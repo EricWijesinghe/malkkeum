@@ -173,12 +173,10 @@ async fn member_for_phone(s: &AppState, phone: &str) -> ApiResult<Option<Uuid>> 
 
 /// Member sign-in: the invite becomes active and the session subject is the team_members row.
 async fn member_login(s: &AppState, member: Uuid) -> ApiResult<Tokens> {
-    let r = sqlx::query(
-        "UPDATE team_members SET invite_status = 'active', last_login_at = now() WHERE id = $1 AND invite_status <> 'removed'",
-    )
-    .bind(member)
-    .execute(&s.db)
-    .await?;
+    let r = sqlx::query("UPDATE team_members SET invite_status = 'active', last_login_at = now() WHERE id = $1 AND invite_status <> 'removed'")
+        .bind(member)
+        .execute(&s.db)
+        .await?;
     // Removed between lookup and update: no session.
     if r.rows_affected() == 0 {
         return Err(ApiError::Unauthorized);

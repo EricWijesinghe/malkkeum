@@ -44,13 +44,12 @@ async fn customer_cancel_refunds_the_payment_and_restores_the_coupon(pool: PgPoo
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
     let c = customer(&app, &pool, "010-5000-0003").await;
-    let coupon: Uuid = sqlx::query_scalar(
-        "INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'welcome', 5000, now() + interval '30 days') RETURNING id",
-    )
-    .bind(c.user)
-    .fetch_one(&pool)
-    .await
-    .expect("coupon");
+    let coupon: Uuid =
+        sqlx::query_scalar("INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'welcome', 5000, now() + interval '30 days') RETURNING id")
+            .bind(c.user)
+            .fetch_one(&pool)
+            .await
+            .expect("coupon");
     let (id, b) = book(&app, &c, 10, Some(coupon)).await;
     assert_eq!(b["status"], 1, "{b}");
     let used: Option<Uuid> = sqlx::query_scalar("SELECT used_booking_id FROM coupons WHERE id = $1")
@@ -64,13 +63,12 @@ async fn customer_cancel_refunds_the_payment_and_restores_the_coupon(pool: PgPoo
     assert_eq!(st, StatusCode::OK, "{cancelled}");
     assert_eq!(cancelled["status"], -1);
 
-    let (paid, refunded): (i64, i64) = sqlx::query_as(
-        "SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1",
-    )
-    .bind(id)
-    .fetch_one(&pool)
-    .await
-    .expect("payments");
+    let (paid, refunded): (i64, i64) =
+        sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1")
+            .bind(id)
+            .fetch_one(&pool)
+            .await
+            .expect("payments");
     assert!(paid > 0, "a payment was taken");
     assert_eq!(refunded, paid, "the payment is fully refunded");
     let used: Option<Uuid> = sqlx::query_scalar("SELECT used_booking_id FROM coupons WHERE id = $1")

@@ -139,8 +139,7 @@ impl Fcm {
 
 fn sign_assertion(account: &ServiceAccount, now: i64) -> Result<String, ProviderError> {
     let key = EncodingKey::from_rsa_pem(account.private_key.as_bytes()).map_err(|_| ProviderError::NotConfigured("fcm"))?;
-    encode(&Header::new(Algorithm::RS256), &assertion_claims(&account.client_email, now), &key)
-        .map_err(|_| ProviderError::NotConfigured("fcm"))
+    encode(&Header::new(Algorithm::RS256), &assertion_claims(&account.client_email, now), &key).map_err(|_| ProviderError::NotConfigured("fcm"))
 }
 
 /// Trades a signed assertion for an access token. Returns (token, lifetime in seconds).

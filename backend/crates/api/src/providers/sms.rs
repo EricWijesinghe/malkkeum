@@ -24,7 +24,10 @@ pub fn signature(api_secret: &str, date: &str, salt: &str) -> String {
 
 /// Value of the `Authorization` header.
 pub fn auth_header(api_key: &str, api_secret: &str, date: &str, salt: &str) -> String {
-    format!("HMAC-SHA256 apiKey={api_key}, date={date}, salt={salt}, signature={}", signature(api_secret, date, salt))
+    format!(
+        "HMAC-SHA256 apiKey={api_key}, date={date}, salt={salt}, signature={}",
+        signature(api_secret, date, salt)
+    )
 }
 
 fn random_salt() -> String {

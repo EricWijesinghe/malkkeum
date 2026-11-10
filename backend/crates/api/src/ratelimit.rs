@@ -187,17 +187,7 @@ mod tests {
 
     fn limiter(auth: usize) -> (Limiter, Instant) {
         let now = Instant::now();
-        (
-            Limiter::new(
-                Limits {
-                    auth,
-                    upload: 2,
-                    general: 3,
-                },
-                now,
-            ),
-            now,
-        )
+        (Limiter::new(Limits { auth, upload: 2, general: 3 }, now), now)
     }
 
     #[test]

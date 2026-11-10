@@ -2,6 +2,7 @@
 //! Money moves only through `settle`: a PAID payment is checked against the checkout, then
 //! fulfilled in one transaction. Any failure after PAID refunds the payment.
 
+use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use super::{
     booking_core::{
         BookingBody, Prepared, after_booking_created, after_deposit, balance_due, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
@@ -11,7 +12,6 @@ use super::{
     catalog::load_service,
     payments::ensure_enabled,
 };
-use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use crate::{
     auth::{Customer, Staff},
     error::{ApiError, ApiResult},

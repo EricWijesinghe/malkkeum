@@ -92,7 +92,14 @@ pub async fn login(app: &Router, phone: &str, audience: &str) -> (String, String
     let (st, sent) = call(app, "POST", "/v1/auth/otp", None, Some(json!({ "phone": phone }))).await;
     assert_eq!(st, StatusCode::OK, "otp request: {sent}");
     let code = sent["dev_code"].as_str().expect("dev_code in dev mode").to_string();
-    let (st, tokens) = call(app, "POST", "/v1/auth/verify", None, Some(json!({ "phone": phone, "code": code, "audience": audience }))).await;
+    let (st, tokens) = call(
+        app,
+        "POST",
+        "/v1/auth/verify",
+        None,
+        Some(json!({ "phone": phone, "code": code, "audience": audience })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "verify: {tokens}");
     (
         tokens["access_token"].as_str().expect("access token").to_string(),
@@ -149,13 +156,12 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "address: {addr}");
-    let card: Uuid = sqlx::query_scalar(
-        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test', 'test card') RETURNING id",
-    )
-    .bind(user)
-    .fetch_one(db)
-    .await
-    .expect("payment method");
+    let card: Uuid =
+        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test', 'test card') RETURNING id")
+            .bind(user)
+            .fetch_one(db)
+            .await
+            .expect("payment method");
     Customer {
         token,
         user,
@@ -176,7 +182,7 @@ pub async fn book(app: &Router, c: &Customer, days: i64, coupon: Option<Uuid>) -
             "service_code": "studio",
             "address_id": c.address,
             "visit_date": visit,
-            "start_hour": 10,
+            "start_hour": 9,
             "coupon_id": coupon,
             "visit_notes": {},
             "payment_method_id": c.card

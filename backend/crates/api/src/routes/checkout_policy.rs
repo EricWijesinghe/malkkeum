@@ -128,7 +128,10 @@ mod tests {
             let r = recovery(status, true, Some("VIRTUAL_ACCOUNT_ISSUED"), false, false);
             assert_eq!(decide(&r), Action::MarkAwaitingDeposit, "{status}");
         }
-        assert_eq!(decide(&recovery("expired", false, Some("VIRTUAL_ACCOUNT_ISSUED"), false, false)), Action::Nothing);
+        assert_eq!(
+            decide(&recovery("expired", false, Some("VIRTUAL_ACCOUNT_ISSUED"), false, false)),
+            Action::Nothing
+        );
         assert_eq!(decide(&recovery("paid", false, Some("VIRTUAL_ACCOUNT_ISSUED"), false, true)), Action::Nothing);
     }
 
@@ -145,7 +148,11 @@ mod tests {
             for expired in [false, true] {
                 for provider in [None, Some("READY"), Some("FAILED"), Some("CANCELLED")] {
                     let action = decide(&recovery(status, expired, provider, false, false));
-                    let expected = if status == "pending" && expired { Action::MarkExpired } else { Action::Nothing };
+                    let expected = if status == "pending" && expired {
+                        Action::MarkExpired
+                    } else {
+                        Action::Nothing
+                    };
                     assert_eq!(action, expected, "{status} expired={expired} {provider:?}");
                 }
             }
@@ -155,7 +162,14 @@ mod tests {
     #[test]
     fn money_actions_only_ever_follow_a_paid_provider_status() {
         let statuses = ["pending", "awaiting_deposit", "paid", "failed", "cancelled", "expired", "refunded", "unknown"];
-        let providers = [None, Some("PAID"), Some("VIRTUAL_ACCOUNT_ISSUED"), Some("READY"), Some("FAILED"), Some("CANCELLED")];
+        let providers = [
+            None,
+            Some("PAID"),
+            Some("VIRTUAL_ACCOUNT_ISSUED"),
+            Some("READY"),
+            Some("FAILED"),
+            Some("CANCELLED"),
+        ];
         for status in statuses {
             for expired in [false, true] {
                 for provider in providers {
@@ -173,10 +187,16 @@ mod tests {
                                 assert!(amount_ok && !expired && is_open_deposit(status), "{r:?}");
                             }
                             if action == Action::FulfilLate {
-                                assert!(amount_ok && (expired || status == "expired") && (is_open_deposit(status) || status == "expired"), "{r:?}");
+                                assert!(
+                                    amount_ok && (expired || status == "expired") && (is_open_deposit(status) || status == "expired"),
+                                    "{r:?}"
+                                );
                             }
                             if action == Action::RefundClosed {
-                                assert!(status != "pending" && status != "awaiting_deposit" && status != "expired" || status == "paid", "{r:?}");
+                                assert!(
+                                    status != "pending" && status != "awaiting_deposit" && status != "expired" || status == "paid",
+                                    "{r:?}"
+                                );
                             }
                         }
                     }

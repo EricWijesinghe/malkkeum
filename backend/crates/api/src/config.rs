@@ -131,7 +131,12 @@ fn solapi() -> Result<Option<SolapiConfig>, ConfigError> {
     let (api_key, api_secret) = match (opt("SOLAPI_API_KEY"), opt("SOLAPI_API_SECRET")) {
         (None, None) => return Ok(None),
         (Some(k), Some(s)) => (k, s),
-        _ => return Err(ConfigError::Invalid("SOLAPI_API_KEY", "set SOLAPI_API_KEY and SOLAPI_API_SECRET together".into())),
+        _ => {
+            return Err(ConfigError::Invalid(
+                "SOLAPI_API_KEY",
+                "set SOLAPI_API_KEY and SOLAPI_API_SECRET together".into(),
+            ));
+        }
     };
     let sender = opt("SMS_SENDER").ok_or(ConfigError::Missing("SMS_SENDER"))?;
     let templates: HashMap<String, String> = match opt("ALIMTALK_TEMPLATES") {

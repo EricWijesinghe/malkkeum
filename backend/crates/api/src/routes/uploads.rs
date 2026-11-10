@@ -52,13 +52,11 @@ async fn upload(State(s): State<AppState>, a: Auth, mut form: Multipart) -> ApiR
         .bind(format!("upload:{}", a.id))
         .execute(&mut *tx)
         .await?;
-    let used: i64 = sqlx::query_scalar(
-        "SELECT count(*) FROM uploads WHERE owner_role = $1 AND owner_id = $2 AND created_at > now() - interval '24 hours'",
-    )
-    .bind(a.role.as_str())
-    .bind(a.id)
-    .fetch_one(&mut *tx)
-    .await?;
+    let used: i64 = sqlx::query_scalar("SELECT count(*) FROM uploads WHERE owner_role = $1 AND owner_id = $2 AND created_at > now() - interval '24 hours'")
+        .bind(a.role.as_str())
+        .bind(a.id)
+        .fetch_one(&mut *tx)
+        .await?;
     if !within_quota(used, s.config.upload_daily_quota) {
         return Err(ApiError::Quota("upload_quota"));
     }
