@@ -1068,4 +1068,387 @@ class TKo extends T {
 
   @override
   String get summaryDate => '방문 일정';
+
+  @override
+  String get pTabJobs => '일감';
+
+  @override
+  String get pTabQuotes => '내 견적';
+
+  @override
+  String get pTabSchedule => '일정';
+
+  @override
+  String get pIntroTitle => '청소 전문가를 위한\n일감 · 일정 · 정산';
+
+  @override
+  String get pIntroBody => '원하는 지역과 시간에만 일하고, 매주 정산 받으세요';
+
+  @override
+  String get pOnbTitle => '파트너 정보를 알려주세요';
+
+  @override
+  String get pOnbName => '대표자 이름';
+
+  @override
+  String get pOnbTeam => '팀 이름';
+
+  @override
+  String get pOnbServices => '할 수 있는 서비스';
+
+  @override
+  String get pOnbAreas => '활동 지역';
+
+  @override
+  String get pOnbDone => '가입 신청';
+
+  @override
+  String get pPendingTitle => '승인을 기다리고 있어요';
+
+  @override
+  String get pPendingBody => '운영팀이 확인 후 승인하면 알림을 보내드려요. 그동안 정산 계좌를 등록해 주세요.';
+
+  @override
+  String get pSuspended => '계정이 일시 중지됐어요. 운영팀에 문의해 주세요.';
+
+  @override
+  String get pDirect => '바로 예약';
+
+  @override
+  String get pQuoteReq => '견적 요청';
+
+  @override
+  String get pShowClosed => '마감된 일감도 보기';
+
+  @override
+  String get pSortNewest => '최신 요청순';
+
+  @override
+  String get pSortVisit => '가까운 방문일순';
+
+  @override
+  String get pSortAmount => '금액 높은순';
+
+  @override
+  String get pNoJobs => '지금 맞는 일감이 없어요';
+
+  @override
+  String get pNoJobsBody => '서비스·지역·근무 시간을 넓히면 더 많은 일감을 볼 수 있어요';
+
+  @override
+  String get pPayout => '예상 정산';
+
+  @override
+  String get pCustomerEstimate => '고객 예상가';
+
+  @override
+  String get pNew => 'NEW';
+
+  @override
+  String get pClosed => '마감';
+
+  @override
+  String get pPrivacyNote => '정확한 주소와 고객 정보는 수락 후에 보여요';
+
+  @override
+  String get pAccept => '수락하기';
+
+  @override
+  String get pAcceptConfirm => '이 일감을 수락할까요?';
+
+  @override
+  String get pAcceptBody =>
+      '수락하면 일정에 추가되고 고객에게 팀 배정 알림이 가요. 방문 2일 전부터는 취소가 어려워요.';
+
+  @override
+  String get pAccepted => '일감을 수락했어요';
+
+  @override
+  String get pSendQuote => '견적 보내기';
+
+  @override
+  String get pQuotePrice => '고객 결제 금액';
+
+  @override
+  String get pQuoteNote => '상담팀에 전할 메모';
+
+  @override
+  String get pQuoteSent => '견적을 보냈어요';
+
+  @override
+  String pFee(String rate) {
+    return '수수료 $rate%';
+  }
+
+  @override
+  String get pYouGet => '받을 금액';
+
+  @override
+  String get pQuoteAll => '전체';
+
+  @override
+  String get pQ_waiting => '대기';
+
+  @override
+  String get pQ_selected => '선택됨';
+
+  @override
+  String get pQ_rejected => '미선택';
+
+  @override
+  String get pQ_closed => '종료';
+
+  @override
+  String get pUnseenOnly => '새 결과만';
+
+  @override
+  String get pNoQuotes => '보낸 견적이 없어요';
+
+  @override
+  String get pMyQuote => '내 견적';
+
+  @override
+  String get pWithdraw => '견적 철회';
+
+  @override
+  String get pWithdrawn => '견적을 철회했어요';
+
+  @override
+  String get pOnlyMine => '내 일정만';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n건';
+  }
+
+  @override
+  String get pNoSchedule => '이 날은 일정이 없어요';
+
+  @override
+  String get pCancelledBanner => '고객이 취소한 일감이에요. 완료 처리할 수 없어요.';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return '일정 변경 요청: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => '가능해요';
+
+  @override
+  String get pRescheduleNo => '어려워요';
+
+  @override
+  String get pCustomer => '고객';
+
+  @override
+  String get pCall => '안심번호로 전화';
+
+  @override
+  String get pCallSoon => '안심번호 연결은 서비스 개시 시 활성화돼요';
+
+  @override
+  String get pQuietHours => '20시 이후에는 전화하지 말아 주세요';
+
+  @override
+  String get pAssignee => '담당자';
+
+  @override
+  String get pChangeAssignee => '담당자 변경';
+
+  @override
+  String get pCustomerRequests => '고객 요청사항';
+
+  @override
+  String get pTeamMemo => '팀 메모 (고객에게 보이지 않아요)';
+
+  @override
+  String get pMemoSaved => '메모를 저장했어요';
+
+  @override
+  String get pPayoutBreakdown => '정산 내역';
+
+  @override
+  String get pAfterBalance => '고객 잔금 결제 후 정산돼요';
+
+  @override
+  String get pChatOps => '운영팀과 채팅';
+
+  @override
+  String get pComplete => '작업 완료 체크';
+
+  @override
+  String get pBeforePhotos => '청소 전 사진';
+
+  @override
+  String get pAfterPhotos => '청소 후 사진';
+
+  @override
+  String get pAddPhoto => '사진 추가';
+
+  @override
+  String get pChecklist => '확인 항목';
+
+  @override
+  String get pCheck1 => '요청한 모든 공간을 청소했어요';
+
+  @override
+  String get pCheck2 => '쓰레기를 정리하고 도구를 회수했어요';
+
+  @override
+  String get pCheck3 => '창문·전기·수도를 확인했어요';
+
+  @override
+  String get pCheck4 => '고객 요청사항을 반영했어요';
+
+  @override
+  String get pCompleteCta => '완료 처리';
+
+  @override
+  String get pCompleteNeed => '사진을 각 1장 이상 올리고 모든 항목을 체크해 주세요';
+
+  @override
+  String get pCompleted => '수고하셨어요!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$date에 $amount 정산 예정';
+  }
+
+  @override
+  String get pPayoutWaiting => '고객 잔금 결제 후 정산일이 정해져요';
+
+  @override
+  String get pPendingPayout => '정산 예정 금액';
+
+  @override
+  String get pSettlements => '정산 내역';
+
+  @override
+  String get pS_waiting_balance => '잔금 대기';
+
+  @override
+  String get pS_pending => '정산 예정';
+
+  @override
+  String get pS_paid => '지급 완료';
+
+  @override
+  String get pS_held => '보류';
+
+  @override
+  String get pReviews => '고객 리뷰';
+
+  @override
+  String get pNoReviews => '아직 리뷰가 없어요';
+
+  @override
+  String get pReplyLater => '답글 기능은 곧 열려요';
+
+  @override
+  String get pServicesAreas => '서비스 · 지역';
+
+  @override
+  String get pPayoutAccount => '정산 계좌';
+
+  @override
+  String get pBank => '은행';
+
+  @override
+  String get pAccountNumber => '계좌번호';
+
+  @override
+  String get pHolder => '예금주';
+
+  @override
+  String get pVerified => '확인 완료';
+
+  @override
+  String get pUnverified => '확인 중';
+
+  @override
+  String get pAccountSaved => '계좌를 저장했어요. 변경 시 다시 확인돼요.';
+
+  @override
+  String get pWorkSchedule => '근무 일정';
+
+  @override
+  String get pWeekdays => '근무 요일';
+
+  @override
+  String get pDayParts => '근무 시간대';
+
+  @override
+  String get pDaysOff => '쉬는 날';
+
+  @override
+  String get pAddDayOff => '쉬는 날 추가';
+
+  @override
+  String get pSaved => '저장했어요';
+
+  @override
+  String get pTeam => '팀원';
+
+  @override
+  String get pOwner => '대표';
+
+  @override
+  String get pInvited => '초대됨';
+
+  @override
+  String get pInvite => '팀원 초대';
+
+  @override
+  String get pInviteSent => '초대 문자를 보냈어요';
+
+  @override
+  String get pRemove => '내보내기';
+
+  @override
+  String get pNotifications => '알림 설정';
+
+  @override
+  String get pNotifyDirect => '새 바로 예약 일감';
+
+  @override
+  String get pNotifyQuotes => '견적 요청 · 결과';
+
+  @override
+  String get pNotifyChat => '운영팀 메시지';
+
+  @override
+  String get pQuietNight => '야간 방해 금지 (22–08시)';
+
+  @override
+  String get pNewInquiry => '새 문의';
+
+  @override
+  String get pTopic_settlement => '정산';
+
+  @override
+  String get pTopic_reschedule => '일정 변경 · 취소';
+
+  @override
+  String get pTopic_app => '앱 사용';
+
+  @override
+  String get pOpsTeam => '운영팀';
+
+  @override
+  String get pViewJob => '일감 보기';
+
+  @override
+  String pBookingNo(String n) {
+    return '예약번호 $n';
+  }
+
+  @override
+  String get pSize => '면적';
+
+  @override
+  String get pSchedule => '일정';
+
+  @override
+  String get pSpace => '공간 정보';
 }

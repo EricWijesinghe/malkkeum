@@ -528,5 +528,170 @@
  "quoteNoPayNow": "지금은 결제하지 않아요",
  "summaryType": "청소 종류",
  "summaryHome": "집 정보",
- "summaryDate": "방문 일정"
+ "summaryDate": "방문 일정",
+ "pTabJobs": "일감",
+ "pTabQuotes": "내 견적",
+ "pTabSchedule": "일정",
+ "pIntroTitle": "청소 전문가를 위한\n일감 · 일정 · 정산",
+ "pIntroBody": "원하는 지역과 시간에만 일하고, 매주 정산 받으세요",
+ "pOnbTitle": "파트너 정보를 알려주세요",
+ "pOnbName": "대표자 이름",
+ "pOnbTeam": "팀 이름",
+ "pOnbServices": "할 수 있는 서비스",
+ "pOnbAreas": "활동 지역",
+ "pOnbDone": "가입 신청",
+ "pPendingTitle": "승인을 기다리고 있어요",
+ "pPendingBody": "운영팀이 확인 후 승인하면 알림을 보내드려요. 그동안 정산 계좌를 등록해 주세요.",
+ "pSuspended": "계정이 일시 중지됐어요. 운영팀에 문의해 주세요.",
+ "pDirect": "바로 예약",
+ "pQuoteReq": "견적 요청",
+ "pShowClosed": "마감된 일감도 보기",
+ "pSortNewest": "최신 요청순",
+ "pSortVisit": "가까운 방문일순",
+ "pSortAmount": "금액 높은순",
+ "pNoJobs": "지금 맞는 일감이 없어요",
+ "pNoJobsBody": "서비스·지역·근무 시간을 넓히면 더 많은 일감을 볼 수 있어요",
+ "pPayout": "예상 정산",
+ "pCustomerEstimate": "고객 예상가",
+ "pNew": "NEW",
+ "pClosed": "마감",
+ "pPrivacyNote": "정확한 주소와 고객 정보는 수락 후에 보여요",
+ "pAccept": "수락하기",
+ "pAcceptConfirm": "이 일감을 수락할까요?",
+ "pAcceptBody": "수락하면 일정에 추가되고 고객에게 팀 배정 알림이 가요. 방문 2일 전부터는 취소가 어려워요.",
+ "pAccepted": "일감을 수락했어요",
+ "pSendQuote": "견적 보내기",
+ "pQuotePrice": "고객 결제 금액",
+ "pQuoteNote": "상담팀에 전할 메모",
+ "pQuoteSent": "견적을 보냈어요",
+ "pFee": "수수료 {rate}%",
+ "@pFee": {
+  "placeholders": {
+   "rate": {
+    "type": "String"
+   }
+  }
+ },
+ "pYouGet": "받을 금액",
+ "pQuoteAll": "전체",
+ "pQ_waiting": "대기",
+ "pQ_selected": "선택됨",
+ "pQ_rejected": "미선택",
+ "pQ_closed": "종료",
+ "pUnseenOnly": "새 결과만",
+ "pNoQuotes": "보낸 견적이 없어요",
+ "pMyQuote": "내 견적",
+ "pWithdraw": "견적 철회",
+ "pWithdrawn": "견적을 철회했어요",
+ "pOnlyMine": "내 일정만",
+ "pJobsCount": "{n}건",
+ "@pJobsCount": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "pNoSchedule": "이 날은 일정이 없어요",
+ "pCancelledBanner": "고객이 취소한 일감이에요. 완료 처리할 수 없어요.",
+ "pRescheduleBanner": "일정 변경 요청: {from} → {to}",
+ "@pRescheduleBanner": {
+  "placeholders": {
+   "from": {
+    "type": "String"
+   },
+   "to": {
+    "type": "String"
+   }
+  }
+ },
+ "pRescheduleOk": "가능해요",
+ "pRescheduleNo": "어려워요",
+ "pCustomer": "고객",
+ "pCall": "안심번호로 전화",
+ "pCallSoon": "안심번호 연결은 서비스 개시 시 활성화돼요",
+ "pQuietHours": "20시 이후에는 전화하지 말아 주세요",
+ "pAssignee": "담당자",
+ "pChangeAssignee": "담당자 변경",
+ "pCustomerRequests": "고객 요청사항",
+ "pTeamMemo": "팀 메모 (고객에게 보이지 않아요)",
+ "pMemoSaved": "메모를 저장했어요",
+ "pPayoutBreakdown": "정산 내역",
+ "pAfterBalance": "고객 잔금 결제 후 정산돼요",
+ "pChatOps": "운영팀과 채팅",
+ "pComplete": "작업 완료 체크",
+ "pBeforePhotos": "청소 전 사진",
+ "pAfterPhotos": "청소 후 사진",
+ "pAddPhoto": "사진 추가",
+ "pChecklist": "확인 항목",
+ "pCheck1": "요청한 모든 공간을 청소했어요",
+ "pCheck2": "쓰레기를 정리하고 도구를 회수했어요",
+ "pCheck3": "창문·전기·수도를 확인했어요",
+ "pCheck4": "고객 요청사항을 반영했어요",
+ "pCompleteCta": "완료 처리",
+ "pCompleteNeed": "사진을 각 1장 이상 올리고 모든 항목을 체크해 주세요",
+ "pCompleted": "수고하셨어요!",
+ "pPayoutOn": "{date}에 {amount} 정산 예정",
+ "@pPayoutOn": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   },
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "pPayoutWaiting": "고객 잔금 결제 후 정산일이 정해져요",
+ "pPendingPayout": "정산 예정 금액",
+ "pSettlements": "정산 내역",
+ "pS_waiting_balance": "잔금 대기",
+ "pS_pending": "정산 예정",
+ "pS_paid": "지급 완료",
+ "pS_held": "보류",
+ "pReviews": "고객 리뷰",
+ "pNoReviews": "아직 리뷰가 없어요",
+ "pReplyLater": "답글 기능은 곧 열려요",
+ "pServicesAreas": "서비스 · 지역",
+ "pPayoutAccount": "정산 계좌",
+ "pBank": "은행",
+ "pAccountNumber": "계좌번호",
+ "pHolder": "예금주",
+ "pVerified": "확인 완료",
+ "pUnverified": "확인 중",
+ "pAccountSaved": "계좌를 저장했어요. 변경 시 다시 확인돼요.",
+ "pWorkSchedule": "근무 일정",
+ "pWeekdays": "근무 요일",
+ "pDayParts": "근무 시간대",
+ "pDaysOff": "쉬는 날",
+ "pAddDayOff": "쉬는 날 추가",
+ "pSaved": "저장했어요",
+ "pTeam": "팀원",
+ "pOwner": "대표",
+ "pInvited": "초대됨",
+ "pInvite": "팀원 초대",
+ "pInviteSent": "초대 문자를 보냈어요",
+ "pRemove": "내보내기",
+ "pNotifications": "알림 설정",
+ "pNotifyDirect": "새 바로 예약 일감",
+ "pNotifyQuotes": "견적 요청 · 결과",
+ "pNotifyChat": "운영팀 메시지",
+ "pQuietNight": "야간 방해 금지 (22–08시)",
+ "pNewInquiry": "새 문의",
+ "pTopic_settlement": "정산",
+ "pTopic_reschedule": "일정 변경 · 취소",
+ "pTopic_app": "앱 사용",
+ "pOpsTeam": "운영팀",
+ "pViewJob": "일감 보기",
+ "pBookingNo": "예약번호 {n}",
+ "@pBookingNo": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "pSize": "면적",
+ "pSchedule": "일정",
+ "pSpace": "공간 정보"
 }

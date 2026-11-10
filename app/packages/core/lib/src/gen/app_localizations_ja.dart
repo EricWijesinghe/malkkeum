@@ -1068,4 +1068,386 @@ class TJa extends T {
 
   @override
   String get summaryDate => '訪問日程';
+
+  @override
+  String get pTabJobs => '仕事';
+
+  @override
+  String get pTabQuotes => '見積';
+
+  @override
+  String get pTabSchedule => '予定';
+
+  @override
+  String get pIntroTitle => '清掃のプロのための\n仕事・予定・精算';
+
+  @override
+  String get pIntroBody => '希望の地域と時間だけ働き、毎週精算';
+
+  @override
+  String get pOnbTitle => 'パートナー情報を入力';
+
+  @override
+  String get pOnbName => '代表者名';
+
+  @override
+  String get pOnbTeam => 'チーム名';
+
+  @override
+  String get pOnbServices => '対応できるサービス';
+
+  @override
+  String get pOnbAreas => '活動地域';
+
+  @override
+  String get pOnbDone => '申請する';
+
+  @override
+  String get pPendingTitle => '承認をお待ちください';
+
+  @override
+  String get pPendingBody => '運営チームが確認後お知らせします。その間に精算口座を登録してください。';
+
+  @override
+  String get pSuspended => 'アカウントが一時停止中です。運営にお問い合わせください。';
+
+  @override
+  String get pDirect => '即予約';
+
+  @override
+  String get pQuoteReq => '見積依頼';
+
+  @override
+  String get pShowClosed => '締切済みも表示';
+
+  @override
+  String get pSortNewest => '新着順';
+
+  @override
+  String get pSortVisit => '訪問日が近い順';
+
+  @override
+  String get pSortAmount => '金額が高い順';
+
+  @override
+  String get pNoJobs => '条件に合う仕事はありません';
+
+  @override
+  String get pNoJobsBody => 'サービス・地域・時間を広げると増えます';
+
+  @override
+  String get pPayout => '精算予定';
+
+  @override
+  String get pCustomerEstimate => '顧客の概算';
+
+  @override
+  String get pNew => 'NEW';
+
+  @override
+  String get pClosed => '締切';
+
+  @override
+  String get pPrivacyNote => '正確な住所と顧客情報は受諾後に表示されます';
+
+  @override
+  String get pAccept => '受ける';
+
+  @override
+  String get pAcceptConfirm => 'この仕事を受けますか？';
+
+  @override
+  String get pAcceptBody => '予定に追加され、顧客に通知されます。訪問2日前からのキャンセルは制限されます。';
+
+  @override
+  String get pAccepted => '仕事を受けました';
+
+  @override
+  String get pSendQuote => '見積を送る';
+
+  @override
+  String get pQuotePrice => '顧客支払額';
+
+  @override
+  String get pQuoteNote => '相談チームへのメモ';
+
+  @override
+  String get pQuoteSent => '見積を送りました';
+
+  @override
+  String pFee(String rate) {
+    return '手数料$rate%';
+  }
+
+  @override
+  String get pYouGet => '受取額';
+
+  @override
+  String get pQuoteAll => 'すべて';
+
+  @override
+  String get pQ_waiting => '待機中';
+
+  @override
+  String get pQ_selected => '選択';
+
+  @override
+  String get pQ_rejected => '不採用';
+
+  @override
+  String get pQ_closed => '終了';
+
+  @override
+  String get pUnseenOnly => '新しい結果のみ';
+
+  @override
+  String get pNoQuotes => '見積はありません';
+
+  @override
+  String get pMyQuote => '自分の見積';
+
+  @override
+  String get pWithdraw => '取り下げ';
+
+  @override
+  String get pWithdrawn => '見積を取り下げました';
+
+  @override
+  String get pOnlyMine => '自分の予定のみ';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n件';
+  }
+
+  @override
+  String get pNoSchedule => '予定はありません';
+
+  @override
+  String get pCancelledBanner => 'キャンセルされた仕事です。完了できません。';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return '日程変更依頼：$from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => '対応可能';
+
+  @override
+  String get pRescheduleNo => '難しい';
+
+  @override
+  String get pCustomer => '顧客';
+
+  @override
+  String get pCall => '安心番号で電話';
+
+  @override
+  String get pCallSoon => '安心番号はサービス開始時に有効になります';
+
+  @override
+  String get pQuietHours => '20時以降の電話はお控えください';
+
+  @override
+  String get pAssignee => '担当者';
+
+  @override
+  String get pChangeAssignee => '担当者を変更';
+
+  @override
+  String get pCustomerRequests => 'お客様のご要望';
+
+  @override
+  String get pTeamMemo => 'チームメモ（顧客には非表示）';
+
+  @override
+  String get pMemoSaved => 'メモを保存しました';
+
+  @override
+  String get pPayoutBreakdown => '精算内訳';
+
+  @override
+  String get pAfterBalance => '顧客の残金支払い後に精算されます';
+
+  @override
+  String get pChatOps => '運営とチャット';
+
+  @override
+  String get pComplete => '作業完了チェック';
+
+  @override
+  String get pBeforePhotos => '清掃前の写真';
+
+  @override
+  String get pAfterPhotos => '清掃後の写真';
+
+  @override
+  String get pAddPhoto => '写真を追加';
+
+  @override
+  String get pChecklist => '確認項目';
+
+  @override
+  String get pCheck1 => '依頼された全箇所を清掃した';
+
+  @override
+  String get pCheck2 => 'ゴミを片付け道具を回収した';
+
+  @override
+  String get pCheck3 => '窓・電気・水道を確認した';
+
+  @override
+  String get pCheck4 => 'お客様のご要望に対応した';
+
+  @override
+  String get pCompleteCta => '完了にする';
+
+  @override
+  String get pCompleteNeed => '各1枚以上の写真と全項目チェックが必要です';
+
+  @override
+  String get pCompleted => 'お疲れさまでした！';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$dateに$amountを精算予定';
+  }
+
+  @override
+  String get pPayoutWaiting => '顧客の残金支払い後に精算日が決まります';
+
+  @override
+  String get pPendingPayout => '精算予定額';
+
+  @override
+  String get pSettlements => '精算履歴';
+
+  @override
+  String get pS_waiting_balance => '残金待ち';
+
+  @override
+  String get pS_pending => '精算予定';
+
+  @override
+  String get pS_paid => '支払済み';
+
+  @override
+  String get pS_held => '保留';
+
+  @override
+  String get pReviews => 'レビュー';
+
+  @override
+  String get pNoReviews => 'まだレビューはありません';
+
+  @override
+  String get pReplyLater => '返信機能は近日公開';
+
+  @override
+  String get pServicesAreas => 'サービス・地域';
+
+  @override
+  String get pPayoutAccount => '精算口座';
+
+  @override
+  String get pBank => '銀行';
+
+  @override
+  String get pAccountNumber => '口座番号';
+
+  @override
+  String get pHolder => '口座名義';
+
+  @override
+  String get pVerified => '確認済み';
+
+  @override
+  String get pUnverified => '確認中';
+
+  @override
+  String get pAccountSaved => '保存しました。変更時は再確認されます。';
+
+  @override
+  String get pWorkSchedule => '勤務スケジュール';
+
+  @override
+  String get pWeekdays => '勤務曜日';
+
+  @override
+  String get pDayParts => '勤務時間帯';
+
+  @override
+  String get pDaysOff => '休日';
+
+  @override
+  String get pAddDayOff => '休日を追加';
+
+  @override
+  String get pSaved => '保存しました';
+
+  @override
+  String get pTeam => 'チームメンバー';
+
+  @override
+  String get pOwner => '代表';
+
+  @override
+  String get pInvited => '招待中';
+
+  @override
+  String get pInvite => 'メンバーを招待';
+
+  @override
+  String get pInviteSent => '招待SMSを送りました';
+
+  @override
+  String get pRemove => '削除';
+
+  @override
+  String get pNotifications => '通知設定';
+
+  @override
+  String get pNotifyDirect => '新しい即予約';
+
+  @override
+  String get pNotifyQuotes => '見積依頼・結果';
+
+  @override
+  String get pNotifyChat => '運営からのメッセージ';
+
+  @override
+  String get pQuietNight => '夜間通知オフ（22〜8時）';
+
+  @override
+  String get pNewInquiry => '新規問い合わせ';
+
+  @override
+  String get pTopic_settlement => '精算';
+
+  @override
+  String get pTopic_reschedule => '日程変更・キャンセル';
+
+  @override
+  String get pTopic_app => 'アプリの使い方';
+
+  @override
+  String get pOpsTeam => '運営チーム';
+
+  @override
+  String get pViewJob => '仕事を見る';
+
+  @override
+  String pBookingNo(String n) {
+    return '予約番号 $n';
+  }
+
+  @override
+  String get pSize => '面積';
+
+  @override
+  String get pSchedule => '日程';
+
+  @override
+  String get pSpace => '空間情報';
 }

@@ -2112,6 +2112,750 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'방문 일정'**
   String get summaryDate;
+
+  /// No description provided for @pTabJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'일감'**
+  String get pTabJobs;
+
+  /// No description provided for @pTabQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 견적'**
+  String get pTabQuotes;
+
+  /// No description provided for @pTabSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정'**
+  String get pTabSchedule;
+
+  /// No description provided for @pIntroTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 전문가를 위한\n일감 · 일정 · 정산'**
+  String get pIntroTitle;
+
+  /// No description provided for @pIntroBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'원하는 지역과 시간에만 일하고, 매주 정산 받으세요'**
+  String get pIntroBody;
+
+  /// No description provided for @pOnbTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 정보를 알려주세요'**
+  String get pOnbTitle;
+
+  /// No description provided for @pOnbName.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자 이름'**
+  String get pOnbName;
+
+  /// No description provided for @pOnbTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 이름'**
+  String get pOnbTeam;
+
+  /// No description provided for @pOnbServices.
+  ///
+  /// In ko, this message translates to:
+  /// **'할 수 있는 서비스'**
+  String get pOnbServices;
+
+  /// No description provided for @pOnbAreas.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 지역'**
+  String get pOnbAreas;
+
+  /// No description provided for @pOnbDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 신청'**
+  String get pOnbDone;
+
+  /// No description provided for @pPendingTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인을 기다리고 있어요'**
+  String get pPendingTitle;
+
+  /// No description provided for @pPendingBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영팀이 확인 후 승인하면 알림을 보내드려요. 그동안 정산 계좌를 등록해 주세요.'**
+  String get pPendingBody;
+
+  /// No description provided for @pSuspended.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정이 일시 중지됐어요. 운영팀에 문의해 주세요.'**
+  String get pSuspended;
+
+  /// No description provided for @pDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 예약'**
+  String get pDirect;
+
+  /// No description provided for @pQuoteReq.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 요청'**
+  String get pQuoteReq;
+
+  /// No description provided for @pShowClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'마감된 일감도 보기'**
+  String get pShowClosed;
+
+  /// No description provided for @pSortNewest.
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 요청순'**
+  String get pSortNewest;
+
+  /// No description provided for @pSortVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'가까운 방문일순'**
+  String get pSortVisit;
+
+  /// No description provided for @pSortAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'금액 높은순'**
+  String get pSortAmount;
+
+  /// No description provided for @pNoJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 맞는 일감이 없어요'**
+  String get pNoJobs;
+
+  /// No description provided for @pNoJobsBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스·지역·근무 시간을 넓히면 더 많은 일감을 볼 수 있어요'**
+  String get pNoJobsBody;
+
+  /// No description provided for @pPayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 정산'**
+  String get pPayout;
+
+  /// No description provided for @pCustomerEstimate.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 예상가'**
+  String get pCustomerEstimate;
+
+  /// No description provided for @pNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'NEW'**
+  String get pNew;
+
+  /// No description provided for @pClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'마감'**
+  String get pClosed;
+
+  /// No description provided for @pPrivacyNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확한 주소와 고객 정보는 수락 후에 보여요'**
+  String get pPrivacyNote;
+
+  /// No description provided for @pAccept.
+  ///
+  /// In ko, this message translates to:
+  /// **'수락하기'**
+  String get pAccept;
+
+  /// No description provided for @pAcceptConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 일감을 수락할까요?'**
+  String get pAcceptConfirm;
+
+  /// No description provided for @pAcceptBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'수락하면 일정에 추가되고 고객에게 팀 배정 알림이 가요. 방문 2일 전부터는 취소가 어려워요.'**
+  String get pAcceptBody;
+
+  /// No description provided for @pAccepted.
+  ///
+  /// In ko, this message translates to:
+  /// **'일감을 수락했어요'**
+  String get pAccepted;
+
+  /// No description provided for @pSendQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 보내기'**
+  String get pSendQuote;
+
+  /// No description provided for @pQuotePrice.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 결제 금액'**
+  String get pQuotePrice;
+
+  /// No description provided for @pQuoteNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담팀에 전할 메모'**
+  String get pQuoteNote;
+
+  /// No description provided for @pQuoteSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적을 보냈어요'**
+  String get pQuoteSent;
+
+  /// No description provided for @pFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 {rate}%'**
+  String pFee(String rate);
+
+  /// No description provided for @pYouGet.
+  ///
+  /// In ko, this message translates to:
+  /// **'받을 금액'**
+  String get pYouGet;
+
+  /// No description provided for @pQuoteAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get pQuoteAll;
+
+  /// No description provided for @pQ_waiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기'**
+  String get pQ_waiting;
+
+  /// No description provided for @pQ_selected.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택됨'**
+  String get pQ_selected;
+
+  /// No description provided for @pQ_rejected.
+  ///
+  /// In ko, this message translates to:
+  /// **'미선택'**
+  String get pQ_rejected;
+
+  /// No description provided for @pQ_closed.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get pQ_closed;
+
+  /// No description provided for @pUnseenOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 결과만'**
+  String get pUnseenOnly;
+
+  /// No description provided for @pNoQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'보낸 견적이 없어요'**
+  String get pNoQuotes;
+
+  /// No description provided for @pMyQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 견적'**
+  String get pMyQuote;
+
+  /// No description provided for @pWithdraw.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 철회'**
+  String get pWithdraw;
+
+  /// No description provided for @pWithdrawn.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적을 철회했어요'**
+  String get pWithdrawn;
+
+  /// No description provided for @pOnlyMine.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 일정만'**
+  String get pOnlyMine;
+
+  /// No description provided for @pJobsCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}건'**
+  String pJobsCount(String n);
+
+  /// No description provided for @pNoSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 날은 일정이 없어요'**
+  String get pNoSchedule;
+
+  /// No description provided for @pCancelledBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객이 취소한 일감이에요. 완료 처리할 수 없어요.'**
+  String get pCancelledBanner;
+
+  /// No description provided for @pRescheduleBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경 요청: {from} → {to}'**
+  String pRescheduleBanner(String from, String to);
+
+  /// No description provided for @pRescheduleOk.
+  ///
+  /// In ko, this message translates to:
+  /// **'가능해요'**
+  String get pRescheduleOk;
+
+  /// No description provided for @pRescheduleNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'어려워요'**
+  String get pRescheduleNo;
+
+  /// No description provided for @pCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get pCustomer;
+
+  /// No description provided for @pCall.
+  ///
+  /// In ko, this message translates to:
+  /// **'안심번호로 전화'**
+  String get pCall;
+
+  /// No description provided for @pCallSoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'안심번호 연결은 서비스 개시 시 활성화돼요'**
+  String get pCallSoon;
+
+  /// No description provided for @pQuietHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'20시 이후에는 전화하지 말아 주세요'**
+  String get pQuietHours;
+
+  /// No description provided for @pAssignee.
+  ///
+  /// In ko, this message translates to:
+  /// **'담당자'**
+  String get pAssignee;
+
+  /// No description provided for @pChangeAssignee.
+  ///
+  /// In ko, this message translates to:
+  /// **'담당자 변경'**
+  String get pChangeAssignee;
+
+  /// No description provided for @pCustomerRequests.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 요청사항'**
+  String get pCustomerRequests;
+
+  /// No description provided for @pTeamMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 메모 (고객에게 보이지 않아요)'**
+  String get pTeamMemo;
+
+  /// No description provided for @pMemoSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모를 저장했어요'**
+  String get pMemoSaved;
+
+  /// No description provided for @pPayoutBreakdown.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 내역'**
+  String get pPayoutBreakdown;
+
+  /// No description provided for @pAfterBalance.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 잔금 결제 후 정산돼요'**
+  String get pAfterBalance;
+
+  /// No description provided for @pChatOps.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영팀과 채팅'**
+  String get pChatOps;
+
+  /// No description provided for @pComplete.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 완료 체크'**
+  String get pComplete;
+
+  /// No description provided for @pBeforePhotos.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 전 사진'**
+  String get pBeforePhotos;
+
+  /// No description provided for @pAfterPhotos.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 후 사진'**
+  String get pAfterPhotos;
+
+  /// No description provided for @pAddPhoto.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 추가'**
+  String get pAddPhoto;
+
+  /// No description provided for @pChecklist.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 항목'**
+  String get pChecklist;
+
+  /// No description provided for @pCheck1.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청한 모든 공간을 청소했어요'**
+  String get pCheck1;
+
+  /// No description provided for @pCheck2.
+  ///
+  /// In ko, this message translates to:
+  /// **'쓰레기를 정리하고 도구를 회수했어요'**
+  String get pCheck2;
+
+  /// No description provided for @pCheck3.
+  ///
+  /// In ko, this message translates to:
+  /// **'창문·전기·수도를 확인했어요'**
+  String get pCheck3;
+
+  /// No description provided for @pCheck4.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 요청사항을 반영했어요'**
+  String get pCheck4;
+
+  /// No description provided for @pCompleteCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료 처리'**
+  String get pCompleteCta;
+
+  /// No description provided for @pCompleteNeed.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진을 각 1장 이상 올리고 모든 항목을 체크해 주세요'**
+  String get pCompleteNeed;
+
+  /// No description provided for @pCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'수고하셨어요!'**
+  String get pCompleted;
+
+  /// No description provided for @pPayoutOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date}에 {amount} 정산 예정'**
+  String pPayoutOn(String date, String amount);
+
+  /// No description provided for @pPayoutWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 잔금 결제 후 정산일이 정해져요'**
+  String get pPayoutWaiting;
+
+  /// No description provided for @pPendingPayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 예정 금액'**
+  String get pPendingPayout;
+
+  /// No description provided for @pSettlements.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 내역'**
+  String get pSettlements;
+
+  /// No description provided for @pS_waiting_balance.
+  ///
+  /// In ko, this message translates to:
+  /// **'잔금 대기'**
+  String get pS_waiting_balance;
+
+  /// No description provided for @pS_pending.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 예정'**
+  String get pS_pending;
+
+  /// No description provided for @pS_paid.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 완료'**
+  String get pS_paid;
+
+  /// No description provided for @pS_held.
+  ///
+  /// In ko, this message translates to:
+  /// **'보류'**
+  String get pS_held;
+
+  /// No description provided for @pReviews.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 리뷰'**
+  String get pReviews;
+
+  /// No description provided for @pNoReviews.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 리뷰가 없어요'**
+  String get pNoReviews;
+
+  /// No description provided for @pReplyLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'답글 기능은 곧 열려요'**
+  String get pReplyLater;
+
+  /// No description provided for @pServicesAreas.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 · 지역'**
+  String get pServicesAreas;
+
+  /// No description provided for @pPayoutAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 계좌'**
+  String get pPayoutAccount;
+
+  /// No description provided for @pBank.
+  ///
+  /// In ko, this message translates to:
+  /// **'은행'**
+  String get pBank;
+
+  /// No description provided for @pAccountNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌번호'**
+  String get pAccountNumber;
+
+  /// No description provided for @pHolder.
+  ///
+  /// In ko, this message translates to:
+  /// **'예금주'**
+  String get pHolder;
+
+  /// No description provided for @pVerified.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 완료'**
+  String get pVerified;
+
+  /// No description provided for @pUnverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 중'**
+  String get pUnverified;
+
+  /// No description provided for @pAccountSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌를 저장했어요. 변경 시 다시 확인돼요.'**
+  String get pAccountSaved;
+
+  /// No description provided for @pWorkSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'근무 일정'**
+  String get pWorkSchedule;
+
+  /// No description provided for @pWeekdays.
+  ///
+  /// In ko, this message translates to:
+  /// **'근무 요일'**
+  String get pWeekdays;
+
+  /// No description provided for @pDayParts.
+  ///
+  /// In ko, this message translates to:
+  /// **'근무 시간대'**
+  String get pDayParts;
+
+  /// No description provided for @pDaysOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'쉬는 날'**
+  String get pDaysOff;
+
+  /// No description provided for @pAddDayOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'쉬는 날 추가'**
+  String get pAddDayOff;
+
+  /// No description provided for @pSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get pSaved;
+
+  /// No description provided for @pTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원'**
+  String get pTeam;
+
+  /// No description provided for @pOwner.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표'**
+  String get pOwner;
+
+  /// No description provided for @pInvited.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대됨'**
+  String get pInvited;
+
+  /// No description provided for @pInvite.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원 초대'**
+  String get pInvite;
+
+  /// No description provided for @pInviteSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 문자를 보냈어요'**
+  String get pInviteSent;
+
+  /// No description provided for @pRemove.
+  ///
+  /// In ko, this message translates to:
+  /// **'내보내기'**
+  String get pRemove;
+
+  /// No description provided for @pNotifications.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 설정'**
+  String get pNotifications;
+
+  /// No description provided for @pNotifyDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 바로 예약 일감'**
+  String get pNotifyDirect;
+
+  /// No description provided for @pNotifyQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 요청 · 결과'**
+  String get pNotifyQuotes;
+
+  /// No description provided for @pNotifyChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영팀 메시지'**
+  String get pNotifyChat;
+
+  /// No description provided for @pQuietNight.
+  ///
+  /// In ko, this message translates to:
+  /// **'야간 방해 금지 (22–08시)'**
+  String get pQuietNight;
+
+  /// No description provided for @pNewInquiry.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 문의'**
+  String get pNewInquiry;
+
+  /// No description provided for @pTopic_settlement.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get pTopic_settlement;
+
+  /// No description provided for @pTopic_reschedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경 · 취소'**
+  String get pTopic_reschedule;
+
+  /// No description provided for @pTopic_app.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 사용'**
+  String get pTopic_app;
+
+  /// No description provided for @pOpsTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영팀'**
+  String get pOpsTeam;
+
+  /// No description provided for @pViewJob.
+  ///
+  /// In ko, this message translates to:
+  /// **'일감 보기'**
+  String get pViewJob;
+
+  /// No description provided for @pBookingNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약번호 {n}'**
+  String pBookingNo(String n);
+
+  /// No description provided for @pSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'면적'**
+  String get pSize;
+
+  /// No description provided for @pSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정'**
+  String get pSchedule;
+
+  /// No description provided for @pSpace.
+  ///
+  /// In ko, this message translates to:
+  /// **'공간 정보'**
+  String get pSpace;
 }
 
 class _TDelegate extends LocalizationsDelegate<T> {

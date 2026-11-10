@@ -1083,4 +1083,388 @@ class TVi extends T {
 
   @override
   String get summaryDate => 'Lịch';
+
+  @override
+  String get pTabJobs => 'Việc';
+
+  @override
+  String get pTabQuotes => 'Báo giá';
+
+  @override
+  String get pTabSchedule => 'Lịch';
+
+  @override
+  String get pIntroTitle => 'Việc, lịch và thanh toán\ncho chuyên gia dọn dẹp';
+
+  @override
+  String get pIntroBody => 'Làm ở khu vực và giờ bạn muốn, nhận tiền hàng tuần';
+
+  @override
+  String get pOnbTitle => 'Thông tin của bạn';
+
+  @override
+  String get pOnbName => 'Tên của bạn';
+
+  @override
+  String get pOnbTeam => 'Tên đội';
+
+  @override
+  String get pOnbServices => 'Dịch vụ bạn làm';
+
+  @override
+  String get pOnbAreas => 'Khu vực làm việc';
+
+  @override
+  String get pOnbDone => 'Đăng ký';
+
+  @override
+  String get pPendingTitle => 'Đang chờ duyệt';
+
+  @override
+  String get pPendingBody =>
+      'Chúng tôi sẽ báo khi được duyệt. Hãy thêm tài khoản nhận tiền.';
+
+  @override
+  String get pSuspended => 'Tài khoản bị tạm dừng, hãy liên hệ vận hành.';
+
+  @override
+  String get pDirect => 'Đặt ngay';
+
+  @override
+  String get pQuoteReq => 'Yêu cầu báo giá';
+
+  @override
+  String get pShowClosed => 'Hiện việc đã đóng';
+
+  @override
+  String get pSortNewest => 'Mới nhất';
+
+  @override
+  String get pSortVisit => 'Ngày gần nhất';
+
+  @override
+  String get pSortAmount => 'Giá cao nhất';
+
+  @override
+  String get pNoJobs => 'Chưa có việc phù hợp';
+
+  @override
+  String get pNoJobsBody => 'Mở rộng dịch vụ, khu vực, giờ để thấy thêm';
+
+  @override
+  String get pPayout => 'Bạn nhận';
+
+  @override
+  String get pCustomerEstimate => 'Ước tính của khách';
+
+  @override
+  String get pNew => 'MỚI';
+
+  @override
+  String get pClosed => 'Đã đóng';
+
+  @override
+  String get pPrivacyNote => 'Địa chỉ và thông tin khách hiện sau khi nhận';
+
+  @override
+  String get pAccept => 'Nhận việc';
+
+  @override
+  String get pAcceptConfirm => 'Nhận việc này?';
+
+  @override
+  String get pAcceptBody =>
+      'Việc sẽ vào lịch và khách được báo. Hủy trong 2 ngày trước bị hạn chế.';
+
+  @override
+  String get pAccepted => 'Đã nhận việc';
+
+  @override
+  String get pSendQuote => 'Gửi báo giá';
+
+  @override
+  String get pQuotePrice => 'Giá cho khách';
+
+  @override
+  String get pQuoteNote => 'Ghi chú cho đội';
+
+  @override
+  String get pQuoteSent => 'Đã gửi báo giá';
+
+  @override
+  String pFee(String rate) {
+    return 'Phí $rate%';
+  }
+
+  @override
+  String get pYouGet => 'Bạn nhận';
+
+  @override
+  String get pQuoteAll => 'Tất cả';
+
+  @override
+  String get pQ_waiting => 'Đang chờ';
+
+  @override
+  String get pQ_selected => 'Được chọn';
+
+  @override
+  String get pQ_rejected => 'Không chọn';
+
+  @override
+  String get pQ_closed => 'Đã đóng';
+
+  @override
+  String get pUnseenOnly => 'Chỉ kết quả mới';
+
+  @override
+  String get pNoQuotes => 'Chưa có báo giá';
+
+  @override
+  String get pMyQuote => 'Báo giá của tôi';
+
+  @override
+  String get pWithdraw => 'Rút báo giá';
+
+  @override
+  String get pWithdrawn => 'Đã rút báo giá';
+
+  @override
+  String get pOnlyMine => 'Chỉ của tôi';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n việc';
+  }
+
+  @override
+  String get pNoSchedule => 'Không có lịch';
+
+  @override
+  String get pCancelledBanner => 'Việc đã bị hủy, không thể hoàn tất.';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return 'Đổi lịch: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => 'Được';
+
+  @override
+  String get pRescheduleNo => 'Không được';
+
+  @override
+  String get pCustomer => 'Khách';
+
+  @override
+  String get pCall => 'Gọi (số ẩn)';
+
+  @override
+  String get pCallSoon => 'Gọi số ẩn sẽ bật khi ra mắt';
+
+  @override
+  String get pQuietHours => 'Không gọi sau 20 giờ';
+
+  @override
+  String get pAssignee => 'Người phụ trách';
+
+  @override
+  String get pChangeAssignee => 'Đổi người phụ trách';
+
+  @override
+  String get pCustomerRequests => 'Yêu cầu của khách';
+
+  @override
+  String get pTeamMemo => 'Ghi chú đội (khách không thấy)';
+
+  @override
+  String get pMemoSaved => 'Đã lưu ghi chú';
+
+  @override
+  String get pPayoutBreakdown => 'Chi tiết thanh toán';
+
+  @override
+  String get pAfterBalance => 'Thanh toán sau khi khách trả phần còn lại';
+
+  @override
+  String get pChatOps => 'Chat với vận hành';
+
+  @override
+  String get pComplete => 'Hoàn tất việc';
+
+  @override
+  String get pBeforePhotos => 'Ảnh trước';
+
+  @override
+  String get pAfterPhotos => 'Ảnh sau';
+
+  @override
+  String get pAddPhoto => 'Thêm ảnh';
+
+  @override
+  String get pChecklist => 'Danh sách kiểm tra';
+
+  @override
+  String get pCheck1 => 'Đã dọn mọi khu vực yêu cầu';
+
+  @override
+  String get pCheck2 => 'Đã dọn rác, thu dụng cụ';
+
+  @override
+  String get pCheck3 => 'Đã kiểm tra cửa sổ, điện, nước';
+
+  @override
+  String get pCheck4 => 'Đã làm theo yêu cầu của khách';
+
+  @override
+  String get pCompleteCta => 'Đánh dấu hoàn tất';
+
+  @override
+  String get pCompleteNeed => 'Cần ít nhất 1 ảnh mỗi loại và tích đủ mục';
+
+  @override
+  String get pCompleted => 'Làm tốt lắm!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$amount sẽ trả vào $date';
+  }
+
+  @override
+  String get pPayoutWaiting => 'Ngày trả được định sau khi khách trả';
+
+  @override
+  String get pPendingPayout => 'Sắp nhận';
+
+  @override
+  String get pSettlements => 'Lịch sử thanh toán';
+
+  @override
+  String get pS_waiting_balance => 'Chờ khách trả';
+
+  @override
+  String get pS_pending => 'Sắp trả';
+
+  @override
+  String get pS_paid => 'Đã trả';
+
+  @override
+  String get pS_held => 'Tạm giữ';
+
+  @override
+  String get pReviews => 'Đánh giá';
+
+  @override
+  String get pNoReviews => 'Chưa có đánh giá';
+
+  @override
+  String get pReplyLater => 'Sắp có tính năng trả lời';
+
+  @override
+  String get pServicesAreas => 'Dịch vụ & khu vực';
+
+  @override
+  String get pPayoutAccount => 'Tài khoản nhận tiền';
+
+  @override
+  String get pBank => 'Ngân hàng';
+
+  @override
+  String get pAccountNumber => 'Số tài khoản';
+
+  @override
+  String get pHolder => 'Chủ tài khoản';
+
+  @override
+  String get pVerified => 'Đã xác minh';
+
+  @override
+  String get pUnverified => 'Đang xác minh';
+
+  @override
+  String get pAccountSaved => 'Đã lưu. Thay đổi sẽ được xác minh lại.';
+
+  @override
+  String get pWorkSchedule => 'Lịch làm việc';
+
+  @override
+  String get pWeekdays => 'Ngày làm';
+
+  @override
+  String get pDayParts => 'Khung giờ';
+
+  @override
+  String get pDaysOff => 'Ngày nghỉ';
+
+  @override
+  String get pAddDayOff => 'Thêm ngày nghỉ';
+
+  @override
+  String get pSaved => 'Đã lưu';
+
+  @override
+  String get pTeam => 'Thành viên';
+
+  @override
+  String get pOwner => 'Chủ';
+
+  @override
+  String get pInvited => 'Đã mời';
+
+  @override
+  String get pInvite => 'Mời thành viên';
+
+  @override
+  String get pInviteSent => 'Đã gửi lời mời';
+
+  @override
+  String get pRemove => 'Xóa';
+
+  @override
+  String get pNotifications => 'Thông báo';
+
+  @override
+  String get pNotifyDirect => 'Việc đặt ngay mới';
+
+  @override
+  String get pNotifyQuotes => 'Yêu cầu & kết quả báo giá';
+
+  @override
+  String get pNotifyChat => 'Tin nhắn vận hành';
+
+  @override
+  String get pQuietNight => 'Yên lặng ban đêm (22–08)';
+
+  @override
+  String get pNewInquiry => 'Hỏi mới';
+
+  @override
+  String get pTopic_settlement => 'Thanh toán';
+
+  @override
+  String get pTopic_reschedule => 'Đổi lịch / hủy';
+
+  @override
+  String get pTopic_app => 'Hỗ trợ ứng dụng';
+
+  @override
+  String get pOpsTeam => 'Đội vận hành';
+
+  @override
+  String get pViewJob => 'Xem việc';
+
+  @override
+  String pBookingNo(String n) {
+    return 'Mã đặt $n';
+  }
+
+  @override
+  String get pSize => 'Diện tích';
+
+  @override
+  String get pSchedule => 'Lịch';
+
+  @override
+  String get pSpace => 'Không gian';
 }

@@ -1087,4 +1087,391 @@ class TEn extends T {
 
   @override
   String get summaryDate => 'Visit';
+
+  @override
+  String get pTabJobs => 'Jobs';
+
+  @override
+  String get pTabQuotes => 'My quotes';
+
+  @override
+  String get pTabSchedule => 'Schedule';
+
+  @override
+  String get pIntroTitle => 'Jobs, schedule and payouts\nfor cleaning pros';
+
+  @override
+  String get pIntroBody =>
+      'Work only where and when you want. Get paid weekly.';
+
+  @override
+  String get pOnbTitle => 'Tell us about you';
+
+  @override
+  String get pOnbName => 'Your name';
+
+  @override
+  String get pOnbTeam => 'Team name';
+
+  @override
+  String get pOnbServices => 'Services you offer';
+
+  @override
+  String get pOnbAreas => 'Where you work';
+
+  @override
+  String get pOnbDone => 'Apply';
+
+  @override
+  String get pPendingTitle => 'Your account is under review';
+
+  @override
+  String get pPendingBody =>
+      'We\'ll notify you once approved. Meanwhile, add your payout account.';
+
+  @override
+  String get pSuspended => 'Your account is paused. Please contact operations.';
+
+  @override
+  String get pDirect => 'Direct';
+
+  @override
+  String get pQuoteReq => 'Quote requests';
+
+  @override
+  String get pShowClosed => 'Show closed jobs';
+
+  @override
+  String get pSortNewest => 'Newest';
+
+  @override
+  String get pSortVisit => 'Soonest visit';
+
+  @override
+  String get pSortAmount => 'Highest amount';
+
+  @override
+  String get pNoJobs => 'No matching jobs right now';
+
+  @override
+  String get pNoJobsBody => 'Widen services, areas or hours to see more';
+
+  @override
+  String get pPayout => 'Your payout';
+
+  @override
+  String get pCustomerEstimate => 'Customer estimate';
+
+  @override
+  String get pNew => 'NEW';
+
+  @override
+  String get pClosed => 'Closed';
+
+  @override
+  String get pPrivacyNote =>
+      'Exact address and customer details appear after you accept';
+
+  @override
+  String get pAccept => 'Accept job';
+
+  @override
+  String get pAcceptConfirm => 'Accept this job?';
+
+  @override
+  String get pAcceptBody =>
+      'It goes on your schedule and the customer is notified. Cancelling within 2 days of the visit is restricted.';
+
+  @override
+  String get pAccepted => 'Job accepted';
+
+  @override
+  String get pSendQuote => 'Send quote';
+
+  @override
+  String get pQuotePrice => 'Customer price';
+
+  @override
+  String get pQuoteNote => 'Note for the team';
+
+  @override
+  String get pQuoteSent => 'Quote sent';
+
+  @override
+  String pFee(String rate) {
+    return '$rate% fee';
+  }
+
+  @override
+  String get pYouGet => 'You receive';
+
+  @override
+  String get pQuoteAll => 'All';
+
+  @override
+  String get pQ_waiting => 'Waiting';
+
+  @override
+  String get pQ_selected => 'Selected';
+
+  @override
+  String get pQ_rejected => 'Not selected';
+
+  @override
+  String get pQ_closed => 'Closed';
+
+  @override
+  String get pUnseenOnly => 'New results only';
+
+  @override
+  String get pNoQuotes => 'No quotes yet';
+
+  @override
+  String get pMyQuote => 'My quote';
+
+  @override
+  String get pWithdraw => 'Withdraw';
+
+  @override
+  String get pWithdrawn => 'Quote withdrawn';
+
+  @override
+  String get pOnlyMine => 'Only mine';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n jobs';
+  }
+
+  @override
+  String get pNoSchedule => 'Nothing scheduled';
+
+  @override
+  String get pCancelledBanner =>
+      'This job was cancelled and can\'t be completed.';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return 'Reschedule: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => 'I can make it';
+
+  @override
+  String get pRescheduleNo => 'Can\'t make it';
+
+  @override
+  String get pCustomer => 'Customer';
+
+  @override
+  String get pCall => 'Call (masked number)';
+
+  @override
+  String get pCallSoon => 'Masked calling activates at launch';
+
+  @override
+  String get pQuietHours => 'No calls after 8 pm';
+
+  @override
+  String get pAssignee => 'Assignee';
+
+  @override
+  String get pChangeAssignee => 'Change assignee';
+
+  @override
+  String get pCustomerRequests => 'Customer requests';
+
+  @override
+  String get pTeamMemo => 'Team memo (customer can\'t see)';
+
+  @override
+  String get pMemoSaved => 'Memo saved';
+
+  @override
+  String get pPayoutBreakdown => 'Payout';
+
+  @override
+  String get pAfterBalance => 'Paid out after the customer pays the balance';
+
+  @override
+  String get pChatOps => 'Chat with operations';
+
+  @override
+  String get pComplete => 'Complete job';
+
+  @override
+  String get pBeforePhotos => 'Before photos';
+
+  @override
+  String get pAfterPhotos => 'After photos';
+
+  @override
+  String get pAddPhoto => 'Add photo';
+
+  @override
+  String get pChecklist => 'Checklist';
+
+  @override
+  String get pCheck1 => 'All requested areas cleaned';
+
+  @override
+  String get pCheck2 => 'Trash handled, tools collected';
+
+  @override
+  String get pCheck3 => 'Windows, power and water checked';
+
+  @override
+  String get pCheck4 => 'Customer requests handled';
+
+  @override
+  String get pCompleteCta => 'Mark complete';
+
+  @override
+  String get pCompleteNeed => 'Add at least one photo each and tick every item';
+
+  @override
+  String get pCompleted => 'Great work!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$amount will be paid on $date';
+  }
+
+  @override
+  String get pPayoutWaiting => 'Payout date is set after the customer pays';
+
+  @override
+  String get pPendingPayout => 'Pending payout';
+
+  @override
+  String get pSettlements => 'Settlements';
+
+  @override
+  String get pS_waiting_balance => 'Awaiting balance';
+
+  @override
+  String get pS_pending => 'Scheduled';
+
+  @override
+  String get pS_paid => 'Paid';
+
+  @override
+  String get pS_held => 'On hold';
+
+  @override
+  String get pReviews => 'Reviews';
+
+  @override
+  String get pNoReviews => 'No reviews yet';
+
+  @override
+  String get pReplyLater => 'Replies are coming soon';
+
+  @override
+  String get pServicesAreas => 'Services & areas';
+
+  @override
+  String get pPayoutAccount => 'Payout account';
+
+  @override
+  String get pBank => 'Bank';
+
+  @override
+  String get pAccountNumber => 'Account number';
+
+  @override
+  String get pHolder => 'Account holder';
+
+  @override
+  String get pVerified => 'Verified';
+
+  @override
+  String get pUnverified => 'Verifying';
+
+  @override
+  String get pAccountSaved => 'Saved. Changes are re-verified.';
+
+  @override
+  String get pWorkSchedule => 'Work schedule';
+
+  @override
+  String get pWeekdays => 'Working days';
+
+  @override
+  String get pDayParts => 'Working hours';
+
+  @override
+  String get pDaysOff => 'Days off';
+
+  @override
+  String get pAddDayOff => 'Add a day off';
+
+  @override
+  String get pSaved => 'Saved';
+
+  @override
+  String get pTeam => 'Team';
+
+  @override
+  String get pOwner => 'Owner';
+
+  @override
+  String get pInvited => 'Invited';
+
+  @override
+  String get pInvite => 'Invite member';
+
+  @override
+  String get pInviteSent => 'Invitation sent';
+
+  @override
+  String get pRemove => 'Remove';
+
+  @override
+  String get pNotifications => 'Notifications';
+
+  @override
+  String get pNotifyDirect => 'New direct jobs';
+
+  @override
+  String get pNotifyQuotes => 'Quote requests & results';
+
+  @override
+  String get pNotifyChat => 'Operations messages';
+
+  @override
+  String get pQuietNight => 'Quiet at night (22–08)';
+
+  @override
+  String get pNewInquiry => 'New inquiry';
+
+  @override
+  String get pTopic_settlement => 'Payouts';
+
+  @override
+  String get pTopic_reschedule => 'Reschedule / cancel';
+
+  @override
+  String get pTopic_app => 'App help';
+
+  @override
+  String get pOpsTeam => 'Operations';
+
+  @override
+  String get pViewJob => 'View job';
+
+  @override
+  String pBookingNo(String n) {
+    return 'Booking $n';
+  }
+
+  @override
+  String get pSize => 'Size';
+
+  @override
+  String get pSchedule => 'Schedule';
+
+  @override
+  String get pSpace => 'Space';
 }

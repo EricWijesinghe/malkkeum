@@ -1065,4 +1065,386 @@ class TZh extends T {
 
   @override
   String get summaryDate => '上门时间';
+
+  @override
+  String get pTabJobs => '接单';
+
+  @override
+  String get pTabQuotes => '我的报价';
+
+  @override
+  String get pTabSchedule => '日程';
+
+  @override
+  String get pIntroTitle => '为清洁专家打造\n接单 · 日程 · 结算';
+
+  @override
+  String get pIntroBody => '只在想要的区域和时间工作，每周结算';
+
+  @override
+  String get pOnbTitle => '填写服务者信息';
+
+  @override
+  String get pOnbName => '负责人姓名';
+
+  @override
+  String get pOnbTeam => '团队名称';
+
+  @override
+  String get pOnbServices => '可提供的服务';
+
+  @override
+  String get pOnbAreas => '服务区域';
+
+  @override
+  String get pOnbDone => '提交申请';
+
+  @override
+  String get pPendingTitle => '正在审核中';
+
+  @override
+  String get pPendingBody => '审核通过后会通知您，请先登记结算账户。';
+
+  @override
+  String get pSuspended => '账户已暂停，请联系运营团队。';
+
+  @override
+  String get pDirect => '直接订单';
+
+  @override
+  String get pQuoteReq => '报价请求';
+
+  @override
+  String get pShowClosed => '显示已结束';
+
+  @override
+  String get pSortNewest => '最新';
+
+  @override
+  String get pSortVisit => '上门最近';
+
+  @override
+  String get pSortAmount => '金额最高';
+
+  @override
+  String get pNoJobs => '暂无匹配的订单';
+
+  @override
+  String get pNoJobsBody => '扩大服务、区域或时间可看到更多';
+
+  @override
+  String get pPayout => '预计结算';
+
+  @override
+  String get pCustomerEstimate => '客户预估';
+
+  @override
+  String get pNew => 'NEW';
+
+  @override
+  String get pClosed => '已结束';
+
+  @override
+  String get pPrivacyNote => '接单后显示详细地址和客户信息';
+
+  @override
+  String get pAccept => '接单';
+
+  @override
+  String get pAcceptConfirm => '确认接单吗？';
+
+  @override
+  String get pAcceptBody => '将加入日程并通知客户。上门前2天内取消受限。';
+
+  @override
+  String get pAccepted => '接单成功';
+
+  @override
+  String get pSendQuote => '提交报价';
+
+  @override
+  String get pQuotePrice => '客户支付金额';
+
+  @override
+  String get pQuoteNote => '给客服的备注';
+
+  @override
+  String get pQuoteSent => '报价已提交';
+
+  @override
+  String pFee(String rate) {
+    return '手续费$rate%';
+  }
+
+  @override
+  String get pYouGet => '实收金额';
+
+  @override
+  String get pQuoteAll => '全部';
+
+  @override
+  String get pQ_waiting => '等待中';
+
+  @override
+  String get pQ_selected => '已选中';
+
+  @override
+  String get pQ_rejected => '未选中';
+
+  @override
+  String get pQ_closed => '已结束';
+
+  @override
+  String get pUnseenOnly => '仅看新结果';
+
+  @override
+  String get pNoQuotes => '暂无报价';
+
+  @override
+  String get pMyQuote => '我的报价';
+
+  @override
+  String get pWithdraw => '撤回报价';
+
+  @override
+  String get pWithdrawn => '报价已撤回';
+
+  @override
+  String get pOnlyMine => '只看我的';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n单';
+  }
+
+  @override
+  String get pNoSchedule => '当天没有日程';
+
+  @override
+  String get pCancelledBanner => '该订单已取消，无法完成。';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return '改期请求：$from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => '可以';
+
+  @override
+  String get pRescheduleNo => '无法前往';
+
+  @override
+  String get pCustomer => '客户';
+
+  @override
+  String get pCall => '隐私号码拨打';
+
+  @override
+  String get pCallSoon => '隐私号码将在上线时开通';
+
+  @override
+  String get pQuietHours => '20点后请勿致电';
+
+  @override
+  String get pAssignee => '负责人';
+
+  @override
+  String get pChangeAssignee => '更换负责人';
+
+  @override
+  String get pCustomerRequests => '客户要求';
+
+  @override
+  String get pTeamMemo => '团队备注（客户不可见）';
+
+  @override
+  String get pMemoSaved => '备注已保存';
+
+  @override
+  String get pPayoutBreakdown => '结算明细';
+
+  @override
+  String get pAfterBalance => '客户付清尾款后结算';
+
+  @override
+  String get pChatOps => '联系运营';
+
+  @override
+  String get pComplete => '完成检查';
+
+  @override
+  String get pBeforePhotos => '清洁前照片';
+
+  @override
+  String get pAfterPhotos => '清洁后照片';
+
+  @override
+  String get pAddPhoto => '添加照片';
+
+  @override
+  String get pChecklist => '检查项';
+
+  @override
+  String get pCheck1 => '已清洁所有指定区域';
+
+  @override
+  String get pCheck2 => '已处理垃圾并收回工具';
+
+  @override
+  String get pCheck3 => '已检查门窗水电';
+
+  @override
+  String get pCheck4 => '已满足客户要求';
+
+  @override
+  String get pCompleteCta => '确认完成';
+
+  @override
+  String get pCompleteNeed => '前后各需至少1张照片并勾选全部';
+
+  @override
+  String get pCompleted => '辛苦了！';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$date结算$amount';
+  }
+
+  @override
+  String get pPayoutWaiting => '客户付款后确定结算日';
+
+  @override
+  String get pPendingPayout => '待结算金额';
+
+  @override
+  String get pSettlements => '结算记录';
+
+  @override
+  String get pS_waiting_balance => '等待尾款';
+
+  @override
+  String get pS_pending => '待结算';
+
+  @override
+  String get pS_paid => '已支付';
+
+  @override
+  String get pS_held => '暂缓';
+
+  @override
+  String get pReviews => '客户评价';
+
+  @override
+  String get pNoReviews => '暂无评价';
+
+  @override
+  String get pReplyLater => '回复功能即将上线';
+
+  @override
+  String get pServicesAreas => '服务与区域';
+
+  @override
+  String get pPayoutAccount => '结算账户';
+
+  @override
+  String get pBank => '银行';
+
+  @override
+  String get pAccountNumber => '账号';
+
+  @override
+  String get pHolder => '户名';
+
+  @override
+  String get pVerified => '已验证';
+
+  @override
+  String get pUnverified => '验证中';
+
+  @override
+  String get pAccountSaved => '已保存，修改后需重新验证。';
+
+  @override
+  String get pWorkSchedule => '工作时间';
+
+  @override
+  String get pWeekdays => '工作日';
+
+  @override
+  String get pDayParts => '工作时段';
+
+  @override
+  String get pDaysOff => '休息日';
+
+  @override
+  String get pAddDayOff => '添加休息日';
+
+  @override
+  String get pSaved => '已保存';
+
+  @override
+  String get pTeam => '团队成员';
+
+  @override
+  String get pOwner => '负责人';
+
+  @override
+  String get pInvited => '已邀请';
+
+  @override
+  String get pInvite => '邀请成员';
+
+  @override
+  String get pInviteSent => '邀请短信已发送';
+
+  @override
+  String get pRemove => '移除';
+
+  @override
+  String get pNotifications => '通知设置';
+
+  @override
+  String get pNotifyDirect => '新直接订单';
+
+  @override
+  String get pNotifyQuotes => '报价请求与结果';
+
+  @override
+  String get pNotifyChat => '运营消息';
+
+  @override
+  String get pQuietNight => '夜间免打扰（22–8点）';
+
+  @override
+  String get pNewInquiry => '新咨询';
+
+  @override
+  String get pTopic_settlement => '结算';
+
+  @override
+  String get pTopic_reschedule => '改期/取消';
+
+  @override
+  String get pTopic_app => '应用帮助';
+
+  @override
+  String get pOpsTeam => '运营团队';
+
+  @override
+  String get pViewJob => '查看订单';
+
+  @override
+  String pBookingNo(String n) {
+    return '预约号 $n';
+  }
+
+  @override
+  String get pSize => '面积';
+
+  @override
+  String get pSchedule => '日程';
+
+  @override
+  String get pSpace => '空间信息';
 }
