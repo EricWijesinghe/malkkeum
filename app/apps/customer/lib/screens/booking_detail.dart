@@ -198,9 +198,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (save == true) {
       await _act(() => context.api.put('/bookings/${b.id}/notes', {'entry': entry.text, 'parking': parking.text, 'other': other.text}), t.notesSaved);
     }
-    for (final c in [entry, parking, other]) {
-      c.dispose();
-    }
+    disposeAfterClose([entry, parking, other]);
   }
 
   Future<void> _reschedule(Booking b) async {
@@ -358,7 +356,7 @@ class _ReviewCardState extends State<_ReviewCard> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             for (var i = 1; i <= 5; i++)
               IconButton(
-                tooltip: '$i',
+                tooltip: context.t.ratingStars('$i'),
                 iconSize: 36,
                 onPressed: () => setState(() => _rating = i),
                 icon: Icon(i <= _rating ? Icons.star_rounded : Icons.star_outline_rounded, color: context.colors.sun),

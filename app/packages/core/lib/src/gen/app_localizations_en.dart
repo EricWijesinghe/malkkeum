@@ -1118,6 +1118,11 @@ class TEn extends T {
   String get reviewHint => 'Tell us what went well or could be better';
 
   @override
+  String ratingStars(String n) {
+    return '$n stars';
+  }
+
+  @override
   String get reviewSubmit => 'Submit review';
 
   @override

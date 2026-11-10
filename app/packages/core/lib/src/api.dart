@@ -49,37 +49,57 @@ class ApiClient {
   Future<dynamic> patch(String path, [Object? body]) => _send('PATCH', path, body: body);
   Future<dynamic> delete(String path) => _send('DELETE', path);
 
-  Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query, bool retried = false}) async {
-    final req = http.Request(method, _uri(path, query))..headers['Content-Type'] = 'application/json';
+  Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query}) => _exec(path, () {
+        final req = http.Request(method, _uri(path, query))..headers['Content-Type'] = 'application/json';
+        if (body != null) req.body = jsonEncode(body);
+        return req;
+      });
+
+  /// Sends a request (rebuilt on retry), refreshing the access token once on 401.
+  Future<dynamic> _exec(String path, http.BaseRequest Function() build, {Duration timeout = _timeout, bool retried = false}) async {
+    final req = build();
     final token = session.accessToken;
     if (token != null) req.headers['Authorization'] = 'Bearer $token';
-    if (body != null) req.body = jsonEncode(body);
     final http.Response res;
     try {
-      res = await http.Response.fromStream(await _http.send(req).timeout(_timeout));
+      res = await http.Response.fromStream(await _http.send(req).timeout(timeout));
     } on TimeoutException {
       throw const ApiException(0, 'timeout');
     } catch (_) {
       throw const ApiException(0, 'network');
     }
     if (res.statusCode == 401 && !retried && session.refreshToken != null && !path.startsWith('/auth/')) {
-      if (await _refresh()) return _send(method, path, body: body, query: query, retried: true);
+      if (await _refresh()) return _exec(path, build, timeout: timeout, retried: true);
     }
-    final decoded = res.body.isEmpty ? null : jsonDecode(utf8.decode(res.bodyBytes));
+    final decoded = _decode(res);
     if (res.statusCode >= 200 && res.statusCode < 300) return decoded;
     final code = decoded is Map ? ((decoded['error'] as Map?)?['code'] as String?) : null;
-    if (res.statusCode == 401) await session.clear();
     throw ApiException(res.statusCode, code ?? 'http_${res.statusCode}');
   }
 
-  /// Single-flight refresh so parallel 401s rotate the token once.
+  /// Proxies can answer with HTML (502, 504): never let a decode error escape as a crash.
+  static Object? _decode(http.Response res) {
+    if (res.bodyBytes.isEmpty) return null;
+    try {
+      return jsonDecode(utf8.decode(res.bodyBytes));
+    } on FormatException {
+      return null;
+    }
+  }
+
+  /// Single-flight refresh so parallel 401s rotate the token once. Only a rejected refresh
+  /// token signs the user out; a network blip keeps the session for the next attempt.
   Future<bool> _refresh() => _refreshing ??= () async {
         try {
-          final r = await _send('POST', '/auth/refresh', body: {'refresh_token': session.refreshToken}, retried: true) as Map<String, dynamic>;
+          final r = await _exec('/auth/refresh', () {
+            return http.Request('POST', _uri('/auth/refresh'))
+              ..headers['Content-Type'] = 'application/json'
+              ..body = jsonEncode({'refresh_token': session.refreshToken});
+          }, retried: true) as Map<String, dynamic>;
           await session.save(r);
           return true;
-        } catch (_) {
-          await session.clear();
+        } on ApiException catch (e) {
+          if (e.status == 400 || e.status == 401 || e.status == 403) await session.clear();
           return false;
         } finally {
           _refreshing = null;
@@ -88,13 +108,14 @@ class ApiClient {
 
   /// Multipart image upload; returns the stored file URL.
   Future<String> upload(List<int> bytes, String filename) async {
-    final req = http.MultipartRequest('POST', _uri('/uploads'))
-      ..headers['Authorization'] = 'Bearer ${session.accessToken}'
-      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename));
-    final res = await http.Response.fromStream(await _http.send(req).timeout(const Duration(seconds: 60)));
-    final decoded = jsonDecode(utf8.decode(res.bodyBytes));
-    if (res.statusCode != 200) throw ApiException(res.statusCode, ((decoded as Map)['error'] as Map?)?['code'] as String? ?? 'upload_failed');
-    return (decoded as Map)['url'] as String;
+    final r = await _exec(
+      '/uploads',
+      () => http.MultipartRequest('POST', _uri('/uploads'))..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename)),
+      timeout: const Duration(seconds: 60),
+    );
+    final url = r is Map ? r['url'] as String? : null;
+    if (url == null) throw const ApiException(500, 'upload_failed');
+    return url;
   }
 
   Uri wsUri() {

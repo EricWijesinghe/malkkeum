@@ -347,6 +347,7 @@
  "payBalance": "Trả phần còn lại",
  "reviewTitle": "Dịch vụ thế nào?",
  "reviewHint": "Điều gì tốt, điều gì cần cải thiện?",
+ "ratingStars": "{n} sao",
  "reviewSubmit": "Gửi đánh giá",
  "reviewThanks": "Cảm ơn đánh giá của bạn",
  "bookAgain": "Đặt lại như cũ",

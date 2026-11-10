@@ -1114,6 +1114,11 @@ class TVi extends T {
   String get reviewHint => 'Điều gì tốt, điều gì cần cải thiện?';
 
   @override
+  String ratingStars(String n) {
+    return '$n sao';
+  }
+
+  @override
   String get reviewSubmit => 'Gửi đánh giá';
 
   @override

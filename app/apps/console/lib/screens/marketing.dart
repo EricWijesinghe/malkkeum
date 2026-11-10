@@ -169,9 +169,7 @@ class _ContentState extends State<_Content> {
         if (mounted) showToast(context, t.error(e));
       }
     }
-    for (final c in [slug, ...titles.values, ...bodies.values]) {
-      c.dispose();
-    }
+    disposeAfterClose([slug, ...titles.values, ...bodies.values]);
   }
 
   @override

@@ -229,7 +229,7 @@ class _BookingPanelState extends State<BookingPanel> with LiveReload {
           _InfoCard(title: t.visitNotes, lines: [for (final v in b.visitNotes.values) if (v is String && v.isNotEmpty) v]),
       ]),
       const SizedBox(height: Space.lg),
-      _actions(b),
+      _StatusActions(booking: b, act: _act, onCancel: () => _cancel(b)),
       if (b.isQuote && b.status == 0) ...[const SizedBox(height: Space.lg), _QuoteDesk(booking: b, estimate: estimate, quotes: quotes, onSent: () => _view.currentState?.reload())],
       const SizedBox(height: Space.lg),
       if (b.threadId != null)
@@ -239,29 +239,6 @@ class _BookingPanelState extends State<BookingPanel> with LiveReload {
           onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Scaffold(appBar: AppBar(title: Text(b.number)), body: ThreadView(threadId: b.threadId!)))),
         ),
     ]);
-  }
-
-  Widget _actions(Booking b) {
-    final t = context.t;
-    final team = TextEditingController(text: b.teamName ?? '');
-    final api = context.api;
-    return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(t.cChangeStatus, style: context.text.titleSmall),
-        const SizedBox(height: Space.sm),
-        if (b.status == 1 && b.proId == null)
-          Row(children: [
-            Expanded(child: TextField(controller: team, decoration: InputDecoration(labelText: t.cTeamName, isDense: true))),
-            const SizedBox(width: Space.xs),
-            FilledButton(onPressed: () => _act(() => api.post('/admin/bookings/${b.id}/status', {'status': 2, 'team_name': team.text})), child: Text(t.cAssign)),
-          ]),
-        Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
-          if (b.status == 2) FilledButton.tonal(onPressed: () => _act(() => api.post('/admin/bookings/${b.id}/status', {'status': 3})), child: Text(t.cMarkDone)),
-          if (b.status == 2) OutlinedButton(onPressed: () => _act(() => api.post('/admin/bookings/${b.id}/status', {'status': 1})), child: Text(t.cConfirm)),
-          if (b.status >= 0 && b.status < 3) OutlinedButton(style: OutlinedButton.styleFrom(foregroundColor: context.colors.danger), onPressed: () => _cancel(b), child: Text(t.cCancelRefund)),
-        ]),
-      ]),
-    );
   }
 
   Future<void> _cancel(Booking b) async {
@@ -282,12 +259,78 @@ class _BookingPanelState extends State<BookingPanel> with LiveReload {
       final api = context.api;
       await _act(() => api.post('/admin/bookings/${b.id}/cancel', {'refund_amount': amount.text.isEmpty ? null : int.parse(amount.text)}));
     }
-    amount.dispose();
+    disposeAfterClose([amount]);
   }
 }
 
 String _payKind(T t, String k) => switch (k) { 'deposit' => t.deposit, 'balance' => t.balance, _ => t.total };
 String _payStatus(T t, String s) => switch (s) { 'paid' => t.quotePaid, 'refunded' => t.cRefunded, 'partially_refunded' => t.cPartRefunded, _ => t.cFailed };
+
+/// Status buttons + team field. Own state so live refreshes don't wipe typing,
+/// and a busy flag so a double tap can't send the same change twice.
+class _StatusActions extends StatefulWidget {
+  const _StatusActions({required this.booking, required this.act, required this.onCancel});
+  final Booking booking;
+  final Future<void> Function(Future<void> Function()) act;
+  final Future<void> Function() onCancel;
+  @override
+  State<_StatusActions> createState() => _StatusActionsState();
+}
+
+class _StatusActionsState extends State<_StatusActions> {
+  late final _team = TextEditingController(text: widget.booking.teamName ?? '');
+  bool _busy = false;
+
+  Future<void> _run(Future<void> Function() fn) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await widget.act(fn);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _status(int status, [String? team]) {
+    final api = context.api;
+    return _run(() => api.post('/admin/bookings/${widget.booking.id}/status', {'status': status, 'team_name': ?team}));
+  }
+
+  @override
+  void dispose() {
+    _team.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final b = widget.booking;
+    return AppCard(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(t.cChangeStatus, style: context.text.titleSmall),
+        const SizedBox(height: Space.sm),
+        if (b.status == 1 && b.proId == null)
+          Row(children: [
+            Expanded(child: TextField(controller: _team, decoration: InputDecoration(labelText: t.cTeamName, isDense: true))),
+            const SizedBox(width: Space.xs),
+            FilledButton(onPressed: _busy ? null : () => _status(2, _team.text), child: Text(t.cAssign)),
+          ]),
+        const SizedBox(height: Space.xs),
+        Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
+          if (b.status == 2 && b.proId == null) FilledButton.tonal(onPressed: _busy ? null : () => _status(3), child: Text(t.cMarkDone)),
+          if (b.status == 2) OutlinedButton(onPressed: _busy ? null : () => _status(1), child: Text(t.cConfirm)),
+          if (b.status >= 0 && b.status < 3)
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(foregroundColor: context.colors.danger),
+              onPressed: _busy ? null : () => _run(widget.onCancel),
+              child: Text(t.cCancelRefund),
+            ),
+        ]),
+      ]),
+    );
+  }
+}
 
 class _InfoCard extends StatelessWidget {
   const _InfoCard({required this.title, required this.lines});

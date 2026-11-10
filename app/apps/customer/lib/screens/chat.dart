@@ -165,10 +165,14 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     });
   }
 
+  int _loadSeq = 0;
+
   Future<void> _load() async {
+    final seq = ++_loadSeq;
     try {
       final r = await context.api.get('/chat/threads/${widget.threadId}/messages') as List;
-      if (!mounted) return;
+      // A newer load (e.g. after resync) supersedes this one.
+      if (!mounted || seq != _loadSeq) return;
       setState(() {
         _messages = r.map((e) => ChatMessage.fromJson(e as Json)).toList();
         _loading = false;
@@ -205,7 +209,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       final url = await context.api.upload(await file.readAsBytes(), file.name);
       await _send({'kind': 'photo', 'url': url});
     } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      if (!mounted) return;
+      showToast(context, context.t.error(e));
       setState(() => _sending = false);
     }
   }

@@ -8,8 +8,9 @@ import '../tokens.dart';
 
 /// Success moment: ring fills, check draws, small confetti burst in service colors.
 class SuccessMark extends StatefulWidget {
-  const SuccessMark({super.key, this.size = 112});
+  const SuccessMark({super.key, this.size = 112, this.semanticLabel});
   final double size;
+  final String? semanticLabel;
 
   @override
   State<SuccessMark> createState() => _SuccessMarkState();
@@ -40,7 +41,7 @@ class _SuccessMarkState extends State<SuccessMark> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: 'success',
+        label: widget.semanticLabel,
         child: SizedBox.square(
           dimension: widget.size * 1.8,
           child: AnimatedBuilder(

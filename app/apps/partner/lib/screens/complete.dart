@@ -65,7 +65,7 @@ class _CompleteScreenState extends State<CompleteScreen> {
       builder: (ctx) => Padding(
         padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.xl),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const SuccessMark(size: 88),
+          SuccessMark(size: 88, semanticLabel: t.pCompleted),
           Text(t.pCompleted, style: ctx.text.headlineSmall),
           const SizedBox(height: Space.xs),
           Text(
@@ -130,7 +130,7 @@ class _CompleteScreenState extends State<CompleteScreen> {
                   Positioned(
                     right: 2,
                     top: 2,
-                    child: IconButton.filledTonal(visualDensity: VisualDensity.compact, tooltip: context.t.delete, icon: const Icon(Icons.close_rounded, size: 16), onPressed: () => setState(() => urls.remove(u))),
+                    child: IconButton.filledTonal(tooltip: context.t.delete, icon: const Icon(Icons.close_rounded, size: 18), onPressed: () => setState(() => urls.remove(u))),
                   ),
                 ]),
               ),

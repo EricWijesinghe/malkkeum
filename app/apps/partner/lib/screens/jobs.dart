@@ -411,17 +411,18 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       final api = context.api;
       await _act(() => api.put('/partner/jobs/${b['id']}/memo', {'memo': ctrl.text}), context.t.pMemoSaved);
     }
-    ctrl.dispose();
+    disposeAfterClose([ctrl]);
   }
 }
 
 /// Price input with a live payout preview. Used for new and edited quotes.
-Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, required int estimate, int? current, String note = '', bool edit = false}) {
+Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, required int estimate, int? current, String note = '', bool edit = false}) async {
   final t = context.t;
   final pro = context.proRead;
   final price = TextEditingController(text: '${current ?? estimate}');
   final memo = TextEditingController(text: note);
-  return showAppSheet<bool>(
+  var sending = false;
+  final result = await showAppSheet<bool>(
     context,
     title: t.pSendQuote,
     builder: (ctx) => StatefulBuilder(
@@ -437,7 +438,7 @@ Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, r
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(8)],
               style: ctx.text.headlineSmall,
-              decoration: InputDecoration(labelText: t.pQuotePrice, suffixText: ctx.lang == 'ko' ? '원' : 'KRW'),
+              decoration: InputDecoration(labelText: t.pQuotePrice, suffixText: currencyUnit(ctx.lang)),
               onChanged: (_) => setSheet(() {}),
             ),
             const SizedBox(height: Space.sm),
@@ -450,9 +451,11 @@ Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, r
             TextField(controller: memo, maxLength: 500, maxLines: 2, decoration: InputDecoration(labelText: t.pQuoteNote)),
             PrimaryButton(
               label: t.pSendQuote,
+              busy: sending,
               onPressed: amount <= 0
                   ? null
                   : () async {
+                      setSheet(() => sending = true);
                       try {
                         final body = {'amount': amount, 'note': memo.text};
                         if (edit) {
@@ -465,6 +468,8 @@ Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, r
                         Navigator.of(ctx).pop(true);
                       } catch (e) {
                         if (ctx.mounted) showToast(ctx, t.error(e));
+                      } finally {
+                        if (ctx.mounted) setSheet(() => sending = false);
                       }
                     },
             ),
@@ -473,4 +478,6 @@ Future<bool?> showQuoteSheet(BuildContext context, {required String bookingId, r
       },
     ),
   );
+  disposeAfterClose([price, memo]);
+  return result;
 }

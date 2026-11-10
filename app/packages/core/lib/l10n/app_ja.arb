@@ -347,6 +347,7 @@
  "payBalance": "残金を支払う",
  "reviewTitle": "清掃はいかがでしたか？",
  "reviewHint": "良かった点や改善点を教えてください",
+ "ratingStars": "{n}つ星",
  "reviewSubmit": "レビューを投稿",
  "reviewThanks": "レビューありがとうございます",
  "bookAgain": "同じ条件で再予約",

@@ -1102,6 +1102,11 @@ class TKo extends T {
   String get reviewHint => '좋았던 점이나 아쉬운 점을 알려 주세요';
 
   @override
+  String ratingStars(String n) {
+    return '$n점';
+  }
+
+  @override
   String get reviewSubmit => '후기 남기기';
 
   @override

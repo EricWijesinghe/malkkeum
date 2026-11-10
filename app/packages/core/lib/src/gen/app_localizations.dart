@@ -2185,6 +2185,12 @@ abstract class T {
   /// **'좋았던 점이나 아쉬운 점을 알려 주세요'**
   String get reviewHint;
 
+  /// No description provided for @ratingStars.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}점'**
+  String ratingStars(String n);
+
   /// No description provided for @reviewSubmit.
   ///
   /// In ko, this message translates to:

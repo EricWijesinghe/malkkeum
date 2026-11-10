@@ -233,6 +233,7 @@ S = {
   "payBalance": ["잔금 결제하기", "Pay balance", "残金を支払う", "支付尾款", "Trả phần còn lại"],
   "reviewTitle": ["청소는 어떠셨나요?", "How did it go?", "清掃はいかがでしたか？", "清洁效果如何？", "Dịch vụ thế nào?"],
   "reviewHint": ["좋았던 점이나 아쉬운 점을 알려 주세요", "Tell us what went well or could be better", "良かった点や改善点を教えてください", "说说满意或不足之处", "Điều gì tốt, điều gì cần cải thiện?"],
+  "ratingStars": ["{n}점", "{n} stars", "{n}つ星", "{n}星", "{n} sao"],
   "reviewSubmit": ["후기 남기기", "Submit review", "レビューを投稿", "提交评价", "Gửi đánh giá"],
   "reviewThanks": ["소중한 후기 고마워요", "Thanks for your review", "レビューありがとうございます", "感谢您的评价", "Cảm ơn đánh giá của bạn"],
   "bookAgain": ["같은 조건으로 다시 예약", "Book again", "同じ条件で再予約", "按原条件再次预约", "Đặt lại như cũ"],

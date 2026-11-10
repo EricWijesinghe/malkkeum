@@ -253,7 +253,7 @@ class _DayChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final weekend = day.weekday >= DateTime.saturday;
     final dow = MaterialLocalizations.of(context).narrowWeekdays[day.weekday % 7];
-    final dowColor = selected ? Colors.white : (day.weekday == DateTime.sunday ? const Color(0xFFD92D20) : weekend ? const Color(0xFF2A44D6) : context.colors.inkMuted);
+    final dowColor = selected ? Colors.white : (day.weekday == DateTime.sunday ? Semantic.sunday : weekend ? Semantic.saturday : context.colors.inkMuted);
     return Semantics(
       selected: selected,
       button: true,
@@ -465,7 +465,7 @@ class DoneScreen extends StatelessWidget {
           padding: const EdgeInsets.all(Space.gutter),
           child: Column(children: [
             const Spacer(),
-            const SuccessMark(),
+            SuccessMark(semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle),
             Text(b.isQuote ? t.doneQuoteTitle : t.doneTitle, style: context.text.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: Space.xs),
             Text(b.isQuote ? t.doneQuoteBody : t.doneBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft), textAlign: TextAlign.center),

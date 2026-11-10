@@ -13,7 +13,7 @@ class PartnerIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xFF111827),
+        backgroundColor: Neutral.c900,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(Space.gutter),
@@ -31,7 +31,7 @@ class PartnerIntro extends StatelessWidget {
               const SizedBox(height: Space.xxl),
               Text(context.t.pIntroTitle, style: context.text.displaySmall?.copyWith(color: Colors.white)),
               const SizedBox(height: Space.sm),
-              Text(context.t.pIntroBody, style: context.text.bodyLarge?.copyWith(color: const Color(0xFFC3C9D3))),
+              Text(context.t.pIntroBody, style: context.text.bodyLarge?.copyWith(color: Neutral.c300)),
               const SizedBox(height: Space.xxl),
               PrimaryButton(
                 label: context.t.introStart,

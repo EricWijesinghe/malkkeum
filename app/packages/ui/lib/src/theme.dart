@@ -97,7 +97,7 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
     freshTint: dark ? const Color(0xFF0F2F27) : const Color(0xFFDDF6EE),
     sun: brand.sun,
     sunTint: dark ? const Color(0xFF3A2D10) : const Color(0xFFFFF4D6),
-    danger: const Color(0xFFD92D20),
+    danger: Semantic.danger,
     isDark: dark,
   );
   final scheme = ColorScheme.fromSeed(seedColor: brand.primary, brightness: brightness).copyWith(

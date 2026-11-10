@@ -347,6 +347,7 @@
  "payBalance": "Pay balance",
  "reviewTitle": "How did it go?",
  "reviewHint": "Tell us what went well or could be better",
+ "ratingStars": "{n} stars",
  "reviewSubmit": "Submit review",
  "reviewThanks": "Thanks for your review",
  "bookAgain": "Book again",

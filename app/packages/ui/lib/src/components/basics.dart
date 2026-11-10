@@ -10,6 +10,19 @@ String formatWon(int amount, String locale) {
   return locale.startsWith('ko') ? '$n원' : '₩$n';
 }
 
+/// Unit shown next to a won input field.
+String currencyUnit(String locale) => locale.startsWith('ko') ? '원' : '₩';
+
+/// Controllers owned by a dialog/sheet must outlive its closing animation;
+/// disposing right after `await showDialog` can hit a still-mounted TextField.
+void disposeAfterClose(Iterable<ChangeNotifier> controllers) {
+  Future<void>.delayed(const Duration(milliseconds: 600), () {
+    for (final c in controllers) {
+      c.dispose();
+    }
+  });
+}
+
 IconData serviceIcon(String code) => switch (code) {
       'studio' => Icons.door_front_door_rounded,
       'kitchen' => Icons.soup_kitchen_rounded,

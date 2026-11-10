@@ -347,6 +347,7 @@
  "payBalance": "支付尾款",
  "reviewTitle": "清洁效果如何？",
  "reviewHint": "说说满意或不足之处",
+ "ratingStars": "{n}星",
  "reviewSubmit": "提交评价",
  "reviewThanks": "感谢您的评价",
  "bookAgain": "按原条件再次预约",

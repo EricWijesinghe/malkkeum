@@ -1,0 +1,59 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_PASSWORD: localdev, POSTGRES_DB: cleaning }
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "rustfmt, clippy" }
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: backend }
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+      - name: End-to-end smoke test
+        env:
+          DATABASE_URL: postgres://postgres:localdev@localhost:5433/cleaning
+          JWT_SECRET: ci-only-secret-ci-only-secret-0123456789
+          DATA_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
+          DEV_MODE: "1"
+          SEED_ADMIN_EMAIL: admin@local.test
+          SEED_ADMIN_PASSWORD: change-me-now-please
+          PSQL: psql
+          PGPASSWORD: localdev
+        run: |
+          cargo build -q -p api
+          ./target/debug/api &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8080/health && break; sleep 1; done
+          python3 -I ../scripts/smoke.py
+
+  apps:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: app } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, cache: true }
+      - run: python3 -I tool/gen_arb.py
+      - run: flutter pub get
+      - run: (cd packages/core && flutter gen-l10n)
+      - run: dart analyze --fatal-infos
+      - run: (cd packages/core && flutter test)

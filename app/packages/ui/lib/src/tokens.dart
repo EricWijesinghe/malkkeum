@@ -95,6 +95,13 @@ abstract final class StatusHues {
       };
 }
 
+/// Fixed semantic colors (not brand): errors and weekend markers.
+abstract final class Semantic {
+  static const danger = Color(0xFFD92D20);
+  static const sunday = Color(0xFFD92D20);
+  static const saturday = Color(0xFF2A44D6);
+}
+
 abstract final class Space {
   static const xxs = 4.0;
   static const xs = 8.0;

@@ -1102,6 +1102,11 @@ class TJa extends T {
   String get reviewHint => '良かった点や改善点を教えてください';
 
   @override
+  String ratingStars(String n) {
+    return '$nつ星';
+  }
+
+  @override
   String get reviewSubmit => 'レビューを投稿';
 
   @override

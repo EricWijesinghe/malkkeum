@@ -53,7 +53,10 @@ class Session extends ChangeNotifier {
 
   Future<void> clear() async {
     accessToken = refreshToken = role = subject = null;
-    await _storage.deleteAll();
+    // Only this app's keys: other namespaces and the language setting stay.
+    for (final k in ['refresh', 'role', 'subject']) {
+      await _storage.delete(key: _k(k));
+    }
     notifyListeners();
   }
 

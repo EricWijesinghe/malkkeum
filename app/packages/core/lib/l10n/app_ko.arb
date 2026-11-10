@@ -527,6 +527,14 @@
  "payBalance": "잔금 결제하기",
  "reviewTitle": "청소는 어떠셨나요?",
  "reviewHint": "좋았던 점이나 아쉬운 점을 알려 주세요",
+ "ratingStars": "{n}점",
+ "@ratingStars": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
  "reviewSubmit": "후기 남기기",
  "reviewThanks": "소중한 후기 고마워요",
  "bookAgain": "같은 조건으로 다시 예약",

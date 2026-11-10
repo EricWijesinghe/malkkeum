@@ -34,7 +34,7 @@ class MoreTab extends StatelessWidget {
         AppCard(
           padding: const EdgeInsets.symmetric(vertical: Space.xs),
           child: Column(children: [
-            ListTile(leading: const Icon(Icons.star_rounded, color: Color(0xFFFFB400)), title: Text(t.pReviews), trailing: Text(rating == null ? '-' : '$rating'), onTap: () => _go(context, const ReviewsScreen())),
+            ListTile(leading: Icon(Icons.star_rounded, color: context.colors.sun), title: Text(t.pReviews), trailing: Text(rating == null ? '-' : '$rating'), onTap: () => _go(context, const ReviewsScreen())),
             ListTile(leading: const Icon(Icons.map_rounded), title: Text(t.pServicesAreas), trailing: const Icon(Icons.chevron_right_rounded), onTap: () => _go(context, const AreasScreen())),
             ListTile(leading: const Icon(Icons.schedule_rounded), title: Text(t.pWorkSchedule), trailing: const Icon(Icons.chevron_right_rounded), onTap: () => _go(context, const WorkScheduleScreen())),
             ListTile(leading: const Icon(Icons.account_balance_rounded), title: Text(t.pPayoutAccount), trailing: const Icon(Icons.chevron_right_rounded), onTap: () => _go(context, const PayoutAccountScreen())),
@@ -292,6 +292,8 @@ class _PayoutAccountState extends State<PayoutAccountScreen> {
     super.initState();
     context.api.get('/partner/payout-account').then((v) {
       if (mounted) setState(() => _current = v as Json?);
+    }, onError: (Object e) {
+      if (mounted) showToast(context, context.t.error(e));
     }).ignore();
   }
 
@@ -386,8 +388,7 @@ class _TeamState extends State<TeamScreen> {
         if (mounted) showToast(context, t.error(e));
       }
     }
-    name.dispose();
-    phone.dispose();
+    disposeAfterClose([name, phone]);
   }
 
   @override

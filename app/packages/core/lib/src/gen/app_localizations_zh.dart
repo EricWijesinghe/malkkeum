@@ -1099,6 +1099,11 @@ class TZh extends T {
   String get reviewHint => '说说满意或不足之处';
 
   @override
+  String ratingStars(String n) {
+    return '$n星';
+  }
+
+  @override
   String get reviewSubmit => '提交评价';
 
   @override

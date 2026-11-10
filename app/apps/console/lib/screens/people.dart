@@ -209,9 +209,7 @@ class _StaffState extends State<StaffScreen> {
       final api = context.api;
       await _act(context, () => api.post('/admin/staff', {'email': email.text, 'name': name.text, 'role': role, 'password': password.text}), () async => _view.currentState?.reload());
     }
-    for (final c in [email, name, password]) {
-      c.dispose();
-    }
+    disposeAfterClose([email, name, password]);
   }
 
   @override

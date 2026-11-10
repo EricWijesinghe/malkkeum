@@ -97,9 +97,7 @@ class _ServicesState extends State<_Services> {
         if (mounted) showToast(context, t.error(e));
       }
     }
-    for (final x in ctrls.values) {
-      x.dispose();
-    }
+    disposeAfterClose(ctrls.values.toList());
   }
 
   @override
@@ -229,7 +227,7 @@ class _FormulaState extends State<_Formula> {
         }
         return ListView(padding: const EdgeInsets.all(Space.lg), children: [
           for (final k in _keys) Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: _num(_ctrls[k]!, _label(t, k))),
-          Text('type %: ${f['type_bps']} · luggage %: ${f['luggage_bps']} · VAT ${(f['vat_bps'] as num) / 100}% · ${t.deposit} ${(f['deposit_bps'] as num) / 100}% (bps)', style: context.text.bodySmall),
+          Text('${t.cSurcharge} ${f['type_bps']} · ${t.luggageTitle} ${f['luggage_bps']} · VAT ${(f['vat_bps'] as num) / 100}% · ${t.deposit} ${(f['deposit_bps'] as num) / 100}%', style: context.text.bodySmall),
           const SizedBox(height: Space.md),
           FilledButton(
             onPressed: !context.console.isAdmin

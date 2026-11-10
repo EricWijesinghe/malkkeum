@@ -122,6 +122,10 @@ class _OpsRoomState extends State<OpsRoom> {
     super.initState();
     _load();
     _sub = context.proRead.realtime.on('chat.message').listen((e) {
+      if (e['type'] == 'resync') {
+        _load();
+        return;
+      }
       final m = (e['data'] as Json?)?['message'] as Json?;
       if (m == null || m['thread_id'] != widget.threadId) return;
       final msg = ChatMessage.fromJson(m);
@@ -132,10 +136,14 @@ class _OpsRoomState extends State<OpsRoom> {
   }
 
   Future<void> _load() async {
-    final r = await context.api.get('/chat/threads/${widget.threadId}/messages') as List;
-    if (!mounted) return;
-    setState(() => _msgs = r.map((e) => ChatMessage.fromJson(e as Json)).toList());
-    _read();
+    try {
+      final r = await context.api.get('/chat/threads/${widget.threadId}/messages') as List;
+      if (!mounted) return;
+      setState(() => _msgs = r.map((e) => ChatMessage.fromJson(e as Json)).toList());
+      _read();
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    }
   }
 
   void _read() => context.api.post('/chat/threads/${widget.threadId}/read').then((_) => mounted ? context.proRead.loadBadges() : null).ignore();
@@ -157,11 +165,14 @@ class _OpsRoomState extends State<OpsRoom> {
   Future<void> _photo() async {
     final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 2048, imageQuality: 85);
     if (f == null || !mounted) return;
+    setState(() => _sending = true);
     try {
       final url = await context.api.upload(await f.readAsBytes(), f.name);
       await _send({'kind': 'photo', 'url': url});
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
+    } finally {
+      if (mounted) setState(() => _sending = false);
     }
   }
 
