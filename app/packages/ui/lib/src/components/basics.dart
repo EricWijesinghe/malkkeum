@@ -307,8 +307,9 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final h = hue ?? ServiceHues.bathroom;
+    // Scrolls rather than overflows when a short screen meets a large system font.
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(Space.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,

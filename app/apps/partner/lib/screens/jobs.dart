@@ -66,16 +66,24 @@ class _JobsTabState extends State<JobsTab> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: Space.md),
+            // Capped and scaled so long translations never push the title off a small phone.
             child: Center(
-              child: Text(
-                '${t.pPendingPayout} ${context.won(pro.pendingPayout)}',
-                style: context.text.labelMedium,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.45),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '${t.pPendingPayout} ${context.won(pro.pendingPayout)}',
+                    style: context.text.labelMedium,
+                  ),
+                ),
               ),
             ),
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(104),
+          // Grows with the system font so the filter rows never clip.
+          preferredSize: Size.fromHeight(MediaQuery.textScalerOf(context).scale(120).clamp(104, 200)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(
               Space.gutter,
@@ -99,13 +107,15 @@ class _JobsTabState extends State<JobsTab> {
                 ),
                 Row(
                   children: [
-                    FilterChip(
-                      label: Text(t.pShowClosed),
-                      selected: _closed,
-                      onSelected: (v) => _set(() => _closed = v),
+                    Flexible(
+                      child: FilterChip(
+                        label: Text(t.pShowClosed, overflow: TextOverflow.ellipsis),
+                        selected: _closed,
+                        onSelected: (v) => _set(() => _closed = v),
+                      ),
                     ),
-                    const Spacer(),
-                    PopupMenuButton<String>(
+                    const SizedBox(width: Space.xs),
+                    Flexible(child: PopupMenuButton<String>(
                       initialValue: _sort,
                       onSelected: (v) => _set(() => _sort = v),
                       itemBuilder: (_) => [
@@ -128,18 +138,19 @@ class _JobsTabState extends State<JobsTab> {
                         child: Padding(
                           padding: const EdgeInsets.all(Space.xs),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(switch (_sort) {
+                              Flexible(child: Text(switch (_sort) {
                                 'visit' => t.pSortVisit,
                                 'amount' => t.pSortAmount,
                                 _ => t.pSortNewest,
-                              }, style: context.text.labelMedium),
+                              }, style: context.text.labelMedium, overflow: TextOverflow.ellipsis)),
                               const Icon(Icons.expand_more_rounded, size: 18),
                             ],
                           ),
                         ),
                       ),
-                    ),
+                    )),
                   ],
                 ),
               ],
@@ -270,7 +281,7 @@ class _JobCard extends StatelessWidget {
               const Divider(height: Space.xl),
               Row(
                 children: [
-                  Column(
+                  Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -286,13 +297,16 @@ class _JobCard extends StatelessWidget {
                         style: context.text.titleLarge,
                       ),
                     ],
-                  ),
-                  const Spacer(),
+                  )),
                   if (job['my_quote'] != null)
-                    Tag(
-                      label:
-                          '${t.pMyQuote} ${context.won((job['my_quote'] as num).toInt())}',
-                      hue: StatusHues.confirmed,
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Tag(
+                          label: '${t.pMyQuote} ${context.won((job['my_quote'] as num).toInt())}',
+                          hue: StatusHues.confirmed,
+                        ),
+                      ),
                     ),
                 ],
               ),
