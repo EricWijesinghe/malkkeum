@@ -60,8 +60,11 @@ class PushService {
       if (Platform.isAndroid) {
         await _local.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
       }
+      // shortcut: getToken/onTokenRefresh are deprecated in firebase_messaging 17 but still work; move to register()/onRegistered once tested on devices.
+      // ignore: deprecated_member_use
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) await registrar.register(token);
+      // ignore: deprecated_member_use
       FirebaseMessaging.instance.onTokenRefresh.listen((t) => _registerQuietly(registrar, t));
     } catch (e) {
       debugPrint('push not registered: $e');

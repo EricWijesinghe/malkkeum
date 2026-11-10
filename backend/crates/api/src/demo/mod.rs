@@ -23,7 +23,7 @@ use std::{collections::BTreeMap, fmt, path::PathBuf};
 use uuid::Uuid;
 
 /// Fixed seed: the same run always produces the same names, amounts and choices.
-const DEMO_SEED: u64 = 0x4D41_4C4B_4555_4D;
+const DEMO_SEED: u64 = 0x004D_414C_4B45_554D;
 /// Advisory lock so two loads or a load and a clear never interleave.
 const DEMO_LOCK: i64 = 0x6D61_6C6B;
 /// Placeholder photo: one 1x1 PNG, named with a fixed 32-hex stem so `is_own_upload` accepts it.

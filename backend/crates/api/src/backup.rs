@@ -66,12 +66,12 @@ impl Fail {
 
 /// Key for the backup files, derived from DATA_KEY so the owner keeps one secret to protect.
 pub fn file_key(data_key: &[u8; 32]) -> [u8; 32] {
-    let mut mac = Hmac::<Sha256>::new_from_slice(data_key).expect("HMAC takes any key length");
+    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(data_key).expect("HMAC takes any key length");
     mac.update(KEY_CONTEXT);
     mac.finalize().into_bytes().into()
 }
 
-fn frame_nonce(prefix: &[u8; 8], index: u32) -> Nonce {
+fn frame_nonce(prefix: &[u8; 8], index: u32) -> Nonce<aes_gcm::aead::consts::U12> {
     let mut n = [0u8; 12];
     n[..8].copy_from_slice(prefix);
     n[8..].copy_from_slice(&index.to_be_bytes());
@@ -158,7 +158,7 @@ pub fn decrypt_stream<R: Read, W: Write>(key: &[u8; 32], mut input: R, mut outpu
 }
 
 fn hmac256(key: &[u8], msg: &[u8]) -> [u8; 32] {
-    let mut mac = Hmac::<Sha256>::new_from_slice(key).expect("HMAC takes any key length");
+    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(key).expect("HMAC takes any key length");
     mac.update(msg);
     mac.finalize().into_bytes().into()
 }
@@ -386,7 +386,7 @@ async fn offsite(http: &reqwest::Client, cfg: &S3Config, data_key: &[u8; 32], fi
 
 async fn open(config: &Config) -> Result<(PgPool, Integrations), String> {
     let db = PgPoolOptions::new().max_connections(2).connect(&config.database_url).await.map_err(|e| e.to_string())?;
-    let integ = Integrations::load(&db, config).await.map_err(|e| e.to_string())?;
+    let integ = crate::integrations::load(&db, config).await.map_err(|e| e.to_string())?;
     Ok((db, integ))
 }
 

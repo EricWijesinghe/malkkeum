@@ -22,9 +22,12 @@ class _OpsScreenState extends State<OpsScreen> {
     final t = context.t;
     return AsyncView<Json>(
       key: _view,
-      load: () async => {
-        'status': await context.api.get('/admin/ops/status') as Json,
-        'alerts': await context.api.get('/admin/ops/alerts') as Json,
+      load: () async {
+        final api = context.api;
+        return {
+          'status': await api.get('/admin/ops/status') as Json,
+          'alerts': await api.get('/admin/ops/alerts') as Json,
+        };
       },
       builder: (context, data, reload) {
         final status = data['status'] as Json;

@@ -7,7 +7,6 @@ mod common;
 use api::demo::{self, DemoError};
 use common::{app, book, customer, seed_catalog, test_config};
 use sqlx::PgPool;
-use uuid::Uuid;
 
 /// Every table `demo load` writes (see `CLEAR_ORDER` in demo/mod.rs).
 const TOUCHED: &[&str] = &[
@@ -20,7 +19,7 @@ const TOUCHED: &[&str] = &[
 /// Per-test upload dir, so parallel tests never delete each other's placeholder file.
 fn config() -> api::config::Config {
     let mut config = test_config();
-    config.upload_dir = std::env::temp_dir().join(format!("demo-test-{}", Uuid::new_v4()));
+    config.upload_dir = std::env::temp_dir().join(format!("demo-test-{}", rand::random::<u64>()));
     config
 }
 

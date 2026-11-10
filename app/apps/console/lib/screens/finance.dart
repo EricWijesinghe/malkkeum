@@ -72,7 +72,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
         _loading = false;
       });
     } on ApiException {
-      if (mounted) setState(() {
+      if (!mounted) return;
+      setState(() {
         _loading = false;
         _failed = true;
       });
@@ -269,8 +270,8 @@ class _TrendCard extends StatelessWidget {
                 spacing: Space.xs,
                 children: [
                   for (final (g, label) in [
-                    (_Grain.day30, t.fRangeDays(30)),
-                    (_Grain.day90, t.fRangeDays(90)),
+                    (_Grain.day30, t.fRangeDays('30')),
+                    (_Grain.day90, t.fRangeDays('90')),
                     (_Grain.week, t.fPeriodWeek),
                     (_Grain.month, t.fPeriodMonth),
                   ])

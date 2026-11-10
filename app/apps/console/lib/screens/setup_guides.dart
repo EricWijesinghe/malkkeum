@@ -119,7 +119,7 @@ final guides = <String, Guide>{
       ),
       Tr(
         '저장한 뒤 [연결 테스트] 를 눌러요. 작은 테스트 파일을 올렸다가 바로 지워요. 비용은 저장 용량에 따라 달라요 (백업 몇 개 분량이면 월 몇 천 원 수준이에요). 정확한 요금은 각 서비스의 요금표를 확인하세요.',
-        'Save, then press Test connection (it uploads and deletes a tiny test file). Cost depends on storage used; a few backups usually cost very little. Check each provider's price page for exact rates.',
+        'Save, then press Test connection (it uploads and deletes a tiny test file). Cost depends on storage used; a few backups usually cost very little. Check each provider’s price page for exact rates.',
       ),
     ],
     fields: const {

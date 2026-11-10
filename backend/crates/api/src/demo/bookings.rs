@@ -338,7 +338,7 @@ async fn extra_checkouts(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError
     ];
     for (status, reason, n) in cases {
         let cust = &world.customers[n as usize % world.customers.len()];
-        let created = now - Duration::days(3 + n as i64 * 4);
+        let created = now - Duration::days(3 + n * 4);
         let tx_id = (status == "refunded").then(|| format!("demo_pay_{}", c.hex(12)));
         checkout(c, cust.id, "booking", None, Some(json!({ "body": { "service_code": "studio" }, "district_code": cust.addresses[0].district })), 45_000, status, tx_id, None, created, reason).await?;
     }

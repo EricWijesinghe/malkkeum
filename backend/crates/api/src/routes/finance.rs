@@ -350,7 +350,7 @@ async fn partners(State(s): State<AppState>, _st: Staff, Query(q): Query<PeriodQ
             })
         })
         .collect();
-    out.sort_by(|a, b| b.settled_gross.cmp(&a.settled_gross));
+    out.sort_by_key(|r| std::cmp::Reverse(r.settled_gross));
     Ok(Json(out))
 }
 
@@ -366,7 +366,7 @@ async fn services(State(s): State<AppState>, _st: Staff, Query(q): Query<PeriodQ
     let rows = aggregate(&s.db, from, to, "year").await?;
     let by_svc = fold_by(&rows, |r| r.svc.clone());
     let mut out: Vec<ServiceRow> = by_svc.into_iter().map(|(service_code, t)| ServiceRow { service_code, m: t.into() }).collect();
-    out.sort_by(|a, b| b.m.gross.cmp(&a.m.gross));
+    out.sort_by_key(|r| std::cmp::Reverse(r.m.gross));
     Ok(Json(out))
 }
 
