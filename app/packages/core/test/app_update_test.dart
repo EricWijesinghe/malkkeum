@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -20,7 +20,7 @@ Json _brand({String? min, String? latest}) => {
 
 Widget _host(ApiClient api, {required String current, Widget? child}) => MaterialApp(
   locale: const Locale('ko'),
-  supportedLocales: T.delegate.supportedLocales,
+  supportedLocales: const [Locale('ko'), Locale('en')],
   localizationsDelegates: const [
     T.delegate,
     GlobalMaterialLocalizations.delegate,
