@@ -2291,4 +2291,47 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Đã có phiên bản $version';
+  }
+
+  @override
+  String get uUpdateNow => 'Cập nhật';
+
+  @override
+  String get uUpdateLater => 'Để sau';
+
+  @override
+  String get uUpdateRequiredTitle => 'Cần cập nhật ứng dụng';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Phiên bản này không còn được hỗ trợ. Vui lòng cập nhật từ cửa hàng.';
+
+  @override
+  String get uUpdateStore => 'Cập nhật trên cửa hàng';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Liên kết cập nhật chưa sẵn sàng. Vui lòng thử lại sau.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Phiên bản hiện tại $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Quản lý phiên bản ứng dụng';
+
+  @override
+  String get uAppVersionHint =>
+      'Ứng dụng thấp hơn bản tối thiểu sẽ dừng ở màn hình cập nhật. Thấp hơn bản mới nhất sẽ thấy banner. Định dạng: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Phiên bản tối thiểu';
+
+  @override
+  String get uLatestVersion => 'Phiên bản mới nhất';
 }

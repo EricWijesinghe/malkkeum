@@ -2317,4 +2317,47 @@ class TSi extends T {
 
   @override
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'නව අනුවාදය $version ලැබී ඇත';
+  }
+
+  @override
+  String get uUpdateNow => 'යාවත්කාලීන කරන්න';
+
+  @override
+  String get uUpdateLater => 'පසුව';
+
+  @override
+  String get uUpdateRequiredTitle => 'යාවත්කාලීනයක් අවශ්‍යයි';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'මෙම අනුවාදය තවදුරටත් සහාය නොදක්වයි. කරුණාකර ගබඩාවෙන් යාවත්කාලීන කරන්න.';
+
+  @override
+  String get uUpdateStore => 'ගබඩාවෙන් යාවත්කාලීන කරන්න';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'යාවත්කාලීන සබැඳිය තවම සූදානම් නැත. පසුව නැවත උත්සාහ කරන්න.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'වත්මන් අනුවාදය $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'යෙදුම් අනුවාද';
+
+  @override
+  String get uAppVersionHint =>
+      'අවම අනුවාදයට පහළ යෙදුම් යාවත්කාලීන තිරයේ නතර වේ. උදාහරණ: 1.2.0';
+
+  @override
+  String get uMinVersion => 'අවම අනුවාදය';
+
+  @override
+  String get uLatestVersion => 'නවතම අනුවාදය';
 }

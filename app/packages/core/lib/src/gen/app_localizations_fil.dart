@@ -2330,4 +2330,47 @@ class TFil extends T {
 
   @override
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'May bagong bersyon $version';
+  }
+
+  @override
+  String get uUpdateNow => 'I-update';
+
+  @override
+  String get uUpdateLater => 'Mamaya';
+
+  @override
+  String get uUpdateRequiredTitle => 'Kailangan ng bagong bersyon';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Hindi na suportado ang bersyong ito. Mag-update mula sa tindahan para magpatuloy.';
+
+  @override
+  String get uUpdateStore => 'Mag-update sa tindahan';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Inihahanda pa ang link ng update. Subukan ulit mamaya.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Kasalukuyang bersyon $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Mga bersyon ng app';
+
+  @override
+  String get uAppVersionHint =>
+      'Hihinto sa screen ng update ang app na mas mababa sa minimum. Makakakita ng banner ang mas luma sa pinakabago. Halimbawa: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Pinakamababang bersyon';
+
+  @override
+  String get uLatestVersion => 'Pinakabagong bersyon';
 }

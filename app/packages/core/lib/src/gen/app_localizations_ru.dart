@@ -2316,4 +2316,47 @@ class TRu extends T {
 
   @override
   String get cInvalidValue => 'Проверьте введённое значение';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Доступна версия $version';
+  }
+
+  @override
+  String get uUpdateNow => 'Обновить';
+
+  @override
+  String get uUpdateLater => 'Позже';
+
+  @override
+  String get uUpdateRequiredTitle => 'Требуется обновление';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Эта версия больше не поддерживается. Обновите приложение в магазине.';
+
+  @override
+  String get uUpdateStore => 'Обновить в магазине';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Ссылка для обновления ещё не готова. Попробуйте позже.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Текущая версия $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Версии приложений';
+
+  @override
+  String get uAppVersionHint =>
+      'Приложения ниже минимальной версии остановятся на экране обновления. Ниже последней версии покажется баннер. Формат: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Минимальная версия';
+
+  @override
+  String get uLatestVersion => 'Последняя версия';
 }

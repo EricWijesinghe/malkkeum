@@ -2311,4 +2311,47 @@ class TNe extends T {
 
   @override
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'नयाँ संस्करण $version उपलब्ध छ';
+  }
+
+  @override
+  String get uUpdateNow => 'अपडेट गर्नुहोस्';
+
+  @override
+  String get uUpdateLater => 'पछि';
+
+  @override
+  String get uUpdateRequiredTitle => 'अपडेट आवश्यक छ';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'यो संस्करण अब समर्थित छैन। कृपया स्टोरबाट अपडेट गर्नुहोस्।';
+
+  @override
+  String get uUpdateStore => 'स्टोरमा अपडेट गर्नुहोस्';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'अपडेट लिंक अझै तयार छैन। पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'हालको संस्करण $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'एप संस्करणहरू';
+
+  @override
+  String get uAppVersionHint =>
+      'न्यूनतम संस्करणभन्दा तल्लो एप अपडेट स्क्रिनमा रोकिनेछ। उदाहरण: 1.2.0';
+
+  @override
+  String get uMinVersion => 'न्यूनतम संस्करण';
+
+  @override
+  String get uLatestVersion => 'नवीनतम संस्करण';
 }

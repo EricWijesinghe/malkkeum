@@ -2323,4 +2323,47 @@ class TUz extends T {
 
   @override
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Yangi versiya $version chiqdi';
+  }
+
+  @override
+  String get uUpdateNow => 'Yangilash';
+
+  @override
+  String get uUpdateLater => 'Keyinroq';
+
+  @override
+  String get uUpdateRequiredTitle => 'Yangilash talab qilinadi';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Bu versiya endi qo\'llab-quvvatlanmaydi. Do\'kondan yangilang.';
+
+  @override
+  String get uUpdateStore => 'Do\'konda yangilash';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Yangilash havolasi hali tayyor emas. Keyinroq urinib ko\'ring.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Joriy versiya $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Ilova versiyalari';
+
+  @override
+  String get uAppVersionHint =>
+      'Minimal versiyadan past ilovalar yangilash ekranida to\'xtaydi. Misol: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Minimal versiya';
+
+  @override
+  String get uLatestVersion => 'So\'nggi versiya';
 }

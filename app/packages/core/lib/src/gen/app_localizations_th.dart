@@ -2306,4 +2306,47 @@ class TTh extends T {
 
   @override
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'มีเวอร์ชันใหม่ $version';
+  }
+
+  @override
+  String get uUpdateNow => 'อัปเดต';
+
+  @override
+  String get uUpdateLater => 'ไว้ทีหลัง';
+
+  @override
+  String get uUpdateRequiredTitle => 'ต้องอัปเดตแอป';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'เวอร์ชันนี้ไม่รองรับแล้ว กรุณาอัปเดตจากสโตร์';
+
+  @override
+  String get uUpdateStore => 'อัปเดตจากสโตร์';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'ลิงก์อัปเดตยังไม่พร้อม กรุณาลองใหม่ภายหลัง';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'เวอร์ชันปัจจุบัน $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'เวอร์ชันแอป';
+
+  @override
+  String get uAppVersionHint =>
+      'แอปที่ต่ำกว่าเวอร์ชันขั้นต่ำจะค้างที่หน้าอัปเดต ตัวอย่าง: 1.2.0';
+
+  @override
+  String get uMinVersion => 'เวอร์ชันขั้นต่ำ';
+
+  @override
+  String get uLatestVersion => 'เวอร์ชันล่าสุด';
 }

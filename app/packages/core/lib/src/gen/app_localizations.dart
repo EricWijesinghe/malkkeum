@@ -4440,6 +4440,78 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
+
+  /// No description provided for @uUpdateBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 버전 {version}이 나왔어요'**
+  String uUpdateBanner(String version);
+
+  /// No description provided for @uUpdateNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get uUpdateNow;
+
+  /// No description provided for @uUpdateLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get uUpdateLater;
+
+  /// No description provided for @uUpdateRequiredTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 버전이 필요해요'**
+  String get uUpdateRequiredTitle;
+
+  /// No description provided for @uUpdateRequiredBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 버전은 더 이상 쓸 수 없어요. 스토어에서 최신 버전으로 업데이트해 주세요.'**
+  String get uUpdateRequiredBody;
+
+  /// No description provided for @uUpdateStore.
+  ///
+  /// In ko, this message translates to:
+  /// **'스토어에서 업데이트'**
+  String get uUpdateStore;
+
+  /// No description provided for @uUpdateStoreMissing.
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트 주소를 준비 중이에요. 잠시 후 다시 열어 주세요.'**
+  String get uUpdateStoreMissing;
+
+  /// No description provided for @uCurrentVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 버전 {version}'**
+  String uCurrentVersion(String version);
+
+  /// No description provided for @uAppVersionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전 관리'**
+  String get uAppVersionTitle;
+
+  /// No description provided for @uAppVersionHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0'**
+  String get uAppVersionHint;
+
+  /// No description provided for @uMinVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 버전'**
+  String get uMinVersion;
+
+  /// No description provided for @uLatestVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 버전'**
+  String get uLatestVersion;
 }
 
 class _TDelegate extends LocalizationsDelegate<T> {

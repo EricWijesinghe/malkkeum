@@ -2259,4 +2259,46 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String uUpdateBanner(String version) {
+    return '새 버전 $version이 나왔어요';
+  }
+
+  @override
+  String get uUpdateNow => '업데이트';
+
+  @override
+  String get uUpdateLater => '나중에';
+
+  @override
+  String get uUpdateRequiredTitle => '새 버전이 필요해요';
+
+  @override
+  String get uUpdateRequiredBody =>
+      '이 버전은 더 이상 쓸 수 없어요. 스토어에서 최신 버전으로 업데이트해 주세요.';
+
+  @override
+  String get uUpdateStore => '스토어에서 업데이트';
+
+  @override
+  String get uUpdateStoreMissing => '업데이트 주소를 준비 중이에요. 잠시 후 다시 열어 주세요.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '현재 버전 $version';
+  }
+
+  @override
+  String get uAppVersionTitle => '앱 버전 관리';
+
+  @override
+  String get uAppVersionHint =>
+      '최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0';
+
+  @override
+  String get uMinVersion => '최소 버전';
+
+  @override
+  String get uLatestVersion => '최신 버전';
 }

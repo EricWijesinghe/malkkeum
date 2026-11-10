@@ -2302,4 +2302,47 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Version $version is available';
+  }
+
+  @override
+  String get uUpdateNow => 'Update';
+
+  @override
+  String get uUpdateLater => 'Later';
+
+  @override
+  String get uUpdateRequiredTitle => 'An update is required';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'This version is no longer supported. Please update from the store.';
+
+  @override
+  String get uUpdateStore => 'Update in the store';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'The update link is not ready yet. Please try again later.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Current version $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'App versions';
+
+  @override
+  String get uAppVersionHint =>
+      'Apps below the minimum stop on an update screen. Apps below the latest version see a banner. Format: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Minimum version';
+
+  @override
+  String get uLatestVersion => 'Latest version';
 }

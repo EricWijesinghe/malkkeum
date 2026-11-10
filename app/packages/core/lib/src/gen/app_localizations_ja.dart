@@ -2257,4 +2257,46 @@ class TJa extends T {
 
   @override
   String get cInvalidValue => '入力内容を確認してください';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'バージョン $version が公開されました';
+  }
+
+  @override
+  String get uUpdateNow => 'アップデート';
+
+  @override
+  String get uUpdateLater => 'あとで';
+
+  @override
+  String get uUpdateRequiredTitle => 'アップデートが必要です';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
+
+  @override
+  String get uUpdateStore => 'ストアでアップデート';
+
+  @override
+  String get uUpdateStoreMissing => 'アップデート先を準備中です。しばらくしてから再度お試しください。';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '現在のバージョン $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'アプリのバージョン';
+
+  @override
+  String get uAppVersionHint =>
+      '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
+
+  @override
+  String get uMinVersion => '最小バージョン';
+
+  @override
+  String get uLatestVersion => '最新バージョン';
 }

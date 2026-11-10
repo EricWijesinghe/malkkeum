@@ -2252,4 +2252,44 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String uUpdateBanner(String version) {
+    return '新版本 $version 已发布';
+  }
+
+  @override
+  String get uUpdateNow => '更新';
+
+  @override
+  String get uUpdateLater => '稍后';
+
+  @override
+  String get uUpdateRequiredTitle => '需要更新';
+
+  @override
+  String get uUpdateRequiredBody => '此版本已不再支持，请从应用商店更新到最新版本。';
+
+  @override
+  String get uUpdateStore => '前往应用商店更新';
+
+  @override
+  String get uUpdateStoreMissing => '更新链接尚未准备好，请稍后再试。';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '当前版本 $version';
+  }
+
+  @override
+  String get uAppVersionTitle => '应用版本管理';
+
+  @override
+  String get uAppVersionHint => '低于最低版本的应用会停在更新页面；低于最新版本则显示提示横幅。格式：1.2.0';
+
+  @override
+  String get uMinVersion => '最低版本';
+
+  @override
+  String get uLatestVersion => '最新版本';
 }

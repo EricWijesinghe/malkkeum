@@ -2316,4 +2316,47 @@ class TMn extends T {
 
   @override
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Шинэ хувилбар $version гарлаа';
+  }
+
+  @override
+  String get uUpdateNow => 'Шинэчлэх';
+
+  @override
+  String get uUpdateLater => 'Дараа';
+
+  @override
+  String get uUpdateRequiredTitle => 'Шинэчлэх шаардлагатай';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Энэ хувилбарыг дэмжихээ больсон. Дэлгүүрээс шинэчилнэ үү.';
+
+  @override
+  String get uUpdateStore => 'Дэлгүүрээс шинэчлэх';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Шинэчлэх холбоос бэлэн болоогүй байна. Дараа дахин оролдоно уу.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Одоогийн хувилбар $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Аппын хувилбарууд';
+
+  @override
+  String get uAppVersionHint =>
+      'Хамгийн бага хувилбараас доош аппууд шинэчлэх дэлгэцэд зогсоно. Жишээ: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Хамгийн бага хувилбар';
+
+  @override
+  String get uLatestVersion => 'Хамгийн сүүлийн хувилбар';
 }

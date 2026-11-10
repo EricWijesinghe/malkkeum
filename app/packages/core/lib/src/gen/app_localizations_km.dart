@@ -2314,4 +2314,47 @@ class TKm extends T {
 
   @override
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'មានកំណែថ្មី $version';
+  }
+
+  @override
+  String get uUpdateNow => 'ធ្វើបច្ចុប្បន្នភាព';
+
+  @override
+  String get uUpdateLater => 'ពេលក្រោយ';
+
+  @override
+  String get uUpdateRequiredTitle => 'ត្រូវការធ្វើបច្ចុប្បន្នភាព';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'កំណែនេះលែងគាំទ្រហើយ។ សូមធ្វើបច្ចុប្បន្នភាពពីហាង។';
+
+  @override
+  String get uUpdateStore => 'ធ្វើបច្ចុប្បន្នភាពនៅក្នុងហាង';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'តំណធ្វើបច្ចុប្បន្នភាពមិនទាន់រួចរាល់។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'កំណែបច្ចុប្បន្ន $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'កំណែកម្មវិធី';
+
+  @override
+  String get uAppVersionHint =>
+      'កម្មវិធីដែលទាបជាងកំណែអប្បបរមានឹងឈប់នៅអេក្រង់ធ្វើបច្ចុប្បន្នភាព។ ឧទាហរណ៍: 1.2.0';
+
+  @override
+  String get uMinVersion => 'កំណែអប្បបរមា';
+
+  @override
+  String get uLatestVersion => 'កំណែចុងក្រោយ';
 }

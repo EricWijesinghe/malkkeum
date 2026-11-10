@@ -2320,4 +2320,47 @@ class TId extends T {
 
   @override
   String get cInvalidValue => 'Periksa nilai yang diisi';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Versi baru $version tersedia';
+  }
+
+  @override
+  String get uUpdateNow => 'Perbarui';
+
+  @override
+  String get uUpdateLater => 'Nanti';
+
+  @override
+  String get uUpdateRequiredTitle => 'Pembaruan diperlukan';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Versi ini sudah tidak didukung. Silakan perbarui dari toko aplikasi.';
+
+  @override
+  String get uUpdateStore => 'Perbarui di toko';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Tautan pembaruan belum siap. Coba lagi nanti.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Versi saat ini $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Versi aplikasi';
+
+  @override
+  String get uAppVersionHint =>
+      'Aplikasi di bawah versi minimum akan berhenti di layar pembaruan. Versi di bawah yang terbaru akan melihat banner. Contoh: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Versi minimum';
+
+  @override
+  String get uLatestVersion => 'Versi terbaru';
 }
