@@ -21,7 +21,7 @@ const MAX_TEAM: i64 = 30;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/me", get(profile).patch(update_profile))
+        .route("/me", get(profile).patch(update_profile).delete(delete_account))
         .route("/me/phone", post(bind_phone))
         .route("/prefs", get(get_prefs).put(put_prefs))
         .route("/team", get(team).post(invite))
@@ -30,6 +30,55 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements", get(settlements))
         .route("/reviews", get(reviews))
         .route("/threads", get(threads))
+}
+
+/// Deletes the partner's account: refused while a job is assigned or money is still owed to them,
+/// so nobody loses a visit or a payout. History rows stay; personal data is wiped.
+async fn delete_account(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
+    let mut tx = s.db.begin().await?;
+    sqlx::query("SELECT id FROM pros WHERE id = $1 FOR UPDATE").bind(a.id).execute(&mut *tx).await?;
+    let (jobs, owed): (bool, bool) = sqlx::query_as(
+        "SELECT EXISTS (SELECT 1 FROM bookings WHERE pro_id = $1 AND status = 2),
+                EXISTS (SELECT 1 FROM settlements WHERE pro_id = $1 AND state IN ('waiting_balance','pending','held'))",
+    )
+    .bind(a.id)
+    .fetch_one(&mut *tx)
+    .await?;
+    if jobs {
+        return Err(ApiError::Conflict("has_active_jobs"));
+    }
+    if owed {
+        return Err(ApiError::Conflict("pending_payouts"));
+    }
+    sqlx::query("UPDATE pros SET deleted_at = now(), status = 'suspended', name = '', team_name = '', phone = NULL WHERE id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM user_identities WHERE role = 'pro' AND subject_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query(
+        "UPDATE refresh_tokens SET revoked_at = now()
+         WHERE revoked_at IS NULL AND (subject = $1 OR subject IN (SELECT id FROM team_members WHERE pro_id = $1))",
+    )
+    .bind(a.id)
+    .execute(&mut *tx)
+    .await?;
+    sqlx::query("DELETE FROM push_tokens WHERE owner_id = $1 OR owner_id IN (SELECT id FROM team_members WHERE pro_id = $1)")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE team_members SET invite_status = 'removed', name = '', phone = '' WHERE pro_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    tx.commit().await?;
+    Ok(Json(json!({ "ok": true })))
 }
 
 async fn profile(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {

@@ -2145,6 +2145,49 @@ class TNe extends T {
   String get cSetupPartnerApp => 'साझेदार एप';
 
   @override
+  String get cSetupPayMethods => 'भुक्तानी विधि';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'ग्राहकले देख्ने भुक्तानी विधि खोल्नुहोस् वा बन्द गर्नुहोस्। तुरुन्तै लागू हुन्छ।';
+
+  @override
+  String get cReviewTitle => 'स्टोर समीक्षाका लागि डेमो खाता';
+
+  @override
+  String get cReviewHint =>
+      'समीक्षकले कोरियाली SMS पाउँदैनन्। यो नम्बर र ६ अङ्कको कोड समीक्षा नोटमा लेख्नुहोस्। आफैं बन्द हुन्छ।';
+
+  @override
+  String get cReviewPhone => 'डेमो फोन नम्बर';
+
+  @override
+  String get cReviewCode => 'स्थिर कोड (६ अङ्क)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '$date सम्म सक्रिय';
+  }
+
+  @override
+  String get cReviewEnable => 'सक्रिय (१४ दिन)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'तपाईंको टोली र व्यक्तिगत विवरण स्थायी रूपमा मेटिन्छ। पहिले तोकिएका काम र बाँकी भुक्तानी पूरा गर्नुहोस्।';
+
+  @override
+  String get err_has_active_jobs =>
+      'तपाईंसँग तोकिएका काम बाँकी छन्। पूरा गर्नुहोस् वा सहायतालाई हस्तान्तरण गर्न भन्नुहोस्।';
+
+  @override
+  String get err_pending_payouts =>
+      'भुक्तानी बाँकी छ। भुक्तानीपछि खाता मेटाउन सकिन्छ।';
+
+  @override
+  String get err_phone_required => 'काम लिनु अघि फोन नम्बर प्रमाणित गर्नुहोस्।';
+
+  @override
   String get cSetupSave => 'सेभ';
 
   @override

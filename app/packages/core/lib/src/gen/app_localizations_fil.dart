@@ -2160,6 +2160,50 @@ class TFil extends T {
   String get cSetupPartnerApp => 'App ng partner';
 
   @override
+  String get cSetupPayMethods => 'Mga paraan ng bayad';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'I-on o i-off ang mga paraang nakikita ng customer. Agad na epekto.';
+
+  @override
+  String get cReviewTitle => 'Demo account para sa store review';
+
+  @override
+  String get cReviewHint =>
+      'Hindi nakakatanggap ng Korean SMS ang reviewer. Ilagay ang numero at 6-digit na code sa review notes. Kusang mag-o-off.';
+
+  @override
+  String get cReviewPhone => 'Demo na numero';
+
+  @override
+  String get cReviewCode => 'Nakapirming code (6 digit)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'Aktibo hanggang $date';
+  }
+
+  @override
+  String get cReviewEnable => 'I-on (14 araw)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Permanenteng mabubura ang team at personal na data. Tapusin muna ang mga naka-assign na trabaho at nakabinbing bayad.';
+
+  @override
+  String get err_has_active_jobs =>
+      'May naka-assign ka pang trabaho. Tapusin o hilingin sa support na ilipat.';
+
+  @override
+  String get err_pending_payouts =>
+      'May nakabinbing bayad pa. Maaaring burahin pagkatapos mabayaran.';
+
+  @override
+  String get err_phone_required =>
+      'I-verify muna ang numero bago tumanggap ng trabaho.';
+
+  @override
   String get cSetupSave => 'I-save';
 
   @override

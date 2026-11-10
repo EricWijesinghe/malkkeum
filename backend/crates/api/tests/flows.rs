@@ -175,3 +175,27 @@ async fn consultant_cannot_edit_content(pool: PgPool) {
     let (st, body) = call(&app, "POST", "/v1/admin/content", Some(token.as_str()), Some(json!({}))).await;
     assert_eq!(st, StatusCode::FORBIDDEN, "{body}");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn partner_cannot_delete_with_an_assigned_job_but_can_once_free(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (free, free_id) = verified_pro(&app, &pool, "010-5000-0301").await;
+    let (st, b) = call(&app, "DELETE", "/v1/partner/me", Some(free.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let phone: Option<String> = sqlx::query_scalar("SELECT phone FROM pros WHERE id = $1")
+        .bind(free_id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert!(phone.is_none(), "personal data wiped");
+
+    let c = customer(&app, &pool, "010-5000-0302").await;
+    let (job, _) = book(&app, &c, 10, None).await;
+    let (busy, _) = verified_pro(&app, &pool, "010-5000-0303").await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{job}/accept"), Some(busy.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, b) = call(&app, "DELETE", "/v1/partner/me", Some(busy.as_str()), None).await;
+    assert_eq!(st, StatusCode::CONFLICT, "{b}");
+    assert_eq!(b["error"]["code"], "has_active_jobs");
+}

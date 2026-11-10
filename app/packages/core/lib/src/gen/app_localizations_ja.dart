@@ -2098,6 +2098,46 @@ class TJa extends T {
   String get cSetupPartnerApp => 'パートナーアプリ';
 
   @override
+  String get cSetupPayMethods => '決済手段';
+
+  @override
+  String get cSetupPayMethodsHint => 'お客様に表示する決済手段をオン・オフ。すぐ反映されます。';
+
+  @override
+  String get cReviewTitle => 'ストア審査用デモアカウント';
+
+  @override
+  String get cReviewHint =>
+      '審査担当は韓国のSMSを受信できません。番号と6桁コードを審査メモに記入してください。期間後に自動で無効になります。';
+
+  @override
+  String get cReviewPhone => 'デモ電話番号';
+
+  @override
+  String get cReviewCode => '固定認証コード（6桁）';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '$dateまで有効';
+  }
+
+  @override
+  String get cReviewEnable => '有効化（14日）';
+
+  @override
+  String get pDeleteAccountBody =>
+      'チームと個人情報は削除され、元に戻せません。割当中の作業や未精算がある場合は先に完了してください。';
+
+  @override
+  String get err_has_active_jobs => '割当中の作業があります。完了するかサポートに移管を依頼してください。';
+
+  @override
+  String get err_pending_payouts => '未精算があります。支払い完了後に退会できます。';
+
+  @override
+  String get err_phone_required => '作業を受けるには先に電話番号を認証してください。';
+
+  @override
   String get cSetupSave => '保存';
 
   @override

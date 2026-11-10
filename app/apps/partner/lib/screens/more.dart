@@ -123,7 +123,8 @@ class MoreTab extends StatelessWidget {
                     items: [
                       for (final (c, n) in [
                         (null, t.langSystem),
-                        for (final e in LocaleController.names.entries) (e.key, e.value),
+                        for (final e in LocaleController.names.entries)
+                          (e.key, e.value),
                       ])
                         DropdownMenuItem(value: c, child: Text(n)),
                     ],
@@ -157,9 +158,53 @@ class MoreTab extends StatelessWidget {
             ),
           ),
           TextButton(onPressed: deps.session.logout, child: Text(t.logout)),
+          TextButton(
+            onPressed: () => _deleteAccount(context),
+            style: TextButton.styleFrom(foregroundColor: context.colors.danger),
+            child: Text(t.deleteAccount),
+          ),
         ],
       ),
     );
+  }
+
+  /// Account deletion (App Store 5.1.1(v)). The server refuses while a job is assigned or a
+  /// payout is still owed, and says which.
+  Future<void> _deleteAccount(BuildContext context) async {
+    final t = context.t;
+    final deps = Deps.read(context);
+    final ok = await showAppSheet<bool>(
+      context,
+      title: t.deleteAccount,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          0,
+          Space.gutter,
+          Space.gutter,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(t.pDeleteAccountBody, style: ctx.text.bodyMedium),
+            const SizedBox(height: Space.xl),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: ctx.colors.danger),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(t.deleteAccount),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await deps.app.api.delete('/partner/me');
+      await deps.session.clear();
+    } catch (e) {
+      if (context.mounted) showToast(context, t.error(e));
+    }
   }
 }
 

@@ -61,20 +61,25 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
     if recent >= OTP_MAX_PER_HOUR || global >= OTP_GLOBAL_PER_HOUR {
         return Err(ApiError::RateLimited);
     }
+    // Store-review demo number: the owner's fixed code, no SMS (reviewers are abroad).
+    let review = super::setup::review_code_hash(&s.db, &phone).await?;
     let code = auth::otp_code();
+    let code_hash = review.clone().unwrap_or_else(|| auth::otp_hash(&s.config.jwt_secret, &phone, &code));
     sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ($1, $2, $3)")
         .bind(&phone)
-        .bind(auth::otp_hash(&s.config.jwt_secret, &phone, &code))
+        .bind(code_hash)
         .bind(Utc::now() + Duration::minutes(OTP_TTL_MIN))
         .execute(&s.db)
         .await?;
-    s.providers
-        .send_sms(&phone, &format!("[인증번호] {code}"))
-        .await
-        .map_err(|e| ApiError::Internal(e.to_string()))?;
+    if review.is_none() {
+        s.providers
+            .send_sms(&phone, &format!("[인증번호] {code}"))
+            .await
+            .map_err(|e| ApiError::Internal(e.to_string()))?;
+    }
     Ok(Json(OtpSent {
         expires_in: OTP_TTL_MIN * 60,
-        dev_code: s.config.dev_mode.then_some(code),
+        dev_code: (s.config.dev_mode && review.is_none()).then_some(code),
     }))
 }
 

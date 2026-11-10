@@ -2152,6 +2152,50 @@ class TId extends T {
   String get cSetupPartnerApp => 'Aplikasi mitra';
 
   @override
+  String get cSetupPayMethods => 'Metode pembayaran';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Aktifkan atau matikan metode yang dilihat pelanggan. Berlaku langsung.';
+
+  @override
+  String get cReviewTitle => 'Akun demo untuk peninjauan toko';
+
+  @override
+  String get cReviewHint =>
+      'Peninjau tidak bisa menerima SMS Korea. Tulis nomor dan kode 6 digit di catatan peninjauan. Mati otomatis.';
+
+  @override
+  String get cReviewPhone => 'Nomor telepon demo';
+
+  @override
+  String get cReviewCode => 'Kode tetap (6 digit)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'Aktif sampai $date';
+  }
+
+  @override
+  String get cReviewEnable => 'Aktifkan (14 hari)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Tim dan data pribadi akan dihapus permanen. Selesaikan pekerjaan dan pembayaran tertunda terlebih dulu.';
+
+  @override
+  String get err_has_active_jobs =>
+      'Masih ada pekerjaan yang ditugaskan. Selesaikan atau minta dukungan memindahkannya.';
+
+  @override
+  String get err_pending_payouts =>
+      'Masih ada pembayaran tertunda. Akun bisa dihapus setelah dibayar.';
+
+  @override
+  String get err_phone_required =>
+      'Verifikasi nomor telepon sebelum menerima pekerjaan.';
+
+  @override
   String get cSetupSave => 'Simpan';
 
   @override

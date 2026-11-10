@@ -1,0 +1,12 @@
+# Web image context is the repo root; it only needs app/, website/ and deploy/Caddyfile.
+.git
+backend
+NTD
+design
+docs
+scripts
+**/build
+**/.dart_tool
+**/node_modules
+app/apps/*/android/.gradle
+app/apps/*/ios/Pods

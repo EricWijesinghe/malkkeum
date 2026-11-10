@@ -29,6 +29,10 @@ const SETUP_CODE_LEN: usize = 12;
 const SETUP_ALPHABET: &[u8] = b"23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 const SETUP_CODE_KEY: &str = "setup_code";
 const BUSINESS_KEY: &str = "business";
+const REVIEW_KEY: &str = "review_account";
+/// App Review needs days, not hours; the account switches itself off after this.
+const REVIEW_MAX_DAYS: i64 = 30;
+const REVIEW_CODE_LEN: usize = 6;
 
 pub fn public_routes() -> Router<AppState> {
     Router::new()
@@ -41,6 +45,7 @@ pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/setup", get(overview))
         .route("/setup/business", put(put_business))
+        .route("/setup/review", put(put_review).delete(clear_review))
         .route("/setup/{section}", put(put_section).delete(clear_section))
         .route("/setup/{section}/test", post(test_section))
 }
@@ -137,6 +142,66 @@ async fn create_admin(State(s): State<AppState>, Json(req): Json<NewAdmin>) -> A
     tx.commit().await?;
     audit(&s.db, "staff_admin", Some(id), "setup.create_admin", &email, json!({})).await?;
     Ok(Json(json!({ "ok": true })))
+}
+
+/// Store-review demo login: one phone number whose sign-in code is fixed by the owner, so app
+/// reviewers abroad can log in without a Korean SMS. Returns the stored code hash while active.
+/// The code still goes through `otp_codes`, so the normal attempt and hourly limits apply.
+pub async fn review_code_hash(db: &PgPool, phone: &str) -> Result<Option<String>, sqlx::Error> {
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(REVIEW_KEY)
+        .fetch_optional(db)
+        .await?;
+    let Some(v) = v else { return Ok(None) };
+    let active = v["phone"].as_str() == Some(phone)
+        && v["expires_at"]
+            .as_str()
+            .and_then(|t| chrono::DateTime::parse_from_rfc3339(t).ok())
+            .is_some_and(|t| t > Utc::now());
+    Ok(active.then(|| v["code_hash"].as_str().map(String::from)).flatten())
+}
+
+#[derive(Deserialize)]
+struct ReviewAccount {
+    phone: String,
+    code: String,
+    days: Option<i64>,
+}
+
+async fn put_review(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<ReviewAccount>) -> ApiResult<Json<Value>> {
+    let phone = crate::auth::normalize_phone(&r.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
+    let code = r.code.trim();
+    if code.len() != REVIEW_CODE_LEN || !code.bytes().all(|b| b.is_ascii_digit()) {
+        return Err(ApiError::BadRequest("invalid_code"));
+    }
+    let days = r.days.unwrap_or(14).clamp(1, REVIEW_MAX_DAYS);
+    let expires_at = Utc::now() + chrono::Duration::days(days);
+    let value = json!({
+        "phone": phone,
+        "code_hash": crate::auth::otp_hash(&s.config.jwt_secret, &phone, code),
+        "expires_at": expires_at.to_rfc3339(),
+    });
+    sqlx::query("INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")
+        .bind(REVIEW_KEY)
+        .bind(&value)
+        .execute(&s.db)
+        .await?;
+    audit(&s.db, a.role.as_str(), Some(a.id), "setup.review_account", &phone, json!({ "days": days })).await?;
+    Ok(Json(json!({ "phone": phone, "expires_at": expires_at })))
+}
+
+async fn clear_review(State(s): State<AppState>, Admin(a): Admin) -> ApiResult<Json<Value>> {
+    sqlx::query("DELETE FROM settings WHERE key = $1").bind(REVIEW_KEY).execute(&s.db).await?;
+    audit(&s.db, a.role.as_str(), Some(a.id), "setup.review_account_cleared", REVIEW_KEY, json!({})).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn review_summary(db: &PgPool) -> Result<Value, sqlx::Error> {
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(REVIEW_KEY)
+        .fetch_optional(db)
+        .await?;
+    Ok(v.map(|v| json!({ "phone": v["phone"], "expires_at": v["expires_at"] })).unwrap_or(Value::Null))
 }
 
 async fn business(db: &PgPool) -> Result<Value, sqlx::Error> {
@@ -301,6 +366,7 @@ async fn overview(State(s): State<AppState>, Admin(_): Admin) -> ApiResult<Json<
     .await?;
     Ok(Json(json!({
         "business": business(&s.db).await?,
+        "review_account": review_summary(&s.db).await?,
         "integrations": cards,
         "counts": { "staff": counts.0, "verified_pros": counts.1, "active_services": counts.2, "bookings": counts.3 },
         "dev_mode": s.config.dev_mode,

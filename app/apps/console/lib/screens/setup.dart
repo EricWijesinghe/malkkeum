@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../state.dart';
 import 'setup_business.dart';
 import 'setup_guides.dart';
+import 'setup_pay_methods.dart';
+import 'setup_review.dart';
 
 /// Owner's launch checklist: business profile plus one card per external service.
 /// Keys are typed here (never in config files), saved encrypted, and tested on the spot.
@@ -48,6 +50,13 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
                 const SizedBox(height: Space.lg),
                 BusinessCard(initial: business, onSaved: _reload),
+                const SizedBox(height: Space.md),
+                const PayMethodsCard(),
+                const SizedBox(height: Space.md),
+                ReviewAccountCard(
+                  current: data['review_account'] as Json?,
+                  onChanged: _reload,
+                ),
                 for (final c in cards) ...[
                   const SizedBox(height: Space.md),
                   IntegrationCard(

@@ -2149,6 +2149,50 @@ class TRu extends T {
   String get cSetupPartnerApp => 'Приложение партнёра';
 
   @override
+  String get cSetupPayMethods => 'Способы оплаты';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Включайте и выключайте способы оплаты для клиентов. Применяется сразу.';
+
+  @override
+  String get cReviewTitle => 'Демо-аккаунт для проверки в магазине';
+
+  @override
+  String get cReviewHint =>
+      'Проверяющие не получают корейские SMS. Укажите номер и 6-значный код в заметках для проверки. Отключится автоматически.';
+
+  @override
+  String get cReviewPhone => 'Демо-номер телефона';
+
+  @override
+  String get cReviewCode => 'Постоянный код (6 цифр)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'Действует до $date';
+  }
+
+  @override
+  String get cReviewEnable => 'Включить (14 дней)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Команда и личные данные будут удалены без возможности восстановления. Сначала завершите назначенные работы и выплаты.';
+
+  @override
+  String get err_has_active_jobs =>
+      'У вас есть назначенные работы. Завершите их или попросите поддержку передать.';
+
+  @override
+  String get err_pending_payouts =>
+      'Есть невыплаченная сумма. Удалить аккаунт можно после выплаты.';
+
+  @override
+  String get err_phone_required =>
+      'Подтвердите номер телефона, прежде чем брать работы.';
+
+  @override
   String get cSetupSave => 'Сохранить';
 
   @override

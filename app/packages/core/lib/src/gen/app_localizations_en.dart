@@ -2134,6 +2134,50 @@ class TEn extends T {
   String get cSetupPartnerApp => 'Partner app';
 
   @override
+  String get cSetupPayMethods => 'Payment methods';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Turn the methods customers see on or off. Applies instantly.';
+
+  @override
+  String get cReviewTitle => 'Store review demo account';
+
+  @override
+  String get cReviewHint =>
+      'Reviewers can\'t receive Korean SMS. Put this number and 6-digit code in the review notes. It switches off automatically.';
+
+  @override
+  String get cReviewPhone => 'Demo phone number';
+
+  @override
+  String get cReviewCode => 'Fixed sign-in code (6 digits)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get cReviewEnable => 'Turn on (14 days)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Your team and personal data will be erased. This can\'t be undone. Finish assigned jobs and pending payouts first.';
+
+  @override
+  String get err_has_active_jobs =>
+      'You still have assigned jobs. Finish them or ask support to reassign.';
+
+  @override
+  String get err_pending_payouts =>
+      'A payout is still pending. You can delete the account after it is paid.';
+
+  @override
+  String get err_phone_required =>
+      'Verify your phone number before taking jobs.';
+
+  @override
   String get cSetupSave => 'Save';
 
   @override

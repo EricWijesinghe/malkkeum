@@ -2155,6 +2155,50 @@ class TUz extends T {
   String get cSetupPartnerApp => 'Hamkor ilovasi';
 
   @override
+  String get cSetupPayMethods => 'To\'lov usullari';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Mijozlar ko\'radigan usullarni yoqing yoki o\'chiring. Darhol qo\'llanadi.';
+
+  @override
+  String get cReviewTitle => 'Do\'kon tekshiruvi uchun demo hisob';
+
+  @override
+  String get cReviewHint =>
+      'Tekshiruvchilar Koreya SMS\'ini olmaydi. Raqam va 6 xonali kodni tekshiruv izohiga yozing. O\'zi o\'chadi.';
+
+  @override
+  String get cReviewPhone => 'Demo telefon raqami';
+
+  @override
+  String get cReviewCode => 'Doimiy kod (6 raqam)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '$date gacha faol';
+  }
+
+  @override
+  String get cReviewEnable => 'Yoqish (14 kun)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Jamoangiz va shaxsiy ma\'lumotlar butunlay o\'chiriladi. Avval tayinlangan ishlar va to\'lovlarni yakunlang.';
+
+  @override
+  String get err_has_active_jobs =>
+      'Sizda tayinlangan ishlar bor. Ularni tugating yoki yordamdan o\'tkazishni so\'rang.';
+
+  @override
+  String get err_pending_payouts =>
+      'To\'lov hali kutilmoqda. To\'langandan keyin o\'chirish mumkin.';
+
+  @override
+  String get err_phone_required =>
+      'Ish olishdan oldin telefon raqamingizni tasdiqlang.';
+
+  @override
   String get cSetupSave => 'Saqlash';
 
   @override

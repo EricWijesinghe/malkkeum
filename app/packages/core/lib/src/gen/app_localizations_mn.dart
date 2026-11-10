@@ -2150,6 +2150,50 @@ class TMn extends T {
   String get cSetupPartnerApp => 'Түншийн апп';
 
   @override
+  String get cSetupPayMethods => 'Төлбөрийн арга';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Хэрэглэгчдэд харагдах төлбөрийн аргыг асаах/унтраах. Шууд хэрэгжинэ.';
+
+  @override
+  String get cReviewTitle => 'Дэлгүүрийн шалгалтын демо бүртгэл';
+
+  @override
+  String get cReviewHint =>
+      'Шалгагч Солонгос SMS хүлээж авахгүй. Дугаар болон 6 оронтой кодыг шалгалтын тэмдэглэлд бичнэ үү. Автоматаар унтарна.';
+
+  @override
+  String get cReviewPhone => 'Демо утасны дугаар';
+
+  @override
+  String get cReviewCode => 'Тогтмол код (6 орон)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '$date хүртэл идэвхтэй';
+  }
+
+  @override
+  String get cReviewEnable => 'Асаах (14 хоног)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Таны баг болон хувийн мэдээлэл бүрмөсөн устна. Эхлээд хуваарилсан ажил, үлдэгдэл төлбөрөө дуусгана уу.';
+
+  @override
+  String get err_has_active_jobs =>
+      'Танд хуваарилсан ажил байна. Дуусгах эсвэл тусламжаас шилжүүлэхийг хүснэ үү.';
+
+  @override
+  String get err_pending_payouts =>
+      'Төлөгдөөгүй төлбөр байна. Төлсний дараа устгаж болно.';
+
+  @override
+  String get err_phone_required =>
+      'Ажил авахаас өмнө утасны дугаараа баталгаажуулна уу.';
+
+  @override
   String get cSetupSave => 'Хадгалах';
 
   @override

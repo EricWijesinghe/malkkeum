@@ -34,6 +34,9 @@ extension Labels on T {
         'address_required' => err_address_required,
         'already_taken' => err_already_taken,
         'invalid_address' => err_invalid_address,
+        'has_active_jobs' => err_has_active_jobs,
+        'pending_payouts' => err_pending_payouts,
+        'phone_required' => err_phone_required,
         _ => errorGeneric,
       };
     }

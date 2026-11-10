@@ -115,3 +115,54 @@ async fn customer_cannot_read_setup(pool: PgPool) {
     let (st, _) = call(&app, "GET", "/v1/admin/setup", Some(token.as_str()), None).await;
     assert_eq!(st, StatusCode::FORBIDDEN);
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn review_account_signs_in_with_the_owner_code_and_no_sms_code_is_echoed(pool: PgPool) {
+    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    let app = common::app(pool.clone());
+    create_owner(&app, "ABCD2345EFGH").await;
+    let t = owner_token(&app).await;
+    let (st, b) = call(
+        &app,
+        "PUT",
+        "/v1/admin/setup/review",
+        Some(t.as_str()),
+        Some(json!({"phone": "010-9999-0001", "code": "123456", "days": 7})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/setup/review",
+        Some(t.as_str()),
+        Some(json!({"phone": "010-9999-0001", "code": "12ab"})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+
+    let (_, sent) = call(&app, "POST", "/v1/auth/otp", None, Some(json!({"phone": "010-9999-0001"}))).await;
+    assert!(sent.get("dev_code").is_none_or(Value::is_null), "fixed code is never echoed: {sent}");
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/auth/verify",
+        None,
+        Some(json!({"phone": "010-9999-0001", "code": "123456", "audience": "customer"})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+
+    let (st, _) = call(&app, "DELETE", "/v1/admin/setup/review", Some(t.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK);
+    call(&app, "POST", "/v1/auth/otp", None, Some(json!({"phone": "010-9999-0001"}))).await;
+    let (st, _) = call(
+        &app,
+        "POST",
+        "/v1/auth/verify",
+        None,
+        Some(json!({"phone": "010-9999-0001", "code": "123456", "audience": "customer"})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "switched off: the fixed code no longer works");
+}

@@ -2126,6 +2126,50 @@ class TVi extends T {
   String get cSetupPartnerApp => 'Ứng dụng đối tác';
 
   @override
+  String get cSetupPayMethods => 'Phương thức thanh toán';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'Bật/tắt phương thức khách thấy. Áp dụng ngay.';
+
+  @override
+  String get cReviewTitle => 'Tài khoản demo cho duyệt ứng dụng';
+
+  @override
+  String get cReviewHint =>
+      'Người duyệt không nhận được SMS Hàn Quốc. Ghi số và mã 6 chữ số vào ghi chú duyệt. Tự tắt khi hết hạn.';
+
+  @override
+  String get cReviewPhone => 'Số điện thoại demo';
+
+  @override
+  String get cReviewCode => 'Mã cố định (6 chữ số)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'Dùng được đến $date';
+  }
+
+  @override
+  String get cReviewEnable => 'Bật (14 ngày)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'Nhóm và dữ liệu cá nhân sẽ bị xóa vĩnh viễn. Hãy hoàn tất việc đã nhận và khoản chờ thanh toán trước.';
+
+  @override
+  String get err_has_active_jobs =>
+      'Bạn còn việc đã nhận. Hãy hoàn thành hoặc nhờ hỗ trợ chuyển giao.';
+
+  @override
+  String get err_pending_payouts =>
+      'Còn khoản chờ thanh toán. Có thể xóa sau khi nhận tiền.';
+
+  @override
+  String get err_phone_required =>
+      'Hãy xác minh số điện thoại trước khi nhận việc.';
+
+  @override
   String get cSetupSave => 'Lưu';
 
   @override

@@ -4135,6 +4135,78 @@ abstract class T {
   /// **'파트너 앱'**
   String get cSetupPartnerApp;
 
+  /// No description provided for @cSetupPayMethods.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 수단'**
+  String get cSetupPayMethods;
+
+  /// No description provided for @cSetupPayMethodsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 앱에 보여줄 결제 수단을 켜고 꺼요. 바로 적용돼요.'**
+  String get cSetupPayMethodsHint;
+
+  /// No description provided for @cReviewTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'스토어 심사용 데모 계정'**
+  String get cReviewTitle;
+
+  /// No description provided for @cReviewHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 심사원은 한국 문자를 받을 수 없어요. 아래 번호와 6자리 코드를 심사 메모에 적어 주세요. 기간이 지나면 자동으로 꺼져요.'**
+  String get cReviewHint;
+
+  /// No description provided for @cReviewPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'데모 전화번호'**
+  String get cReviewPhone;
+
+  /// No description provided for @cReviewCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'고정 인증 코드 (숫자 6자리)'**
+  String get cReviewCode;
+
+  /// No description provided for @cReviewActiveUntil.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date}까지 사용 가능'**
+  String cReviewActiveUntil(String date);
+
+  /// No description provided for @cReviewEnable.
+  ///
+  /// In ko, this message translates to:
+  /// **'켜기 (14일)'**
+  String get cReviewEnable;
+
+  /// No description provided for @pDeleteAccountBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀과 개인정보가 삭제되고 되돌릴 수 없어요. 배정된 작업이 있거나 정산이 남아 있으면 먼저 마무리해 주세요.'**
+  String get pDeleteAccountBody;
+
+  /// No description provided for @err_has_active_jobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'배정된 작업이 있어요. 작업을 마치거나 상담원에게 이관을 요청해 주세요.'**
+  String get err_has_active_jobs;
+
+  /// No description provided for @err_pending_payouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 정산이 남아 있어요. 지급이 끝난 뒤 탈퇴할 수 있어요.'**
+  String get err_pending_payouts;
+
+  /// No description provided for @err_phone_required.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업을 받으려면 먼저 휴대폰 번호를 인증해 주세요.'**
+  String get err_phone_required;
+
   /// No description provided for @cSetupSave.
   ///
   /// In ko, this message translates to:

@@ -2095,6 +2095,44 @@ class TZh extends T {
   String get cSetupPartnerApp => '服务者应用';
 
   @override
+  String get cSetupPayMethods => '支付方式';
+
+  @override
+  String get cSetupPayMethodsHint => '开启或关闭客户可见的支付方式，立即生效。';
+
+  @override
+  String get cReviewTitle => '应用审核演示账号';
+
+  @override
+  String get cReviewHint => '审核人员无法接收韩国短信。请把号码和6位验证码写进审核备注，到期自动关闭。';
+
+  @override
+  String get cReviewPhone => '演示电话号码';
+
+  @override
+  String get cReviewCode => '固定验证码（6位数字）';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '有效期至 $date';
+  }
+
+  @override
+  String get cReviewEnable => '开启（14天）';
+
+  @override
+  String get pDeleteAccountBody => '团队和个人信息将被删除且无法恢复。请先完成已分配的作业和待结算款项。';
+
+  @override
+  String get err_has_active_jobs => '您还有已分配的作业，请完成或联系客服转派。';
+
+  @override
+  String get err_pending_payouts => '仍有待结算款项，付款完成后可注销。';
+
+  @override
+  String get err_phone_required => '接单前请先验证手机号。';
+
+  @override
   String get cSetupSave => '保存';
 
   @override

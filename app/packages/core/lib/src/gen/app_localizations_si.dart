@@ -2151,6 +2151,50 @@ class TSi extends T {
   String get cSetupPartnerApp => 'හවුල්කරු යෙදුම';
 
   @override
+  String get cSetupPayMethods => 'ගෙවීම් ක්‍රම';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'පාරිභෝගිකයන්ට පෙනෙන ගෙවීම් ක්‍රම සක්‍රිය/අක්‍රිය කරන්න. වහාම යෙදේ.';
+
+  @override
+  String get cReviewTitle => 'ස්ටෝර් සමාලෝචන ආදර්ශ ගිණුම';
+
+  @override
+  String get cReviewHint =>
+      'සමාලෝචකයින්ට කොරියානු SMS ලැබෙන්නේ නැත. අංකය සහ ඉලක්කම් 6 කේතය සමාලෝචන සටහනේ ලියන්න. ස්වයංක්‍රීයව අක්‍රිය වේ.';
+
+  @override
+  String get cReviewPhone => 'ආදර්ශ දුරකථන අංකය';
+
+  @override
+  String get cReviewCode => 'ස්ථිර කේතය (ඉලක්කම් 6)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return '$date දක්වා සක්‍රිය';
+  }
+
+  @override
+  String get cReviewEnable => 'සක්‍රිය කරන්න (දින 14)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'ඔබේ කණ්ඩායම සහ පුද්ගලික දත්ත ස්ථිරවම මැකේ. පවරා ඇති කාර්ය සහ ඉතිරි ගෙවීම් පළමුව අවසන් කරන්න.';
+
+  @override
+  String get err_has_active_jobs =>
+      'ඔබට පවරා ඇති කාර්ය තිබේ. ඒවා අවසන් කරන්න හෝ සහාය ලබාගන්න.';
+
+  @override
+  String get err_pending_payouts =>
+      'ගෙවීමක් තවම ඉතිරිය. ගෙවූ පසු ගිණුම මැකිය හැක.';
+
+  @override
+  String get err_phone_required =>
+      'කාර්ය ලබා ගැනීමට පෙර දුරකථන අංකය තහවුරු කරන්න.';
+
+  @override
   String get cSetupSave => 'සුරකින්න';
 
   @override

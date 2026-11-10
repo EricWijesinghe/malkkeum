@@ -2142,6 +2142,49 @@ class TTh extends T {
   String get cSetupPartnerApp => 'แอปพาร์ทเนอร์';
 
   @override
+  String get cSetupPayMethods => 'วิธีชำระเงิน';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'เปิดหรือปิดวิธีชำระเงินที่ลูกค้าเห็น มีผลทันที';
+
+  @override
+  String get cReviewTitle => 'บัญชีเดโมสำหรับการตรวจสอบแอป';
+
+  @override
+  String get cReviewHint =>
+      'ผู้ตรวจสอบรับ SMS เกาหลีไม่ได้ ใส่หมายเลขและรหัส 6 หลักในบันทึกการตรวจสอบ ปิดอัตโนมัติเมื่อหมดเวลา';
+
+  @override
+  String get cReviewPhone => 'เบอร์โทรเดโม';
+
+  @override
+  String get cReviewCode => 'รหัสคงที่ (6 หลัก)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'ใช้ได้ถึง $date';
+  }
+
+  @override
+  String get cReviewEnable => 'เปิด (14 วัน)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'ทีมและข้อมูลส่วนตัวจะถูกลบถาวร กรุณาทำงานที่ได้รับและยอดค้างจ่ายให้เสร็จก่อน';
+
+  @override
+  String get err_has_active_jobs =>
+      'คุณยังมีงานที่ได้รับอยู่ ทำให้เสร็จหรือขอให้ฝ่ายบริการโอนงาน';
+
+  @override
+  String get err_pending_payouts =>
+      'ยังมียอดค้างจ่าย ลบบัญชีได้หลังได้รับเงินแล้ว';
+
+  @override
+  String get err_phone_required => 'ยืนยันเบอร์โทรก่อนรับงาน';
+
+  @override
   String get cSetupSave => 'บันทึก';
 
   @override

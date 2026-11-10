@@ -2149,6 +2149,49 @@ class TKm extends T {
   String get cSetupPartnerApp => 'កម្មវិធីដៃគូ';
 
   @override
+  String get cSetupPayMethods => 'វិធីបង់ប្រាក់';
+
+  @override
+  String get cSetupPayMethodsHint =>
+      'បើក ឬបិទវិធីបង់ប្រាក់ដែលអតិថិជនឃើញ។ មានប្រសិទ្ធភាពភ្លាមៗ។';
+
+  @override
+  String get cReviewTitle => 'គណនីសាកល្បងសម្រាប់ការពិនិត្យហាង';
+
+  @override
+  String get cReviewHint =>
+      'អ្នកពិនិត្យមិនអាចទទួល SMS កូរ៉េបានទេ។ សូមសរសេរលេខ និងលេខកូដ ៦ ខ្ទង់ក្នុងកំណត់ចំណាំ។ បិទដោយស្វ័យប្រវត្តិ។';
+
+  @override
+  String get cReviewPhone => 'លេខទូរស័ព្ទសាកល្បង';
+
+  @override
+  String get cReviewCode => 'លេខកូដថេរ (៦ ខ្ទង់)';
+
+  @override
+  String cReviewActiveUntil(String date) {
+    return 'ប្រើបានដល់ $date';
+  }
+
+  @override
+  String get cReviewEnable => 'បើក (១៤ ថ្ងៃ)';
+
+  @override
+  String get pDeleteAccountBody =>
+      'ក្រុម និងទិន្នន័យផ្ទាល់ខ្លួននឹងត្រូវលុបជាអចិន្ត្រៃយ៍។ សូមបញ្ចប់ការងារ និងការទូទាត់ដែលនៅសល់ជាមុន។';
+
+  @override
+  String get err_has_active_jobs =>
+      'អ្នកនៅមានការងារដែលបានចាត់តាំង។ សូមបញ្ចប់ ឬស្នើជំនួយផ្ទេរ។';
+
+  @override
+  String get err_pending_payouts =>
+      'នៅមានការទូទាត់មិនទាន់បង់។ អាចលុបបានបន្ទាប់ពីបង់រួច។';
+
+  @override
+  String get err_phone_required => 'សូមផ្ទៀងផ្ទាត់លេខទូរស័ព្ទមុនទទួលការងារ។';
+
+  @override
   String get cSetupSave => 'រក្សាទុក';
 
   @override
