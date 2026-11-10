@@ -9,6 +9,39 @@ class TFil extends T {
   TFil([String locale = 'fil']) : super(locale);
 
   @override
+  String get aiLabel => 'AI na katulong';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Awtomatikong sumasagot sa chat ng mga customer. May bayad sa API ang bawat mensahe.';
+
+  @override
+  String get aiModeOffline => 'Sumagot lang kapag walang staff';
+
+  @override
+  String get aiModeAlways => 'Laging unang sumasagot ang AI';
+
+  @override
+  String get aiPause => 'I-pause ang AI';
+
+  @override
+  String get aiResume => 'Ipagpatuloy ang AI';
+
+  @override
+  String get aiPausedNote => 'Naka-pause ang AI sa chat na ito';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Mga tawag sa AI ngayong buwan: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'Naka-off ang AI na tagasagot';
+
+  @override
   String get apSocialOr => 'o';
 
   @override
@@ -1698,6 +1731,537 @@ class TFil extends T {
   String get themeTip => 'Palitan ang theme';
 
   @override
+  String get fFinance => 'Pananalapi';
+
+  @override
+  String get fPeriodDay => 'Araw';
+
+  @override
+  String get fPeriodWeek => 'Linggo';
+
+  @override
+  String get fPeriodMonth => 'Buwan';
+
+  @override
+  String get fPeriodCustom => 'Pasadya';
+
+  @override
+  String get fFrom => 'Mula';
+
+  @override
+  String get fTo => 'Hanggang';
+
+  @override
+  String get fGross => 'Kabuuang bayad';
+
+  @override
+  String get fRefunds => 'Refund';
+
+  @override
+  String get fNetRevenue => 'Netong kita';
+
+  @override
+  String get fPlatformFee => 'Bayad sa platform';
+
+  @override
+  String get fPaidOut => 'Nabayaran sa partners';
+
+  @override
+  String get fPendingOut => 'Nakabinbing bayad';
+
+  @override
+  String get fHeldOut => 'Naka-hold';
+
+  @override
+  String get fVatEstimate => 'Tinatayang VAT';
+
+  @override
+  String get fVatNote =>
+      'Tinatayang 10% ng bayad sa platform. Kumpirmahin sa iyong accountant.';
+
+  @override
+  String get fAov => 'Average na order';
+
+  @override
+  String get fBookings => 'Mga booking';
+
+  @override
+  String get fCancelRate => 'Rate ng pagkansela';
+
+  @override
+  String get fDiscounts => 'Diskwento at kupon';
+
+  @override
+  String get fMethods => 'Paraan ng bayad';
+
+  @override
+  String get fTrend => 'Trend';
+
+  @override
+  String fRangeDays(String n) {
+    return 'Nakaraang $n araw';
+  }
+
+  @override
+  String get fRangeWeeks => 'Nakaraang 12 linggo';
+
+  @override
+  String get fRangeMonths => 'Nakaraang 12 buwan';
+
+  @override
+  String get fByPartner => 'Kita kada partner';
+
+  @override
+  String get fByService => 'Kita kada serbisyo';
+
+  @override
+  String get fExportTitle => 'Export para sa accounting';
+
+  @override
+  String get fExportLedger => 'CSV ng talaan ng bayad';
+
+  @override
+  String get fExportSettlements => 'CSV ng settlements';
+
+  @override
+  String get fExportMonthly => 'CSV ng buwanang buod (accountant)';
+
+  @override
+  String get fDownload => 'I-download ang CSV';
+
+  @override
+  String get fDownloadWebOnly => 'Sa web console lang maida-download ang CSV';
+
+  @override
+  String get fDownloadFailed => 'Hindi na-download';
+
+  @override
+  String get fNoRecords => 'Walang record sa panahong ito';
+
+  @override
+  String get fLoadFailed => 'Hindi ma-load ang datos ng pananalapi';
+
+  @override
+  String get fRetry => 'Subukan muli';
+
+  @override
+  String get fColPartner => 'Partner';
+
+  @override
+  String get fColJobs => 'Bilang';
+
+  @override
+  String get fColSettled => 'Kabuuang settled';
+
+  @override
+  String get fColFee => 'Bayad';
+
+  @override
+  String get fColNet => 'Netong bayad';
+
+  @override
+  String get pEarnings => 'Kita';
+
+  @override
+  String get pNextPayout => 'Susunod na bayad';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'Babayaran sa $date';
+  }
+
+  @override
+  String get pNoPayout => 'Walang nakatakdang bayad';
+
+  @override
+  String get pPendingTotal => 'Naghihintay bayaran';
+
+  @override
+  String get pPaidTotal => 'Nabayaran na';
+
+  @override
+  String get pWeekly => 'Lingguhan';
+
+  @override
+  String get pMonthly => 'Buwanan';
+
+  @override
+  String proofHomes(String count) {
+    return '$count bahay ang nalinis ngayong buwan';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Average na $rating bituin · $count review';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Mga kamakailang review';
+
+  @override
+  String get rebookTitle => 'I-book ulit ang huling serbisyo?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · huling bisita $date';
+  }
+
+  @override
+  String get rebookButton => 'I-book ulit';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count na lang ang natitira';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Kumusta ang paglilinis?';
+
+  @override
+  String get reviewPhotosAdd => 'Magdagdag ng larawan';
+
+  @override
+  String get reviewPhotosHint => 'Hanggang 5 larawan';
+
+  @override
+  String get reviewSaved => 'Salamat sa iyong review';
+
+  @override
+  String get reviewPhotoFailed => 'Hindi na-upload ang larawan. Subukan ulit.';
+
+  @override
+  String get referralTitle => 'Mag-imbita ng kaibigan, makakuha ng kupon';
+
+  @override
+  String referralBody(String amount) {
+    return 'Kapag natapos ng kaibigan mo ang unang booking, kayong dalawa ay makakakuha ng $amount na kupon';
+  }
+
+  @override
+  String get referralCopy => 'Kopyahin ang code';
+
+  @override
+  String get referralCopied => 'Nakopya ang referral code';
+
+  @override
+  String get referralClaimTitle => 'May referral code ka ba?';
+
+  @override
+  String get referralClaimField => 'Ilagay ang referral code';
+
+  @override
+  String get referralClaimButton => 'Ilapat';
+
+  @override
+  String get referralClaimed => 'Nailapat ang referral code';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited na inimbita · $rewarded na gantimpala';
+  }
+
+  @override
+  String get err_self_referral => 'Hindi mo magagamit ang sarili mong code';
+
+  @override
+  String get err_referee_already_booked =>
+      'Mailalagay lang ang code bago ang unang booking';
+
+  @override
+  String get err_already_referred => 'May referral code ka na';
+
+  @override
+  String get err_invalid_referral_code => 'Pakitingnan ang referral code';
+
+  @override
+  String get err_referral_disabled => 'Pansamantalang naka-pause ang referral';
+
+  @override
+  String get err_invalid_photos =>
+      'Mga larawang galing sa Malkkeum lang ang maaaring ilakip';
+
+  @override
+  String get welcomeOfferTitle => 'Diskuwento sa unang booking';
+
+  @override
+  String get welcomeOfferBody =>
+      'Awtomatikong ilalapat sa unang booking ng bagong customer. Hindi kasama ang kupon.';
+
+  @override
+  String get offerKindAmount => 'Nakapirmi (won)';
+
+  @override
+  String get offerKindPercent => 'Porsiyento (%)';
+
+  @override
+  String get offerValue => 'Halaga ng diskuwento';
+
+  @override
+  String get offerEnabled => 'Gamitin';
+
+  @override
+  String get offerSaved => 'Na-save';
+
+  @override
+  String get referralSettingsTitle => 'Gantimpala sa referral';
+
+  @override
+  String get referralSettingsBody =>
+      'Ibibigay kapag natapos at nabayaran ang unang booking ng kaibigan. Hinaharang ang sariling referral at paulit na numero.';
+
+  @override
+  String get referralRewardAmount => 'Halaga ng gantimpala (won)';
+
+  @override
+  String get reviewsModerationTitle => 'Pamamahala ng review';
+
+  @override
+  String get reviewHide => 'Itago';
+
+  @override
+  String get reviewShow => 'Ipakita ulit';
+
+  @override
+  String get reviewHiddenTag => 'Nakatago';
+
+  @override
+  String get growthAverageRating => 'Average na rating';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count na review';
+  }
+
+  @override
+  String get growthReferralConversion => 'Conversion ng referral';
+
+  @override
+  String get growthTab => 'Paglago';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded sa $invited';
+  }
+
+  @override
+  String get cOps => 'Katayuan ng sistema';
+
+  @override
+  String get oLevelGreen => 'Maayos';
+
+  @override
+  String get oLevelYellow => 'Tingnan';
+
+  @override
+  String get oLevelRed => 'Kailangan ng aksyon';
+
+  @override
+  String get oOverall => 'Katayuan ng server';
+
+  @override
+  String get oRefresh => 'I-refresh';
+
+  @override
+  String get oVersion => 'Bersyon';
+
+  @override
+  String get oUptime => 'Tagal ng pagtakbo';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours oras $minutes minuto';
+  }
+
+  @override
+  String get oChecks => 'Mga tseke';
+
+  @override
+  String get oCheckDb => 'Database';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Tugon $ms ms · laki $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Disk ng server';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% ang bakante';
+  }
+
+  @override
+  String get oCheckBackup => 'Awtomatikong backup';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Huling backup $hours oras na ang nakalipas';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Wala pang backup';
+
+  @override
+  String get oCheckErrors => 'Error ng server (24 oras)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Bayad na dapat tingnan';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 oras)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Abiso ng bayad (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Maling pirma $count (24 oras)';
+  }
+
+  @override
+  String get oIntegrations => 'Mga external na serbisyo';
+
+  @override
+  String get oIntNotSet => 'Hindi pa naka-set up';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Huling tagumpay $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Huling pagkabigo $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Wala pang gumamit';
+
+  @override
+  String get oActDb =>
+      'Hindi makakonekta sa database. Patakbuhin ang malkkeum logs sa server; i-restart kung paulit-ulit.';
+
+  @override
+  String get oActDisk =>
+      'Wala pang 10% ang bakanteng disk. Burahin ang lumang backup o dagdagan ang disk.';
+
+  @override
+  String get oActBackup =>
+      'Lampas na sa oras ang awtomatikong backup. Patakbuhin ang malkkeum backup sa server at tingnan ang backups/backup.log.';
+
+  @override
+  String get oActErrors =>
+      'Maraming error ng server. Tingnan ang error sa malkkeum logs at ipasa sa developer kung paulit-ulit.';
+
+  @override
+  String get oActPayments =>
+      'Maaaring nabayaran na pero hindi naproseso nang awtomatiko. Tingnan sa PortOne at mag-refund nang manwal kung kailangan.';
+
+  @override
+  String get oActWebhook =>
+      'Pumapalya ang pagsusuri ng pirma ng abiso ng bayad. Ilagay muli ang webhook secret sa Setup > Payments (PortOne).';
+
+  @override
+  String get oActIntegration =>
+      'Pumapalya ang koneksyon na ito. Tingnan ang mga key sa Setup at pindutin ang Test connection.';
+
+  @override
+  String get oActNotSet =>
+      'Hindi pa naka-set up. Maglagay ng mga key sa Setup.';
+
+  @override
+  String get oAlerts => 'Mga setting ng alerto';
+
+  @override
+  String get oAlertsHint =>
+      'Ipapaalam sa inbox at sa telepono ng may-ari sa SMS ang mga problema. Isang beses lang kada 6 na oras ang parehong problema.';
+
+  @override
+  String get oRuleSms => 'Pumapalya ang pagpapadala ng SMS';
+
+  @override
+  String get oRulePush => 'Pumapalya ang push notification';
+
+  @override
+  String get oRulePayment => 'Pumapalya ang koneksyon sa bayad';
+
+  @override
+  String get oRuleStuck => 'Hindi awtomatikong naproseso ang bayad';
+
+  @override
+  String get oRuleSocial => 'Pumapalya ang social sign-in';
+
+  @override
+  String get oRuleBackup => 'Nalaktawan ang awtomatikong backup';
+
+  @override
+  String get oRuleDisk => 'Halos puno ang disk';
+
+  @override
+  String get oQuietHours => 'Tahimik na oras';
+
+  @override
+  String get oQuietFrom => 'Mula';
+
+  @override
+  String get oQuietTo => 'Hanggang';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'Walang alerto sa mga oras na ito; isang mensahe ang ipapadala pagkatapos.';
+
+  @override
+  String get oAlertPhone => 'Telepono para sa alerto';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Iwanang blangko para sa numero ng suporta sa business info.';
+
+  @override
+  String get oSave => 'I-save';
+
+  @override
+  String get oSaved => 'Na-save ang mga setting ng alerto';
+
+  @override
+  String get oSaveFailed => 'Hindi na-save. Suriin ang mga inilagay.';
+
+  @override
+  String get oLoadFailed => 'Hindi ma-load ang katayuan';
+
+  @override
+  String get oBackupOffsite => 'External na backup (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Naka-off. I-on sa Setup > External na backup.';
+
+  @override
+  String get oLastBackup => 'Huling backup';
+
+  @override
+  String get oDiskFree => 'Bakanteng espasyo';
+
+  @override
+  String get oNoData => 'Wala pang datos';
+
+  @override
+  String get cIntBackup => 'External na backup (S3-compatible)';
+
+  @override
   String get pTabJobs => 'Trabaho';
 
   @override
@@ -2330,6 +2894,49 @@ class TFil extends T {
 
   @override
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'May bagong bersyon $version';
+  }
+
+  @override
+  String get uUpdateNow => 'I-update';
+
+  @override
+  String get uUpdateLater => 'Mamaya';
+
+  @override
+  String get uUpdateRequiredTitle => 'Kailangan ng bagong bersyon';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Hindi na suportado ang bersyong ito. Mag-update mula sa tindahan para magpatuloy.';
+
+  @override
+  String get uUpdateStore => 'Mag-update sa tindahan';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Inihahanda pa ang link ng update. Subukan ulit mamaya.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Kasalukuyang bersyon $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Mga bersyon ng app';
+
+  @override
+  String get uAppVersionHint =>
+      'Hihinto sa screen ng update ang app na mas mababa sa minimum. Makakakita ng banner ang mas luma sa pinakabago. Halimbawa: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Pinakamababang bersyon';
+
+  @override
+  String get uLatestVersion => 'Pinakabagong bersyon';
 
   @override
   String get webBookNow => 'Mag-book sa web';

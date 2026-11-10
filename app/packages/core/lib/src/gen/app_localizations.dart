@@ -121,6 +121,66 @@ abstract class T {
     Locale('zh'),
   ];
 
+  /// No description provided for @aiLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담원'**
+  String get aiLabel;
+
+  /// No description provided for @aiBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI'**
+  String get aiBadge;
+
+  /// No description provided for @aiCardHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 채팅에 자동으로 답변해요. 메시지마다 API 요금이 발생해요.'**
+  String get aiCardHint;
+
+  /// No description provided for @aiModeOffline.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담원이 없을 때만 답변'**
+  String get aiModeOffline;
+
+  /// No description provided for @aiModeAlways.
+  ///
+  /// In ko, this message translates to:
+  /// **'항상 AI가 먼저 답변'**
+  String get aiModeAlways;
+
+  /// No description provided for @aiPause.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 일시중지'**
+  String get aiPause;
+
+  /// No description provided for @aiResume.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 재개'**
+  String get aiResume;
+
+  /// No description provided for @aiPausedNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI가 이 대화에 답변하지 않아요'**
+  String get aiPausedNote;
+
+  /// No description provided for @aiUsageMonth.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 AI 호출 {count}회'**
+  String aiUsageMonth(String count);
+
+  /// No description provided for @aiNotConfigured.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담원이 꺼져 있어요'**
+  String get aiNotConfigured;
+
   /// No description provided for @apSocialOr.
   ///
   /// In ko, this message translates to:
@@ -3265,6 +3325,954 @@ abstract class T {
   /// **'테마 바꾸기'**
   String get themeTip;
 
+  /// No description provided for @fFinance.
+  ///
+  /// In ko, this message translates to:
+  /// **'재무'**
+  String get fFinance;
+
+  /// No description provided for @fPeriodDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'일'**
+  String get fPeriodDay;
+
+  /// No description provided for @fPeriodWeek.
+  ///
+  /// In ko, this message translates to:
+  /// **'주'**
+  String get fPeriodWeek;
+
+  /// No description provided for @fPeriodMonth.
+  ///
+  /// In ko, this message translates to:
+  /// **'월'**
+  String get fPeriodMonth;
+
+  /// No description provided for @fPeriodCustom.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간'**
+  String get fPeriodCustom;
+
+  /// No description provided for @fFrom.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get fFrom;
+
+  /// No description provided for @fTo.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료'**
+  String get fTo;
+
+  /// No description provided for @fGross.
+  ///
+  /// In ko, this message translates to:
+  /// **'총결제액'**
+  String get fGross;
+
+  /// No description provided for @fRefunds.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불'**
+  String get fRefunds;
+
+  /// No description provided for @fNetRevenue.
+  ///
+  /// In ko, this message translates to:
+  /// **'순매출'**
+  String get fNetRevenue;
+
+  /// No description provided for @fPlatformFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'플랫폼 수수료'**
+  String get fPlatformFee;
+
+  /// No description provided for @fPaidOut.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 지급 완료'**
+  String get fPaidOut;
+
+  /// No description provided for @fPendingOut.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 예정'**
+  String get fPendingOut;
+
+  /// No description provided for @fHeldOut.
+  ///
+  /// In ko, this message translates to:
+  /// **'보류'**
+  String get fHeldOut;
+
+  /// No description provided for @fVatEstimate.
+  ///
+  /// In ko, this message translates to:
+  /// **'부가세 추정'**
+  String get fVatEstimate;
+
+  /// No description provided for @fVatNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'플랫폼 수수료의 10%로 계산한 추정치예요. 세무사와 확인하세요.'**
+  String get fVatNote;
+
+  /// No description provided for @fAov.
+  ///
+  /// In ko, this message translates to:
+  /// **'평균 주문액'**
+  String get fAov;
+
+  /// No description provided for @fBookings.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get fBookings;
+
+  /// No description provided for @fCancelRate.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소율'**
+  String get fCancelRate;
+
+  /// No description provided for @fDiscounts.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인·쿠폰'**
+  String get fDiscounts;
+
+  /// No description provided for @fMethods.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제수단'**
+  String get fMethods;
+
+  /// No description provided for @fTrend.
+  ///
+  /// In ko, this message translates to:
+  /// **'추이'**
+  String get fTrend;
+
+  /// No description provided for @fRangeDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 {n}일'**
+  String fRangeDays(String n);
+
+  /// No description provided for @fRangeWeeks.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 12주'**
+  String get fRangeWeeks;
+
+  /// No description provided for @fRangeMonths.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 12개월'**
+  String get fRangeMonths;
+
+  /// No description provided for @fByPartner.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너별 정산'**
+  String get fByPartner;
+
+  /// No description provided for @fByService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스별 매출'**
+  String get fByService;
+
+  /// No description provided for @fExportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'회계 자료 내려받기'**
+  String get fExportTitle;
+
+  /// No description provided for @fExportLedger.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 원장 CSV'**
+  String get fExportLedger;
+
+  /// No description provided for @fExportSettlements.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 내역 CSV'**
+  String get fExportSettlements;
+
+  /// No description provided for @fExportMonthly.
+  ///
+  /// In ko, this message translates to:
+  /// **'월별 요약 CSV (세무사용)'**
+  String get fExportMonthly;
+
+  /// No description provided for @fDownload.
+  ///
+  /// In ko, this message translates to:
+  /// **'CSV 내려받기'**
+  String get fDownload;
+
+  /// No description provided for @fDownloadWebOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'CSV 내려받기는 웹 콘솔에서 할 수 있어요'**
+  String get fDownloadWebOnly;
+
+  /// No description provided for @fDownloadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'내려받지 못했어요'**
+  String get fDownloadFailed;
+
+  /// No description provided for @fNoRecords.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기간에 기록이 없어요'**
+  String get fNoRecords;
+
+  /// No description provided for @fLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'재무 자료를 불러오지 못했어요'**
+  String get fLoadFailed;
+
+  /// No description provided for @fRetry.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get fRetry;
+
+  /// No description provided for @fColPartner.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너'**
+  String get fColPartner;
+
+  /// No description provided for @fColJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'건수'**
+  String get fColJobs;
+
+  /// No description provided for @fColSettled.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 총액'**
+  String get fColSettled;
+
+  /// No description provided for @fColFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료'**
+  String get fColFee;
+
+  /// No description provided for @fColNet.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급액'**
+  String get fColNet;
+
+  /// No description provided for @pEarnings.
+  ///
+  /// In ko, this message translates to:
+  /// **'수입'**
+  String get pEarnings;
+
+  /// No description provided for @pNextPayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 지급'**
+  String get pNextPayout;
+
+  /// No description provided for @pNextPayoutOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date} 지급 예정'**
+  String pNextPayoutOn(String date);
+
+  /// No description provided for @pNoPayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'예정된 지급이 없어요'**
+  String get pNoPayout;
+
+  /// No description provided for @pPendingTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 대기'**
+  String get pPendingTotal;
+
+  /// No description provided for @pPaidTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 완료'**
+  String get pPaidTotal;
+
+  /// No description provided for @pWeekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'주간'**
+  String get pWeekly;
+
+  /// No description provided for @pMonthly.
+  ///
+  /// In ko, this message translates to:
+  /// **'월간'**
+  String get pMonthly;
+
+  /// No description provided for @proofHomes.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 {count}집을 청소했어요'**
+  String proofHomes(String count);
+
+  /// No description provided for @proofRating.
+  ///
+  /// In ko, this message translates to:
+  /// **'평균 평점 {rating}점 · 후기 {count}개'**
+  String proofRating(String rating, String count);
+
+  /// No description provided for @proofReviewsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 후기'**
+  String get proofReviewsTitle;
+
+  /// No description provided for @rebookTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'지난번 서비스를 다시 예약할까요?'**
+  String get rebookTitle;
+
+  /// No description provided for @rebookBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{service} · 지난 방문 {date}'**
+  String rebookBody(String service, String date);
+
+  /// No description provided for @rebookButton.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 예약하기'**
+  String get rebookButton;
+
+  /// No description provided for @seatsLeft.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}자리 남음'**
+  String seatsLeft(String count);
+
+  /// No description provided for @reviewSheetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 청소는 어떠셨나요?'**
+  String get reviewSheetTitle;
+
+  /// No description provided for @reviewPhotosAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 추가'**
+  String get reviewPhotosAdd;
+
+  /// No description provided for @reviewPhotosHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진은 최대 5장까지 올릴 수 있어요'**
+  String get reviewPhotosHint;
+
+  /// No description provided for @reviewSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기를 남겨 주셔서 고마워요'**
+  String get reviewSaved;
+
+  /// No description provided for @reviewPhotoFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진을 올리지 못했어요. 다시 시도해 주세요.'**
+  String get reviewPhotoFailed;
+
+  /// No description provided for @referralTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구를 초대하면 쿠폰을 드려요'**
+  String get referralTitle;
+
+  /// No description provided for @referralBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구가 첫 예약을 마치면 두 분 모두 {amount} 쿠폰을 받아요'**
+  String referralBody(String amount);
+
+  /// No description provided for @referralCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'코드 복사'**
+  String get referralCopy;
+
+  /// No description provided for @referralCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 코드를 복사했어요'**
+  String get referralCopied;
+
+  /// No description provided for @referralClaimTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 코드가 있나요?'**
+  String get referralClaimTitle;
+
+  /// No description provided for @referralClaimField.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 코드 입력'**
+  String get referralClaimField;
+
+  /// No description provided for @referralClaimButton.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록'**
+  String get referralClaimButton;
+
+  /// No description provided for @referralClaimed.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 코드가 등록됐어요'**
+  String get referralClaimed;
+
+  /// No description provided for @referralStats.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 {invited}명 · 보상 {rewarded}건'**
+  String referralStats(String invited, String rewarded);
+
+  /// No description provided for @err_self_referral.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 추천 코드는 쓸 수 없어요'**
+  String get err_self_referral;
+
+  /// No description provided for @err_referee_already_booked.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 이후에는 추천 코드를 등록할 수 없어요'**
+  String get err_referee_already_booked;
+
+  /// No description provided for @err_already_referred.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 추천 코드를 등록했어요'**
+  String get err_already_referred;
+
+  /// No description provided for @err_invalid_referral_code.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 코드를 확인해 주세요'**
+  String get err_invalid_referral_code;
+
+  /// No description provided for @err_referral_disabled.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 친구 추천을 받지 않아요'**
+  String get err_referral_disabled;
+
+  /// No description provided for @err_invalid_photos.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진은 말끔이 올린 파일만 첨부할 수 있어요'**
+  String get err_invalid_photos;
+
+  /// No description provided for @welcomeOfferTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 예약 할인'**
+  String get welcomeOfferTitle;
+
+  /// No description provided for @welcomeOfferBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'신규 고객의 첫 예약에 자동으로 적용돼요. 쿠폰과는 중복되지 않아요.'**
+  String get welcomeOfferBody;
+
+  /// No description provided for @offerKindAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'정액(원)'**
+  String get offerKindAmount;
+
+  /// No description provided for @offerKindPercent.
+  ///
+  /// In ko, this message translates to:
+  /// **'정률(%)'**
+  String get offerKindPercent;
+
+  /// No description provided for @offerValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인 값'**
+  String get offerValue;
+
+  /// No description provided for @offerEnabled.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용'**
+  String get offerEnabled;
+
+  /// No description provided for @offerSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get offerSaved;
+
+  /// No description provided for @referralSettingsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 추천 보상'**
+  String get referralSettingsTitle;
+
+  /// No description provided for @referralSettingsBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구가 첫 예약을 완료하고 결제까지 끝나면 지급돼요. 본인 추천, 같은 번호 중복은 막아요.'**
+  String get referralSettingsBody;
+
+  /// No description provided for @referralRewardAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'보상 금액(원)'**
+  String get referralRewardAmount;
+
+  /// No description provided for @reviewsModerationTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 관리'**
+  String get reviewsModerationTitle;
+
+  /// No description provided for @reviewHide.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨기기'**
+  String get reviewHide;
+
+  /// No description provided for @reviewShow.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 보이기'**
+  String get reviewShow;
+
+  /// No description provided for @reviewHiddenTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨김'**
+  String get reviewHiddenTag;
+
+  /// No description provided for @growthAverageRating.
+  ///
+  /// In ko, this message translates to:
+  /// **'평균 평점'**
+  String get growthAverageRating;
+
+  /// No description provided for @growthReviewCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 {count}개'**
+  String growthReviewCount(String count);
+
+  /// No description provided for @growthReferralConversion.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 추천 전환'**
+  String get growthReferralConversion;
+
+  /// No description provided for @growthTab.
+  ///
+  /// In ko, this message translates to:
+  /// **'성장'**
+  String get growthTab;
+
+  /// No description provided for @growthReferralValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{rewarded}/{invited}명'**
+  String growthReferralValue(String rewarded, String invited);
+
+  /// No description provided for @cOps.
+  ///
+  /// In ko, this message translates to:
+  /// **'시스템 상태'**
+  String get cOps;
+
+  /// No description provided for @oLevelGreen.
+  ///
+  /// In ko, this message translates to:
+  /// **'정상'**
+  String get oLevelGreen;
+
+  /// No description provided for @oLevelYellow.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 필요'**
+  String get oLevelYellow;
+
+  /// No description provided for @oLevelRed.
+  ///
+  /// In ko, this message translates to:
+  /// **'조치 필요'**
+  String get oLevelRed;
+
+  /// No description provided for @oOverall.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 상태'**
+  String get oOverall;
+
+  /// No description provided for @oRefresh.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로고침'**
+  String get oRefresh;
+
+  /// No description provided for @oVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'버전'**
+  String get oVersion;
+
+  /// No description provided for @oUptime.
+  ///
+  /// In ko, this message translates to:
+  /// **'가동 시간'**
+  String get oUptime;
+
+  /// No description provided for @oUptimeValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{hours}시간 {minutes}분'**
+  String oUptimeValue(String hours, String minutes);
+
+  /// No description provided for @oChecks.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 항목'**
+  String get oChecks;
+
+  /// No description provided for @oCheckDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터베이스'**
+  String get oCheckDb;
+
+  /// No description provided for @oCheckDbValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'응답 {ms}ms · 용량 {mb}MB'**
+  String oCheckDbValue(String ms, String mb);
+
+  /// No description provided for @oCheckDisk.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 디스크'**
+  String get oCheckDisk;
+
+  /// No description provided for @oCheckDiskValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'여유 {pct}%'**
+  String oCheckDiskValue(String pct);
+
+  /// No description provided for @oCheckBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 백업'**
+  String get oCheckBackup;
+
+  /// No description provided for @oCheckBackupValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 백업 {hours}시간 전'**
+  String oCheckBackupValue(String hours);
+
+  /// No description provided for @oCheckBackupNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'백업 기록이 없어요'**
+  String get oCheckBackupNone;
+
+  /// No description provided for @oCheckErrors.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 오류 (24시간)'**
+  String get oCheckErrors;
+
+  /// No description provided for @oCheckErrorsValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}건'**
+  String oCheckErrorsValue(String count);
+
+  /// No description provided for @oCheckPayments.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 확인 필요'**
+  String get oCheckPayments;
+
+  /// No description provided for @oCheckPaymentsValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}건 (24시간)'**
+  String oCheckPaymentsValue(String count);
+
+  /// No description provided for @oCheckWebhook.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 알림 (웹훅)'**
+  String get oCheckWebhook;
+
+  /// No description provided for @oCheckWebhookValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명 실패 {count}건 (24시간)'**
+  String oCheckWebhookValue(String count);
+
+  /// No description provided for @oIntegrations.
+  ///
+  /// In ko, this message translates to:
+  /// **'외부 서비스'**
+  String get oIntegrations;
+
+  /// No description provided for @oIntNotSet.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 안 됨'**
+  String get oIntNotSet;
+
+  /// No description provided for @oIntLastOk.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 성공 {at}'**
+  String oIntLastOk(String at);
+
+  /// No description provided for @oIntLastFail.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 실패 {at} ({code})'**
+  String oIntLastFail(String at, String code);
+
+  /// No description provided for @oIntNever.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 사용 기록이 없어요'**
+  String get oIntNever;
+
+  /// No description provided for @oActDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터베이스에 연결하지 못했어요. 서버에서 malkkeum logs 로 원인을 보고, 계속되면 서버를 재시작하세요.'**
+  String get oActDb;
+
+  /// No description provided for @oActDisk.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 여유 공간이 10% 아래예요. 오래된 백업 파일을 지우거나 서버 디스크를 늘려 주세요.'**
+  String get oActDisk;
+
+  /// No description provided for @oActBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 백업이 오래됐어요. 서버에서 malkkeum backup 을 실행하고 backups/backup.log 를 확인하세요.'**
+  String get oActBackup;
+
+  /// No description provided for @oActErrors.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 오류가 많아요. malkkeum logs 에서 error 줄을 확인하고, 반복되면 개발사에 전달하세요.'**
+  String get oActErrors;
+
+  /// No description provided for @oActPayments.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제는 됐지만 자동 처리가 안 됐을 수 있어요. PortOne 관리자 화면에서 해당 결제를 확인하고 필요하면 직접 환불하세요.'**
+  String get oActPayments;
+
+  /// No description provided for @oActWebhook.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 알림의 서명 검사가 실패했어요. 설정 > 결제(PortOne)에서 웹훅 시크릿을 다시 입력하세요.'**
+  String get oActWebhook;
+
+  /// No description provided for @oActIntegration.
+  ///
+  /// In ko, this message translates to:
+  /// **'연동이 실패하고 있어요. 설정 화면에서 키를 다시 확인하고 [연결 테스트] 를 누르세요.'**
+  String get oActIntegration;
+
+  /// No description provided for @oActNotSet.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 설정되지 않았어요. 설정 화면에서 키를 입력하세요.'**
+  String get oActNotSet;
+
+  /// No description provided for @oAlerts.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 설정'**
+  String get oAlerts;
+
+  /// No description provided for @oAlertsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'문제가 생기면 상담함과 사장님 휴대폰(문자)으로 알려 드려요. 같은 문제는 6시간에 한 번만 보내요.'**
+  String get oAlertsHint;
+
+  /// No description provided for @oRuleSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자(SMS) 발송 실패'**
+  String get oRuleSms;
+
+  /// No description provided for @oRulePush.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 알림(푸시) 실패'**
+  String get oRulePush;
+
+  /// No description provided for @oRulePayment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 연동 실패'**
+  String get oRulePayment;
+
+  /// No description provided for @oRuleStuck.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 자동 처리 실패'**
+  String get oRuleStuck;
+
+  /// No description provided for @oRuleSocial.
+  ///
+  /// In ko, this message translates to:
+  /// **'소셜 로그인 실패'**
+  String get oRuleSocial;
+
+  /// No description provided for @oRuleBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 백업 누락'**
+  String get oRuleBackup;
+
+  /// No description provided for @oRuleDisk.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 부족'**
+  String get oRuleDisk;
+
+  /// No description provided for @oQuietHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'조용한 시간'**
+  String get oQuietHours;
+
+  /// No description provided for @oQuietFrom.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get oQuietFrom;
+
+  /// No description provided for @oQuietTo.
+  ///
+  /// In ko, this message translates to:
+  /// **'끝'**
+  String get oQuietTo;
+
+  /// No description provided for @oHour.
+  ///
+  /// In ko, this message translates to:
+  /// **'{hour}시'**
+  String oHour(String hour);
+
+  /// No description provided for @oQuietHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 시간에는 알림을 보내지 않고, 끝난 뒤에 한 번 알려 드려요.'**
+  String get oQuietHint;
+
+  /// No description provided for @oAlertPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 받을 휴대폰'**
+  String get oAlertPhone;
+
+  /// No description provided for @oAlertPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'비워 두면 사업자 정보의 고객센터 번호로 보내요.'**
+  String get oAlertPhoneHint;
+
+  /// No description provided for @oSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get oSave;
+
+  /// No description provided for @oSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 설정을 저장했어요'**
+  String get oSaved;
+
+  /// No description provided for @oSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하지 못했어요. 입력값을 확인해 주세요.'**
+  String get oSaveFailed;
+
+  /// No description provided for @oLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태를 불러오지 못했어요'**
+  String get oLoadFailed;
+
+  /// No description provided for @oBackupOffsite.
+  ///
+  /// In ko, this message translates to:
+  /// **'외부 백업 (S3)'**
+  String get oBackupOffsite;
+
+  /// No description provided for @oBackupOffsiteOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'꺼져 있어요. 설정 > 외부 백업 에서 켤 수 있어요.'**
+  String get oBackupOffsiteOff;
+
+  /// No description provided for @oLastBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 백업'**
+  String get oLastBackup;
+
+  /// No description provided for @oDiskFree.
+  ///
+  /// In ko, this message translates to:
+  /// **'여유 공간'**
+  String get oDiskFree;
+
+  /// No description provided for @oNoData.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 데이터가 없어요'**
+  String get oNoData;
+
+  /// No description provided for @cIntBackup.
+  ///
+  /// In ko, this message translates to:
+  /// **'외부 백업 (S3 호환)'**
+  String get cIntBackup;
+
   /// No description provided for @pTabJobs.
   ///
   /// In ko, this message translates to:
@@ -4440,6 +5448,78 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
+
+  /// No description provided for @uUpdateBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 버전 {version}이 나왔어요'**
+  String uUpdateBanner(String version);
+
+  /// No description provided for @uUpdateNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트'**
+  String get uUpdateNow;
+
+  /// No description provided for @uUpdateLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get uUpdateLater;
+
+  /// No description provided for @uUpdateRequiredTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 버전이 필요해요'**
+  String get uUpdateRequiredTitle;
+
+  /// No description provided for @uUpdateRequiredBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 버전은 더 이상 쓸 수 없어요. 스토어에서 최신 버전으로 업데이트해 주세요.'**
+  String get uUpdateRequiredBody;
+
+  /// No description provided for @uUpdateStore.
+  ///
+  /// In ko, this message translates to:
+  /// **'스토어에서 업데이트'**
+  String get uUpdateStore;
+
+  /// No description provided for @uUpdateStoreMissing.
+  ///
+  /// In ko, this message translates to:
+  /// **'업데이트 주소를 준비 중이에요. 잠시 후 다시 열어 주세요.'**
+  String get uUpdateStoreMissing;
+
+  /// No description provided for @uCurrentVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 버전 {version}'**
+  String uCurrentVersion(String version);
+
+  /// No description provided for @uAppVersionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 버전 관리'**
+  String get uAppVersionTitle;
+
+  /// No description provided for @uAppVersionHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0'**
+  String get uAppVersionHint;
+
+  /// No description provided for @uMinVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 버전'**
+  String get uMinVersion;
+
+  /// No description provided for @uLatestVersion.
+  ///
+  /// In ko, this message translates to:
+  /// **'최신 버전'**
+  String get uLatestVersion;
 
   /// No description provided for @webBookNow.
   ///

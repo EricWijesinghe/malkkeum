@@ -9,6 +9,38 @@ class TZh extends T {
   TZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get aiLabel => 'AI 助手';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint => '自动回复客户聊天。每条消息都会产生 API 费用。';
+
+  @override
+  String get aiModeOffline => '仅在无人值班时回答';
+
+  @override
+  String get aiModeAlways => '始终由 AI 先回答';
+
+  @override
+  String get aiPause => '暂停 AI';
+
+  @override
+  String get aiResume => '恢复 AI';
+
+  @override
+  String get aiPausedNote => '此对话已暂停 AI';
+
+  @override
+  String aiUsageMonth(String count) {
+    return '本月 AI 调用 $count 次';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI 客服未开启';
+
+  @override
   String get apSocialOr => '或';
 
   @override
@@ -1648,6 +1680,521 @@ class TZh extends T {
   String get themeTip => '切换主题';
 
   @override
+  String get fFinance => '财务';
+
+  @override
+  String get fPeriodDay => '日';
+
+  @override
+  String get fPeriodWeek => '周';
+
+  @override
+  String get fPeriodMonth => '月';
+
+  @override
+  String get fPeriodCustom => '自定义';
+
+  @override
+  String get fFrom => '开始';
+
+  @override
+  String get fTo => '结束';
+
+  @override
+  String get fGross => '总支付额';
+
+  @override
+  String get fRefunds => '退款';
+
+  @override
+  String get fNetRevenue => '净收入';
+
+  @override
+  String get fPlatformFee => '平台手续费';
+
+  @override
+  String get fPaidOut => '已支付合作方';
+
+  @override
+  String get fPendingOut => '待支付';
+
+  @override
+  String get fHeldOut => '暂缓';
+
+  @override
+  String get fVatEstimate => '增值税（估算）';
+
+  @override
+  String get fVatNote => '按平台手续费的10%估算，请与会计师确认。';
+
+  @override
+  String get fAov => '平均订单额';
+
+  @override
+  String get fBookings => '预约';
+
+  @override
+  String get fCancelRate => '取消率';
+
+  @override
+  String get fDiscounts => '折扣与优惠券';
+
+  @override
+  String get fMethods => '支付方式';
+
+  @override
+  String get fTrend => '趋势';
+
+  @override
+  String fRangeDays(String n) {
+    return '最近$n天';
+  }
+
+  @override
+  String get fRangeWeeks => '最近12周';
+
+  @override
+  String get fRangeMonths => '最近12个月';
+
+  @override
+  String get fByPartner => '按合作方结算';
+
+  @override
+  String get fByService => '按服务统计收入';
+
+  @override
+  String get fExportTitle => '会计数据导出';
+
+  @override
+  String get fExportLedger => '支付台账 CSV';
+
+  @override
+  String get fExportSettlements => '结算明细 CSV';
+
+  @override
+  String get fExportMonthly => '月度汇总 CSV（会计用）';
+
+  @override
+  String get fDownload => '下载 CSV';
+
+  @override
+  String get fDownloadWebOnly => 'CSV 下载请在网页控制台进行';
+
+  @override
+  String get fDownloadFailed => '下载失败';
+
+  @override
+  String get fNoRecords => '此期间没有记录';
+
+  @override
+  String get fLoadFailed => '无法加载财务数据';
+
+  @override
+  String get fRetry => '重试';
+
+  @override
+  String get fColPartner => '合作方';
+
+  @override
+  String get fColJobs => '单数';
+
+  @override
+  String get fColSettled => '结算总额';
+
+  @override
+  String get fColFee => '手续费';
+
+  @override
+  String get fColNet => '净额';
+
+  @override
+  String get pEarnings => '收入';
+
+  @override
+  String get pNextPayout => '下次结算';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date结算';
+  }
+
+  @override
+  String get pNoPayout => '暂无结算安排';
+
+  @override
+  String get pPendingTotal => '待结算';
+
+  @override
+  String get pPaidTotal => '已结算';
+
+  @override
+  String get pWeekly => '每周';
+
+  @override
+  String get pMonthly => '每月';
+
+  @override
+  String proofHomes(String count) {
+    return '本月已清洁 $count 户';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return '平均 $rating 分 · $count 条评价';
+  }
+
+  @override
+  String get proofReviewsTitle => '最近评价';
+
+  @override
+  String get rebookTitle => '要再次预约上次的服务吗？';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · 上次 $date';
+  }
+
+  @override
+  String get rebookButton => '再次预约';
+
+  @override
+  String seatsLeft(String count) {
+    return '剩余$count个名额';
+  }
+
+  @override
+  String get reviewSheetTitle => '这次清洁怎么样？';
+
+  @override
+  String get reviewPhotosAdd => '添加照片';
+
+  @override
+  String get reviewPhotosHint => '最多可上传 5 张照片';
+
+  @override
+  String get reviewSaved => '感谢您的评价';
+
+  @override
+  String get reviewPhotoFailed => '照片上传失败，请重试';
+
+  @override
+  String get referralTitle => '邀请好友，各得优惠券';
+
+  @override
+  String referralBody(String amount) {
+    return '好友完成首单后，你们各得 $amount 优惠券';
+  }
+
+  @override
+  String get referralCopy => '复制代码';
+
+  @override
+  String get referralCopied => '推荐码已复制';
+
+  @override
+  String get referralClaimTitle => '有推荐码吗？';
+
+  @override
+  String get referralClaimField => '输入推荐码';
+
+  @override
+  String get referralClaimButton => '提交';
+
+  @override
+  String get referralClaimed => '推荐码已提交';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '已邀请 $invited 人 · 已发放 $rewarded 次';
+  }
+
+  @override
+  String get err_self_referral => '不能使用自己的推荐码';
+
+  @override
+  String get err_referee_already_booked => '首单之后无法填写推荐码';
+
+  @override
+  String get err_already_referred => '已经填写过推荐码';
+
+  @override
+  String get err_invalid_referral_code => '请检查推荐码';
+
+  @override
+  String get err_referral_disabled => '目前暂不接受好友推荐';
+
+  @override
+  String get err_invalid_photos => '只能附加通过平台上传的照片';
+
+  @override
+  String get welcomeOfferTitle => '首单优惠';
+
+  @override
+  String get welcomeOfferBody => '新客户首单自动适用，不与优惠券叠加。';
+
+  @override
+  String get offerKindAmount => '固定金额（韩元）';
+
+  @override
+  String get offerKindPercent => '百分比（%）';
+
+  @override
+  String get offerValue => '优惠值';
+
+  @override
+  String get offerEnabled => '启用';
+
+  @override
+  String get offerSaved => '已保存';
+
+  @override
+  String get referralSettingsTitle => '好友推荐奖励';
+
+  @override
+  String get referralSettingsBody => '好友首单完成并付款后发放。禁止自我推荐和重复手机号。';
+
+  @override
+  String get referralRewardAmount => '奖励金额（韩元）';
+
+  @override
+  String get reviewsModerationTitle => '评价管理';
+
+  @override
+  String get reviewHide => '隐藏';
+
+  @override
+  String get reviewShow => '重新显示';
+
+  @override
+  String get reviewHiddenTag => '已隐藏';
+
+  @override
+  String get growthAverageRating => '平均评分';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count 条评价';
+  }
+
+  @override
+  String get growthReferralConversion => '推荐转化';
+
+  @override
+  String get growthTab => '增长';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded/$invited 人';
+  }
+
+  @override
+  String get cOps => '系统状态';
+
+  @override
+  String get oLevelGreen => '正常';
+
+  @override
+  String get oLevelYellow => '需关注';
+
+  @override
+  String get oLevelRed => '需处理';
+
+  @override
+  String get oOverall => '服务器状态';
+
+  @override
+  String get oRefresh => '刷新';
+
+  @override
+  String get oVersion => '版本';
+
+  @override
+  String get oUptime => '运行时间';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours小时$minutes分';
+  }
+
+  @override
+  String get oChecks => '检查项目';
+
+  @override
+  String get oCheckDb => '数据库';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return '响应 ${ms}ms・容量 ${mb}MB';
+  }
+
+  @override
+  String get oCheckDisk => '服务器磁盘';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '剩余 $pct%';
+  }
+
+  @override
+  String get oCheckBackup => '自动备份';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return '上次备份 $hours 小时前';
+  }
+
+  @override
+  String get oCheckBackupNone => '没有备份记录';
+
+  @override
+  String get oCheckErrors => '服务器错误（24小时）';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count次';
+  }
+
+  @override
+  String get oCheckPayments => '待核对的支付';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count笔（24小时）';
+  }
+
+  @override
+  String get oCheckWebhook => '支付通知（Webhook）';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return '签名失败 $count次（24小时）';
+  }
+
+  @override
+  String get oIntegrations => '外部服务';
+
+  @override
+  String get oIntNotSet => '未设置';
+
+  @override
+  String oIntLastOk(String at) {
+    return '上次成功 $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return '上次失败 $at（$code）';
+  }
+
+  @override
+  String get oIntNever => '暂无使用记录';
+
+  @override
+  String get oActDb => '无法连接数据库。在服务器运行 malkkeum logs 查看原因，持续出现请重启服务器。';
+
+  @override
+  String get oActDisk => '磁盘剩余不足10%。请删除旧备份文件或扩大磁盘。';
+
+  @override
+  String get oActBackup =>
+      '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
+
+  @override
+  String get oActErrors => '服务器错误较多。请在 malkkeum logs 中查看 error 行，反复出现请反馈给开发方。';
+
+  @override
+  String get oActPayments => '部分支付可能已成功但未自动处理。请在 PortOne 后台核对，必要时手动退款。';
+
+  @override
+  String get oActWebhook => '支付通知签名校验失败。请在 设置 > 支付（PortOne）中重新输入 Webhook 密钥。';
+
+  @override
+  String get oActIntegration => '连接失败。请在设置页面检查密钥并点击 [连接测试]。';
+
+  @override
+  String get oActNotSet => '尚未设置。请在设置页面输入密钥。';
+
+  @override
+  String get oAlerts => '提醒设置';
+
+  @override
+  String get oAlertsHint => '出现问题时会通知咨询箱，并短信发送到店主手机。同一问题每6小时只发一次。';
+
+  @override
+  String get oRuleSms => '短信发送失败';
+
+  @override
+  String get oRulePush => '推送失败';
+
+  @override
+  String get oRulePayment => '支付连接失败';
+
+  @override
+  String get oRuleStuck => '支付未自动处理';
+
+  @override
+  String get oRuleSocial => '社交登录失败';
+
+  @override
+  String get oRuleBackup => '自动备份缺失';
+
+  @override
+  String get oRuleDisk => '磁盘不足';
+
+  @override
+  String get oQuietHours => '勿扰时段';
+
+  @override
+  String get oQuietFrom => '开始';
+
+  @override
+  String get oQuietTo => '结束';
+
+  @override
+  String oHour(String hour) {
+    return '$hour点';
+  }
+
+  @override
+  String get oQuietHint => '这段时间不发送提醒，结束后发送一次。';
+
+  @override
+  String get oAlertPhone => '接收提醒的手机';
+
+  @override
+  String get oAlertPhoneHint => '留空则发送到商家信息中的客服号码。';
+
+  @override
+  String get oSave => '保存';
+
+  @override
+  String get oSaved => '提醒设置已保存';
+
+  @override
+  String get oSaveFailed => '保存失败，请检查输入内容。';
+
+  @override
+  String get oLoadFailed => '无法加载状态';
+
+  @override
+  String get oBackupOffsite => '异地备份（S3）';
+
+  @override
+  String get oBackupOffsiteOff => '未开启。可在 设置 > 异地备份 中开启。';
+
+  @override
+  String get oLastBackup => '上次备份';
+
+  @override
+  String get oDiskFree => '剩余空间';
+
+  @override
+  String get oNoData => '暂无数据';
+
+  @override
+  String get cIntBackup => '异地备份（S3 兼容）';
+
+  @override
   String get pTabJobs => '接单';
 
   @override
@@ -2252,6 +2799,46 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String uUpdateBanner(String version) {
+    return '新版本 $version 已发布';
+  }
+
+  @override
+  String get uUpdateNow => '更新';
+
+  @override
+  String get uUpdateLater => '稍后';
+
+  @override
+  String get uUpdateRequiredTitle => '需要更新';
+
+  @override
+  String get uUpdateRequiredBody => '此版本已不再支持，请从应用商店更新到最新版本。';
+
+  @override
+  String get uUpdateStore => '前往应用商店更新';
+
+  @override
+  String get uUpdateStoreMissing => '更新链接尚未准备好，请稍后再试。';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '当前版本 $version';
+  }
+
+  @override
+  String get uAppVersionTitle => '应用版本管理';
+
+  @override
+  String get uAppVersionHint => '低于最低版本的应用会停在更新页面；低于最新版本则显示提示横幅。格式：1.2.0';
+
+  @override
+  String get uMinVersion => '最低版本';
+
+  @override
+  String get uLatestVersion => '最新版本';
 
   @override
   String get webBookNow => '网页直接预约';

@@ -9,6 +9,38 @@ class TKo extends T {
   TKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get aiLabel => 'AI 상담원';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint => '고객 채팅에 자동으로 답변해요. 메시지마다 API 요금이 발생해요.';
+
+  @override
+  String get aiModeOffline => '상담원이 없을 때만 답변';
+
+  @override
+  String get aiModeAlways => '항상 AI가 먼저 답변';
+
+  @override
+  String get aiPause => 'AI 일시중지';
+
+  @override
+  String get aiResume => 'AI 재개';
+
+  @override
+  String get aiPausedNote => 'AI가 이 대화에 답변하지 않아요';
+
+  @override
+  String aiUsageMonth(String count) {
+    return '이번 달 AI 호출 $count회';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI 상담원이 꺼져 있어요';
+
+  @override
   String get apSocialOr => '또는';
 
   @override
@@ -1651,6 +1683,528 @@ class TKo extends T {
   String get themeTip => '테마 바꾸기';
 
   @override
+  String get fFinance => '재무';
+
+  @override
+  String get fPeriodDay => '일';
+
+  @override
+  String get fPeriodWeek => '주';
+
+  @override
+  String get fPeriodMonth => '월';
+
+  @override
+  String get fPeriodCustom => '기간';
+
+  @override
+  String get fFrom => '시작';
+
+  @override
+  String get fTo => '종료';
+
+  @override
+  String get fGross => '총결제액';
+
+  @override
+  String get fRefunds => '환불';
+
+  @override
+  String get fNetRevenue => '순매출';
+
+  @override
+  String get fPlatformFee => '플랫폼 수수료';
+
+  @override
+  String get fPaidOut => '파트너 지급 완료';
+
+  @override
+  String get fPendingOut => '지급 예정';
+
+  @override
+  String get fHeldOut => '보류';
+
+  @override
+  String get fVatEstimate => '부가세 추정';
+
+  @override
+  String get fVatNote => '플랫폼 수수료의 10%로 계산한 추정치예요. 세무사와 확인하세요.';
+
+  @override
+  String get fAov => '평균 주문액';
+
+  @override
+  String get fBookings => '예약';
+
+  @override
+  String get fCancelRate => '취소율';
+
+  @override
+  String get fDiscounts => '할인·쿠폰';
+
+  @override
+  String get fMethods => '결제수단';
+
+  @override
+  String get fTrend => '추이';
+
+  @override
+  String fRangeDays(String n) {
+    return '최근 $n일';
+  }
+
+  @override
+  String get fRangeWeeks => '최근 12주';
+
+  @override
+  String get fRangeMonths => '최근 12개월';
+
+  @override
+  String get fByPartner => '파트너별 정산';
+
+  @override
+  String get fByService => '서비스별 매출';
+
+  @override
+  String get fExportTitle => '회계 자료 내려받기';
+
+  @override
+  String get fExportLedger => '결제 원장 CSV';
+
+  @override
+  String get fExportSettlements => '정산 내역 CSV';
+
+  @override
+  String get fExportMonthly => '월별 요약 CSV (세무사용)';
+
+  @override
+  String get fDownload => 'CSV 내려받기';
+
+  @override
+  String get fDownloadWebOnly => 'CSV 내려받기는 웹 콘솔에서 할 수 있어요';
+
+  @override
+  String get fDownloadFailed => '내려받지 못했어요';
+
+  @override
+  String get fNoRecords => '이 기간에 기록이 없어요';
+
+  @override
+  String get fLoadFailed => '재무 자료를 불러오지 못했어요';
+
+  @override
+  String get fRetry => '다시 시도';
+
+  @override
+  String get fColPartner => '파트너';
+
+  @override
+  String get fColJobs => '건수';
+
+  @override
+  String get fColSettled => '정산 총액';
+
+  @override
+  String get fColFee => '수수료';
+
+  @override
+  String get fColNet => '지급액';
+
+  @override
+  String get pEarnings => '수입';
+
+  @override
+  String get pNextPayout => '다음 지급';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date 지급 예정';
+  }
+
+  @override
+  String get pNoPayout => '예정된 지급이 없어요';
+
+  @override
+  String get pPendingTotal => '지급 대기';
+
+  @override
+  String get pPaidTotal => '지급 완료';
+
+  @override
+  String get pWeekly => '주간';
+
+  @override
+  String get pMonthly => '월간';
+
+  @override
+  String proofHomes(String count) {
+    return '이번 달 $count집을 청소했어요';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return '평균 평점 $rating점 · 후기 $count개';
+  }
+
+  @override
+  String get proofReviewsTitle => '최근 후기';
+
+  @override
+  String get rebookTitle => '지난번 서비스를 다시 예약할까요?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · 지난 방문 $date';
+  }
+
+  @override
+  String get rebookButton => '다시 예약하기';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count자리 남음';
+  }
+
+  @override
+  String get reviewSheetTitle => '이번 청소는 어떠셨나요?';
+
+  @override
+  String get reviewPhotosAdd => '사진 추가';
+
+  @override
+  String get reviewPhotosHint => '사진은 최대 5장까지 올릴 수 있어요';
+
+  @override
+  String get reviewSaved => '후기를 남겨 주셔서 고마워요';
+
+  @override
+  String get reviewPhotoFailed => '사진을 올리지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get referralTitle => '친구를 초대하면 쿠폰을 드려요';
+
+  @override
+  String referralBody(String amount) {
+    return '친구가 첫 예약을 마치면 두 분 모두 $amount 쿠폰을 받아요';
+  }
+
+  @override
+  String get referralCopy => '코드 복사';
+
+  @override
+  String get referralCopied => '추천 코드를 복사했어요';
+
+  @override
+  String get referralClaimTitle => '추천 코드가 있나요?';
+
+  @override
+  String get referralClaimField => '추천 코드 입력';
+
+  @override
+  String get referralClaimButton => '등록';
+
+  @override
+  String get referralClaimed => '추천 코드가 등록됐어요';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '초대 $invited명 · 보상 $rewarded건';
+  }
+
+  @override
+  String get err_self_referral => '내 추천 코드는 쓸 수 없어요';
+
+  @override
+  String get err_referee_already_booked => '예약 이후에는 추천 코드를 등록할 수 없어요';
+
+  @override
+  String get err_already_referred => '이미 추천 코드를 등록했어요';
+
+  @override
+  String get err_invalid_referral_code => '추천 코드를 확인해 주세요';
+
+  @override
+  String get err_referral_disabled => '지금은 친구 추천을 받지 않아요';
+
+  @override
+  String get err_invalid_photos => '사진은 말끔이 올린 파일만 첨부할 수 있어요';
+
+  @override
+  String get welcomeOfferTitle => '첫 예약 할인';
+
+  @override
+  String get welcomeOfferBody => '신규 고객의 첫 예약에 자동으로 적용돼요. 쿠폰과는 중복되지 않아요.';
+
+  @override
+  String get offerKindAmount => '정액(원)';
+
+  @override
+  String get offerKindPercent => '정률(%)';
+
+  @override
+  String get offerValue => '할인 값';
+
+  @override
+  String get offerEnabled => '사용';
+
+  @override
+  String get offerSaved => '저장했어요';
+
+  @override
+  String get referralSettingsTitle => '친구 추천 보상';
+
+  @override
+  String get referralSettingsBody =>
+      '친구가 첫 예약을 완료하고 결제까지 끝나면 지급돼요. 본인 추천, 같은 번호 중복은 막아요.';
+
+  @override
+  String get referralRewardAmount => '보상 금액(원)';
+
+  @override
+  String get reviewsModerationTitle => '후기 관리';
+
+  @override
+  String get reviewHide => '숨기기';
+
+  @override
+  String get reviewShow => '다시 보이기';
+
+  @override
+  String get reviewHiddenTag => '숨김';
+
+  @override
+  String get growthAverageRating => '평균 평점';
+
+  @override
+  String growthReviewCount(String count) {
+    return '후기 $count개';
+  }
+
+  @override
+  String get growthReferralConversion => '친구 추천 전환';
+
+  @override
+  String get growthTab => '성장';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded/$invited명';
+  }
+
+  @override
+  String get cOps => '시스템 상태';
+
+  @override
+  String get oLevelGreen => '정상';
+
+  @override
+  String get oLevelYellow => '확인 필요';
+
+  @override
+  String get oLevelRed => '조치 필요';
+
+  @override
+  String get oOverall => '서버 상태';
+
+  @override
+  String get oRefresh => '새로고침';
+
+  @override
+  String get oVersion => '버전';
+
+  @override
+  String get oUptime => '가동 시간';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours시간 $minutes분';
+  }
+
+  @override
+  String get oChecks => '점검 항목';
+
+  @override
+  String get oCheckDb => '데이터베이스';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return '응답 ${ms}ms · 용량 ${mb}MB';
+  }
+
+  @override
+  String get oCheckDisk => '서버 디스크';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '여유 $pct%';
+  }
+
+  @override
+  String get oCheckBackup => '자동 백업';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return '마지막 백업 $hours시간 전';
+  }
+
+  @override
+  String get oCheckBackupNone => '백업 기록이 없어요';
+
+  @override
+  String get oCheckErrors => '서버 오류 (24시간)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count건';
+  }
+
+  @override
+  String get oCheckPayments => '결제 확인 필요';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count건 (24시간)';
+  }
+
+  @override
+  String get oCheckWebhook => '결제 알림 (웹훅)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return '서명 실패 $count건 (24시간)';
+  }
+
+  @override
+  String get oIntegrations => '외부 서비스';
+
+  @override
+  String get oIntNotSet => '설정 안 됨';
+
+  @override
+  String oIntLastOk(String at) {
+    return '마지막 성공 $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return '마지막 실패 $at ($code)';
+  }
+
+  @override
+  String get oIntNever => '아직 사용 기록이 없어요';
+
+  @override
+  String get oActDb =>
+      '데이터베이스에 연결하지 못했어요. 서버에서 malkkeum logs 로 원인을 보고, 계속되면 서버를 재시작하세요.';
+
+  @override
+  String get oActDisk => '디스크 여유 공간이 10% 아래예요. 오래된 백업 파일을 지우거나 서버 디스크를 늘려 주세요.';
+
+  @override
+  String get oActBackup =>
+      '자동 백업이 오래됐어요. 서버에서 malkkeum backup 을 실행하고 backups/backup.log 를 확인하세요.';
+
+  @override
+  String get oActErrors =>
+      '서버 오류가 많아요. malkkeum logs 에서 error 줄을 확인하고, 반복되면 개발사에 전달하세요.';
+
+  @override
+  String get oActPayments =>
+      '결제는 됐지만 자동 처리가 안 됐을 수 있어요. PortOne 관리자 화면에서 해당 결제를 확인하고 필요하면 직접 환불하세요.';
+
+  @override
+  String get oActWebhook =>
+      '결제 알림의 서명 검사가 실패했어요. 설정 > 결제(PortOne)에서 웹훅 시크릿을 다시 입력하세요.';
+
+  @override
+  String get oActIntegration =>
+      '연동이 실패하고 있어요. 설정 화면에서 키를 다시 확인하고 [연결 테스트] 를 누르세요.';
+
+  @override
+  String get oActNotSet => '아직 설정되지 않았어요. 설정 화면에서 키를 입력하세요.';
+
+  @override
+  String get oAlerts => '알림 설정';
+
+  @override
+  String get oAlertsHint =>
+      '문제가 생기면 상담함과 사장님 휴대폰(문자)으로 알려 드려요. 같은 문제는 6시간에 한 번만 보내요.';
+
+  @override
+  String get oRuleSms => '문자(SMS) 발송 실패';
+
+  @override
+  String get oRulePush => '앱 알림(푸시) 실패';
+
+  @override
+  String get oRulePayment => '결제 연동 실패';
+
+  @override
+  String get oRuleStuck => '결제 자동 처리 실패';
+
+  @override
+  String get oRuleSocial => '소셜 로그인 실패';
+
+  @override
+  String get oRuleBackup => '자동 백업 누락';
+
+  @override
+  String get oRuleDisk => '디스크 부족';
+
+  @override
+  String get oQuietHours => '조용한 시간';
+
+  @override
+  String get oQuietFrom => '시작';
+
+  @override
+  String get oQuietTo => '끝';
+
+  @override
+  String oHour(String hour) {
+    return '$hour시';
+  }
+
+  @override
+  String get oQuietHint => '이 시간에는 알림을 보내지 않고, 끝난 뒤에 한 번 알려 드려요.';
+
+  @override
+  String get oAlertPhone => '알림 받을 휴대폰';
+
+  @override
+  String get oAlertPhoneHint => '비워 두면 사업자 정보의 고객센터 번호로 보내요.';
+
+  @override
+  String get oSave => '저장';
+
+  @override
+  String get oSaved => '알림 설정을 저장했어요';
+
+  @override
+  String get oSaveFailed => '저장하지 못했어요. 입력값을 확인해 주세요.';
+
+  @override
+  String get oLoadFailed => '상태를 불러오지 못했어요';
+
+  @override
+  String get oBackupOffsite => '외부 백업 (S3)';
+
+  @override
+  String get oBackupOffsiteOff => '꺼져 있어요. 설정 > 외부 백업 에서 켤 수 있어요.';
+
+  @override
+  String get oLastBackup => '마지막 백업';
+
+  @override
+  String get oDiskFree => '여유 공간';
+
+  @override
+  String get oNoData => '아직 데이터가 없어요';
+
+  @override
+  String get cIntBackup => '외부 백업 (S3 호환)';
+
+  @override
   String get pTabJobs => '일감';
 
   @override
@@ -2259,6 +2813,48 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String uUpdateBanner(String version) {
+    return '새 버전 $version이 나왔어요';
+  }
+
+  @override
+  String get uUpdateNow => '업데이트';
+
+  @override
+  String get uUpdateLater => '나중에';
+
+  @override
+  String get uUpdateRequiredTitle => '새 버전이 필요해요';
+
+  @override
+  String get uUpdateRequiredBody =>
+      '이 버전은 더 이상 쓸 수 없어요. 스토어에서 최신 버전으로 업데이트해 주세요.';
+
+  @override
+  String get uUpdateStore => '스토어에서 업데이트';
+
+  @override
+  String get uUpdateStoreMissing => '업데이트 주소를 준비 중이에요. 잠시 후 다시 열어 주세요.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '현재 버전 $version';
+  }
+
+  @override
+  String get uAppVersionTitle => '앱 버전 관리';
+
+  @override
+  String get uAppVersionHint =>
+      '최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0';
+
+  @override
+  String get uMinVersion => '최소 버전';
+
+  @override
+  String get uLatestVersion => '최신 버전';
 
   @override
   String get webBookNow => '웹에서 바로 예약';

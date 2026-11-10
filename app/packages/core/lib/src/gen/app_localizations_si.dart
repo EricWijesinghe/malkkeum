@@ -9,6 +9,39 @@ class TSi extends T {
   TSi([String locale = 'si']) : super(locale);
 
   @override
+  String get aiLabel => 'AI සහායක';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'පාරිභෝගික කථාවලට ස්වයංක්‍රීයව පිළිතුරු දෙයි. සෑම පණිවිඩයකටම API ගාස්තු අයවේ.';
+
+  @override
+  String get aiModeOffline => 'කාර්ය මණ්ඩලය නැති විට පමණක් පිළිතුරු දෙයි';
+
+  @override
+  String get aiModeAlways => 'AI සෑම විටම පළමුව පිළිතුරු දෙයි';
+
+  @override
+  String get aiPause => 'AI විරාම ගන්වන්න';
+
+  @override
+  String get aiResume => 'AI නැවත ආරම්භ කරන්න';
+
+  @override
+  String get aiPausedNote => 'මෙම කථාවට AI විරාම ගන්වා ඇත';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'මෙම මාසයේ AI ඇමතුම්: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI සහායක ක්‍රියාවිරහිතයි';
+
+  @override
   String get apSocialOr => 'හෝ';
 
   @override
@@ -1693,6 +1726,536 @@ class TSi extends T {
   String get themeTip => 'තේමාව වෙනස් කරන්න';
 
   @override
+  String get fFinance => 'මූල්‍ය';
+
+  @override
+  String get fPeriodDay => 'දිනය';
+
+  @override
+  String get fPeriodWeek => 'සතිය';
+
+  @override
+  String get fPeriodMonth => 'මාසය';
+
+  @override
+  String get fPeriodCustom => 'රිතිය';
+
+  @override
+  String get fFrom => 'සිට';
+
+  @override
+  String get fTo => 'දක්වා';
+
+  @override
+  String get fGross => 'මුළු ගෙවීම්';
+
+  @override
+  String get fRefunds => 'ආපසු ගෙවීම්';
+
+  @override
+  String get fNetRevenue => 'ශුද්ධ ආදායම';
+
+  @override
+  String get fPlatformFee => 'වේදිකා ගාස්තුව';
+
+  @override
+  String get fPaidOut => 'හවුල්කරුවන්ට ගෙවූ';
+
+  @override
+  String get fPendingOut => 'ගෙවීම් බලාපොරොත්තුවෙන්';
+
+  @override
+  String get fHeldOut => 'රඳවා ඇත';
+
+  @override
+  String get fVatEstimate => 'VAT ඇස්තමේන්තුව';
+
+  @override
+  String get fVatNote =>
+      'වේදිකා ගාස්තුවෙන් 10%ක ඇස්තමේන්තුවකි. ගණකාධිකාරී සමඟ තහවුරු කරන්න.';
+
+  @override
+  String get fAov => 'සාමාන්‍ය ඇණවුම් අගය';
+
+  @override
+  String get fBookings => 'වෙන්කිරීම්';
+
+  @override
+  String get fCancelRate => 'අවලංගු කිරීමේ අනුපාතය';
+
+  @override
+  String get fDiscounts => 'වට්ටම් සහ කූපන්';
+
+  @override
+  String get fMethods => 'ගෙවීම් ක්‍රම';
+
+  @override
+  String get fTrend => 'ප්‍රවණතාව';
+
+  @override
+  String fRangeDays(String n) {
+    return 'අවසන් දින $n';
+  }
+
+  @override
+  String get fRangeWeeks => 'අවසන් සති 12';
+
+  @override
+  String get fRangeMonths => 'අවසන් මාස 12';
+
+  @override
+  String get fByPartner => 'හවුල්කරුවා අනුව ඉපයීම්';
+
+  @override
+  String get fByService => 'සේවාව අනුව ආදායම';
+
+  @override
+  String get fExportTitle => 'ගිණුම්කරණ නිර්යාත';
+
+  @override
+  String get fExportLedger => 'ගෙවීම් ලෙජරය CSV';
+
+  @override
+  String get fExportSettlements => 'පියවීම් CSV';
+
+  @override
+  String get fExportMonthly => 'මාසික සාරාංශය CSV (ගණකාධිකාරී)';
+
+  @override
+  String get fDownload => 'CSV බාගන්න';
+
+  @override
+  String get fDownloadWebOnly => 'CSV බාගත හැක්කේ වෙබ් කොන්සෝලයෙන්';
+
+  @override
+  String get fDownloadFailed => 'බාගත කළ නොහැකි විය';
+
+  @override
+  String get fNoRecords => 'මෙම කාලයේ වාර්තා නැත';
+
+  @override
+  String get fLoadFailed => 'මූල්‍ය දත්ත පූරණය කළ නොහැකි විය';
+
+  @override
+  String get fRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get fColPartner => 'හවුල්කරු';
+
+  @override
+  String get fColJobs => 'ගණන';
+
+  @override
+  String get fColSettled => 'මුළු පියවීම';
+
+  @override
+  String get fColFee => 'ගාස්තුව';
+
+  @override
+  String get fColNet => 'ශුද්ධ';
+
+  @override
+  String get pEarnings => 'ඉපයීම්';
+
+  @override
+  String get pNextPayout => 'ඊළඟ ගෙවීම';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date ගෙවීම';
+  }
+
+  @override
+  String get pNoPayout => 'නියමිත ගෙවීම් නැත';
+
+  @override
+  String get pPendingTotal => 'ගෙවීමට බලාපොරොත්තුවෙන්';
+
+  @override
+  String get pPaidTotal => 'ගෙවා ඇත';
+
+  @override
+  String get pWeekly => 'සතිපතා';
+
+  @override
+  String get pMonthly => 'මාසික';
+
+  @override
+  String proofHomes(String count) {
+    return 'මෙ මාසයේ නිවාස $countක් පිරිසිදු කළා';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'සාමාන්‍ය තරු $rating · සමාලෝචන $count';
+  }
+
+  @override
+  String get proofReviewsTitle => 'මෑත සමාලෝචන';
+
+  @override
+  String get rebookTitle => 'පසුගිය සේවාව නැවත වෙන් කරන්නද?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · අවසන් පැමිණීම $date';
+  }
+
+  @override
+  String get rebookButton => 'නැවත වෙන් කරන්න';
+
+  @override
+  String seatsLeft(String count) {
+    return 'ඉතිරි ස්ථාන $countයි';
+  }
+
+  @override
+  String get reviewSheetTitle => 'මෙම පිරිසිදු කිරීම කෙසේ වීද?';
+
+  @override
+  String get reviewPhotosAdd => 'ඡායාරූප එක් කරන්න';
+
+  @override
+  String get reviewPhotosHint => 'ඡායාරූප 5 දක්වා';
+
+  @override
+  String get reviewSaved => 'සමාලෝචනයට ස්තූතියි';
+
+  @override
+  String get reviewPhotoFailed =>
+      'ඡායාරූපය උඩුගත කළ නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get referralTitle => 'මිතුරෙකු ආරාධනා කර කූපනයක් ලබාගන්න';
+
+  @override
+  String referralBody(String amount) {
+    return 'මිතුරා පළමු වෙන්කිරීම නිම කළ විට ඔබ දෙදෙනාටම $amount කූපනයක් ලැබේ';
+  }
+
+  @override
+  String get referralCopy => 'කේතය පිටපත් කරන්න';
+
+  @override
+  String get referralCopied => 'යොමු කේතය පිටපත් කළා';
+
+  @override
+  String get referralClaimTitle => 'යොමු කේතයක් තිබේද?';
+
+  @override
+  String get referralClaimField => 'යොමු කේතය ඇතුළත් කරන්න';
+
+  @override
+  String get referralClaimButton => 'යොදන්න';
+
+  @override
+  String get referralClaimed => 'යොමු කේතය යොදන ලදී';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return 'ආරාධනා $invited · ප්‍රතිලාභ $rewarded';
+  }
+
+  @override
+  String get err_self_referral => 'ඔබේම කේතය භාවිත කළ නොහැක';
+
+  @override
+  String get err_referee_already_booked =>
+      'පළමු වෙන්කිරීමට පෙර පමණක් කේතය ඇතුළත් කළ හැක';
+
+  @override
+  String get err_already_referred => 'යොමු කේතය දැනටමත් යොදා ඇත';
+
+  @override
+  String get err_invalid_referral_code => 'යොමු කේතය පරීක්ෂා කරන්න';
+
+  @override
+  String get err_referral_disabled => 'දැනට යොමු කිරීම් විරාම කර ඇත';
+
+  @override
+  String get err_invalid_photos =>
+      'Malkkeum හරහා උඩුගත කළ ඡායාරූප පමණක් අමුණන්න පුළුවන්';
+
+  @override
+  String get welcomeOfferTitle => 'පළමු වෙන්කිරීම් වට්ටම';
+
+  @override
+  String get welcomeOfferBody =>
+      'නව පාරිභෝගිකයාගේ පළමු වෙන්කිරීමට ස්වයංක්‍රීයව යොදයි. කූපන සමග එකතු නොවේ.';
+
+  @override
+  String get offerKindAmount => 'ස්ථිර (වොන්)';
+
+  @override
+  String get offerKindPercent => 'ප්‍රතිශතය (%)';
+
+  @override
+  String get offerValue => 'වට්ටම් අගය';
+
+  @override
+  String get offerEnabled => 'ක්‍රියාත්මක';
+
+  @override
+  String get offerSaved => 'සුරකින ලදී';
+
+  @override
+  String get referralSettingsTitle => 'යොමු කිරීමේ ප්‍රතිලාභය';
+
+  @override
+  String get referralSettingsBody =>
+      'මිතුරාගේ පළමු වෙන්කිරීම නිම වී ගෙවූ පසු ලබා දේ. ස්වයං-යොමු සහ එකම දුරකථන අංකය අවහිර වේ.';
+
+  @override
+  String get referralRewardAmount => 'ප්‍රතිලාභ මුදල (වොන්)';
+
+  @override
+  String get reviewsModerationTitle => 'සමාලෝචන මෙහෙයවීම';
+
+  @override
+  String get reviewHide => 'සඟවන්න';
+
+  @override
+  String get reviewShow => 'නැවත පෙන්වන්න';
+
+  @override
+  String get reviewHiddenTag => 'සඟවා ඇත';
+
+  @override
+  String get growthAverageRating => 'සාමාන්‍ය ශ්‍රේණිය';
+
+  @override
+  String growthReviewCount(String count) {
+    return 'සමාලෝචන $count';
+  }
+
+  @override
+  String get growthReferralConversion => 'යොමු පරිවර්තනය';
+
+  @override
+  String get growthTab => 'වර්ධනය';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$invited න් $rewarded';
+  }
+
+  @override
+  String get cOps => 'පද්ධති තත්ත්වය';
+
+  @override
+  String get oLevelGreen => 'සාමාන්‍යයි';
+
+  @override
+  String get oLevelYellow => 'පරීක්ෂා කරන්න';
+
+  @override
+  String get oLevelRed => 'ක්‍රියාමාර්ගය අවශ්‍යයි';
+
+  @override
+  String get oOverall => 'සේවාදායක තත්ත්වය';
+
+  @override
+  String get oRefresh => 'නැවුම් කරන්න';
+
+  @override
+  String get oVersion => 'අනුවාදය';
+
+  @override
+  String get oUptime => 'ක්‍රියාත්මක කාලය';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return 'පැය $hours මිනිත්තු $minutes';
+  }
+
+  @override
+  String get oChecks => 'පරීක්ෂා';
+
+  @override
+  String get oCheckDb => 'දත්ත ගබඩාව';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'ප්‍රතිචාරය $ms ms · ප්‍රමාණය $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'සේවාදායක තැටිය';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% නිදහස්';
+  }
+
+  @override
+  String get oCheckBackup => 'ස්වයංක්‍රීය උපස්ථය';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'අවසන් උපස්ථය පැය $hours කට පෙර';
+  }
+
+  @override
+  String get oCheckBackupNone => 'උපස්ථ තවම නැත';
+
+  @override
+  String get oCheckErrors => 'සේවාදායක දෝෂ (පැය 24)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'පරීක්ෂා කළ යුතු ගෙවීම්';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (පැය 24)';
+  }
+
+  @override
+  String get oCheckWebhook => 'ගෙවීම් දැනුම්දීම් (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'අත්සන් අසමත් $count (පැය 24)';
+  }
+
+  @override
+  String get oIntegrations => 'බාහිර සේවා';
+
+  @override
+  String get oIntNotSet => 'සකසා නැත';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'අවසන් සාර්ථකත්වය $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'අවසන් අසමත්වීම $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'භාවිතයක් තවම නැත';
+
+  @override
+  String get oActDb =>
+      'දත්ත ගබඩාවට සම්බන්ධ විය නොහැක. සේවාදායකයේ malkkeum logs ධාවනය කරන්න; දිගටම නම් නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get oActDisk =>
+      'තැටියේ නිදහස් ඉඩ 10% ට අඩුයි. පැරණි උපස්ථ මකන්න හෝ තැටිය වැඩි කරන්න.';
+
+  @override
+  String get oActBackup =>
+      'ස්වයංක්‍රීය උපස්ථය ප්‍රමාද වී ඇත. සේවාදායකයේ malkkeum backup ධාවනය කර backups/backup.log පරීක්ෂා කරන්න.';
+
+  @override
+  String get oActErrors =>
+      'සේවාදායක දෝෂ බොහොමයි. malkkeum logs හි error පේළි බලා නැවත නැවත වේ නම් සංවර්ධකයාට යවන්න.';
+
+  @override
+  String get oActPayments =>
+      'ගෙවීම සිදු වී ඇති නමුත් ස්වයංක්‍රීයව සකසා නැත. PortOne හි පරීක්ෂා කර අවශ්‍ය නම් අතින් ආපසු ගෙවන්න.';
+
+  @override
+  String get oActWebhook =>
+      'ගෙවීම් දැනුම්දීමේ අත්සන් පරීක්ෂාව අසමත් වේ. සැකසුම් > ගෙවීම් (PortOne) හි webhook secret නැවත ඇතුළු කරන්න.';
+
+  @override
+  String get oActIntegration =>
+      'මෙම සම්බන්ධතාවය අසමත් වේ. සැකසුම් හි යතුරු පරීක්ෂා කර Test connection ඔබන්න.';
+
+  @override
+  String get oActNotSet => 'තවම සකසා නැත. සැකසුම් හි යතුරු ඇතුළු කරන්න.';
+
+  @override
+  String get oAlerts => 'ඇඟවීම් සැකසුම්';
+
+  @override
+  String get oAlertsHint =>
+      'ගැටලු ඇති වූ විට inbox සහ හිමිකරුගේ දුරකථනයට SMS මගින් දන්වයි. එම ගැටලුව පැය 6 කට වරක් පමණි.';
+
+  @override
+  String get oRuleSms => 'SMS යැවීම අසමත්';
+
+  @override
+  String get oRulePush => 'පුෂ් දැනුම්දීම් අසමත්';
+
+  @override
+  String get oRulePayment => 'ගෙවීම් සම්බන්ධතාවය අසමත්';
+
+  @override
+  String get oRuleStuck => 'ගෙවීම ස්වයංක්‍රීයව සකසා නැත';
+
+  @override
+  String get oRuleSocial => 'සමාජ ජාල පිවිසීම අසමත්';
+
+  @override
+  String get oRuleBackup => 'ස්වයංක්‍රීය උපස්ථය මඟ හැරී ඇත';
+
+  @override
+  String get oRuleDisk => 'තැටිය පිරී ආසන්නයි';
+
+  @override
+  String get oQuietHours => 'නිශ්ශබ්ද වේලා';
+
+  @override
+  String get oQuietFrom => 'සිට';
+
+  @override
+  String get oQuietTo => 'දක්වා';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'මෙම වේලාවන්හි දැනුම්දීම් නැත; අවසන් වූ පසු එක් පණිවිඩයක් යයි.';
+
+  @override
+  String get oAlertPhone => 'ඇඟවීම් ලැබෙන දුරකථනය';
+
+  @override
+  String get oAlertPhoneHint => 'හිස්ව තබන්න; ව්‍යාපාර තොරතුරේ සහාය අංකයට යයි.';
+
+  @override
+  String get oSave => 'සුරකින්න';
+
+  @override
+  String get oSaved => 'ඇඟවීම් සැකසුම් සුරකින ලදි';
+
+  @override
+  String get oSaveFailed => 'සුරැකිය නොහැක. අගයන් පරීක්ෂා කරන්න.';
+
+  @override
+  String get oLoadFailed => 'තත්ත්වය පූරණය කළ නොහැක';
+
+  @override
+  String get oBackupOffsite => 'බාහිර උපස්ථය (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'ක්‍රියාවිරහිතයි. සැකසුම් > බාහිර උපස්ථය තුළ ක්‍රියාත්මක කරන්න.';
+
+  @override
+  String get oLastBackup => 'අවසන් උපස්ථය';
+
+  @override
+  String get oDiskFree => 'නිදහස් ඉඩ';
+
+  @override
+  String get oNoData => 'දත්ත තවම නැත';
+
+  @override
+  String get cIntBackup => 'බාහිර උපස්ථය (S3 අනුකූල)';
+
+  @override
   String get pTabJobs => 'කාර්යයන්';
 
   @override
@@ -2317,6 +2880,49 @@ class TSi extends T {
 
   @override
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'නව අනුවාදය $version ලැබී ඇත';
+  }
+
+  @override
+  String get uUpdateNow => 'යාවත්කාලීන කරන්න';
+
+  @override
+  String get uUpdateLater => 'පසුව';
+
+  @override
+  String get uUpdateRequiredTitle => 'යාවත්කාලීනයක් අවශ්‍යයි';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'මෙම අනුවාදය තවදුරටත් සහාය නොදක්වයි. කරුණාකර ගබඩාවෙන් යාවත්කාලීන කරන්න.';
+
+  @override
+  String get uUpdateStore => 'ගබඩාවෙන් යාවත්කාලීන කරන්න';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'යාවත්කාලීන සබැඳිය තවම සූදානම් නැත. පසුව නැවත උත්සාහ කරන්න.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'වත්මන් අනුවාදය $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'යෙදුම් අනුවාද';
+
+  @override
+  String get uAppVersionHint =>
+      'අවම අනුවාදයට පහළ යෙදුම් යාවත්කාලීන තිරයේ නතර වේ. උදාහරණ: 1.2.0';
+
+  @override
+  String get uMinVersion => 'අවම අනුවාදය';
+
+  @override
+  String get uLatestVersion => 'නවතම අනුවාදය';
 
   @override
   String get webBookNow => 'වෙබ් අඩවියෙන් වහාම වෙන් කරන්න';

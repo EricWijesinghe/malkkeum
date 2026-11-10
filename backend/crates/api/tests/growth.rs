@@ -54,7 +54,7 @@ async fn only_the_customer_reviews_a_completed_booking_once_with_own_photos(pool
     let ok = json!({ "rating": 5, "body": "꼼꼼해요", "photos": [PHOTO] });
 
     let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(ok.clone())).await;
-    assert_eq!((st, b["code"].as_str()), (StatusCode::CONFLICT, Some("not_completed")), "{b}");
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("not_completed")), "{b}");
 
     complete_job(&app, &pool, id, pro.as_str()).await;
 
@@ -69,7 +69,7 @@ async fn only_the_customer_reviews_a_completed_booking_once_with_own_photos(pool
     let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(ok.clone())).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(ok)).await;
-    assert_eq!((st, b["code"].as_str()), (StatusCode::CONFLICT, Some("already_reviewed")), "{b}");
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("already_reviewed")), "{b}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -114,7 +114,7 @@ async fn referral_pays_both_sides_once_after_the_friend_pays_and_completes(pool:
     assert_eq!(again["code"], code, "the code is stable");
 
     let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(referrer.token.as_str()), Some(json!({ "code": code }))).await;
-    assert_eq!((st, b["code"].as_str()), (StatusCode::BAD_REQUEST, Some("self_referral")), "{b}");
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("self_referral")), "{b}");
 
     let friend = customer(&app, &pool, "010-5200-0002").await;
     let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": "NOSUCH12" }))).await;
@@ -122,7 +122,7 @@ async fn referral_pays_both_sides_once_after_the_friend_pays_and_completes(pool:
     let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": code }))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": code }))).await;
-    assert_eq!((st, b["code"].as_str()), (StatusCode::CONFLICT, Some("already_referred")), "{b}");
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("already_referred")), "{b}");
 
     let (pro, _) = verified_pro(&app, &pool, "010-5200-0101").await;
     let (first, _) = book(&app, &friend, 10, None).await;
@@ -150,7 +150,7 @@ async fn referral_is_refused_after_the_friend_has_booked(pool: PgPool) {
     let friend = customer(&app, &pool, "010-5300-0002").await;
     book(&app, &friend, 10, None).await;
     let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": mine["code"] }))).await;
-    assert_eq!((st, b["code"].as_str()), (StatusCode::BAD_REQUEST, Some("referee_already_booked")), "{b}");
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("referee_already_booked")), "{b}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -170,17 +170,12 @@ async fn welcome_offer_applies_once_to_the_first_booking_and_not_on_top_of_a_cou
     assert_eq!(of(first), Some(5_000), "first booking gets the welcome offer");
     assert_eq!(of(second), Some(0), "only the first booking");
 
+    let fresh = customer(&app, &pool, "010-5400-0002").await;
     let coupon: Uuid = sqlx::query_scalar("INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'manual', 2000, now() + interval '30 days') RETURNING id")
-        .bind(c.user)
+        .bind(fresh.user)
         .fetch_one(&pool)
         .await
         .expect("coupon");
-    let fresh = customer(&app, &pool, "010-5400-0002").await;
-    sqlx::query("INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'manual', 2000, now() + interval '30 days')")
-        .bind(fresh.user)
-        .execute(&pool)
-        .await
-        .expect("coupon row");
     let (with_coupon, _) = book(&app, &fresh, 12, Some(coupon)).await;
     let (d,): (i64,) = sqlx::query_as("SELECT discount FROM bookings WHERE id = $1").bind(with_coupon).fetch_one(&pool).await.expect("discount");
     assert_eq!(d, 2_000, "a coupon is never stacked with the welcome offer");

@@ -9,6 +9,39 @@ class TRu extends T {
   TRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get aiLabel => 'ИИ-ассистент';
+
+  @override
+  String get aiBadge => 'ИИ';
+
+  @override
+  String get aiCardHint =>
+      'Автоматически отвечает в чатах клиентов. Каждое сообщение оплачивается по тарифу API.';
+
+  @override
+  String get aiModeOffline => 'Отвечает, только когда сотрудников нет';
+
+  @override
+  String get aiModeAlways => 'ИИ всегда отвечает первым';
+
+  @override
+  String get aiPause => 'Пауза для ИИ';
+
+  @override
+  String get aiResume => 'Возобновить ИИ';
+
+  @override
+  String get aiPausedNote => 'ИИ приостановлен для этого чата';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Вызовов ИИ в этом месяце: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'ИИ-ассистент выключен';
+
+  @override
   String get apSocialOr => 'или';
 
   @override
@@ -1690,6 +1723,537 @@ class TRu extends T {
   String get themeTip => 'Сменить тему';
 
   @override
+  String get fFinance => 'Финансы';
+
+  @override
+  String get fPeriodDay => 'День';
+
+  @override
+  String get fPeriodWeek => 'Неделя';
+
+  @override
+  String get fPeriodMonth => 'Месяц';
+
+  @override
+  String get fPeriodCustom => 'Период';
+
+  @override
+  String get fFrom => 'С';
+
+  @override
+  String get fTo => 'По';
+
+  @override
+  String get fGross => 'Сумма платежей';
+
+  @override
+  String get fRefunds => 'Возвраты';
+
+  @override
+  String get fNetRevenue => 'Чистая выручка';
+
+  @override
+  String get fPlatformFee => 'Комиссия платформы';
+
+  @override
+  String get fPaidOut => 'Выплачено партнёрам';
+
+  @override
+  String get fPendingOut => 'Ожидают выплаты';
+
+  @override
+  String get fHeldOut => 'На удержании';
+
+  @override
+  String get fVatEstimate => 'НДС (оценка)';
+
+  @override
+  String get fVatNote =>
+      'Оценка: 10% от комиссии платформы. Уточните у бухгалтера.';
+
+  @override
+  String get fAov => 'Средний чек';
+
+  @override
+  String get fBookings => 'Заказы';
+
+  @override
+  String get fCancelRate => 'Доля отмен';
+
+  @override
+  String get fDiscounts => 'Скидки и купоны';
+
+  @override
+  String get fMethods => 'Способы оплаты';
+
+  @override
+  String get fTrend => 'Динамика';
+
+  @override
+  String fRangeDays(String n) {
+    return 'Последние $n дн.';
+  }
+
+  @override
+  String get fRangeWeeks => 'Последние 12 недель';
+
+  @override
+  String get fRangeMonths => 'Последние 12 месяцев';
+
+  @override
+  String get fByPartner => 'Доход по партнёрам';
+
+  @override
+  String get fByService => 'Выручка по услугам';
+
+  @override
+  String get fExportTitle => 'Выгрузки для бухгалтерии';
+
+  @override
+  String get fExportLedger => 'CSV: журнал платежей';
+
+  @override
+  String get fExportSettlements => 'CSV: расчёты';
+
+  @override
+  String get fExportMonthly => 'CSV: месячная сводка (бухгалтер)';
+
+  @override
+  String get fDownload => 'Скачать CSV';
+
+  @override
+  String get fDownloadWebOnly => 'CSV скачивается в веб-консоли';
+
+  @override
+  String get fDownloadFailed => 'Не удалось скачать';
+
+  @override
+  String get fNoRecords => 'За этот период записей нет';
+
+  @override
+  String get fLoadFailed => 'Не удалось загрузить финансы';
+
+  @override
+  String get fRetry => 'Повторить';
+
+  @override
+  String get fColPartner => 'Партнёр';
+
+  @override
+  String get fColJobs => 'Заказов';
+
+  @override
+  String get fColSettled => 'Начислено';
+
+  @override
+  String get fColFee => 'Комиссия';
+
+  @override
+  String get fColNet => 'К выплате';
+
+  @override
+  String get pEarnings => 'Заработок';
+
+  @override
+  String get pNextPayout => 'Следующая выплата';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'Выплата $date';
+  }
+
+  @override
+  String get pNoPayout => 'Выплат не запланировано';
+
+  @override
+  String get pPendingTotal => 'Ожидает выплаты';
+
+  @override
+  String get pPaidTotal => 'Выплачено';
+
+  @override
+  String get pWeekly => 'По неделям';
+
+  @override
+  String get pMonthly => 'По месяцам';
+
+  @override
+  String proofHomes(String count) {
+    return 'В этом месяце убрано домов: $count';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Средняя оценка $rating · отзывов: $count';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Последние отзывы';
+
+  @override
+  String get rebookTitle => 'Забронировать последнюю услугу снова?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · последний визит $date';
+  }
+
+  @override
+  String get rebookButton => 'Забронировать снова';
+
+  @override
+  String seatsLeft(String count) {
+    return 'Осталось мест: $count';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Как прошла уборка?';
+
+  @override
+  String get reviewPhotosAdd => 'Добавить фото';
+
+  @override
+  String get reviewPhotosHint => 'До 5 фото';
+
+  @override
+  String get reviewSaved => 'Спасибо за отзыв';
+
+  @override
+  String get reviewPhotoFailed =>
+      'Не удалось загрузить фото. Попробуйте ещё раз.';
+
+  @override
+  String get referralTitle => 'Пригласите друга и получите купон';
+
+  @override
+  String referralBody(String amount) {
+    return 'Когда друг завершит первую запись, вы оба получите купон на $amount';
+  }
+
+  @override
+  String get referralCopy => 'Скопировать код';
+
+  @override
+  String get referralCopied => 'Реферальный код скопирован';
+
+  @override
+  String get referralClaimTitle => 'Есть реферальный код?';
+
+  @override
+  String get referralClaimField => 'Введите реферальный код';
+
+  @override
+  String get referralClaimButton => 'Применить';
+
+  @override
+  String get referralClaimed => 'Реферальный код применён';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return 'Приглашено: $invited · наград: $rewarded';
+  }
+
+  @override
+  String get err_self_referral => 'Нельзя использовать свой код';
+
+  @override
+  String get err_referee_already_booked =>
+      'Код можно ввести только до первой записи';
+
+  @override
+  String get err_already_referred => 'Реферальный код уже применён';
+
+  @override
+  String get err_invalid_referral_code => 'Проверьте реферальный код';
+
+  @override
+  String get err_referral_disabled => 'Рефералы временно приостановлены';
+
+  @override
+  String get err_invalid_photos =>
+      'Можно прикрепить только фото, загруженные через Malkkeum';
+
+  @override
+  String get welcomeOfferTitle => 'Скидка на первую запись';
+
+  @override
+  String get welcomeOfferBody =>
+      'Применяется автоматически к первой записи нового клиента. Не суммируется с купонами.';
+
+  @override
+  String get offerKindAmount => 'Фиксированная (вон)';
+
+  @override
+  String get offerKindPercent => 'Процент (%)';
+
+  @override
+  String get offerValue => 'Размер скидки';
+
+  @override
+  String get offerEnabled => 'Вкл.';
+
+  @override
+  String get offerSaved => 'Сохранено';
+
+  @override
+  String get referralSettingsTitle => 'Награда за рекомендацию';
+
+  @override
+  String get referralSettingsBody =>
+      'Выплачивается, когда первая запись друга завершена и оплачена. Самореферал и повтор номера блокируются.';
+
+  @override
+  String get referralRewardAmount => 'Сумма награды (вон)';
+
+  @override
+  String get reviewsModerationTitle => 'Модерация отзывов';
+
+  @override
+  String get reviewHide => 'Скрыть';
+
+  @override
+  String get reviewShow => 'Показать снова';
+
+  @override
+  String get reviewHiddenTag => 'Скрыт';
+
+  @override
+  String get growthAverageRating => 'Средняя оценка';
+
+  @override
+  String growthReviewCount(String count) {
+    return 'Отзывов: $count';
+  }
+
+  @override
+  String get growthReferralConversion => 'Конверсия рефералов';
+
+  @override
+  String get growthTab => 'Рост';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded из $invited';
+  }
+
+  @override
+  String get cOps => 'Состояние системы';
+
+  @override
+  String get oLevelGreen => 'В норме';
+
+  @override
+  String get oLevelYellow => 'Проверить';
+
+  @override
+  String get oLevelRed => 'Нужны действия';
+
+  @override
+  String get oOverall => 'Состояние сервера';
+
+  @override
+  String get oRefresh => 'Обновить';
+
+  @override
+  String get oVersion => 'Версия';
+
+  @override
+  String get oUptime => 'Время работы';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String get oChecks => 'Проверки';
+
+  @override
+  String get oCheckDb => 'База данных';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Отклик $ms мс · размер $mb МБ';
+  }
+
+  @override
+  String get oCheckDisk => 'Диск сервера';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return 'свободно $pct%';
+  }
+
+  @override
+  String get oCheckBackup => 'Автоматическая копия';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Последняя копия $hours ч назад';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Копий пока нет';
+
+  @override
+  String get oCheckErrors => 'Ошибки сервера (24 ч)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Платежи для проверки';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 ч)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Уведомления об оплате (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Ошибки подписи $count (24 ч)';
+  }
+
+  @override
+  String get oIntegrations => 'Внешние сервисы';
+
+  @override
+  String get oIntNotSet => 'Не настроено';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Последний успех $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Последняя ошибка $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Пока не использовалось';
+
+  @override
+  String get oActDb =>
+      'Нет подключения к базе данных. Выполните malkkeum logs на сервере; если проблема сохраняется, перезапустите сервер.';
+
+  @override
+  String get oActDisk =>
+      'Свободно меньше 10% диска. Удалите старые копии или увеличьте диск.';
+
+  @override
+  String get oActBackup =>
+      'Автоматическая копия просрочена. Выполните malkkeum backup на сервере и проверьте backups/backup.log.';
+
+  @override
+  String get oActErrors =>
+      'Много ошибок сервера. Посмотрите строки error в malkkeum logs и передайте разработчику, если они повторяются.';
+
+  @override
+  String get oActPayments =>
+      'Оплата могла пройти, но не обработалась автоматически. Проверьте её в PortOne и при необходимости верните деньги вручную.';
+
+  @override
+  String get oActWebhook =>
+      'Не проходит проверка подписи уведомлений об оплате. Введите webhook secret заново в Настройки > Оплата (PortOne).';
+
+  @override
+  String get oActIntegration =>
+      'Подключение не работает. Проверьте ключи в настройках и нажмите Test connection.';
+
+  @override
+  String get oActNotSet => 'Не настроено. Введите ключи в настройках.';
+
+  @override
+  String get oAlerts => 'Настройки оповещений';
+
+  @override
+  String get oAlertsHint =>
+      'О проблемах сообщим во входящих и SMS на телефон владельца. Одна и та же проблема отправляется не чаще раза в 6 часов.';
+
+  @override
+  String get oRuleSms => 'Не отправляются SMS';
+
+  @override
+  String get oRulePush => 'Не работают push-уведомления';
+
+  @override
+  String get oRulePayment => 'Не работает подключение оплаты';
+
+  @override
+  String get oRuleStuck => 'Оплата не обработалась автоматически';
+
+  @override
+  String get oRuleSocial => 'Не работает вход через соцсети';
+
+  @override
+  String get oRuleBackup => 'Пропущена автоматическая копия';
+
+  @override
+  String get oRuleDisk => 'Диск почти заполнен';
+
+  @override
+  String get oQuietHours => 'Тихие часы';
+
+  @override
+  String get oQuietFrom => 'С';
+
+  @override
+  String get oQuietTo => 'До';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'В это время оповещения не отправляются; после окончания придёт одно сообщение.';
+
+  @override
+  String get oAlertPhone => 'Телефон для оповещений';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Оставьте пустым, чтобы использовать номер поддержки из данных о компании.';
+
+  @override
+  String get oSave => 'Сохранить';
+
+  @override
+  String get oSaved => 'Настройки оповещений сохранены';
+
+  @override
+  String get oSaveFailed => 'Не удалось сохранить. Проверьте значения.';
+
+  @override
+  String get oLoadFailed => 'Не удалось загрузить состояние';
+
+  @override
+  String get oBackupOffsite => 'Внешняя копия (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Выключено. Включите в Настройки > Внешняя копия.';
+
+  @override
+  String get oLastBackup => 'Последняя копия';
+
+  @override
+  String get oDiskFree => 'Свободное место';
+
+  @override
+  String get oNoData => 'Данных пока нет';
+
+  @override
+  String get cIntBackup => 'Внешняя копия (совместимо с S3)';
+
+  @override
   String get pTabJobs => 'Заказы';
 
   @override
@@ -2316,6 +2880,49 @@ class TRu extends T {
 
   @override
   String get cInvalidValue => 'Проверьте введённое значение';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Доступна версия $version';
+  }
+
+  @override
+  String get uUpdateNow => 'Обновить';
+
+  @override
+  String get uUpdateLater => 'Позже';
+
+  @override
+  String get uUpdateRequiredTitle => 'Требуется обновление';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Эта версия больше не поддерживается. Обновите приложение в магазине.';
+
+  @override
+  String get uUpdateStore => 'Обновить в магазине';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Ссылка для обновления ещё не готова. Попробуйте позже.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Текущая версия $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Версии приложений';
+
+  @override
+  String get uAppVersionHint =>
+      'Приложения ниже минимальной версии остановятся на экране обновления. Ниже последней версии покажется баннер. Формат: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Минимальная версия';
+
+  @override
+  String get uLatestVersion => 'Последняя версия';
 
   @override
   String get webBookNow => 'Забронировать в браузере';

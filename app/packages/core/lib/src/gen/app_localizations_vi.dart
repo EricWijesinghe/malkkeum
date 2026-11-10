@@ -9,6 +9,39 @@ class TVi extends T {
   TVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get aiLabel => 'Trợ lý AI';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Tự động trả lời chat của khách. Mỗi tin nhắn đều phát sinh phí API.';
+
+  @override
+  String get aiModeOffline => 'Chỉ trả lời khi không có nhân viên';
+
+  @override
+  String get aiModeAlways => 'AI luôn trả lời trước';
+
+  @override
+  String get aiPause => 'Tạm dừng AI';
+
+  @override
+  String get aiResume => 'Tiếp tục AI';
+
+  @override
+  String get aiPausedNote => 'AI đang tạm dừng trong cuộc trò chuyện này';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Lượt gọi AI tháng này: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'Trợ lý AI đang tắt';
+
+  @override
   String get apSocialOr => 'hoặc';
 
   @override
@@ -1677,6 +1710,533 @@ class TVi extends T {
   String get themeTip => 'Đổi giao diện';
 
   @override
+  String get fFinance => 'Tài chính';
+
+  @override
+  String get fPeriodDay => 'Ngày';
+
+  @override
+  String get fPeriodWeek => 'Tuần';
+
+  @override
+  String get fPeriodMonth => 'Tháng';
+
+  @override
+  String get fPeriodCustom => 'Tùy chọn';
+
+  @override
+  String get fFrom => 'Từ';
+
+  @override
+  String get fTo => 'Đến';
+
+  @override
+  String get fGross => 'Tổng thanh toán';
+
+  @override
+  String get fRefunds => 'Hoàn tiền';
+
+  @override
+  String get fNetRevenue => 'Doanh thu ròng';
+
+  @override
+  String get fPlatformFee => 'Phí nền tảng';
+
+  @override
+  String get fPaidOut => 'Đã trả đối tác';
+
+  @override
+  String get fPendingOut => 'Chờ thanh toán';
+
+  @override
+  String get fHeldOut => 'Tạm giữ';
+
+  @override
+  String get fVatEstimate => 'Thuế GTGT (ước tính)';
+
+  @override
+  String get fVatNote => 'Ước tính 10% phí nền tảng. Hãy kiểm tra với kế toán.';
+
+  @override
+  String get fAov => 'Giá trị đơn TB';
+
+  @override
+  String get fBookings => 'Đặt lịch';
+
+  @override
+  String get fCancelRate => 'Tỷ lệ hủy';
+
+  @override
+  String get fDiscounts => 'Giảm giá & phiếu';
+
+  @override
+  String get fMethods => 'Phương thức thanh toán';
+
+  @override
+  String get fTrend => 'Xu hướng';
+
+  @override
+  String fRangeDays(String n) {
+    return '$n ngày qua';
+  }
+
+  @override
+  String get fRangeWeeks => '12 tuần qua';
+
+  @override
+  String get fRangeMonths => '12 tháng qua';
+
+  @override
+  String get fByPartner => 'Thu nhập theo đối tác';
+
+  @override
+  String get fByService => 'Doanh thu theo dịch vụ';
+
+  @override
+  String get fExportTitle => 'Xuất dữ liệu kế toán';
+
+  @override
+  String get fExportLedger => 'Sổ thanh toán CSV';
+
+  @override
+  String get fExportSettlements => 'Bảng thanh toán CSV';
+
+  @override
+  String get fExportMonthly => 'Tóm tắt tháng CSV (kế toán)';
+
+  @override
+  String get fDownload => 'Tải CSV';
+
+  @override
+  String get fDownloadWebOnly => 'Tải CSV dùng bảng điều hành web';
+
+  @override
+  String get fDownloadFailed => 'Tải xuống thất bại';
+
+  @override
+  String get fNoRecords => 'Không có dữ liệu trong kỳ này';
+
+  @override
+  String get fLoadFailed => 'Không tải được dữ liệu tài chính';
+
+  @override
+  String get fRetry => 'Thử lại';
+
+  @override
+  String get fColPartner => 'Đối tác';
+
+  @override
+  String get fColJobs => 'Số việc';
+
+  @override
+  String get fColSettled => 'Tổng quyết toán';
+
+  @override
+  String get fColFee => 'Phí';
+
+  @override
+  String get fColNet => 'Thực nhận';
+
+  @override
+  String get pEarnings => 'Thu nhập';
+
+  @override
+  String get pNextPayout => 'Lần thanh toán tiếp';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'Thanh toán $date';
+  }
+
+  @override
+  String get pNoPayout => 'Chưa có lần thanh toán';
+
+  @override
+  String get pPendingTotal => 'Chờ thanh toán';
+
+  @override
+  String get pPaidTotal => 'Đã thanh toán';
+
+  @override
+  String get pWeekly => 'Theo tuần';
+
+  @override
+  String get pMonthly => 'Theo tháng';
+
+  @override
+  String proofHomes(String count) {
+    return 'Tháng này đã dọn $count nhà';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Trung bình $rating sao · $count đánh giá';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Đánh giá gần đây';
+
+  @override
+  String get rebookTitle => 'Đặt lại dịch vụ lần trước?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · lần trước $date';
+  }
+
+  @override
+  String get rebookButton => 'Đặt lại';
+
+  @override
+  String seatsLeft(String count) {
+    return 'Còn $count chỗ';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Lần dọn này thế nào?';
+
+  @override
+  String get reviewPhotosAdd => 'Thêm ảnh';
+
+  @override
+  String get reviewPhotosHint => 'Tối đa 5 ảnh';
+
+  @override
+  String get reviewSaved => 'Cảm ơn bạn đã đánh giá';
+
+  @override
+  String get reviewPhotoFailed => 'Không tải được ảnh, hãy thử lại';
+
+  @override
+  String get referralTitle => 'Mời bạn bè, nhận phiếu giảm giá';
+
+  @override
+  String referralBody(String amount) {
+    return 'Khi bạn bè hoàn tất lần đặt đầu, cả hai nhận phiếu $amount';
+  }
+
+  @override
+  String get referralCopy => 'Sao chép mã';
+
+  @override
+  String get referralCopied => 'Đã sao chép mã giới thiệu';
+
+  @override
+  String get referralClaimTitle => 'Bạn có mã giới thiệu?';
+
+  @override
+  String get referralClaimField => 'Nhập mã giới thiệu';
+
+  @override
+  String get referralClaimButton => 'Áp dụng';
+
+  @override
+  String get referralClaimed => 'Đã áp dụng mã giới thiệu';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return 'Đã mời $invited · Đã thưởng $rewarded';
+  }
+
+  @override
+  String get err_self_referral => 'Không thể dùng mã của chính bạn';
+
+  @override
+  String get err_referee_already_booked => 'Chỉ nhập mã trước lần đặt đầu tiên';
+
+  @override
+  String get err_already_referred => 'Bạn đã áp dụng mã giới thiệu';
+
+  @override
+  String get err_invalid_referral_code => 'Kiểm tra lại mã giới thiệu';
+
+  @override
+  String get err_referral_disabled => 'Hiện chưa nhận giới thiệu';
+
+  @override
+  String get err_invalid_photos => 'Chỉ đính kèm ảnh đã tải lên qua ứng dụng';
+
+  @override
+  String get welcomeOfferTitle => 'Ưu đãi lần đặt đầu';
+
+  @override
+  String get welcomeOfferBody =>
+      'Tự động áp dụng cho lần đặt đầu của khách mới. Không cộng với phiếu giảm giá.';
+
+  @override
+  String get offerKindAmount => 'Số tiền (won)';
+
+  @override
+  String get offerKindPercent => 'Phần trăm (%)';
+
+  @override
+  String get offerValue => 'Giá trị giảm';
+
+  @override
+  String get offerEnabled => 'Bật';
+
+  @override
+  String get offerSaved => 'Đã lưu';
+
+  @override
+  String get referralSettingsTitle => 'Thưởng giới thiệu bạn bè';
+
+  @override
+  String get referralSettingsBody =>
+      'Được thưởng khi bạn bè hoàn tất và thanh toán lần đặt đầu. Chặn tự giới thiệu và trùng số.';
+
+  @override
+  String get referralRewardAmount => 'Số tiền thưởng (won)';
+
+  @override
+  String get reviewsModerationTitle => 'Quản lý đánh giá';
+
+  @override
+  String get reviewHide => 'Ẩn';
+
+  @override
+  String get reviewShow => 'Hiện lại';
+
+  @override
+  String get reviewHiddenTag => 'Đã ẩn';
+
+  @override
+  String get growthAverageRating => 'Điểm trung bình';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count đánh giá';
+  }
+
+  @override
+  String get growthReferralConversion => 'Tỷ lệ chuyển đổi giới thiệu';
+
+  @override
+  String get growthTab => 'Tăng trưởng';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded/$invited người';
+  }
+
+  @override
+  String get cOps => 'Trạng thái hệ thống';
+
+  @override
+  String get oLevelGreen => 'Ổn định';
+
+  @override
+  String get oLevelYellow => 'Cần xem';
+
+  @override
+  String get oLevelRed => 'Cần xử lý';
+
+  @override
+  String get oOverall => 'Trạng thái máy chủ';
+
+  @override
+  String get oRefresh => 'Làm mới';
+
+  @override
+  String get oVersion => 'Phiên bản';
+
+  @override
+  String get oUptime => 'Thời gian chạy';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours giờ $minutes phút';
+  }
+
+  @override
+  String get oChecks => 'Mục kiểm tra';
+
+  @override
+  String get oCheckDb => 'Cơ sở dữ liệu';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Phản hồi $ms ms · dung lượng $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Ổ đĩa máy chủ';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return 'Còn trống $pct%';
+  }
+
+  @override
+  String get oCheckBackup => 'Sao lưu tự động';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Sao lưu cuối $hours giờ trước';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Chưa có bản sao lưu';
+
+  @override
+  String get oCheckErrors => 'Lỗi máy chủ (24 giờ)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count lỗi';
+  }
+
+  @override
+  String get oCheckPayments => 'Thanh toán cần kiểm tra';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 giờ)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Thông báo thanh toán (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Sai chữ ký $count (24 giờ)';
+  }
+
+  @override
+  String get oIntegrations => 'Dịch vụ bên ngoài';
+
+  @override
+  String get oIntNotSet => 'Chưa cài đặt';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Thành công gần nhất $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Lỗi gần nhất $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Chưa có lượt sử dụng';
+
+  @override
+  String get oActDb =>
+      'Không kết nối được cơ sở dữ liệu. Chạy malkkeum logs trên máy chủ; khởi động lại nếu vẫn lỗi.';
+
+  @override
+  String get oActDisk =>
+      'Dung lượng trống dưới 10%. Xóa bản sao lưu cũ hoặc tăng dung lượng đĩa.';
+
+  @override
+  String get oActBackup =>
+      'Sao lưu tự động đã quá hạn. Chạy malkkeum backup trên máy chủ và kiểm tra backups/backup.log.';
+
+  @override
+  String get oActErrors =>
+      'Nhiều lỗi máy chủ. Xem các dòng error trong malkkeum logs; nếu lặp lại, hãy báo cho nhà phát triển.';
+
+  @override
+  String get oActPayments =>
+      'Có thanh toán đã thành công nhưng chưa xử lý tự động. Kiểm tra trên PortOne và hoàn tiền thủ công nếu cần.';
+
+  @override
+  String get oActWebhook =>
+      'Xác minh chữ ký thông báo thanh toán lỗi. Nhập lại webhook secret trong Thiết lập > Thanh toán (PortOne).';
+
+  @override
+  String get oActIntegration =>
+      'Kết nối đang lỗi. Kiểm tra khóa trong Thiết lập và bấm Kiểm tra kết nối.';
+
+  @override
+  String get oActNotSet => 'Chưa cài đặt. Nhập khóa trong Thiết lập.';
+
+  @override
+  String get oAlerts => 'Cài đặt cảnh báo';
+
+  @override
+  String get oAlertsHint =>
+      'Khi có sự cố, hộp thư và tin nhắn SMS đến điện thoại chủ cửa hàng. Cùng một sự cố chỉ gửi 6 giờ một lần.';
+
+  @override
+  String get oRuleSms => 'Gửi SMS lỗi';
+
+  @override
+  String get oRulePush => 'Thông báo đẩy lỗi';
+
+  @override
+  String get oRulePayment => 'Kết nối thanh toán lỗi';
+
+  @override
+  String get oRuleStuck => 'Thanh toán không tự xử lý';
+
+  @override
+  String get oRuleSocial => 'Đăng nhập mạng xã hội lỗi';
+
+  @override
+  String get oRuleBackup => 'Thiếu sao lưu tự động';
+
+  @override
+  String get oRuleDisk => 'Hết dung lượng đĩa';
+
+  @override
+  String get oQuietHours => 'Giờ yên tĩnh';
+
+  @override
+  String get oQuietFrom => 'Từ';
+
+  @override
+  String get oQuietTo => 'Đến';
+
+  @override
+  String oHour(String hour) {
+    return '${hour}h';
+  }
+
+  @override
+  String get oQuietHint =>
+      'Không gửi cảnh báo trong giờ này; sẽ gửi một lần sau khi kết thúc.';
+
+  @override
+  String get oAlertPhone => 'Điện thoại nhận cảnh báo';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Để trống sẽ gửi đến số hỗ trợ trong thông tin doanh nghiệp.';
+
+  @override
+  String get oSave => 'Lưu';
+
+  @override
+  String get oSaved => 'Đã lưu cài đặt cảnh báo';
+
+  @override
+  String get oSaveFailed => 'Không lưu được. Kiểm tra lại giá trị đã nhập.';
+
+  @override
+  String get oLoadFailed => 'Không tải được trạng thái';
+
+  @override
+  String get oBackupOffsite => 'Sao lưu ngoài máy chủ (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Đang tắt. Bật trong Thiết lập > Sao lưu ngoài máy chủ.';
+
+  @override
+  String get oLastBackup => 'Sao lưu gần nhất';
+
+  @override
+  String get oDiskFree => 'Dung lượng trống';
+
+  @override
+  String get oNoData => 'Chưa có dữ liệu';
+
+  @override
+  String get cIntBackup => 'Sao lưu ngoài (tương thích S3)';
+
+  @override
   String get pTabJobs => 'Việc';
 
   @override
@@ -2291,6 +2851,49 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Đã có phiên bản $version';
+  }
+
+  @override
+  String get uUpdateNow => 'Cập nhật';
+
+  @override
+  String get uUpdateLater => 'Để sau';
+
+  @override
+  String get uUpdateRequiredTitle => 'Cần cập nhật ứng dụng';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Phiên bản này không còn được hỗ trợ. Vui lòng cập nhật từ cửa hàng.';
+
+  @override
+  String get uUpdateStore => 'Cập nhật trên cửa hàng';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Liên kết cập nhật chưa sẵn sàng. Vui lòng thử lại sau.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Phiên bản hiện tại $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Quản lý phiên bản ứng dụng';
+
+  @override
+  String get uAppVersionHint =>
+      'Ứng dụng thấp hơn bản tối thiểu sẽ dừng ở màn hình cập nhật. Thấp hơn bản mới nhất sẽ thấy banner. Định dạng: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Phiên bản tối thiểu';
+
+  @override
+  String get uLatestVersion => 'Phiên bản mới nhất';
 
   @override
   String get webBookNow => 'Đặt lịch ngay trên web';

@@ -9,6 +9,38 @@ class TTh extends T {
   TTh([String locale = 'th']) : super(locale);
 
   @override
+  String get aiLabel => 'ผู้ช่วย AI';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint => 'ตอบแชทลูกค้าโดยอัตโนมัติ ทุกข้อความมีค่า API';
+
+  @override
+  String get aiModeOffline => 'ตอบเฉพาะตอนไม่มีเจ้าหน้าที่';
+
+  @override
+  String get aiModeAlways => 'AI ตอบก่อนเสมอ';
+
+  @override
+  String get aiPause => 'หยุด AI ชั่วคราว';
+
+  @override
+  String get aiResume => 'เปิด AI อีกครั้ง';
+
+  @override
+  String get aiPausedNote => 'หยุด AI ชั่วคราวในแชทนี้';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'การเรียก AI เดือนนี้: $count ครั้ง';
+  }
+
+  @override
+  String get aiNotConfigured => 'ยังไม่ได้เปิดผู้ช่วย AI';
+
+  @override
   String get apSocialOr => 'หรือ';
 
   @override
@@ -1684,6 +1716,535 @@ class TTh extends T {
   String get themeTip => 'เปลี่ยนธีม';
 
   @override
+  String get fFinance => 'การเงิน';
+
+  @override
+  String get fPeriodDay => 'วัน';
+
+  @override
+  String get fPeriodWeek => 'สัปดาห์';
+
+  @override
+  String get fPeriodMonth => 'เดือน';
+
+  @override
+  String get fPeriodCustom => 'กำหนดเอง';
+
+  @override
+  String get fFrom => 'เริ่ม';
+
+  @override
+  String get fTo => 'ถึง';
+
+  @override
+  String get fGross => 'ยอดชำระรวม';
+
+  @override
+  String get fRefunds => 'คืนเงิน';
+
+  @override
+  String get fNetRevenue => 'รายได้สุทธิ';
+
+  @override
+  String get fPlatformFee => 'ค่าธรรมเนียมแพลตฟอร์ม';
+
+  @override
+  String get fPaidOut => 'จ่ายให้พาร์ทเนอร์แล้ว';
+
+  @override
+  String get fPendingOut => 'รอจ่าย';
+
+  @override
+  String get fHeldOut => 'พักไว้';
+
+  @override
+  String get fVatEstimate => 'VAT (ประมาณการ)';
+
+  @override
+  String get fVatNote =>
+      'ประมาณการจาก 10% ของค่าธรรมเนียมแพลตฟอร์ม โปรดตรวจสอบกับนักบัญชี';
+
+  @override
+  String get fAov => 'มูลค่าออเดอร์เฉลี่ย';
+
+  @override
+  String get fBookings => 'การจอง';
+
+  @override
+  String get fCancelRate => 'อัตราการยกเลิก';
+
+  @override
+  String get fDiscounts => 'ส่วนลดและคูปอง';
+
+  @override
+  String get fMethods => 'วิธีชำระเงิน';
+
+  @override
+  String get fTrend => 'แนวโน้ม';
+
+  @override
+  String fRangeDays(String n) {
+    return '$n วันล่าสุด';
+  }
+
+  @override
+  String get fRangeWeeks => '12 สัปดาห์ล่าสุด';
+
+  @override
+  String get fRangeMonths => '12 เดือนล่าสุด';
+
+  @override
+  String get fByPartner => 'รายได้ตามพาร์ทเนอร์';
+
+  @override
+  String get fByService => 'รายได้ตามบริการ';
+
+  @override
+  String get fExportTitle => 'ส่งออกข้อมูลบัญชี';
+
+  @override
+  String get fExportLedger => 'CSV สมุดรายการชำระเงิน';
+
+  @override
+  String get fExportSettlements => 'CSV การชำระบัญชี';
+
+  @override
+  String get fExportMonthly => 'CSV สรุปรายเดือน (นักบัญชี)';
+
+  @override
+  String get fDownload => 'ดาวน์โหลด CSV';
+
+  @override
+  String get fDownloadWebOnly => 'ดาวน์โหลด CSV ได้ที่คอนโซลเว็บ';
+
+  @override
+  String get fDownloadFailed => 'ดาวน์โหลดไม่สำเร็จ';
+
+  @override
+  String get fNoRecords => 'ไม่มีข้อมูลในช่วงนี้';
+
+  @override
+  String get fLoadFailed => 'โหลดข้อมูลการเงินไม่ได้';
+
+  @override
+  String get fRetry => 'ลองอีกครั้ง';
+
+  @override
+  String get fColPartner => 'พาร์ทเนอร์';
+
+  @override
+  String get fColJobs => 'งาน';
+
+  @override
+  String get fColSettled => 'ยอดชำระรวม';
+
+  @override
+  String get fColFee => 'ค่าธรรมเนียม';
+
+  @override
+  String get fColNet => 'สุทธิ';
+
+  @override
+  String get pEarnings => 'รายได้';
+
+  @override
+  String get pNextPayout => 'การจ่ายเงินครั้งถัดไป';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'จ่ายวันที่ $date';
+  }
+
+  @override
+  String get pNoPayout => 'ยังไม่มีการจ่ายเงินที่กำหนดไว้';
+
+  @override
+  String get pPendingTotal => 'รอจ่าย';
+
+  @override
+  String get pPaidTotal => 'จ่ายแล้ว';
+
+  @override
+  String get pWeekly => 'รายสัปดาห์';
+
+  @override
+  String get pMonthly => 'รายเดือน';
+
+  @override
+  String proofHomes(String count) {
+    return 'เดือนนี้ทำความสะอาดแล้ว $count หลัง';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'คะแนนเฉลี่ย $rating ดาว · รีวิว $count รายการ';
+  }
+
+  @override
+  String get proofReviewsTitle => 'รีวิวล่าสุด';
+
+  @override
+  String get rebookTitle => 'จองบริการครั้งก่อนอีกครั้งไหม?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · เข้าบริการล่าสุด $date';
+  }
+
+  @override
+  String get rebookButton => 'จองอีกครั้ง';
+
+  @override
+  String seatsLeft(String count) {
+    return 'เหลือ $count ที่';
+  }
+
+  @override
+  String get reviewSheetTitle => 'การทำความสะอาดครั้งนี้เป็นอย่างไรบ้าง?';
+
+  @override
+  String get reviewPhotosAdd => 'เพิ่มรูปภาพ';
+
+  @override
+  String get reviewPhotosHint => 'สูงสุด 5 รูป';
+
+  @override
+  String get reviewSaved => 'ขอบคุณสำหรับรีวิวของคุณ';
+
+  @override
+  String get reviewPhotoFailed => 'อัปโหลดรูปไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get referralTitle => 'ชวนเพื่อน รับคูปอง';
+
+  @override
+  String referralBody(String amount) {
+    return 'เมื่อเพื่อนของคุณจองครั้งแรกเสร็จ คุณทั้งคู่จะได้คูปอง $amount';
+  }
+
+  @override
+  String get referralCopy => 'คัดลอกรหัส';
+
+  @override
+  String get referralCopied => 'คัดลอกรหัสแนะนำแล้ว';
+
+  @override
+  String get referralClaimTitle => 'มีรหัสแนะนำไหม?';
+
+  @override
+  String get referralClaimField => 'กรอกรหัสแนะนำ';
+
+  @override
+  String get referralClaimButton => 'ใช้รหัส';
+
+  @override
+  String get referralClaimed => 'ใช้รหัสแนะนำแล้ว';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return 'ชวนแล้ว $invited คน · รับรางวัล $rewarded ครั้ง';
+  }
+
+  @override
+  String get err_self_referral => 'ใช้รหัสของตัวเองไม่ได้';
+
+  @override
+  String get err_referee_already_booked =>
+      'กรอกรหัสได้ก่อนการจองครั้งแรกเท่านั้น';
+
+  @override
+  String get err_already_referred => 'ใช้รหัสแนะนำไปแล้ว';
+
+  @override
+  String get err_invalid_referral_code => 'ตรวจสอบรหัสแนะนำอีกครั้ง';
+
+  @override
+  String get err_referral_disabled => 'ตอนนี้ปิดระบบแนะนำเพื่อน';
+
+  @override
+  String get err_invalid_photos => 'แนบได้เฉพาะรูปที่อัปโหลดผ่าน Malkkeum';
+
+  @override
+  String get welcomeOfferTitle => 'ส่วนลดการจองครั้งแรก';
+
+  @override
+  String get welcomeOfferBody =>
+      'ใช้อัตโนมัติกับการจองครั้งแรกของลูกค้าใหม่ ไม่รวมกับคูปอง';
+
+  @override
+  String get offerKindAmount => 'จำนวนเงินคงที่ (วอน)';
+
+  @override
+  String get offerKindPercent => 'เปอร์เซ็นต์ (%)';
+
+  @override
+  String get offerValue => 'มูลค่าส่วนลด';
+
+  @override
+  String get offerEnabled => 'เปิดใช้';
+
+  @override
+  String get offerSaved => 'บันทึกแล้ว';
+
+  @override
+  String get referralSettingsTitle => 'รางวัลแนะนำเพื่อน';
+
+  @override
+  String get referralSettingsBody =>
+      'จ่ายเมื่อการจองครั้งแรกของเพื่อนเสร็จและชำระเงินแล้ว บล็อกการแนะนำตัวเองและเบอร์ซ้ำ';
+
+  @override
+  String get referralRewardAmount => 'มูลค่ารางวัล (วอน)';
+
+  @override
+  String get reviewsModerationTitle => 'จัดการรีวิว';
+
+  @override
+  String get reviewHide => 'ซ่อน';
+
+  @override
+  String get reviewShow => 'แสดงอีกครั้ง';
+
+  @override
+  String get reviewHiddenTag => 'ซ่อนอยู่';
+
+  @override
+  String get growthAverageRating => 'คะแนนเฉลี่ย';
+
+  @override
+  String growthReviewCount(String count) {
+    return 'รีวิว $count รายการ';
+  }
+
+  @override
+  String get growthReferralConversion => 'อัตราการแนะนำสำเร็จ';
+
+  @override
+  String get growthTab => 'การเติบโต';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded จาก $invited';
+  }
+
+  @override
+  String get cOps => 'สถานะระบบ';
+
+  @override
+  String get oLevelGreen => 'ปกติ';
+
+  @override
+  String get oLevelYellow => 'ควรตรวจสอบ';
+
+  @override
+  String get oLevelRed => 'ต้องดำเนินการ';
+
+  @override
+  String get oOverall => 'สถานะเซิร์ฟเวอร์';
+
+  @override
+  String get oRefresh => 'รีเฟรช';
+
+  @override
+  String get oVersion => 'เวอร์ชัน';
+
+  @override
+  String get oUptime => 'ทำงานมาแล้ว';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours ชม. $minutes นาที';
+  }
+
+  @override
+  String get oChecks => 'รายการตรวจสอบ';
+
+  @override
+  String get oCheckDb => 'ฐานข้อมูล';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'ตอบสนอง $ms ms · ขนาด $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'ดิสก์เซิร์ฟเวอร์';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return 'ว่าง $pct%';
+  }
+
+  @override
+  String get oCheckBackup => 'สำรองข้อมูลอัตโนมัติ';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'สำรองล่าสุดเมื่อ $hours ชม. ที่แล้ว';
+  }
+
+  @override
+  String get oCheckBackupNone => 'ยังไม่มีการสำรองข้อมูล';
+
+  @override
+  String get oCheckErrors => 'ข้อผิดพลาดของเซิร์ฟเวอร์ (24 ชม.)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'การชำระเงินที่ต้องตรวจ';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 ชม.)';
+  }
+
+  @override
+  String get oCheckWebhook => 'แจ้งเตือนการชำระเงิน (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'ลายเซ็นไม่ผ่าน $count (24 ชม.)';
+  }
+
+  @override
+  String get oIntegrations => 'บริการภายนอก';
+
+  @override
+  String get oIntNotSet => 'ยังไม่ได้ตั้งค่า';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'สำเร็จล่าสุด $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'ล้มเหลวล่าสุด $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'ยังไม่มีการใช้งาน';
+
+  @override
+  String get oActDb =>
+      'เชื่อมต่อฐานข้อมูลไม่ได้ รัน malkkeum logs บนเซิร์ฟเวอร์ และรีสตาร์ตหากยังเกิดซ้ำ';
+
+  @override
+  String get oActDisk =>
+      'พื้นที่ว่างในดิสก์น้อยกว่า 10% ลบไฟล์สำรองเก่าหรือเพิ่มพื้นที่ดิสก์';
+
+  @override
+  String get oActBackup =>
+      'การสำรองข้อมูลอัตโนมัติเลยกำหนด รัน malkkeum backup บนเซิร์ฟเวอร์และตรวจ backups/backup.log';
+
+  @override
+  String get oActErrors =>
+      'มีข้อผิดพลาดของเซิร์ฟเวอร์มาก ดูบรรทัด error ใน malkkeum logs และส่งให้ผู้พัฒนาหากเกิดซ้ำ';
+
+  @override
+  String get oActPayments =>
+      'อาจชำระเงินสำเร็จแล้วแต่ยังไม่ได้ดำเนินการอัตโนมัติ ตรวจใน PortOne และคืนเงินเองหากจำเป็น';
+
+  @override
+  String get oActWebhook =>
+      'การตรวจลายเซ็นการแจ้งเตือนการชำระเงินไม่ผ่าน ใส่ webhook secret ใหม่ที่ ตั้งค่า > การชำระเงิน (PortOne)';
+
+  @override
+  String get oActIntegration =>
+      'การเชื่อมต่อนี้ล้มเหลว ตรวจคีย์ในหน้าตั้งค่าแล้วกด Test connection';
+
+  @override
+  String get oActNotSet => 'ยังไม่ได้ตั้งค่า ใส่คีย์ในหน้าตั้งค่า';
+
+  @override
+  String get oAlerts => 'การตั้งค่าการแจ้งเตือน';
+
+  @override
+  String get oAlertsHint =>
+      'หากมีปัญหา จะแจ้งในกล่องข้อความและส่ง SMS ถึงโทรศัพท์เจ้าของ ปัญหาเดิมจะส่งทุก 6 ชั่วโมง';
+
+  @override
+  String get oRuleSms => 'ส่ง SMS ไม่สำเร็จ';
+
+  @override
+  String get oRulePush => 'แจ้งเตือนแบบพุชไม่สำเร็จ';
+
+  @override
+  String get oRulePayment => 'การเชื่อมต่อการชำระเงินไม่สำเร็จ';
+
+  @override
+  String get oRuleStuck => 'การชำระเงินไม่ได้ดำเนินการอัตโนมัติ';
+
+  @override
+  String get oRuleSocial => 'เข้าสู่ระบบด้วยโซเชียลไม่สำเร็จ';
+
+  @override
+  String get oRuleBackup => 'ข้ามการสำรองข้อมูลอัตโนมัติ';
+
+  @override
+  String get oRuleDisk => 'ดิสก์เกือบเต็ม';
+
+  @override
+  String get oQuietHours => 'ช่วงเวลาเงียบ';
+
+  @override
+  String get oQuietFrom => 'ตั้งแต่';
+
+  @override
+  String get oQuietTo => 'ถึง';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'ไม่แจ้งเตือนในช่วงนี้ และจะส่งหนึ่งข้อความหลังจบช่วง';
+
+  @override
+  String get oAlertPhone => 'โทรศัพท์รับการแจ้งเตือน';
+
+  @override
+  String get oAlertPhoneHint =>
+      'เว้นว่างเพื่อใช้เบอร์ฝ่ายสนับสนุนในข้อมูลธุรกิจ';
+
+  @override
+  String get oSave => 'บันทึก';
+
+  @override
+  String get oSaved => 'บันทึกการตั้งค่าการแจ้งเตือนแล้ว';
+
+  @override
+  String get oSaveFailed => 'บันทึกไม่สำเร็จ ตรวจสอบค่าที่กรอก';
+
+  @override
+  String get oLoadFailed => 'โหลดสถานะไม่สำเร็จ';
+
+  @override
+  String get oBackupOffsite => 'สำรองข้อมูลภายนอก (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'ปิดอยู่ เปิดได้ที่ ตั้งค่า > สำรองข้อมูลภายนอก';
+
+  @override
+  String get oLastBackup => 'สำรองล่าสุด';
+
+  @override
+  String get oDiskFree => 'พื้นที่ว่าง';
+
+  @override
+  String get oNoData => 'ยังไม่มีข้อมูล';
+
+  @override
+  String get cIntBackup => 'สำรองข้อมูลภายนอก (รองรับ S3)';
+
+  @override
   String get pTabJobs => 'งาน';
 
   @override
@@ -2306,6 +2867,49 @@ class TTh extends T {
 
   @override
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'มีเวอร์ชันใหม่ $version';
+  }
+
+  @override
+  String get uUpdateNow => 'อัปเดต';
+
+  @override
+  String get uUpdateLater => 'ไว้ทีหลัง';
+
+  @override
+  String get uUpdateRequiredTitle => 'ต้องอัปเดตแอป';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'เวอร์ชันนี้ไม่รองรับแล้ว กรุณาอัปเดตจากสโตร์';
+
+  @override
+  String get uUpdateStore => 'อัปเดตจากสโตร์';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'ลิงก์อัปเดตยังไม่พร้อม กรุณาลองใหม่ภายหลัง';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'เวอร์ชันปัจจุบัน $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'เวอร์ชันแอป';
+
+  @override
+  String get uAppVersionHint =>
+      'แอปที่ต่ำกว่าเวอร์ชันขั้นต่ำจะค้างที่หน้าอัปเดต ตัวอย่าง: 1.2.0';
+
+  @override
+  String get uMinVersion => 'เวอร์ชันขั้นต่ำ';
+
+  @override
+  String get uLatestVersion => 'เวอร์ชันล่าสุด';
 
   @override
   String get webBookNow => 'จองบนเว็บเลย';

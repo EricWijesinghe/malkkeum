@@ -9,6 +9,39 @@ class TNe extends T {
   TNe([String locale = 'ne']) : super(locale);
 
   @override
+  String get aiLabel => 'AI सहायक';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'ग्राहकको च्याटमा स्वतः जवाफ दिन्छ। प्रत्येक सन्देशमा API शुल्क लाग्छ।';
+
+  @override
+  String get aiModeOffline => 'कर्मचारी नभएको बेला मात्र जवाफ दिन्छ';
+
+  @override
+  String get aiModeAlways => 'AI सधैं पहिले जवाफ दिन्छ';
+
+  @override
+  String get aiPause => 'AI रोक्नुहोस्';
+
+  @override
+  String get aiResume => 'AI पुनः सुरु गर्नुहोस्';
+
+  @override
+  String get aiPausedNote => 'यो च्याटमा AI रोकिएको छ';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'यस महिनाको AI कल: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI सहायक बन्द छ';
+
+  @override
   String get apSocialOr => 'वा';
 
   @override
@@ -1687,6 +1720,536 @@ class TNe extends T {
   String get themeTip => 'थिम परिवर्तन गर्नुहोस्';
 
   @override
+  String get fFinance => 'वित्त';
+
+  @override
+  String get fPeriodDay => 'दिन';
+
+  @override
+  String get fPeriodWeek => 'हप्ता';
+
+  @override
+  String get fPeriodMonth => 'महिना';
+
+  @override
+  String get fPeriodCustom => 'अनुकूल';
+
+  @override
+  String get fFrom => 'देखि';
+
+  @override
+  String get fTo => 'सम्म';
+
+  @override
+  String get fGross => 'कुल बुकिङ रकम';
+
+  @override
+  String get fRefunds => 'फिर्ता';
+
+  @override
+  String get fNetRevenue => 'खुद आम्दानी';
+
+  @override
+  String get fPlatformFee => 'प्लेटफर्म शुल्क';
+
+  @override
+  String get fPaidOut => 'साझेदारलाई भुक्तानी';
+
+  @override
+  String get fPendingOut => 'भुक्तानी बाँकी';
+
+  @override
+  String get fHeldOut => 'रोकिएको';
+
+  @override
+  String get fVatEstimate => 'VAT अनुमान';
+
+  @override
+  String get fVatNote =>
+      'प्लेटफर्म शुल्कको १०% अनुमान हो। लेखापालसँग पुष्टि गर्नुहोस्।';
+
+  @override
+  String get fAov => 'औसत अर्डर मूल्य';
+
+  @override
+  String get fBookings => 'बुकिङ';
+
+  @override
+  String get fCancelRate => 'रद्द दर';
+
+  @override
+  String get fDiscounts => 'छुट र कुपन';
+
+  @override
+  String get fMethods => 'भुक्तानी विधि';
+
+  @override
+  String get fTrend => 'प्रवृत्ति';
+
+  @override
+  String fRangeDays(String n) {
+    return 'अन्तिम $n दिन';
+  }
+
+  @override
+  String get fRangeWeeks => 'अन्तिम १२ हप्ता';
+
+  @override
+  String get fRangeMonths => 'अन्तिम १२ महिना';
+
+  @override
+  String get fByPartner => 'साझेदार अनुसार कमाइ';
+
+  @override
+  String get fByService => 'सेवा अनुसार आम्दानी';
+
+  @override
+  String get fExportTitle => 'लेखा निर्यात';
+
+  @override
+  String get fExportLedger => 'भुक्तानी खाता CSV';
+
+  @override
+  String get fExportSettlements => 'सेटलमेन्ट CSV';
+
+  @override
+  String get fExportMonthly => 'मासिक सारांश CSV (लेखापाल)';
+
+  @override
+  String get fDownload => 'CSV डाउनलोड';
+
+  @override
+  String get fDownloadWebOnly => 'CSV डाउनलोड वेब कन्सोलबाट गर्नुहोस्';
+
+  @override
+  String get fDownloadFailed => 'डाउनलोड भएन';
+
+  @override
+  String get fNoRecords => 'यस अवधिमा कुनै रेकर्ड छैन';
+
+  @override
+  String get fLoadFailed => 'वित्तीय डाटा लोड हुन सकेन';
+
+  @override
+  String get fRetry => 'फेरि प्रयास';
+
+  @override
+  String get fColPartner => 'साझेदार';
+
+  @override
+  String get fColJobs => 'संख्या';
+
+  @override
+  String get fColSettled => 'कुल सेटल';
+
+  @override
+  String get fColFee => 'शुल्क';
+
+  @override
+  String get fColNet => 'खुद';
+
+  @override
+  String get pEarnings => 'कमाइ';
+
+  @override
+  String get pNextPayout => 'अर्को भुक्तानी';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date मा भुक्तानी';
+  }
+
+  @override
+  String get pNoPayout => 'कुनै भुक्तानी तालिकामा छैन';
+
+  @override
+  String get pPendingTotal => 'भुक्तानी पर्खँदै';
+
+  @override
+  String get pPaidTotal => 'भुक्तानी भइसक्यो';
+
+  @override
+  String get pWeekly => 'साप्ताहिक';
+
+  @override
+  String get pMonthly => 'मासिक';
+
+  @override
+  String proofHomes(String count) {
+    return 'यस महिना $count घर सफा गरियो';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'औसत $rating स्टार · $count समीक्षा';
+  }
+
+  @override
+  String get proofReviewsTitle => 'हालका समीक्षा';
+
+  @override
+  String get rebookTitle => 'अघिल्लो सेवा फेरि बुक गर्ने हो?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · अन्तिम भ्रमण $date';
+  }
+
+  @override
+  String get rebookButton => 'फेरि बुक गर्नुहोस्';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count स्थान बाँकी';
+  }
+
+  @override
+  String get reviewSheetTitle => 'यो सफाइ कस्तो भयो?';
+
+  @override
+  String get reviewPhotosAdd => 'फोटो थप्नुहोस्';
+
+  @override
+  String get reviewPhotosHint => 'अधिकतम ५ फोटो';
+
+  @override
+  String get reviewSaved => 'समीक्षाका लागि धन्यवाद';
+
+  @override
+  String get reviewPhotoFailed => 'फोटो अपलोड भएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get referralTitle => 'साथीलाई निम्ता दिनुहोस्, कुपन पाउनुहोस्';
+
+  @override
+  String referralBody(String amount) {
+    return 'साथीले पहिलो बुकिङ पूरा गर्दा तपाईं दुवैले $amount कुपन पाउनुहुन्छ';
+  }
+
+  @override
+  String get referralCopy => 'कोड कपी गर्नुहोस्';
+
+  @override
+  String get referralCopied => 'रेफरल कोड कपी भयो';
+
+  @override
+  String get referralClaimTitle => 'रेफरल कोड छ?';
+
+  @override
+  String get referralClaimField => 'रेफरल कोड लेख्नुहोस्';
+
+  @override
+  String get referralClaimButton => 'लागू गर्नुहोस्';
+
+  @override
+  String get referralClaimed => 'रेफरल कोड लागू भयो';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited जनालाई निम्ता · $rewarded पुरस्कार';
+  }
+
+  @override
+  String get err_self_referral => 'आफ्नै कोड प्रयोग गर्न मिल्दैन';
+
+  @override
+  String get err_referee_already_booked =>
+      'पहिलो बुकिङ अघि मात्र कोड थप्न सकिन्छ';
+
+  @override
+  String get err_already_referred => 'रेफरल कोड पहिल्यै लागू भइसकेको छ';
+
+  @override
+  String get err_invalid_referral_code => 'रेफरल कोड जाँच गर्नुहोस्';
+
+  @override
+  String get err_referral_disabled => 'अहिले रेफरल रोकिएको छ';
+
+  @override
+  String get err_invalid_photos =>
+      'Malkkeum मार्फत अपलोड गरिएका फोटो मात्र संलग्न गर्न सकिन्छ';
+
+  @override
+  String get welcomeOfferTitle => 'पहिलो बुकिङ छुट';
+
+  @override
+  String get welcomeOfferBody =>
+      'नयाँ ग्राहकको पहिलो बुकिङमा स्वतः लागू हुन्छ। कुपनसँग मिलाइँदैन।';
+
+  @override
+  String get offerKindAmount => 'निश्चित रकम (वोन)';
+
+  @override
+  String get offerKindPercent => 'प्रतिशत (%)';
+
+  @override
+  String get offerValue => 'छुट मान';
+
+  @override
+  String get offerEnabled => 'सक्रिय';
+
+  @override
+  String get offerSaved => 'सुरक्षित भयो';
+
+  @override
+  String get referralSettingsTitle => 'रेफरल इनाम';
+
+  @override
+  String get referralSettingsBody =>
+      'साथीको पहिलो बुकिङ पूरा भई भुक्तानी भएपछि दिइन्छ। आफैलाई रेफर र दोहोरिएको फोन नम्बर रोकिन्छ।';
+
+  @override
+  String get referralRewardAmount => 'इनाम रकम (वोन)';
+
+  @override
+  String get reviewsModerationTitle => 'समीक्षा व्यवस्थापन';
+
+  @override
+  String get reviewHide => 'लुकाउनुहोस्';
+
+  @override
+  String get reviewShow => 'फेरि देखाउनुहोस्';
+
+  @override
+  String get reviewHiddenTag => 'लुकाइएको';
+
+  @override
+  String get growthAverageRating => 'औसत मूल्याङ्कन';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count समीक्षा';
+  }
+
+  @override
+  String get growthReferralConversion => 'रेफरल रूपान्तरण';
+
+  @override
+  String get growthTab => 'वृद्धि';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$invited मध्ये $rewarded';
+  }
+
+  @override
+  String get cOps => 'प्रणाली स्थिति';
+
+  @override
+  String get oLevelGreen => 'सामान्य';
+
+  @override
+  String get oLevelYellow => 'जाँच गर्नुहोस्';
+
+  @override
+  String get oLevelRed => 'कारबाही चाहियो';
+
+  @override
+  String get oOverall => 'सर्भर स्थिति';
+
+  @override
+  String get oRefresh => 'ताजा गर्नुहोस्';
+
+  @override
+  String get oVersion => 'संस्करण';
+
+  @override
+  String get oUptime => 'चलेको समय';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours घण्टा $minutes मिनेट';
+  }
+
+  @override
+  String get oChecks => 'जाँचहरू';
+
+  @override
+  String get oCheckDb => 'डेटाबेस';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'प्रतिक्रिया $ms ms · आकार $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'सर्भर डिस्क';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% खाली';
+  }
+
+  @override
+  String get oCheckBackup => 'स्वचालित ब्याकअप';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'अन्तिम ब्याकअप $hours घण्टा अगाडि';
+  }
+
+  @override
+  String get oCheckBackupNone => 'अहिलेसम्म ब्याकअप छैन';
+
+  @override
+  String get oCheckErrors => 'सर्भर त्रुटि (२४ घण्टा)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'जाँच गर्नुपर्ने भुक्तानी';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (२४ घण्टा)';
+  }
+
+  @override
+  String get oCheckWebhook => 'भुक्तानी सूचना (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'हस्ताक्षर असफल $count (२४ घण्टा)';
+  }
+
+  @override
+  String get oIntegrations => 'बाह्य सेवाहरू';
+
+  @override
+  String get oIntNotSet => 'सेटअप भएको छैन';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'अन्तिम सफलता $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'अन्तिम असफलता $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'अहिलेसम्म प्रयोग भएको छैन';
+
+  @override
+  String get oActDb =>
+      'डेटाबेससँग जडान हुन सकेन। सर्भरमा malkkeum logs चलाउनुहोस्; जारी रहेमा पुनः सुरु गर्नुहोस्।';
+
+  @override
+  String get oActDisk =>
+      'डिस्कमा १०% भन्दा कम खाली ठाउँ छ। पुराना ब्याकअप मेटाउनुहोस् वा डिस्क थप्नुहोस्।';
+
+  @override
+  String get oActBackup =>
+      'स्वचालित ब्याकअप ढिलो भएको छ। सर्भरमा malkkeum backup चलाउनुहोस् र backups/backup.log हेर्नुहोस्।';
+
+  @override
+  String get oActErrors =>
+      'सर्भर त्रुटि धेरै छन्। malkkeum logs मा error लाइनहरू हेर्नुहोस्; दोहोरिए विकासकर्तालाई पठाउनुहोस्।';
+
+  @override
+  String get oActPayments =>
+      'भुक्तानी भएको हुन सक्छ तर स्वचालित रूपमा प्रशोधन भएको छैन। PortOne मा जाँच गर्नुहोस् र आवश्यक परे म्यानुअल रिफन्ड गर्नुहोस्।';
+
+  @override
+  String get oActWebhook =>
+      'भुक्तानी सूचनाको हस्ताक्षर जाँच असफल भयो। सेटअप > भुक्तानी (PortOne) मा webhook secret फेरि राख्नुहोस्।';
+
+  @override
+  String get oActIntegration =>
+      'यो जडान असफल भइरहेको छ। सेटअपमा कुञ्जीहरू जाँच गरी Test connection थिच्नुहोस्।';
+
+  @override
+  String get oActNotSet =>
+      'अहिलेसम्म सेटअप भएको छैन। सेटअपमा कुञ्जी राख्नुहोस्।';
+
+  @override
+  String get oAlerts => 'सूचना सेटिङ';
+
+  @override
+  String get oAlertsHint =>
+      'समस्या भएमा इनबक्स र मालिकको फोनमा SMS पठाइन्छ। उही समस्या हरेक ६ घण्टामा एक पटक मात्र पठाइन्छ।';
+
+  @override
+  String get oRuleSms => 'SMS पठाउन असफल';
+
+  @override
+  String get oRulePush => 'पुश सूचना असफल';
+
+  @override
+  String get oRulePayment => 'भुक्तानी जडान असफल';
+
+  @override
+  String get oRuleStuck => 'भुक्तानी स्वचालित रूपमा प्रशोधन भएन';
+
+  @override
+  String get oRuleSocial => 'सामाजिक लगइन असफल';
+
+  @override
+  String get oRuleBackup => 'स्वचालित ब्याकअप छुट्यो';
+
+  @override
+  String get oRuleDisk => 'डिस्क लगभग भरियो';
+
+  @override
+  String get oQuietHours => 'शान्त समय';
+
+  @override
+  String get oQuietFrom => 'सुरु';
+
+  @override
+  String get oQuietTo => 'सम्म';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'यो समयमा सूचना पठाइँदैन; समाप्त भएपछि एक पटक पठाइन्छ।';
+
+  @override
+  String get oAlertPhone => 'सूचना पाउने फोन';
+
+  @override
+  String get oAlertPhoneHint =>
+      'खाली छोडे व्यवसाय जानकारीमा भएको सहायता नम्बरमा पठाइन्छ।';
+
+  @override
+  String get oSave => 'सेभ';
+
+  @override
+  String get oSaved => 'सूचना सेटिङ सेभ भयो';
+
+  @override
+  String get oSaveFailed => 'सेभ गर्न सकिएन। मानहरू जाँच गर्नुहोस्।';
+
+  @override
+  String get oLoadFailed => 'स्थिति लोड गर्न सकिएन';
+
+  @override
+  String get oBackupOffsite => 'बाह्य ब्याकअप (S3)';
+
+  @override
+  String get oBackupOffsiteOff => 'बन्द छ। सेटअप > बाह्य ब्याकअपमा खोल्नुहोस्।';
+
+  @override
+  String get oLastBackup => 'अन्तिम ब्याकअप';
+
+  @override
+  String get oDiskFree => 'खाली ठाउँ';
+
+  @override
+  String get oNoData => 'अहिलेसम्म डेटा छैन';
+
+  @override
+  String get cIntBackup => 'बाह्य ब्याकअप (S3-सँग मिल्ने)';
+
+  @override
   String get pTabJobs => 'काम';
 
   @override
@@ -2311,6 +2874,49 @@ class TNe extends T {
 
   @override
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'नयाँ संस्करण $version उपलब्ध छ';
+  }
+
+  @override
+  String get uUpdateNow => 'अपडेट गर्नुहोस्';
+
+  @override
+  String get uUpdateLater => 'पछि';
+
+  @override
+  String get uUpdateRequiredTitle => 'अपडेट आवश्यक छ';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'यो संस्करण अब समर्थित छैन। कृपया स्टोरबाट अपडेट गर्नुहोस्।';
+
+  @override
+  String get uUpdateStore => 'स्टोरमा अपडेट गर्नुहोस्';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'अपडेट लिंक अझै तयार छैन। पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'हालको संस्करण $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'एप संस्करणहरू';
+
+  @override
+  String get uAppVersionHint =>
+      'न्यूनतम संस्करणभन्दा तल्लो एप अपडेट स्क्रिनमा रोकिनेछ। उदाहरण: 1.2.0';
+
+  @override
+  String get uMinVersion => 'न्यूनतम संस्करण';
+
+  @override
+  String get uLatestVersion => 'नवीनतम संस्करण';
 
   @override
   String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';

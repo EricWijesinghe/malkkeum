@@ -9,6 +9,39 @@ class TId extends T {
   TId([String locale = 'id']) : super(locale);
 
   @override
+  String get aiLabel => 'Asisten AI';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Menjawab chat pelanggan secara otomatis. Setiap pesan dikenai biaya API.';
+
+  @override
+  String get aiModeOffline => 'Jawab hanya saat staf tidak ada';
+
+  @override
+  String get aiModeAlways => 'AI selalu menjawab lebih dulu';
+
+  @override
+  String get aiPause => 'Jeda AI';
+
+  @override
+  String get aiResume => 'Lanjutkan AI';
+
+  @override
+  String get aiPausedNote => 'AI dijeda untuk chat ini';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Panggilan AI bulan ini: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI pendamping mati';
+
+  @override
   String get apSocialOr => 'atau';
 
   @override
@@ -1691,6 +1724,536 @@ class TId extends T {
   String get themeTip => 'Ganti tema';
 
   @override
+  String get fFinance => 'Keuangan';
+
+  @override
+  String get fPeriodDay => 'Hari';
+
+  @override
+  String get fPeriodWeek => 'Minggu';
+
+  @override
+  String get fPeriodMonth => 'Bulan';
+
+  @override
+  String get fPeriodCustom => 'Kustom';
+
+  @override
+  String get fFrom => 'Dari';
+
+  @override
+  String get fTo => 'Sampai';
+
+  @override
+  String get fGross => 'Total pembayaran';
+
+  @override
+  String get fRefunds => 'Pengembalian';
+
+  @override
+  String get fNetRevenue => 'Pendapatan bersih';
+
+  @override
+  String get fPlatformFee => 'Biaya platform';
+
+  @override
+  String get fPaidOut => 'Dibayarkan ke mitra';
+
+  @override
+  String get fPendingOut => 'Pembayaran tertunda';
+
+  @override
+  String get fHeldOut => 'Ditahan';
+
+  @override
+  String get fVatEstimate => 'Estimasi PPN';
+
+  @override
+  String get fVatNote =>
+      'Estimasi 10% dari biaya platform. Konfirmasi dengan akuntan Anda.';
+
+  @override
+  String get fAov => 'Rata-rata nilai pesanan';
+
+  @override
+  String get fBookings => 'Pemesanan';
+
+  @override
+  String get fCancelRate => 'Tingkat pembatalan';
+
+  @override
+  String get fDiscounts => 'Diskon & kupon';
+
+  @override
+  String get fMethods => 'Metode pembayaran';
+
+  @override
+  String get fTrend => 'Tren';
+
+  @override
+  String fRangeDays(String n) {
+    return '$n hari terakhir';
+  }
+
+  @override
+  String get fRangeWeeks => '12 minggu terakhir';
+
+  @override
+  String get fRangeMonths => '12 bulan terakhir';
+
+  @override
+  String get fByPartner => 'Pendapatan per mitra';
+
+  @override
+  String get fByService => 'Pendapatan per layanan';
+
+  @override
+  String get fExportTitle => 'Ekspor akuntansi';
+
+  @override
+  String get fExportLedger => 'CSV buku pembayaran';
+
+  @override
+  String get fExportSettlements => 'CSV penyelesaian';
+
+  @override
+  String get fExportMonthly => 'CSV ringkasan bulanan (akuntan)';
+
+  @override
+  String get fDownload => 'Unduh CSV';
+
+  @override
+  String get fDownloadWebOnly => 'Unduh CSV tersedia di konsol web';
+
+  @override
+  String get fDownloadFailed => 'Gagal mengunduh';
+
+  @override
+  String get fNoRecords => 'Tidak ada catatan pada periode ini';
+
+  @override
+  String get fLoadFailed => 'Data keuangan gagal dimuat';
+
+  @override
+  String get fRetry => 'Coba lagi';
+
+  @override
+  String get fColPartner => 'Mitra';
+
+  @override
+  String get fColJobs => 'Jumlah';
+
+  @override
+  String get fColSettled => 'Total penyelesaian';
+
+  @override
+  String get fColFee => 'Biaya';
+
+  @override
+  String get fColNet => 'Bersih';
+
+  @override
+  String get pEarnings => 'Penghasilan';
+
+  @override
+  String get pNextPayout => 'Pembayaran berikutnya';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'Dibayar $date';
+  }
+
+  @override
+  String get pNoPayout => 'Belum ada pembayaran terjadwal';
+
+  @override
+  String get pPendingTotal => 'Menunggu dibayar';
+
+  @override
+  String get pPaidTotal => 'Sudah dibayar';
+
+  @override
+  String get pWeekly => 'Mingguan';
+
+  @override
+  String get pMonthly => 'Bulanan';
+
+  @override
+  String proofHomes(String count) {
+    return '$count rumah dibersihkan bulan ini';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Rata-rata $rating bintang · $count ulasan';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Ulasan terbaru';
+
+  @override
+  String get rebookTitle => 'Pesan lagi layanan terakhir?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · kunjungan terakhir $date';
+  }
+
+  @override
+  String get rebookButton => 'Pesan lagi';
+
+  @override
+  String seatsLeft(String count) {
+    return 'Sisa $count tempat';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Bagaimana pembersihan kali ini?';
+
+  @override
+  String get reviewPhotosAdd => 'Tambah foto';
+
+  @override
+  String get reviewPhotosHint => 'Maksimal 5 foto';
+
+  @override
+  String get reviewSaved => 'Terima kasih atas ulasan Anda';
+
+  @override
+  String get reviewPhotoFailed => 'Foto gagal diunggah. Coba lagi.';
+
+  @override
+  String get referralTitle => 'Undang teman, dapatkan kupon';
+
+  @override
+  String referralBody(String amount) {
+    return 'Saat teman Anda menyelesaikan pesanan pertama, Anda berdua mendapat kupon $amount';
+  }
+
+  @override
+  String get referralCopy => 'Salin kode';
+
+  @override
+  String get referralCopied => 'Kode referral disalin';
+
+  @override
+  String get referralClaimTitle => 'Punya kode referral?';
+
+  @override
+  String get referralClaimField => 'Masukkan kode referral';
+
+  @override
+  String get referralClaimButton => 'Terapkan';
+
+  @override
+  String get referralClaimed => 'Kode referral diterapkan';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited diundang · $rewarded hadiah';
+  }
+
+  @override
+  String get err_self_referral => 'Anda tidak bisa memakai kode sendiri';
+
+  @override
+  String get err_referee_already_booked =>
+      'Kode hanya bisa dimasukkan sebelum pesanan pertama';
+
+  @override
+  String get err_already_referred => 'Kode referral sudah diterapkan';
+
+  @override
+  String get err_invalid_referral_code => 'Periksa kembali kode referral';
+
+  @override
+  String get err_referral_disabled => 'Referral sedang dijeda';
+
+  @override
+  String get err_invalid_photos =>
+      'Hanya foto yang diunggah lewat Malkkeum yang bisa dilampirkan';
+
+  @override
+  String get welcomeOfferTitle => 'Diskon pesanan pertama';
+
+  @override
+  String get welcomeOfferBody =>
+      'Otomatis berlaku untuk pesanan pertama pelanggan baru. Tidak digabung dengan kupon.';
+
+  @override
+  String get offerKindAmount => 'Nominal (won)';
+
+  @override
+  String get offerKindPercent => 'Persen (%)';
+
+  @override
+  String get offerValue => 'Nilai diskon';
+
+  @override
+  String get offerEnabled => 'Aktif';
+
+  @override
+  String get offerSaved => 'Tersimpan';
+
+  @override
+  String get referralSettingsTitle => 'Hadiah referral';
+
+  @override
+  String get referralSettingsBody =>
+      'Diberikan setelah pesanan pertama teman selesai dan dibayar. Referral diri sendiri dan nomor ganda diblokir.';
+
+  @override
+  String get referralRewardAmount => 'Nominal hadiah (won)';
+
+  @override
+  String get reviewsModerationTitle => 'Moderasi ulasan';
+
+  @override
+  String get reviewHide => 'Sembunyikan';
+
+  @override
+  String get reviewShow => 'Tampilkan lagi';
+
+  @override
+  String get reviewHiddenTag => 'Disembunyikan';
+
+  @override
+  String get growthAverageRating => 'Rata-rata rating';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count ulasan';
+  }
+
+  @override
+  String get growthReferralConversion => 'Konversi referral';
+
+  @override
+  String get growthTab => 'Pertumbuhan';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded dari $invited';
+  }
+
+  @override
+  String get cOps => 'Status sistem';
+
+  @override
+  String get oLevelGreen => 'Normal';
+
+  @override
+  String get oLevelYellow => 'Perlu dicek';
+
+  @override
+  String get oLevelRed => 'Perlu tindakan';
+
+  @override
+  String get oOverall => 'Status server';
+
+  @override
+  String get oRefresh => 'Muat ulang';
+
+  @override
+  String get oVersion => 'Versi';
+
+  @override
+  String get oUptime => 'Waktu aktif';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours jam $minutes menit';
+  }
+
+  @override
+  String get oChecks => 'Pemeriksaan';
+
+  @override
+  String get oCheckDb => 'Database';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Respons $ms ms · ukuran $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Disk server';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return 'Sisa $pct%';
+  }
+
+  @override
+  String get oCheckBackup => 'Cadangan otomatis';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Cadangan terakhir $hours jam lalu';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Belum ada cadangan';
+
+  @override
+  String get oCheckErrors => 'Error server (24 jam)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Pembayaran perlu dicek';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 jam)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Notifikasi pembayaran (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Tanda tangan gagal $count (24 jam)';
+  }
+
+  @override
+  String get oIntegrations => 'Layanan eksternal';
+
+  @override
+  String get oIntNotSet => 'Belum diatur';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Berhasil terakhir $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Gagal terakhir $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Belum ada penggunaan';
+
+  @override
+  String get oActDb =>
+      'Tidak dapat terhubung ke database. Jalankan malkkeum logs di server; restart jika terus terjadi.';
+
+  @override
+  String get oActDisk =>
+      'Sisa disk di bawah 10%. Hapus cadangan lama atau tambah kapasitas disk.';
+
+  @override
+  String get oActBackup =>
+      'Cadangan otomatis terlambat. Jalankan malkkeum backup di server dan cek backups/backup.log.';
+
+  @override
+  String get oActErrors =>
+      'Banyak error server. Cek baris error di malkkeum logs dan kirim ke pengembang jika berulang.';
+
+  @override
+  String get oActPayments =>
+      'Pembayaran mungkin sudah masuk tetapi belum diproses otomatis. Cek di PortOne dan refund manual jika perlu.';
+
+  @override
+  String get oActWebhook =>
+      'Pemeriksaan tanda tangan notifikasi pembayaran gagal. Masukkan ulang webhook secret di Setup > Payments (PortOne).';
+
+  @override
+  String get oActIntegration =>
+      'Koneksi ini gagal. Cek kunci di Setup lalu tekan Test connection.';
+
+  @override
+  String get oActNotSet => 'Belum diatur. Masukkan kunci di Setup.';
+
+  @override
+  String get oAlerts => 'Pengaturan peringatan';
+
+  @override
+  String get oAlertsHint =>
+      'Masalah dikirim ke kotak masuk dan SMS ke ponsel pemilik. Masalah yang sama hanya dikirim sekali tiap 6 jam.';
+
+  @override
+  String get oRuleSms => 'Pengiriman SMS gagal';
+
+  @override
+  String get oRulePush => 'Notifikasi push gagal';
+
+  @override
+  String get oRulePayment => 'Koneksi pembayaran gagal';
+
+  @override
+  String get oRuleStuck => 'Pembayaran tidak diproses otomatis';
+
+  @override
+  String get oRuleSocial => 'Login sosial gagal';
+
+  @override
+  String get oRuleBackup => 'Cadangan otomatis terlewat';
+
+  @override
+  String get oRuleDisk => 'Disk hampir penuh';
+
+  @override
+  String get oQuietHours => 'Jam tenang';
+
+  @override
+  String get oQuietFrom => 'Dari';
+
+  @override
+  String get oQuietTo => 'Sampai';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'Tidak ada peringatan pada jam ini; satu pesan dikirim setelah selesai.';
+
+  @override
+  String get oAlertPhone => 'Telepon untuk peringatan';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Kosongkan untuk memakai nomor layanan pelanggan di info bisnis.';
+
+  @override
+  String get oSave => 'Simpan';
+
+  @override
+  String get oSaved => 'Pengaturan peringatan disimpan';
+
+  @override
+  String get oSaveFailed => 'Gagal menyimpan. Periksa isiannya.';
+
+  @override
+  String get oLoadFailed => 'Status gagal dimuat';
+
+  @override
+  String get oBackupOffsite => 'Cadangan eksternal (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Mati. Aktifkan di Setup > Cadangan eksternal.';
+
+  @override
+  String get oLastBackup => 'Cadangan terakhir';
+
+  @override
+  String get oDiskFree => 'Ruang kosong';
+
+  @override
+  String get oNoData => 'Belum ada data';
+
+  @override
+  String get cIntBackup => 'Cadangan eksternal (kompatibel S3)';
+
+  @override
   String get pTabJobs => 'Pekerjaan';
 
   @override
@@ -2320,6 +2883,49 @@ class TId extends T {
 
   @override
   String get cInvalidValue => 'Periksa nilai yang diisi';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Versi baru $version tersedia';
+  }
+
+  @override
+  String get uUpdateNow => 'Perbarui';
+
+  @override
+  String get uUpdateLater => 'Nanti';
+
+  @override
+  String get uUpdateRequiredTitle => 'Pembaruan diperlukan';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Versi ini sudah tidak didukung. Silakan perbarui dari toko aplikasi.';
+
+  @override
+  String get uUpdateStore => 'Perbarui di toko';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Tautan pembaruan belum siap. Coba lagi nanti.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Versi saat ini $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Versi aplikasi';
+
+  @override
+  String get uAppVersionHint =>
+      'Aplikasi di bawah versi minimum akan berhenti di layar pembaruan. Versi di bawah yang terbaru akan melihat banner. Contoh: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Versi minimum';
+
+  @override
+  String get uLatestVersion => 'Versi terbaru';
 
   @override
   String get webBookNow => 'Pesan lewat web';

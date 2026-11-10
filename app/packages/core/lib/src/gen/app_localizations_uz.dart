@@ -9,6 +9,39 @@ class TUz extends T {
   TUz([String locale = 'uz']) : super(locale);
 
   @override
+  String get aiLabel => 'AI yordamchi';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Mijozlar chatiga avtomatik javob beradi. Har bir xabar uchun API to\'lovi olinadi.';
+
+  @override
+  String get aiModeOffline => 'Faqat xodimlar bo\'lmaganda javob beradi';
+
+  @override
+  String get aiModeAlways => 'AI doim birinchi javob beradi';
+
+  @override
+  String get aiPause => 'AI ni to\'xtatish';
+
+  @override
+  String get aiResume => 'AI ni davom ettirish';
+
+  @override
+  String get aiPausedNote => 'Bu chatda AI to\'xtatilgan';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Bu oydagi AI chaqiruvlari: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI yordamchi o\'chirilgan';
+
+  @override
   String get apSocialOr => 'yoki';
 
   @override
@@ -1695,6 +1728,539 @@ class TUz extends T {
   String get themeTip => 'Mavzuni o\'zgartirish';
 
   @override
+  String get fFinance => 'Moliya';
+
+  @override
+  String get fPeriodDay => 'Kun';
+
+  @override
+  String get fPeriodWeek => 'Hafta';
+
+  @override
+  String get fPeriodMonth => 'Oy';
+
+  @override
+  String get fPeriodCustom => 'Boshqa';
+
+  @override
+  String get fFrom => 'Boshlanishi';
+
+  @override
+  String get fTo => 'Tugashi';
+
+  @override
+  String get fGross => 'Jami to\'lovlar';
+
+  @override
+  String get fRefunds => 'Qaytarishlar';
+
+  @override
+  String get fNetRevenue => 'Sof daromad';
+
+  @override
+  String get fPlatformFee => 'Platforma komissiyasi';
+
+  @override
+  String get fPaidOut => 'Hamkorlarga to\'langan';
+
+  @override
+  String get fPendingOut => 'To\'lash kutilmoqda';
+
+  @override
+  String get fHeldOut => 'Ushlab qolingan';
+
+  @override
+  String get fVatEstimate => 'QQS (taxminiy)';
+
+  @override
+  String get fVatNote =>
+      'Platforma komissiyasining 10% asosida taxminiy. Buxgalter bilan tekshiring.';
+
+  @override
+  String get fAov => 'O\'rtacha buyurtma';
+
+  @override
+  String get fBookings => 'Buyurtmalar';
+
+  @override
+  String get fCancelRate => 'Bekor qilish foizi';
+
+  @override
+  String get fDiscounts => 'Chegirma va kuponlar';
+
+  @override
+  String get fMethods => 'To\'lov usullari';
+
+  @override
+  String get fTrend => 'Tendensiya';
+
+  @override
+  String fRangeDays(String n) {
+    return 'So\'nggi $n kun';
+  }
+
+  @override
+  String get fRangeWeeks => 'So\'nggi 12 hafta';
+
+  @override
+  String get fRangeMonths => 'So\'nggi 12 oy';
+
+  @override
+  String get fByPartner => 'Hamkorlar bo\'yicha daromad';
+
+  @override
+  String get fByService => 'Xizmat bo\'yicha daromad';
+
+  @override
+  String get fExportTitle => 'Buxgalteriya eksporti';
+
+  @override
+  String get fExportLedger => 'To\'lovlar jurnali CSV';
+
+  @override
+  String get fExportSettlements => 'Hisob-kitoblar CSV';
+
+  @override
+  String get fExportMonthly => 'Oylik xulosa CSV (buxgalter)';
+
+  @override
+  String get fDownload => 'CSV yuklab olish';
+
+  @override
+  String get fDownloadWebOnly => 'CSV faqat veb konsolda yuklanadi';
+
+  @override
+  String get fDownloadFailed => 'Yuklab bo\'lmadi';
+
+  @override
+  String get fNoRecords => 'Bu davrda yozuv yo\'q';
+
+  @override
+  String get fLoadFailed => 'Moliya ma\'lumotlarini yuklab bo\'lmadi';
+
+  @override
+  String get fRetry => 'Qayta urinish';
+
+  @override
+  String get fColPartner => 'Hamkor';
+
+  @override
+  String get fColJobs => 'Soni';
+
+  @override
+  String get fColSettled => 'Jami hisob-kitob';
+
+  @override
+  String get fColFee => 'Komissiya';
+
+  @override
+  String get fColNet => 'Sof';
+
+  @override
+  String get pEarnings => 'Daromad';
+
+  @override
+  String get pNextPayout => 'Keyingi to\'lov';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date sanasida to\'lanadi';
+  }
+
+  @override
+  String get pNoPayout => 'Rejalashtirilgan to\'lov yo\'q';
+
+  @override
+  String get pPendingTotal => 'To\'lash kutilmoqda';
+
+  @override
+  String get pPaidTotal => 'To\'langan';
+
+  @override
+  String get pWeekly => 'Haftalik';
+
+  @override
+  String get pMonthly => 'Oylik';
+
+  @override
+  String proofHomes(String count) {
+    return 'Shu oy $count ta uy tozalandi';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'O‘rtacha $rating yulduz · $count ta sharh';
+  }
+
+  @override
+  String get proofReviewsTitle => 'So‘nggi sharhlar';
+
+  @override
+  String get rebookTitle => 'Oxirgi xizmatni qayta bronlaysizmi?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · oxirgi tashrif $date';
+  }
+
+  @override
+  String get rebookButton => 'Qayta bron qilish';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count ta joy qoldi';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Tozalash qanday o‘tdi?';
+
+  @override
+  String get reviewPhotosAdd => 'Surat qo‘shish';
+
+  @override
+  String get reviewPhotosHint => 'Eng ko‘pi 5 ta surat';
+
+  @override
+  String get reviewSaved => 'Sharhingiz uchun rahmat';
+
+  @override
+  String get reviewPhotoFailed =>
+      'Suratni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get referralTitle => 'Do‘stni taklif qiling, kupon oling';
+
+  @override
+  String referralBody(String amount) {
+    return 'Do‘stingiz birinchi buyurtmasini yakunlasa, ikkingiz ham $amount kupon olasiz';
+  }
+
+  @override
+  String get referralCopy => 'Kodni nusxalash';
+
+  @override
+  String get referralCopied => 'Taklif kodi nusxalandi';
+
+  @override
+  String get referralClaimTitle => 'Taklif kodingiz bormi?';
+
+  @override
+  String get referralClaimField => 'Taklif kodini kiriting';
+
+  @override
+  String get referralClaimButton => 'Qo‘llash';
+
+  @override
+  String get referralClaimed => 'Taklif kodi qo‘llandi';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited ta taklif · $rewarded ta mukofot';
+  }
+
+  @override
+  String get err_self_referral =>
+      'O‘zingizning kodingizdan foydalanib bo‘lmaydi';
+
+  @override
+  String get err_referee_already_booked =>
+      'Kodni faqat birinchi buyurtmadan oldin kiritish mumkin';
+
+  @override
+  String get err_already_referred => 'Taklif kodi allaqachon qo‘llangan';
+
+  @override
+  String get err_invalid_referral_code => 'Taklif kodini tekshiring';
+
+  @override
+  String get err_referral_disabled => 'Hozircha taklif dasturi to‘xtatilgan';
+
+  @override
+  String get err_invalid_photos =>
+      'Faqat Malkkeum orqali yuklangan suratlarni biriktirish mumkin';
+
+  @override
+  String get welcomeOfferTitle => 'Birinchi buyurtma chegirmasi';
+
+  @override
+  String get welcomeOfferBody =>
+      'Yangi mijozning birinchi buyurtmasiga avtomatik qo‘llanadi. Kupon bilan birga ishlamaydi.';
+
+  @override
+  String get offerKindAmount => 'Belgilangan (so‘m)';
+
+  @override
+  String get offerKindPercent => 'Foiz (%)';
+
+  @override
+  String get offerValue => 'Chegirma qiymati';
+
+  @override
+  String get offerEnabled => 'Yoqish';
+
+  @override
+  String get offerSaved => 'Saqlandi';
+
+  @override
+  String get referralSettingsTitle => 'Taklif mukofoti';
+
+  @override
+  String get referralSettingsBody =>
+      'Do‘stning birinchi buyurtmasi yakunlanib, to‘lov qilingach beriladi. O‘z-o‘zini taklif qilish va bir xil raqam bloklanadi.';
+
+  @override
+  String get referralRewardAmount => 'Mukofot miqdori (so‘m)';
+
+  @override
+  String get reviewsModerationTitle => 'Sharhlarni boshqarish';
+
+  @override
+  String get reviewHide => 'Yashirish';
+
+  @override
+  String get reviewShow => 'Qayta ko‘rsatish';
+
+  @override
+  String get reviewHiddenTag => 'Yashirilgan';
+
+  @override
+  String get growthAverageRating => 'O‘rtacha reyting';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count ta sharh';
+  }
+
+  @override
+  String get growthReferralConversion => 'Taklif konversiyasi';
+
+  @override
+  String get growthTab => 'O‘sish';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$invited tadan $rewarded';
+  }
+
+  @override
+  String get cOps => 'Tizim holati';
+
+  @override
+  String get oLevelGreen => 'Yaxshi';
+
+  @override
+  String get oLevelYellow => 'Tekshiring';
+
+  @override
+  String get oLevelRed => 'Harakat kerak';
+
+  @override
+  String get oOverall => 'Server holati';
+
+  @override
+  String get oRefresh => 'Yangilash';
+
+  @override
+  String get oVersion => 'Versiya';
+
+  @override
+  String get oUptime => 'Ishlash vaqti';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours soat $minutes daqiqa';
+  }
+
+  @override
+  String get oChecks => 'Tekshiruvlar';
+
+  @override
+  String get oCheckDb => 'Ma’lumotlar bazasi';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Javob $ms ms · hajmi $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Server diski';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% bo‘sh';
+  }
+
+  @override
+  String get oCheckBackup => 'Avtomatik zaxira';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Oxirgi zaxira $hours soat oldin';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Hali zaxira yo‘q';
+
+  @override
+  String get oCheckErrors => 'Server xatolari (24 soat)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Tekshirilishi kerak bo‘lgan to‘lovlar';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 soat)';
+  }
+
+  @override
+  String get oCheckWebhook => 'To‘lov bildirishnomalari (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Imzo xatosi $count (24 soat)';
+  }
+
+  @override
+  String get oIntegrations => 'Tashqi xizmatlar';
+
+  @override
+  String get oIntNotSet => 'Sozlanmagan';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Oxirgi muvaffaqiyat $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Oxirgi xato $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Hali foydalanilmagan';
+
+  @override
+  String get oActDb =>
+      'Ma’lumotlar bazasiga ulanib bo‘lmadi. Serverda malkkeum logs ni ishga tushiring; davom etsa qayta ishga tushiring.';
+
+  @override
+  String get oActDisk =>
+      'Diskda bo‘sh joy 10% dan kam. Eski zaxiralarni o‘chiring yoki diskni kengaytiring.';
+
+  @override
+  String get oActBackup =>
+      'Avtomatik zaxira kechikdi. Serverda malkkeum backup ni ishga tushiring va backups/backup.log ni tekshiring.';
+
+  @override
+  String get oActErrors =>
+      'Server xatolari ko‘p. malkkeum logs dagi error qatorlarini ko‘ring; takrorlansa dasturchiga yuboring.';
+
+  @override
+  String get oActPayments =>
+      'To‘lov o‘tgan bo‘lishi mumkin, lekin avtomatik qayta ishlanmagan. PortOne da tekshiring va kerak bo‘lsa qo‘lda qaytaring.';
+
+  @override
+  String get oActWebhook =>
+      'To‘lov bildirishnomasi imzosini tekshirish xato. Sozlash > To‘lov (PortOne) da webhook secret ni qayta kiriting.';
+
+  @override
+  String get oActIntegration =>
+      'Bu ulanish ishlamayapti. Sozlashdagi kalitlarni tekshirib, Test connection ni bosing.';
+
+  @override
+  String get oActNotSet => 'Hali sozlanmagan. Sozlashda kalitlarni kiriting.';
+
+  @override
+  String get oAlerts => 'Ogohlantirish sozlamalari';
+
+  @override
+  String get oAlertsHint =>
+      'Muammolar kiruvchi xabarlar va egasining telefoniga SMS orqali yuboriladi. Bir xil muammo 6 soatda bir marta yuboriladi.';
+
+  @override
+  String get oRuleSms => 'SMS yuborish xato';
+
+  @override
+  String get oRulePush => 'Push bildirishnomalar xato';
+
+  @override
+  String get oRulePayment => 'To‘lov ulanishi xato';
+
+  @override
+  String get oRuleStuck => 'To‘lov avtomatik qayta ishlanmadi';
+
+  @override
+  String get oRuleSocial => 'Ijtimoiy tarmoq orqali kirish xato';
+
+  @override
+  String get oRuleBackup => 'Avtomatik zaxira o‘tkazib yuborildi';
+
+  @override
+  String get oRuleDisk => 'Disk deyarli to‘lgan';
+
+  @override
+  String get oQuietHours => 'Jim soatlar';
+
+  @override
+  String get oQuietFrom => 'Dan';
+
+  @override
+  String get oQuietTo => 'Gacha';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'Shu soatlarda bildirishnoma yuborilmaydi; tugagach bitta xabar keladi.';
+
+  @override
+  String get oAlertPhone => 'Ogohlantirish telefoni';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Bo‘sh qoldirsangiz biznes ma’lumotidagi yordam raqamiga yuboriladi.';
+
+  @override
+  String get oSave => 'Saqlash';
+
+  @override
+  String get oSaved => 'Ogohlantirish sozlamalari saqlandi';
+
+  @override
+  String get oSaveFailed =>
+      'Saqlab bo‘lmadi. Kiritilgan qiymatlarni tekshiring.';
+
+  @override
+  String get oLoadFailed => 'Holatni yuklab bo‘lmadi';
+
+  @override
+  String get oBackupOffsite => 'Tashqi zaxira (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'O‘chirilgan. Sozlash > Tashqi zaxirada yoqing.';
+
+  @override
+  String get oLastBackup => 'Oxirgi zaxira';
+
+  @override
+  String get oDiskFree => 'Bo‘sh joy';
+
+  @override
+  String get oNoData => 'Hali ma’lumot yo‘q';
+
+  @override
+  String get cIntBackup => 'Tashqi zaxira (S3 mos)';
+
+  @override
   String get pTabJobs => 'Ishlar';
 
   @override
@@ -2323,6 +2889,49 @@ class TUz extends T {
 
   @override
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Yangi versiya $version chiqdi';
+  }
+
+  @override
+  String get uUpdateNow => 'Yangilash';
+
+  @override
+  String get uUpdateLater => 'Keyinroq';
+
+  @override
+  String get uUpdateRequiredTitle => 'Yangilash talab qilinadi';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Bu versiya endi qo\'llab-quvvatlanmaydi. Do\'kondan yangilang.';
+
+  @override
+  String get uUpdateStore => 'Do\'konda yangilash';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Yangilash havolasi hali tayyor emas. Keyinroq urinib ko\'ring.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Joriy versiya $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Ilova versiyalari';
+
+  @override
+  String get uAppVersionHint =>
+      'Minimal versiyadan past ilovalar yangilash ekranida to\'xtaydi. Misol: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Minimal versiya';
+
+  @override
+  String get uLatestVersion => 'So\'nggi versiya';
 
   @override
   String get webBookNow => 'Veb orqali darhol band qiling';

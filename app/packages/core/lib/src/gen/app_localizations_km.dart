@@ -9,6 +9,39 @@ class TKm extends T {
   TKm([String locale = 'km']) : super(locale);
 
   @override
+  String get aiLabel => 'ជំនួយការ AI';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'ឆ្លើយការជជែករបស់អតិថិជនដោយស្វ័យប្រវត្តិ។ សារនីមួយៗមានថ្លៃ API។';
+
+  @override
+  String get aiModeOffline => 'ឆ្លើយតែពេលគ្មានបុគ្គលិក';
+
+  @override
+  String get aiModeAlways => 'AI តែងឆ្លើយមុនគេ';
+
+  @override
+  String get aiPause => 'ផ្អាក AI';
+
+  @override
+  String get aiResume => 'បន្ត AI';
+
+  @override
+  String get aiPausedNote => 'AI ត្រូវបានផ្អាកសម្រាប់ការជជែកនេះ';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'ការហៅ AI ខែនេះ៖ $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI មិនទាន់បើក';
+
+  @override
   String get apSocialOr => 'ឬ';
 
   @override
@@ -1690,6 +1723,536 @@ class TKm extends T {
   String get themeTip => 'ប្តូរធីម';
 
   @override
+  String get fFinance => 'ហិរញ្ញវត្ថុ';
+
+  @override
+  String get fPeriodDay => 'ថ្ងៃ';
+
+  @override
+  String get fPeriodWeek => 'សប្តាហ៍';
+
+  @override
+  String get fPeriodMonth => 'ខែ';
+
+  @override
+  String get fPeriodCustom => 'កំណត់ខ្លួនឯង';
+
+  @override
+  String get fFrom => 'ពី';
+
+  @override
+  String get fTo => 'ដល់';
+
+  @override
+  String get fGross => 'ការទូទាត់សរុប';
+
+  @override
+  String get fRefunds => 'ការសងប្រាក់វិញ';
+
+  @override
+  String get fNetRevenue => 'ចំណូលសុទ្ធ';
+
+  @override
+  String get fPlatformFee => 'ថ្លៃសេវាវេទិកា';
+
+  @override
+  String get fPaidOut => 'បានបង់ដល់ដៃគូ';
+
+  @override
+  String get fPendingOut => 'កំពុងរង់ចាំបង់';
+
+  @override
+  String get fHeldOut => 'បានផ្អាក';
+
+  @override
+  String get fVatEstimate => 'ពន្ធ VAT (ប៉ាន់ស្មាន)';
+
+  @override
+  String get fVatNote =>
+      'ប៉ាន់ស្មាន ១០% នៃថ្លៃសេវាវេទិកា។ សូមបញ្ជាក់ជាមួយគណនេយ្យករ។';
+
+  @override
+  String get fAov => 'តម្លៃបញ្ជាទិញមធ្យម';
+
+  @override
+  String get fBookings => 'ការកក់';
+
+  @override
+  String get fCancelRate => 'អត្រាលុបចោល';
+
+  @override
+  String get fDiscounts => 'បញ្ចុះតម្លៃ និងគូប៉ុង';
+
+  @override
+  String get fMethods => 'វិធីទូទាត់';
+
+  @override
+  String get fTrend => 'និន្នាការ';
+
+  @override
+  String fRangeDays(String n) {
+    return '$n ថ្ងៃចុងក្រោយ';
+  }
+
+  @override
+  String get fRangeWeeks => '១២ សប្តាហ៍ចុងក្រោយ';
+
+  @override
+  String get fRangeMonths => '១២ ខែចុងក្រោយ';
+
+  @override
+  String get fByPartner => 'ចំណូលតាមដៃគូ';
+
+  @override
+  String get fByService => 'ចំណូលតាមសេវាកម្ម';
+
+  @override
+  String get fExportTitle => 'ទាញយកទិន្នន័យគណនេយ្យ';
+
+  @override
+  String get fExportLedger => 'CSV កំណត់ត្រាទូទាត់';
+
+  @override
+  String get fExportSettlements => 'CSV ការបំពេញការទូទាត់';
+
+  @override
+  String get fExportMonthly => 'CSV សង្ខេបប្រចាំខែ (គណនេយ្យករ)';
+
+  @override
+  String get fDownload => 'ទាញយក CSV';
+
+  @override
+  String get fDownloadWebOnly => 'អាចទាញយក CSV នៅលើកុងសូលវែបបាន';
+
+  @override
+  String get fDownloadFailed => 'ការទាញយកបានបរាជ័យ';
+
+  @override
+  String get fNoRecords => 'គ្មានកំណត់ត្រាក្នុងរយៈពេលនេះ';
+
+  @override
+  String get fLoadFailed => 'មិនអាចផ្ទុកទិន្នន័យហិរញ្ញវត្ថុបានទេ';
+
+  @override
+  String get fRetry => 'ព្យាយាមម្តងទៀត';
+
+  @override
+  String get fColPartner => 'ដៃគូ';
+
+  @override
+  String get fColJobs => 'ចំនួន';
+
+  @override
+  String get fColSettled => 'ការទូទាត់សរុប';
+
+  @override
+  String get fColFee => 'ថ្លៃសេវា';
+
+  @override
+  String get fColNet => 'សុទ្ធ';
+
+  @override
+  String get pEarnings => 'ចំណូល';
+
+  @override
+  String get pNextPayout => 'ការបង់លើកក្រោយ';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'នឹងបង់នៅ $date';
+  }
+
+  @override
+  String get pNoPayout => 'មិនមានការបង់ដែលបានកំណត់ទេ';
+
+  @override
+  String get pPendingTotal => 'កំពុងរង់ចាំបង់';
+
+  @override
+  String get pPaidTotal => 'បានបង់រួច';
+
+  @override
+  String get pWeekly => 'ប្រចាំសប្តាហ៍';
+
+  @override
+  String get pMonthly => 'ប្រចាំខែ';
+
+  @override
+  String proofHomes(String count) {
+    return 'ខែនេះបានសម្អាតផ្ទះ $count';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'ពិន្ទុមធ្យម $rating ផ្កាយ · មតិ $count';
+  }
+
+  @override
+  String get proofReviewsTitle => 'មតិថ្មីៗ';
+
+  @override
+  String get rebookTitle => 'ចង់កក់សេវាលើកមុនម្តងទៀតទេ?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · ចុះសម្អាតចុងក្រោយ $date';
+  }
+
+  @override
+  String get rebookButton => 'កក់ម្តងទៀត';
+
+  @override
+  String seatsLeft(String count) {
+    return 'នៅសល់ $count កន្លែង';
+  }
+
+  @override
+  String get reviewSheetTitle => 'ការសម្អាតលើកនេះយ៉ាងម៉េច?';
+
+  @override
+  String get reviewPhotosAdd => 'បន្ថែមរូបភាព';
+
+  @override
+  String get reviewPhotosHint => 'រូបភាពច្រើនបំផុត ៥';
+
+  @override
+  String get reviewSaved => 'អរគុណសម្រាប់មតិរបស់អ្នក';
+
+  @override
+  String get reviewPhotoFailed => 'មិនអាចផ្ទុករូបភាពឡើយ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get referralTitle => 'អញ្ជើញមិត្តភក្តិ ទទួលគូប៉ុង';
+
+  @override
+  String referralBody(String amount) {
+    return 'នៅពេលមិត្តបញ្ចប់ការកក់ដំបូង អ្នកទាំងពីរទទួលគូប៉ុង $amount';
+  }
+
+  @override
+  String get referralCopy => 'ចម្លងកូដ';
+
+  @override
+  String get referralCopied => 'បានចម្លងកូដណែនាំ';
+
+  @override
+  String get referralClaimTitle => 'មានកូដណែនាំទេ?';
+
+  @override
+  String get referralClaimField => 'បញ្ចូលកូដណែនាំ';
+
+  @override
+  String get referralClaimButton => 'អនុវត្ត';
+
+  @override
+  String get referralClaimed => 'បានអនុវត្តកូដណែនាំ';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return 'បានអញ្ជើញ $invited · បានផ្តល់រង្វាន់ $rewarded';
+  }
+
+  @override
+  String get err_self_referral => 'មិនអាចប្រើកូដរបស់ខ្លួនឯងបានទេ';
+
+  @override
+  String get err_referee_already_booked =>
+      'បញ្ចូលកូដបានតែមុនការកក់ដំបូងប៉ុណ្ណោះ';
+
+  @override
+  String get err_already_referred => 'បានអនុវត្តកូដណែនាំរួចហើយ';
+
+  @override
+  String get err_invalid_referral_code => 'សូមពិនិត្យកូដណែនាំឡើងវិញ';
+
+  @override
+  String get err_referral_disabled => 'ការណែនាំត្រូវបានផ្អាកបណ្តោះអាសន្ន';
+
+  @override
+  String get err_invalid_photos =>
+      'អាចភ្ជាប់តែរូបភាពដែលផ្ទុកឡើងតាម Malkkeum ប៉ុណ្ណោះ';
+
+  @override
+  String get welcomeOfferTitle => 'បញ្ចុះតម្លៃការកក់ដំបូង';
+
+  @override
+  String get welcomeOfferBody =>
+      'អនុវត្តដោយស្វ័យប្រវត្តិសម្រាប់ការកក់ដំបូងរបស់អតិថិជនថ្មី។ មិនរួមបញ្ចូលជាមួយគូប៉ុង។';
+
+  @override
+  String get offerKindAmount => 'ចំនួនថេរ (វ៉ុន)';
+
+  @override
+  String get offerKindPercent => 'ភាគរយ (%)';
+
+  @override
+  String get offerValue => 'តម្លៃបញ្ចុះ';
+
+  @override
+  String get offerEnabled => 'បើក';
+
+  @override
+  String get offerSaved => 'បានរក្សាទុក';
+
+  @override
+  String get referralSettingsTitle => 'រង្វាន់ណែនាំមិត្តភក្តិ';
+
+  @override
+  String get referralSettingsBody =>
+      'ផ្តល់ពេលមិត្តបញ្ចប់ការកក់ដំបូង និងបង់ប្រាក់រួច។ ទប់ស្កាត់ការណែនាំខ្លួនឯង និងលេខទូរស័ព្ទដដែល។';
+
+  @override
+  String get referralRewardAmount => 'ចំនួនរង្វាន់ (វ៉ុន)';
+
+  @override
+  String get reviewsModerationTitle => 'ការគ្រប់គ្រងមតិ';
+
+  @override
+  String get reviewHide => 'លាក់';
+
+  @override
+  String get reviewShow => 'បង្ហាញម្តងទៀត';
+
+  @override
+  String get reviewHiddenTag => 'បានលាក់';
+
+  @override
+  String get growthAverageRating => 'ពិន្ទុមធ្យម';
+
+  @override
+  String growthReviewCount(String count) {
+    return 'មតិ $count';
+  }
+
+  @override
+  String get growthReferralConversion => 'អត្រាណែនាំ';
+
+  @override
+  String get growthTab => 'ការលូតលាស់';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded ក្នុង $invited';
+  }
+
+  @override
+  String get cOps => 'ស្ថានភាពប្រព័ន្ធ';
+
+  @override
+  String get oLevelGreen => 'ធម្មតា';
+
+  @override
+  String get oLevelYellow => 'ត្រូវពិនិត្យ';
+
+  @override
+  String get oLevelRed => 'ត្រូវដោះស្រាយ';
+
+  @override
+  String get oOverall => 'ស្ថានភាពម៉ាស៊ីនមេ';
+
+  @override
+  String get oRefresh => 'ធ្វើឱ្យស្រស់';
+
+  @override
+  String get oVersion => 'កំណែ';
+
+  @override
+  String get oUptime => 'រយៈពេលដំណើរការ';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours ម៉ោង $minutes នាទី';
+  }
+
+  @override
+  String get oChecks => 'ការពិនិត្យ';
+
+  @override
+  String get oCheckDb => 'មូលដ្ឋានទិន្នន័យ';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'ការឆ្លើយតប $ms ms · ទំហំ $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'ថាសម៉ាស៊ីនមេ';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return 'នៅទំនេរ $pct%';
+  }
+
+  @override
+  String get oCheckBackup => 'ការបម្រុងទុកស្វ័យប្រវត្តិ';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'ការបម្រុងទុកចុងក្រោយ $hours ម៉ោងមុន';
+  }
+
+  @override
+  String get oCheckBackupNone => 'មិនទាន់មានការបម្រុងទុក';
+
+  @override
+  String get oCheckErrors => 'កំហុសម៉ាស៊ីនមេ (24 ម៉ោង)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'ការទូទាត់ត្រូវពិនិត្យ';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 ម៉ោង)';
+  }
+
+  @override
+  String get oCheckWebhook => 'ការជូនដំណឹងទូទាត់ (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'ហត្ថលេខាខុស $count (24 ម៉ោង)';
+  }
+
+  @override
+  String get oIntegrations => 'សេវាកម្មខាងក្រៅ';
+
+  @override
+  String get oIntNotSet => 'មិនទាន់កំណត់';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'ជោគជ័យចុងក្រោយ $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'បរាជ័យចុងក្រោយ $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'មិនទាន់មានការប្រើប្រាស់';
+
+  @override
+  String get oActDb =>
+      'មិនអាចភ្ជាប់មូលដ្ឋានទិន្នន័យបាន។ ដំណើរការ malkkeum logs នៅម៉ាស៊ីនមេ; ចាប់ផ្តើមឡើងវិញប្រសិនបើនៅតែកើត។';
+
+  @override
+  String get oActDisk =>
+      'ទំហំថាសទំនេរក្រោម 10%។ លុបការបម្រុងទុកចាស់ ឬបន្ថែមថាស។';
+
+  @override
+  String get oActBackup =>
+      'ការបម្រុងទុកស្វ័យប្រវត្តិយឺត។ ដំណើរការ malkkeum backup នៅម៉ាស៊ីនមេ ហើយពិនិត្យ backups/backup.log។';
+
+  @override
+  String get oActErrors =>
+      'មានកំហុសម៉ាស៊ីនមេច្រើន។ ពិនិត្យបន្ទាត់ error ក្នុង malkkeum logs ហើយផ្ញើទៅអ្នកអភិវឌ្ឍប្រសិនបើកើតឡើងម្តងទៀត។';
+
+  @override
+  String get oActPayments =>
+      'ការទូទាត់អាចបានជោគជ័យ តែមិនបានដំណើរការដោយស្វ័យប្រវត្តិ។ ពិនិត្យក្នុង PortOne ហើយសងប្រាក់ដោយដៃប្រសិនបើចាំបាច់។';
+
+  @override
+  String get oActWebhook =>
+      'ការផ្ទៀងផ្ទាត់ហត្ថលេខាការជូនដំណឹងទូទាត់បរាជ័យ។ បញ្ចូល webhook secret ឡើងវិញក្នុង ការកំណត់ > ការទូទាត់ (PortOne)។';
+
+  @override
+  String get oActIntegration =>
+      'ការតភ្ជាប់នេះបរាជ័យ។ ពិនិត្យកូនសោក្នុងការកំណត់ ហើយចុច Test connection។';
+
+  @override
+  String get oActNotSet => 'មិនទាន់កំណត់។ បញ្ចូលកូនសោក្នុងការកំណត់។';
+
+  @override
+  String get oAlerts => 'ការកំណត់ការជូនដំណឹង';
+
+  @override
+  String get oAlertsHint =>
+      'បញ្ហានឹងបង្ហាញក្នុងប្រអប់សារ និងផ្ញើ SMS ទៅទូរស័ព្ទម្ចាស់។ បញ្ហាដដែលផ្ញើតែម្តងក្នុងរៀងរាល់ 6 ម៉ោង។';
+
+  @override
+  String get oRuleSms => 'ការផ្ញើ SMS បរាជ័យ';
+
+  @override
+  String get oRulePush => 'ការជូនដំណឹង push បរាជ័យ';
+
+  @override
+  String get oRulePayment => 'ការតភ្ជាប់ទូទាត់បរាជ័យ';
+
+  @override
+  String get oRuleStuck => 'ការទូទាត់មិនដំណើរការដោយស្វ័យប្រវត្តិ';
+
+  @override
+  String get oRuleSocial => 'ការចូលតាមបណ្ដាញសង្គមបរាជ័យ';
+
+  @override
+  String get oRuleBackup => 'ការបម្រុងទុកស្វ័យប្រវត្តិខកខាន';
+
+  @override
+  String get oRuleDisk => 'ថាសជិតពេញ';
+
+  @override
+  String get oQuietHours => 'ម៉ោងស្ងាត់';
+
+  @override
+  String get oQuietFrom => 'ចាប់ពី';
+
+  @override
+  String get oQuietTo => 'ដល់';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'មិនមានការជូនដំណឹងក្នុងម៉ោងនេះ; សារមួយនឹងផ្ញើបន្ទាប់ពីចប់។';
+
+  @override
+  String get oAlertPhone => 'ទូរស័ព្ទទទួលការជូនដំណឹង';
+
+  @override
+  String get oAlertPhoneHint =>
+      'ទុកទំនេរដើម្បីប្រើលេខសេវាអតិថិជននៅក្នុងព័ត៌មានអាជីវកម្ម។';
+
+  @override
+  String get oSave => 'រក្សាទុក';
+
+  @override
+  String get oSaved => 'បានរក្សាទុកការកំណត់ការជូនដំណឹង';
+
+  @override
+  String get oSaveFailed => 'មិនអាចរក្សាទុកបាន។ ពិនិត្យតម្លៃដែលបានបញ្ចូល។';
+
+  @override
+  String get oLoadFailed => 'មិនអាចផ្ទុកស្ថានភាពបាន';
+
+  @override
+  String get oBackupOffsite => 'ការបម្រុងទុកខាងក្រៅ (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'បិទនៅឡើយ។ បើកក្នុង ការកំណត់ > ការបម្រុងទុកខាងក្រៅ។';
+
+  @override
+  String get oLastBackup => 'ការបម្រុងទុកចុងក្រោយ';
+
+  @override
+  String get oDiskFree => 'កន្លែងទំនេរ';
+
+  @override
+  String get oNoData => 'មិនទាន់មានទិន្នន័យ';
+
+  @override
+  String get cIntBackup => 'ការបម្រុងទុកខាងក្រៅ (ដូច S3)';
+
+  @override
   String get pTabJobs => 'ការងារ';
 
   @override
@@ -2314,6 +2877,49 @@ class TKm extends T {
 
   @override
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'មានកំណែថ្មី $version';
+  }
+
+  @override
+  String get uUpdateNow => 'ធ្វើបច្ចុប្បន្នភាព';
+
+  @override
+  String get uUpdateLater => 'ពេលក្រោយ';
+
+  @override
+  String get uUpdateRequiredTitle => 'ត្រូវការធ្វើបច្ចុប្បន្នភាព';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'កំណែនេះលែងគាំទ្រហើយ។ សូមធ្វើបច្ចុប្បន្នភាពពីហាង។';
+
+  @override
+  String get uUpdateStore => 'ធ្វើបច្ចុប្បន្នភាពនៅក្នុងហាង';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'តំណធ្វើបច្ចុប្បន្នភាពមិនទាន់រួចរាល់។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'កំណែបច្ចុប្បន្ន $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'កំណែកម្មវិធី';
+
+  @override
+  String get uAppVersionHint =>
+      'កម្មវិធីដែលទាបជាងកំណែអប្បបរមានឹងឈប់នៅអេក្រង់ធ្វើបច្ចុប្បន្នភាព។ ឧទាហរណ៍: 1.2.0';
+
+  @override
+  String get uMinVersion => 'កំណែអប្បបរមា';
+
+  @override
+  String get uLatestVersion => 'កំណែចុងក្រោយ';
 
   @override
   String get webBookNow => 'កក់នៅលើវេប';

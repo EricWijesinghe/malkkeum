@@ -9,6 +9,39 @@ class TMn extends T {
   TMn([String locale = 'mn']) : super(locale);
 
   @override
+  String get aiLabel => 'AI туслах';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Хэрэглэгчийн чатад автоматаар хариулна. Мессеж бүр API төлбөртэй.';
+
+  @override
+  String get aiModeOffline => 'Ажилтан байхгүй үед л хариулна';
+
+  @override
+  String get aiModeAlways => 'AI үргэлж эхлээд хариулна';
+
+  @override
+  String get aiPause => 'AI-г түр зогсоох';
+
+  @override
+  String get aiResume => 'AI-г үргэлжлүүлэх';
+
+  @override
+  String get aiPausedNote => 'Энэ чатад AI түр зогссон';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'Энэ сарын AI дуудалт: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI туслагч идэвхгүй байна';
+
+  @override
   String get apSocialOr => 'эсвэл';
 
   @override
@@ -1691,6 +1724,538 @@ class TMn extends T {
   String get themeTip => 'Загвар солих';
 
   @override
+  String get fFinance => 'Санхүү';
+
+  @override
+  String get fPeriodDay => 'Өдөр';
+
+  @override
+  String get fPeriodWeek => 'Долоо хоног';
+
+  @override
+  String get fPeriodMonth => 'Сар';
+
+  @override
+  String get fPeriodCustom => 'Хугацаа';
+
+  @override
+  String get fFrom => 'Эхлэх';
+
+  @override
+  String get fTo => 'Дуусах';
+
+  @override
+  String get fGross => 'Нийт төлбөр';
+
+  @override
+  String get fRefunds => 'Буцаалт';
+
+  @override
+  String get fNetRevenue => 'Цэвэр орлого';
+
+  @override
+  String get fPlatformFee => 'Платформын шимтгэл';
+
+  @override
+  String get fPaidOut => 'Хамтрагчдад шилжсэн';
+
+  @override
+  String get fPendingOut => 'Шилжүүлэх хүлээгдэж буй';
+
+  @override
+  String get fHeldOut => 'Түр зогсоосон';
+
+  @override
+  String get fVatEstimate => 'НӨАТ (тооцоолол)';
+
+  @override
+  String get fVatNote =>
+      'Платформын шимтгэлийн 10%-иар тооцсон таамаглал. Нягтлагчтайгаа баталгаажуулна уу.';
+
+  @override
+  String get fAov => 'Захиалгын дундаж дүн';
+
+  @override
+  String get fBookings => 'Захиалга';
+
+  @override
+  String get fCancelRate => 'Цуцлалтын хувь';
+
+  @override
+  String get fDiscounts => 'Хөнгөлөлт, купон';
+
+  @override
+  String get fMethods => 'Төлбөрийн хэлбэр';
+
+  @override
+  String get fTrend => 'Чиг хандлага';
+
+  @override
+  String fRangeDays(String n) {
+    return 'Сүүлийн $n өдөр';
+  }
+
+  @override
+  String get fRangeWeeks => 'Сүүлийн 12 долоо хоног';
+
+  @override
+  String get fRangeMonths => 'Сүүлийн 12 сар';
+
+  @override
+  String get fByPartner => 'Хамтрагчаар орлого';
+
+  @override
+  String get fByService => 'Үйлчилгээгээр орлого';
+
+  @override
+  String get fExportTitle => 'Нягтлангийн экспорт';
+
+  @override
+  String get fExportLedger => 'Төлбөрийн бүртгэл CSV';
+
+  @override
+  String get fExportSettlements => 'Тооцооны CSV';
+
+  @override
+  String get fExportMonthly => 'Сарын тойм CSV (нягтлан)';
+
+  @override
+  String get fDownload => 'CSV татах';
+
+  @override
+  String get fDownloadWebOnly => 'CSV-ийг вэб консолоос татна уу';
+
+  @override
+  String get fDownloadFailed => 'Татаж чадсангүй';
+
+  @override
+  String get fNoRecords => 'Энэ хугацаанд бүртгэл алга';
+
+  @override
+  String get fLoadFailed => 'Санхүүгийн мэдээлэл ачаалагдсангүй';
+
+  @override
+  String get fRetry => 'Дахин оролдох';
+
+  @override
+  String get fColPartner => 'Хамтрагч';
+
+  @override
+  String get fColJobs => 'Тоо';
+
+  @override
+  String get fColSettled => 'Нийт тооцоо';
+
+  @override
+  String get fColFee => 'Шимтгэл';
+
+  @override
+  String get fColNet => 'Цэвэр';
+
+  @override
+  String get pEarnings => 'Орлого';
+
+  @override
+  String get pNextPayout => 'Дараагийн шилжүүлэг';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$date-нд шилжүүлнэ';
+  }
+
+  @override
+  String get pNoPayout => 'Товлосон шилжүүлэг алга';
+
+  @override
+  String get pPendingTotal => 'Шилжүүлэх хүлээгдэж буй';
+
+  @override
+  String get pPaidTotal => 'Шилжүүлсэн';
+
+  @override
+  String get pWeekly => 'Долоо хоногоор';
+
+  @override
+  String get pMonthly => 'Сараар';
+
+  @override
+  String proofHomes(String count) {
+    return 'Энэ сард $count гэр цэвэрлэсэн';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Дундаж $rating од · $count сэтгэгдэл';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Сүүлийн сэтгэгдэл';
+
+  @override
+  String get rebookTitle => 'Сүүлийн үйлчилгээгээ дахин захиалах уу?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · сүүлд $date';
+  }
+
+  @override
+  String get rebookButton => 'Дахин захиалах';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count суудал үлдсэн';
+  }
+
+  @override
+  String get reviewSheetTitle => 'Энэ цэвэрлэгээ ямар байсан бэ?';
+
+  @override
+  String get reviewPhotosAdd => 'Зураг нэмэх';
+
+  @override
+  String get reviewPhotosHint => 'Дээд тал нь 5 зураг';
+
+  @override
+  String get reviewSaved => 'Сэтгэгдэл өгсөнд баярлалаа';
+
+  @override
+  String get reviewPhotoFailed =>
+      'Зургийг илгээж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get referralTitle => 'Найзаа урьж купон аваарай';
+
+  @override
+  String referralBody(String amount) {
+    return 'Найз тань анхны захиалгаа дуусгахад та хоёулаа $amount купон авна';
+  }
+
+  @override
+  String get referralCopy => 'Кодыг хуулах';
+
+  @override
+  String get referralCopied => 'Урилгын код хуулагдлаа';
+
+  @override
+  String get referralClaimTitle => 'Урилгын кодтой юу?';
+
+  @override
+  String get referralClaimField => 'Урилгын код оруулах';
+
+  @override
+  String get referralClaimButton => 'Бүртгэх';
+
+  @override
+  String get referralClaimed => 'Урилгын код бүртгэгдлээ';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited урьсан · $rewarded шагнал';
+  }
+
+  @override
+  String get err_self_referral => 'Өөрийн кодыг ашиглах боломжгүй';
+
+  @override
+  String get err_referee_already_booked =>
+      'Кодыг зөвхөн анхны захиалгын өмнө оруулна';
+
+  @override
+  String get err_already_referred => 'Урилгын код аль хэдийн бүртгэгдсэн';
+
+  @override
+  String get err_invalid_referral_code => 'Урилгын кодоо шалгана уу';
+
+  @override
+  String get err_referral_disabled => 'Одоогоор урилга түр зогссон';
+
+  @override
+  String get err_invalid_photos =>
+      'Зөвхөн Malkkeum-оор байршуулсан зургийг хавсаргана';
+
+  @override
+  String get welcomeOfferTitle => 'Анхны захиалгын хөнгөлөлт';
+
+  @override
+  String get welcomeOfferBody =>
+      'Шинэ үйлчлүүлэгчийн анхны захиалгад автоматаар хэрэглэгдэнэ. Купонтой хамт болохгүй.';
+
+  @override
+  String get offerKindAmount => 'Тогтмол (вон)';
+
+  @override
+  String get offerKindPercent => 'Хувиар (%)';
+
+  @override
+  String get offerValue => 'Хөнгөлөлтийн утга';
+
+  @override
+  String get offerEnabled => 'Асаах';
+
+  @override
+  String get offerSaved => 'Хадгалагдлаа';
+
+  @override
+  String get referralSettingsTitle => 'Найз урьсны шагнал';
+
+  @override
+  String get referralSettingsBody =>
+      'Найзын анхны захиалга дуусаж, төлбөр хийгдсэний дараа олгоно. Өөрийгөө урих, ижил дугаарыг хориглоно.';
+
+  @override
+  String get referralRewardAmount => 'Шагналын дүн (вон)';
+
+  @override
+  String get reviewsModerationTitle => 'Сэтгэгдлийн удирдлага';
+
+  @override
+  String get reviewHide => 'Нуух';
+
+  @override
+  String get reviewShow => 'Дахин харуулах';
+
+  @override
+  String get reviewHiddenTag => 'Нуусан';
+
+  @override
+  String get growthAverageRating => 'Дундаж үнэлгээ';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count сэтгэгдэл';
+  }
+
+  @override
+  String get growthReferralConversion => 'Урилгын хувиргалт';
+
+  @override
+  String get growthTab => 'Өсөлт';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$invited-с $rewarded';
+  }
+
+  @override
+  String get cOps => 'Системийн төлөв';
+
+  @override
+  String get oLevelGreen => 'Хэвийн';
+
+  @override
+  String get oLevelYellow => 'Шалгах';
+
+  @override
+  String get oLevelRed => 'Шаардлагатай';
+
+  @override
+  String get oOverall => 'Серверийн төлөв';
+
+  @override
+  String get oRefresh => 'Шинэчлэх';
+
+  @override
+  String get oVersion => 'Хувилбар';
+
+  @override
+  String get oUptime => 'Ажилласан хугацаа';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours цаг $minutes минут';
+  }
+
+  @override
+  String get oChecks => 'Шалгалтууд';
+
+  @override
+  String get oCheckDb => 'Өгөгдлийн сан';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Хариу $ms ms · хэмжээ $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Серверийн диск';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% чөлөөтэй';
+  }
+
+  @override
+  String get oCheckBackup => 'Автомат нөөцлөлт';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Сүүлийн нөөцлөлт $hours цагийн өмнө';
+  }
+
+  @override
+  String get oCheckBackupNone => 'Нөөцлөлт хараахан байхгүй';
+
+  @override
+  String get oCheckErrors => 'Серверийн алдаа (24 цаг)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Шалгах төлбөр';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 цаг)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Төлбөрийн мэдэгдэл (webhook)';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Гарын үсэг буруу $count (24 цаг)';
+  }
+
+  @override
+  String get oIntegrations => 'Гадаад үйлчилгээ';
+
+  @override
+  String get oIntNotSet => 'Тохируулаагүй';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Сүүлд амжилттай $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Сүүлд алдаатай $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'Ашиглалт хараахан байхгүй';
+
+  @override
+  String get oActDb =>
+      'Өгөгдлийн сантай холбогдож чадсангүй. Серверт malkkeum logs ажиллуулж, үргэлжлэвэл дахин эхлүүлнэ үү.';
+
+  @override
+  String get oActDisk =>
+      'Диск чөлөөт орон 10%-иас доош байна. Хуучин нөөцийг устгах эсвэл дискээ нэмнэ үү.';
+
+  @override
+  String get oActBackup =>
+      'Автомат нөөцлөлт хоцорсон. Серверт malkkeum backup ажиллуулж, backups/backup.log-ийг шалгана уу.';
+
+  @override
+  String get oActErrors =>
+      'Серверийн алдаа олон байна. malkkeum logs-ийн error мөрүүдийг шалгаж, давтагдвал хөгжүүлэгчид илгээнэ үү.';
+
+  @override
+  String get oActPayments =>
+      'Төлбөр хийгдсэн ч автоматаар боловсрогдоогүй байж магадгүй. PortOne дээр шалгаад шаардлагатай бол буцаан олгоно уу.';
+
+  @override
+  String get oActWebhook =>
+      'Төлбөрийн мэдэгдлийн гарын үсгийн шалгалт амжилтгүй. Тохиргоо > Төлбөр (PortOne) дээр webhook secret-ээ дахин оруулна уу.';
+
+  @override
+  String get oActIntegration =>
+      'Энэ холболт амжилтгүй байна. Тохиргоон дахь түлхүүрүүдээ шалгаад Test connection дарна уу.';
+
+  @override
+  String get oActNotSet =>
+      'Хараахан тохируулаагүй. Тохиргоонд түлхүүр оруулна уу.';
+
+  @override
+  String get oAlerts => 'Сэрэмжлүүлгийн тохиргоо';
+
+  @override
+  String get oAlertsHint =>
+      'Асуудал гарвал хүлээн авах хайрцагт болон эзэмшигчийн утсанд SMS-ээр мэдэгдэнэ. Нэг асуудлыг 6 цаг тутамд нэг удаа илгээнэ.';
+
+  @override
+  String get oRuleSms => 'SMS илгээх алдаатай';
+
+  @override
+  String get oRulePush => 'Push мэдэгдэл алдаатай';
+
+  @override
+  String get oRulePayment => 'Төлбөрийн холболт алдаатай';
+
+  @override
+  String get oRuleStuck => 'Төлбөр автоматаар боловсрогдохгүй';
+
+  @override
+  String get oRuleSocial => 'Нийгмийн сүлжээгээр нэвтрэлт алдаатай';
+
+  @override
+  String get oRuleBackup => 'Автомат нөөцлөлт алгассан';
+
+  @override
+  String get oRuleDisk => 'Диск дүүрэх дөхсөн';
+
+  @override
+  String get oQuietHours => 'Тайван цаг';
+
+  @override
+  String get oQuietFrom => 'Эхлэх';
+
+  @override
+  String get oQuietTo => 'Дуусах';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'Эдгээр цагт мэдэгдэхгүй; дууссаны дараа нэг мэдэгдэл очно.';
+
+  @override
+  String get oAlertPhone => 'Мэдэгдэл авах утас';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Хоосон орхивол бизнесийн мэдээлэл дэх дэмжлэгийн дугаар руу илгээнэ.';
+
+  @override
+  String get oSave => 'Хадгалах';
+
+  @override
+  String get oSaved => 'Сэрэмжлүүлгийн тохиргоог хадгаллаа';
+
+  @override
+  String get oSaveFailed => 'Хадгалж чадсангүй. Оруулсан утгаа шалгана уу.';
+
+  @override
+  String get oLoadFailed => 'Төлөвийг ачаалж чадсангүй';
+
+  @override
+  String get oBackupOffsite => 'Гадаад нөөцлөлт (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Унтарсан. Тохиргоо > Гадаад нөөцлөлт дээр асаана уу.';
+
+  @override
+  String get oLastBackup => 'Сүүлийн нөөцлөлт';
+
+  @override
+  String get oDiskFree => 'Чөлөөт орон';
+
+  @override
+  String get oNoData => 'Өгөгдөл хараахан байхгүй';
+
+  @override
+  String get cIntBackup => 'Гадаад нөөцлөлт (S3-тай нийцтэй)';
+
+  @override
   String get pTabJobs => 'Ажил';
 
   @override
@@ -2316,6 +2881,49 @@ class TMn extends T {
 
   @override
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Шинэ хувилбар $version гарлаа';
+  }
+
+  @override
+  String get uUpdateNow => 'Шинэчлэх';
+
+  @override
+  String get uUpdateLater => 'Дараа';
+
+  @override
+  String get uUpdateRequiredTitle => 'Шинэчлэх шаардлагатай';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'Энэ хувилбарыг дэмжихээ больсон. Дэлгүүрээс шинэчилнэ үү.';
+
+  @override
+  String get uUpdateStore => 'Дэлгүүрээс шинэчлэх';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'Шинэчлэх холбоос бэлэн болоогүй байна. Дараа дахин оролдоно уу.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Одоогийн хувилбар $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'Аппын хувилбарууд';
+
+  @override
+  String get uAppVersionHint =>
+      'Хамгийн бага хувилбараас доош аппууд шинэчлэх дэлгэцэд зогсоно. Жишээ: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Хамгийн бага хувилбар';
+
+  @override
+  String get uLatestVersion => 'Хамгийн сүүлийн хувилбар';
 
   @override
   String get webBookNow => 'Вэбээр шууд захиалах';

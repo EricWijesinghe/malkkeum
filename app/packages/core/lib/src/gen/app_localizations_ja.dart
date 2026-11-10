@@ -9,6 +9,38 @@ class TJa extends T {
   TJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get aiLabel => 'AIアシスタント';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint => 'お客様のチャットに自動で返信します。メッセージごとにAPI料金がかかります。';
+
+  @override
+  String get aiModeOffline => '担当者不在時のみ回答';
+
+  @override
+  String get aiModeAlways => '常にAIが先に回答';
+
+  @override
+  String get aiPause => 'AI を一時停止';
+
+  @override
+  String get aiResume => 'AI を再開';
+
+  @override
+  String get aiPausedNote => 'この会話ではAIが返信しません';
+
+  @override
+  String aiUsageMonth(String count) {
+    return '今月のAI呼び出し $count 回';
+  }
+
+  @override
+  String get aiNotConfigured => 'AIサポートはオフです';
+
+  @override
   String get apSocialOr => 'または';
 
   @override
@@ -1651,6 +1683,526 @@ class TJa extends T {
   String get themeTip => 'テーマを変更';
 
   @override
+  String get fFinance => '財務';
+
+  @override
+  String get fPeriodDay => '日';
+
+  @override
+  String get fPeriodWeek => '週';
+
+  @override
+  String get fPeriodMonth => '月';
+
+  @override
+  String get fPeriodCustom => '期間';
+
+  @override
+  String get fFrom => '開始';
+
+  @override
+  String get fTo => '終了';
+
+  @override
+  String get fGross => '総決済額';
+
+  @override
+  String get fRefunds => '返金';
+
+  @override
+  String get fNetRevenue => '純売上';
+
+  @override
+  String get fPlatformFee => 'プラットフォーム手数料';
+
+  @override
+  String get fPaidOut => 'パートナー支払済';
+
+  @override
+  String get fPendingOut => '支払予定';
+
+  @override
+  String get fHeldOut => '保留';
+
+  @override
+  String get fVatEstimate => '消費税（推定）';
+
+  @override
+  String get fVatNote => 'プラットフォーム手数料の10%で計算した推定値です。税理士にご確認ください。';
+
+  @override
+  String get fAov => '平均注文額';
+
+  @override
+  String get fBookings => '予約';
+
+  @override
+  String get fCancelRate => 'キャンセル率';
+
+  @override
+  String get fDiscounts => '割引・クーポン';
+
+  @override
+  String get fMethods => '決済手段';
+
+  @override
+  String get fTrend => '推移';
+
+  @override
+  String fRangeDays(String n) {
+    return '直近$n日';
+  }
+
+  @override
+  String get fRangeWeeks => '直近12週';
+
+  @override
+  String get fRangeMonths => '直近12か月';
+
+  @override
+  String get fByPartner => 'パートナー別精算';
+
+  @override
+  String get fByService => 'サービス別売上';
+
+  @override
+  String get fExportTitle => '会計データ書き出し';
+
+  @override
+  String get fExportLedger => '決済台帳 CSV';
+
+  @override
+  String get fExportSettlements => '精算明細 CSV';
+
+  @override
+  String get fExportMonthly => '月次サマリー CSV（税理士用）';
+
+  @override
+  String get fDownload => 'CSVをダウンロード';
+
+  @override
+  String get fDownloadWebOnly => 'CSVのダウンロードはWebコンソールで行えます';
+
+  @override
+  String get fDownloadFailed => 'ダウンロードできませんでした';
+
+  @override
+  String get fNoRecords => 'この期間の記録はありません';
+
+  @override
+  String get fLoadFailed => '財務データを読み込めませんでした';
+
+  @override
+  String get fRetry => '再試行';
+
+  @override
+  String get fColPartner => 'パートナー';
+
+  @override
+  String get fColJobs => '件数';
+
+  @override
+  String get fColSettled => '精算総額';
+
+  @override
+  String get fColFee => '手数料';
+
+  @override
+  String get fColNet => '支払額';
+
+  @override
+  String get pEarnings => '収入';
+
+  @override
+  String get pNextPayout => '次の支払い';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return '$dateに支払い';
+  }
+
+  @override
+  String get pNoPayout => '予定された支払いはありません';
+
+  @override
+  String get pPendingTotal => '支払い待ち';
+
+  @override
+  String get pPaidTotal => '支払い済み';
+
+  @override
+  String get pWeekly => '週間';
+
+  @override
+  String get pMonthly => '月間';
+
+  @override
+  String proofHomes(String count) {
+    return '今月 $count件のお宅を清掃しました';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return '平均評価 $rating点 · レビュー$count件';
+  }
+
+  @override
+  String get proofReviewsTitle => '最近のレビュー';
+
+  @override
+  String get rebookTitle => '前回のサービスをもう一度予約しますか？';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · 前回 $date';
+  }
+
+  @override
+  String get rebookButton => 'もう一度予約';
+
+  @override
+  String seatsLeft(String count) {
+    return '残り$count枠';
+  }
+
+  @override
+  String get reviewSheetTitle => '今回の清掃はいかがでしたか？';
+
+  @override
+  String get reviewPhotosAdd => '写真を追加';
+
+  @override
+  String get reviewPhotosHint => '写真は最大5枚まで';
+
+  @override
+  String get reviewSaved => 'レビューをありがとうございます';
+
+  @override
+  String get reviewPhotoFailed => '写真をアップロードできませんでした';
+
+  @override
+  String get referralTitle => '友達を招待してクーポンをもらおう';
+
+  @override
+  String referralBody(String amount) {
+    return '友達が初回予約を完了すると、お二人とも$amountのクーポンがもらえます';
+  }
+
+  @override
+  String get referralCopy => 'コードをコピー';
+
+  @override
+  String get referralCopied => '紹介コードをコピーしました';
+
+  @override
+  String get referralClaimTitle => '紹介コードはありますか？';
+
+  @override
+  String get referralClaimField => '紹介コードを入力';
+
+  @override
+  String get referralClaimButton => '登録';
+
+  @override
+  String get referralClaimed => '紹介コードを登録しました';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '招待 $invited人 · 特典 $rewarded件';
+  }
+
+  @override
+  String get err_self_referral => 'ご自身の紹介コードは使えません';
+
+  @override
+  String get err_referee_already_booked => '初回予約の後は紹介コードを登録できません';
+
+  @override
+  String get err_already_referred => 'すでに紹介コードが登録されています';
+
+  @override
+  String get err_invalid_referral_code => '紹介コードを確認してください';
+
+  @override
+  String get err_referral_disabled => '現在、友達紹介は受け付けていません';
+
+  @override
+  String get err_invalid_photos => 'アプリからアップロードした写真のみ添付できます';
+
+  @override
+  String get welcomeOfferTitle => '初回予約割引';
+
+  @override
+  String get welcomeOfferBody => '新規のお客様の初回予約に自動適用されます。クーポンとは併用できません。';
+
+  @override
+  String get offerKindAmount => '定額（ウォン）';
+
+  @override
+  String get offerKindPercent => '定率（%）';
+
+  @override
+  String get offerValue => '割引値';
+
+  @override
+  String get offerEnabled => '利用する';
+
+  @override
+  String get offerSaved => '保存しました';
+
+  @override
+  String get referralSettingsTitle => '友達紹介の特典';
+
+  @override
+  String get referralSettingsBody =>
+      '友達の初回予約が完了・決済されると付与されます。自己紹介や同じ番号の重複は防止されます。';
+
+  @override
+  String get referralRewardAmount => '特典金額（ウォン）';
+
+  @override
+  String get reviewsModerationTitle => 'レビュー管理';
+
+  @override
+  String get reviewHide => '非表示';
+
+  @override
+  String get reviewShow => '再表示';
+
+  @override
+  String get reviewHiddenTag => '非表示';
+
+  @override
+  String get growthAverageRating => '平均評価';
+
+  @override
+  String growthReviewCount(String count) {
+    return 'レビュー$count件';
+  }
+
+  @override
+  String get growthReferralConversion => '紹介の成約率';
+
+  @override
+  String get growthTab => '成長';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded/$invited人';
+  }
+
+  @override
+  String get cOps => 'システム状態';
+
+  @override
+  String get oLevelGreen => '正常';
+
+  @override
+  String get oLevelYellow => '要確認';
+
+  @override
+  String get oLevelRed => '対応が必要';
+
+  @override
+  String get oOverall => 'サーバーの状態';
+
+  @override
+  String get oRefresh => '更新';
+
+  @override
+  String get oVersion => 'バージョン';
+
+  @override
+  String get oUptime => '稼働時間';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours時間$minutes分';
+  }
+
+  @override
+  String get oChecks => '点検項目';
+
+  @override
+  String get oCheckDb => 'データベース';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return '応答 ${ms}ms・容量 ${mb}MB';
+  }
+
+  @override
+  String get oCheckDisk => 'サーバーのディスク';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '空き $pct%';
+  }
+
+  @override
+  String get oCheckBackup => '自動バックアップ';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return '最後のバックアップ $hours時間前';
+  }
+
+  @override
+  String get oCheckBackupNone => 'バックアップ記録がありません';
+
+  @override
+  String get oCheckErrors => 'サーバーエラー（24時間）';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count件';
+  }
+
+  @override
+  String get oCheckPayments => '確認が必要な決済';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count件（24時間）';
+  }
+
+  @override
+  String get oCheckWebhook => '決済通知（Webhook）';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return '署名失敗 $count件（24時間）';
+  }
+
+  @override
+  String get oIntegrations => '外部サービス';
+
+  @override
+  String get oIntNotSet => '未設定';
+
+  @override
+  String oIntLastOk(String at) {
+    return '最後の成功 $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return '最後の失敗 $at（$code）';
+  }
+
+  @override
+  String get oIntNever => 'まだ利用記録がありません';
+
+  @override
+  String get oActDb =>
+      'データベースに接続できません。サーバーで malkkeum logs を確認し、続く場合は再起動してください。';
+
+  @override
+  String get oActDisk => 'ディスクの空きが10%未満です。古いバックアップを削除するか、ディスクを増設してください。';
+
+  @override
+  String get oActBackup =>
+      '自動バックアップが遅れています。サーバーで malkkeum backup を実行し、backups/backup.log を確認してください。';
+
+  @override
+  String get oActErrors =>
+      'サーバーエラーが多発しています。malkkeum logs の error 行を確認し、繰り返す場合は開発元へ連絡してください。';
+
+  @override
+  String get oActPayments =>
+      '決済は完了したものの自動処理されていない可能性があります。PortOne 管理画面で確認し、必要なら手動で返金してください。';
+
+  @override
+  String get oActWebhook =>
+      '決済通知の署名検証に失敗しています。設定 > 決済（PortOne）で Webhook シークレットを再入力してください。';
+
+  @override
+  String get oActIntegration => '連携に失敗しています。設定画面でキーを確認し、[接続テスト] を押してください。';
+
+  @override
+  String get oActNotSet => 'まだ設定されていません。設定画面でキーを入力してください。';
+
+  @override
+  String get oAlerts => '通知設定';
+
+  @override
+  String get oAlertsHint => '問題が起きると相談箱と携帯（SMS）にお知らせします。同じ問題は6時間に1回だけ送ります。';
+
+  @override
+  String get oRuleSms => 'SMS 送信の失敗';
+
+  @override
+  String get oRulePush => 'プッシュ通知の失敗';
+
+  @override
+  String get oRulePayment => '決済連携の失敗';
+
+  @override
+  String get oRuleStuck => '決済の自動処理の失敗';
+
+  @override
+  String get oRuleSocial => 'ソーシャルログインの失敗';
+
+  @override
+  String get oRuleBackup => '自動バックアップの欠落';
+
+  @override
+  String get oRuleDisk => 'ディスク不足';
+
+  @override
+  String get oQuietHours => 'おやすみ時間';
+
+  @override
+  String get oQuietFrom => '開始';
+
+  @override
+  String get oQuietTo => '終了';
+
+  @override
+  String oHour(String hour) {
+    return '$hour時';
+  }
+
+  @override
+  String get oQuietHint => 'この時間は通知せず、終了後に一度お知らせします。';
+
+  @override
+  String get oAlertPhone => '通知を受け取る携帯';
+
+  @override
+  String get oAlertPhoneHint => '空欄の場合は事業者情報のサポート番号に送ります。';
+
+  @override
+  String get oSave => '保存';
+
+  @override
+  String get oSaved => '通知設定を保存しました';
+
+  @override
+  String get oSaveFailed => '保存できませんでした。入力内容を確認してください。';
+
+  @override
+  String get oLoadFailed => '状態を読み込めませんでした';
+
+  @override
+  String get oBackupOffsite => '外部バックアップ（S3）';
+
+  @override
+  String get oBackupOffsiteOff => 'オフです。設定 > 外部バックアップ で有効にできます。';
+
+  @override
+  String get oLastBackup => '最後のバックアップ';
+
+  @override
+  String get oDiskFree => '空き容量';
+
+  @override
+  String get oNoData => 'まだデータがありません';
+
+  @override
+  String get cIntBackup => '外部バックアップ（S3互換）';
+
+  @override
   String get pTabJobs => '仕事';
 
   @override
@@ -2257,6 +2809,48 @@ class TJa extends T {
 
   @override
   String get cInvalidValue => '入力内容を確認してください';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'バージョン $version が公開されました';
+  }
+
+  @override
+  String get uUpdateNow => 'アップデート';
+
+  @override
+  String get uUpdateLater => 'あとで';
+
+  @override
+  String get uUpdateRequiredTitle => 'アップデートが必要です';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
+
+  @override
+  String get uUpdateStore => 'ストアでアップデート';
+
+  @override
+  String get uUpdateStoreMissing => 'アップデート先を準備中です。しばらくしてから再度お試しください。';
+
+  @override
+  String uCurrentVersion(String version) {
+    return '現在のバージョン $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'アプリのバージョン';
+
+  @override
+  String get uAppVersionHint =>
+      '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
+
+  @override
+  String get uMinVersion => '最小バージョン';
+
+  @override
+  String get uLatestVersion => '最新バージョン';
 
   @override
   String get webBookNow => 'ウェブで今すぐ予約';

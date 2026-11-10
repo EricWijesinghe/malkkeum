@@ -9,6 +9,39 @@ class TEn extends T {
   TEn([String locale = 'en']) : super(locale);
 
   @override
+  String get aiLabel => 'AI assistant';
+
+  @override
+  String get aiBadge => 'AI';
+
+  @override
+  String get aiCardHint =>
+      'Answers customer chats automatically. Each message costs API fees.';
+
+  @override
+  String get aiModeOffline => 'Answer only when staff are away';
+
+  @override
+  String get aiModeAlways => 'AI answers first, always';
+
+  @override
+  String get aiPause => 'Pause AI';
+
+  @override
+  String get aiResume => 'Resume AI';
+
+  @override
+  String get aiPausedNote => 'AI is paused for this chat';
+
+  @override
+  String aiUsageMonth(String count) {
+    return 'AI calls this month: $count';
+  }
+
+  @override
+  String get aiNotConfigured => 'AI support is off';
+
+  @override
   String get apSocialOr => 'or';
 
   @override
@@ -1680,6 +1713,536 @@ class TEn extends T {
   String get themeTip => 'Change theme';
 
   @override
+  String get fFinance => 'Finance';
+
+  @override
+  String get fPeriodDay => 'Day';
+
+  @override
+  String get fPeriodWeek => 'Week';
+
+  @override
+  String get fPeriodMonth => 'Month';
+
+  @override
+  String get fPeriodCustom => 'Custom';
+
+  @override
+  String get fFrom => 'From';
+
+  @override
+  String get fTo => 'To';
+
+  @override
+  String get fGross => 'Gross bookings';
+
+  @override
+  String get fRefunds => 'Refunds';
+
+  @override
+  String get fNetRevenue => 'Net revenue';
+
+  @override
+  String get fPlatformFee => 'Platform fee';
+
+  @override
+  String get fPaidOut => 'Paid to partners';
+
+  @override
+  String get fPendingOut => 'Pending payouts';
+
+  @override
+  String get fHeldOut => 'On hold';
+
+  @override
+  String get fVatEstimate => 'VAT estimate';
+
+  @override
+  String get fVatNote =>
+      'Estimate: 10% of the platform fee. Confirm with your accountant.';
+
+  @override
+  String get fAov => 'Avg order value';
+
+  @override
+  String get fBookings => 'Bookings';
+
+  @override
+  String get fCancelRate => 'Cancellation rate';
+
+  @override
+  String get fDiscounts => 'Discounts & coupons';
+
+  @override
+  String get fMethods => 'Payment methods';
+
+  @override
+  String get fTrend => 'Trend';
+
+  @override
+  String fRangeDays(String n) {
+    return 'Last $n days';
+  }
+
+  @override
+  String get fRangeWeeks => 'Last 12 weeks';
+
+  @override
+  String get fRangeMonths => 'Last 12 months';
+
+  @override
+  String get fByPartner => 'Earnings by partner';
+
+  @override
+  String get fByService => 'Revenue by service';
+
+  @override
+  String get fExportTitle => 'Accounting exports';
+
+  @override
+  String get fExportLedger => 'Payments ledger CSV';
+
+  @override
+  String get fExportSettlements => 'Settlements CSV';
+
+  @override
+  String get fExportMonthly => 'Monthly summary CSV (accountant)';
+
+  @override
+  String get fDownload => 'Download CSV';
+
+  @override
+  String get fDownloadWebOnly => 'CSV download works in the web console';
+
+  @override
+  String get fDownloadFailed => 'Download failed';
+
+  @override
+  String get fNoRecords => 'No records in this period';
+
+  @override
+  String get fLoadFailed => 'Could not load finance data';
+
+  @override
+  String get fRetry => 'Try again';
+
+  @override
+  String get fColPartner => 'Partner';
+
+  @override
+  String get fColJobs => 'Jobs';
+
+  @override
+  String get fColSettled => 'Settled';
+
+  @override
+  String get fColFee => 'Fee';
+
+  @override
+  String get fColNet => 'Net';
+
+  @override
+  String get pEarnings => 'Earnings';
+
+  @override
+  String get pNextPayout => 'Next payout';
+
+  @override
+  String pNextPayoutOn(String date) {
+    return 'Paid on $date';
+  }
+
+  @override
+  String get pNoPayout => 'No payout scheduled';
+
+  @override
+  String get pPendingTotal => 'Waiting to pay';
+
+  @override
+  String get pPaidTotal => 'Paid out';
+
+  @override
+  String get pWeekly => 'Weekly';
+
+  @override
+  String get pMonthly => 'Monthly';
+
+  @override
+  String proofHomes(String count) {
+    return '$count homes cleaned this month';
+  }
+
+  @override
+  String proofRating(String rating, String count) {
+    return 'Average $rating stars · $count reviews';
+  }
+
+  @override
+  String get proofReviewsTitle => 'Recent reviews';
+
+  @override
+  String get rebookTitle => 'Book the last service again?';
+
+  @override
+  String rebookBody(String service, String date) {
+    return '$service · last visit $date';
+  }
+
+  @override
+  String get rebookButton => 'Book again';
+
+  @override
+  String seatsLeft(String count) {
+    return '$count left';
+  }
+
+  @override
+  String get reviewSheetTitle => 'How was this clean?';
+
+  @override
+  String get reviewPhotosAdd => 'Add photos';
+
+  @override
+  String get reviewPhotosHint => 'Up to 5 photos';
+
+  @override
+  String get reviewSaved => 'Thanks for your review';
+
+  @override
+  String get reviewPhotoFailed => 'Couldn\'t upload the photo. Try again.';
+
+  @override
+  String get referralTitle => 'Invite a friend, get a coupon';
+
+  @override
+  String referralBody(String amount) {
+    return 'When your friend completes a first booking, you both get a $amount coupon';
+  }
+
+  @override
+  String get referralCopy => 'Copy code';
+
+  @override
+  String get referralCopied => 'Referral code copied';
+
+  @override
+  String get referralClaimTitle => 'Have a referral code?';
+
+  @override
+  String get referralClaimField => 'Enter referral code';
+
+  @override
+  String get referralClaimButton => 'Apply';
+
+  @override
+  String get referralClaimed => 'Referral code applied';
+
+  @override
+  String referralStats(String invited, String rewarded) {
+    return '$invited invited · $rewarded rewarded';
+  }
+
+  @override
+  String get err_self_referral => 'You can\'t use your own code';
+
+  @override
+  String get err_referee_already_booked =>
+      'Codes can only be added before your first booking';
+
+  @override
+  String get err_already_referred => 'A referral code is already applied';
+
+  @override
+  String get err_invalid_referral_code => 'Check the referral code';
+
+  @override
+  String get err_referral_disabled => 'Referrals are paused right now';
+
+  @override
+  String get err_invalid_photos =>
+      'Only photos uploaded through Malkkeum can be attached';
+
+  @override
+  String get welcomeOfferTitle => 'First-booking offer';
+
+  @override
+  String get welcomeOfferBody =>
+      'Applied automatically to a new customer\'s first booking. Not combined with coupons.';
+
+  @override
+  String get offerKindAmount => 'Fixed (won)';
+
+  @override
+  String get offerKindPercent => 'Percent (%)';
+
+  @override
+  String get offerValue => 'Discount value';
+
+  @override
+  String get offerEnabled => 'On';
+
+  @override
+  String get offerSaved => 'Saved';
+
+  @override
+  String get referralSettingsTitle => 'Referral reward';
+
+  @override
+  String get referralSettingsBody =>
+      'Paid once a friend\'s first booking is completed and paid. Self-referrals and duplicate phones are blocked.';
+
+  @override
+  String get referralRewardAmount => 'Reward amount (won)';
+
+  @override
+  String get reviewsModerationTitle => 'Review moderation';
+
+  @override
+  String get reviewHide => 'Hide';
+
+  @override
+  String get reviewShow => 'Show again';
+
+  @override
+  String get reviewHiddenTag => 'Hidden';
+
+  @override
+  String get growthAverageRating => 'Average rating';
+
+  @override
+  String growthReviewCount(String count) {
+    return '$count reviews';
+  }
+
+  @override
+  String get growthReferralConversion => 'Referral conversion';
+
+  @override
+  String get growthTab => 'Growth';
+
+  @override
+  String growthReferralValue(String rewarded, String invited) {
+    return '$rewarded of $invited';
+  }
+
+  @override
+  String get cOps => 'System status';
+
+  @override
+  String get oLevelGreen => 'OK';
+
+  @override
+  String get oLevelYellow => 'Check';
+
+  @override
+  String get oLevelRed => 'Action needed';
+
+  @override
+  String get oOverall => 'Server status';
+
+  @override
+  String get oRefresh => 'Refresh';
+
+  @override
+  String get oVersion => 'Version';
+
+  @override
+  String get oUptime => 'Uptime';
+
+  @override
+  String oUptimeValue(String hours, String minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get oChecks => 'Checks';
+
+  @override
+  String get oCheckDb => 'Database';
+
+  @override
+  String oCheckDbValue(String ms, String mb) {
+    return 'Response $ms ms · size $mb MB';
+  }
+
+  @override
+  String get oCheckDisk => 'Server disk';
+
+  @override
+  String oCheckDiskValue(String pct) {
+    return '$pct% free';
+  }
+
+  @override
+  String get oCheckBackup => 'Automatic backup';
+
+  @override
+  String oCheckBackupValue(String hours) {
+    return 'Last backup $hours h ago';
+  }
+
+  @override
+  String get oCheckBackupNone => 'No backup yet';
+
+  @override
+  String get oCheckErrors => 'Server errors (24 h)';
+
+  @override
+  String oCheckErrorsValue(String count) {
+    return '$count';
+  }
+
+  @override
+  String get oCheckPayments => 'Payments to check';
+
+  @override
+  String oCheckPaymentsValue(String count) {
+    return '$count (24 h)';
+  }
+
+  @override
+  String get oCheckWebhook => 'Payment webhooks';
+
+  @override
+  String oCheckWebhookValue(String count) {
+    return 'Signature failures $count (24 h)';
+  }
+
+  @override
+  String get oIntegrations => 'External services';
+
+  @override
+  String get oIntNotSet => 'Not set up';
+
+  @override
+  String oIntLastOk(String at) {
+    return 'Last success $at';
+  }
+
+  @override
+  String oIntLastFail(String at, String code) {
+    return 'Last failure $at ($code)';
+  }
+
+  @override
+  String get oIntNever => 'No traffic yet';
+
+  @override
+  String get oActDb =>
+      'The database is unreachable. Run malkkeum logs on the server; restart it if this continues.';
+
+  @override
+  String get oActDisk =>
+      'Less than 10% disk space is free. Delete old backup files or add disk space.';
+
+  @override
+  String get oActBackup =>
+      'The automatic backup is overdue. Run malkkeum backup on the server and check backups/backup.log.';
+
+  @override
+  String get oActErrors =>
+      'Many server errors. Check the error lines in malkkeum logs and send them to your developer if they repeat.';
+
+  @override
+  String get oActPayments =>
+      'A payment may have gone through without being processed. Check it in the PortOne console and refund it yourself if needed.';
+
+  @override
+  String get oActWebhook =>
+      'Payment webhook signature checks are failing. Re-enter the webhook secret under Setup > Payments (PortOne).';
+
+  @override
+  String get oActIntegration =>
+      'This connection is failing. Check the keys in Setup and press Test connection.';
+
+  @override
+  String get oActNotSet => 'Not set up yet. Enter the keys in Setup.';
+
+  @override
+  String get oAlerts => 'Alert settings';
+
+  @override
+  String get oAlertsHint =>
+      'Problems show in the inbox and are texted to the owner\'s phone. The same problem is sent once every 6 hours.';
+
+  @override
+  String get oRuleSms => 'SMS sending fails';
+
+  @override
+  String get oRulePush => 'Push notifications fail';
+
+  @override
+  String get oRulePayment => 'Payment connection fails';
+
+  @override
+  String get oRuleStuck => 'Payment not processed automatically';
+
+  @override
+  String get oRuleSocial => 'Social sign-in fails';
+
+  @override
+  String get oRuleBackup => 'Automatic backup missed';
+
+  @override
+  String get oRuleDisk => 'Disk nearly full';
+
+  @override
+  String get oQuietHours => 'Quiet hours';
+
+  @override
+  String get oQuietFrom => 'From';
+
+  @override
+  String get oQuietTo => 'To';
+
+  @override
+  String oHour(String hour) {
+    return '$hour:00';
+  }
+
+  @override
+  String get oQuietHint =>
+      'No alerts during these hours; you get one message after they end.';
+
+  @override
+  String get oAlertPhone => 'Phone for alerts';
+
+  @override
+  String get oAlertPhoneHint =>
+      'Leave empty to use the support number from business info.';
+
+  @override
+  String get oSave => 'Save';
+
+  @override
+  String get oSaved => 'Alert settings saved';
+
+  @override
+  String get oSaveFailed => 'Could not save. Check the values.';
+
+  @override
+  String get oLoadFailed => 'Could not load status';
+
+  @override
+  String get oBackupOffsite => 'Offsite backup (S3)';
+
+  @override
+  String get oBackupOffsiteOff =>
+      'Off. Turn it on under Setup > Offsite backup.';
+
+  @override
+  String get oLastBackup => 'Last backup';
+
+  @override
+  String get oDiskFree => 'Free space';
+
+  @override
+  String get oNoData => 'No data yet';
+
+  @override
+  String get cIntBackup => 'Offsite backup (S3-compatible)';
+
+  @override
   String get pTabJobs => 'Jobs';
 
   @override
@@ -2302,6 +2865,49 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String uUpdateBanner(String version) {
+    return 'Version $version is available';
+  }
+
+  @override
+  String get uUpdateNow => 'Update';
+
+  @override
+  String get uUpdateLater => 'Later';
+
+  @override
+  String get uUpdateRequiredTitle => 'An update is required';
+
+  @override
+  String get uUpdateRequiredBody =>
+      'This version is no longer supported. Please update from the store.';
+
+  @override
+  String get uUpdateStore => 'Update in the store';
+
+  @override
+  String get uUpdateStoreMissing =>
+      'The update link is not ready yet. Please try again later.';
+
+  @override
+  String uCurrentVersion(String version) {
+    return 'Current version $version';
+  }
+
+  @override
+  String get uAppVersionTitle => 'App versions';
+
+  @override
+  String get uAppVersionHint =>
+      'Apps below the minimum stop on an update screen. Apps below the latest version see a banner. Format: 1.2.0';
+
+  @override
+  String get uMinVersion => 'Minimum version';
+
+  @override
+  String get uLatestVersion => 'Latest version';
 
   @override
   String get webBookNow => 'Book on the web';
