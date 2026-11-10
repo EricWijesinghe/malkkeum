@@ -1,9 +1,11 @@
 name: release
 
-# Tag vX.Y.Z (or run by hand) -> server images on GHCR + install.sh attached to a GitHub release.
-# The installer is published with this repository's image location baked in, so the person
-# installing only runs:
-#   curl -fsSL https://github.com/<owner>/<repo>/releases/latest/download/install.sh | sudo bash
+# Tag vX.Y.Z (or run by hand) -> server images on GHCR + a release in the PUBLIC delivery repo
+# (repo variable DIST_REPO, e.g. owner/malkkeum-install; secret DIST_TOKEN with write access to it).
+# The delivery repo holds only install.sh and the Korean guides — never source. The installer is
+# published with this repository's image location baked in, so the person installing only runs:
+#   curl -fsSL https://github.com/<DIST_REPO>/releases/latest/download/install.sh | sudo bash
+# One-time: make the two GHCR packages public (Package settings -> Change visibility).
 on:
   push:
     tags: ["v*"]
@@ -52,8 +54,23 @@ jobs:
           sed "s|IMAGE_REPO=\"\${MALKKEUM_IMAGES:-ghcr.io/malkkeum}\"|IMAGE_REPO=\"\${MALKKEUM_IMAGES:-$repo}\"|" deploy/install.sh > install.sh
           grep -q "$repo" install.sh
           bash -n install.sh
+      - name: Guides into the delivery repo
+        env: { DIST_REPO: "${{ vars.DIST_REPO }}", DIST_TOKEN: "${{ secrets.DIST_TOKEN }}" }
+        run: |
+          test -n "$DIST_REPO" && test -n "$DIST_TOKEN" || { echo "::error::set variable DIST_REPO and secret DIST_TOKEN"; exit 1; }
+          git clone -q "https://x-access-token:${DIST_TOKEN}@github.com/${DIST_REPO}.git" dist
+          rm -rf dist/guide dist/store && cp -r docs/guide docs/store dist/
+          url="https://github.com/${DIST_REPO}/releases/latest/download/install.sh"
+          sed -i "s|https://github.com/<계정>/<저장소>/releases/latest/download/install.sh|$url|" dist/guide/01-*.md
+          cp docs/delivery-README.md dist/README.md
+          sed -i "s|INSTALL_URL|$url|" dist/README.md
+          cd dist && git add -A
+          git diff --cached --quiet || { git -c user.name=release -c user.email=release@users.noreply.github.com commit -qm "guides ${GITHUB_REF_NAME}" && git push -q; }
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          repository: ${{ vars.DIST_REPO }}
+          token: ${{ secrets.DIST_TOKEN }}
           files: install.sh
-          generate_release_notes: true
+          body: "설치 명령: curl -fsSL https://github.com/${{ vars.DIST_REPO }}/releases/latest/download/install.sh | sudo bash"
+

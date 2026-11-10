@@ -1,53 +1,48 @@
-# Deploy & run guide
+# Delivery runbook (developer only)
 
-For the owner and whoever operates the service. Everything here builds from this repo.
+The client never gets source. They get a **public delivery repo** (installer + Korean guides),
+public server images, and store apps that the developer builds and uploads to the client's own
+store accounts. Source stays in the private repo.
 
-## What gets deployed
-
-| Piece | Where it runs | How people get it |
+| Piece | Built by | Client receives |
 |---|---|---|
-| API + database | One Linux server (any cloud or a rented VPS) via Docker | — |
-| Ops console | Same server (web, `https://console…`) **and** a Windows app **and** an Android/iOS app | Browser / installer / store or internal testing |
-| Customer app | Google Play + App Store | Store |
-| Partner app | Google Play + App Store | Store |
+| API image, web image (website + console at `/admin/`) | `release.yml` → GHCR | `docker pull` via install.sh |
+| install.sh + `guide/` + `store/` | `release.yml` → `DIST_REPO` | one `curl … \| sudo bash` line |
+| Customer / partner apps | Codemagic on the private repo | TestFlight / Play internal test, then stores |
 
-## 1. Server (API, database, console website)
+## 1. One-time setup (developer)
 
-Needs: a Linux server with Docker, two DNS names pointing at it (e.g. `api.yourbrand.kr`, `console.yourbrand.kr`).
+1. Private repo: `gh repo create malkkeum --private --source . --push`
+2. Public delivery repo: `gh repo create malkkeum-install --public --add-readme`
+3. In the private repo: variable `DIST_REPO=<owner>/malkkeum-install`; secret `DIST_TOKEN` =
+   fine-grained PAT with *Contents: read/write* on the delivery repo only.
+4. Release: `git tag v1.0.0 && git push --tags`. Then, once, open both GHCR packages
+   (`malkkeum-api`, `malkkeum-web`) → Package settings → **Change visibility → Public**.
+   Images contain compiled binaries and minified web assets only.
+5. Check: `docker pull ghcr.io/<owner>/malkkeum-api:latest` from a logged-out machine.
 
-```bash
-cd app/apps/console && flutter build web --release --dart-define=API_BASE=https://api.yourbrand.kr
-cd ../../../deploy && cp .env.example .env   # fill in every value
-docker compose up -d --build
-```
+Send the client the delivery repo link. Guide 01 already contains the exact install line.
 
-Caddy gets HTTPS certificates automatically. The first admin account comes from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`; sign in to the console and change it.
+## 2. Server updates
 
-Backups: back up the `dbdata` and `uploads` volumes daily, and keep `DATA_KEY` somewhere safe. Without it, stored bank account numbers can't be read.
+Tag a new version. Every installed server pulls `latest` each Monday 04:00 KST after a backup,
+or immediately with `malkkeum update`. Migrations run on API start.
 
-## 2. Ops console on Windows
+## 3. Store apps (per client)
 
-```bash
-cd app/apps/console
-flutter build windows --release --dart-define=API_BASE=https://api.yourbrand.kr
-```
+The client creates the store accounts and invites the developer (guide 03). Then in Codemagic,
+connected to the **private** repo:
+1. Integrations → App Store Connect: the client's API key, name `malkkeum_asc`.
+2. Code signing → Android keystores: generate upload keystore, reference `malkkeum_upload`.
+   Keep a copy offline — losing it blocks Play updates (recoverable only via Play support).
+3. Env group `malkkeum`: `API_BASE=https://<client domain>`, `GCLOUD_SERVICE_ACCOUNT_CREDENTIALS`
+   (service account created in the client's Play Console, *Release* permission, secure).
+4. Create the two apps in App Store Connect / Play Console (bundle ids `com.malkkeum.customer`,
+   `com.malkkeum.partner`), run the four workflows in `codemagic.yaml`.
+5. Store listing text: `docs/store/listing-ko.md`; data safety: `docs/store/data-safety.md`;
+   demo login from the client's console (guide 03 D).
 
-The app is in `build/windows/x64/runner/Release/`. Zip that folder, or package it as MSIX (`dart run msix:create`) for a proper installer.
-
-## 3. Phone apps (customer, partner, console)
-
-Every app takes the API address at build time:
-
-```bash
-flutter build appbundle --release --dart-define=API_BASE=https://api.yourbrand.kr   # Android → Play Console
-flutter build ipa --release --dart-define=API_BASE=https://api.yourbrand.kr         # iOS → App Store Connect (needs a Mac)
-```
-
-Before the first store upload:
-- **App IDs**: currently `com.malkkeum.customer|partner|console`. Change them now if the final brand differs. They can't be changed after publishing.
-- **Signing**: create an Android upload keystore (`keytool -genkey …`) and set it in `android/key.properties`. iOS needs an Apple Developer account ($99/yr) and a Mac with Xcode.
-- **Store accounts**: Google Play Console ($25 once) and Apple Developer, both under the business name.
-- **Brand**: swap `BrandConfig.placeholder` (name, colors) in `app/packages/ui/lib/src/tokens.dart`, then replace launcher icons (`flutter_launcher_icons`).
+Apps bake in `API_BASE` at build time, so a domain change means a rebuild.
 
 ## 4. Before launch: real services to sign up for
 

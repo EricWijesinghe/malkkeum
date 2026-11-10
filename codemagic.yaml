@@ -5,7 +5,7 @@
 #        API_BASE                     https://<your domain>            (the server the apps talk to)
 #        GCLOUD_SERVICE_ACCOUNT_CREDENTIALS  Google Play service-account JSON (secure)
 #   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android".
-# Step-by-step with screenshots: docs/guide/03-앱-출시.md
+# Run by the developer on the private repo, never by the client. Runbook: docs/DEPLOY.md §3
 
 definitions:
   prepare: &prepare
