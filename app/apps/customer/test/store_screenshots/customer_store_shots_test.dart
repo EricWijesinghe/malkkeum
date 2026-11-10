@@ -108,13 +108,15 @@ Widget _draftScreen(Widget Function(BookingDraft draft) build) {
 void main() {
   for (final lang in shotLangs) {
     testWidgets('store shots (customer, $lang)', (tester) async {
-      await loadShotFonts();
+      await tester.runAsync(loadShotFonts);
       final envs = {for (final mode in const [ThemeMode.light, ThemeMode.dark]) mode: await _env(lang, mode)};
       final devices = shotDevices.where((d) => shotDeviceSlugs.contains(d.slug));
       for (final device in devices) {
         for (final shot in _shots) {
           final env = envs[shot.dark ? ThemeMode.dark : ThemeMode.light]!;
           final app = AppState(env.api, FakeRealtime(env.api));
+          // The Shell loads these on start in the real app; screens shot alone need them up front.
+          await tester.runAsync(app.loadAll);
           await captureShot(
             tester,
             CustomerTestHost(env: env, app: app, home: shot.screen()),

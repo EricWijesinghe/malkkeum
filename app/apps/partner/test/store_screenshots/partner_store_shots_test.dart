@@ -117,7 +117,7 @@ final _shots = <_Shot>[
 void main() {
   for (final lang in shotLangs) {
     testWidgets('store shots (partner, $lang)', (tester) async {
-      await loadShotFonts();
+      await tester.runAsync(loadShotFonts);
       final envs = {for (final mode in const [ThemeMode.light, ThemeMode.dark]) mode: await _env(lang, mode)};
       final devices = shotDevices.where((d) => shotDeviceSlugs.contains(d.slug));
       for (final device in devices) {

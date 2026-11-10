@@ -40,18 +40,25 @@ final shotOutRoot = const String.fromEnvironment('SHOT_OUT', defaultValue: 'buil
 Future<void> loadShotFonts() async {
   // flutter test runs with the app folder as cwd (app/apps/<app>); the ui package sits beside it.
   final fontDir = Directory('${Directory.current.path}/../../packages/ui/assets/fonts');
-  final pretendard = FontLoader('Pretendard');
-  for (final f in fontDir.listSync().whereType<File>().where((f) => f.path.endsWith('.otf'))) {
-    pretendard.addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));
+  // The theme names the font with `package: 'ui'`, so the engine looks it up as
+  // 'packages/ui/<family>'; register both spellings.
+  final otfs = fontDir.listSync().whereType<File>().where((f) => f.path.endsWith('.otf')).toList();
+  for (final family in const ['Pretendard', 'packages/ui/Pretendard']) {
+    final loader = FontLoader(family);
+    for (final f in otfs) {
+      loader.addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));
+    }
+    await loader.load();
   }
-  await pretendard.load();
 
   final winFonts = Platform.environment['SHOT_WIN_FONTS'] ?? r'C:\Windows\Fonts';
   Future<void> cjk(String family, String file) async {
     final f = File('$winFonts${Platform.pathSeparator}$file');
     if (!f.existsSync()) return;
-    final loader = FontLoader(family)..addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));
-    await loader.load();
+    for (final name in [family, 'packages/ui/$family']) {
+      final loader = FontLoader(name)..addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));
+      await loader.load();
+    }
   }
 
   await cjk('Noto Sans SC', 'msyh.ttc');

@@ -405,10 +405,11 @@ class _ServiceGrid extends StatelessWidget {
                             builder: (_) => ServiceScreen(service: s),
                           ),
                         ),
-                        // Large system fonts scale the tile content down instead of overflowing it.
-                        child: FittedBox(
+                        // Large system fonts scale the tile down instead of overflowing it. The fixed
+                        // width keeps every tile the same size; only height can trigger the scaling.
+                        child: LayoutBuilder(builder: (context, box) => FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Column(
+                          child: SizedBox(width: box.maxWidth, child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Hero(
@@ -441,8 +442,8 @@ class _ServiceGrid extends StatelessWidget {
                               ),
                             ),
                           ],
-                          ),
-                        ),
+                          )),
+                        )),
                       ),
                     ),
                   ),
