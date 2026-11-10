@@ -60,7 +60,7 @@ Json _jobDetail() => {
         'cancelled': false,
       },
       'committed': true,
-      'payout': {'net': 41600, 'fee': 10400},
+      'payout': {'gross': 52000, 'net': 41600, 'fee': 10400},
     };
 
 List<Json> _settlements() => [

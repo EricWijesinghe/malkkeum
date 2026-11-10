@@ -86,7 +86,7 @@ class _Shot {
 }
 
 final _shots = <_Shot>[
-  _Shot('01-home', dark: false, screen: () => HomeTab(onOpenTab: (_) {})),
+  _Shot('01-home', dark: false, screen: () => Scaffold(body: HomeTab(onOpenTab: (_) {}))),
   _Shot('02-service', dark: false, screen: () => ServiceScreen(service: Service.fromJson(serviceJson('bathroom')), initialUnit: 1)),
   _Shot('03-schedule', dark: false, screen: () => _draftScreen((d) => ScheduleScreen(draft: d))),
   _Shot('04-checkout', dark: false, screen: () => _draftScreen((d) => CheckoutScreen(draft: d))),

@@ -220,16 +220,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           padding: const EdgeInsets.all(Space.gutter),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SectionTitle(t.scheduleArrival, trailing: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : null),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              childAspectRatio: 1.5, // 2.6 clipped the title and window text at 390 dp
-              mainAxisSpacing: Space.xs,
-              crossAxisSpacing: Space.xs,
-              children: [
-                for (final h in _slots)
-                  OptionCard(
+            // Two per row, each row as tall as its tallest card: long translations and large
+            // system fonts wrap instead of clipping (a fixed grid aspect ratio clipped them).
+            for (var i = 0; i < _slots.length; i += 2)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.xs),
+                child: IntrinsicHeight(
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    for (final h in _slots.skip(i).take(2)) ...[
+                      if (h != _slots[i]) const SizedBox(width: Space.xs),
+                      Expanded(child: OptionCard(
                     title: d.service.isQuote ? (h < 12 ? t.morning : t.afternoon) : hourLabel(h, lang),
                     subtitle: !(_available[h] ?? true)
                         ? t.scheduleFull
@@ -240,9 +240,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     enabled: _available[h] ?? true,
                     accent: hue.tone,
                     onTap: () => setState(() => d.hour = h),
-                  ),
-              ],
-            ),
+                  )),
+                    ],
+                    if (i + 1 >= _slots.length) ...[const SizedBox(width: Space.xs), const Spacer()],
+                  ]),
+                ),
+              ),
             const SizedBox(height: Space.md),
             if (d.service.isQuote)
               Text(t.scheduleQuoteNote, style: context.text.bodySmall)
