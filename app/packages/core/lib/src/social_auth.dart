@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
 import 'session.dart';
+import 'social_native_stub.dart' if (dart.library.io) 'social_native_io.dart';
 
 /// Providers the backend accepts on POST /v1/auth/social.
 abstract final class SocialProviders {
@@ -60,26 +61,60 @@ class DevSocialSignIn extends SocialSignIn {
   Future<String?> obtainToken(BuildContext context) => devToken();
 }
 
-/// Integration point for a real SDK. Each provider gets one subclass that calls its SDK
-/// and returns the access token. Until the SDK package is added (docs/DEPLOY.md §4) and the
-/// provider is listed in --dart-define=SOCIAL_PROVIDERS, it reports provider_not_configured.
+/// Used when a provider has no native SDK in this build (web, or a build without its keys).
 class UnconfiguredSocialSignIn extends SocialSignIn {
   const UnconfiguredSocialSignIn(this.provider);
   @override
   final String provider;
 
-  // TODO(kakao): kakao_flutter_sdk_user -> UserApi.instance.loginWithKakaoTalk()/loginWithKakaoAccount(); return token.accessToken.
-  // TODO(naver): flutter_naver_login -> FlutterNaverLogin.logIn(); return result.accessToken.
-  // TODO(google): google_sign_in -> GoogleSignIn(...).signIn(); return auth.accessToken (or idToken per backend contract).
-  // TODO(apple): sign_in_with_apple -> SignInWithApple.getAppleIDCredential(); return credential.identityToken.
   @override
   Future<String?> obtainToken(BuildContext context) async => throw const ApiException(501, 'provider_not_configured');
 }
 
-/// Build-time switch: --dart-define=SOCIAL_PROVIDERS=kakao,naver (empty = none configured).
+/// Native keys, read at build time (--dart-define). Empty = not configured; that hides the provider.
+abstract final class SocialKeys {
+  static const kakaoNativeKey = String.fromEnvironment('KAKAO_NATIVE_KEY');
+  static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
+  static const naverClientSecret = String.fromEnvironment('NAVER_CLIENT_SECRET');
+  static const naverClientName = String.fromEnvironment('NAVER_CLIENT_NAME');
+  static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
+  static const googleIosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
+  static const requested = String.fromEnvironment('SOCIAL_PROVIDERS');
+
+  static const values = {
+    'KAKAO_NATIVE_KEY': kakaoNativeKey,
+    'NAVER_CLIENT_ID': naverClientId,
+    'NAVER_CLIENT_SECRET': naverClientSecret,
+    'NAVER_CLIENT_NAME': naverClientName,
+    'GOOGLE_SERVER_CLIENT_ID': googleServerClientId,
+    'GOOGLE_IOS_CLIENT_ID': googleIosClientId,
+  };
+}
+
+/// Which providers this build can offer. [requested] (SOCIAL_PROVIDERS, comma list) narrows the list;
+/// empty means all. A provider is offered only when every key it needs is set. Apple needs no key.
+Set<String> providersForKeys({required String requested, required Map<String, String> keys, required bool ios}) {
+  bool has(String k) => (keys[k] ?? '').isNotEmpty;
+  final wanted = requested.trim().isEmpty
+      ? SocialProviders.all.toSet()
+      : requested.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
+  final available = {
+    if (has('KAKAO_NATIVE_KEY')) SocialProviders.kakao,
+    if (has('NAVER_CLIENT_ID') && has('NAVER_CLIENT_SECRET') && has('NAVER_CLIENT_NAME')) SocialProviders.naver,
+    if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID'))) SocialProviders.google,
+    SocialProviders.apple,
+  };
+  return wanted.intersection(available);
+}
+
+/// The providers this build offers. Web has no native SDK here, so it offers none.
 Set<String> configuredSocialProviders() {
-  const raw = String.fromEnvironment('SOCIAL_PROVIDERS');
-  return raw.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
+  if (kIsWeb) return {};
+  return providersForKeys(
+    requested: SocialKeys.requested,
+    keys: SocialKeys.values,
+    ios: defaultTargetPlatform == TargetPlatform.iOS,
+  );
 }
 
 /// True for loopback / emulator / LAN-style dev hosts. Production hosts never get dev sign-in.
@@ -111,7 +146,7 @@ List<SocialSignIn> socialSignInsFor({
     if (dev) {
       out.add(DevSocialSignIn(p, storage: storage));
     } else if (live.contains(p)) {
-      out.add(UnconfiguredSocialSignIn(p));
+      out.add(nativeSocialSignIn(p) ?? UnconfiguredSocialSignIn(p));
     }
   }
   return out;

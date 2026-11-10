@@ -1,1 +1,7 @@
+// Native SDK keys: ios/Flutter/Keys.xcconfig is written by CI from env vars (optional include).
+// Defaults come first so a build without the file still has valid values; Keys.xcconfig overrides them.
+KAKAO_URL_SCHEME = kakao-unset
+GOOGLE_IOS_CLIENT_ID = google-unset
+GOOGLE_REVERSED_CLIENT_ID = google-unset
+#include? "Keys.xcconfig"
 #include "Generated.xcconfig"

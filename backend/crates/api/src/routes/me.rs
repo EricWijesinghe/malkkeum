@@ -32,7 +32,7 @@ pub fn routes() -> Router<AppState> {
         .route("/me/coupons", get(list_coupons))
         .route("/me/payment-methods", get(list_methods).post(register_method))
         .route("/me/payment-methods/{id}", delete(delete_method))
-        .route("/me/push-token", post(register_push))
+        .route("/me/push-token", post(register_push).delete(unregister_push))
         .route("/me/notifications", get(list_notifications))
         .route("/me/notifications/read", post(read_notifications))
 }
@@ -367,6 +367,24 @@ async fn register_push(State(s): State<AppState>, a: Auth, Json(p): Json<PushTok
         .bind(role)
         .bind(a.id)
         .bind(p.platform)
+        .execute(&s.db)
+        .await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+#[derive(Deserialize)]
+struct PushTokenRemoval {
+    token: String,
+}
+
+/// Sign-out: drops one device token, and only if it belongs to the caller.
+async fn unregister_push(State(s): State<AppState>, a: Auth, Json(p): Json<PushTokenRemoval>) -> ApiResult<Json<Value>> {
+    if p.token.is_empty() || p.token.len() > 4096 {
+        return Err(ApiError::BadRequest("invalid_push_token"));
+    }
+    sqlx::query("DELETE FROM push_tokens WHERE token = $1 AND owner_id = $2")
+        .bind(p.token)
+        .bind(a.id)
         .execute(&s.db)
         .await?;
     Ok(Json(json!({ "ok": true })))

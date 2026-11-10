@@ -80,8 +80,16 @@ class Session extends ChangeNotifier {
     await save(await api.post('/auth/staff/login', {'email': email, 'password': password}) as Map<String, dynamic>);
   }
 
+  /// Runs before local sign-out, while the access token still works (push token removal).
+  Future<void> Function()? beforeLogout;
+
   Future<void> logout() async {
     final token = refreshToken;
+    try {
+      await beforeLogout?.call();
+    } catch (_) {
+      // Best-effort: a failed push unregister must never block signing out.
+    }
     await clear();
     if (token != null) {
       try {

@@ -51,7 +51,7 @@ class ApiClient {
   Future<dynamic> post(String path, [Object? body]) => _send('POST', path, body: body);
   Future<dynamic> put(String path, [Object? body]) => _send('PUT', path, body: body);
   Future<dynamic> patch(String path, [Object? body]) => _send('PATCH', path, body: body);
-  Future<dynamic> delete(String path) => _send('DELETE', path);
+  Future<dynamic> delete(String path, [Object? body]) => _send('DELETE', path, body: body);
 
   /// Raw response bytes (CSV exports). The bearer token stays in the header, never in the URL.
   Future<List<int>> getBytes(String path, {Map<String, String?>? query}) async {
