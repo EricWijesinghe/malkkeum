@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>말끔 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--brand:#12B886;--brand-d:#0B8F69;--brand-w:#E7F8F1;--ink:#191F28;--ink2:#333D4B;--sub:#8B95A1;--sub2:#6B7684;--line:#EEF0F3;--bg:#F4F5F7;--navy:#101A36;--red:#F04452;--orange:#FF9F1C;--blue:#3182F6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#DDE1E6;color:var(--ink);display:flex;align-items:center;justify-content:center;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+input{font:inherit;color:inherit}
+.device{position:relative;width:390px;height:844px;max-height:100vh;background:#fff;border-radius:36px;overflow:hidden;box-shadow:0 30px 80px rgba(16,26,54,.25)}
+@media (max-width:500px){body{background:#fff;display:block}.device{width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;box-shadow:none}}
+#app{height:100%}
+.screen{height:100%;display:flex;flex-direction:column;background:#fff}
+.screen.gray{background:var(--bg)}
+.body{flex:1;overflow-y:auto;overflow-x:hidden}
+.body::-webkit-scrollbar,.hs::-webkit-scrollbar,.chips::-webkit-scrollbar,.tabs::-webkit-scrollbar,.qr::-webkit-scrollbar{display:none}
+.nav{height:56px;display:flex;align-items:center;padding:0 8px;flex-shrink:0;gap:4px}
+.ib{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;position:relative}
+.nav-title{flex:1;font-size:17px;font-weight:600}
+.nav-title.c{text-align:center}
+.nav-title small{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-top:1px}
+.nav-link{color:var(--brand-d);font-weight:600;font-size:15px;padding:0 12px;display:flex;align-items:center;gap:4px}
+svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+svg.i.sm{width:18px;height:18px}
+svg.i.lg{width:30px;height:30px}
+.h1{font-size:26px;font-weight:700;line-height:1.38;padding:8px 24px 0;letter-spacing:-.02em}
+.desc{font-size:15px;color:var(--sub2);line-height:1.6;padding:10px 24px 0}
+.desc em{font-style:normal;color:var(--brand-d);font-weight:600}
+.sec{padding:28px 24px}
+.sec-t{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sec-t .req{font-size:14px;color:var(--red);font-weight:500}
+.divider{height:10px;background:var(--bg)}
+.hr{height:1px;background:var(--line);margin:0 24px}
+.cta{padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#fff;flex-shrink:0;display:flex;gap:10px;align-items:center}
+.btn{height:56px;border-radius:14px;background:var(--brand);color:#fff;font-size:17px;font-weight:700;flex:1;text-align:center;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:#D1D6DB;cursor:not-allowed;transform:none}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid #E5E8EB}
+.btn.sm{flex:0 0 150px}
+.pricebar{flex:1}
+.pricebar b{font-size:21px}
+.pricebar small{display:block;color:var(--sub);font-size:13px;text-decoration:underline;margin-top:2px;cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 24px;border:1px solid #E5E8EB;border-radius:24px;font-weight:600;font-size:16px;background:#fff}
+.radio{width:26px;height:26px;border-radius:50%;border:2px solid #D1D6DB;flex-shrink:0;transition:border .15s;background:#fff}
+.radio.on{border:8px solid var(--brand)}
+.chk{width:26px;height:26px;border-radius:50%;background:#D1D6DB;color:#fff;display:grid;place-items:center;flex-shrink:0}
+.chk.on{background:var(--brand)}
+.chk svg{width:16px;height:16px;stroke-width:2.6}
+.opt{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;width:100%;text-align:left;background:#fff}
+.opt.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset}
+.opt .t{font-size:17px;font-weight:600}
+.opt .s{font-size:14px;color:var(--sub2);margin-top:4px;line-height:1.5}
+.opt .s a{color:var(--brand-d);font-weight:600;text-decoration:underline}
+.row{display:flex;align-items:center;gap:14px;padding:16px 0;width:100%;text-align:left;cursor:pointer}
+.row .t{flex:1;font-size:16px;line-height:1.45}
+.row .chev{color:#C4CAD1}
+.cops{display:flex;flex-wrap:wrap;gap:18px 22px}
+.cops.nowrap{flex-wrap:nowrap;overflow-x:auto;margin:0 -24px;padding:0 24px}
+.cop{display:flex;flex-direction:column;align-items:center;gap:10px;width:72px;flex-shrink:0;cursor:pointer;font-size:14px;color:var(--ink2);text-align:center;line-height:1.35}
+.cop .c{width:72px;height:72px;border-radius:50%;background:var(--bg);display:grid;place-items:center;transition:.15s;font-size:22px;font-weight:600}
+.cop.on .c{background:var(--brand);color:#fff}
+.cop .c svg{width:30px;height:30px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 24px}
+.chip{flex-shrink:0;height:40px;padding:0 18px;border-radius:20px;border:1px solid #E5E8EB;font-size:15px;white-space:nowrap;background:#fff}
+.chip.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.tabs{display:flex;gap:24px;padding:0 24px;border-bottom:1px solid var(--line);overflow-x:auto;flex-shrink:0}
+.tab{height:50px;font-size:17px;font-weight:600;color:#B0B8C1;position:relative;white-space:nowrap;flex-shrink:0}
+.tab.on{color:var(--ink)}
+.tab.on::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--ink);border-radius:2px}
+.tabs.eq{gap:0;padding:0}.tabs.eq .tab{flex:1;text-align:center}
+.tabs.eq .tab.on{color:var(--brand-d)}.tabs.eq .tab.on::after{background:var(--brand)}
+.hs{display:flex;gap:12px;overflow-x:auto;padding:0 24px;scroll-snap-type:x mandatory;scroll-padding:0 24px}
+.hs>*{scroll-snap-align:start;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:13px;font-size:13px;font-weight:700}
+.badge.navy{background:var(--navy);color:#fff}
+.badge.orange{background:var(--orange);color:#3a2300}
+.badge.brand{background:var(--brand-w);color:var(--brand-d)}
+.badge.line{border:1px solid #E5E8EB;color:var(--brand-d);background:#fff}
+.empty{text-align:center;color:var(--sub);font-size:16px;padding:80px 24px;line-height:1.6}
+.empty b{display:block;color:var(--ink);font-size:19px;margin-bottom:6px}
+.note{font-size:14px;color:var(--sub2);line-height:1.6;padding-left:18px;position:relative}
+.note::before{content:'※';position:absolute;left:0}
+.bul{font-size:15px;color:var(--sub2);line-height:1.6;padding:6px 0 6px 14px;position:relative}
+.bul::before{content:'';position:absolute;left:2px;top:15px;width:4px;height:4px;border-radius:50%;background:#B0B8C1}
+.infobox{background:var(--bg);border-radius:14px;padding:18px 20px;font-size:15px;line-height:1.6;color:var(--ink2);display:flex;align-items:center;gap:12px}
+.infobox a{color:var(--brand-d);font-weight:700;text-decoration:underline;cursor:pointer;white-space:nowrap}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;font-size:15px}
+.kv span{color:var(--sub2)}
+.kv.total{font-size:17px;font-weight:700;border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
+.kv.total b{color:var(--brand-d)}
+.box{border:1px solid var(--line);border-radius:16px;padding:8px 22px}
+/* toast & sheet */
+#toast-root .wrap{position:absolute;left:16px;right:16px;z-index:70;pointer-events:none}
+.toast{background:rgba(25,31,40,.95);color:#fff;border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.5;display:flex;align-items:center;gap:12px;pointer-events:auto;animation:tin .25s ease;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast b{color:#63E6BE}
+.toast button{color:#63E6BE;font-weight:700;white-space:nowrap}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}}
+.sheet-ov{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;z-index:51;max-height:86%;display:flex;flex-direction:column;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}}@keyframes fade{from{opacity:0}}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 8px 24px}
+.sheet-h h3{font-size:20px}
+.sheet-b{overflow-y:auto;padding:8px 24px 24px}
+.sheet .cta{border-top:0}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:var(--ink2)}
+.field input{width:100%;height:52px;border-radius:12px;border:1px solid transparent;background:var(--bg);padding:0 16px;font-size:16px;outline:none}
+.field input:focus{border-color:var(--brand);background:#fff}
+/* tabbar */
+.tabbar{height:64px;border-top:1px solid var(--line);display:flex;background:#fff;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:#4E5968;position:relative}
+.tabbar button.on{color:var(--ink);font-weight:700}
+.tabbar button.on svg{stroke-width:2.3}
+.tabbar .cnt{position:absolute;top:6px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+/* home */
+.home-h{display:flex;align-items:center;gap:12px;padding:12px 16px 8px 24px}
+.logo{font-size:24px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:4px;letter-spacing:-.04em}
+.seg{flex:1;display:flex;justify-content:center}
+.seg>div{display:flex;background:var(--bg);border-radius:20px;padding:3px}
+.seg button{height:36px;padding:0 16px;border-radius:18px;font-size:15px;font-weight:600;color:#B0B8C1}
+.seg button.on{background:var(--ink2);color:#fff}
+.dotr{position:absolute;top:9px;right:10px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 4px;padding:18px 16px 26px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:9px;font-size:14px;color:var(--ink2);position:relative;text-align:center}
+.tile .ti{width:58px;height:58px;border-radius:18px;display:grid;place-items:center}
+.tile .ti svg{width:30px;height:30px;stroke-width:1.8}
+.tile .nb{position:absolute;top:-6px;left:calc(50% + 14px);background:var(--red);color:#fff;font-size:11px;font-weight:800;height:20px;min-width:20px;padding:0 6px;border-radius:10px;display:grid;place-items:center}
+.reco{display:flex;align-items:center;gap:18px;padding:8px 24px 28px;width:100%}
+.reco .av{width:84px;height:84px;border-radius:50%;background:radial-gradient(circle,#D3F9E8 30%,#EFFCF6 70%,transparent 72%);display:grid;place-items:center;color:var(--brand-d);flex-shrink:0}
+.reco .av svg{width:40px;height:40px}
+.reco b{font-size:22px;display:block}
+.reco span{color:var(--sub);font-size:15px;display:flex;align-items:center;gap:2px;margin-top:6px}
+.banner{height:130px;border-radius:18px;padding:22px 24px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;text-align:left}
+.banner .bt{font-size:18px;font-weight:700;line-height:1.4}
+.banner .bs{font-size:14px;color:var(--sub2);margin-top:6px}
+.banner .art{width:96px;height:64px;border-radius:10px;transform:rotate(-8deg);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px;box-shadow:0 8px 16px rgba(0,0,0,.12);flex-shrink:0}
+.bcount{position:absolute;right:32px;bottom:22px;background:#fff;border-radius:14px;height:28px;padding:0 6px 0 12px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.bcount i{width:18px;height:18px;border-radius:50%;background:var(--ink2);color:#fff;display:grid;place-items:center;font-style:normal;font-size:14px;line-height:1}
+.card{background:#fff;border-radius:18px;margin:0 16px;padding:8px 20px}
+.news{display:flex;gap:16px;align-items:center;padding:12px 0;width:100%;text-align:left}
+.news .th{width:84px;height:84px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;font-size:36px}
+.news small{color:var(--sub);font-size:14px}
+.news p{font-size:16px;line-height:1.45;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.promo{border-radius:16px;padding:20px 22px;color:#fff;background:linear-gradient(120deg,#FF8A3D,#FF6B3D);margin:8px 0;text-align:left;width:100%}
+.promo small{opacity:.9;font-size:13px}
+.promo b{display:block;font-size:19px;line-height:1.4;margin-top:4px}
+.promo u{font-size:13px;opacity:.9;margin-top:10px;display:inline-block}
+/* calendar */
+.cal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px 24px}
+.cal-h .m{font-size:26px;font-weight:700;display:flex;align-items:center;gap:2px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);padding:0 10px;row-gap:2px}
+.cal .wd{text-align:center;font-size:13px;color:var(--sub);padding:8px 0}
+.cal .d{height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:600;border-radius:12px;margin:0 3px;position:relative;text-align:center}
+.cal .d.today{font-size:15px}
+.cal .d.out{color:#D1D6DB}
+.cal .d:disabled{color:#D9DDE2;cursor:default}
+.cal .d.sel{background:var(--ink2);color:#fff}
+.cal .d .dot{width:5px;height:5px;border-radius:50%;background:var(--brand);position:absolute;bottom:4px}
+.handle{width:56px;height:5px;border-radius:3px;background:#E5E8EB;margin:14px auto}
+.bk{display:flex;align-items:center;gap:16px;padding:14px 24px;width:100%;text-align:left}
+.bk .ic{width:64px;height:64px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.bk .ic svg{width:30px;height:30px}
+.bk b{font-size:20px;display:block}
+.bk span{color:var(--sub);font-size:15px}
+/* more */
+.mgroup{background:#fff;border-radius:20px;margin:0 16px 16px;padding:6px 24px}
+.mrow{display:flex;align-items:center;gap:18px;padding:18px 0;width:100%;font-size:17px;text-align:left}
+.mrow svg.i{width:28px;height:28px;stroke-width:1.5}
+.mrow .t{flex:1}
+.mrow .v{color:var(--sub);font-size:16px}
+.mrow .chev{color:#C4CAD1}
+/* misc */
+.hero{margin:22px 24px 0;height:180px;border-radius:18px;display:grid;place-items:center}
+.hero .hc{width:110px;height:110px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.hero .hc svg{width:54px;height:54px;stroke-width:1.5}
+.rv{width:300px;border-radius:16px;overflow:hidden;background:var(--bg)}
+.rv .ba{display:grid;grid-template-columns:1fr 1fr;height:150px}
+.rv .ba div{position:relative;display:grid;place-items:center;font-size:40px}
+.rv .ba span{position:absolute;left:0;bottom:0;background:var(--ink2);color:#fff;font-size:13px;font-weight:700;padding:6px 10px}
+.rv .rb{padding:16px 18px}
+.rv .rn{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.rv .rn i{width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;font-style:normal}
+.rv p{font-size:14px;color:var(--sub2);line-height:1.6;margin-top:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 4px}
+.tools div{display:flex;flex-direction:column;align-items:center;gap:10px;font-size:14px;color:var(--ink2)}
+.tools svg{width:34px;height:34px;stroke-width:1.4}
+.cnts{display:flex;gap:12px;overflow-x:auto;margin:0 -24px;padding:0 24px}
+.cnt-card{flex-shrink:0;min-width:130px;border:1px solid #E5E8EB;border-radius:14px;padding:16px 18px;text-align:left}
+.cnt-card b{font-size:18px;display:block;white-space:nowrap}
+.cnt-card span{font-size:14px;color:var(--sub);margin-top:4px;display:block}
+.cnt-card em{font-style:normal;font-size:14px;font-weight:600;color:var(--ink2);margin-top:8px;display:block}
+.cnt-card.on{border:2px solid var(--ink2);background:var(--bg);padding:15px 17px}
+.mgr{display:flex;align-items:center;justify-content:space-between;padding:4px 24px 24px}
+.mgr p{font-size:16px;line-height:1.6}
+.mgr a{color:var(--sub);font-size:15px;display:flex;align-items:center;gap:2px;cursor:pointer}
+.mgr .av{width:88px;height:88px;border-radius:50%;background:var(--brand-w);display:grid;place-items:center;color:var(--brand-d)}
+.mgr .av svg{width:44px;height:44px;stroke-width:1.5}
+.trow{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+.trow .tl b{font-size:24px;display:block}
+.trow .tl b.ph{color:#C4CAD1}
+.trow .tl span{font-size:14px;color:var(--sub);margin-top:4px;display:block}
+.trow .pill{height:52px;padding:0 26px}
+.slot{display:flex;justify-content:space-between;align-items:center;width:100%;padding:18px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;font-size:16px}
+.slot.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset;color:var(--brand-d);font-weight:700}
+.slot:disabled{color:#C4CAD1;background:var(--bg)}
+.done-ic{width:88px;height:88px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;margin:60px auto 24px;animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
+.done-ic svg{width:44px;height:44px;stroke-width:2.6}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.stepper{display:flex;justify-content:space-between;position:relative;margin:28px 24px 0}
+.stepper::before{content:'';position:absolute;top:9px;left:12%;right:12%;height:2px;background:#E5E8EB}
+.stepper .bar{position:absolute;top:9px;left:12%;height:2px;background:var(--brand)}
+.stepper div{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;font-size:15px;color:#B0B8C1;font-weight:600}
+.stepper i{width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #D1D6DB;display:block}
+.stepper .on{color:var(--brand-d)}
+.stepper .on i{background:var(--brand);border-color:var(--brand)}
+.bavatar{width:110px;height:110px;border-radius:50%;background:var(--navy);margin:20px auto;display:grid;place-items:center;color:#63E6BE}
+.bavatar svg{width:56px;height:56px;stroke-width:1.4}
+.plan{margin:24px auto 0;display:block}
+.check-li{display:flex;gap:12px;align-items:center;padding:10px 0;font-size:16px}
+.check-li i{width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.check-li i svg{width:16px;height:16px;stroke-width:2.6}
+.quote{background:#fff;border:2px solid var(--brand);border-radius:18px;padding:24px;margin:28px 20px}
+.quote .qh{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:700}
+.quote .qp{font-size:26px;font-weight:700;margin-top:6px}
+.quote li{list-style:none;display:flex;gap:10px;color:var(--sub2);font-size:15px;padding:5px 0}
+.quote li svg{color:var(--brand);width:18px;height:18px;stroke-width:2.4}
+.faq{border-bottom:1px solid var(--line)}
+.faq button{display:flex;width:100%;padding:20px 0;font-size:16px;font-weight:600;gap:10px;align-items:center;text-align:left}
+.faq p{padding:0 0 20px;color:var(--sub2);line-height:1.6;font-size:15px}
+/* chat */
+.clist{display:flex;align-items:center;gap:14px;padding:16px 24px;width:100%;text-align:left;border-bottom:1px solid var(--line)}
+.clist .ca{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.clist .ca svg{width:26px;height:26px}
+.clist .cm{flex:1;min-width:0}
+.clist .cm b{font-size:16px;display:block}
+.clist .cm p{font-size:14px;color:var(--sub2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clist .cr{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:var(--sub);flex-shrink:0}
+.clist .un{background:var(--red);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
+.msgs{padding:16px 16px 20px;display:flex;flex-direction:column;gap:6px;min-height:100%}
+.mrow2{display:flex;align-items:flex-end;gap:6px;max-width:100%}
+.mrow2.me{justify-content:flex-end}
+.mav{width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;flex-shrink:0;align-self:flex-start}
+.mav svg{width:20px;height:20px}
+.mname{font-size:13px;color:var(--sub2);margin:0 0 4px 2px}
+.msg{max-width:260px;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.me .msg{background:var(--brand);color:#fff;border-bottom-right-radius:6px}
+.agent .msg{background:#fff;border-top-left-radius:6px}
+.mt{font-size:11px;color:var(--sub);flex-shrink:0;padding-bottom:2px}
+.sysmsg{align-self:center;font-size:12px;color:var(--sub);background:rgba(0,0,0,.05);padding:5px 12px;border-radius:12px;margin:10px 0}
+.mcard{background:#fff;border-radius:16px;padding:16px 18px;width:260px;border:1px solid var(--line)}
+.mcard b{font-size:15px;display:block;margin-bottom:8px}
+.mcard .kv{font-size:13px;padding:4px 0}
+.mcard button{margin-top:10px;width:100%;height:38px;border-radius:10px;background:var(--bg);font-weight:600;font-size:14px;text-align:center}
+.typing{display:inline-flex;gap:4px;padding:14px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#B0B8C1;animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.qr{display:flex;gap:8px;overflow-x:auto;padding:10px 12px 0;background:#fff;border-top:1px solid var(--line)}
+.qr button{flex-shrink:0;height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--brand);color:var(--brand-d);font-size:14px;font-weight:600;background:#fff}
+.cin{display:flex;gap:8px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff}
+.qr+.cin{border-top:0}
+.cin input{flex:1;height:44px;border-radius:22px;background:var(--bg);border:0;padding:0 18px;font-size:15px;outline:none}
+.cin .send{width:44px;height:44px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.cin .plus{width:40px;height:40px;display:grid;place-items:center;color:var(--sub2)}
+</style>
+</head>
+<body>
+<div class="device">
+  <div id="app"></div>
+  <div id="sheet-root"></div>
+  <div id="toast-root"></div>
+</div>
+<script>
+/* ================= 아이콘 ================= */
+const IC={
+back:'<path d="M15 5l-7 7 7 7"/>',close:'<path d="M6 6l12 12M18 6L6 18"/>',chev:'<path d="M9 6l6 6-6 6"/>',down:'<path d="M6 9l6 6 6-6"/>',up:'<path d="M6 15l6-6 6 6"/>',left:'<path d="M14 6l-6 6 6 6"/>',
+check:'<path d="M5 12.5l4.5 4.5L19 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+home:'<path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+bell:'<path d="M6 16v-5a6 6 0 1112 0v5l2 2H4zM10 20a2 2 0 004 0"/>',
+card:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M14 15h4"/>',
+ticket:'<path d="M3 7h18v3a2 2 0 000 4v3H3v-3a2 2 0 000-4z"/><path d="M9 14l5-5M9.5 9.5h.01M14 14h.01"/>',
+coinP:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6.5"/><path d="M10.5 15.5v-7h2a2 2 0 010 4h-2"/>',
+pin:'<path d="M12 21s-7-6.5-7-11a7 7 0 0114 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+mega:'<path d="M4 10v4h3l8 4V6L7 10z"/><path d="M18 9.5a3 3 0 010 5"/>',
+bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/>',
+help:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M10 9a2 2 0 113 1.7c-.6.4-1 .8-1 1.6M12 13.8h.01"/>',
+faq:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h8"/>',
+hand:'<path d="M3 12l4-4 4 2 3-3 7 6-5 5-3-2-2 2z"/><path d="M11 10l3 3"/>',
+shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16c1-1.6 2.3-2.4 4-2.4s3 .8 4 2.4"/>',
+doc:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 14l2 2 4-4"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+ver:'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 10l1.5 4L11 10M14.5 14v-4M13 10h3"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V8a4 4 0 018 0"/>',
+logo:'<path d="M12 3l2.2 5.6L20 9.5l-4.4 3.8 1.4 5.9L12 16l-5 3.2 1.4-5.9L4 9.5l5.8-.9z"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+washer:'<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6.5h.01M10 6.5h.01"/>',
+elev:'<rect x="5" y="3" width="14" height="18"/><path d="M12 3v18"/><path d="M2 12l2-2v4zM22 12l-2-2v4z"/>',
+noelev:'<rect x="5" y="3" width="14" height="18" stroke-dasharray="2 2"/><path d="M12 3v18" stroke-dasharray="2 2"/>',
+toilet:'<path d="M7 3h7v7H7zM5 10h14a7 7 0 01-14 0zM9 16.5L8 21h8l-1-4.5"/>',
+kitchen:'<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h16M8 7h.01M12 7h.01"/><circle cx="12" cy="15" r="2.5"/>',
+vacuum:'<circle cx="7" cy="17" r="3"/><path d="M10 17h9l-4-13h-2M13 4l-3 10"/>',
+trash:'<path d="M8 8h8l2 12H6z"/><path d="M10 8c0-2 .8-3 2-4 1.2 1 2 2 2 4"/>',
+mop:'<path d="M12 3v12M6 15h12l1 4H5z"/>',cloth:'<path d="M5 7c0-2 14-2 14 0v10c0 2-14 2-14 0z"/><path d="M8 10h8"/>',
+glove:'<path d="M8 21v-8l-2.5-3 1-1.2L9 11V5a1.2 1.2 0 012.4 0v5V4a1.2 1.2 0 012.4 0v6V5a1.2 1.2 0 012.4 0v9l-1 7z"/>',
+sponge:'<rect x="4" y="8" width="16" height="9" rx="2"/><path d="M4 12.5h16"/>',
+spray:'<path d="M9 10h6v11H9zM10 10V7h4l3 2M9 5h3"/>',
+truck:'<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+building:'<path d="M4 21V5h10v16M14 9h6v12M3 21h18M7 9h3M7 13h3M7 17h3M17 13h.01M17 17h.01"/>',
+apt:'<path d="M6 21V6l6-3 6 3v15zM10 9h4M10 13h4M10 17h4"/>',
+villa:'<path d="M4 11l8-7 8 7v10H4z"/><path d="M10 21v-6h4v6"/>',
+store:'<path d="M3 9h18l-1.6-5H4.6zM5 9v11h14V9M9.5 20v-5h5v5"/>',
+duplex:'<path d="M4 11l8-7 8 7v10H4z"/><path d="M8 21v-4h5v-4h3"/>',noduplex:'<path d="M4 11l8-7 8 7v10H4z" stroke-dasharray="2 2"/>',
+box:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>',
+roller:'<rect x="5" y="3" width="13" height="5" rx="1.5"/><path d="M18 5.5h2v5h-8v3M11 13.5h2v7h-2z"/>',
+movehome:'<rect x="5" y="4" width="14" height="16" rx="1"/><path d="M9 4v5l1.5-1 1.5 1V4"/>',
+keyhome:'<path d="M4 11l8-7 8 7v10H4z"/><circle cx="12" cy="13" r="2"/><path d="M12 15v3"/>',
+drawer:'<rect x="5" y="4" width="14" height="14" rx="1"/><path d="M5 11h14M10 7.5h4M10 14.5h4M7 18v2M17 18v2"/>',
+bed:'<path d="M3 19v-8h18v8M3 15h18M6 11V8h5v3M13 11V8h5v3"/>',
+aircon:'<rect x="3" y="5" width="18" height="8" rx="2"/><path d="M6 10h12M7.5 16c0 1.5-1 2-1 3M12 16v3M16.5 16c0 1.5 1 2 1 3"/>',
+sofa:'<path d="M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M3 11h18v6H3zM5 17v2M19 17v2"/>',
+chat:'<path d="M4 5h16v11H10l-5 4v-4H4z"/>',send:'<path d="M4 12l16-8-6 16-2.5-6.5z"/>',
+headset:'<path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20c0 1-1.5 2-4 2h-2"/>',
+camera:'<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/>',
+};
+const ic=(n,c='')=>`<svg class="i ${c}" viewBox="0 0 24 24">${IC[n]||''}</svg>`;
+
+/* ================= 서비스 데이터 ================= */
+// type: fixed(고정 금액) | unit(개수/종류 선택) | consult(상담 후 견적) — 모든 서비스는 1회 예약
+const SVC={
+ oneroom:{name:'원룸 청소',icon:'box',tint:'#FFF5E0',color:'#F59F00',type:'fixed',price:45000,hours:2,prep:true,
+  desc:'방 1개, 화장실 1개인 10평 이하 원룸 청소를<br>2시간 동안 진행합니다.'},
+ moveout:{name:'이사 청소',icon:'truck',tint:'#E6F7FA',color:'#15AABF',type:'consult',
+  desc:'이사 나가기 전, 짐을 뺀 집을 전문 청소팀이<br>장비를 가지고 방문하여 청소합니다.',
+  types:[{id:'out',name:'퇴거 청소',icon:'box',k:0},{id:'same',name:'이사 당일 청소',icon:'truck',k:.1},{id:'part',name:'짐 일부 남음',icon:'drawer',k:.05}]},
+ move:{name:'입주 청소',icon:'keyhome',tint:'#E7F8F1',color:'#12B886',type:'consult',
+  desc:'새 집에 들어가기 전, 전문 청소팀이 장비를 가지고<br>방문하여 실내 공간을 청소합니다.',
+  types:[{id:'normal',name:'일반 입주',icon:'movehome',k:0},{id:'interior',name:'인테리어 후',icon:'roller',k:.2},{id:'living',name:'거주 중 대청소',icon:'villa',k:.1}]},
+ bath:{name:'화장실 청소',icon:'toilet',tint:'#EAF3FF',color:'#3182F6',type:'unit',prep:true,unitTitle:'화장실 개수',
+  desc:'선반, 수전, 세면대와 변기의 안팎을 청소하고<br>바닥 물기를 제거해 마무리합니다.',
+  units:[{label:'1개',dur:'2시간',price:39000},{label:'2개',dur:'2시간',price:52000},{label:'3개',dur:'3시간',price:69000},{label:'4개',dur:'4시간',price:84000}],
+  notes:['배수구, 변기 막힘 등 서비스 진행에 지장을 주는 문제가 있는 경우 서비스가 제한될 수 있습니다.','특수 약품 및 도구가 필요한 청소, 천장 및 환풍기 청소는 제공하지 않습니다.','오래된 곰팡이, 찌든 때 등은 완전히 제거되지 않을 수 있습니다.']},
+ kitchen:{name:'주방 청소',icon:'kitchen',tint:'#FFF0EA',color:'#FF7A45',type:'fixed',price:45000,hours:2,prep:true,
+  desc:'싱크대, 가스레인지, 후드 겉면, 상판을 중심으로<br>주방을 집중 청소합니다.'},
+ mattress:{name:'매트리스 청소',icon:'bed',tint:'#EEF0FF',color:'#5C6BFF',type:'unit',badge:'N',unitTitle:'매트리스 개수',
+  desc:'전문 장비로 매트리스 표면의 먼지, 진드기, 얼룩을<br>흡입하고 스팀 살균 세척합니다.',
+  units:[{label:'1개',dur:'1시간',price:59000},{label:'2개',dur:'1시간 30분',price:99000},{label:'3개',dur:'2시간',price:139000},{label:'4개',dur:'2시간 30분',price:175000}],
+  notes:['싱글부터 킹 사이즈까지 같은 금액입니다.','세척 후 완전 건조까지 4~6시간 정도 걸립니다.','스프링 손상, 꺼짐 등 구조적인 문제는 개선되지 않습니다.']},
+ aircon:{name:'에어컨 청소',icon:'aircon',tint:'#E6F7FA',color:'#1098AD',type:'unit',badge:'HOT',unitTitle:'에어컨 종류',
+  desc:'에어컨을 분해해 열교환기, 송풍팬, 필터를<br>고압 세척하고 살균 마무리합니다.',
+  units:[{label:'벽걸이 1대',dur:'1시간 30분',price:79000},{label:'스탠드 1대',dur:'2시간',price:119000},{label:'2in1 (스탠드+벽걸이)',dur:'3시간',price:179000},{label:'천장형 1대',dur:'2시간',price:139000}],
+  notes:['제조 10년 이상 제품은 부품 노후로 분해 세척이 어려울 수 있습니다.','실외기 청소는 포함되지 않습니다.','세척 전후 정상 작동 여부를 함께 확인합니다.']},
+ sofa:{name:'소파 청소',icon:'sofa',tint:'#FFF0F6',color:'#D6336C',type:'unit',unitTitle:'소파 크기',
+  desc:'패브릭 소재에 맞는 세제로 오염을 분해하고<br>습식 추출 방식으로 깨끗하게 세척합니다.',
+  units:[{label:'1~2인용',dur:'1시간',price:59000},{label:'3인용',dur:'1시간 30분',price:79000},{label:'4인용 이상',dur:'2시간',price:99000},{label:'L자 · 카우치',dur:'2시간 30분',price:119000}],
+  notes:['가죽 소파는 클리닝 및 보습 코팅으로 진행됩니다.','오래된 얼룩, 이염은 완전히 제거되지 않을 수 있습니다.','세척 후 완전 건조까지 4~6시간 정도 걸립니다.']},
+};
+const HOME_GRID=['oneroom','moveout','move','bath','kitchen','mattress','aircon','sofa'];
+const SLOTS=['오전 8시~9시','오전 9시~10시','오후 1시~2시','오후 2시~3시'];
+const LUGGAGE=[['짐 없음',0],['이삿짐 풀지 않은 상태',0],['이삿짐 일부 푼 상태',.05],['짐을 다 풀었거나 생활하고 있는 상태',.15],['짐의 상태를 파악할 수 없는 상태',.1]];
+const BUILDINGS=[['아파트','apt'],['오피스텔','building'],['빌라/주택','villa'],['상업공간','store']];
+const ROOMS=[['원룸',180000],['1.5룸 (분리형 원룸 / 거실+방 1개)',230000],['거실+방 2개',300000],['거실+방 3개',380000],['거실+방 4개 이상',460000]];
+const STATUS=['상담요청','예약확정','매칭완료','서비스완료'];
+const STATUS_MSG=['상담을 요청했습니다.','예약이 확정됐습니다.','매니저 매칭이 완료됐습니다.','서비스가 완료됐습니다.'];
+const REVIEWS=[
+ {n:'김**',a:'서울 금천구',t:'약속된 시간에 맞춰 방문해 주셨어요. 집 상태를 같이 보면서 추가로 신경 쓰면 좋을 곳까지 알려주셔서 만족스러웠습니다.',b:'🫧',f:'✨'},
+ {n:'이**',a:'경기 성남시',t:'이사 전날 맡겼는데 창틀이랑 화장실 물때가 완전히 사라졌어요. 다음 이사 때도 또 부를 거예요.',b:'🪣',f:'🌿'},
+ {n:'박**',a:'인천 연수구',t:'상담 채팅으로 견적을 미리 받아서 당일에 추가 요금 걱정이 없었어요. 꼼꼼하게 해주셨습니다.',b:'🧺',f:'🌼'},
+];
+const AREAS4=[['living','room1','room2'],['kitchen'],['bath'],['entry']];
+const SCOPE=[
+ {chip:'원룸 청소',tabs:['방','주방','화장실','현관/쓰레기'],area:AREAS4,
+  items:[['가구 위 먼지 제거','청소기 및 막대걸레로 바닥 청소','침구 정리정돈','물건 제자리 정리정돈'],['식기 설거지 및 건조대 정리','싱크볼 및 거름망 세척','가스레인지, 상판 닦기'],['거울 물때 제거','수전, 세면대, 변기 내/외부 청소','배수구 머리카락 제거','바닥 물기 제거'],['현관 바닥 먼지 제거 및 신발 정리','분리수거 및 쓰레기 배출']],
+  not:['세탁 및 빨래 정리','손이 닿지 않는 곳','특수청소','청소 외의 가사업무']},
+ {chip:'이사/입주 청소',tabs:['거실/방','주방','화장실','현관/베란다'],area:AREAS4,
+  items:[['몰딩, 창틀, 문틀 먼지 제거','붙박이장 내부 청소','바닥 기계 세척'],['상하부장 내부 세척','후드 필터 세척','싱크대 및 배수구 살균'],['타일 줄눈 및 물때 집중 제거','환풍기 겉면 청소','욕조, 샤워부스 세척'],['현관 바닥 및 중문 세척','베란다 바닥 및 창틀 세척','방충망 먼지 제거']],
+  not:['폐기물 수거 및 배출','외부 유리창 청소 (고층)','인테리어 시공 잔재물 철거','곰팡이 시공 및 코팅']},
+ {chip:'화장실·주방',tabs:['화장실','주방'],area:[['bath'],['kitchen']],
+  items:[['거울 물때 제거','전면 선반 청소 후 제자리 정돈','수전, 세면대, 변기 등 내/외부 청소','배수구 머리카락 제거 및 청소','바닥 물기 제거'],['싱크대, 상판 기름때 제거','가스레인지·인덕션 세척','후드 겉면 닦기','싱크볼 및 거름망 세척']],
+  not:['천장 및 환풍기 내부 청소','후드 내부 분해 세척','특수 약품이 필요한 오염']},
+ {chip:'가전·가구',tabs:['에어컨','매트리스','소파'],area:null,
+  items:[['열교환기 고압 세척','송풍팬 분해 세척','필터 세척 및 살균','배수 호스 점검'],['표면 먼지 및 진드기 흡입','얼룩 부분 세척','스팀 살균','건조 및 탈취'],['패브릭 습식 추출 세척','쿠션 틈새 먼지 제거','가죽 클리닝 및 보습','탈취 마무리']],
+  not:['실외기 청소','제품 수리 및 부품 교체','구조적 손상 복구']},
+];
+
+/* ================= 상태 ================= */
+const KEY='malkkeum-proto-v2';
+const DEFAULT=()=>({
+ user:{name:'홍길동',phone:'010-0000-0000',email:'demo@example.com'},
+ addresses:[{id:'a1',kind:'home',name:'우리집',addr:'서울특별시 성동구 예시로 12',detail:'5층',pyeong:8}],
+ bookings:[],coupons:[],payMethods:[],chats:[],got:{},points:0,welcome:false,
+});
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||DEFAULT()}catch(e){S=DEFAULT()}
+S={...DEFAULT(),...S};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const ui={tab:'home',stack:[],draft:null,cal:null,homeSeg:0,scopeChip:0,scopeTab:0,scopeNot:true,addrTab:'home',payTab:0,banner:0,dsheet:null,faqOpen:-1,payOpen:true,typing:{}};
+
+/* ================= 유틸 ================= */
+const $app=document.getElementById('app');
+const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DAYS=['일','월','화','수','목','금','토'];
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const today0=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const diffDays=(a,b)=>Math.round((pd(b)-pd(a))/86400000);
+const fmtS=s=>{const d=pd(s);return `${d.getMonth()+1}.${pad(d.getDate())}(${DAYS[d.getDay()]})`};
+const fmtL=s=>{const d=pd(s);return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}(${DAYS[d.getDay()]})`};
+const hm=t=>{const d=new Date(t);const h=d.getHours();return `${h<12?'오전':'오후'} ${h%12||12}:${pad(d.getMinutes())}`};
+const r100=n=>Math.round(n/100)*100;
+const cur=()=>ui.stack[ui.stack.length-1];
+const addrOf=id=>S.addresses.find(a=>a.id===id);
+const addrText=a=>a?`${a.addr}${a.detail?' '+a.detail:''}`:'';
+const svcName=id=>SVC[id]?.name||id;
+
+/* ================= 렌더링 ================= */
+let lastKey=null,timers=[];
+function render(){
+ timers.forEach(clearInterval);timers=[];
+ const t=cur();const key=t?`${ui.stack.length}:${t.screen}`:`tab:${ui.tab}`;
+ const same=key===lastKey;const prev=$app.querySelector('.body');const st=same&&prev?prev.scrollTop:0;
+ const hs={};if(same)$app.querySelectorAll('[data-keep]').forEach(e=>hs[e.dataset.keep]=e.scrollLeft);
+ const inp=$app.querySelector('#chat-in');const iv=same&&inp?inp.value:'';const focused=same&&inp&&document.activeElement===inp;
+ $app.innerHTML=t?SCREENS[t.screen](t.params||{}):`<div class="screen ${['home','more'].includes(ui.tab)?'gray':''}">${TABS[ui.tab]()}${tabbar()}</div>`;
+ const b=$app.querySelector('.body');if(b)b.scrollTop=st;
+ $app.querySelectorAll('[data-keep]').forEach(e=>{if(hs[e.dataset.keep]!=null)e.scrollLeft=hs[e.dataset.keep]});
+ const ni=$app.querySelector('#chat-in');if(ni){ni.value=iv;if(focused)ni.focus();const cb=$app.querySelector('.body');cb.scrollTop=cb.scrollHeight}
+ lastKey=key;afterRender();
+}
+function go(screen,params={}){ui.stack.push({screen,params});closeSheet();render();onEnter(screen)}
+function back(){ui.stack.pop();closeSheet();render()}
+function home(){ui.stack=[];ui.tab='home';closeSheet();render()}
+function setTab(t){ui.tab=t;ui.stack=[];render()}
+function popTo(screen){while(ui.stack.length&&cur().screen!==screen)ui.stack.pop();render()}
+function onEnter(s){
+ if(s==='f_time'||s==='m_time'){const n=8+Math.floor(Math.random()*18);setTimeout(()=>toast(`지금 고객님 집 근처<br><b>${n}명</b>의 회원이 예약하고 있어요!`,{icon:'✨',ms:2800}),350)}
+}
+function afterRender(){
+ const hb=$app.querySelector('[data-keep="banner"]');
+ if(hb){hb.onscroll=()=>{const i=Math.round(hb.scrollLeft/(hb.firstElementChild.offsetWidth+12));if(i!==ui.banner){ui.banner=i;const c=$app.querySelector('#bcount');if(c)c.textContent=`${i+1}/${BANNERS.length}`}};
+  timers.push(setInterval(()=>{if(!document.body.contains(hb))return;const w=hb.firstElementChild.offsetWidth+12;hb.scrollTo({left:((ui.banner+1)%BANNERS.length)*w,behavior:'smooth'})},4000))}
+}
+let toastT;
+function toast(msg,o={}){
+ const r=document.getElementById('toast-root');
+ const low=!!$app.querySelector('.cta,.tabbar,.cin');
+ r.innerHTML=`<div class="wrap" style="bottom:${o.bottom??(low?96:28)}px"><div class="toast">${o.icon?`<span style="font-size:22px">${o.icon}</span>`:''}<div style="flex:1">${msg}</div>${o.action?`<button onclick="${o.action.fn};document.getElementById('toast-root').innerHTML=''">${o.action.label}</button>`:''}</div></div>`;
+ clearTimeout(toastT);toastT=setTimeout(()=>r.innerHTML='',o.ms||2600);
+}
+function sheet(title,body,footer=''){
+ document.getElementById('sheet-root').innerHTML=`<div class="sheet-ov" onclick="closeSheet()"></div><div class="sheet">${title!==null?`<div class="sheet-h"><h3>${title}</h3><button class="ib" onclick="closeSheet()">${ic('close')}</button></div>`:''}<div class="sheet-b">${body}</div>${footer?`<div class="cta">${footer}</div>`:''}</div>`;
+}
+function closeSheet(){document.getElementById('sheet-root').innerHTML='';ui.dsheet=null}
+const navBar=({title='',close=false,right='',center=false,dark=false}={})=>`<header class="nav" ${dark?'style="background:var(--navy);color:#fff"':''}><button class="ib" onclick="back()">${ic(close?'close':'back')}</button><div class="nav-title ${center?'c':''}">${title}</div>${right||'<div style="width:44px"></div>'}</header>`;
+const scopeLink=(label='청소 범위')=>`<button class="nav-link" onclick="go('scope')">${ic('info','sm')}${label}</button>`;
+const unread=()=>S.chats.reduce((s,c)=>s+(c.unread||0),0);
+function tabbar(){
+ const it=[['home','home','홈'],['booking','user','내 예약'],['chat','chat','상담'],['more','dots','더보기']];const u=unread();
+ return `<nav class="tabbar">${it.map(([k,i,l])=>`<button class="${ui.tab===k?'on':''}" onclick="setTab('${k}')">${ic(i)}${l}${k==='chat'&&u?`<span class="cnt">${u}</span>`:''}</button>`).join('')}</nav>`;
+}
+function calGrid(y,m,{sel,isDis,dots,pick}){
+ const first=new Date(y,m,1);const start=addDays(first,-first.getDay());const t=ymd(today0());
+ let h=DAYS.map(w=>`<div class="wd">${w}</div>`).join('');
+ for(let i=0;i<42;i++){const d=addDays(start,i);const s=ymd(d);const out=d.getMonth()!==m;const dis=isDis?isDis(s):false;
+  h+=`<button class="d ${out?'out':''} ${s===sel?'sel':''} ${s===t?'today':''}" ${dis?'disabled':''} onclick="${pick}('${s}')">${s===t?'오늘':d.getDate()}${dots&&dots(s)?'<i class="dot"></i>':''}</button>`}
+ return `<div class="cal">${h}</div>`;
+}
+
+/* ================= 탭: 홈 ================= */
+const BANNERS=[
+ {t:'첫 청소 15,000원<br>쿠폰팩 즉시 지급',s:'신규 고객 웰컴 쿠폰',bg:'#FFFFFF',art:'15,000',ac:'#12B886',fn:'getWelcome()'},
+ {t:'여름 오기 전,<br>에어컨 청소 7% 할인',s:'최대 1만원 할인',bg:'#E6F7FA',art:'7%',ac:'#1098AD',fn:"startFlow('aircon')"},
+ {t:'이사 날짜 정하셨나요?<br>상담하고 견적 받기',s:'이사 · 입주 청소',bg:'#E7F8F1',art:'상담',ac:'#0CA678',fn:"startFlow('moveout')"},
+ {t:'진드기 걱정 끝,<br>매트리스 청소 오픈',s:'스팀 살균까지 한 번에',bg:'#EEF0FF',art:'NEW',ac:'#5C6BFF',fn:"startFlow('mattress')"},
+];
+const NEWS=[
+ {c:'원룸 청소',t:'10평 원룸, 2시간이면 어디까지 청소될까요?',e:'🧹',bg:'#FFF5E0'},
+ {c:'에어컨 청소',t:'에어컨 냄새의 원인은 필터가 아니라 열교환기예요',e:'❄️',bg:'#E6F7FA'},
+ {c:'매트리스 청소',t:'침대 위 진드기, 얼마나 자주 관리해야 할까요?',e:'🛏️',bg:'#EEF0FF'},
+ {c:'이사 청소',t:'이사 전 체크리스트: 퇴거 청소는 언제 예약할까?',e:'📦',bg:'#E7F8F1'},
+];
+TABS={};
+TABS.home=()=>{
+ const tiles=HOME_GRID.map(id=>{const s=SVC[id];return `<button class="tile" onclick="startFlow('${id}')"><div class="ti" style="background:${s.tint};color:${s.color}">${ic(s.icon)}</div>${s.name}${s.badge?`<span class="nb">${s.badge}</span>`:''}</button>`}).join('');
+ const pick=ui.homeSeg===1;
+ return `<div class="body">
+ <div style="background:#fff">
+  <div class="home-h"><div class="logo">${ic('logo')}말끔</div>
+   <div class="seg"><div><button class="${!pick?'on':''}" onclick="ui.homeSeg=0;render()">말끔 전체</button><button class="${pick?'on':''}" onclick="ui.homeSeg=1;render()">말끔 PICK</button></div></div>
+   <button class="ib" onclick="go('notice')">${ic('bell')}<i class="dotr"></i></button></div>
+  ${pick?pickList():`<div class="grid4">${tiles}</div>
+  <div class="hr"></div>
+  <div class="sec" style="padding-bottom:4px"><div class="sec-t" style="margin:0;font-size:22px">추천 서비스</div></div>
+  <button class="reco" onclick="startFlow('moveout')"><div class="av">${ic('truck')}</div><div><b>이사 전 퇴거 청소까지</b><span>이사 청소 · 상담 후 견적 ${ic('chev','sm')}</span></div></button>`}
+ </div>
+ <div style="padding:20px 0 8px;position:relative">
+  <div class="hs" data-keep="banner" style="padding:0 16px;scroll-padding:0 16px">${BANNERS.map(b=>`<button class="banner" style="width:100%;background:${b.bg}" onclick="${b.fn}"><div><div class="bt">${b.t}</div><div class="bs">${b.s}</div></div><div class="art" style="background:${b.ac};font-size:${b.art.length>3?18:22}px">${b.art}</div></button>`).join('')}</div>
+  <button class="bcount" onclick="bannerSheet()"><span id="bcount">${ui.banner+1}/${BANNERS.length}</span><i>+</i></button>
+ </div>
+ <div class="sec" style="padding:24px 24px 14px"><div class="sec-t" style="margin:0;font-size:22px">말끔 소식</div></div>
+ <div class="card">
+  <button class="row" onclick="go('notice')"><span class="badge" style="background:#ADB5BD;color:#fff;border-radius:6px">공지</span><span class="t">[원룸청소] 서비스 요금 조정 안내</span></button>
+  <button class="promo" onclick="toast('제휴카드 혜택 페이지는 데모에서 준비 중이에요')"><small>말끔 × 제휴카드</small><b>매월 최대 30,000원<br>청구 할인 혜택</b><u>자세히 보기</u></button>
+  ${NEWS.map(n=>`<button class="news" onclick="toast('콘텐츠 상세는 데모에서 준비 중이에요')"><div class="th" style="background:${n.bg}">${n.e}</div><div><small>${n.c}</small><p>${n.t}</p></div></button>`).join('')}
+ </div>
+ <div style="height:28px"></div>
+ </div>`;
+};
+function pickList(){
+ const picks=[['moveout','이사 시즌 가장 많이 찾는 서비스','상담 채팅으로 견적까지 한 번에'],['aircon','여름 전 미리 준비','분해 세척으로 냄새 원인 제거'],['mattress','새로 나온 서비스','진드기 흡입부터 스팀 살균까지'],['oneroom','10평 이하 원룸이라면','2시간 집중 청소 45,000원']];
+ return `<div style="padding:12px 16px 24px">${picks.map(([id,t,s])=>`<button class="opt" onclick="startFlow('${id}')"><div style="width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:${SVC[id].tint};color:${SVC[id].color}">${ic(SVC[id].icon,'lg')}</div><div style="flex:1"><div class="s" style="margin:0">${t}</div><div class="t">${SVC[id].name}</div><div class="s">${s}</div></div><span style="color:#C4CAD1">${ic('chev')}</span></button>`).join('')}</div>`;
+}
+function bannerSheet(){sheet('진행 중인 혜택',BANNERS.map(b=>`<button class="opt" onclick="closeSheet();${b.fn.replace(/"/g,'&quot;')}"><div style="flex:1"><div class="t">${b.t.replace('<br>',' ')}</div><div class="s">${b.s}</div></div><span style="color:#C4CAD1">${ic('chev')}</span></button>`).join(''))}
+function getWelcome(){
+ if(S.welcome){toast('이미 받은 쿠폰이에요. 더보기 > 쿠폰에서 확인하세요.');return}
+ S.welcome=true;addCoupon('원룸 청소 10,000원 할인',10000,'oneroom');addCoupon('첫 청소 5,000원 할인',5000);save();
+ toast('웰컴 쿠폰 2장(15,000원)이 지급됐어요!',{icon:'🎉',action:{label:'쿠폰함',fn:"go('coupons')"}});
+}
+function addCoupon(name,amount,svc){S.coupons.push({id:'c'+Date.now()+Math.random().toString(16).slice(2,6),name,amount,svc:svc||null,exp:ymd(addDays(today0(),14)),used:false})}
+
+/* ================= 예약 흐름 ================= */
+SCREENS={};
+const reviewsHS=()=>`<div class="hs" data-keep="rv">${REVIEWS.map(r=>`<div class="rv"><div class="ba"><div style="background:#DEE2E6">${r.b}<span>전</span></div><div style="background:#E7F8F1">${r.f}<span style="background:var(--brand)">후</span></div></div><div class="rb"><div class="rn"><i>🙂</i>${r.n} (${r.a})</div><p>${r.t}</p></div></div>`).join('')}</div><div style="padding:10px 24px 0;font-size:12px;color:var(--sub)">* 프로토타입용 샘플 후기입니다.</div>`;
+function startFlow(svc){
+ const s=SVC[svc];if(!s)return;
+ ui.draft={svc,unit:0,addressId:S.addresses[0]?.id||null,date:null,time:null,couponId:null,usePoint:true,payId:S.payMethods[0]?.id||null,
+  mvType:null,luggage:null,building:null,rooms:null,duplex:null,baths:1,balconies:1,elevator:null,over3:false};
+ go(stepsFor(ui.draft)[0]);
+}
+function stepsFor(d){
+ const s=SVC[d.svc];
+ if(s.type==='consult')return['m_type','m_basic','m_counts','f_addr','m_time','m_quote','m_confirm'];
+ const st=[s.type==='unit'?'f_unit':'f_svc','f_addr','f_time'];if(s.prep)st.push('f_prep');st.push('f_pay');return st;
+}
+function next(){const st=stepsFor(ui.draft);const i=st.indexOf(cur().screen);if(i>=0&&i<st.length-1)go(st[i+1])}
+function D(k,v){ui.draft[k]=v;render()}
+const durOf=d=>{const s=SVC[d.svc];return s.type==='unit'?s.units[d.unit].dur:s.hours+'시간'};
+function price(d=ui.draft){
+ const s=SVC[d.svc];let base,label;
+ if(s.type==='unit'){const u=s.units[d.unit];base=u.price;label=`기본금액(${u.label} · ${u.dur})`}
+ else{base=s.price;label=`기본금액(${s.hours}시간)`}
+ const c=S.coupons.find(c=>c.id===d.couponId);const coupon=c?Math.min(c.amount,base):0;
+ return{base,label,coupon,total:Math.max(0,base-coupon)};
+}
+const priceBar=(btn='다음',fn='next()')=>{const p=price();return `<div class="cta"><div class="pricebar"><b>${won(p.total)}</b><small onclick="priceSheet()">자세히</small></div><button class="btn sm" onclick="${fn}">${btn}</button></div>`};
+function priceSheet(){const p=price();sheet('결제 예정 금액',`<div class="kv"><span>${p.label}</span>${won(p.base)}</div>${p.coupon?`<div class="kv"><span>쿠폰 할인</span>-${won(p.coupon)}</div>`:''}<div class="kv total"><span style="color:var(--ink)">결제 예정 금액</span><b>${won(p.total)}</b></div>`)}
+
+SCREENS.f_svc=()=>{const d=ui.draft,s=SVC[d.svc];
+ return `<div class="screen">${navBar({right:scopeLink()})}<div class="body">
+ <div class="h1">${s.name}</div><div class="desc">${s.desc}</div>
+ <div class="hero" style="background:linear-gradient(135deg,${s.tint},#fff)"><div class="hc" style="color:${s.color}">${ic(s.icon)}</div></div>
+ <div class="sec" style="padding-bottom:20px"><div class="box" style="padding:14px 22px"><div class="kv"><span>서비스 시간</span>${s.hours}시간</div><div class="kv"><span>금액</span><b>${won(s.price)}</b></div></div></div>
+ ${d.svc==='oneroom'?`<div class="divider"></div><div class="sec"><div class="sec-t">제공 서비스</div><div style="background:var(--bg);border-radius:16px;padding:24px 16px 18px"><div style="display:flex;justify-content:space-around;text-align:center;font-size:15px">${[['sponge','주방, 설거지'],['toilet','화장실 청소'],['vacuum','바닥 청소']].map(([i,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:10px">${ic(i,'lg')}${t}</div>`).join('')}</div><div style="border-top:1px solid #E5E8EB;margin-top:18px;padding-top:14px;font-size:14px;color:var(--brand-d);display:flex;gap:6px;align-items:center">${ic('info','sm')}세탁 서비스는 제공하지 않습니다.</div></div></div>`:''}
+ </div><div class="cta"><button class="btn" onclick="next()">다음</button></div></div>`};
+
+SCREENS.f_unit=()=>{const d=ui.draft,s=SVC[d.svc];return `<div class="screen">${navBar({right:scopeLink()})}<div class="body">
+ <div class="h1">${s.name}</div><div class="desc">${s.desc}</div>
+ <div class="hero" style="background:linear-gradient(135deg,${s.tint},#fff)"><div class="hc" style="color:${s.color}">${ic(s.icon)}</div></div>
+ <div class="sec"><div class="sec-t">${s.unitTitle}</div><div class="cnts" data-keep="cnt">${s.units.map((u,i)=>`<button class="cnt-card ${d.unit===i?'on':''}" onclick="D('unit',${i})"><b>${u.label}</b><span>${u.dur} 소요</span><em>${won(u.price)}</em></button>`).join('')}</div></div>
+ <div class="divider"></div><div class="sec"><div class="sec-t">유의사항</div>${s.notes.map(n=>`<div class="bul">${n}</div>`).join('')}</div>
+ </div>${priceBar()}</div>`};
+
+SCREENS.f_addr=()=>{const d=ui.draft;return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">예약할<br>주소를 선택해 주세요.</div>
+ <div class="sec">${S.addresses.length?S.addresses.map(a=>`<button class="row" style="align-items:flex-start;padding:14px 0" onclick="D('addressId','${a.id}')"><div style="flex:1"><div style="font-size:17px;font-weight:700">${esc(a.name)}</div><div style="font-size:16px;line-height:1.55;margin-top:6px;color:var(--ink2)">${esc(addrText(a))}, ${a.pyeong}평 <a style="color:var(--brand-d);font-weight:700" onclick="event.stopPropagation();addrSheet('${a.id}')">수정</a></div></div><span class="radio ${d.addressId===a.id?'on':''}" style="margin-top:14px"></span></button>`).join(''):`<div class="empty" style="padding:40px 0 20px"><b>등록된 주소가 없어요</b>주소를 추가하고 예약을 진행해 보세요.</div>`}
+ <div style="text-align:center;margin-top:24px"><button class="pill" onclick="addrSheet()">${ic('plus','sm')}주소 추가</button></div></div>
+ </div><div class="cta"><button class="btn" onclick="addrNext()">다음</button></div></div>`};
+function addrNext(){
+ const d=ui.draft;const a=addrOf(d.addressId);
+ if(!a){toast('주소를 선택하거나 추가해 주세요');return}
+ if(d.svc==='oneroom'&&a.pyeong>10){toast('원룸 청소는 10평 이하만 가능합니다.<br>더 넓은 공간은 상담으로 안내드릴게요.',{action:{label:'상담하기',fn:"startChat('원룸 청소 (10평 초과)')"},ms:4000});return}
+ next();
+}
+function addrSheet(id){
+ const a=id?addrOf(id):{name:'',addr:'',detail:'',pyeong:'',kind:ui.addrTab||'home'};
+ sheet(id?'주소 수정':'주소 추가',`
+ <div class="field"><label>주소 명칭</label><input id="fa-name" placeholder="예: 우리집" value="${esc(a.name)}"></div>
+ <div class="field"><label>주소</label><input id="fa-addr" placeholder="예: 서울특별시 성동구 예시로 12" value="${esc(a.addr)}"></div>
+ <div class="field"><label>상세 주소</label><input id="fa-detail" placeholder="동, 호수, 층" value="${esc(a.detail)}"></div>
+ <div class="field"><label>평수</label><input id="fa-py" type="number" inputmode="numeric" placeholder="예: 24" value="${a.pyeong}"></div>
+ <div class="field"><label>구분</label><div style="display:flex;gap:8px">${[['home','집'],['office','사무실']].map(([k,l])=>`<button class="chip ${a.kind===k?'on':''}" onclick="this.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));this.classList.add('on')">${l}</button>`).join('')}</div></div>
+ <p style="font-size:13px;color:var(--sub)">* 프로토타입이므로 실제 주소 대신 예시 주소를 입력하세요.</p>`,
+ `${id?`<button class="btn ghost" style="flex:0 0 100px" onclick="delAddr('${id}')">삭제</button>`:''}<button class="btn" onclick="saveAddr('${id||''}')">저장</button>`);
+}
+function saveAddr(id){
+ const g=k=>document.getElementById(k).value.trim();const kindEl=document.querySelector('.sheet .chip.on');
+ const v={name:g('fa-name')||'우리집',addr:g('fa-addr'),detail:g('fa-detail'),pyeong:Number(g('fa-py'))||0,kind:kindEl&&kindEl.textContent==='사무실'?'office':'home'};
+ if(!v.addr||!v.pyeong){toast('주소와 평수를 입력해 주세요',{bottom:110});return}
+ if(id)Object.assign(addrOf(id),v);else{const na={id:'a'+Date.now(),...v};S.addresses.push(na);if(ui.draft)ui.draft.addressId=na.id}
+ save();closeSheet();render();toast(id?'주소를 수정했어요':'주소를 추가했어요');
+}
+function delAddr(id){S.addresses=S.addresses.filter(a=>a.id!==id);if(ui.draft&&ui.draft.addressId===id)ui.draft.addressId=S.addresses[0]?.id||null;save();closeSheet();render();toast('주소를 삭제했어요')}
+
+SCREENS.f_time=()=>{const d=ui.draft;
+ return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">날짜/시간을 선택해 주세요.</div>
+ <div class="mgr" style="padding-top:18px"><div><p>교육받은 매니저님이 방문합니다.</p><a onclick="eduSheet()">어떤 교육을 받나요? ${ic('chev','sm')}</a></div><div class="av">${ic('user')}</div></div>
+ <div class="divider"></div>
+ <div class="sec" style="padding-bottom:0"><div class="sec-t" style="margin:0;justify-content:flex-start;gap:6px">시간 <span style="color:#B0B8C1">${ic('info','sm')}</span></div></div>
+ <div class="trow"><div class="tl"><b>${durOf(d)}</b><span>서비스 시간</span></div></div>
+ <div class="trow"><div class="tl"><b class="${d.date?'':'ph'}">${d.date?fmtS(d.date):'방문 일'}</b></div><button class="pill" onclick="dateSheet()">${d.date?'변경':'선택'}</button></div>
+ <div class="trow"><div class="tl"><b class="${d.time?'':'ph'}">${d.time||'방문 시간'}</b></div><button class="pill" onclick="timeSheet()">${d.time?'변경':'선택'}</button></div>
+ <div style="height:24px"></div>
+ </div>${priceBar('다음','timeNext()')}</div>`};
+function timeNext(){const d=ui.draft;if(!d.date){toast('방문 일을 선택해 주세요');return}if(!d.time){toast('방문 시간을 선택해 주세요');return}next()}
+function eduSheet(){sheet('매니저 교육 과정',['기본 청소 교육 (8시간)','서비스별 장비·세제 사용 교육','고객 응대 및 안전 교육','실습 평가 통과'].map(t=>`<div class="check-li"><i>${ic('check')}</i>${t}</div>`).join('')+`<p style="color:var(--sub2);font-size:14px;line-height:1.6;margin-top:14px">모든 매니저는 신원 확인과 교육 과정을 마친 뒤 활동합니다. (프로토타입 예시 문구)</p>`)}
+function dateSheet(){
+ const d=ui.draft;
+ if(!ui.dsheet){const base=d.date?pd(d.date):addDays(today0(),1);ui.dsheet={y:base.getFullYear(),m:base.getMonth()}}
+ const {y,m}=ui.dsheet;const min=addDays(today0(),1),max=addDays(today0(),60);
+ const isDis=s=>{const x=pd(s);return x<min||x>max};
+ const keep=ui.dsheet;
+ sheet('방문일 선택',`<div class="cal-h" style="padding:0 0 8px"><button class="ib" onclick="moveD(-1)">${ic('left')}</button><div class="m" style="font-size:20px">${y}년 ${m+1}월</div><button class="ib" onclick="moveD(1)">${ic('chev')}</button></div>${calGrid(y,m,{sel:d.date,isDis,pick:'pickDate'})}<p style="font-size:13px;color:var(--sub);margin-top:12px">내일부터 60일 이내로 선택할 수 있어요.</p>`);
+ ui.dsheet=keep;
+}
+function moveD(n){let {y,m}=ui.dsheet;m+=n;if(m<0){m=11;y--}if(m>11){m=0;y++}ui.dsheet={y,m};dateSheet()}
+function pickDate(s){ui.draft.date=s;ui.draft.time=null;closeSheet();render()}
+function timeSheet(){
+ const d=ui.draft;if(!d.date){toast('방문 일을 먼저 선택해 주세요');return}
+ const consult=SVC[d.svc].type==='consult';const slots=consult?['오전 방문 (8시~9시)','오후 방문 (1시~2시)']:SLOTS;
+ const seed=pd(d.date).getDate();
+ sheet('방문 시간 선택',slots.map((t,i)=>{const full=!consult&&(seed+i)%4===0;return `<button class="slot ${d.time===t?'on':''}" ${full?'disabled':''} onclick="ui.draft.time='${t}';closeSheet();render()">${t}${consult?'':' 방문'}<span style="font-size:14px">${full?'마감':(d.time===t?ic('check'):'')}</span></button>`}).join('')+(consult?'<p style="font-size:13px;color:var(--sub)">정확한 도착 시간은 상담 시 안내드려요.</p>':''));
+}
+
+SCREENS.f_prep=()=>`<div class="screen">${navBar()}<div class="body">
+ <div class="h1">${esc(S.user.name)}님<br>서비스 전 꼭 준비해 주세요!</div>
+ <div class="sec"><div class="sec-t" style="margin-bottom:6px">준비할 청소도구</div><p style="font-size:14px;color:var(--sub);margin-bottom:24px">미 준비 시 일부 서비스에 제한이 있을 수 있습니다.</p>
+ <div class="tools">${[['vacuum','청소기'],['trash','쓰레기봉투'],['mop','막대걸레'],['cloth','손걸레'],['glove','고무장갑'],['sponge','수세미'],['spray','다목적세제']].map(([i,t])=>`<div>${ic(i)}${t}</div>`).join('')}</div></div>
+ <div class="divider"></div><div class="sec"><div class="infobox">${ic('chat')}<div style="flex:1">도구 준비가 어렵다면 상담 채팅으로 미리 말씀해 주세요.</div><a onclick="startChat('${svcName(ui.draft.svc)} 준비물 문의')">문의</a></div></div>
+ </div>${priceBar()}</div>`;
+
+SCREENS.f_pay=()=>{const d=ui.draft,p=price();const c=S.coupons.find(x=>x.id===d.couponId);const avail=usableCoupons();const pm=S.payMethods.find(m=>m.id===d.payId);const s=SVC[d.svc];
+ return `<div class="screen">${navBar({close:true})}<div class="body">
+ <div class="h1">할인 및 결제 수단을<br>선택해 주세요.</div>
+ <div class="sec"><div class="sec-t">쿠폰</div><div class="row" style="padding:4px 0">${ic('ticket','lg')}<span class="t" style="font-size:17px;font-weight:600">${c?esc(c.name):'미적용'}</span><button style="color:var(--brand-d);font-weight:700;font-size:17px" onclick="couponSheet()">${c?'변경':'추가'}</button></div><p style="font-size:15px;color:var(--sub);margin-top:12px">${avail.length?`사용 가능한 쿠폰 ${avail.length}장`:'사용 가능한 쿠폰이 없습니다.'}</p></div>
+ <div class="divider"></div>
+ <div class="sec"><div class="sec-t">포인트 <button style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500" onclick="D('usePoint',!ui.draft.usePoint)"><span class="chk ${d.usePoint?'on':''}">${ic('check')}</span>포인트 우선 사용</button></div>
+ <div class="row" style="padding:4px 0"><span style="background:var(--brand);color:#fff;border-radius:8px;width:56px;height:34px;display:grid;place-items:center;font-weight:800">P</span><span class="t" style="font-size:17px;font-weight:600">${S.points?won(S.points):'미적용'}</span><button style="color:var(--brand-d);font-weight:700;font-size:17px" onclick="toast('포인트 충전은 데모에서 준비 중이에요')">충전</button></div><p style="font-size:15px;color:var(--sub);margin-top:12px">사용 가능한 포인트가 없습니다.</p></div>
+ <div class="divider"></div>
+ <div class="sec"><div class="sec-t">결제수단</div><div class="row" style="padding:4px 0"><span style="background:var(--ink2);color:#fff;border-radius:8px;width:56px;height:34px;display:grid;place-items:center;font-weight:700;font-size:14px">pay</span><span class="t" style="font-size:17px;font-weight:600">${pm?pm.name:'결제수단 없음'}</span><button style="color:var(--brand-d);font-weight:700;font-size:17px" onclick="payMethodSheet(true)">${pm?'변경':'등록'}</button></div></div>
+ <div class="divider"></div>
+ <div class="sec"><button class="sec-t" style="width:100%" onclick="ui.payOpen=!ui.payOpen;render()">${s.name} ${ic(ui.payOpen?'up':'down')}</button>
+ ${ui.payOpen?`<div class="kv"><span>${p.label}</span>${won(p.base)}</div>${p.coupon?`<div class="kv"><span>쿠폰 할인</span>-${won(p.coupon)}</div>`:''}`:''}
+ <div class="kv total"><span style="color:var(--ink)">결제 예정 금액</span><b>${won(p.total)}</b></div>
+ <p style="font-size:13px;color:var(--sub);margin-top:14px;line-height:1.6">프로토타입이므로 실제 결제는 일어나지 않습니다.</p></div>
+ </div><div class="cta"><button class="btn" ${pm?'':'disabled'} onclick="payDone()">${won(p.total)} 결제하기</button></div></div>`};
+function usableCoupons(){const d=ui.draft;return S.coupons.filter(c=>!c.used&&c.amount>0&&(!c.svc||c.svc===d.svc))}
+function couponSheet(){const list=usableCoupons();sheet('쿠폰 선택',list.length?`<button class="slot ${!ui.draft.couponId?'on':''}" onclick="ui.draft.couponId=null;closeSheet();render()">적용 안 함</button>${list.map(c=>`<button class="slot ${ui.draft.couponId===c.id?'on':''}" onclick="ui.draft.couponId='${c.id}';closeSheet();render()"><span style="text-align:left">${esc(c.name)}<br><small style="color:var(--sub);font-weight:500">${fmtS(c.exp)}까지</small></span><b>-${won(c.amount)}</b></button>`).join('')}`:`<div class="empty" style="padding:30px 0">사용 가능한 쿠폰이 없습니다.<br><a style="color:var(--brand-d);font-weight:700;cursor:pointer" onclick="closeSheet();getWelcome();render()">웰컴 쿠폰 받기</a></div>`)}
+const PAY_TYPES=['신용/체크카드','계좌 간편이체','간편결제 A','간편결제 B'];
+function payMethodSheet(select){sheet('결제수단 등록',PAY_TYPES.map(t=>`<button class="row" style="padding:20px 0" onclick="regPay('${t}',${!!select})"><span class="t" style="font-size:18px;font-weight:600">${t}</span>${S.payMethods.some(m=>m.name===t)?'<span class="badge brand">등록됨</span>':''}<span class="chev">${ic('chev')}</span></button>`).join('')+`<p style="font-size:13px;color:var(--sub);margin-top:8px">프로토타입에서는 실제 카드 정보를 받지 않고 등록된 것처럼 표시만 해요.</p>`)}
+function regPay(name,select){let m=S.payMethods.find(x=>x.name===name);if(!m){m={id:'pm'+Date.now(),name};S.payMethods.push(m);save()}if(select&&ui.draft)ui.draft.payId=m.id;closeSheet();render();toast(`${name}을(를) 결제수단으로 등록했어요`)}
+function createBooking(extra){
+ const d=ui.draft;const a=addrOf(d.addressId);
+ const b={id:'b'+Date.now(),svc:d.svc,date:d.date||ymd(addDays(today0(),3)),time:d.time||'상담 후 확정',addrName:a?.name||'',addr:a?addrText(a):'',pyeong:a?.pyeong,created:Date.now(),...extra};
+ S.bookings.push(b);save();return b;
+}
+function payDone(){
+ const d=ui.draft,p=price(),s=SVC[d.svc];
+ if(d.couponId){const c=S.coupons.find(x=>x.id===d.couponId);if(c)c.used=true}
+ const info=[];if(s.type==='unit')info.push([s.unitTitle,s.units[d.unit].label]);info.push(['서비스 시간',durOf(d)]);
+ const b=createBooking({status:1,kind:'direct',price:p.total,method:'1회',info,paid:true,payName:S.payMethods.find(m=>m.id===d.payId)?.name});
+ ui.stack=[];go('done',{id:b.id});
+}
+SCREENS.done=({id})=>{const b=S.bookings.find(x=>x.id===id);return `<div class="screen"><div class="body" style="text-align:center">
+ <div class="done-ic">${ic('check')}</div><div style="font-size:26px;font-weight:700">예약이 완료됐어요</div>
+ <p style="color:var(--sub2);margin-top:12px;line-height:1.6">방문 전날 매니저 정보를 알려드릴게요.</p>
+ <div class="box" style="margin:36px 24px;text-align:left;padding:14px 22px">
+  <div class="kv"><span>서비스</span>${svcName(b.svc)}</div><div class="kv"><span>방문일</span>${fmtL(b.date)}</div><div class="kv"><span>방문 시간</span>${b.time}</div><div class="kv"><span>주소</span><span style="color:var(--ink);text-align:right">${esc(b.addrName)}</span></div><div class="kv total"><span style="color:var(--ink)">결제 금액</span><b>${won(b.price)}</b></div></div>
+ </div><div class="cta"><button class="btn ghost" onclick="home()">홈으로</button><button class="btn" onclick="viewBooking('${id}')">예약 내역 보기</button></div></div>`};
+function viewBooking(id){const b=S.bookings.find(x=>x.id===id);const d=pd(b.date);ui.cal={y:d.getFullYear(),m:d.getMonth(),sel:b.date};ui.stack=[];ui.tab='booking';render()}
+
+/* ---- 이사 · 입주 청소 (상담형) ---- */
+const mvTypes=(d=ui.draft)=>SVC[d.svc].types;
+SCREENS.m_type=()=>{const d=ui.draft,s=SVC[d.svc];return `<div class="screen">${navBar({right:scopeLink('서비스 범위')})}<div class="body">
+ <div class="h1">${s.name}</div><div class="desc">${s.desc}</div>
+ <div class="sec"><div class="sec-t">청소 유형 선택</div><div class="cops" style="justify-content:space-between">${mvTypes().map(t=>`<button class="cop ${d.mvType===t.id?'on':''}" style="width:96px" onclick="D('mvType','${t.id}')"><span class="c" style="width:80px;height:80px">${ic(t.icon)}</span>${t.name}</button>`).join('')}</div></div>
+ ${d.mvType?`<div class="hr"></div><div class="sec"><div class="sec-t">어떤 짐이 있나요?</div>${LUGGAGE.map(([l],i)=>`<button class="row" style="padding:18px 0" onclick="D('luggage',${i})"><span class="t" style="font-size:17px">${l}</span><span class="radio ${d.luggage===i?'on':''}"></span></button>`).join('')}</div>`:''}
+ <div class="divider"></div><div class="sec" style="padding-bottom:0"><div class="sec-t">생생한 이용후기를 확인하세요.</div></div>${reviewsHS()}<div style="height:28px"></div>
+ </div><div class="cta"><button class="btn" onclick="ui.draft.mvType&&ui.draft.luggage!=null?next():toast('청소 유형과 짐 상태를 선택해 주세요')">다음</button></div></div>`};
+SCREENS.m_basic=()=>{const d=ui.draft;return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">기본 정보를 선택해 주세요.</div><div class="desc">선택된 내용은 서비스에 필요한 <em>필수정보</em>입니다.<br>서비스 가격에 영향을 미칠 수 있습니다.</div>
+ <div class="sec"><div class="sec-t">청소받을 건물 종류</div><div class="cops">${BUILDINGS.map(([n,i])=>`<button class="cop ${d.building===n?'on':''}" onclick="D('building','${n}')"><span class="c">${ic(i)}</span>${n}</button>`).join('')}</div></div>
+ ${d.building?`<div class="hr"></div><div class="sec"><div class="sec-t">방 구조</div>${ROOMS.map(([n],i)=>`<button class="row" style="padding:18px 0" onclick="D('rooms',${i})"><span class="t" style="font-size:17px">${n}</span><span class="radio ${d.rooms===i?'on':''}"></span></button>`).join('')}</div>
+ <div class="hr"></div><div class="sec"><div class="sec-t">복층 유무 ${d.duplex==null?'<span class="req">선택해주세요</span>':''}</div><div class="cops">${[['없음','noduplex'],['있음','duplex']].map(([n,i])=>`<button class="cop ${d.duplex===n?'on':''}" onclick="D('duplex','${n}')"><span class="c">${ic(i)}</span>${n}</button>`).join('')}</div></div>`:''}
+ </div><div class="cta"><button class="btn" onclick="d=ui.draft;d.building&&d.rooms!=null&&d.duplex?next():toast('건물 종류, 방 구조, 복층 유무를 모두 선택해 주세요')">다음</button></div></div>`};
+const numCircles=(key,max=5)=>`<div class="cops nowrap" data-keep="${key}">${Array.from({length:max+1},(_,n)=>`<button class="cop ${ui.draft[key]===n?'on':''}" onclick="D('${key}',${n})"><span class="c">${n}</span>${n}개</button>`).join('')}</div>`;
+SCREENS.m_counts=()=>{const d=ui.draft;return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">공간 정보를 알려주세요.</div>
+ <div class="sec"><div class="sec-t">화장실 개수</div>${numCircles('baths')}</div><div class="divider"></div>
+ <div class="sec"><div class="sec-t">베란다/다용도실 개수</div>${numCircles('balconies')}</div><div class="divider"></div>
+ <div class="sec"><div class="sec-t">엘리베이터 유무</div><div class="cops">${[['있음','elev'],['없음','noelev']].map(([n,i])=>`<button class="cop ${d.elevator===n?'on':''}" onclick="D('elevator','${n}')"><span class="c">${ic(i)}</span>${n}</button>`).join('')}</div>
+ <div style="border-top:1px solid var(--line);margin-top:28px;padding-top:24px"><div class="sec-t" style="font-size:16px">추가 정보</div><button class="row" onclick="D('over3',!ui.draft.over3)"><span class="t">서비스 받을 공간이 3층 이상입니다.</span><span class="radio ${d.over3?'on':''}"></span></button></div></div>
+ </div><div class="cta"><button class="btn" onclick="ui.draft.elevator?next():toast('엘리베이터 유무를 선택해 주세요')">다음</button></div></div>`};
+SCREENS.m_time=()=>{const d=ui.draft;const got=S.got.combo7;return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">날짜/시간을 선택해 주세요.</div><div class="desc">날짜와 시간에 따라 금액이 추가될 수 있습니다.</div>
+ <div style="height:16px"></div>
+ <div class="trow"><div class="tl"><b class="${d.date?'':'ph'}">${d.date?fmtS(d.date):'방문 일'}</b></div><button class="pill" onclick="dateSheet()">${d.date?'변경':'선택'}</button></div>
+ <div class="trow"><div class="tl"><b class="${d.time?'':'ph'}" style="${d.time?'font-size:20px':''}">${d.time||'방문 시간'}</b></div><button class="pill" onclick="timeSheet()">${d.time?'변경':'선택'}</button></div>
+ </div><div style="padding:0 20px 12px"><div class="infobox"><div style="flex:1"><b style="font-size:16px">에어컨 청소 함께 하면 7% 할인</b><br><span style="color:var(--sub)">새 집 들어가기 전에 같이 맡겨 보세요.</span></div><button style="border-left:1px solid #E5E8EB;padding-left:16px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:14px;color:${got?'var(--sub)':'var(--ink2)'}" onclick="getComboCoupon()">${ic(got?'check':'down')}${got?'받음':'쿠폰다운'}</button></div></div>
+ <div class="cta" style="border-top:0"><button class="btn" onclick="d=ui.draft;!d.date?toast('방문 일을 선택해 주세요'):!d.time?toast('방문 시간을 선택해 주세요'):next()">다음</button></div></div>`};
+function getComboCoupon(){if(S.got.combo7){toast('이미 받은 쿠폰이에요');return}S.got.combo7=true;addCoupon('에어컨 청소 7% 할인 (최대 1만원)',7000,'aircon');save();render();toast('에어컨 청소 할인 쿠폰을 받았어요',{icon:'🎟️'})}
+function mvEstimate(d=ui.draft){
+ let p=ROOMS[d.rooms??0][1];p+=Math.max(0,d.baths-1)*30000+d.balconies*15000;if(d.duplex==='있음')p+=60000;if(d.elevator==='없음'&&d.over3)p+=40000;
+ p*=1+(mvTypes(d).find(t=>t.id===d.mvType)?.k||0)+(LUGGAGE[d.luggage??0][1]);return r100(p*1.1);
+}
+SCREENS.m_quote=()=>`<div class="screen gray">${navBar()}<div class="body"><div class="h1">견적 방식을 확인하고<br>예약을 진행해 주세요.</div>
+ <div class="quote"><div style="display:flex;justify-content:space-between;align-items:center"><div class="qh"><span style="color:var(--brand)">말끔</span>안심예약 <span class="badge brand" style="font-size:12px">추천!</span></div><span class="chk on" style="width:36px;height:36px">${ic('check')}</span></div>
+ <div class="qp">${won(mvEstimate())}</div><p style="font-size:13px;color:var(--sub);margin:2px 0 14px">예상 견적 (VAT 포함) · 상담 후 변경될 수 있어요</p>
+ <ul>${['교육 인증을 받은 전문 청소팀이 진행','서비스 후 7일 무상 AS 제공','상담 채팅으로 진행 상황 실시간 확인','친환경 세제 사용','후기 작성 시 5만 포인트 증정'].map(t=>`<li>${ic('check')}${t}</li>`).join('')}</ul></div>
+ </div><div class="cta"><button class="btn" onclick="next()">다음</button></div></div>`;
+SCREENS.m_confirm=()=>{const d=ui.draft,a=addrOf(d.addressId);const est=mvEstimate();
+ const sec=(t,rows,edit)=>`<div class="sec"><div class="sec-t">${t}${edit?`<button style="font-size:15px;color:var(--sub);text-decoration:underline;font-weight:500" onclick="popTo('${edit}')">변경</button>`:''}</div>${rows.map(([k,v])=>`<div style="padding:10px 0"><div style="font-size:15px;font-weight:600">${k}</div><div style="font-size:16px;color:var(--ink2);margin-top:6px;line-height:1.5">${v}</div></div>`).join('')}</div>`;
+ return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1">${fmtS(d.date)}<br>예약을 완료해 주세요.</div>
+ <div style="padding:16px 24px 0;font-weight:700">방문 시간 : ${d.time}</div>
+ <div style="padding:14px 24px 28px"><p class="note">예약 신청 후 상담 채팅방이 열립니다. 상담사와 견적·일정을 확정한 뒤 예약금을 결제하면 예약이 확정됩니다.</p></div>
+ <div class="divider"></div>${sec('집 정보',[['주소',esc(addrText(a))],['이름',esc(a.name)]],'f_addr')}
+ <div class="divider"></div>${sec('기본 정보',[['청소 유형',`${mvTypes().find(t=>t.id===d.mvType).name} · ${LUGGAGE[d.luggage][0]}`],['건물',`${d.building} · ${ROOMS[d.rooms][0]} · 복층 ${d.duplex}`]],'m_type')}
+ <div class="divider"></div>${sec('서비스 필요 정보',[['공간',`화장실 ${d.baths}개 · 베란다/다용도실 ${d.balconies}개 · 엘리베이터 ${d.elevator}${d.over3?' · 3층 이상':''}`]],'m_counts')}
+ <div class="divider"></div><div class="sec"><div class="sec-t">결제 정보</div><div class="kv"><span>예상 서비스 금액</span>${won(est)}</div><div class="kv"><span>예약금 (확정 시 결제)</span>${won(r100(est*.1))}</div><p style="font-size:13px;color:var(--sub);margin-top:10px">지금은 결제되지 않아요.</p></div>
+ </div><div class="cta"><button class="btn" onclick="mvSubmit()">예약 신청하기</button></div></div>`};
+function mvSubmit(){
+ const d=ui.draft;const tname=mvTypes().find(t=>t.id===d.mvType).name;const est=mvEstimate();
+ const b=createBooking({status:0,kind:'consult',price:est,method:'말끔 안심예약',paid:false,
+  info:[['청소 유형',tname],['짐 상태',LUGGAGE[d.luggage][0]],['건물',d.building],['방 구조',ROOMS[d.rooms][0]],['복층',d.duplex],['화장실',d.baths+'개'],['베란다/다용도실',d.balconies+'개'],['엘리베이터',d.elevator]]});
+ const c=newChat({title:svcName(d.svc)+' 상담',svc:d.svc,bookingId:b.id,kind:'consult'});
+ c.msgs.push({from:'sys',text:`${fmtL(b.date)} ${svcName(d.svc)} 상담이 접수됐어요`,t:Date.now()});
+ c.msgs.push({from:'card',t:Date.now(),title:`${svcName(d.svc)} 예약 신청`,rows:[['방문일',`${fmtS(b.date)} ${b.time}`],['청소 유형',tname],['공간',`${ROOMS[d.rooms][0]} · 화장실 ${d.baths}개`],['예상 견적',won(est)]],bookingId:b.id});
+ b.chatId=c.id;save();
+ agentSay(c.id,`안녕하세요, ${esc(S.user.name)}님! 말끔 상담팀입니다 😊\n${fmtS(b.date)} ${svcName(d.svc)} 신청 잘 받았어요.`,1500);
+ agentSay(c.id,`예상 견적은 ${won(est)}이에요. 현장 오염도나 짐 상태에 따라 조금 달라질 수 있어요.\n\n집 상태를 알 수 있는 사진을 보내주시거나, 궁금한 점을 편하게 남겨주세요. 일정과 견적이 괜찮으시면 "예약 확정할게요"라고 말씀해 주세요.`,4200);
+ const dt=pd(b.date);ui.cal={y:dt.getFullYear(),m:dt.getMonth(),sel:b.date};ui.stack=[];ui.tab='booking';go('bdetail',{id:b.id,fresh:true});
+}
+
+/* ================= 상담 채팅 ================= */
+function newChat({title,svc=null,bookingId=null,kind='general'}){
+ const c={id:'ch'+Date.now()+Math.random().toString(16).slice(2,5),title,svc,bookingId,kind,unread:0,msgs:[],created:Date.now()};
+ S.chats.unshift(c);save();return c;
+}
+const chatOf=id=>S.chats.find(c=>c.id===id);
+const viewing=id=>cur()?.screen==='chatroom'&&cur().params.id===id;
+function refreshIfSafe(id){if(viewing(id)||!ui.stack.length)render()}
+function agentSay(id,text,delay=1400,extra={}){
+ setTimeout(()=>{ui.typing[id]=(ui.typing[id]||0)+1;refreshIfSafe(id)},Math.max(0,delay-1100));
+ setTimeout(()=>{
+  const c=chatOf(id);if(!c)return;ui.typing[id]=Math.max(0,(ui.typing[id]||1)-1);
+  c.msgs.push({from:'agent',text,t:Date.now(),...extra});
+  if(!viewing(id)){c.unread=(c.unread||0)+1;toast(`<b>${esc(c.title)}</b><br>새 상담 메시지가 도착했어요`,{icon:'💬',action:{label:'보기',fn:`openChat('${id}')`},ms:3500})}
+  save();refreshIfSafe(id);
+ },delay);
+}
+function startChat(topic){
+ let c=S.chats.find(x=>x.title===topic&&!x.bookingId);
+ if(!c){c=newChat({title:topic});c.msgs.push({from:'sys',text:'상담이 시작됐어요',t:Date.now()});save();agentSay(c.id,`안녕하세요, 말끔 상담팀입니다 😊\n${topic} 관련해서 어떤 점이 궁금하신가요? 평수나 원하시는 날짜를 함께 알려주시면 더 빠르게 안내드릴게요.`,1300)}
+ closeSheet();openChat(c.id);
+}
+function openChat(id){const c=chatOf(id);if(!c)return;c.unread=0;save();if(viewing(id)){render();return}go('chatroom',{id})}
+function openChatForBooking(bid){const b=S.bookings.find(x=>x.id===bid);let c=b.chatId&&chatOf(b.chatId);
+ if(!c){c=newChat({title:svcName(b.svc)+' 문의',svc:b.svc,bookingId:b.id,kind:b.kind});c.msgs.push({from:'sys',text:`${fmtL(b.date)} 예약 건 문의`,t:Date.now()});b.chatId=c.id;save();agentSay(c.id,`안녕하세요, 말끔 상담팀입니다.\n${fmtS(b.date)} ${svcName(b.svc)} 예약 건으로 무엇을 도와드릴까요?`,1200)}
+ openChat(c.id)}
+function sendMsg(id,text){
+ const inp=document.getElementById('chat-in');text=(text??inp?.value??'').trim();if(!text)return;if(inp)inp.value='';
+ const c=chatOf(id);c.msgs.push({from:'me',text,t:Date.now()});save();render();
+ agentSay(id,replyFor(c,text),1600+Math.random()*900);
+}
+function replyFor(c,t){
+ const b=c.bookingId&&S.bookings.find(x=>x.id===c.bookingId);
+ if(/확정|예약할게|진행해|좋아요|괜찮/.test(t)&&b&&b.status===0){
+  setTimeout(()=>{b.status=1;b.paid=true;save();if(!ui.stack.length||viewing(c.id)||cur()?.screen==='bdetail')render()},1700);
+  return `예약이 확정됐어요! 🎉\n예약금 ${won(r100(b.price*.1))}은 데모이므로 결제된 것으로 처리했어요. 방문 전날 담당 팀장님 정보를 보내드릴게요.`}
+ if(/견적|가격|얼마|비용|금액/.test(t))return b?.price?`현재 예상 견적은 ${won(b.price)}이에요.\n오염도나 짐 상태에 따라 현장에서 ±10% 정도 달라질 수 있고, 변동이 있으면 작업 전에 먼저 말씀드려요.`:'정확한 견적을 위해 평수와 방 구조, 원하시는 날짜를 알려주시겠어요? 사진을 함께 보내주시면 더 정확해요.';
+ if(/일정|날짜|변경|시간|언제/.test(t))return '원하시는 날짜와 시간대(오전/오후)를 알려주시면 가능한 팀을 바로 확인해 드릴게요.';
+ if(/취소|환불/.test(t))return b&&b.status===0?'아직 예약금 결제 전이라 취소 수수료는 없어요. 예약 상세 화면 하단의 "예약 취소"로 바로 취소하실 수 있어요.':'방문 2일 전까지는 전액 환불, 이후에는 규정에 따라 수수료가 발생할 수 있어요.';
+ if(/사진|이미지/.test(t))return '프로토타입에서는 사진 전송을 지원하지 않아요. 실제 앱에서는 입력창 왼쪽의 카메라 버튼으로 보낼 수 있어요 📷';
+ if(/주차|엘리베이터|층/.test(t))return '주차 가능 여부와 엘리베이터 사용 가능 시간을 알려주시면 작업 동선에 반영할게요.';
+ if(/안녕|문의|질문/.test(t))return '네, 말씀하세요! 어떤 서비스가 궁금하신가요?';
+ return '네, 확인했습니다. 담당 매니저에게 전달하고 곧 답변드릴게요 🙂';
+}
+TABS.chat=()=>{const list=S.chats;return `<div class="body">
+ <div style="display:flex;align-items:center;padding:28px 16px 16px 24px"><div style="font-size:30px;font-weight:800;flex:1">상담</div><button class="pill" style="height:40px;padding:0 16px;font-size:15px" onclick="inquirySheet()">${ic('plus','sm')}새 상담</button></div>
+ <div style="margin:0 16px 8px;background:var(--brand-w);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:center;font-size:14px;color:var(--brand-d)">${ic('headset')}<span>평일 09:00~18:00 · 평균 응답 5분 (데모: 자동 응답)</span></div>
+ ${list.length?list.map(c=>{const last=[...c.msgs].reverse().find(m=>m.from!=='sys')||c.msgs[c.msgs.length-1];const s=SVC[c.svc];
+  return `<button class="clist" onclick="openChat('${c.id}')"><span class="ca" style="background:${s?s.tint:'var(--bg)'};color:${s?s.color:'var(--ink2)'}">${ic(s?s.icon:'chat')}</span><div class="cm"><b>${esc(c.title)}</b><p>${ui.typing[c.id]?'상담사가 입력 중…':last?(last.from==='card'?'[예약 신청서]':esc(last.text).split('\n')[0]):''}</p></div><div class="cr">${last?hm(last.t):''}${c.unread?`<span class="un">${c.unread}</span>`:''}</div></button>`}).join('')
+ :`<div class="empty" style="padding-top:110px"><b>진행 중인 상담이 없어요</b>이사·입주 청소를 신청하거나<br>궁금한 점을 바로 물어보세요.<br><button class="pill" style="margin-top:24px" onclick="inquirySheet()">${ic('chat','sm')}상담 시작하기</button></div>`}
+ </div>`};
+SCREENS.chatroom=({id})=>{const c=chatOf(id);if(!c)return `<div class="screen">${navBar()}<div class="empty">상담을 찾을 수 없어요.</div></div>`;
+ if(c.unread){c.unread=0;save()}
+ const b=c.bookingId&&S.bookings.find(x=>x.id===c.bookingId);
+ const qr=c.bookingId?(b&&b.status===0?['예약 확정할게요','견적이 궁금해요','일정 변경하고 싶어요','주차 안내']:['일정 변경하고 싶어요','취소하고 싶어요','주차 안내']):['가격이 궁금해요','가능한 날짜 알려주세요','사진 보내는 법'];
+ let prevFrom=null;
+ const msgs=c.msgs.map(m=>{let h='';
+  if(m.from==='sys')h=`<div class="sysmsg">${esc(m.text)}</div>`;
+  else if(m.from==='card')h=`<div class="mrow2 me"><span class="mt">${hm(m.t)}</span><div class="mcard"><b>📋 ${esc(m.title)}</b>${m.rows.map(([k,v])=>`<div class="kv"><span>${k}</span>${esc(v)}</div>`).join('')}<button onclick="go('bdetail',{id:'${m.bookingId}'})">예약 상세 보기</button></div></div>`;
+  else if(m.from==='me')h=`<div class="mrow2 me"><span class="mt">${hm(m.t)}</span><div class="msg">${esc(m.text)}</div></div>`;
+  else{const first=prevFrom!=='agent';h=`<div class="mrow2 agent">${first?`<span class="mav">${ic('headset')}</span>`:'<span style="width:36px;flex-shrink:0"></span>'}<div>${first?'<div class="mname">말끔 상담팀</div>':''}<div style="display:flex;align-items:flex-end;gap:6px"><div class="msg">${m.text}</div><span class="mt">${hm(m.t)}</span></div></div></div>`}
+  prevFrom=m.from;return h}).join('');
+ const typing=ui.typing[id]?`<div class="mrow2 agent"><span class="mav">${ic('headset')}</span><div class="msg typing"><i></i><i></i><i></i></div></div>`:'';
+ return `<div class="screen">${navBar({title:`${esc(c.title)}<small>말끔 상담팀 · 평균 응답 5분</small>`,right:b?`<button class="nav-link" onclick="go('bdetail',{id:'${b.id}'})">예약 보기</button>`:''})}
+ <div class="body" style="background:var(--bg)"><div class="msgs">${msgs}${typing}</div></div>
+ <div class="qr">${qr.map(q=>`<button onclick="sendMsg('${id}','${q}')">${q}</button>`).join('')}</div>
+ <div class="cin"><button class="plus" onclick="toast('사진 전송은 데모에서 준비 중이에요')">${ic('camera')}</button><input id="chat-in" placeholder="메시지를 입력하세요" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();sendMsg('${id}')}"><button class="send" onclick="sendMsg('${id}')">${ic('send','sm')}</button></div></div>`};
+function inquirySheet(){sheet('어떤 상담이 필요하세요?',[...HOME_GRID.map(id=>[SVC[id].name+' 문의',SVC[id]]),['기타 문의',null]].map(([t,s])=>`<button class="row" onclick="startChat('${t}')"><span style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:${s?s.tint:'var(--bg)'};color:${s?s.color:'var(--ink2)'}">${ic(s?s.icon:'chat')}</span><span class="t" style="font-size:17px">${t}</span><span class="chev">${ic('chev')}</span></button>`).join(''))}
+
+/* ================= 예약 상세 ================= */
+SCREENS.bdetail=({id,fresh})=>{
+ const b=S.bookings.find(x=>x.id===id);if(!b)return `<div class="screen">${navBar({close:true})}<div class="empty">예약을 찾을 수 없어요.</div></div>`;
+ if(fresh){cur().params.fresh=false;setTimeout(()=>sheet(null,`<div style="text-align:center;padding:24px 0 4px"><div class="done-ic" style="margin:0 auto 20px">${ic('check')}</div><div style="font-size:24px;font-weight:700">예약 신청 완료</div><p style="color:var(--sub2);margin-top:12px;line-height:1.6">상담 채팅방이 열렸어요.<br>상담사가 곧 견적과 일정을 안내해 드릴게요.</p></div>`,`<button class="btn ghost" onclick="closeSheet()">닫기</button><button class="btn" onclick="openChat('${b.chatId}')">상담 채팅 보기</button>`),50)}
+ const pct=b.status===0?0:b.status/3*76;
+ return `<div class="screen">${navBar({close:true})}<div class="body">
+ <div style="text-align:center"><div style="font-size:32px;font-weight:800;letter-spacing:-.03em">${fmtL(b.date)}</div><div style="font-size:19px;margin-top:8px">${b.time.includes('방문')?b.time:b.time+' 방문'}</div>
+ <div class="bavatar">${ic('user')}</div><div style="font-size:20px">${STATUS_MSG[b.status]}</div></div>
+ <div class="stepper"><span class="bar" style="width:${pct}%"></span>${STATUS.map((s,i)=>`<div class="${i<=b.status?'on':''}"><i></i>${s}</div>`).join('')}</div>
+ ${b.status===0&&b.kind==='consult'?`<div style="padding:36px 24px 0"><p class="note">상담 채팅에서 견적과 일정을 확정한 뒤 예약금을 결제하시면 예약이 확정됩니다.</p></div>`:''}
+ <div style="text-align:center;padding:20px 0 28px"><button style="font-size:13px;color:var(--sub);text-decoration:underline" onclick="advance('${b.id}')">${b.status<3?'[데모] 다음 단계로 진행':'[데모] 처음 상태로'}</button></div>
+ <div class="divider"></div>
+ <div class="sec"><div class="sec-t">결제 정보</div>
+ ${b.kind==='consult'?`<p style="font-size:15px;color:var(--sub2);line-height:1.6">서비스 금액은 상담 후에 변경될 수 있습니다.<br>예약금은 서비스 금액의 10%가 결제됩니다.</p><div class="box" style="margin:20px 0;padding:18px 22px"><div style="font-size:14px;color:var(--sub)">견적 방식</div><div style="font-size:19px;font-weight:700;margin-top:6px">${b.method}</div></div>`:''}
+ <div class="sec-t" style="font-size:17px;margin:8px 0 4px">서비스 금액 정보 (VAT 포함)<span style="font-size:15px;color:var(--sub);font-weight:500">${b.paid?'결제완료':'결제대기'}</span></div><div class="kv"><span style="color:var(--ink)">결제 금액</span>${won(b.price)}</div><div class="kv"><span>ㄴ 서비스 금액</span><span>${won(b.price)}</span></div>${b.payName?`<div class="kv"><span>결제수단</span>${b.payName}</div>`:''}
+ </div><div class="divider"></div>
+ <div class="sec"><div class="sec-t">서비스 정보</div><div class="kv"><span>서비스</span>${svcName(b.svc)}</div>
+ ${b.info?.length?`<div class="box" style="margin-top:14px">${b.info.map(([k,v])=>`<div class="row" style="padding:14px 0"><span class="t">${k}</span><b style="color:var(--brand-d)">${v}</b></div>`).join('')}</div>`:''}</div>
+ <div class="divider"></div>
+ <div class="sec"><div class="sec-t">집 정보</div><div class="kv"><span style="width:70px">명칭</span><span style="flex:1;color:var(--ink)">${esc(b.addrName)}</span></div><div class="kv"><span style="width:70px">주소</span><span style="flex:1;color:var(--ink);line-height:1.5">${esc(b.addr)}</span></div><div class="kv"><span style="width:70px">전화번호</span><span style="flex:1;color:var(--ink)">${S.user.phone}</span></div></div>
+ <div style="background:var(--bg);padding:28px 24px 48px;text-align:center"><button class="pill" onclick="openChatForBooking('${b.id}')">${ic('chat','sm')}상담 채팅</button><br><button style="margin-top:20px;font-size:14px;color:var(--sub);text-decoration:underline" onclick="cancelSheet('${b.id}')">예약 취소</button></div>
+ </div></div>`};
+function advance(id){const b=S.bookings.find(x=>x.id===id);b.status=b.status<3?b.status+1:0;if(b.kind==='consult')b.paid=b.status>=1;save();render();toast(`상태: ${STATUS[b.status]}`)}
+function cancelSheet(id){sheet('예약을 취소할까요?',`<p style="color:var(--sub2);line-height:1.6">취소한 예약은 되돌릴 수 없어요. 결제된 금액은 데모이므로 실제 환불은 없습니다.</p>`,`<button class="btn ghost" onclick="closeSheet()">닫기</button><button class="btn" style="background:var(--red)" onclick="cancelBooking('${id}')">예약 취소</button>`)}
+function cancelBooking(id){const b=S.bookings.find(x=>x.id===id);S.bookings=S.bookings.filter(x=>x.id!==id);const c=b?.chatId&&chatOf(b.chatId);if(c){c.msgs.push({from:'sys',text:'예약이 취소됐어요',t:Date.now()});c.bookingId=null}save();closeSheet();back();toast('예약을 취소했어요')}
+
+/* ================= 탭: 내 예약 ================= */
+const occursOn=(b,s)=>b.date===s;
+TABS.booking=()=>{
+ if(!ui.cal){const t=today0();ui.cal={y:t.getFullYear(),m:t.getMonth(),sel:ymd(t)}}
+ const {y,m,sel}=ui.cal;const list=S.bookings.filter(b=>occursOn(b,sel));
+ const groups={};list.forEach(b=>(groups[b.addrName]=groups[b.addrName]||[]).push(b));
+ return `<div class="body">
+ <div class="cal-h"><div class="m"><button class="ib" style="width:32px" onclick="calMove(-1)">${ic('left','sm')}</button>${String(y).slice(2)}년 ${m+1}월<button class="ib" style="width:32px" onclick="calMove(1)">${ic('chev','sm')}</button></div>
+ <button class="ib" onclick="calToday()"><span style="border:1.7px solid var(--ink);border-radius:6px;font-size:11px;font-weight:700;padding:3px 4px">오늘</span></button></div>
+ ${calGrid(y,m,{sel,dots:s=>S.bookings.some(b=>occursOn(b,s)),pick:'calPick'})}
+ <div class="handle"></div><div style="height:1px;background:var(--line)"></div>
+ ${list.length?Object.entries(groups).map(([n,bs])=>`<div style="padding:28px 24px 6px;font-size:17px;color:var(--sub);font-weight:600">${esc(n)} <span style="color:var(--brand)">${bs.length}</span></div>${bs.map(b=>`<button class="bk" onclick="go('bdetail',{id:'${b.id}'})"><span class="ic" style="color:${SVC[b.svc].color}">${ic(SVC[b.svc].icon)}</span><div style="flex:1"><b>${b.time.replace(' 방문','').replace(/\(.*\)/,'').trim()}</b><span>${svcName(b.svc)} ›</span></div><span class="badge line">${STATUS[b.status]}</span></button>`).join('')}`).join('')
+ :`<div class="empty" style="padding:90px 24px">해당 일자에 예약된 서비스가 없습니다.<br><button class="pill" style="margin-top:20px" onclick="setTab('home')">서비스 둘러보기</button></div>`}
+ </div>`;
+};
+function calMove(n){let {y,m}=ui.cal;m+=n;if(m<0){m=11;y--}if(m>11){m=0;y++}ui.cal={...ui.cal,y,m};render()}
+function calToday(){const t=today0();ui.cal={y:t.getFullYear(),m:t.getMonth(),sel:ymd(t)};render()}
+function calPick(s){const d=pd(s);ui.cal={y:d.getFullYear(),m:d.getMonth(),sel:s};render()}
+
+/* ================= 탭: 더보기 ================= */
+TABS.more=()=>{const cc=S.coupons.filter(c=>!c.used).length;
+ const g=rows=>`<div class="mgroup">${rows.map(([i,t,fn,v])=>`<button class="mrow" onclick="${fn}">${ic(i)}<span class="t">${t}</span>${v!=null?`<span class="v">${v}</span>`:''}<span class="chev">${ic('chev')}</span></button>`).join('')}</div>`;
+ return `<div class="body"><div style="font-size:30px;font-weight:800;padding:28px 24px 22px">더보기</div>
+ ${g([['villa','서비스 범위',"go('scope')"],['card','결제수단 관리',"go('paym')"],['ticket','쿠폰',"go('coupons')",cc?cc+'장':null],['coinP','청소 포인트',"go('points')",S.points.toLocaleString()+'P']])}
+ ${g([['user','계정정보',"go('account')"],['home','주소 관리',"go('addrs')"]])}
+ ${g([['mega','공지사항',"go('notice')"],['bulb','말끔 팁',"go('tips')"],['faq','자주 묻는 질문',"go('faq')"],['help','상담하기',"setTab('chat')"],['hand','제휴 문의',"startChat('제휴 문의')"]])}
+ ${g([['ver','버전 정보',"resetSheet()",'v0.2 프로토타입'],['shield','개인정보 처리방침',"go('doc',{t:'개인정보 처리방침'})"],['doc','이용약관',"go('doc',{t:'이용약관'})"],['lock','오픈소스 라이선스',"go('doc',{t:'오픈소스 라이선스'})"]])}
+ <div style="height:20px"></div></div>`};
+function resetSheet(){sheet('데모 데이터',`<p style="color:var(--sub2);line-height:1.6">예약, 상담 채팅, 쿠폰, 주소 등 이 브라우저에 저장된 데모 데이터를 처음 상태로 되돌립니다.</p>`,`<button class="btn ghost" onclick="closeSheet()">취소</button><button class="btn" onclick="S=DEFAULT();save();ui.cal=null;closeSheet();setTab('home');toast('데모 데이터를 초기화했어요')">초기화</button>`)}
+SCREENS.scope=()=>{const sc=SCOPE[ui.scopeChip];const t=Math.min(ui.scopeTab,sc.tabs.length-1);
+ let plan='';
+ if(sc.area){const hi=sc.area[t];
+  const R={entry:[12,14,40,120],living:[52,14,130,120],kitchen:[182,14,120,120],room1:[12,134,130,96],bath:[142,134,60,96],room2:[202,134,100,96]};
+  const L={entry:'현관',living:'거실',kitchen:'주방',room1:'방',bath:'화장실',room2:'방'};
+  plan=`<svg class="plan" viewBox="0 0 314 244" width="300"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#12B886" stroke-width="1.2" opacity=".45"/></pattern></defs>
+  ${Object.entries(R).map(([k,[x,y,w,h]])=>{const on=hi.includes(k);return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${on?'url(#hatch)':'#fff'}" stroke="${on?'#12B886':'#B0B8C1'}" stroke-width="${on?2.4:1.6}"/>${on?`<rect x="${x}" y="${y}" width="${L[k].length*11+12}" height="20" fill="#0B8F69"/><text x="${x+6}" y="${y+14}" fill="#fff" font-size="11" font-weight="700">${L[k]}</text>`:''}`}).join('')}
+  <rect x="80" y="70" width="70" height="26" rx="6" fill="none" stroke="#ADB5BD"/><rect x="200" y="50" width="40" height="50" fill="none" stroke="#ADB5BD"/><rect x="280" y="24" width="16" height="60" fill="none" stroke="#ADB5BD"/><rect x="30" y="160" width="60" height="50" fill="none" stroke="#ADB5BD"/><ellipse cx="160" cy="160" rx="10" ry="12" fill="none" stroke="#ADB5BD"/><rect x="150" y="190" width="44" height="30" rx="4" fill="none" stroke="#ADB5BD"/><rect x="240" y="150" width="50" height="60" fill="none" stroke="#ADB5BD"/></svg>`}
+ else{const s=SVC[['aircon','mattress','sofa'][t]];plan=`<div class="hero" style="margin-top:0;background:linear-gradient(135deg,${s.tint},#fff)"><div class="hc" style="color:${s.color}">${ic(s.icon)}</div></div>`}
+ return `<div class="screen">${navBar()}<div class="body">
+ <div class="h1" style="font-size:30px">서비스 범위</div><div style="height:18px"></div>
+ <div class="chips" data-keep="sc">${SCOPE.map((s,i)=>`<button class="chip ${ui.scopeChip===i?'on':''}" style="height:48px;padding:0 20px;font-size:16px;border-radius:24px" onclick="ui.scopeChip=${i};ui.scopeTab=0;render()">${s.chip}</button>`).join('')}</div>
+ <div style="padding:24px 0 8px">${plan}</div>
+ <div class="tabs" data-keep="st">${sc.tabs.map((n,i)=>`<button class="tab ${t===i?'on':''}" style="font-size:19px" onclick="ui.scopeTab=${i};render()">${n}</button>`).join('')}</div>
+ <div class="sec"><div style="color:var(--sub);font-size:15px;margin-bottom:12px">기본 서비스</div>${sc.items[t].map(x=>`<div class="check-li"><i>${ic('check')}</i>${x}</div>`).join('')}
+ <div style="border-top:1px solid var(--line);margin-top:24px;padding-top:20px"><button class="sec-t" style="width:100%" onclick="ui.scopeNot=!ui.scopeNot;render()">미제공 서비스 ${ic(ui.scopeNot?'up':'down')}</button>${ui.scopeNot?sc.not.map(x=>`<div class="bul">${x}</div>`).join(''):''}</div></div>
+ </div></div>`};
+SCREENS.paym=()=>`<div class="screen">${navBar({title:'결제수단 관리'})}<div class="tabs" style="gap:32px">${['가정집','사무실'].map((n,i)=>`<button class="tab ${ui.payTab===i?'on':''}" style="font-size:20px" onclick="ui.payTab=${i};render()">${n}</button>`).join('')}</div><div class="body" style="padding:8px 24px">
+ ${PAY_TYPES.map(t=>`<button class="row" style="padding:24px 0" onclick="regPay('${t}')"><span class="t" style="font-size:18px;font-weight:600">${t}</span>${S.payMethods.some(m=>m.name===t)?'<span class="badge brand">등록됨</span>':''}<span class="chev">${ic('chev')}</span></button>`).join('')}
+ <p style="font-size:13px;color:var(--sub);margin-top:12px">프로토타입에서는 실제 결제 정보를 입력받지 않습니다.</p></div></div>`;
+SCREENS.addrs=()=>{const list=S.addresses.filter(a=>a.kind===ui.addrTab);const lbl=ui.addrTab==='home'?'집':'사무실';
+ return `<div class="screen">${navBar()}<div class="tabs eq">${[['home','집'],['office','사무실']].map(([k,l])=>`<button class="tab ${ui.addrTab===k?'on':''}" style="font-size:20px" onclick="ui.addrTab='${k}';render()">${l}</button>`).join('')}</div><div class="body">
+ ${list.length?`<div style="padding:12px 24px">${list.map(a=>`<button class="row" style="border-bottom:1px solid var(--line);padding:20px 0" onclick="addrSheet('${a.id}')"><div style="flex:1"><div style="font-weight:700;font-size:17px">${esc(a.name)}</div><div style="color:var(--sub2);margin-top:6px;line-height:1.5">${esc(addrText(a))}, ${a.pyeong}평</div></div><span style="color:var(--brand-d);font-weight:600">수정</span></button>`).join('')}</div><div style="text-align:center;padding:24px"><button class="pill" onclick="addrSheet()">${ic('plus','sm')}주소 추가</button></div>`
+ :`<div class="empty" style="padding-top:200px"><b>${lbl} 주소가 존재하지 않습니다.</b>주소를 추가하고 청소 예약을 진행해 보세요.<br><button class="pill" style="margin-top:28px" onclick="addrSheet()">${ic('plus','sm')}주소 추가</button></div>`}</div></div>`};
+SCREENS.coupons=()=>`<div class="screen gray">${navBar({title:'쿠폰'})}<div class="body" style="padding:8px 16px">${S.coupons.length?S.coupons.map(c=>`<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:14px;opacity:${c.used?.45:1}"><span style="color:var(--brand)">${ic('ticket','lg')}</span><div style="flex:1"><div style="font-weight:700;font-size:17px">${c.amount?won(c.amount)+' 할인':'할인 쿠폰'}</div><div style="color:var(--sub2);font-size:14px;margin-top:4px">${esc(c.name)}</div><div style="color:var(--sub);font-size:13px;margin-top:4px">${c.svc?svcName(c.svc)+' · ':''}${fmtS(c.exp)}까지${c.used?' · 사용완료':''}</div></div></div>`).join(''):`<div class="empty"><b>보유한 쿠폰이 없어요</b>홈 배너에서 웰컴 쿠폰을 받아보세요.<br><button class="pill" style="margin-top:20px" onclick="getWelcome();render()">웰컴 쿠폰 받기</button></div>`}</div></div>`;
+SCREENS.points=()=>`<div class="screen">${navBar({title:'청소 포인트'})}<div class="body"><div style="padding:24px"><div style="color:var(--sub)">사용 가능</div><div style="font-size:34px;font-weight:800;margin-top:6px">${S.points.toLocaleString()}P</div></div><div class="divider"></div><div class="empty">포인트 내역이 없어요.<br>후기를 작성하면 포인트를 드려요.</div></div></div>`;
+SCREENS.account=()=>`<div class="screen">${navBar({title:'계정정보'})}<div class="body" style="padding:8px 24px">${[['이름',S.user.name],['휴대폰 번호',S.user.phone],['이메일',S.user.email],['로그인 방식','데모 계정']].map(([k,v])=>`<div class="row" style="border-bottom:1px solid var(--line);padding:22px 0"><span class="t" style="color:var(--sub2)">${k}</span><span>${esc(v)}</span></div>`).join('')}<p style="font-size:13px;color:var(--sub);margin-top:16px">프로토타입 샘플 계정입니다.</p></div></div>`;
+SCREENS.notice=()=>`<div class="screen">${navBar({title:'공지사항'})}<div class="body" style="padding:0 24px">${[['[원룸청소] 서비스 요금 조정 안내','2026.11.01'],['에어컨 청소 성수기 예약 오픈 안내','2026.10.24'],['매트리스 · 소파 청소 서비스 오픈','2026.10.02'],['개인정보 처리방침 개정 안내','2026.09.15']].map(([t,d])=>`<button class="row" style="border-bottom:1px solid var(--line);padding:20px 0;display:block" onclick="toast('공지 상세는 데모에서 준비 중이에요')"><div style="font-size:16px">${t}</div><div style="color:var(--sub);font-size:13px;margin-top:6px">${d}</div></button>`).join('')}</div></div>`;
+SCREENS.tips=()=>`<div class="screen gray">${navBar({title:'말끔 팁'})}<div class="body"><div class="card" style="margin-top:8px">${NEWS.map(n=>`<button class="news" onclick="toast('콘텐츠 상세는 데모에서 준비 중이에요')"><div class="th" style="background:${n.bg}">${n.e}</div><div><small>${n.c}</small><p>${n.t}</p></div></button>`).join('')}</div></div></div>`;
+const FAQS=[['예약은 언제까지 변경할 수 있나요?','방문 2일 전까지 앱에서 직접 변경할 수 있어요. 이후에는 상담 채팅으로 문의해 주세요.'],['매니저님이 청소도구를 가져오나요?','원룸·화장실·주방 청소는 고객님 댁의 기본 청소도구를 사용해요. 이사·입주, 에어컨, 매트리스, 소파 청소는 전문 장비를 가져갑니다.'],['할인 쿠폰은 어떻게 받나요?','홈 배너의 웰컴 쿠폰팩과 이벤트 쿠폰을 받을 수 있어요. 받은 쿠폰은 결제 화면에서 바로 적용됩니다.'],['이사·입주 청소는 왜 상담이 필요한가요?','집 상태와 짐 여부에 따라 인원과 장비가 달라져서, 상담 채팅으로 견적을 확정한 뒤 진행해요.']];
+SCREENS.faq=()=>`<div class="screen">${navBar({title:'자주 묻는 질문'})}<div class="body" style="padding:0 24px">${FAQS.map(([q,a],i)=>`<div class="faq"><button onclick="ui.faqOpen=ui.faqOpen===${i}?-1:${i};render()"><b style="color:var(--brand)">Q</b><span style="flex:1">${q}</span>${ic(ui.faqOpen===i?'up':'down','sm')}</button>${ui.faqOpen===i?`<p>${a}</p>`:''}</div>`).join('')}</div></div>`;
+SCREENS.doc=({t})=>`<div class="screen">${navBar({title:t})}<div class="body" style="padding:24px;color:var(--sub2);line-height:1.7">${t} 본문 영역입니다. 프로토타입에서는 내용을 제공하지 않습니다.</div></div>`;
+
+render();
+</script>
+</body>
+</html>

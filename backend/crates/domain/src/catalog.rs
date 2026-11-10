@@ -1,0 +1,133 @@
+use crate::{DomainError, Won};
+use serde::{Deserialize, Serialize};
+
+/// How a service is booked and priced.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum Pricing {
+    /// One price, paid in full at booking.
+    Fixed { price: Won, minutes: u32 },
+    /// Customer picks one option (count / size), paid in full at booking.
+    Unit { units: Vec<UnitOption> },
+    /// Estimate first, final price agreed in chat, 10% deposit confirms.
+    Quote,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct UnitOption {
+    pub label_key: String,
+    pub minutes: u32,
+    pub price: Won,
+}
+
+/// A bookable service. Rows live in the database and are editable in admin;
+/// `default_catalog` seeds a fresh install with the prototype's sample prices.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Service {
+    pub code: String,
+    pub pricing: Pricing,
+    /// Customer must have cleaning tools ready (studio, kitchen, bathroom).
+    pub needs_preparation: bool,
+    /// Studio rule: maximum address size in pyeong, if any.
+    pub max_pyeong: Option<u16>,
+}
+
+impl Service {
+    pub fn is_quote(&self) -> bool {
+        matches!(self.pricing, Pricing::Quote)
+    }
+
+    /// Price and duration for an optional unit choice. Quote services have no list price.
+    pub fn list_price(&self, unit_index: Option<usize>) -> Result<(Won, u32), DomainError> {
+        match (&self.pricing, unit_index) {
+            (Pricing::Fixed { price, minutes }, None) => Ok((*price, *minutes)),
+            (Pricing::Unit { units }, Some(i)) => units
+                .get(i)
+                .map(|u| (u.price, u.minutes))
+                .ok_or(DomainError::InvalidUnit),
+            _ => Err(DomainError::InvalidUnit),
+        }
+    }
+
+    /// Spec rule 1: studio cleaning only for small homes.
+    pub fn check_address_size(&self, size_pyeong: u16) -> Result<(), DomainError> {
+        match self.max_pyeong {
+            Some(max) if size_pyeong > max => Err(DomainError::StudioTooLarge { max }),
+            _ => Ok(()),
+        }
+    }
+}
+
+fn unit(label_key: &str, minutes: u32, price: i64) -> UnitOption {
+    UnitOption { label_key: label_key.into(), minutes, price: Won(price) }
+}
+
+fn service(code: &str, pricing: Pricing, prep: bool, max_pyeong: Option<u16>) -> Service {
+    Service { code: code.into(), pricing, needs_preparation: prep, max_pyeong }
+}
+
+/// The 8 launch services with the spec's sample prices (VAT included).
+pub fn default_catalog() -> Vec<Service> {
+    use Pricing::*;
+    vec![
+        service("studio", Fixed { price: Won(45_000), minutes: 120 }, true, Some(10)),
+        service("kitchen", Fixed { price: Won(45_000), minutes: 120 }, true, None),
+        service(
+            "bathroom",
+            Unit { units: vec![unit("count_1", 120, 39_000), unit("count_2", 120, 52_000), unit("count_3", 180, 69_000), unit("count_4", 240, 84_000)] },
+            true,
+            None,
+        ),
+        service(
+            "mattress",
+            Unit { units: vec![unit("count_1", 60, 59_000), unit("count_2", 90, 99_000), unit("count_3", 120, 139_000), unit("count_4", 150, 175_000)] },
+            false,
+            None,
+        ),
+        service(
+            "aircon",
+            Unit { units: vec![unit("wall", 90, 79_000), unit("stand", 120, 119_000), unit("two_in_one", 180, 179_000), unit("ceiling", 120, 139_000)] },
+            false,
+            None,
+        ),
+        service(
+            "sofa",
+            Unit { units: vec![unit("seat_1_2", 60, 59_000), unit("seat_3", 90, 79_000), unit("seat_4_plus", 120, 99_000), unit("l_shape", 150, 119_000)] },
+            false,
+            None,
+        ),
+        service("move_out", Quote, false, None),
+        service("move_in", Quote, false, None),
+    ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn by_code(code: &str) -> Service {
+        default_catalog().into_iter().find(|s| s.code == code).unwrap()
+    }
+
+    #[test]
+    fn catalog_has_eight_services() {
+        assert_eq!(default_catalog().len(), 8);
+    }
+
+    #[test]
+    fn unit_price_lookup() {
+        assert_eq!(by_code("bathroom").list_price(Some(1)), Ok((Won(52_000), 120)));
+        assert_eq!(by_code("bathroom").list_price(Some(9)), Err(DomainError::InvalidUnit));
+        assert_eq!(by_code("bathroom").list_price(None), Err(DomainError::InvalidUnit));
+        assert_eq!(by_code("studio").list_price(None), Ok((Won(45_000), 120)));
+        assert!(by_code("move_in").list_price(None).is_err());
+    }
+
+    #[test]
+    fn studio_rule() {
+        let studio = by_code("studio");
+        assert!(studio.check_address_size(10).is_ok());
+        assert_eq!(studio.check_address_size(15), Err(DomainError::StudioTooLarge { max: 10 }));
+        assert!(by_code("kitchen").check_address_size(60).is_ok());
+    }
+}

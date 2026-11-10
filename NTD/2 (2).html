@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>말끔 파트너 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--brand:#12B886;--brand-d:#0B8F69;--brand-w:#E7F8F1;--ink:#191F28;--ink2:#333D4B;--sub:#8B95A1;--sub2:#6B7684;--line:#EEF0F3;--bg:#F4F5F7;--navy:#16243F;--red:#F04452;--orange:#FF9F1C;--blue:#3182F6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#DDE1E6;color:var(--ink);display:flex;align-items:center;justify-content:center;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+input,textarea,select{font:inherit;color:inherit}
+.device{position:relative;width:390px;height:844px;max-height:100vh;background:#fff;border-radius:36px;overflow:hidden;box-shadow:0 30px 80px rgba(16,26,54,.25)}
+@media (max-width:500px){body{background:#fff;display:block}.device{width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;box-shadow:none}}
+#app{height:100%}
+.screen{height:100%;display:flex;flex-direction:column;background:#fff}
+.screen.gray{background:var(--bg)}
+.body{flex:1;overflow-y:auto;overflow-x:hidden}
+.body::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+.nav{height:56px;display:flex;align-items:center;padding:0 8px;flex-shrink:0;gap:4px}
+.ib{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;position:relative}
+.nav-title{flex:1;font-size:17px;font-weight:600}
+.nav-title small{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-top:1px}
+svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+svg.i.sm{width:18px;height:18px}
+svg.i.lg{width:30px;height:30px}
+.h1{font-size:28px;font-weight:800;line-height:1.35;padding:12px 24px 0;letter-spacing:-.02em}
+.desc{font-size:15px;color:var(--sub2);line-height:1.6;padding:8px 24px 0}
+.sec{padding:24px}
+.sec-t{font-size:18px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cta{padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#fff;flex-shrink:0;display:flex;gap:10px;align-items:center}
+.btn{height:56px;border-radius:14px;background:var(--brand);color:#fff;font-size:17px;font-weight:700;flex:1;text-align:center;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:#D1D6DB;cursor:not-allowed}
+.btn.dark{background:var(--ink2)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid #E5E8EB}
+.btn.sm{height:40px;font-size:15px;border-radius:10px;flex:0 0 auto;padding:0 16px}
+.pill{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 20px;border:1px solid #E5E8EB;border-radius:22px;font-weight:600;font-size:15px;background:#fff}
+.radio{width:24px;height:24px;border-radius:50%;border:2px solid #D1D6DB;flex-shrink:0;background:#fff}
+.radio.on{border:7px solid var(--brand)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 24px}
+.chip{flex-shrink:0;height:44px;padding:0 18px;border-radius:22px;background:var(--bg);font-size:16px;white-space:nowrap;font-weight:500}
+.chip.on{background:var(--brand-w);color:var(--brand-d);font-weight:700}
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 8px}
+.toolbar .chk{display:flex;align-items:center;gap:10px;font-size:16px}
+.toolbar .sort{display:flex;align-items:center;gap:4px;color:var(--sub2);font-size:15px}
+.empty{text-align:center;color:var(--sub);font-size:15px;padding:120px 24px;line-height:1.6}
+.empty b{display:block;color:var(--ink);font-size:20px;margin-bottom:8px}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap}
+.badge.brand{background:var(--brand-w);color:var(--brand-d)}
+.badge.navy{background:var(--navy);color:#fff}
+.badge.gray{background:#F2F4F6;color:var(--sub2)}
+.badge.orange{background:#FFF4E5;color:#C76A00}
+.badge.red{background:#FFEEF0;color:var(--red)}
+.badge.blue{background:#EAF3FF;color:var(--blue)}
+.svcb{display:inline-flex;border:1.5px solid var(--navy);border-radius:7px;overflow:hidden;font-size:13px;font-weight:700}
+.svcb span{padding:4px 9px}.svcb span:first-child{background:var(--navy);color:#fff}
+.jcard{background:#fff;border-radius:18px;margin:0 16px 12px;padding:20px;display:block;width:calc(100% - 32px);text-align:left}
+.jcard.closed{opacity:.5}
+.jcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.jcard .when{font-size:19px;font-weight:700;margin-top:12px}
+.jcard .meta{font-size:14px;color:var(--sub2);margin-top:6px;line-height:1.5}
+.jcard .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.jcard .pay{font-size:18px;font-weight:800}
+.jcard .pay small{font-size:12px;color:var(--sub);font-weight:500;display:block}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;font-size:15px}
+.kv span{color:var(--sub2)}
+.kv.total{font-size:17px;font-weight:700;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:6px}
+.kv.total b{font-size:22px}
+.box{background:#fff;border-radius:18px;margin:0 16px 14px;padding:22px 24px}
+.box h3{font-size:20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.box h3 a{font-size:15px;color:var(--brand-d);cursor:pointer}
+.info-row{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:16px}
+.info-row b{color:var(--brand-d)}
+.dhero{background:var(--brand);color:#fff;padding:8px 24px 64px}
+.dhero h2{font-size:26px;line-height:1.4;letter-spacing:-.02em}
+.dhero p{margin-top:12px;font-size:15px;opacity:.9}
+.dhero+.box{margin-top:-44px}
+/* toast & sheet */
+#toast-root .wrap{position:absolute;left:16px;right:16px;z-index:70;pointer-events:none}
+.toast{background:rgba(25,31,40,.95);color:#fff;border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.5;display:flex;align-items:center;gap:12px;pointer-events:auto;animation:tin .25s ease}
+.toast b{color:#63E6BE}.toast button{color:#63E6BE;font-weight:700;white-space:nowrap}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}}
+.sheet-ov{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;z-index:51;max-height:86%;display:flex;flex-direction:column;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}}@keyframes fade{from{opacity:0}}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 8px 24px}
+.sheet-h h3{font-size:20px}
+.sheet-b{overflow-y:auto;padding:8px 24px 24px}
+.sheet .cta{border-top:0}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:var(--ink2)}
+.field input,.field textarea{width:100%;min-height:52px;border-radius:12px;border:1px solid transparent;background:var(--bg);padding:14px 16px;font-size:16px;outline:none;resize:none}
+.field input:focus,.field textarea:focus{border-color:var(--brand);background:#fff}
+.slot{display:flex;justify-content:space-between;align-items:center;width:100%;padding:18px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;font-size:16px}
+.slot.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset;color:var(--brand-d);font-weight:700}
+/* tabbar */
+.tabbar{height:64px;border-top:1px solid var(--line);display:flex;background:#fff;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:#4E5968;position:relative}
+.tabbar button.on{color:var(--ink);font-weight:700}
+.tabbar button.on svg{stroke-width:2.4}
+.tabbar .cnt{position:absolute;top:6px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+/* calendar */
+.cal-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px 24px}
+.cal-h .m{font-size:26px;font-weight:800;display:flex;align-items:center;gap:2px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);padding:0 10px}
+.cal .wd{text-align:center;font-size:14px;color:var(--sub2);padding:10px 0;border-bottom:1px solid var(--line)}
+.cal .wd:first-child{color:var(--red)}
+.cal .d{min-height:86px;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:10px;font-size:17px;border-bottom:1px solid var(--line)}
+.cal .d.sun{color:var(--red)}
+.cal .d.out{color:#D1D6DB}
+.cal .d.today>span{color:var(--brand-d);font-weight:700;font-size:15px}
+.cal .d i{font-style:normal;background:var(--brand);color:#fff;font-size:13px;font-weight:700;border-radius:8px;padding:7px 8px}
+.cal .d i.team{background:#B2F2DB;color:var(--brand-d)}
+/* more */
+.prof{display:flex;align-items:center;gap:16px;padding:24px;width:100%;text-align:left}
+.prof .av{width:72px;height:72px;border-radius:50%;background:var(--brand-w);color:var(--brand-d);display:grid;place-items:center;flex-shrink:0}
+.prof .av svg{width:36px;height:36px}
+.prof b{font-size:24px;display:block}
+.prof small{color:var(--sub);font-size:15px}
+.cashcard{margin:0 16px;background:var(--bg);border-radius:16px;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;width:calc(100% - 32px);font-size:16px}
+.cashcard b{font-size:19px;display:flex;align-items:center;gap:6px}
+.mtitle{font-size:20px;font-weight:800;padding:32px 24px 8px}
+.mrow{display:flex;align-items:center;gap:18px;padding:18px 24px;width:100%;font-size:17px;text-align:left}
+.mrow svg.i{width:28px;height:28px;stroke-width:1.5}
+.mrow .t{flex:1}.mrow .v{color:var(--sub);font-size:15px}.mrow .chev{color:#C4CAD1}
+.toggle{width:50px;height:30px;border-radius:15px;background:#D1D6DB;position:relative;flex-shrink:0;transition:.2s}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on{background:var(--brand)}.toggle.on::after{left:23px}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photos button{aspect-ratio:1;border-radius:12px;background:var(--bg);border:1.5px dashed #C4CAD1;display:grid;place-items:center;color:var(--sub);font-size:13px;text-align:center}
+.photos button.on{border:0;background:linear-gradient(135deg,#D3F9E8,#E7F8F1);color:var(--brand-d);font-weight:700}
+.check-li{display:flex;gap:12px;align-items:center;padding:12px 0;font-size:16px;width:100%;text-align:left}
+.msgs{padding:16px;display:flex;flex-direction:column;gap:6px;min-height:100%}
+.mrow2{display:flex;align-items:flex-end;gap:6px}.mrow2.me{justify-content:flex-end}
+.msg{max-width:260px;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.me .msg{background:var(--brand);color:#fff;border-bottom-right-radius:6px}
+.ag .msg{background:#fff;border-top-left-radius:6px}
+.mt{font-size:11px;color:var(--sub)}
+.cin{display:flex;gap:8px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line)}
+.cin input{flex:1;height:44px;border-radius:22px;background:var(--bg);border:0;padding:0 18px;font-size:15px;outline:none}
+.cin .send{width:44px;height:44px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center}
+.clist{display:flex;align-items:center;gap:14px;padding:16px 24px;width:100%;text-align:left;border-bottom:1px solid var(--line)}
+.clist .ca{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.clist .cm{flex:1;min-width:0}.clist .cm b{font-size:16px;display:block}
+.clist .cm p{font-size:14px;color:var(--sub2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clist .cr{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:var(--sub);flex-shrink:0}
+.clist .un{background:var(--red);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 6px}
+.stars{color:#FAB005;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="device"><div id="app"></div><div id="sheet-root"></div><div id="toast-root"></div></div>
+<script>
+/* ================= 아이콘 ================= */
+const IC={
+back:'<path d="M15 5l-7 7 7 7"/>',close:'<path d="M6 6l12 12M18 6L6 18"/>',chev:'<path d="M9 6l6 6-6 6"/>',down:'<path d="M6 9l6 6 6-6"/>',left:'<path d="M14 6l-6 6 6 6"/>',check:'<path d="M5 12.5l4.5 4.5L19 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',doc:'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 9h6M9 13h6"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15.5" r="1.3"/>',dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5.5 6.5-5.5s5.5 2 6.5 5.5"/><circle cx="16.5" cy="7" r="2.8"/><path d="M16 12.5c2.8 0 4.8 1.6 5.5 4.5"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+won:'<circle cx="12" cy="12" r="9"/><path d="M7 9l2 6 3-6 3 6 2-6M6.5 12h11"/>',chat:'<path d="M4 5h16v11H10l-5 4v-4H4z"/>',review:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/>',
+quote:'<rect x="5" y="3" width="12" height="18" rx="1.5"/><path d="M8.5 8h5M8.5 12h5M17 11h2v8l-2 2"/>',card:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M14 15h4"/>',
+calcheck:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/>',bell:'<path d="M6 16v-5a6 6 0 1112 0v5l2 2H4zM10 20a2 2 0 004 0"/>',
+phone:'<path d="M6 3h3.5l2 5-2.5 1.5a11 11 0 005.5 5.5L16 12.5l5 2V18a2 2 0 01-2 2A16 16 0 014 5a2 2 0 012-2z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-1 .7-1.5 1.2-1.5 2.5M12 17h.01"/>',
+mega:'<path d="M4 10v4h3l8 4V6L7 10z"/><path d="M18 9.5a3 3 0 010 5"/>',pin:'<path d="M12 21s-7-6.5-7-11a7 7 0 0114 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+camera:'<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/>',send:'<path d="M4 12l16-8-6 16-2.5-6.5z"/>',logo:'<path d="M12 3l2.2 5.6L20 9.5l-4.4 3.8 1.4 5.9L12 16l-5 3.2 1.4-5.9L4 9.5l5.8-.9z"/>',
+toilet:'<path d="M7 3h7v7H7zM5 10h14a7 7 0 01-14 0zM9 16.5L8 21h8l-1-4.5"/>',elev:'<rect x="5" y="3" width="14" height="18"/><path d="M12 3v18"/>',balcony:'<path d="M7 11V4h10v7M4 11h16v9H4zM4 15.5h16M9 11v9M15 11v9"/>',house:'<path d="M4 11l8-7 8 7v10H4z"/><path d="M8 21v-4h5v-4h3"/>',
+};
+const ic=(n,c='')=>`<svg class="i ${c}" viewBox="0 0 24 24">${IC[n]||''}</svg>`;
+
+/* ================= 데이터 ================= */
+const SVC={oneroom:'원룸 청소',moveout:'이사 청소',move:'입주 청소',bath:'화장실 청소',kitchen:'주방 청소',mattress:'매트리스 청소',aircon:'에어컨 청소',sofa:'소파 청소'};
+const FEE=0.2; // 플랫폼 수수료 (프로토타입 값, 확정 필요)
+const DAYS=['일','월','화','수','목','금','토'];
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const today0=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const D=n=>ymd(addDays(today0(),n));
+const fmtS=s=>{const d=pd(s);return `${d.getMonth()+1}.${d.getDate()}(${DAYS[d.getDay()]})`};
+const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
+const r100=n=>Math.round(n/100)*100;
+const payOf=p=>r100(p*(1-FEE));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hm=t=>{const d=new Date(t);const h=d.getHours();return `${h<12?'오전':'오후'} ${h%12||12}:${pad(d.getMinutes())}`};
+
+// 프로토타입용 샘플 업무 (실제 고객 정보 아님)
+const SEED=()=>[
+ {id:'j1',notes:{entry:'공동현관 #0000 (샘플)',parking:'지상 방문 주차 가능',etc:''},kind:'direct',svc:'aircon',unit:'벽걸이 1대',date:D(2),time:'오전 9시~10시',dist:'서울 성동구',addr:'서울특별시 성동구 예시로 21',detail:'302호',py:18,building:'아파트',price:79000,status:'open',req:Date.now()-3600e3},
+ {id:'j2',kind:'direct',svc:'bath',unit:'화장실 2개',date:D(3),time:'오후 1시~2시',dist:'서울 광진구',addr:'서울특별시 광진구 샘플로 8',detail:'1102호',py:32,building:'아파트',price:52000,status:'open',req:Date.now()-7200e3},
+ {id:'j3',notes:{entry:'',parking:'',etc:'반려묘가 있어요. 현관문을 꼭 닫아주세요.'},kind:'direct',svc:'oneroom',unit:'원룸 · 2시간',date:D(4),time:'오전 8시~9시',dist:'서울 성동구',addr:'서울특별시 성동구 테스트길 5',detail:'4층',py:9,building:'오피스텔',price:45000,status:'open',req:Date.now()-60e3*25},
+ {id:'j4',kind:'direct',svc:'mattress',unit:'매트리스 2개',date:D(6),time:'오후 2시~3시',dist:'서울 송파구',addr:'서울특별시 송파구 예시대로 101',detail:'707호',py:25,building:'아파트',price:99000,status:'open',req:Date.now()-86400e3},
+ {id:'j5',kind:'direct',svc:'sofa',unit:'3인용',date:D(1),time:'오전 9시~10시',dist:'서울 강남구',addr:'서울특별시 강남구 샘플길 12',detail:'201호',py:20,building:'빌라/주택',price:79000,status:'closed',req:Date.now()-86400e3*2},
+ {id:'q1',kind:'quote',svc:'move',mv:'일반 입주',luggage:'짐 없음',date:D(10),time:'오전 방문 (8시~9시)',dist:'서울 성동구',addr:'서울특별시 성동구 예시로 77',detail:'101동 1203호',py:24,building:'아파트',rooms:'거실+방 3개',duplex:'없음',baths:2,balconies:2,elevator:'있음',estimate:528000,status:'open',req:Date.now()-60e3*40},
+ {id:'q2',kind:'quote',svc:'moveout',mv:'퇴거 청소',luggage:'짐 없음',date:D(7),time:'오후 방문 (1시~2시)',dist:'서울 광진구',addr:'서울특별시 광진구 테스트로 33',detail:'805호',py:9,building:'오피스텔',rooms:'원룸',duplex:'없음',baths:1,balconies:0,elevator:'있음',estimate:198000,status:'open',req:Date.now()-3600e3*5},
+ {id:'q3',kind:'quote',svc:'move',mv:'인테리어 후',luggage:'짐 없음',date:D(14),time:'오전 방문 (8시~9시)',dist:'서울 강동구',addr:'서울특별시 강동구 샘플로 50',detail:'1503호',py:32,building:'아파트',rooms:'거실+방 4개 이상',duplex:'없음',baths:2,balconies:3,elevator:'있음',estimate:690000,status:'open',req:Date.now()-3600e3*9},
+ {id:'q4',kind:'quote',svc:'move',mv:'일반 입주',luggage:'이삿짐 풀지 않은 상태',date:D(12),time:'오후 방문 (1시~2시)',dist:'서울 성북구',addr:'서울특별시 성북구 예시길 9',detail:'3층',py:18,building:'빌라/주택',rooms:'거실+방 2개',duplex:'없음',baths:1,balconies:1,elevator:'없음',estimate:363000,status:'quoted',quote:{amount:350000,msg:'짐이 들어오기 전 오전 작업을 권해드려요.',state:'waiting',seen:true,at:Date.now()-3600e3*20},req:Date.now()-86400e3},
+ {id:'q5',kind:'quote',svc:'moveout',mv:'이사 당일 청소',luggage:'짐 없음',date:D(5),time:'오전 방문 (8시~9시)',dist:'서울 동대문구',addr:'서울특별시 동대문구 테스트로 2',detail:'602호',py:15,building:'아파트',rooms:'거실+방 2개',duplex:'없음',baths:1,balconies:1,elevator:'있음',estimate:360000,status:'quoted',quote:{amount:380000,msg:'',state:'rejected',seen:true,at:Date.now()-86400e3*2},req:Date.now()-86400e3*3},
+ {id:'m1',notes:{entry:'공동현관 #0000 (샘플)',parking:'지하 2층 방문 주차',etc:'베란다 창틀 오염이 심해요.'},balancePaid:false,kind:'quote',svc:'move',mv:'일반 입주',luggage:'짐 없음',date:D(0),time:'오후 방문 (1시~2시)',dist:'서울 성동구',addr:'서울특별시 성동구 예시로 34',detail:'1218호',py:9,building:'오피스텔',rooms:'원룸',duplex:'없음',baths:1,balconies:0,elevator:'있음',estimate:242000,status:'mine',quote:{amount:242000,msg:'',state:'selected',seen:true,at:Date.now()-86400e3*4},price:242000,assignee:'me',customer:'김**',req:Date.now()-86400e3*5},
+ {id:'m2',notes:{entry:'',parking:'',etc:'싱크대 하부장은 비워둘게요.'},resched:{from:`${fmtS(D(1))} 오전 9시~10시`},kind:'direct',svc:'kitchen',unit:'주방 · 2시간',date:D(3),time:'오후 1시~2시',dist:'서울 성동구',addr:'서울특별시 성동구 샘플로 15',detail:'502호',py:20,building:'아파트',price:45000,status:'mine',assignee:'t2',customer:'이**',req:Date.now()-86400e3*2},
+ {id:'m3',kind:'direct',svc:'aircon',unit:'스탠드 1대',date:D(-3),time:'오후 1시~2시',dist:'서울 광진구',addr:'서울특별시 광진구 예시길 40',detail:'901호',py:28,building:'아파트',price:119000,status:'done',assignee:'me',customer:'박**',req:Date.now()-86400e3*7,doneAt:Date.now()-86400e3*3},
+ {id:'m4',kind:'direct',svc:'bath',unit:'화장실 1개',date:D(2),time:'오전 8시~9시',dist:'서울 광진구',addr:'서울특별시 광진구 샘플로 3',detail:'201호',py:12,building:'빌라/주택',price:39000,status:'cancelled',assignee:'me',customer:'최**',req:Date.now()-86400e3*3,cancelledAt:Date.now()-3600e3*3},
+];
+const KEY='malkkeum-partner-v3';
+const DEFAULT=()=>({
+ pro:{name:'홍길동',team:'말끔 1팀',phone:'010-0000-0000'},
+ team:[{id:'me',name:'홍길동 (나)',phone:'010-0000-0000'},{id:'t2',name:'김매니저',phone:'010-0000-0001'}],
+ jobs:SEED(),
+ settle:[{id:'s0',job:'m3',title:'에어컨 청소 · 스탠드 1대',amount:payOf(119000),date:D(4),state:'예정'},{id:'s-1',job:'old',title:'입주 청소 · 거실+방 2개',amount:payOf(330000),date:D(-20),state:'완료'}],
+ reviews:[{n:'박**',svc:'에어컨 청소',star:5,t:'꼼꼼하게 분해해서 청소해 주셨어요. 냄새가 완전히 사라졌습니다.',d:D(-2)},{n:'최**',svc:'입주 청소',star:4,t:'시간 약속을 잘 지켜주셨고 마무리가 깔끔했어요.',d:D(-18)}],
+ settings:{svcs:{oneroom:true,moveout:true,move:true,bath:true,kitchen:true,mattress:true,aircon:true,sofa:false},areas:['성동구','광진구','송파구','강동구','강남구'],days:[1,2,3,4,5,6],slots:['오전','오후'],noti:{job:true,quote:true,chat:true,night:false},bank:{name:'예시은행',acct:'123-***-***890',holder:'홍길동'}},
+ chats:[
+  {id:'c1',title:'입주 청소 · 예약 M1',jobId:'m1',unread:1,msgs:[{from:'sys',text:'예약번호 M1 관련 안내',t:Date.now()-7200e3},{from:'ag',text:'오늘 오후 1시 방문 건 안내드려요.\n고객님이 남기신 출입 정보: 공동현관 #0000 (샘플)\n주차는 지하 2층에 가능합니다.',t:Date.now()-7200e3}]},
+  {id:'c2',title:'주방 청소 · 예약 M2',jobId:'m2',unread:1,msgs:[{from:'sys',text:'예약번호 M2 일정 변경 요청',t:Date.now()-3600e3},{from:'ag',text:'고객님이 방문 일정 변경을 요청했어요. 업무 상세에서 확인하거나, 어려우면 이 채팅으로 알려주세요.',t:Date.now()-3600e3}]},
+  {id:'c0',title:'말끔 운영팀',jobId:null,unread:0,msgs:[{from:'sys',text:'말끔 운영팀 채팅이 시작됐어요',t:Date.now()-86400e3},{from:'ag',text:'안녕하세요, 말끔 파트너 운영팀입니다. 업무나 정산 관련 문의를 남겨주세요.',t:Date.now()-86400e3}]},
+ ],
+});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||DEFAULT()}catch(e){S=DEFAULT()}
+S={...DEFAULT(),...S};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const ui={tab:'find',stack:[],findSeg:'direct',showClosed:false,sort:'req',qChip:'all',qUnseen:false,cal:null,mineOnly:false,typing:{}};
+
+/* ================= 렌더링 ================= */
+const $app=document.getElementById('app');
+let lastKey=null;
+function render(){
+ const t=cur();const key=t?`${ui.stack.length}:${t.screen}`:`tab:${ui.tab}`;
+ const same=key===lastKey;const prev=$app.querySelector('.body');const st=same&&prev?prev.scrollTop:0;
+ const inp=$app.querySelector('#chat-in');const iv=same&&inp?inp.value:'';
+ $app.innerHTML=t?SCREENS[t.screen](t.params||{}):`<div class="screen ${['find','quotes'].includes(ui.tab)?'':''}">${TABS[ui.tab]()}${tabbar()}</div>`;
+ const b=$app.querySelector('.body');if(b)b.scrollTop=st;
+ const ni=$app.querySelector('#chat-in');if(ni){ni.value=iv;b.scrollTop=b.scrollHeight}
+ lastKey=key;
+}
+const cur=()=>ui.stack[ui.stack.length-1];
+function go(screen,params={}){ui.stack.push({screen,params});closeSheet();render()}
+function back(){ui.stack.pop();closeSheet();render()}
+function setTab(t){ui.tab=t;ui.stack=[];render()}
+let toastT;
+function toast(msg,o={}){const r=document.getElementById('toast-root');const low=!!$app.querySelector('.cta,.tabbar,.cin');
+ r.innerHTML=`<div class="wrap" style="bottom:${low?96:28}px"><div class="toast">${o.icon?`<span style="font-size:22px">${o.icon}</span>`:''}<div style="flex:1">${msg}</div>${o.action?`<button onclick="${o.action.fn};document.getElementById('toast-root').innerHTML=''">${o.action.label}</button>`:''}</div></div>`;
+ clearTimeout(toastT);toastT=setTimeout(()=>r.innerHTML='',o.ms||2600)}
+function sheet(title,body,footer=''){document.getElementById('sheet-root').innerHTML=`<div class="sheet-ov" onclick="closeSheet()"></div><div class="sheet">${title!==null?`<div class="sheet-h"><h3>${title}</h3><button class="ib" onclick="closeSheet()">${ic('close')}</button></div>`:''}<div class="sheet-b">${body}</div>${footer?`<div class="cta">${footer}</div>`:''}</div>`}
+function closeSheet(){document.getElementById('sheet-root').innerHTML=''}
+const navBar=(title='',right='',close=false,dark=false)=>`<header class="nav" ${dark?'style="background:var(--brand);color:#fff"':''}><button class="ib" onclick="back()">${ic(close?'close':'back')}</button><div class="nav-title">${title}</div>${right||'<div style="width:44px"></div>'}</header>`;
+const job=id=>S.jobs.find(j=>j.id===id);
+const isUnseenSelected=()=>S.jobs.filter(j=>j.quote&&!j.quote.seen).length;
+function tabbar(){const it=[['find','search','업무찾기'],['quotes','quote','견적 관리'],['sched','cal','스케줄'],['chat','chat','채팅'],['more','dots','더보기']];const badge={quotes:isUnseenSelected(),chat:unreadAll()};
+ return `<nav class="tabbar">${it.map(([k,i,l])=>`<button class="${ui.tab===k?'on':''}" onclick="setTab('${k}')">${ic(i)}${l}${badge[k]?`<span class="cnt">${badge[k]}</span>`:''}</button>`).join('')}</nav>`}
+const svcBadge=j=>`<span class="svcb"><span>${SVC[j.svc]}</span><span>${j.kind==='quote'?'견적':'바로예약'}</span></span>`;
+const assName=id=>S.team.find(t=>t.id===id)?.name||'미지정';
+
+/* ================= 탭 1: 업무찾기 ================= */
+TABS={};
+TABS.find=()=>{
+ const seg=ui.findSeg;
+ const st=S.settings;let list=S.jobs.filter(j=>j.kind===seg&&(j.status==='open'||(ui.showClosed&&j.status==='closed'))&&st.svcs[j.svc]&&st.areas.some(a=>j.dist.endsWith(a)));
+ const sorts={req:(a,b)=>b.req-a.req,date:(a,b)=>a.date.localeCompare(b.date),pay:(a,b)=>(b.price||b.estimate)-(a.price||a.estimate)};list.sort(sorts[ui.sort]);
+ return `<div class="body" style="background:var(--bg)"><div style="background:#fff;padding-bottom:20px"><div class="h1" style="padding-top:28px">업무찾기</div><div style="height:20px"></div>
+ <div class="chips">${[['direct','바로 예약'],['quote','견적 요청']].map(([k,l])=>`<button class="chip ${seg===k?'on':''}" onclick="ui.findSeg='${k}';render()">${l}</button>`).join('')}</div></div>
+ <div class="toolbar"><button class="chk" onclick="ui.showClosed=!ui.showClosed;render()"><span class="radio ${ui.showClosed?'on':''}"></span>마감업무 보기</button><button class="sort" onclick="sortSheet()">${{req:'요청 최신 순',date:'방문일 빠른 순',pay:'금액 높은 순'}[ui.sort]} ${ic('down','sm')}</button></div>
+ <div style="padding:0 24px 12px;font-size:13px;color:var(--sub)">${seg==='direct'?'고객이 결제를 마친 업무예요. 먼저 수락한 프로에게 배정됩니다.':'이사·입주 청소 견적 요청이에요. 견적을 보내면 말끔 상담팀이 고객과 조율합니다.'}</div>
+ ${list.length?list.map(jobCard).join(''):`<div class="empty"><b>잡을 수 있는 업무가 없습니다.</b>업무가 모두 마감되었거나,<br>현재 활동 지역의 업무가 없습니다.</div>`}
+ <div style="height:16px"></div></div>`};
+function jobCard(j){const closed=j.status==='closed';const p=j.kind==='direct'?j.price:j.estimate;
+ return `<button class="jcard ${closed?'closed':''}" onclick="go('preview',{id:'${j.id}'})"><div class="top">${svcBadge(j)}${closed?'<span class="badge gray">마감</span>':(Date.now()-j.req<3600e3?'<span class="badge red">NEW</span>':'')}</div>
+ <div class="when">${fmtS(j.date)} ${j.time}</div><div class="meta">${j.dist} · ${j.building} · ${j.py}평${j.kind==='direct'?` · ${j.unit}`:` · ${j.rooms}`}</div>
+ <div class="foot"><div class="pay"><small>${j.kind==='direct'?'예상 정산액':'고객 예상 견적'}</small>${won(j.kind==='direct'?payOf(p):p)}</div>${closed?'':`<span class="btn sm ${j.kind==='direct'?'':'dark'}" style="display:inline-grid;place-items:center">${j.kind==='direct'?'업무 보기':'견적 보내기'}</span>`}</div></button>`}
+function sortSheet(){sheet('정렬',[['req','요청 최신 순'],['date','방문일 빠른 순'],['pay','금액 높은 순']].map(([k,l])=>`<button class="slot ${ui.sort===k?'on':''}" onclick="ui.sort='${k}';closeSheet();render()">${l}<span>${ui.sort===k?ic('check'):''}</span></button>`).join(''))}
+
+/* ---- 업무 미리보기 (수락 전) ---- */
+const spaceRows=j=>j.kind==='quote'?[['house',`${j.building} · ${j.rooms} · 복층 ${j.duplex}`],['toilet',`화장실 <b>${j.baths}개</b>`],['balcony',`베란다/다용도실 <b>${j.balconies?j.balconies+'개':'없음'}</b>`],['elev',`엘리베이터 <b>${j.elevator}</b>`]]:[['house',`${j.building} · ${j.py}평`],['doc',`선택 옵션 <b>${j.unit}</b>`]];
+SCREENS={};
+SCREENS.preview=({id})=>{const j=job(id);const direct=j.kind==='direct';const closed=j.status!=='open';
+ return `<div class="screen gray">${navBar('','',true,true)}<div class="body">
+ <div class="dhero"><div style="margin-bottom:12px"><span class="badge" style="background:rgba(255,255,255,.2);color:#fff">${direct?'바로 예약':'견적 요청'}</span></div><h2>${direct?`${SVC[j.svc]}<br>예상 정산액 ${won(payOf(j.price))}`:`${SVC[j.svc]} · ${j.mv}<br>고객 예상 견적 ${won(j.estimate)}`}</h2><p>${j.py}평 · ${j.building} · ${j.dist}</p></div>
+ <div class="box"><h3>업무 일정</h3><div style="font-size:17px;line-height:1.6">${fmtS(j.date)}<br>${j.time} 방문 예정</div></div>
+ <div class="box"><h3>공간 정보</h3>${j.kind==='quote'?`<div class="info-row">${ic('doc')}<span>${j.mv} · ${j.luggage}</span></div>`:''}${spaceRows(j).map(([i,t])=>`<div class="info-row">${ic(i)}<span>${t}</span></div>`).join('')}
+ <p style="font-size:13px;color:var(--sub);margin-top:10px">상세 주소, 고객 연락처, 고객 요청사항은 ${direct?'업무 수락':'견적 채택'} 후에 공개됩니다.</p></div>
+ ${direct?`<div class="box"><div class="kv total"><span style="color:var(--ink)">예상 정산액</span><b>${won(payOf(j.price))}</b></div><div class="kv"><span>고객 결제 금액</span>${won(j.price)}</div><div class="kv"><span>ㄴ 플랫폼 수수료 (${FEE*100}%)</span>-${won(j.price-payOf(j.price))}</div></div>`
+ :`<div class="box"><h3>견적 안내</h3><p style="font-size:15px;color:var(--sub2);line-height:1.6">고객 예상 견적은 앱이 자동 계산한 금액이에요. 현장 상태를 고려해 견적을 보내주세요. 말끔 상담팀이 견적을 비교해 고객과 확정합니다.</p></div>`}
+ <div style="height:12px"></div></div>
+ <div class="cta">${closed?`<button class="btn" disabled>${j.status==='closed'?'마감된 업무입니다':'이미 처리된 업무입니다'}</button>`:direct?`<button class="btn" onclick="acceptSheet('${j.id}')">업무 수락하기</button>`:`<button class="btn dark" onclick="quoteSheet('${j.id}')">견적 보내기</button>`}</div></div>`};
+function acceptSheet(id){const j=job(id);sheet('이 업무를 수락할까요?',`<div class="kv"><span>서비스</span>${SVC[j.svc]} · ${j.unit}</div><div class="kv"><span>일정</span>${fmtS(j.date)} ${j.time}</div><div class="kv"><span>지역</span>${j.dist}</div><div class="kv"><span>예상 정산액</span><b>${won(payOf(j.price))}</b></div><p style="font-size:13px;color:var(--sub);margin-top:12px;line-height:1.6">수락 후 취소하면 패널티가 있을 수 있어요 (정책 확정 필요). 담당자는 업무 상세에서 바꿀 수 있어요.</p>`,`<button class="btn ghost" onclick="closeSheet()">취소</button><button class="btn" onclick="acceptJob('${id}')">수락</button>`)}
+function acceptJob(id){const j=job(id);j.status='mine';j.assignee='me';j.customer=['김**','이**','최**','정**'][id.charCodeAt(1)%4];save();ui.stack=[];ui.tab='sched';const d=pd(j.date);ui.cal={y:d.getFullYear(),m:d.getMonth()};go('detail',{id});toast('업무를 수락했어요. 고객에게 매칭 완료 알림이 갑니다.',{icon:'✅'})}
+function quoteSheet(id){const j=job(id);sheet('견적 보내기',`<div class="field"><label>고객 견적 금액 (VAT 포함)</label><input id="q-amt" type="number" inputmode="numeric" value="${j.estimate}" oninput="document.getElementById('q-pay').textContent=(Math.round((this.value||0)*${1-FEE}/100)*100).toLocaleString('ko-KR')+'원'"></div>
+ <div class="kv" style="margin:-6px 0 12px"><span>예상 정산액 (수수료 ${FEE*100}% 제외)</span><b id="q-pay">${won(payOf(j.estimate))}</b></div>
+ <div class="field"><label>상담팀에 전달할 메모 (선택)</label><textarea id="q-msg" rows="3" placeholder="예: 줄눈 오염이 심하면 추가 작업이 필요할 수 있어요."></textarea></div>`,`<button class="btn" onclick="sendQuote('${id}')">견적 제출</button>`)}
+function sendQuote(id){const a=Number(document.getElementById('q-amt').value);if(!a){toast('견적 금액을 입력해 주세요');return}const j=job(id);j.status='quoted';j.quote={amount:a,msg:document.getElementById('q-msg').value.trim(),state:'waiting',seen:true,at:Date.now()};save();closeSheet();ui.stack=[];ui.tab='quotes';ui.qChip='all';render();toast('견적을 보냈어요. 채택되면 알림을 드릴게요.',{icon:'📨'})}
+
+/* ================= 탭 2: 견적 관리 ================= */
+const QSTATE={waiting:['대기중','orange'],selected:['채택','brand'],rejected:['미채택','gray'],closed:['마감','gray']};
+TABS.quotes=()=>{
+ let list=S.jobs.filter(j=>j.quote);if(ui.qChip!=='all')list=list.filter(j=>j.quote.state===ui.qChip);if(ui.qUnseen)list=list.filter(j=>!j.quote.seen);
+ list.sort((a,b)=>b.quote.at-a.quote.at);
+ return `<div class="body" style="background:var(--bg)"><div style="background:#fff;padding-bottom:20px"><div style="display:flex;justify-content:flex-end;padding:8px 12px 0"><button class="ib" onclick="toast('검색은 데모에서 준비 중이에요')">${ic('search')}</button></div><div class="h1" style="padding-top:0">내 견적 관리</div><div style="height:20px"></div>
+ <div class="chips">${[['all','전체'],['waiting','대기중'],['selected','채택'],['rejected','미채택'],['closed','마감']].map(([k,l])=>`<button class="chip ${ui.qChip===k?'on':''}" onclick="ui.qChip='${k}';render()">${l}</button>`).join('')}</div></div>
+ <div class="toolbar"><button class="chk" onclick="ui.qUnseen=!ui.qUnseen;render()"><span class="radio ${ui.qUnseen?'on':''}"></span>미확인 결과만 보기</button><span class="sort">제출 최신 순</span></div>
+ ${list.length?list.map(j=>{const [l,c]=QSTATE[j.quote.state];return `<button class="jcard" onclick="openQuote('${j.id}')"><div class="top">${svcBadge(j)}<span class="badge ${c}">${l}${!j.quote.seen?' · NEW':''}</span></div><div class="when">${fmtS(j.date)} ${j.time}</div><div class="meta">${j.dist} · ${j.building} · ${j.py}평 · ${j.rooms}</div><div class="foot"><div class="pay"><small>내 견적</small>${won(j.quote.amount)}</div><span style="font-size:13px;color:var(--sub)">고객 예상 ${won(j.estimate)}</span></div></button>`}).join('')
+ :`<div class="empty"><b>견적 내역이 없습니다.</b>업무찾기 > 견적 요청에서<br>견적을 보내보세요.</div>`}<div style="height:16px"></div></div>`};
+function openQuote(id){const j=job(id);if(!j.quote.seen){j.quote.seen=true;save()}if(j.quote.state==='selected'){go('detail',{id});return}go('qdetail',{id})}
+SCREENS.qdetail=({id})=>{const j=job(id);const [l,c]=QSTATE[j.quote.state];
+ return `<div class="screen gray">${navBar('견적 상세')}<div class="body">
+ <div class="box" style="margin-top:8px"><div style="display:flex;justify-content:space-between">${svcBadge(j)}<span class="badge ${c}">${l}</span></div><div style="font-size:20px;font-weight:700;margin-top:14px">${fmtS(j.date)} ${j.time}</div><div style="color:var(--sub2);margin-top:6px">${j.dist} · ${j.building} · ${j.py}평</div></div>
+ <div class="box"><h3>내 견적</h3><div class="kv total"><span style="color:var(--ink)">견적 금액</span><b>${won(j.quote.amount)}</b></div><div class="kv"><span>예상 정산액</span>${won(payOf(j.quote.amount))}</div><div class="kv"><span>고객 예상 견적</span>${won(j.estimate)}</div><div class="kv"><span>제출</span>${hm(j.quote.at)}</div>${j.quote.msg?`<p style="margin-top:10px;background:var(--bg);border-radius:12px;padding:14px;font-size:15px;line-height:1.6">${esc(j.quote.msg)}</p>`:''}</div>
+ <div class="box"><h3>공간 정보</h3><div class="info-row">${ic('doc')}<span>${j.mv} · ${j.luggage}</span></div>${spaceRows(j).map(([i,t])=>`<div class="info-row">${ic(i)}<span>${t}</span></div>`).join('')}</div>
+ ${j.quote.state==='waiting'?`<div style="text-align:center;padding:8px 0 28px"><button style="font-size:13px;color:var(--sub);text-decoration:underline" onclick="demoSelect('${j.id}')">[데모] 상담팀이 이 견적을 채택</button></div>`:'<div style="height:20px"></div>'}
+ </div>${j.quote.state==='waiting'?`<div class="cta"><button class="btn ghost" onclick="withdraw('${j.id}')">견적 철회</button><button class="btn" onclick="quoteSheet('${j.id}')">견적 수정</button></div>`:''}</div>`};
+function withdraw(id){const j=job(id);delete j.quote;j.status='open';save();back();toast('견적을 철회했어요')}
+function demoSelect(id){const j=job(id);j.quote.state='selected';j.quote.seen=false;j.status='mine';j.assignee='me';j.price=j.quote.amount;j.customer='정**';const c=jobThread(id);c.msgs.push({from:'ag',text:`견적 ${won(j.quote.amount)}이 채택됐어요! 고객님이 예약금 결제를 마쳤습니다.\n${fmtS(j.date)} ${j.time} 방문 잘 부탁드려요.`,t:Date.now()});c.unread=(c.unread||0)+1;save();ui.stack=[];render();toast('견적이 채택됐어요! 고객이 예약금을 결제했고 스케줄에 추가됐어요.',{icon:'🎉',action:{label:'보기',fn:`openQuote('${id}')`},ms:4000})}
+
+/* ================= 탭 3: 스케줄 관리 ================= */
+const mineJobs=()=>S.jobs.filter(j=>['mine','done'].includes(j.status)&&(!ui.mineOnly||j.assignee==='me'));
+TABS.sched=()=>{
+ if(!ui.cal){const t=today0();ui.cal={y:t.getFullYear(),m:t.getMonth()}}
+ const {y,m}=ui.cal;const first=new Date(y,m,1);const start=addDays(first,-first.getDay());const t=ymd(today0());const jobs=mineJobs();
+ let cells=DAYS.map(d=>`<div class="wd">${d}</div>`).join('');
+ for(let i=0;i<42;i++){const d=addDays(start,i);const s=ymd(d);const n=jobs.filter(j=>j.date===s);const out=d.getMonth()!==m;
+  if(i>=35&&out&&addDays(start,35).getMonth()!==m)break;
+  cells+=`<button class="d ${out?'out':''} ${d.getDay()===0?'sun':''} ${s===t?'today':''}" onclick="daySheet('${s}')"><span>${s===t?'오늘':d.getDate()}</span>${n.length?`<i class="${n.every(j=>j.assignee!=='me')?'team':''}">${n.length}건</i>`:''}</button>`}
+ return `<div class="body"><div style="display:flex;justify-content:flex-end;gap:4px;padding:8px 12px 0"><button class="ib" onclick="toast('검색은 데모에서 준비 중이에요')">${ic('search')}</button><button class="ib" onclick="setTab('more');go('workset')">${ic('calcheck')}</button><button class="ib" onclick="setTab('more');go('team')">${ic('users')}</button></div>
+ <div class="cal-h"><div class="m"><button class="ib" style="width:32px" onclick="calMove(-1)">${ic('left','sm')}</button>${y}년 ${m+1}월<button class="ib" style="width:32px" onclick="calMove(1)">${ic('chev','sm')}</button></div></div>
+ <div style="display:flex;justify-content:flex-end;padding:8px 24px 12px"><button class="chk" style="display:flex;gap:10px;align-items:center;font-size:16px" onclick="ui.mineOnly=!ui.mineOnly;render()"><span class="radio ${ui.mineOnly?'on':''}"></span>담당만 보기</button></div>
+ <div class="cal">${cells}</div><p style="padding:14px 24px 24px;font-size:13px;color:var(--sub)">진한 칸 = 내가 담당 · 연한 칸 = 팀원이 담당</p></div>`};
+function calMove(n){let {y,m}=ui.cal;m+=n;if(m<0){m=11;y--}if(m>11){m=0;y++}ui.cal={y,m};render()}
+function daySheet(s){const list=S.jobs.filter(j=>['mine','done','cancelled'].includes(j.status)&&(!ui.mineOnly||j.assignee==='me')&&j.date===s);if(!list.length){toast(`${fmtS(s)} 업무가 없어요`);return}
+ sheet(`${fmtS(s)} 업무`,list.map(j=>`<div style="padding:16px 0;border-bottom:1px solid var(--line)">${svcBadge(j)}${j.status==='done'?' <span class="badge gray">완료</span>':''}${j.status==='cancelled'?' <span class="badge red">취소됨</span>':''}${j.resched?' <span class="badge orange">일정 변경 요청</span>':''}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div><div style="font-size:22px;font-weight:800">${j.time.replace(' 방문','')}</div><div style="color:var(--ink2);margin-top:6px;line-height:1.6;font-size:15px">고객: ${j.customer}<br>담당자: ${esc(assName(j.assignee))}</div><div style="color:var(--sub);font-size:14px;margin-top:4px">${esc(j.addr)} ${esc(j.detail)}</div></div><button class="btn sm ghost" style="background:var(--bg);border:0" onclick="go('detail',{id:'${j.id}'})">보기</button></div></div>`).join(''))}
+
+/* ---- 업무 상세 (수락 후) ---- */
+SCREENS.detail=({id})=>{const j=job(id);const done=j.status==='done';const price=j.price;const pay=payOf(price);
+ return `<div class="screen gray">${navBar('','',true,true)}<div class="body">
+ <div class="dhero"><h2>${SVC[j.svc]}${j.kind==='quote'?`, ${j.mv}`:''}<br>정산 예정 ${won(pay)}</h2><p>${j.py}평 · ${j.building} · 예약번호 ${j.id.toUpperCase()}${done?' · 완료':''}</p></div>
+ <div class="box"><h3>업무 일정</h3><div style="font-size:17px;line-height:1.6">${fmtS(j.date)}<br>${j.time} 방문 예정</div></div>
+ ${bannerFor(j)}<div class="box"><h3>고객 정보</h3><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:17px">${j.customer} 고객님</div><div style="color:var(--sub);font-size:14px;margin-top:6px">밤 8시 이후 연락은 피해주세요.</div></div><button class="btn sm ghost" style="background:var(--bg);border:0" onclick="toast('안심번호(050)로 연결됩니다. 실제 번호는 공개되지 않아요. (데모)')">전화하기</button></div></div>
+ <div class="box"><h3>담당자 ${done||j.status==='cancelled'?'':`<a onclick="assignSheet('${j.id}')">담당자 변경</a>`}</h3><div style="font-size:17px">${esc(assName(j.assignee))}</div><div style="color:var(--sub);font-size:14px;margin-top:6px">${S.team.find(t=>t.id===j.assignee)?.phone||''}</div></div>
+ <div class="box"><h3>집 정보</h3><div style="font-size:17px;line-height:1.6">${esc(j.addr)}</div><div style="color:var(--sub2);margin-top:4px">${esc(j.detail)}</div><div style="border-top:1px solid var(--line);margin-top:16px;padding-top:16px"><div style="font-weight:700;margin-bottom:6px">평수</div>${j.py}평 (전용면적)</div></div>
+ ${notesBox(j)}<div class="box"><h3>서비스 정보</h3>${j.kind==='quote'?`<div class="info-row">${ic('doc')}<span>${j.mv} · ${j.luggage}</span></div>`:''}${spaceRows(j).map(([i,t])=>`<div class="info-row">${ic(i)}<span>${t}</span></div>`).join('')}</div>
+ <div class="box"><h3>메모 <a onclick="memoSheet('${j.id}')">${j.memo?'수정':'입력'}</a></h3><div style="color:${j.memo?'var(--ink)':'var(--sub)'};line-height:1.6;white-space:pre-wrap">${j.memo?esc(j.memo):'저장된 메모가 없습니다.'}</div></div>
+ <p style="padding:0 28px 14px;font-size:14px;color:var(--sub)">※ 메모는 우리 팀만 볼 수 있어요.</p>
+ <div class="box"><div class="kv total"><span style="color:var(--ink)">정산 예정 금액</span><b>${won(pay)}</b></div><div class="kv"><span>고객 결제 금액</span>${won(price)}</div><div class="kv"><span>ㄴ 플랫폼 수수료 (${FEE*100}%)</span>-${won(price-pay)}</div>${j.kind==='quote'?`<p style="font-size:13px;color:var(--sub);margin-top:10px;line-height:1.6">이사·입주 청소는 고객이 잔금을 결제한 뒤 정산 예정에 추가돼요.${j.balancePaid?' (잔금 결제 완료)':''}</p>`:''}</div>
+ <div class="box" style="padding:0"><button class="mrow" style="justify-content:center" onclick="toast('말끔 운영팀으로 전화 연결 (데모)')">${ic('phone')}말끔에 전화하기</button><div style="height:1px;background:var(--line)"></div><button class="mrow" style="justify-content:center" onclick="openJobChat('${j.id}')">${ic('chat')}말끔과 채팅하기</button></div>
+ <div style="height:16px"></div></div>
+ <div class="cta">${j.status==='cancelled'?'<button class="btn" disabled>취소된 업무입니다</button>':done?`<button class="btn" disabled>업무 완료됨</button>`:`<button class="btn dark" onclick="go('complete',{id:'${j.id}'})">업무 완료 체크하기</button>`}</div></div>`};
+function assignSheet(id){const j=job(id);sheet('담당자 변경',S.team.map(t=>`<button class="slot ${j.assignee===t.id?'on':''}" onclick="job('${id}').assignee='${t.id}';save();closeSheet();render();toast('담당자를 변경했어요')">${esc(t.name)}<span>${j.assignee===t.id?ic('check'):''}</span></button>`).join('')+`<div style="text-align:center;margin-top:8px"><button class="pill" onclick="closeSheet();go('team')">${ic('plus','sm')}구성원 추가</button></div>`)}
+function memoSheet(id){const j=job(id);sheet('메모',`<div class="field"><textarea id="memo" rows="5" placeholder="예: 공동현관 비밀번호, 주차 위치, 준비물">${esc(j.memo||'')}</textarea></div>`,`<button class="btn" onclick="job('${id}').memo=document.getElementById('memo').value.trim();save();closeSheet();render();toast('메모를 저장했어요')">저장</button>`)}
+function bannerFor(j){
+ if(j.status==='cancelled')return `<div class="box" style="background:#FFEEF0"><b style="color:var(--red);font-size:17px">고객이 예약을 취소했어요</b><p style="font-size:14px;color:var(--sub2);margin-top:6px;line-height:1.6">이 업무는 진행하지 않아요. 방문 2일 이내 취소라면 보상 기준에 따라 정산될 수 있어요 (정책 확정 필요).</p></div>`;
+ if(j.resched)return `<div class="box" style="background:#FFF4E5"><b style="color:#C76A00;font-size:17px">고객이 일정 변경을 요청했어요</b><p style="font-size:15px;color:var(--ink2);margin-top:8px;line-height:1.6"><s style="color:var(--sub)">${j.resched.from}</s><br>→ <b>${fmtS(j.date)} ${j.time}</b></p><div style="display:flex;gap:8px;margin-top:14px"><button class="btn sm ghost" style="flex:1" onclick="reschedNo('${j.id}')">어려워요</button><button class="btn sm" style="flex:1" onclick="reschedOk('${j.id}')">변경 일정 확인</button></div></div>`;
+ return ''}
+function reschedOk(id){const j=job(id);j.resched=null;const c=jobThread(id);c.msgs.push({from:'sys',text:`변경 일정 확인: ${fmtS(j.date)} ${j.time}`,t:Date.now()});save();render();toast('변경된 일정을 확인했어요. 고객에게 알림이 갑니다.')}
+function reschedNo(id){const j=job(id);const c=jobThread(id);c.msgs.push({from:'me',text:`변경 요청하신 ${fmtS(j.date)} ${j.time}에는 방문이 어려워요.`,t:Date.now()});save();openChat(c.id);agentSay(c.id,'확인했습니다. 고객님과 다른 일정으로 조율하거나, 어려우면 다른 프로를 배정할게요.',1500)}
+const notesBox=j=>{const n=j.notes||{};const rows=[['출입 방법',n.entry],['주차',n.parking],['기타 요청',n.etc]].filter(r=>r[1]);return `<div class="box"><h3>고객 요청사항</h3>${rows.length?rows.map(([k,v])=>`<div class="kv"><span style="width:80px;flex-shrink:0">${k}</span><span style="flex:1;color:var(--ink)">${esc(v)}</span></div>`).join(''):'<div style="color:var(--sub)">고객이 남긴 요청사항이 없어요.</div>'}</div>`};
+SCREENS.complete=({id})=>{const j=job(id);const p=cur().params;p.photos=p.photos||{b:[0,0,0],a:[0,0,0]};p.checks=p.checks||[0,0,0,0];
+ const ok=p.photos.b.some(x=>x)&&p.photos.a.some(x=>x)&&p.checks.every(x=>x);
+ const items=['계약된 범위의 청소를 모두 마쳤어요','고객과 결과를 함께 확인했어요','사용한 도구와 쓰레기를 정리했어요','파손이나 특이사항이 있다면 메모에 남겼어요'];
+ const ph=(k)=>p.photos[k].map((v,i)=>`<button class="${v?'on':''}" onclick="cur().params.photos.${k}[${i}]=1;render()">${v?'✓ 사진 추가됨':ic('camera')+'<br>사진 추가'}</button>`).join('');
+ return `<div class="screen">${navBar('업무 완료 체크')}<div class="body">
+ <div class="h1" style="font-size:24px">${SVC[j.svc]}<br>작업을 마무리해 주세요.</div>
+ <div class="sec"><div class="sec-t">작업 전 사진 <span style="font-size:13px;color:var(--sub);font-weight:500">1장 이상</span></div><div class="photos">${ph('b')}</div></div>
+ <div class="sec" style="padding-top:0"><div class="sec-t">작업 후 사진 <span style="font-size:13px;color:var(--sub);font-weight:500">1장 이상</span></div><div class="photos">${ph('a')}</div></div>
+ <div class="sec" style="padding-top:0"><div class="sec-t">완료 확인</div>${items.map((t,i)=>`<button class="check-li" onclick="cur().params.checks[${i}]=cur().params.checks[${i}]?0:1;render()"><span class="radio ${p.checks[i]?'on':''}"></span>${t}</button>`).join('')}</div>
+ <p style="padding:0 24px 24px;font-size:13px;color:var(--sub);line-height:1.6">사진은 고객 앱의 예약 상세에 함께 표시되고, 분쟁 시 증빙으로 사용돼요. (프로토타입에서는 실제 사진을 올리지 않아요)</p>
+ </div><div class="cta"><button class="btn" ${ok?'':'disabled'} onclick="finishJob('${id}')">업무 완료</button></div></div>`};
+function finishJob(id){const j=job(id);j.status='done';j.doneAt=Date.now();const wed=addDays(today0(),((3-today0().getDay()+7)%7)||7);S.settle.unshift({id:'s'+Date.now(),job:id,title:`${SVC[j.svc]} · ${j.unit||j.rooms}`,amount:payOf(j.price),date:ymd(wed),state:j.kind==='quote'&&!j.balancePaid?'잔금 대기':'예정'});save();ui.stack=[];render();
+ sheet(null,`<div style="text-align:center;padding:28px 0 8px"><div style="width:80px;height:80px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;margin:0 auto 20px">${ic('check','lg')}</div><div style="font-size:22px;font-weight:700">수고하셨어요!</div><p style="color:var(--sub2);margin-top:10px;line-height:1.6">고객에게 서비스 완료 알림을 보냈어요.<br>${j.kind==='quote'&&!j.balancePaid?`${won(payOf(j.price))}은 고객이 잔금을 결제하면 정산 예정에 추가돼요.`:`${won(payOf(j.price))}은 ${fmtS(ymd(wed))}에 정산될 예정이에요.`}</p></div>`,`<button class="btn" onclick="closeSheet()">확인</button>`)}
+
+/* ================= 탭 4: 더보기 ================= */
+TABS.more=()=>{const pend=S.settle.filter(s=>s.state==='예정').reduce((a,s)=>a+s.amount,0);
+ const row=(i,t,fn,v)=>`<button class="mrow" onclick="${fn}">${ic(i)}<span class="t">${t}</span>${v?`<span class="v">${v}</span>`:''}<span class="chev">${ic('chev')}</span></button>`;
+ return `<div class="body"><button class="prof" onclick="go('profile')"><span class="av">${ic('user')}</span><div style="flex:1"><b>${esc(S.pro.name)} 프로님</b><small>${esc(S.pro.team)}</small></div><span style="color:#C4CAD1">${ic('chev')}</span></button>
+ <button class="cashcard" onclick="go('settle')"><span>정산 예정 금액</span><b>${won(pend)} ${ic('chev','sm')}</b></button>
+ <div class="mtitle">내 활동</div>${row('won','정산내역',"go('settle')")}${row('review','후기 관리',"go('reviews')",`★ ${(S.reviews.reduce((a,r)=>a+r.star,0)/S.reviews.length).toFixed(1)}`)}
+ <div class="mtitle">관리 및 설정</div>${row('quote','서비스 · 지역 설정',"go('svcset')")}${row('card','정산 계좌 관리',"go('bank')")}${row('calcheck','업무일정 설정',"go('workset')")}${row('user','구성원 관리',"go('team')",S.team.length+'명')}${row('bell','알림 설정',"go('noti')")}
+ <div class="mtitle">고객 지원</div>${row('chat','채팅',"setTab('chat')",unreadAll()?unreadAll()+'개 안 읽음':'')}${row('mega','공지사항',"toast('공지 상세는 데모에서 준비 중이에요')")}${row('help','자주 묻는 질문',"go('faq')")}
+ ${row('doc','버전 정보',"resetSheet()",'v0.1 프로토타입')}<div style="height:24px"></div></div>`};
+function resetSheet(){sheet('데모 데이터',`<p style="color:var(--sub2);line-height:1.6">업무, 견적, 정산, 설정 등 이 브라우저에 저장된 데모 데이터를 처음 상태로 되돌립니다.</p>`,`<button class="btn ghost" onclick="closeSheet()">취소</button><button class="btn" onclick="S=DEFAULT();save();ui.cal=null;closeSheet();setTab('find');toast('초기화했어요')">초기화</button>`)}
+SCREENS.profile=()=>`<div class="screen">${navBar('내 정보')}<div class="body" style="padding:8px 24px">${[['이름',S.pro.name],['팀 이름',S.pro.team],['휴대폰',S.pro.phone],['활동 상태','활동 중'],['신원 인증','완료 (데모)'],['교육 이수','기본 교육 완료 (데모)']].map(([k,v])=>`<div class="kv" style="padding:20px 0;border-bottom:1px solid var(--line);font-size:16px"><span>${k}</span>${esc(v)}</div>`).join('')}<p style="font-size:13px;color:var(--sub);margin-top:16px">프로토타입 샘플 계정입니다.</p></div></div>`;
+SCREENS.settle=()=>{const pend=S.settle.filter(s=>s.state!=='완료');const done=S.settle.filter(s=>s.state==='완료');
+ const item=s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)"><div><div style="font-size:16px">${esc(s.title)}</div><div style="font-size:13px;color:var(--sub);margin-top:4px">${s.state==='잔금 대기'?'고객 잔금 결제 후 정산':`${s.state==='예정'?'정산 예정일':'정산일'} ${fmtS(s.date)}`}</div></div><div style="text-align:right"><b style="font-size:17px">${won(s.amount)}</b><div><span class="badge ${{'예정':'orange','잔금 대기':'red'}[s.state]||'gray'}" style="margin-top:6px">${s.state}</span></div>${s.state==='잔금 대기'?`<button style="font-size:12px;color:var(--sub);text-decoration:underline;margin-top:6px" onclick="S.settle.find(x=>x.id==='${s.id}').state='예정';save();render()">[데모] 고객 잔금 결제</button>`:''}</div></div>`;
+ return `<div class="screen">${navBar('정산내역')}<div class="body"><div style="padding:16px 24px 24px;background:var(--bg)"><div style="color:var(--sub2)">정산 예정</div><div style="font-size:32px;font-weight:800;margin-top:6px">${won(pend.filter(s=>s.state==='예정').reduce((a,s)=>a+s.amount,0))}</div>${pend.some(s=>s.state==='잔금 대기')?`<div style="font-size:14px;color:var(--sub2);margin-top:6px">잔금 대기 ${won(pend.filter(s=>s.state==='잔금 대기').reduce((a,s)=>a+s.amount,0))} 별도</div>`:''}<div style="font-size:13px;color:var(--sub);margin-top:8px">서비스 완료 후 다음 수요일에 등록된 계좌로 입금돼요. (정책 확정 필요)</div></div>
+ <div style="padding:8px 24px">${pend.map(item).join('')}${done.length?`<div style="font-weight:700;margin:24px 0 4px">지난 정산</div>${done.map(item).join('')}`:''}</div></div></div>`};
+SCREENS.reviews=()=>`<div class="screen">${navBar('후기 관리')}<div class="body" style="padding:8px 24px">${S.reviews.map(r=>`<div style="padding:18px 0;border-bottom:1px solid var(--line)"><div style="display:flex;justify-content:space-between"><b>${r.n} · ${r.svc}</b><span style="font-size:13px;color:var(--sub)">${fmtS(r.d)}</span></div><div class="stars" style="margin-top:6px">${'★'.repeat(r.star)}${'☆'.repeat(5-r.star)}</div><p style="margin-top:8px;line-height:1.6;color:var(--ink2)">${r.t}</p><button style="margin-top:10px;font-size:14px;color:var(--brand-d);font-weight:600" onclick="toast('후기 답글은 데모에서 준비 중이에요')">답글 달기</button></div>`).join('')}<p style="font-size:12px;color:var(--sub);margin-top:12px">* 프로토타입용 샘플 후기입니다.</p></div></div>`;
+SCREENS.svcset=()=>{const st=S.settings;const ALL=['성동구','광진구','송파구','강남구','강동구','성북구','동대문구','중구','용산구','마포구'];
+ return `<div class="screen">${navBar('서비스 · 지역 설정')}<div class="body"><div class="sec"><div class="sec-t">제공하는 서비스</div>${Object.entries(SVC).map(([k,n])=>`<button class="mrow" style="padding:14px 0" onclick="S.settings.svcs.${k}=!S.settings.svcs.${k};save();render()"><span class="t">${n}</span><span class="toggle ${st.svcs[k]?'on':''}"></span></button>`).join('')}
+ <p style="font-size:13px;color:var(--sub);margin-top:8px">켜진 서비스의 업무만 업무찾기에 표시돼요.</p></div>
+ <div class="sec" style="padding-top:0"><div class="sec-t">활동 지역 (서울)</div><div style="display:flex;flex-wrap:wrap;gap:8px">${ALL.map(a=>`<button class="chip ${st.areas.includes(a)?'on':''}" onclick="toggleArea('${a}')">${a}</button>`).join('')}</div></div></div></div>`};
+function toggleArea(a){const s=S.settings.areas;const i=s.indexOf(a);i<0?s.push(a):s.splice(i,1);save();render()}
+SCREENS.bank=()=>{const b=S.settings.bank;return `<div class="screen">${navBar('정산 계좌 관리')}<div class="body" style="padding:8px 24px">${[['은행',b.name],['계좌번호',b.acct],['예금주',b.holder]].map(([k,v])=>`<div class="kv" style="padding:20px 0;border-bottom:1px solid var(--line);font-size:16px"><span>${k}</span>${esc(v)}</div>`).join('')}<div style="text-align:center;margin-top:28px"><button class="pill" onclick="toast('계좌 변경은 본인 인증 후 가능해요 (데모)')">계좌 변경</button></div><p style="font-size:13px;color:var(--sub);margin-top:20px">샘플 계좌 정보입니다. 실제 앱에서는 예금주 본인 확인이 필요해요.</p></div></div>`};
+SCREENS.workset=()=>{const st=S.settings;return `<div class="screen">${navBar('업무일정 설정')}<div class="body"><div class="sec"><div class="sec-t">활동 요일</div><div style="display:flex;gap:8px;flex-wrap:wrap">${[1,2,3,4,5,6,0].map(d=>`<button class="chip ${st.days.includes(d)?'on':''}" style="width:44px;padding:0;text-align:center" onclick="toggleDay(${d})">${DAYS[d]}</button>`).join('')}</div></div>
+ <div class="sec" style="padding-top:0"><div class="sec-t">활동 시간대</div>${['오전','오후'].map(s=>`<button class="mrow" style="padding:14px 0" onclick="toggleSlot('${s}')"><span class="t">${s} ${s==='오전'?'(8시~12시 시작)':'(13시~15시 시작)'}</span><span class="toggle ${st.slots.includes(s)?'on':''}"></span></button>`).join('')}
+ <p style="font-size:13px;color:var(--sub);margin-top:8px">활동하지 않는 요일·시간대의 업무는 업무찾기에 표시되지 않아요.</p></div>
+ <div class="sec" style="padding-top:0"><div class="sec-t">휴무일 지정</div><button class="pill" onclick="toast('휴무일 달력은 데모에서 준비 중이에요')">${ic('cal','sm')}휴무일 추가</button></div></div></div>`};
+function toggleDay(d){const s=S.settings.days;const i=s.indexOf(d);i<0?s.push(d):s.splice(i,1);save();render()}
+function toggleSlot(x){const s=S.settings.slots;const i=s.indexOf(x);i<0?s.push(x):s.splice(i,1);save();render()}
+SCREENS.team=()=>`<div class="screen">${navBar('구성원 관리')}<div class="body" style="padding:8px 24px">${S.team.map(t=>`<div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)"><span style="width:44px;height:44px;border-radius:50%;background:var(--brand-w);color:var(--brand-d);display:grid;place-items:center">${ic('user')}</span><div style="flex:1"><div style="font-size:16px;font-weight:600">${esc(t.name)}</div><div style="font-size:14px;color:var(--sub)">${esc(t.phone)}</div></div>${t.id==='me'?'<span class="badge brand">대표</span>':`<button style="color:var(--sub);font-size:14px" onclick="S.team=S.team.filter(x=>x.id!=='${t.id}');S.jobs.forEach(j=>{if(j.assignee==='${t.id}')j.assignee='me'});save();render();toast('구성원을 삭제했어요')">삭제</button>`}</div>`).join('')}
+ <div style="text-align:center;margin-top:24px"><button class="pill" onclick="memberSheet()">${ic('plus','sm')}구성원 초대</button></div><p style="font-size:13px;color:var(--sub);margin-top:20px;line-height:1.6">초대받은 구성원은 같은 팀 업무를 보고 담당자로 지정될 수 있어요. 정산은 대표 계좌로 들어갑니다.</p></div></div>`;
+function memberSheet(){sheet('구성원 초대',`<div class="field"><label>이름</label><input id="m-name" placeholder="예: 김매니저"></div><div class="field"><label>휴대폰 번호</label><input id="m-phone" placeholder="010-0000-0000"></div><p style="font-size:13px;color:var(--sub)">실제 앱에서는 초대 문자가 발송돼요. 예시 정보만 입력하세요.</p>`,`<button class="btn" onclick="addMember()">초대하기</button>`)}
+function addMember(){const n=document.getElementById('m-name').value.trim();if(!n){toast('이름을 입력해 주세요');return}S.team.push({id:'t'+Date.now(),name:n,phone:document.getElementById('m-phone').value.trim()||'-'});save();closeSheet();render();toast('구성원을 초대했어요')}
+SCREENS.noti=()=>{const n=S.settings.noti;return `<div class="screen">${navBar('알림 설정')}<div class="body" style="padding:8px 24px">${[['job','새 바로예약 업무','활동 지역·서비스에 맞는 새 업무'],['quote','견적 요청 · 채택 결과','새 견적 요청과 내 견적의 채택 여부'],['chat','운영팀 채팅','말끔 운영팀의 새 메시지'],['night','야간 알림 (21시~8시)','꺼두면 아침에 모아서 보내드려요']].map(([k,t,s])=>`<button class="mrow" style="padding:18px 0" onclick="S.settings.noti.${k}=!S.settings.noti.${k};save();render()"><span class="t">${t}<br><small style="color:var(--sub);font-size:13px">${s}</small></span><span class="toggle ${n[k]?'on':''}"></span></button>`).join('')}</div></div>`};
+const FAQS=[['업무를 수락한 뒤 취소할 수 있나요?','방문 2일 전까지는 운영팀 채팅으로 취소를 요청할 수 있어요. 이후 취소는 패널티가 있을 수 있습니다. (정책 확정 필요)'],['정산은 언제 되나요?','서비스 완료 후 다음 수요일에 수수료를 제외한 금액이 등록 계좌로 입금돼요. (정책 확정 필요)'],['견적은 어떻게 채택되나요?','여러 프로의 견적을 말끔 상담팀이 비교해 고객과 확정해요. 채택되면 알림과 함께 스케줄에 추가됩니다.'],['고객 연락처는 왜 안심번호로 보이나요?','고객과 프로의 개인정보 보호를 위해 실제 번호 대신 050 안심번호로 연결돼요.']];
+SCREENS.faq=()=>`<div class="screen">${navBar('자주 묻는 질문')}<div class="body" style="padding:0 24px">${FAQS.map(([q,a])=>`<details style="border-bottom:1px solid var(--line);padding:18px 0"><summary style="font-weight:600;font-size:16px;cursor:pointer;list-style:none">Q. ${q}</summary><p style="margin-top:12px;color:var(--sub2);line-height:1.6;font-size:15px">${a}</p></details>`).join('')}</div></div>`;
+/* ================= 탭 4: 채팅 (말끔 운영팀) ================= */
+const chatOf=id=>S.chats.find(c=>c.id===id);
+const unreadAll=()=>S.chats.reduce((a,c)=>a+(c.unread||0),0);
+const lastMsg=c=>c.msgs[c.msgs.length-1];
+const viewing=id=>cur()?.screen==='chat'&&cur().params.id===id;
+function refresh(id){if(viewing(id)||!ui.stack.length)render()}
+function openChat(id){const c=chatOf(id);if(!c)return;c.unread=0;save();if(viewing(id)){render();return}go('chat',{id})}
+function jobThread(jid){const j=job(jid);let c=S.chats.find(x=>x.jobId===jid);
+ if(!c){c={id:'c'+Date.now(),title:`${SVC[j.svc]} · 예약 ${j.id.toUpperCase()}`,jobId:jid,unread:0,msgs:[{from:'sys',text:`${fmtS(j.date)} ${SVC[j.svc]} 업무 문의`,t:Date.now()}]};S.chats.unshift(c);save()}
+ return c}
+function openJobChat(jid){const fresh=!S.chats.some(x=>x.jobId===jid);const c=jobThread(jid);if(fresh)agentSay(c.id,'안녕하세요, 말끔 운영팀입니다. 이 업무 관련해서 무엇을 도와드릴까요?',1200);openChat(c.id)}
+function startTopic(t){let c=S.chats.find(x=>x.title===t&&!x.jobId);
+ if(!c){c={id:'c'+Date.now(),title:t,jobId:null,unread:0,msgs:[{from:'sys',text:`${t} 채팅이 시작됐어요`,t:Date.now()}]};S.chats.unshift(c);save();agentSay(c.id,`안녕하세요, 말끔 운영팀입니다. ${t} 내용을 남겨주시면 확인 후 답변드릴게요.`,1200)}
+ closeSheet();openChat(c.id)}
+function agentSay(id,text,delay){
+ setTimeout(()=>{ui.typing[id]=1;refresh(id)},Math.max(0,delay-1000));
+ setTimeout(()=>{const c=chatOf(id);if(!c)return;ui.typing[id]=0;c.msgs.push({from:'ag',text,t:Date.now()});
+  if(!viewing(id)){c.unread=(c.unread||0)+1;toast(`<b>${esc(c.title)}</b><br>새 메시지가 도착했어요`,{icon:'💬',action:{label:'보기',fn:`openChat('${id}')`}})}
+  save();refresh(id)},delay)}
+function newChatSheet(){const mine=S.jobs.filter(j=>j.status==='mine');
+ sheet('새 문의',`<div style="font-size:14px;color:var(--sub);margin-bottom:6px">업무 관련</div>${mine.length?mine.map(j=>`<button class="slot" onclick="closeSheet();openJobChat('${j.id}')"><span style="text-align:left">${SVC[j.svc]}<br><small style="color:var(--sub);font-weight:500">${fmtS(j.date)} ${j.time}</small></span>${ic('chev')}</button>`).join(''):'<p style="color:var(--sub);font-size:14px;margin-bottom:10px">진행 중인 업무가 없어요.</p>'}
+ <div style="font-size:14px;color:var(--sub);margin:14px 0 6px">일반 문의</div>${['정산 문의','일정 변경 · 취소','앱 사용 문의','기타 문의'].map(t=>`<button class="slot" onclick="startTopic('${t}')">${t}${ic('chev')}</button>`).join('')}`)}
+TABS.chat=()=>{const list=[...S.chats].sort((a,b)=>lastMsg(b).t-lastMsg(a).t);
+ return `<div class="body"><div style="display:flex;align-items:center;padding:28px 16px 0 24px"><div style="font-size:28px;font-weight:800;flex:1">채팅</div><button class="pill" style="height:40px;padding:0 16px" onclick="newChatSheet()">${ic('plus','sm')}새 문의</button></div>
+ <div class="desc" style="padding-bottom:12px">말끔 운영팀과의 대화를 업무별로 모아봤어요. 고객과의 직접 채팅은 제공하지 않아요.</div>
+ ${list.length?list.map(c=>{const l=lastMsg(c);const j=c.jobId&&job(c.jobId);return `<button class="clist" onclick="openChat('${c.id}')"><span class="ca" style="background:${j?'var(--brand-w)':'var(--bg)'};color:${j?'var(--brand-d)':'var(--ink2)'}">${ic(j?'doc':'chat')}</span><div class="cm"><b>${esc(c.title)}</b><p>${ui.typing[c.id]?'입력 중…':esc(l.text).split('\n')[0]}</p></div><div class="cr">${hm(l.t)}${c.unread?`<span class="un">${c.unread}</span>`:''}</div></button>`}).join('')
+ :`<div class="empty"><b>채팅이 없어요</b>업무나 정산 관련 문의를 남겨보세요.</div>`}</div>`};
+SCREENS.chat=({id})=>{const c=chatOf(id);if(c.unread){c.unread=0;save()}const j=c.jobId&&job(c.jobId);
+ return `<div class="screen">${navBar(`${esc(c.title)}<small>말끔 운영팀 · 평일 09:00~18:00 (데모 자동 응답)</small>`,j?`<button style="color:var(--brand-d);font-weight:600;font-size:15px;padding:0 12px" onclick="go('detail',{id:'${j.id}'})">업무 보기</button>`:'')}
+ <div class="body" style="background:var(--bg)"><div class="msgs">${c.msgs.map(m=>m.from==='sys'?`<div style="align-self:center;font-size:12px;color:var(--sub);background:rgba(0,0,0,.05);padding:5px 12px;border-radius:12px;margin:8px 0">${esc(m.text)}</div>`:`<div class="mrow2 ${m.from==='me'?'me':'ag'}">${m.from==='me'?`<span class="mt">${hm(m.t)}</span>`:''}<div class="msg">${esc(m.text)}</div>${m.from!=='me'?`<span class="mt">${hm(m.t)}</span>`:''}</div>`).join('')}${ui.typing[id]?'<div class="mrow2 ag"><div class="msg" style="color:var(--sub)">입력 중…</div></div>':''}</div></div>
+ <div class="cin"><input id="chat-in" placeholder="메시지를 입력하세요" onkeydown="if(event.key==='Enter'&&!event.isComposing){event.preventDefault();sendChat('${id}')}"><button class="send" onclick="sendChat('${id}')">${ic('send','sm')}</button></div></div>`};
+function sendChat(id){const i=document.getElementById('chat-in');const t=i.value.trim();if(!t)return;i.value='';const c=chatOf(id);c.msgs.push({from:'me',text:t,t:Date.now()});save();render();
+ const r=/정산|입금|돈/.test(t)?'정산은 서비스 완료 후 다음 수요일에 진행돼요. 정산내역에서 예정일을 확인할 수 있어요.':/취소|못 가|변경/.test(t)?'일정 변경이나 취소가 필요하시면 사유를 남겨주세요. 고객님과 조율 후 안내드릴게요.':/고객|연락|비밀번호|주차/.test(t)?'고객님께 확인해서 이 채팅방으로 알려드릴게요. 방문 30분 전까지 답이 없으면 운영팀이 대신 연락드립니다.':'확인했습니다. 담당 매니저가 곧 답변드릴게요.';
+ agentSay(id,r,1500)}
+
+render();
+</script>
+</body>
+</html>

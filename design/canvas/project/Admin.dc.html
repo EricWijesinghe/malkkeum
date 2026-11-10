@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>관리자 상담함</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans KR',system-ui,sans-serif;color:#0E1726;background:#FFFFFF}
+a{color:inherit;text-decoration:none}a:hover{color:#0B7A75}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; display: flex; flex-wrap: wrap; background: #FFFFFF; font-family: 'IBM Plex Sans KR', system-ui, sans-serif; color: #0E1726; font-size: 13px">
+
+  <aside style="flex: 1 1 220px; max-width: 240px; min-width: 200px; box-sizing: border-box; background: #F7F8F7; border-right: 1px solid #E9EBEE; padding: 14px 10px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 8px; padding: 4px 8px 12px"><span style="width: 22px; height: 22px; border-radius: 6px; background: #0B7A75"></span><strong style="font-size: 14px">말끔 운영</strong></div>
+    <button style="display: flex; align-items: center; gap: 8px; height: 34px; border: 1px solid #E3E6EA; border-radius: 8px; background: #FFFFFF; padding: 0 10px; font: 400 13px 'IBM Plex Sans KR', sans-serif; color: #5D6878; margin-bottom: 10px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <span style="flex: 1; text-align: left">검색 · 명령</span><kbd style="font: 600 11px 'IBM Plex Sans KR', sans-serif; border: 1px solid #E3E6EA; border-radius: 4px; padding: 1px 5px">Ctrl K</kbd>
+    </button>
+    <a href="#" style="display: flex; justify-content: space-between; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556"><span>예약</span><span style="color: #5D6878">12</span></a>
+    <a href="#" style="display: flex; justify-content: space-between; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556"><span>견적 데스크</span><span style="color: #7A4F00; font-weight: 600">3</span></a>
+    <a href="#" aria-current="page" style="display: flex; justify-content: space-between; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; background: #E9EBEE; color: #0E1726; font-weight: 600"><span>상담함 · 고객</span><span>5</span></a>
+    <a href="#" style="display: flex; justify-content: space-between; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556"><span>상담함 · 파트너</span><span style="color: #5D6878">2</span></a>
+    <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556">파트너 관리</a>
+    <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556">카탈로그 · 가격</a>
+    <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556">쿠폰 · 배너 · 공지</a>
+    <a href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; color: #3A4556">정산</a>
+    <div style="margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 8px"><span style="width: 24px; height: 24px; border-radius: 50%; background: #CDEBE7; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #08615D">지</span><span>지수 · 상담원</span></div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap">
+    <section aria-label="대화 목록" style="flex: 1 1 280px; max-width: 320px; border-right: 1px solid #E9EBEE; display: flex; flex-direction: column">
+      <div style="height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid #E9EBEE"><strong style="font-size: 14px">고객 상담</strong><span style="color: #5D6878">안 읽음 먼저</span></div>
+      <a href="#" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; background: #E9F6F4; border-bottom: 1px solid #E9EBEE; box-shadow: inset 2px 0 0 #0B7A75">
+        <div style="display: flex; justify-content: space-between"><strong>김*은 · 입주 청소</strong><span style="color: #5D6878">10:07</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #3A4556; overflow: hidden; white-space: nowrap; text-overflow: ellipsis">사진 2장</span><span style="min-width: 18px; height: 18px; border-radius: 9px; background: #0B7A75; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">2</span></div>
+        <span style="align-self: flex-start; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: #FFF4DD; color: #7A4F00">견적 대기 · 파트너 견적 3</span>
+      </a>
+      <a href="#" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-bottom: 1px solid #E9EBEE">
+        <div style="display: flex; justify-content: space-between"><strong>박*준 · 이사 청소</strong><span style="color: #5D6878">09:51</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 8px"><span style="color: #3A4556">주차는 지하 2층 가능한가요?</span><span style="min-width: 18px; height: 18px; border-radius: 9px; background: #0B7A75; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">1</span></div>
+      </a>
+      <a href="#" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-bottom: 1px solid #E9EBEE">
+        <div style="display: flex; justify-content: space-between"><strong>이*희 · 원룸 청소</strong><span style="color: #5D6878">어제</span></div>
+        <span style="color: #5D6878">13평이라 원룸 예약이 안 돼요</span>
+      </a>
+      <a href="#" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-bottom: 1px solid #E9EBEE">
+        <div style="display: flex; justify-content: space-between"><strong>최*아 · 기타 문의</strong><span style="color: #5D6878">어제</span></div>
+        <span style="color: #5D6878">감사합니다!</span>
+      </a>
+      <div style="margin-top: auto; padding: 10px 14px; color: #5D6878; border-top: 1px solid #E9EBEE; display: flex; gap: 12px"><span><kbd>J</kbd> <kbd>K</kbd> 이동</span><span><kbd>E</kbd> 완료 처리</span><span><kbd>Q</kbd> 견적</span></div>
+    </section>
+
+    <section aria-label="대화" style="flex: 2 1 380px; min-width: 0; display: flex; flex-direction: column">
+      <div style="height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid #E9EBEE"><strong style="font-size: 14px">김*은</strong><span style="color: #5D6878">입주 청소 · BK-2611-0412 · 12월 5일 (토) 오전</span></div>
+      <div style="flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 10px; background: #FBFBFA">
+        <div style="align-self: center; font-size: 12px; color: #5D6878">입주 청소 상담이 접수됐어요 · 10:02</div>
+        <div style="align-self: flex-start; max-width: 420px; background: #FFFFFF; border: 1px solid #E3E6EA; border-radius: 12px; padding: 10px 12px; line-height: 1.55">견적 요청 · 인테리어 후 · 아파트 방 3 · 욕실 2 · 발코니 2 · 예상 580,800원</div>
+        <div style="align-self: flex-end; max-width: 420px; background: #E9F6F4; border-radius: 12px; padding: 10px 12px; line-height: 1.55">안녕하세요, 상담 매니저 지수예요. 거실과 주방 사진을 보내 주시면 정확한 견적을 드릴게요.<div style="font-size: 11px; color: #5D6878; margin-top: 4px; text-align: right">지수 · 10:05 · 읽음</div></div>
+        <div style="align-self: flex-start; display: flex; gap: 6px"><div style="width: 120px; height: 90px; border-radius: 10px; background: #D5D9DF; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #3A4556">[거실 사진]</div><div style="width: 120px; height: 90px; border-radius: 10px; background: #D5D9DF; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #3A4556">[주방 사진]</div></div>
+      </div>
+      <div style="border-top: 1px solid #E9EBEE; padding: 12px 18px; display: flex; flex-direction: column; gap: 8px">
+        <label style="display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">답장</span><textarea rows="2" placeholder="답장 입력 · / 로 상용구, Ctrl+Enter 전송" style="flex: 1; resize: none; border: 1px solid #E3E6EA; border-radius: 10px; padding: 10px 12px; font: 400 13px 'IBM Plex Sans KR', sans-serif; color: #0E1726"></textarea></label>
+        <div style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap">
+          <button style="height: 32px; padding: 0 12px; border: 1px solid #E3E6EA; border-radius: 8px; background: #FFFFFF; font: 500 13px 'IBM Plex Sans KR', sans-serif; color: #0E1726">사진</button>
+          <button style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #0E1726; font: 600 13px 'IBM Plex Sans KR', sans-serif; color: #FFFFFF">보내기</button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="예약 정보와 견적" style="flex: 1 1 300px; max-width: 360px; border-left: 1px solid #E9EBEE; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <strong style="font-size: 12px; color: #5D6878">고객 답변</strong>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; line-height: 1.7">
+          <span style="color: #5D6878">유형</span><span>인테리어 후</span>
+          <span style="color: #5D6878">건물</span><span>아파트 · 8층</span>
+          <span style="color: #5D6878">구조</span><span>방 3 · 복층 아님</span>
+          <span style="color: #5D6878">욕실 · 발코니</span><span>2 · 2</span>
+          <span style="color: #5D6878">엘리베이터</span><span>있음</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 10px; background: #F7F8F7; font-variant-numeric: tabular-nums">
+        <strong style="font-size: 12px; color: #5D6878; margin-bottom: 4px">자동 산정</strong>
+        <div style="display: flex; justify-content: space-between"><span>방 3 기본</span><span>380,000</span></div>
+        <div style="display: flex; justify-content: space-between"><span>욕실 +1 · 발코니 2</span><span>+60,000</span></div>
+        <div style="display: flex; justify-content: space-between"><span>인테리어 후 +20%</span><span>×1.2</span></div>
+        <div style="display: flex; justify-content: space-between"><span>부가세</span><span>×1.1</span></div>
+        <div style="display: flex; justify-content: space-between; font-weight: 700; padding-top: 4px; border-top: 1px solid #E3E6EA"><span>예상</span><span>580,800원</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <strong style="font-size: 12px; color: #5D6878">파트너 견적 3건 · 하나를 고르세요</strong>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1.5px solid #0B7A75; background: #E9F6F4"><input type="radio" name="pq" checked="" style="accent-color: #0B7A75; margin: 0"><span style="flex: 1">클린팀 한빛 · ★4.9</span><strong style="font-variant-numeric: tabular-nums">560,000</strong></label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid #E3E6EA"><input type="radio" name="pq" style="accent-color: #0B7A75; margin: 0"><span style="flex: 1">새봄클린 · ★4.7</span><strong style="font-variant-numeric: tabular-nums">540,000</strong></label>
+        <label style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid #E3E6EA"><input type="radio" name="pq" style="accent-color: #0B7A75; margin: 0"><span style="flex: 1">다온 · ★4.8</span><strong style="font-variant-numeric: tabular-nums">590,000</strong></label>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto">
+        <div style="display: flex; justify-content: space-between; font-variant-numeric: tabular-nums"><span style="color: #5D6878">예약금 10%</span><strong>56,000원</strong></div>
+        <button style="height: 40px; border: 0; border-radius: 10px; background: #0B7A75; color: #FFFFFF; font: 600 14px 'IBM Plex Sans KR', sans-serif">고객에게 견적 보내기 · Ctrl Enter</button>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

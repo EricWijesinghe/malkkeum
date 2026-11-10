@@ -1,0 +1,11 @@
+[package]
+name = "domain"
+description = "Pure business rules: pricing, quotes, coupons, bookings, scheduling, payouts. No I/O."
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+chrono.workspace = true
+serde.workspace = true
+thiserror.workspace = true

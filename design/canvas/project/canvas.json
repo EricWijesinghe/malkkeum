@@ -1,0 +1,24 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-10T11:30:00Z"},
+  "title": "Cleaning Platform Design",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 1560, "title": "Design system v0.1"},
+    "Home.dc.html": {"x": 0, "y": 1920, "w": 390, "h": 844, "title": "01 홈", "is_interactive": true},
+    "Service.dc.html": {"x": 470, "y": 1920, "w": 390, "h": 844, "title": "02 서비스 선택", "is_interactive": true},
+    "Schedule.dc.html": {"x": 940, "y": 1920, "w": 390, "h": 844, "title": "03 날짜·시간", "is_interactive": true},
+    "Checkout.dc.html": {"x": 1410, "y": 1920, "w": 390, "h": 844, "title": "04 결제", "is_interactive": true},
+    "Booking.dc.html": {"x": 1880, "y": 1920, "w": 390, "h": 844, "title": "05 예약 상세 · 실시간 진행", "is_interactive": true},
+    "Chat.dc.html": {"x": 2350, "y": 1920, "w": 390, "h": 844, "title": "06 상담 · 견적"},
+    "Partner.dc.html": {"x": 0, "y": 3124, "w": 390, "h": 844, "title": "07 파트너 · 일감 찾기"},
+    "Admin.dc.html": {"x": 470, "y": 3124, "w": 1440, "h": 900, "title": "08 관리자 · 상담함", "expand": "fill"}
+  },
+  "order": ["Main.dc.html", "Home.dc.html", "Service.dc.html", "Schedule.dc.html", "Checkout.dc.html", "Booking.dc.html", "Chat.dc.html", "Partner.dc.html", "Admin.dc.html"],
+  "notes": {
+    "rowCustomer": {"x": 0, "y": 1640, "text": "Customer app — 예약부터 상담까지", "kind": "title1", "maxW": 2740},
+    "rowOps": {"x": 0, "y": 2844, "text": "Partner app & Admin", "kind": "title1", "maxW": 1910}
+  },
+  "designSystems": []
+}

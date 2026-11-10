@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F6F4;font-family:'IBM Plex Sans KR',system-ui,sans-serif;color:#0E1726}
+a{color:#0B7A75}a:hover{color:#08615D}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 1560px; box-sizing: border-box; padding: 72px 80px; display: flex; flex-direction: column; gap: 56px; background: #F5F6F4; font-family: 'IBM Plex Sans KR', system-ui, sans-serif; color: #0E1726">
+
+  <header style="display: flex; justify-content: space-between; align-items: flex-end; gap: 40px">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: {{primary}}; display: flex; align-items: center; justify-content: center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="m8.5 14 2.5 2.5 4.5-5"/></svg>
+        </div>
+        <span style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em">말끔</span>
+        <span style="font-size: 12px; font-weight: 600; color: #5D6878; border: 1px solid #D5D9DF; border-radius: 999px; padding: 3px 10px">PLACEHOLDER BRAND</span>
+      </div>
+      <h1 style="margin: 0; font-size: 48px; line-height: 1.15; font-weight: 700; letter-spacing: -0.03em">Design system v0.1</h1>
+      <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3A4556; max-width: 720px">고객 앱, 파트너 앱, 관리자 화면이 하나의 토큰을 공유합니다. 브랜드 이름, 로고, 색은 모두 토큰으로 분리되어 코드 수정 없이 교체할 수 있습니다.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 640px">
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 15px">신뢰</strong><span style="font-size: 13px; line-height: 1.5; color: #5D6878">정확한 가격, 숨김 없는 조건</span></div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 15px">명료</strong><span style="font-size: 13px; line-height: 1.5; color: #5D6878">한 화면, 한 가지 결정</span></div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 15px">진행 가시성</strong><span style="font-size: 13px; line-height: 1.5; color: #5D6878">지금 어디까지 왔는지 항상 보임</span></div>
+      <div style="background: #FFFFFF; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 15px">조용한 고급감</strong><span style="font-size: 13px; line-height: 1.5; color: #5D6878">장식 대신 여백과 타이포</span></div>
+    </div>
+  </header>
+
+  <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+    <div style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 700">Color · brand</h2>
+      <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #E9F6F4"></div><span style="font-size: 12px; color: #5D6878">50</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #CDEBE7"></div><span style="font-size: 12px; color: #5D6878">100</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #9DD6CF"></div><span style="font-size: 12px; color: #5D6878">200</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #3FAEA4"></div><span style="font-size: 12px; color: #5D6878">400</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: {{primary}}; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px {{primary}}"></div><span style="font-size: 12px; font-weight: 700">600 primary</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #08615D"></div><span style="font-size: 12px; color: #5D6878">700 pressed</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #064A47"></div><span style="font-size: 12px; color: #5D6878">800</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 64px; border-radius: 12px; background: #F5A524"></div><span style="font-size: 12px; color: #5D6878">accent</span></div>
+      </div>
+      <h3 style="margin: 8px 0 0; font-size: 15px; font-weight: 600; color: #3A4556">Neutral · ink</h3>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #0E1726"></div><span style="font-size: 12px; color: #5D6878">ink 900</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #3A4556"></div><span style="font-size: 12px; color: #5D6878">ink 700</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #5D6878"></div><span style="font-size: 12px; color: #5D6878">ink 500</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #D5D9DF"></div><span style="font-size: 12px; color: #5D6878">line strong</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #E9EBEE"></div><span style="font-size: 12px; color: #5D6878">line</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #F5F6F4; box-shadow: inset 0 0 0 1px #E9EBEE"></div><span style="font-size: 12px; color: #5D6878">canvas</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><div style="height: 44px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #E9EBEE"></div><span style="font-size: 12px; color: #5D6878">surface</span></div>
+      </div>
+      <h3 style="margin: 8px 0 0; font-size: 15px; font-weight: 600; color: #3A4556">예약 상태 · 한 상태 한 색</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: #FFF4DD; color: #7A4F00">0 상담 중</span>
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: #EAF1FF; color: #1F4FC2">1 예약 확정</span>
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: #E9F6F4; color: #08615D">2 팀 배정</span>
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: #EEF0F2; color: #3A4556">3 청소 완료</span>
+        <span style="font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: #FDECEC; color: #B3261E">취소됨</span>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 20px; font-weight: 700">Typography</h2><span style="font-size: 13px; color: #5D6878">IBM Plex Sans KR · 숫자는 tabular</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Display 32</span><span style="font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.02em">52,000원</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Title 24</span><span style="font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em">언제 방문할까요?</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Title 20</span><span style="font-size: 20px; line-height: 28px; font-weight: 700">화장실 청소</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Headline 17</span><span style="font-size: 17px; line-height: 24px; font-weight: 600">11월 14일 (금) 오전 9시</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Body 15</span><span style="font-size: 15px; line-height: 22px">선반, 수전, 세면대와 변기의 안팎을 청소합니다.</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid #E9EBEE; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #5D6878">Callout 14</span><span style="font-size: 14px; line-height: 20px; color: #3A4556">방문 2일 전까지 무료로 취소할 수 있어요</span></div>
+      <div style="display: flex; align-items: baseline; gap: 20px"><span style="width: 96px; font-size: 12px; color: #5D6878">Caption 12</span><span style="font-size: 12px; line-height: 16px; font-weight: 500; color: #5D6878">부가세 포함 · 100원 단위 반올림</span></div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px">
+    <div style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 18px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 700">Spacing · 4pt</h2>
+      <div style="display: flex; align-items: flex-end; gap: 10px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 4px; height: 4px; background: {{primary}}; border-radius: 1px"></div><span style="font-size: 11px; color: #5D6878">4</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 8px; height: 8px; background: {{primary}}; border-radius: 2px"></div><span style="font-size: 11px; color: #5D6878">8</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 12px; height: 12px; background: {{primary}}; border-radius: 2px"></div><span style="font-size: 11px; color: #5D6878">12</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 16px; height: 16px; background: {{primary}}; border-radius: 3px"></div><span style="font-size: 11px; color: #5D6878">16</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 20px; height: 20px; background: {{primary}}; border-radius: 3px"></div><span style="font-size: 11px; color: #5D6878">20</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 24px; height: 24px; background: {{primary}}; border-radius: 4px"></div><span style="font-size: 11px; color: #5D6878">24</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 32px; height: 32px; background: {{primary}}; border-radius: 4px"></div><span style="font-size: 11px; color: #5D6878">32</span></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 48px; height: 48px; background: {{primary}}; border-radius: 6px"></div><span style="font-size: 11px; color: #5D6878">48</span></div>
+      </div>
+      <h3 style="margin: 6px 0 0; font-size: 15px; font-weight: 600; color: #3A4556">Radius</h3>
+      <div style="display: flex; gap: 12px; align-items: center">
+        <div style="width: 52px; height: 52px; border: 2px solid #0E1726; border-radius: 8px"></div>
+        <div style="width: 52px; height: 52px; border: 2px solid #0E1726; border-radius: 12px"></div>
+        <div style="width: 52px; height: 52px; border: 2px solid #0E1726; border-radius: 16px"></div>
+        <div style="width: 52px; height: 52px; border: 2px solid #0E1726; border-radius: 24px 24px 0 0"></div>
+        <div style="width: 80px; height: 36px; border: 2px solid #0E1726; border-radius: 999px"></div>
+      </div>
+      <span style="font-size: 13px; line-height: 1.5; color: #5D6878">8 칩 · 12 입력 · 16 카드 · 24 시트 · pill 버튼/배지</span>
+    </div>
+
+    <div style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 18px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 700">Elevation</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; background: #F5F6F4; border-radius: 16px; padding: 20px">
+        <div style="height: 72px; background: #FFFFFF; border-radius: 14px; box-shadow: inset 0 0 0 1px #E9EBEE; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #3A4556">e0 · 선</div>
+        <div style="height: 72px; background: #FFFFFF; border-radius: 14px; box-shadow: 0 1px 2px rgba(14,23,38,.06), 0 1px 1px rgba(14,23,38,.04); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #3A4556">e1 · 카드</div>
+        <div style="height: 72px; background: #FFFFFF; border-radius: 14px; box-shadow: 0 6px 16px rgba(14,23,38,.08), 0 2px 4px rgba(14,23,38,.04); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #3A4556">e2 · 떠 있는 바</div>
+        <div style="height: 72px; background: #FFFFFF; border-radius: 14px; box-shadow: 0 16px 40px rgba(14,23,38,.16); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #3A4556">e3 · 시트</div>
+      </div>
+      <span style="font-size: 13px; line-height: 1.5; color: #5D6878">그림자는 높이를 뜻할 때만. 대부분의 카드는 e0 또는 e1.</span>
+    </div>
+
+    <div style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 700">Motion</h2>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #E9EBEE; padding-bottom: 10px"><span>micro · 탭, 토글</span><span style="color: #5D6878">120ms · standard</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #E9EBEE; padding-bottom: 10px"><span>화면 전환</span><span style="color: #5D6878">280ms · emphasized</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #E9EBEE; padding-bottom: 10px"><span>바텀 시트</span><span style="color: #5D6878">spring · damping 0.86</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #E9EBEE; padding-bottom: 10px"><span>가격 변경</span><span style="color: #5D6878">숫자 롤링 240ms</span></div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px"><span>결제 완료</span><span style="color: #5D6878">체크 드로잉 480ms + 햅틱</span></div>
+      <span style="font-size: 13px; line-height: 1.5; color: #5D6878">standard (.2,0,0,1) · emphasized (.05,.7,.1,1). 시스템 '동작 줄이기' 설정 시 페이드로 대체.</span>
+    </div>
+  </section>
+
+  <section style="background: #FFFFFF; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 700">Components</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 13px; font-weight: 600; color: #5D6878">Buttons · 최소 높이 52 / 터치 48+</span>
+        <button style="height: 56px; border: 0; border-radius: 16px; background: {{primary}}; color: #FFFFFF; font: 600 17px 'IBM Plex Sans KR', sans-serif">52,000원 결제하기</button>
+        <button style="height: 52px; border: 0; border-radius: 16px; background: #E9F6F4; color: #08615D; font: 600 16px 'IBM Plex Sans KR', sans-serif">상담으로 문의하기</button>
+        <button style="height: 52px; border: 1px solid #D5D9DF; border-radius: 16px; background: #FFFFFF; color: #0E1726; font: 600 16px 'IBM Plex Sans KR', sans-serif">날짜 변경</button>
+        <button disabled="" style="height: 56px; border: 0; border-radius: 16px; background: #E9EBEE; color: #5D6878; font: 600 17px 'IBM Plex Sans KR', sans-serif">결제수단을 등록해 주세요</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 13px; font-weight: 600; color: #5D6878">Option card · 선택 상태</span>
+        <label style="display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 16px; border: 2px solid {{primary}}; background: #E9F6F4">
+          <input type="radio" name="dsopt" checked="" style="width: 20px; height: 20px; accent-color: {{primary}}; margin: 0">
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 16px">화장실 2개</strong><span style="font-size: 13px; color: #3A4556">약 2시간</span></span>
+          <strong style="font-size: 16px; font-variant-numeric: tabular-nums">52,000원</strong>
+        </label>
+        <label style="display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 16px; border: 1px solid #E9EBEE; background: #FFFFFF">
+          <input type="radio" name="dsopt" style="width: 20px; height: 20px; accent-color: {{primary}}; margin: 0">
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 16px">화장실 3개</strong><span style="font-size: 13px; color: #5D6878">약 3시간</span></span>
+          <strong style="font-size: 16px; font-variant-numeric: tabular-nums">69,000원</strong>
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #3A4556">집 크기 (평)
+          <input value="24" style="height: 52px; border: 1px solid #D5D9DF; border-radius: 12px; padding: 0 16px; font: 500 16px 'IBM Plex Sans KR', sans-serif; color: #0E1726">
+        </label>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 13px; font-weight: 600; color: #5D6878">Icons · 24 grid · 1.75 stroke</span>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="원룸"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="주방"><path d="M4 11h16v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M2 11h2M20 11h2M9.5 8c0-1.2.6-2.2 1.2-2.8M13.5 8c0-1.2.6-2.2 1.2-2.8"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="화장실"><path d="M3 12h18v3a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V6.5a2.5 2.5 0 0 1 4.6-1.4"/><path d="m7 20-1 2M17 20l1 2"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="매트리스"><path d="M3 18V7M21 18v-5a3 3 0 0 0-3-3h-7v5M3 15h18"/><circle cx="7" cy="11.5" r="1.6"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="에어컨"><rect x="3" y="5" width="18" height="8" rx="2"/><path d="M7 10h10M8 17l-1 2M12 17v3M16 17l1 2"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="소파"><path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM6 18v2M18 18v2"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="이사 청소"><path d="M2 6h11v10H2zM13 9h4l3 3v4h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg></div>
+          <div style="height: 64px; border-radius: 14px; background: #F5F6F4; display: flex; align-items: center; justify-content: center; color: #0E1726"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="입주 청소"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l2 2M14.5 8.5l2 2"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"primary":{"editor":"color","default":"#0B7A75","options":["#0B7A75","#2F5BEA","#0E1726","#12B886"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { primary: this.props.primary ?? '#0B7A75' };
+  }
+}
+</script>
+</body>
+</html>

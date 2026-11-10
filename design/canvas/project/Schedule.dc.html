@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>방문 날짜와 시간</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans KR',system-ui,sans-serif;color:#0E1726}
+a{color:inherit;text-decoration:none}a:hover{color:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'IBM Plex Sans KR', system-ui, sans-serif; color: #0E1726">
+  <div style="height: 56px; display: flex; align-items: center; padding: 0 4px">
+    <a href="Service.dc.html" aria-label="뒤로" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E1726" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></a>
+    <span style="flex: 1; text-align: center; font-size: 16px; font-weight: 600; margin-right: 48px">3 / 4 · 일정</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 0 16px">
+    <div style="height: 3px; border-radius: 2px; background: #0B7A75"></div><div style="height: 3px; border-radius: 2px; background: #0B7A75"></div><div style="height: 3px; border-radius: 2px; background: #0B7A75"></div><div style="height: 3px; border-radius: 2px; background: #E9EBEE"></div>
+  </div>
+
+  <div style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 22px">
+    <h1 style="margin: 0; font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em">언제 방문할까요?</h1>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; background: #F5F6F4">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A4556" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><strong style="font-size: 14px">우리집 · 24평</strong><span style="font-size: 13px; color: #5D6878">서울 강남구 테헤란로 [상세주소]</span></div>
+      <button style="height: 36px; padding: 0 12px; border: 1px solid #D5D9DF; border-radius: 10px; background: #FFFFFF; font: 600 13px 'IBM Plex Sans KR', sans-serif; color: #0E1726">변경</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <strong style="font-size: 16px">2026년 11월</strong>
+        <button style="height: 36px; border: 0; background: transparent; font: 600 13px 'IBM Plex Sans KR', sans-serif; color: #0B7A75; padding: 0">달력으로 보기</button>
+      </div>
+      <div role="radiogroup" aria-label="방문 날짜" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{days}}" as="d" hint-placeholder-count="14">
+          <button role="radio" aria-checked="{{d.selected}}" aria-label="{{d.aria}}" onClick="{{d.pick}}" style="{{d.style}}">
+            <span style="{{d.dowStyle}}">{{d.dow}}</span>
+            <span style="font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums">{{d.num}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; color: #5D6878">내일부터 60일 이내로 예약할 수 있어요</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <strong style="font-size: 16px">도착 시간</strong>
+      <div role="radiogroup" aria-label="도착 시간" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{slots}}" as="s" hint-placeholder-count="4">
+          <button role="radio" aria-checked="{{s.selected}}" disabled="{{s.full}}" onClick="{{s.pick}}" style="{{s.style}}">
+            <span style="font-size: 16px; font-weight: 600">{{s.label}}</span>
+            <span style="font-size: 12px; font-weight: 500">{{s.sub}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: #E9F6F4">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#08615D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span style="font-size: 14px; line-height: 1.5; color: #08615D">약 2시간 소요 · <strong>{{endText}}쯤 끝나요.</strong> 그 시간까지 일정을 비워 두세요.</span>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; box-shadow: 0 -1px 0 #E9EBEE; padding: 12px 16px 26px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; justify-content: space-between; font-size: 14px"><span style="color: #3A4556">{{summary}}</span><strong style="font-variant-numeric: tabular-nums">52,000원</strong></div>
+    <a href="Checkout.dc.html" style="height: 56px; border-radius: 16px; background: #0B7A75; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600">결제하러 가기</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { day: 2, slot: 1 }; }
+  renderVals() {
+    const dows = ['일', '월', '화', '수', '목', '금', '토'];
+    const base = new Date(2026, 10, 11);
+    const slotDefs = [
+      { label: '오전 8시', h: 8 }, { label: '오전 9시', h: 9 },
+      { label: '오후 1시', h: 13 }, { label: '오후 2시', h: 14 }
+    ];
+    const isFull = (di, si) => (di * 3 + si * 5) % 7 === 0;
+    const days = Array.from({ length: 14 }, (_, i) => {
+      const dt = new Date(base); dt.setDate(base.getDate() + i);
+      const dw = dt.getDay(); const sel = i === this.state.day;
+      const dowColor = sel ? '#FFFFFF' : dw === 0 ? '#C8322B' : dw === 6 ? '#2F5BEA' : '#5D6878';
+      return {
+        dow: dows[dw], num: dt.getDate(), selected: sel,
+        aria: (dt.getMonth() + 1) + '월 ' + dt.getDate() + '일 ' + dows[dw] + '요일',
+        dowStyle: 'font-size: 11px; font-weight: 600; color: ' + dowColor,
+        style: 'height: 60px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer; padding: 0; ' +
+          (sel ? 'border: 0; background: #0E1726; color: #FFFFFF' : 'border: 1px solid #E3E6EA; background: #FFFFFF; color: #0E1726'),
+        pick: () => this.setState({ day: i, slot: isFull(i, this.state.slot) ? slotDefs.findIndex((_, k) => !isFull(i, k)) : this.state.slot })
+      };
+    });
+    const slots = slotDefs.map((s, i) => {
+      const full = isFull(this.state.day, i); const sel = !full && i === this.state.slot;
+      return {
+        label: s.label, full, selected: sel,
+        sub: full ? '마감' : s.h + ':00–' + (s.h + 1) + ':00 도착',
+        style: 'height: 64px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: inherit; padding: 0; ' +
+          (full ? 'border: 1px dashed #D5D9DF; background: #F5F6F4; color: #5D6878; cursor: not-allowed; text-decoration: line-through'
+            : sel ? 'border: 2px solid #0B7A75; background: #E9F6F4; color: #08615D; cursor: pointer'
+            : 'border: 1px solid #E3E6EA; background: #FFFFFF; color: #0E1726; cursor: pointer'),
+        pick: () => { if (!full) this.setState({ slot: i }); }
+      };
+    });
+    const d = days[this.state.day]; const s = slotDefs[this.state.slot];
+    const end = s.h + 1 + 2;
+    const fmt = (h) => (h < 12 ? '오전 ' + h : '오후 ' + (h === 12 ? 12 : h - 12)) + '시';
+    return {
+      days, slots,
+      endText: fmt(end),
+      summary: '11월 ' + d.num + '일 (' + d.dow + ') ' + s.label + ' 도착'
+    };
+  }
+}
+</script>
+</body>
+</html>
