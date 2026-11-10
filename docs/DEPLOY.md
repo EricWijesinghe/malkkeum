@@ -39,8 +39,14 @@ connected to the **private** repo:
    (service account created in the client's Play Console, *Release* permission, secure).
 4. Create the two apps in App Store Connect / Play Console (bundle ids `com.malkkeum.customer`,
    `com.malkkeum.partner`), run the four workflows in `codemagic.yaml`.
-5. Store listing text: `docs/store/listing-ko.md`; data safety: `docs/store/data-safety.md`;
-   demo login from the client's console (guide 03 D).
+5. Store listing text: `docs/store/listing-{ko,en,ja,zh,vi}.md` (check lengths with
+   `python -I docs/store/check_listings.py`); data safety: `docs/store/data-safety.md` (Google) and
+   `docs/store/app-privacy.md` (Apple); demo login from the client's console (guide 03 D).
+6. Store images are generated, not hand-made: `scripts/store/generate.sh` renders both apps at the store
+   sizes (iPhone 6.9"/6.5", iPad 13", Android 1080x2400), frames them with captions in 5 languages, and
+   writes the Play feature graphics and poster. Output: `docs/store/screenshots/<app>/<size>/<lang>/NN-name.png`,
+   `docs/store/graphics/`. Re-run after app screen changes, then upload the folders. Captions:
+   `docs/store/screenshots/captions.json`. Screen list and fake data: `app/apps/*/test/store_screenshots/`.
 
 Apps bake in `API_BASE` at build time, so a domain change means a rebuild.
 

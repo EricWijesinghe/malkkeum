@@ -60,7 +60,8 @@ jobs:
       - run: (cd packages/core && flutter gen-l10n)
       - run: dart analyze --fatal-infos
       - name: Widget tests
-        run: for p in packages/core packages/ui apps/customer apps/partner apps/console; do (cd $p && flutter test) || exit 1; done
+        # store_screenshots = generated store images (scripts/store/generate.sh), not part of CI.
+        run: for p in packages/core packages/ui apps/customer apps/partner apps/console; do (cd $p && flutter test --exclude-tags store_screenshots) || exit 1; done
 
   images:
     runs-on: ubuntu-latest

@@ -7,3 +7,4 @@ export 'src/fake_api.dart';
 export 'src/fake_storage.dart';
 export 'src/fixtures.dart';
 export 'src/harness.dart';
+export 'src/store_shots.dart';
