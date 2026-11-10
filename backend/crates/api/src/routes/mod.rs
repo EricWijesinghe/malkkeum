@@ -7,6 +7,7 @@ mod catalog;
 mod chat;
 mod checkout_policy;
 pub(crate) mod checkouts;
+mod finance;
 mod me;
 mod member;
 mod partner;
@@ -62,9 +63,10 @@ pub fn router(state: AppState) -> Router {
                 .merge(admin_content::routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
-                .merge(setup::admin_routes()),
+                .merge(setup::admin_routes())
+                .merge(finance::routes()),
         )
-        .nest("/partner", partner::routes().merge(partner_jobs::routes()))
+        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler));
 

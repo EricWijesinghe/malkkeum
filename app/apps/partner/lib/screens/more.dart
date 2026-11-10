@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'chat.dart';
+import 'earnings.dart';
 
 class MoreTab extends StatelessWidget {
   const MoreTab({super.key});
@@ -51,9 +52,9 @@ class MoreTab extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => _go(context, const SettlementsScreen()),
+                  onPressed: () => _go(context, const EarningsScreen()),
                   child: Text(
-                    '${t.pSettlements} ›',
+                    '${t.pEarnings} ›',
                     style: TextStyle(color: context.colors.fresh),
                   ),
                 ),

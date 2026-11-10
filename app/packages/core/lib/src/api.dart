@@ -53,6 +53,12 @@ class ApiClient {
   Future<dynamic> patch(String path, [Object? body]) => _send('PATCH', path, body: body);
   Future<dynamic> delete(String path) => _send('DELETE', path);
 
+  /// Raw response bytes (CSV exports). The bearer token stays in the header, never in the URL.
+  Future<List<int>> getBytes(String path, {Map<String, String?>? query}) async {
+    final bytes = await _exec(path, () => http.Request('GET', _uri(path, query)), raw: true);
+    return bytes as List<int>;
+  }
+
   Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query}) => _exec(path, () {
         final req = http.Request(method, _uri(path, query))..headers['Content-Type'] = 'application/json';
         if (body != null) req.body = jsonEncode(body);
@@ -60,7 +66,7 @@ class ApiClient {
       });
 
   /// Sends a request (rebuilt on retry), refreshing the access token once on 401.
-  Future<dynamic> _exec(String path, http.BaseRequest Function() build, {Duration timeout = _timeout, bool retried = false}) async {
+  Future<dynamic> _exec(String path, http.BaseRequest Function() build, {Duration timeout = _timeout, bool retried = false, bool raw = false}) async {
     final req = build();
     final token = session.accessToken;
     if (token != null) req.headers['Authorization'] = 'Bearer $token';
@@ -73,9 +79,9 @@ class ApiClient {
       throw const ApiException(0, 'network');
     }
     if (res.statusCode == 401 && !retried && session.refreshToken != null && !path.startsWith('/auth/')) {
-      if (await _refresh()) return _exec(path, build, timeout: timeout, retried: true);
+      if (await _refresh()) return _exec(path, build, timeout: timeout, retried: true, raw: raw);
     }
-    final decoded = _decode(res);
+    final decoded = raw ? res.bodyBytes : _decode(res);
     if (res.statusCode >= 200 && res.statusCode < 300) return decoded;
     final code = decoded is Map ? ((decoded['error'] as Map?)?['code'] as String?) : null;
     throw ApiException(res.statusCode, code ?? 'http_${res.statusCode}');
