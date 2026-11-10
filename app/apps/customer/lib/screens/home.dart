@@ -183,8 +183,9 @@ class _AddressChip extends StatelessWidget {
       onTap: () => Navigator.of(
         context,
       ).push(MaterialPageRoute<void>(builder: (_) => const AddressesScreen())),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: Space.xs),
+      // 48 dp minimum touch target (Android / WCAG).
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

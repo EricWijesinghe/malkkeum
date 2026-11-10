@@ -1,0 +1,94 @@
+# Cloud builds for the store apps (no Mac needed). Set up once in the Codemagic web UI:
+#   1. Teams → Integrations → App Store Connect: add an API key named "malkkeum_asc".
+#   2. Code signing → Android keystores: upload the upload keystore with reference "malkkeum_upload".
+#   3. Environment variables → group "malkkeum":
+#        API_BASE                     https://<your domain>            (the server the apps talk to)
+#        GCLOUD_SERVICE_ACCOUNT_CREDENTIALS  Google Play service-account JSON (secure)
+#   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android".
+# Step-by-step with screenshots: docs/guide/03-앱-출시.md
+
+definitions:
+  prepare: &prepare
+    name: Strings and packages
+    script: |
+      cd app
+      python3 -I tool/gen_arb.py
+      flutter pub get
+      (cd packages/core && flutter gen-l10n)
+  env: &env
+    flutter: stable
+    xcode: latest
+    groups: [malkkeum]
+
+workflows:
+  customer-android:
+    name: Customer · Google Play
+    max_build_duration: 60
+    environment:
+      <<: *env
+      android_signing: [malkkeum_upload]
+    scripts:
+      - *prepare
+      - name: Build app bundle
+        working_directory: app/apps/customer
+        script: flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE
+    artifacts: [app/apps/customer/build/**/outputs/**/*.aab]
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  customer-ios:
+    name: Customer · App Store
+    max_build_duration: 90
+    integrations: { app_store_connect: malkkeum_asc }
+    environment:
+      <<: *env
+      ios_signing: { distribution_type: app_store, bundle_identifier: com.malkkeum.customer }
+    scripts:
+      - *prepare
+      - name: Signing profiles
+        script: xcode-project use-profiles
+      - name: Build ipa
+        working_directory: app/apps/customer
+        script: flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE --export-options-plist=/Users/builder/export_options.plist
+    artifacts: [app/apps/customer/build/ios/ipa/*.ipa]
+    publishing:
+      app_store_connect: { auth: integration, submit_to_testflight: true }
+
+  partner-android:
+    name: Partner · Google Play
+    max_build_duration: 60
+    environment:
+      <<: *env
+      android_signing: [malkkeum_upload]
+    scripts:
+      - *prepare
+      - name: Build app bundle
+        working_directory: app/apps/partner
+        script: flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE
+    artifacts: [app/apps/partner/build/**/outputs/**/*.aab]
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  partner-ios:
+    name: Partner · App Store
+    max_build_duration: 90
+    integrations: { app_store_connect: malkkeum_asc }
+    environment:
+      <<: *env
+      ios_signing: { distribution_type: app_store, bundle_identifier: com.malkkeum.partner }
+    scripts:
+      - *prepare
+      - name: Signing profiles
+        script: xcode-project use-profiles
+      - name: Build ipa
+        working_directory: app/apps/partner
+        script: flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE --export-options-plist=/Users/builder/export_options.plist
+    artifacts: [app/apps/partner/build/ios/ipa/*.ipa]
+    publishing:
+      app_store_connect: { auth: integration, submit_to_testflight: true }

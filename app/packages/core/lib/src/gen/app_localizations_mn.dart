@@ -2082,4 +2082,168 @@ class TMn extends T {
 
   @override
   String get pSpace => 'Талбайн мэдээлэл';
+
+  @override
+  String get cSetup => 'Тохиргоо';
+
+  @override
+  String get cSetupTitle => 'Эхлүүлэхэд бэлтгэх';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$total-с $done дууссан';
+  }
+
+  @override
+  String get cSetupAllDone => 'Бүх зүйл бэлэн!';
+
+  @override
+  String get cSetupBusiness => 'Бизнесийн мэдээлэл';
+
+  @override
+  String get cSetupBusinessName => 'Үйлчилгээний нэр';
+
+  @override
+  String get cSetupSupportPhone => 'Тусламжийн утас';
+
+  @override
+  String get cSetupSupportEmail => 'Тусламжийн имэйл';
+
+  @override
+  String get cSetupSupportHours => 'Тусламжийн цаг';
+
+  @override
+  String get cSetupColor => 'Брэндийн өнгө';
+
+  @override
+  String get cSetupLogo => 'Лого байршуулах';
+
+  @override
+  String get cSetupCompany => 'Компанийн мэдээлэл (апп, вэбийн доод хэсэгт)';
+
+  @override
+  String get cSetupLegalName => 'Хуулийн нэр';
+
+  @override
+  String get cSetupCeo => 'Төлөөлөгч';
+
+  @override
+  String get cSetupRegNo => 'Бүртгэлийн дугаар';
+
+  @override
+  String get cSetupMailOrderNo => 'Онлайн худалдааны бүртгэл';
+
+  @override
+  String get cSetupAddress => 'Хаяг';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Нууцлалын хариуцагч';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Апп дэлгүүрийн холбоос (бөглөсний дараа вэбийн товч идэвхжинэ)';
+
+  @override
+  String get cSetupCustomerApp => 'Хэрэглэгчийн апп';
+
+  @override
+  String get cSetupPartnerApp => 'Түншийн апп';
+
+  @override
+  String get cSetupSave => 'Хадгалах';
+
+  @override
+  String get cSetupSaved => 'Хадгалсан';
+
+  @override
+  String get cSetupTest => 'Холболт шалгах';
+
+  @override
+  String get cSetupClear => 'Салгах';
+
+  @override
+  String get cSetupConnected => 'Холбогдсон';
+
+  @override
+  String get cSetupNotConnected => 'Холбогдоогүй';
+
+  @override
+  String get cSetupFromEnv => 'Серверийн тохиргоог ашиглаж байна';
+
+  @override
+  String get cSetupCheckInApp => 'Хадгалсан · аппаас нэвтэрч шалгана уу';
+
+  @override
+  String get cSetupInvalidKey => 'Түлхүүр буруу. Хуулсан утгаа шалгана уу';
+
+  @override
+  String get cSetupUnreachable =>
+      'Үйлчилгээнд холбогдож чадсангүй. Дараа дахин оролдоно уу';
+
+  @override
+  String get cSetupKeepValue => 'Хадгалсан (солих үед л оруулна)';
+
+  @override
+  String get cSetupGuide => 'Тохируулах заавар';
+
+  @override
+  String get cSetupOpenSite => 'Сайт нээх';
+
+  @override
+  String get cSetupWebhook => 'Webhook хаяг (PortOne консолд буулгана)';
+
+  @override
+  String get cCopied => 'Хуулсан';
+
+  @override
+  String get cSetupDevMode => 'Туршилтын горим: бодит төлбөр, мессеж явахгүй';
+
+  @override
+  String get cSetupOptional => 'Заавал биш';
+
+  @override
+  String get cIntPortone => 'Төлбөр (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS ба KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Аппын мэдэгдэл (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao нэвтрэлт';
+
+  @override
+  String get cIntNaver => 'Naver нэвтрэлт';
+
+  @override
+  String get cIntGoogle => 'Google нэвтрэлт';
+
+  @override
+  String get cIntApple => 'Apple нэвтрэлт';
+
+  @override
+  String get cFirstRunTitle => 'Тавтай морил! Эзэмшигчийн бүртгэл үүсгэнэ үү';
+
+  @override
+  String get cFirstRunBody =>
+      'Суулгах үед гарсан 12 тэмдэгт кодыг оруулна уу. Энэ бүртгэл бүх тохиргоог удирдана.';
+
+  @override
+  String get cFirstRunCode => 'Суулгацын код';
+
+  @override
+  String get cName => 'Нэр';
+
+  @override
+  String get cFirstRunCreate => 'Бүртгэл үүсгээд эхлэх';
+
+  @override
+  String get cWrongSetupCode => 'Суулгацын код буруу';
+
+  @override
+  String get cWeakPassword => 'Нууц үг хамгийн багадаа 12 тэмдэгт байна';
+
+  @override
+  String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
 }

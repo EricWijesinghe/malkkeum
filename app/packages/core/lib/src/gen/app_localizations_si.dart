@@ -2083,4 +2083,168 @@ class TSi extends T {
 
   @override
   String get pSpace => 'ඉඩ තොරතුරු';
+
+  @override
+  String get cSetup => 'සැකසුම';
+
+  @override
+  String get cSetupTitle => 'දියත් කිරීමට සූදානම';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$total න් $done ක් අවසන්';
+  }
+
+  @override
+  String get cSetupAllDone => 'සියල්ල සූදානම්!';
+
+  @override
+  String get cSetupBusiness => 'ව්‍යාපාර තොරතුරු';
+
+  @override
+  String get cSetupBusinessName => 'සේවාවේ නම';
+
+  @override
+  String get cSetupSupportPhone => 'සහාය දුරකථනය';
+
+  @override
+  String get cSetupSupportEmail => 'සහාය ඊමේල්';
+
+  @override
+  String get cSetupSupportHours => 'සහාය වේලාව';
+
+  @override
+  String get cSetupColor => 'සන්නාම වර්ණය';
+
+  @override
+  String get cSetupLogo => 'ලාංඡනය උඩුගත කරන්න';
+
+  @override
+  String get cSetupCompany => 'සමාගම් තොරතුරු (යෙදුමේ සහ වෙබ් අඩවියේ පහළ)';
+
+  @override
+  String get cSetupLegalName => 'නීතිමය නම';
+
+  @override
+  String get cSetupCeo => 'නියෝජිත';
+
+  @override
+  String get cSetupRegNo => 'ලියාපදිංචි අංකය';
+
+  @override
+  String get cSetupMailOrderNo => 'මාර්ගගත විකුණුම් ලියාපදිංචි අංකය';
+
+  @override
+  String get cSetupAddress => 'ලිපිනය';
+
+  @override
+  String get cSetupPrivacyOfficer => 'පෞද්ගලිකත්ව නිලධාරී';
+
+  @override
+  String get cSetupStoreLinks =>
+      'ස්ටෝර් සබැඳි (පුරවූ පසු වෙබ් බොත්තම් සක්‍රිය වේ)';
+
+  @override
+  String get cSetupCustomerApp => 'පාරිභෝගික යෙදුම';
+
+  @override
+  String get cSetupPartnerApp => 'හවුල්කරු යෙදුම';
+
+  @override
+  String get cSetupSave => 'සුරකින්න';
+
+  @override
+  String get cSetupSaved => 'සුරැකිණි';
+
+  @override
+  String get cSetupTest => 'සම්බන්ධතාව පරීක්ෂා කරන්න';
+
+  @override
+  String get cSetupClear => 'විසන්ධි කරන්න';
+
+  @override
+  String get cSetupConnected => 'සම්බන්ධයි';
+
+  @override
+  String get cSetupNotConnected => 'සම්බන්ධ නැත';
+
+  @override
+  String get cSetupFromEnv => 'සේවාදායක සැකසුම් භාවිතයේ';
+
+  @override
+  String get cSetupCheckInApp => 'සුරැකිණි · යෙදුමෙන් පිවිසී තහවුරු කරන්න';
+
+  @override
+  String get cSetupInvalidKey =>
+      'යතුර ප්‍රතික්ෂේප විය. පිටපත් කළ අගය පරීක්ෂා කරන්න';
+
+  @override
+  String get cSetupUnreachable => 'සේවාවට ළඟා විය නොහැක. පසුව උත්සාහ කරන්න';
+
+  @override
+  String get cSetupKeepValue => 'සුරැකිණි (වෙනස් කිරීමට පමණක් ඇතුළත් කරන්න)';
+
+  @override
+  String get cSetupGuide => 'සකසන ආකාරය';
+
+  @override
+  String get cSetupOpenSite => 'අඩවිය විවෘත කරන්න';
+
+  @override
+  String get cSetupWebhook => 'Webhook ලිපිනය (PortOne කොන්සෝලයට අලවන්න)';
+
+  @override
+  String get cCopied => 'පිටපත් විය';
+
+  @override
+  String get cSetupDevMode => 'පරීක්ෂණ මාදිලිය: සැබෑ ගෙවීම් හෝ පණිවිඩ නොයවයි';
+
+  @override
+  String get cSetupOptional => 'විකල්ප';
+
+  @override
+  String get cIntPortone => 'ගෙවීම් (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS සහ KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'යෙදුම් දැනුම්දීම් (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao පිවිසුම';
+
+  @override
+  String get cIntNaver => 'Naver පිවිසුම';
+
+  @override
+  String get cIntGoogle => 'Google පිවිසුම';
+
+  @override
+  String get cIntApple => 'Apple පිවිසුම';
+
+  @override
+  String get cFirstRunTitle => 'සාදරයෙන් පිළිගනිමු! හිමිකරු ගිණුම සාදන්න';
+
+  @override
+  String get cFirstRunBody =>
+      'ස්ථාපනයේදී පෙන්වූ අකුරු 12 කේතය ඇතුළත් කරන්න. මෙම ගිණුම සියලු සැකසුම් කළමනාකරණය කරයි.';
+
+  @override
+  String get cFirstRunCode => 'සැකසුම් කේතය';
+
+  @override
+  String get cName => 'නම';
+
+  @override
+  String get cFirstRunCreate => 'ගිණුම සාදා අරඹන්න';
+
+  @override
+  String get cWrongSetupCode => 'සැකසුම් කේතය වැරදියි';
+
+  @override
+  String get cWeakPassword => 'මුරපදයට අවම අකුරු 12 ක් අවශ්‍යයි';
+
+  @override
+  String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
 }

@@ -4,6 +4,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing: CI secrets (Codemagic CM_KEYSTORE_*) or android/key.properties.
+// Without either, release builds fall back to debug keys so `flutter run --release` still works.
+val keyProps = java.util.Properties().apply {
+    val f = rootProject.file("key.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun signingValue(env: String, prop: String): String? = System.getenv(env) ?: keyProps.getProperty(prop)
+val releaseStore = signingValue("CM_KEYSTORE_PATH", "storeFile")
+
+
 android {
     namespace = "com.malkkeum.console"
     compileSdk = flutter.compileSdkVersion
@@ -15,7 +25,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.malkkeum.console"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -29,11 +38,20 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (releaseStore != null) {
+            create("release") {
+                storeFile = file(releaseStore)
+                storePassword = signingValue("CM_KEYSTORE_PASSWORD", "storePassword")
+                keyAlias = signingValue("CM_KEY_ALIAS", "keyAlias")
+                keyPassword = signingValue("CM_KEY_PASSWORD", "keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (releaseStore != null) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
         }
     }
 }

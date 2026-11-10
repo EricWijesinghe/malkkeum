@@ -221,7 +221,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              childAspectRatio: 2.6,
+              childAspectRatio: 1.5, // 2.6 clipped the title and window text at 390 dp
               mainAxisSpacing: Space.xs,
               crossAxisSpacing: Space.xs,
               children: [

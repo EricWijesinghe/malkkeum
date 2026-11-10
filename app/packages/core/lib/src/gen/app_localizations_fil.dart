@@ -2091,4 +2091,173 @@ class TFil extends T {
 
   @override
   String get pSpace => 'Impormasyon ng espasyo';
+
+  @override
+  String get cSetup => 'Setup';
+
+  @override
+  String get cSetupTitle => 'Paghahanda sa paglulunsad';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$done sa $total tapos';
+  }
+
+  @override
+  String get cSetupAllDone => 'Handa na ang lahat!';
+
+  @override
+  String get cSetupBusiness => 'Profile ng negosyo';
+
+  @override
+  String get cSetupBusinessName => 'Pangalan ng serbisyo';
+
+  @override
+  String get cSetupSupportPhone => 'Telepono ng suporta';
+
+  @override
+  String get cSetupSupportEmail => 'Email ng suporta';
+
+  @override
+  String get cSetupSupportHours => 'Oras ng suporta';
+
+  @override
+  String get cSetupColor => 'Kulay ng brand';
+
+  @override
+  String get cSetupLogo => 'Mag-upload ng logo';
+
+  @override
+  String get cSetupCompany =>
+      'Detalye ng kumpanya (makikita sa ibaba ng app at website)';
+
+  @override
+  String get cSetupLegalName => 'Legal na pangalan';
+
+  @override
+  String get cSetupCeo => 'Kinatawan';
+
+  @override
+  String get cSetupRegNo => 'Numero ng rehistro';
+
+  @override
+  String get cSetupMailOrderNo => 'Numero ng online sales registration';
+
+  @override
+  String get cSetupAddress => 'Address';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Privacy officer';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Mga store link (gagana ang mga button sa website kapag napunan)';
+
+  @override
+  String get cSetupCustomerApp => 'App ng customer';
+
+  @override
+  String get cSetupPartnerApp => 'App ng partner';
+
+  @override
+  String get cSetupSave => 'I-save';
+
+  @override
+  String get cSetupSaved => 'Na-save';
+
+  @override
+  String get cSetupTest => 'Subukan ang koneksyon';
+
+  @override
+  String get cSetupClear => 'Idiskonekta';
+
+  @override
+  String get cSetupConnected => 'Nakakonekta';
+
+  @override
+  String get cSetupNotConnected => 'Hindi nakakonekta';
+
+  @override
+  String get cSetupFromEnv => 'Gamit ang server settings';
+
+  @override
+  String get cSetupCheckInApp =>
+      'Na-save · kumpirmahin sa pag-sign in mula sa app';
+
+  @override
+  String get cSetupInvalidKey =>
+      'Tinanggihan ang key. Suriin ang kinopyang value';
+
+  @override
+  String get cSetupUnreachable =>
+      'Hindi maabot ang serbisyo. Subukan muli mamaya';
+
+  @override
+  String get cSetupKeepValue => 'Naka-save (i-type lang kung papalitan)';
+
+  @override
+  String get cSetupGuide => 'Paano i-setup';
+
+  @override
+  String get cSetupOpenSite => 'Buksan ang site';
+
+  @override
+  String get cSetupWebhook => 'Webhook URL (i-paste sa PortOne console)';
+
+  @override
+  String get cCopied => 'Nakopya';
+
+  @override
+  String get cSetupDevMode => 'Test mode: walang totoong bayad o mensahe';
+
+  @override
+  String get cSetupOptional => 'Opsyonal';
+
+  @override
+  String get cIntPortone => 'Bayad (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS at KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Push ng app (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao login';
+
+  @override
+  String get cIntNaver => 'Naver login';
+
+  @override
+  String get cIntGoogle => 'Google login';
+
+  @override
+  String get cIntApple => 'Apple login';
+
+  @override
+  String get cFirstRunTitle =>
+      'Maligayang pagdating! Gumawa ng account ng may-ari';
+
+  @override
+  String get cFirstRunBody =>
+      'Ilagay ang 12-character na code na ipinakita sa pag-install. Ang account na ito ang mamamahala sa lahat ng setting.';
+
+  @override
+  String get cFirstRunCode => 'Setup code';
+
+  @override
+  String get cName => 'Pangalan';
+
+  @override
+  String get cFirstRunCreate => 'Gumawa ng account at magsimula';
+
+  @override
+  String get cWrongSetupCode => 'Mali ang setup code';
+
+  @override
+  String get cWeakPassword =>
+      'Kailangan ng hindi bababa sa 12 character ang password';
+
+  @override
+  String get cInvalidValue => 'Pakisuri ang inilagay na value';
 }

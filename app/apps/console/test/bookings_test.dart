@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'dart:async';
 
 import 'package:console/screens/bookings.dart';
@@ -87,6 +88,9 @@ void main() {
     await settle(tester);
     expect(tester.widget<TextField>(find.widgetWithText(TextField, koT.cFinalPrice)).controller!.text, '60000');
 
+    // The send button sits below the fold of the panel's ListView on a 900 dp tall window.
+    await tester.ensureVisible(find.widgetWithText(PrimaryButton, koT.cSendQuote));
+    await settle(tester, duration: const Duration(milliseconds: 300));
     await tester.tap(find.widgetWithText(PrimaryButton, koT.cSendQuote));
     await settle(tester);
     expect(

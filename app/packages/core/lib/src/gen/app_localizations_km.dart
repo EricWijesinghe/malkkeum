@@ -2081,4 +2081,168 @@ class TKm extends T {
 
   @override
   String get pSpace => 'ព័ត៌មានលំហ';
+
+  @override
+  String get cSetup => 'ការកំណត់';
+
+  @override
+  String get cSetupTitle => 'ត្រៀមដាក់ឱ្យដំណើរការ';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return 'រួចរាល់ $done/$total';
+  }
+
+  @override
+  String get cSetupAllDone => 'អ្វីៗទាំងអស់រួចរាល់!';
+
+  @override
+  String get cSetupBusiness => 'ព័ត៌មានអាជីវកម្ម';
+
+  @override
+  String get cSetupBusinessName => 'ឈ្មោះសេវា';
+
+  @override
+  String get cSetupSupportPhone => 'ទូរស័ព្ទជំនួយ';
+
+  @override
+  String get cSetupSupportEmail => 'អ៊ីមែលជំនួយ';
+
+  @override
+  String get cSetupSupportHours => 'ម៉ោងជំនួយ';
+
+  @override
+  String get cSetupColor => 'ពណ៌ម៉ាក';
+
+  @override
+  String get cSetupLogo => 'ផ្ទុកឡូហ្គោ';
+
+  @override
+  String get cSetupCompany =>
+      'ព័ត៌មានក្រុមហ៊ុន (បង្ហាញខាងក្រោមកម្មវិធី និងគេហទំព័រ)';
+
+  @override
+  String get cSetupLegalName => 'ឈ្មោះផ្លូវច្បាប់';
+
+  @override
+  String get cSetupCeo => 'អ្នកតំណាង';
+
+  @override
+  String get cSetupRegNo => 'លេខចុះបញ្ជី';
+
+  @override
+  String get cSetupMailOrderNo => 'លេខចុះបញ្ជីលក់អនឡាញ';
+
+  @override
+  String get cSetupAddress => 'អាសយដ្ឋាន';
+
+  @override
+  String get cSetupPrivacyOfficer => 'មន្ត្រីការពារទិន្នន័យ';
+
+  @override
+  String get cSetupStoreLinks => 'តំណហាង (ប៊ូតុងលើគេហទំព័រនឹងដំណើរការពេលបំពេញ)';
+
+  @override
+  String get cSetupCustomerApp => 'កម្មវិធីអតិថិជន';
+
+  @override
+  String get cSetupPartnerApp => 'កម្មវិធីដៃគូ';
+
+  @override
+  String get cSetupSave => 'រក្សាទុក';
+
+  @override
+  String get cSetupSaved => 'បានរក្សាទុក';
+
+  @override
+  String get cSetupTest => 'សាកល្បងការតភ្ជាប់';
+
+  @override
+  String get cSetupClear => 'ផ្ដាច់';
+
+  @override
+  String get cSetupConnected => 'បានតភ្ជាប់';
+
+  @override
+  String get cSetupNotConnected => 'មិនទាន់តភ្ជាប់';
+
+  @override
+  String get cSetupFromEnv => 'កំពុងប្រើការកំណត់ម៉ាស៊ីនមេ';
+
+  @override
+  String get cSetupCheckInApp => 'បានរក្សាទុក · បញ្ជាក់ដោយចូលពីកម្មវិធី';
+
+  @override
+  String get cSetupInvalidKey =>
+      'កូនសោត្រូវបានបដិសេធ។ សូមពិនិត្យតម្លៃដែលបានចម្លង';
+
+  @override
+  String get cSetupUnreachable => 'មិនអាចភ្ជាប់សេវាបានទេ។ សូមព្យាយាមម្តងទៀត';
+
+  @override
+  String get cSetupKeepValue => 'បានរក្សាទុក (វាយតែពេលចង់ប្តូរ)';
+
+  @override
+  String get cSetupGuide => 'របៀបកំណត់';
+
+  @override
+  String get cSetupOpenSite => 'បើកគេហទំព័រ';
+
+  @override
+  String get cSetupWebhook => 'អាសយដ្ឋាន Webhook (បិទភ្ជាប់ក្នុង PortOne)';
+
+  @override
+  String get cCopied => 'បានចម្លង';
+
+  @override
+  String get cSetupDevMode => 'របៀបសាកល្បង៖ គ្មានការបង់ប្រាក់ ឬសារពិត';
+
+  @override
+  String get cSetupOptional => 'ស្រេចចិត្ត';
+
+  @override
+  String get cIntPortone => 'ការបង់ប្រាក់ (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS និង KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'ការជូនដំណឹងកម្មវិធី (Firebase)';
+
+  @override
+  String get cIntKakao => 'ចូលដោយ Kakao';
+
+  @override
+  String get cIntNaver => 'ចូលដោយ Naver';
+
+  @override
+  String get cIntGoogle => 'ចូលដោយ Google';
+
+  @override
+  String get cIntApple => 'ចូលដោយ Apple';
+
+  @override
+  String get cFirstRunTitle => 'សូមស្វាគមន៍! បង្កើតគណនីម្ចាស់';
+
+  @override
+  String get cFirstRunBody =>
+      'បញ្ចូលលេខកូដ ១២ តួដែលបង្ហាញពេលដំឡើង។ គណនីនេះគ្រប់គ្រងការកំណត់ទាំងអស់។';
+
+  @override
+  String get cFirstRunCode => 'លេខកូដដំឡើង';
+
+  @override
+  String get cName => 'ឈ្មោះ';
+
+  @override
+  String get cFirstRunCreate => 'បង្កើតគណនី ហើយចាប់ផ្ដើម';
+
+  @override
+  String get cWrongSetupCode => 'លេខកូដដំឡើងមិនត្រឹមត្រូវ';
+
+  @override
+  String get cWeakPassword => 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ១២ តួ';
+
+  @override
+  String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
 }

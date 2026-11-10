@@ -2032,4 +2032,166 @@ class TKo extends T {
 
   @override
   String get pSpace => '공간 정보';
+
+  @override
+  String get cSetup => '설정';
+
+  @override
+  String get cSetupTitle => '서비스 시작 준비';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$done/$total 완료';
+  }
+
+  @override
+  String get cSetupAllDone => '모든 준비가 끝났어요!';
+
+  @override
+  String get cSetupBusiness => '사업장 정보';
+
+  @override
+  String get cSetupBusinessName => '서비스 이름';
+
+  @override
+  String get cSetupSupportPhone => '고객센터 전화';
+
+  @override
+  String get cSetupSupportEmail => '고객센터 이메일';
+
+  @override
+  String get cSetupSupportHours => '상담 시간';
+
+  @override
+  String get cSetupColor => '대표 색상';
+
+  @override
+  String get cSetupLogo => '로고 올리기';
+
+  @override
+  String get cSetupCompany => '사업자 정보 (앱·웹사이트 하단에 표시)';
+
+  @override
+  String get cSetupLegalName => '상호(법인명)';
+
+  @override
+  String get cSetupCeo => '대표자';
+
+  @override
+  String get cSetupRegNo => '사업자등록번호';
+
+  @override
+  String get cSetupMailOrderNo => '통신판매업 신고번호';
+
+  @override
+  String get cSetupAddress => '사업장 주소';
+
+  @override
+  String get cSetupPrivacyOfficer => '개인정보 보호책임자';
+
+  @override
+  String get cSetupStoreLinks => '앱 스토어 주소 (출시 후 입력하면 웹사이트 버튼이 켜져요)';
+
+  @override
+  String get cSetupCustomerApp => '고객 앱';
+
+  @override
+  String get cSetupPartnerApp => '파트너 앱';
+
+  @override
+  String get cSetupSave => '저장';
+
+  @override
+  String get cSetupSaved => '저장했어요';
+
+  @override
+  String get cSetupTest => '연결 테스트';
+
+  @override
+  String get cSetupClear => '연결 해제';
+
+  @override
+  String get cSetupConnected => '연결됨';
+
+  @override
+  String get cSetupNotConnected => '연결 안 됨';
+
+  @override
+  String get cSetupFromEnv => '서버 설정 사용 중';
+
+  @override
+  String get cSetupCheckInApp => '저장됨 · 앱에서 로그인해 확인하세요';
+
+  @override
+  String get cSetupInvalidKey => '키가 올바르지 않아요. 복사한 값을 다시 확인해 주세요';
+
+  @override
+  String get cSetupUnreachable => '서비스에 연결할 수 없어요. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get cSetupKeepValue => '저장된 값 유지 (바꿀 때만 입력)';
+
+  @override
+  String get cSetupGuide => '따라 하기';
+
+  @override
+  String get cSetupOpenSite => '사이트 열기';
+
+  @override
+  String get cSetupWebhook => '웹훅 주소 (PortOne 콘솔에 붙여넣기)';
+
+  @override
+  String get cCopied => '복사했어요';
+
+  @override
+  String get cSetupDevMode => '테스트 모드예요. 실제 결제·문자는 나가지 않아요';
+
+  @override
+  String get cSetupOptional => '선택';
+
+  @override
+  String get cIntPortone => '결제 (PortOne)';
+
+  @override
+  String get cIntSolapi => '문자 · 알림톡 (Solapi)';
+
+  @override
+  String get cIntPush => '앱 푸시 알림 (Firebase)';
+
+  @override
+  String get cIntKakao => '카카오 로그인';
+
+  @override
+  String get cIntNaver => '네이버 로그인';
+
+  @override
+  String get cIntGoogle => '구글 로그인';
+
+  @override
+  String get cIntApple => '애플 로그인';
+
+  @override
+  String get cFirstRunTitle => '환영합니다! 사장님 계정을 만들어 주세요';
+
+  @override
+  String get cFirstRunBody =>
+      '설치할 때 화면에 나온 12자리 설치 코드를 입력하세요. 이 계정으로 모든 설정을 관리해요.';
+
+  @override
+  String get cFirstRunCode => '설치 코드';
+
+  @override
+  String get cName => '이름';
+
+  @override
+  String get cFirstRunCreate => '계정 만들고 시작하기';
+
+  @override
+  String get cWrongSetupCode => '설치 코드가 맞지 않아요';
+
+  @override
+  String get cWeakPassword => '비밀번호는 12자 이상이어야 해요';
+
+  @override
+  String get cInvalidValue => '입력값을 확인해 주세요';
 }

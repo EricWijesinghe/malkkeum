@@ -16,7 +16,6 @@ void main() {
     testWidgets('jobs feed meets tap-target and contrast guidelines (${mode.name})', (tester) async {
       setViewport(tester, phoneSize);
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final fake = FakeApi();
       stockPartnerApi(fake, jobs: [jobJson(customerPrice: 100000)]);
       final env = await TestEnv.create(fake: fake, role: 'partner', themeMode: mode);
@@ -25,12 +24,12 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);
+      handle.dispose();
     });
 
     testWidgets('pending waiting screen meets tap-target and contrast guidelines (${mode.name})', (tester) async {
       setViewport(tester, phoneSize);
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final fake = FakeApi();
       stockPartnerApi(fake, profile: verifiedProfile(status: 'pending'));
       final env = await TestEnv.create(fake: fake, role: 'partner', themeMode: mode);
@@ -39,6 +38,7 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);
+      handle.dispose();
     });
   }
 }

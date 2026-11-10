@@ -2028,4 +2028,165 @@ class TZh extends T {
 
   @override
   String get pSpace => '空间信息';
+
+  @override
+  String get cSetup => '设置';
+
+  @override
+  String get cSetupTitle => '准备上线';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '已完成 $done/$total';
+  }
+
+  @override
+  String get cSetupAllDone => '一切就绪！';
+
+  @override
+  String get cSetupBusiness => '商家信息';
+
+  @override
+  String get cSetupBusinessName => '服务名称';
+
+  @override
+  String get cSetupSupportPhone => '客服电话';
+
+  @override
+  String get cSetupSupportEmail => '客服邮箱';
+
+  @override
+  String get cSetupSupportHours => '客服时间';
+
+  @override
+  String get cSetupColor => '品牌色';
+
+  @override
+  String get cSetupLogo => '上传标志';
+
+  @override
+  String get cSetupCompany => '公司信息（显示在应用和网站底部）';
+
+  @override
+  String get cSetupLegalName => '公司名称';
+
+  @override
+  String get cSetupCeo => '法定代表人';
+
+  @override
+  String get cSetupRegNo => '营业执照号';
+
+  @override
+  String get cSetupMailOrderNo => '电商备案号';
+
+  @override
+  String get cSetupAddress => '公司地址';
+
+  @override
+  String get cSetupPrivacyOfficer => '个人信息负责人';
+
+  @override
+  String get cSetupStoreLinks => '应用商店链接（填写后网站按钮生效）';
+
+  @override
+  String get cSetupCustomerApp => '客户应用';
+
+  @override
+  String get cSetupPartnerApp => '服务者应用';
+
+  @override
+  String get cSetupSave => '保存';
+
+  @override
+  String get cSetupSaved => '已保存';
+
+  @override
+  String get cSetupTest => '测试连接';
+
+  @override
+  String get cSetupClear => '断开连接';
+
+  @override
+  String get cSetupConnected => '已连接';
+
+  @override
+  String get cSetupNotConnected => '未连接';
+
+  @override
+  String get cSetupFromEnv => '使用服务器设置';
+
+  @override
+  String get cSetupCheckInApp => '已保存 · 请在应用中登录确认';
+
+  @override
+  String get cSetupInvalidKey => '密钥无效，请检查复制的内容';
+
+  @override
+  String get cSetupUnreachable => '无法连接服务，请稍后重试';
+
+  @override
+  String get cSetupKeepValue => '已保存（仅在更换时输入）';
+
+  @override
+  String get cSetupGuide => '设置步骤';
+
+  @override
+  String get cSetupOpenSite => '打开网站';
+
+  @override
+  String get cSetupWebhook => 'Webhook 地址（粘贴到 PortOne 控制台）';
+
+  @override
+  String get cCopied => '已复制';
+
+  @override
+  String get cSetupDevMode => '测试模式：不会产生真实支付或短信';
+
+  @override
+  String get cSetupOptional => '可选';
+
+  @override
+  String get cIntPortone => '支付（PortOne）';
+
+  @override
+  String get cIntSolapi => '短信与通知（Solapi）';
+
+  @override
+  String get cIntPush => '应用推送（Firebase）';
+
+  @override
+  String get cIntKakao => 'Kakao 登录';
+
+  @override
+  String get cIntNaver => 'Naver 登录';
+
+  @override
+  String get cIntGoogle => 'Google 登录';
+
+  @override
+  String get cIntApple => 'Apple 登录';
+
+  @override
+  String get cFirstRunTitle => '欢迎！请创建店主账号';
+
+  @override
+  String get cFirstRunBody => '请输入安装时显示的 12 位安装码。此账号可管理所有设置。';
+
+  @override
+  String get cFirstRunCode => '安装码';
+
+  @override
+  String get cName => '姓名';
+
+  @override
+  String get cFirstRunCreate => '创建账号并开始';
+
+  @override
+  String get cWrongSetupCode => '安装码不正确';
+
+  @override
+  String get cWeakPassword => '密码至少需要 12 个字符';
+
+  @override
+  String get cInvalidValue => '请检查输入内容';
 }

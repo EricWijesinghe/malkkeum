@@ -85,6 +85,13 @@ void main() {
     await pumpUntilFound(tester, find.text(koT.quick_confirm));
 
     expect(find.widgetWithText(ActionChip, koT.quick_confirm), findsOneWidget);
+    // The fourth chip sits past the strip's edge; the horizontal ListView builds it only once scrolled into view.
+    final strip = find.byWidgetPredicate((w) => w is ListView && w.scrollDirection == Axis.horizontal);
+    await tester.scrollUntilVisible(
+      find.widgetWithText(ActionChip, koT.quick_parking),
+      60,
+      scrollable: find.descendant(of: strip, matching: find.byType(Scrollable)),
+    );
     expect(find.widgetWithText(ActionChip, koT.quick_parking), findsOneWidget);
     expect(find.widgetWithText(ActionChip, koT.quick_hello), findsNothing);
     await unmount(tester);

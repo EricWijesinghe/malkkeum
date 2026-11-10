@@ -4008,6 +4008,324 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'공간 정보'**
   String get pSpace;
+
+  /// No description provided for @cSetup.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get cSetup;
+
+  /// No description provided for @cSetupTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 시작 준비'**
+  String get cSetupTitle;
+
+  /// No description provided for @cSetupProgress.
+  ///
+  /// In ko, this message translates to:
+  /// **'{done}/{total} 완료'**
+  String cSetupProgress(String done, String total);
+
+  /// No description provided for @cSetupAllDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 준비가 끝났어요!'**
+  String get cSetupAllDone;
+
+  /// No description provided for @cSetupBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업장 정보'**
+  String get cSetupBusiness;
+
+  /// No description provided for @cSetupBusinessName.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 이름'**
+  String get cSetupBusinessName;
+
+  /// No description provided for @cSetupSupportPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객센터 전화'**
+  String get cSetupSupportPhone;
+
+  /// No description provided for @cSetupSupportEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객센터 이메일'**
+  String get cSetupSupportEmail;
+
+  /// No description provided for @cSetupSupportHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 시간'**
+  String get cSetupSupportHours;
+
+  /// No description provided for @cSetupColor.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표 색상'**
+  String get cSetupColor;
+
+  /// No description provided for @cSetupLogo.
+  ///
+  /// In ko, this message translates to:
+  /// **'로고 올리기'**
+  String get cSetupLogo;
+
+  /// No description provided for @cSetupCompany.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자 정보 (앱·웹사이트 하단에 표시)'**
+  String get cSetupCompany;
+
+  /// No description provided for @cSetupLegalName.
+  ///
+  /// In ko, this message translates to:
+  /// **'상호(법인명)'**
+  String get cSetupLegalName;
+
+  /// No description provided for @cSetupCeo.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자'**
+  String get cSetupCeo;
+
+  /// No description provided for @cSetupRegNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호'**
+  String get cSetupRegNo;
+
+  /// No description provided for @cSetupMailOrderNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'통신판매업 신고번호'**
+  String get cSetupMailOrderNo;
+
+  /// No description provided for @cSetupAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업장 주소'**
+  String get cSetupAddress;
+
+  /// No description provided for @cSetupPrivacyOfficer.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 보호책임자'**
+  String get cSetupPrivacyOfficer;
+
+  /// No description provided for @cSetupStoreLinks.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 스토어 주소 (출시 후 입력하면 웹사이트 버튼이 켜져요)'**
+  String get cSetupStoreLinks;
+
+  /// No description provided for @cSetupCustomerApp.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 앱'**
+  String get cSetupCustomerApp;
+
+  /// No description provided for @cSetupPartnerApp.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 앱'**
+  String get cSetupPartnerApp;
+
+  /// No description provided for @cSetupSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get cSetupSave;
+
+  /// No description provided for @cSetupSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get cSetupSaved;
+
+  /// No description provided for @cSetupTest.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 테스트'**
+  String get cSetupTest;
+
+  /// No description provided for @cSetupClear.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 해제'**
+  String get cSetupClear;
+
+  /// No description provided for @cSetupConnected.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결됨'**
+  String get cSetupConnected;
+
+  /// No description provided for @cSetupNotConnected.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 안 됨'**
+  String get cSetupNotConnected;
+
+  /// No description provided for @cSetupFromEnv.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 설정 사용 중'**
+  String get cSetupFromEnv;
+
+  /// No description provided for @cSetupCheckInApp.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장됨 · 앱에서 로그인해 확인하세요'**
+  String get cSetupCheckInApp;
+
+  /// No description provided for @cSetupInvalidKey.
+  ///
+  /// In ko, this message translates to:
+  /// **'키가 올바르지 않아요. 복사한 값을 다시 확인해 주세요'**
+  String get cSetupInvalidKey;
+
+  /// No description provided for @cSetupUnreachable.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스에 연결할 수 없어요. 잠시 후 다시 시도해 주세요'**
+  String get cSetupUnreachable;
+
+  /// No description provided for @cSetupKeepValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 값 유지 (바꿀 때만 입력)'**
+  String get cSetupKeepValue;
+
+  /// No description provided for @cSetupGuide.
+  ///
+  /// In ko, this message translates to:
+  /// **'따라 하기'**
+  String get cSetupGuide;
+
+  /// No description provided for @cSetupOpenSite.
+  ///
+  /// In ko, this message translates to:
+  /// **'사이트 열기'**
+  String get cSetupOpenSite;
+
+  /// No description provided for @cSetupWebhook.
+  ///
+  /// In ko, this message translates to:
+  /// **'웹훅 주소 (PortOne 콘솔에 붙여넣기)'**
+  String get cSetupWebhook;
+
+  /// No description provided for @cCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사했어요'**
+  String get cCopied;
+
+  /// No description provided for @cSetupDevMode.
+  ///
+  /// In ko, this message translates to:
+  /// **'테스트 모드예요. 실제 결제·문자는 나가지 않아요'**
+  String get cSetupDevMode;
+
+  /// No description provided for @cSetupOptional.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택'**
+  String get cSetupOptional;
+
+  /// No description provided for @cIntPortone.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 (PortOne)'**
+  String get cIntPortone;
+
+  /// No description provided for @cIntSolapi.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 · 알림톡 (Solapi)'**
+  String get cIntSolapi;
+
+  /// No description provided for @cIntPush.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 푸시 알림 (Firebase)'**
+  String get cIntPush;
+
+  /// No description provided for @cIntKakao.
+  ///
+  /// In ko, this message translates to:
+  /// **'카카오 로그인'**
+  String get cIntKakao;
+
+  /// No description provided for @cIntNaver.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버 로그인'**
+  String get cIntNaver;
+
+  /// No description provided for @cIntGoogle.
+  ///
+  /// In ko, this message translates to:
+  /// **'구글 로그인'**
+  String get cIntGoogle;
+
+  /// No description provided for @cIntApple.
+  ///
+  /// In ko, this message translates to:
+  /// **'애플 로그인'**
+  String get cIntApple;
+
+  /// No description provided for @cFirstRunTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'환영합니다! 사장님 계정을 만들어 주세요'**
+  String get cFirstRunTitle;
+
+  /// No description provided for @cFirstRunBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치할 때 화면에 나온 12자리 설치 코드를 입력하세요. 이 계정으로 모든 설정을 관리해요.'**
+  String get cFirstRunBody;
+
+  /// No description provided for @cFirstRunCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치 코드'**
+  String get cFirstRunCode;
+
+  /// No description provided for @cName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get cName;
+
+  /// No description provided for @cFirstRunCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정 만들고 시작하기'**
+  String get cFirstRunCreate;
+
+  /// No description provided for @cWrongSetupCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치 코드가 맞지 않아요'**
+  String get cWrongSetupCode;
+
+  /// No description provided for @cWeakPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호는 12자 이상이어야 해요'**
+  String get cWeakPassword;
+
+  /// No description provided for @cInvalidValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력값을 확인해 주세요'**
+  String get cInvalidValue;
 }
 
 class _TDelegate extends LocalizationsDelegate<T> {

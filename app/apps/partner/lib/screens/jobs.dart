@@ -121,17 +121,21 @@ class _JobsTabState extends State<JobsTab> {
                           child: Text(t.pSortAmount),
                         ),
                       ],
-                      child: Padding(
-                        padding: const EdgeInsets.all(Space.xs),
-                        child: Row(
-                          children: [
-                            Text(switch (_sort) {
-                              'visit' => t.pSortVisit,
-                              'amount' => t.pSortAmount,
-                              _ => t.pSortNewest,
-                            }, style: context.text.labelMedium),
-                            const Icon(Icons.expand_more_rounded, size: 18),
-                          ],
+                      // 48 dp minimum tap target; the bare label is only ~34 dp tall.
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Padding(
+                          padding: const EdgeInsets.all(Space.xs),
+                          child: Row(
+                            children: [
+                              Text(switch (_sort) {
+                                'visit' => t.pSortVisit,
+                                'amount' => t.pSortAmount,
+                                _ => t.pSortNewest,
+                              }, style: context.text.labelMedium),
+                              const Icon(Icons.expand_more_rounded, size: 18),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -867,11 +871,12 @@ Future<bool?> showQuoteSheet(
                 padding: const EdgeInsets.all(Space.md),
                 child: Row(
                   children: [
-                    Text(
-                      '${t.pYouGet} (${t.pFee(pro.feeLabel)})',
-                      style: ctx.text.bodySmall,
+                    Expanded(
+                      child: Text(
+                        '${t.pYouGet} (${t.pFee(pro.feeLabel)})',
+                        style: ctx.text.bodySmall,
+                      ),
                     ),
-                    const Spacer(),
                     RollingAmount(
                       value: pro.payoutFor(amount),
                       format: ctx.won,

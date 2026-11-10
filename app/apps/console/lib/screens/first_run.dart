@@ -29,7 +29,9 @@ class _ConsoleEntryState extends State<ConsoleEntry> {
   Widget build(BuildContext context) => FutureBuilder<bool>(
     future: _needsAdmin,
     builder: (context, snap) {
-      if (!snap.hasData) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      if (!snap.hasData) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
       return snap.data! ? const FirstRunScreen() : const LoginScreen();
     },
   );
@@ -79,12 +81,14 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
       await deps.session.staffLogin(_email.text.trim(), _password.text);
     } on ApiException catch (e) {
       if (!mounted) return;
-      setState(() => _error = switch (e.status) {
-        403 => t.cWrongSetupCode,
-        409 => t.cLoginFailed,
-        400 => e.code == 'weak_password' ? t.cWeakPassword : t.cInvalidValue,
-        _ => t.error(e),
-      });
+      setState(
+        () => _error = switch (e.status) {
+          403 => t.cWrongSetupCode,
+          409 => t.cLoginFailed,
+          400 => e.code == 'weak_password' ? t.cWeakPassword : t.cInvalidValue,
+          _ => t.error(e),
+        },
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -102,41 +106,70 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
               constraints: const BoxConstraints(maxWidth: 440),
               child: AppCard(
                 child: AutofillGroup(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Wrap(spacing: 8, runSpacing: 8, children: [
-                      for (final c in const ['bathroom', 'kitchen', 'aircon', 'sofa', 'move_in']) ServiceGlyph(c, size: 40),
-                    ]),
-                    const SizedBox(height: Space.lg),
-                    Text(t.cFirstRunTitle, style: context.text.headlineSmall),
-                    const SizedBox(height: Space.sm),
-                    Text(t.cFirstRunBody, style: context.text.bodyMedium),
-                    const SizedBox(height: Space.lg),
-                    TextField(
-                      controller: _code,
-                      textCapitalization: TextCapitalization.characters,
-                      autocorrect: false,
-                      decoration: InputDecoration(labelText: t.cFirstRunCode, hintText: 'ABCD-2345-EFGH'),
-                    ),
-                    const SizedBox(height: Space.sm),
-                    TextField(controller: _name, autofillHints: const [AutofillHints.name], decoration: InputDecoration(labelText: t.cName)),
-                    const SizedBox(height: Space.sm),
-                    TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [AutofillHints.newUsername],
-                      decoration: InputDecoration(labelText: t.cEmail),
-                    ),
-                    const SizedBox(height: Space.sm),
-                    TextField(
-                      controller: _password,
-                      obscureText: true,
-                      autofillHints: const [AutofillHints.newPassword],
-                      decoration: InputDecoration(labelText: t.cPassword, helperText: t.cPasswordRule, errorText: _error),
-                      onSubmitted: (_) => _create(),
-                    ),
-                    const SizedBox(height: Space.lg),
-                    PrimaryButton(label: t.cFirstRunCreate, busy: _busy, onPressed: _create),
-                  ]),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final c in const [
+                            'bathroom',
+                            'kitchen',
+                            'aircon',
+                            'sofa',
+                            'move_in',
+                          ])
+                            ServiceGlyph(c, size: 40),
+                        ],
+                      ),
+                      const SizedBox(height: Space.lg),
+                      Text(t.cFirstRunTitle, style: context.text.headlineSmall),
+                      const SizedBox(height: Space.sm),
+                      Text(t.cFirstRunBody, style: context.text.bodyMedium),
+                      const SizedBox(height: Space.lg),
+                      TextField(
+                        controller: _code,
+                        textCapitalization: TextCapitalization.characters,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          labelText: t.cFirstRunCode,
+                          hintText: 'ABCD-2345-EFGH',
+                        ),
+                      ),
+                      const SizedBox(height: Space.sm),
+                      TextField(
+                        controller: _name,
+                        autofillHints: const [AutofillHints.name],
+                        decoration: InputDecoration(labelText: t.cName),
+                      ),
+                      const SizedBox(height: Space.sm),
+                      TextField(
+                        controller: _email,
+                        keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.newUsername],
+                        decoration: InputDecoration(labelText: t.cEmail),
+                      ),
+                      const SizedBox(height: Space.sm),
+                      TextField(
+                        controller: _password,
+                        obscureText: true,
+                        autofillHints: const [AutofillHints.newPassword],
+                        decoration: InputDecoration(
+                          labelText: t.cPassword,
+                          helperText: t.cPasswordRule,
+                          errorText: _error,
+                        ),
+                        onSubmitted: (_) => _create(),
+                      ),
+                      const SizedBox(height: Space.lg),
+                      PrimaryButton(
+                        label: t.cFirstRunCreate,
+                        busy: _busy,
+                        onPressed: _create,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

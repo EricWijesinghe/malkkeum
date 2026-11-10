@@ -86,7 +86,8 @@ class AppCard extends StatelessWidget {
               ? null
               : Border.all(color: edge, width: border == null ? 1 : 1.5),
         ),
-        child: child,
+        // Own Material so ListTile ink/background isn't hidden by the colored decoration.
+        child: Material(type: MaterialType.transparency, child: child),
       ),
     );
   }

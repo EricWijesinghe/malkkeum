@@ -23,7 +23,7 @@ class AsyncViewState<V> extends State<AsyncView<V>> {
 
   Future<void> reload() async {
     final f = widget.load();
-    setState(() => _future = f);
+    setState(() { _future = f; });
     try {
       await f;
     } catch (_) {
@@ -42,10 +42,10 @@ class AsyncViewState<V> extends State<AsyncView<V>> {
           // Keep showing the previous data while refreshing (no flash of skeletons).
           if (snap.connectionState != ConnectionState.done && _last != null) return widget.builder(context, _last as V, reload);
           if (snap.hasError) return ErrorRetry(message: context.t.error(snap.error!), retryLabel: context.t.retry, onRetry: reload);
-          return ListView(
+          // A Column, not a ListView: callers may sit this inside their own scroll view.
+          return Padding(
             padding: const EdgeInsets.all(Space.gutter),
-            physics: const NeverScrollableScrollPhysics(),
-            children: [for (var i = 0; i < widget.skeletons; i++) Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: Skeleton(height: widget.skeletonHeight))],
+            child: Column(children: [for (var i = 0; i < widget.skeletons; i++) Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: Skeleton(height: widget.skeletonHeight))]),
           );
         },
       );

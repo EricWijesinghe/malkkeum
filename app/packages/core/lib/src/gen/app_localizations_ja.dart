@@ -2031,4 +2031,165 @@ class TJa extends T {
 
   @override
   String get pSpace => '空間情報';
+
+  @override
+  String get cSetup => '設定';
+
+  @override
+  String get cSetupTitle => 'サービス開始の準備';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$done/$total 完了';
+  }
+
+  @override
+  String get cSetupAllDone => 'すべての準備ができました！';
+
+  @override
+  String get cSetupBusiness => '事業者情報';
+
+  @override
+  String get cSetupBusinessName => 'サービス名';
+
+  @override
+  String get cSetupSupportPhone => 'サポート電話';
+
+  @override
+  String get cSetupSupportEmail => 'サポートメール';
+
+  @override
+  String get cSetupSupportHours => '受付時間';
+
+  @override
+  String get cSetupColor => 'ブランドカラー';
+
+  @override
+  String get cSetupLogo => 'ロゴをアップロード';
+
+  @override
+  String get cSetupCompany => '事業者情報（アプリ・サイト下部に表示）';
+
+  @override
+  String get cSetupLegalName => '商号';
+
+  @override
+  String get cSetupCeo => '代表者';
+
+  @override
+  String get cSetupRegNo => '事業者登録番号';
+
+  @override
+  String get cSetupMailOrderNo => '通信販売業届出番号';
+
+  @override
+  String get cSetupAddress => '所在地';
+
+  @override
+  String get cSetupPrivacyOfficer => '個人情報保護責任者';
+
+  @override
+  String get cSetupStoreLinks => 'ストアURL（入力するとサイトのボタンが有効に）';
+
+  @override
+  String get cSetupCustomerApp => 'お客様アプリ';
+
+  @override
+  String get cSetupPartnerApp => 'パートナーアプリ';
+
+  @override
+  String get cSetupSave => '保存';
+
+  @override
+  String get cSetupSaved => '保存しました';
+
+  @override
+  String get cSetupTest => '接続テスト';
+
+  @override
+  String get cSetupClear => '接続解除';
+
+  @override
+  String get cSetupConnected => '接続済み';
+
+  @override
+  String get cSetupNotConnected => '未接続';
+
+  @override
+  String get cSetupFromEnv => 'サーバー設定を使用中';
+
+  @override
+  String get cSetupCheckInApp => '保存済み・アプリでログインして確認';
+
+  @override
+  String get cSetupInvalidKey => 'キーが正しくありません。コピーした値を確認してください';
+
+  @override
+  String get cSetupUnreachable => 'サービスに接続できません。しばらくして再試行してください';
+
+  @override
+  String get cSetupKeepValue => '保存済み（変更時のみ入力）';
+
+  @override
+  String get cSetupGuide => '設定手順';
+
+  @override
+  String get cSetupOpenSite => 'サイトを開く';
+
+  @override
+  String get cSetupWebhook => 'Webhook URL（PortOneコンソールに貼り付け）';
+
+  @override
+  String get cCopied => 'コピーしました';
+
+  @override
+  String get cSetupDevMode => 'テストモードです。実際の決済・メッセージは送信されません';
+
+  @override
+  String get cSetupOptional => '任意';
+
+  @override
+  String get cIntPortone => '決済（PortOne）';
+
+  @override
+  String get cIntSolapi => 'SMS・アラートトーク（Solapi）';
+
+  @override
+  String get cIntPush => 'アプリ通知（Firebase）';
+
+  @override
+  String get cIntKakao => 'Kakaoログイン';
+
+  @override
+  String get cIntNaver => 'Naverログイン';
+
+  @override
+  String get cIntGoogle => 'Googleログイン';
+
+  @override
+  String get cIntApple => 'Appleログイン';
+
+  @override
+  String get cFirstRunTitle => 'ようこそ！オーナーのアカウントを作成してください';
+
+  @override
+  String get cFirstRunBody => 'インストール時に表示された12桁の設置コードを入力してください。';
+
+  @override
+  String get cFirstRunCode => '設置コード';
+
+  @override
+  String get cName => '名前';
+
+  @override
+  String get cFirstRunCreate => 'アカウントを作成して開始';
+
+  @override
+  String get cWrongSetupCode => '設置コードが違います';
+
+  @override
+  String get cWeakPassword => 'パスワードは12文字以上必要です';
+
+  @override
+  String get cInvalidValue => '入力内容を確認してください';
 }

@@ -2077,4 +2077,169 @@ class TNe extends T {
 
   @override
   String get pSpace => 'ठाउँको जानकारी';
+
+  @override
+  String get cSetup => 'सेटअप';
+
+  @override
+  String get cSetupTitle => 'सुरु गर्न तयारी';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$total मध्ये $done पूरा';
+  }
+
+  @override
+  String get cSetupAllDone => 'सबै तयार छ!';
+
+  @override
+  String get cSetupBusiness => 'व्यवसाय विवरण';
+
+  @override
+  String get cSetupBusinessName => 'सेवाको नाम';
+
+  @override
+  String get cSetupSupportPhone => 'सहायता फोन';
+
+  @override
+  String get cSetupSupportEmail => 'सहायता इमेल';
+
+  @override
+  String get cSetupSupportHours => 'सहायता समय';
+
+  @override
+  String get cSetupColor => 'ब्रान्ड रङ';
+
+  @override
+  String get cSetupLogo => 'लोगो अपलोड';
+
+  @override
+  String get cSetupCompany => 'कम्पनी विवरण (एप र वेबसाइटको तल देखिन्छ)';
+
+  @override
+  String get cSetupLegalName => 'कानुनी नाम';
+
+  @override
+  String get cSetupCeo => 'प्रतिनिधि';
+
+  @override
+  String get cSetupRegNo => 'दर्ता नम्बर';
+
+  @override
+  String get cSetupMailOrderNo => 'अनलाइन बिक्री दर्ता नम्बर';
+
+  @override
+  String get cSetupAddress => 'ठेगाना';
+
+  @override
+  String get cSetupPrivacyOfficer => 'गोपनीयता अधिकारी';
+
+  @override
+  String get cSetupStoreLinks =>
+      'एप स्टोर लिङ्क (भरेपछि वेबसाइटका बटन सक्रिय हुन्छन्)';
+
+  @override
+  String get cSetupCustomerApp => 'ग्राहक एप';
+
+  @override
+  String get cSetupPartnerApp => 'साझेदार एप';
+
+  @override
+  String get cSetupSave => 'सेभ';
+
+  @override
+  String get cSetupSaved => 'सेभ भयो';
+
+  @override
+  String get cSetupTest => 'जडान जाँच';
+
+  @override
+  String get cSetupClear => 'विच्छेद';
+
+  @override
+  String get cSetupConnected => 'जडान भयो';
+
+  @override
+  String get cSetupNotConnected => 'जडान छैन';
+
+  @override
+  String get cSetupFromEnv => 'सर्भर सेटिङ प्रयोगमा';
+
+  @override
+  String get cSetupCheckInApp => 'सेभ भयो · एपबाट लगइन गरेर पुष्टि गर्नुहोस्';
+
+  @override
+  String get cSetupInvalidKey =>
+      'कुञ्जी अस्वीकार भयो। कपी गरेको मान जाँच्नुहोस्';
+
+  @override
+  String get cSetupUnreachable =>
+      'सेवामा पुग्न सकिएन। केही बेरपछि प्रयास गर्नुहोस्';
+
+  @override
+  String get cSetupKeepValue => 'सेभ गरिएको (बदल्न मात्र लेख्नुहोस्)';
+
+  @override
+  String get cSetupGuide => 'कसरी सेटअप गर्ने';
+
+  @override
+  String get cSetupOpenSite => 'साइट खोल्नुहोस्';
+
+  @override
+  String get cSetupWebhook => 'Webhook ठेगाना (PortOne कन्सोलमा टाँस्नुहोस्)';
+
+  @override
+  String get cCopied => 'कपी भयो';
+
+  @override
+  String get cSetupDevMode => 'परीक्षण मोड: वास्तविक भुक्तानी वा सन्देश जाँदैन';
+
+  @override
+  String get cSetupOptional => 'ऐच्छिक';
+
+  @override
+  String get cIntPortone => 'भुक्तानी (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS र KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'एप सूचना (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao लगइन';
+
+  @override
+  String get cIntNaver => 'Naver लगइन';
+
+  @override
+  String get cIntGoogle => 'Google लगइन';
+
+  @override
+  String get cIntApple => 'Apple लगइन';
+
+  @override
+  String get cFirstRunTitle => 'स्वागत छ! मालिकको खाता बनाउनुहोस्';
+
+  @override
+  String get cFirstRunBody =>
+      'स्थापना गर्दा देखिएको १२ अक्षरको कोड लेख्नुहोस्। यो खाताले सबै सेटिङ व्यवस्थापन गर्छ।';
+
+  @override
+  String get cFirstRunCode => 'सेटअप कोड';
+
+  @override
+  String get cName => 'नाम';
+
+  @override
+  String get cFirstRunCreate => 'खाता बनाएर सुरु गर्नुहोस्';
+
+  @override
+  String get cWrongSetupCode => 'सेटअप कोड मिलेन';
+
+  @override
+  String get cWeakPassword => 'पासवर्ड कम्तीमा १२ अक्षरको हुनुपर्छ';
+
+  @override
+  String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
 }

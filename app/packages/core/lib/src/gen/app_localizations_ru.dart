@@ -2081,4 +2081,169 @@ class TRu extends T {
 
   @override
   String get pSpace => 'Информация о пространстве';
+
+  @override
+  String get cSetup => 'Настройка';
+
+  @override
+  String get cSetupTitle => 'Подготовка к запуску';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return 'Готово $done из $total';
+  }
+
+  @override
+  String get cSetupAllDone => 'Всё готово!';
+
+  @override
+  String get cSetupBusiness => 'Профиль компании';
+
+  @override
+  String get cSetupBusinessName => 'Название сервиса';
+
+  @override
+  String get cSetupSupportPhone => 'Телефон поддержки';
+
+  @override
+  String get cSetupSupportEmail => 'Email поддержки';
+
+  @override
+  String get cSetupSupportHours => 'Часы поддержки';
+
+  @override
+  String get cSetupColor => 'Фирменный цвет';
+
+  @override
+  String get cSetupLogo => 'Загрузить логотип';
+
+  @override
+  String get cSetupCompany => 'Реквизиты (в подвале приложения и сайта)';
+
+  @override
+  String get cSetupLegalName => 'Юридическое название';
+
+  @override
+  String get cSetupCeo => 'Руководитель';
+
+  @override
+  String get cSetupRegNo => 'Рег. номер компании';
+
+  @override
+  String get cSetupMailOrderNo => 'Номер регистрации продаж';
+
+  @override
+  String get cSetupAddress => 'Адрес';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Ответственный за данные';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Ссылки на магазины (кнопки на сайте включатся после заполнения)';
+
+  @override
+  String get cSetupCustomerApp => 'Приложение клиента';
+
+  @override
+  String get cSetupPartnerApp => 'Приложение партнёра';
+
+  @override
+  String get cSetupSave => 'Сохранить';
+
+  @override
+  String get cSetupSaved => 'Сохранено';
+
+  @override
+  String get cSetupTest => 'Проверить подключение';
+
+  @override
+  String get cSetupClear => 'Отключить';
+
+  @override
+  String get cSetupConnected => 'Подключено';
+
+  @override
+  String get cSetupNotConnected => 'Не подключено';
+
+  @override
+  String get cSetupFromEnv => 'Используются настройки сервера';
+
+  @override
+  String get cSetupCheckInApp => 'Сохранено · проверьте входом в приложении';
+
+  @override
+  String get cSetupInvalidKey =>
+      'Ключ отклонён. Проверьте скопированное значение';
+
+  @override
+  String get cSetupUnreachable => 'Сервис недоступен. Повторите позже';
+
+  @override
+  String get cSetupKeepValue => 'Сохранено (введите, только чтобы заменить)';
+
+  @override
+  String get cSetupGuide => 'Как настроить';
+
+  @override
+  String get cSetupOpenSite => 'Открыть сайт';
+
+  @override
+  String get cSetupWebhook => 'Адрес webhook (вставьте в консоль PortOne)';
+
+  @override
+  String get cCopied => 'Скопировано';
+
+  @override
+  String get cSetupDevMode =>
+      'Тестовый режим: реальные платежи и сообщения не отправляются';
+
+  @override
+  String get cSetupOptional => 'Необязательно';
+
+  @override
+  String get cIntPortone => 'Платежи (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS и KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Push-уведомления (Firebase)';
+
+  @override
+  String get cIntKakao => 'Вход через Kakao';
+
+  @override
+  String get cIntNaver => 'Вход через Naver';
+
+  @override
+  String get cIntGoogle => 'Вход через Google';
+
+  @override
+  String get cIntApple => 'Вход через Apple';
+
+  @override
+  String get cFirstRunTitle => 'Добро пожаловать! Создайте аккаунт владельца';
+
+  @override
+  String get cFirstRunBody =>
+      'Введите 12-значный код, показанный при установке. Этот аккаунт управляет всеми настройками.';
+
+  @override
+  String get cFirstRunCode => 'Код установки';
+
+  @override
+  String get cName => 'Имя';
+
+  @override
+  String get cFirstRunCreate => 'Создать аккаунт и начать';
+
+  @override
+  String get cWrongSetupCode => 'Неверный код установки';
+
+  @override
+  String get cWeakPassword => 'Пароль должен быть не короче 12 символов';
+
+  @override
+  String get cInvalidValue => 'Проверьте введённое значение';
 }

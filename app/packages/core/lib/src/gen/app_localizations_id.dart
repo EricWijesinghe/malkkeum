@@ -2083,4 +2083,171 @@ class TId extends T {
 
   @override
   String get pSpace => 'Info ruang';
+
+  @override
+  String get cSetup => 'Pengaturan';
+
+  @override
+  String get cSetupTitle => 'Siap untuk diluncurkan';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$done dari $total selesai';
+  }
+
+  @override
+  String get cSetupAllDone => 'Semua sudah siap!';
+
+  @override
+  String get cSetupBusiness => 'Profil bisnis';
+
+  @override
+  String get cSetupBusinessName => 'Nama layanan';
+
+  @override
+  String get cSetupSupportPhone => 'Telepon dukungan';
+
+  @override
+  String get cSetupSupportEmail => 'Email dukungan';
+
+  @override
+  String get cSetupSupportHours => 'Jam dukungan';
+
+  @override
+  String get cSetupColor => 'Warna merek';
+
+  @override
+  String get cSetupLogo => 'Unggah logo';
+
+  @override
+  String get cSetupCompany =>
+      'Data perusahaan (tampil di bawah aplikasi dan situs)';
+
+  @override
+  String get cSetupLegalName => 'Nama resmi';
+
+  @override
+  String get cSetupCeo => 'Perwakilan';
+
+  @override
+  String get cSetupRegNo => 'Nomor registrasi usaha';
+
+  @override
+  String get cSetupMailOrderNo => 'Nomor izin penjualan online';
+
+  @override
+  String get cSetupAddress => 'Alamat';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Petugas privasi';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Tautan toko (tombol situs aktif setelah diisi)';
+
+  @override
+  String get cSetupCustomerApp => 'Aplikasi pelanggan';
+
+  @override
+  String get cSetupPartnerApp => 'Aplikasi mitra';
+
+  @override
+  String get cSetupSave => 'Simpan';
+
+  @override
+  String get cSetupSaved => 'Tersimpan';
+
+  @override
+  String get cSetupTest => 'Uji koneksi';
+
+  @override
+  String get cSetupClear => 'Putuskan';
+
+  @override
+  String get cSetupConnected => 'Terhubung';
+
+  @override
+  String get cSetupNotConnected => 'Belum terhubung';
+
+  @override
+  String get cSetupFromEnv => 'Memakai pengaturan server';
+
+  @override
+  String get cSetupCheckInApp =>
+      'Tersimpan · konfirmasi dengan masuk dari aplikasi';
+
+  @override
+  String get cSetupInvalidKey => 'Kunci ditolak. Periksa nilai yang disalin';
+
+  @override
+  String get cSetupUnreachable =>
+      'Layanan tidak dapat dijangkau. Coba lagi nanti';
+
+  @override
+  String get cSetupKeepValue => 'Tersimpan (isi hanya untuk mengganti)';
+
+  @override
+  String get cSetupGuide => 'Cara mengatur';
+
+  @override
+  String get cSetupOpenSite => 'Buka situs';
+
+  @override
+  String get cSetupWebhook => 'URL webhook (tempel di konsol PortOne)';
+
+  @override
+  String get cCopied => 'Disalin';
+
+  @override
+  String get cSetupDevMode =>
+      'Mode uji: tidak ada pembayaran atau pesan sungguhan';
+
+  @override
+  String get cSetupOptional => 'Opsional';
+
+  @override
+  String get cIntPortone => 'Pembayaran (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS & KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Notifikasi aplikasi (Firebase)';
+
+  @override
+  String get cIntKakao => 'Masuk dengan Kakao';
+
+  @override
+  String get cIntNaver => 'Masuk dengan Naver';
+
+  @override
+  String get cIntGoogle => 'Masuk dengan Google';
+
+  @override
+  String get cIntApple => 'Masuk dengan Apple';
+
+  @override
+  String get cFirstRunTitle => 'Selamat datang! Buat akun pemilik';
+
+  @override
+  String get cFirstRunBody =>
+      'Masukkan kode 12 karakter yang tampil saat instalasi. Akun ini mengelola semua pengaturan.';
+
+  @override
+  String get cFirstRunCode => 'Kode instalasi';
+
+  @override
+  String get cName => 'Nama';
+
+  @override
+  String get cFirstRunCreate => 'Buat akun dan mulai';
+
+  @override
+  String get cWrongSetupCode => 'Kode instalasi salah';
+
+  @override
+  String get cWeakPassword => 'Kata sandi minimal 12 karakter';
+
+  @override
+  String get cInvalidValue => 'Periksa nilai yang diisi';
 }

@@ -2065,4 +2065,171 @@ class TEn extends T {
 
   @override
   String get pSpace => 'Space';
+
+  @override
+  String get cSetup => 'Setup';
+
+  @override
+  String get cSetupTitle => 'Get ready to launch';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$done of $total done';
+  }
+
+  @override
+  String get cSetupAllDone => 'Everything is ready!';
+
+  @override
+  String get cSetupBusiness => 'Business profile';
+
+  @override
+  String get cSetupBusinessName => 'Service name';
+
+  @override
+  String get cSetupSupportPhone => 'Support phone';
+
+  @override
+  String get cSetupSupportEmail => 'Support email';
+
+  @override
+  String get cSetupSupportHours => 'Support hours';
+
+  @override
+  String get cSetupColor => 'Brand color';
+
+  @override
+  String get cSetupLogo => 'Upload logo';
+
+  @override
+  String get cSetupCompany =>
+      'Company details (shown in app and website footer)';
+
+  @override
+  String get cSetupLegalName => 'Legal name';
+
+  @override
+  String get cSetupCeo => 'Representative';
+
+  @override
+  String get cSetupRegNo => 'Business registration no.';
+
+  @override
+  String get cSetupMailOrderNo => 'Mail-order registration no.';
+
+  @override
+  String get cSetupAddress => 'Business address';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Privacy officer';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Store links (the website buttons turn on once filled)';
+
+  @override
+  String get cSetupCustomerApp => 'Customer app';
+
+  @override
+  String get cSetupPartnerApp => 'Partner app';
+
+  @override
+  String get cSetupSave => 'Save';
+
+  @override
+  String get cSetupSaved => 'Saved';
+
+  @override
+  String get cSetupTest => 'Test connection';
+
+  @override
+  String get cSetupClear => 'Disconnect';
+
+  @override
+  String get cSetupConnected => 'Connected';
+
+  @override
+  String get cSetupNotConnected => 'Not connected';
+
+  @override
+  String get cSetupFromEnv => 'Using server settings';
+
+  @override
+  String get cSetupCheckInApp => 'Saved · confirm by signing in from the app';
+
+  @override
+  String get cSetupInvalidKey =>
+      'The key was rejected. Check the value you copied';
+
+  @override
+  String get cSetupUnreachable =>
+      'Could not reach the service. Try again shortly';
+
+  @override
+  String get cSetupKeepValue => 'Saved (type only to replace)';
+
+  @override
+  String get cSetupGuide => 'How to set up';
+
+  @override
+  String get cSetupOpenSite => 'Open site';
+
+  @override
+  String get cSetupWebhook => 'Webhook URL (paste into the PortOne console)';
+
+  @override
+  String get cCopied => 'Copied';
+
+  @override
+  String get cSetupDevMode =>
+      'Test mode: no real payments or messages are sent';
+
+  @override
+  String get cSetupOptional => 'Optional';
+
+  @override
+  String get cIntPortone => 'Payments (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS & KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'App push (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao login';
+
+  @override
+  String get cIntNaver => 'Naver login';
+
+  @override
+  String get cIntGoogle => 'Google login';
+
+  @override
+  String get cIntApple => 'Apple login';
+
+  @override
+  String get cFirstRunTitle => 'Welcome! Create the owner account';
+
+  @override
+  String get cFirstRunBody =>
+      'Enter the 12-character setup code shown during installation. This account manages every setting.';
+
+  @override
+  String get cFirstRunCode => 'Setup code';
+
+  @override
+  String get cName => 'Name';
+
+  @override
+  String get cFirstRunCreate => 'Create account and start';
+
+  @override
+  String get cWrongSetupCode => 'That setup code is not right';
+
+  @override
+  String get cWeakPassword => 'Password needs at least 12 characters';
+
+  @override
+  String get cInvalidValue => 'Please check the highlighted value';
 }

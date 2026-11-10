@@ -80,41 +80,43 @@ class DashboardScreen extends StatelessWidget {
                     for (final (label, value, icon, hue) in kpis)
                       // Hover tilt is desktop-first; touch gets the same card with the press spring only.
                       Tilt3D(
-                        child: AppCard(
-                          glow: hue.tone,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: context.colors.tintOf(hue),
-                                  borderRadius: BorderRadius.circular(10),
+                        child: SizedBox.expand(
+                          child: AppCard(
+                            glow: hue.tone,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: context.colors.tintOf(hue),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    icon,
+                                    size: 20,
+                                    color: context.colors.isDark
+                                        ? hue.tint
+                                        : hue.tone,
+                                  ),
                                 ),
-                                child: Icon(
-                                  icon,
-                                  size: 20,
-                                  color: context.colors.isDark
-                                      ? hue.tint
-                                      : hue.tone,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    value,
+                                    style: context.text.headlineSmall,
+                                  ),
                                 ),
-                              ),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  value,
-                                  style: context.text.headlineSmall,
+                                Text(
+                                  label,
+                                  style: context.text.labelSmall,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                              Text(
-                                label,
-                                style: context.text.labelSmall,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

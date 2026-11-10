@@ -30,26 +30,42 @@ class _SetupScreenState extends State<SetupScreen> {
       builder: (context, data, reload) {
         final cards = (data['integrations'] as List).cast<Json>();
         final business = (data['business'] as Json?) ?? const {};
-        final done = cards.where((c) => c['configured'] == true).length + (business['name'] != null ? 1 : 0);
+        final done =
+            cards.where((c) => c['configured'] == true).length +
+            (business['name'] != null ? 1 : 0);
         final total = cards.length + 1;
-        return ListView(
-          padding: const EdgeInsets.all(Space.lg),
-          children: [
-            _Header(done: done, total: total, devMode: data['dev_mode'] == true),
-            const SizedBox(height: Space.lg),
-            BusinessCard(initial: business, onSaved: _reload),
-            for (final c in cards) ...[
-              const SizedBox(height: Space.md),
-              IntegrationCard(
-                key: ValueKey(c['code']),
-                card: c,
-                webhookUrl: data['webhook_url'] as String?,
-                onChanged: _reload,
-              ),
-            ],
-            const SizedBox(height: Space.xl),
-            Text(t.cSetupProgress('$done', '$total'), textAlign: TextAlign.center, style: context.text.bodySmall),
-          ],
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 920),
+            child: ListView(
+              padding: const EdgeInsets.all(Space.lg),
+              children: [
+                _Header(
+                  done: done,
+                  total: total,
+                  devMode: data['dev_mode'] == true,
+                ),
+                const SizedBox(height: Space.lg),
+                BusinessCard(initial: business, onSaved: _reload),
+                for (final c in cards) ...[
+                  const SizedBox(height: Space.md),
+                  IntegrationCard(
+                    key: ValueKey(c['code']),
+                    card: c,
+                    webhookUrl: data['webhook_url'] as String?,
+                    onChanged: _reload,
+                  ),
+                ],
+                const SizedBox(height: Space.xl),
+                Text(
+                  t.cSetupProgress('$done', '$total'),
+                  textAlign: TextAlign.center,
+                  style: context.text.bodySmall,
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -57,7 +73,11 @@ class _SetupScreenState extends State<SetupScreen> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.done, required this.total, required this.devMode});
+  const _Header({
+    required this.done,
+    required this.total,
+    required this.devMode,
+  });
   final int done;
   final int total;
   final bool devMode;
@@ -67,39 +87,68 @@ class _Header extends StatelessWidget {
     final t = context.t;
     final finished = done == total;
     return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(finished ? Icons.rocket_launch_rounded : Icons.checklist_rounded, color: context.primary, size: 28),
-          const SizedBox(width: Space.sm),
-          Expanded(child: Text(finished ? t.cSetupAllDone : t.cSetupTitle, style: context.text.titleLarge)),
-          Text(t.cSetupProgress('$done', '$total'), style: context.text.titleSmall),
-        ]),
-        const SizedBox(height: Space.md),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: total == 0 ? 0 : done / total),
-            duration: const Duration(milliseconds: 600),
-            curve: Motion.ease,
-            builder: (_, v, _) => LinearProgressIndicator(value: v, minHeight: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                finished
+                    ? Icons.rocket_launch_rounded
+                    : Icons.checklist_rounded,
+                color: context.primary,
+                size: 28,
+              ),
+              const SizedBox(width: Space.sm),
+              Expanded(
+                child: Text(
+                  finished ? t.cSetupAllDone : t.cSetupTitle,
+                  style: context.text.titleLarge,
+                ),
+              ),
+              Text(
+                t.cSetupProgress('$done', '$total'),
+                style: context.text.titleSmall,
+              ),
+            ],
           ),
-        ),
-        if (devMode) ...[
           const SizedBox(height: Space.md),
-          Row(children: [
-            const Icon(Icons.science_rounded, size: 18),
-            const SizedBox(width: Space.xs),
-            Expanded(child: Text(t.cSetupDevMode, style: context.text.bodySmall)),
-          ]),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: total == 0 ? 0 : done / total),
+              duration: const Duration(milliseconds: 600),
+              curve: Motion.ease,
+              builder: (_, v, _) =>
+                  LinearProgressIndicator(value: v, minHeight: 10),
+            ),
+          ),
+          if (devMode) ...[
+            const SizedBox(height: Space.md),
+            Row(
+              children: [
+                const Icon(Icons.science_rounded, size: 18),
+                const SizedBox(width: Space.xs),
+                Expanded(
+                  child: Text(t.cSetupDevMode, style: context.text.bodySmall),
+                ),
+              ],
+            ),
+          ],
         ],
-      ]),
+      ),
     );
   }
 }
 
 /// One external service: status, the how-to steps, the fields, save / test / disconnect.
 class IntegrationCard extends StatefulWidget {
-  const IntegrationCard({super.key, required this.card, required this.onChanged, this.webhookUrl});
+  const IntegrationCard({
+    super.key,
+    required this.card,
+    required this.onChanged,
+    this.webhookUrl,
+  });
   final Json card;
   final VoidCallback onChanged;
   final String? webhookUrl;
@@ -127,12 +176,22 @@ class _IntegrationCardState extends State<IntegrationCard> {
       final kind = f['kind'] as String;
       final preview = f['preview'];
       if (kind == 'map') {
-        final saved = preview is Map ? preview.cast<String, dynamic>() : const <String, dynamic>{};
-        final keys = {..._guide.fields[name]?.suggestions ?? const <String>[], ...saved.keys};
-        _map[name] = {for (final k in keys) k: TextEditingController(text: saved[k] as String? ?? '')};
+        final saved = preview is Map
+            ? preview.cast<String, dynamic>()
+            : const <String, dynamic>{};
+        final keys = {
+          ..._guide.fields[name]?.suggestions ?? const <String>[],
+          ...saved.keys,
+        };
+        _map[name] = {
+          for (final k in keys)
+            k: TextEditingController(text: saved[k] as String? ?? ''),
+        };
       } else {
         final show = kind == 'text' || kind == 'list';
-        final text = preview is List ? preview.join(', ') : (preview as String? ?? '');
+        final text = preview is List
+            ? preview.join(', ')
+            : (preview as String? ?? '');
         _text[name] = TextEditingController(text: show ? text : '');
       }
     }
@@ -166,7 +225,14 @@ class _IntegrationCardState extends State<IntegrationCard> {
     try {
       await action();
     } catch (e) {
-      if (mounted) showToast(context, e is ApiException && e.status == 400 ? setupMessage(context.t, e.code) : context.t.error(e));
+      if (mounted) {
+        showToast(
+          context,
+          e is ApiException && e.status == 400
+              ? setupMessage(context.t, e.code)
+              : context.t.error(e),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -201,30 +267,75 @@ class _IntegrationCardState extends State<IntegrationCard> {
         ? Tag(label: t.cSetupFromEnv, hue: StatusHues.assigned)
         : _result == null
         ? Tag(label: t.cSetupSaved, hue: StatusHues.confirmed)
-        : Tag(label: setupMessage(t, _result!['code'] as String), hue: ok ? StatusHues.assigned : StatusHues.cancelled);
+        : Tag(
+            label: setupMessage(t, _result!['code'] as String),
+            hue: ok ? StatusHues.assigned : StatusHues.cancelled,
+          );
     return AppCard(
       padding: EdgeInsets.zero,
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
+          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
           initiallyExpanded: !configured,
-          tilePadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.xs),
-          childrenPadding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
-          leading: Icon(configured ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded, color: configured ? context.primary : null),
+          tilePadding: const EdgeInsets.symmetric(
+            horizontal: Space.lg,
+            vertical: Space.xs,
+          ),
+          childrenPadding: const EdgeInsets.fromLTRB(
+            Space.lg,
+            0,
+            Space.lg,
+            Space.lg,
+          ),
+          leading: Icon(
+            configured
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked_rounded,
+            color: configured ? context.primary : null,
+          ),
           title: Text(_guide.title(t), style: context.text.titleMedium),
-          subtitle: Padding(padding: const EdgeInsets.only(top: 4), child: Align(alignment: Alignment.centerLeft, child: status)),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Align(alignment: Alignment.centerLeft, child: status),
+          ),
           children: [
             _Steps(guide: _guide),
-            if (_code == 'portone' && widget.webhookUrl != null) _CopyRow(label: t.cSetupWebhook, value: widget.webhookUrl!),
+            if (_code == 'portone' && widget.webhookUrl != null)
+              _CopyRow(label: t.cSetupWebhook, value: widget.webhookUrl!),
             const SizedBox(height: Space.md),
             for (final f in _fields) _field(context, f),
             const SizedBox(height: Space.md),
-            Wrap(spacing: Space.sm, runSpacing: Space.sm, children: [
-              FilledButton.icon(onPressed: _busy ? null : _save, icon: const Icon(Icons.save_rounded), label: Text(t.cSetupSave)),
-              if (configured) OutlinedButton.icon(onPressed: _busy ? null : () => _run(_test), icon: const Icon(Icons.wifi_tethering_rounded), label: Text(t.cSetupTest)),
-              if (widget.card['source'] == 'console') TextButton(onPressed: _busy ? null : _clear, child: Text(t.cSetupClear)),
-              if (_busy) const Padding(padding: EdgeInsets.all(8), child: SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            ]),
+            Wrap(
+              spacing: Space.sm,
+              runSpacing: Space.sm,
+              children: [
+                FilledButton.icon(
+                  onPressed: _busy ? null : _save,
+                  icon: const Icon(Icons.save_rounded),
+                  label: Text(t.cSetupSave),
+                ),
+                if (configured)
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => _run(_test),
+                    icon: const Icon(Icons.wifi_tethering_rounded),
+                    label: Text(t.cSetupTest),
+                  ),
+                if (widget.card['source'] == 'console')
+                  TextButton(
+                    onPressed: _busy ? null : _clear,
+                    child: Text(t.cSetupClear),
+                  ),
+                if (_busy)
+                  const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
@@ -236,20 +347,27 @@ class _IntegrationCardState extends State<IntegrationCard> {
     final name = f['name'] as String;
     final kind = f['kind'] as String;
     final g = _guide.fields[name];
-    final label = '${g?.label.of(context.lang) ?? name}${f['required'] == true ? '' : ' (${t.cSetupOptional})'}';
+    final label =
+        '${g?.label.of(context.lang) ?? name}${f['required'] == true ? '' : ' (${t.cSetupOptional})'}';
     final saved = f['set'] == true;
     if (kind == 'map') {
       return Padding(
         padding: const EdgeInsets.only(bottom: Space.sm),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: context.text.labelLarge),
-          const SizedBox(height: Space.xs),
-          for (final e in _map[name]!.entries)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.xs),
-              child: TextField(controller: e.value, decoration: InputDecoration(labelText: e.key, isDense: true)),
-            ),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: context.text.labelLarge),
+            const SizedBox(height: Space.xs),
+            for (final e in _map[name]!.entries)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.xs),
+                child: TextField(
+                  controller: e.value,
+                  decoration: InputDecoration(labelText: e.key, isDense: true),
+                ),
+              ),
+          ],
+        ),
       );
     }
     final hidden = kind == 'secret' || kind == 'file';
@@ -265,7 +383,9 @@ class _IntegrationCardState extends State<IntegrationCard> {
         enableSuggestions: false,
         decoration: InputDecoration(
           labelText: label,
-          helperText: hidden && saved ? '${t.cSetupKeepValue} · ${preview ?? ''}' : g?.hint?.of(context.lang),
+          helperText: hidden && saved
+              ? '${t.cSetupKeepValue} · ${preview ?? ''}'
+              : g?.hint?.of(context.lang),
         ),
       ),
     );
@@ -279,25 +399,46 @@ class _Steps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Expanded(child: Text(t.cSetupGuide, style: context.text.labelLarge)),
-        TextButton.icon(
-          onPressed: () => launchUrl(Uri.parse(guide.site), mode: LaunchMode.externalApplication),
-          icon: const Icon(Icons.open_in_new_rounded, size: 18),
-          label: Text(t.cSetupOpenSite),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(t.cSetupGuide, style: context.text.labelLarge),
+            ),
+            TextButton.icon(
+              onPressed: () => launchUrl(
+                Uri.parse(guide.site),
+                mode: LaunchMode.externalApplication,
+              ),
+              icon: const Icon(Icons.open_in_new_rounded, size: 18),
+              label: Text(t.cSetupOpenSite),
+            ),
+          ],
         ),
-      ]),
-      for (final (i, step) in guide.steps.indexed)
-        Padding(
-          padding: const EdgeInsets.only(bottom: Space.xs),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            CircleAvatar(radius: 11, child: Text('${i + 1}', style: context.text.labelSmall)),
-            const SizedBox(width: Space.sm),
-            Expanded(child: Text(step.of(context.lang), style: context.text.bodyMedium)),
-          ]),
-        ),
-    ]);
+        for (final (i, step) in guide.steps.indexed)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.xs),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 11,
+                  child: Text('${i + 1}', style: context.text.labelSmall),
+                ),
+                const SizedBox(width: Space.sm),
+                Expanded(
+                  child: Text(
+                    step.of(context.lang),
+                    style: context.text.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
   }
 }
 

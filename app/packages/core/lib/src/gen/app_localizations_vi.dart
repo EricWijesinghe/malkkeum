@@ -2059,4 +2059,166 @@ class TVi extends T {
 
   @override
   String get pSpace => 'Không gian';
+
+  @override
+  String get cSetup => 'Thiết lập';
+
+  @override
+  String get cSetupTitle => 'Sẵn sàng ra mắt';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return 'Xong $done/$total';
+  }
+
+  @override
+  String get cSetupAllDone => 'Mọi thứ đã sẵn sàng!';
+
+  @override
+  String get cSetupBusiness => 'Thông tin doanh nghiệp';
+
+  @override
+  String get cSetupBusinessName => 'Tên dịch vụ';
+
+  @override
+  String get cSetupSupportPhone => 'SĐT hỗ trợ';
+
+  @override
+  String get cSetupSupportEmail => 'Email hỗ trợ';
+
+  @override
+  String get cSetupSupportHours => 'Giờ hỗ trợ';
+
+  @override
+  String get cSetupColor => 'Màu thương hiệu';
+
+  @override
+  String get cSetupLogo => 'Tải logo lên';
+
+  @override
+  String get cSetupCompany => 'Thông tin công ty (hiện ở chân trang)';
+
+  @override
+  String get cSetupLegalName => 'Tên pháp lý';
+
+  @override
+  String get cSetupCeo => 'Người đại diện';
+
+  @override
+  String get cSetupRegNo => 'Mã số đăng ký';
+
+  @override
+  String get cSetupMailOrderNo => 'Số đăng ký bán hàng';
+
+  @override
+  String get cSetupAddress => 'Địa chỉ';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Người phụ trách bảo mật';
+
+  @override
+  String get cSetupStoreLinks => 'Liên kết cửa hàng (điền để bật nút trên web)';
+
+  @override
+  String get cSetupCustomerApp => 'Ứng dụng khách';
+
+  @override
+  String get cSetupPartnerApp => 'Ứng dụng đối tác';
+
+  @override
+  String get cSetupSave => 'Lưu';
+
+  @override
+  String get cSetupSaved => 'Đã lưu';
+
+  @override
+  String get cSetupTest => 'Kiểm tra kết nối';
+
+  @override
+  String get cSetupClear => 'Ngắt kết nối';
+
+  @override
+  String get cSetupConnected => 'Đã kết nối';
+
+  @override
+  String get cSetupNotConnected => 'Chưa kết nối';
+
+  @override
+  String get cSetupFromEnv => 'Đang dùng cấu hình máy chủ';
+
+  @override
+  String get cSetupCheckInApp => 'Đã lưu · đăng nhập từ ứng dụng để xác nhận';
+
+  @override
+  String get cSetupInvalidKey =>
+      'Khóa không hợp lệ, hãy kiểm tra giá trị đã sao chép';
+
+  @override
+  String get cSetupUnreachable => 'Không kết nối được, hãy thử lại sau';
+
+  @override
+  String get cSetupKeepValue => 'Đã lưu (chỉ nhập khi muốn thay)';
+
+  @override
+  String get cSetupGuide => 'Cách thiết lập';
+
+  @override
+  String get cSetupOpenSite => 'Mở trang';
+
+  @override
+  String get cSetupWebhook => 'URL webhook (dán vào PortOne)';
+
+  @override
+  String get cCopied => 'Đã sao chép';
+
+  @override
+  String get cSetupDevMode => 'Chế độ thử: không thanh toán hay gửi tin thật';
+
+  @override
+  String get cSetupOptional => 'Tùy chọn';
+
+  @override
+  String get cIntPortone => 'Thanh toán (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS & KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Thông báo đẩy (Firebase)';
+
+  @override
+  String get cIntKakao => 'Đăng nhập Kakao';
+
+  @override
+  String get cIntNaver => 'Đăng nhập Naver';
+
+  @override
+  String get cIntGoogle => 'Đăng nhập Google';
+
+  @override
+  String get cIntApple => 'Đăng nhập Apple';
+
+  @override
+  String get cFirstRunTitle => 'Chào mừng! Hãy tạo tài khoản chủ';
+
+  @override
+  String get cFirstRunBody => 'Nhập mã cài đặt 12 ký tự hiển thị khi cài đặt.';
+
+  @override
+  String get cFirstRunCode => 'Mã cài đặt';
+
+  @override
+  String get cName => 'Tên';
+
+  @override
+  String get cFirstRunCreate => 'Tạo tài khoản và bắt đầu';
+
+  @override
+  String get cWrongSetupCode => 'Mã cài đặt không đúng';
+
+  @override
+  String get cWeakPassword => 'Mật khẩu cần ít nhất 12 ký tự';
+
+  @override
+  String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
 }

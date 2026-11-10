@@ -2087,4 +2087,170 @@ class TUz extends T {
 
   @override
   String get pSpace => 'Joy ma\'lumoti';
+
+  @override
+  String get cSetup => 'Sozlash';
+
+  @override
+  String get cSetupTitle => 'Ishga tushirishga tayyorgarlik';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return '$total dan $done tasi tayyor';
+  }
+
+  @override
+  String get cSetupAllDone => 'Hammasi tayyor!';
+
+  @override
+  String get cSetupBusiness => 'Biznes ma\'lumotlari';
+
+  @override
+  String get cSetupBusinessName => 'Xizmat nomi';
+
+  @override
+  String get cSetupSupportPhone => 'Yordam telefoni';
+
+  @override
+  String get cSetupSupportEmail => 'Yordam emaili';
+
+  @override
+  String get cSetupSupportHours => 'Yordam vaqti';
+
+  @override
+  String get cSetupColor => 'Brend rangi';
+
+  @override
+  String get cSetupLogo => 'Logotip yuklash';
+
+  @override
+  String get cSetupCompany => 'Kompaniya ma\'lumotlari (ilova va sayt pastida)';
+
+  @override
+  String get cSetupLegalName => 'Yuridik nom';
+
+  @override
+  String get cSetupCeo => 'Rahbar';
+
+  @override
+  String get cSetupRegNo => 'Ro\'yxat raqami';
+
+  @override
+  String get cSetupMailOrderNo => 'Onlayn savdo ro\'yxat raqami';
+
+  @override
+  String get cSetupAddress => 'Manzil';
+
+  @override
+  String get cSetupPrivacyOfficer => 'Maxfiylik mas\'uli';
+
+  @override
+  String get cSetupStoreLinks =>
+      'Do\'kon havolalari (to\'ldirilgach sayt tugmalari yoqiladi)';
+
+  @override
+  String get cSetupCustomerApp => 'Mijoz ilovasi';
+
+  @override
+  String get cSetupPartnerApp => 'Hamkor ilovasi';
+
+  @override
+  String get cSetupSave => 'Saqlash';
+
+  @override
+  String get cSetupSaved => 'Saqlandi';
+
+  @override
+  String get cSetupTest => 'Ulanishni tekshirish';
+
+  @override
+  String get cSetupClear => 'Uzish';
+
+  @override
+  String get cSetupConnected => 'Ulangan';
+
+  @override
+  String get cSetupNotConnected => 'Ulanmagan';
+
+  @override
+  String get cSetupFromEnv => 'Server sozlamalari ishlatilmoqda';
+
+  @override
+  String get cSetupCheckInApp => 'Saqlandi · ilovadan kirib tasdiqlang';
+
+  @override
+  String get cSetupInvalidKey =>
+      'Kalit rad etildi. Nusxalangan qiymatni tekshiring';
+
+  @override
+  String get cSetupUnreachable =>
+      'Xizmatga ulanib bo\'lmadi. Keyinroq urinib ko\'ring';
+
+  @override
+  String get cSetupKeepValue => 'Saqlangan (faqat almashtirish uchun kiriting)';
+
+  @override
+  String get cSetupGuide => 'Qanday sozlash';
+
+  @override
+  String get cSetupOpenSite => 'Saytni ochish';
+
+  @override
+  String get cSetupWebhook => 'Webhook manzili (PortOne konsoliga joylang)';
+
+  @override
+  String get cCopied => 'Nusxalandi';
+
+  @override
+  String get cSetupDevMode =>
+      'Sinov rejimi: haqiqiy to\'lov yoki xabar yuborilmaydi';
+
+  @override
+  String get cSetupOptional => 'Ixtiyoriy';
+
+  @override
+  String get cIntPortone => 'To\'lovlar (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS va KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'Ilova bildirishnomalari (Firebase)';
+
+  @override
+  String get cIntKakao => 'Kakao orqali kirish';
+
+  @override
+  String get cIntNaver => 'Naver orqali kirish';
+
+  @override
+  String get cIntGoogle => 'Google orqali kirish';
+
+  @override
+  String get cIntApple => 'Apple orqali kirish';
+
+  @override
+  String get cFirstRunTitle => 'Xush kelibsiz! Egasi hisobini yarating';
+
+  @override
+  String get cFirstRunBody =>
+      'O\'rnatishda ko\'rsatilgan 12 belgili kodni kiriting. Bu hisob barcha sozlamalarni boshqaradi.';
+
+  @override
+  String get cFirstRunCode => 'O\'rnatish kodi';
+
+  @override
+  String get cName => 'Ism';
+
+  @override
+  String get cFirstRunCreate => 'Hisob yaratib boshlash';
+
+  @override
+  String get cWrongSetupCode => 'O\'rnatish kodi noto\'g\'ri';
+
+  @override
+  String get cWeakPassword => 'Parol kamida 12 belgidan iborat bo\'lishi kerak';
+
+  @override
+  String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
 }

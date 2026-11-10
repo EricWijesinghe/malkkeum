@@ -21,18 +21,17 @@ void main() {
     testWidgets('intro screen meets tap-target and contrast guidelines ($name)', (tester) async {
       setViewport(tester, phoneSize);
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final env = await TestEnv.create(signedIn: false, themeMode: mode);
       await pumpCustomerApp(tester, env);
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);
+      handle.dispose();
     });
 
     testWidgets('home screen meets tap-target and contrast guidelines ($name)', (tester) async {
-      setViewport(tester, phoneSize);
+      setViewport(tester, tallPhoneSize);
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final fake = FakeApi();
       stockCustomerApi(fake, name: '지민');
       final env = await TestEnv.create(fake: fake, themeMode: mode);
@@ -41,12 +40,12 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);
+      handle.dispose();
     });
 
     testWidgets('service detail meets tap-target and contrast guidelines ($name)', (tester) async {
       setViewport(tester, phoneSize);
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final fake = FakeApi();
       stockCustomerApi(fake);
       final env = await TestEnv.create(fake: fake, themeMode: mode);
@@ -54,6 +53,7 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);
+      handle.dispose();
     });
   }
 }

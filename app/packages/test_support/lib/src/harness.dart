@@ -1,5 +1,5 @@
 import 'package:core/core.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'env.dart';
@@ -8,7 +8,7 @@ import 'env.dart';
 /// pending at the end of a widget test). Live-event behaviour is covered at the
 /// core level, not here.
 class FakeRealtime extends Realtime {
-  FakeRealtime(ApiClient api) : super(api);
+  FakeRealtime(super.api);
 
   @override
   void connect() {}
@@ -48,11 +48,18 @@ void setViewport(WidgetTester tester, Size logical) {
 /// Common phone size (iPhone 14 class, logical pixels).
 const phoneSize = Size(390, 844);
 
+/// Phone width, tall enough that no content scrolls under the frosted bottom bar
+/// (the contrast checker would sample the blur instead of the real background).
+const tallPhoneSize = Size(390, 1600);
+
 /// Tablet / desktop width that triggers the side rail and split views.
 const wideSize = Size(1280, 900);
 
-/// Replaces the tree so timers from the last screen are cancelled before the test ends.
-Future<void> unmount(WidgetTester tester) => tester.pumpWidget(const SizedBox.shrink());
+/// Replaces the tree, then advances time so delayed timers (stagger-in, reconnects) fire before the test ends.
+Future<void> unmount(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pump(const Duration(seconds: 1));
+}
 
 /// Convenience: a fresh environment with the default (signed-in, Korean, dark) setup.
 Future<TestEnv> freshEnv({bool signedIn = true, String localeCode = 'ko', ThemeMode mode = ThemeMode.dark}) =>

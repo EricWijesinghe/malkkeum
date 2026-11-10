@@ -72,7 +72,7 @@ void main() {
       ..reply('POST', '/partner/jobs/job-1/accept', {'ok': true});
     stockPartnerApi(fake);
     final env = await TestEnv.create(fake: fake, role: 'partner');
-    await pumpPartnerScreen(tester, env, JobDetailScreen(id: 'job-1'));
+    await pumpPartnerScreen(tester, env, const JobDetailScreen(id: 'job-1'));
     await pumpUntilFound(tester, find.text(koT.pAccept));
 
     await tester.tap(find.text(koT.pAccept));
@@ -95,7 +95,7 @@ void main() {
       ..reply('POST', '/partner/jobs/job-1/accept', {'error': {'code': 'already_taken'}}, status: 409);
     stockPartnerApi(fake);
     final env = await TestEnv.create(fake: fake, role: 'partner');
-    await pumpPartnerScreen(tester, env, JobDetailScreen(id: 'job-1'));
+    await pumpPartnerScreen(tester, env, const JobDetailScreen(id: 'job-1'));
     await pumpUntilFound(tester, find.text(koT.pAccept));
 
     await tester.tap(find.text(koT.pAccept));

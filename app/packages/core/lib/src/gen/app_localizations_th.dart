@@ -2074,4 +2074,167 @@ class TTh extends T {
 
   @override
   String get pSpace => 'ข้อมูลพื้นที่';
+
+  @override
+  String get cSetup => 'ตั้งค่า';
+
+  @override
+  String get cSetupTitle => 'เตรียมพร้อมเปิดบริการ';
+
+  @override
+  String cSetupProgress(String done, String total) {
+    return 'เสร็จแล้ว $done/$total';
+  }
+
+  @override
+  String get cSetupAllDone => 'ทุกอย่างพร้อมแล้ว!';
+
+  @override
+  String get cSetupBusiness => 'ข้อมูลธุรกิจ';
+
+  @override
+  String get cSetupBusinessName => 'ชื่อบริการ';
+
+  @override
+  String get cSetupSupportPhone => 'โทรศัพท์ฝ่ายบริการ';
+
+  @override
+  String get cSetupSupportEmail => 'อีเมลฝ่ายบริการ';
+
+  @override
+  String get cSetupSupportHours => 'เวลาให้บริการ';
+
+  @override
+  String get cSetupColor => 'สีแบรนด์';
+
+  @override
+  String get cSetupLogo => 'อัปโหลดโลโก้';
+
+  @override
+  String get cSetupCompany => 'ข้อมูลบริษัท (แสดงท้ายแอปและเว็บไซต์)';
+
+  @override
+  String get cSetupLegalName => 'ชื่อนิติบุคคล';
+
+  @override
+  String get cSetupCeo => 'ผู้แทน';
+
+  @override
+  String get cSetupRegNo => 'เลขทะเบียนธุรกิจ';
+
+  @override
+  String get cSetupMailOrderNo => 'เลขทะเบียนพาณิชย์อิเล็กทรอนิกส์';
+
+  @override
+  String get cSetupAddress => 'ที่อยู่';
+
+  @override
+  String get cSetupPrivacyOfficer => 'เจ้าหน้าที่คุ้มครองข้อมูล';
+
+  @override
+  String get cSetupStoreLinks =>
+      'ลิงก์ร้านค้าแอป (กรอกแล้วปุ่มบนเว็บจะเปิดใช้)';
+
+  @override
+  String get cSetupCustomerApp => 'แอปลูกค้า';
+
+  @override
+  String get cSetupPartnerApp => 'แอปพาร์ทเนอร์';
+
+  @override
+  String get cSetupSave => 'บันทึก';
+
+  @override
+  String get cSetupSaved => 'บันทึกแล้ว';
+
+  @override
+  String get cSetupTest => 'ทดสอบการเชื่อมต่อ';
+
+  @override
+  String get cSetupClear => 'ยกเลิกการเชื่อมต่อ';
+
+  @override
+  String get cSetupConnected => 'เชื่อมต่อแล้ว';
+
+  @override
+  String get cSetupNotConnected => 'ยังไม่เชื่อมต่อ';
+
+  @override
+  String get cSetupFromEnv => 'ใช้การตั้งค่าเซิร์ฟเวอร์';
+
+  @override
+  String get cSetupCheckInApp => 'บันทึกแล้ว · ยืนยันโดยเข้าสู่ระบบจากแอป';
+
+  @override
+  String get cSetupInvalidKey => 'คีย์ไม่ถูกต้อง โปรดตรวจสอบค่าที่คัดลอก';
+
+  @override
+  String get cSetupUnreachable => 'เชื่อมต่อบริการไม่ได้ ลองใหม่ภายหลัง';
+
+  @override
+  String get cSetupKeepValue => 'บันทึกแล้ว (กรอกเฉพาะเมื่อต้องการเปลี่ยน)';
+
+  @override
+  String get cSetupGuide => 'วิธีตั้งค่า';
+
+  @override
+  String get cSetupOpenSite => 'เปิดเว็บไซต์';
+
+  @override
+  String get cSetupWebhook => 'ที่อยู่ Webhook (วางในคอนโซล PortOne)';
+
+  @override
+  String get cCopied => 'คัดลอกแล้ว';
+
+  @override
+  String get cSetupDevMode => 'โหมดทดสอบ: ไม่มีการชำระเงินหรือส่งข้อความจริง';
+
+  @override
+  String get cSetupOptional => 'ไม่บังคับ';
+
+  @override
+  String get cIntPortone => 'การชำระเงิน (PortOne)';
+
+  @override
+  String get cIntSolapi => 'SMS และ KakaoTalk (Solapi)';
+
+  @override
+  String get cIntPush => 'การแจ้งเตือนแอป (Firebase)';
+
+  @override
+  String get cIntKakao => 'เข้าสู่ระบบด้วย Kakao';
+
+  @override
+  String get cIntNaver => 'เข้าสู่ระบบด้วย Naver';
+
+  @override
+  String get cIntGoogle => 'เข้าสู่ระบบด้วย Google';
+
+  @override
+  String get cIntApple => 'เข้าสู่ระบบด้วย Apple';
+
+  @override
+  String get cFirstRunTitle => 'ยินดีต้อนรับ! สร้างบัญชีเจ้าของ';
+
+  @override
+  String get cFirstRunBody =>
+      'กรอกรหัส 12 ตัวที่แสดงตอนติดตั้ง บัญชีนี้จัดการการตั้งค่าทั้งหมด';
+
+  @override
+  String get cFirstRunCode => 'รหัสติดตั้ง';
+
+  @override
+  String get cName => 'ชื่อ';
+
+  @override
+  String get cFirstRunCreate => 'สร้างบัญชีและเริ่ม';
+
+  @override
+  String get cWrongSetupCode => 'รหัสติดตั้งไม่ถูกต้อง';
+
+  @override
+  String get cWeakPassword => 'รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร';
+
+  @override
+  String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
 }

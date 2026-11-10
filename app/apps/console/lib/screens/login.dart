@@ -22,9 +22,17 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await Deps.read(context).session.staffLogin(_email.text.trim(), _password.text);
+      await Deps.read(
+        context,
+      ).session.staffLogin(_email.text.trim(), _password.text);
     } on ApiException catch (e) {
-      if (mounted) setState(() => _error = e.status == 401 ? context.t.cLoginFailed : context.t.error(e));
+      if (mounted) {
+        setState(
+          () => _error = e.status == 401
+              ? context.t.cLoginFailed
+              : context.t.error(e),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -47,23 +55,54 @@ class _LoginScreenState extends State<LoginScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: AutofillGroup(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Wrap(spacing: 8, runSpacing: 8, children: [for (final c in const ['bathroom', 'kitchen', 'aircon', 'sofa', 'move_in']) ServiceGlyph(c, size: 40)]),
-                const SizedBox(height: Space.xl),
-                Text('${BrandConfig.placeholder.name} ${t.cTitle}', style: context.text.headlineMedium),
-                const SizedBox(height: Space.xl),
-                TextField(controller: _email, autofillHints: const [AutofillHints.username], keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: t.cEmail)),
-                const SizedBox(height: Space.sm),
-                TextField(
-                  controller: _password,
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.password],
-                  decoration: InputDecoration(labelText: t.cPassword, errorText: _error),
-                  onSubmitted: (_) => _login(),
-                ),
-                const SizedBox(height: Space.lg),
-                PrimaryButton(label: t.cLogin, busy: _busy, onPressed: _login),
-              ]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final c in const [
+                        'bathroom',
+                        'kitchen',
+                        'aircon',
+                        'sofa',
+                        'move_in',
+                      ])
+                        ServiceGlyph(c, size: 40),
+                    ],
+                  ),
+                  const SizedBox(height: Space.xl),
+                  Text(
+                    '${BrandConfig.placeholder.name} ${t.cTitle}',
+                    style: context.text.headlineMedium,
+                  ),
+                  const SizedBox(height: Space.xl),
+                  TextField(
+                    controller: _email,
+                    autofillHints: const [AutofillHints.username],
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(labelText: t.cEmail),
+                  ),
+                  const SizedBox(height: Space.sm),
+                  TextField(
+                    controller: _password,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.password],
+                    decoration: InputDecoration(
+                      labelText: t.cPassword,
+                      errorText: _error,
+                    ),
+                    onSubmitted: (_) => _login(),
+                  ),
+                  const SizedBox(height: Space.lg),
+                  PrimaryButton(
+                    label: t.cLogin,
+                    busy: _busy,
+                    onPressed: _login,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
