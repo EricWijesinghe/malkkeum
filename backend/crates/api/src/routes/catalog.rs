@@ -63,16 +63,27 @@ pub async fn load_service(db: &sqlx::PgPool, code: &str) -> ApiResult<Service> {
 }
 
 pub async fn load_formula(db: &sqlx::PgPool) -> ApiResult<QuoteFormula> {
-    let v: Option<sqlx::types::Json<QuoteFormula>> = sqlx::query_scalar("SELECT value FROM settings WHERE key = 'quote_formula'").fetch_optional(db).await?;
+    let v: Option<sqlx::types::Json<QuoteFormula>> = sqlx::query_scalar("SELECT value FROM settings WHERE key = 'quote_formula'")
+        .fetch_optional(db)
+        .await?;
     Ok(v.map(|j| j.0).unwrap_or_default())
 }
 
 async fn list_services(State(s): State<AppState>) -> ApiResult<Json<Vec<ServiceDto>>> {
-    let rows: Vec<ServiceRow> = sqlx::query_as(&format!("SELECT {SERVICE_COLS} FROM services WHERE active ORDER BY sort_order")).fetch_all(&s.db).await?;
-    Ok(Json(rows.into_iter().map(|r| {
-        let content = r.content.clone();
-        ServiceDto { service: r.into_domain(), content }
-    }).collect()))
+    let rows: Vec<ServiceRow> = sqlx::query_as(&format!("SELECT {SERVICE_COLS} FROM services WHERE active ORDER BY sort_order"))
+        .fetch_all(&s.db)
+        .await?;
+    Ok(Json(
+        rows.into_iter()
+            .map(|r| {
+                let content = r.content.clone();
+                ServiceDto {
+                    service: r.into_domain(),
+                    content,
+                }
+            })
+            .collect(),
+    ))
 }
 
 #[derive(Deserialize)]
@@ -98,10 +109,14 @@ async fn slots(State(s): State<AppState>, Query(q): Query<SlotQuery>) -> ApiResu
     .bind(hours.iter().map(|h| i16::from(*h)).collect::<Vec<_>>())
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows.into_iter().map(|(h, cap, used)| SlotDto {
-        start_hour: h as u8,
-        available: cap.is_none_or(|c| used < i64::from(c)),
-    }).collect()))
+    Ok(Json(
+        rows.into_iter()
+            .map(|(h, cap, used)| SlotDto {
+                start_hour: h as u8,
+                available: cap.is_none_or(|c| used < i64::from(c)),
+            })
+            .collect(),
+    ))
 }
 
 async fn estimate(State(s): State<AppState>, Json(a): Json<QuoteAnswers>) -> ApiResult<Json<Estimate>> {

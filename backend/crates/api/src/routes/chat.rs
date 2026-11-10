@@ -73,15 +73,24 @@ pub async fn booking_thread(conn: &mut PgConnection, audience: &str, owner: Uuid
 }
 
 /// Inserts a message and bumps unread counters for the other side.
-pub async fn insert_message(conn: &mut PgConnection, thread: Uuid, sender: &str, sender_id: Option<Uuid>, kind: &str, body: Value) -> Result<MessageRow, sqlx::Error> {
-    let msg: MessageRow = sqlx::query_as("INSERT INTO chat_messages (thread_id, sender, sender_id, kind, body) VALUES ($1,$2,$3,$4,$5) RETURNING id, thread_id, sender, kind, body, created_at")
-        .bind(thread)
-        .bind(sender)
-        .bind(sender_id)
-        .bind(kind)
-        .bind(body)
-        .fetch_one(&mut *conn)
-        .await?;
+pub async fn insert_message(
+    conn: &mut PgConnection,
+    thread: Uuid,
+    sender: &str,
+    sender_id: Option<Uuid>,
+    kind: &str,
+    body: Value,
+) -> Result<MessageRow, sqlx::Error> {
+    let msg: MessageRow = sqlx::query_as(
+        "INSERT INTO chat_messages (thread_id, sender, sender_id, kind, body) VALUES ($1,$2,$3,$4,$5) RETURNING id, thread_id, sender, kind, body, created_at",
+    )
+    .bind(thread)
+    .bind(sender)
+    .bind(sender_id)
+    .bind(kind)
+    .bind(body)
+    .fetch_one(&mut *conn)
+    .await?;
     let (member_inc, staff_inc) = match sender {
         "staff" => (1, 0),
         "system" => (1, 1),
@@ -98,7 +107,10 @@ pub async fn insert_message(conn: &mut PgConnection, thread: Uuid, sender: &str,
 
 /// Fan-out after commit: live event to both sides, push to the member when staff/system wrote.
 pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> {
-    let (user_id, pro_id): (Option<Uuid>, Option<Uuid>) = sqlx::query_as("SELECT user_id, pro_id FROM chat_threads WHERE id = $1").bind(msg.thread_id).fetch_one(&s.db).await?;
+    let (user_id, pro_id): (Option<Uuid>, Option<Uuid>) = sqlx::query_as("SELECT user_id, pro_id FROM chat_threads WHERE id = $1")
+        .bind(msg.thread_id)
+        .fetch_one(&s.db)
+        .await?;
     let member = user_id.map(Recipient::User).or(pro_id.map(Recipient::Pro)).ok_or(ApiError::NotFound)?;
     let data = json!({ "message": msg });
     s.hub.send(Recipient::Staff, "chat.message", data.clone());
@@ -128,11 +140,13 @@ fn member_filter(a: &Auth) -> ApiResult<(&'static str, &'static str)> {
 }
 
 pub async fn list_threads_for(db: &PgPool, audience: &str, col: &str, owner: Uuid) -> ApiResult<Vec<ThreadRow>> {
-    Ok(sqlx::query_as(&format!("SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 AND t.{col} = $2 ORDER BY t.last_message_at DESC"))
-        .bind(audience)
-        .bind(owner)
-        .fetch_all(db)
-        .await?)
+    Ok(sqlx::query_as(&format!(
+        "SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 AND t.{col} = $2 ORDER BY t.last_message_at DESC"
+    ))
+    .bind(audience)
+    .bind(owner)
+    .fetch_all(db)
+    .await?)
 }
 
 async fn my_threads(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Vec<ThreadRow>>> {
@@ -154,7 +168,11 @@ async fn open_thread(State(s): State<AppState>, a: Auth, Json(o): Json<OpenThrea
     let mut conn = s.db.acquire().await?;
     let id = if let Some(b) = o.booking_id {
         let owner_col = if aud == "customer" { "user_id" } else { "pro_id" };
-        let owns: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings WHERE id = $1 AND {owner_col} = $2)")).bind(b).bind(a.id).fetch_one(&mut *conn).await?;
+        let owns: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings WHERE id = $1 AND {owner_col} = $2)"))
+            .bind(b)
+            .bind(a.id)
+            .fetch_one(&mut *conn)
+            .await?;
         if !owns {
             return Err(ApiError::NotFound);
         }
@@ -176,7 +194,11 @@ pub async fn authorize_thread(db: &PgPool, a: &Auth, thread: Uuid) -> ApiResult<
         return Ok(());
     }
     let (_, col) = member_filter(a)?;
-    let ok: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM chat_threads WHERE id = $1 AND {col} = $2)")).bind(thread).bind(a.id).fetch_one(db).await?;
+    let ok: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM chat_threads WHERE id = $1 AND {col} = $2)"))
+        .bind(thread)
+        .bind(a.id)
+        .fetch_one(db)
+        .await?;
     if ok { Ok(()) } else { Err(ApiError::NotFound) }
 }
 
@@ -210,7 +232,7 @@ pub fn validate_outgoing(o: &Outgoing, public_base: &str) -> ApiResult<(&'static
     match o {
         Outgoing::Text { text } if !text.trim().is_empty() && text.chars().count() <= MAX_TEXT => Ok(("text", json!({ "text": text.trim() }))),
         // Only our own upload URLs, so chats cannot carry arbitrary links as images.
-        Outgoing::Photo { url } if url.starts_with(&format!("{public_base}/files/")) => Ok(("photo", json!({ "url": url }))),
+        Outgoing::Photo { url } if crate::util::is_own_upload(public_base, url) => Ok(("photo", json!({ "url": url }))),
         _ => Err(ApiError::BadRequest("invalid_message")),
     }
 }
@@ -233,7 +255,10 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
 pub async fn mark_read(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
     authorize_thread(&s.db, &a, id).await?;
     let col = if a.role.is_staff() { "unread_staff" } else { "unread_member" };
-    sqlx::query(&format!("UPDATE chat_threads SET {col} = 0 WHERE id = $1")).bind(id).execute(&s.db).await?;
+    sqlx::query(&format!("UPDATE chat_threads SET {col} = 0 WHERE id = $1"))
+        .bind(id)
+        .execute(&s.db)
+        .await?;
     let to = if a.role.is_staff() { None } else { Some(Recipient::Staff) };
     if let Some(to) = to {
         s.hub.send(to, "chat.read", json!({ "thread_id": id }));

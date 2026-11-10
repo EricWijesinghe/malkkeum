@@ -44,8 +44,12 @@ impl ApiError {
             Self::BadRequest(c) => (StatusCode::BAD_REQUEST, c),
             Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate_limited"),
             Self::PaymentFailed(_) => (StatusCode::PAYMENT_REQUIRED, "payment_failed"),
+            Self::Domain(e @ (DomainError::SlotFull | DomainError::CouponUsed | DomainError::InvalidTransition | DomainError::CancellationWindowClosed)) => {
+                (StatusCode::CONFLICT, e.code())
+            }
             Self::Domain(e) => (StatusCode::UNPROCESSABLE_ENTITY, e.code()),
             Self::Db(sqlx::Error::RowNotFound) => (StatusCode::NOT_FOUND, "not_found"),
+            Self::Db(sqlx::Error::Database(d)) if d.is_unique_violation() => (StatusCode::CONFLICT, "duplicate"),
             Self::Db(_) | Self::Internal(_) => (StatusCode::INTERNAL_SERVER_ERROR, "internal"),
         }
     }

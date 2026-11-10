@@ -56,15 +56,27 @@ async fn update_profile(State(s): State<AppState>, Pro(a): Pro, Json(p): Json<Pr
         return Err(ApiError::BadRequest("invalid_profile"));
     }
     sqlx::query("UPDATE pros SET name = COALESCE($2, name), team_name = COALESCE($3, team_name), locale = COALESCE($4, locale) WHERE id = $1")
-        .bind(a.id).bind(&p.name).bind(&p.team_name).bind(&p.locale).execute(&s.db).await?;
+        .bind(a.id)
+        .bind(&p.name)
+        .bind(&p.team_name)
+        .bind(&p.locale)
+        .execute(&s.db)
+        .await?;
     if let Some(n) = &p.name {
-        sqlx::query("UPDATE team_members SET name = $2 WHERE pro_id = $1 AND role = 'owner'").bind(a.id).bind(n).execute(&s.db).await?;
+        sqlx::query("UPDATE team_members SET name = $2 WHERE pro_id = $1 AND role = 'owner'")
+            .bind(a.id)
+            .bind(n)
+            .execute(&s.db)
+            .await?;
     }
     profile(State(s), Pro(a)).await
 }
 
 async fn get_prefs(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
-    let v: Value = sqlx::query_scalar("SELECT to_jsonb(pp) - 'pro_id' FROM partner_prefs pp WHERE pro_id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let v: Value = sqlx::query_scalar("SELECT to_jsonb(pp) - 'pro_id' FROM partner_prefs pp WHERE pro_id = $1")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     Ok(Json(v))
 }
 
@@ -88,8 +100,15 @@ async fn put_prefs(State(s): State<AppState>, Pro(a): Pro, Json(p): Json<Prefs>)
         return Err(ApiError::BadRequest("invalid_prefs"));
     }
     sqlx::query("UPDATE partner_prefs SET services=$2, districts=$3, weekdays=$4, day_parts=$5, days_off=$6, notify=$7 WHERE pro_id=$1")
-        .bind(a.id).bind(&p.services).bind(&p.districts).bind(&p.weekdays).bind(&p.day_parts).bind(&p.days_off).bind(&p.notify)
-        .execute(&s.db).await?;
+        .bind(a.id)
+        .bind(&p.services)
+        .bind(&p.districts)
+        .bind(&p.weekdays)
+        .bind(&p.day_parts)
+        .bind(&p.days_off)
+        .bind(&p.notify)
+        .execute(&s.db)
+        .await?;
     get_prefs(State(s), Pro(a)).await
 }
 
@@ -112,7 +131,10 @@ async fn invite(State(s): State<AppState>, Pro(a): Pro, Json(i): Json<Invite>) -
     if i.name.trim().is_empty() || i.name.chars().count() > 40 {
         return Err(ApiError::BadRequest("invalid_name"));
     }
-    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM team_members WHERE pro_id = $1 AND invite_status <> 'removed'").bind(a.id).fetch_one(&s.db).await?;
+    let count: i64 = sqlx::query_scalar("SELECT count(*) FROM team_members WHERE pro_id = $1 AND invite_status <> 'removed'")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     if count >= MAX_TEAM {
         return Err(ApiError::Conflict("team_full"));
     }
@@ -123,11 +145,19 @@ async fn invite(State(s): State<AppState>, Pro(a): Pro, Json(i): Json<Invite>) -
 }
 
 async fn remove_member(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    let r = sqlx::query("UPDATE team_members SET invite_status = 'removed' WHERE id = $1 AND pro_id = $2 AND role = 'member'").bind(id).bind(a.id).execute(&s.db).await?;
+    let r = sqlx::query("UPDATE team_members SET invite_status = 'removed' WHERE id = $1 AND pro_id = $2 AND role = 'member'")
+        .bind(id)
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     if r.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
-    sqlx::query("UPDATE bookings SET assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner') WHERE assignee_id = $1 AND status = 2").bind(id).bind(a.id).execute(&s.db).await?;
+    sqlx::query("UPDATE bookings SET assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner') WHERE assignee_id = $1 AND status = 2")
+        .bind(id)
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     Ok(Json(json!({ "ok": true })))
 }
 
@@ -154,10 +184,18 @@ async fn put_account(State(s): State<AppState>, Pro(a): Pro, Json(x): Json<Accou
     }
     let last4 = digits[digits.len() - 4..].to_string();
     let verified = s.config.dev_mode.then(chrono::Utc::now);
-    sqlx::query("INSERT INTO payout_accounts (pro_id, bank, account_enc, account_last4, holder, verified_at) VALUES ($1,$2,$3,$4,$5,$6)
-                 ON CONFLICT (pro_id) DO UPDATE SET bank=$2, account_enc=$3, account_last4=$4, holder=$5, verified_at=$6")
-        .bind(a.id).bind(x.bank.trim()).bind(crypto::encrypt(&s.config.data_key, &digits)).bind(last4).bind(x.holder.trim()).bind(verified)
-        .execute(&s.db).await?;
+    sqlx::query(
+        "INSERT INTO payout_accounts (pro_id, bank, account_enc, account_last4, holder, verified_at) VALUES ($1,$2,$3,$4,$5,$6)
+                 ON CONFLICT (pro_id) DO UPDATE SET bank=$2, account_enc=$3, account_last4=$4, holder=$5, verified_at=$6",
+    )
+    .bind(a.id)
+    .bind(x.bank.trim())
+    .bind(crypto::encrypt(&s.config.data_key, &digits))
+    .bind(last4)
+    .bind(x.holder.trim())
+    .bind(verified)
+    .execute(&s.db)
+    .await?;
     get_account(State(s), Pro(a)).await
 }
 

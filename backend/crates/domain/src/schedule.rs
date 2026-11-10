@@ -32,7 +32,11 @@ pub fn check_date(today: NaiveDate, visit: NaiveDate) -> Result<(), DomainError>
 
 pub fn check_slot(is_quote: bool, start_hour: u8) -> Result<(), DomainError> {
     let allowed: &[u8] = if is_quote { &QUOTE_SLOTS } else { &STANDARD_SLOTS };
-    if allowed.contains(&start_hour) { Ok(()) } else { Err(DomainError::InvalidSlot) }
+    if allowed.contains(&start_hour) {
+        Ok(())
+    } else {
+        Err(DomainError::InvalidSlot)
+    }
 }
 
 /// Capacity is configured per slot in admin (decision #6). `None` = unlimited.

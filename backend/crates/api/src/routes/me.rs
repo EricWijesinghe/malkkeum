@@ -85,7 +85,10 @@ async fn update_profile(State(s): State<AppState>, Customer(a): Customer, Json(p
 /// Spec rule 5: welcome pack once per account, issued when sign-up completes.
 async fn issue_welcome_pack(s: &AppState, user: Uuid) -> ApiResult<()> {
     let mut tx = s.db.begin().await?;
-    let claimed = sqlx::query("UPDATE users SET welcome_issued = TRUE WHERE id = $1 AND NOT welcome_issued").bind(user).execute(&mut *tx).await?;
+    let claimed = sqlx::query("UPDATE users SET welcome_issued = TRUE WHERE id = $1 AND NOT welcome_issued")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     if claimed.rows_affected() == 1 {
         for c in domain::coupon::welcome_pack(Utc::now()) {
             let name = if c.service_code.is_some() { "welcome_studio" } else { "welcome_any" };
@@ -107,11 +110,26 @@ async fn issue_welcome_pack(s: &AppState, user: Uuid) -> ApiResult<()> {
 /// PIPA: account deletion anonymises personal data; bookings are kept for accounting.
 async fn delete_account(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
     let mut tx = s.db.begin().await?;
-    sqlx::query("UPDATE users SET deleted_at = now(), name = '', email = NULL, phone = 'deleted:' || id::text WHERE id = $1").bind(a.id).execute(&mut *tx).await?;
-    sqlx::query("UPDATE addresses SET deleted_at = now() WHERE user_id = $1").bind(a.id).execute(&mut *tx).await?;
-    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1").bind(a.id).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1").bind(a.id).execute(&mut *tx).await?;
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1").bind(a.id).execute(&mut *tx).await?;
+    sqlx::query("UPDATE users SET deleted_at = now(), name = '', email = NULL, phone = 'deleted:' || id::text WHERE id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE addresses SET deleted_at = now() WHERE user_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
     tx.commit().await?;
     Ok(Json(json!({ "ok": true })))
 }
@@ -155,10 +173,12 @@ impl AddressInput {
 const ADDRESS_COLS: &str = "id, kind, label, road_address, detail, district_code, size_pyeong";
 
 async fn list_addresses(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<Address>>> {
-    let rows = sqlx::query_as(&format!("SELECT {ADDRESS_COLS} FROM addresses WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at"))
-        .bind(a.id)
-        .fetch_all(&s.db)
-        .await?;
+    let rows = sqlx::query_as(&format!(
+        "SELECT {ADDRESS_COLS} FROM addresses WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at"
+    ))
+    .bind(a.id)
+    .fetch_all(&s.db)
+    .await?;
     Ok(Json(rows))
 }
 
@@ -200,7 +220,11 @@ async fn update_address(State(s): State<AppState>, Customer(a): Customer, Path(i
 }
 
 async fn delete_address(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    let r = sqlx::query("UPDATE addresses SET deleted_at = now() WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL").bind(id).bind(a.id).execute(&s.db).await?;
+    let r = sqlx::query("UPDATE addresses SET deleted_at = now() WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL")
+        .bind(id)
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     if r.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
@@ -235,10 +259,11 @@ struct MethodRow {
 }
 
 async fn list_methods(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<MethodRow>>> {
-    let rows = sqlx::query_as("SELECT id, provider, display_name, created_at FROM payment_methods WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at")
-        .bind(a.id)
-        .fetch_all(&s.db)
-        .await?;
+    let rows =
+        sqlx::query_as("SELECT id, provider, display_name, created_at FROM payment_methods WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at")
+            .bind(a.id)
+            .fetch_all(&s.db)
+            .await?;
     Ok(Json(rows))
 }
 
@@ -254,19 +279,29 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
     if !matches!(r.provider.as_str(), "card" | "kakaopay" | "naverpay" | "tosspay") || r.display_name.chars().count() > MAX_NAME_LEN {
         return Err(ApiError::BadRequest("invalid_payment_method"));
     }
-    let key = s.providers.issue_billing_key(&r.auth_key).await.map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    let row = sqlx::query_as("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at")
-        .bind(a.id)
-        .bind(&r.provider)
-        .bind(key)
-        .bind(&r.display_name)
-        .fetch_one(&s.db)
-        .await?;
+    let key = s
+        .providers
+        .issue_billing_key(&r.auth_key)
+        .await
+        .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
+    let row = sqlx::query_as(
+        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at",
+    )
+    .bind(a.id)
+    .bind(&r.provider)
+    .bind(key)
+    .bind(&r.display_name)
+    .fetch_one(&s.db)
+    .await?;
     Ok(Json(row))
 }
 
 async fn delete_method(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE id = $1 AND user_id = $2").bind(id).bind(a.id).execute(&s.db).await?;
+    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE id = $1 AND user_id = $2")
+        .bind(id)
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     Ok(Json(json!({ "ok": true })))
 }
 
@@ -302,16 +337,22 @@ struct NotificationRow {
 }
 
 async fn list_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Vec<NotificationRow>>> {
-    let rows = sqlx::query_as("SELECT id, kind, data, read_at, created_at FROM notifications WHERE owner_role = $1 AND owner_id = $2 ORDER BY created_at DESC LIMIT $3")
-        .bind(a.role.as_str())
-        .bind(a.id)
-        .bind(NOTIFICATION_PAGE)
-        .fetch_all(&s.db)
-        .await?;
+    let rows = sqlx::query_as(
+        "SELECT id, kind, data, read_at, created_at FROM notifications WHERE owner_role = $1 AND owner_id = $2 ORDER BY created_at DESC LIMIT $3",
+    )
+    .bind(a.role.as_str())
+    .bind(a.id)
+    .bind(NOTIFICATION_PAGE)
+    .fetch_all(&s.db)
+    .await?;
     Ok(Json(rows))
 }
 
 async fn read_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Value>> {
-    sqlx::query("UPDATE notifications SET read_at = now() WHERE owner_role = $1 AND owner_id = $2 AND read_at IS NULL").bind(a.role.as_str()).bind(a.id).execute(&s.db).await?;
+    sqlx::query("UPDATE notifications SET read_at = now() WHERE owner_role = $1 AND owner_id = $2 AND read_at IS NULL")
+        .bind(a.role.as_str())
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     Ok(Json(json!({ "ok": true })))
 }

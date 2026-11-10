@@ -67,7 +67,15 @@ async fn dashboard(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Dash
     )
     .fetch_one(&s.db)
     .await?;
-    Ok(Json(Dashboard { today_jobs: row.0, open_quotes: row.1, unassigned: row.2, unread_threads: row.3, revenue_30d: row.4, bookings_30d: row.5, by_service }))
+    Ok(Json(Dashboard {
+        today_jobs: row.0,
+        open_quotes: row.1,
+        unassigned: row.2,
+        unread_threads: row.3,
+        revenue_30d: row.4,
+        bookings_30d: row.5,
+        by_service,
+    }))
 }
 
 #[derive(Deserialize)]
@@ -109,19 +117,30 @@ struct BookingDetail {
 
 async fn booking_detail(State(s): State<AppState>, _st: Staff, Path(id): Path<Uuid>) -> ApiResult<Json<BookingDetail>> {
     let booking = load_booking(&s.db, id).await?;
-    let customer: Value = sqlx::query_scalar("SELECT jsonb_build_object('id', id, 'name', name, 'phone', phone, 'email', email) FROM users WHERE id = $1").bind(booking.user_id).fetch_one(&s.db).await?;
+    let customer: Value = sqlx::query_scalar("SELECT jsonb_build_object('id', id, 'name', name, 'phone', phone, 'email', email) FROM users WHERE id = $1")
+        .bind(booking.user_id)
+        .fetch_one(&s.db)
+        .await?;
     let payments: Value = sqlx::query_scalar(
         "SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'amount', amount, 'kind', kind, 'status', status, 'refunded', refunded_amount, 'at', created_at) ORDER BY created_at), '[]'::jsonb) FROM payments WHERE booking_id = $1",
     )
     .bind(id)
     .fetch_one(&s.db)
     .await?;
-    let answers = booking.answers.clone().and_then(|a| serde_json::from_value::<domain::quote::QuoteAnswers>(a).ok());
+    let answers = booking
+        .answers
+        .clone()
+        .and_then(|a| serde_json::from_value::<domain::quote::QuoteAnswers>(a).ok());
     let estimate_breakdown = match answers {
         Some(a) => Some(serde_json::to_value(load_formula(&s.db).await?.estimate(&a)?).unwrap_or(Value::Null)),
         None => None,
     };
-    Ok(Json(BookingDetail { booking, customer, payments, estimate_breakdown }))
+    Ok(Json(BookingDetail {
+        booking,
+        customer,
+        payments,
+        estimate_breakdown,
+    }))
 }
 
 #[derive(Deserialize)]
@@ -137,11 +156,24 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
         return Err(ApiError::BadRequest("use_cancel"));
     }
     b.status()?.transition(to)?;
+    // Deposit confirms quote bookings, and a pro's job completes through the
+    // completion check (photos + settlement); staff can't shortcut either.
+    if b.status()? == BookingStatus::Consultation {
+        return Err(ApiError::Conflict("deposit_required"));
+    }
+    if to == BookingStatus::Completed && b.pro_id.is_some() {
+        return Err(ApiError::Conflict("pro_completes_job"));
+    }
     if to == BookingStatus::TeamAssigned && b.pro_id.is_none() && c.team_name.as_deref().is_none_or(|t| t.trim().is_empty()) {
         return Err(ApiError::BadRequest("team_required"));
     }
     let moved = sqlx::query(
-        "UPDATE bookings SET status = $3, team_name = COALESCE($4, team_name), completed_at = CASE WHEN $3 = 3 THEN now() ELSE completed_at END, updated_at = now() WHERE id = $1 AND status = $2",
+        "UPDATE bookings SET status = $3,
+           team_name = CASE WHEN $3 = 1 THEN NULL ELSE COALESCE($4, team_name) END,
+           pro_id = CASE WHEN $3 = 1 THEN NULL ELSE pro_id END,
+           assignee_id = CASE WHEN $3 = 1 THEN NULL ELSE assignee_id END,
+           completed_at = CASE WHEN $3 = 3 THEN now() ELSE completed_at END, updated_at = now()
+         WHERE id = $1 AND status = $2",
     )
     .bind(id)
     .bind(b.status)
@@ -152,11 +184,27 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
     if moved.rows_affected() == 0 {
         return Err(ApiError::Conflict("booking_changed"));
     }
-    audit(&s.db, "staff", Some(st.id), "booking.status", &id.to_string(), json!({ "from": b.status, "to": c.status })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "booking.status",
+        &id.to_string(),
+        json!({ "from": b.status, "to": c.status }),
+    )
+    .await?;
     if let Some(t) = b.thread_id {
         chat::post_system(&s, t, "status_changed", json!({ "status": c.status })).await?;
     }
-    notify(&s, Recipient::User(b.user_id), "booking.status", "예약 상태가 바뀌었어요", &b.number, json!({ "booking_id": id, "status": c.status })).await?;
+    notify(
+        &s,
+        Recipient::User(b.user_id),
+        "booking.status",
+        "예약 상태가 바뀌었어요",
+        &b.number,
+        json!({ "booking_id": id, "status": c.status }),
+    )
+    .await?;
     Ok(Json(load_booking(&s.db, id).await?))
 }
 
@@ -173,7 +221,15 @@ async fn cancel(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
         return Err(ApiError::BadRequest("invalid_amount"));
     }
     apply_cancel(&s, &b, c.refund_amount, "staff").await?;
-    audit(&s.db, "staff", Some(st.id), "booking.cancel", &id.to_string(), json!({ "refund_amount": c.refund_amount })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "booking.cancel",
+        &id.to_string(),
+        json!({ "refund_amount": c.refund_amount }),
+    )
+    .await?;
     Ok(Json(load_booking(&s.db, id).await?))
 }
 
@@ -221,21 +277,49 @@ async fn send_quote(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<
     let price = Won(q.final_price).round100();
     let deposit = load_formula(&s.db).await?.deposit(price);
     let mut tx = s.db.begin().await?;
-    sqlx::query("UPDATE bookings SET final_price = $2, deposit = $3, updated_at = now() WHERE id = $1").bind(id).bind(price.0).bind(deposit.0).execute(&mut *tx).await?;
-    sqlx::query("UPDATE quotes SET state = 'waiting', updated_at = now() WHERE booking_id = $1 AND state = 'selected'").bind(id).execute(&mut *tx).await?;
+    sqlx::query("UPDATE bookings SET final_price = $2, deposit = $3, updated_at = now() WHERE id = $1 AND status = 0")
+        .bind(id)
+        .bind(price.0)
+        .bind(deposit.0)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE quotes SET state = 'waiting', updated_at = now() WHERE booking_id = $1 AND state = 'selected'")
+        .bind(id)
+        .execute(&mut *tx)
+        .await?;
     if let Some(qid) = q.quote_id {
-        let r = sqlx::query("UPDATE quotes SET state = 'selected', updated_at = now() WHERE id = $1 AND booking_id = $2 AND state = 'waiting'").bind(qid).bind(id).execute(&mut *tx).await?;
+        let r = sqlx::query("UPDATE quotes SET state = 'selected', updated_at = now() WHERE id = $1 AND booking_id = $2 AND state = 'waiting'")
+            .bind(qid)
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
         if r.rows_affected() == 0 {
             return Err(ApiError::Conflict("quote_unavailable"));
         }
     }
     let thread = chat::booking_thread(&mut tx, "customer", b.user_id, id, &b.service_code).await?;
-    let msg = chat::insert_message(&mut tx, thread, "staff", Some(st.id), "quote", json!({
-        "booking_id": id, "final_price": price.0, "deposit": deposit.0, "balance": price.0 - deposit.0, "note": q.note
-    })).await?;
+    let msg = chat::insert_message(
+        &mut tx,
+        thread,
+        "staff",
+        Some(st.id),
+        "quote",
+        json!({
+            "booking_id": id, "final_price": price.0, "deposit": deposit.0, "balance": price.0 - deposit.0, "note": q.note
+        }),
+    )
+    .await?;
     tx.commit().await?;
     chat::broadcast_message(&s, &msg).await?;
-    audit(&s.db, "staff", Some(st.id), "quote.send", &id.to_string(), json!({ "final_price": price.0, "quote_id": q.quote_id })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "quote.send",
+        &id.to_string(),
+        json!({ "final_price": price.0, "quote_id": q.quote_id }),
+    )
+    .await?;
     Ok(Json(msg))
 }
 
@@ -249,10 +333,12 @@ async fn inbox(State(s): State<AppState>, _st: Staff, Query(q): Query<InboxQuery
     if aud != "customer" && aud != "partner" {
         return Err(ApiError::BadRequest("invalid_audience"));
     }
-    let rows = sqlx::query_as(&format!("SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 ORDER BY (t.unread_staff > 0) DESC, t.last_message_at DESC LIMIT $2"))
-        .bind(aud)
-        .bind(LIST_LIMIT)
-        .fetch_all(&s.db)
-        .await?;
+    let rows = sqlx::query_as(&format!(
+        "SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 ORDER BY (t.unread_staff > 0) DESC, t.last_message_at DESC LIMIT $2"
+    ))
+    .bind(aud)
+    .bind(LIST_LIMIT)
+    .fetch_all(&s.db)
+    .await?;
     Ok(Json(rows))
 }

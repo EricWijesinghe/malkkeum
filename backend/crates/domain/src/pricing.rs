@@ -11,18 +11,18 @@ pub struct PriceBreakdown {
 }
 
 /// Server-authoritative price for a fixed / unit booking (paid in full).
-pub fn price_booking(
-    service: &Service,
-    unit_index: Option<usize>,
-    coupon: Option<&Coupon>,
-    now: DateTime<Utc>,
-) -> Result<PriceBreakdown, DomainError> {
+pub fn price_booking(service: &Service, unit_index: Option<usize>, coupon: Option<&Coupon>, now: DateTime<Utc>) -> Result<PriceBreakdown, DomainError> {
     let (list_price, minutes) = service.list_price(unit_index)?;
     let discount = match coupon {
         Some(c) => c.discount_for(list_price, &service.code, now)?,
         None => Won::ZERO,
     };
-    Ok(PriceBreakdown { list_price, discount, total: list_price.saturating_sub(discount), minutes })
+    Ok(PriceBreakdown {
+        list_price,
+        discount,
+        total: list_price.saturating_sub(discount),
+        minutes,
+    })
 }
 
 #[cfg(test)]

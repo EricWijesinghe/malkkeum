@@ -1,7 +1,15 @@
 //! Photo uploads (chat photos, completion photos). Validated by magic bytes, stored under random names.
 
-use crate::{auth::Auth, error::{ApiError, ApiResult}, state::AppState};
-use axum::{Json, Router, extract::{Multipart, State}, routing::post};
+use crate::{
+    auth::Auth,
+    error::{ApiError, ApiResult},
+    state::AppState,
+};
+use axum::{
+    Json, Router,
+    extract::{Multipart, State},
+    routing::post,
+};
 use rand::{RngCore, rngs::OsRng};
 use serde_json::{Value, json};
 
@@ -22,7 +30,11 @@ fn sniff(bytes: &[u8]) -> Option<&'static str> {
 }
 
 async fn upload(State(s): State<AppState>, _a: Auth, mut form: Multipart) -> ApiResult<Json<Value>> {
-    let field = form.next_field().await.map_err(|_| ApiError::BadRequest("invalid_upload"))?.ok_or(ApiError::BadRequest("invalid_upload"))?;
+    let field = form
+        .next_field()
+        .await
+        .map_err(|_| ApiError::BadRequest("invalid_upload"))?
+        .ok_or(ApiError::BadRequest("invalid_upload"))?;
     let bytes = field.bytes().await.map_err(|_| ApiError::BadRequest("invalid_upload"))?;
     if bytes.len() > MAX_IMAGE_BYTES {
         return Err(ApiError::BadRequest("file_too_large"));
@@ -32,7 +44,9 @@ async fn upload(State(s): State<AppState>, _a: Auth, mut form: Multipart) -> Api
     OsRng.fill_bytes(&mut name);
     // shortcut: unguessable names on a public path; move to signed URLs on object storage before launch.
     let file = format!("{}.{ext}", hex::encode(name));
-    tokio::fs::write(s.config.upload_dir.join(&file), &bytes).await.map_err(|e| ApiError::Internal(e.to_string()))?;
+    tokio::fs::write(s.config.upload_dir.join(&file), &bytes)
+        .await
+        .map_err(|e| ApiError::Internal(e.to_string()))?;
     Ok(Json(json!({ "url": format!("{}/files/{file}", s.config.public_base_url) })))
 }
 

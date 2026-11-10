@@ -6,7 +6,10 @@ use crate::{
     state::AppState,
 };
 use axum::{
-    extract::{Query, State, WebSocketUpgrade, ws::{Message, WebSocket}},
+    extract::{
+        Query, State, WebSocketUpgrade,
+        ws::{Message, WebSocket},
+    },
     response::Response,
 };
 use futures_util::{SinkExt, StreamExt};
@@ -45,7 +48,9 @@ pub struct Hub {
 
 impl Default for Hub {
     fn default() -> Self {
-        Self { tx: broadcast::channel(HUB_CAPACITY).0 }
+        Self {
+            tx: broadcast::channel(HUB_CAPACITY).0,
+        }
     }
 }
 
@@ -69,6 +74,10 @@ pub struct WsQuery {
     token: String,
 }
 
+/// Sockets close when the access token would expire; clients reconnect with a fresh token,
+/// so a deactivated account stops receiving events within one token lifetime.
+const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MIN as u64 * 60);
+
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
     let auth = verify_access(&state.config.jwt_secret, &q.token)?;
     let rx = state.hub.tx.subscribe();
@@ -78,8 +87,14 @@ pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>,
 async fn pump(socket: WebSocket, mut rx: broadcast::Receiver<Event>, id: Uuid, role: Role) {
     let (mut sink, mut stream) = socket.split();
     let mut ping = tokio::time::interval(PING_EVERY);
+    let expiry = tokio::time::sleep(SOCKET_LIFETIME);
+    tokio::pin!(expiry);
     loop {
         tokio::select! {
+            () = &mut expiry => {
+                let _ = sink.send(Message::Close(None)).await;
+                break;
+            }
             ev = rx.recv() => match ev {
                 Ok(ev) if matches(ev.to, id, role) => {
                     let Ok(text) = serde_json::to_string(&ev) else { continue };

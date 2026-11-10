@@ -17,7 +17,13 @@ pub struct Coupon {
 
 impl Coupon {
     pub fn issue(amount: Won, service_code: Option<String>, now: DateTime<Utc>) -> Self {
-        Self { amount, service_code, issued_at: now, expires_at: now + Duration::days(COUPON_LIFETIME_DAYS), used: false }
+        Self {
+            amount,
+            service_code,
+            issued_at: now,
+            expires_at: now + Duration::days(COUPON_LIFETIME_DAYS),
+            used: false,
+        }
     }
 
     pub fn check(&self, service_code: &str, now: DateTime<Utc>) -> Result<(), DomainError> {

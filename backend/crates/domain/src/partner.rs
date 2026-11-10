@@ -1,6 +1,9 @@
 //! Partner (pro) rules: job visibility, payout math, weekly settlement date.
 
-use crate::{Won, schedule::{DayPart, day_part}};
+use crate::{
+    Won,
+    schedule::{DayPart, day_part},
+};
 use chrono::{Datelike, Duration, NaiveDate, Weekday};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -69,7 +72,14 @@ mod tests {
 
     #[test]
     fn fee_and_net() {
-        assert_eq!(payout(Won(52_000), DEFAULT_FEE_BPS), Payout { gross: Won(52_000), fee: Won(10_400), net: Won(41_600) });
+        assert_eq!(
+            payout(Won(52_000), DEFAULT_FEE_BPS),
+            Payout {
+                gross: Won(52_000),
+                fee: Won(10_400),
+                net: Won(41_600)
+            }
+        );
     }
 
     #[test]
@@ -89,12 +99,41 @@ mod tests {
             days_off: [d(11, 20)].into(),
             verified_and_active: true,
         };
-        let job = JobFacts { service_code: "bathroom", district_code: "11680", visit_date: d(11, 13), start_hour: 9 };
+        let job = JobFacts {
+            service_code: "bathroom",
+            district_code: "11680",
+            visit_date: d(11, 13),
+            start_hour: 9,
+        };
         assert!(is_visible(&prefs, &job));
         assert!(!is_visible(&prefs, &JobFacts { start_hour: 13, ..job.clone() }));
-        assert!(!is_visible(&prefs, &JobFacts { visit_date: d(11, 14), ..job.clone() })); // Saturday
-        assert!(!is_visible(&prefs, &JobFacts { visit_date: d(11, 20), ..job.clone() })); // day off
-        assert!(!is_visible(&prefs, &JobFacts { service_code: "sofa", ..job.clone() }));
-        assert!(!is_visible(&PartnerPrefs { verified_and_active: false, ..prefs.clone() }, &job));
+        assert!(!is_visible(
+            &prefs,
+            &JobFacts {
+                visit_date: d(11, 14),
+                ..job.clone()
+            }
+        )); // Saturday
+        assert!(!is_visible(
+            &prefs,
+            &JobFacts {
+                visit_date: d(11, 20),
+                ..job.clone()
+            }
+        )); // day off
+        assert!(!is_visible(
+            &prefs,
+            &JobFacts {
+                service_code: "sofa",
+                ..job.clone()
+            }
+        ));
+        assert!(!is_visible(
+            &PartnerPrefs {
+                verified_and_active: false,
+                ..prefs.clone()
+            },
+            &job
+        ));
     }
 }

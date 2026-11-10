@@ -10,7 +10,9 @@ pub fn encrypt(key: &[u8; 32], plaintext: &str) -> String {
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
     let mut nonce = [0u8; NONCE_LEN];
     OsRng.fill_bytes(&mut nonce);
-    let ct = cipher.encrypt(Nonce::from_slice(&nonce), plaintext.as_bytes()).expect("AES-GCM encryption cannot fail for valid key");
+    let ct = cipher
+        .encrypt(Nonce::from_slice(&nonce), plaintext.as_bytes())
+        .expect("AES-GCM encryption cannot fail for valid key");
     let mut out = nonce.to_vec();
     out.extend(ct);
     STANDARD.encode(out)

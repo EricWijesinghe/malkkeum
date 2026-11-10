@@ -21,6 +21,7 @@ use tower_http::{
     cors::{AllowOrigin, CorsLayer},
     limit::RequestBodyLimitLayer,
     services::ServeDir,
+    set_header::SetResponseHeaderLayer,
     timeout::TimeoutLayer,
     trace::TraceLayer,
 };
@@ -50,16 +51,35 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(|| async { Json(json!({ "ok": true })) }))
         .nest("/v1", api)
-        .nest_service("/files", files)
+        .nest_service(
+            "/files",
+            tower::ServiceBuilder::new()
+                .layer(SetResponseHeaderLayer::overriding(
+                    header::X_CONTENT_TYPE_OPTIONS,
+                    HeaderValue::from_static("nosniff"),
+                ))
+                .service(files),
+        )
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))
         .layer(TimeoutLayer::with_status_code(axum::http::StatusCode::REQUEST_TIMEOUT, REQUEST_TIMEOUT))
         .layer(cors)
-        .layer(TraceLayer::new_for_http())
+        // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(|req: &axum::http::Request<_>| tracing::info_span!("http", method = %req.method(), path = %req.uri().path())),
+        )
         .with_state(state)
 }
 
 /// Writes an audit record for any staff or money-moving action.
-pub(crate) async fn audit(db: &sqlx::PgPool, actor_role: &str, actor_id: Option<uuid::Uuid>, action: &str, target: &str, data: serde_json::Value) -> Result<(), sqlx::Error> {
+pub(crate) async fn audit(
+    db: &sqlx::PgPool,
+    actor_role: &str,
+    actor_id: Option<uuid::Uuid>,
+    action: &str,
+    target: &str,
+    data: serde_json::Value,
+) -> Result<(), sqlx::Error> {
     sqlx::query("INSERT INTO audit_log (actor_role, actor_id, action, target, data) VALUES ($1,$2,$3,$4,$5)")
         .bind(actor_role)
         .bind(actor_id)

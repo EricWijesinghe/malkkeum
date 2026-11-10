@@ -62,13 +62,21 @@ pub struct Auth {
 
 pub fn issue_access(secret: &[u8], id: Uuid, role: Role) -> Result<String, ApiError> {
     let now = Utc::now();
-    let claims = Claims { sub: id, role, iat: now.timestamp(), exp: (now + Duration::minutes(ACCESS_TTL_MIN)).timestamp() };
+    let claims = Claims {
+        sub: id,
+        role,
+        iat: now.timestamp(),
+        exp: (now + Duration::minutes(ACCESS_TTL_MIN)).timestamp(),
+    };
     encode(&Header::default(), &claims, &EncodingKey::from_secret(secret)).map_err(|e| ApiError::Internal(e.to_string()))
 }
 
 pub fn verify_access(secret: &[u8], token: &str) -> Result<Auth, ApiError> {
     let data = decode::<Claims>(token, &DecodingKey::from_secret(secret), &Validation::default()).map_err(|_| ApiError::Unauthorized)?;
-    Ok(Auth { id: data.claims.sub, role: data.claims.role })
+    Ok(Auth {
+        id: data.claims.sub,
+        role: data.claims.role,
+    })
 }
 
 /// Opaque refresh token; only its SHA-256 is stored.
@@ -99,8 +107,27 @@ pub fn otp_hash(secret: &[u8], phone: &str, code: &str) -> String {
 
 pub fn hash_password(password: &str) -> Result<String, ApiError> {
     let salt = SaltString::generate(&mut OsRng);
-    Argon2::default().hash_password(password.as_bytes(), &salt).map(|h| h.to_string()).map_err(|e| ApiError::Internal(e.to_string()))
+    Argon2::default()
+        .hash_password(password.as_bytes(), &salt)
+        .map(|h| h.to_string())
+        .map_err(|e| ApiError::Internal(e.to_string()))
 }
+
+/// Argon2 is deliberately slow and memory-hungry: run it off the async workers and cap
+/// concurrency so a burst of login attempts can't stall every other request.
+pub async fn verify_password_blocking(password: String, hash: String) -> Result<bool, ApiError> {
+    static LIMIT: std::sync::OnceLock<tokio::sync::Semaphore> = std::sync::OnceLock::new();
+    let _permit = LIMIT
+        .get_or_init(|| tokio::sync::Semaphore::new(PASSWORD_CONCURRENCY))
+        .acquire()
+        .await
+        .map_err(|e| ApiError::Internal(e.to_string()))?;
+    tokio::task::spawn_blocking(move || verify_password(&password, &hash))
+        .await
+        .map_err(|e| ApiError::Internal(e.to_string()))
+}
+
+const PASSWORD_CONCURRENCY: usize = 4;
 
 pub fn verify_password(password: &str, hash: &str) -> bool {
     PasswordHash::new(hash).is_ok_and(|parsed| Argon2::default().verify_password(password.as_bytes(), &parsed).is_ok())

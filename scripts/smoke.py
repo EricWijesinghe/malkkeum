@@ -9,6 +9,8 @@ Run:  python -I scripts/smoke.py [base_url]
 """
 
 import json
+import os
+import subprocess
 import random
 import sys
 import urllib.error
@@ -35,6 +37,13 @@ def call(method, path, body=None, token=None, expect=200):
     return payload
 
 
+def sql(statement):
+    # Test-only shortcut to move a booking to its visit day (local dev DB).
+    psql = os.environ.get("PSQL", "F:/tools/pgsql/bin/psql.exe")
+    env = {**os.environ, "PGPASSWORD": os.environ.get("PGPASSWORD", "localdev")}
+    subprocess.run([psql, "-h", "localhost", "-p", "5433", "-U", "postgres", "-d", "cleaning", "-qc", statement], check=True, env=env)
+
+
 def phone():
     return f"010{random.randint(10000000, 99999999)}"
 
@@ -51,7 +60,8 @@ def step(name):
 
 
 def main():
-    visit = (date.today() + timedelta(days=5)).isoformat()
+    # A fresh date per run so repeated runs never fill the same slots.
+    visit = (date.today() + timedelta(days=random.randint(5, 55))).isoformat()
     staff = call("POST", "/v1/auth/staff/login", {"email": ADMIN[0], "password": ADMIN[1]})["access_token"]
     call("POST", "/v1/auth/staff/login", {"email": ADMIN[0], "password": "wrong"}, expect=401)
     step("staff login, wrong password rejected")
@@ -79,7 +89,7 @@ def main():
 
     b = call("POST", "/v1/bookings", {"service_code": "bathroom", "unit_index": 1, "address_id": big["id"], "visit_date": visit, "start_hour": 9, "coupon_id": any_coupon["id"], "payment_method_id": card["id"]}, cust)
     assert (b["status"], b["list_price"], b["discount"], b["paid_amount"]) == (1, 52000, 5000, 47000), b
-    err = call("POST", "/v1/bookings", {"service_code": "kitchen", "address_id": big["id"], "visit_date": visit, "start_hour": 14, "coupon_id": any_coupon["id"], "payment_method_id": card["id"]}, cust, expect=422)
+    err = call("POST", "/v1/bookings", {"service_code": "kitchen", "address_id": big["id"], "visit_date": visit, "start_hour": 14, "coupon_id": any_coupon["id"], "payment_method_id": card["id"]}, cust, expect=409)
     assert err["error"]["code"] == "coupon_used"
     step("bathroom x2 = 52,000 - 5,000 coupon = 47,000 paid; coupon single-use")
 
@@ -103,8 +113,11 @@ def main():
     assert call("GET", f"/v1/bookings/{b['id']}", token=cust)["status"] == 2
     step("first pro wins, second gets already_taken; address + masked name revealed; customer sees team assigned")
 
-    photo = f"{BASE.replace('127.0.0.1', '127.0.0.1')}/files/x.jpg"
+    photo = f"{BASE}/files/{'ab' * 16}.jpg"
     call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [], "after_photos": [photo], "checklist": [True] * 4}, pros[0], expect=400)
+    early = call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0], expect=409)
+    assert early["error"]["code"] == "job_not_started"
+    sql(f"UPDATE bookings SET visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date WHERE id = '{b['id']}'")  # time travel to visit day
     done = call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0])
     assert done["net"] == 41600, done
     assert call("GET", f"/v1/bookings/{b['id']}", token=cust)["status"] == 3

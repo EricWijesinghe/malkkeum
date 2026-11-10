@@ -41,10 +41,7 @@ impl Service {
     pub fn list_price(&self, unit_index: Option<usize>) -> Result<(Won, u32), DomainError> {
         match (&self.pricing, unit_index) {
             (Pricing::Fixed { price, minutes }, None) => Ok((*price, *minutes)),
-            (Pricing::Unit { units }, Some(i)) => units
-                .get(i)
-                .map(|u| (u.price, u.minutes))
-                .ok_or(DomainError::InvalidUnit),
+            (Pricing::Unit { units }, Some(i)) => units.get(i).map(|u| (u.price, u.minutes)).ok_or(DomainError::InvalidUnit),
             _ => Err(DomainError::InvalidUnit),
         }
     }
@@ -59,40 +56,93 @@ impl Service {
 }
 
 fn unit(label_key: &str, minutes: u32, price: i64) -> UnitOption {
-    UnitOption { label_key: label_key.into(), minutes, price: Won(price) }
+    UnitOption {
+        label_key: label_key.into(),
+        minutes,
+        price: Won(price),
+    }
 }
 
 fn service(code: &str, pricing: Pricing, prep: bool, max_pyeong: Option<u16>) -> Service {
-    Service { code: code.into(), pricing, needs_preparation: prep, max_pyeong }
+    Service {
+        code: code.into(),
+        pricing,
+        needs_preparation: prep,
+        max_pyeong,
+    }
 }
 
 /// The 8 launch services with the spec's sample prices (VAT included).
 pub fn default_catalog() -> Vec<Service> {
     use Pricing::*;
     vec![
-        service("studio", Fixed { price: Won(45_000), minutes: 120 }, true, Some(10)),
-        service("kitchen", Fixed { price: Won(45_000), minutes: 120 }, true, None),
+        service(
+            "studio",
+            Fixed {
+                price: Won(45_000),
+                minutes: 120,
+            },
+            true,
+            Some(10),
+        ),
+        service(
+            "kitchen",
+            Fixed {
+                price: Won(45_000),
+                minutes: 120,
+            },
+            true,
+            None,
+        ),
         service(
             "bathroom",
-            Unit { units: vec![unit("count_1", 120, 39_000), unit("count_2", 120, 52_000), unit("count_3", 180, 69_000), unit("count_4", 240, 84_000)] },
+            Unit {
+                units: vec![
+                    unit("count_1", 120, 39_000),
+                    unit("count_2", 120, 52_000),
+                    unit("count_3", 180, 69_000),
+                    unit("count_4", 240, 84_000),
+                ],
+            },
             true,
             None,
         ),
         service(
             "mattress",
-            Unit { units: vec![unit("count_1", 60, 59_000), unit("count_2", 90, 99_000), unit("count_3", 120, 139_000), unit("count_4", 150, 175_000)] },
+            Unit {
+                units: vec![
+                    unit("count_1", 60, 59_000),
+                    unit("count_2", 90, 99_000),
+                    unit("count_3", 120, 139_000),
+                    unit("count_4", 150, 175_000),
+                ],
+            },
             false,
             None,
         ),
         service(
             "aircon",
-            Unit { units: vec![unit("wall", 90, 79_000), unit("stand", 120, 119_000), unit("two_in_one", 180, 179_000), unit("ceiling", 120, 139_000)] },
+            Unit {
+                units: vec![
+                    unit("wall", 90, 79_000),
+                    unit("stand", 120, 119_000),
+                    unit("two_in_one", 180, 179_000),
+                    unit("ceiling", 120, 139_000),
+                ],
+            },
             false,
             None,
         ),
         service(
             "sofa",
-            Unit { units: vec![unit("seat_1_2", 60, 59_000), unit("seat_3", 90, 79_000), unit("seat_4_plus", 120, 99_000), unit("l_shape", 150, 119_000)] },
+            Unit {
+                units: vec![
+                    unit("seat_1_2", 60, 59_000),
+                    unit("seat_3", 90, 79_000),
+                    unit("seat_4_plus", 120, 99_000),
+                    unit("l_shape", 150, 119_000),
+                ],
+            },
             false,
             None,
         ),

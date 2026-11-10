@@ -107,8 +107,17 @@ impl Default for QuoteFormula {
             per_balcony: Won(15_000),
             duplex: Won(60_000),
             no_elevator_high_floor: Won(40_000),
-            type_bps: TypeSurcharges { after_interior: 2_000, lived_in_deep_clean: 1_000, same_day_move: 1_000, some_luggage_left: 500 },
-            luggage_bps: LuggageSurcharges { partly_unpacked: 500, fully_lived_in: 1_500, unknown: 1_000 },
+            type_bps: TypeSurcharges {
+                after_interior: 2_000,
+                lived_in_deep_clean: 1_000,
+                same_day_move: 1_000,
+                some_luggage_left: 500,
+            },
+            luggage_bps: LuggageSurcharges {
+                partly_unpacked: 500,
+                fully_lived_in: 1_500,
+                unknown: 1_000,
+            },
             vat_bps: 1_000,
             deposit_bps: 1_000,
         }
@@ -179,7 +188,13 @@ impl QuoteFormula {
         let surcharge_bps = self.type_surcharge(a.cleaning_type) + self.luggage_surcharge(a.luggage);
         let before_vat = (base + extras).times_bps(FULL_BPS + surcharge_bps);
         let total = before_vat.times_bps(FULL_BPS + self.vat_bps).round100();
-        Ok(Estimate { base, extras, surcharge_bps, before_vat, total })
+        Ok(Estimate {
+            base,
+            extras,
+            surcharge_bps,
+            before_vat,
+            total,
+        })
     }
 
     /// Spec rule 4: 10% of the final agreed price, rounded to 100 won.
@@ -234,7 +249,12 @@ mod tests {
 
     #[test]
     fn zero_bathrooms_has_no_negative_extra() {
-        let a = QuoteAnswers { bathrooms: 0, balconies: 0, cleaning_type: CleaningType::NormalMoveIn, ..answers() };
+        let a = QuoteAnswers {
+            bathrooms: 0,
+            balconies: 0,
+            cleaning_type: CleaningType::NormalMoveIn,
+            ..answers()
+        };
         assert_eq!(QuoteFormula::default().estimate(&a).unwrap().extras, Won(0));
     }
 

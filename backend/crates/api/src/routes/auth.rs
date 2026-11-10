@@ -12,6 +12,9 @@ use uuid::Uuid;
 const OTP_TTL_MIN: i64 = 5;
 const OTP_MAX_ATTEMPTS: i32 = 5;
 const OTP_MAX_PER_HOUR: i64 = 5;
+const OTP_GLOBAL_PER_HOUR: i64 = 3_000;
+const STAFF_MAX_FAILURES: i32 = 5;
+const MAX_PASSWORD_BYTES: usize = 256;
 const STAFF_DUMMY_HASH: &str = "$argon2id$v=19$m=19456,t=2,p=1$c2FsdHNhbHRzYWx0$0000000000000000000000000000000000000000000";
 
 pub fn routes() -> Router<AppState> {
@@ -49,7 +52,11 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
         .bind(&phone)
         .fetch_one(&s.db)
         .await?;
-    if recent >= OTP_MAX_PER_HOUR {
+    // Global ceiling too: stops SMS-pumping across many numbers (cost + table growth).
+    let global: i64 = sqlx::query_scalar("SELECT count(*) FROM otp_codes WHERE created_at > now() - interval '1 hour'")
+        .fetch_one(&s.db)
+        .await?;
+    if recent >= OTP_MAX_PER_HOUR || global >= OTP_GLOBAL_PER_HOUR {
         return Err(ApiError::RateLimited);
     }
     let code = auth::otp_code();
@@ -59,8 +66,14 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
         .bind(Utc::now() + Duration::minutes(OTP_TTL_MIN))
         .execute(&s.db)
         .await?;
-    s.providers.send_sms(&phone, &format!("[인증번호] {code}")).await.map_err(|e| ApiError::Internal(e.to_string()))?;
-    Ok(Json(OtpSent { expires_in: OTP_TTL_MIN * 60, dev_code: s.config.dev_mode.then_some(code) }))
+    s.providers
+        .send_sms(&phone, &format!("[인증번호] {code}"))
+        .await
+        .map_err(|e| ApiError::Internal(e.to_string()))?;
+    Ok(Json(OtpSent {
+        expires_in: OTP_TTL_MIN * 60,
+        dev_code: s.config.dev_mode.then_some(code),
+    }))
 }
 
 #[derive(Deserialize)]
@@ -88,27 +101,42 @@ async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool) -> ApiRe
         .bind(Utc::now() + Duration::days(auth::REFRESH_TTL_DAYS))
         .execute(&s.db)
         .await?;
-    Ok(Tokens { access_token: auth::issue_access(&s.config.jwt_secret, id, role)?, refresh_token, role, subject: id, is_new })
+    Ok(Tokens {
+        access_token: auth::issue_access(&s.config.jwt_secret, id, role)?,
+        refresh_token,
+        role,
+        subject: id,
+        is_new,
+    })
 }
 
 async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -> ApiResult<Json<Tokens>> {
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
-    let row: Option<(Uuid, String, i32)> = sqlx::query_as(
-        "SELECT id, code_hash, attempts FROM otp_codes WHERE phone = $1 AND expires_at > now() ORDER BY created_at DESC LIMIT 1",
+    // Count the attempt *before* comparing, atomically: parallel guesses can't share one budget.
+    let row: Option<String> = sqlx::query_scalar(
+        "UPDATE otp_codes SET attempts = attempts + 1
+         WHERE id = (SELECT id FROM otp_codes WHERE phone = $1 AND expires_at > now() ORDER BY created_at DESC LIMIT 1)
+           AND attempts < $2
+         RETURNING code_hash",
     )
     .bind(&phone)
+    .bind(OTP_MAX_ATTEMPTS)
     .fetch_optional(&s.db)
     .await?;
-    let (otp_id, stored, attempts) = row.ok_or(ApiError::BadRequest("otp_expired"))?;
-    if attempts >= OTP_MAX_ATTEMPTS {
-        return Err(ApiError::RateLimited);
-    }
+    let stored = row.ok_or(ApiError::BadRequest("otp_expired"))?;
     let given = auth::otp_hash(&s.config.jwt_secret, &phone, req.code.trim());
     if !bool::from(given.as_bytes().ct_eq(stored.as_bytes())) {
-        sqlx::query("UPDATE otp_codes SET attempts = attempts + 1 WHERE id = $1").bind(otp_id).execute(&s.db).await?;
         return Err(ApiError::BadRequest("otp_invalid"));
     }
-    sqlx::query("DELETE FROM otp_codes WHERE phone = $1").bind(&phone).execute(&s.db).await?;
+    // Single use: only the request that deletes the code proceeds.
+    let consumed = sqlx::query("DELETE FROM otp_codes WHERE phone = $1 AND code_hash = $2")
+        .bind(&phone)
+        .bind(&stored)
+        .execute(&s.db)
+        .await?;
+    if consumed.rows_affected() == 0 {
+        return Err(ApiError::BadRequest("otp_expired"));
+    }
 
     let (table, role) = match req.audience {
         Audience::Customer => ("users", Role::Customer),
@@ -122,8 +150,15 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
     .fetch_one(&s.db)
     .await?;
     if role == Role::Pro && is_new {
-        sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING").bind(id).execute(&s.db).await?;
-        sqlx::query("INSERT INTO team_members (pro_id, name, phone, role, invite_status) VALUES ($1, '', $2, 'owner', 'active')").bind(id).bind(&phone).execute(&s.db).await?;
+        sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING")
+            .bind(id)
+            .execute(&s.db)
+            .await?;
+        sqlx::query("INSERT INTO team_members (pro_id, name, phone, role, invite_status) VALUES ($1, '', $2, 'owner', 'active')")
+            .bind(id)
+            .bind(&phone)
+            .execute(&s.db)
+            .await?;
     }
     Ok(Json(issue_tokens(&s, id, role, is_new).await?))
 }
@@ -144,7 +179,22 @@ async fn refresh(State(s): State<AppState>, Json(req): Json<RefreshRequest>) -> 
     .await?;
     let (id, role) = row.ok_or(ApiError::Unauthorized)?;
     let role = Role::parse(&role).ok_or(ApiError::Unauthorized)?;
+    ensure_active(&s, id, role).await?;
     Ok(Json(issue_tokens(&s, id, role, false).await?))
+}
+
+/// Deleted customers and deactivated staff can't keep a session alive.
+/// (Suspended pros may sign in: the app shows them why they can't work.)
+async fn ensure_active(s: &AppState, id: Uuid, role: Role) -> ApiResult<()> {
+    let ok: bool = match role {
+        Role::Customer => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM users WHERE id = $1 AND deleted_at IS NULL)"),
+        Role::Pro => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1)"),
+        Role::StaffAdmin | Role::StaffConsultant => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)"),
+    }
+    .bind(id)
+    .fetch_one(&s.db)
+    .await?;
+    if ok { Ok(()) } else { Err(ApiError::Unauthorized) }
 }
 
 async fn logout(State(s): State<AppState>, Json(req): Json<RefreshRequest>) -> ApiResult<Json<serde_json::Value>> {
@@ -162,14 +212,37 @@ struct StaffLogin {
 }
 
 async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Tokens>> {
-    let row: Option<(Uuid, String, String)> = sqlx::query_as("SELECT id, password_hash, role FROM staff WHERE lower(email) = lower($1) AND active")
-        .bind(req.email.trim())
-        .fetch_optional(&s.db)
-        .await?;
+    if req.password.len() > MAX_PASSWORD_BYTES {
+        return Err(ApiError::Unauthorized);
+    }
+    let row: Option<(Uuid, String, String, bool)> =
+        sqlx::query_as("SELECT id, password_hash, role, COALESCE(locked_until > now(), FALSE) FROM staff WHERE lower(email) = lower($1) AND active")
+            .bind(req.email.trim())
+            .fetch_optional(&s.db)
+            .await?;
+    if row.as_ref().is_some_and(|r| r.3) {
+        return Err(ApiError::RateLimited);
+    }
     // Verify against a dummy hash when the account is missing to keep timing uniform.
-    let hash = row.as_ref().map(|r| r.1.as_str()).unwrap_or(STAFF_DUMMY_HASH);
-    let ok = auth::verify_password(&req.password, hash);
-    let (id, _, role) = row.filter(|_| ok).ok_or(ApiError::Unauthorized)?;
+    let hash = row.as_ref().map(|r| r.1.clone()).unwrap_or_else(|| STAFF_DUMMY_HASH.to_string());
+    let ok = auth::verify_password_blocking(req.password, hash).await?;
+    if let (Some(r), false) = (&row, ok) {
+        // Lock the account for a while after repeated failures (online guessing).
+        sqlx::query(
+            "UPDATE staff SET failed_logins = CASE WHEN failed_logins + 1 >= $2 THEN 0 ELSE failed_logins + 1 END,
+               locked_until = CASE WHEN failed_logins + 1 >= $2 THEN now() + interval '15 minutes' ELSE locked_until END
+             WHERE id = $1",
+        )
+        .bind(r.0)
+        .bind(STAFF_MAX_FAILURES)
+        .execute(&s.db)
+        .await?;
+    }
+    let (id, _, role, _) = row.filter(|_| ok).ok_or(ApiError::Unauthorized)?;
+    sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1")
+        .bind(id)
+        .execute(&s.db)
+        .await?;
     let role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
     Ok(Json(issue_tokens(&s, id, role, false).await?))
 }
