@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
@@ -118,6 +120,47 @@ class PartnerShell extends StatefulWidget {
 
 class _PartnerShellState extends State<PartnerShell> {
   int _tab = 0;
+  bool _pushStarted = false;
+  StreamSubscription<PushTarget>? _pushTaps;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_pushStarted) return;
+    _pushStarted = true;
+    PushService.start(context.api).ignore();
+    _pushTaps = PushService.taps.listen(_openPush);
+    final launch = PushService.takePending();
+    if (launch != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openPush(launch);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _pushTaps?.cancel();
+    super.dispose();
+  }
+
+  /// Opens the job or ops chat a tapped push points to.
+  Future<void> _openPush(PushTarget target) async {
+    final nav = Navigator.of(context);
+    final api = context.api;
+    try {
+      switch (target) {
+        case BookingTarget(:final bookingId):
+          await nav.push(MaterialPageRoute<void>(builder: (_) => JobDetailScreen(id: bookingId)));
+        case ChatTarget(:final threadId):
+          final thread = await findChatThread(api, '/partner/threads', threadId);
+          if (thread == null) return;
+          await nav.push(MaterialPageRoute<void>(builder: (_) => OpsRoom(threadId: thread.id, topic: thread.topic, bookingId: thread.bookingId)));
+      }
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

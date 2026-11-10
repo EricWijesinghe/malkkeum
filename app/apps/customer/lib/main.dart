@@ -14,6 +14,7 @@ Future<void> main() async {
   final locale = LocaleController();
   final theme = ThemeController();
   await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  await PushService.init();
   runApp(
     CustomerApp(
       session: session,

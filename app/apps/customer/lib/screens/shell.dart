@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'booking_detail.dart';
 import 'bookings.dart';
 import 'chat.dart';
 import 'home.dart';
@@ -18,6 +21,7 @@ class Shell extends StatefulWidget {
 class _ShellState extends State<Shell> {
   int _tab = 0;
   bool _loaded = false;
+  StreamSubscription<PushTarget>? _pushTaps;
 
   @override
   void didChangeDependencies() {
@@ -29,6 +33,38 @@ class _ShellState extends State<Shell> {
       if (mounted) showToast(context, context.t.error(e));
     });
     app.realtime.connect();
+    PushService.start(app.api).ignore();
+    _pushTaps = PushService.taps.listen(_openPush);
+    final launch = PushService.takePending();
+    if (launch != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openPush(launch);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _pushTaps?.cancel();
+    super.dispose();
+  }
+
+  /// Opens the booking or chat a tapped push points to.
+  Future<void> _openPush(PushTarget target) async {
+    final app = context.appRead;
+    final nav = Navigator.of(context);
+    try {
+      switch (target) {
+        case BookingTarget(:final bookingId):
+          await nav.push(MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: bookingId)));
+        case ChatTarget(:final threadId):
+          final thread = await findChatThread(app.api, '/chat/threads', threadId);
+          if (thread == null) return;
+          await nav.push(MaterialPageRoute<void>(builder: (_) => ChatRoomScreen(threadId: thread.id, topic: thread.topic, bookingId: thread.bookingId)));
+      }
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    }
   }
 
   void go(int tab) => setState(() => _tab = tab);

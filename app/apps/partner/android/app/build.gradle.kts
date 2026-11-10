@@ -11,6 +11,19 @@ val keyProps = java.util.Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 fun signingValue(env: String, prop: String): String? = System.getenv(env) ?: keyProps.getProperty(prop)
+
+// Build-time --dart-define values. The Flutter tool passes them to Gradle as base64 "KEY=VALUE" entries.
+val dartDefines: Map<String, String> =
+    (project.findProperty("dart-defines") as String?)
+        ?.split(",")
+        ?.associate { entry ->
+            val (key, value) = String(java.util.Base64.getDecoder().decode(entry)).split("=", limit = 2)
+            key to value
+        }
+        .orEmpty()
+// Firebase (push) needs google-services.json, written by CI from a secret. Without it the plugin stays off.
+val hasFirebaseConfig = file("google-services.json").exists()
+if (hasFirebaseConfig) apply(plugin = "com.google.gms.google-services")
 val releaseStore = signingValue("CM_KEYSTORE_PATH", "storeFile")
 
 
@@ -36,6 +49,8 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Kakao login redirect scheme is kakao<native app key>; Naver needs none on Android.
+        manifestPlaceholders["kakaoNativeKey"] = dartDefines["KAKAO_NATIVE_KEY"].orEmpty()
     }
 
     signingConfigs {
