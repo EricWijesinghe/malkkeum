@@ -73,6 +73,7 @@ struct World {
 async fn world(db: PgPool, mode: Mode) -> World {
     seed_catalog(&db).await;
     let fake = Fake::default();
+    *fake.stop.lock().expect("stop lock") = "end_turn";
     let mut cfg = common::test_config();
     cfg.anthropic_base_url = fake_anthropic(fake.clone()).await;
     let state = build_state(db.clone(), cfg.clone()).expect("state");

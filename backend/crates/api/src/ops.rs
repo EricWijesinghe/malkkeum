@@ -362,7 +362,7 @@ mod tests {
         let now = at(12);
         assert_eq!(integration_level(false, None, None, now), Level::Yellow);
         assert_eq!(integration_level(true, None, None, now), Level::Green);
-        assert_eq!(integration_level(true, Some(at(9)), Some(at(10)), now), Level::Yellow, "recovered");
+        assert_eq!(integration_level(true, Some(at(11)), Some(at(10)), now), Level::Yellow, "recovered");
         assert_eq!(integration_level(true, Some(at(9)), Some(at(11)), now), Level::Red, "failing now");
         let old = Utc.with_ymd_and_hms(2026, 11, 9, 0, 0, 0).unwrap();
         assert_eq!(integration_level(true, None, Some(old), now), Level::Green, "failure older than a day");
