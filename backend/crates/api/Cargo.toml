@@ -1,0 +1,33 @@
+[package]
+name = "api"
+description = "HTTP + WebSocket API for customer, partner and console apps"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+domain = { path = "../domain" }
+aes-gcm = "0.10"
+argon2 = { version = "0.5", features = ["std"] }
+axum = { version = "0.8", features = ["ws", "multipart", "macros"] }
+base64 = "0.22"
+chrono.workspace = true
+futures-util = "0.3"
+hex = "0.4"
+jsonwebtoken = "9"
+rand = "0.8"
+serde.workspace = true
+serde_json.workspace = true
+sha2 = "0.10"
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "migrate", "macros"] }
+subtle = "2"
+thiserror.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "fs", "sync", "time"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "limit", "fs", "timeout"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+uuid.workspace = true
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"

@@ -1,0 +1,363 @@
+//! Partner jobs: feed, preview, atomic accept, quotes, schedule, assignment, memo, completion, reschedule replies.
+
+use super::{bookings::{BOOKING_COLS, BookingRow, load_booking}, chat};
+use crate::{
+    auth::{Pro, mask_name},
+    error::{ApiError, ApiResult},
+    realtime::{Recipient, notify},
+    state::AppState,
+};
+use axum::{
+    Json, Router,
+    extract::{Path, Query, State},
+    routing::{get, post, put},
+};
+use chrono::{NaiveDate, Utc};
+use domain::{Won, partner::{payout, payout_date}};
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
+use uuid::Uuid;
+
+const FEED_LIMIT: i64 = 100;
+const CHECKLIST_ITEMS: usize = 4;
+const MAX_PHOTOS: usize = 20;
+
+pub fn routes() -> Router<AppState> {
+    Router::new()
+        .route("/jobs", get(feed))
+        .route("/jobs/{id}", get(job))
+        .route("/jobs/{id}/accept", post(accept))
+        .route("/jobs/{id}/quote", post(submit_quote).put(edit_quote).delete(withdraw_quote))
+        .route("/jobs/{id}/assign", post(assign))
+        .route("/jobs/{id}/memo", put(memo))
+        .route("/jobs/{id}/complete", post(complete))
+        .route("/jobs/{id}/reschedule", post(reply_reschedule))
+        .route("/quotes", get(my_quotes))
+        .route("/schedule", get(schedule))
+}
+
+/// Same rule as `domain::partner::is_visible`, expressed in SQL for the feed.
+const VISIBLE: &str = "p.status = 'verified'
+    AND b.service_code = ANY(pp.services) AND b.district_code = ANY(pp.districts)
+    AND (EXTRACT(ISODOW FROM b.visit_date)::int - 1)::smallint = ANY(pp.weekdays)
+    AND (CASE WHEN b.start_hour < 12 THEN 'morning' ELSE 'afternoon' END) = ANY(pp.day_parts)
+    AND NOT (b.visit_date = ANY(pp.days_off))";
+
+#[derive(Serialize, sqlx::FromRow)]
+struct JobCard {
+    id: Uuid,
+    service_code: String,
+    unit_index: Option<i16>,
+    district_code: String,
+    road_area: Option<String>,
+    visit_date: NaiveDate,
+    start_hour: i16,
+    minutes: Option<i32>,
+    size_pyeong: Option<i32>,
+    building: Option<String>,
+    answers: Option<Value>,
+    customer_price: Option<i64>,
+    estimate: Option<i64>,
+    fee_bps: i32,
+    my_quote: Option<i64>,
+    is_open: bool,
+    created_at: chrono::DateTime<Utc>,
+}
+
+#[derive(Deserialize)]
+struct FeedQuery {
+    kind: String,
+    #[serde(default)]
+    include_closed: bool,
+    sort: Option<String>,
+}
+
+async fn feed(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<FeedQuery>) -> ApiResult<Json<Vec<JobCard>>> {
+    let kind_filter = match q.kind.as_str() {
+        "direct" => "b.answers IS NULL AND (b.status = 1 AND b.pro_id IS NULL AND b.team_name IS NULL OR $2 AND b.status >= 1 AND b.visit_date >= current_date)",
+        "quote" => "b.answers IS NOT NULL AND (b.status = 0 OR $2 AND b.visit_date >= current_date)",
+        _ => return Err(ApiError::BadRequest("invalid_kind")),
+    };
+    let order = match q.sort.as_deref() {
+        Some("visit") => "b.visit_date, b.start_hour",
+        Some("amount") => "COALESCE(b.list_price, b.estimate) DESC",
+        _ => "b.created_at DESC",
+    };
+    // Only the neighbourhood (dong) part of the road address is exposed before commitment.
+    let rows = sqlx::query_as(&format!(
+        "SELECT b.id, b.service_code, b.unit_index, b.district_code, split_part(b.address->>'road_address', ' ', 2) AS road_area, b.visit_date, b.start_hour, b.minutes,
+           (b.address->>'size_pyeong')::int AS size_pyeong, b.answers->>'building' AS building, b.answers, b.list_price AS customer_price, b.estimate, p.fee_bps,
+           (SELECT amount FROM quotes q WHERE q.booking_id = b.id AND q.pro_id = p.id AND q.state <> 'withdrawn') AS my_quote,
+           (b.pro_id IS NULL AND b.status IN (0, 1)) AS is_open, b.created_at
+         FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
+         WHERE p.id = $1 AND b.visit_date > current_date AND {VISIBLE} AND ({kind_filter})
+         ORDER BY {order} LIMIT $3"
+    ))
+    .bind(a.id)
+    .bind(q.include_closed)
+    .bind(FEED_LIMIT)
+    .fetch_all(&s.db)
+    .await?;
+    Ok(Json(rows))
+}
+
+#[derive(Serialize)]
+struct JobDetail {
+    booking: Value,
+    committed: bool,
+    payout: Value,
+    customer_name: Option<String>,
+    assignee: Option<Value>,
+    team_memo: Option<String>,
+    can_call: bool,
+}
+
+fn gross(b: &BookingRow) -> Option<i64> {
+    b.final_price.or(b.list_price)
+}
+
+/// Before commitment only space facts are returned; after, address, notes and masked name.
+async fn job(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<JobDetail>> {
+    let b = load_booking(&s.db, id).await?;
+    let fee_bps: i32 = sqlx::query_scalar("SELECT fee_bps FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let committed = b.pro_id == Some(a.id);
+    let pay = gross(&b).map(|g| payout(Won(g), i64::from(fee_bps)));
+    let mut view = json!({
+        "id": b.id, "number": b.number, "service_code": b.service_code, "unit_index": b.unit_index, "district_code": b.district_code,
+        "visit_date": b.visit_date, "start_hour": b.start_hour, "minutes": b.minutes, "status": b.status, "answers": b.answers,
+        "estimate": b.estimate, "size_pyeong": b.address.get("size_pyeong"), "kind": b.address.get("kind"),
+        "reschedule": b.reschedule, "cancelled": b.status == -1, "is_quote": b.answers.is_some(), "balance_paid": b.balance_paid,
+    });
+    let (mut name, mut assignee, mut memo) = (None, None, None);
+    if committed {
+        view["address"] = b.address.clone();
+        view["visit_notes"] = b.visit_notes.clone();
+        let raw: String = sqlx::query_scalar("SELECT name FROM users WHERE id = $1").bind(b.user_id).fetch_one(&s.db).await?;
+        name = Some(mask_name(&raw));
+        assignee = sqlx::query_scalar("SELECT jsonb_build_object('id', m.id, 'name', m.name) FROM bookings b JOIN team_members m ON m.id = b.assignee_id WHERE b.id = $1").bind(id).fetch_optional(&s.db).await?;
+        memo = Some(sqlx::query_scalar("SELECT team_memo FROM bookings WHERE id = $1").bind(id).fetch_one(&s.db).await?);
+    }
+    // Masked-number calls allowed until 3 days after the visit (provider wiring: decision #4).
+    let can_call = committed && (Utc::now().date_naive() - b.visit_date).num_days() <= 3 && b.status >= 2;
+    Ok(Json(JobDetail { booking: view, committed, payout: json!(pay), customer_name: name, assignee, team_memo: memo, can_call }))
+}
+
+/// First-come accept. The UPDATE's WHERE clause is the lock: exactly one pro wins.
+async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let visible: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id WHERE b.id = $1 AND p.id = $2 AND {VISIBLE})"))
+        .bind(id)
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
+    if !visible {
+        return Err(ApiError::NotFound);
+    }
+    let won: Option<(Uuid, String)> = sqlx::query_as(
+        "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now()
+         WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = 1 AND answers IS NULL RETURNING user_id, number",
+    )
+    .bind(id)
+    .bind(a.id)
+    .fetch_optional(&s.db)
+    .await?;
+    let (user, number) = won.ok_or(ApiError::Conflict("already_taken"))?;
+    let owner: Option<Uuid> = sqlx::query_scalar("SELECT id FROM team_members WHERE pro_id = $1 AND role = 'owner'").bind(a.id).fetch_optional(&s.db).await?;
+    sqlx::query("UPDATE bookings SET assignee_id = $2 WHERE id = $1").bind(id).bind(owner).execute(&s.db).await?;
+    notify(&s, Recipient::User(user), "booking.status", "청소팀이 배정됐어요", &number, json!({ "booking_id": id, "status": 2 })).await?;
+    s.hub.send(Recipient::Staff, "booking.updated", json!({ "booking_id": id }));
+    Ok(Json(json!({ "ok": true, "booking_id": id })))
+}
+
+#[derive(Deserialize)]
+struct QuoteInput {
+    amount: i64,
+    #[serde(default)]
+    note: String,
+}
+
+const MAX_QUOTE: i64 = 50_000_000;
+const MAX_NOTE: usize = 500;
+
+impl QuoteInput {
+    fn validate(&self) -> ApiResult<i64> {
+        if (1..=MAX_QUOTE).contains(&self.amount) && self.note.chars().count() <= MAX_NOTE {
+            Ok(Won(self.amount).round100().0)
+        } else {
+            Err(ApiError::BadRequest("invalid_quote"))
+        }
+    }
+}
+
+async fn submit_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(q): Json<QuoteInput>) -> ApiResult<Json<Value>> {
+    let amount = q.validate()?;
+    let open: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id WHERE b.id = $1 AND p.id = $2 AND b.status = 0 AND b.answers IS NOT NULL AND {VISIBLE})"))
+        .bind(id)
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
+    if !open {
+        return Err(ApiError::Conflict("request_closed"));
+    }
+    sqlx::query("INSERT INTO quotes (booking_id, pro_id, amount, note) VALUES ($1,$2,$3,$4) ON CONFLICT (booking_id, pro_id) DO UPDATE SET amount = $3, note = $4, state = 'waiting', updated_at = now() WHERE quotes.state = 'withdrawn'")
+        .bind(id)
+        .bind(a.id)
+        .bind(amount)
+        .bind(q.note.trim())
+        .execute(&s.db)
+        .await?;
+    s.hub.send(Recipient::Staff, "quote.submitted", json!({ "booking_id": id }));
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn edit_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(q): Json<QuoteInput>) -> ApiResult<Json<Value>> {
+    let amount = q.validate()?;
+    let r = sqlx::query("UPDATE quotes SET amount = $3, note = $4, updated_at = now() WHERE booking_id = $1 AND pro_id = $2 AND state = 'waiting'")
+        .bind(id).bind(a.id).bind(amount).bind(q.note.trim()).execute(&s.db).await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::Conflict("quote_locked"));
+    }
+    s.hub.send(Recipient::Staff, "quote.submitted", json!({ "booking_id": id }));
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn withdraw_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let r = sqlx::query("UPDATE quotes SET state = 'withdrawn', updated_at = now() WHERE booking_id = $1 AND pro_id = $2 AND state = 'waiting'").bind(id).bind(a.id).execute(&s.db).await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::Conflict("quote_locked"));
+    }
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn my_quotes(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
+    // Closing stale requests lazily keeps the state right without a scheduler.
+    sqlx::query("UPDATE quotes q SET state = 'closed' FROM bookings b WHERE q.booking_id = b.id AND q.state = 'waiting' AND (b.visit_date <= current_date OR b.status = -1)").execute(&s.db).await?;
+    let v: Value = sqlx::query_scalar(
+        "SELECT COALESCE(jsonb_agg(x ORDER BY x.updated_at DESC), '[]') FROM (SELECT q.id, q.booking_id, q.amount, q.note, q.state, q.seen_by_pro, q.created_at, q.updated_at,
+           b.service_code, b.visit_date, b.start_hour, b.estimate, b.district_code, b.answers FROM quotes q JOIN bookings b ON b.id = q.booking_id WHERE q.pro_id = $1 AND q.state <> 'withdrawn') x",
+    )
+    .bind(a.id)
+    .fetch_one(&s.db)
+    .await?;
+    sqlx::query("UPDATE quotes SET seen_by_pro = TRUE WHERE pro_id = $1 AND NOT seen_by_pro").bind(a.id).execute(&s.db).await?;
+    Ok(Json(v))
+}
+
+#[derive(Deserialize)]
+struct Month {
+    from: NaiveDate,
+    to: NaiveDate,
+}
+
+async fn schedule(State(s): State<AppState>, Pro(a): Pro, Query(m): Query<Month>) -> ApiResult<Json<Vec<BookingRow>>> {
+    if (m.to - m.from).num_days() > 62 {
+        return Err(ApiError::BadRequest("range_too_large"));
+    }
+    let rows = sqlx::query_as(&format!("SELECT {BOOKING_COLS} FROM bookings b WHERE b.pro_id = $1 AND b.visit_date BETWEEN $2 AND $3 ORDER BY b.visit_date, b.start_hour"))
+        .bind(a.id)
+        .bind(m.from)
+        .bind(m.to)
+        .fetch_all(&s.db)
+        .await?;
+    Ok(Json(rows))
+}
+
+#[derive(Deserialize)]
+struct Assign {
+    member_id: Uuid,
+}
+
+async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(x): Json<Assign>) -> ApiResult<Json<Value>> {
+    let r = sqlx::query(
+        "UPDATE bookings SET assignee_id = $3, updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2
+           AND EXISTS (SELECT 1 FROM team_members m WHERE m.id = $3 AND m.pro_id = $2 AND m.invite_status <> 'removed')",
+    )
+    .bind(id).bind(a.id).bind(x.member_id).execute(&s.db).await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    let phone: String = sqlx::query_scalar("SELECT phone FROM team_members WHERE id = $1").bind(x.member_id).fetch_one(&s.db).await?;
+    // shortcut: members get an SMS; member log-in to the app comes with team accounts (phase 2).
+    let _ = s.providers.send_sms(&phone, "새 작업이 배정됐어요").await;
+    Ok(Json(json!({ "ok": true })))
+}
+
+#[derive(Deserialize)]
+struct Memo {
+    memo: String,
+}
+
+async fn memo(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(m): Json<Memo>) -> ApiResult<Json<Value>> {
+    if m.memo.chars().count() > 1000 {
+        return Err(ApiError::BadRequest("memo_too_long"));
+    }
+    let r = sqlx::query("UPDATE bookings SET team_memo = $3 WHERE id = $1 AND pro_id = $2").bind(id).bind(a.id).bind(m.memo).execute(&s.db).await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    Ok(Json(json!({ "ok": true })))
+}
+
+#[derive(Deserialize)]
+struct Completion {
+    before_photos: Vec<String>,
+    after_photos: Vec<String>,
+    checklist: Vec<bool>,
+}
+
+async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
+    let own_file = |u: &String| u.starts_with(&format!("{}/files/", s.config.public_base_url));
+    let photos_ok = (1..=MAX_PHOTOS).contains(&c.before_photos.len()) && (1..=MAX_PHOTOS).contains(&c.after_photos.len()) && c.before_photos.iter().chain(&c.after_photos).all(own_file);
+    if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
+        return Err(ApiError::BadRequest("completion_incomplete"));
+    }
+    let b = load_booking(&s.db, id).await?;
+    if b.pro_id != Some(a.id) {
+        return Err(ApiError::NotFound);
+    }
+    let fee_bps: i32 = sqlx::query_scalar("SELECT fee_bps FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let p = payout(Won(gross(&b).unwrap_or(0)), i64::from(fee_bps));
+    let today = (Utc::now() + chrono::Duration::hours(9)).date_naive();
+    let is_quote = b.answers.is_some();
+    let mut tx = s.db.begin().await?;
+    let moved = sqlx::query("UPDATE bookings SET status = 3, completed_at = now(), updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2").bind(id).bind(a.id).execute(&mut *tx).await?;
+    if moved.rows_affected() == 0 {
+        return Err(ApiError::Conflict("job_not_active"));
+    }
+    sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by) VALUES ($1,$2,$3,$4,$5)")
+        .bind(id).bind(&c.before_photos).bind(&c.after_photos).bind(json!(c.checklist)).bind(a.id)
+        .execute(&mut *tx).await?;
+    sqlx::query("INSERT INTO settlements (pro_id, booking_id, gross, fee, net, payout_date, state) VALUES ($1,$2,$3,$4,$5,$6,$7)")
+        .bind(a.id).bind(id).bind(p.gross.0).bind(p.fee.0).bind(p.net.0)
+        .bind(if is_quote { None } else { Some(payout_date(today)) })
+        .bind(if is_quote { "waiting_balance" } else { "pending" })
+        .execute(&mut *tx).await?;
+    tx.commit().await?;
+    if let Some(t) = b.thread_id {
+        chat::post_system(&s, t, "job_completed", json!({})).await?;
+    }
+    notify(&s, Recipient::User(b.user_id), "booking.completed", "청소가 끝났어요", "전후 사진을 확인해 보세요", json!({ "booking_id": id, "status": 3 })).await?;
+    Ok(Json(json!({ "ok": true, "payout_date": if is_quote { None } else { Some(payout_date(today)) }, "net": p.net })))
+}
+
+#[derive(Deserialize)]
+struct RescheduleReply {
+    accept: bool,
+}
+
+async fn reply_reschedule(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(r): Json<RescheduleReply>) -> ApiResult<Json<Value>> {
+    let b = load_booking(&s.db, id).await?;
+    if b.pro_id != Some(a.id) || b.reschedule.is_none() {
+        return Err(ApiError::NotFound);
+    }
+    if r.accept {
+        sqlx::query("UPDATE bookings SET reschedule = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
+        notify(&s, Recipient::User(b.user_id), "booking.reschedule_confirmed", "변경된 일정이 확정됐어요", &b.number, json!({ "booking_id": id })).await?;
+    } else {
+        let mut conn = s.db.acquire().await?;
+        let thread = chat::booking_thread(&mut conn, "partner", a.id, id, &b.service_code).await?;
+        let msg = chat::insert_message(&mut conn, thread, "partner", Some(a.id), "system", json!({ "code": "reschedule_declined" })).await?;
+        drop(conn);
+        chat::broadcast_message(&s, &msg).await?;
+    }
+    Ok(Json(json!({ "ok": true })))
+}
