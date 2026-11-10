@@ -719,5 +719,7 @@
  "cFirstRunCreate": "Buat akun dan mulai",
  "cWrongSetupCode": "Kode instalasi salah",
  "cWeakPassword": "Kata sandi minimal 12 karakter",
- "cInvalidValue": "Periksa nilai yang diisi"
+ "cInvalidValue": "Periksa nilai yang diisi",
+ "webBookNow": "Pesan lewat web",
+ "webBookSub": "Tanpa perlu memasang aplikasi"
 }

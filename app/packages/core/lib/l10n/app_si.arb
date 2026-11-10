@@ -719,5 +719,7 @@
  "cFirstRunCreate": "ගිණුම සාදා අරඹන්න",
  "cWrongSetupCode": "සැකසුම් කේතය වැරදියි",
  "cWeakPassword": "මුරපදයට අවම අකුරු 12 ක් අවශ්‍යයි",
- "cInvalidValue": "කරුණාකර අගය පරීක්ෂා කරන්න"
+ "cInvalidValue": "කරුණාකර අගය පරීක්ෂා කරන්න",
+ "webBookNow": "වෙබ් අඩවියෙන් වහාම වෙන් කරන්න",
+ "webBookSub": "යෙදුම ස්ථාපනය නොකර"
 }

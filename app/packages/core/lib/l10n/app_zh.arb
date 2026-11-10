@@ -719,5 +719,7 @@
  "cFirstRunCreate": "创建账号并开始",
  "cWrongSetupCode": "安装码不正确",
  "cWeakPassword": "密码至少需要 12 个字符",
- "cInvalidValue": "请检查输入内容"
+ "cInvalidValue": "请检查输入内容",
+ "webBookNow": "网页直接预约",
+ "webBookSub": "无需安装应用，直接预约"
 }

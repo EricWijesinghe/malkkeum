@@ -2323,4 +2323,10 @@ class TUz extends T {
 
   @override
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
+
+  @override
+  String get webBookNow => 'Veb orqali darhol band qiling';
+
+  @override
+  String get webBookSub => 'Ilovani o\'rnatmasdan';
 }

@@ -2257,4 +2257,10 @@ class TJa extends T {
 
   @override
   String get cInvalidValue => '入力内容を確認してください';
+
+  @override
+  String get webBookNow => 'ウェブで今すぐ予約';
+
+  @override
+  String get webBookSub => 'アプリ不要ですぐ予約';
 }

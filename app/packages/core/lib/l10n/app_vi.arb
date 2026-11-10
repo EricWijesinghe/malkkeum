@@ -719,5 +719,7 @@
  "cFirstRunCreate": "Tạo tài khoản và bắt đầu",
  "cWrongSetupCode": "Mã cài đặt không đúng",
  "cWeakPassword": "Mật khẩu cần ít nhất 12 ký tự",
- "cInvalidValue": "Vui lòng kiểm tra giá trị"
+ "cInvalidValue": "Vui lòng kiểm tra giá trị",
+ "webBookNow": "Đặt lịch ngay trên web",
+ "webBookSub": "Đặt lịch không cần cài ứng dụng"
 }

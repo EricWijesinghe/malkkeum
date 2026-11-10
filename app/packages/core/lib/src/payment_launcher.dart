@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
@@ -57,9 +58,13 @@ class DevPaymentLauncher extends PaymentLauncher {
   }
 }
 
-PaymentLauncher paymentLauncherFor(String apiBase) => isDevApiBase(apiBase)
-    ? const DevPaymentLauncher()
-    : PortOneWebViewLauncher(apiBase);
+/// Dev base: simulated window. Web: the hosted PortOne page in this tab (no WebView on web).
+/// Mobile: the hosted page in a WebView. [isWeb] defaults to kIsWeb; tests pass it explicitly.
+PaymentLauncher paymentLauncherFor(String apiBase, {bool? isWeb}) {
+  if (isDevApiBase(apiBase)) return const DevPaymentLauncher();
+  if (isWeb ?? kIsWeb) return PortOneRedirectLauncher(apiBase);
+  return PortOneWebViewLauncher(apiBase);
+}
 
 class _DevPaymentSheet extends StatelessWidget {
   const _DevPaymentSheet({required this.intent});

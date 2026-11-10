@@ -719,5 +719,7 @@
  "cFirstRunCreate": "アカウントを作成して開始",
  "cWrongSetupCode": "設置コードが違います",
  "cWeakPassword": "パスワードは12文字以上必要です",
- "cInvalidValue": "入力内容を確認してください"
+ "cInvalidValue": "入力内容を確認してください",
+ "webBookNow": "ウェブで今すぐ予約",
+ "webBookSub": "アプリ不要ですぐ予約"
 }

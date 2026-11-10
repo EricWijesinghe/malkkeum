@@ -1,5 +1,6 @@
 # One domain for everything, HTTPS certificates issued and renewed automatically:
 #   https://DOMAIN/          website
+#   https://DOMAIN/app/      customer web app (PWA; every /app/* deep link serves index.html)
 #   https://DOMAIN/admin/    operations console (setup wizard on first visit)
 #   https://DOMAIN/v1, /files, /health   API
 {
@@ -12,7 +13,12 @@
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
+		# Site-wide CSP. 'unsafe-inline' scripts: the website's theme snippet and Flutter's bootstrap.
+		# PortOne's SDK and payment windows need cdn.portone.io and https: frames/connections.
+		# wasm-unsafe-eval: Flutter's skwasm renderer. frame-ancestors none: nothing may embed us.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
 		-Server
 	}
 
@@ -25,6 +31,18 @@
 	handle_path /admin/* {
 		root * /srv/console
 		try_files {path} /index.html
+		file_server
+	}
+
+	# Entry points and the service worker must revalidate; the rest is cached for a day.
+	redir /app /app/
+	handle_path /app/* {
+		root * /srv/app
+		try_files {path} /index.html
+		@entry path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
+		@other not @entry
+		header @entry Cache-Control "no-cache"
+		header @other Cache-Control "public, max-age=86400"
 		file_server
 	}
 

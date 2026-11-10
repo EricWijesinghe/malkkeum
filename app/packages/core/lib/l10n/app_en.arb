@@ -719,5 +719,7 @@
  "cFirstRunCreate": "Create account and start",
  "cWrongSetupCode": "That setup code is not right",
  "cWeakPassword": "Password needs at least 12 characters",
- "cInvalidValue": "Please check the highlighted value"
+ "cInvalidValue": "Please check the highlighted value",
+ "webBookNow": "Book on the web",
+ "webBookSub": "Book without installing the app"
 }

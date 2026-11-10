@@ -2302,4 +2302,10 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String get webBookNow => 'Book on the web';
+
+  @override
+  String get webBookSub => 'Book without installing the app';
 }

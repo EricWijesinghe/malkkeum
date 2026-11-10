@@ -88,9 +88,10 @@ bool isDevApiBase(String baseUrl) {
   return host == 'localhost' || host == '127.0.0.1' || host == '10.0.2.2' || host.endsWith('.local');
 }
 
-/// Apple is offered where Sign in with Apple exists (iOS, macOS) and on the web for demos.
+/// Apple is offered where Sign in with Apple exists (iOS, macOS); never on the web.
 bool appleAvailable() {
-  if (kIsWeb) return true;
+  // Web has no Sign in with Apple SDK wired: only the dev stubs appear there.
+  if (kIsWeb) return false;
   return defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS;
 }
 
@@ -104,7 +105,8 @@ List<SocialSignIn> socialSignInsFor({
 }) {
   final apple = appleOk ?? appleAvailable();
   final dev = isDevApiBase(apiBase);
-  final live = configured ?? configuredSocialProviders();
+  // Web has no social SDK wired yet, so production web shows no social buttons.
+  final live = kIsWeb ? const <String>{} : (configured ?? configuredSocialProviders());
   final out = <SocialSignIn>[];
   for (final p in SocialProviders.all) {
     if (p == SocialProviders.apple && !apple) continue;

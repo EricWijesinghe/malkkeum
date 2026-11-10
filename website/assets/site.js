@@ -146,6 +146,12 @@ function pickLang() {
 let lang = pickLang();
 let services = [];
 let names = {};
+let webCopy = {};
+function applyWebCopy() {
+  const per = webCopy[lang] || webCopy.en || {};
+  document.querySelectorAll("[data-web-t]").forEach((el) => { if (per[el.dataset.webT]) el.textContent = per[el.dataset.webT]; });
+}
+fetch("assets/web_copy.json").then((r) => r.json()).then((j) => { webCopy = j; applyWebCopy(); }).catch(() => {});
 const text = (k) => (COPY[lang] && COPY[lang][k]) || COPY.en[k] || COPY.ko[k] || '';
 const won = (n) => new Intl.NumberFormat(lang === 'ko' ? 'ko-KR' : lang, { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(n);
 
@@ -153,6 +159,7 @@ function applyCopy() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = text(el.dataset.t); });
   renderServices();
+  applyWebCopy();
 }
 
 function fromPrice(s) {

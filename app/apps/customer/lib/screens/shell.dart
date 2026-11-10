@@ -7,6 +7,7 @@ import 'bookings.dart';
 import 'chat.dart';
 import 'home.dart';
 import 'more.dart';
+import 'web_return.dart';
 
 /// Four tabs. Phones get a bottom bar; tablets and desktop get a side rail.
 class Shell extends StatefulWidget {
@@ -29,6 +30,10 @@ class _ShellState extends State<Shell> {
       if (mounted) showToast(context, context.t.error(e));
     });
     app.realtime.connect();
+    // Web deep links (/app/#/booking/..) and the return from the hosted payment page.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) openWebHashRoute(context);
+    });
   }
 
   void go(int tab) => setState(() => _tab = tab);

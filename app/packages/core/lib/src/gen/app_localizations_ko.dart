@@ -2259,4 +2259,10 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String get webBookNow => '웹에서 바로 예약';
+
+  @override
+  String get webBookSub => '앱 설치 없이 바로 예약해요';
 }

@@ -2311,4 +2311,10 @@ class TNe extends T {
 
   @override
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
+
+  @override
+  String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';
+
+  @override
+  String get webBookSub => 'एप इन्स्टल नगरी बुक गर्नुहोस्';
 }

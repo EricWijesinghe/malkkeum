@@ -24,6 +24,9 @@
     (function () {
       var q = new URLSearchParams(location.search);
       var id = q.get('checkout');
+      // Web app (/app/) opened this page in its own tab: remember where to resume, read by done.html.
+      var back = q.get('back');
+      if (back && back.indexOf('/app/') === 0) { try { sessionStorage.setItem('mk.payBack', back); } catch (e) { /* private mode */ } }
       var done = function (extra) {
         var p = new URLSearchParams(Object.assign({ paymentId: id || '' }, extra || {}));
         location.replace('/pay/done.html?' + p.toString());

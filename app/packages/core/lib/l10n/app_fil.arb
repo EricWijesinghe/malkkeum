@@ -719,5 +719,7 @@
  "cFirstRunCreate": "Gumawa ng account at magsimula",
  "cWrongSetupCode": "Mali ang setup code",
  "cWeakPassword": "Kailangan ng hindi bababa sa 12 character ang password",
- "cInvalidValue": "Pakisuri ang inilagay na value"
+ "cInvalidValue": "Pakisuri ang inilagay na value",
+ "webBookNow": "Mag-book sa web",
+ "webBookSub": "Walang kailangang i-install na app"
 }

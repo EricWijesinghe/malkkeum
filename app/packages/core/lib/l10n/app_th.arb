@@ -719,5 +719,7 @@
  "cFirstRunCreate": "สร้างบัญชีและเริ่ม",
  "cWrongSetupCode": "รหัสติดตั้งไม่ถูกต้อง",
  "cWeakPassword": "รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร",
- "cInvalidValue": "โปรดตรวจสอบค่าที่กรอก"
+ "cInvalidValue": "โปรดตรวจสอบค่าที่กรอก",
+ "webBookNow": "จองบนเว็บเลย",
+ "webBookSub": "ไม่ต้องติดตั้งแอป"
 }

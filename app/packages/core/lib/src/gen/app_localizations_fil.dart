@@ -2330,4 +2330,10 @@ class TFil extends T {
 
   @override
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
+
+  @override
+  String get webBookNow => 'Mag-book sa web';
+
+  @override
+  String get webBookSub => 'Walang kailangang i-install na app';
 }

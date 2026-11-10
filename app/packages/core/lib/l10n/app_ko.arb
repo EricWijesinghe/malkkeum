@@ -1037,5 +1037,7 @@
  "cFirstRunCreate": "계정 만들고 시작하기",
  "cWrongSetupCode": "설치 코드가 맞지 않아요",
  "cWeakPassword": "비밀번호는 12자 이상이어야 해요",
- "cInvalidValue": "입력값을 확인해 주세요"
+ "cInvalidValue": "입력값을 확인해 주세요",
+ "webBookNow": "웹에서 바로 예약",
+ "webBookSub": "앱 설치 없이 바로 예약해요"
 }

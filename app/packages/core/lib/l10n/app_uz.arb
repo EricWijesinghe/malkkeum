@@ -719,5 +719,7 @@
  "cFirstRunCreate": "Hisob yaratib boshlash",
  "cWrongSetupCode": "O'rnatish kodi noto'g'ri",
  "cWeakPassword": "Parol kamida 12 belgidan iborat bo'lishi kerak",
- "cInvalidValue": "Kiritilgan qiymatni tekshiring"
+ "cInvalidValue": "Kiritilgan qiymatni tekshiring",
+ "webBookNow": "Veb orqali darhol band qiling",
+ "webBookSub": "Ilovani o'rnatmasdan"
 }
