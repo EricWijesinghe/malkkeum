@@ -5,6 +5,7 @@ pub mod booking;
 pub mod catalog;
 pub mod coupon;
 pub mod error;
+pub mod growth;
 pub mod money;
 pub mod partner;
 pub mod pricing;

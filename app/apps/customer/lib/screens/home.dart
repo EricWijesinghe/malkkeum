@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
+import 'growth.dart';
 import 'more.dart';
 import 'notifications.dart';
 import 'service.dart';
@@ -149,6 +150,10 @@ class _HomeTabState extends State<HomeTab> {
                   const SizedBox(height: Space.md),
                   _RebookCard(booking: last),
                 ],
+                const SizedBox(height: Space.lg),
+                const SocialProofCard(),
+                const SizedBox(height: Space.md),
+                const ReferralCard(),
                 const SizedBox(height: Space.lg),
                 const StaggerIn(index: 4, child: _TrustRow()),
                 if (_notices.isNotEmpty) ...[

@@ -37,6 +37,12 @@ extension Labels on T {
         'has_active_jobs' => err_has_active_jobs,
         'pending_payouts' => err_pending_payouts,
         'phone_required' => err_phone_required,
+        'self_referral' => err_self_referral,
+        'referee_already_booked' => err_referee_already_booked,
+        'already_referred' => err_already_referred,
+        'invalid_referral_code' => err_invalid_referral_code,
+        'referral_disabled' => err_referral_disabled,
+        'invalid_photos' => err_invalid_photos,
         _ => errorGeneric,
       };
     }

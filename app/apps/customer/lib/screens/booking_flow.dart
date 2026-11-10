@@ -124,6 +124,8 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   BookingDraft get d => widget.draft;
   Map<int, bool> _available = {};
+  // Server-sent only when a slot is genuinely almost full (1-2 seats left).
+  Map<int, int> _seatsLeft = {};
   bool _loading = false;
 
   List<DateTime> get _days {
@@ -146,6 +148,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       final r = await context.api.get('/slots', query: {'date': isoDate(d.date!), 'quote': '${d.service.isQuote}'}) as List;
       if (!mounted) return;
       _available = {for (final s in r.cast<Json>()) (s['start_hour'] as num).toInt(): s['available'] as bool};
+      _seatsLeft = {for (final s in r.cast<Json>()) if (s['seats_left'] != null) (s['start_hour'] as num).toInt(): (s['seats_left'] as num).toInt()};
       if (d.hour != null && _available[d.hour] == false) d.hour = null;
       d.hour ??= _slots.where((h) => _available[h] ?? true).firstOrNull;
     } catch (e) {
@@ -228,7 +231,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 for (final h in _slots)
                   OptionCard(
                     title: d.service.isQuote ? (h < 12 ? t.morning : t.afternoon) : hourLabel(h, lang),
-                    subtitle: (_available[h] ?? true) ? t.scheduleWindow(hourLabel(h, lang), hourLabel(h + 1, lang)) : t.scheduleFull,
+                    subtitle: !(_available[h] ?? true)
+                        ? t.scheduleFull
+                        : _seatsLeft[h] != null
+                        ? t.seatsLeft('${_seatsLeft[h]}')
+                        : t.scheduleWindow(hourLabel(h, lang), hourLabel(h + 1, lang)),
                     selected: d.hour == h,
                     enabled: _available[h] ?? true,
                     accent: hue.tone,

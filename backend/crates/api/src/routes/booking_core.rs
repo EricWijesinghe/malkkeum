@@ -2,7 +2,7 @@
 //! request validation, server-side pricing, the paid-booking insert, and the deposit
 //! and balance steps. Nothing here decides money; callers own the transaction.
 
-use super::{bookings::BookingRow, catalog::load_service, chat};
+use super::{bookings::BookingRow, catalog::load_service, chat, growth};
 use crate::{
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
@@ -16,6 +16,7 @@ use domain::{
     catalog::Service,
     coupon::Coupon,
     partner::payout_date,
+    growth::{apply_welcome, welcome_applies},
     pricing::{PriceBreakdown, price_booking},
     quote::QuoteAnswers,
     schedule::{check_capacity, check_date, check_slot},
@@ -106,13 +107,27 @@ pub async fn load_coupon(conn: &mut PgConnection, user: Uuid, id: Uuid, lock: bo
     })
 }
 
-/// Server-side price for the chosen unit and optional coupon.
+/// Server-side price for the chosen unit, optional coupon, and the first-booking welcome offer.
 pub async fn price_for(conn: &mut PgConnection, user: Uuid, prep: &Prepared, b: &BookingBody, lock: bool) -> ApiResult<PriceBreakdown> {
     let coupon = match b.coupon_id {
         Some(id) => Some(load_coupon(conn, user, id, lock).await?),
         None => None,
     };
-    Ok(price_booking(&prep.service, b.unit_index, coupon.as_ref(), Utc::now())?)
+    let price = price_booking(&prep.service, b.unit_index, coupon.as_ref(), Utc::now())?;
+    let offer = growth::load_welcome(conn).await?;
+    if !offer.enabled || coupon.is_some() {
+        return Ok(price);
+    }
+    // Per-customer lock held to commit: two first bookings at once can't both get the welcome price.
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtext($1))")
+        .bind(format!("welcome-user:{user}"))
+        .execute(&mut *conn)
+        .await?;
+    let prior: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1").bind(user).fetch_one(&mut *conn).await?;
+    if !welcome_applies(&offer, prior, false) {
+        return Ok(price);
+    }
+    Ok(apply_welcome(price, &offer))
 }
 
 /// Takes the per-slot lock for the rest of the transaction and fails when the slot is full.
@@ -240,6 +255,7 @@ pub async fn take_balance(conn: &mut PgConnection, b: &BookingRow, balance: i64)
     if moved.rows_affected() == 0 {
         return Err(ApiError::Conflict("balance_not_due"));
     }
+    growth::reward_on_paid_completion(&mut *conn, b.id).await?;
     let completed = b.completed_at.map(|c| (c + chrono::Duration::hours(9)).date_naive()).unwrap_or_else(today_kst);
     sqlx::query("UPDATE settlements SET state = 'pending', payout_date = $2 WHERE booking_id = $1 AND state = 'waiting_balance'")
         .bind(b.id)

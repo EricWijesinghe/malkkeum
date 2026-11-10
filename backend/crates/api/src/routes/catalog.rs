@@ -96,6 +96,8 @@ struct SlotQuery {
 struct SlotDto {
     start_hour: u8,
     available: bool,
+    /// Only when 1..=2 seats are really left in a capped slot (honest scarcity).
+    seats_left: Option<u32>,
 }
 
 /// Availability for one date; capacity per start hour is set in the console.
@@ -111,9 +113,14 @@ async fn slots(State(s): State<AppState>, Query(q): Query<SlotQuery>) -> ApiResu
     .await?;
     Ok(Json(
         rows.into_iter()
-            .map(|(h, cap, used)| SlotDto {
-                start_hour: h as u8,
-                available: cap.is_none_or(|c| used < i64::from(c)),
+            .map(|(h, cap, used)| {
+                let used = u32::try_from(used).unwrap_or(u32::MAX);
+                let capacity = cap.map(|c| u32::try_from(c).unwrap_or(0));
+                SlotDto {
+                    start_hour: h as u8,
+                    available: capacity.is_none_or(|c| used < c),
+                    seats_left: domain::growth::seats_left_to_show(capacity, used),
+                }
             })
             .collect(),
     ))

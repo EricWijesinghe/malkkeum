@@ -1,7 +1,7 @@
 //! Console: bookings, status changes, quote desk, inboxes, dashboard.
 
 use super::{
-    audit,
+    audit, growth,
     bookings::{BOOKING_COLS, BookingRow, apply_cancel, load_booking},
     catalog::load_formula,
     chat::{self, MessageRow, THREAD_COLS, ThreadRow},
@@ -48,6 +48,10 @@ struct Dashboard {
     revenue_30d: i64,
     bookings_30d: i64,
     by_service: Value,
+    /// Growth tiles: visible-review average (null without reviews) and referral funnel.
+    average_rating: Option<f64>,
+    referrals_invited: i64,
+    referrals_rewarded: i64,
 }
 
 async fn dashboard(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Dashboard>> {
@@ -67,6 +71,7 @@ async fn dashboard(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Dash
     )
     .fetch_one(&s.db)
     .await?;
+    let growth = growth::dashboard_figures(&s.db).await?;
     Ok(Json(Dashboard {
         today_jobs: row.0,
         open_quotes: row.1,
@@ -75,6 +80,9 @@ async fn dashboard(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Dash
         revenue_30d: row.4,
         bookings_30d: row.5,
         by_service,
+        average_rating: growth.average_rating,
+        referrals_invited: growth.invited,
+        referrals_rewarded: growth.rewarded,
     }))
 }
 
@@ -183,6 +191,9 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
     .await?;
     if moved.rows_affected() == 0 {
         return Err(ApiError::Conflict("booking_changed"));
+    }
+    if to == BookingStatus::Completed {
+        crate::util::best_effort("referral", growth::reward_in_own_tx(&s.db, id)).await;
     }
     audit(
         &s.db,

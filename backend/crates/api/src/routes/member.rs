@@ -3,7 +3,7 @@
 
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
-    chat,
+    chat, growth,
 };
 use crate::{
     auth::{Member, mask_name},
@@ -152,6 +152,7 @@ async fn complete(State(s): State<AppState>, Member(a): Member, Path(id): Path<U
         .bind(if is_quote { "waiting_balance" } else { "pending" })
         .execute(&mut *tx)
         .await?;
+    growth::reward_on_paid_completion(&mut tx, id).await?;
     tx.commit().await?;
     if let Some(t) = b.thread_id {
         best_effort("chat", chat::post_system(&s, t, "job_completed", json!({}))).await;
