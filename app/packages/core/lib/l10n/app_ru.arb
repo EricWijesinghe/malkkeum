@@ -719,5 +719,17 @@
  "cFirstRunCreate": "Создать аккаунт и начать",
  "cWrongSetupCode": "Неверный код установки",
  "cWeakPassword": "Пароль должен быть не короче 12 символов",
- "cInvalidValue": "Проверьте введённое значение"
+ "cInvalidValue": "Проверьте введённое значение",
+ "uUpdateBanner": "Доступна версия {version}",
+ "uUpdateNow": "Обновить",
+ "uUpdateLater": "Позже",
+ "uUpdateRequiredTitle": "Требуется обновление",
+ "uUpdateRequiredBody": "Эта версия больше не поддерживается. Обновите приложение в магазине.",
+ "uUpdateStore": "Обновить в магазине",
+ "uUpdateStoreMissing": "Ссылка для обновления ещё не готова. Попробуйте позже.",
+ "uCurrentVersion": "Текущая версия {version}",
+ "uAppVersionTitle": "Версии приложений",
+ "uAppVersionHint": "Приложения ниже минимальной версии остановятся на экране обновления. Ниже последней версии покажется баннер. Формат: 1.2.0",
+ "uMinVersion": "Минимальная версия",
+ "uLatestVersion": "Последняя версия"
 }

@@ -1,39 +1,68 @@
 #!/usr/bin/env bash
 # 말끔 서버 설치 프로그램 (Ubuntu 22.04 / 24.04, Debian 12)
 #
-#   curl -fsSL https://raw.githubusercontent.com/<org>/<repo>/main/deploy/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/main/install.sh | sudo bash
+#   (베타 채널: .../beta/install.sh)
 #
-# Asks two questions (domain, email), then installs Docker, generates every secret, starts the
-# service with automatic HTTPS, schedules daily backups and installs the `malkkeum` command.
-# Re-running it is safe: existing settings and data are kept and the service is updated.
+# 질문 두 개(도메인, 이메일)에 답하면 Docker 설치, 보안 키 생성, HTTPS 자동 설정, 매일 백업,
+# `malkkeum` 명령 설치까지 끝냅니다. 다시 실행해도 안전합니다: 설정과 데이터는 그대로 두고 서비스만 맞춥니다.
+#
+# 자동 설치·테스트용 환경 변수 (보통은 필요 없어요):
+#   MALKKEUM_DOMAIN, MALKKEUM_EMAIL   질문 대신 값 지정
+#   MALKKEUM_IMAGES                   이미지 저장소 (기본: 릴리스 저장소)
+#   MALKKEUM_CHANNEL                  stable | beta
+#   MALKKEUM_VERSION                  채널 대신 쓸 이미지 태그 (테스트용)
+#   MALKKEUM_TLS=internal             공인 인증서 대신 내부 인증 기관 사용 (테스트용)
+#   MALKKEUM_SKIP_DNS_CHECK=1         도메인 IP 확인 생략
+#   MALKKEUM_HEALTH_WAIT=300          기동 확인 대기 시간(초)
 set -euo pipefail
 
-IMAGE_REPO="${MALKKEUM_IMAGES:-ghcr.io/malkkeum}"
-VERSION="${MALKKEUM_VERSION:-latest}"
+IMAGE_REPO_DEFAULT=ghcr.io/ericwijesinghe
+DEFAULT_CHANNEL=stable
 DIR=/opt/malkkeum
-BACKUP_KEEP_DAYS=14
-HEALTH_WAIT_SECS=300
+HEALTH_WAIT_SECS=${MALKKEUM_HEALTH_WAIT:-300}
 
 say()  { printf '\n\033[1;34m▶ %s\033[0m\n' "$*"; }
 ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m! %s\033[0m\n' "$*"; }
 die()  { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 1; }
+dc()   { docker compose --env-file .env "$@"; }
 
-ask() { # ask "질문" default -> answer (reads from the terminal even when piped from curl)
-  local q="$1" def="${2:-}" a
-  if [ -n "$def" ]; then printf '%s [%s]: ' "$q" "$def" >/dev/tty; else printf '%s: ' "$q" >/dev/tty; fi
-  IFS= read -r a </dev/tty || true
+ask() { # ask "질문" 기본값 -> 답 (터미널이 없으면 기본값)
+  local q="$1" def="${2:-}" a=""
+  if (: </dev/tty) 2>/dev/null; then
+    printf '%s%s: ' "$q" "${def:+ [$def]}" >/dev/tty
+    IFS= read -r a </dev/tty || true
+  fi
   printf '%s' "${a:-$def}"
 }
 
 rand_hex() { openssl rand -hex "$1"; }
-setup_code() { # 12 characters without 0/O/1/I/L, shown as XXXX-XXXX-XXXX
+setup_code() { # 0/O/1/I/L 을 뺀 12자리. 화면을 보고 손으로 입력하는 코드예요.
   local alphabet=23456789ABCDEFGHJKMNPQRSTUVWXYZ code=""
   while [ ${#code} -lt 12 ]; do
     local b; b=$(od -An -N1 -tu1 /dev/urandom | tr -d ' ')
     [ "$b" -lt 248 ] && code="$code${alphabet:$((b % 31)):1}"
   done
   printf '%s' "$code"
+}
+
+env_set() { # env_set 키 값 : .env 에 키가 있으면 바꾸고, 없으면 추가해요
+  local k="$1" v="$2" tmp; tmp=$(mktemp)
+  if grep -q "^$k=" .env; then
+    awk -v k="$k" -v v="$v" 'index($0, k "=") == 1 { print k "=" v; next } { print }' .env > "$tmp"
+  else
+    { cat .env; printf '%s=%s\n' "$k" "$v"; } > "$tmp"
+  fi
+  cat "$tmp" > .env; rm -f "$tmp"
+}
+
+wait_healthy() { # 도메인을 이 서버로 직접 불러서 응답을 기다려요 (DNS 설정과 무관)
+  local waited=0
+  until curl -fsSk --max-time 5 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" >/dev/null 2>&1; do
+    sleep 5; waited=$((waited + 5))
+    [ "$waited" -ge "$HEALTH_WAIT_SECS" ] && return 1
+  done
 }
 
 [ "$(id -u)" -eq 0 ] || die "관리자 권한이 필요해요. 명령 앞에 sudo 를 붙여 다시 실행해 주세요."
@@ -45,14 +74,31 @@ cd "$DIR"
 
 if [ -f .env ]; then
   ok "기존 설치를 찾았어요. 설정과 데이터는 그대로 두고 최신 버전으로 업데이트합니다."
+  set -a
   # shellcheck disable=SC1091
-  set -a; . ./.env; set +a
+  . ./.env
+  set +a
+  FRESH=0
 else
-  DOMAIN=$(ask "서비스 주소(도메인)를 입력하세요. 예: malkkeum.co.kr" "")
-  DOMAIN=${DOMAIN#http://}; DOMAIN=${DOMAIN#https://}; DOMAIN=${DOMAIN%%/*}
-  [ -n "$DOMAIN" ] || die "도메인이 필요해요."
-  ACME_EMAIL=$(ask "보안 인증서 안내를 받을 이메일" "")
+  FRESH=1
 fi
+
+# 설정 값 우선순위: 환경 변수 > 기존 .env > 기본값
+IMAGE_REPO=${MALKKEUM_IMAGES:-${IMAGE_REPO:-$IMAGE_REPO_DEFAULT}}
+TLS_MODE=${MALKKEUM_TLS:-${TLS_MODE:-}}
+CHANNEL=${MALKKEUM_CHANNEL:-${CHANNEL:-$DEFAULT_CHANNEL}}
+VERSION=${MALKKEUM_VERSION:-${MALKKEUM_CHANNEL:-${VERSION:-$CHANNEL}}}
+case "$CHANNEL" in stable|beta) ;; *) die "채널은 stable 또는 beta 중 하나예요." ;; esac
+case "$TLS_MODE" in ""|internal) ;; *) die "MALKKEUM_TLS 는 internal 만 쓸 수 있어요." ;; esac
+
+if [ -n "${MALKKEUM_DOMAIN:-}" ]; then
+  DOMAIN=$MALKKEUM_DOMAIN
+elif [ -z "${DOMAIN:-}" ]; then
+  DOMAIN=$(ask "서비스 주소(도메인)를 입력하세요. 예: malkkeum.co.kr" "")
+fi
+DOMAIN=${DOMAIN#http://}; DOMAIN=${DOMAIN#https://}; DOMAIN=${DOMAIN%%/*}
+[ -n "$DOMAIN" ] || die "도메인이 필요해요."
+ACME_EMAIL=${MALKKEUM_EMAIL:-${ACME_EMAIL:-$(ask "보안 인증서 안내를 받을 이메일" "")}}
 
 say "필수 프로그램 설치"
 apt-get update -qq
@@ -65,33 +111,40 @@ docker compose version >/dev/null 2>&1 || die "Docker Compose 를 설치하지 �
 ok "Docker 준비 완료"
 
 say "도메인 확인"
-SERVER_IP=$(curl -fsS4 https://api.ipify.org || true)
-DOMAIN_IP=$(dig +short A "$DOMAIN" | tail -n1 || true)
-if [ -n "$SERVER_IP" ] && [ "$SERVER_IP" = "$DOMAIN_IP" ]; then
-  ok "$DOMAIN → $SERVER_IP (이 서버)"
+if [ "$TLS_MODE" = internal ] || [ -n "${MALKKEUM_SKIP_DNS_CHECK:-}" ]; then
+  ok "도메인 IP 확인은 건너뛰었어요 (테스트 설치)"
 else
-  warn "$DOMAIN 의 A 레코드가 이 서버($SERVER_IP)를 가리키지 않아요 (현재: ${DOMAIN_IP:-없음})."
-  warn "도메인 관리 화면에서 A 레코드를 $SERVER_IP 로 설정하세요. 설정 후 몇 분 안에 HTTPS 가 자동으로 켜집니다."
+  SERVER_IP=$(curl -fsS4 https://api.ipify.org || true)
+  DOMAIN_IP=$(dig +short A "$DOMAIN" | tail -n1 || true)
+  if [ -n "$SERVER_IP" ] && [ "$SERVER_IP" = "$DOMAIN_IP" ]; then
+    ok "$DOMAIN → $SERVER_IP (이 서버)"
+  else
+    warn "$DOMAIN 의 A 레코드가 이 서버($SERVER_IP)를 가리키지 않아요 (현재: ${DOMAIN_IP:-없음})."
+    warn "도메인 관리 화면에서 A 레코드를 $SERVER_IP 로 설정하세요. 설정 후 몇 분 안에 HTTPS 가 자동으로 켜집니다."
+  fi
 fi
 
-if [ ! -f .env ]; then
-  SETUP_CODE=$(setup_code)
+if [ "$FRESH" = 1 ]; then
   umask 077
   cat > .env <<EOF
 # 말끔 서버 설정 — install.sh 가 만들었어요. 이 파일을 안전한 곳에 따로 보관하세요.
 # DATA_KEY 를 잃어버리면 저장된 결제·연동 키와 계좌 정보를 복구할 수 없어요.
-DOMAIN=$DOMAIN
-ACME_EMAIL=$ACME_EMAIL
-IMAGE_REPO=$IMAGE_REPO
-VERSION=$VERSION
 DB_PASSWORD=$(rand_hex 24)
 JWT_SECRET=$(rand_hex 32)
 DATA_KEY=$(rand_hex 32)
-SETUP_CODE=$SETUP_CODE
+SETUP_CODE=$(setup_code)
 EOF
   umask 022
   ok "보안 키를 새로 만들었어요"
 fi
+env_set DOMAIN "$DOMAIN"
+env_set ACME_EMAIL "$ACME_EMAIL"
+env_set IMAGE_REPO "$IMAGE_REPO"
+env_set TLS_MODE "$TLS_MODE"
+env_set CHANNEL "$CHANNEL"
+env_set VERSION "$VERSION"
+env_set API_IMAGE "$IMAGE_REPO/malkkeum-api:$VERSION"
+env_set WEB_IMAGE "$IMAGE_REPO/malkkeum-web:$VERSION"
 
 cat > docker-compose.yml <<'EOF'
 # Managed by install.sh — re-run the installer or `malkkeum update` instead of editing.
@@ -103,7 +156,7 @@ services:
     volumes: [dbdata:/var/lib/postgresql/data]
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
   api:
-    image: ${IMAGE_REPO}/malkkeum-api:${VERSION}
+    image: ${API_IMAGE:?set by install.sh}
     restart: unless-stopped
     depends_on: { db: { condition: service_healthy } }
     environment:
@@ -119,48 +172,159 @@ services:
     volumes: [uploads:/data/uploads]
     healthcheck: { test: ["CMD", "api", "--health"], interval: 15s, retries: 10, start_period: 20s }
   web:
-    image: ${IMAGE_REPO}/malkkeum-web:${VERSION}
+    image: ${WEB_IMAGE:?set by install.sh}
     restart: unless-stopped
     depends_on: [api]
     ports: ["80:80", "443:443", "443:443/udp"]
-    environment: { DOMAIN: "${DOMAIN}", ACME_EMAIL: "${ACME_EMAIL}" }
+    environment: { DOMAIN: "${DOMAIN}", ACME_EMAIL: "${ACME_EMAIL}", TLS_MODE: "${TLS_MODE}" }
     volumes: [caddydata:/data, caddyconfig:/config]
 volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
 EOF
 
-cat > /usr/local/bin/malkkeum <<EOF
+# 관리 명령. 본문은 따옴표 heredoc 이라 그대로 옮겨지고, __DIR__ 만 바꿔 넣어요.
+cat > /usr/local/bin/malkkeum <<'CLI'
 #!/usr/bin/env bash
-# 말끔 관리 명령. 사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|version]
+# 말끔 관리 명령. 사용법: malkkeum [status|update|rollback|channel 채널|version|backup|restore 파일|logs|setup-code]
 set -euo pipefail
-cd $DIR
-dc() { docker compose --env-file .env "\$@"; }
-case "\${1:-status}" in
-  status)
-    dc ps
-    if curl -fsS "https://\$(grep ^DOMAIN= .env | cut -d= -f2)/health" >/dev/null; then echo "✔ 서비스 정상"; else echo "✘ 서비스 응답 없음 — 'malkkeum logs' 로 확인하세요"; fi ;;
-  update)
-    "\$0" backup
-    dc pull -q && dc up -d --remove-orphans && docker image prune -f >/dev/null
-    echo "✔ 최신 버전으로 업데이트했어요" ;;
-  backup)
-    ts=\$(date +%Y%m%d-%H%M)
-    dc exec -T db pg_dump -U app -d cleaning --clean --if-exists | gzip > backups/db-\$ts.sql.gz
-    dc run --rm --no-deps -T --entrypoint tar api czf - -C /data uploads > backups/uploads-\$ts.tar.gz 2>/dev/null || true
-    find backups -type f -mtime +$BACKUP_KEEP_DAYS -delete
-    echo "✔ 백업 완료: $DIR/backups/db-\$ts.sql.gz" ;;
-  restore)
-    f="\${2:?복원할 백업 파일을 지정하세요. 예: malkkeum restore backups/db-20261110-0330.sql.gz}"
-    read -r -p "현재 데이터를 \$f 로 되돌릴까요? (yes 입력) " a </dev/tty; [ "\$a" = yes ] || exit 1
-    gunzip -c "\$f" | dc exec -T db psql -q -U app -d cleaning >/dev/null && echo "✔ 복원 완료" ;;
-  logs) dc logs --tail 200 -f "\${2:-api}" ;;
-  setup-code) grep ^SETUP_CODE= .env | cut -d= -f2 | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
-  version) grep ^VERSION= .env | cut -d= -f2 ;;
-  *) echo "사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|version]"; exit 1 ;;
-esac
-EOF
-chmod 755 /usr/local/bin/malkkeum
+DIR=__DIR__
+BACKUP_KEEP_DAYS=14
+UPDATE_WAIT_SECS=${MALKKEUM_HEALTH_WAIT:-180}
+cd "$DIR"
 
-# Daily backup at 03:30, weekly automatic update (after a backup) on Monday 04:00.
+dc() { docker compose --env-file .env "$@"; }
+ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }
+warn() { printf '\033[1;33m! %s\033[0m\n' "$*"; }
+die()  { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 1; }
+env_get() { { grep -E "^$1=" .env || true; } | tail -n1 | cut -d= -f2-; }
+env_set() { # 키 값 : .env 에 기록 (있으면 바꾸고 없으면 추가)
+  local k="$1" v="$2" tmp; tmp=$(mktemp)
+  if grep -q "^$k=" .env; then
+    awk -v k="$k" -v v="$v" 'index($0, k "=") == 1 { print k "=" v; next } { print }' .env > "$tmp"
+  else
+    { cat .env; printf '%s=%s\n' "$k" "$v"; } > "$tmp"
+  fi
+  cat "$tmp" > .env; rm -f "$tmp"
+}
+health_ok() {
+  local d; d=$(env_get DOMAIN)
+  curl -fsSk --max-time 5 --resolve "$d:443:127.0.0.1" "https://$d/health" >/dev/null 2>&1
+}
+wait_healthy() {
+  local waited=0
+  until health_ok; do
+    sleep 5; waited=$((waited + 5))
+    [ "$waited" -ge "$UPDATE_WAIT_SECS" ] && return 1
+  done
+}
+# 지금 쓰는 이미지를 저장소@다이제스트 형태로 기록해 둬야, 태그가 바뀌어도 되돌릴 수 있어요.
+digest_ref() {
+  local d; d=$(docker image inspect --format '{{index .RepoDigests 0}}' "$1" 2>/dev/null || true)
+  printf '%s' "${d:-$1}"
+}
+# 이미지 두 개를 지정해서 기동하고 .env 에 기록해요.
+set_images() {
+  env_set API_IMAGE "$1"; env_set WEB_IMAGE "$2"
+  dc up -d --remove-orphans
+}
+
+cmd_backup() {
+  local ts; ts=$(date +%Y%m%d-%H%M%S)
+  dc exec -T db pg_dump -U app -d cleaning --clean --if-exists | gzip > "backups/db-$ts.sql.gz"
+  dc run --rm --no-deps -T --entrypoint tar api czf - -C /data uploads > "backups/uploads-$ts.tar.gz" 2>/dev/null || true
+  find backups \( -name 'db-*.sql.gz' -o -name 'uploads-*.tar.gz' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
+  ok "백업 완료: $DIR/backups/db-$ts.sql.gz"
+}
+
+cmd_update() {
+  local repo ver cur_api cur_web
+  printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
+  cmd_backup || die "백업에 실패해서 업데이트를 멈췄어요. 'malkkeum logs' 로 확인하세요."
+  repo=$(env_get IMAGE_REPO); ver=$(env_get VERSION)
+  cur_api=$(digest_ref "$(env_get API_IMAGE)"); cur_web=$(digest_ref "$(env_get WEB_IMAGE)")
+  dc pull -q api web || die "새 버전을 내려받지 못했어요. 지금 서비스는 그대로 돌고 있어요."
+  env_set PREV_API_IMAGE "$cur_api"; env_set PREV_WEB_IMAGE "$cur_web"
+  set_images "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver"
+  if wait_healthy; then
+    dc image prune -f --filter until=336h >/dev/null 2>&1 || true
+    ok "최신 버전($ver)으로 업데이트했어요"
+    return 0
+  fi
+  warn "새 버전이 응답하지 않아요. 이전 버전으로 되돌릴게요."
+  set_images "$cur_api" "$cur_web"
+  if wait_healthy; then
+    die "업데이트에 실패해서 이전 버전으로 되돌렸어요. 'malkkeum logs' 로 원인을 확인해 주세요."
+  fi
+  die "이전 버전으로도 응답하지 않아요. 'malkkeum logs' 화면을 개발자에게 전달해 주세요."
+}
+
+cmd_rollback() {
+  local prev_api prev_web cur_api cur_web
+  prev_api=$(env_get PREV_API_IMAGE); prev_web=$(env_get PREV_WEB_IMAGE)
+  if [ -z "$prev_api" ] || [ "$prev_api" = "$(env_get API_IMAGE)" ]; then
+    die "되돌릴 이전 버전 기록이 없어요. 업데이트를 한 번 한 뒤에 쓸 수 있어요."
+  fi
+  cmd_backup || die "백업에 실패해서 되돌리기를 멈췄어요."
+  cur_api=$(digest_ref "$(env_get API_IMAGE)"); cur_web=$(digest_ref "$(env_get WEB_IMAGE)")
+  env_set PREV_API_IMAGE "$cur_api"; env_set PREV_WEB_IMAGE "$cur_web"
+  set_images "$prev_api" "${prev_web:-$(env_get WEB_IMAGE)}"
+  if wait_healthy; then ok "이전 버전으로 되돌렸어요"; else die "되돌린 뒤에도 응답이 없어요. 'malkkeum logs' 를 확인하세요."; fi
+}
+
+cmd_channel() {
+  local ch="${1:-}"
+  case "$ch" in
+    stable|beta) ;;
+    *) die "사용법: malkkeum channel stable | beta" ;;
+  esac
+  env_set CHANNEL "$ch"; env_set VERSION "$ch"
+  printf '\n▶ %s 채널로 바꾸고 업데이트합니다\n' "$ch"
+  cmd_update
+}
+
+cmd_version() {
+  local cid running=""
+  cid=$(dc ps -q api 2>/dev/null | head -n1 || true)
+  [ -n "$cid" ] && running=$(docker inspect -f '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$cid" 2>/dev/null || true)
+  if [ -z "$running" ] || [ "$running" = "<no value>" ]; then
+    running=$(curl -fsSk --max-time 5 --resolve "$(env_get DOMAIN):443:127.0.0.1" "https://$(env_get DOMAIN)/health" 2>/dev/null | grep -o '"version":"[^"]*"' | cut -d'"' -f4 || true)
+  fi
+  echo "채널: $(env_get CHANNEL)  (이미지 태그: $(env_get VERSION))"
+  echo "실행 중인 버전: ${running:-알 수 없음}"
+}
+
+cmd_status() {
+  dc ps
+  if health_ok; then ok "서비스 정상"; else warn "서비스 응답 없음 — 'malkkeum logs' 로 확인하세요"; fi
+}
+
+cmd_restore() {
+  local f="${1:?복원할 백업 파일을 지정하세요. 예: malkkeum restore backups/db-20261110-033000.sql.gz}"
+  local a=""
+  read -r -p "현재 데이터를 $f 로 되돌릴까요? (yes 입력) " a </dev/tty || true
+  [ "$a" = yes ] || die "취소했어요."
+  gunzip -c "$f" | dc exec -T db psql -q -U app -d cleaning >/dev/null && ok "복원 완료"
+}
+
+case "${1:-status}" in
+  status) cmd_status ;;
+  update) cmd_update ;;
+  rollback) cmd_rollback ;;
+  channel) shift; cmd_channel "$@" ;;
+  version) cmd_version ;;
+  backup) cmd_backup ;;
+  restore) shift; cmd_restore "$@" ;;
+  logs) dc logs --tail 200 -f "${2:-api}" ;;
+  setup-code) env_get SETUP_CODE | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
+  *)
+    echo "사용법: malkkeum [status|update|rollback|channel stable|beta|version|backup|restore 파일|logs|setup-code]"
+    exit 1 ;;
+esac
+CLI
+sed -i "s|__DIR__|$DIR|" /usr/local/bin/malkkeum
+chmod 755 /usr/local/bin/malkkeum
+ok "관리 명령 malkkeum 을 설치했어요"
+
+# 매일 03:30 백업, 매주 월요일 04:00 자동 업데이트 (업데이트 전에도 백업하고, 실패하면 자동으로 되돌려요).
 timedatectl set-timezone Asia/Seoul 2>/dev/null || true
 cat > /etc/cron.d/malkkeum <<EOF
 30 3 * * * root /usr/local/bin/malkkeum backup >> $DIR/backups/backup.log 2>&1
@@ -173,20 +337,17 @@ if command -v ufw >/dev/null && ufw status | grep -q active; then
 fi
 
 say "서비스 시작 (처음에는 몇 분 걸릴 수 있어요)"
-docker compose --env-file .env pull -q
-docker compose --env-file .env up -d --remove-orphans
+dc pull -q api web
+dc up -d --remove-orphans
 
-waited=0
-until curl -fsS "https://$DOMAIN/health" >/dev/null 2>&1 || curl -fsS -H "Host: $DOMAIN" http://127.0.0.1/health >/dev/null 2>&1; do
-  sleep 5; waited=$((waited + 5))
-  [ $waited -ge $HEALTH_WAIT_SECS ] && { warn "서비스가 아직 응답하지 않아요. 'malkkeum logs' 로 확인하세요."; break; }
-done
+wait_healthy || warn "서비스가 아직 응답하지 않아요. 'malkkeum logs' 로 확인하세요."
 
 CODE=$(/usr/local/bin/malkkeum setup-code)
+CH=$(grep '^CHANNEL=' .env | cut -d= -f2-)
 cat <<EOF
 
 ────────────────────────────────────────────────────────────
-  ✔ 설치가 끝났어요!
+  ✔ 설치가 끝났어요!   (채널: $CH)
 
   1) 브라우저에서 이 주소를 여세요:   https://$DOMAIN/admin/
   2) 설치 코드를 입력하고 사장님 계정을 만드세요:
@@ -198,6 +359,6 @@ cat <<EOF
   ⚠ $DIR/.env 파일을 USB 나 안전한 곳에 꼭 복사해 두세요.
     (이 파일이 없으면 백업을 복원할 수 없어요)
 
-  관리 명령:  malkkeum status | update | backup | logs
+  관리 명령:  malkkeum status | update | rollback | channel | version | backup | logs
 ────────────────────────────────────────────────────────────
 EOF

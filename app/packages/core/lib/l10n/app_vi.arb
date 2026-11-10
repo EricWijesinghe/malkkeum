@@ -719,5 +719,17 @@
  "cFirstRunCreate": "Tạo tài khoản và bắt đầu",
  "cWrongSetupCode": "Mã cài đặt không đúng",
  "cWeakPassword": "Mật khẩu cần ít nhất 12 ký tự",
- "cInvalidValue": "Vui lòng kiểm tra giá trị"
+ "cInvalidValue": "Vui lòng kiểm tra giá trị",
+ "uUpdateBanner": "Đã có phiên bản {version}",
+ "uUpdateNow": "Cập nhật",
+ "uUpdateLater": "Để sau",
+ "uUpdateRequiredTitle": "Cần cập nhật ứng dụng",
+ "uUpdateRequiredBody": "Phiên bản này không còn được hỗ trợ. Vui lòng cập nhật từ cửa hàng.",
+ "uUpdateStore": "Cập nhật trên cửa hàng",
+ "uUpdateStoreMissing": "Liên kết cập nhật chưa sẵn sàng. Vui lòng thử lại sau.",
+ "uCurrentVersion": "Phiên bản hiện tại {version}",
+ "uAppVersionTitle": "Quản lý phiên bản ứng dụng",
+ "uAppVersionHint": "Ứng dụng thấp hơn bản tối thiểu sẽ dừng ở màn hình cập nhật. Thấp hơn bản mới nhất sẽ thấy banner. Định dạng: 1.2.0",
+ "uMinVersion": "Phiên bản tối thiểu",
+ "uLatestVersion": "Phiên bản mới nhất"
 }

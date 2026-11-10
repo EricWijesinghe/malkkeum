@@ -719,5 +719,17 @@
  "cFirstRunCreate": "បង្កើតគណនី ហើយចាប់ផ្ដើម",
  "cWrongSetupCode": "លេខកូដដំឡើងមិនត្រឹមត្រូវ",
  "cWeakPassword": "ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ១២ តួ",
- "cInvalidValue": "សូមពិនិត្យតម្លៃដែលបានបញ្ចូល"
+ "cInvalidValue": "សូមពិនិត្យតម្លៃដែលបានបញ្ចូល",
+ "uUpdateBanner": "មានកំណែថ្មី {version}",
+ "uUpdateNow": "ធ្វើបច្ចុប្បន្នភាព",
+ "uUpdateLater": "ពេលក្រោយ",
+ "uUpdateRequiredTitle": "ត្រូវការធ្វើបច្ចុប្បន្នភាព",
+ "uUpdateRequiredBody": "កំណែនេះលែងគាំទ្រហើយ។ សូមធ្វើបច្ចុប្បន្នភាពពីហាង។",
+ "uUpdateStore": "ធ្វើបច្ចុប្បន្នភាពនៅក្នុងហាង",
+ "uUpdateStoreMissing": "តំណធ្វើបច្ចុប្បន្នភាពមិនទាន់រួចរាល់។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។",
+ "uCurrentVersion": "កំណែបច្ចុប្បន្ន {version}",
+ "uAppVersionTitle": "កំណែកម្មវិធី",
+ "uAppVersionHint": "កម្មវិធីដែលទាបជាងកំណែអប្បបរមានឹងឈប់នៅអេក្រង់ធ្វើបច្ចុប្បន្នភាព។ ឧទាហរណ៍: 1.2.0",
+ "uMinVersion": "កំណែអប្បបរមា",
+ "uLatestVersion": "កំណែចុងក្រោយ"
 }

@@ -24,6 +24,12 @@ use axum::{
 };
 use serde_json::json;
 use std::time::Duration;
+
+/// Release version baked in at image build (`--build-arg APP_VERSION=1.2.3`); `dev` for local builds.
+pub const APP_VERSION: &str = match option_env!("APP_VERSION") {
+    Some(v) => v,
+    None => "dev",
+};
 use tower_http::{
     cors::{AllowOrigin, CorsLayer},
     limit::RequestBodyLimitLayer,
@@ -69,7 +75,7 @@ pub fn router(state: AppState) -> Router {
         .route("/ws", get(realtime::ws_handler));
 
     Router::new()
-        .route("/health", get(|| async { Json(json!({ "ok": true })) }))
+        .route("/health", get(|| async { Json(json!({ "ok": true, "version": APP_VERSION })) }))
         .nest("/v1", api)
         .nest_service(
             "/files",

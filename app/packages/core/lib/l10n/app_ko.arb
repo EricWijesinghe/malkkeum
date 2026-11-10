@@ -1037,5 +1037,31 @@
  "cFirstRunCreate": "계정 만들고 시작하기",
  "cWrongSetupCode": "설치 코드가 맞지 않아요",
  "cWeakPassword": "비밀번호는 12자 이상이어야 해요",
- "cInvalidValue": "입력값을 확인해 주세요"
+ "cInvalidValue": "입력값을 확인해 주세요",
+ "uUpdateBanner": "새 버전 {version}이 나왔어요",
+ "@uUpdateBanner": {
+  "placeholders": {
+   "version": {
+    "type": "String"
+   }
+  }
+ },
+ "uUpdateNow": "업데이트",
+ "uUpdateLater": "나중에",
+ "uUpdateRequiredTitle": "새 버전이 필요해요",
+ "uUpdateRequiredBody": "이 버전은 더 이상 쓸 수 없어요. 스토어에서 최신 버전으로 업데이트해 주세요.",
+ "uUpdateStore": "스토어에서 업데이트",
+ "uUpdateStoreMissing": "업데이트 주소를 준비 중이에요. 잠시 후 다시 열어 주세요.",
+ "uCurrentVersion": "현재 버전 {version}",
+ "@uCurrentVersion": {
+  "placeholders": {
+   "version": {
+    "type": "String"
+   }
+  }
+ },
+ "uAppVersionTitle": "앱 버전 관리",
+ "uAppVersionHint": "최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0",
+ "uMinVersion": "최소 버전",
+ "uLatestVersion": "최신 버전"
 }

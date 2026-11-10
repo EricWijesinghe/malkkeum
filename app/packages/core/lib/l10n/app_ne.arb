@@ -719,5 +719,17 @@
  "cFirstRunCreate": "खाता बनाएर सुरु गर्नुहोस्",
  "cWrongSetupCode": "सेटअप कोड मिलेन",
  "cWeakPassword": "पासवर्ड कम्तीमा १२ अक्षरको हुनुपर्छ",
- "cInvalidValue": "कृपया मान जाँच्नुहोस्"
+ "cInvalidValue": "कृपया मान जाँच्नुहोस्",
+ "uUpdateBanner": "नयाँ संस्करण {version} उपलब्ध छ",
+ "uUpdateNow": "अपडेट गर्नुहोस्",
+ "uUpdateLater": "पछि",
+ "uUpdateRequiredTitle": "अपडेट आवश्यक छ",
+ "uUpdateRequiredBody": "यो संस्करण अब समर्थित छैन। कृपया स्टोरबाट अपडेट गर्नुहोस्।",
+ "uUpdateStore": "स्टोरमा अपडेट गर्नुहोस्",
+ "uUpdateStoreMissing": "अपडेट लिंक अझै तयार छैन। पछि फेरि प्रयास गर्नुहोस्।",
+ "uCurrentVersion": "हालको संस्करण {version}",
+ "uAppVersionTitle": "एप संस्करणहरू",
+ "uAppVersionHint": "न्यूनतम संस्करणभन्दा तल्लो एप अपडेट स्क्रिनमा रोकिनेछ। उदाहरण: 1.2.0",
+ "uMinVersion": "न्यूनतम संस्करण",
+ "uLatestVersion": "नवीनतम संस्करण"
 }

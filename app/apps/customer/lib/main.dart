@@ -47,6 +47,11 @@ class CustomerApp extends StatelessWidget {
       theme: theme,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        builder: (context, child) => UpdateGate(
+          api: session.api,
+          app: 'customer',
+          child: child ?? const SizedBox.shrink(),
+        ),
         onGenerateTitle: (c) => BrandConfig.placeholder.name,
         theme: buildTheme(BrandConfig.placeholder, Brightness.light),
         darkTheme: buildTheme(BrandConfig.placeholder, Brightness.dark),

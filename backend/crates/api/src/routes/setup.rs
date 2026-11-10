@@ -244,6 +244,35 @@ fn clean_text(v: &Value, key: &str) -> Result<Option<String>, ApiError> {
     }
 }
 
+const APP_VERSION_KEYS: [&str; 2] = ["min_app_version", "latest_app_version"];
+
+/// `1.2.3`: the store version an app reports. Below `min_app_version` the app stops and asks to update.
+pub fn is_app_version(s: &str) -> bool {
+    let parts: Vec<&str> = s.split('.').collect();
+    parts.len() == 3 && parts.iter().all(|p| !p.is_empty() && p.len() <= 4 && p.bytes().all(|b| b.is_ascii_digit()))
+}
+
+/// `{"customer": {"min_app_version": "1.0.0", "latest_app_version": "1.2.0"}, "partner": {...}}`
+fn clean_app_versions(input: &Value) -> Result<Value, ApiError> {
+    let apps = input.as_object().ok_or(ApiError::BadRequest("invalid_input"))?;
+    let mut out = Map::new();
+    for app in ["customer", "partner"] {
+        let mut entry = Map::new();
+        for k in APP_VERSION_KEYS {
+            if let Some(v) = clean_text(apps.get(app).unwrap_or(&Value::Null), k)? {
+                if !is_app_version(&v) {
+                    return Err(ApiError::BadRequest("invalid_version"));
+                }
+                entry.insert(k.into(), json!(v));
+            }
+        }
+        if !entry.is_empty() {
+            out.insert(app.into(), Value::Object(entry));
+        }
+    }
+    Ok(Value::Object(out))
+}
+
 pub fn is_hex_color(s: &str) -> bool {
     s.len() == 7 && s.starts_with('#') && s[1..].bytes().all(|b| b.is_ascii_hexdigit())
 }
@@ -290,6 +319,9 @@ pub fn clean_business(base: &str, input: &Value) -> Result<Value, ApiError> {
         }
     }
     out.insert("company".into(), Value::Object(company));
+    if let Some(apps) = input.get("app_versions") {
+        out.insert("app_versions".into(), clean_app_versions(apps)?);
+    }
     if !out.contains_key("name") {
         return Err(ApiError::BadRequest("missing_field"));
     }
@@ -504,6 +536,20 @@ mod tests {
         assert!(err(json!({"name": "a", "logo_url": "/files/../etc/passwd"})).contains("invalid_logo"));
         assert!(err(json!({"name": "x".repeat(201)})).contains("field_too_long"));
         assert!(err(json!({"name": "a", "play_store_url": "http://x"})).contains("invalid_link"));
+        assert!(err(json!({"name": "a", "app_versions": {"customer": {"min_app_version": "1.0"}}})).contains("invalid_version"));
+    }
+
+    #[test]
+    fn app_versions_are_kept_per_app() {
+        let v = clean_business(
+            "http://127.0.0.1:8080",
+            &json!({"name": "a", "app_versions": {"customer": {"min_app_version": " 1.0.0 ", "latest_app_version": "1.2.0"}, "partner": {}}}),
+        )
+        .unwrap();
+        assert_eq!(v["app_versions"]["customer"]["min_app_version"], "1.0.0");
+        assert_eq!(v["app_versions"]["customer"]["latest_app_version"], "1.2.0");
+        assert!(v["app_versions"].get("partner").is_none());
+        assert!(is_app_version("10.0.12") && !is_app_version("1.0.0-beta") && !is_app_version("1..0"));
     }
 
     #[test]

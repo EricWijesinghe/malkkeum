@@ -2,6 +2,7 @@
 library;
 
 export 'src/api.dart';
+export 'src/app_update.dart';
 export 'src/async_view.dart';
 export 'src/districts.dart';
 export 'src/gen/app_localizations.dart';

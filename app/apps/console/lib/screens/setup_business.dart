@@ -55,6 +55,13 @@ class _BusinessCardState extends State<BusinessCard> {
     'partner_app_store_url',
     'partner_play_store_url',
   ];
+  // Stored as app_versions.<app>.<field>; below min the app blocks, below latest it shows a banner.
+  static const _versions = [
+    'customer.min_app_version',
+    'customer.latest_app_version',
+    'partner.min_app_version',
+    'partner.latest_app_version',
+  ];
 
   late final Map<String, TextEditingController> _c;
   late final TextEditingController _color;
@@ -72,12 +79,20 @@ class _BusinessCardState extends State<BusinessCard> {
         'company.$k': TextEditingController(text: company[k] as String? ?? ''),
       for (final k in _links)
         k: TextEditingController(text: widget.initial[k] as String? ?? ''),
+      for (final k in _versions)
+        k: TextEditingController(text: _savedVersion(k)),
     };
     _color = TextEditingController(
       text: widget.initial['primary_color'] as String? ?? _swatches.first,
     )..addListener(() => setState(() {}));
     _logo = widget.initial['logo_url'] as String?;
     _c['name']!.addListener(() => setState(() {}));
+  }
+
+  String _savedVersion(String key) {
+    final app = key.split('.')[0], field = key.split('.')[1];
+    final apps = widget.initial['app_versions'] as Json?;
+    return (apps?[app] as Json?)?[field] as String? ?? '';
   }
 
   @override
@@ -103,6 +118,10 @@ class _BusinessCardState extends State<BusinessCard> {
     'play_store_url' => 'Google Play · ${t.cSetupCustomerApp}',
     'partner_app_store_url' => 'App Store · ${t.cSetupPartnerApp}',
     'partner_play_store_url' => 'Google Play · ${t.cSetupPartnerApp}',
+    'customer.min_app_version' => '${t.cSetupCustomerApp} · ${t.uMinVersion}',
+    'customer.latest_app_version' => '${t.cSetupCustomerApp} · ${t.uLatestVersion}',
+    'partner.min_app_version' => '${t.cSetupPartnerApp} · ${t.uMinVersion}',
+    'partner.latest_app_version' => '${t.cSetupPartnerApp} · ${t.uLatestVersion}',
     _ => t.cSetupPrivacyOfficer,
   };
 
@@ -134,6 +153,13 @@ class _BusinessCardState extends State<BusinessCard> {
         'primary_color': _color.text,
         'logo_url': _logo,
         'company': {for (final k in _company) k: _c['company.$k']!.text},
+        'app_versions': {
+          for (final app in ['customer', 'partner'])
+            app: {
+              'min_app_version': _c['$app.min_app_version']!.text,
+              'latest_app_version': _c['$app.latest_app_version']!.text,
+            },
+        },
       });
       if (!mounted) return;
       showToast(context, t.cSetupSaved);
@@ -240,6 +266,12 @@ class _BusinessCardState extends State<BusinessCard> {
             Text(t.cSetupStoreLinks, style: context.text.labelLarge),
             const SizedBox(height: Space.xs),
             for (final k in _links) field(k),
+            const SizedBox(height: Space.md),
+            Text(t.uAppVersionTitle, style: context.text.labelLarge),
+            const SizedBox(height: Space.xs),
+            Text(t.uAppVersionHint, style: context.text.bodySmall),
+            const SizedBox(height: Space.xs),
+            for (final k in _versions) field(k),
             const SizedBox(height: Space.sm),
             Align(
               alignment: Alignment.centerLeft,
