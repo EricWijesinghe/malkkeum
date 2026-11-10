@@ -71,7 +71,9 @@ pub fn parse_input(v: &Value) -> Result<Prefs, &'static str> {
         Some(raw) => {
             let digits: String = raw.chars().filter(char::is_ascii_digit).collect();
             let allowed = raw.chars().all(|c| c.is_ascii_digit() || c == '-' || c == ' ');
-            if !allowed || !digits.starts_with('0') || !(10..=11).contains(&digits.len()) {
+            // Korean mobiles only (010, 011, 016-019): never premium-rate 060 or landlines.
+            let mobile = digits.starts_with("01") && matches!(digits.as_bytes().get(2), Some(b'0' | b'1' | b'6'..=b'9'));
+            if !allowed || !mobile || !(10..=11).contains(&digits.len()) {
                 return Err("invalid_phone");
             }
             Some(digits)

@@ -132,7 +132,8 @@ pub fn check_reward(already_rewarded: bool, paid_in_full: bool) -> Result<(), Re
 
 /// Paid in full: some money came in, and a quoted job's final price is covered.
 pub fn paid_in_full(paid: i64, final_price: Option<i64>) -> bool {
-    paid > 0 && paid >= final_price.unwrap_or(0)
+    // No known price means we cannot tell it was paid in full: no reward.
+    final_price.is_some_and(|p| paid > 0 && paid >= p)
 }
 
 /// Shows a social-proof count only once it is persuasive.
@@ -157,6 +158,32 @@ pub fn mask_name(name: &str) -> String {
             if chars.len() == 2 { format!("{first}*") } else { format!("{first}{middle}{last}") }
         }
     }
+}
+
+/// Public review text without contact details: runs of 4+ digits (phone numbers, unit numbers)
+/// and anything shaped like an e-mail address become `***`.
+pub fn redact_contacts(text: &str) -> String {
+    let words: Vec<String> = text
+        .split(' ')
+        .map(|w| if w.contains('@') && w.contains('.') { "***".to_string() } else { w.to_string() })
+        .collect();
+    let joined = words.join(" ");
+    let mut out = String::with_capacity(joined.len());
+    let mut run = String::new();
+    let flush = |run: &mut String, out: &mut String| {
+        if run.chars().filter(char::is_ascii_digit).count() >= 4 { out.push_str("***") } else { out.push_str(run) }
+        run.clear();
+    };
+    for c in joined.chars() {
+        if c.is_ascii_digit() || (!run.is_empty() && (c == '-' || c == '.')) {
+            run.push(c);
+        } else {
+            flush(&mut run, &mut out);
+            out.push(c);
+        }
+    }
+    flush(&mut run, &mut out);
+    out
 }
 
 #[cfg(test)]
@@ -207,7 +234,8 @@ mod tests {
         assert_eq!(check_reward(false, false), Err(ReferralError::NotPaid));
         assert_eq!(check_reward(true, true), Err(ReferralError::AlreadyRewarded));
         assert_eq!(check_reward(false, true), Ok(()));
-        assert!(paid_in_full(47_000, None), "fixed service paid up front");
+        assert!(paid_in_full(47_000, Some(47_000)), "fixed service paid up front");
+        assert!(!paid_in_full(47_000, None), "unknown price never counts as paid in full");
         assert!(!paid_in_full(0, None), "nothing paid");
         assert!(!paid_in_full(10_000, Some(50_000)), "quote deposit only");
         assert!(paid_in_full(50_000, Some(50_000)), "quote fully paid");
@@ -235,5 +263,13 @@ mod tests {
         assert_eq!(mask_name("김"), "김*");
         assert_eq!(mask_name("  "), "고객");
         assert_eq!(mask_name("Anna Lee"), "A******e");
+    }
+
+    #[test]
+    fn public_reviews_hide_phone_numbers_and_emails() {
+        assert_eq!(redact_contacts("친절해요 010-1234-5678 연락주세요"), "친절해요 *** 연락주세요");
+        assert_eq!(redact_contacts("문의 kim@mail.com 으로"), "문의 *** 으로");
+        assert_eq!(redact_contacts("3시간 걸렸고 2번 와주셨어요"), "3시간 걸렸고 2번 와주셨어요");
+        assert_eq!(redact_contacts("101동 1203호"), "101동 ***호");
     }
 }

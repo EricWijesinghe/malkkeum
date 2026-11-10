@@ -393,11 +393,12 @@ async fn staff(c: &mut Ctx<'_>) -> Result<(Uuid, Uuid), DemoError> {
         ("demo.admin@demo.invalid", "샘플 관리자", "admin"),
         ("demo.consultant@demo.invalid", "샘플 상담사", "consultant"),
     ] {
-        // Random, never stored: nobody can sign in as a demo staff member. Clear deletes the row.
-        let secret = c.hex(16);
+        // OS randomness (the demo RNG is seeded, so its output is public) and the row is inactive:
+        // nobody can sign in as demo staff. Clear deletes the row.
+        let secret: String = (0..32).map(|_| format!("{:02x}", rand::random::<u8>())).collect();
         let hash = hash_password(&secret).map_err(|_| DemoError::Data("staff password hash failed".into()))?;
         let id = c.id();
-        sqlx::query("INSERT INTO staff (id, email, name, password_hash, role, active, created_at) VALUES ($1,$2,$3,$4,$5,TRUE,$6)")
+        sqlx::query("INSERT INTO staff (id, email, name, password_hash, role, active, created_at) VALUES ($1,$2,$3,$4,$5,FALSE,$6)")
             .bind(id)
             .bind(email)
             .bind(name)

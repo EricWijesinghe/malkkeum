@@ -223,9 +223,27 @@ fn check_webhook_secret(s: &str) -> Result<(), Invalid> {
     STANDARD.decode(raw).map(|_| ()).map_err(|_| Invalid("invalid_webhook_secret"))
 }
 
+/// Backup targets are public object stores; refuse loopback/private/link-local hosts so a saved
+/// endpoint can't be used to probe services inside the server's network.
+fn public_host(endpoint: &str) -> bool {
+    let rest = endpoint.trim_start_matches("https://");
+    let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
+    let host = authority.rsplit_once('@').map_or(authority, |(_, h)| h);
+    let host = host.strip_prefix('[').and_then(|h| h.split_once(']')).map_or_else(|| host.rsplit_once(':').map_or(host, |(h, _)| h), |(h, _)| h);
+    let lower = host.to_ascii_lowercase();
+    if lower.is_empty() || lower == "localhost" || lower.ends_with(".localhost") || lower.ends_with(".internal") || lower.ends_with(".local") {
+        return false;
+    }
+    match lower.parse::<std::net::IpAddr>() {
+        Ok(std::net::IpAddr::V4(ip)) => !(ip.is_loopback() || ip.is_private() || ip.is_link_local() || ip.is_unspecified() || ip.is_broadcast()),
+        Ok(std::net::IpAddr::V6(ip)) => !(ip.is_loopback() || ip.is_unspecified() || (ip.segments()[0] & 0xfe00) == 0xfc00 || (ip.segments()[0] & 0xffc0) == 0xfe80),
+        Err(_) => true,
+    }
+}
+
 fn s3_config(v: &Map<String, Value>) -> Result<S3Config, Invalid> {
     let endpoint = required(v, "endpoint")?.trim_end_matches('/').to_string();
-    if !endpoint.starts_with("https://") || endpoint.contains(char::is_whitespace) {
+    if !endpoint.starts_with("https://") || endpoint.contains(char::is_whitespace) || !public_host(&endpoint) {
         return Err(Invalid("invalid_endpoint"));
     }
     let region = required(v, "region")?;
@@ -502,6 +520,16 @@ mod tests {
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "mode": "daytime"}))).unwrap_err(), Invalid("invalid_mode"));
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "model": "x y"}))).unwrap_err(), Invalid("invalid_model"));
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"model": "claude-opus-5-5"}))).unwrap_err(), Invalid("missing_field"));
+    }
+
+    #[test]
+    fn backup_endpoint_must_be_a_public_host() {
+        for bad in ["https://127.0.0.1", "https://10.0.0.5:9000", "https://169.254.169.254/latest", "https://[::1]", "https://localhost", "https://minio.internal"] {
+            assert!(!public_host(bad), "{bad}");
+        }
+        for good in ["https://acc.r2.cloudflarestorage.com", "https://kr.object.ncloudstorage.com", "https://s3.ap-northeast-2.amazonaws.com:443"] {
+            assert!(public_host(good), "{good}");
+        }
     }
 
     #[test]

@@ -97,8 +97,11 @@ elif [ -z "${DOMAIN:-}" ]; then
   DOMAIN=$(ask "서비스 주소(도메인)를 입력하세요. 예: malkkeum.co.kr" "")
 fi
 DOMAIN=${DOMAIN#http://}; DOMAIN=${DOMAIN#https://}; DOMAIN=${DOMAIN%%/*}
+# .env is sourced by root later: only plain host names and e-mail addresses may go in.
+printf '%s' "$DOMAIN" | grep -Eq '^[A-Za-z0-9]([A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$' || die "도메인 형식이 올바르지 않아요: $DOMAIN (예: malkkeum.co.kr)"
 [ -n "$DOMAIN" ] || die "도메인이 필요해요."
 ACME_EMAIL=${MALKKEUM_EMAIL:-${ACME_EMAIL:-$(ask "보안 인증서 안내를 받을 이메일" "")}}
+[ -z "$ACME_EMAIL" ] || printf '%s' "$ACME_EMAIL" | grep -Eq '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+$' || die "이메일 형식이 올바르지 않아요: $ACME_EMAIL"
 
 say "필수 프로그램 설치"
 apt-get update -qq
@@ -190,6 +193,9 @@ DIR=__DIR__
 BACKUP_KEEP_DAYS=14
 UPDATE_WAIT_SECS=${MALKKEUM_HEALTH_WAIT:-180}
 cd "$DIR"
+# Backups hold every customer's data: only root may read them.
+umask 077
+chmod 700 backups 2>/dev/null || true
 
 dc() { docker compose --env-file .env "$@"; }
 ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }

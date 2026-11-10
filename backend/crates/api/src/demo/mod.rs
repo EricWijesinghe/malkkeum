@@ -113,8 +113,9 @@ pub(crate) struct Ctx<'t> {
 }
 
 impl Ctx<'_> {
+    /// Ids come from OS randomness: the seeded RNG is public, so its ids would be guessable.
     pub fn id(&mut self) -> Uuid {
-        Uuid::from_u64_pair(self.rng.next_u64(), self.rng.next_u64())
+        Uuid::from_u64_pair(rand::random(), rand::random())
     }
 
     /// Random lowercase hex string of `bytes` bytes (2 characters each).
@@ -248,6 +249,11 @@ pub async fn cli(args: &[String]) -> i32 {
     };
     if let Err(e) = sqlx::migrate!("../../migrations").run(&db).await {
         return fail(&format!("migrate: {e}"));
+    }
+    // Same idempotent first-run data the server writes on start (catalogue, settings), so a load
+    // works even before the API has ever started against this database.
+    if let Err(e) = crate::seed::run(&db, &config).await {
+        return fail(&format!("seed: {e}"));
     }
     let result = match args.first().map(String::as_str) {
         Some("load") => load(&db, &config, args.iter().any(|a| a == "--force")).await,

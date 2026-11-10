@@ -156,7 +156,7 @@ pub(crate) async fn reward_in_own_tx(db: &PgPool, booking: Uuid) -> ApiResult<()
 /// Pays both sides once a referred friend's booking is paid in full. Call inside the completion
 /// transaction; a no-op until the friend's booking is paid, and never twice (row lock + state).
 pub(crate) async fn reward_on_paid_completion(conn: &mut PgConnection, booking: Uuid) -> ApiResult<()> {
-    let (friend, paid, final_price): (Uuid, i64, Option<i64>) = sqlx::query_as("SELECT user_id, paid_amount, final_price FROM bookings WHERE id = $1")
+    let (friend, paid, final_price): (Uuid, i64, Option<i64>) = sqlx::query_as("SELECT user_id, paid_amount, COALESCE(final_price, list_price) FROM bookings WHERE id = $1")
         .bind(booking)
         .fetch_one(&mut *conn)
         .await?;
@@ -216,7 +216,7 @@ async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
     .bind(PROOF_BODY_CHARS)
     .fetch_all(&s.db)
     .await?;
-    let reviews: Vec<PublicReview> = recent.into_iter().map(|(rating, body, name)| PublicReview { rating, body, name: mask_name(&name) }).collect();
+    let reviews: Vec<PublicReview> = recent.into_iter().map(|(rating, body, name)| PublicReview { rating, body: domain::growth::redact_contacts(&body), name: mask_name(&name) }).collect();
     let rating = proof_count(rated).and(avg).map(round_rating);
     Ok(Json(json!({
         "homes_this_month": proof_count(homes),
