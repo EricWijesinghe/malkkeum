@@ -1,9 +1,14 @@
 # Cloud builds for the store apps (no Mac needed). Set up once in the Codemagic web UI:
 #   1. Teams → Integrations → App Store Connect: add an API key named "malkkeum_asc".
 #   2. Code signing → Android keystores: upload the upload keystore with reference "malkkeum_upload".
-#   3. Environment variables → group "malkkeum":
-#        API_BASE                     https://<your domain>            (the server the apps talk to)
+#   3. Environment variables → group "malkkeum" (every key except API_BASE is optional; a missing
+#      key only hides that sign-in button / disables push). Full list + where to get each: DEPLOY.md §3
+#        API_BASE                     https://<client domain>          (the server the apps talk to)
 #        GCLOUD_SERVICE_ACCOUNT_CREDENTIALS  Google Play service-account JSON (secure)
+#        KAKAO_NATIVE_KEY, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, NAVER_CLIENT_NAME,
+#        GOOGLE_SERVER_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, SOCIAL_PROVIDERS (optional override)
+#        GOOGLE_SERVICES_JSON_B64 / GOOGLE_SERVICE_INFO_PLIST_B64          (customer Firebase, base64)
+#        PARTNER_GOOGLE_SERVICES_JSON_B64 / PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64 (partner Firebase)
 #   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android".
 # Run by the developer on the private repo, never by the client. Runbook: docs/DEPLOY.md §3
 
@@ -31,7 +36,9 @@ workflows:
       - *prepare
       - name: Build app bundle
         working_directory: app/apps/customer
-        script: flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE
+        script: |
+          ../../../scripts/ci/native-keys.sh customer
+          flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json
     artifacts: [app/apps/customer/build/**/outputs/**/*.aab]
     publishing:
       google_play:
@@ -52,7 +59,9 @@ workflows:
         script: xcode-project use-profiles
       - name: Build ipa
         working_directory: app/apps/customer
-        script: flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE --export-options-plist=/Users/builder/export_options.plist
+        script: |
+          ../../../scripts/ci/native-keys.sh customer
+          flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
     artifacts: [app/apps/customer/build/ios/ipa/*.ipa]
     publishing:
       app_store_connect: { auth: integration, submit_to_testflight: true }
@@ -67,7 +76,9 @@ workflows:
       - *prepare
       - name: Build app bundle
         working_directory: app/apps/partner
-        script: flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE
+        script: |
+          ../../../scripts/ci/native-keys.sh partner
+          flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json
     artifacts: [app/apps/partner/build/**/outputs/**/*.aab]
     publishing:
       google_play:
@@ -88,7 +99,9 @@ workflows:
         script: xcode-project use-profiles
       - name: Build ipa
         working_directory: app/apps/partner
-        script: flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define=API_BASE=$API_BASE --export-options-plist=/Users/builder/export_options.plist
+        script: |
+          ../../../scripts/ci/native-keys.sh partner
+          flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
     artifacts: [app/apps/partner/build/ios/ipa/*.ipa]
     publishing:
       app_store_connect: { auth: integration, submit_to_testflight: true }

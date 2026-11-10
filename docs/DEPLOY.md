@@ -73,6 +73,27 @@ connected to the **private** repo:
 
 Apps bake in `API_BASE` at build time, so a domain change means a rebuild.
 
+### Native keys (Codemagic env group `malkkeum`)
+`scripts/ci/native-keys.sh <app>` turns these into `keys.json` (dart-defines), `ios/Flutter/Keys.xcconfig`
+and the Firebase files. All optional except `API_BASE`; a missing key hides that button / disables push.
+
+| Var | Where to get it |
+|---|---|
+| `API_BASE` | `https://<client domain>` |
+| `KAKAO_NATIVE_KEY` | developers.kakao.com → app → 앱 키 → 네이티브 앱 키. Register Android key hash (Play App Signing SHA-1 → base64) and iOS bundle id under 플랫폼 |
+| `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` / `NAVER_CLIENT_NAME` | developers.naver.com → 애플리케이션 → 네아로. iOS URL scheme must be exactly `malkkeumnaver`; Android package names |
+| `GOOGLE_SERVER_CLIENT_ID` | Google Cloud console → Credentials → *Web* OAuth client id (also put it in the console wizard Google card) |
+| `GOOGLE_IOS_CLIENT_ID` | Google Cloud console → *iOS* OAuth client for each bundle id (the reversed id is derived) |
+| `GOOGLE_SERVICES_JSON_B64`, `GOOGLE_SERVICE_INFO_PLIST_B64` | Firebase project → customer Android/iOS app config files, `base64 -w0` |
+| `PARTNER_GOOGLE_SERVICES_JSON_B64`, `PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64` | same for the partner apps |
+| `SOCIAL_PROVIDERS` | optional override, e.g. `kakao,naver` |
+
+iOS, once per bundle id in the Apple Developer portal: enable **Sign in with Apple** and **Push
+Notifications**, upload an APNs key (.p8) to Firebase → Cloud Messaging. In Xcode the Runner target
+needs both capabilities (Codemagic automatic signing picks them up from the App ID).
+Server side (console wizard): Firebase service-account key (Push card), Kakao REST key, Naver client id,
+Google + Apple client ids — these verify the tokens the apps send.
+
 ## 4. Before launch: real services to sign up for
 
 The code has an adapter point for each. Dev mode uses safe fakes until then.
@@ -96,7 +117,7 @@ The code has an adapter point for each. Dev mode uses safe fakes until then.
 
 Legal: publish a privacy policy and terms (PIPA). Add them in the console under Coupons & content → Legal (slugs `privacy` and `terms`). The apps show them automatically.
 
-### Sign-in and payment SDKs (not yet wired)
+### Sign-in and push SDKs (wired; keys via Codemagic, see §3)
 
 The apps ship with integration points, not SDK packages. They need native app keys, so nothing below is added until the owner has the accounts.
 
