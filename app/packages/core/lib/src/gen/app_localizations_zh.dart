@@ -2147,6 +2147,17 @@ class TZh extends T {
   String get pVerifyPhone => '验证手机号';
 
   @override
+  String get mMyJobs => '我的作业';
+
+  @override
+  String get mNoJobs => '暂无分配的作业，组长分配后会显示在这里。';
+
+  @override
+  String mTeam(String team) {
+    return '$team 成员';
+  }
+
+  @override
   String get cSetupSave => '保存';
 
   @override

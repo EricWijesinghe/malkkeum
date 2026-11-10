@@ -2209,6 +2209,18 @@ class TSi extends T {
   String get pVerifyPhone => 'තහවුරු කරන්න';
 
   @override
+  String get mMyJobs => 'මගේ කාර්ය';
+
+  @override
+  String get mNoJobs =>
+      'තවම පවරා ඇති කාර්ය නැත. කණ්ඩායම් නායකයා පවරන කාර්ය මෙහි පෙන්වයි.';
+
+  @override
+  String mTeam(String team) {
+    return '$team සාමාජික';
+  }
+
+  @override
   String get cSetupSave => 'සුරකින්න';
 
   @override

@@ -718,4 +718,7 @@ T = {
     "nEmpty": "Belum ada notifikasi",
     "nUnread": "{count} belum dibaca",
     "pVerifyPhone": "Verifikasi",
+    "mMyJobs": "Pekerjaan saya",
+    "mNoJobs": "Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.",
+    "mTeam": "Anggota {team}",
 }

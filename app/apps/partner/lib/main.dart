@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ui/ui.dart';
 
+import 'screens/member.dart';
 import 'screens/auth.dart';
 import 'screens/shell.dart';
 import 'state.dart';
@@ -71,7 +72,11 @@ class PartnerApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: session.signedIn ? const Gate() : const PartnerIntro(),
+        home: !session.signedIn
+            ? const PartnerIntro()
+            : session.role == 'member'
+            ? const MemberShell()
+            : const Gate(),
       ),
     ),
   );

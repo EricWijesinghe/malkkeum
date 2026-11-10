@@ -2210,6 +2210,18 @@ class TId extends T {
   String get pVerifyPhone => 'Verifikasi';
 
   @override
+  String get mMyJobs => 'Pekerjaan saya';
+
+  @override
+  String get mNoJobs =>
+      'Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.';
+
+  @override
+  String mTeam(String team) {
+    return 'Anggota $team';
+  }
+
+  @override
   String get cSetupSave => 'Simpan';
 
   @override

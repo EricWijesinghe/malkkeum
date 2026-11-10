@@ -2199,6 +2199,18 @@ class TTh extends T {
   String get pVerifyPhone => 'ยืนยัน';
 
   @override
+  String get mMyJobs => 'งานของฉัน';
+
+  @override
+  String get mNoJobs =>
+      'ยังไม่มีงานที่ได้รับ งานที่หัวหน้าทีมมอบหมายจะแสดงที่นี่';
+
+  @override
+  String mTeam(String team) {
+    return 'สมาชิกของ $team';
+  }
+
+  @override
   String get cSetupSave => 'บันทึก';
 
   @override

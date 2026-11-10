@@ -2192,6 +2192,18 @@ class TEn extends T {
   String get pVerifyPhone => 'Verify';
 
   @override
+  String get mMyJobs => 'My jobs';
+
+  @override
+  String get mNoJobs =>
+      'No jobs assigned yet. Jobs your team lead assigns show up here.';
+
+  @override
+  String mTeam(String team) {
+    return 'Member of $team';
+  }
+
+  @override
   String get cSetupSave => 'Save';
 
   @override

@@ -2184,6 +2184,18 @@ class TVi extends T {
   String get pVerifyPhone => 'Xác minh';
 
   @override
+  String get mMyJobs => 'Việc của tôi';
+
+  @override
+  String get mNoJobs =>
+      'Chưa có việc được giao. Việc trưởng nhóm giao sẽ hiện ở đây.';
+
+  @override
+  String mTeam(String team) {
+    return 'Thành viên $team';
+  }
+
+  @override
   String get cSetupSave => 'Lưu';
 
   @override

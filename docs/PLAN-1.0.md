@@ -34,7 +34,7 @@ industry-grade product (installer → web setup wizard → status page).
 
 ## Status
 See `docs/PROGRESS.md` (session log) and the checklist below.
-- [x] 1 Stabilize — branch compiled, all tests green, merged to master (2026-11-11). Features plan items 5 (phone_required label) done; 3 (payment methods) done in Setup; 1, 2, 4, 6, 7 still open (docs/verify/flutter-features-plan.md).
+- [x] 1 Stabilize — branch compiled, all tests green, merged to master (2026-11-11). Features plan items 3–7 done (payment methods, inbox, phone gate, member mode, PortOne WebView); 1–2 (file splits) open.
 - [ ] 2 Wow layer — website 3D hero done; in-app 3D renders / Rive moments / earnings chart not started.
 - [x] 3 Setup system — encrypted keys + tests, first-run owner, business profile, payment methods, store-review demo account. Owner alerts (Korean AlimTalk on failures) not done.
 - [x] 4 Installer + hosting — install.sh + malkkeum CLI + backups + weekly update; release workflow → GHCR. Never run on a real server yet. Render blueprint not done.

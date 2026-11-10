@@ -2213,6 +2213,18 @@ class TUz extends T {
   String get pVerifyPhone => 'Tasdiqlash';
 
   @override
+  String get mMyJobs => 'Mening ishlarim';
+
+  @override
+  String get mNoJobs =>
+      'Hozircha tayinlangan ish yo\'q. Jamoa rahbari bergan ishlar shu yerda ko\'rinadi.';
+
+  @override
+  String mTeam(String team) {
+    return '$team a\'zosi';
+  }
+
+  @override
   String get cSetupSave => 'Saqlash';
 
   @override

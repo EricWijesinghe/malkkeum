@@ -2218,6 +2218,18 @@ class TFil extends T {
   String get pVerifyPhone => 'I-verify';
 
   @override
+  String get mMyJobs => 'Mga trabaho ko';
+
+  @override
+  String get mNoJobs =>
+      'Wala pang naka-assign. Lalabas dito ang mga trabahong ibibigay ng team lead.';
+
+  @override
+  String mTeam(String team) {
+    return 'Miyembro ng $team';
+  }
+
+  @override
   String get cSetupSave => 'I-save';
 
   @override

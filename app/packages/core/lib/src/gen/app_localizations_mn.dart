@@ -2208,6 +2208,18 @@ class TMn extends T {
   String get pVerifyPhone => 'Баталгаажуулах';
 
   @override
+  String get mMyJobs => 'Миний ажил';
+
+  @override
+  String get mNoJobs =>
+      'Хуваарилсан ажил алга. Багийн ахлагчийн өгсөн ажил энд харагдана.';
+
+  @override
+  String mTeam(String team) {
+    return '$team-н гишүүн';
+  }
+
+  @override
   String get cSetupSave => 'Хадгалах';
 
   @override

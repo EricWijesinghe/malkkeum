@@ -2153,6 +2153,17 @@ class TKo extends T {
   String get pVerifyPhone => '번호 인증';
 
   @override
+  String get mMyJobs => '내 작업';
+
+  @override
+  String get mNoJobs => '배정된 작업이 없어요. 팀장이 작업을 배정하면 여기에 보여요.';
+
+  @override
+  String mTeam(String team) {
+    return '$team 팀원';
+  }
+
+  @override
   String get cSetupSave => '저장';
 
   @override

@@ -2206,6 +2206,18 @@ class TKm extends T {
   String get pVerifyPhone => 'ផ្ទៀងផ្ទាត់';
 
   @override
+  String get mMyJobs => 'ការងាររបស់ខ្ញុំ';
+
+  @override
+  String get mNoJobs =>
+      'មិនទាន់មានការងារចាត់តាំងទេ។ ការងារពីប្រធានក្រុមនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String mTeam(String team) {
+    return 'សមាជិក $team';
+  }
+
+  @override
   String get cSetupSave => 'រក្សាទុក';
 
   @override

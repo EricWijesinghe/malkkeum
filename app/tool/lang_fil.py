@@ -718,4 +718,7 @@ T = {
     "nEmpty": "Wala pang alerto",
     "nUnread": "{count} hindi pa nababasa",
     "pVerifyPhone": "I-verify",
+    "mMyJobs": "Mga trabaho ko",
+    "mNoJobs": "Wala pang naka-assign. Lalabas dito ang mga trabahong ibibigay ng team lead.",
+    "mTeam": "Miyembro ng {team}",
 }

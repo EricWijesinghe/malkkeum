@@ -11,9 +11,14 @@ class CompleteScreen extends StatefulWidget {
     super.key,
     required this.bookingId,
     required this.isQuote,
+    this.basePath = '/partner',
   });
   final String bookingId;
   final bool isQuote;
+
+  /// `/partner` for the team owner, `/member` for a team member (no payout shown).
+  final String basePath;
+  bool get isMember => basePath == '/member';
   @override
   State<CompleteScreen> createState() => _CompleteScreenState();
 }
@@ -53,16 +58,21 @@ class _CompleteScreenState extends State<CompleteScreen> {
     setState(() => _busy = true);
     try {
       final r =
-          await context.api.post('/partner/jobs/${widget.bookingId}/complete', {
-                'before_photos': _before,
-                'after_photos': _after,
-                'checklist': _checks,
-              })
+          await context.api.post(
+                '${widget.basePath}/jobs/${widget.bookingId}/complete',
+                {
+                  'before_photos': _before,
+                  'after_photos': _after,
+                  'checklist': _checks,
+                },
+              )
               as Json;
       if (!mounted) return;
-      context.proRead
-        ..jobsChanged()
-        ..loadProfile().ignore();
+      if (!widget.isMember) {
+        context.proRead
+          ..jobsChanged()
+          ..loadProfile().ignore();
+      }
       await _success(r);
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
@@ -90,16 +100,17 @@ class _CompleteScreenState extends State<CompleteScreen> {
             SuccessMark(size: 88, semanticLabel: t.pCompleted),
             Text(t.pCompleted, style: ctx.text.headlineSmall),
             const SizedBox(height: Space.xs),
-            Text(
-              date == null
-                  ? t.pPayoutWaiting
-                  : t.pPayoutOn(
-                      dateLabel(DateTime.parse(date), ctx.lang),
-                      ctx.won((r['net'] as num).toInt()),
-                    ),
-              style: ctx.text.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
+            if (!widget.isMember)
+              Text(
+                date == null
+                    ? t.pPayoutWaiting
+                    : t.pPayoutOn(
+                        dateLabel(DateTime.parse(date), ctx.lang),
+                        ctx.won((r['net'] as num).toInt()),
+                      ),
+                style: ctx.text.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
             const SizedBox(height: Space.xl),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(),

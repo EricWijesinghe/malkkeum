@@ -2202,6 +2202,18 @@ class TNe extends T {
   String get pVerifyPhone => 'प्रमाणित गर्नुहोस्';
 
   @override
+  String get mMyJobs => 'मेरा काम';
+
+  @override
+  String get mNoJobs =>
+      'अहिले कुनै काम तोकिएको छैन। टोली प्रमुखले तोकेपछि यहाँ देखिन्छ।';
+
+  @override
+  String mTeam(String team) {
+    return '$team सदस्य';
+  }
+
+  @override
   String get cSetupSave => 'सेभ';
 
   @override

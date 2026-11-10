@@ -4231,6 +4231,24 @@ abstract class T {
   /// **'번호 인증'**
   String get pVerifyPhone;
 
+  /// No description provided for @mMyJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 작업'**
+  String get mMyJobs;
+
+  /// No description provided for @mNoJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'배정된 작업이 없어요. 팀장이 작업을 배정하면 여기에 보여요.'**
+  String get mNoJobs;
+
+  /// No description provided for @mTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'{team} 팀원'**
+  String mTeam(String team);
+
   /// No description provided for @cSetupSave.
   ///
   /// In ko, this message translates to:

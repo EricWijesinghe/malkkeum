@@ -718,4 +718,7 @@ T = {
     "nEmpty": "Hozircha bildirishnoma yo'q",
     "nUnread": "{count} ta o'qilmagan",
     "pVerifyPhone": "Tasdiqlash",
+    "mMyJobs": "Mening ishlarim",
+    "mNoJobs": "Hozircha tayinlangan ish yo'q. Jamoa rahbari bergan ishlar shu yerda ko'rinadi.",
+    "mTeam": "{team} a'zosi",
 }

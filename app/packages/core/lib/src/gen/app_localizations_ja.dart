@@ -2152,6 +2152,17 @@ class TJa extends T {
   String get pVerifyPhone => '番号認証';
 
   @override
+  String get mMyJobs => '担当作業';
+
+  @override
+  String get mNoJobs => '割り当てられた作業はありません。チームリーダーが割り当てるとここに表示されます。';
+
+  @override
+  String mTeam(String team) {
+    return '$team のメンバー';
+  }
+
+  @override
   String get cSetupSave => '保存';
 
   @override

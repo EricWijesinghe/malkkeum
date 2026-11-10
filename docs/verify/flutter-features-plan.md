@@ -1,4 +1,7 @@
-# Flutter features — plan for the next session (not started)
+# Flutter features — status (updated 2026-11-11)
+
+Done: 3 (payment methods, in console Setup), 4 (notification inbox), 5 (phone gate), 6 (member mode: `apps/partner/lib/screens/member.dart`), 7 (PortOne WebView, `packages/core/lib/src/portone_webview.dart` + `website/pay/`).
+Open: 1 and 2 (file splits; refactor only, no user-visible change).
 
 The 2026-11-10 attempt was aborted because the machine was too loaded to verify imports; no files were changed.
 Do these one at a time, running `dart analyze --fatal-infos` after each.

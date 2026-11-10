@@ -2207,6 +2207,18 @@ class TRu extends T {
   String get pVerifyPhone => 'Подтвердить';
 
   @override
+  String get mMyJobs => 'Мои работы';
+
+  @override
+  String get mNoJobs =>
+      'Пока нет назначенных работ. Здесь появятся работы от руководителя команды.';
+
+  @override
+  String mTeam(String team) {
+    return 'Участник $team';
+  }
+
+  @override
   String get cSetupSave => 'Сохранить';
 
   @override
