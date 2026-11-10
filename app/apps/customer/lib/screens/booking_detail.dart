@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_flow.dart';
+import 'growth.dart';
 import 'pay_flow.dart';
 import 'service.dart';
 
@@ -110,7 +111,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       if (b.status >= 0) ...[const SizedBox(height: Space.sm), _Timeline(booking: b)],
       if (b.status == -1) _info(Icons.event_busy_rounded, t.cancelled, null, StatusHues.cancelled),
       if (b.beforePhotos.isNotEmpty || b.afterPhotos.isNotEmpty) ...[const SizedBox(height: Space.sm), _Photos(before: b.beforePhotos, after: b.afterPhotos)],
-      if (b.status == 3 && !b.reviewed) ...[const SizedBox(height: Space.sm), _ReviewCard(onSubmit: (rating, text) => _act(() => context.api.post('/bookings/${b.id}/review', {'rating': rating, 'body': text}), t.reviewThanks))],
+      if (b.status == 3 && !b.reviewed) ...[const SizedBox(height: Space.sm), _ReviewPrompt(bookingId: b.id, onSaved: () => _act(() async {}, t.reviewSaved))],
       if ((service?.needsPreparation ?? false) && b.isActive) ...[const SizedBox(height: Space.sm), _prepCard()],
       const SizedBox(height: Space.sm),
       AppCard(
@@ -352,39 +353,23 @@ class _Photos extends StatelessWidget {
   }
 }
 
-class _ReviewCard extends StatefulWidget {
-  const _ReviewCard({required this.onSubmit});
-  final Future<void> Function(int rating, String text) onSubmit;
-  @override
-  State<_ReviewCard> createState() => _ReviewCardState();
-}
-
-class _ReviewCardState extends State<_ReviewCard> {
-  int _rating = 0;
-  final _text = TextEditingController();
-
-  @override
-  void dispose() {
-    _text.dispose();
-    super.dispose();
-  }
+class _ReviewPrompt extends StatelessWidget {
+  const _ReviewPrompt({required this.bookingId, required this.onSaved});
+  final String bookingId;
+  final VoidCallback onSaved;
 
   @override
   Widget build(BuildContext context) => AppCard(
         color: context.colors.sunTint,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(context.t.reviewTitle, style: context.text.titleSmall),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            for (var i = 1; i <= 5; i++)
-              IconButton(
-                tooltip: context.t.ratingStars('$i'),
-                iconSize: 36,
-                onPressed: () => setState(() => _rating = i),
-                icon: Icon(i <= _rating ? Icons.star_rounded : Icons.star_outline_rounded, color: context.colors.sun),
-              ),
-          ]),
-          TextField(controller: _text, maxLength: 1000, maxLines: 3, decoration: InputDecoration(hintText: context.t.reviewHint)),
-          FilledButton(onPressed: _rating == 0 ? null : () => widget.onSubmit(_rating, _text.text.trim()), child: Text(context.t.reviewSubmit)),
+        onTap: () async {
+          final saved = await showReviewSheet(context, bookingId);
+          if (saved == true) onSaved();
+        },
+        child: Row(children: [
+          Icon(Icons.star_rounded, color: context.colors.sun),
+          const SizedBox(width: Space.xs),
+          Expanded(child: Text(context.t.reviewTitle, style: context.text.titleSmall)),
+          const Icon(Icons.chevron_right_rounded),
         ]),
       );
 }

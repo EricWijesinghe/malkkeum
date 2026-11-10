@@ -49,6 +49,23 @@ class DashboardScreen extends StatelessWidget {
         Icons.event_available_rounded,
         ServiceHues.aircon,
       ),
+      (
+        t.growthAverageRating,
+        d['average_rating'] == null
+            ? '-'
+            : (d['average_rating'] as num).toStringAsFixed(1),
+        Icons.star_rounded,
+        ServiceHues.kitchen,
+      ),
+      (
+        t.growthReferralConversion,
+        t.growthReferralValue(
+          '${n('referrals_rewarded')}',
+          '${n('referrals_invited')}',
+        ),
+        Icons.group_add_rounded,
+        ServiceHues.mattress,
+      ),
     ];
     final byService = ((d['by_service'] as Json?) ?? const {}).map(
       (k, v) => MapEntry(k, (v as num).toInt()),

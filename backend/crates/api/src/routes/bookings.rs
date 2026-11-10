@@ -7,7 +7,7 @@ use super::{
         record_payment, take_balance, take_deposit,
     },
     catalog::load_formula,
-    chat,
+    chat, growth,
 };
 use crate::{
     auth::Customer,
@@ -484,6 +484,8 @@ async fn reschedule(State(s): State<AppState>, Customer(a): Customer, Path(id): 
 struct ReviewInput {
     rating: i16,
     body: String,
+    #[serde(default)]
+    photos: Vec<String>,
 }
 
 async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(r): Json<ReviewInput>) -> ApiResult<Json<Value>> {
@@ -494,12 +496,14 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if !(1..=5).contains(&r.rating) || r.body.chars().count() > 1000 {
         return Err(ApiError::BadRequest("invalid_review"));
     }
-    let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (booking_id) DO NOTHING")
+    growth::check_photos(&s.config.public_base_url, &r.photos)?;
+    let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
         .bind(id)
         .bind(a.id)
         .bind(b.pro_id)
         .bind(r.rating)
         .bind(r.body.trim())
+        .bind(sqlx::types::Json(&r.photos))
         .execute(&s.db)
         .await?;
     if inserted.rows_affected() == 0 {

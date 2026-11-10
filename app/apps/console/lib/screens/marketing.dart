@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'growth.dart';
 
 // Content can be written in every app language; missing ones fall back to Korean.
 final _langs = LocaleController.names.keys.toList();
@@ -23,7 +24,7 @@ class MarketingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Column(
         children: [
           TabBar(
@@ -32,9 +33,10 @@ class MarketingScreen extends StatelessWidget {
             tabs: [
               Tab(text: t.cIssueCoupon),
               Tab(text: t.cContent),
+              Tab(text: t.growthTab),
             ],
           ),
-          const Expanded(child: TabBarView(children: [_Coupons(), _Content()])),
+          const Expanded(child: TabBarView(children: [_Coupons(), _Content(), GrowthSettings()])),
         ],
       ),
     );

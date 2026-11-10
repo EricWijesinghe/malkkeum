@@ -6,6 +6,7 @@ const LANGS = { ko: '한국어', en: 'English', ja: '日本語', zh: '中文', v
 
 const COPY = {
   ko: {
+    proof_title: '말끔 이야기', proof_homes: '이번 달 {n}집을 청소했어요', proof_rating: '평균 평점 {r}점 · 후기 {n}개',
     nav_services: '서비스', nav_how: '이용 방법', nav_faq: '자주 묻는 질문', nav_partner: '파트너 지원',
     eyebrow: '오늘 예약하면 내일 방문', h1a: '집안일은 맡기고,', h1b: '반짝이는 하루를.',
     lead: '검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격 확인하고 1분 만에 예약하세요.',
@@ -29,6 +30,7 @@ const COPY = {
     store_soon: '곧 출시',
   },
   en: {
+    proof_title: 'Malkkeum in numbers', proof_homes: '{n} homes cleaned this month', proof_rating: 'Average {r} stars · {n} reviews',
     nav_services: 'Services', nav_how: 'How it works', nav_faq: 'FAQ', nav_partner: 'Become a pro',
     eyebrow: 'Book today, cleaned tomorrow', h1a: 'Hand over the chores,', h1b: 'keep the sparkle.',
     lead: 'Verified cleaning pros for everything from bathrooms to move-in cleans. See the price in the app and book in a minute.',
@@ -52,6 +54,7 @@ const COPY = {
     store_soon: 'Coming soon',
   },
   ja: {
+    proof_title: 'マルックムの実績', proof_homes: '今月 {n}件のお宅を清掃しました', proof_rating: '平均評価 {r}点 · レビュー{n}件',
     nav_services: 'サービス', nav_how: 'ご利用方法', nav_faq: 'よくある質問', nav_partner: 'パートナー募集',
     eyebrow: '今日予約、明日訪問', h1a: '家事はおまかせ、', h1b: '輝く毎日を。',
     lead: '審査済みの清掃のプロが浴室から引越し清掃まで。アプリで料金を確認して1分で予約。',
@@ -75,6 +78,7 @@ const COPY = {
     store_soon: '近日公開',
   },
   zh: {
+    proof_title: '末尽的口碑', proof_homes: '本月已清洁 {n} 户', proof_rating: '平均 {r} 分 · {n} 条评价',
     nav_services: '服务', nav_how: '使用方法', nav_faq: '常见问题', nav_partner: '成为服务者',
     eyebrow: '今天预约，明天上门', h1a: '家务交给我们，', h1b: '生活焕然一新。',
     lead: '经过认证的保洁专家，从浴室到搬家保洁。应用内查看价格，一分钟完成预约。',
@@ -98,6 +102,7 @@ const COPY = {
     store_soon: '即将上线',
   },
   vi: {
+    proof_title: 'Malkkeum qua con số', proof_homes: 'Tháng này đã dọn {n} nhà', proof_rating: 'Trung bình {r} sao · {n} đánh giá',
     nav_services: 'Dịch vụ', nav_how: 'Cách dùng', nav_faq: 'Hỏi đáp', nav_partner: 'Trở thành đối tác',
     eyebrow: 'Đặt hôm nay, đến ngày mai', h1a: 'Việc nhà để chúng tôi lo,', h1b: 'bạn giữ niềm vui.',
     lead: 'Chuyên gia vệ sinh đã xác minh, từ phòng tắm đến dọn nhà mới. Xem giá trong ứng dụng và đặt trong một phút.',
@@ -153,6 +158,21 @@ function applyCopy() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = text(el.dataset.t); });
   renderServices();
+  renderProof();
+}
+
+// Real numbers from /v1/public/proof. The API nulls any count that is too small to persuade; a null hides its line.
+let proof = null;
+function renderProof() {
+  const section = document.getElementById('proof');
+  if (!section || !proof) return;
+  const { homes_this_month: homes, rating, review_count: count, reviews = [] } = proof;
+  if (homes == null && rating == null && reviews.length === 0) return;
+  document.getElementById('proof-homes').textContent = homes == null ? '' : text('proof_homes').replace('{n}', homes);
+  document.getElementById('proof-rating').textContent = rating == null || count == null ? '' : text('proof_rating').replace('{r}', rating.toFixed(1)).replace('{n}', count);
+  const list = document.getElementById('proof-reviews');
+  list.replaceChildren(...reviews.map((r) => { const li = document.createElement('li'); li.textContent = `★${r.rating} ${r.body} — ${r.name}`; return li; }));
+  section.hidden = false;
 }
 
 function fromPrice(s) {
@@ -290,4 +310,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (svc.status === 'fulfilled' && Array.isArray(svc.value)) services = svc.value;
   applyCopy();
   if (brand.status === 'fulfilled') applyBrand(brand.value);
+  try { proof = await getJson('/v1/public/proof'); renderProof(); } catch { /* optional section stays hidden */ }
 });
