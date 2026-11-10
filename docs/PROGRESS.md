@@ -31,8 +31,10 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 - [ ] Real provider adapters: Toss/PortOne, SMS (NHN/Aligo), FCM/APNs, Kakao address, 050 numbers, AlimTalk
 - [ ] Team-member logins (members currently get SMS only)
 - [ ] Deploy: Dockerfile, docker-compose, TLS reverse proxy, backups
-- [ ] Flutter workspace: ui package (tokens, components), core package (API client, models, l10n)
-- [ ] Customer app: all ~25 screens
+- [x] Flutter workspace (pub workspace `app/`): `packages/ui` (tokens, service hues, theme light/dark, components, Pretendard), `packages/core` (API client w/ refresh, secure session, realtime, models, i18n helpers, Seoul districts)
+- [x] Strings: `app/tool/strings_*.py` -> `python -I app/tool/gen_arb.py` -> 5 ARB files (ko/en/ja/zh/vi), checked for missing/placeholder drift
+- [x] Customer app: intro/OTP/profile, home, service, address, schedule, checkout, done, quote flow (6 steps), bookings calendar/list, detail (timeline, deposit/balance, photos, review, notes, reschedule, cancel), chat list/room (quote card, photos, quick replies), more (coupons, points, account, addresses, payments, scope, notices, tips, FAQ, language, legal, licenses, delete account). Web + Android debug builds OK.
+- [ ] Customer: real PG registration SDK, Kakao address search, push (FCM), move-in cross-sell coupon claim, before/after review carousel on quote type step
 - [ ] Partner app: all ~18 screens + onboarding
 - [ ] Console: bookings, quote desk, inbox, catalog, marketing, partners, settlements, staff roles
 - [ ] Translations for 5 languages
@@ -45,6 +47,7 @@ cd backend && cargo test          # unit tests
 scripts/dev-api.sh                # Postgres (F:/tools/pgdata, port 5433) + API on :8080, DEV_MODE fakes
 python -I scripts/smoke.py        # end-to-end checks against the running API
 ```
+Screenshots: `node F:/tools/shot/tour.js` (Playwright on F:) against `flutter build web` served on :5173.
 Dev console login: admin@local.test / change-me-now-please (from backend/.env, change it).
 
 ## Log
