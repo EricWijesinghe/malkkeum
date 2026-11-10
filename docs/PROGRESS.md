@@ -25,9 +25,12 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 ## Roadmap
 - [x] Design canvas v0.1 (internal design canvas, source `design/canvas`)
 - [x] Rust domain core: catalog, pricing, quote formula, coupons, booking states, schedule, partner payouts (22 tests)
-- [ ] API: auth (phone OTP + JWT), addresses, catalog, bookings, payments, coupons
-- [ ] API: chat (WebSocket), push, photos, quotes desk, partner jobs (atomic accept), settlements
-- [ ] Postgres migrations + seed; docker-compose (postgres, api, minio)
+- [x] API: auth (phone OTP + JWT refresh rotation, staff argon2), addresses, catalog, bookings, payments (fake PG), coupons, refunds
+- [x] API: chat REST + WebSocket hub, notifications, uploads, quote desk, partner feed/atomic accept/quotes/completion/settlements, console CRUD, audit log
+- [x] Postgres migrations + idempotent seed; `scripts/smoke.py` e2e (13 checks) green
+- [ ] Real provider adapters: Toss/PortOne, SMS (NHN/Aligo), FCM/APNs, Kakao address, 050 numbers, AlimTalk
+- [ ] Team-member logins (members currently get SMS only)
+- [ ] Deploy: Dockerfile, docker-compose, TLS reverse proxy, backups
 - [ ] Flutter workspace: ui package (tokens, components), core package (API client, models, l10n)
 - [ ] Customer app: all ~25 screens
 - [ ] Partner app: all ~18 screens + onboarding
@@ -35,11 +38,14 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 - [ ] Translations for 5 languages
 - [ ] Release: signing, store listings, CI, deploy guide (docs/DEPLOY.md)
 
-## How to build
+## How to build / run
 ```
 source scripts/env.sh
-cd backend && cargo test
+cd backend && cargo test          # unit tests
+scripts/dev-api.sh                # Postgres (F:/tools/pgdata, port 5433) + API on :8080, DEV_MODE fakes
+python -I scripts/smoke.py        # end-to-end checks against the running API
 ```
+Dev console login: admin@local.test / change-me-now-please (from backend/.env, change it).
 
 ## Log
-- 2026-11-10 Session 1: specs read, design canvas, repo init, domain crate green.
+- 2026-11-10 Session 1: specs read, design canvas, repo init, domain crate green, full API + e2e smoke green. Next: Flutter workspace (ui, core, customer, partner, console).

@@ -1,0 +1,18 @@
+name: console
+description: console app
+publish_to: none
+version: 1.0.0+1
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  ui:
+  core:
+  image_picker: ^1.2.4
+  url_launcher: ^6.3.3
+flutter:
+  uses-material-design: true

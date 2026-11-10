@@ -8,3 +8,5 @@ build/
 .idea/
 .vscode/
 backend/data/
+app/**/build/
+app/packages/core/build/

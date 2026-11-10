@@ -1,0 +1,19 @@
+name: core
+description: API client, auth session, realtime, models and translations shared by all apps.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  ui:
+  flutter_secure_storage: ^11.2.0
+  http: ^1.6.0
+  intl: ^0.20.3
+  web_socket_channel: ^3.0.3
+flutter:
+  generate: true

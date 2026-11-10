@@ -1,0 +1,532 @@
+{
+ "@@locale": "ko",
+ "ok": "확인",
+ "cancel": "취소",
+ "next": "다음",
+ "close": "닫기",
+ "save": "저장",
+ "delete": "삭제",
+ "edit": "수정",
+ "change": "변경",
+ "retry": "다시 시도",
+ "yes": "예",
+ "no": "아니요",
+ "required": "필수",
+ "viewAll": "전체 보기",
+ "today": "오늘",
+ "errorGeneric": "문제가 생겼어요. 잠시 후 다시 시도해 주세요.",
+ "errorNetwork": "인터넷 연결을 확인해 주세요",
+ "err_invalid_phone": "휴대폰 번호를 확인해 주세요",
+ "err_otp_invalid": "인증번호가 맞지 않아요",
+ "err_otp_expired": "인증번호가 만료됐어요. 다시 받아 주세요.",
+ "err_rate_limited": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
+ "err_studio_too_large": "원룸 청소는 10평 이하 집만 가능해요",
+ "err_date_out_of_range": "내일부터 60일 이내로 골라 주세요",
+ "err_slot_full": "그 시간은 마감됐어요. 다른 시간을 골라 주세요.",
+ "err_coupon_expired": "기간이 지난 쿠폰이에요",
+ "err_coupon_used": "이미 사용한 쿠폰이에요",
+ "err_coupon_wrong_service": "이 서비스에는 쓸 수 없는 쿠폰이에요",
+ "err_payment_failed": "결제가 승인되지 않았어요. 다른 결제수단을 써 주세요.",
+ "err_payment_method_required": "결제수단을 선택해 주세요",
+ "err_cancellation_window_closed": "방문 2일 전부터는 상담팀을 통해 취소할 수 있어요",
+ "err_address_required": "방문할 주소를 등록해 주세요",
+ "err_already_taken": "다른 파트너가 먼저 수락했어요",
+ "err_invalid_address": "주소 정보를 모두 입력해 주세요",
+ "tabHome": "홈",
+ "tabBookings": "예약",
+ "tabChat": "상담",
+ "tabMore": "더보기",
+ "introTitle": "전문가의 청소를\n가장 쉽게 예약하세요",
+ "introBody": "정찰 가격 · 검증된 청소팀 · 실시간 진행 상황",
+ "introStart": "휴대폰 번호로 시작하기",
+ "loginPhoneTitle": "휴대폰 번호를 알려주세요",
+ "loginPhoneHint": "010-0000-0000",
+ "loginSendCode": "인증번호 받기",
+ "loginCodeTitle": "인증번호 6자리를 입력해 주세요",
+ "loginCodeSentTo": "{phone}(으)로 보냈어요",
+ "@loginCodeSentTo": {
+  "placeholders": {
+   "phone": {
+    "type": "String"
+   }
+  }
+ },
+ "loginResend": "다시 받기",
+ "loginVerify": "확인",
+ "loginTerms": "계속하면 이용약관과 개인정보 처리방침에 동의하게 돼요",
+ "profileTitle": "이름을 알려주세요",
+ "profileNameHint": "이름",
+ "profileDone": "시작하기",
+ "welcomeToast": "가입 축하 쿠폰 2장을 드렸어요",
+ "svc_studio": "원룸 청소",
+ "svc_kitchen": "주방 청소",
+ "svc_bathroom": "화장실 청소",
+ "svc_mattress": "매트리스 청소",
+ "svc_aircon": "에어컨 청소",
+ "svc_sofa": "소파 청소",
+ "svc_move_out": "이사 청소",
+ "svc_move_in": "입주 청소",
+ "svcShort_studio": "원룸",
+ "svcShort_kitchen": "주방",
+ "svcShort_bathroom": "화장실",
+ "svcShort_mattress": "매트리스",
+ "svcShort_aircon": "에어컨",
+ "svcShort_sofa": "소파",
+ "svcShort_move_out": "이사",
+ "svcShort_move_in": "입주",
+ "svcDesc_studio": "방 1개, 화장실 1개인 10평 이하 원룸을 2시간 동안 꼼꼼히 청소해요.",
+ "svcDesc_kitchen": "싱크대, 가스레인지, 후드 겉면, 상판을 중심으로 주방을 집중 청소해요.",
+ "svcDesc_bathroom": "선반, 수전, 세면대와 변기의 안팎을 청소하고 바닥 물기까지 정리해요.",
+ "svcDesc_mattress": "전문 장비로 먼지, 진드기, 얼룩을 흡입하고 스팀으로 살균 세척해요.",
+ "svcDesc_aircon": "분해 후 열교환기, 송풍팬, 필터를 고압 세척하고 살균으로 마무리해요.",
+ "svcDesc_sofa": "소재에 맞는 세제로 오염을 분해하고 습식 추출 방식으로 세척해요.",
+ "svcDesc_move_out": "이사 나가기 전, 짐을 뺀 집을 전문 청소팀이 장비를 가지고 방문해 청소해요.",
+ "svcDesc_move_in": "새 집에 들어가기 전, 전문 청소팀이 장비를 가지고 방문해 실내를 청소해요.",
+ "svcNotes_bathroom": "배수구·변기 막힘이 있으면 서비스가 제한될 수 있어요\n특수 약품이 필요한 청소, 천장·환풍기 청소는 제공하지 않아요\n오래된 곰팡이·찌든 때는 완전히 제거되지 않을 수 있어요",
+ "svcNotes_mattress": "싱글부터 킹 사이즈까지 같은 금액이에요\n세척 후 완전 건조까지 4~6시간 걸려요\n스프링 손상, 꺼짐 등 구조적인 문제는 개선되지 않아요",
+ "svcNotes_aircon": "제조 10년 이상 제품은 분해 세척이 어려울 수 있어요\n실외기 청소는 포함되지 않아요\n세척 전후 정상 작동 여부를 함께 확인해요",
+ "svcNotes_sofa": "가죽 소파는 클리닝과 보습 코팅으로 진행돼요\n오래된 얼룩·이염은 완전히 제거되지 않을 수 있어요\n완전 건조까지 4~6시간 걸려요",
+ "unitTitle_bathroom": "화장실 개수",
+ "unitTitle_mattress": "매트리스 개수",
+ "unitTitle_aircon": "에어컨 종류",
+ "unitTitle_sofa": "소파 크기",
+ "unit_count": "{n}개",
+ "@unit_count": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "unit_wall": "벽걸이 1대",
+ "unit_stand": "스탠드 1대",
+ "unit_two_in_one": "2in1 (스탠드+벽걸이)",
+ "unit_ceiling": "천장형 1대",
+ "unit_seat_1_2": "1~2인용",
+ "unit_seat_3": "3인용",
+ "unit_seat_4_plus": "4인용 이상",
+ "unit_l_shape": "L자 · 카우치",
+ "durH": "{h}시간",
+ "@durH": {
+  "placeholders": {
+   "h": {
+    "type": "String"
+   }
+  }
+ },
+ "durHM": "{h}시간 {m}분",
+ "@durHM": {
+  "placeholders": {
+   "h": {
+    "type": "String"
+   },
+   "m": {
+    "type": "String"
+   }
+  }
+ },
+ "durM": "{m}분",
+ "@durM": {
+  "placeholders": {
+   "m": {
+    "type": "String"
+   }
+  }
+ },
+ "about": "약 {value}",
+ "@about": {
+  "placeholders": {
+   "value": {
+    "type": "String"
+   }
+  }
+ },
+ "fromPrice": "{price}~",
+ "@fromPrice": {
+  "placeholders": {
+   "price": {
+    "type": "String"
+   }
+  }
+ },
+ "quoteBadge": "견적",
+ "status0": "상담 중",
+ "status1": "예약 확정",
+ "status2": "팀 배정 완료",
+ "status3": "청소 완료",
+ "statusCancelled": "취소됨",
+ "homeGreeting": "{name}님,\n오늘은 어디를 깨끗하게 할까요?",
+ "@homeGreeting": {
+  "placeholders": {
+   "name": {
+    "type": "String"
+   }
+  }
+ },
+ "homeGreetingAnon": "오늘은 어디를\n깨끗하게 할까요?",
+ "homeUpcoming": "다가오는 예약",
+ "dDay": "D-{days}",
+ "@dDay": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "homeServices": "어떤 청소가 필요하세요?",
+ "homeAddAddress": "주소를 등록하면 가능한 서비스와 가격을 바로 보여드려요",
+ "homeAddAddressCta": "주소 등록",
+ "homeRebook": "{service} 다시 예약하기",
+ "@homeRebook": {
+  "placeholders": {
+   "service": {
+    "type": "String"
+   }
+  }
+ },
+ "homeRebookBody": "지난번과 같은 조건으로 빠르게 예약해요",
+ "homeNotices": "새 소식",
+ "trustVat": "부가세 포함\n표시된 가격 그대로",
+ "trustCancel": "방문 2일 전까지\n무료 취소",
+ "trustCard": "카드 정보는\n결제사에만 보관",
+ "stepOf": "{current} / {total}",
+ "@stepOf": {
+  "placeholders": {
+   "current": {
+    "type": "String"
+   },
+   "total": {
+    "type": "String"
+   }
+  }
+ },
+ "chooseDate": "날짜 고르기",
+ "notIncluded": "꼭 확인해 주세요",
+ "studioBlockedTitle": "{size}평은 원룸 청소 대상이 아니에요",
+ "@studioBlockedTitle": {
+  "placeholders": {
+   "size": {
+    "type": "String"
+   }
+  }
+ },
+ "studioBlockedBody": "상담팀이 집에 맞는 서비스를 추천해 드릴게요.",
+ "consultCta": "상담으로 문의하기",
+ "addressTitle": "어디로 방문할까요?",
+ "addressAdd": "새 주소 추가",
+ "addressLabel": "이름",
+ "addressLabelHint": "예: 우리집",
+ "addressDistrict": "구",
+ "addressRoad": "도로명 주소",
+ "addressDetail": "상세 주소",
+ "addressSize": "집 크기 (평)",
+ "addressSizeHelp": "전용면적 기준 · 1평 ≈ 3.3㎡",
+ "addressHome": "집",
+ "addressOffice": "사무실",
+ "addressEmpty": "저장된 주소가 없어요",
+ "addressSaved": "주소를 저장했어요",
+ "pyeong": "{n}평",
+ "@pyeong": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "scheduleTitle": "언제 방문할까요?",
+ "scheduleArrival": "도착 시간",
+ "scheduleFull": "마감",
+ "scheduleWindow": "{start}–{end} 도착",
+ "@scheduleWindow": {
+  "placeholders": {
+   "start": {
+    "type": "String"
+   },
+   "end": {
+    "type": "String"
+   }
+  }
+ },
+ "scheduleEnds": "{duration} 소요 · {time}쯤 끝나요",
+ "@scheduleEnds": {
+  "placeholders": {
+   "duration": {
+    "type": "String"
+   },
+   "time": {
+    "type": "String"
+   }
+  }
+ },
+ "scheduleRange": "내일부터 60일 이내로 예약할 수 있어요",
+ "morning": "오전",
+ "afternoon": "오후",
+ "scheduleQuoteNote": "정확한 도착 시간은 상담에서 안내해 드려요",
+ "goToPayment": "결제하러 가기",
+ "prepTitle": "방문 전에 준비해 주세요",
+ "prepBody": "준비되지 않으면 일부 작업이 제한될 수 있어요",
+ "prepAsk": "준비가 어렵다면 상담으로 미리 알려 주세요",
+ "tool_vacuum": "청소기",
+ "tool_trash": "쓰레기봉투",
+ "tool_mop": "막대걸레",
+ "tool_cloth": "손걸레",
+ "tool_gloves": "고무장갑",
+ "tool_sponge": "수세미",
+ "tool_spray": "다목적세제",
+ "checkoutTitle": "결제",
+ "coupon": "쿠폰",
+ "couponNone": "사용 안 함",
+ "couponAvailable": "사용 가능 {count}장",
+ "@couponAvailable": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "paymentMethod": "결제수단",
+ "addPaymentMethod": "결제수단 등록",
+ "methodCard": "신용·체크카드",
+ "methodKakao": "카카오페이",
+ "methodNaver": "네이버페이",
+ "methodToss": "토스페이",
+ "methodRegistered": "등록됨",
+ "methodAdded": "결제수단을 등록했어요",
+ "listPrice": "서비스 금액",
+ "discount": "쿠폰 할인",
+ "total": "결제 금액",
+ "vatIncluded": "부가세 포함",
+ "payAmount": "{amount} 결제하기",
+ "@payAmount": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "needMethod": "결제수단을 등록해 주세요",
+ "freeCancelUntil": "{date}까지 무료 취소",
+ "@freeCancelUntil": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "doneTitle": "예약이 완료됐어요",
+ "doneBody": "청소팀이 배정되면 바로 알려드릴게요",
+ "doneQuoteTitle": "상담 요청이 접수됐어요",
+ "doneQuoteBody": "상담팀이 확인 후 최종 견적을 보내드려요. 견적은 상담 탭에서 확인할 수 있어요.",
+ "goHome": "홈으로",
+ "viewBooking": "예약 보기",
+ "bookingsTitle": "예약",
+ "bookingsUpcoming": "다가오는 예약",
+ "bookingsPast": "지난 예약",
+ "bookingsEmpty": "아직 예약이 없어요",
+ "bookingsEmptyBody": "첫 예약에 쓸 수 있는 쿠폰이 준비돼 있어요",
+ "bookNow": "청소 예약하기",
+ "detailTitle": "예약 상세",
+ "stepRequested": "상담 접수",
+ "stepConfirmed": "예약 확정",
+ "stepAssigned": "청소팀 배정",
+ "stepCompleted": "청소 완료",
+ "teamVisiting": "{team}이(가) 방문해요",
+ "@teamVisiting": {
+  "placeholders": {
+   "team": {
+    "type": "String"
+   }
+  }
+ },
+ "photosSoon": "끝나면 전후 사진이 여기에 올라와요",
+ "before": "청소 전",
+ "after": "청소 후",
+ "prepCheck": "준비물 체크",
+ "prepAllSet": "모두 준비됐어요",
+ "visitAddress": "방문 주소",
+ "paid": "결제",
+ "askTeam": "상담팀에 문의하기",
+ "cancelBooking": "예약 취소",
+ "cancelTitle": "예약을 취소할까요?",
+ "cancelFree": "지금 취소하면 결제 금액 전액이 환불되고 쿠폰도 돌려드려요.",
+ "cancelKeep": "유지하기",
+ "cancelled": "예약이 취소됐어요",
+ "reschedule": "일정 변경",
+ "rescheduled": "일정을 변경했어요",
+ "visitNotes": "방문 요청사항",
+ "notesEntry": "출입 방법 (공동현관 비밀번호 등)",
+ "notesParking": "주차",
+ "notesOther": "기타",
+ "notesSaved": "요청사항을 저장했어요",
+ "depositDue": "예약금 {amount}을(를) 결제하면 예약이 확정돼요",
+ "@depositDue": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "payDeposit": "예약금 결제하기",
+ "waitingQuote": "상담팀이 견적을 준비하고 있어요",
+ "estimate": "예상 금액",
+ "finalPrice": "최종 견적",
+ "deposit": "예약금",
+ "balance": "잔금",
+ "balanceDue": "잔금 {amount}을(를) 결제해 주세요",
+ "@balanceDue": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "payBalance": "잔금 결제하기",
+ "reviewTitle": "청소는 어떠셨나요?",
+ "reviewHint": "좋았던 점이나 아쉬운 점을 알려 주세요",
+ "reviewSubmit": "후기 남기기",
+ "reviewThanks": "소중한 후기 고마워요",
+ "bookAgain": "같은 조건으로 다시 예약",
+ "chatTitle": "상담",
+ "chatTeam": "상담팀",
+ "chatHours": "평일 09:00–18:00",
+ "chatEmpty": "궁금한 점이 있으면 언제든 물어보세요",
+ "chatNew": "새 상담",
+ "chatTopicTitle": "무엇이 궁금하세요?",
+ "topicOther": "기타 문의",
+ "chatHint": "메시지를 입력하세요",
+ "chatSend": "보내기",
+ "chatPhoto": "사진 보내기",
+ "chatTyping": "상담팀이 입력 중",
+ "quick_confirm": "예약 확정할게요",
+ "quick_price": "가격이 궁금해요",
+ "quick_date": "날짜를 바꾸고 싶어요",
+ "quick_parking": "주차가 가능한가요?",
+ "quick_hello": "안녕하세요",
+ "quick_duration": "얼마나 걸리나요?",
+ "quoteArrived": "최종 견적이 도착했어요",
+ "quoteDepositNow": "지금 예약금 10%",
+ "quoteBalanceLater": "청소 후 잔금",
+ "quotePay": "예약금 결제하고 확정하기",
+ "quotePaid": "결제 완료",
+ "requestCard": "견적 요청",
+ "sys_consultation_received": "상담이 접수됐어요",
+ "sys_deposit_paid": "예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.",
+ "@sys_deposit_paid": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "sys_booking_cancelled": "예약이 취소됐어요",
+ "sys_status_changed": "예약 상태가 '{status}'(으)로 바뀌었어요",
+ "@sys_status_changed": {
+  "placeholders": {
+   "status": {
+    "type": "String"
+   }
+  }
+ },
+ "sys_job_completed": "청소가 끝났어요. 전후 사진을 확인해 보세요.",
+ "sys_rescheduled": "일정이 {date}(으)로 변경됐어요",
+ "@sys_rescheduled": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "sys_reschedule_declined": "파트너가 변경된 일정에 방문이 어려워요. 상담팀이 다시 조율할게요.",
+ "moreTitle": "더보기",
+ "moreScope": "서비스 범위",
+ "morePayments": "결제수단 관리",
+ "moreCoupons": "쿠폰",
+ "morePoints": "청소 포인트",
+ "moreAccount": "계정 정보",
+ "moreAddresses": "주소 관리",
+ "moreNotices": "공지사항",
+ "moreTips": "청소 팁",
+ "moreFaq": "자주 묻는 질문",
+ "morePartner": "파트너 제휴 문의",
+ "moreLanguage": "언어",
+ "langSystem": "기기 설정 따르기",
+ "moreVersion": "버전 {v}",
+ "@moreVersion": {
+  "placeholders": {
+   "v": {
+    "type": "String"
+   }
+  }
+ },
+ "morePrivacy": "개인정보 처리방침",
+ "moreTerms": "이용약관",
+ "moreLicenses": "오픈소스 라이선스",
+ "logout": "로그아웃",
+ "deleteAccount": "회원 탈퇴",
+ "deleteAccountBody": "개인정보가 삭제되고 되돌릴 수 없어요. 진행 중인 예약은 먼저 취소해 주세요.",
+ "couponsEmpty": "보유한 쿠폰이 없어요",
+ "couponUntil": "{date}까지",
+ "@couponUntil": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "couponUsed": "사용 완료",
+ "couponExpired": "기간 만료",
+ "couponAnyService": "모든 서비스",
+ "coupon_welcome_studio": "가입 축하 원룸 쿠폰",
+ "coupon_welcome_any": "가입 축하 쿠폰",
+ "pointsBalance": "보유 포인트",
+ "pointsEmpty": "포인트 내역이 없어요",
+ "accountName": "이름",
+ "accountPhone": "휴대폰 번호",
+ "accountEmail": "이메일",
+ "accountLogin": "로그인 방식",
+ "accountLoginPhone": "휴대폰 인증",
+ "methodsEmpty": "등록된 결제수단이 없어요",
+ "noContent": "아직 등록된 내용이 없어요",
+ "quoteTypeTitle": "어떤 청소가 필요하세요?",
+ "type_standard": "퇴거 청소",
+ "type_same_day_move": "이사 당일 청소",
+ "type_some_luggage_left": "짐 일부 남음",
+ "type_normal_move_in": "일반 입주",
+ "type_after_interior": "인테리어 후",
+ "type_lived_in_deep_clean": "거주 중 대청소",
+ "luggageTitle": "짐은 어떤 상태인가요?",
+ "luggage_empty": "짐 없음",
+ "luggage_partly_unpacked": "일부 정리 중",
+ "luggage_fully_lived_in": "생활 중",
+ "luggage_unknown": "잘 모르겠어요",
+ "quoteBasicTitle": "집 구조를 알려주세요",
+ "buildingType": "건물 유형",
+ "building_apartment": "아파트",
+ "building_villa": "빌라",
+ "building_officetel": "오피스텔",
+ "building_house": "단독주택",
+ "building_other": "기타",
+ "layoutTitle": "구조",
+ "layout_studio": "원룸",
+ "layout_one_and_half": "1.5룸",
+ "layout_two_rooms": "방 2개",
+ "layout_three_rooms": "방 3개",
+ "layout_four_plus": "방 4개 이상",
+ "duplexTitle": "복층인가요?",
+ "quoteSpaceTitle": "공간을 알려주세요",
+ "bathroomsLabel": "화장실",
+ "balconiesLabel": "발코니 · 다용도실",
+ "elevatorTitle": "엘리베이터가 있나요?",
+ "floor3Label": "3층 이상이에요",
+ "quoteEstimateTitle": "예상 견적이에요",
+ "quoteEstimateBody": "상담에서 사진과 상황을 확인한 뒤 최종 금액이 정해져요",
+ "quoteG1": "최종 금액은 상담에서 확정해요",
+ "quoteG2": "예약금 10%로 확정, 잔금은 청소 후",
+ "quoteG3": "확정 전에는 언제든 무료 취소",
+ "quoteConfirmTitle": "요청 내용을 확인해 주세요",
+ "quoteRequest": "상담 요청하기",
+ "quoteNoPayNow": "지금은 결제하지 않아요",
+ "summaryType": "청소 종류",
+ "summaryHome": "집 정보",
+ "summaryDate": "방문 일정"
+}

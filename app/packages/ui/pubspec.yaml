@@ -1,0 +1,25 @@
+name: ui
+description: Design system — tokens, theme, components. Brand lives in BrandConfig.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.20.3
+flutter:
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: packages/ui/assets/fonts/Pretendard-Regular.otf
+          weight: 400
+        - asset: packages/ui/assets/fonts/Pretendard-Medium.otf
+          weight: 500
+        - asset: packages/ui/assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+        - asset: packages/ui/assets/fonts/Pretendard-Bold.otf
+          weight: 700
+        - asset: packages/ui/assets/fonts/Pretendard-ExtraBold.otf
+          weight: 800
