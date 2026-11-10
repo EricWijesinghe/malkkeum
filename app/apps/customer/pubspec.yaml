@@ -14,5 +14,6 @@ dependencies:
   core:
   image_picker: ^1.2.4
   url_launcher: ^6.3.3
+  intl: ^0.20.3
 flutter:
   uses-material-design: true
