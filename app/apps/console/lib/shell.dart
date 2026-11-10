@@ -6,6 +6,7 @@ import 'package:ui/ui.dart';
 import 'screens/bookings.dart';
 import 'screens/catalog.dart';
 import 'screens/dashboard.dart';
+import 'screens/finance.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
 import 'screens/people.dart';
@@ -52,6 +53,12 @@ final _sections = <_Section>[
     Icons.payments_rounded,
     (t) => t.cSettlements,
     () => const SettlementsScreen(),
+  ),
+  _Section(
+    Icons.account_balance_wallet_rounded,
+    (t) => t.fFinance,
+    () => const FinanceScreen(),
+    adminOnly: true,
   ),
   _Section(
     Icons.people_alt_rounded,
