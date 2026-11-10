@@ -9,6 +9,381 @@ class TJa extends T {
   TJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get cTitle => '運営コンソール';
+
+  @override
+  String get cEmail => 'メール';
+
+  @override
+  String get cPassword => 'パスワード';
+
+  @override
+  String get cLogin => 'ログイン';
+
+  @override
+  String get cLoginFailed => 'メールまたはパスワードが違います';
+
+  @override
+  String get cDashboard => 'ダッシュボード';
+
+  @override
+  String get cBookings => '予約';
+
+  @override
+  String get cQuoteDesk => '見積デスク';
+
+  @override
+  String get cInbox => '相談箱';
+
+  @override
+  String get cCatalog => 'カタログ・価格';
+
+  @override
+  String get cMarketing => 'クーポン・コンテンツ';
+
+  @override
+  String get cPartners => 'パートナー';
+
+  @override
+  String get cSettlements => '精算';
+
+  @override
+  String get cCustomers => '顧客';
+
+  @override
+  String get cStaff => 'スタッフ';
+
+  @override
+  String get cSearchCommand => '検索・コマンド';
+
+  @override
+  String get cPaletteHint => 'メニュー名か予約番号を入力';
+
+  @override
+  String get cTodayJobs => '本日の作業';
+
+  @override
+  String get cOpenQuotes => '見積待ち';
+
+  @override
+  String get cUnassigned => '未割当';
+
+  @override
+  String get cUnreadThreads => '未読の相談';
+
+  @override
+  String get cRevenue30 => '30日決済額';
+
+  @override
+  String get cBookings30 => '30日予約';
+
+  @override
+  String get cByService => 'サービス別予約（30日）';
+
+  @override
+  String get cAllStatus => '全ステータス';
+
+  @override
+  String get cAllServices => '全サービス';
+
+  @override
+  String get cSearch => '検索（番号・電話・名前・住所）';
+
+  @override
+  String get cNoResults => '結果なし';
+
+  @override
+  String get cNumber => '予約番号';
+
+  @override
+  String get cVisit => '訪問';
+
+  @override
+  String get cService => 'サービス';
+
+  @override
+  String get cStatus => 'ステータス';
+
+  @override
+  String get cTeam => 'チーム';
+
+  @override
+  String get cAmount => '金額';
+
+  @override
+  String get cCustomer => '顧客';
+
+  @override
+  String get cPayments => '決済';
+
+  @override
+  String get cChangeStatus => 'ステータス変更';
+
+  @override
+  String get cTeamName => '割当チーム名';
+
+  @override
+  String get cAssign => 'チーム割当';
+
+  @override
+  String get cMarkDone => '完了にする';
+
+  @override
+  String get cConfirm => '確定にする';
+
+  @override
+  String get cCancelRefund => 'キャンセル・返金';
+
+  @override
+  String get cRefundAmount => '返金額（空欄で全額）';
+
+  @override
+  String get cDone => '完了しました';
+
+  @override
+  String get cAnswers => '顧客の回答';
+
+  @override
+  String get cEstimateCalc => '自動算定';
+
+  @override
+  String get cBase => '基本';
+
+  @override
+  String get cExtras => '追加';
+
+  @override
+  String get cSurcharge => '割増';
+
+  @override
+  String get cBeforeVat => '税抜';
+
+  @override
+  String get cProQuotes => 'パートナー見積';
+
+  @override
+  String get cNoProQuotes => 'まだ見積はありません';
+
+  @override
+  String get cFinalPrice => '顧客の最終金額';
+
+  @override
+  String get cQuoteNote => '顧客へのメモ';
+
+  @override
+  String get cSendQuote => '顧客に見積を送る';
+
+  @override
+  String get cQuoteSent => '見積を送りました';
+
+  @override
+  String get cCustomerChats => '顧客';
+
+  @override
+  String get cPartnerChats => 'パートナー';
+
+  @override
+  String get cSelectBooking => '予約を選択してください';
+
+  @override
+  String get cRefunded => '返金済み';
+
+  @override
+  String get cPartRefunded => '一部返金';
+
+  @override
+  String get cFailed => '失敗';
+
+  @override
+  String get cSelectThread => '会話を選択してください';
+
+  @override
+  String get cReplyHint => '返信を入力・Ctrl+Enterで送信';
+
+  @override
+  String get cOpenBooking => '予約を開く';
+
+  @override
+  String get cShortcuts => 'J/K移動・Ctrl+Kコマンド';
+
+  @override
+  String get cPricing => '価格';
+
+  @override
+  String get cMinutes => '所要(分)';
+
+  @override
+  String get cActive => '販売中';
+
+  @override
+  String get cSaved => '保存しました';
+
+  @override
+  String get cSlotCapacity => '時間帯別の受付数';
+
+  @override
+  String get cUnlimited => '制限なし';
+
+  @override
+  String get cFormula => '見積算定式';
+
+  @override
+  String get f_base_studio => '基本：ワンルーム';
+
+  @override
+  String get f_base_one_and_half => '基本：1.5ルーム';
+
+  @override
+  String get f_base_two_rooms => '基本：2部屋';
+
+  @override
+  String get f_base_three_rooms => '基本：3部屋';
+
+  @override
+  String get f_base_four_plus => '基本：4部屋以上';
+
+  @override
+  String get f_per_extra_bathroom => '浴室追加ごと';
+
+  @override
+  String get f_per_balcony => 'バルコニーごと';
+
+  @override
+  String get f_duplex => 'メゾネット';
+
+  @override
+  String get f_no_elevator_high_floor => 'EVなし＋3階以上';
+
+  @override
+  String get cIssueCoupon => 'クーポン発行';
+
+  @override
+  String get cCouponName => 'クーポン名';
+
+  @override
+  String get cCouponPhones => '対象電話番号（改行区切り）';
+
+  @override
+  String get cAllCustomers => '全顧客へ';
+
+  @override
+  String cIssued(String n) {
+    return '$n枚発行しました';
+  }
+
+  @override
+  String get cContent => 'コンテンツ';
+
+  @override
+  String get cKind_notice => 'お知らせ';
+
+  @override
+  String get cKind_tip => 'ヒント';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'バナー';
+
+  @override
+  String get cKind_legal => '規約';
+
+  @override
+  String get cNewContent => '新規コンテンツ';
+
+  @override
+  String get cTitleField => 'タイトル';
+
+  @override
+  String get cBodyField => '本文';
+
+  @override
+  String get cSlug => '識別子（規約：privacy / terms）';
+
+  @override
+  String get cVerify => '承認';
+
+  @override
+  String get cSuspend => '停止';
+
+  @override
+  String get cPro_pending => '承認待ち';
+
+  @override
+  String get cPro_verified => '活動中';
+
+  @override
+  String get cPro_suspended => '停止中';
+
+  @override
+  String get cCompleted => '完了';
+
+  @override
+  String get cCancelledN => 'キャンセル';
+
+  @override
+  String get cRating => '評価';
+
+  @override
+  String get cFeeRate => '手数料率 %';
+
+  @override
+  String get cRunPayouts => '精算支払いを実行';
+
+  @override
+  String get cPayoutDate => '支払基準日';
+
+  @override
+  String cPayoutDone(String n) {
+    return '$n名に支払いました';
+  }
+
+  @override
+  String get cHold => '保留';
+
+  @override
+  String get cRelease => '保留解除';
+
+  @override
+  String get cNet => '支払額';
+
+  @override
+  String get cAddStaff => 'スタッフ追加';
+
+  @override
+  String get cRoleAdmin => '管理者';
+
+  @override
+  String get cRoleConsultant => '相談員';
+
+  @override
+  String get cDeactivate => '無効化';
+
+  @override
+  String get cActivate => '有効化';
+
+  @override
+  String get cPasswordRule => '12文字以上';
+
+  @override
+  String get cAdminOnly => '管理者のみ操作できます';
+
+  @override
+  String cBookingsCount(String n) {
+    return '予約$n件';
+  }
+
+  @override
+  String get cJoined => '登録';
+
+  @override
+  String get cNewBooking => '新しい予約';
+
+  @override
+  String get cNewMessage => '新着メッセージ';
+
+  @override
   String get ok => 'OK';
 
   @override

@@ -9,6 +9,381 @@ class TEn extends T {
   TEn([String locale = 'en']) : super(locale);
 
   @override
+  String get cTitle => 'Operations console';
+
+  @override
+  String get cEmail => 'Email';
+
+  @override
+  String get cPassword => 'Password';
+
+  @override
+  String get cLogin => 'Sign in';
+
+  @override
+  String get cLoginFailed => 'Wrong email or password';
+
+  @override
+  String get cDashboard => 'Dashboard';
+
+  @override
+  String get cBookings => 'Bookings';
+
+  @override
+  String get cQuoteDesk => 'Quote desk';
+
+  @override
+  String get cInbox => 'Inbox';
+
+  @override
+  String get cCatalog => 'Catalog & prices';
+
+  @override
+  String get cMarketing => 'Coupons & content';
+
+  @override
+  String get cPartners => 'Partners';
+
+  @override
+  String get cSettlements => 'Settlements';
+
+  @override
+  String get cCustomers => 'Customers';
+
+  @override
+  String get cStaff => 'Staff';
+
+  @override
+  String get cSearchCommand => 'Search or jump';
+
+  @override
+  String get cPaletteHint => 'Type a section or booking number';
+
+  @override
+  String get cTodayJobs => 'Today\'s jobs';
+
+  @override
+  String get cOpenQuotes => 'Open quotes';
+
+  @override
+  String get cUnassigned => 'Unassigned';
+
+  @override
+  String get cUnreadThreads => 'Unread chats';
+
+  @override
+  String get cRevenue30 => '30-day revenue';
+
+  @override
+  String get cBookings30 => '30-day bookings';
+
+  @override
+  String get cByService => 'Bookings by service (30 days)';
+
+  @override
+  String get cAllStatus => 'All statuses';
+
+  @override
+  String get cAllServices => 'All services';
+
+  @override
+  String get cSearch => 'Search (number, phone, name, address)';
+
+  @override
+  String get cNoResults => 'No results';
+
+  @override
+  String get cNumber => 'Number';
+
+  @override
+  String get cVisit => 'Visit';
+
+  @override
+  String get cService => 'Service';
+
+  @override
+  String get cStatus => 'Status';
+
+  @override
+  String get cTeam => 'Team';
+
+  @override
+  String get cAmount => 'Amount';
+
+  @override
+  String get cCustomer => 'Customer';
+
+  @override
+  String get cPayments => 'Payments';
+
+  @override
+  String get cChangeStatus => 'Change status';
+
+  @override
+  String get cTeamName => 'Assigned team';
+
+  @override
+  String get cAssign => 'Assign team';
+
+  @override
+  String get cMarkDone => 'Mark completed';
+
+  @override
+  String get cConfirm => 'Mark confirmed';
+
+  @override
+  String get cCancelRefund => 'Cancel & refund';
+
+  @override
+  String get cRefundAmount => 'Refund amount (empty = full)';
+
+  @override
+  String get cDone => 'Done';
+
+  @override
+  String get cAnswers => 'Customer answers';
+
+  @override
+  String get cEstimateCalc => 'Calculated estimate';
+
+  @override
+  String get cBase => 'Base';
+
+  @override
+  String get cExtras => 'Extras';
+
+  @override
+  String get cSurcharge => 'Surcharge';
+
+  @override
+  String get cBeforeVat => 'Before VAT';
+
+  @override
+  String get cProQuotes => 'Partner quotes';
+
+  @override
+  String get cNoProQuotes => 'No partner quotes yet';
+
+  @override
+  String get cFinalPrice => 'Final price to customer';
+
+  @override
+  String get cQuoteNote => 'Note to customer';
+
+  @override
+  String get cSendQuote => 'Send quote to customer';
+
+  @override
+  String get cQuoteSent => 'Quote sent';
+
+  @override
+  String get cCustomerChats => 'Customers';
+
+  @override
+  String get cPartnerChats => 'Partners';
+
+  @override
+  String get cSelectBooking => 'Pick a booking';
+
+  @override
+  String get cRefunded => 'Refunded';
+
+  @override
+  String get cPartRefunded => 'Partly refunded';
+
+  @override
+  String get cFailed => 'Failed';
+
+  @override
+  String get cSelectThread => 'Pick a conversation';
+
+  @override
+  String get cReplyHint => 'Reply · Ctrl+Enter to send';
+
+  @override
+  String get cOpenBooking => 'Open booking';
+
+  @override
+  String get cShortcuts => 'J/K move · Ctrl+K command';
+
+  @override
+  String get cPricing => 'Pricing';
+
+  @override
+  String get cMinutes => 'Minutes';
+
+  @override
+  String get cActive => 'Active';
+
+  @override
+  String get cSaved => 'Saved';
+
+  @override
+  String get cSlotCapacity => 'Capacity per arrival slot';
+
+  @override
+  String get cUnlimited => 'Unlimited';
+
+  @override
+  String get cFormula => 'Quote formula';
+
+  @override
+  String get f_base_studio => 'Base: studio';
+
+  @override
+  String get f_base_one_and_half => 'Base: 1.5 rooms';
+
+  @override
+  String get f_base_two_rooms => 'Base: 2 rooms';
+
+  @override
+  String get f_base_three_rooms => 'Base: 3 rooms';
+
+  @override
+  String get f_base_four_plus => 'Base: 4+ rooms';
+
+  @override
+  String get f_per_extra_bathroom => 'Per extra bathroom';
+
+  @override
+  String get f_per_balcony => 'Per balcony';
+
+  @override
+  String get f_duplex => 'Duplex';
+
+  @override
+  String get f_no_elevator_high_floor => 'No elevator & floor 3+';
+
+  @override
+  String get cIssueCoupon => 'Issue coupons';
+
+  @override
+  String get cCouponName => 'Coupon name';
+
+  @override
+  String get cCouponPhones => 'Phone numbers (one per line)';
+
+  @override
+  String get cAllCustomers => 'To all customers';
+
+  @override
+  String cIssued(String n) {
+    return 'Issued $n';
+  }
+
+  @override
+  String get cContent => 'Content';
+
+  @override
+  String get cKind_notice => 'Notice';
+
+  @override
+  String get cKind_tip => 'Tip';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'Banner';
+
+  @override
+  String get cKind_legal => 'Legal';
+
+  @override
+  String get cNewContent => 'New content';
+
+  @override
+  String get cTitleField => 'Title';
+
+  @override
+  String get cBodyField => 'Body';
+
+  @override
+  String get cSlug => 'Slug (legal: privacy / terms)';
+
+  @override
+  String get cVerify => 'Approve';
+
+  @override
+  String get cSuspend => 'Suspend';
+
+  @override
+  String get cPro_pending => 'Pending';
+
+  @override
+  String get cPro_verified => 'Active';
+
+  @override
+  String get cPro_suspended => 'Suspended';
+
+  @override
+  String get cCompleted => 'Completed';
+
+  @override
+  String get cCancelledN => 'Cancelled';
+
+  @override
+  String get cRating => 'Rating';
+
+  @override
+  String get cFeeRate => 'Fee %';
+
+  @override
+  String get cRunPayouts => 'Run payouts';
+
+  @override
+  String get cPayoutDate => 'Pay up to date';
+
+  @override
+  String cPayoutDone(String n) {
+    return 'Paid $n partners';
+  }
+
+  @override
+  String get cHold => 'Hold';
+
+  @override
+  String get cRelease => 'Release';
+
+  @override
+  String get cNet => 'Net';
+
+  @override
+  String get cAddStaff => 'Add staff';
+
+  @override
+  String get cRoleAdmin => 'Admin';
+
+  @override
+  String get cRoleConsultant => 'Consultant';
+
+  @override
+  String get cDeactivate => 'Deactivate';
+
+  @override
+  String get cActivate => 'Activate';
+
+  @override
+  String get cPasswordRule => 'At least 12 characters';
+
+  @override
+  String get cAdminOnly => 'Admins only';
+
+  @override
+  String cBookingsCount(String n) {
+    return '$n bookings';
+  }
+
+  @override
+  String get cJoined => 'Joined';
+
+  @override
+  String get cNewBooking => 'New booking';
+
+  @override
+  String get cNewMessage => 'New message';
+
+  @override
   String get ok => 'OK';
 
   @override

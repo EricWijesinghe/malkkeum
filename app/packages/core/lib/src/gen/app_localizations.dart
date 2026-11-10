@@ -103,6 +103,744 @@ abstract class T {
     Locale('zh'),
   ];
 
+  /// No description provided for @cTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영 콘솔'**
+  String get cTitle;
+
+  /// No description provided for @cEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일'**
+  String get cEmail;
+
+  /// No description provided for @cPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호'**
+  String get cPassword;
+
+  /// No description provided for @cLogin.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인'**
+  String get cLogin;
+
+  /// No description provided for @cLoginFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일 또는 비밀번호가 맞지 않아요'**
+  String get cLoginFailed;
+
+  /// No description provided for @cDashboard.
+  ///
+  /// In ko, this message translates to:
+  /// **'대시보드'**
+  String get cDashboard;
+
+  /// No description provided for @cBookings.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get cBookings;
+
+  /// No description provided for @cQuoteDesk.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 데스크'**
+  String get cQuoteDesk;
+
+  /// No description provided for @cInbox.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담함'**
+  String get cInbox;
+
+  /// No description provided for @cCatalog.
+  ///
+  /// In ko, this message translates to:
+  /// **'카탈로그 · 가격'**
+  String get cCatalog;
+
+  /// No description provided for @cMarketing.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 · 콘텐츠'**
+  String get cMarketing;
+
+  /// No description provided for @cPartners.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너'**
+  String get cPartners;
+
+  /// No description provided for @cSettlements.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get cSettlements;
+
+  /// No description provided for @cCustomers.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get cCustomers;
+
+  /// No description provided for @cStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원'**
+  String get cStaff;
+
+  /// No description provided for @cSearchCommand.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 · 명령'**
+  String get cSearchCommand;
+
+  /// No description provided for @cPaletteHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'메뉴 이름이나 예약번호를 입력하세요'**
+  String get cPaletteHint;
+
+  /// No description provided for @cTodayJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 작업'**
+  String get cTodayJobs;
+
+  /// No description provided for @cOpenQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 대기'**
+  String get cOpenQuotes;
+
+  /// No description provided for @cUnassigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'미배정'**
+  String get cUnassigned;
+
+  /// No description provided for @cUnreadThreads.
+  ///
+  /// In ko, this message translates to:
+  /// **'안 읽은 상담'**
+  String get cUnreadThreads;
+
+  /// No description provided for @cRevenue30.
+  ///
+  /// In ko, this message translates to:
+  /// **'30일 결제액'**
+  String get cRevenue30;
+
+  /// No description provided for @cBookings30.
+  ///
+  /// In ko, this message translates to:
+  /// **'30일 예약'**
+  String get cBookings30;
+
+  /// No description provided for @cByService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스별 예약 (30일)'**
+  String get cByService;
+
+  /// No description provided for @cAllStatus.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 상태'**
+  String get cAllStatus;
+
+  /// No description provided for @cAllServices.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 서비스'**
+  String get cAllServices;
+
+  /// No description provided for @cSearch.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 (예약번호, 전화, 이름, 주소)'**
+  String get cSearch;
+
+  /// No description provided for @cNoResults.
+  ///
+  /// In ko, this message translates to:
+  /// **'결과가 없어요'**
+  String get cNoResults;
+
+  /// No description provided for @cNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약번호'**
+  String get cNumber;
+
+  /// No description provided for @cVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문'**
+  String get cVisit;
+
+  /// No description provided for @cService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스'**
+  String get cService;
+
+  /// No description provided for @cStatus.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태'**
+  String get cStatus;
+
+  /// No description provided for @cTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀'**
+  String get cTeam;
+
+  /// No description provided for @cAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'금액'**
+  String get cAmount;
+
+  /// No description provided for @cCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get cCustomer;
+
+  /// No description provided for @cPayments.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제'**
+  String get cPayments;
+
+  /// No description provided for @cChangeStatus.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태 변경'**
+  String get cChangeStatus;
+
+  /// No description provided for @cTeamName.
+  ///
+  /// In ko, this message translates to:
+  /// **'배정 팀 이름'**
+  String get cTeamName;
+
+  /// No description provided for @cAssign.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 배정'**
+  String get cAssign;
+
+  /// No description provided for @cMarkDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료 처리'**
+  String get cMarkDone;
+
+  /// No description provided for @cConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확정 처리'**
+  String get cConfirm;
+
+  /// No description provided for @cCancelRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소 · 환불'**
+  String get cCancelRefund;
+
+  /// No description provided for @cRefundAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 금액 (비우면 전액)'**
+  String get cRefundAmount;
+
+  /// No description provided for @cDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리했어요'**
+  String get cDone;
+
+  /// No description provided for @cAnswers.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 답변'**
+  String get cAnswers;
+
+  /// No description provided for @cEstimateCalc.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 산정'**
+  String get cEstimateCalc;
+
+  /// No description provided for @cBase.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본'**
+  String get cBase;
+
+  /// No description provided for @cExtras.
+  ///
+  /// In ko, this message translates to:
+  /// **'추가'**
+  String get cExtras;
+
+  /// No description provided for @cSurcharge.
+  ///
+  /// In ko, this message translates to:
+  /// **'할증'**
+  String get cSurcharge;
+
+  /// No description provided for @cBeforeVat.
+  ///
+  /// In ko, this message translates to:
+  /// **'부가세 전'**
+  String get cBeforeVat;
+
+  /// No description provided for @cProQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 견적'**
+  String get cProQuotes;
+
+  /// No description provided for @cNoProQuotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 받은 견적이 없어요'**
+  String get cNoProQuotes;
+
+  /// No description provided for @cFinalPrice.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 최종 금액'**
+  String get cFinalPrice;
+
+  /// No description provided for @cQuoteNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객에게 보낼 메모'**
+  String get cQuoteNote;
+
+  /// No description provided for @cSendQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객에게 견적 보내기'**
+  String get cSendQuote;
+
+  /// No description provided for @cQuoteSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적을 보냈어요'**
+  String get cQuoteSent;
+
+  /// No description provided for @cCustomerChats.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get cCustomerChats;
+
+  /// No description provided for @cPartnerChats.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너'**
+  String get cPartnerChats;
+
+  /// No description provided for @cSelectBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약을 선택하세요'**
+  String get cSelectBooking;
+
+  /// No description provided for @cRefunded.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불됨'**
+  String get cRefunded;
+
+  /// No description provided for @cPartRefunded.
+  ///
+  /// In ko, this message translates to:
+  /// **'부분 환불'**
+  String get cPartRefunded;
+
+  /// No description provided for @cFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get cFailed;
+
+  /// No description provided for @cSelectThread.
+  ///
+  /// In ko, this message translates to:
+  /// **'대화를 선택하세요'**
+  String get cSelectThread;
+
+  /// No description provided for @cReplyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'답장 입력 · Ctrl+Enter 전송'**
+  String get cReplyHint;
+
+  /// No description provided for @cOpenBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 열기'**
+  String get cOpenBooking;
+
+  /// No description provided for @cShortcuts.
+  ///
+  /// In ko, this message translates to:
+  /// **'J/K 이동 · Ctrl+K 명령'**
+  String get cShortcuts;
+
+  /// No description provided for @cPricing.
+  ///
+  /// In ko, this message translates to:
+  /// **'가격'**
+  String get cPricing;
+
+  /// No description provided for @cMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'소요(분)'**
+  String get cMinutes;
+
+  /// No description provided for @cActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'판매 중'**
+  String get cActive;
+
+  /// No description provided for @cSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get cSaved;
+
+  /// No description provided for @cSlotCapacity.
+  ///
+  /// In ko, this message translates to:
+  /// **'시간대별 수용량'**
+  String get cSlotCapacity;
+
+  /// No description provided for @cUnlimited.
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 없음'**
+  String get cUnlimited;
+
+  /// No description provided for @cFormula.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 산정식'**
+  String get cFormula;
+
+  /// No description provided for @f_base_studio.
+  ///
+  /// In ko, this message translates to:
+  /// **'원룸 기본'**
+  String get f_base_studio;
+
+  /// No description provided for @f_base_one_and_half.
+  ///
+  /// In ko, this message translates to:
+  /// **'1.5룸 기본'**
+  String get f_base_one_and_half;
+
+  /// No description provided for @f_base_two_rooms.
+  ///
+  /// In ko, this message translates to:
+  /// **'방 2개 기본'**
+  String get f_base_two_rooms;
+
+  /// No description provided for @f_base_three_rooms.
+  ///
+  /// In ko, this message translates to:
+  /// **'방 3개 기본'**
+  String get f_base_three_rooms;
+
+  /// No description provided for @f_base_four_plus.
+  ///
+  /// In ko, this message translates to:
+  /// **'방 4개 이상 기본'**
+  String get f_base_four_plus;
+
+  /// No description provided for @f_per_extra_bathroom.
+  ///
+  /// In ko, this message translates to:
+  /// **'욕실 추가당'**
+  String get f_per_extra_bathroom;
+
+  /// No description provided for @f_per_balcony.
+  ///
+  /// In ko, this message translates to:
+  /// **'발코니당'**
+  String get f_per_balcony;
+
+  /// No description provided for @f_duplex.
+  ///
+  /// In ko, this message translates to:
+  /// **'복층'**
+  String get f_duplex;
+
+  /// No description provided for @f_no_elevator_high_floor.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 없음 + 3층 이상'**
+  String get f_no_elevator_high_floor;
+
+  /// No description provided for @cIssueCoupon.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 발급'**
+  String get cIssueCoupon;
+
+  /// No description provided for @cCouponName.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 이름'**
+  String get cCouponName;
+
+  /// No description provided for @cCouponPhones.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 전화번호 (줄바꿈으로 구분)'**
+  String get cCouponPhones;
+
+  /// No description provided for @cAllCustomers.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 고객에게'**
+  String get cAllCustomers;
+
+  /// No description provided for @cIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}장 발급했어요'**
+  String cIssued(String n);
+
+  /// No description provided for @cContent.
+  ///
+  /// In ko, this message translates to:
+  /// **'콘텐츠'**
+  String get cContent;
+
+  /// No description provided for @cKind_notice.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get cKind_notice;
+
+  /// No description provided for @cKind_tip.
+  ///
+  /// In ko, this message translates to:
+  /// **'팁'**
+  String get cKind_tip;
+
+  /// No description provided for @cKind_faq.
+  ///
+  /// In ko, this message translates to:
+  /// **'FAQ'**
+  String get cKind_faq;
+
+  /// No description provided for @cKind_banner.
+  ///
+  /// In ko, this message translates to:
+  /// **'배너'**
+  String get cKind_banner;
+
+  /// No description provided for @cKind_legal.
+  ///
+  /// In ko, this message translates to:
+  /// **'약관'**
+  String get cKind_legal;
+
+  /// No description provided for @cNewContent.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 콘텐츠'**
+  String get cNewContent;
+
+  /// No description provided for @cTitleField.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get cTitleField;
+
+  /// No description provided for @cBodyField.
+  ///
+  /// In ko, this message translates to:
+  /// **'본문'**
+  String get cBodyField;
+
+  /// No description provided for @cSlug.
+  ///
+  /// In ko, this message translates to:
+  /// **'식별자 (약관: privacy / terms)'**
+  String get cSlug;
+
+  /// No description provided for @cVerify.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인'**
+  String get cVerify;
+
+  /// No description provided for @cSuspend.
+  ///
+  /// In ko, this message translates to:
+  /// **'중지'**
+  String get cSuspend;
+
+  /// No description provided for @cPro_pending.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인 대기'**
+  String get cPro_pending;
+
+  /// No description provided for @cPro_verified.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 중'**
+  String get cPro_verified;
+
+  /// No description provided for @cPro_suspended.
+  ///
+  /// In ko, this message translates to:
+  /// **'중지됨'**
+  String get cPro_suspended;
+
+  /// No description provided for @cCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get cCompleted;
+
+  /// No description provided for @cCancelledN.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get cCancelledN;
+
+  /// No description provided for @cRating.
+  ///
+  /// In ko, this message translates to:
+  /// **'평점'**
+  String get cRating;
+
+  /// No description provided for @cFeeRate.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료율 %'**
+  String get cFeeRate;
+
+  /// No description provided for @cRunPayouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 지급 실행'**
+  String get cRunPayouts;
+
+  /// No description provided for @cPayoutDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 기준일'**
+  String get cPayoutDate;
+
+  /// No description provided for @cPayoutDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}명에게 지급 처리했어요'**
+  String cPayoutDone(String n);
+
+  /// No description provided for @cHold.
+  ///
+  /// In ko, this message translates to:
+  /// **'보류'**
+  String get cHold;
+
+  /// No description provided for @cRelease.
+  ///
+  /// In ko, this message translates to:
+  /// **'보류 해제'**
+  String get cRelease;
+
+  /// No description provided for @cNet.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급액'**
+  String get cNet;
+
+  /// No description provided for @cAddStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 추가'**
+  String get cAddStaff;
+
+  /// No description provided for @cRoleAdmin.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자'**
+  String get cRoleAdmin;
+
+  /// No description provided for @cRoleConsultant.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담원'**
+  String get cRoleConsultant;
+
+  /// No description provided for @cDeactivate.
+  ///
+  /// In ko, this message translates to:
+  /// **'비활성화'**
+  String get cDeactivate;
+
+  /// No description provided for @cActivate.
+  ///
+  /// In ko, this message translates to:
+  /// **'활성화'**
+  String get cActivate;
+
+  /// No description provided for @cPasswordRule.
+  ///
+  /// In ko, this message translates to:
+  /// **'12자 이상'**
+  String get cPasswordRule;
+
+  /// No description provided for @cAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자만 할 수 있어요'**
+  String get cAdminOnly;
+
+  /// No description provided for @cBookingsCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 {n}건'**
+  String cBookingsCount(String n);
+
+  /// No description provided for @cJoined.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입'**
+  String get cJoined;
+
+  /// No description provided for @cNewBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 예약이 들어왔어요'**
+  String get cNewBooking;
+
+  /// No description provided for @cNewMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 메시지'**
+  String get cNewMessage;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:

@@ -1,0 +1,36 @@
+# Production stack on one server: Postgres + API + Caddy (automatic HTTPS).
+# Usage: copy deploy/.env.example to deploy/.env, fill it, then `docker compose up -d --build`.
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cleaning
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 10 }
+  api:
+    build: ../backend
+    restart: unless-stopped
+    depends_on: { db: { condition: service_healthy } }
+    environment:
+      DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      DATA_KEY: ${DATA_KEY:?set DATA_KEY}
+      PUBLIC_BASE_URL: https://${API_DOMAIN}
+      ALLOWED_ORIGINS: https://${CONSOLE_DOMAIN}
+      DEV_MODE: ${DEV_MODE:-0}  # see .env.example warning
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+    volumes: [uploads:/data/uploads]
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment: { API_DOMAIN: "${API_DOMAIN}", CONSOLE_DOMAIN: "${CONSOLE_DOMAIN}" }
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../app/apps/console/build/web:/srv/console:ro
+      - caddydata:/data
+volumes: { dbdata: {}, uploads: {}, caddydata: {} }

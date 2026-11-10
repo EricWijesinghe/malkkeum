@@ -9,6 +9,381 @@ class TZh extends T {
   TZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get cTitle => '运营控制台';
+
+  @override
+  String get cEmail => '邮箱';
+
+  @override
+  String get cPassword => '密码';
+
+  @override
+  String get cLogin => '登录';
+
+  @override
+  String get cLoginFailed => '邮箱或密码错误';
+
+  @override
+  String get cDashboard => '仪表盘';
+
+  @override
+  String get cBookings => '预约';
+
+  @override
+  String get cQuoteDesk => '报价台';
+
+  @override
+  String get cInbox => '咨询箱';
+
+  @override
+  String get cCatalog => '目录与价格';
+
+  @override
+  String get cMarketing => '优惠券与内容';
+
+  @override
+  String get cPartners => '服务者';
+
+  @override
+  String get cSettlements => '结算';
+
+  @override
+  String get cCustomers => '客户';
+
+  @override
+  String get cStaff => '员工';
+
+  @override
+  String get cSearchCommand => '搜索或跳转';
+
+  @override
+  String get cPaletteHint => '输入菜单名或预约号';
+
+  @override
+  String get cTodayJobs => '今日作业';
+
+  @override
+  String get cOpenQuotes => '待报价';
+
+  @override
+  String get cUnassigned => '未派单';
+
+  @override
+  String get cUnreadThreads => '未读咨询';
+
+  @override
+  String get cRevenue30 => '30天收入';
+
+  @override
+  String get cBookings30 => '30天预约';
+
+  @override
+  String get cByService => '按服务预约（30天）';
+
+  @override
+  String get cAllStatus => '全部状态';
+
+  @override
+  String get cAllServices => '全部服务';
+
+  @override
+  String get cSearch => '搜索（编号、电话、姓名、地址）';
+
+  @override
+  String get cNoResults => '无结果';
+
+  @override
+  String get cNumber => '预约号';
+
+  @override
+  String get cVisit => '上门';
+
+  @override
+  String get cService => '服务';
+
+  @override
+  String get cStatus => '状态';
+
+  @override
+  String get cTeam => '团队';
+
+  @override
+  String get cAmount => '金额';
+
+  @override
+  String get cCustomer => '客户';
+
+  @override
+  String get cPayments => '支付';
+
+  @override
+  String get cChangeStatus => '更改状态';
+
+  @override
+  String get cTeamName => '指派团队';
+
+  @override
+  String get cAssign => '指派团队';
+
+  @override
+  String get cMarkDone => '标记完成';
+
+  @override
+  String get cConfirm => '标记确认';
+
+  @override
+  String get cCancelRefund => '取消并退款';
+
+  @override
+  String get cRefundAmount => '退款金额（留空为全额）';
+
+  @override
+  String get cDone => '已处理';
+
+  @override
+  String get cAnswers => '客户回答';
+
+  @override
+  String get cEstimateCalc => '自动估算';
+
+  @override
+  String get cBase => '基础';
+
+  @override
+  String get cExtras => '附加';
+
+  @override
+  String get cSurcharge => '加价';
+
+  @override
+  String get cBeforeVat => '税前';
+
+  @override
+  String get cProQuotes => '服务者报价';
+
+  @override
+  String get cNoProQuotes => '暂无服务者报价';
+
+  @override
+  String get cFinalPrice => '给客户的最终价';
+
+  @override
+  String get cQuoteNote => '给客户的备注';
+
+  @override
+  String get cSendQuote => '发送报价给客户';
+
+  @override
+  String get cQuoteSent => '报价已发送';
+
+  @override
+  String get cCustomerChats => '客户';
+
+  @override
+  String get cPartnerChats => '服务者';
+
+  @override
+  String get cSelectBooking => '请选择预约';
+
+  @override
+  String get cRefunded => '已退款';
+
+  @override
+  String get cPartRefunded => '部分退款';
+
+  @override
+  String get cFailed => '失败';
+
+  @override
+  String get cSelectThread => '请选择会话';
+
+  @override
+  String get cReplyHint => '输入回复 · Ctrl+Enter发送';
+
+  @override
+  String get cOpenBooking => '打开预约';
+
+  @override
+  String get cShortcuts => 'J/K移动 · Ctrl+K命令';
+
+  @override
+  String get cPricing => '价格';
+
+  @override
+  String get cMinutes => '时长(分)';
+
+  @override
+  String get cActive => '上架中';
+
+  @override
+  String get cSaved => '已保存';
+
+  @override
+  String get cSlotCapacity => '各时段容量';
+
+  @override
+  String get cUnlimited => '不限';
+
+  @override
+  String get cFormula => '报价公式';
+
+  @override
+  String get f_base_studio => '基础：单间';
+
+  @override
+  String get f_base_one_and_half => '基础：1.5室';
+
+  @override
+  String get f_base_two_rooms => '基础：2室';
+
+  @override
+  String get f_base_three_rooms => '基础：3室';
+
+  @override
+  String get f_base_four_plus => '基础：4室以上';
+
+  @override
+  String get f_per_extra_bathroom => '每增加卫生间';
+
+  @override
+  String get f_per_balcony => '每个阳台';
+
+  @override
+  String get f_duplex => '复式';
+
+  @override
+  String get f_no_elevator_high_floor => '无电梯且3楼以上';
+
+  @override
+  String get cIssueCoupon => '发放优惠券';
+
+  @override
+  String get cCouponName => '优惠券名称';
+
+  @override
+  String get cCouponPhones => '目标手机号（每行一个）';
+
+  @override
+  String get cAllCustomers => '发给全部客户';
+
+  @override
+  String cIssued(String n) {
+    return '已发放$n张';
+  }
+
+  @override
+  String get cContent => '内容';
+
+  @override
+  String get cKind_notice => '公告';
+
+  @override
+  String get cKind_tip => '贴士';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => '横幅';
+
+  @override
+  String get cKind_legal => '条款';
+
+  @override
+  String get cNewContent => '新内容';
+
+  @override
+  String get cTitleField => '标题';
+
+  @override
+  String get cBodyField => '正文';
+
+  @override
+  String get cSlug => '标识（条款：privacy / terms）';
+
+  @override
+  String get cVerify => '批准';
+
+  @override
+  String get cSuspend => '暂停';
+
+  @override
+  String get cPro_pending => '待审核';
+
+  @override
+  String get cPro_verified => '活跃';
+
+  @override
+  String get cPro_suspended => '已暂停';
+
+  @override
+  String get cCompleted => '完成';
+
+  @override
+  String get cCancelledN => '取消';
+
+  @override
+  String get cRating => '评分';
+
+  @override
+  String get cFeeRate => '费率 %';
+
+  @override
+  String get cRunPayouts => '执行结算';
+
+  @override
+  String get cPayoutDate => '截止日期';
+
+  @override
+  String cPayoutDone(String n) {
+    return '已向$n位服务者支付';
+  }
+
+  @override
+  String get cHold => '暂缓';
+
+  @override
+  String get cRelease => '解除暂缓';
+
+  @override
+  String get cNet => '实付';
+
+  @override
+  String get cAddStaff => '添加员工';
+
+  @override
+  String get cRoleAdmin => '管理员';
+
+  @override
+  String get cRoleConsultant => '顾问';
+
+  @override
+  String get cDeactivate => '停用';
+
+  @override
+  String get cActivate => '启用';
+
+  @override
+  String get cPasswordRule => '至少12个字符';
+
+  @override
+  String get cAdminOnly => '仅管理员可操作';
+
+  @override
+  String cBookingsCount(String n) {
+    return '预约$n笔';
+  }
+
+  @override
+  String get cJoined => '注册';
+
+  @override
+  String get cNewBooking => '新预约';
+
+  @override
+  String get cNewMessage => '新消息';
+
+  @override
   String get ok => '确定';
 
   @override

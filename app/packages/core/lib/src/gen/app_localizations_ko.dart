@@ -9,6 +9,381 @@ class TKo extends T {
   TKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get cTitle => '운영 콘솔';
+
+  @override
+  String get cEmail => '이메일';
+
+  @override
+  String get cPassword => '비밀번호';
+
+  @override
+  String get cLogin => '로그인';
+
+  @override
+  String get cLoginFailed => '이메일 또는 비밀번호가 맞지 않아요';
+
+  @override
+  String get cDashboard => '대시보드';
+
+  @override
+  String get cBookings => '예약';
+
+  @override
+  String get cQuoteDesk => '견적 데스크';
+
+  @override
+  String get cInbox => '상담함';
+
+  @override
+  String get cCatalog => '카탈로그 · 가격';
+
+  @override
+  String get cMarketing => '쿠폰 · 콘텐츠';
+
+  @override
+  String get cPartners => '파트너';
+
+  @override
+  String get cSettlements => '정산';
+
+  @override
+  String get cCustomers => '고객';
+
+  @override
+  String get cStaff => '직원';
+
+  @override
+  String get cSearchCommand => '검색 · 명령';
+
+  @override
+  String get cPaletteHint => '메뉴 이름이나 예약번호를 입력하세요';
+
+  @override
+  String get cTodayJobs => '오늘 작업';
+
+  @override
+  String get cOpenQuotes => '견적 대기';
+
+  @override
+  String get cUnassigned => '미배정';
+
+  @override
+  String get cUnreadThreads => '안 읽은 상담';
+
+  @override
+  String get cRevenue30 => '30일 결제액';
+
+  @override
+  String get cBookings30 => '30일 예약';
+
+  @override
+  String get cByService => '서비스별 예약 (30일)';
+
+  @override
+  String get cAllStatus => '전체 상태';
+
+  @override
+  String get cAllServices => '전체 서비스';
+
+  @override
+  String get cSearch => '검색 (예약번호, 전화, 이름, 주소)';
+
+  @override
+  String get cNoResults => '결과가 없어요';
+
+  @override
+  String get cNumber => '예약번호';
+
+  @override
+  String get cVisit => '방문';
+
+  @override
+  String get cService => '서비스';
+
+  @override
+  String get cStatus => '상태';
+
+  @override
+  String get cTeam => '팀';
+
+  @override
+  String get cAmount => '금액';
+
+  @override
+  String get cCustomer => '고객';
+
+  @override
+  String get cPayments => '결제';
+
+  @override
+  String get cChangeStatus => '상태 변경';
+
+  @override
+  String get cTeamName => '배정 팀 이름';
+
+  @override
+  String get cAssign => '팀 배정';
+
+  @override
+  String get cMarkDone => '완료 처리';
+
+  @override
+  String get cConfirm => '확정 처리';
+
+  @override
+  String get cCancelRefund => '취소 · 환불';
+
+  @override
+  String get cRefundAmount => '환불 금액 (비우면 전액)';
+
+  @override
+  String get cDone => '처리했어요';
+
+  @override
+  String get cAnswers => '고객 답변';
+
+  @override
+  String get cEstimateCalc => '자동 산정';
+
+  @override
+  String get cBase => '기본';
+
+  @override
+  String get cExtras => '추가';
+
+  @override
+  String get cSurcharge => '할증';
+
+  @override
+  String get cBeforeVat => '부가세 전';
+
+  @override
+  String get cProQuotes => '파트너 견적';
+
+  @override
+  String get cNoProQuotes => '아직 받은 견적이 없어요';
+
+  @override
+  String get cFinalPrice => '고객 최종 금액';
+
+  @override
+  String get cQuoteNote => '고객에게 보낼 메모';
+
+  @override
+  String get cSendQuote => '고객에게 견적 보내기';
+
+  @override
+  String get cQuoteSent => '견적을 보냈어요';
+
+  @override
+  String get cCustomerChats => '고객';
+
+  @override
+  String get cPartnerChats => '파트너';
+
+  @override
+  String get cSelectBooking => '예약을 선택하세요';
+
+  @override
+  String get cRefunded => '환불됨';
+
+  @override
+  String get cPartRefunded => '부분 환불';
+
+  @override
+  String get cFailed => '실패';
+
+  @override
+  String get cSelectThread => '대화를 선택하세요';
+
+  @override
+  String get cReplyHint => '답장 입력 · Ctrl+Enter 전송';
+
+  @override
+  String get cOpenBooking => '예약 열기';
+
+  @override
+  String get cShortcuts => 'J/K 이동 · Ctrl+K 명령';
+
+  @override
+  String get cPricing => '가격';
+
+  @override
+  String get cMinutes => '소요(분)';
+
+  @override
+  String get cActive => '판매 중';
+
+  @override
+  String get cSaved => '저장했어요';
+
+  @override
+  String get cSlotCapacity => '시간대별 수용량';
+
+  @override
+  String get cUnlimited => '제한 없음';
+
+  @override
+  String get cFormula => '견적 산정식';
+
+  @override
+  String get f_base_studio => '원룸 기본';
+
+  @override
+  String get f_base_one_and_half => '1.5룸 기본';
+
+  @override
+  String get f_base_two_rooms => '방 2개 기본';
+
+  @override
+  String get f_base_three_rooms => '방 3개 기본';
+
+  @override
+  String get f_base_four_plus => '방 4개 이상 기본';
+
+  @override
+  String get f_per_extra_bathroom => '욕실 추가당';
+
+  @override
+  String get f_per_balcony => '발코니당';
+
+  @override
+  String get f_duplex => '복층';
+
+  @override
+  String get f_no_elevator_high_floor => '엘리베이터 없음 + 3층 이상';
+
+  @override
+  String get cIssueCoupon => '쿠폰 발급';
+
+  @override
+  String get cCouponName => '쿠폰 이름';
+
+  @override
+  String get cCouponPhones => '대상 전화번호 (줄바꿈으로 구분)';
+
+  @override
+  String get cAllCustomers => '전체 고객에게';
+
+  @override
+  String cIssued(String n) {
+    return '$n장 발급했어요';
+  }
+
+  @override
+  String get cContent => '콘텐츠';
+
+  @override
+  String get cKind_notice => '공지';
+
+  @override
+  String get cKind_tip => '팁';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => '배너';
+
+  @override
+  String get cKind_legal => '약관';
+
+  @override
+  String get cNewContent => '새 콘텐츠';
+
+  @override
+  String get cTitleField => '제목';
+
+  @override
+  String get cBodyField => '본문';
+
+  @override
+  String get cSlug => '식별자 (약관: privacy / terms)';
+
+  @override
+  String get cVerify => '승인';
+
+  @override
+  String get cSuspend => '중지';
+
+  @override
+  String get cPro_pending => '승인 대기';
+
+  @override
+  String get cPro_verified => '활동 중';
+
+  @override
+  String get cPro_suspended => '중지됨';
+
+  @override
+  String get cCompleted => '완료';
+
+  @override
+  String get cCancelledN => '취소';
+
+  @override
+  String get cRating => '평점';
+
+  @override
+  String get cFeeRate => '수수료율 %';
+
+  @override
+  String get cRunPayouts => '정산 지급 실행';
+
+  @override
+  String get cPayoutDate => '지급 기준일';
+
+  @override
+  String cPayoutDone(String n) {
+    return '$n명에게 지급 처리했어요';
+  }
+
+  @override
+  String get cHold => '보류';
+
+  @override
+  String get cRelease => '보류 해제';
+
+  @override
+  String get cNet => '지급액';
+
+  @override
+  String get cAddStaff => '직원 추가';
+
+  @override
+  String get cRoleAdmin => '관리자';
+
+  @override
+  String get cRoleConsultant => '상담원';
+
+  @override
+  String get cDeactivate => '비활성화';
+
+  @override
+  String get cActivate => '활성화';
+
+  @override
+  String get cPasswordRule => '12자 이상';
+
+  @override
+  String get cAdminOnly => '관리자만 할 수 있어요';
+
+  @override
+  String cBookingsCount(String n) {
+    return '예약 $n건';
+  }
+
+  @override
+  String get cJoined => '가입';
+
+  @override
+  String get cNewBooking => '새 예약이 들어왔어요';
+
+  @override
+  String get cNewMessage => '새 메시지';
+
+  @override
   String get ok => '확인';
 
   @override

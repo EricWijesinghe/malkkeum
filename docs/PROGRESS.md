@@ -35,10 +35,14 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 - [x] Strings: `app/tool/strings_*.py` -> `python -I app/tool/gen_arb.py` -> 5 ARB files (ko/en/ja/zh/vi), checked for missing/placeholder drift
 - [x] Customer app: intro/OTP/profile, home, service, address, schedule, checkout, done, quote flow (6 steps), bookings calendar/list, detail (timeline, deposit/balance, photos, review, notes, reschedule, cancel), chat list/room (quote card, photos, quick replies), more (coupons, points, account, addresses, payments, scope, notices, tips, FAQ, language, legal, licenses, delete account). Web + Android debug builds OK.
 - [ ] Customer: real PG registration SDK, Kakao address search, push (FCM), move-in cross-sell coupon claim, before/after review carousel on quote type step
-- [ ] Partner app: all ~18 screens + onboarding
-- [ ] Console: bookings, quote desk, inbox, catalog, marketing, partners, settlements, staff roles
-- [ ] Translations for 5 languages
-- [ ] Release: signing, store listings, CI, deploy guide (docs/DEPLOY.md)
+- [x] Partner app: intro/OTP, onboarding (name, team, services, districts), pending/suspended gates, jobs feed (direct/quote, sort, closed), job detail (masked before accept, accept sheet, quote sheet w/ live payout, assignee, memo, reschedule reply, cancelled banner, payout breakdown), my quotes (filters, edit/withdraw), schedule month view, completion (photos + checklist + success), ops chat, settlements, reviews, areas, work schedule, payout account, team, notifications, language
+- [x] Console (Flutter: Windows / phone / web): staff login, Ctrl+K palette, Ctrl+1..9, dashboard KPIs + by-service bars, bookings split view w/ status/assign/cancel-refund, quote desk (answers, estimate breakdown, partner quotes, send), inbox (customer/partner, J/K, Ctrl+Enter), catalog prices/capacity/formula, coupons + 5-language content editor, partners approve/suspend, settlements payout run + transfer sheet + hold, customers, staff (admin only)
+- [x] Translations: 5 languages for all three apps (~580 keys)
+- [x] Deploy kit: backend/Dockerfile, deploy/docker-compose.yml (+Caddy HTTPS), deploy/.env.example, docs/DEPLOY.md; extras list docs/PITCH.md
+- [ ] Release: signing keys, store accounts, final app IDs/brand/icons (owner decisions, see DEPLOY.md §3)
+- [ ] CI pipeline (cargo test + flutter analyze + smoke on PR)
+- [ ] Widget tests for key flows (currently: Rust unit + e2e smoke; Flutter verified by analyze + screenshots)
+- [ ] Design canvas refresh to the colorful v1 palette (code is the source of truth now)
 
 ## How to build / run
 ```
@@ -51,4 +55,4 @@ Screenshots: `node F:/tools/shot/tour.js` (Playwright on F:) against `flutter bu
 Dev console login: admin@local.test / change-me-now-please (from backend/.env, change it).
 
 ## Log
-- 2026-11-10 Session 1: specs read, design canvas, repo init, domain crate green, full API + e2e smoke green. Next: Flutter workspace (ui, core, customer, partner, console).
+- 2026-11-10 Session 1: specs, design canvas, domain + API (smoke green), Flutter workspace, customer/partner/console apps (analyze clean), 5 languages, deploy kit. Screenshots verified customer intro/home + console dashboard/bookings. Next: real provider adapters once owner has accounts, CI, widget tests, store prep.

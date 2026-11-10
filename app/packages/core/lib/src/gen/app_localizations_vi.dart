@@ -9,6 +9,381 @@ class TVi extends T {
   TVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get cTitle => 'Bảng điều hành';
+
+  @override
+  String get cEmail => 'Email';
+
+  @override
+  String get cPassword => 'Mật khẩu';
+
+  @override
+  String get cLogin => 'Đăng nhập';
+
+  @override
+  String get cLoginFailed => 'Sai email hoặc mật khẩu';
+
+  @override
+  String get cDashboard => 'Tổng quan';
+
+  @override
+  String get cBookings => 'Lịch hẹn';
+
+  @override
+  String get cQuoteDesk => 'Bàn báo giá';
+
+  @override
+  String get cInbox => 'Hộp thư';
+
+  @override
+  String get cCatalog => 'Danh mục & giá';
+
+  @override
+  String get cMarketing => 'Phiếu & nội dung';
+
+  @override
+  String get cPartners => 'Đối tác';
+
+  @override
+  String get cSettlements => 'Thanh toán';
+
+  @override
+  String get cCustomers => 'Khách hàng';
+
+  @override
+  String get cStaff => 'Nhân viên';
+
+  @override
+  String get cSearchCommand => 'Tìm hoặc chuyển';
+
+  @override
+  String get cPaletteHint => 'Nhập mục hoặc mã đặt';
+
+  @override
+  String get cTodayJobs => 'Việc hôm nay';
+
+  @override
+  String get cOpenQuotes => 'Chờ báo giá';
+
+  @override
+  String get cUnassigned => 'Chưa giao';
+
+  @override
+  String get cUnreadThreads => 'Chat chưa đọc';
+
+  @override
+  String get cRevenue30 => 'Doanh thu 30 ngày';
+
+  @override
+  String get cBookings30 => 'Lịch 30 ngày';
+
+  @override
+  String get cByService => 'Theo dịch vụ (30 ngày)';
+
+  @override
+  String get cAllStatus => 'Mọi trạng thái';
+
+  @override
+  String get cAllServices => 'Mọi dịch vụ';
+
+  @override
+  String get cSearch => 'Tìm (mã, SĐT, tên, địa chỉ)';
+
+  @override
+  String get cNoResults => 'Không có kết quả';
+
+  @override
+  String get cNumber => 'Mã';
+
+  @override
+  String get cVisit => 'Lịch';
+
+  @override
+  String get cService => 'Dịch vụ';
+
+  @override
+  String get cStatus => 'Trạng thái';
+
+  @override
+  String get cTeam => 'Đội';
+
+  @override
+  String get cAmount => 'Số tiền';
+
+  @override
+  String get cCustomer => 'Khách';
+
+  @override
+  String get cPayments => 'Thanh toán';
+
+  @override
+  String get cChangeStatus => 'Đổi trạng thái';
+
+  @override
+  String get cTeamName => 'Đội được giao';
+
+  @override
+  String get cAssign => 'Giao đội';
+
+  @override
+  String get cMarkDone => 'Đánh dấu xong';
+
+  @override
+  String get cConfirm => 'Đánh dấu xác nhận';
+
+  @override
+  String get cCancelRefund => 'Hủy & hoàn tiền';
+
+  @override
+  String get cRefundAmount => 'Số tiền hoàn (trống = toàn bộ)';
+
+  @override
+  String get cDone => 'Đã xong';
+
+  @override
+  String get cAnswers => 'Trả lời của khách';
+
+  @override
+  String get cEstimateCalc => 'Ước tính tự động';
+
+  @override
+  String get cBase => 'Cơ bản';
+
+  @override
+  String get cExtras => 'Phụ thêm';
+
+  @override
+  String get cSurcharge => 'Phụ phí';
+
+  @override
+  String get cBeforeVat => 'Trước VAT';
+
+  @override
+  String get cProQuotes => 'Báo giá đối tác';
+
+  @override
+  String get cNoProQuotes => 'Chưa có báo giá';
+
+  @override
+  String get cFinalPrice => 'Giá cuối cho khách';
+
+  @override
+  String get cQuoteNote => 'Ghi chú cho khách';
+
+  @override
+  String get cSendQuote => 'Gửi báo giá cho khách';
+
+  @override
+  String get cQuoteSent => 'Đã gửi báo giá';
+
+  @override
+  String get cCustomerChats => 'Khách';
+
+  @override
+  String get cPartnerChats => 'Đối tác';
+
+  @override
+  String get cSelectBooking => 'Chọn một lịch hẹn';
+
+  @override
+  String get cRefunded => 'Đã hoàn tiền';
+
+  @override
+  String get cPartRefunded => 'Hoàn một phần';
+
+  @override
+  String get cFailed => 'Thất bại';
+
+  @override
+  String get cSelectThread => 'Chọn cuộc trò chuyện';
+
+  @override
+  String get cReplyHint => 'Trả lời · Ctrl+Enter để gửi';
+
+  @override
+  String get cOpenBooking => 'Mở lịch';
+
+  @override
+  String get cShortcuts => 'J/K di chuyển · Ctrl+K lệnh';
+
+  @override
+  String get cPricing => 'Giá';
+
+  @override
+  String get cMinutes => 'Phút';
+
+  @override
+  String get cActive => 'Đang bán';
+
+  @override
+  String get cSaved => 'Đã lưu';
+
+  @override
+  String get cSlotCapacity => 'Sức chứa mỗi khung giờ';
+
+  @override
+  String get cUnlimited => 'Không giới hạn';
+
+  @override
+  String get cFormula => 'Công thức báo giá';
+
+  @override
+  String get f_base_studio => 'Cơ bản: studio';
+
+  @override
+  String get f_base_one_and_half => 'Cơ bản: 1,5 phòng';
+
+  @override
+  String get f_base_two_rooms => 'Cơ bản: 2 phòng';
+
+  @override
+  String get f_base_three_rooms => 'Cơ bản: 3 phòng';
+
+  @override
+  String get f_base_four_plus => 'Cơ bản: 4+ phòng';
+
+  @override
+  String get f_per_extra_bathroom => 'Mỗi phòng tắm thêm';
+
+  @override
+  String get f_per_balcony => 'Mỗi ban công';
+
+  @override
+  String get f_duplex => 'Nhà 2 tầng';
+
+  @override
+  String get f_no_elevator_high_floor => 'Không thang máy & tầng 3+';
+
+  @override
+  String get cIssueCoupon => 'Phát phiếu';
+
+  @override
+  String get cCouponName => 'Tên phiếu';
+
+  @override
+  String get cCouponPhones => 'Số điện thoại (mỗi dòng một số)';
+
+  @override
+  String get cAllCustomers => 'Cho mọi khách';
+
+  @override
+  String cIssued(String n) {
+    return 'Đã phát $n';
+  }
+
+  @override
+  String get cContent => 'Nội dung';
+
+  @override
+  String get cKind_notice => 'Thông báo';
+
+  @override
+  String get cKind_tip => 'Mẹo';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'Banner';
+
+  @override
+  String get cKind_legal => 'Pháp lý';
+
+  @override
+  String get cNewContent => 'Nội dung mới';
+
+  @override
+  String get cTitleField => 'Tiêu đề';
+
+  @override
+  String get cBodyField => 'Nội dung';
+
+  @override
+  String get cSlug => 'Mã (pháp lý: privacy / terms)';
+
+  @override
+  String get cVerify => 'Duyệt';
+
+  @override
+  String get cSuspend => 'Tạm dừng';
+
+  @override
+  String get cPro_pending => 'Chờ duyệt';
+
+  @override
+  String get cPro_verified => 'Đang hoạt động';
+
+  @override
+  String get cPro_suspended => 'Tạm dừng';
+
+  @override
+  String get cCompleted => 'Hoàn tất';
+
+  @override
+  String get cCancelledN => 'Hủy';
+
+  @override
+  String get cRating => 'Đánh giá';
+
+  @override
+  String get cFeeRate => 'Phí %';
+
+  @override
+  String get cRunPayouts => 'Chạy thanh toán';
+
+  @override
+  String get cPayoutDate => 'Trả đến ngày';
+
+  @override
+  String cPayoutDone(String n) {
+    return 'Đã trả cho $n đối tác';
+  }
+
+  @override
+  String get cHold => 'Giữ';
+
+  @override
+  String get cRelease => 'Bỏ giữ';
+
+  @override
+  String get cNet => 'Thực nhận';
+
+  @override
+  String get cAddStaff => 'Thêm nhân viên';
+
+  @override
+  String get cRoleAdmin => 'Quản trị';
+
+  @override
+  String get cRoleConsultant => 'Tư vấn viên';
+
+  @override
+  String get cDeactivate => 'Vô hiệu';
+
+  @override
+  String get cActivate => 'Kích hoạt';
+
+  @override
+  String get cPasswordRule => 'Ít nhất 12 ký tự';
+
+  @override
+  String get cAdminOnly => 'Chỉ quản trị viên';
+
+  @override
+  String cBookingsCount(String n) {
+    return '$n lịch';
+  }
+
+  @override
+  String get cJoined => 'Tham gia';
+
+  @override
+  String get cNewBooking => 'Lịch mới';
+
+  @override
+  String get cNewMessage => 'Tin nhắn mới';
+
+  @override
   String get ok => 'OK';
 
   @override
