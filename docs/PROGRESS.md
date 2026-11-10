@@ -68,3 +68,11 @@ Dev console login: admin@local.test / change-me-now-please (from backend/.env, c
 - Store: `scripts/store_ready.py`, icons via `F:/tools/shot/icons.js`, `codemagic.yaml`, `docs/store/*`, `docs/guide/*`.
 - Next: features plan items 1, 2, 4, 6, 7; in-app wow layer; real SDK keys; store screenshots; first real install on a VPS.
 
+
+### 2026-11-11 (evening) — complete suite push (10 parallel feature branches, merged + verified centrally)
+- Features: AI support agent (Claude, offline/always-first modes, per-thread pause, usage; mig 0009); reviews, referrals, welcome offer, honest social proof + seats-left (0010); demo data `malkkeum demo load|clear` + `docs/sample-data.md` (0011); finance dashboard, charts, accountant CSV (UTF-8 BOM, formula guard), partner earnings; system status page, owner alerts, encrypted S3-compatible offsite backups (0013); in-app 3D cards/transitions/celebrations, contrast-tested palette; update channels (stable/beta), safe update + auto-rollback, CI install e2e, app update prompts; native Kakao/Naver/Google/Apple sign-in + Firebase push (keys from Codemagic via `scripts/ci/native-keys.sh`); customer web app (PWA) at `/app/`; generated store screenshots/listings (`scripts/store/generate.sh`).
+- i18n: server push/inbox/SMS in recipient language (`backend/crates/api/src/i18n.rs`), OTP SMS in app language, first-launch language picker.
+- Quality: 14-language × 320px × 1.3x text sweeps for customer and partner (`test/locale_sweep_test.dart`) — fixed every overflow found; real-font store renders caught one more (arrival grid).
+- Security review: all HIGH/MEDIUM fixed except CSP tightening (needs a live PortOne check); jsonwebtoken → 10.3 (GHSA-h395-gr6q-cpjc).
+- Totals: Rust 177 tests, Flutter 201+ tests, analyze/clippy/shellcheck/actionlint clean.
+- Blocked: GitHub Actions jobs for the private repo stay queued (no runner assigned) → owner must check GitHub billing/spending limit; release v1.0.0 waits on it. Then make GHCR packages public once.
