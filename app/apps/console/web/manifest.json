@@ -1,12 +1,12 @@
 {
-    "name": "console",
-    "short_name": "console",
+    "name": "말끔 관리자",
+    "short_name": "말끔 관리",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#0B1220",
+    "theme_color": "#3B5BFD",
+    "description": "말끔 운영 콘솔 — 예약, 상담, 정산, 설정",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
@@ -31,5 +31,7 @@
             "type": "image/png",
             "purpose": "maskable"
         }
-    ]
+    ],
+    "id": "malkkeum-console",
+    "lang": "ko"
 }
