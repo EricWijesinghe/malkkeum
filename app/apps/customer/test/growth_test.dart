@@ -23,9 +23,11 @@ void main() {
     await pumpCustomerScreen(
       tester,
       env,
-      Builder(
-        builder: (context) => Center(
-          child: FilledButton(onPressed: () => showReviewSheet(context, 'bk-1'), child: const Text('open')),
+      Scaffold(
+        body: Builder(
+          builder: (context) => Center(
+            child: FilledButton(onPressed: () => showReviewSheet(context, 'bk-1'), child: const Text('open')),
+          ),
         ),
       ),
     );
@@ -41,7 +43,7 @@ void main() {
     await settle(tester);
     expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
     await tester.tap(submit);
-    await settle(tester);
+    await settle(tester, duration: const Duration(seconds: 1));
 
     final sent = fake.lastCall('POST', '/bookings/bk-1/review');
     expect(sent, isNotNull);

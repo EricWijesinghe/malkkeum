@@ -59,14 +59,16 @@ void main() {
       final env = await TestEnv.create(fake: fake, localeCode: code, signedIn: false);
       await pumpCustomerApp(tester, env);
       await settle(tester, duration: const Duration(milliseconds: 600));
-      expect(tester.takeException(), isNull);
+      final intro = tester.takeException();
+      expect(intro, isNull, reason: 'intro: ${intro is FlutterError ? intro.toStringDeep() : intro}');
       await unmount(tester);
 
       final signedIn = await TestEnv.create(fake: fake, localeCode: code);
       for (final s in catalogCodes) {
         await pumpCustomerScreen(tester, signedIn, ServiceScreen(service: Service.fromJson(serviceJson(s))));
         await settle(tester, duration: const Duration(milliseconds: 400));
-        expect(tester.takeException(), isNull, reason: 'service $s');
+        final e = tester.takeException();
+        expect(e, isNull, reason: 'service $s: ${e is FlutterError ? e.toStringDeep() : e}');
         await unmount(tester);
       }
     });

@@ -224,8 +224,10 @@ class _ReviewSheetState extends State<ReviewSheet> {
     try {
       await context.api.post('/bookings/${widget.bookingId}/review', {'rating': _rating, 'body': _text.text.trim(), 'photos': _photos});
       if (!mounted) return;
-      showToast(context, t.reviewSaved);
+      // Close first, then confirm on the screen underneath (the sheet's own context is gone after pop).
+      final messenger = ScaffoldMessenger.maybeOf(context);
       Navigator.of(context).pop(true);
+      messenger?.showSnackBar(SnackBar(content: Text(t.reviewSaved)));
     } catch (e) {
       if (mounted) showToast(context, t.error(e));
     } finally {

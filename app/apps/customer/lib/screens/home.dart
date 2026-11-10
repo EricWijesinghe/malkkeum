@@ -281,14 +281,18 @@ class _UpcomingCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              '${t.homeUpcoming} · ${days <= 0 ? t.today : t.dDay('$days')}',
-                              style: context.text.labelMedium?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.9),
+                            Expanded(
+                              child: Text(
+                                '${t.homeUpcoming} · ${days <= 0 ? t.today : t.dDay('$days')}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.text.labelMedium?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                ),
                               ),
                             ),
-                            const Spacer(),
-                            Container(
+                            const SizedBox(width: Space.xs),
+                            Flexible(child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                                 vertical: 4,
@@ -302,16 +306,20 @@ class _UpcomingCard extends StatelessWidget {
                                 children: [
                                   const _LiveDot(),
                                   const SizedBox(width: 6),
-                                  Text(
-                                    t.status(b.status),
-                                    style: context.text.labelMedium?.copyWith(
-                                      color: Colors.white,
-                                      fontSize: 12,
+                                  Flexible(
+                                    child: Text(
+                                      t.status(b.status),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.text.labelMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
+                            )),
                           ],
                         ),
                         const SizedBox(height: Space.sm),
@@ -397,8 +405,11 @@ class _ServiceGrid extends StatelessWidget {
                             builder: (_) => ServiceScreen(service: s),
                           ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        // Large system fonts scale the tile content down instead of overflowing it.
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Hero(
                               tag: 'svc-${s.code}',
@@ -430,6 +441,7 @@ class _ServiceGrid extends StatelessWidget {
                               ),
                             ),
                           ],
+                          ),
                         ),
                       ),
                     ),

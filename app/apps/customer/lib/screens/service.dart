@@ -92,11 +92,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       children: [
                         Icon(Icons.schedule_rounded, color: hue.tone),
                         const SizedBox(width: Space.xs),
-                        Text(
-                          t.about(t.duration(s.minutes!)),
-                          style: context.text.titleSmall,
+                        Expanded(
+                          child: Text(
+                            t.about(t.duration(s.minutes!)),
+                            style: context.text.titleSmall,
+                          ),
                         ),
-                        const Spacer(),
+                        const SizedBox(width: Space.xs),
                         Text(
                           context.won(s.price!),
                           style: context.text.titleLarge,
@@ -195,11 +197,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
             ? null
             : Row(
                 children: [
-                  Text(
-                    t.about(t.duration(d.minutes)),
-                    style: context.text.bodySmall,
+                  Expanded(
+                    child: Text(
+                      t.about(t.duration(d.minutes)),
+                      style: context.text.bodySmall,
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: Space.xs),
                   RollingAmount(
                     value: d.listPrice,
                     format: context.won,

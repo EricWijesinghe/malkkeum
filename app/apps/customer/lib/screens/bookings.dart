@@ -164,7 +164,8 @@ class _DayCell extends StatelessWidget {
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onTap,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          // Large system fonts scale the day cell down instead of overflowing the strip.
+          child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisSize: MainAxisSize.min, children: [
             Container(
               width: 34,
               height: 34,
@@ -181,7 +182,7 @@ class _DayCell extends StatelessWidget {
               for (final b in items.take(3))
                 Container(width: 6, height: 6, margin: const EdgeInsets.symmetric(horizontal: 1), decoration: BoxDecoration(shape: BoxShape.circle, color: ServiceHues.of(b.serviceCode).tone)),
             ]),
-          ]),
+          ]),)
         ),
       );
 }

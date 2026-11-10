@@ -18,12 +18,16 @@ class IntroScreen extends StatelessWidget {
     return Scaffold(
       body: AuroraBackground(
         child: SafeArea(
-          child: Padding(
+          // Fills the screen on normal phones; scrolls instead of overflowing on small ones with large text.
+          child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: box.maxHeight),
+              child: IntrinsicHeight(child: Padding(
             padding: const EdgeInsets.all(Space.gutter),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const SizedBox(height: Space.xl),
               StaggerIn(index: 0, child: Text(BrandConfig.placeholder.name, style: context.text.titleLarge?.copyWith(color: context.primary, fontWeight: FontWeight.w800))),
-              const Expanded(child: Center(child: _OrbField())),
+              Expanded(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 120), child: const _OrbField()))),
               StaggerIn(index: 1, child: Text(t.introTitle, style: context.text.displaySmall)),
               const SizedBox(height: Space.sm),
               StaggerIn(index: 2, child: Text(t.introBody, style: context.text.bodyLarge?.copyWith(color: context.colors.inkSoft))),
@@ -32,7 +36,9 @@ class IntroScreen extends StatelessWidget {
               const SizedBox(height: Space.sm),
               Center(child: Text(t.loginTerms, style: context.text.labelSmall, textAlign: TextAlign.center)),
             ]),
-          ),
+          )),
+            ),
+          )),
         ),
       ),
     );
