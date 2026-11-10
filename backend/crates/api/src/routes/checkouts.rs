@@ -11,12 +11,14 @@ use super::{
     catalog::load_service,
     payments::ensure_enabled,
 };
+use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use crate::{
-    auth::Customer,
+    auth::{Customer, Staff},
     error::{ApiError, ApiResult},
     providers::{PaymentInfo, ProviderError},
+    realtime::{Recipient, notify},
     state::AppState,
-    util::{refund_or_alert, today_kst},
+    util::{best_effort, refund_or_alert, today_kst},
 };
 use axum::{
     Json, Router,
@@ -29,7 +31,7 @@ use domain::{
     schedule::{check_date, check_slot},
 };
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Value, json};
 use sqlx::{PgPool, Postgres, Transaction};
 use uuid::Uuid;
 
@@ -41,6 +43,10 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/checkouts", get(list).post(create))
         .route("/checkouts/{id}/confirm", post(confirm))
+}
+
+pub fn admin_routes() -> Router<AppState> {
+    Router::new().route("/checkouts", get(admin_list))
 }
 
 #[derive(Deserialize)]
@@ -220,55 +226,114 @@ async fn confirm(State(s): State<AppState>, Customer(a): Customer, Path(id): Pat
 }
 
 /// Verifies a provider payment against a checkout and moves the checkout forward.
-/// Shared by the confirm call and the PortOne webhook.
+/// Shared by the confirm call, the PortOne webhook and the reconciler. The provider is
+/// always asked; the webhook body and the client are never trusted for money.
 pub async fn settle(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<ConfirmResult> {
     if ck.status == "paid" && ck.provider_payment_id.as_deref() == Some(payment_id) {
         return Ok(ConfirmResult::paid(ck.result_booking_id));
-    }
-    if matches!(ck.status.as_str(), "failed" | "cancelled") {
-        return Err(ApiError::Conflict("checkout_closed"));
     }
     let info = s.providers.payment(payment_id, ck.amount).await.map_err(|e| match e {
         ProviderError::NotFound => ApiError::BadRequest("payment_not_found"),
         other => other.into(),
     })?;
-    if info.status == "PAID" {
-        if !amount_matches(ck.amount, &info) {
-            // Money came in for something other than this checkout: give it back.
-            refund_or_alert(s, "portone", payment_id, info.total).await;
-            mark_failed(&s.db, ck.id).await?;
-            return Err(ApiError::BadRequest("amount_mismatch"));
-        }
-        return match fulfil(s, ck, payment_id).await {
+    apply(s, ck, payment_id, Some(&info)).await
+}
+
+/// Carries out `decide` for one checkout. `info` is `None` when the provider has no such payment.
+async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&PaymentInfo>) -> ApiResult<ConfirmResult> {
+    let action = decide(&Recovery {
+        status: &ck.status,
+        expired: ck.expires_at < Utc::now(),
+        provider_status: info.map(|i| i.status.as_str()),
+        amount_ok: info.is_some_and(|i| amount_matches(ck.amount, i)),
+        paid_by_this: ck.provider_payment_id.as_deref() == Some(payment_id),
+    });
+    let provider_status = info.map_or("NOT_FOUND", |i| i.status.as_str());
+    match action {
+        Action::Nothing => Err(refused(ck, provider_status)),
+        Action::Fulfil | Action::FulfilLate => match fulfil(s, ck, payment_id).await {
             Ok(booking_id) => Ok(ConfirmResult::paid(Some(booking_id))),
             Err(e) => {
                 refund_or_alert(s, "portone", payment_id, ck.amount).await;
+                if action == Action::FulfilLate {
+                    // Paid after expiry and the slot or coupon is gone: the money went back, say so.
+                    refund_late(s, ck, &refund_reason(&e)).await?;
+                    return Err(ApiError::Conflict("checkout_refunded"));
+                }
                 mark_failed(&s.db, ck.id).await?;
                 Err(e)
             }
-        };
+        },
+        Action::RefundMismatch => {
+            if let Some(i) = info {
+                // Money came in for something other than this checkout: give it back.
+                refund_or_alert(s, "portone", payment_id, i.total).await;
+            }
+            mark_failed(&s.db, ck.id).await?;
+            Err(ApiError::BadRequest("amount_mismatch"))
+        }
+        Action::RefundClosed => {
+            if let Some(i) = info {
+                refund_or_alert(s, "portone", payment_id, i.total).await;
+            }
+            if ck.status != "paid" {
+                refund_late(s, ck, "closed_checkout").await?;
+            }
+            Err(ApiError::Conflict("checkout_closed"))
+        }
+        Action::MarkAwaitingDeposit => {
+            let i = info.ok_or(ApiError::Internal("virtual account without provider payment".into()))?;
+            sqlx::query("UPDATE checkouts SET status = 'awaiting_deposit', provider_payment_id = $2, virtual_account = $3 WHERE id = $1 AND status IN ('pending','awaiting_deposit')")
+                .bind(ck.id)
+                .bind(payment_id)
+                .bind(&i.method)
+                .execute(&s.db)
+                .await?;
+            Ok(ConfirmResult {
+                status: "awaiting_deposit",
+                booking_id: None,
+                virtual_account: Some(i.method.clone()),
+            })
+        }
+        Action::MarkExpired => {
+            sqlx::query("UPDATE checkouts SET status = 'expired' WHERE id = $1 AND status = 'pending'")
+                .bind(ck.id)
+                .execute(&s.db)
+                .await?;
+            Err(ApiError::Conflict("checkout_expired"))
+        }
     }
-    if info.status == "VIRTUAL_ACCOUNT_ISSUED" && matches!(ck.status.as_str(), "pending" | "awaiting_deposit") {
-        sqlx::query("UPDATE checkouts SET status = 'awaiting_deposit', provider_payment_id = $2, virtual_account = $3 WHERE id = $1 AND status IN ('pending','awaiting_deposit')")
-            .bind(ck.id)
-            .bind(payment_id)
-            .bind(&info.method)
-            .execute(&s.db)
-            .await?;
-        return Ok(ConfirmResult {
-            status: "awaiting_deposit",
-            booking_id: None,
-            virtual_account: Some(info.method),
-        });
+}
+
+/// The refusal for a checkout that stays as it is: closed checkouts say so, open ones report the provider state.
+fn refused(ck: &CheckoutRow, provider_status: &str) -> ApiError {
+    if matches!(ck.status.as_str(), "failed" | "cancelled" | "refunded") {
+        ApiError::Conflict("checkout_closed")
+    } else {
+        ApiError::PaymentFailed(provider_status.to_string())
     }
-    if ck.status == "pending" && ck.expires_at < Utc::now() {
-        sqlx::query("UPDATE checkouts SET status = 'expired' WHERE id = $1 AND status = 'pending'")
-            .bind(ck.id)
-            .execute(&s.db)
-            .await?;
-        return Err(ApiError::Conflict("checkout_expired"));
-    }
-    Err(ApiError::PaymentFailed(info.status))
+}
+
+/// Marks a checkout refunded (from any open or closed-by-failure state) and tells the customer.
+async fn refund_late(s: &AppState, ck: &CheckoutRow, reason: &str) -> ApiResult<()> {
+    sqlx::query("UPDATE checkouts SET status = 'refunded', refund_reason = $2 WHERE id = $1 AND status IN ('pending','awaiting_deposit','expired','failed','cancelled')")
+        .bind(ck.id)
+        .bind(reason)
+        .execute(&s.db)
+        .await?;
+    best_effort(
+        "notify",
+        notify(
+            s,
+            Recipient::User(ck.user_id),
+            "payment.refunded",
+            "결제가 자동으로 취소됐어요",
+            "예약 조건이 바뀌어 결제 금액을 환불했어요",
+            json!({ "checkout_id": ck.id }),
+        ),
+    )
+    .await;
+    Ok(())
 }
 
 /// What a settled checkout changes. Loaded before the transaction; re-checked inside it.
@@ -393,10 +458,23 @@ async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow>
         .ok_or(ApiError::NotFound)
 }
 
-/// The awaiting virtual-account checkout that a webhook payment belongs to, if any.
-pub async fn find_awaiting(db: &PgPool, payment_id: &str) -> ApiResult<Option<CheckoutRow>> {
+pub async fn find_by_id(db: &PgPool, id: Uuid) -> ApiResult<Option<CheckoutRow>> {
+    Ok(sqlx::query_as(&format!("SELECT {CHECKOUT_COLS} FROM checkouts WHERE id = $1"))
+        .bind(id)
+        .fetch_optional(db)
+        .await?)
+}
+
+/// The checkout a provider payment belongs to. The app pays with `checkout.id` as the PortOne
+/// paymentId, so that is tried first; the payment id stored at settlement covers the rest.
+pub async fn find_by_payment(db: &PgPool, payment_id: &str) -> ApiResult<Option<CheckoutRow>> {
+    if let Ok(id) = Uuid::parse_str(payment_id)
+        && let Some(ck) = find_by_id(db, id).await?
+    {
+        return Ok(Some(ck));
+    }
     Ok(sqlx::query_as(&format!(
-        "SELECT {CHECKOUT_COLS} FROM checkouts WHERE provider_payment_id = $1 AND status = 'awaiting_deposit'"
+        "SELECT {CHECKOUT_COLS} FROM checkouts WHERE provider_payment_id = $1 ORDER BY created_at DESC LIMIT 1"
     ))
     .bind(payment_id)
     .fetch_optional(db)
@@ -409,6 +487,63 @@ async fn mark_failed(db: &PgPool, id: Uuid) -> ApiResult<()> {
         .execute(db)
         .await?;
     Ok(())
+}
+
+/// Checkouts re-checked with the provider once per cooldown, and only after this much time.
+const RECON_BATCH: i64 = 20;
+const RECON_COOLDOWN_SECS: i64 = 300;
+const RECON_MIN_AGE_SECS: i64 = 120;
+const RECON_MAX_AGE_HOURS: i64 = 24;
+
+/// One reconciler pass: sweep pending checkouts older than a day to 'expired', then claim a
+/// batch of recent unfinished checkouts and settle each against the provider.
+/// Returns how many were checked.
+pub(crate) async fn reconcile_pass(s: &AppState) -> ApiResult<usize> {
+    let now = Utc::now();
+    sqlx::query(
+        "UPDATE checkouts SET status = 'expired' WHERE id IN (
+            SELECT id FROM checkouts WHERE status = 'pending' AND created_at < $1
+            LIMIT 200 FOR UPDATE SKIP LOCKED)",
+    )
+    .bind(now - Duration::hours(RECON_MAX_AGE_HOURS))
+    .execute(&s.db)
+    .await?;
+    // Claim: the stamp is the lease. SKIP LOCKED keeps two replicas off the same rows.
+    let claimed: Vec<CheckoutRow> = sqlx::query_as(&format!(
+        "UPDATE checkouts SET reconciled_at = now() WHERE id IN (
+            SELECT id FROM checkouts
+            WHERE status IN ('pending','awaiting_deposit','expired') AND created_at < $1 AND created_at > $2
+              AND (reconciled_at IS NULL OR reconciled_at < $3)
+            ORDER BY reconciled_at NULLS FIRST, created_at
+            LIMIT $4 FOR UPDATE SKIP LOCKED)
+         RETURNING {CHECKOUT_COLS}"
+    ))
+    .bind(now - Duration::seconds(RECON_MIN_AGE_SECS))
+    .bind(now - Duration::hours(RECON_MAX_AGE_HOURS))
+    .bind(now - Duration::seconds(RECON_COOLDOWN_SECS))
+    .bind(RECON_BATCH)
+    .fetch_all(&s.db)
+    .await?;
+    for ck in &claimed {
+        reconcile_one(s, ck).await;
+    }
+    Ok(claimed.len())
+}
+
+async fn reconcile_one(s: &AppState, ck: &CheckoutRow) {
+    // Payment id = checkout id, as the app pays with it.
+    let payment_id = ck.id.to_string();
+    let info = match s.providers.payment(&payment_id, ck.amount).await {
+        Ok(info) => Some(info),
+        Err(ProviderError::NotFound) => None,
+        Err(e) => {
+            tracing::warn!(error = %e, checkout = %ck.id, "reconcile: provider lookup failed");
+            return;
+        }
+    };
+    if let Err(e) = apply(s, ck, &payment_id, info.as_ref()).await {
+        tracing::debug!(error = %e, checkout = %ck.id, "reconcile: checkout left as it is");
+    }
 }
 
 #[derive(Deserialize)]
@@ -442,6 +577,40 @@ async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<
     .bind(a.id)
     .bind(q.status)
     .bind(LIST_LIMIT)
+    .fetch_all(&s.db)
+    .await?;
+    Ok(Json(rows))
+}
+
+const ADMIN_STATUSES: [&str; 5] = ["pending", "awaiting_deposit", "paid", "refunded", "expired"];
+const ADMIN_LIST_LIMIT: i64 = 200;
+
+#[derive(Serialize, sqlx::FromRow)]
+struct AdminCheckoutView {
+    id: Uuid,
+    kind: String,
+    method: String,
+    amount: i64,
+    status: String,
+    created_at: DateTime<Utc>,
+    booking_id: Option<Uuid>,
+    result_booking_id: Option<Uuid>,
+    user_id: Uuid,
+}
+
+/// Console view of checkouts, newest first. Staff only.
+async fn admin_list(State(s): State<AppState>, _staff: Staff, Query(q): Query<ListQuery>) -> ApiResult<Json<Vec<AdminCheckoutView>>> {
+    if let Some(status) = &q.status
+        && !ADMIN_STATUSES.contains(&status.as_str())
+    {
+        return Err(ApiError::BadRequest("invalid_status"));
+    }
+    let rows = sqlx::query_as(
+        "SELECT id, kind, method, amount, status, created_at, booking_id, result_booking_id, user_id
+         FROM checkouts WHERE ($1::text IS NULL OR status = $1) ORDER BY created_at DESC LIMIT $2",
+    )
+    .bind(q.status)
+    .bind(ADMIN_LIST_LIMIT)
     .fetch_all(&s.db)
     .await?;
     Ok(Json(rows))

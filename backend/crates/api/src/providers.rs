@@ -1,12 +1,14 @@
 //! Adapters for paid external services. Dev mode uses in-process fakes so the
 //! whole system runs offline; production adapters plug in behind the same API.
 
+pub mod fcm;
 pub mod portone;
+pub mod sms;
 pub mod social;
 
 use crate::{config::Config, error::ApiError};
 use rand::{RngCore, rngs::OsRng};
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::time::Duration;
 
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
@@ -57,6 +59,7 @@ pub struct IdentityInfo {
 pub struct Providers {
     cfg: Config,
     http: reqwest::Client,
+    fcm: Option<fcm::Fcm>,
 }
 
 fn random_id(prefix: &str) -> String {
@@ -68,7 +71,8 @@ fn random_id(prefix: &str) -> String {
 impl Providers {
     pub fn new(cfg: Config) -> Result<Self, reqwest::Error> {
         let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
-        Ok(Self { cfg, http })
+        let fcm = cfg.fcm.clone().map(fcm::Fcm::new);
+        Ok(Self { cfg, http, fcm })
     }
 
     pub fn cfg(&self) -> &Config {
@@ -89,9 +93,41 @@ impl Providers {
     }
 
     pub async fn send_sms(&self, phone: &str, text: &str) -> Result<(), ProviderError> {
-        self.require_dev("sms")?;
+        if !self.dev() {
+            let cfg = self.cfg.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
+            return sms::send_sms(&self.http, cfg, phone, text).await;
+        }
         tracing::info!(target: "fake_sms", phone, text, "sms sent");
         Ok(())
+    }
+
+    /// Customer message for an event kind. Sent as AlimTalk when a template is configured for `kind`
+    /// (Solapi carries the text as SMS fallback); if that call fails, a plain SMS goes out instead.
+    /// Kinds without a template send nothing here (in-app and push still cover them).
+    pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
+        let Some(cfg) = self.cfg.solapi.as_ref() else {
+            return Ok(());
+        };
+        let Some(template) = cfg.templates.get(kind) else {
+            return Ok(());
+        };
+        let text = format!("{title}\n{body}");
+        if self.dev() {
+            tracing::info!(target: "fake_alimtalk", phone, kind, text, "alimtalk sent");
+            return Ok(());
+        }
+        let variables = json!({ "#{title}": title, "#{body}": body });
+        let sent = match cfg.pf_id.as_deref() {
+            Some(pf_id) => sms::send_alimtalk(&self.http, cfg, pf_id, template, phone, &text, variables).await,
+            None => Err(ProviderError::NotConfigured("alimtalk")),
+        };
+        match sent {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                tracing::warn!(error = %e, kind, "alimtalk failed; sending sms");
+                sms::send_sms(&self.http, cfg, phone, &text).await
+            }
+        }
     }
 
     /// Exchange the gateway's card-auth result for a reusable billing key.
@@ -141,11 +177,19 @@ impl Providers {
     }
 
     pub async fn push(&self, tokens: &[String], title: &str, body: &str, data: &Value) -> Result<(), ProviderError> {
+        self.push_collect(tokens, title, body, data).await.map(|_| ())
+    }
+
+    /// Pushes to every token. Returns the tokens the push service reports as dead, for the caller to prune.
+    pub async fn push_collect(&self, tokens: &[String], title: &str, body: &str, data: &Value) -> Result<Vec<String>, ProviderError> {
         if tokens.is_empty() {
-            return Ok(());
+            return Ok(Vec::new());
         }
-        self.require_dev("push")?;
-        tracing::info!(target: "fake_push", count = tokens.len(), title, body, %data, "push sent");
-        Ok(())
+        if self.dev() {
+            tracing::info!(target: "fake_push", count = tokens.len(), title, body, %data, "push sent");
+            return Ok(Vec::new());
+        }
+        let fcm = self.fcm.as_ref().ok_or(ProviderError::NotConfigured("push"))?;
+        fcm.send(&self.http, tokens, title, body, data).await
     }
 }

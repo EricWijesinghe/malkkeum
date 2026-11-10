@@ -187,7 +187,18 @@ async fn visible_to(s: &AppState, booking: Uuid, pro: Uuid) -> ApiResult<bool> {
 }
 
 /// First-come accept. The UPDATE's WHERE clause is the lock: exactly one pro wins.
+/// Pros must have a verified phone (bound by OTP) before they take jobs, quote or finish them.
+/// Social sign-ups have none until they bind one. Viewing the feed stays open.
+async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
+    let has_phone: bool = sqlx::query_scalar("SELECT phone IS NOT NULL FROM pros WHERE id = $1")
+        .bind(pro)
+        .fetch_one(&s.db)
+        .await?;
+    if has_phone { Ok(()) } else { Err(ApiError::Conflict("phone_required")) }
+}
+
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    require_phone(&s, a.id).await?;
     if !visible_to(&s, id, a.id).await? {
         return Err(ApiError::NotFound);
     }
@@ -236,6 +247,7 @@ impl QuoteInput {
 }
 
 async fn submit_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(q): Json<QuoteInput>) -> ApiResult<Json<Value>> {
+    require_phone(&s, a.id).await?;
     let amount = q.validate()?;
     let open: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id WHERE b.id = $1 AND p.id = $2 AND b.status = 0 AND b.answers IS NOT NULL AND {VISIBLE})"))
         .bind(id)
@@ -349,7 +361,19 @@ async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Js
         .bind(x.member_id)
         .fetch_one(&s.db)
         .await?;
-    // shortcut: members get an SMS; member log-in to the app comes with team accounts (phase 2).
+    // Member app: in-app notification + push + live event. The SMS stays for members without the app.
+    best_effort(
+        "member_assigned",
+        notify(
+            &s,
+            Recipient::Member(x.member_id),
+            "job.assigned",
+            "새 작업이 배정됐어요",
+            "앱에서 일정과 주소를 확인하세요",
+            json!({ "booking_id": id }),
+        ),
+    )
+    .await;
     let _ = s.providers.send_sms(&phone, "새 작업이 배정됐어요").await;
     Ok(Json(json!({ "ok": true })))
 }
@@ -383,6 +407,7 @@ struct Completion {
 }
 
 async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
+    require_phone(&s, a.id).await?;
     let own_file = |u: &String| is_own_upload(&s.config.public_base_url, u);
     let photos_ok = (1..=MAX_PHOTOS).contains(&c.before_photos.len())
         && (1..=MAX_PHOTOS).contains(&c.after_photos.len())

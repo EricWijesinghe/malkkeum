@@ -1,0 +1,16 @@
+name: test_support
+description: Dev-only test helpers shared by the app test suites (fake API, fake storage, fixtures).
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: ^3.9.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  core:
+  ui:
+  http: ^1.6.0
+  flutter_secure_storage: ^11.2.0

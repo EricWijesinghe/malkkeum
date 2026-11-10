@@ -116,6 +116,16 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
     consume_otp(&s, &phone, &req.code).await?;
 
+    // Partner app: a phone that owns a team logs in as owner; otherwise an invited team member logs in as member.
+    let member = if req.audience == Audience::Partner && !owner_phone_exists(&s, &phone).await? {
+        member_for_phone(&s, &phone).await?
+    } else {
+        None
+    };
+    if let Some(member) = member {
+        return Ok(Json(member_login(&s, member).await?));
+    }
+
     let (table, role) = match req.audience {
         Audience::Customer => ("users", Role::Customer),
         Audience::Partner => ("pros", Role::Pro),
@@ -139,6 +149,41 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
             .await?;
     }
     Ok(Json(issue_tokens(&s, id, role, is_new).await?))
+}
+
+/// Owner login wins: a phone that already owns a pro account is never treated as a member login.
+async fn owner_phone_exists(s: &AppState, phone: &str) -> ApiResult<bool> {
+    Ok(sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE phone = $1)")
+        .bind(phone)
+        .fetch_one(&s.db)
+        .await?)
+}
+
+/// Newest non-removed member invite for the phone. A phone invited to several teams signs in to the
+/// team it used most recently (one session = one team).
+async fn member_for_phone(s: &AppState, phone: &str) -> ApiResult<Option<Uuid>> {
+    Ok(sqlx::query_scalar(
+        "SELECT id FROM team_members WHERE phone = $1 AND role = 'member' AND invite_status <> 'removed'
+         ORDER BY last_login_at DESC NULLS LAST, created_at DESC LIMIT 1",
+    )
+    .bind(phone)
+    .fetch_optional(&s.db)
+    .await?)
+}
+
+/// Member sign-in: the invite becomes active and the session subject is the team_members row.
+async fn member_login(s: &AppState, member: Uuid) -> ApiResult<Tokens> {
+    let r = sqlx::query(
+        "UPDATE team_members SET invite_status = 'active', last_login_at = now() WHERE id = $1 AND invite_status <> 'removed'",
+    )
+    .bind(member)
+    .execute(&s.db)
+    .await?;
+    // Removed between lookup and update: no session.
+    if r.rows_affected() == 0 {
+        return Err(ApiError::Unauthorized);
+    }
+    issue_tokens(s, member, Role::Member, false).await
 }
 
 /// A phone number proven by a login code, used for sign-in and for binding a phone to an account.
@@ -205,6 +250,7 @@ async fn ensure_active(s: &AppState, id: Uuid, role: Role) -> ApiResult<()> {
     let ok: bool = match role {
         Role::Customer => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM users WHERE id = $1 AND deleted_at IS NULL)"),
         Role::Pro => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1)"),
+        Role::Member => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM team_members WHERE id = $1 AND role = 'member' AND invite_status <> 'removed')"),
         Role::StaffAdmin | Role::StaffConsultant => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)"),
     }
     .bind(id)

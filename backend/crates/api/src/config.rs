@@ -1,3 +1,4 @@
+use crate::providers::fcm::ServiceAccount;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use std::{collections::HashMap, env, net::SocketAddr, path::PathBuf};
 
@@ -22,6 +23,33 @@ pub struct Config {
     pub google_client_ids: Vec<String>,
     pub apple_client_ids: Vec<String>,
     pub portone: PortOne,
+    /// Solapi SMS + KakaoTalk AlimTalk. None: no SMS outside dev mode (503 provider_not_configured).
+    pub solapi: Option<SolapiConfig>,
+    /// Firebase service account for FCM HTTP v1 push. None: no push outside dev mode.
+    pub fcm: Option<ServiceAccount>,
+    /// Behind a reverse proxy: rate limits key on the right-most X-Forwarded-For entry.
+    pub trusted_proxy: bool,
+    pub rate_auth_per_min: u32,
+    pub rate_upload_per_min: u32,
+    pub rate_general_per_min: u32,
+    pub upload_daily_quota: u32,
+    pub max_open_quote_requests: u32,
+    pub max_threads_per_day: u32,
+    /// Checkout reconciler period (seconds).
+    pub reconcile_interval_secs: u64,
+}
+
+/// Solapi REST API v4 credentials and AlimTalk routing.
+#[derive(Clone, Debug)]
+pub struct SolapiConfig {
+    pub api_key: String,
+    pub api_secret: String,
+    /// Registered sender number (digits only).
+    pub sender: String,
+    /// KakaoTalk channel (PF) id; AlimTalk is skipped without it.
+    pub pf_id: Option<String>,
+    /// Event kind (e.g. `booking.status`) -> approved AlimTalk template id.
+    pub templates: HashMap<String, String>,
 }
 
 /// PortOne V2 (payments, identity verification, webhooks). All optional until a real account exists.
@@ -52,6 +80,25 @@ fn opt(key: &str) -> Option<String> {
     env::var(key).ok().map(|v| v.trim().to_string()).filter(|v| !v.is_empty())
 }
 
+fn flag(key: &str) -> bool {
+    opt(key).is_some_and(|v| v == "1" || v == "true")
+}
+
+/// Numeric env var with a default; values below `min` are refused at startup.
+fn number<T>(key: &'static str, default: T, min: T) -> Result<T, ConfigError>
+where
+    T: std::str::FromStr + PartialOrd + std::fmt::Display + Copy,
+{
+    let Some(raw) = opt(key) else {
+        return Ok(default);
+    };
+    let value: T = raw.parse().map_err(|_| ConfigError::Invalid(key, format!("not a number: {raw}")))?;
+    if value < min {
+        return Err(ConfigError::Invalid(key, format!("must be at least {min}")));
+    }
+    Ok(value)
+}
+
 fn list(key: &str) -> Vec<String> {
     opt(key)
         .map(|v| v.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect())
@@ -78,6 +125,41 @@ fn portone() -> Result<PortOne, ConfigError> {
         store_id: opt("PORTONE_STORE_ID"),
         channel_keys,
     })
+}
+
+fn solapi() -> Result<Option<SolapiConfig>, ConfigError> {
+    let (api_key, api_secret) = match (opt("SOLAPI_API_KEY"), opt("SOLAPI_API_SECRET")) {
+        (None, None) => return Ok(None),
+        (Some(k), Some(s)) => (k, s),
+        _ => return Err(ConfigError::Invalid("SOLAPI_API_KEY", "set SOLAPI_API_KEY and SOLAPI_API_SECRET together".into())),
+    };
+    let sender = opt("SMS_SENDER").ok_or(ConfigError::Missing("SMS_SENDER"))?;
+    let templates: HashMap<String, String> = match opt("ALIMTALK_TEMPLATES") {
+        Some(j) => serde_json::from_str(&j).map_err(|e| ConfigError::Invalid("ALIMTALK_TEMPLATES", e.to_string()))?,
+        None => HashMap::new(),
+    };
+    Ok(Some(SolapiConfig {
+        api_key,
+        api_secret,
+        sender,
+        pf_id: opt("ALIMTALK_PF_ID"),
+        templates,
+    }))
+}
+
+/// `FCM_SERVICE_ACCOUNT` is either the JSON itself or a path to the downloaded key file.
+fn fcm_account() -> Result<Option<ServiceAccount>, ConfigError> {
+    let Some(raw) = opt("FCM_SERVICE_ACCOUNT") else {
+        return Ok(None);
+    };
+    let json = if raw.starts_with('{') {
+        raw
+    } else {
+        std::fs::read_to_string(&raw).map_err(|e| ConfigError::Invalid("FCM_SERVICE_ACCOUNT", format!("cannot read file: {e}")))?
+    };
+    serde_json::from_str(&json)
+        .map(Some)
+        .map_err(|e| ConfigError::Invalid("FCM_SERVICE_ACCOUNT", e.to_string()))
 }
 
 impl Config {
@@ -124,6 +206,16 @@ impl Config {
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
             apple_client_ids: list("APPLE_CLIENT_IDS"),
             portone: portone()?,
+            solapi: solapi()?,
+            fcm: fcm_account()?,
+            trusted_proxy: flag("TRUSTED_PROXY"),
+            rate_auth_per_min: number("RATE_LIMIT_AUTH_PER_MIN", 20, 1)?,
+            rate_upload_per_min: number("RATE_LIMIT_UPLOAD_PER_MIN", 30, 1)?,
+            rate_general_per_min: number("RATE_LIMIT_GENERAL_PER_MIN", 300, 1)?,
+            upload_daily_quota: number("UPLOAD_DAILY_QUOTA", 100, 1)?,
+            max_open_quote_requests: number("MAX_OPEN_QUOTE_REQUESTS", 3, 1)?,
+            max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
+            reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
         })
     }
 }

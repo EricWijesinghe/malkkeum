@@ -3,6 +3,7 @@
 use crate::{
     auth::Auth,
     error::{ApiError, ApiResult},
+    ratelimit::within_quota,
     state::AppState,
 };
 use axum::{
@@ -29,7 +30,7 @@ fn sniff(bytes: &[u8]) -> Option<&'static str> {
     }
 }
 
-async fn upload(State(s): State<AppState>, _a: Auth, mut form: Multipart) -> ApiResult<Json<Value>> {
+async fn upload(State(s): State<AppState>, a: Auth, mut form: Multipart) -> ApiResult<Json<Value>> {
     let field = form
         .next_field()
         .await
@@ -44,9 +45,34 @@ async fn upload(State(s): State<AppState>, _a: Auth, mut form: Multipart) -> Api
     OsRng.fill_bytes(&mut name);
     // shortcut: unguessable names on a public path; move to signed URLs on object storage before launch.
     let file = format!("{}.{ext}", hex::encode(name));
+    let size = i64::try_from(bytes.len()).unwrap_or(i64::MAX);
+    // Quota check, row insert and file write share one transaction: a failed write leaves no row.
+    let mut tx = s.db.begin().await?;
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtext($1))")
+        .bind(format!("upload:{}", a.id))
+        .execute(&mut *tx)
+        .await?;
+    let used: i64 = sqlx::query_scalar(
+        "SELECT count(*) FROM uploads WHERE owner_role = $1 AND owner_id = $2 AND created_at > now() - interval '24 hours'",
+    )
+    .bind(a.role.as_str())
+    .bind(a.id)
+    .fetch_one(&mut *tx)
+    .await?;
+    if !within_quota(used, s.config.upload_daily_quota) {
+        return Err(ApiError::Quota("upload_quota"));
+    }
+    sqlx::query("INSERT INTO uploads (owner_role, owner_id, file, bytes) VALUES ($1, $2, $3, $4)")
+        .bind(a.role.as_str())
+        .bind(a.id)
+        .bind(&file)
+        .bind(size)
+        .execute(&mut *tx)
+        .await?;
     tokio::fs::write(s.config.upload_dir.join(&file), &bytes)
         .await
         .map_err(|e| ApiError::Internal(e.to_string()))?;
+    tx.commit().await?;
     Ok(Json(json!({ "url": format!("{}/files/{file}", s.config.public_base_url) })))
 }
 

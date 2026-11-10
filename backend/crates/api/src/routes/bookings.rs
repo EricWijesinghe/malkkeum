@@ -12,6 +12,7 @@ use super::{
 use crate::{
     auth::Customer,
     error::{ApiError, ApiResult},
+    ratelimit::within_quota,
     realtime::{Recipient, notify},
     state::AppState,
     util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
@@ -149,6 +150,18 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     // Anything needing its own pool connection is read before the slot lock is taken.
     let formula = load_formula(&s.db).await?;
     let mut tx = s.db.begin().await?;
+    // Per-customer lock first: two concurrent requests cannot both pass the open-request count.
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtext($1))")
+        .bind(format!("quote-user:{user}"))
+        .execute(&mut *tx)
+        .await?;
+    let open: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1 AND status = 0 AND answers IS NOT NULL")
+        .bind(user)
+        .fetch_one(&mut *tx)
+        .await?;
+    if !within_quota(open, s.config.max_open_quote_requests) {
+        return Err(ApiError::Conflict("too_many_open_requests"));
+    }
     // Serialize bookings per slot so capacity can't be oversold.
     lock_slot(&mut tx, b.visit_date, b.start_hour).await?;
     let id = Uuid::now_v7();

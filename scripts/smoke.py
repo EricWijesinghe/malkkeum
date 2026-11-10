@@ -219,16 +219,53 @@ def social_flow(staff, visit):
     assert any(c["id"] == va["id"] for c in pending), pending
     step("virtual account -> awaiting_deposit, listed for the customer")
 
-    # Webhooks are signature-gated: an unsigned call must never settle anything.
-    status, _ = raw("POST", "/v1/webhooks/portone", {"type": "Transaction.Paid", "data": {"paymentId": "dev:va"}})
-    assert status in (401, 503), status
-    step("unsigned PortOne webhook rejected (signature gate; dev has no webhook secret)")
+    # Card checkout whose confirm never arrives: the Transaction.Paid webhook settles it.
+    # Dev has no webhook secret, so the unsigned event is accepted (DEV_MODE rule); PortOne is re-read.
+    next_day = (date.fromisoformat(visit) + timedelta(days=1)).isoformat()
+    card = call("POST", "/v1/checkouts", {"kind": "booking", "booking": {**body, "start_hour": 9, "visit_date": next_day}, "method": "card"}, sc)
+    status, _ = raw("POST", "/v1/webhooks/portone", {"type": "Transaction.Paid", "data": {"paymentId": card["id"]}})
+    assert status == 200, status
+    settled = call("POST", f"/v1/checkouts/{card['id']}/confirm", {"payment_id": card["id"]}, sc)
+    assert settled["status"] == "paid" and settled["booking_id"], settled
+    step("card checkout settled by unsigned dev Transaction.Paid webhook (paymentId = checkout id); confirm is idempotent")
+
+    listed = call("GET", "/v1/admin/checkouts?status=paid", token=staff)
+    assert any(c["id"] == card["id"] for c in listed), "paid checkout missing from console list"
+    call("GET", "/v1/admin/checkouts", token=sc, expect=403)
+    call("GET", "/v1/admin/checkouts?status=bogus", token=staff, expect=400)
+    step("console lists checkouts for staff; customer gets 403; unknown status 400")
 
     all_codes = ["card", "kakaopay", "naverpay", "tosspay", "payco", "samsungpay", "applepay", "transfer", "virtual_account", "phone"]
     call("PUT", "/v1/admin/payment-methods", {"enabled": [c for c in all_codes if c != "phone"]}, staff)
     call("POST", "/v1/checkouts", {"kind": "booking", "booking": {**body, "start_hour": 9}, "method": "phone"}, sc, expect=400)
     call("PUT", "/v1/admin/payment-methods", {"enabled": all_codes}, staff)
     step("admin switches a method off (checkout refused), then back on")
+
+    # Social pro without a verified phone: may view, may not accept.
+    spro = call("POST", "/v1/auth/social", {"provider": "kakao", "token": f"dev:pro-{random.randint(10**9, 10**10)}", "audience": "partner"})
+    pt = spro["access_token"]
+    pro_id = call("GET", "/v1/partner/me", token=pt)["id"]
+    call("POST", f"/v1/admin/pros/{pro_id}/status", {"status": "verified"}, staff)
+    refused = call("POST", f"/v1/partner/jobs/{done['booking_id']}/accept", token=pt, expect=409)
+    assert refused["error"]["code"] == "phone_required", refused
+    step("social pro without a phone: accept -> 409 phone_required")
+
+    quote_limit(visit)
+
+
+def quote_limit(visit):
+    # A customer may hold three open quote requests; the fourth is refused.
+    spam = login("customer")
+    addr = call("POST", "/v1/me/addresses", {"kind": "home", "label": "견적", "road_address": "서울 강남구 역삼로 7", "detail": "", "district_code": DISTRICT, "size_pyeong": 24}, spam)
+    answers = {"cleaning_type": "after_interior", "luggage": "empty", "building": "apartment", "layout": "three_rooms", "duplex": False, "bathrooms": 2, "balconies": 2, "elevator": True, "floor_3_or_higher": True}
+    base = date.fromisoformat(visit)
+    for offset in (2, 3, 4):
+        request = {"service_code": "move_in", "address_id": addr["id"], "visit_date": (base + timedelta(days=offset)).isoformat(), "start_hour": 8, "answers": answers}
+        call("POST", "/v1/bookings", request, spam)
+    fourth = {**request, "visit_date": (base + timedelta(days=5)).isoformat()}
+    refused = call("POST", "/v1/bookings", fourth, spam, expect=409)
+    assert refused["error"]["code"] == "too_many_open_requests", refused
+    step("4th open quote request -> 409 too_many_open_requests")
 
 
 if __name__ == "__main__":

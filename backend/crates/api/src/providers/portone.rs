@@ -8,6 +8,7 @@ use reqwest::{StatusCode, header::AUTHORIZATION};
 use serde_json::{Value, json};
 use sha2::Sha256;
 use subtle::ConstantTimeEq;
+use uuid::Uuid;
 
 const API: &str = "https://api.portone.io";
 const WEBHOOK_TOLERANCE_SECS: i64 = 300;
@@ -90,7 +91,34 @@ pub async fn identity(p: &Providers, id: &str) -> Result<IdentityInfo, ProviderE
     })
 }
 
-/// Dev fakes: `dev:paid` settles at the expected total, `dev:va` issues a virtual account.
+/// The checkout id a payment was created with, from its `customData` (object, or JSON text).
+/// Dev mode has no provider to ask, so it answers `None`.
+pub async fn custom_checkout_id(p: &Providers, id: &str) -> Result<Option<Uuid>, ProviderError> {
+    if p.cfg().dev_mode {
+        return Ok(None);
+    }
+    check_id(id)?;
+    match get_json(p, &format!("/payments/{id}")).await {
+        Ok(v) => Ok(custom_data_checkout_id(&v["customData"])),
+        Err(ProviderError::NotFound) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+fn custom_data_checkout_id(custom: &Value) -> Option<Uuid> {
+    let parsed_text: Value;
+    let obj: &Value = match custom.as_str() {
+        Some(raw) => {
+            parsed_text = serde_json::from_str(raw).ok()?;
+            &parsed_text
+        }
+        None => custom,
+    };
+    Uuid::parse_str(obj["checkoutId"].as_str()?).ok()
+}
+
+/// Dev fakes: `dev:paid` settles at the expected total, `dev:va` issues a virtual account,
+/// and a checkout id pays as a card payment (the dev gateway has no real payer).
 pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
     let (status, method) = match id {
         "dev:paid" => ("PAID", json!({ "type": "PaymentMethodEasyPay" })),
@@ -99,6 +127,7 @@ pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
             json!({ "type": "PaymentMethodVirtualAccount", "bank": "KB", "accountNumber": "123-456-789012" }),
         ),
         "dev:failed" => ("FAILED", json!({})),
+        _ if Uuid::parse_str(id).is_ok() => ("PAID", json!({ "type": "PaymentMethodCard" })),
         _ => return None,
     };
     Some(PaymentInfo {
@@ -221,5 +250,26 @@ mod tests {
         assert!(check_id("../identity").is_err());
         assert!(check_id("x?y=1").is_err());
         assert!(check_id("").is_err());
+    }
+
+    #[test]
+    fn custom_data_checkout_id_reads_object_and_json_text() {
+        let id = Uuid::now_v7();
+        let object = json!({ "checkoutId": id.to_string() });
+        assert_eq!(custom_data_checkout_id(&object), Some(id));
+        let text = Value::String(object.to_string());
+        assert_eq!(custom_data_checkout_id(&text), Some(id));
+        assert_eq!(custom_data_checkout_id(&json!({ "checkoutId": "not-a-uuid" })), None);
+        assert_eq!(custom_data_checkout_id(&Value::String("{broken".into())), None);
+        assert_eq!(custom_data_checkout_id(&Value::Null), None);
+    }
+
+    #[test]
+    fn dev_gateway_pays_checkout_ids_and_keeps_fakes() {
+        let id = Uuid::now_v7().to_string();
+        assert_eq!(dev_payment(&id, 52_000).map(|p| (p.status, p.total)), Some(("PAID".into(), 52_000)));
+        assert_eq!(dev_payment("dev:paid", 1).map(|p| p.status), Some("PAID".into()));
+        assert_eq!(dev_payment("dev:va", 1).map(|p| p.status), Some("VIRTUAL_ACCOUNT_ISSUED".into()));
+        assert!(dev_payment("random-string", 1).is_none());
     }
 }

@@ -27,6 +27,8 @@ const PING_EVERY: Duration = Duration::from_secs(25);
 pub enum Recipient {
     User(Uuid),
     Pro(Uuid),
+    /// A team member (partner app login); id is `team_members.id`.
+    Member(Uuid),
     Staff,
 }
 
@@ -65,6 +67,7 @@ fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
     match to {
         Recipient::User(u) => role == Role::Customer && u == id,
         Recipient::Pro(p) => role == Role::Pro && p == id,
+        Recipient::Member(m) => role == Role::Member && m == id,
         Recipient::Staff => role.is_staff(),
     }
 }
@@ -123,6 +126,7 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
     let (role, owner) = match to {
         Recipient::User(id) => ("customer", Some(id)),
         Recipient::Pro(id) => ("pro", Some(id)),
+        Recipient::Member(id) => ("member", Some(id)),
         Recipient::Staff => ("staff", None),
     };
     if let Some(owner) = owner {
@@ -138,10 +142,59 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
             .bind(owner)
             .fetch_all(&state.db)
             .await?;
-        if let Err(e) = state.providers.push(&tokens, title, body, &data).await {
-            tracing::warn!(error = %e, "push failed; notification kept in inbox");
+        match state.providers.push_collect(&tokens, title, body, &data).await {
+            Ok(dead) => prune_push_tokens(state, role, owner, &dead).await,
+            Err(e) => tracing::warn!(error = %e, "push failed; notification kept in inbox"),
+        }
+        if let Recipient::User(user) = to {
+            kakao_to_customer(state, user, kind, title, body);
         }
     }
     state.hub.send(to, kind, data);
     Ok(())
+}
+
+/// Drops device tokens the push service no longer accepts (app removed, token rotated).
+async fn prune_push_tokens(state: &AppState, role: &str, owner: Uuid, dead: &[String]) {
+    if dead.is_empty() {
+        return;
+    }
+    let pruned = sqlx::query("DELETE FROM push_tokens WHERE token = ANY($1) AND owner_role = $2 AND owner_id = $3")
+        .bind(dead.to_vec())
+        .bind(role)
+        .bind(owner)
+        .execute(&state.db)
+        .await;
+    if let Err(e) = pruned {
+        tracing::warn!(error = %e, "failed to prune dead push tokens");
+    }
+}
+
+/// AlimTalk (or SMS fallback) to a customer for kinds that have a template. Runs off the request path;
+/// failures only log, so a provider outage never fails the business action that triggered it.
+fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, title: &str, body: &str) {
+    if !state.config.solapi.as_ref().is_some_and(|c| c.templates.contains_key(kind)) {
+        return;
+    }
+    let state = state.clone();
+    let (title, body) = (title.to_string(), body.to_string());
+    tokio::spawn(async move {
+        let found = sqlx::query_scalar::<_, Option<String>>("SELECT phone FROM users WHERE id = $1")
+            .bind(user)
+            .fetch_optional(&state.db)
+            .await;
+        let phone = match found {
+            Ok(row) => row.flatten(),
+            Err(e) => {
+                tracing::warn!(error = %e, kind, "customer phone lookup failed");
+                return;
+            }
+        };
+        let Some(phone) = phone else {
+            return;
+        };
+        if let Err(e) = state.providers.send_customer_message(&phone, kind, &title, &body).await {
+            tracing::warn!(error = %e, kind, "customer message failed");
+        }
+    });
 }

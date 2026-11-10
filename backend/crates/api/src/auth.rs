@@ -18,6 +18,8 @@ pub const REFRESH_TTL_DAYS: i64 = 30;
 pub enum Role {
     Customer,
     Pro,
+    /// Team member of a pro's team: sees assigned jobs only, never payouts. Subject is `team_members.id`.
+    Member,
     StaffAdmin,
     StaffConsultant,
 }
@@ -27,6 +29,7 @@ impl Role {
         match self {
             Self::Customer => "customer",
             Self::Pro => "pro",
+            Self::Member => "member",
             Self::StaffAdmin => "staff_admin",
             Self::StaffConsultant => "staff_consultant",
         }
@@ -35,6 +38,7 @@ impl Role {
         Some(match s {
             "customer" => Self::Customer,
             "pro" => Self::Pro,
+            "member" => Self::Member,
             "staff_admin" => Self::StaffAdmin,
             "staff_consultant" => Self::StaffConsultant,
             _ => return None,
@@ -179,8 +183,13 @@ macro_rules! role_extractor {
     };
 }
 
+fn is_member_role(r: Role) -> bool {
+    r == Role::Member
+}
+
 role_extractor!(Customer, |r| r == Role::Customer);
 role_extractor!(Pro, |r| r == Role::Pro);
+role_extractor!(Member, is_member_role);
 role_extractor!(Staff, |r| r.is_staff());
 role_extractor!(Admin, |r| r == Role::StaffAdmin);
 
@@ -211,6 +220,17 @@ mod tests {
         let a = verify_access(secret, &t).unwrap();
         assert_eq!((a.id, a.role), (id, Role::Pro));
         assert!(verify_access(b"another-secret-another-secret-xx", &t).is_err());
+    }
+
+    #[test]
+    fn member_role_parses_and_only_members_pass_the_extractor_check() {
+        assert_eq!(Role::parse("member"), Some(Role::Member));
+        assert_eq!(Role::Member.as_str(), "member");
+        assert!(!Role::Member.is_staff());
+        assert!(is_member_role(Role::Member));
+        assert!(!is_member_role(Role::Pro));
+        assert!(!is_member_role(Role::Customer));
+        assert!(!is_member_role(Role::StaffAdmin));
     }
 
     #[test]

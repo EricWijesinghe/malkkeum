@@ -5,7 +5,9 @@ mod booking_core;
 mod bookings;
 mod catalog;
 mod chat;
-mod checkouts;
+mod checkout_policy;
+pub(crate) mod checkouts;
+mod member;
 mod me;
 mod partner;
 mod partner_jobs;
@@ -40,6 +42,7 @@ pub fn router(state: AppState) -> Router {
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
         .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
     let files = ServeDir::new(state.config.upload_dir.clone());
+    let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, std::time::Instant::now()));
 
     let api = Router::new()
         .merge(auth::routes())
@@ -51,8 +54,15 @@ pub fn router(state: AppState) -> Router {
         .merge(checkouts::routes())
         .merge(payments::routes())
         .merge(webhooks::routes())
-        .nest("/admin", admin::routes().merge(admin_content::routes()).merge(payments::admin_routes()))
+        .nest(
+            "/admin",
+            admin::routes()
+                .merge(admin_content::routes())
+                .merge(payments::admin_routes())
+                .merge(checkouts::admin_routes()),
+        )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()))
+        .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler));
 
     Router::new()
@@ -70,6 +80,7 @@ pub fn router(state: AppState) -> Router {
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))
         .layer(TimeoutLayer::with_status_code(axum::http::StatusCode::REQUEST_TIMEOUT, REQUEST_TIMEOUT))
         .layer(cors)
+        .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
         // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
         .layer(
             TraceLayer::new_for_http()

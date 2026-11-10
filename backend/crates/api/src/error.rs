@@ -22,6 +22,8 @@ pub enum ApiError {
     BadRequest(&'static str),
     #[error("too many requests")]
     RateLimited,
+    #[error("quota exceeded: {0}")]
+    Quota(&'static str),
     #[error("payment failed: {0}")]
     PaymentFailed(String),
     #[error("unavailable: {0}")]
@@ -45,6 +47,7 @@ impl ApiError {
             Self::Conflict(c) => (StatusCode::CONFLICT, c),
             Self::BadRequest(c) => (StatusCode::BAD_REQUEST, c),
             Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate_limited"),
+            Self::Quota(c) => (StatusCode::TOO_MANY_REQUESTS, c),
             Self::PaymentFailed(_) => (StatusCode::PAYMENT_REQUIRED, "payment_failed"),
             Self::Unavailable(c) => (StatusCode::SERVICE_UNAVAILABLE, c),
             Self::Domain(e @ (DomainError::SlotFull | DomainError::CouponUsed | DomainError::InvalidTransition | DomainError::CancellationWindowClosed)) => {

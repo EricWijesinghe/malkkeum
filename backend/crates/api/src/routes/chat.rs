@@ -3,6 +3,7 @@
 use crate::{
     auth::{Auth, Role},
     error::{ApiError, ApiResult},
+    ratelimit::within_quota,
     realtime::{Recipient, notify},
     state::AppState,
 };
@@ -178,6 +179,18 @@ async fn open_thread(State(s): State<AppState>, a: Auth, Json(o): Json<OpenThrea
         }
         booking_thread(&mut conn, aud, a.id, b, o.topic.trim()).await?
     } else {
+        // Customers may open a limited number of free-standing threads per day (spam guard).
+        if aud == "customer" {
+            let opened: i64 = sqlx::query_scalar(
+                "SELECT count(*) FROM chat_threads WHERE audience = 'customer' AND user_id = $1 AND created_at > now() - interval '24 hours'",
+            )
+            .bind(a.id)
+            .fetch_one(&mut *conn)
+            .await?;
+            if !within_quota(opened, s.config.max_threads_per_day) {
+                return Err(ApiError::Quota("thread_quota"));
+            }
+        }
         sqlx::query_scalar(&format!("INSERT INTO chat_threads (audience, {col}, topic) VALUES ($1, $2, $3) RETURNING id"))
             .bind(aud)
             .bind(a.id)

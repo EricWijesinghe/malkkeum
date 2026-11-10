@@ -8,5 +8,6 @@ workspace:
   - apps/customer
   - apps/partner
   - apps/console
+  - packages/test_support
 dev_dependencies:
   flutter_lints: ^6.0.0
