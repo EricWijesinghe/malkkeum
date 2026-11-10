@@ -9,6 +9,7 @@ import 'screens/dashboard.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
 import 'screens/people.dart';
+import 'screens/setup.dart';
 import 'state.dart';
 
 class _Section {
@@ -61,6 +62,12 @@ final _sections = <_Section>[
     Icons.badge_rounded,
     (t) => t.cStaff,
     () => const StaffScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    Icons.tune_rounded,
+    (t) => t.cSetup,
+    () => const SetupScreen(),
     adminOnly: true,
   ),
 ];

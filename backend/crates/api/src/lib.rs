@@ -5,6 +5,7 @@ pub mod auth;
 pub mod config;
 pub mod crypto;
 pub mod error;
+pub mod integrations;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
@@ -41,12 +42,15 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!("../../migrations").run(&db).await?;
     seed::run(&db, &config).await?;
+    routes::setup::ensure_setup_code(&db, config.setup_code.as_deref()).await?;
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     if config.dev_mode {
         tracing::warn!("DEV_MODE on: fake SMS, payments and push");
     }
     let bind = config.bind;
     let state = build_state(db, config)?;
+    routes::setup::reload(&state).await?;
+    spawn_settings_refresh(state.clone());
     reconciler::spawn(state.clone());
     let listener = tokio::net::TcpListener::bind(bind).await?;
     tracing::info!(%bind, "listening");
@@ -54,6 +58,22 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     let app = routes::router(state).into_make_service_with_connect_info::<SocketAddr>();
     axum::serve(listener, app).with_graceful_shutdown(shutdown()).await?;
     Ok(())
+}
+
+/// Other replicas pick up keys saved in the setup wizard within this period.
+const SETTINGS_REFRESH: Duration = Duration::from_secs(60);
+
+fn spawn_settings_refresh(state: AppState) {
+    tokio::spawn(async move {
+        let mut tick = tokio::time::interval(SETTINGS_REFRESH);
+        tick.tick().await;
+        loop {
+            tick.tick().await;
+            if let Err(e) = routes::setup::reload(&state).await {
+                tracing::warn!(error = %e, "settings refresh failed");
+            }
+        }
+    });
 }
 
 async fn shutdown() {

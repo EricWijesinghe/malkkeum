@@ -63,7 +63,8 @@ struct EventData {
 }
 
 async fn portone(State(s): State<AppState>, headers: HeaderMap, body: Bytes) -> ApiResult<Json<Value>> {
-    let secret = s.config.portone.webhook_secret.as_deref();
+    let integ = s.providers.integ();
+    let secret = integ.portone.webhook_secret.as_deref();
     match (webhook_auth(s.config.dev_mode, secret), secret) {
         (WebhookAuth::Verify, Some(secret)) => {
             verify_webhook(

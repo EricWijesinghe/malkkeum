@@ -74,7 +74,8 @@ async fn bearer_json(p: &Providers, url: &str, token: &str) -> ApiResult<Value> 
 }
 
 async fn kakao(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    let app_id = p.cfg().kakao_app_id.as_deref().ok_or(ApiError::Unavailable("provider_not_configured"))?;
+    let integ = p.integ();
+    let app_id = integ.kakao_app_id.as_deref().ok_or(ApiError::Unavailable("provider_not_configured"))?;
     let info = bearer_json(p, "https://kapi.kakao.com/v1/user/access_token_info", token).await?;
     if json_text(&info["app_id"]) != app_id {
         return Err(ApiError::Unauthorized);
@@ -129,7 +130,8 @@ fn flex_i64<'de, D: Deserializer<'de>>(d: D) -> Result<i64, D::Error> {
 }
 
 async fn google(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    let ids = &p.cfg().google_client_ids;
+    let integ = p.integ();
+    let ids = &integ.google_client_ids;
     if ids.is_empty() {
         return Err(ApiError::Unavailable("provider_not_configured"));
     }
@@ -208,7 +210,8 @@ async fn apple_keys(p: &Providers, force: bool) -> ApiResult<Vec<Jwk>> {
 }
 
 async fn apple(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    let ids = &p.cfg().apple_client_ids;
+    let integ = p.integ();
+    let ids = &integ.apple_client_ids;
     if ids.is_empty() {
         return Err(ApiError::Unavailable("provider_not_configured"));
     }

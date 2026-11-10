@@ -12,6 +12,7 @@ mod member;
 mod partner;
 mod partner_jobs;
 pub(crate) mod payments;
+pub mod setup;
 mod uploads;
 mod webhooks;
 
@@ -54,12 +55,14 @@ pub fn router(state: AppState) -> Router {
         .merge(checkouts::routes())
         .merge(payments::routes())
         .merge(webhooks::routes())
+        .merge(setup::public_routes())
         .nest(
             "/admin",
             admin::routes()
                 .merge(admin_content::routes())
                 .merge(payments::admin_routes())
-                .merge(checkouts::admin_routes()),
+                .merge(checkouts::admin_routes())
+                .merge(setup::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()))
         .nest("/member", member::routes())

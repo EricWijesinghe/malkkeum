@@ -1,5 +1,6 @@
-# Production stack on one server: Postgres + API + Caddy (automatic HTTPS).
-# Usage: copy deploy/.env.example to deploy/.env, fill it, then `docker compose up -d --build`.
+# Production stack on one server: Postgres + API + web (Caddy: website, console, automatic HTTPS).
+# Installed and managed by deploy/install.sh — nobody needs to edit this file.
+# Images are prebuilt by .github/workflows/release.yml; `malkkeum update` pulls new ones.
 services:
   db:
     image: postgres:17
@@ -9,28 +10,35 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
     volumes: [dbdata:/var/lib/postgresql/data]
-    healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 10 }
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
+
   api:
-    build: ../backend
+    image: ${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-api:${VERSION:-latest}
+    build: { context: ../backend }
     restart: unless-stopped
     depends_on: { db: { condition: service_healthy } }
     environment:
       DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
-      PUBLIC_BASE_URL: https://${API_DOMAIN}
-      ALLOWED_ORIGINS: https://${CONSOLE_DOMAIN}
-      DEV_MODE: ${DEV_MODE:-0}  # see .env.example warning
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      SETUP_CODE: ${SETUP_CODE:-}
+      PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
+      ALLOWED_ORIGINS: https://${DOMAIN}
+      TRUSTED_PROXY: "1"
+      DEV_MODE: "0"
+      RUST_LOG: info,sqlx=warn
     volumes: [uploads:/data/uploads]
-  caddy:
-    image: caddy:2
+    healthcheck: { test: ["CMD", "api", "--health"], interval: 15s, retries: 10, start_period: 20s }
+
+  web:
+    image: ${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-web:${VERSION:-latest}
+    build: { context: .., dockerfile: deploy/web.Dockerfile }
     restart: unless-stopped
-    ports: ["80:80", "443:443"]
-    environment: { API_DOMAIN: "${API_DOMAIN}", CONSOLE_DOMAIN: "${CONSOLE_DOMAIN}" }
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ../app/apps/console/build/web:/srv/console:ro
-      - caddydata:/data
-volumes: { dbdata: {}, uploads: {}, caddydata: {} }
+    depends_on: [api]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes: [caddydata:/data, caddyconfig:/config]
+
+volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }

@@ -14,8 +14,19 @@ const API: &str = "https://api.portone.io";
 const WEBHOOK_TOLERANCE_SECS: i64 = 300;
 
 fn auth(p: &Providers) -> Result<String, ProviderError> {
-    let secret = p.cfg().portone.api_secret.as_deref().ok_or(ProviderError::NotConfigured("portone"))?;
+    let integ = p.integ();
+    let secret = integ.portone.api_secret.as_deref().ok_or(ProviderError::NotConfigured("portone"))?;
     Ok(format!("PortOne {secret}"))
+}
+
+/// Setup-wizard check: looks up a payment that cannot exist. 404 means the secret was accepted.
+pub async fn check(http: &reqwest::Client, secret: &str) -> Result<StatusCode, ProviderError> {
+    http.get(format!("{API}/payments/malkkeum-setup-check"))
+        .header(AUTHORIZATION, format!("PortOne {secret}"))
+        .send()
+        .await
+        .map(|r| r.status())
+        .map_err(upstream)
 }
 
 /// Ids are put into URL paths: only plain tokens, so no traversal or query injection.

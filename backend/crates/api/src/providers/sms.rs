@@ -10,6 +10,7 @@ use serde_json::{Value, json};
 use sha2::Sha256;
 
 const SEND_URL: &str = "https://api.solapi.com/messages/v4/send";
+const BALANCE_URL: &str = "https://api.solapi.com/cash/v1/balance";
 /// Korean text fits 90 bytes (EUC-KR) in 45 characters; longer text goes out as LMS.
 const SMS_MAX_CHARS: usize = 45;
 
@@ -80,6 +81,18 @@ async fn post(http: &reqwest::Client, cfg: &SolapiConfig, message: Value) -> Res
     } else {
         Err(ProviderError::Upstream(format!("solapi status {}", resp.status())))
     }
+}
+
+/// Setup-wizard check: reads the account balance, which needs valid keys and sends nothing.
+pub async fn check(http: &reqwest::Client, cfg: &SolapiConfig) -> Result<reqwest::StatusCode, ProviderError> {
+    let date = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let auth = auth_header(&cfg.api_key, &cfg.api_secret, &date, &random_salt());
+    http.get(BALANCE_URL)
+        .header(reqwest::header::AUTHORIZATION, auth)
+        .send()
+        .await
+        .map(|r| r.status())
+        .map_err(|e| ProviderError::Upstream(e.to_string()))
 }
 
 #[cfg(test)]

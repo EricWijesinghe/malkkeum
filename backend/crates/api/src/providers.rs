@@ -6,10 +6,13 @@ pub mod portone;
 pub mod sms;
 pub mod social;
 
-use crate::{config::Config, error::ApiError};
+use crate::{config::Config, error::ApiError, integrations::Integrations};
 use rand::{RngCore, rngs::OsRng};
 use serde_json::{Value, json};
-use std::time::Duration;
+use std::{
+    sync::{Arc, RwLock},
+    time::Duration,
+};
 
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -55,11 +58,24 @@ pub struct IdentityInfo {
     pub name: Option<String>,
 }
 
+/// Keys in use right now; replaced as a whole when the owner saves the setup wizard.
+struct Live {
+    integ: Arc<Integrations>,
+    fcm: Option<fcm::Fcm>,
+}
+
+impl Live {
+    fn new(integ: Integrations) -> Self {
+        let fcm = integ.fcm.clone().map(fcm::Fcm::new);
+        Self { integ: Arc::new(integ), fcm }
+    }
+}
+
 #[derive(Clone)]
 pub struct Providers {
     cfg: Config,
     http: reqwest::Client,
-    fcm: Option<fcm::Fcm>,
+    live: Arc<RwLock<Live>>,
 }
 
 fn random_id(prefix: &str) -> String {
@@ -71,12 +87,27 @@ fn random_id(prefix: &str) -> String {
 impl Providers {
     pub fn new(cfg: Config) -> Result<Self, reqwest::Error> {
         let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
-        let fcm = cfg.fcm.clone().map(fcm::Fcm::new);
-        Ok(Self { cfg, http, fcm })
+        let live = Arc::new(RwLock::new(Live::new(Integrations::from_config(&cfg))));
+        Ok(Self { cfg, http, live })
     }
 
     pub fn cfg(&self) -> &Config {
         &self.cfg
+    }
+
+    /// Snapshot of the live integration keys.
+    pub fn integ(&self) -> Arc<Integrations> {
+        // A panic while holding the lock cannot leave Live half-written (it is replaced whole).
+        self.live.read().unwrap_or_else(|e| e.into_inner()).integ.clone()
+    }
+
+    fn fcm(&self) -> Option<fcm::Fcm> {
+        self.live.read().unwrap_or_else(|e| e.into_inner()).fcm.clone()
+    }
+
+    /// Switches every provider to new keys (setup wizard save, periodic refresh).
+    pub fn set_integrations(&self, integ: Integrations) {
+        *self.live.write().unwrap_or_else(|e| e.into_inner()) = Live::new(integ);
     }
 
     pub fn http(&self) -> &reqwest::Client {
@@ -94,7 +125,8 @@ impl Providers {
 
     pub async fn send_sms(&self, phone: &str, text: &str) -> Result<(), ProviderError> {
         if !self.dev() {
-            let cfg = self.cfg.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
+            let integ = self.integ();
+            let cfg = integ.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
             return sms::send_sms(&self.http, cfg, phone, text).await;
         }
         tracing::info!(target: "fake_sms", phone, text, "sms sent");
@@ -105,7 +137,8 @@ impl Providers {
     /// (Solapi carries the text as SMS fallback); if that call fails, a plain SMS goes out instead.
     /// Kinds without a template send nothing here (in-app and push still cover them).
     pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
-        let Some(cfg) = self.cfg.solapi.as_ref() else {
+        let integ = self.integ();
+        let Some(cfg) = integ.solapi.as_ref() else {
             return Ok(());
         };
         let Some(template) = cfg.templates.get(kind) else {
@@ -189,7 +222,7 @@ impl Providers {
             tracing::info!(target: "fake_push", count = tokens.len(), title, body, %data, "push sent");
             return Ok(Vec::new());
         }
-        let fcm = self.fcm.as_ref().ok_or(ProviderError::NotConfigured("push"))?;
+        let fcm = self.fcm().ok_or(ProviderError::NotConfigured("push"))?;
         fcm.send(&self.http, tokens, title, body, data).await
     }
 }

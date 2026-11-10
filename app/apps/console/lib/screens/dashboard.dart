@@ -75,7 +75,7 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisCount: cols,
                   mainAxisSpacing: Space.sm,
                   crossAxisSpacing: Space.sm,
-                  childAspectRatio: 1.45,
+                  childAspectRatio: 1.3,
                   children: [
                     for (final (label, value, icon, hue) in kpis)
                       // Hover tilt is desktop-first; touch gets the same card with the press spring only.

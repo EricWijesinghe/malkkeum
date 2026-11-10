@@ -1,12 +1,36 @@
-{$API_DOMAIN} {
-	encode zstd gzip
-	reverse_proxy api:8080
+# One domain for everything, HTTPS certificates issued and renewed automatically:
+#   https://DOMAIN/          website
+#   https://DOMAIN/admin/    operations console (setup wizard on first visit)
+#   https://DOMAIN/v1, /files, /health   API
+{
+	email {$ACME_EMAIL}
 }
 
-{$CONSOLE_DOMAIN} {
+{$DOMAIN} {
 	encode zstd gzip
-	root * /srv/console
-	try_files {path} /index.html
-	file_server
-	header Strict-Transport-Security "max-age=31536000"
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	@api path /v1/* /files/* /health
+	handle @api {
+		reverse_proxy api:8080
+	}
+
+	redir /admin /admin/
+	handle_path /admin/* {
+		root * /srv/console
+		try_files {path} /index.html
+		file_server
+	}
+
+	handle {
+		root * /srv/website
+		try_files {path} {path}.html {path}/index.html /index.html
+		file_server
+	}
 }

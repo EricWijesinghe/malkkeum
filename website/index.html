@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>말끔 · 믿을 수 있는 홈클리닝</title>
+  <meta name="description" content="검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격을 확인하고 1분 만에 예약하세요.">
+  <meta name="theme-color" content="#0B1022">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="말끔 · 믿을 수 있는 홈클리닝">
+  <meta property="og:description" content="검증된 청소 전문가, 투명한 가격, 1분 예약.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>
+    // Theme before first paint: no flash of the wrong theme.
+    try { const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <script type="module" src="assets/hero3d.js"></script>
+  <script defer src="assets/site.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>말끔</span></a>
+      <nav class="nav-links" aria-label="주요 메뉴">
+        <a href="#services" data-t="nav_services">서비스</a>
+        <a href="#how" data-t="nav_how">이용 방법</a>
+        <a href="#faq" data-t="nav_faq">자주 묻는 질문</a>
+        <a href="partners.html" data-t="nav_partner">파트너 지원</a>
+      </nav>
+      <div class="tools">
+        <select id="lang" class="lang" aria-label="Language"></select>
+        <button id="theme" class="icon-btn" type="button" aria-label="Light mode">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap">
+        <div class="reveal in">
+          <span class="eyebrow"><span class="dot"></span><span data-t="eyebrow">오늘 예약하면 내일 방문</span></span>
+          <h1><span data-t="h1a">집안일은 맡기고,</span><br><span class="grad" data-t="h1b">반짝이는 하루를.</span></h1>
+          <p class="lead" data-t="lead">검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격 확인하고 1분 만에 예약하세요.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#download" data-t="cta_book">앱으로 예약하기</a>
+            <a class="btn btn-ghost" href="#services" data-t="cta_prices">가격 보기</a>
+          </div>
+        </div>
+        <div class="hero-stage">
+          <div class="hero-fallback" aria-hidden="true"></div>
+          <canvas id="hero-3d" aria-hidden="true"></canvas>
+          <div class="float-chip a" data-t="chip_a">✨ 검증된 전문가</div>
+          <div class="float-chip b" data-t="chip_b">💳 간편 결제</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" aria-labelledby="svc-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="svc-title" data-t="svc_title">필요한 청소만, 투명한 가격으로</h2>
+          <p data-t="svc_sub">아래 가격은 실시간으로 반영돼요.</p>
+        </div>
+        <div class="grid" id="services-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="how-title" data-t="how_title">예약은 1분, 나머지는 저희가</h2></div>
+        <div class="steps">
+          <div class="step reveal"><h3 data-t="how_1t">서비스 선택</h3><p data-t="how_1"></p></div>
+          <div class="step reveal"><h3 data-t="how_2t">날짜 선택</h3><p data-t="how_2"></p></div>
+          <div class="step reveal"><h3 data-t="how_3t">간편 결제</h3><p data-t="how_3"></p></div>
+          <div class="step reveal"><h3 data-t="how_4t">방문 · 완료</h3><p data-t="how_4"></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="ba-title">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="ba-title" data-t="ba_title">차이를 직접 밀어서 확인하세요</h2></div>
+        <div class="ba reveal">
+          <div class="layer before" data-t="ba_before">청소 전</div>
+          <div class="layer after" data-t="ba_after">청소 후</div>
+          <div class="handle" aria-hidden="true"></div>
+          <input type="range" min="0" max="100" value="50" aria-label="Before / after">
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="trust-title">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="trust-title" data-t="trust_title">믿고 맡길 수 있는 이유</h2></div>
+        <div class="trust">
+          <div class="item reveal"><span class="emoji" aria-hidden="true">🛡️</span><b data-t="t1t"></b><p data-t="t1"></p></div>
+          <div class="item reveal"><span class="emoji" aria-hidden="true">📅</span><b data-t="t2t"></b><p data-t="t2"></p></div>
+          <div class="item reveal"><span class="emoji" aria-hidden="true">📸</span><b data-t="t3t"></b><p data-t="t3"></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="section-head reveal"><h2 id="faq-title" data-t="faq_title">자주 묻는 질문</h2></div>
+        <div class="faq">
+          <details class="reveal"><summary data-t="q1"></summary><p data-t="a1"></p></details>
+          <details class="reveal"><summary data-t="q2"></summary><p data-t="a2"></p></details>
+          <details class="reveal"><summary data-t="q3"></summary><p data-t="a3"></p></details>
+          <details class="reveal"><summary data-t="q4"></summary><p data-t="a4"></p></details>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <div class="band reveal">
+          <div><h2 data-t="band_title">지금 앱을 내려받고 첫 예약 쿠폰을 받으세요</h2><p data-t="band_sub"></p></div>
+          <div class="store-badges">
+            <a class="store" data-link="app_store_url" href="#download" aria-disabled="true"><span aria-hidden="true"></span><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
+            <a class="store" data-link="play_store_url" href="#download" aria-disabled="true"><span aria-hidden="true">▶</span><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap cols">
+      <div>
+        <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>말끔</span></a>
+        <p class="company" id="company"></p>
+        <p>© <span id="year"></span> <span data-brand-name>말끔</span></p>
+      </div>
+      <div>
+        <b data-t="f_support">고객센터</b><br>
+        <a data-support-phone href="#"></a><br>
+        <a data-support-email href="#"></a>
+      </div>
+      <div>
+        <a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br>
+        <a href="terms.html" data-t="f_terms">이용약관</a><br>
+        <a href="location.html" data-t="f_location">위치기반서비스 이용약관</a><br>
+        <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a><br>
+        <a href="partners.html" data-t="nav_partner">파트너 지원</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

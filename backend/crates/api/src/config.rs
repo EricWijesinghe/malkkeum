@@ -18,6 +18,8 @@ pub struct Config {
     pub dev_mode: bool,
     pub allowed_origins: Vec<String>,
     pub seed_admin: Option<(String, String)>,
+    /// One-time code for creating the owner account in the console (installer sets it; random otherwise).
+    pub setup_code: Option<String>,
     /// Kakao REST app id: a Kakao token is only accepted if it was issued to this app.
     pub kakao_app_id: Option<String>,
     pub google_client_ids: Vec<String>,
@@ -207,6 +209,7 @@ impl Config {
                 .map(|v| v.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect())
                 .unwrap_or_default(),
             seed_admin,
+            setup_code: opt("SETUP_CODE").map(|c| c.to_uppercase().replace(['-', ' '], "")),
             kakao_app_id: opt("KAKAO_APP_ID"),
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
             apple_client_ids: list("APPLE_CLIENT_IDS"),

@@ -38,6 +38,7 @@ pub fn test_config() -> Config {
         dev_mode: true,
         allowed_origins: Vec::new(),
         seed_admin: None,
+        setup_code: None,
         kakao_app_id: None,
         google_client_ids: Vec::new(),
         apple_client_ids: Vec::new(),

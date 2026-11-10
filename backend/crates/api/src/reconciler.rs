@@ -13,17 +13,17 @@ pub fn enabled(_dev_mode: bool, portone_configured: bool) -> bool {
     portone_configured
 }
 
-/// Starts the periodic pass unless it is disabled. Errors are logged and the loop goes on.
+/// Starts the periodic pass. Each tick re-checks the live keys, so PortOne entered later in the
+/// setup wizard switches recovery on without a restart. Errors are logged and the loop goes on.
 pub fn spawn(state: AppState) {
-    if !enabled(state.config.dev_mode, state.config.portone.api_secret.is_some()) {
-        tracing::info!("checkout reconciler disabled: PortOne is not configured");
-        return;
-    }
     let every = Duration::from_secs(state.config.reconcile_interval_secs);
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(every);
         loop {
             tick.tick().await;
+            if !enabled(state.config.dev_mode, state.providers.integ().portone.api_secret.is_some()) {
+                continue;
+            }
             match checkouts::reconcile_pass(&state).await {
                 Ok(0) => {}
                 Ok(checked) => tracing::info!(checked, "checkout reconcile pass"),

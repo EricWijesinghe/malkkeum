@@ -173,7 +173,7 @@ async fn prune_push_tokens(state: &AppState, role: &str, owner: Uuid, dead: &[St
 /// AlimTalk (or SMS fallback) to a customer for kinds that have a template. Runs off the request path;
 /// failures only log, so a provider outage never fails the business action that triggered it.
 fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, title: &str, body: &str) {
-    if !state.config.solapi.as_ref().is_some_and(|c| c.templates.contains_key(kind)) {
+    if !state.providers.integ().solapi.as_ref().is_some_and(|c| c.templates.contains_key(kind)) {
         return;
     }
     let state = state.clone();

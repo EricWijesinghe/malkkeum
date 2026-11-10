@@ -314,7 +314,7 @@ class _StatusActionsState extends State<_StatusActions> {
           Row(children: [
             Expanded(child: TextField(controller: _team, decoration: InputDecoration(labelText: t.cTeamName, isDense: true))),
             const SizedBox(width: Space.xs),
-            FilledButton(onPressed: _busy ? null : () => _status(2, _team.text), child: Text(t.cAssign)),
+            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(0, 56)), onPressed: _busy ? null : () => _status(2, _team.text), child: Text(t.cAssign)),
           ]),
         const SizedBox(height: Space.xs),
         Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [

@@ -176,7 +176,8 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
         .execute(&s.db)
         .await?;
     let method = req.method();
-    let portone = &s.config.portone;
+    let integ = s.providers.integ();
+    let portone = &integ.portone;
     Ok(Json(CheckoutIntent {
         id,
         amount: intent.amount,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ui/ui.dart';
 
-import 'screens/login.dart';
+import 'screens/first_run.dart';
 import 'shell.dart';
 import 'state.dart';
 
@@ -62,7 +62,7 @@ class ConsoleApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: session.signedIn ? const ConsoleShell() : const LoginScreen(),
+        home: session.signedIn ? const ConsoleShell() : const ConsoleEntry(),
       ),
     ),
   );

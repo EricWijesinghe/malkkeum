@@ -143,7 +143,7 @@ fn sign_assertion(account: &ServiceAccount, now: i64) -> Result<String, Provider
 }
 
 /// Trades a signed assertion for an access token. Returns (token, lifetime in seconds).
-async fn exchange(http: &reqwest::Client, account: &ServiceAccount, now: i64) -> Result<(String, u64), ProviderError> {
+pub(crate) async fn exchange(http: &reqwest::Client, account: &ServiceAccount, now: i64) -> Result<(String, u64), ProviderError> {
     let jwt = sign_assertion(account, now)?;
     // JWTs are base64url, so the assertion needs no further escaping.
     let form = format!("grant_type={GRANT_TYPE}&assertion={jwt}");

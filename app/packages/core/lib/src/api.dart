@@ -8,9 +8,13 @@ import 'package:http/http.dart' as http;
 import 'session.dart';
 
 /// API base URL. Override at build time: --dart-define=API_BASE=https://api.example.com
+const _localHosts = {'localhost', '127.0.0.1', ''};
+
 String defaultApiBase() {
   const fromEnv = String.fromEnvironment('API_BASE');
   if (fromEnv.isNotEmpty) return fromEnv;
+  // Deployed web build (console): the API lives on the same domain, so one build fits every install.
+  if (kIsWeb && !_localHosts.contains(Uri.base.host)) return Uri.base.origin;
   // Android emulator reaches the host machine through 10.0.2.2.
   if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:8080';
   return 'http://127.0.0.1:8080';

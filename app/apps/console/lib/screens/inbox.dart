@@ -211,7 +211,7 @@ class _ThreadViewState extends State<ThreadView> {
           child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Expanded(child: TextField(controller: _input, minLines: 1, maxLines: 6, maxLength: 2000, decoration: InputDecoration(hintText: t.cReplyHint, counterText: '', isDense: true))),
             const SizedBox(width: Space.xs),
-            FilledButton(onPressed: _sending ? null : _send, child: Text(t.chatSend)),
+            FilledButton(style: FilledButton.styleFrom(minimumSize: const Size(0, 56)), onPressed: _sending ? null : _send, child: Text(t.chatSend)),
           ]),
         ),
       ),
