@@ -17,6 +17,11 @@ async fn main() {
     if std::env::args().nth(1).as_deref() == Some("--health") {
         std::process::exit(health().await);
     }
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.first().is_some_and(|a| a.starts_with("backup-")) {
+        tracing_subscriber::fmt().with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "warn".into())).init();
+        std::process::exit(api::backup::cli(&args).await);
+    }
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "info,sqlx=warn".into()))
         .init();

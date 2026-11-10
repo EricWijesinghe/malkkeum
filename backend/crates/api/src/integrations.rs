@@ -25,6 +25,18 @@ pub struct Integrations {
     pub portone: PortOne,
     pub solapi: Option<SolapiConfig>,
     pub fcm: Option<ServiceAccount>,
+    pub backup: Option<S3Config>,
+}
+
+/// S3-compatible offsite backup target (AWS S3, Cloudflare R2, Naver Cloud Object Storage, Backblaze B2).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct S3Config {
+    pub endpoint: String,
+    pub region: String,
+    pub bucket: String,
+    pub access_key: String,
+    pub secret_key: String,
+    pub retention_days: u32,
 }
 
 impl Integrations {
@@ -37,6 +49,7 @@ impl Integrations {
             portone: c.portone.clone(),
             solapi: c.solapi.clone(),
             fcm: c.fcm.clone(),
+            backup: None,
         }
     }
 
@@ -50,6 +63,7 @@ impl Integrations {
             Section::Naver => self.naver_client_id.is_some(),
             Section::Google => !self.google_client_ids.is_empty(),
             Section::Apple => !self.apple_client_ids.is_empty(),
+            Section::Backup => self.backup.is_some(),
         }
     }
 }
@@ -89,10 +103,11 @@ pub enum Section {
     Naver,
     Google,
     Apple,
+    Backup,
 }
 
 impl Section {
-    pub const ALL: [Section; 7] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple];
+    pub const ALL: [Section; 8] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Backup];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -103,6 +118,7 @@ impl Section {
             Self::Naver => "naver",
             Self::Google => "google",
             Self::Apple => "apple",
+            Self::Backup => "backup",
         }
     }
 
@@ -118,6 +134,7 @@ impl Section {
             Self::Kakao => &KAKAO_FIELDS,
             Self::Naver => &NAVER_FIELDS,
             Self::Google | Self::Apple => &CLIENT_ID_FIELDS,
+            Self::Backup => &BACKUP_FIELDS,
         }
     }
 }
@@ -139,6 +156,16 @@ const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
 const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
 const NAVER_FIELDS: [Field; 1] = [f("client_id", Kind::Text, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
+const BACKUP_FIELDS: [Field; 6] = [
+    f("endpoint", Kind::Text, true),
+    f("region", Kind::Text, true),
+    f("bucket", Kind::Text, true),
+    f("access_key", Kind::Secret, true),
+    f("secret_key", Kind::Secret, true),
+    f("retention_days", Kind::Text, false),
+];
+const BACKUP_RETENTION_DEFAULT: u32 = 30;
+const BACKUP_RETENTION_MAX: u32 = 3650;
 
 /// A wizard value that fails validation. The code maps to a Korean message in the console.
 #[derive(Debug, PartialEq, Eq)]
@@ -187,6 +214,35 @@ fn check_webhook_secret(s: &str) -> Result<(), Invalid> {
     STANDARD.decode(raw).map(|_| ()).map_err(|_| Invalid("invalid_webhook_secret"))
 }
 
+fn s3_config(v: &Map<String, Value>) -> Result<S3Config, Invalid> {
+    let endpoint = required(v, "endpoint")?.trim_end_matches('/').to_string();
+    if !endpoint.starts_with("https://") || endpoint.contains(char::is_whitespace) {
+        return Err(Invalid("invalid_endpoint"));
+    }
+    let region = required(v, "region")?;
+    if !region.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+        return Err(Invalid("invalid_region"));
+    }
+    let bucket = required(v, "bucket")?;
+    let bucket_ok = (3..=63).contains(&bucket.len())
+        && bucket.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '.');
+    if !bucket_ok {
+        return Err(Invalid("invalid_bucket"));
+    }
+    let retention_days = match text(v, "retention_days") {
+        None => BACKUP_RETENTION_DEFAULT,
+        Some(d) => d.parse::<u32>().ok().filter(|d| (1..=BACKUP_RETENTION_MAX).contains(d)).ok_or(Invalid("invalid_retention"))?,
+    };
+    Ok(S3Config {
+        endpoint,
+        region,
+        bucket,
+        access_key: required(v, "access_key")?,
+        secret_key: required(v, "secret_key")?,
+        retention_days,
+    })
+}
+
 fn service_account(v: &Map<String, Value>) -> Result<ServiceAccount, Invalid> {
     let parsed = match v.get("service_account") {
         Some(Value::String(s)) => serde_json::from_str::<ServiceAccount>(s.trim()),
@@ -230,6 +286,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
             });
         }
         Section::Push => out.fcm = Some(service_account(v)?),
+        Section::Backup => out.backup = Some(s3_config(v)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
         Section::Naver => out.naver_client_id = Some(required(v, "client_id")?),
         Section::Google | Section::Apple => {
@@ -414,6 +471,25 @@ mod tests {
         assert_eq!(preview(Kind::Secret, &json!("ab")), json!("••••ab"));
         assert_eq!(preview(Kind::File, &json!({"client_email": "push@p.iam"})), json!("push@p.iam"));
         assert_eq!(preview(Kind::Text, &json!("store-1")), json!("store-1"));
+    }
+
+    #[test]
+    fn backup_section_validates_endpoint_bucket_and_retention() {
+        let good = json!({"endpoint": "https://acc.r2.cloudflarestorage.com/", "region": "auto", "bucket": "malkkeum-backup", "access_key": "AK", "secret_key": "SK"});
+        let out = apply(&Integrations::default(), Section::Backup, &obj(good.clone())).unwrap();
+        let cfg = out.backup.clone().expect("backup configured");
+        assert_eq!(cfg.endpoint, "https://acc.r2.cloudflarestorage.com");
+        assert_eq!(cfg.retention_days, 30);
+        assert!(out.has(Section::Backup));
+        let mut insecure = good.clone();
+        insecure["endpoint"] = json!("http://plain.example");
+        assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(insecure)).unwrap_err(), Invalid("invalid_endpoint"));
+        let mut bucket = good.clone();
+        bucket["bucket"] = json!("Bad_Bucket");
+        assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(bucket)).unwrap_err(), Invalid("invalid_bucket"));
+        let mut keep = good;
+        keep["retention_days"] = json!("0");
+        assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(keep)).unwrap_err(), Invalid("invalid_retention"));
     }
 
     #[test]

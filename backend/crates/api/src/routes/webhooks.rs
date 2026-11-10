@@ -77,8 +77,10 @@ async fn portone(State(s): State<AppState>, headers: HeaderMap, body: Bytes) -> 
             )
             .map_err(|e: WebhookError| {
                 tracing::warn!(error = ?e, "portone webhook rejected");
+                s.providers.observe("portone_webhook", Err("bad_signature"));
                 ApiError::Unauthorized
             })?;
+            s.providers.observe("portone_webhook", Ok(()));
         }
         (WebhookAuth::UnsignedDev, _) => {
             tracing::warn!("unsigned portone webhook accepted: DEV_MODE without PORTONE_WEBHOOK_SECRET");

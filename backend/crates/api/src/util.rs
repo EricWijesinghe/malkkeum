@@ -28,6 +28,7 @@ pub async fn refund_or_alert(s: &AppState, provider: &str, tx_id: &str, amount: 
     if let Err(e) = s.providers.refund(provider, tx_id, amount).await {
         // Money is out of sync with the DB: this must reach a human.
         tracing::error!(error = %e, provider, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
+        crate::ops::record(&s.db, "payment_stuck", Err("refund_failed"));
     }
 }
 

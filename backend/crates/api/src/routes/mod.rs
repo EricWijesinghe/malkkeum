@@ -9,6 +9,7 @@ mod checkout_policy;
 pub(crate) mod checkouts;
 mod me;
 mod member;
+mod ops;
 mod partner;
 mod partner_jobs;
 pub(crate) mod payments;
@@ -62,7 +63,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(admin_content::routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
-                .merge(setup::admin_routes()),
+                .merge(setup::admin_routes())
+                .merge(ops::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()))
         .nest("/member", member::routes())
@@ -89,6 +91,7 @@ pub fn router(state: AppState) -> Router {
             TraceLayer::new_for_http()
                 .make_span_with(|req: &axum::http::Request<_>| tracing::info_span!("http", method = %req.method(), path = %req.uri().path())),
         )
+        .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
         .with_state(state)
 }
 

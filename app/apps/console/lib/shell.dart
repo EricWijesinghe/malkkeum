@@ -8,6 +8,7 @@ import 'screens/catalog.dart';
 import 'screens/dashboard.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
+import 'screens/ops.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
 import 'state.dart';
@@ -69,6 +70,11 @@ final _sections = <_Section>[
     (t) => t.cSetup,
     () => const SetupScreen(),
     adminOnly: true,
+  ),
+  _Section(
+    Icons.monitor_heart_rounded,
+    (t) => t.cOps,
+    () => const OpsScreen(),
   ),
 ];
 

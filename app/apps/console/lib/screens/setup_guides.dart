@@ -97,6 +97,40 @@ final guides = <String, Guide>{
       ),
     },
   ),
+  'backup': Guide(
+    title: (t) => t.cIntBackup,
+    site: 'https://dash.cloudflare.com',
+    steps: const [
+      Tr(
+        'Cloudflare R2 또는 네이버 클라우드 Object Storage 에 가입하고, 비공개 버킷을 하나 만들어요 (예: malkkeum-backup).',
+        'Sign up for Cloudflare R2 or Naver Cloud Object Storage and create one private bucket (e.g. malkkeum-backup).',
+      ),
+      Tr(
+        'R2: [R2 → API 토큰] 에서 "객체 읽기 및 쓰기" 권한 토큰을 만들어요. 네이버 클라우드: 마이페이지 → 인증키 관리에서 액세스 키를 만들어요. 나온 Access Key 와 Secret Key 를 복사해요 (Secret 은 한 번만 보여요).',
+        'R2: create an API token with Object Read & Write under R2 → API Tokens. Naver Cloud: My page → Access key management. Copy the Access Key and Secret Key (the secret is shown once).',
+      ),
+      Tr(
+        '엔드포인트와 리전: R2 는 https://<계정ID>.r2.cloudflarestorage.com 과 리전 auto. 네이버 클라우드는 https://kr.object.ncloudstorage.com 과 리전 kr-standard.',
+        'Endpoint and region: R2 uses https://<account-id>.r2.cloudflarestorage.com and region auto. Naver Cloud uses https://kr.object.ncloudstorage.com and region kr-standard.',
+      ),
+      Tr(
+        '보관 기간(일)을 정해요. 기본 30일이 지난 백업 파일은 자동으로 지워져요.',
+        'Choose how many days to keep backups (default 30). Older backup files are deleted automatically.',
+      ),
+      Tr(
+        '저장한 뒤 [연결 테스트] 를 눌러요. 작은 테스트 파일을 올렸다가 바로 지워요. 비용은 저장 용량에 따라 달라요 (백업 몇 개 분량이면 월 몇 천 원 수준이에요). 정확한 요금은 각 서비스의 요금표를 확인하세요.',
+        'Save, then press Test connection (it uploads and deletes a tiny test file). Cost depends on storage used; a few backups usually cost very little. Check each provider's price page for exact rates.',
+      ),
+    ],
+    fields: const {
+      'endpoint': FieldGuide(Tr('엔드포인트', 'Endpoint'), hint: Tr('https://...', 'https://...')),
+      'region': FieldGuide(Tr('리전', 'Region'), hint: Tr('R2: auto · 네이버: kr-standard', 'R2: auto · Naver: kr-standard')),
+      'bucket': FieldGuide(Tr('버킷 이름', 'Bucket name')),
+      'access_key': FieldGuide(Tr('Access Key', 'Access Key')),
+      'secret_key': FieldGuide(Tr('Secret Key', 'Secret Key')),
+      'retention_days': FieldGuide(Tr('보관 기간(일)', 'Keep for (days)'), hint: Tr('기본 30', 'default 30')),
+    },
+  ),
   'solapi': Guide(
     title: (t) => t.cIntSolapi,
     site: 'https://console.solapi.com',
