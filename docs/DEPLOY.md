@@ -7,26 +7,49 @@ store accounts. Source stays in the private repo.
 | Piece | Built by | Client receives |
 |---|---|---|
 | API image, web image (website + console at `/admin/`) | `release.yml` → GHCR | `docker pull` via install.sh |
-| install.sh + `guide/` + `store/` | `release.yml` → `DIST_REPO` | one `curl … \| sudo bash` line |
+| install.sh + `guide/` + `store/` | `release.yml` → `DIST_REPO` (branches `main` = stable, `beta`) | one `curl … \| sudo bash` line |
 | Customer / partner apps | Codemagic on the private repo | TestFlight / Play internal test, then stores |
+
+## 0. Release gate
+
+`release.yml` runs `e2e.yml` first: it builds both images on the runner, runs the real
+`deploy/install.sh` against them (HTTPS with an internal CA, console, website, setup code, re-run
+keeps data, broken image → automatic rollback, good image → update). Nothing is pushed or published
+unless that passes. The same job runs on every push and PR via `ci.yml`.
 
 ## 1. One-time setup (developer)
 
 1. Private repo: `gh repo create malkkeum --private --source . --push`
-2. Public delivery repo: `gh repo create malkkeum-install --public --add-readme`
-3. In the private repo: variable `DIST_REPO=<owner>/malkkeum-install`; secret `DIST_TOKEN` =
-   fine-grained PAT with *Contents: read/write* on the delivery repo only.
+2. Public delivery repo: `gh repo create malkkeum-install --public --add-readme`; make sure it has a
+   `main` branch (the default branch of the new repo).
+3. Deploy key: `ssh-keygen -t ed25519 -N '' -f malkkeum-dist` → add `malkkeum-dist.pub` to
+   `malkkeum-install` under *Settings → Deploy keys* with **Allow write access** ticked.
+   In the private repo: secret `DIST_DEPLOY_KEY` = contents of `malkkeum-dist` (then delete the local
+   files). Variable `DIST_REPO=<owner>/malkkeum-install`.
 4. Release: `git tag v1.0.0 && git push --tags`. Then, once, open both GHCR packages
    (`malkkeum-api`, `malkkeum-web`) → Package settings → **Change visibility → Public**.
+   The packages link to the public delivery repo through the OCI source label.
    Images contain compiled binaries and minified web assets only.
-5. Check: `docker pull ghcr.io/<owner>/malkkeum-api:latest` from a logged-out machine.
+5. Check: `docker pull ghcr.io/<owner>/malkkeum-api:stable` from a logged-out machine.
 
-Send the client the delivery repo link. Guide 01 already contains the exact install line.
+Send the client the delivery repo link. Guide 01 already contains the exact install line
+(`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`).
 
-## 2. Server updates
+## 2. Releases and channels
 
-Tag a new version. Every installed server pulls `latest` each Monday 04:00 KST after a backup,
-or immediately with `malkkeum update`. Migrations run on API start.
+| Tag | Images (GHCR) | Delivery branch |
+|---|---|---|
+| `v1.2.3` | `1.2.3`, `beta`, `stable`, `latest` | `beta` and `main` |
+| `v1.3.0-beta.1` | `1.3.0-beta.1`, `beta` | `beta` only |
+
+- `stable` (client default) and `beta` are image tags; `malkkeum channel beta|stable` switches a server.
+- Every installed server keeps its channel tag in `/opt/malkkeum/.env` (`VERSION=stable`). Each
+  Monday 04:00 KST it backs up, pulls the tag, checks health, and rolls back to the recorded previous
+  image digests if the new one does not answer within 3 minutes.
+- `malkkeum rollback` returns to the digests recorded by the last update (forward-only migrations:
+  restore a backup if the schema changed; see guide 01).
+- Apps bake in the API version floor: set `min_app_version` / `latest_app_version` per app in the
+  console (사업장 정보). Below the minimum the app shows a blocking update screen.
 
 ## 3. Store apps (per client)
 

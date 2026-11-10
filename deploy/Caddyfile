@@ -7,6 +7,8 @@
 }
 
 {$DOMAIN} {
+	# Empty = automatic public HTTPS; TLS_MODE=internal = Caddy CA (installer tests only).
+	tls {$TLS_MODE}
 	encode zstd gzip
 
 	header {

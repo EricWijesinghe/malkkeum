@@ -775,5 +775,17 @@
  "cFirstRunCreate": "アカウントを作成して開始",
  "cWrongSetupCode": "設置コードが違います",
  "cWeakPassword": "パスワードは12文字以上必要です",
- "cInvalidValue": "入力内容を確認してください"
+ "cInvalidValue": "入力内容を確認してください",
+ "uUpdateBanner": "バージョン {version} が公開されました",
+ "uUpdateNow": "アップデート",
+ "uUpdateLater": "あとで",
+ "uUpdateRequiredTitle": "アップデートが必要です",
+ "uUpdateRequiredBody": "このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。",
+ "uUpdateStore": "ストアでアップデート",
+ "uUpdateStoreMissing": "アップデート先を準備中です。しばらくしてから再度お試しください。",
+ "uCurrentVersion": "現在のバージョン {version}",
+ "uAppVersionTitle": "アプリのバージョン",
+ "uAppVersionHint": "最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0",
+ "uMinVersion": "最小バージョン",
+ "uLatestVersion": "最新バージョン"
 }

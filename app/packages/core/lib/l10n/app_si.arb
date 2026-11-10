@@ -775,5 +775,17 @@
  "cFirstRunCreate": "ගිණුම සාදා අරඹන්න",
  "cWrongSetupCode": "සැකසුම් කේතය වැරදියි",
  "cWeakPassword": "මුරපදයට අවම අකුරු 12 ක් අවශ්‍යයි",
- "cInvalidValue": "කරුණාකර අගය පරීක්ෂා කරන්න"
+ "cInvalidValue": "කරුණාකර අගය පරීක්ෂා කරන්න",
+ "uUpdateBanner": "නව අනුවාදය {version} ලැබී ඇත",
+ "uUpdateNow": "යාවත්කාලීන කරන්න",
+ "uUpdateLater": "පසුව",
+ "uUpdateRequiredTitle": "යාවත්කාලීනයක් අවශ්‍යයි",
+ "uUpdateRequiredBody": "මෙම අනුවාදය තවදුරටත් සහාය නොදක්වයි. කරුණාකර ගබඩාවෙන් යාවත්කාලීන කරන්න.",
+ "uUpdateStore": "ගබඩාවෙන් යාවත්කාලීන කරන්න",
+ "uUpdateStoreMissing": "යාවත්කාලීන සබැඳිය තවම සූදානම් නැත. පසුව නැවත උත්සාහ කරන්න.",
+ "uCurrentVersion": "වත්මන් අනුවාදය {version}",
+ "uAppVersionTitle": "යෙදුම් අනුවාද",
+ "uAppVersionHint": "අවම අනුවාදයට පහළ යෙදුම් යාවත්කාලීන තිරයේ නතර වේ. උදාහරණ: 1.2.0",
+ "uMinVersion": "අවම අනුවාදය",
+ "uLatestVersion": "නවතම අනුවාදය"
 }

@@ -1,0 +1,43 @@
+name: install-e2e
+
+# Builds both server images on this runner, then runs the real deploy/install.sh against them and
+# checks the result (deploy/e2e-install.sh). Called by ci.yml on every push/PR and by release.yml
+# before anything is published.
+on:
+  workflow_call:
+
+jobs:
+  install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Local registry for the test images
+        run: docker run -d --name registry -p 5000:5000 registry:2
+      - uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+      - name: API image
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          build-args: APP_VERSION=e2e
+          tags: localhost:5000/malkkeum-api:e2e
+          cache-from: type=gha,scope=malkkeum-api
+          cache-to: type=gha,mode=max,scope=malkkeum-api
+      - name: Web image (website + console)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/web.Dockerfile
+          push: true
+          build-args: APP_VERSION=e2e
+          tags: localhost:5000/malkkeum-web:e2e
+          cache-from: type=gha,scope=malkkeum-web
+          cache-to: type=gha,mode=max,scope=malkkeum-web
+      - name: Install, use, update, roll back
+        run: bash deploy/e2e-install.sh
+      - name: Update log on failure
+        if: failure()
+        run: sudo tail -n 200 /opt/malkkeum/backups/update.log 2>/dev/null || true

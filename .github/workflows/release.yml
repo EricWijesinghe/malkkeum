@@ -1,11 +1,12 @@
 name: release
 
-# Tag vX.Y.Z (or run by hand) -> server images on GHCR + a release in the PUBLIC delivery repo
-# (repo variable DIST_REPO, e.g. owner/malkkeum-install; secret DIST_TOKEN with write access to it).
-# The delivery repo holds only install.sh and the Korean guides — never source. The installer is
-# published with this repository's image location baked in, so the person installing only runs:
-#   curl -fsSL https://github.com/<DIST_REPO>/releases/latest/download/install.sh | sudo bash
-# One-time: make the two GHCR packages public (Package settings -> Change visibility).
+# Tag vX.Y.Z or vX.Y.Z-beta.N -> install test -> server images on GHCR -> installer + guides into the
+# PUBLIC delivery repo (repo variable DIST_REPO, e.g. owner/malkkeum-install) -> GitHub Release notes
+# in this private repo. Nothing is published unless the install test passes.
+#
+# Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
+# prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
+# Secret DIST_DEPLOY_KEY: SSH private key with write access to DIST_REPO (deploy key).
 on:
   push:
     tags: ["v*"]
@@ -16,7 +17,12 @@ permissions:
   packages: write
 
 jobs:
+  test:
+    uses: ./.github/workflows/e2e.yml
+
   images:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,10 +31,15 @@ jobs:
           - { name: malkkeum-web, context: ., file: deploy/web.Dockerfile }
     steps:
       - uses: actions/checkout@v4
-      - id: meta
+      - name: Tags
+        id: meta
+        env: { NAME: "${{ matrix.name }}" }
         run: |
-          echo "repo=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          repo="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
+          ver="${GITHUB_REF_NAME#v}"
+          tags="$repo/$NAME:$ver,$repo/$NAME:beta"
+          case "$ver" in *-*) ;; *) tags="$tags,$repo/$NAME:stable,$repo/$NAME:latest" ;; esac
+          { echo "tags=$tags"; echo "version=$ver"; } >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
@@ -38,39 +49,33 @@ jobs:
           file: ${{ matrix.file }}
           push: true
           platforms: linux/amd64,linux/arm64
+          build-args: APP_VERSION=${{ steps.meta.outputs.version }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
-          tags: |
-            ${{ steps.meta.outputs.repo }}/${{ matrix.name }}:latest
-            ${{ steps.meta.outputs.repo }}/${{ matrix.name }}:${{ steps.meta.outputs.version }}
+          tags: ${{ steps.meta.outputs.tags }}
 
-  installer:
+  delivery:
     needs: images
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          repo="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}"
-          sed "s|IMAGE_REPO=\"\${MALKKEUM_IMAGES:-ghcr.io/malkkeum}\"|IMAGE_REPO=\"\${MALKKEUM_IMAGES:-$repo}\"|" deploy/install.sh > install.sh
-          grep -q "$repo" install.sh
-          bash -n install.sh
-      - name: Guides into the delivery repo
-        env: { DIST_REPO: "${{ vars.DIST_REPO }}", DIST_TOKEN: "${{ secrets.DIST_TOKEN }}" }
+      - name: Deploy key and GitHub host key (fingerprint checked)
         run: |
-          test -n "$DIST_REPO" && test -n "$DIST_TOKEN" || { echo "::error::set variable DIST_REPO and secret DIST_TOKEN"; exit 1; }
-          git clone -q "https://x-access-token:${DIST_TOKEN}@github.com/${DIST_REPO}.git" dist
-          rm -rf dist/guide dist/store && cp -r docs/guide docs/store dist/
-          url="https://github.com/${DIST_REPO}/releases/latest/download/install.sh"
-          sed -i "s|https://github.com/<계정>/<저장소>/releases/latest/download/install.sh|$url|" dist/guide/01-*.md
-          cp docs/delivery-README.md dist/README.md
-          sed -i "s|INSTALL_URL|$url|" dist/README.md
-          cd dist && git add -A
-          git diff --cached --quiet || { git -c user.name=release -c user.email=release@users.noreply.github.com commit -qm "guides ${GITHUB_REF_NAME}" && git push -q; }
-      - uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          ssh-keyscan -t ed25519 github.com > ~/.ssh/known_hosts 2>/dev/null
+          test "$(ssh-keygen -lf ~/.ssh/known_hosts | awk '{print $2}')" = "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
-          repository: ${{ vars.DIST_REPO }}
-          token: ${{ secrets.DIST_TOKEN }}
-          files: install.sh
-          body: "설치 명령: curl -fsSL https://github.com/${{ vars.DIST_REPO }}/releases/latest/download/install.sh | sudo bash"
-
+          ssh-private-key: ${{ secrets.DIST_DEPLOY_KEY }}
+      - name: Publish installer and guides
+        env:
+          DIST_REPO: ${{ vars.DIST_REPO }}
+          VER: ${{ github.ref_name }}
+        run: IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" bash deploy/publish-delivery.sh
+      - name: Release notes in this (private) repo
+        env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}" }
+        run: |
+          flags=()
+          case "$VER" in *-*) flags+=(--prerelease) ;; esac
+          gh release create "$VER" --title "$VER" --generate-notes "${flags[@]}"

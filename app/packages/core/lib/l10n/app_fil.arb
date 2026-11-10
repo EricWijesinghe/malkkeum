@@ -775,5 +775,17 @@
  "cFirstRunCreate": "Gumawa ng account at magsimula",
  "cWrongSetupCode": "Mali ang setup code",
  "cWeakPassword": "Kailangan ng hindi bababa sa 12 character ang password",
- "cInvalidValue": "Pakisuri ang inilagay na value"
+ "cInvalidValue": "Pakisuri ang inilagay na value",
+ "uUpdateBanner": "May bagong bersyon {version}",
+ "uUpdateNow": "I-update",
+ "uUpdateLater": "Mamaya",
+ "uUpdateRequiredTitle": "Kailangan ng bagong bersyon",
+ "uUpdateRequiredBody": "Hindi na suportado ang bersyong ito. Mag-update mula sa tindahan para magpatuloy.",
+ "uUpdateStore": "Mag-update sa tindahan",
+ "uUpdateStoreMissing": "Inihahanda pa ang link ng update. Subukan ulit mamaya.",
+ "uCurrentVersion": "Kasalukuyang bersyon {version}",
+ "uAppVersionTitle": "Mga bersyon ng app",
+ "uAppVersionHint": "Hihinto sa screen ng update ang app na mas mababa sa minimum. Makakakita ng banner ang mas luma sa pinakabago. Halimbawa: 1.2.0",
+ "uMinVersion": "Pinakamababang bersyon",
+ "uLatestVersion": "Pinakabagong bersyon"
 }

@@ -13,7 +13,7 @@ services:
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
 
   api:
-    image: ${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-api:${VERSION:-latest}
+    image: ${API_IMAGE:-${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-api:${VERSION:-stable}}
     build: { context: ../backend }
     restart: unless-stopped
     depends_on: { db: { condition: service_healthy } }
@@ -31,7 +31,7 @@ services:
     healthcheck: { test: ["CMD", "api", "--health"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
-    image: ${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-web:${VERSION:-latest}
+    image: ${WEB_IMAGE:-${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-web:${VERSION:-stable}}
     build: { context: .., dockerfile: deploy/web.Dockerfile }
     restart: unless-stopped
     depends_on: [api]

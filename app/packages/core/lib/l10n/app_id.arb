@@ -775,5 +775,17 @@
  "cFirstRunCreate": "Buat akun dan mulai",
  "cWrongSetupCode": "Kode instalasi salah",
  "cWeakPassword": "Kata sandi minimal 12 karakter",
- "cInvalidValue": "Periksa nilai yang diisi"
+ "cInvalidValue": "Periksa nilai yang diisi",
+ "uUpdateBanner": "Versi baru {version} tersedia",
+ "uUpdateNow": "Perbarui",
+ "uUpdateLater": "Nanti",
+ "uUpdateRequiredTitle": "Pembaruan diperlukan",
+ "uUpdateRequiredBody": "Versi ini sudah tidak didukung. Silakan perbarui dari toko aplikasi.",
+ "uUpdateStore": "Perbarui di toko",
+ "uUpdateStoreMissing": "Tautan pembaruan belum siap. Coba lagi nanti.",
+ "uCurrentVersion": "Versi saat ini {version}",
+ "uAppVersionTitle": "Versi aplikasi",
+ "uAppVersionHint": "Aplikasi di bawah versi minimum akan berhenti di layar pembaruan. Versi di bawah yang terbaru akan melihat banner. Contoh: 1.2.0",
+ "uMinVersion": "Versi minimum",
+ "uLatestVersion": "Versi terbaru"
 }

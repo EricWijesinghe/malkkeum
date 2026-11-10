@@ -775,5 +775,17 @@
  "cFirstRunCreate": "สร้างบัญชีและเริ่ม",
  "cWrongSetupCode": "รหัสติดตั้งไม่ถูกต้อง",
  "cWeakPassword": "รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร",
- "cInvalidValue": "โปรดตรวจสอบค่าที่กรอก"
+ "cInvalidValue": "โปรดตรวจสอบค่าที่กรอก",
+ "uUpdateBanner": "มีเวอร์ชันใหม่ {version}",
+ "uUpdateNow": "อัปเดต",
+ "uUpdateLater": "ไว้ทีหลัง",
+ "uUpdateRequiredTitle": "ต้องอัปเดตแอป",
+ "uUpdateRequiredBody": "เวอร์ชันนี้ไม่รองรับแล้ว กรุณาอัปเดตจากสโตร์",
+ "uUpdateStore": "อัปเดตจากสโตร์",
+ "uUpdateStoreMissing": "ลิงก์อัปเดตยังไม่พร้อม กรุณาลองใหม่ภายหลัง",
+ "uCurrentVersion": "เวอร์ชันปัจจุบัน {version}",
+ "uAppVersionTitle": "เวอร์ชันแอป",
+ "uAppVersionHint": "แอปที่ต่ำกว่าเวอร์ชันขั้นต่ำจะค้างที่หน้าอัปเดต ตัวอย่าง: 1.2.0",
+ "uMinVersion": "เวอร์ชันขั้นต่ำ",
+ "uLatestVersion": "เวอร์ชันล่าสุด"
 }

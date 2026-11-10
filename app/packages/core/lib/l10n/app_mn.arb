@@ -775,5 +775,17 @@
  "cFirstRunCreate": "Бүртгэл үүсгээд эхлэх",
  "cWrongSetupCode": "Суулгацын код буруу",
  "cWeakPassword": "Нууц үг хамгийн багадаа 12 тэмдэгт байна",
- "cInvalidValue": "Оруулсан утгаа шалгана уу"
+ "cInvalidValue": "Оруулсан утгаа шалгана уу",
+ "uUpdateBanner": "Шинэ хувилбар {version} гарлаа",
+ "uUpdateNow": "Шинэчлэх",
+ "uUpdateLater": "Дараа",
+ "uUpdateRequiredTitle": "Шинэчлэх шаардлагатай",
+ "uUpdateRequiredBody": "Энэ хувилбарыг дэмжихээ больсон. Дэлгүүрээс шинэчилнэ үү.",
+ "uUpdateStore": "Дэлгүүрээс шинэчлэх",
+ "uUpdateStoreMissing": "Шинэчлэх холбоос бэлэн болоогүй байна. Дараа дахин оролдоно уу.",
+ "uCurrentVersion": "Одоогийн хувилбар {version}",
+ "uAppVersionTitle": "Аппын хувилбарууд",
+ "uAppVersionHint": "Хамгийн бага хувилбараас доош аппууд шинэчлэх дэлгэцэд зогсоно. Жишээ: 1.2.0",
+ "uMinVersion": "Хамгийн бага хувилбар",
+ "uLatestVersion": "Хамгийн сүүлийн хувилбар"
 }

@@ -775,5 +775,17 @@
  "cFirstRunCreate": "Hisob yaratib boshlash",
  "cWrongSetupCode": "O'rnatish kodi noto'g'ri",
  "cWeakPassword": "Parol kamida 12 belgidan iborat bo'lishi kerak",
- "cInvalidValue": "Kiritilgan qiymatni tekshiring"
+ "cInvalidValue": "Kiritilgan qiymatni tekshiring",
+ "uUpdateBanner": "Yangi versiya {version} chiqdi",
+ "uUpdateNow": "Yangilash",
+ "uUpdateLater": "Keyinroq",
+ "uUpdateRequiredTitle": "Yangilash talab qilinadi",
+ "uUpdateRequiredBody": "Bu versiya endi qo'llab-quvvatlanmaydi. Do'kondan yangilang.",
+ "uUpdateStore": "Do'konda yangilash",
+ "uUpdateStoreMissing": "Yangilash havolasi hali tayyor emas. Keyinroq urinib ko'ring.",
+ "uCurrentVersion": "Joriy versiya {version}",
+ "uAppVersionTitle": "Ilova versiyalari",
+ "uAppVersionHint": "Minimal versiyadan past ilovalar yangilash ekranida to'xtaydi. Misol: 1.2.0",
+ "uMinVersion": "Minimal versiya",
+ "uLatestVersion": "So'nggi versiya"
 }

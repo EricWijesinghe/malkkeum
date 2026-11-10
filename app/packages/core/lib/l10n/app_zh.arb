@@ -775,5 +775,17 @@
  "cFirstRunCreate": "创建账号并开始",
  "cWrongSetupCode": "安装码不正确",
  "cWeakPassword": "密码至少需要 12 个字符",
- "cInvalidValue": "请检查输入内容"
+ "cInvalidValue": "请检查输入内容",
+ "uUpdateBanner": "新版本 {version} 已发布",
+ "uUpdateNow": "更新",
+ "uUpdateLater": "稍后",
+ "uUpdateRequiredTitle": "需要更新",
+ "uUpdateRequiredBody": "此版本已不再支持，请从应用商店更新到最新版本。",
+ "uUpdateStore": "前往应用商店更新",
+ "uUpdateStoreMissing": "更新链接尚未准备好，请稍后再试。",
+ "uCurrentVersion": "当前版本 {version}",
+ "uAppVersionTitle": "应用版本管理",
+ "uAppVersionHint": "低于最低版本的应用会停在更新页面；低于最新版本则显示提示横幅。格式：1.2.0",
+ "uMinVersion": "最低版本",
+ "uLatestVersion": "最新版本"
 }

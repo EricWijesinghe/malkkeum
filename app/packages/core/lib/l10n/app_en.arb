@@ -775,5 +775,17 @@
  "cFirstRunCreate": "Create account and start",
  "cWrongSetupCode": "That setup code is not right",
  "cWeakPassword": "Password needs at least 12 characters",
- "cInvalidValue": "Please check the highlighted value"
+ "cInvalidValue": "Please check the highlighted value",
+ "uUpdateBanner": "Version {version} is available",
+ "uUpdateNow": "Update",
+ "uUpdateLater": "Later",
+ "uUpdateRequiredTitle": "An update is required",
+ "uUpdateRequiredBody": "This version is no longer supported. Please update from the store.",
+ "uUpdateStore": "Update in the store",
+ "uUpdateStoreMissing": "The update link is not ready yet. Please try again later.",
+ "uCurrentVersion": "Current version {version}",
+ "uAppVersionTitle": "App versions",
+ "uAppVersionHint": "Apps below the minimum stop on an update screen. Apps below the latest version see a banner. Format: 1.2.0",
+ "uMinVersion": "Minimum version",
+ "uLatestVersion": "Latest version"
 }
