@@ -97,7 +97,7 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
         ),
         Expanded(
           child: _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const SkeletonList()
               : ListView.builder(
                   itemCount: _threads.length,
                   itemBuilder: (_, i) {

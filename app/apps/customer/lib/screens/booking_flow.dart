@@ -527,7 +527,7 @@ class DoneScreen extends StatelessWidget {
           padding: const EdgeInsets.all(Space.gutter),
           child: Column(children: [
             const Spacer(),
-            SuccessMark(semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle),
+            FlipIn(child: SuccessMark(semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle)),
             StaggerIn(index: 1, child: Text(b.isQuote ? t.doneQuoteTitle : t.doneTitle, style: context.text.headlineSmall, textAlign: TextAlign.center)),
             const SizedBox(height: Space.xs),
             Text(b.isQuote ? t.doneQuoteBody : t.doneBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft), textAlign: TextAlign.center),

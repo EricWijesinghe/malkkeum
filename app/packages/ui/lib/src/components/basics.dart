@@ -429,10 +429,21 @@ class Skeleton extends StatefulWidget {
 
 class _SkeletonState extends State<Skeleton>
     with SingleTickerProviderStateMixin {
+  // One sweeping highlight band per loop; the band is static under reduced motion.
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1100),
-  )..repeat(reverse: true);
+    duration: const Duration(milliseconds: 1300),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _c.stop();
+    } else if (!_c.isAnimating) {
+      _c.repeat();
+    }
+  }
 
   @override
   void dispose() {
@@ -442,20 +453,56 @@ class _SkeletonState extends State<Skeleton>
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     final reduce = MediaQuery.disableAnimationsOf(context);
-    return FadeTransition(
-      opacity: reduce
-          ? const AlwaysStoppedAnimation(0.7)
-          : Tween(begin: 0.45, end: 1.0).animate(_c),
+    final box = BoxDecoration(
+      color: c.line,
+      borderRadius: BorderRadius.circular(widget.radius),
+    );
+    return RepaintBoundary(
       child: Container(
         height: widget.height,
-        decoration: BoxDecoration(
-          color: context.colors.line,
-          borderRadius: BorderRadius.circular(widget.radius),
-        ),
+        decoration: box,
+        child: reduce
+            ? null
+            : AnimatedBuilder(
+                animation: _c,
+                builder: (_, _) => DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(widget.radius),
+                    gradient: LinearGradient(
+                      begin: Alignment(-3 + 4 * _c.value, 0),
+                      end: Alignment(1 + 4 * _c.value, 0),
+                      colors: [c.line, c.surfaceHigh, c.line],
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }
+}
+
+/// Loading placeholder for a list: [count] shimmering rows in place of a spinner.
+class SkeletonList extends StatelessWidget {
+  const SkeletonList({super.key, this.count = 4, this.rowHeight = 72});
+  final int count;
+  final double rowHeight;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(Space.gutter),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < count; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.sm),
+            child: Skeleton(height: rowHeight),
+          ),
+      ],
+    ),
+  );
 }
 
 Future<T?> showAppSheet<T>(
