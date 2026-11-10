@@ -207,8 +207,12 @@ class _Tilt3DState extends State<Tilt3D> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  // Reduced motion: no transform layer or pointer tracking at all.
   @override
-  Widget build(BuildContext context) => MouseRegion(
+  Widget build(BuildContext context) =>
+      _live ? _tilted(context) : widget.child;
+
+  Widget _tilted(BuildContext context) => MouseRegion(
     onEnter: (e) => _track(e.localPosition),
     onHover: (e) => _track(e.localPosition),
     onExit: (_) => _release(),

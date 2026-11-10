@@ -56,14 +56,15 @@ class ServiceHue {
 }
 
 abstract final class ServiceHues {
+  // Tone = text/icon on tint, >= 4.5:1 (palette_contrast_test.dart).
   static const studio = ServiceHue(
     Color(0xFFFFF3D6),
-    Color(0xFFB86E00),
+    Color(0xFF9E5F00),
     Color(0xFF3A2D10),
   );
   static const kitchen = ServiceHue(
     Color(0xFFFFE9E3),
-    Color(0xFFD2432C),
+    Color(0xFFBF3D28),
     Color(0xFF3B1E18),
   );
   static const bathroom = ServiceHue(
@@ -78,22 +79,22 @@ abstract final class ServiceHues {
   );
   static const aircon = ServiceHue(
     Color(0xFFDDF6FA),
-    Color(0xFF0B8AA3),
+    Color(0xFF09768B),
     Color(0xFF102E35),
   );
   static const sofa = ServiceHue(
     Color(0xFFFFE6F0),
-    Color(0xFFC72D6C),
+    Color(0xFFC12C69),
     Color(0xFF3A1626),
   );
   static const moveOut = ServiceHue(
     Color(0xFFDBF5EC),
-    Color(0xFF0B8A6B),
+    Color(0xFF0A795E),
     Color(0xFF0F2F27),
   );
   static const moveIn = ServiceHue(
     Color(0xFFE7F6DA),
-    Color(0xFF3E8A12),
+    Color(0xFF377A10),
     Color(0xFF1C2E10),
   );
 

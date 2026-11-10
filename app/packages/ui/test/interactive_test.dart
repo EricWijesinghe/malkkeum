@@ -79,8 +79,8 @@ void main() {
     await tester.pump();
     await mouse.moveTo(tester.getCenter(tilt) + const Offset(60, 0));
     await tester.pump(const Duration(milliseconds: 300));
-    final m = tester.widget<Transform>(find.descendant(of: tilt, matching: find.byType(Transform)).first).transform;
-    expect(m.storage[0], closeTo(1.0, 1e-9));
+    // No transform layer at all: the child is returned as-is.
+    expect(find.descendant(of: tilt, matching: find.byType(Transform)), findsNothing);
   });
 
   testWidgets('ServiceGlyph renders at 36 and 120 in both themes', (tester) async {

@@ -34,6 +34,49 @@ class SharedAxisPageTransitionsBuilder extends PageTransitionsBuilder {
   }
 }
 
+/// Subtle 3D route: incoming page turns in around the Y axis (about 7 degrees),
+/// scales from 96% and fades in. Pop runs the same curve in reverse.
+/// Instant when the OS asks for reduced motion.
+class Depth3DPageTransitionsBuilder extends PageTransitionsBuilder {
+  const Depth3DPageTransitionsBuilder();
+
+  static const _turn = 0.12;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Motion.emphasized,
+      reverseCurve: Motion.ease,
+    );
+    return FadeTransition(
+      opacity: curved,
+      child: AnimatedBuilder(
+        animation: curved,
+        child: child,
+        builder: (_, child) {
+          final t = curved.value;
+          final m = Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateY((1 - t) * _turn);
+          return Transform(
+            alignment: Alignment.center,
+            transform: m,
+            child: Transform.scale(scale: 0.96 + 0.04 * t, child: child),
+          );
+        },
+      ),
+    );
+  }
+}
+
 /// Staggered entrance for list sections and feed cards: each item fades and
 /// rises after `index * step`, capped so long lists don't wait forever.
 class StaggerIn extends StatefulWidget {

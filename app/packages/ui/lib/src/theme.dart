@@ -282,11 +282,12 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: SharedAxisPageTransitionsBuilder(),
+        // iOS/macOS keep Cupertino for the edge-swipe back gesture.
+        TargetPlatform.android: Depth3DPageTransitionsBuilder(),
         TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.windows: SharedAxisPageTransitionsBuilder(),
+        TargetPlatform.windows: Depth3DPageTransitionsBuilder(),
         TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: SharedAxisPageTransitionsBuilder(),
+        TargetPlatform.linux: Depth3DPageTransitionsBuilder(),
       },
     ),
   );
