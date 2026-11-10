@@ -79,12 +79,12 @@ void main() {
     await settle(tester);
 
     final sms = find.widgetWithText(SwitchListTile, koT.oRuleSms);
-    await tester.ensureVisible(sms);
+    await tester.scrollUntilVisible(sms, 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(sms);
     await settle(tester, duration: const Duration(milliseconds: 200));
 
     final save = find.widgetWithText(PrimaryButton, koT.oSave);
-    await tester.ensureVisible(save);
+    await tester.scrollUntilVisible(save, 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(save);
     await settle(tester);
 

@@ -1,6 +1,9 @@
 // Store screenshots for the customer app. Excluded from normal runs (tag `store_screenshots`).
 // Generate with `scripts/store/generate.sh` (see docs/guide/03-앱-출시.md). Writes PNGs under
 // build/store_shots/raw/customer/<device>/<lang>/NN-name.png; scripts/store/frame.js adds captions.
+@Tags(['store_screenshots'])
+library;
+
 import 'package:core/core.dart';
 import 'package:customer/screens/booking_detail.dart';
 import 'package:customer/screens/booking_flow.dart';

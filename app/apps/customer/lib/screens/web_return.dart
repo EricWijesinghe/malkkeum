@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +7,7 @@ import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
 import 'pay_flow.dart' show showVirtualAccount;
-
-@JS('history.replaceState')
-external void _replaceState(JSAny? data, JSString title, JSString url);
+import 'web_history_stub.dart' if (dart.library.js_interop) 'web_history_web.dart';
 
 /// Web deep links live in the URL hash: /app/#/booking/`<id>`, and /app/#/pay-return?paymentId=..
 /// after the hosted PortOne page. Null when there is no hash (every mobile launch).
@@ -22,7 +18,7 @@ Uri? webHashRoute(Uri base) => base.fragment.isEmpty ? null : Uri.parse(base.fra
 Future<void> openWebHashRoute(BuildContext context) async {
   final route = webHashRoute(Uri.base);
   if (route == null) return;
-  _replaceState(null, ''.toJS, Uri.base.replace(fragment: '').toString().toJS);
+  replaceBrowserUrl(Uri.base.replace(fragment: '').toString());
   final segments = route.pathSegments;
   if (segments.length == 2 && segments.first == 'booking') {
     final id = segments[1];

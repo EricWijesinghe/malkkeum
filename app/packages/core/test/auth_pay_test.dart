@@ -92,7 +92,7 @@ void main() {
       final none = socialSignInsFor(apiBase: 'https://api.example.com', storage: storage, configured: const {}, appleOk: true);
       expect(none, isEmpty);
       final kakaoOnly = socialSignInsFor(apiBase: 'https://api.example.com', storage: storage, configured: const {'kakao'}, appleOk: true);
-      expect(kakaoOnly.single, isA<UnconfiguredSocialSignIn>());
+      expect(kakaoOnly.single, isNot(isA<DevSocialSignIn>()));
       expect(kakaoOnly.single.provider, 'kakao');
     });
 

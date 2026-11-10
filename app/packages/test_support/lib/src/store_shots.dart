@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -39,8 +38,8 @@ final shotOutRoot = const String.fromEnvironment('SHOT_OUT', defaultValue: 'buil
 /// CJK fallbacks come from the Windows font folder (Yu Gothic, Microsoft YaHei), registered under the
 /// family names the theme already falls back to ('Noto Sans JP' / 'Noto Sans SC').
 Future<void> loadShotFonts() async {
-  final uiLib = await Isolate.resolvePackageUri(Uri.parse('package:ui/ui.dart'));
-  final fontDir = Directory('${File.fromUri(uiLib!).parent.parent.path}/assets/fonts');
+  // flutter test runs with the app folder as cwd (app/apps/<app>); the ui package sits beside it.
+  final fontDir = Directory('${Directory.current.path}/../../packages/ui/assets/fonts');
   final pretendard = FontLoader('Pretendard');
   for (final f in fontDir.listSync().whereType<File>().where((f) => f.path.endsWith('.otf'))) {
     pretendard.addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));

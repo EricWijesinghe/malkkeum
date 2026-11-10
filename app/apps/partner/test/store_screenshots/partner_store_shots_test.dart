@@ -1,5 +1,8 @@
 // Store screenshots for the partner app. Excluded from normal runs (tag `store_screenshots`).
 // Generate with `scripts/store/generate.sh`. PNGs land in build/store_shots/raw/partner/<device>/<lang>/.
+@Tags(['store_screenshots'])
+library;
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
