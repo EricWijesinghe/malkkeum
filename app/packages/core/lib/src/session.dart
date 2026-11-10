@@ -6,6 +6,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'api.dart';
 
 /// Who is signed in. Tokens live in the OS keystore (Keychain / Keystore / DPAPI).
+/// Web: flutter_secure_storage has no keystore, so the refresh token sits in localStorage, encrypted
+/// with a WebCrypto key kept in IndexedDB. Any script on the page can still read it while the tab is
+/// open: the tradeoff is accepted for a no-install web app, guarded by the CSP in deploy/Caddyfile.
+/// An httpOnly refresh cookie would be stronger but needs server work. logout() deletes it on web too.
 class Session extends ChangeNotifier {
   Session({FlutterSecureStorage? storage, required this.namespace}) : _storage = storage ?? const FlutterSecureStorage();
 

@@ -2317,4 +2317,10 @@ class TSi extends T {
 
   @override
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
+
+  @override
+  String get webBookNow => 'වෙබ් අඩවියෙන් වහාම වෙන් කරන්න';
+
+  @override
+  String get webBookSub => 'යෙදුම ස්ථාපනය නොකර';
 }

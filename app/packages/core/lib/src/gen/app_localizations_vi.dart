@@ -2291,4 +2291,10 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String get webBookNow => 'Đặt lịch ngay trên web';
+
+  @override
+  String get webBookSub => 'Đặt lịch không cần cài ứng dụng';
 }

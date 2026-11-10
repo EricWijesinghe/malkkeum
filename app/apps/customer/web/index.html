@@ -1,46 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Served at /app/ (deploy/Caddyfile). The build's --base-href sets this path. -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="말끔 - 검증된 청소 전문가를 1분 만에 예약하세요.">
+  <meta name="theme-color" content="#070B16">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="customer">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="말끔">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>customer</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <title>말끔</title>
+
+  <!-- Painted before the Flutter engine loads, in the app's dark canvas colour: no white flash. -->
+  <style>
+    html, body { margin: 0; height: 100%; background: #070B16; }
+    #splash { position: fixed; inset: 0; display: grid; place-items: center; background: #070B16; color: #F2F5FA;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      transition: opacity .3s ease; z-index: 1; }
+    #splash.done { opacity: 0; pointer-events: none; }
+    #splash .wrap { text-align: center; }
+    #splash .word { font-size: 32px; font-weight: 800; letter-spacing: -.02em; }
+    #splash .dot { width: 8px; height: 8px; margin: 18px auto 0; border-radius: 50%; background: #7C93FF; animation: pulse 1.1s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
+    @media (prefers-color-scheme: light) {
+      html, body, #splash { background: #F5F7FB; color: #111827; }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <div id="splash" aria-hidden="true"><div class="wrap"><div class="word">말끔</div><div class="dot"></div></div></div>
+  <script>
+    // Hide the splash on the first Flutter frame; a safety timeout covers a stalled engine load.
+    (function () {
+      var splash = document.getElementById('splash');
+      var hide = function () { splash.classList.add('done'); };
+      window.addEventListener('flutter-first-frame', hide, { once: true });
+      setTimeout(hide, 12000);
+    })();
+  </script>
+  <!-- Flutter loader (service worker, renderer and the app bundle). -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

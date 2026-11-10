@@ -2316,4 +2316,10 @@ class TRu extends T {
 
   @override
   String get cInvalidValue => 'Проверьте введённое значение';
+
+  @override
+  String get webBookNow => 'Забронировать в браузере';
+
+  @override
+  String get webBookSub => 'Без установки приложения';
 }

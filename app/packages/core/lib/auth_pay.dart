@@ -8,7 +8,7 @@ export 'src/identity.dart';
 export 'src/pay_brands.dart';
 export 'src/pay_i18n.dart';
 export 'src/payment_launcher.dart';
-export 'src/portone_webview.dart' show PortOneWebViewLauncher, outcomeFromRedirect, parseAndroidIntent, portOnePageUri;
+export 'src/portone_webview.dart' show PortOneRedirectLauncher, PortOneWebViewLauncher, outcomeFromRedirect, parseAndroidIntent, portOnePageUri, webPayReturnPath;
 export 'src/phone_attach.dart';
 export 'src/social_auth.dart';
 export 'src/social_buttons.dart';

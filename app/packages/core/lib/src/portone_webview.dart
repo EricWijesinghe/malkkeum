@@ -8,7 +8,7 @@ import 'payment_launcher.dart';
 
 /// URL of our hosted PortOne page for [intent] (website/pay/index.html, same domain as the API).
 /// `paymentId` is the checkout id there: the webhook and the recovery pass depend on it.
-Uri portOnePageUri(String apiBase, CheckoutIntent intent, {String? phone}) =>
+Uri portOnePageUri(String apiBase, CheckoutIntent intent, {String? phone, String? back}) =>
     Uri.parse('$apiBase/pay/').replace(
       queryParameters: {
         'checkout': intent.id,
@@ -18,8 +18,12 @@ Uri portOnePageUri(String apiBase, CheckoutIntent intent, {String? phone}) =>
         'method': intent.method,
         'name': intent.orderName,
         'phone': ?phone,
+        'back': ?back,
       },
     );
+
+/// Where the web app resumes after the hosted page (same origin, hash route, see customer web_return).
+const webPayReturnPath = '/app/#/pay-return';
 
 /// Result codes PortOne puts on the redirect when the customer backs out.
 const _cancelCodes = {
@@ -57,6 +61,28 @@ PaymentOutcome? outcomeFromRedirect(Uri uri, String checkoutId) {
       : Uri.tryParse('$scheme://${url.substring(9, hash)}');
   final store = pkg == null ? null : Uri.parse('market://details?id=$pkg');
   return (app: app, store: store);
+}
+
+/// Web: the hosted PortOne page replaces this tab. The page sends the customer back to
+/// [webPayReturnPath] when done, so the app confirms the payment after the reload.
+class PortOneRedirectLauncher extends PaymentLauncher {
+  const PortOneRedirectLauncher(this.apiBase, {this.phone});
+  final String apiBase;
+  final String? phone;
+
+  @override
+  Future<PaymentOutcome?> pay({
+    required BuildContext context,
+    required CheckoutIntent intent,
+  }) async {
+    if (intent.storeId.isEmpty || intent.channelKey.isEmpty) {
+      return const PaymentRejected('provider_not_configured');
+    }
+    final uri = portOnePageUri(apiBase, intent, phone: phone, back: webPayReturnPath);
+    await launchUrl(uri, webOnlyWindowName: '_self');
+    // The page unloads now; a null outcome only matters if the navigation was blocked.
+    return null;
+  }
 }
 
 /// Real PG window: our hosted PortOne page in a WebView.

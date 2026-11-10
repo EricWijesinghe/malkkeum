@@ -2314,4 +2314,10 @@ class TKm extends T {
 
   @override
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
+
+  @override
+  String get webBookNow => 'កក់នៅលើវេប';
+
+  @override
+  String get webBookSub => 'មិនចាំបាច់ដំឡើងកម្មវិធី';
 }

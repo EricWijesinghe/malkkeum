@@ -4440,6 +4440,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
+
+  /// No description provided for @webBookNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'웹에서 바로 예약'**
+  String get webBookNow;
+
+  /// No description provided for @webBookSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 설치 없이 바로 예약해요'**
+  String get webBookSub;
 }
 
 class _TDelegate extends LocalizationsDelegate<T> {

@@ -56,11 +56,12 @@ class CheckoutService {
       case PaymentRejected(:final code):
         return CheckoutFailed(code);
       case PaymentApproved(:final paymentId):
-        return _confirm(intent.id, paymentId);
+        return confirm(intent.id, paymentId);
     }
   }
 
-  Future<CheckoutResult> _confirm(String checkoutId, String paymentId) async {
+  /// Confirms a checkout the PG authorized. Also used when the web app resumes after the hosted page.
+  Future<CheckoutResult> confirm(String checkoutId, String paymentId) async {
     try {
       final r = await api.post('/checkouts/$checkoutId/confirm', {'payment_id': paymentId}) as Json;
       if (r['status'] == 'awaiting_deposit') {

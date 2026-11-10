@@ -2316,4 +2316,10 @@ class TMn extends T {
 
   @override
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
+
+  @override
+  String get webBookNow => 'Вэбээр шууд захиалах';
+
+  @override
+  String get webBookSub => 'Аппликейшн суулгах шаардлагагүй';
 }

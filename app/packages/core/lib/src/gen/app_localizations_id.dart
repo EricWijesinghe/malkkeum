@@ -2320,4 +2320,10 @@ class TId extends T {
 
   @override
   String get cInvalidValue => 'Periksa nilai yang diisi';
+
+  @override
+  String get webBookNow => 'Pesan lewat web';
+
+  @override
+  String get webBookSub => 'Tanpa perlu memasang aplikasi';
 }

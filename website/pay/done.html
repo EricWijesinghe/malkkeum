@@ -13,5 +13,13 @@
 <body>
   <!-- The app intercepts this address before it loads; a browser that lands here just sees this. -->
   <p>결제 결과를 확인하고 있어요.<br>앱으로 돌아가 주세요.</p>
+  <script>
+    // Web app flow: resume the app with this result (the app confirms it). Only /app/ paths are allowed.
+    (function () {
+      var back = null;
+      try { back = sessionStorage.getItem('mk.payBack'); sessionStorage.removeItem('mk.payBack'); } catch (e) { /* private mode */ }
+      if (back && back.indexOf('/app/') === 0) location.replace(back + location.search);
+    })();
+  </script>
 </body>
 </html>

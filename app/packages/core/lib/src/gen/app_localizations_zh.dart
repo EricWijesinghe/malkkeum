@@ -2252,4 +2252,10 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String get webBookNow => '网页直接预约';
+
+  @override
+  String get webBookSub => '无需安装应用，直接预约';
 }

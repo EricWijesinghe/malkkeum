@@ -2306,4 +2306,10 @@ class TTh extends T {
 
   @override
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
+
+  @override
+  String get webBookNow => 'จองบนเว็บเลย';
+
+  @override
+  String get webBookSub => 'ไม่ต้องติดตั้งแอป';
 }

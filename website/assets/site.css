@@ -82,6 +82,8 @@ select.lang { padding: 0 10px; }
 .store { display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 18px; border-radius: 16px; background: #000; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.18); }
 .store small { display: block; font-size: 0.68rem; opacity: 0.8; line-height: 1; }
 .store b { display: block; font-size: 1.05rem; line-height: 1.2; }
+.btn-web { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; min-height: 56px; padding: 0 22px; border-radius: 16px; background: #fff; color: #111827; text-decoration: none; font-weight: 800; font-size: 1.05rem; box-shadow: 0 14px 30px -12px rgba(0,0,0,0.35); }
+.btn-web small { font-size: 0.72rem; font-weight: 500; color: #5B6472; }
 
 /* Hero */
 .hero { position: relative; padding: clamp(32px, 6vw, 80px) 0 40px; }
