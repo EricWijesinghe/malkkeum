@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,7 +9,7 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
-import 'payments.dart';
+import 'pay_flow.dart';
 
 const _topics = ['studio', 'kitchen', 'bathroom', 'mattress', 'aircon', 'sofa', 'move_out', 'move_in', 'other'];
 
@@ -215,15 +216,31 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     }
   }
 
+  /// Quote card pay button: same method choice as checkout and booking detail.
   Future<void> _payDeposit(String bookingId) async {
-    final method = await pickPaymentMethod(context);
-    if (method == null || !mounted) return;
+    final choice = await choosePayMethod(context);
+    if (choice == null || !mounted) return;
     try {
-      await context.api.post('/bookings/$bookingId/deposit', {'payment_method_id': method});
+      switch (choice) {
+        case SavedChoice(:final methodId):
+          await context.api.post('/bookings/$bookingId/deposit', {'payment_method_id': methodId});
+        case ChannelChoice(:final channel):
+          final result = await payWithChannel(context, channel, {'kind': 'deposit', 'booking_id': bookingId});
+          if (!mounted) return;
+          switch (result) {
+            case CheckoutAwaitingDeposit(:final account):
+              await showVirtualAccount(context, account);
+            case CheckoutFailed(:final code):
+              showToast(context, context.t.checkoutFailure(code));
+              return;
+            case CheckoutPaid() || CheckoutCancelled():
+              break;
+          }
+      }
       if (!mounted) return;
       context.appRead.bookingsChanged();
     } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      if (mounted) showToast(context, context.t.payError(e));
     }
   }
 

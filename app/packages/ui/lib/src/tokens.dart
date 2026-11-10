@@ -56,43 +56,95 @@ class ServiceHue {
 }
 
 abstract final class ServiceHues {
-  static const studio = ServiceHue(Color(0xFFFFF3D6), Color(0xFFB86E00), Color(0xFF3A2D10));
-  static const kitchen = ServiceHue(Color(0xFFFFE9E3), Color(0xFFD2432C), Color(0xFF3B1E18));
-  static const bathroom = ServiceHue(Color(0xFFE2F0FF), Color(0xFF1668D6), Color(0xFF14263E));
-  static const mattress = ServiceHue(Color(0xFFEEE9FF), Color(0xFF5E3FD6), Color(0xFF241C40));
-  static const aircon = ServiceHue(Color(0xFFDDF6FA), Color(0xFF0B8AA3), Color(0xFF102E35));
-  static const sofa = ServiceHue(Color(0xFFFFE6F0), Color(0xFFC72D6C), Color(0xFF3A1626));
-  static const moveOut = ServiceHue(Color(0xFFDBF5EC), Color(0xFF0B8A6B), Color(0xFF0F2F27));
-  static const moveIn = ServiceHue(Color(0xFFE7F6DA), Color(0xFF3E8A12), Color(0xFF1C2E10));
+  static const studio = ServiceHue(
+    Color(0xFFFFF3D6),
+    Color(0xFFB86E00),
+    Color(0xFF3A2D10),
+  );
+  static const kitchen = ServiceHue(
+    Color(0xFFFFE9E3),
+    Color(0xFFD2432C),
+    Color(0xFF3B1E18),
+  );
+  static const bathroom = ServiceHue(
+    Color(0xFFE2F0FF),
+    Color(0xFF1668D6),
+    Color(0xFF14263E),
+  );
+  static const mattress = ServiceHue(
+    Color(0xFFEEE9FF),
+    Color(0xFF5E3FD6),
+    Color(0xFF241C40),
+  );
+  static const aircon = ServiceHue(
+    Color(0xFFDDF6FA),
+    Color(0xFF0B8AA3),
+    Color(0xFF102E35),
+  );
+  static const sofa = ServiceHue(
+    Color(0xFFFFE6F0),
+    Color(0xFFC72D6C),
+    Color(0xFF3A1626),
+  );
+  static const moveOut = ServiceHue(
+    Color(0xFFDBF5EC),
+    Color(0xFF0B8A6B),
+    Color(0xFF0F2F27),
+  );
+  static const moveIn = ServiceHue(
+    Color(0xFFE7F6DA),
+    Color(0xFF3E8A12),
+    Color(0xFF1C2E10),
+  );
 
   static ServiceHue of(String code) => switch (code) {
-        'studio' => studio,
-        'kitchen' => kitchen,
-        'bathroom' => bathroom,
-        'mattress' => mattress,
-        'aircon' => aircon,
-        'sofa' => sofa,
-        'move_out' => moveOut,
-        'move_in' => moveIn,
-        _ => bathroom,
-      };
+    'studio' => studio,
+    'kitchen' => kitchen,
+    'bathroom' => bathroom,
+    'mattress' => mattress,
+    'aircon' => aircon,
+    'sofa' => sofa,
+    'move_out' => moveOut,
+    'move_in' => moveIn,
+    _ => bathroom,
+  };
 }
 
 /// Booking status colors (0-3, -1). Text tones all pass 4.5:1 on their tint.
 abstract final class StatusHues {
-  static const consultation = ServiceHue(Color(0xFFFFF1D1), Color(0xFF8A5600), Color(0xFF3A2D10));
-  static const confirmed = ServiceHue(Color(0xFFE6ECFF), Color(0xFF2A44D6), Color(0xFF1A2347));
-  static const assigned = ServiceHue(Color(0xFFDDF5EE), Color(0xFF07725A), Color(0xFF0F2F27));
-  static const completed = ServiceHue(Color(0xFFEEF0F3), Color(0xFF374151), Color(0xFF262B33));
-  static const cancelled = ServiceHue(Color(0xFFFDE8E8), Color(0xFFB42318), Color(0xFF3B1818));
+  static const consultation = ServiceHue(
+    Color(0xFFFFF1D1),
+    Color(0xFF8A5600),
+    Color(0xFF3A2D10),
+  );
+  static const confirmed = ServiceHue(
+    Color(0xFFE6ECFF),
+    Color(0xFF2A44D6),
+    Color(0xFF1A2347),
+  );
+  static const assigned = ServiceHue(
+    Color(0xFFDDF5EE),
+    Color(0xFF07725A),
+    Color(0xFF0F2F27),
+  );
+  static const completed = ServiceHue(
+    Color(0xFFEEF0F3),
+    Color(0xFF374151),
+    Color(0xFF262B33),
+  );
+  static const cancelled = ServiceHue(
+    Color(0xFFFDE8E8),
+    Color(0xFFB42318),
+    Color(0xFF3B1818),
+  );
 
   static ServiceHue of(int status) => switch (status) {
-        0 => consultation,
-        1 => confirmed,
-        2 => assigned,
-        3 => completed,
-        _ => cancelled,
-      };
+    0 => consultation,
+    1 => confirmed,
+    2 => assigned,
+    3 => completed,
+    _ => cancelled,
+  };
 }
 
 /// Fixed semantic colors (not brand): errors and weekend markers.
@@ -118,7 +170,7 @@ abstract final class Radii {
   static const chip = 10.0;
   static const input = 14.0;
   static const card = 20.0;
-  static const tile = 18.0;
+  static const tile = 16.0;
   static const sheet = 28.0;
   static const pill = 999.0;
 }
@@ -130,15 +182,20 @@ abstract final class Motion {
   static const celebrate = Duration(milliseconds: 520);
   static const ease = Cubic(0.2, 0, 0, 1);
   static const emphasized = Cubic(0.05, 0.7, 0.1, 1);
+  static const press = Duration(milliseconds: 90);
 }
 
 abstract final class Elevation {
-  static const card = [BoxShadow(color: Color(0x0D111827), blurRadius: 2, offset: Offset(0, 1))];
+  static const card = [
+    BoxShadow(color: Color(0x0D111827), blurRadius: 2, offset: Offset(0, 1)),
+  ];
   static const raised = [
     BoxShadow(color: Color(0x14111827), blurRadius: 18, offset: Offset(0, 6)),
     BoxShadow(color: Color(0x0A111827), blurRadius: 4, offset: Offset(0, 1)),
   ];
-  static const sheet = [BoxShadow(color: Color(0x29111827), blurRadius: 40, offset: Offset(0, -8))];
+  static const sheet = [
+    BoxShadow(color: Color(0x29111827), blurRadius: 40, offset: Offset(0, -8)),
+  ];
 }
 
 abstract final class Breakpoints {

@@ -9,3 +9,4 @@ export 'src/i18n.dart';
 export 'src/models.dart';
 export 'src/realtime.dart';
 export 'src/session.dart';
+export 'src/theme_mode.dart';

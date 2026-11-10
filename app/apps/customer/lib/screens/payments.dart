@@ -1,95 +1,46 @@
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'pay_method_picker.dart';
 
-typedef _Provider = ({String code, String label, IconData icon, Color color});
+/// Saved one-tap methods (billing flow) with the registration grid, PAYCO included.
+class PaymentMethodsScreen extends StatefulWidget {
+  const PaymentMethodsScreen({super.key});
 
-List<_Provider> _providers(T t) => [
-      (code: 'card', label: t.methodCard, icon: Icons.credit_card_rounded, color: const Color(0xFF3B5BFD)),
-      (code: 'kakaopay', label: t.methodKakao, icon: Icons.chat_bubble_rounded, color: const Color(0xFFB38F00)),
-      (code: 'naverpay', label: t.methodNaver, icon: Icons.bolt_rounded, color: const Color(0xFF03A94D)),
-      (code: 'tosspay', label: t.methodToss, icon: Icons.account_balance_wallet_rounded, color: const Color(0xFF1B64DA)),
-    ];
-
-/// Pick a saved method or register a new one. Returns the method id.
-Future<String?> pickPaymentMethod(BuildContext context, {String? selected}) {
-  final t = context.t;
-  return showAppSheet<String>(
-    context,
-    title: t.paymentMethod,
-    builder: (ctx) => ListenableBuilder(
-      listenable: ctx.appRead,
-      builder: (ctx, _) {
-        final methods = ctx.appRead.methods;
-        return ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter), children: [
-          for (final m in methods)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.xs),
-              child: OptionCard(
-                leading: Icon(_providers(t).firstWhere((p) => p.code == m.provider, orElse: () => _providers(t).first).icon),
-                title: m.displayName,
-                selected: m.id == selected,
-                onTap: () => Navigator.of(ctx).pop(m.id),
-              ),
-            ),
-          const SizedBox(height: Space.xs),
-          Text(t.addPaymentMethod, style: ctx.text.titleSmall),
-          const SizedBox(height: Space.xs),
-          _ProviderGrid(onAdded: (id) => Navigator.of(ctx).pop(id)),
-        ]);
-      },
-    ),
-  );
-}
-
-class _ProviderGrid extends StatefulWidget {
-  const _ProviderGrid({required this.onAdded});
-  final ValueChanged<String> onAdded;
   @override
-  State<_ProviderGrid> createState() => _ProviderGridState();
+  State<PaymentMethodsScreen> createState() => _PaymentMethodsScreenState();
 }
 
-class _ProviderGridState extends State<_ProviderGrid> {
-  String? _busy;
+class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
+  late Future<List<PayChannel>> _billing;
+  String? _adding;
 
-  Future<void> _add(_Provider p) async {
-    setState(() => _busy = p.code);
-    try {
-      // The gateway's registration UI runs here once the PG contract is signed (decision #3).
-      final m = await context.appRead.addMethod(p.code, p.label);
-      if (!mounted) return;
-      showToast(context, context.t.methodAdded);
-      widget.onAdded(m.id);
-    } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
-    } finally {
-      if (mounted) setState(() => _busy = null);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _billing = _loadBilling();
   }
 
-  @override
-  Widget build(BuildContext context) => GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 2,
-        childAspectRatio: 2.8,
-        mainAxisSpacing: Space.xs,
-        crossAxisSpacing: Space.xs,
-        children: [
-          for (final p in _providers(context.t))
-            OutlinedButton.icon(
-              icon: _busy == p.code ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : Icon(p.icon, color: p.color),
-              label: Text(p.label, overflow: TextOverflow.ellipsis),
-              onPressed: _busy == null ? () => _add(p) : null,
-            ),
-        ],
-      );
-}
+  Future<List<PayChannel>> _loadBilling() async => (await fetchPayChannels(context.api)).where((c) => c.isBilling).toList();
 
-class PaymentMethodsScreen extends StatelessWidget {
-  const PaymentMethodsScreen({super.key});
+  void _reload() => setState(() => _billing = _loadBilling());
+
+  Future<void> _add(PayChannel ch) async {
+    final t = context.t;
+    setState(() => _adding = ch.code);
+    try {
+      // The gateway's registration UI runs here once the PG contract is signed (decision #3).
+      await context.appRead.addMethod(ch.code, t.payMethod(ch.code));
+      if (mounted) showToast(context, t.methodAdded);
+    } catch (e) {
+      if (mounted) showToast(context, t.payError(e));
+    } finally {
+      if (mounted) setState(() => _adding = null);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,26 +49,48 @@ class PaymentMethodsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(t.morePayments)),
       body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        if (app.methods.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: Space.xl), child: Center(child: Text(t.methodsEmpty, style: context.text.bodySmall))),
+        Text(t.apPayManageHint, style: context.text.bodySmall?.copyWith(color: context.colors.inkSoft)),
+        const SizedBox(height: Space.md),
+        if (app.methods.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: Space.lg), child: Center(child: Text(t.methodsEmpty, style: context.text.bodySmall))),
         for (final m in app.methods)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.xs),
             child: AppCard(
               child: Row(children: [
-                Icon(Icons.credit_card_rounded, color: context.primary),
+                PayBrandBadge(code: m.provider, height: 36),
                 const SizedBox(width: Space.md),
                 Expanded(child: Text(m.displayName, style: context.text.titleSmall)),
                 Tag(label: t.methodRegistered, hue: StatusHues.assigned),
-                IconButton(tooltip: t.delete, icon: const Icon(Icons.delete_outline_rounded), onPressed: () => app.deleteMethod(m.id).catchError((Object e) {
-                      if (context.mounted) showToast(context, t.error(e));
-                    })),
+                IconButton(
+                  tooltip: t.delete,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  onPressed: () => app.deleteMethod(m.id).catchError((Object e) {
+                    if (context.mounted) showToast(context, t.payError(e));
+                  }),
+                ),
               ]),
             ),
           ),
         const SizedBox(height: Space.lg),
-        Text(t.addPaymentMethod, style: context.text.titleSmall),
+        Text(t.apPayManageTitle, style: context.text.titleSmall),
         const SizedBox(height: Space.xs),
-        _ProviderGrid(onAdded: (_) {}),
+        FutureBuilder<List<PayChannel>>(
+          future: _billing,
+          builder: (context, snap) {
+            if (snap.hasError) return ErrorRetry(message: t.errorGeneric, retryLabel: t.retry, onRetry: _reload);
+            final channels = snap.data;
+            if (channels == null) return const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: CircularProgressIndicator()));
+            return Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
+              for (final ch in channels)
+                PayChannelTile(
+                  code: ch.code,
+                  label: t.payMethod(ch.code),
+                  busy: _adding == ch.code,
+                  onTap: _adding == null ? () => _add(ch) : null,
+                ),
+            ]);
+          },
+        ),
       ]),
     );
   }

@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 
 import '../theme.dart';
 import '../tokens.dart';
+import 'depth.dart';
+import 'glyph.dart';
+import 'interactive.dart';
 
 /// "52,000원" in Korean, "₩52,000" elsewhere.
 String formatWon(int amount, String locale) {
@@ -24,16 +27,16 @@ void disposeAfterClose(Iterable<ChangeNotifier> controllers) {
 }
 
 IconData serviceIcon(String code) => switch (code) {
-      'studio' => Icons.door_front_door_rounded,
-      'kitchen' => Icons.soup_kitchen_rounded,
-      'bathroom' => Icons.bathtub_rounded,
-      'mattress' => Icons.king_bed_rounded,
-      'aircon' => Icons.ac_unit_rounded,
-      'sofa' => Icons.weekend_rounded,
-      'move_out' => Icons.local_shipping_rounded,
-      'move_in' => Icons.vpn_key_rounded,
-      _ => Icons.cleaning_services_rounded,
-    };
+  'studio' => Icons.door_front_door_rounded,
+  'kitchen' => Icons.soup_kitchen_rounded,
+  'bathroom' => Icons.bathtub_rounded,
+  'mattress' => Icons.king_bed_rounded,
+  'aircon' => Icons.ac_unit_rounded,
+  'sofa' => Icons.weekend_rounded,
+  'move_out' => Icons.local_shipping_rounded,
+  'move_in' => Icons.vpn_key_rounded,
+  _ => Icons.cleaning_services_rounded,
+};
 
 extension ResponsiveX on BuildContext {
   double get width => MediaQuery.sizeOf(this).width;
@@ -41,46 +44,49 @@ extension ResponsiveX on BuildContext {
   bool get isCompact => width < Breakpoints.compact;
 }
 
-/// A colored rounded square holding the service glyph.
-class ServiceGlyph extends StatelessWidget {
-  const ServiceGlyph(this.code, {super.key, this.size = 56});
-  final String code;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final hue = ServiceHues.of(code);
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: context.colors.tintOf(hue), borderRadius: BorderRadius.circular(size * 0.32)),
-      child: Icon(serviceIcon(code), size: size * 0.5, color: context.colors.isDark ? hue.tint : hue.tone),
-    );
-  }
-}
-
+/// Card on the surface scale. Tappable cards get [Pressable] (spring + haptic).
+/// Dark mode lifts with a hairline border and a brand halo, not a black shadow.
 class AppCard extends StatelessWidget {
-  const AppCard({super.key, required this.child, this.padding = const EdgeInsets.all(Space.lg), this.onTap, this.color, this.border});
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(Space.lg),
+    this.onTap,
+    this.color,
+    this.border,
+    this.level = Level.card,
+    this.glow,
+  });
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
   final Color? color;
   final Color? border;
+  final Level level;
+
+  /// Tints the dark-mode halo (e.g. a service hue). Defaults to the brand accent.
+  final Color? glow;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     final radius = BorderRadius.circular(Radii.card);
-    return Material(
-      color: color ?? context.colors.surface,
-      borderRadius: radius,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: onTap,
-        child: Container(
-          padding: padding,
-          decoration: border == null ? null : BoxDecoration(borderRadius: radius, border: Border.all(color: border!, width: 1.5)),
-          child: child,
+    final edge = border ?? (c.isDark ? c.line : null);
+    return Pressable(
+      enabled: onTap != null,
+      onTap: onTap,
+      radius: radius,
+      shadows: Depth.of(c, level, glow: glow),
+      child: Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          color: color ?? c.surface,
+          borderRadius: radius,
+          border: edge == null
+              ? null
+              : Border.all(color: edge, width: border == null ? 1 : 1.5),
         ),
+        child: child,
       ),
     );
   }
@@ -92,7 +98,8 @@ class StatusBadge extends StatelessWidget {
   final String label;
 
   @override
-  Widget build(BuildContext context) => Tag(label: label, hue: StatusHues.of(status));
+  Widget build(BuildContext context) =>
+      Tag(label: label, hue: StatusHues.of(status));
 }
 
 class Tag extends StatelessWidget {
@@ -106,11 +113,23 @@ class Tag extends StatelessWidget {
     final fg = context.colors.isDark ? hue.tint : hue.tone;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: context.colors.tintOf(hue), borderRadius: BorderRadius.circular(Radii.pill)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        if (icon != null) ...[Icon(icon, size: 14, color: fg), const SizedBox(width: 4)],
-        Text(label, style: context.text.labelMedium?.copyWith(color: fg, fontSize: 12)),
-      ]),
+      decoration: BoxDecoration(
+        color: context.colors.tintOf(hue),
+        borderRadius: BorderRadius.circular(Radii.pill),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: fg),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: context.text.labelMedium?.copyWith(color: fg, fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -122,90 +141,167 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: Space.sm),
-        child: Row(children: [
-          Expanded(child: Semantics(header: true, child: Text(title, style: context.text.titleMedium))),
-          ?trailing,
-        ]),
-      );
+    padding: const EdgeInsets.only(bottom: Space.sm),
+    child: Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(title, style: context.text.titleMedium),
+          ),
+        ),
+        ?trailing,
+      ],
+    ),
+  );
 }
 
 /// Primary CTA with built-in busy state so double taps can't double charge.
+/// Presses spring down and the brand glow tightens.
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({super.key, required this.label, required this.onPressed, this.busy = false, this.color});
+  const PrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.busy = false,
+    this.color,
+  });
   final String label;
   final VoidCallback? onPressed;
   final bool busy;
   final Color? color;
 
   @override
-  Widget build(BuildContext context) => FilledButton(
-        style: color == null ? null : FilledButton.styleFrom(backgroundColor: color),
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null && !busy;
+    final fill = color ?? context.primary;
+    return Pressable(
+      enabled: enabled,
+      radius: BorderRadius.circular(Radii.input),
+      shadows: enabled
+          ? [
+              BoxShadow(
+                color: fill.withValues(
+                  alpha: context.colors.isDark ? 0.5 : 0.30,
+                ),
+                blurRadius: 18,
+                spreadRadius: -2,
+                offset: const Offset(0, 8),
+              ),
+            ]
+          : const [],
+      child: FilledButton(
+        style: color == null
+            ? null
+            : FilledButton.styleFrom(backgroundColor: color),
         onPressed: busy ? null : onPressed,
         child: AnimatedSwitcher(
           duration: Motion.micro,
           child: busy
-              ? const SizedBox(key: ValueKey('busy'), width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
+              ? const SizedBox(
+                  key: ValueKey('busy'),
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: Colors.white,
+                  ),
+                )
               : Text(label, key: const ValueKey('label')),
         ),
-      );
+      ),
+    );
+  }
 }
 
-/// Sticky bottom area: optional summary line above the CTA.
+/// Sticky bottom area on a glass surface: optional summary line above the CTA.
 class BottomActionBar extends StatelessWidget {
   const BottomActionBar({super.key, required this.child, this.summary});
   final Widget child;
   final Widget? summary;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(color: context.colors.surface, border: Border(top: BorderSide(color: context.colors.line))),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(Space.gutter, Space.sm, Space.gutter, Space.sm),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              if (summary != null) ...[summary!, const SizedBox(height: Space.sm)],
-              child,
-            ]),
-          ),
+  Widget build(BuildContext context) => GlassBar(
+    child: SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          Space.sm,
+          Space.gutter,
+          Space.sm,
         ),
-      );
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (summary != null) ...[
+              summary!,
+              const SizedBox(height: Space.sm),
+            ],
+            child,
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 /// Segmented progress for multi-step flows.
 class StepProgress extends StatelessWidget {
-  const StepProgress({super.key, required this.current, required this.total, this.color});
+  const StepProgress({
+    super.key,
+    required this.current,
+    required this.total,
+    this.color,
+  });
   final int current;
   final int total;
   final Color? color;
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: '$current / $total',
-        child: Row(children: [
-          for (var i = 0; i < total; i++) ...[
-            if (i > 0) const SizedBox(width: 4),
-            Expanded(
-              child: AnimatedContainer(
-                duration: Motion.standard,
-                curve: Motion.ease,
-                height: 4,
-                decoration: BoxDecoration(color: i < current ? (color ?? context.primary) : context.colors.line, borderRadius: BorderRadius.circular(2)),
+    label: '$current / $total',
+    child: Row(
+      children: [
+        for (var i = 0; i < total; i++) ...[
+          if (i > 0) const SizedBox(width: 4),
+          Expanded(
+            child: AnimatedContainer(
+              duration: Motion.standard,
+              curve: Motion.ease,
+              height: 4,
+              decoration: BoxDecoration(
+                color: i < current
+                    ? (color ?? context.primary)
+                    : context.colors.line,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-          ],
-        ]),
-      );
+          ),
+        ],
+      ],
+    ),
+  );
 }
 
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.icon, required this.title, this.body, this.action, this.hue});
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.body,
+    this.action,
+    this.hue,
+    this.codes = const ['studio', 'kitchen', 'bathroom'],
+  });
   final IconData icon;
   final String title;
   final String? body;
   final Widget? action;
   final ServiceHue? hue;
+
+  /// Three service codes for the cluster (left, right, front).
+  final List<String> codes;
 
   @override
   Widget build(BuildContext context) {
@@ -213,36 +309,111 @@ class EmptyState extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(Space.xxl),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(color: context.colors.tintOf(h), shape: BoxShape.circle),
-            child: Icon(icon, size: 40, color: context.colors.isDark ? h.tint : h.tone),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _GlyphCluster(codes: codes, icon: icon, hue: h),
+            const SizedBox(height: Space.lg),
+            Text(
+              title,
+              style: context.text.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            if (body != null) ...[
+              const SizedBox(height: Space.xs),
+              Text(
+                body!,
+                style: context.text.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ],
+            if (action != null) ...[const SizedBox(height: Space.xl), action!],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Empty state drawn from clay service glyphs (a composition, not a plain icon).
+class _GlyphCluster extends StatelessWidget {
+  const _GlyphCluster({
+    required this.codes,
+    required this.icon,
+    required this.hue,
+  });
+  final List<String> codes;
+  final IconData icon;
+  final ServiceHue hue;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return SizedBox(
+      width: 176,
+      height: 120,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: 26,
+            child: Transform.rotate(
+              angle: -0.14,
+              child: ServiceGlyph(codes[0], size: 64),
+            ),
           ),
-          const SizedBox(height: Space.lg),
-          Text(title, style: context.text.titleMedium, textAlign: TextAlign.center),
-          if (body != null) ...[const SizedBox(height: Space.xs), Text(body!, style: context.text.bodySmall, textAlign: TextAlign.center)],
-          if (action != null) ...[const SizedBox(height: Space.xl), action!],
-        ]),
+          Positioned(
+            right: 0,
+            top: 26,
+            child: Transform.rotate(
+              angle: 0.14,
+              child: ServiceGlyph(codes[1], size: 64),
+            ),
+          ),
+          Positioned(left: 50, top: 0, child: ServiceGlyph(codes[2], size: 76)),
+          Positioned(
+            right: 4,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: c.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: c.line),
+                boxShadow: Depth.of(c, Level.raised, glow: hue.tone),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: c.isDark ? hue.tint : hue.tone,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class ErrorRetry extends StatelessWidget {
-  const ErrorRetry({super.key, required this.message, required this.retryLabel, required this.onRetry});
+  const ErrorRetry({
+    super.key,
+    required this.message,
+    required this.retryLabel,
+    required this.onRetry,
+  });
   final String message;
   final String retryLabel;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) => EmptyState(
-        icon: Icons.wifi_off_rounded,
-        title: message,
-        hue: StatusHues.cancelled,
-        action: OutlinedButton(onPressed: onRetry, child: Text(retryLabel)),
-      );
+    icon: Icons.wifi_off_rounded,
+    title: message,
+    hue: StatusHues.cancelled,
+    action: OutlinedButton(onPressed: onRetry, child: Text(retryLabel)),
+  );
 }
 
 /// Calm placeholder block while data loads (no spinners on content).
@@ -255,8 +426,12 @@ class Skeleton extends StatefulWidget {
   State<Skeleton> createState() => _SkeletonState();
 }
 
-class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..repeat(reverse: true);
+class _SkeletonState extends State<Skeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..repeat(reverse: true);
 
   @override
   void dispose() {
@@ -268,24 +443,48 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     final reduce = MediaQuery.disableAnimationsOf(context);
     return FadeTransition(
-      opacity: reduce ? const AlwaysStoppedAnimation(0.7) : Tween(begin: 0.45, end: 1.0).animate(_c),
-      child: Container(height: widget.height, decoration: BoxDecoration(color: context.colors.line, borderRadius: BorderRadius.circular(widget.radius))),
+      opacity: reduce
+          ? const AlwaysStoppedAnimation(0.7)
+          : Tween(begin: 0.45, end: 1.0).animate(_c),
+      child: Container(
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: context.colors.line,
+          borderRadius: BorderRadius.circular(widget.radius),
+        ),
+      ),
     );
   }
 }
 
-Future<T?> showAppSheet<T>(BuildContext context, {required String title, required WidgetBuilder builder}) => showModalBottomSheet<T>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Padding(padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.md), child: Text(title, style: ctx.text.titleLarge)),
-          Flexible(child: builder(ctx)),
-        ]),
-      ),
-    );
+Future<T?> showAppSheet<T>(
+  BuildContext context, {
+  required String title,
+  required WidgetBuilder builder,
+}) => showModalBottomSheet<T>(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (ctx) => Padding(
+    padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            0,
+            Space.gutter,
+            Space.md,
+          ),
+          child: Text(title, style: ctx.text.titleLarge),
+        ),
+        Flexible(child: builder(ctx)),
+      ],
+    ),
+  ),
+);
 
 void showToast(BuildContext context, String message) {
   ScaffoldMessenger.of(context)

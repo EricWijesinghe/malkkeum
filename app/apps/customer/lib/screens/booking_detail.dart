@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_flow.dart';
-import 'payments.dart';
+import 'pay_flow.dart';
 import 'service.dart';
 
 class BookingDetailScreen extends StatefulWidget {
@@ -50,10 +51,30 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     }
   }
 
+  /// kind = 'deposit' | 'balance'. Saved method: one-tap. Channel: PG window per payment.
   Future<void> _pay(Booking b, String kind) async {
-    final method = await pickPaymentMethod(context);
-    if (method == null || !mounted) return;
-    await _act(() => context.api.post('/bookings/${b.id}/$kind', {'payment_method_id': method}));
+    final choice = await choosePayMethod(context);
+    if (choice == null || !mounted) return;
+    switch (choice) {
+      case SavedChoice(:final methodId):
+        await _act(() => context.api.post('/bookings/${b.id}/$kind', {'payment_method_id': methodId}));
+      case ChannelChoice(:final channel):
+        final result = await payWithChannel(context, channel, {'kind': kind, 'booking_id': b.id});
+        if (!mounted) return;
+        switch (result) {
+          case CheckoutPaid():
+            context.appRead.bookingsChanged();
+            await _view.currentState?.reload();
+          case CheckoutAwaitingDeposit(:final account):
+            context.appRead.bookingsChanged();
+            await showVirtualAccount(context, account);
+            if (mounted) await _view.currentState?.reload();
+          case CheckoutFailed(:final code):
+            showToast(context, context.t.checkoutFailure(code));
+          case CheckoutCancelled():
+            break;
+        }
+    }
   }
 
   @override

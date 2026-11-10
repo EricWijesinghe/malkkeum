@@ -44,7 +44,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let bind = config.bind;
     let state = AppState {
         db,
-        providers: Arc::new(Providers::new(config.dev_mode)),
+        providers: Arc::new(Providers::new(config.clone())?),
         config: Arc::new(config),
         hub: Hub::default(),
     };

@@ -24,10 +24,10 @@ pub async fn best_effort(what: &'static str, f: impl Future<Output = ApiResult<(
 }
 
 /// Compensating refund when a charge succeeded but saving it did not.
-pub async fn refund_or_alert(s: &AppState, tx_id: &str, amount: i64) {
-    if let Err(e) = s.providers.refund(tx_id, amount).await {
+pub async fn refund_or_alert(s: &AppState, provider: &str, tx_id: &str, amount: i64) {
+    if let Err(e) = s.providers.refund(provider, tx_id, amount).await {
         // Money is out of sync with the DB: this must reach a human.
-        tracing::error!(error = %e, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
+        tracing::error!(error = %e, provider, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
     }
 }
 

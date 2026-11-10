@@ -12,33 +12,57 @@ Future<void> main() async {
   final session = Session(namespace: 'customer');
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
   final locale = LocaleController();
-  await Future.wait([session.restore(), locale.restore()]);
-  runApp(CustomerApp(session: session, app: AppState(api, Realtime(api)), locale: locale));
+  final theme = ThemeController();
+  await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  runApp(
+    CustomerApp(
+      session: session,
+      app: AppState(api, Realtime(api)),
+      locale: locale,
+      theme: theme,
+    ),
+  );
 }
 
 class CustomerApp extends StatelessWidget {
-  const CustomerApp({super.key, required this.session, required this.app, required this.locale});
+  const CustomerApp({
+    super.key,
+    required this.session,
+    required this.app,
+    required this.locale,
+    required this.theme,
+  });
   final Session session;
   final AppState app;
   final LocaleController locale;
+  final ThemeController theme;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-        listenable: Listenable.merge([locale, session]),
-        builder: (context, _) => Deps(
-          app: app,
-          session: session,
-          locale: locale,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            onGenerateTitle: (c) => BrandConfig.placeholder.name,
-            theme: buildTheme(BrandConfig.placeholder, Brightness.light),
-            darkTheme: buildTheme(BrandConfig.placeholder, Brightness.dark),
-            locale: locale.locale,
-            supportedLocales: LocaleController.supported,
-            localizationsDelegates: const [T.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-            home: session.signedIn ? const Shell() : const IntroScreen(),
-          ),
-        ),
-      );
+    listenable: Listenable.merge([locale, session, theme]),
+    builder: (context, _) => Deps(
+      app: app,
+      session: session,
+      locale: locale,
+      theme: theme,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        onGenerateTitle: (c) => BrandConfig.placeholder.name,
+        theme: buildTheme(BrandConfig.placeholder, Brightness.light),
+        darkTheme: buildTheme(BrandConfig.placeholder, Brightness.dark),
+        themeMode: theme.mode,
+        themeAnimationDuration: const Duration(milliseconds: 280),
+        themeAnimationCurve: Motion.ease,
+        locale: locale.locale,
+        supportedLocales: LocaleController.supported,
+        localizationsDelegates: const [
+          T.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: session.signedIn ? const Shell() : const IntroScreen(),
+      ),
+    ),
+  );
 }

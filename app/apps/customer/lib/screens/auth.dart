@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,53 +8,76 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 
-/// First screen: a colorful mosaic of the services and one clear call to action.
+/// First screen: aurora mesh behind floating service orbs that drift with the pointer.
 class IntroScreen extends StatelessWidget {
   const IntroScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const codes = ['studio', 'kitchen', 'bathroom', 'mattress', 'aircon', 'sofa', 'move_out', 'move_in'];
+    final t = context.t;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(Space.gutter),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: Space.xl),
-            Text(BrandConfig.placeholder.name, style: context.text.titleLarge?.copyWith(color: context.primary, fontWeight: FontWeight.w800)),
-            const SizedBox(height: Space.xxl),
-            Expanded(
-              child: Center(
-                child: GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 3,
-                mainAxisSpacing: Space.md,
-                crossAxisSpacing: Space.md,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  for (var i = 0; i < codes.length; i++)
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0, end: 1),
-                      duration: Duration(milliseconds: 420 + i * 60),
-                      curve: Motion.emphasized,
-                      builder: (_, v, child) => Opacity(opacity: v, child: Transform.translate(offset: Offset(0, 16 * (1 - v)), child: child)),
-                      child: LayoutBuilder(builder: (_, c) => ServiceGlyph(codes[i], size: c.maxWidth)),
-                    ),
-                  Center(child: Icon(Icons.auto_awesome_rounded, size: 48, color: BrandConfig.placeholder.sun)),
-                ],
-              ),
-              ),
-            ),
-            Text(context.t.introTitle, style: context.text.displaySmall),
-            const SizedBox(height: Space.sm),
-            Text(context.t.introBody, style: context.text.bodyLarge?.copyWith(color: context.colors.inkSoft)),
-            const SizedBox(height: Space.xxl),
-            PrimaryButton(label: context.t.introStart, onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PhoneScreen()))),
-            const SizedBox(height: Space.sm),
-            Center(child: Text(context.t.loginTerms, style: context.text.labelSmall, textAlign: TextAlign.center)),
-          ]),
+      body: AuroraBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(Space.gutter),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: Space.xl),
+              StaggerIn(index: 0, child: Text(BrandConfig.placeholder.name, style: context.text.titleLarge?.copyWith(color: context.primary, fontWeight: FontWeight.w800))),
+              const Expanded(child: Center(child: _OrbField())),
+              StaggerIn(index: 1, child: Text(t.introTitle, style: context.text.displaySmall)),
+              const SizedBox(height: Space.sm),
+              StaggerIn(index: 2, child: Text(t.introBody, style: context.text.bodyLarge?.copyWith(color: context.colors.inkSoft))),
+              const SizedBox(height: Space.xxl),
+              PrimaryButton(label: t.introStart, onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PhoneScreen()))),
+              const SizedBox(height: Space.sm),
+              Center(child: Text(t.loginTerms, style: context.text.labelSmall, textAlign: TextAlign.center)),
+            ]),
+          ),
         ),
       ),
+    );
+  }
+}
+
+/// Eight service orbs at staggered depths; the sun in the middle stays put.
+class _OrbField extends StatelessWidget {
+  const _OrbField();
+
+  @override
+  Widget build(BuildContext context) => const AspectRatio(
+        aspectRatio: 1,
+        child: ParallaxField(
+          range: 22,
+          items: [
+            ParallaxItem(alignment: Alignment(-0.62, -0.78), depth: 0.6, phase: 0.0, child: ServiceGlyph('studio', size: 72)),
+            ParallaxItem(alignment: Alignment(0.02, -0.95), depth: 0.9, phase: 0.2, child: ServiceGlyph('kitchen', size: 64)),
+            ParallaxItem(alignment: Alignment(0.68, -0.7), depth: 0.5, phase: 0.4, child: ServiceGlyph('bathroom', size: 78)),
+            ParallaxItem(alignment: Alignment(-0.9, -0.05), depth: 1.0, phase: 0.6, child: ServiceGlyph('mattress', size: 74)),
+            ParallaxItem(alignment: Alignment(0.86, 0.02), depth: 0.7, phase: 0.8, child: ServiceGlyph('aircon', size: 66)),
+            ParallaxItem(alignment: Alignment(-0.38, 0.5), depth: 0.4, phase: 0.1, child: ServiceGlyph('sofa', size: 60)),
+            ParallaxItem(alignment: Alignment(0.42, 0.62), depth: 0.8, phase: 0.3, child: ServiceGlyph('move_out', size: 72)),
+            ParallaxItem(alignment: Alignment(-0.84, 0.72), depth: 0.6, phase: 0.5, child: ServiceGlyph('move_in', size: 58)),
+            ParallaxItem(alignment: Alignment.center, depth: 0.2, child: _Sun()),
+          ],
+        ),
+      );
+}
+
+class _Sun extends StatelessWidget {
+  const _Sun();
+
+  @override
+  Widget build(BuildContext context) {
+    final sun = context.colors.sun;
+    return Container(
+      width: 84,
+      height: 84,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(colors: [sun.withValues(alpha: 0.9), sun.withValues(alpha: 0.35)]),
+        boxShadow: [BoxShadow(color: sun.withValues(alpha: 0.35), blurRadius: 36, spreadRadius: 2)],
+      ),
+      child: const Icon(Icons.auto_awesome_rounded, size: 40, color: Colors.white),
     );
   }
 }
@@ -74,9 +98,37 @@ class PhoneScreen extends StatefulWidget {
 class _PhoneScreenState extends State<PhoneScreen> {
   final _ctrl = TextEditingController();
   bool _busy = false;
+  String? _busyProvider;
 
   String get _digits => _ctrl.text.replaceAll(RegExp(r'\D'), '');
   bool get _valid => RegExp(r'^01[016789]\d{7,8}$').hasMatch(_digits);
+
+  /// Social sign-in: SDK token -> /auth/social. A new account without a verified phone
+  /// verifies one first, then asks for a name if it has none.
+  Future<void> _socialSignIn(SocialSignIn provider) async {
+    final deps = Deps.read(context);
+    final nav = Navigator.of(context);
+    setState(() => _busyProvider = provider.provider);
+    try {
+      final result = await signInWithSocial(context: context, api: deps.session.api, session: deps.session, provider: provider, audience: 'customer');
+      if (result == null || !mounted) return;
+      if (result.needsPhone) {
+        await nav.push<bool>(MaterialPageRoute<bool>(builder: (_) => PhoneAttachScreen(api: deps.session.api, audience: 'customer')));
+        if (!mounted) return;
+      }
+      await deps.app.loadProfile();
+      if (!mounted) return;
+      if (result.isNew || deps.app.name.isEmpty) {
+        await nav.pushReplacement(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
+      } else {
+        nav.popUntil((route) => route.isFirst);
+      }
+    } catch (e) {
+      if (mounted) showToast(context, context.t.payError(e));
+    } finally {
+      if (mounted) setState(() => _busyProvider = null);
+    }
+  }
 
   Future<void> _send() async {
     setState(() => _busy = true);
@@ -118,6 +170,13 @@ class _PhoneScreenState extends State<PhoneScreen> {
             decoration: InputDecoration(hintText: context.t.loginPhoneHint),
             onChanged: (_) => setState(() {}),
             onSubmitted: (_) => _valid ? _send() : null,
+          ),
+          const SizedBox(height: Space.xl),
+          SocialSignInRow(
+            providers: defaultSocialSignIns(Deps.read(context).session.api.baseUrl),
+            busyProvider: _busyProvider,
+            devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
+            onSelected: _socialSignIn,
           ),
         ]),
         bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: context.t.loginSendCode, busy: _busy, onPressed: _valid ? _send : null)),

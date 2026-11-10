@@ -20,14 +20,18 @@ class PartnerState extends ChangeNotifier {
   String get name => profile['name'] as String? ?? '';
   String get teamName => profile['team_name'] as String? ?? '';
   int get feeBps => (profile['fee_bps'] as num? ?? 2000).toInt();
-  String get feeLabel => feeBps % 100 == 0 ? '${feeBps ~/ 100}' : (feeBps / 100).toStringAsFixed(1);
+  String get feeLabel => feeBps % 100 == 0
+      ? '${feeBps ~/ 100}'
+      : (feeBps / 100).toStringAsFixed(1);
   int get pendingPayout => (profile['pending_payout'] as num? ?? 0).toInt();
-  bool get onboarded => name.isNotEmpty && (prefs['services'] as List? ?? const []).isNotEmpty;
+  bool get onboarded =>
+      name.isNotEmpty && (prefs['services'] as List? ?? const []).isNotEmpty;
 
   /// Same math as the server's domain::partner::payout (fee rounded half-up).
   int payoutFor(int gross) => gross - ((gross * feeBps + 5000) ~/ 10000);
 
-  Future<void> loadAll() => Future.wait([loadProfile(), loadPrefs(), loadBadges()]);
+  Future<void> loadAll() =>
+      Future.wait([loadProfile(), loadPrefs(), loadBadges()]);
 
   Future<void> loadProfile() async {
     profile = await api.get('/partner/me') as Json;
@@ -46,7 +50,9 @@ class PartnerState extends ChangeNotifier {
   }
 
   Future<void> loadBadges() async {
-    final threads = (await api.get('/partner/threads') as List).map((e) => ChatThread.fromJson(e as Json));
+    final threads = (await api.get('/partner/threads') as List).map(
+      (e) => ChatThread.fromJson(e as Json),
+    );
     unreadChats = threads.fold(0, (s, t) => s + t.unreadMember);
     final quotes = (await api.get('/partner/quotes') as List).cast<Json>();
     unseenQuotes = quotes.where((q) => q['seen_by_pro'] == false).length;
@@ -72,11 +78,20 @@ class PartnerState extends ChangeNotifier {
 }
 
 class Deps extends InheritedNotifier<PartnerState> {
-  const Deps({super.key, required this.app, required this.session, required this.locale, required super.child}) : super(notifier: app);
+  const Deps({
+    super.key,
+    required this.app,
+    required this.session,
+    required this.locale,
+    required this.theme,
+    required super.child,
+  }) : super(notifier: app);
   final PartnerState app;
   final Session session;
   final LocaleController locale;
-  static Deps of(BuildContext c) => c.dependOnInheritedWidgetOfExactType<Deps>()!;
+  final ThemeController theme;
+  static Deps of(BuildContext c) =>
+      c.dependOnInheritedWidgetOfExactType<Deps>()!;
   static Deps read(BuildContext c) => c.getInheritedWidgetOfExactType<Deps>()!;
 }
 

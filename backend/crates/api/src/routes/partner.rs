@@ -1,5 +1,6 @@
 //! Partner account: profile, preferences (services/areas/schedule), team, payout account, settlements, reviews.
 
+use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Pro, normalize_phone},
     crypto,
@@ -9,7 +10,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, State},
-    routing::{delete, get},
+    routing::{delete, get, post},
 };
 use chrono::NaiveDate;
 use serde::Deserialize;
@@ -21,6 +22,7 @@ const MAX_TEAM: i64 = 30;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/me", get(profile).patch(update_profile))
+        .route("/me/phone", post(bind_phone))
         .route("/prefs", get(get_prefs).put(put_prefs))
         .route("/team", get(team).post(invite))
         .route("/team/{id}", delete(remove_member))
@@ -32,7 +34,7 @@ pub fn routes() -> Router<AppState> {
 
 async fn profile(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
     let v: Value = sqlx::query_scalar(
-        "SELECT jsonb_build_object('id', p.id, 'name', p.name, 'team_name', p.team_name, 'phone', p.phone, 'status', p.status, 'fee_bps', p.fee_bps, 'locale', p.locale,
+        "SELECT jsonb_build_object('id', p.id, 'name', p.name, 'team_name', p.team_name, 'phone', p.phone, 'phone_verified', (p.phone IS NOT NULL), 'status', p.status, 'fee_bps', p.fee_bps, 'locale', p.locale,
            'pending_payout', (SELECT COALESCE(sum(net), 0) FROM settlements WHERE pro_id = p.id AND state IN ('pending','waiting_balance')),
            'rating', (SELECT round(avg(rating)::numeric, 2) FROM reviews WHERE pro_id = p.id AND NOT hidden),
            'review_count', (SELECT count(*) FROM reviews WHERE pro_id = p.id AND NOT hidden)) FROM pros p WHERE p.id = $1",
@@ -41,6 +43,27 @@ async fn profile(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value
     .fetch_one(&s.db)
     .await?;
     Ok(Json(v))
+}
+
+/// Binds a phone proven by a login code to the pro and to their owner team row.
+async fn bind_phone(State(s): State<AppState>, Pro(a): Pro, Json(b): Json<PhoneBind>) -> ApiResult<Json<Value>> {
+    let phone = normalize_phone(&b.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
+    consume_otp(&s, &phone, &b.code).await?;
+    let mut tx = s.db.begin().await?;
+    sqlx::query("UPDATE pros SET phone = $2 WHERE id = $1")
+        .bind(a.id)
+        .bind(&phone)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| conflict_on_unique(e, "phone_taken"))?;
+    sqlx::query("UPDATE team_members SET phone = $2 WHERE pro_id = $1 AND role = 'owner'")
+        .bind(a.id)
+        .bind(&phone)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| conflict_on_unique(e, "phone_taken"))?;
+    tx.commit().await?;
+    profile(State(s), Pro(a)).await
 }
 
 #[derive(Deserialize)]

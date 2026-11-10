@@ -1,8 +1,10 @@
 //! Customer account: profile, addresses, coupons, payment methods, devices, notifications.
 
+use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
-    auth::{Auth, Customer},
+    auth::{Auth, Customer, normalize_phone, sha256_hex},
     error::{ApiError, ApiResult},
+    providers::ProviderError,
     state::AppState,
 };
 use axum::{
@@ -23,6 +25,8 @@ const NOTIFICATION_PAGE: i64 = 50;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/me", get(profile).patch(update_profile).delete(delete_account))
+        .route("/me/phone", post(bind_phone))
+        .route("/me/identity", post(verify_identity))
         .route("/me/addresses", get(list_addresses).post(create_address))
         .route("/me/addresses/{id}", put(update_address).delete(delete_address))
         .route("/me/coupons", get(list_coupons))
@@ -36,7 +40,8 @@ pub fn routes() -> Router<AppState> {
 #[derive(Serialize, sqlx::FromRow)]
 struct Profile {
     id: Uuid,
-    phone: String,
+    phone: Option<String>,
+    phone_verified: bool,
     name: String,
     email: Option<String>,
     locale: String,
@@ -44,11 +49,51 @@ struct Profile {
 }
 
 async fn profile(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Profile>> {
-    let p = sqlx::query_as("SELECT id, phone, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL")
-        .bind(a.id)
-        .fetch_one(&s.db)
-        .await?;
+    let p = sqlx::query_as(
+        "SELECT id, phone, phone IS NOT NULL AS phone_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
+    )
+    .bind(a.id)
+    .fetch_one(&s.db)
+    .await?;
     Ok(Json(p))
+}
+
+/// Binds a phone number proven by a login code. A number held by another account is a conflict.
+async fn bind_phone(State(s): State<AppState>, Customer(a): Customer, Json(b): Json<PhoneBind>) -> ApiResult<Json<Profile>> {
+    let phone = normalize_phone(&b.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
+    consume_otp(&s, &phone, &b.code).await?;
+    sqlx::query("UPDATE users SET phone = $2 WHERE id = $1 AND deleted_at IS NULL")
+        .bind(a.id)
+        .bind(&phone)
+        .execute(&s.db)
+        .await
+        .map_err(|e| conflict_on_unique(e, "phone_taken"))?;
+    profile(State(s), Customer(a)).await
+}
+
+#[derive(Deserialize)]
+struct IdentityInput {
+    identity_verification_id: String,
+}
+
+/// PASS / 본인인증: PortOne confirms the verification; only a hash of the CI is kept.
+async fn verify_identity(State(s): State<AppState>, Customer(a): Customer, Json(i): Json<IdentityInput>) -> ApiResult<Json<Profile>> {
+    let info = s.providers.identity(&i.identity_verification_id).await.map_err(|e| match e {
+        ProviderError::NotFound => ApiError::BadRequest("identity_not_found"),
+        other => other.into(),
+    })?;
+    let ci = match (info.status.as_str(), info.ci) {
+        ("VERIFIED", Some(ci)) => ci,
+        _ => return Err(ApiError::BadRequest("identity_not_verified")),
+    };
+    sqlx::query("UPDATE users SET identity_verified_at = now(), ci_hash = $2, name = CASE WHEN name = '' THEN COALESCE($3, '') ELSE name END WHERE id = $1 AND deleted_at IS NULL")
+        .bind(a.id)
+        .bind(sha256_hex(ci.as_bytes()))
+        .bind(info.name)
+        .execute(&s.db)
+        .await
+        .map_err(|e| conflict_on_unique(e, "identity_taken"))?;
+    profile(State(s), Customer(a)).await
 }
 
 #[derive(Deserialize)]
@@ -276,7 +321,7 @@ struct RegisterMethod {
 }
 
 async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(r): Json<RegisterMethod>) -> ApiResult<Json<MethodRow>> {
-    if !matches!(r.provider.as_str(), "card" | "kakaopay" | "naverpay" | "tosspay") || r.display_name.chars().count() > MAX_NAME_LEN {
+    if !matches!(r.provider.as_str(), "card" | "kakaopay" | "naverpay" | "tosspay" | "payco") || r.display_name.chars().count() > MAX_NAME_LEN {
         return Err(ApiError::BadRequest("invalid_payment_method"));
     }
     let key = s

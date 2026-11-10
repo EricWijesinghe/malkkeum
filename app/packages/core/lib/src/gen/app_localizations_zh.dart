@@ -9,6 +9,192 @@ class TZh extends T {
   TZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get apSocialOr => '或';
+
+  @override
+  String get apSocialSignIn => '快捷登录';
+
+  @override
+  String get apLoginKakao => '使用 Kakao 继续';
+
+  @override
+  String get apLoginNaver => '使用 Naver 继续';
+
+  @override
+  String get apLoginGoogle => '使用 Google 继续';
+
+  @override
+  String get apLoginApple => '使用 Apple 继续';
+
+  @override
+  String get apDevSocialNote => '开发模式：将登录测试账号，而非真实社交账号。';
+
+  @override
+  String get apSocialFailed => '快捷登录失败，请重试。';
+
+  @override
+  String get apProviderNotConfigured => '该登录方式暂未开放';
+
+  @override
+  String get apPhoneTaken => '该手机号已绑定其他账号';
+
+  @override
+  String get apPhoneAttachTitle => '请验证手机号';
+
+  @override
+  String get apPhoneAttachBody => '用于预约和服务人员联系，只需验证一次。';
+
+  @override
+  String get apPayAllTitle => '选择付款方式';
+
+  @override
+  String get apPaySavedTitle => '已保存的付款方式';
+
+  @override
+  String get apPayMoreTitle => '全部付款方式';
+
+  @override
+  String get apPayBillingHint => '绑定一次，之后一键支付';
+
+  @override
+  String get apPayCheckoutHint => '在支付窗口中完成';
+
+  @override
+  String get apPayRegistering => '正在绑定…';
+
+  @override
+  String get apPayManageHint => '使用已绑定的付款方式一键支付，可在此添加快捷支付。';
+
+  @override
+  String get apMethodCard => '信用卡·借记卡';
+
+  @override
+  String get apMethodKakao => 'Kakao Pay';
+
+  @override
+  String get apMethodNaver => 'Naver Pay';
+
+  @override
+  String get apMethodToss => 'Toss Pay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => '三星支付';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => '银行转账';
+
+  @override
+  String get apMethodVirtual => '虚拟账户';
+
+  @override
+  String get apMethodPhone => '手机代扣';
+
+  @override
+  String get apMethodUnknown => '其他';
+
+  @override
+  String get apVaTitle => '入账账户已生成';
+
+  @override
+  String get apVaWaiting => '等待付款';
+
+  @override
+  String get apVaBody => '在期限内付款后预约即确认，系统自动核对。';
+
+  @override
+  String get apVaBank => '银行';
+
+  @override
+  String get apVaAccount => '账号';
+
+  @override
+  String get apVaHolder => '户名';
+
+  @override
+  String get apVaAmount => '金额';
+
+  @override
+  String apVaDue(String due) {
+    return '请在$due前付款';
+  }
+
+  @override
+  String get apVaCopy => '复制';
+
+  @override
+  String get apVaCopied => '已复制账号';
+
+  @override
+  String get apVaBannerTitle => '有待付款的预约';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · $due前';
+  }
+
+  @override
+  String get apVaBannerAction => '查看账户';
+
+  @override
+  String get apPgTitle => '支付窗口';
+
+  @override
+  String get apPgDevNote => '仅限开发环境的模拟支付，不会真实扣款。';
+
+  @override
+  String apPgPay(String amount) {
+    return '支付 $amount';
+  }
+
+  @override
+  String get apPgIssue => '获取账号';
+
+  @override
+  String get apPgCancel => '取消支付';
+
+  @override
+  String get apErrSlotFullRefunded => '该时段刚被订满，付款已自动取消';
+
+  @override
+  String get apErrCheckoutExpired => '支付已超时，请重试。';
+
+  @override
+  String get apIdentityTitle => '实名认证 (PASS)';
+
+  @override
+  String get apIdentityBody => '通过手机运营商实名核验，用于保障交易与结算安全。';
+
+  @override
+  String get apIdentityAction => '去实名认证';
+
+  @override
+  String get apIdentityDone => '实名认证已完成';
+
+  @override
+  String get apIdentityVerified => '已认证';
+
+  @override
+  String get apIdentityUnverified => '尚未认证';
+
+  @override
+  String get apIdentityDevTitle => '测试实名认证';
+
+  @override
+  String get apIdentityDevBody => '开发环境下无需真实认证即可通过。';
+
+  @override
+  String get apIdentityDevPass => '通过';
+
+  @override
+  String get apPayManageTitle => '快捷支付绑定';
+
+  @override
   String get cTitle => '运营控制台';
 
   @override
@@ -1445,6 +1631,21 @@ class TZh extends T {
 
   @override
   String get summaryDate => '上门时间';
+
+  @override
+  String get themeTitle => '主题';
+
+  @override
+  String get themeDark => '深色';
+
+  @override
+  String get themeLight => '浅色';
+
+  @override
+  String get themeSystem => '跟随系统';
+
+  @override
+  String get themeTip => '切换主题';
 
   @override
   String get pTabJobs => '接单';

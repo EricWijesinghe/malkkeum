@@ -103,6 +103,366 @@ abstract class T {
     Locale('zh'),
   ];
 
+  /// No description provided for @apSocialOr.
+  ///
+  /// In ko, this message translates to:
+  /// **'또는'**
+  String get apSocialOr;
+
+  /// No description provided for @apSocialSignIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'간편 로그인'**
+  String get apSocialSignIn;
+
+  /// No description provided for @apLoginKakao.
+  ///
+  /// In ko, this message translates to:
+  /// **'카카오로 계속하기'**
+  String get apLoginKakao;
+
+  /// No description provided for @apLoginNaver.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버로 계속하기'**
+  String get apLoginNaver;
+
+  /// No description provided for @apLoginGoogle.
+  ///
+  /// In ko, this message translates to:
+  /// **'Google로 계속하기'**
+  String get apLoginGoogle;
+
+  /// No description provided for @apLoginApple.
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple로 계속하기'**
+  String get apLoginApple;
+
+  /// No description provided for @apDevSocialNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'개발 모드예요. 실제 소셜 계정이 아니라 테스트 계정으로 로그인해요.'**
+  String get apDevSocialNote;
+
+  /// No description provided for @apSocialFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'간편 로그인에 실패했어요. 다시 시도해 주세요.'**
+  String get apSocialFailed;
+
+  /// No description provided for @apProviderNotConfigured.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 로그인 수단은 아직 준비 중이에요'**
+  String get apProviderNotConfigured;
+
+  /// No description provided for @apPhoneTaken.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 다른 계정에 등록된 번호예요'**
+  String get apPhoneTaken;
+
+  /// No description provided for @apPhoneAttachTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 번호를 인증해 주세요'**
+  String get apPhoneAttachTitle;
+
+  /// No description provided for @apPhoneAttachBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약과 기사 연락에 쓰는 번호예요. 한 번만 인증하면 돼요.'**
+  String get apPhoneAttachBody;
+
+  /// No description provided for @apPayAllTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제수단 선택'**
+  String get apPayAllTitle;
+
+  /// No description provided for @apPaySavedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장한 결제수단'**
+  String get apPaySavedTitle;
+
+  /// No description provided for @apPayMoreTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 결제수단'**
+  String get apPayMoreTitle;
+
+  /// No description provided for @apPayBillingHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 번 등록하면 다음부터 한 번에 결제해요'**
+  String get apPayBillingHint;
+
+  /// No description provided for @apPayCheckoutHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제창에서 마무리해요'**
+  String get apPayCheckoutHint;
+
+  /// No description provided for @apPayRegistering.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록하는 중이에요'**
+  String get apPayRegistering;
+
+  /// No description provided for @apPayManageHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록한 결제수단으로 한 번에 결제해요. 간편결제는 여기서 추가할 수 있어요.'**
+  String get apPayManageHint;
+
+  /// No description provided for @apMethodCard.
+  ///
+  /// In ko, this message translates to:
+  /// **'신용·체크카드'**
+  String get apMethodCard;
+
+  /// No description provided for @apMethodKakao.
+  ///
+  /// In ko, this message translates to:
+  /// **'카카오페이'**
+  String get apMethodKakao;
+
+  /// No description provided for @apMethodNaver.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버페이'**
+  String get apMethodNaver;
+
+  /// No description provided for @apMethodToss.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스페이'**
+  String get apMethodToss;
+
+  /// No description provided for @apMethodPayco.
+  ///
+  /// In ko, this message translates to:
+  /// **'페이코'**
+  String get apMethodPayco;
+
+  /// No description provided for @apMethodSamsung.
+  ///
+  /// In ko, this message translates to:
+  /// **'삼성페이'**
+  String get apMethodSamsung;
+
+  /// No description provided for @apMethodApple.
+  ///
+  /// In ko, this message translates to:
+  /// **'애플페이'**
+  String get apMethodApple;
+
+  /// No description provided for @apMethodTransfer.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌이체'**
+  String get apMethodTransfer;
+
+  /// No description provided for @apMethodVirtual.
+  ///
+  /// In ko, this message translates to:
+  /// **'가상계좌'**
+  String get apMethodVirtual;
+
+  /// No description provided for @apMethodPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 결제'**
+  String get apMethodPhone;
+
+  /// No description provided for @apMethodUnknown.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 결제'**
+  String get apMethodUnknown;
+
+  /// No description provided for @apVaTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 계좌가 준비됐어요'**
+  String get apVaTitle;
+
+  /// No description provided for @apVaWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 대기 중'**
+  String get apVaWaiting;
+
+  /// No description provided for @apVaBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'기한 안에 입금하면 예약이 확정돼요. 입금은 자동으로 확인돼요.'**
+  String get apVaBody;
+
+  /// No description provided for @apVaBank.
+  ///
+  /// In ko, this message translates to:
+  /// **'은행'**
+  String get apVaBank;
+
+  /// No description provided for @apVaAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌번호'**
+  String get apVaAccount;
+
+  /// No description provided for @apVaHolder.
+  ///
+  /// In ko, this message translates to:
+  /// **'예금주'**
+  String get apVaHolder;
+
+  /// No description provided for @apVaAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 금액'**
+  String get apVaAmount;
+
+  /// No description provided for @apVaDue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{due}까지 입금해 주세요'**
+  String apVaDue(String due);
+
+  /// No description provided for @apVaCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get apVaCopy;
+
+  /// No description provided for @apVaCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌번호를 복사했어요'**
+  String get apVaCopied;
+
+  /// No description provided for @apVaBannerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 대기 중인 예약이 있어요'**
+  String get apVaBannerTitle;
+
+  /// No description provided for @apVaBannerBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{amount} · {due}까지'**
+  String apVaBannerBody(String amount, String due);
+
+  /// No description provided for @apVaBannerAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 보기'**
+  String get apVaBannerAction;
+
+  /// No description provided for @apPgTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제창'**
+  String get apPgTitle;
+
+  /// No description provided for @apPgDevNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'개발 환경 전용 결제 시뮬레이션이에요. 실제 결제는 일어나지 않아요.'**
+  String get apPgDevNote;
+
+  /// No description provided for @apPgPay.
+  ///
+  /// In ko, this message translates to:
+  /// **'{amount} 결제하기'**
+  String apPgPay(String amount);
+
+  /// No description provided for @apPgIssue.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 발급받기'**
+  String get apPgIssue;
+
+  /// No description provided for @apPgCancel.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 취소'**
+  String get apPgCancel;
+
+  /// No description provided for @apErrSlotFullRefunded.
+  ///
+  /// In ko, this message translates to:
+  /// **'방금 그 시간이 마감돼서 결제가 자동 취소됐어요'**
+  String get apErrSlotFullRefunded;
+
+  /// No description provided for @apErrCheckoutExpired.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 시간이 지났어요. 다시 시도해 주세요.'**
+  String get apErrCheckoutExpired;
+
+  /// No description provided for @apIdentityTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인인증 (PASS)'**
+  String get apIdentityTitle;
+
+  /// No description provided for @apIdentityBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 명의로 본인을 확인해요. 안전한 거래와 정산에 쓰여요.'**
+  String get apIdentityBody;
+
+  /// No description provided for @apIdentityAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인인증하기'**
+  String get apIdentityAction;
+
+  /// No description provided for @apIdentityDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인인증이 완료됐어요'**
+  String get apIdentityDone;
+
+  /// No description provided for @apIdentityVerified.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 완료'**
+  String get apIdentityVerified;
+
+  /// No description provided for @apIdentityUnverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 인증하지 않았어요'**
+  String get apIdentityUnverified;
+
+  /// No description provided for @apIdentityDevTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'테스트 본인인증'**
+  String get apIdentityDevTitle;
+
+  /// No description provided for @apIdentityDevBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'개발 환경에서는 실제 인증 없이 통과해요.'**
+  String get apIdentityDevBody;
+
+  /// No description provided for @apIdentityDevPass.
+  ///
+  /// In ko, this message translates to:
+  /// **'통과 처리'**
+  String get apIdentityDevPass;
+
+  /// No description provided for @apPayManageTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'간편결제 등록'**
+  String get apPayManageTitle;
+
   /// No description provided for @cTitle.
   ///
   /// In ko, this message translates to:
@@ -2856,6 +3216,36 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'방문 일정'**
   String get summaryDate;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'테마'**
+  String get themeTitle;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In ko, this message translates to:
+  /// **'다크'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In ko, this message translates to:
+  /// **'라이트'**
+  String get themeLight;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In ko, this message translates to:
+  /// **'시스템 설정'**
+  String get themeSystem;
+
+  /// No description provided for @themeTip.
+  ///
+  /// In ko, this message translates to:
+  /// **'테마 바꾸기'**
+  String get themeTip;
 
   /// No description provided for @pTabJobs.
   ///

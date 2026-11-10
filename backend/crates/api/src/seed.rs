@@ -27,6 +27,12 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
         .bind(json!({ "weekdays": [0,1,2,3,4], "open": "09:00", "close": "18:00" }))
         .execute(db)
         .await?;
+    // Every payment method starts enabled; admin switches them off in the console.
+    let methods: Vec<&str> = crate::routes::payments::METHODS.iter().map(|m| m.0).collect();
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('payment_methods', $1) ON CONFLICT DO NOTHING")
+        .bind(sqlx::types::Json(methods))
+        .execute(db)
+        .await?;
     for h in [8i16, 9, 13, 14] {
         sqlx::query("INSERT INTO slot_capacity (start_hour, capacity) VALUES ($1, $2) ON CONFLICT DO NOTHING")
             .bind(h)

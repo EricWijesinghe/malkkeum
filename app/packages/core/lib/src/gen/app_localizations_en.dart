@@ -9,6 +9,202 @@ class TEn extends T {
   TEn([String locale = 'en']) : super(locale);
 
   @override
+  String get apSocialOr => 'or';
+
+  @override
+  String get apSocialSignIn => 'Quick sign-in';
+
+  @override
+  String get apLoginKakao => 'Continue with Kakao';
+
+  @override
+  String get apLoginNaver => 'Continue with Naver';
+
+  @override
+  String get apLoginGoogle => 'Continue with Google';
+
+  @override
+  String get apLoginApple => 'Continue with Apple';
+
+  @override
+  String get apDevSocialNote =>
+      'Dev mode: signs in to a test account, not a real social account.';
+
+  @override
+  String get apSocialFailed => 'Quick sign-in failed. Please try again.';
+
+  @override
+  String get apProviderNotConfigured =>
+      'This sign-in method isn\'t available yet';
+
+  @override
+  String get apPhoneTaken => 'This number is already linked to another account';
+
+  @override
+  String get apPhoneAttachTitle => 'Verify your mobile number';
+
+  @override
+  String get apPhoneAttachBody =>
+      'We use this number for bookings and pro contact. One-time check.';
+
+  @override
+  String get apPayAllTitle => 'Choose a payment method';
+
+  @override
+  String get apPaySavedTitle => 'Saved methods';
+
+  @override
+  String get apPayMoreTitle => 'All payment methods';
+
+  @override
+  String get apPayBillingHint => 'Save once, then pay in one tap';
+
+  @override
+  String get apPayCheckoutHint => 'Finish in the payment window';
+
+  @override
+  String get apPayRegistering => 'Registering…';
+
+  @override
+  String get apPayManageHint =>
+      'Pay in one tap with saved methods. Add quick-pay methods here.';
+
+  @override
+  String get apMethodCard => 'Credit & debit card';
+
+  @override
+  String get apMethodKakao => 'KakaoPay';
+
+  @override
+  String get apMethodNaver => 'NaverPay';
+
+  @override
+  String get apMethodToss => 'TossPay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => 'Bank transfer';
+
+  @override
+  String get apMethodVirtual => 'Virtual account';
+
+  @override
+  String get apMethodPhone => 'Mobile bill';
+
+  @override
+  String get apMethodUnknown => 'Other';
+
+  @override
+  String get apVaTitle => 'Your deposit account is ready';
+
+  @override
+  String get apVaWaiting => 'Waiting for your deposit';
+
+  @override
+  String get apVaBody =>
+      'Your booking is confirmed once the deposit arrives. We check it automatically.';
+
+  @override
+  String get apVaBank => 'Bank';
+
+  @override
+  String get apVaAccount => 'Account number';
+
+  @override
+  String get apVaHolder => 'Account holder';
+
+  @override
+  String get apVaAmount => 'Amount';
+
+  @override
+  String apVaDue(String due) {
+    return 'Deposit by $due';
+  }
+
+  @override
+  String get apVaCopy => 'Copy';
+
+  @override
+  String get apVaCopied => 'Account number copied';
+
+  @override
+  String get apVaBannerTitle => 'A booking is waiting for your deposit';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · by $due';
+  }
+
+  @override
+  String get apVaBannerAction => 'View account';
+
+  @override
+  String get apPgTitle => 'Payment window';
+
+  @override
+  String get apPgDevNote =>
+      'Development-only payment simulation. No real charge happens.';
+
+  @override
+  String apPgPay(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get apPgIssue => 'Get account number';
+
+  @override
+  String get apPgCancel => 'Cancel payment';
+
+  @override
+  String get apErrSlotFullRefunded =>
+      'That slot just filled up, so your payment was cancelled automatically';
+
+  @override
+  String get apErrCheckoutExpired =>
+      'The payment window expired. Please try again.';
+
+  @override
+  String get apIdentityTitle => 'Identity check (PASS)';
+
+  @override
+  String get apIdentityBody =>
+      'Confirms you with your phone carrier. Used for safe trading and payouts.';
+
+  @override
+  String get apIdentityAction => 'Verify identity';
+
+  @override
+  String get apIdentityDone => 'Identity verified';
+
+  @override
+  String get apIdentityVerified => 'Verified';
+
+  @override
+  String get apIdentityUnverified => 'Not verified yet';
+
+  @override
+  String get apIdentityDevTitle => 'Test identity check';
+
+  @override
+  String get apIdentityDevBody =>
+      'In development, this passes without a real check.';
+
+  @override
+  String get apIdentityDevPass => 'Pass';
+
+  @override
+  String get apPayManageTitle => 'Register quick-pay';
+
+  @override
   String get cTitle => 'Operations console';
 
   @override
@@ -1467,6 +1663,21 @@ class TEn extends T {
 
   @override
   String get summaryDate => 'Visit';
+
+  @override
+  String get themeTitle => 'Theme';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeTip => 'Change theme';
 
   @override
   String get pTabJobs => 'Jobs';

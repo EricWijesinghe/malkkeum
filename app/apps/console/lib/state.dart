@@ -32,11 +32,20 @@ class ConsoleState extends ChangeNotifier {
 }
 
 class Deps extends InheritedNotifier<ConsoleState> {
-  const Deps({super.key, required this.state, required this.session, required this.locale, required super.child}) : super(notifier: state);
+  const Deps({
+    super.key,
+    required this.state,
+    required this.session,
+    required this.locale,
+    required this.theme,
+    required super.child,
+  }) : super(notifier: state);
   final ConsoleState state;
   final Session session;
   final LocaleController locale;
-  static Deps of(BuildContext c) => c.dependOnInheritedWidgetOfExactType<Deps>()!;
+  final ThemeController theme;
+  static Deps of(BuildContext c) =>
+      c.dependOnInheritedWidgetOfExactType<Deps>()!;
   static Deps read(BuildContext c) => c.getInheritedWidgetOfExactType<Deps>()!;
 }
 

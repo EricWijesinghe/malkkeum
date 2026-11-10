@@ -9,6 +9,203 @@ class TVi extends T {
   TVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get apSocialOr => 'hoặc';
+
+  @override
+  String get apSocialSignIn => 'Đăng nhập nhanh';
+
+  @override
+  String get apLoginKakao => 'Tiếp tục với Kakao';
+
+  @override
+  String get apLoginNaver => 'Tiếp tục với Naver';
+
+  @override
+  String get apLoginGoogle => 'Tiếp tục với Google';
+
+  @override
+  String get apLoginApple => 'Tiếp tục với Apple';
+
+  @override
+  String get apDevSocialNote =>
+      'Chế độ phát triển: đăng nhập bằng tài khoản thử, không phải tài khoản mạng xã hội thật.';
+
+  @override
+  String get apSocialFailed => 'Đăng nhập nhanh thất bại. Vui lòng thử lại.';
+
+  @override
+  String get apProviderNotConfigured =>
+      'Phương thức đăng nhập này chưa sẵn sàng';
+
+  @override
+  String get apPhoneTaken => 'Số này đã được gắn với tài khoản khác';
+
+  @override
+  String get apPhoneAttachTitle => 'Xác minh số điện thoại của bạn';
+
+  @override
+  String get apPhoneAttachBody =>
+      'Số này dùng cho lịch hẹn và liên hệ với đối tác. Chỉ cần xác minh một lần.';
+
+  @override
+  String get apPayAllTitle => 'Chọn phương thức thanh toán';
+
+  @override
+  String get apPaySavedTitle => 'Phương thức đã lưu';
+
+  @override
+  String get apPayMoreTitle => 'Tất cả phương thức';
+
+  @override
+  String get apPayBillingHint =>
+      'Lưu một lần, lần sau thanh toán chỉ với một chạm';
+
+  @override
+  String get apPayCheckoutHint => 'Hoàn tất trong cửa sổ thanh toán';
+
+  @override
+  String get apPayRegistering => 'Đang đăng ký…';
+
+  @override
+  String get apPayManageHint =>
+      'Thanh toán một chạm bằng phương thức đã lưu. Thêm phương thức thanh toán nhanh tại đây.';
+
+  @override
+  String get apMethodCard => 'Thẻ tín dụng & ghi nợ';
+
+  @override
+  String get apMethodKakao => 'KakaoPay';
+
+  @override
+  String get apMethodNaver => 'NaverPay';
+
+  @override
+  String get apMethodToss => 'TossPay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => 'Chuyển khoản';
+
+  @override
+  String get apMethodVirtual => 'Tài khoản ảo';
+
+  @override
+  String get apMethodPhone => 'Thanh toán qua điện thoại';
+
+  @override
+  String get apMethodUnknown => 'Khác';
+
+  @override
+  String get apVaTitle => 'Tài khoản nhận tiền đã sẵn sàng';
+
+  @override
+  String get apVaWaiting => 'Đang chờ chuyển khoản';
+
+  @override
+  String get apVaBody =>
+      'Đặt lịch được xác nhận khi nhận đủ tiền trước hạn. Hệ thống tự động kiểm tra.';
+
+  @override
+  String get apVaBank => 'Ngân hàng';
+
+  @override
+  String get apVaAccount => 'Số tài khoản';
+
+  @override
+  String get apVaHolder => 'Chủ tài khoản';
+
+  @override
+  String get apVaAmount => 'Số tiền';
+
+  @override
+  String apVaDue(String due) {
+    return 'Vui lòng chuyển khoản trước $due';
+  }
+
+  @override
+  String get apVaCopy => 'Sao chép';
+
+  @override
+  String get apVaCopied => 'Đã sao chép số tài khoản';
+
+  @override
+  String get apVaBannerTitle => 'Có lịch hẹn đang chờ chuyển khoản';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · trước $due';
+  }
+
+  @override
+  String get apVaBannerAction => 'Xem tài khoản';
+
+  @override
+  String get apPgTitle => 'Cửa sổ thanh toán';
+
+  @override
+  String get apPgDevNote =>
+      'Mô phỏng thanh toán chỉ dùng khi phát triển. Không có giao dịch thật.';
+
+  @override
+  String apPgPay(String amount) {
+    return 'Thanh toán $amount';
+  }
+
+  @override
+  String get apPgIssue => 'Lấy số tài khoản';
+
+  @override
+  String get apPgCancel => 'Hủy thanh toán';
+
+  @override
+  String get apErrSlotFullRefunded =>
+      'Khung giờ vừa kín nên thanh toán đã được hủy tự động';
+
+  @override
+  String get apErrCheckoutExpired =>
+      'Phiên thanh toán đã hết hạn. Vui lòng thử lại.';
+
+  @override
+  String get apIdentityTitle => 'Xác minh danh tính (PASS)';
+
+  @override
+  String get apIdentityBody =>
+      'Xác minh bằng tên chính chủ điện thoại. Dùng để đảm bảo giao dịch và thanh toán an toàn.';
+
+  @override
+  String get apIdentityAction => 'Xác minh';
+
+  @override
+  String get apIdentityDone => 'Đã xác minh danh tính';
+
+  @override
+  String get apIdentityVerified => 'Đã xác minh';
+
+  @override
+  String get apIdentityUnverified => 'Chưa xác minh';
+
+  @override
+  String get apIdentityDevTitle => 'Xác minh thử nghiệm';
+
+  @override
+  String get apIdentityDevBody =>
+      'Khi phát triển, bước này được bỏ qua mà không cần xác minh thật.';
+
+  @override
+  String get apIdentityDevPass => 'Cho qua';
+
+  @override
+  String get apPayManageTitle => 'Đăng ký thanh toán nhanh';
+
+  @override
   String get cTitle => 'Bảng điều hành';
 
   @override
@@ -1463,6 +1660,21 @@ class TVi extends T {
 
   @override
   String get summaryDate => 'Lịch';
+
+  @override
+  String get themeTitle => 'Giao diện';
+
+  @override
+  String get themeDark => 'Tối';
+
+  @override
+  String get themeLight => 'Sáng';
+
+  @override
+  String get themeSystem => 'Theo hệ thống';
+
+  @override
+  String get themeTip => 'Đổi giao diện';
 
   @override
   String get pTabJobs => 'Việc';

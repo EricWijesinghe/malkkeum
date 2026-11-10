@@ -9,6 +9,9 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.20.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 flutter:
   fonts:
     - family: Pretendard

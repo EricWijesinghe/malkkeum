@@ -157,7 +157,78 @@ def main():
     dash = call("GET", "/v1/admin/dashboard", token=staff)
     call("GET", "/v1/admin/dashboard", token=cust, expect=403)
     step(f"dashboard (30d bookings: {dash['bookings_30d']}); customer blocked from console")
+    social_flow(staff, visit)
     print("ALL SMOKE CHECKS PASSED")
+
+
+def raw(method, path, body=None, headers=None):
+    """Like call() but returns (status, payload) without asserting."""
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(BASE + path, data=data, method=method)
+    req.add_header("Content-Type", "application/json")
+    for k, v in (headers or {}).items():
+        req.add_header(k, v)
+    try:
+        with urllib.request.urlopen(req) as r:
+            return r.status, json.loads(r.read() or b"null")
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read() or b"null")
+
+
+def social_flow(staff, visit):
+    # Social sign-in (dev fake), phone binding, PortOne checkouts and the admin method switch.
+    methods = {m["code"] for m in call("GET", "/v1/payments/methods")}
+    assert {"kakaopay", "virtual_account", "card"} <= methods, methods
+    step(f"payment methods catalogue ({len(methods)} enabled)")
+
+    token = f"dev:kakao-{random.randint(10**9, 10**10)}"
+    first = call("POST", "/v1/auth/social", {"provider": "kakao", "token": token, "audience": "customer"})
+    assert first["is_new"] is True and first["needs_phone"] is True, first
+    again = call("POST", "/v1/auth/social", {"provider": "kakao", "token": token, "audience": "customer"})
+    assert again["subject"] == first["subject"] and again["is_new"] is False, again
+    sc = first["access_token"]
+    step("social dev:kakao: new account needs_phone=true; same token returns the same account")
+
+    p = phone()
+    code = call("POST", "/v1/auth/otp", {"phone": p})["dev_code"]
+    bound = call("POST", "/v1/me/phone", {"phone": p, "code": code}, sc)
+    assert bound["phone_verified"] is True and bound["phone"] == p, bound
+    call("POST", "/v1/me/phone", {"phone": p, "code": code}, sc, expect=400)
+    assert call("POST", "/v1/auth/social", {"provider": "kakao", "token": token, "audience": "customer"})["needs_phone"] is False
+    step("phone bound via OTP (code is single use); needs_phone=false afterwards")
+
+    addr = call("POST", "/v1/me/addresses", {"kind": "home", "label": "소셜", "road_address": "서울 강남구 테헤란로 9", "detail": "", "district_code": DISTRICT, "size_pyeong": 9}, sc)
+    body = {"service_code": "bathroom", "unit_index": 1, "address_id": addr["id"], "visit_date": visit, "start_hour": 14}
+    intent = call("POST", "/v1/checkouts", {"kind": "booking", "booking": body, "method": "kakaopay"}, sc)
+    assert intent["amount"] == 52000 and intent["method"] == "kakaopay", intent
+    done = call("POST", f"/v1/checkouts/{intent['id']}/confirm", {"payment_id": "dev:paid"}, sc)
+    assert done["status"] == "paid" and done["booking_id"], done
+    assert call("POST", f"/v1/checkouts/{intent['id']}/confirm", {"payment_id": "dev:paid"}, sc) == done
+    booked = call("GET", f"/v1/bookings/{done['booking_id']}", token=sc)
+    assert booked["status"] == 1 and booked["paid_amount"] == 52000, booked
+    step("checkout kakaopay 52,000 -> confirm dev:paid -> booking status 1; re-confirm is idempotent")
+
+    failing = call("POST", "/v1/checkouts", {"kind": "booking", "booking": {**body, "start_hour": 8}, "method": "card"}, sc)
+    assert call("POST", f"/v1/checkouts/{failing['id']}/confirm", {"payment_id": "dev:failed"}, sc, expect=402)["error"]["code"] == "payment_failed"
+    step("failed payment -> 402 payment_failed, no booking")
+
+    va = call("POST", "/v1/checkouts", {"kind": "booking", "booking": {**body, "start_hour": 13}, "method": "virtual_account"}, sc)
+    issued = call("POST", f"/v1/checkouts/{va['id']}/confirm", {"payment_id": "dev:va"}, sc)
+    assert issued["status"] == "awaiting_deposit" and issued["virtual_account"]["accountNumber"], issued
+    pending = call("GET", "/v1/checkouts?status=awaiting_deposit", token=sc)
+    assert any(c["id"] == va["id"] for c in pending), pending
+    step("virtual account -> awaiting_deposit, listed for the customer")
+
+    # Webhooks are signature-gated: an unsigned call must never settle anything.
+    status, _ = raw("POST", "/v1/webhooks/portone", {"type": "Transaction.Paid", "data": {"paymentId": "dev:va"}})
+    assert status in (401, 503), status
+    step("unsigned PortOne webhook rejected (signature gate; dev has no webhook secret)")
+
+    all_codes = ["card", "kakaopay", "naverpay", "tosspay", "payco", "samsungpay", "applepay", "transfer", "virtual_account", "phone"]
+    call("PUT", "/v1/admin/payment-methods", {"enabled": [c for c in all_codes if c != "phone"]}, staff)
+    call("POST", "/v1/checkouts", {"kind": "booking", "booking": {**body, "start_hour": 9}, "method": "phone"}, sc, expect=400)
+    call("PUT", "/v1/admin/payment-methods", {"enabled": all_codes}, staff)
+    step("admin switches a method off (checkout refused), then back on")
 
 
 if __name__ == "__main__":

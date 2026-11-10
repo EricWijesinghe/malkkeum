@@ -1,13 +1,17 @@
 mod admin;
 mod admin_content;
 mod auth;
+mod booking_core;
 mod bookings;
 mod catalog;
 mod chat;
+mod checkouts;
 mod me;
 mod partner;
 mod partner_jobs;
+pub(crate) mod payments;
 mod uploads;
+mod webhooks;
 
 use crate::{realtime, state::AppState};
 use axum::{
@@ -44,7 +48,10 @@ pub fn router(state: AppState) -> Router {
         .merge(bookings::routes())
         .merge(chat::routes())
         .merge(uploads::routes())
-        .nest("/admin", admin::routes().merge(admin_content::routes()))
+        .merge(checkouts::routes())
+        .merge(payments::routes())
+        .merge(webhooks::routes())
+        .nest("/admin", admin::routes().merge(admin_content::routes()).merge(payments::admin_routes()))
         .nest("/partner", partner::routes().merge(partner_jobs::routes()))
         .route("/ws", get(realtime::ws_handler));
 

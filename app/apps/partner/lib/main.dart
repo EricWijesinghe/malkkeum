@@ -22,33 +22,57 @@ Future<void> main() async {
   final session = Session(namespace: 'partner');
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
   final locale = LocaleController();
-  await Future.wait([session.restore(), locale.restore()]);
-  runApp(PartnerApp(session: session, app: PartnerState(api, Realtime(api)), locale: locale));
+  final theme = ThemeController();
+  await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  runApp(
+    PartnerApp(
+      session: session,
+      app: PartnerState(api, Realtime(api)),
+      locale: locale,
+      theme: theme,
+    ),
+  );
 }
 
 class PartnerApp extends StatelessWidget {
-  const PartnerApp({super.key, required this.session, required this.app, required this.locale});
+  const PartnerApp({
+    super.key,
+    required this.session,
+    required this.app,
+    required this.locale,
+    required this.theme,
+  });
   final Session session;
   final PartnerState app;
   final LocaleController locale;
+  final ThemeController theme;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-        listenable: Listenable.merge([locale, session]),
-        builder: (context, _) => Deps(
-          app: app,
-          session: session,
-          locale: locale,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            onGenerateTitle: (_) => partnerBrand.name,
-            theme: buildTheme(partnerBrand, Brightness.light),
-            darkTheme: buildTheme(partnerBrand, Brightness.dark),
-            locale: locale.locale,
-            supportedLocales: LocaleController.supported,
-            localizationsDelegates: const [T.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-            home: session.signedIn ? const Gate() : const PartnerIntro(),
-          ),
-        ),
-      );
+    listenable: Listenable.merge([locale, session, theme]),
+    builder: (context, _) => Deps(
+      app: app,
+      session: session,
+      locale: locale,
+      theme: theme,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        onGenerateTitle: (_) => partnerBrand.name,
+        theme: buildTheme(partnerBrand, Brightness.light),
+        darkTheme: buildTheme(partnerBrand, Brightness.dark),
+        themeMode: theme.mode,
+        themeAnimationDuration: const Duration(milliseconds: 280),
+        themeAnimationCurve: Motion.ease,
+        locale: locale.locale,
+        supportedLocales: LocaleController.supported,
+        localizationsDelegates: const [
+          T.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: session.signedIn ? const Gate() : const PartnerIntro(),
+      ),
+    ),
+  );
 }

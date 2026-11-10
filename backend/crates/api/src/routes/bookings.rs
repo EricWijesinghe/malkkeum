@@ -2,7 +2,11 @@
 
 use super::{
     audit,
-    catalog::{load_formula, load_service},
+    booking_core::{
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, deposit_due, insert_paid, lock_slot, next_number, prepare, price_for,
+        record_payment, take_balance, take_deposit,
+    },
+    catalog::load_formula,
     chat,
 };
 use crate::{
@@ -10,7 +14,7 @@ use crate::{
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
     state::AppState,
-    util::{KST_TODAY, best_effort, lock_and_count_slot, refund_or_alert, sanitize_notes, today_kst},
+    util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
 use axum::{
     Json, Router,
@@ -21,10 +25,6 @@ use chrono::{DateTime, NaiveDate, Utc};
 use domain::{
     Won,
     booking::{BookingStatus, customer_cancel},
-    coupon::Coupon,
-    partner::payout_date,
-    pricing::price_booking,
-    quote::QuoteAnswers,
     schedule::{check_capacity, check_date, check_slot},
 };
 use serde::{Deserialize, Serialize};
@@ -100,35 +100,17 @@ pub async fn load_booking(db: &sqlx::PgPool, id: Uuid) -> ApiResult<BookingRow> 
         .ok_or(ApiError::NotFound)
 }
 
-async fn owned(s: &AppState, user: Uuid, id: Uuid) -> ApiResult<BookingRow> {
+/// The customer's own booking; anyone else gets 404, not 403.
+pub async fn owned(s: &AppState, user: Uuid, id: Uuid) -> ApiResult<BookingRow> {
     let b = load_booking(&s.db, id).await?;
     if b.user_id == user { Ok(b) } else { Err(ApiError::NotFound) }
 }
 
-type CouponRow = (i64, Option<String>, DateTime<Utc>, DateTime<Utc>, Option<Uuid>);
-
 #[derive(Deserialize)]
 struct CreateBooking {
-    service_code: String,
-    unit_index: Option<usize>,
-    address_id: Uuid,
-    visit_date: NaiveDate,
-    start_hour: u8,
-    coupon_id: Option<Uuid>,
+    #[serde(flatten)]
+    body: BookingBody,
     payment_method_id: Option<Uuid>,
-    answers: Option<QuoteAnswers>,
-    #[serde(default)]
-    visit_notes: Value,
-}
-
-#[derive(sqlx::FromRow)]
-struct AddressSnap {
-    kind: String,
-    label: String,
-    road_address: String,
-    detail: String,
-    district_code: String,
-    size_pyeong: i16,
 }
 
 /// Charges a saved method and records the payment. Used inside a transaction.
@@ -145,164 +127,105 @@ pub async fn charge(s: &AppState, conn: &mut PgConnection, user: Uuid, method: U
         .charge(&key, amount.0, &idem)
         .await
         .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    let recorded =
-        sqlx::query("INSERT INTO payments (booking_id, amount, kind, status, provider, provider_tx_id, idempotency_key) VALUES ($1,$2,$3,'paid','pg',$4,$5)")
-            .bind(booking)
-            .bind(amount.0)
-            .bind(kind)
-            .bind(&tx_id)
-            .bind(idem)
-            .execute(conn)
-            .await;
-    if let Err(e) = recorded {
-        refund_or_alert(s, &tx_id, amount.0).await;
-        return Err(e.into());
+    if let Err(e) = record_payment(conn, booking, amount.0, kind, "pg", &tx_id, &idem).await {
+        refund_or_alert(s, "pg", &tx_id, amount.0).await;
+        return Err(e);
     }
     Ok(tx_id)
 }
 
 async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Json<CreateBooking>) -> ApiResult<Json<BookingRow>> {
-    let service = load_service(&s.db, &req.service_code).await?;
-    let addr: AddressSnap = sqlx::query_as(
-        "SELECT kind, label, road_address, detail, district_code, size_pyeong FROM addresses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
-    )
-    .bind(req.address_id)
-    .bind(a.id)
-    .fetch_optional(&s.db)
-    .await?
-    .ok_or(ApiError::BadRequest("address_required"))?;
-    service.check_address_size(addr.size_pyeong as u16)?;
-    check_date(today_kst(), req.visit_date)?;
-    check_slot(service.is_quote(), req.start_hour)?;
-    let snapshot = json!({ "kind": addr.kind, "label": addr.label, "road_address": addr.road_address, "detail": addr.detail, "size_pyeong": addr.size_pyeong });
-
-    let notes = if req.visit_notes.is_null() {
-        json!({})
+    let prep = prepare(&s.db, a.id, &req.body).await?;
+    let id = if prep.service.is_quote() {
+        create_quote(&s, a.id, &req.body, &prep).await?
     } else {
-        sanitize_notes(&req.visit_notes).ok_or(ApiError::BadRequest("invalid_notes"))?
+        create_paid(&s, a.id, &req, &prep).await?
     };
-    // Anything needing its own pool connection is read before the slot lock is taken.
-    let formula = if service.is_quote() { Some(load_formula(&s.db).await?) } else { None };
+    Ok(Json(load_booking(&s.db, id).await?))
+}
 
+/// Quote services: a consultation request with the estimate. No payment yet.
+async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared) -> ApiResult<Uuid> {
+    // Anything needing its own pool connection is read before the slot lock is taken.
+    let formula = load_formula(&s.db).await?;
     let mut tx = s.db.begin().await?;
     // Serialize bookings per slot so capacity can't be oversold.
-    let (used, cap) = lock_and_count_slot(&mut tx, req.visit_date, req.start_hour, None).await?;
-    check_capacity(used, cap)?;
-
+    lock_slot(&mut tx, b.visit_date, b.start_hour).await?;
     let id = Uuid::now_v7();
-    let number: String = sqlx::query_scalar(&format!(
-        "SELECT 'BK' || to_char({KST_TODAY}, 'YYMM') || '-' || lpad(nextval('booking_number_seq')::text, 5, '0')"
-    ))
-    .fetch_one(&mut *tx)
+    let number = next_number(&mut tx).await?;
+    let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
+    let est = formula.estimate(&answers)?;
+    sqlx::query(
+        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11)",
+    )
+    .bind(id)
+    .bind(&number)
+    .bind(user)
+    .bind(&prep.service.code)
+    .bind(&prep.snapshot)
+    .bind(&prep.district_code)
+    .bind(b.visit_date)
+    .bind(i16::from(b.start_hour))
+    .bind(sqlx::types::Json(&answers))
+    .bind(est.total.0)
+    .bind(&prep.notes)
+    .execute(&mut *tx)
     .await?;
+    let thread = chat::booking_thread(&mut tx, "customer", user, id, &prep.service.code).await?;
+    let sys = chat::insert_message(&mut tx, thread, "system", None, "system", json!({ "code": "consultation_received" })).await?;
+    let card = chat::insert_message(
+        &mut tx,
+        thread,
+        "system",
+        None,
+        "card",
+        json!({
+            "booking_id": id, "service_code": prep.service.code, "visit_date": b.visit_date, "start_hour": b.start_hour,
+            "answers": answers, "estimate": est.total.0
+        }),
+    )
+    .await?;
+    tx.commit().await?;
+    best_effort("broadcast", chat::broadcast_message(s, &sys)).await;
+    best_effort("broadcast", chat::broadcast_message(s, &card)).await;
+    best_effort(
+        "notify",
+        notify(
+            s,
+            Recipient::Staff,
+            "booking.quote_requested",
+            "견적 요청",
+            &number,
+            json!({ "booking_id": id }),
+        ),
+    )
+    .await;
+    Ok(id)
+}
 
-    if let Some(formula) = formula {
-        let answers = req.answers.ok_or(ApiError::BadRequest("answers_required"))?;
-        let est = formula.estimate(&answers)?;
-        sqlx::query(
-            "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11)",
-        )
-        .bind(id)
-        .bind(&number)
-        .bind(a.id)
-        .bind(&service.code)
-        .bind(&snapshot)
-        .bind(&addr.district_code)
-        .bind(req.visit_date)
-        .bind(i16::from(req.start_hour))
-        .bind(sqlx::types::Json(&answers))
-        .bind(est.total.0)
-        .bind(&notes)
-        .execute(&mut *tx)
-        .await?;
-        let thread = chat::booking_thread(&mut tx, "customer", a.id, id, &service.code).await?;
-        let sys = chat::insert_message(&mut tx, thread, "system", None, "system", json!({ "code": "consultation_received" })).await?;
-        let card = chat::insert_message(
-            &mut tx,
-            thread,
-            "system",
-            None,
-            "card",
-            json!({
-                "booking_id": id, "service_code": service.code, "visit_date": req.visit_date, "start_hour": req.start_hour,
-                "answers": answers, "estimate": est.total.0
-            }),
-        )
-        .await?;
-        tx.commit().await?;
-        best_effort("broadcast", chat::broadcast_message(&s, &sys)).await;
-        best_effort("broadcast", chat::broadcast_message(&s, &card)).await;
-        best_effort(
-            "notify",
-            notify(
-                &s,
-                Recipient::Staff,
-                "booking.quote_requested",
-                "견적 요청",
-                &number,
-                json!({ "booking_id": id }),
-            ),
-        )
-        .await;
+/// Fixed and unit services: priced on the server and paid in full now.
+async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepared) -> ApiResult<Uuid> {
+    let method = req.payment_method_id.ok_or(ApiError::BadRequest("payment_method_required"))?;
+    let mut tx = s.db.begin().await?;
+    lock_slot(&mut tx, req.body.visit_date, req.body.start_hour).await?;
+    let price = price_for(&mut tx, user, prep, &req.body, true).await?;
+    let id = Uuid::now_v7();
+    let number = insert_paid(&mut tx, id, user, prep, &req.body, &price).await?;
+    let tx_id = if price.total.0 > 0 {
+        Some(charge(s, &mut tx, user, method, id, price.total, "full").await?)
     } else {
-        let coupon = match req.coupon_id {
-            Some(cid) => {
-                let row: Option<CouponRow> = sqlx::query_as(
-                    "SELECT amount, service_code, issued_at, expires_at, used_booking_id FROM coupons WHERE id = $1 AND user_id = $2 FOR UPDATE",
-                )
-                .bind(cid)
-                .bind(a.id)
-                .fetch_optional(&mut *tx)
-                .await?;
-                let (amount, svc, issued_at, expires_at, used) = row.ok_or(ApiError::NotFound)?;
-                Some(Coupon {
-                    amount: Won(amount),
-                    service_code: svc,
-                    issued_at,
-                    expires_at,
-                    used: used.is_some(),
-                })
-            }
-            None => None,
-        };
-        let price = price_booking(&service, req.unit_index, coupon.as_ref(), Utc::now())?;
-        let method = req.payment_method_id.ok_or(ApiError::BadRequest("payment_method_required"))?;
-        sqlx::query(
-            "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15)",
-        )
-        .bind(id).bind(&number).bind(a.id).bind(&service.code).bind(req.unit_index.map(|u| u as i16)).bind(&snapshot).bind(&addr.district_code)
-        .bind(req.visit_date).bind(i16::from(req.start_hour)).bind(price.minutes as i32).bind(price.list_price.0).bind(price.discount.0).bind(price.total.0)
-        .bind(req.coupon_id).bind(&notes)
-        .execute(&mut *tx)
-        .await?;
-        if let Some(cid) = req.coupon_id {
-            sqlx::query("UPDATE coupons SET used_booking_id = $2 WHERE id = $1")
-                .bind(cid)
-                .bind(id)
-                .execute(&mut *tx)
-                .await?;
+        None
+    };
+    if let Err(e) = tx.commit().await {
+        // Charged but not saved: give the money back before reporting the failure.
+        if let Some(t) = tx_id {
+            refund_or_alert(s, "pg", &t, price.total.0).await;
         }
-        let tx_id = if price.total.0 > 0 {
-            Some(charge(&s, &mut tx, a.id, method, id, price.total, "full").await?)
-        } else {
-            None
-        };
-        if let Err(e) = tx.commit().await {
-            // Charged but not saved: give the money back before reporting the failure.
-            if let Some(t) = tx_id {
-                refund_or_alert(&s, &t, price.total.0).await;
-            }
-            return Err(e.into());
-        }
-        best_effort(
-            "notify",
-            notify(&s, Recipient::Staff, "booking.created", "새 예약", &number, json!({ "booking_id": id })),
-        )
-        .await;
+        return Err(e.into());
     }
-    Ok(Json(load_booking(&s.db, id).await?))
+    after_booking_created(s, id, &number).await;
+    Ok(id)
 }
 
 async fn list(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<BookingRow>>> {
@@ -321,19 +244,24 @@ async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
 
 /// Refunds every paid payment on a booking (full or a capped amount) and records it.
 pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) -> ApiResult<i64> {
-    let pays: Vec<(Uuid, i64, i64, Option<String>)> = sqlx::query_as("SELECT id, amount, refunded_amount, provider_tx_id FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') ORDER BY created_at DESC")
-        .bind(booking)
-        .fetch_all(&s.db)
-        .await?;
+    let pays: Vec<(Uuid, i64, i64, Option<String>, String)> = sqlx::query_as(
+        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') ORDER BY created_at DESC",
+    )
+    .bind(booking)
+    .fetch_all(&s.db)
+    .await?;
     let mut left = max_amount.unwrap_or(i64::MAX);
     let mut total = 0;
-    for (pid, amount, refunded, tx) in pays {
+    for (pid, amount, refunded, tx, provider) in pays {
         let amt = (amount - refunded).min(left);
         if amt <= 0 {
             continue;
         }
         let tx = tx.ok_or_else(|| ApiError::Internal(format!("payment {pid} has no provider transaction id")))?;
-        s.providers.refund(&tx, amt).await.map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
+        s.providers
+            .refund(&provider, &tx, amt)
+            .await
+            .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
         let status = if refunded + amt == amount { "refunded" } else { "partially_refunded" };
         sqlx::query("UPDATE payments SET refunded_amount = refunded_amount + $2, status = $3 WHERE id = $1")
             .bind(pid)
@@ -418,98 +346,30 @@ struct PayRequest {
 /// Quote booking: pay 10% deposit after the staff quote -> confirmed (or team assigned).
 async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<PayRequest>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
-    let (Some(_), Some(deposit)) = (b.final_price, b.deposit) else {
-        return Err(ApiError::Conflict("quote_not_sent"));
-    };
-    if b.status()? != BookingStatus::Consultation {
-        return Err(ApiError::Conflict("already_confirmed"));
-    }
+    let deposit = deposit_due(&b)?;
     let mut tx = s.db.begin().await?;
-    // Read the chosen quote under lock so a concurrent staff change can't attach the wrong pro.
-    let selected: Option<(Uuid, Uuid)> = sqlx::query_as("SELECT id, pro_id FROM quotes WHERE booking_id = $1 AND state = 'selected' FOR UPDATE")
-        .bind(id)
-        .fetch_optional(&mut *tx)
-        .await?;
-    let new_status = if selected.is_some() { 2 } else { 1 };
-    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0")
-        .bind(id).bind(new_status).bind(deposit).bind(selected.map(|q| q.1))
-        .execute(&mut *tx).await?;
-    if moved.rows_affected() == 0 {
-        return Err(ApiError::Conflict("booking_changed"));
-    }
-    sqlx::query("UPDATE quotes SET state = 'rejected', updated_at = now(), seen_by_pro = FALSE WHERE booking_id = $1 AND state = 'waiting'")
-        .bind(id)
-        .execute(&mut *tx)
-        .await?;
+    take_deposit(&mut tx, id, deposit).await?;
     // Charge last: after this only the commit can fail, and that path refunds.
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(deposit), "deposit").await?;
     if let Err(e) = tx.commit().await {
-        refund_or_alert(&s, &tx_id, deposit).await;
+        refund_or_alert(&s, "pg", &tx_id, deposit).await;
         return Err(e.into());
     }
-    if let Some(t) = b.thread_id {
-        best_effort("chat", chat::post_system(&s, t, "deposit_paid", json!({ "amount": deposit }))).await;
-    }
-    if let Some((_, pro)) = selected {
-        best_effort(
-            "notify",
-            notify(
-                &s,
-                Recipient::Pro(pro),
-                "quote.selected",
-                "견적이 선택됐어요",
-                &b.number,
-                json!({ "booking_id": id }),
-            ),
-        )
-        .await;
-    }
-    best_effort(
-        "notify",
-        notify(
-            &s,
-            Recipient::Staff,
-            "booking.deposit_paid",
-            "예약금 결제",
-            &b.number,
-            json!({ "booking_id": id }),
-        ),
-    )
-    .await;
-    Ok(Json(load_booking(&s.db, id).await?))
+    // Reload: the pro attached by the deposit is needed for the notifications.
+    let after = load_booking(&s.db, id).await?;
+    after_deposit(&s, &after, deposit).await;
+    Ok(Json(after))
 }
 
 /// Quote booking balance after completion; releases the pro's settlement.
 async fn pay_balance(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<PayRequest>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
-    let (Some(final_price), Some(deposit)) = (b.final_price, b.deposit) else {
-        return Err(ApiError::Conflict("not_quote_booking"));
-    };
-    if b.status()? != BookingStatus::Completed || b.balance_paid {
-        return Err(ApiError::Conflict("balance_not_due"));
-    }
-    let balance = final_price - deposit;
-    if balance <= 0 {
-        return Err(ApiError::Conflict("balance_not_due"));
-    }
+    let balance = balance_due(&b)?;
     let mut tx = s.db.begin().await?;
-    let moved = sqlx::query("UPDATE bookings SET balance_paid = TRUE, paid_amount = paid_amount + $2, updated_at = now() WHERE id = $1 AND NOT balance_paid")
-        .bind(id)
-        .bind(balance)
-        .execute(&mut *tx)
-        .await?;
-    if moved.rows_affected() == 0 {
-        return Err(ApiError::Conflict("balance_not_due"));
-    }
-    let completed = b.completed_at.map(|c| (c + chrono::Duration::hours(9)).date_naive()).unwrap_or_else(today_kst);
-    sqlx::query("UPDATE settlements SET state = 'pending', payout_date = $2 WHERE booking_id = $1 AND state = 'waiting_balance'")
-        .bind(id)
-        .bind(payout_date(today_kst().max(completed)))
-        .execute(&mut *tx)
-        .await?;
+    take_balance(&mut tx, &b, balance).await?;
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(balance), "balance").await?;
     if let Err(e) = tx.commit().await {
-        refund_or_alert(&s, &tx_id, balance).await;
+        refund_or_alert(&s, "pg", &tx_id, balance).await;
         return Err(e.into());
     }
     Ok(Json(load_booking(&s.db, id).await?))
@@ -568,6 +428,7 @@ async fn reschedule(State(s): State<AppState>, Customer(a): Customer, Path(id): 
             .unwrap_or_else(|| json!({ "from_date": b.visit_date, "from_hour": b.start_hour, "requested_at": Utc::now() }))
     });
     let mut tx = s.db.begin().await?;
+    // The booking's own current slot does not count against the new one.
     let (used, cap) = lock_and_count_slot(&mut tx, r.visit_date, r.start_hour, Some(id)).await?;
     check_capacity(used, cap)?;
     let moved = sqlx::query("UPDATE bookings SET visit_date = $2, start_hour = $3, reschedule = $4, updated_at = now() WHERE id = $1 AND status = $5")

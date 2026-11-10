@@ -9,6 +9,192 @@ class TJa extends T {
   TJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get apSocialOr => 'または';
+
+  @override
+  String get apSocialSignIn => '簡単ログイン';
+
+  @override
+  String get apLoginKakao => 'カカオで続ける';
+
+  @override
+  String get apLoginNaver => 'ネイバーで続ける';
+
+  @override
+  String get apLoginGoogle => 'Googleで続ける';
+
+  @override
+  String get apLoginApple => 'Appleで続ける';
+
+  @override
+  String get apDevSocialNote => '開発モードです。実際のソーシャルアカウントではなくテストアカウントでログインします。';
+
+  @override
+  String get apSocialFailed => '簡単ログインに失敗しました。もう一度お試しください。';
+
+  @override
+  String get apProviderNotConfigured => 'このログイン方法はまだ準備中です';
+
+  @override
+  String get apPhoneTaken => 'この番号は別のアカウントに登録されています';
+
+  @override
+  String get apPhoneAttachTitle => '携帯番号を認証してください';
+
+  @override
+  String get apPhoneAttachBody => '予約と担当者への連絡に使う番号です。一度認証すれば十分です。';
+
+  @override
+  String get apPayAllTitle => '支払い方法を選択';
+
+  @override
+  String get apPaySavedTitle => '保存済みの支払い方法';
+
+  @override
+  String get apPayMoreTitle => 'すべての支払い方法';
+
+  @override
+  String get apPayBillingHint => '一度登録すれば次からワンタップで支払えます';
+
+  @override
+  String get apPayCheckoutHint => '決済画面で完了します';
+
+  @override
+  String get apPayRegistering => '登録中…';
+
+  @override
+  String get apPayManageHint => '登録した支払い方法でワンタップ決済できます。ここで追加できます。';
+
+  @override
+  String get apMethodCard => 'クレジット・デビットカード';
+
+  @override
+  String get apMethodKakao => 'カカオペイ';
+
+  @override
+  String get apMethodNaver => 'ネイバーペイ';
+
+  @override
+  String get apMethodToss => 'トスペイ';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => '口座振替';
+
+  @override
+  String get apMethodVirtual => '仮想口座';
+
+  @override
+  String get apMethodPhone => '携帯決済';
+
+  @override
+  String get apMethodUnknown => 'その他';
+
+  @override
+  String get apVaTitle => '入金口座の準備ができました';
+
+  @override
+  String get apVaWaiting => '入金待ち';
+
+  @override
+  String get apVaBody => '期限内に入金されると予約が確定します。入金は自動で確認されます。';
+
+  @override
+  String get apVaBank => '銀行';
+
+  @override
+  String get apVaAccount => '口座番号';
+
+  @override
+  String get apVaHolder => '口座名義';
+
+  @override
+  String get apVaAmount => '入金額';
+
+  @override
+  String apVaDue(String due) {
+    return '$dueまでに入金してください';
+  }
+
+  @override
+  String get apVaCopy => 'コピー';
+
+  @override
+  String get apVaCopied => '口座番号をコピーしました';
+
+  @override
+  String get apVaBannerTitle => '入金待ちの予約があります';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · $dueまで';
+  }
+
+  @override
+  String get apVaBannerAction => '口座を見る';
+
+  @override
+  String get apPgTitle => '決済画面';
+
+  @override
+  String get apPgDevNote => '開発環境専用の決済シミュレーションです。実際の決済は行われません。';
+
+  @override
+  String apPgPay(String amount) {
+    return '$amount を支払う';
+  }
+
+  @override
+  String get apPgIssue => '口座番号を発行';
+
+  @override
+  String get apPgCancel => '支払いをキャンセル';
+
+  @override
+  String get apErrSlotFullRefunded => 'その時間が埋まったため、お支払いは自動キャンセルされました';
+
+  @override
+  String get apErrCheckoutExpired => '決済の有効時間が過ぎました。もう一度お試しください。';
+
+  @override
+  String get apIdentityTitle => '本人確認 (PASS)';
+
+  @override
+  String get apIdentityBody => '携帯回線の名義で本人を確認します。安全な取引と精算に使われます。';
+
+  @override
+  String get apIdentityAction => '本人確認する';
+
+  @override
+  String get apIdentityDone => '本人確認が完了しました';
+
+  @override
+  String get apIdentityVerified => '確認済み';
+
+  @override
+  String get apIdentityUnverified => '未確認です';
+
+  @override
+  String get apIdentityDevTitle => 'テスト本人確認';
+
+  @override
+  String get apIdentityDevBody => '開発環境では実際の確認なしで通過します。';
+
+  @override
+  String get apIdentityDevPass => '通過にする';
+
+  @override
+  String get apPayManageTitle => '簡単決済の登録';
+
+  @override
   String get cTitle => '運営コンソール';
 
   @override
@@ -1448,6 +1634,21 @@ class TJa extends T {
 
   @override
   String get summaryDate => '訪問日程';
+
+  @override
+  String get themeTitle => 'テーマ';
+
+  @override
+  String get themeDark => 'ダーク';
+
+  @override
+  String get themeLight => 'ライト';
+
+  @override
+  String get themeSystem => 'システム設定';
+
+  @override
+  String get themeTip => 'テーマを変更';
 
   @override
   String get pTabJobs => '仕事';

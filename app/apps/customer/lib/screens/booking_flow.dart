@@ -1,3 +1,4 @@
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
@@ -6,7 +7,9 @@ import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
 import 'chat.dart';
-import 'payments.dart';
+import 'pay_flow.dart';
+import 'pay_method_picker.dart';
+import 'virtual_account.dart';
 
 const _maxDaysAhead = 60;
 const _standardSlots = [8, 9, 13, 14];
@@ -292,23 +295,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   BookingDraft get d => widget.draft;
   bool _busy = false;
   bool _autoPicked = false;
+  PayChoice? _choice;
 
   int _discount(List<Coupon> coupons) {
     final c = coupons.where((c) => c.id == d.couponId).firstOrNull;
     return c == null ? 0 : (c.amount < d.listPrice ? c.amount : d.listPrice);
   }
 
-  Future<void> _pay() async {
+  /// Booking body for checkout channels: the draft without the saved-method id.
+  Json _bookingBody() => d.toJson()..remove('payment_method_id');
+
+  /// Saved method -> POST /bookings (one-tap). Checkout channel -> PG window, then confirm.
+  Future<void> _pay(int total) async {
+    final choice = _choice;
+    if (choice == null) return;
     setState(() => _busy = true);
     final app = context.appRead;
     try {
-      final b = Booking.fromJson(await app.api.post('/bookings', d.toJson()) as Json);
-      app.bookingsChanged();
-      await app.loadCoupons();
+      final CheckoutResult result;
+      if (choice case ChannelChoice(:final channel)) {
+        result = await payWithChannel(context, channel, {'kind': 'booking', 'booking': _bookingBody()});
+      } else {
+        result = CheckoutPaid(Booking.fromJson(await app.api.post('/bookings', d.toJson()) as Json));
+      }
       if (!mounted) return;
-      await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: b)), (r) => r.isFirst);
+      switch (result) {
+        case CheckoutPaid(:final booking):
+          app.bookingsChanged();
+          await app.loadCoupons();
+          if (!mounted) return;
+          await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)), (r) => r.isFirst);
+        case CheckoutAwaitingDeposit(:final account):
+          app.bookingsChanged();
+          await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => VirtualAccountScreen(account: account, amount: total)), (r) => r.isFirst);
+        case CheckoutFailed(:final code):
+          showToast(context, context.t.checkoutFailure(code));
+        case CheckoutCancelled():
+          break;
+      }
     } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      if (mounted) showToast(context, context.t.payError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -323,8 +349,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       // Best coupon pre-applied: customers shouldn't have to hunt for savings.
       d.couponId ??= usable.firstOrNull?.id;
       d.methodId ??= app.methods.firstOrNull?.id;
+      _choice = d.methodId == null ? null : SavedChoice(d.methodId!);
       _autoPicked = true;
     }
+    final savedId = switch (_choice) {
+      SavedChoice(:final methodId) => methodId,
+      _ => null,
+    };
+    final channelCode = switch (_choice) {
+      ChannelChoice(:final channel) => channel.code,
+      _ => null,
+    };
     final discount = _discount(app.coupons);
     final total = d.listPrice - discount;
     final freeUntil = d.date!.subtract(const Duration(days: 2));
@@ -358,16 +393,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               trailing: coupon == null ? const Icon(Icons.chevron_right_rounded) : Text('−${context.won(discount)}', style: context.text.titleSmall?.copyWith(color: context.colors.fresh)),
               onTap: usable.isEmpty ? null : () => _pickCoupon(usable),
             ),
-            const Divider(indent: Space.gutter, endIndent: Space.gutter),
-            ListTile(
-              leading: Icon(Icons.credit_card_rounded, color: context.primary),
-              title: Text(t.paymentMethod),
-              subtitle: Text(app.methods.where((m) => m.id == d.methodId).firstOrNull?.displayName ?? t.needMethod),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () async {
-                final id = await pickPaymentMethod(context, selected: d.methodId);
-                if (id != null) setState(() => d.methodId = id);
-              },
+          ]),
+        ),
+        const SizedBox(height: Space.sm),
+        AppCard(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(t.apPayAllTitle, style: context.text.titleSmall),
+            const SizedBox(height: Space.xs),
+            PayMethodPicker(
+              selectedSavedId: savedId,
+              selectedChannel: channelCode,
+              onChoose: (c) => setState(() {
+                _choice = c;
+                d.methodId = switch (c) {
+                  SavedChoice(:final methodId) => methodId,
+                  ChannelChoice() => null,
+                };
+              }),
             ),
           ]),
         ),
@@ -405,9 +447,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       bottomNavigationBar: BottomActionBar(
         summary: Text(t.freeCancelUntil(dateLabel(freeUntil, context.lang)), style: context.text.labelSmall),
         child: PrimaryButton(
-          label: d.methodId == null ? t.needMethod : t.payAmount(context.won(total)),
+          label: _choice == null ? t.needMethod : t.payAmount(context.won(total)),
           busy: _busy,
-          onPressed: d.methodId == null ? null : _pay,
+          onPressed: _choice == null ? null : () => _pay(total),
         ),
       ),
     );
@@ -466,11 +508,11 @@ class DoneScreen extends StatelessWidget {
           child: Column(children: [
             const Spacer(),
             SuccessMark(semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle),
-            Text(b.isQuote ? t.doneQuoteTitle : t.doneTitle, style: context.text.headlineSmall, textAlign: TextAlign.center),
+            StaggerIn(index: 1, child: Text(b.isQuote ? t.doneQuoteTitle : t.doneTitle, style: context.text.headlineSmall, textAlign: TextAlign.center)),
             const SizedBox(height: Space.xs),
             Text(b.isQuote ? t.doneQuoteBody : t.doneBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft), textAlign: TextAlign.center),
             const SizedBox(height: Space.xl),
-            AppCard(
+            StaggerIn(index: 2, child: AppCard(
               child: Row(children: [
                 ServiceGlyph(b.serviceCode, size: 48),
                 const SizedBox(width: Space.md),
@@ -480,9 +522,9 @@ class DoneScreen extends StatelessWidget {
                     Text('${dateLabel(b.visitDate, context.lang)} ${hourLabel(b.startHour, context.lang)}', style: context.text.bodySmall),
                   ]),
                 ),
-                if (!b.isQuote) Text(context.won(b.paidAmount), style: context.text.titleSmall),
+                if (!b.isQuote) RollingAmount(value: b.paidAmount, format: context.won, style: context.text.titleSmall),
               ]),
-            ),
+            )),
             const Spacer(),
             Row(children: [
               Expanded(child: OutlinedButton(onPressed: () => Navigator.of(context).pop(), child: Text(t.goHome))),

@@ -9,6 +9,192 @@ class TKo extends T {
   TKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get apSocialOr => '또는';
+
+  @override
+  String get apSocialSignIn => '간편 로그인';
+
+  @override
+  String get apLoginKakao => '카카오로 계속하기';
+
+  @override
+  String get apLoginNaver => '네이버로 계속하기';
+
+  @override
+  String get apLoginGoogle => 'Google로 계속하기';
+
+  @override
+  String get apLoginApple => 'Apple로 계속하기';
+
+  @override
+  String get apDevSocialNote => '개발 모드예요. 실제 소셜 계정이 아니라 테스트 계정으로 로그인해요.';
+
+  @override
+  String get apSocialFailed => '간편 로그인에 실패했어요. 다시 시도해 주세요.';
+
+  @override
+  String get apProviderNotConfigured => '이 로그인 수단은 아직 준비 중이에요';
+
+  @override
+  String get apPhoneTaken => '이미 다른 계정에 등록된 번호예요';
+
+  @override
+  String get apPhoneAttachTitle => '휴대폰 번호를 인증해 주세요';
+
+  @override
+  String get apPhoneAttachBody => '예약과 기사 연락에 쓰는 번호예요. 한 번만 인증하면 돼요.';
+
+  @override
+  String get apPayAllTitle => '결제수단 선택';
+
+  @override
+  String get apPaySavedTitle => '저장한 결제수단';
+
+  @override
+  String get apPayMoreTitle => '모든 결제수단';
+
+  @override
+  String get apPayBillingHint => '한 번 등록하면 다음부터 한 번에 결제해요';
+
+  @override
+  String get apPayCheckoutHint => '결제창에서 마무리해요';
+
+  @override
+  String get apPayRegistering => '등록하는 중이에요';
+
+  @override
+  String get apPayManageHint => '등록한 결제수단으로 한 번에 결제해요. 간편결제는 여기서 추가할 수 있어요.';
+
+  @override
+  String get apMethodCard => '신용·체크카드';
+
+  @override
+  String get apMethodKakao => '카카오페이';
+
+  @override
+  String get apMethodNaver => '네이버페이';
+
+  @override
+  String get apMethodToss => '토스페이';
+
+  @override
+  String get apMethodPayco => '페이코';
+
+  @override
+  String get apMethodSamsung => '삼성페이';
+
+  @override
+  String get apMethodApple => '애플페이';
+
+  @override
+  String get apMethodTransfer => '계좌이체';
+
+  @override
+  String get apMethodVirtual => '가상계좌';
+
+  @override
+  String get apMethodPhone => '휴대폰 결제';
+
+  @override
+  String get apMethodUnknown => '기타 결제';
+
+  @override
+  String get apVaTitle => '입금 계좌가 준비됐어요';
+
+  @override
+  String get apVaWaiting => '입금 대기 중';
+
+  @override
+  String get apVaBody => '기한 안에 입금하면 예약이 확정돼요. 입금은 자동으로 확인돼요.';
+
+  @override
+  String get apVaBank => '은행';
+
+  @override
+  String get apVaAccount => '계좌번호';
+
+  @override
+  String get apVaHolder => '예금주';
+
+  @override
+  String get apVaAmount => '입금 금액';
+
+  @override
+  String apVaDue(String due) {
+    return '$due까지 입금해 주세요';
+  }
+
+  @override
+  String get apVaCopy => '복사';
+
+  @override
+  String get apVaCopied => '계좌번호를 복사했어요';
+
+  @override
+  String get apVaBannerTitle => '입금 대기 중인 예약이 있어요';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · $due까지';
+  }
+
+  @override
+  String get apVaBannerAction => '계좌 보기';
+
+  @override
+  String get apPgTitle => '결제창';
+
+  @override
+  String get apPgDevNote => '개발 환경 전용 결제 시뮬레이션이에요. 실제 결제는 일어나지 않아요.';
+
+  @override
+  String apPgPay(String amount) {
+    return '$amount 결제하기';
+  }
+
+  @override
+  String get apPgIssue => '계좌 발급받기';
+
+  @override
+  String get apPgCancel => '결제 취소';
+
+  @override
+  String get apErrSlotFullRefunded => '방금 그 시간이 마감돼서 결제가 자동 취소됐어요';
+
+  @override
+  String get apErrCheckoutExpired => '결제 시간이 지났어요. 다시 시도해 주세요.';
+
+  @override
+  String get apIdentityTitle => '본인인증 (PASS)';
+
+  @override
+  String get apIdentityBody => '휴대폰 명의로 본인을 확인해요. 안전한 거래와 정산에 쓰여요.';
+
+  @override
+  String get apIdentityAction => '본인인증하기';
+
+  @override
+  String get apIdentityDone => '본인인증이 완료됐어요';
+
+  @override
+  String get apIdentityVerified => '인증 완료';
+
+  @override
+  String get apIdentityUnverified => '아직 인증하지 않았어요';
+
+  @override
+  String get apIdentityDevTitle => '테스트 본인인증';
+
+  @override
+  String get apIdentityDevBody => '개발 환경에서는 실제 인증 없이 통과해요.';
+
+  @override
+  String get apIdentityDevPass => '통과 처리';
+
+  @override
+  String get apPayManageTitle => '간편결제 등록';
+
+  @override
   String get cTitle => '운영 콘솔';
 
   @override
@@ -1448,6 +1634,21 @@ class TKo extends T {
 
   @override
   String get summaryDate => '방문 일정';
+
+  @override
+  String get themeTitle => '테마';
+
+  @override
+  String get themeDark => '다크';
+
+  @override
+  String get themeLight => '라이트';
+
+  @override
+  String get themeSystem => '시스템 설정';
+
+  @override
+  String get themeTip => '테마 바꾸기';
 
   @override
   String get pTabJobs => '일감';

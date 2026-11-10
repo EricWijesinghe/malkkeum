@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_detail.dart';
+import 'pending_deposits_banner.dart';
 
 /// Month calendar with service-colored dots + the day's bookings; or a plain list.
 class BookingsTab extends StatefulWidget {
@@ -44,16 +45,21 @@ class _BookingsTabState extends State<BookingsTab> {
           ),
         ],
       ),
-      body: AsyncView<List<Booking>>(
-        key: _view,
-        load: _load,
-        builder: (context, all, reload) {
-          if (all.isEmpty) {
-            return EmptyState(icon: Icons.event_note_rounded, title: t.bookingsEmpty, body: t.bookingsEmptyBody, hue: ServiceHues.studio);
-          }
-          return RefreshIndicator(onRefresh: reload, child: _calendar ? _calendarView(all) : _listView(all));
-        },
-      ),
+      body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        const PendingDepositsBanner(),
+        Expanded(
+          child: AsyncView<List<Booking>>(
+            key: _view,
+            load: _load,
+            builder: (context, all, reload) {
+              if (all.isEmpty) {
+                return EmptyState(icon: Icons.event_note_rounded, title: t.bookingsEmpty, body: t.bookingsEmptyBody, hue: ServiceHues.studio);
+              }
+              return RefreshIndicator(onRefresh: reload, child: _calendar ? _calendarView(all) : _listView(all));
+            },
+          ),
+        ),
+      ]),
     );
   }
 

@@ -24,6 +24,8 @@ pub enum ApiError {
     RateLimited,
     #[error("payment failed: {0}")]
     PaymentFailed(String),
+    #[error("unavailable: {0}")]
+    Unavailable(&'static str),
     #[error(transparent)]
     Domain(#[from] DomainError),
     #[error(transparent)]
@@ -44,6 +46,7 @@ impl ApiError {
             Self::BadRequest(c) => (StatusCode::BAD_REQUEST, c),
             Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate_limited"),
             Self::PaymentFailed(_) => (StatusCode::PAYMENT_REQUIRED, "payment_failed"),
+            Self::Unavailable(c) => (StatusCode::SERVICE_UNAVAILABLE, c),
             Self::Domain(e @ (DomainError::SlotFull | DomainError::CouponUsed | DomainError::InvalidTransition | DomainError::CancellationWindowClosed)) => {
                 (StatusCode::CONFLICT, e.code())
             }

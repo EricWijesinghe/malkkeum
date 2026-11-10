@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,8 +56,29 @@ class _PhoneScreenState extends State<_PhoneScreen> {
   final _code = TextEditingController();
   bool _sent = false;
   bool _busy = false;
+  String? _busyProvider;
 
   String get _digits => _phone.text.replaceAll(RegExp(r'\D'), '');
+
+  /// Social sign-in for partners. A new account without a verified phone verifies one first.
+  Future<void> _social(SocialSignIn provider) async {
+    final deps = Deps.read(context);
+    final nav = Navigator.of(context);
+    setState(() => _busyProvider = provider.provider);
+    try {
+      final result = await signInWithSocial(context: context, api: deps.session.api, session: deps.session, provider: provider, audience: 'partner');
+      if (result == null || !mounted) return;
+      if (result.needsPhone) {
+        await nav.push<bool>(MaterialPageRoute<bool>(builder: (_) => PhoneAttachScreen(api: deps.session.api, audience: 'partner')));
+        if (!mounted) return;
+      }
+      nav.popUntil((route) => route.isFirst);
+    } catch (e) {
+      if (mounted) showToast(context, context.t.payError(e));
+    } finally {
+      if (mounted) setState(() => _busyProvider = null);
+    }
+  }
 
   Future<void> _run(Future<void> Function() fn) async {
     setState(() => _busy = true);
@@ -119,6 +141,15 @@ class _PhoneScreenState extends State<_PhoneScreen> {
             onChanged: (v) => v.length == 6 ? _verify() : setState(() {}),
           ),
           TextButton(onPressed: _busy ? null : _send, child: Text(t.loginResend)),
+        ],
+        if (!_sent) ...[
+          const SizedBox(height: Space.xl),
+          SocialSignInRow(
+            providers: defaultSocialSignIns(Deps.read(context).session.api.baseUrl),
+            busyProvider: _busyProvider,
+            devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
+            onSelected: _social,
+          ),
         ],
       ]),
       bottomNavigationBar: BottomActionBar(

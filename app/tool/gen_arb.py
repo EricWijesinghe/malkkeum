@@ -13,6 +13,8 @@ import re
 import sys
 
 LANGS = ["ko", "en", "ja", "zh", "vi"]
+# Extra languages live in lang_<code>.py as T = {key: text}; they must cover every key.
+EXTRA = sorted(p.stem[5:] for p in pathlib.Path(__file__).resolve().parent.glob("lang_*.py"))
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE.parent / "packages" / "core" / "lib" / "l10n"
 PLACEHOLDER = re.compile(r"\{(\w+)\}")
@@ -44,7 +46,22 @@ def main():
     if errors:
         sys.exit("\n".join(errors))
 
+    extras = {}
+    for code in EXTRA:
+        spec = importlib.util.spec_from_file_location(f"lang_{code}", HERE / f"lang_{code}.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        missing = [k for k in table if not mod.T.get(k)]
+        unknown = [k for k in mod.T if k not in table]
+        bad = [k for k in table if k in mod.T and set(PLACEHOLDER.findall(mod.T[k])) != set(PLACEHOLDER.findall(table[k][0]))]
+        if missing or unknown or bad:
+            sys.exit(f"lang_{code}: missing {missing[:10]}{'...' if len(missing) > 10 else ''} unknown {unknown[:5]} placeholder-mismatch {bad[:10]}")
+        extras[code] = mod.T
+
     OUT.mkdir(parents=True, exist_ok=True)
+    for code, texts in extras.items():
+        arb = {"@@locale": code, **{k: texts[k] for k in table}}
+        (OUT / f"app_{code}.arb").write_text(json.dumps(arb, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     for i, lang in enumerate(LANGS):
         arb = {"@@locale": lang}
         for key, row in table.items():
@@ -53,7 +70,7 @@ def main():
             if lang == "ko" and names:
                 arb[f"@{key}"] = {"placeholders": {n: {"type": "String"} for n in dict.fromkeys(names)}}
         (OUT / f"app_{lang}.arb").write_text(json.dumps(arb, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"wrote {len(LANGS)} ARB files, {len(table)} keys each")
+    print(f"wrote {len(LANGS) + len(extras)} ARB files, {len(table)} keys each")
 
 
 if __name__ == "__main__":

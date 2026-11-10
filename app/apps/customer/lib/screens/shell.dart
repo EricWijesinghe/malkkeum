@@ -37,51 +37,83 @@ class _ShellState extends State<Shell> {
   Widget build(BuildContext context) {
     final t = context.t;
     final unread = context.app.unreadChats;
-    Widget badge(IconData icon) => Badge(isLabelVisible: unread > 0, label: Text('$unread'), child: Icon(icon));
+    Widget badge(IconData icon) => Badge(
+      isLabelVisible: unread > 0,
+      label: Text('$unread'),
+      child: Icon(icon),
+    );
     final destinations = [
       (Icons.home_outlined, Icons.home_rounded, t.tabHome),
-      (Icons.calendar_month_outlined, Icons.calendar_month_rounded, t.tabBookings),
+      (
+        Icons.calendar_month_outlined,
+        Icons.calendar_month_rounded,
+        t.tabBookings,
+      ),
       (Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, t.tabChat),
       (Icons.menu_rounded, Icons.menu_rounded, t.tabMore),
     ];
-    final pages = [HomeTab(onOpenTab: go), const BookingsTab(), const ChatListTab(), const MoreTab()];
+    final pages = [
+      HomeTab(onOpenTab: go),
+      const BookingsTab(),
+      const ChatListTab(),
+      const MoreTab(),
+    ];
     final body = IndexedStack(index: _tab, children: pages);
 
     if (context.isWide) {
       return Scaffold(
-        body: Row(children: [
-          NavigationRail(
-            selectedIndex: _tab,
-            onDestinationSelected: go,
-            labelType: NavigationRailLabelType.all,
-            backgroundColor: context.colors.surface,
-            destinations: [
-              for (var i = 0; i < destinations.length; i++)
-                NavigationRailDestination(
-                  icon: i == 2 ? badge(destinations[i].$1) : Icon(destinations[i].$1),
-                  selectedIcon: i == 2 ? badge(destinations[i].$2) : Icon(destinations[i].$2),
-                  label: Text(destinations[i].$3),
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: _tab,
+              onDestinationSelected: go,
+              labelType: NavigationRailLabelType.all,
+              backgroundColor: context.colors.surface,
+              destinations: [
+                for (var i = 0; i < destinations.length; i++)
+                  NavigationRailDestination(
+                    icon: i == 2
+                        ? badge(destinations[i].$1)
+                        : Icon(destinations[i].$1),
+                    selectedIcon: i == 2
+                        ? badge(destinations[i].$2)
+                        : Icon(destinations[i].$2),
+                    label: Text(destinations[i].$3),
+                  ),
+              ],
+            ),
+            const VerticalDivider(width: 1),
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: body,
                 ),
-            ],
-          ),
-          const VerticalDivider(width: 1),
-          Expanded(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 720), child: body))),
-        ]),
+              ),
+            ),
+          ],
+        ),
       );
     }
     return Scaffold(
       body: body,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: go,
-        destinations: [
-          for (var i = 0; i < destinations.length; i++)
-            NavigationDestination(
-              icon: i == 2 ? badge(destinations[i].$1) : Icon(destinations[i].$1),
-              selectedIcon: i == 2 ? badge(destinations[i].$2) : Icon(destinations[i].$2),
-              label: destinations[i].$3,
-            ),
-        ],
+      bottomNavigationBar: GlassBar(
+        child: NavigationBar(
+          selectedIndex: _tab,
+          onDestinationSelected: go,
+          destinations: [
+            for (var i = 0; i < destinations.length; i++)
+              NavigationDestination(
+                icon: i == 2
+                    ? badge(destinations[i].$1)
+                    : Icon(destinations[i].$1),
+                selectedIcon: i == 2
+                    ? badge(destinations[i].$2)
+                    : Icon(destinations[i].$2),
+                label: destinations[i].$3,
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 use crate::{
     auth::{self, Role},
     error::{ApiError, ApiResult},
+    providers::social::{self, SocialUser},
     state::AppState,
 };
 use axum::{Json, Router, extract::State, routing::post};
@@ -24,6 +25,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/refresh", post(refresh))
         .route("/auth/logout", post(logout))
         .route("/auth/staff/login", post(staff_login))
+        .route("/auth/social", post(social_login))
 }
 
 #[derive(Deserialize, Clone, Copy, PartialEq, Eq)]
@@ -112,31 +114,7 @@ async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool) -> ApiRe
 
 async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -> ApiResult<Json<Tokens>> {
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
-    // Count the attempt *before* comparing, atomically: parallel guesses can't share one budget.
-    let row: Option<String> = sqlx::query_scalar(
-        "UPDATE otp_codes SET attempts = attempts + 1
-         WHERE id = (SELECT id FROM otp_codes WHERE phone = $1 AND expires_at > now() ORDER BY created_at DESC LIMIT 1)
-           AND attempts < $2
-         RETURNING code_hash",
-    )
-    .bind(&phone)
-    .bind(OTP_MAX_ATTEMPTS)
-    .fetch_optional(&s.db)
-    .await?;
-    let stored = row.ok_or(ApiError::BadRequest("otp_expired"))?;
-    let given = auth::otp_hash(&s.config.jwt_secret, &phone, req.code.trim());
-    if !bool::from(given.as_bytes().ct_eq(stored.as_bytes())) {
-        return Err(ApiError::BadRequest("otp_invalid"));
-    }
-    // Single use: only the request that deletes the code proceeds.
-    let consumed = sqlx::query("DELETE FROM otp_codes WHERE phone = $1 AND code_hash = $2")
-        .bind(&phone)
-        .bind(&stored)
-        .execute(&s.db)
-        .await?;
-    if consumed.rows_affected() == 0 {
-        return Err(ApiError::BadRequest("otp_expired"));
-    }
+    consume_otp(&s, &phone, &req.code).await?;
 
     let (table, role) = match req.audience {
         Audience::Customer => ("users", Role::Customer),
@@ -161,6 +139,44 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
             .await?;
     }
     Ok(Json(issue_tokens(&s, id, role, is_new).await?))
+}
+
+/// A phone number proven by a login code, used for sign-in and for binding a phone to an account.
+#[derive(Deserialize)]
+pub struct PhoneBind {
+    pub phone: String,
+    pub code: String,
+}
+
+/// Checks a login code and burns it: attempts are counted before comparing, and a code works once.
+pub async fn consume_otp(s: &AppState, phone: &str, code: &str) -> ApiResult<()> {
+    // Count the attempt *before* comparing, atomically: parallel guesses can't share one budget.
+    let row: Option<String> = sqlx::query_scalar(
+        "UPDATE otp_codes SET attempts = attempts + 1
+         WHERE id = (SELECT id FROM otp_codes WHERE phone = $1 AND expires_at > now() ORDER BY created_at DESC LIMIT 1)
+           AND attempts < $2
+         RETURNING code_hash",
+    )
+    .bind(phone)
+    .bind(OTP_MAX_ATTEMPTS)
+    .fetch_optional(&s.db)
+    .await?;
+    let stored = row.ok_or(ApiError::BadRequest("otp_expired"))?;
+    let given = auth::otp_hash(&s.config.jwt_secret, phone, code.trim());
+    if !bool::from(given.as_bytes().ct_eq(stored.as_bytes())) {
+        return Err(ApiError::BadRequest("otp_invalid"));
+    }
+    // Single use: only the request that deletes the code proceeds.
+    let consumed = sqlx::query("DELETE FROM otp_codes WHERE phone = $1 AND code_hash = $2")
+        .bind(phone)
+        .bind(&stored)
+        .execute(&s.db)
+        .await?;
+    if consumed.rows_affected() == 0 {
+        return Err(ApiError::BadRequest("otp_expired"));
+    }
+
+    Ok(())
 }
 
 #[derive(Deserialize)]
@@ -245,4 +261,111 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
         .await?;
     let role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
     Ok(Json(issue_tokens(&s, id, role, false).await?))
+}
+
+/// Maps a unique violation to a 409 with a specific code; any other database error stays internal.
+pub fn conflict_on_unique(e: sqlx::Error, code: &'static str) -> ApiError {
+    if matches!(&e, sqlx::Error::Database(d) if d.is_unique_violation()) {
+        ApiError::Conflict(code)
+    } else {
+        ApiError::Db(e)
+    }
+}
+
+const PROVIDERS: [&str; 4] = ["kakao", "naver", "google", "apple"];
+const MAX_SOCIAL_TOKEN: usize = 4096;
+const IDENTITY_SQL: &str = "SELECT subject_id FROM user_identities WHERE provider = $1 AND provider_user_id = $2 AND role = $3";
+
+#[derive(Deserialize)]
+struct SocialLogin {
+    provider: String,
+    token: String,
+    audience: Audience,
+}
+
+#[derive(Serialize)]
+pub struct SocialTokens {
+    #[serde(flatten)]
+    tokens: Tokens,
+    /// True until the account has a verified phone; the app asks for one before the main flow.
+    needs_phone: bool,
+}
+
+async fn social_login(State(s): State<AppState>, Json(req): Json<SocialLogin>) -> ApiResult<Json<SocialTokens>> {
+    if !PROVIDERS.contains(&req.provider.as_str()) {
+        return Err(ApiError::BadRequest("invalid_provider"));
+    }
+    if req.token.is_empty() || req.token.len() > MAX_SOCIAL_TOKEN {
+        return Err(ApiError::BadRequest("invalid_token"));
+    }
+    let social = social::verify(&s.providers, &req.provider, &req.token).await?;
+    let role = match req.audience {
+        Audience::Customer => Role::Customer,
+        Audience::Partner => Role::Pro,
+    };
+    let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role).await?;
+    ensure_active(&s, id, role).await?;
+    let needs_phone = phone_missing(&s, id, role).await?;
+    let tokens = issue_tokens(&s, id, role, is_new).await?;
+    Ok(Json(SocialTokens { tokens, needs_phone }))
+}
+
+async fn find_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role) -> ApiResult<Option<Uuid>> {
+    Ok(sqlx::query_scalar(IDENTITY_SQL)
+        .bind(provider)
+        .bind(&social.provider_user_id)
+        .bind(role.as_str())
+        .fetch_optional(&s.db)
+        .await?)
+}
+
+/// Finds the account behind a provider identity, or creates it with its identity row in one transaction.
+async fn find_or_create_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role) -> ApiResult<(Uuid, bool)> {
+    if let Some(id) = find_identity(s, provider, social, role).await? {
+        return Ok((id, false));
+    }
+    let mut tx = s.db.begin().await?;
+    let table = if role == Role::Pro { "pros" } else { "users" };
+    let id: Uuid = sqlx::query_scalar(&format!("INSERT INTO {table} DEFAULT VALUES RETURNING id"))
+        .fetch_one(&mut *tx)
+        .await?;
+    let linked =
+        sqlx::query("INSERT INTO user_identities (provider, provider_user_id, role, subject_id, email) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING")
+            .bind(provider)
+            .bind(&social.provider_user_id)
+            .bind(role.as_str())
+            .bind(id)
+            .bind(&social.email)
+            .execute(&mut *tx)
+            .await?;
+    if linked.rows_affected() == 0 {
+        // A parallel first sign-in with the same identity won: use its account.
+        tx.rollback().await?;
+        let existing = find_identity(s, provider, social, role)
+            .await?
+            .ok_or(ApiError::Internal("identity vanished".into()))?;
+        return Ok((existing, false));
+    }
+    if role == Role::Pro {
+        sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING")
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
+        // Phone is unknown until verified; the owner row takes it when /partner/me/phone succeeds.
+        sqlx::query("INSERT INTO team_members (pro_id, name, phone, role, invite_status) VALUES ($1, '', '', 'owner', 'active')")
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
+    }
+    tx.commit().await?;
+    Ok((id, true))
+}
+
+async fn phone_missing(s: &AppState, id: Uuid, role: Role) -> ApiResult<bool> {
+    let table = if role == Role::Pro { "pros" } else { "users" };
+    let missing: bool = sqlx::query_scalar(&format!("SELECT phone IS NULL FROM {table} WHERE id = $1"))
+        .bind(id)
+        .fetch_one(&s.db)
+        .await?;
+    Ok(missing)
 }

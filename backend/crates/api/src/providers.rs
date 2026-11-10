@@ -1,8 +1,15 @@
 //! Adapters for paid external services. Dev mode uses in-process fakes so the
 //! whole system runs offline; production adapters plug in behind the same API.
 
+pub mod portone;
+pub mod social;
+
+use crate::{config::Config, error::ApiError};
 use rand::{RngCore, rngs::OsRng};
 use serde_json::Value;
+use std::time::Duration;
+
+const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProviderError {
@@ -10,14 +17,46 @@ pub enum ProviderError {
     Declined(String),
     #[error("provider not configured: {0}")]
     NotConfigured(&'static str),
+    #[error("provider request failed: {0}")]
+    Upstream(String),
+    #[error("not found")]
+    NotFound,
+}
+
+impl From<ProviderError> for ApiError {
+    fn from(e: ProviderError) -> Self {
+        match e {
+            ProviderError::Declined(m) => ApiError::PaymentFailed(m),
+            ProviderError::NotFound => ApiError::NotFound,
+            ProviderError::NotConfigured(_) => ApiError::Unavailable("provider_not_configured"),
+            ProviderError::Upstream(_) => ApiError::Unavailable("provider_unreachable"),
+        }
+    }
 }
 
 /// Billing key that the fake gateway always declines, for testing failure UX.
 pub const FAKE_DECLINE_KEY: &str = "fake_decline";
 
-#[derive(Debug, Clone)]
+/// What the payment provider says about one payment (amount in won).
+pub struct PaymentInfo {
+    pub status: String,
+    pub total: i64,
+    pub currency: String,
+    /// Provider's method object; for virtual accounts it carries the account details.
+    pub method: Value,
+}
+
+/// Identity verification result (PASS / 본인인증).
+pub struct IdentityInfo {
+    pub status: String,
+    pub ci: Option<String>,
+    pub name: Option<String>,
+}
+
+#[derive(Clone)]
 pub struct Providers {
-    dev: bool,
+    cfg: Config,
+    http: reqwest::Client,
 }
 
 fn random_id(prefix: &str) -> String {
@@ -27,13 +66,26 @@ fn random_id(prefix: &str) -> String {
 }
 
 impl Providers {
-    pub fn new(dev: bool) -> Self {
-        Self { dev }
+    pub fn new(cfg: Config) -> Result<Self, reqwest::Error> {
+        let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
+        Ok(Self { cfg, http })
+    }
+
+    pub fn cfg(&self) -> &Config {
+        &self.cfg
+    }
+
+    pub fn http(&self) -> &reqwest::Client {
+        &self.http
+    }
+
+    fn dev(&self) -> bool {
+        self.cfg.dev_mode
     }
 
     fn require_dev(&self, what: &'static str) -> Result<(), ProviderError> {
-        // shortcut: only fakes exist yet; add Toss/PortOne, NHN SMS, FCM adapters before launch.
-        if self.dev { Ok(()) } else { Err(ProviderError::NotConfigured(what)) }
+        // shortcut: only the legacy 'pg' gateway has no real adapter; PortOne is wired in portone.rs.
+        if self.dev() { Ok(()) } else { Err(ProviderError::NotConfigured(what)) }
     }
 
     pub async fn send_sms(&self, phone: &str, text: &str) -> Result<(), ProviderError> {
@@ -60,10 +112,32 @@ impl Providers {
         Ok(random_id("tx"))
     }
 
-    pub async fn refund(&self, tx_id: &str, amount: i64) -> Result<(), ProviderError> {
-        self.require_dev("payments")?;
-        tracing::info!(target: "fake_pg", tx_id, amount, "refunded");
-        Ok(())
+    /// Refunds (or cancels) a payment at the gateway that took it.
+    pub async fn refund(&self, provider: &str, tx_id: &str, amount: i64) -> Result<(), ProviderError> {
+        match provider {
+            "portone" if !self.dev() => portone::cancel(self, tx_id, amount).await,
+            _ => {
+                self.require_dev("payments")?;
+                tracing::info!(target: "fake_pg", provider, tx_id, amount, "refunded");
+                Ok(())
+            }
+        }
+    }
+
+    /// Fetches a PortOne payment. Dev mode fakes only `dev:` ids, priced at `dev_total`.
+    pub async fn payment(&self, payment_id: &str, dev_total: i64) -> Result<PaymentInfo, ProviderError> {
+        if !self.dev() {
+            return portone::payment(self, payment_id).await;
+        }
+        portone::dev_payment(payment_id, dev_total).ok_or(ProviderError::NotFound)
+    }
+
+    /// Verifies a PortOne identity verification (PASS / 본인인증).
+    pub async fn identity(&self, verification_id: &str) -> Result<IdentityInfo, ProviderError> {
+        if !self.dev() {
+            return portone::identity(self, verification_id).await;
+        }
+        portone::dev_identity(verification_id).ok_or(ProviderError::NotFound)
     }
 
     pub async fn push(&self, tokens: &[String], title: &str, body: &str, data: &Value) -> Result<(), ProviderError> {

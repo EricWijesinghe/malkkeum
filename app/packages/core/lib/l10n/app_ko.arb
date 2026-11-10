@@ -1,5 +1,89 @@
 {
  "@@locale": "ko",
+ "apSocialOr": "또는",
+ "apSocialSignIn": "간편 로그인",
+ "apLoginKakao": "카카오로 계속하기",
+ "apLoginNaver": "네이버로 계속하기",
+ "apLoginGoogle": "Google로 계속하기",
+ "apLoginApple": "Apple로 계속하기",
+ "apDevSocialNote": "개발 모드예요. 실제 소셜 계정이 아니라 테스트 계정으로 로그인해요.",
+ "apSocialFailed": "간편 로그인에 실패했어요. 다시 시도해 주세요.",
+ "apProviderNotConfigured": "이 로그인 수단은 아직 준비 중이에요",
+ "apPhoneTaken": "이미 다른 계정에 등록된 번호예요",
+ "apPhoneAttachTitle": "휴대폰 번호를 인증해 주세요",
+ "apPhoneAttachBody": "예약과 기사 연락에 쓰는 번호예요. 한 번만 인증하면 돼요.",
+ "apPayAllTitle": "결제수단 선택",
+ "apPaySavedTitle": "저장한 결제수단",
+ "apPayMoreTitle": "모든 결제수단",
+ "apPayBillingHint": "한 번 등록하면 다음부터 한 번에 결제해요",
+ "apPayCheckoutHint": "결제창에서 마무리해요",
+ "apPayRegistering": "등록하는 중이에요",
+ "apPayManageHint": "등록한 결제수단으로 한 번에 결제해요. 간편결제는 여기서 추가할 수 있어요.",
+ "apMethodCard": "신용·체크카드",
+ "apMethodKakao": "카카오페이",
+ "apMethodNaver": "네이버페이",
+ "apMethodToss": "토스페이",
+ "apMethodPayco": "페이코",
+ "apMethodSamsung": "삼성페이",
+ "apMethodApple": "애플페이",
+ "apMethodTransfer": "계좌이체",
+ "apMethodVirtual": "가상계좌",
+ "apMethodPhone": "휴대폰 결제",
+ "apMethodUnknown": "기타 결제",
+ "apVaTitle": "입금 계좌가 준비됐어요",
+ "apVaWaiting": "입금 대기 중",
+ "apVaBody": "기한 안에 입금하면 예약이 확정돼요. 입금은 자동으로 확인돼요.",
+ "apVaBank": "은행",
+ "apVaAccount": "계좌번호",
+ "apVaHolder": "예금주",
+ "apVaAmount": "입금 금액",
+ "apVaDue": "{due}까지 입금해 주세요",
+ "@apVaDue": {
+  "placeholders": {
+   "due": {
+    "type": "String"
+   }
+  }
+ },
+ "apVaCopy": "복사",
+ "apVaCopied": "계좌번호를 복사했어요",
+ "apVaBannerTitle": "입금 대기 중인 예약이 있어요",
+ "apVaBannerBody": "{amount} · {due}까지",
+ "@apVaBannerBody": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   },
+   "due": {
+    "type": "String"
+   }
+  }
+ },
+ "apVaBannerAction": "계좌 보기",
+ "apPgTitle": "결제창",
+ "apPgDevNote": "개발 환경 전용 결제 시뮬레이션이에요. 실제 결제는 일어나지 않아요.",
+ "apPgPay": "{amount} 결제하기",
+ "@apPgPay": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "apPgIssue": "계좌 발급받기",
+ "apPgCancel": "결제 취소",
+ "apErrSlotFullRefunded": "방금 그 시간이 마감돼서 결제가 자동 취소됐어요",
+ "apErrCheckoutExpired": "결제 시간이 지났어요. 다시 시도해 주세요.",
+ "apIdentityTitle": "본인인증 (PASS)",
+ "apIdentityBody": "휴대폰 명의로 본인을 확인해요. 안전한 거래와 정산에 쓰여요.",
+ "apIdentityAction": "본인인증하기",
+ "apIdentityDone": "본인인증이 완료됐어요",
+ "apIdentityVerified": "인증 완료",
+ "apIdentityUnverified": "아직 인증하지 않았어요",
+ "apIdentityDevTitle": "테스트 본인인증",
+ "apIdentityDevBody": "개발 환경에서는 실제 인증 없이 통과해요.",
+ "apIdentityDevPass": "통과 처리",
+ "apPayManageTitle": "간편결제 등록",
  "cTitle": "운영 콘솔",
  "cEmail": "이메일",
  "cPassword": "비밀번호",
@@ -681,6 +765,11 @@
  "summaryType": "청소 종류",
  "summaryHome": "집 정보",
  "summaryDate": "방문 일정",
+ "themeTitle": "테마",
+ "themeDark": "다크",
+ "themeLight": "라이트",
+ "themeSystem": "시스템 설정",
+ "themeTip": "테마 바꾸기",
  "pTabJobs": "일감",
  "pTabQuotes": "내 견적",
  "pTabSchedule": "일정",

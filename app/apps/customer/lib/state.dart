@@ -22,10 +22,18 @@ class AppState extends ChangeNotifier {
   /// Bumped on any booking change so lists can refetch.
   int bookingsVersion = 0;
 
-  Service? service(String code) => services.where((s) => s.code == code).firstOrNull;
+  Service? service(String code) =>
+      services.where((s) => s.code == code).firstOrNull;
 
   Future<void> loadAll() async {
-    await Future.wait([loadProfile(), loadServices(), loadAddresses(), loadCoupons(), loadMethods(), loadUnread()]);
+    await Future.wait([
+      loadProfile(),
+      loadServices(),
+      loadAddresses(),
+      loadCoupons(),
+      loadMethods(),
+      loadUnread(),
+    ]);
   }
 
   Future<void> loadProfile() async {
@@ -37,33 +45,45 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadServices() async {
-    services = (await api.get('/services') as List).map((e) => Service.fromJson(e as Json)).toList();
+    services = (await api.get('/services') as List)
+        .map((e) => Service.fromJson(e as Json))
+        .toList();
     notifyListeners();
   }
 
   Future<void> loadAddresses() async {
-    addresses = (await api.get('/me/addresses') as List).map((e) => Address.fromJson(e as Json)).toList();
+    addresses = (await api.get('/me/addresses') as List)
+        .map((e) => Address.fromJson(e as Json))
+        .toList();
     notifyListeners();
   }
 
   Future<void> loadCoupons() async {
-    coupons = (await api.get('/me/coupons') as List).map((e) => Coupon.fromJson(e as Json)).toList();
+    coupons = (await api.get('/me/coupons') as List)
+        .map((e) => Coupon.fromJson(e as Json))
+        .toList();
     notifyListeners();
   }
 
   Future<void> loadMethods() async {
-    methods = (await api.get('/me/payment-methods') as List).map((e) => PaymentMethod.fromJson(e as Json)).toList();
+    methods = (await api.get('/me/payment-methods') as List)
+        .map((e) => PaymentMethod.fromJson(e as Json))
+        .toList();
     notifyListeners();
   }
 
   Future<void> loadUnread() async {
-    final threads = (await api.get('/chat/threads') as List).map((e) => ChatThread.fromJson(e as Json));
+    final threads = (await api.get('/chat/threads') as List).map(
+      (e) => ChatThread.fromJson(e as Json),
+    );
     unreadChats = threads.fold(0, (sum, t) => sum + t.unreadMember);
     notifyListeners();
   }
 
   Future<Address> saveAddress(Json input, {String? id}) async {
-    final r = id == null ? await api.post('/me/addresses', input) : await api.put('/me/addresses/$id', input);
+    final r = id == null
+        ? await api.post('/me/addresses', input)
+        : await api.put('/me/addresses/$id', input);
     await loadAddresses();
     return Address.fromJson(r as Json);
   }
@@ -75,7 +95,11 @@ class AppState extends ChangeNotifier {
 
   Future<PaymentMethod> addMethod(String provider, String displayName) async {
     // shortcut: auth_key comes from the gateway's card-registration SDK once the PG contract exists.
-    final r = await api.post('/me/payment-methods', {'provider': provider, 'auth_key': 'dev-${DateTime.now().millisecondsSinceEpoch}', 'display_name': displayName});
+    final r = await api.post('/me/payment-methods', {
+      'provider': provider,
+      'auth_key': 'dev-${DateTime.now().millisecondsSinceEpoch}',
+      'display_name': displayName,
+    });
     await loadMethods();
     return PaymentMethod.fromJson(r as Json);
   }
@@ -94,7 +118,10 @@ class AppState extends ChangeNotifier {
     switch (e['type']) {
       case 'chat.message' || 'resync':
         loadUnread().ignore();
-      case 'booking.status' || 'booking.cancelled' || 'booking.completed' || 'booking.reschedule_confirmed':
+      case 'booking.status' ||
+          'booking.cancelled' ||
+          'booking.completed' ||
+          'booking.reschedule_confirmed':
         bookingsChanged();
     }
     if (e['type'] == 'resync') bookingsChanged();
@@ -103,13 +130,23 @@ class AppState extends ChangeNotifier {
 
 /// Gives every screen the app services without a DI package.
 class Deps extends InheritedNotifier<AppState> {
-  const Deps({super.key, required this.app, required this.session, required this.locale, required super.child}) : super(notifier: app);
+  const Deps({
+    super.key,
+    required this.app,
+    required this.session,
+    required this.locale,
+    required this.theme,
+    required super.child,
+  }) : super(notifier: app);
   final AppState app;
   final Session session;
   final LocaleController locale;
+  final ThemeController theme;
 
-  static Deps of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<Deps>()!;
-  static Deps read(BuildContext context) => context.getInheritedWidgetOfExactType<Deps>()!;
+  static Deps of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<Deps>()!;
+  static Deps read(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<Deps>()!;
 }
 
 extension DepsX on BuildContext {
@@ -130,17 +167,22 @@ class BookingDraft {
   String? methodId;
   QuoteAnswers answers = QuoteAnswers();
 
-  int get listPrice => service.type == PricingType.fixed ? service.price! : (unitIndex == null ? 0 : service.units[unitIndex!].price);
-  int get minutes => service.type == PricingType.fixed ? service.minutes! : (unitIndex == null ? 0 : service.units[unitIndex!].minutes);
+  int get listPrice => service.type == PricingType.fixed
+      ? service.price!
+      : (unitIndex == null ? 0 : service.units[unitIndex!].price);
+  int get minutes => service.type == PricingType.fixed
+      ? service.minutes!
+      : (unitIndex == null ? 0 : service.units[unitIndex!].minutes);
 
   Json toJson() => {
-        'service_code': service.code,
-        'unit_index': unitIndex,
-        'address_id': address!.id,
-        'visit_date': '${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}',
-        'start_hour': hour,
-        'coupon_id': couponId,
-        'payment_method_id': methodId,
-        if (service.isQuote) 'answers': answers.toJson(),
-      };
+    'service_code': service.code,
+    'unit_index': unitIndex,
+    'address_id': address!.id,
+    'visit_date':
+        '${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}',
+    'start_hour': hour,
+    'coupon_id': couponId,
+    'payment_method_id': methodId,
+    if (service.isQuote) 'answers': answers.toJson(),
+  };
 }
