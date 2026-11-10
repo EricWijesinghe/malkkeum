@@ -20,6 +20,11 @@ OUT = HERE.parent / "packages" / "core" / "lib" / "l10n"
 PLACEHOLDER = re.compile(r"\{(\w+)\}")
 
 
+# A strings_<area>.py may also carry its extra-language texts as X = {code: {key: text}},
+# so a feature adds one self-contained file instead of editing every lang_<code>.py.
+AREA_EXTRAS = {}
+
+
 def load_tables():
     merged = {}
     for path in sorted(HERE.glob("strings_*.py")):
@@ -30,6 +35,8 @@ def load_tables():
             if key in merged:
                 sys.exit(f"duplicate key {key} in {path.name}")
             merged[key] = row
+        for code, texts in getattr(mod, "X", {}).items():
+            AREA_EXTRAS.setdefault(code, {}).update(texts)
     return merged
 
 
@@ -51,6 +58,7 @@ def main():
         spec = importlib.util.spec_from_file_location(f"lang_{code}", HERE / f"lang_{code}.py")
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
+        mod.T = {**mod.T, **AREA_EXTRAS.get(code, {})}
         missing = [k for k in table if not mod.T.get(k)]
         unknown = [k for k in mod.T if k not in table]
         bad = [k for k in table if k in mod.T and set(PLACEHOLDER.findall(mod.T[k])) != set(PLACEHOLDER.findall(table[k][0]))]
