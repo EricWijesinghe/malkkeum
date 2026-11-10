@@ -335,7 +335,7 @@ Every table in the Malkkeum database with one example row from the demo data
 |---|---|---|
 | `pro_id` | uuid | b42ab2c1-570d-6606-0cb4-cfe2a77b1544 |
 | `bank` | text | 데모은행 |
-| `account_enc` | text | M26i8H5DhjCao8Rlz5jWtH5mZc9QTDQpmjoUbwaaq8CZmYU2U06iO/UpYpM… |
+| `account_enc` | text | •••• (hidden) |
 | `account_last4` | text | 5678 |
 | `holder` | text | 김태현 |
 | `verified_at` | timestamp with time zone | 2026-05-29T09:18:40.845049+09:00 |

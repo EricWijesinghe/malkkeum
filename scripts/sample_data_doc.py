@@ -14,7 +14,7 @@ import sys
 DB = sys.argv[1] if len(sys.argv) > 1 else "cleaning_demo"
 PSQL = os.environ.get("PSQL", "psql")
 OUT = pathlib.Path(__file__).resolve().parent.parent / "docs" / "sample-data.md"
-SECRET_HINTS = ("hash", "secret", "token", "password", "key", "ci_", "billing")
+SECRET_HINTS = ("hash", "secret", "token", "password", "key", "ci_", "billing", "_enc")
 MAX_CELL = 60
 
 # One-line meaning per table (English · Korean) for the owner's brother.
