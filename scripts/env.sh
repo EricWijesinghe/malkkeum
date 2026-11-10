@@ -9,3 +9,4 @@ export npm_config_cache=/f/tools/npm-cache
 export TMP=/f/tools/tmp TEMP=/f/tools/tmp TMPDIR=/f/tools/tmp
 export FLUTTER_SUPPRESS_ANALYTICS=true
 export JAVA_HOME="/c/Program Files/Java/jdk-21.0.12"
+export PLAYWRIGHT_BROWSERS_PATH=F:/tools/ms-playwright

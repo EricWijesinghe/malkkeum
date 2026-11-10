@@ -50,7 +50,7 @@ body{font-family:${STACK};background:linear-gradient(160deg,${colors.a} 0%,${col
 .phone img{display:block;width:100%;height:auto;border-radius:${Math.round(radius * 0.72)}px}
 </style></head><body><div class="glow"></div>
 <div class="head"><div>${lines[0]}</div><div>${lines[1]}</div></div>
-<div class="phone"><img src="${imgUrl}" style="aspect-ratio:${imgRatio}"></div>
+<div class="phone"><img src="${imgUrl}" style="aspect-ratio:${imgRatio.w} / ${imgRatio.h}"></div>
 </body></html>`;
 }
 
@@ -65,7 +65,7 @@ body{font-family:${STACK};background:linear-gradient(120deg,${colors.a},${colors
 .txt{position:absolute;left:64px;top:0;bottom:0;width:520px;display:flex;flex-direction:column;justify-content:center}
 .title{font-size:104px;font-weight:800;letter-spacing:-.03em;line-height:1}
 .tag{font-size:36px;font-weight:600;margin-top:24px;opacity:.95;line-height:1.3}
-.phone{position:absolute;right:90px;top:50px;height:400px;width:${Math.round(400 * imgRatio)}px;padding:12px;background:#0B1022;border-radius:44px;box-shadow:0 30px 60px rgba(6,10,30,.45)}
+.phone{position:absolute;right:90px;top:50px;height:400px;width:${Math.round((400 * imgRatio.w) / imgRatio.h)}px;padding:12px;background:#0B1022;border-radius:44px;box-shadow:0 30px 60px rgba(6,10,30,.45)}
 .phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;border-radius:34px}
 </style></head><body><div class="glow"></div>
 <div class="txt"><div class="title">${title}</div><div class="tag">${tagline}</div></div>
@@ -82,8 +82,9 @@ function writeHtml(name, html) {
 
 function imageRatio(file) {
   // PNG IHDR: width at byte 16, height at byte 20.
-  const buf = fs.readFileSync(file, { start: 16, end: 23 });
-  return `${buf.readUInt32BE(0)} / ${buf.readUInt32BE(4)}`;
+  // readFileSync has no start/end options, so read the header bytes from the whole buffer.
+  const buf = fs.readFileSync(file);
+  return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
 }
 
 function listDirs(p) {
