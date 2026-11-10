@@ -236,6 +236,50 @@ final guides = <String, Guide>{
     ],
     fields: const {'client_ids': FieldGuide(Tr('번들 ID 목록', 'Bundle IDs'))},
   ),
+  'ai': Guide(
+    title: (t) => t.aiLabel,
+    site: 'https://console.anthropic.com',
+    steps: const [
+      Tr(
+        'console.anthropic.com 에 가입하고 로그인해요. 결제 수단을 등록해야 키를 쓸 수 있어요.',
+        'Sign up and log in at console.anthropic.com. A payment method is required before the key works.',
+      ),
+      Tr(
+        '왼쪽 메뉴의 [API keys] 를 열고 [Create Key] 를 눌러 새 키를 만들어요.',
+        'Open API keys in the left menu and press Create Key.',
+      ),
+      Tr(
+        '만든 키(sk-ant- 로 시작)를 복사해 아래 API 키 칸에 붙여넣어요. 키는 한 번만 보여요.',
+        'Copy the key (it starts with sk-ant-) and paste it in the API key box below. It is shown only once.',
+      ),
+      Tr(
+        '[Settings] → [Limits] 에서 월 사용 한도(Monthly spend limit)를 꼭 정해 두세요. AI가 답변할 때마다 요금이 나와요.',
+        'In Settings → Limits, set a monthly spend limit. Every answer the AI gives costs money.',
+      ),
+      Tr(
+        '운영 방식을 골라요. offline 은 상담원이 없을 때만, always_first 는 항상 AI가 먼저 답변해요. 비워두면 offline 이에요.',
+        'Choose a mode: offline answers only when staff are away, always_first answers first every time. Empty means offline.',
+      ),
+      Tr(
+        '저장한 뒤 [연결 테스트] 를 눌러 초록색이 나오면 끝! 테스트는 토큰을 쓰지 않아요.',
+        'Save, then press Test connection. Green means done! The test spends no tokens.',
+      ),
+    ],
+    fields: const {
+      'api_key': FieldGuide(
+        Tr('API 키', 'API key'),
+        hint: Tr('sk-ant- 로 시작해요', 'Starts with sk-ant-'),
+      ),
+      'model': FieldGuide(
+        Tr('모델', 'Model'),
+        hint: Tr('비워두면 claude-opus-5-5', 'Leave empty for claude-opus-5-5'),
+      ),
+      'mode': FieldGuide(
+        Tr('운영 방식', 'Mode'),
+        hint: Tr('offline 또는 always_first', 'offline or always_first'),
+      ),
+    },
+  ),
 };
 
 /// Plain-language message for a setup error or test result code from the server.

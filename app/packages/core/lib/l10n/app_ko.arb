@@ -1,5 +1,22 @@
 {
  "@@locale": "ko",
+ "aiLabel": "AI 상담원",
+ "aiBadge": "AI",
+ "aiCardHint": "고객 채팅에 자동으로 답변해요. 메시지마다 API 요금이 발생해요.",
+ "aiModeOffline": "상담원이 없을 때만 답변",
+ "aiModeAlways": "항상 AI가 먼저 답변",
+ "aiPause": "AI 일시중지",
+ "aiResume": "AI 재개",
+ "aiPausedNote": "AI가 이 대화에 답변하지 않아요",
+ "aiUsageMonth": "이번 달 AI 호출 {count}회",
+ "@aiUsageMonth": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "aiNotConfigured": "AI 상담원이 꺼져 있어요",
  "apSocialOr": "또는",
  "apSocialSignIn": "간편 로그인",
  "apLoginKakao": "카카오로 계속하기",

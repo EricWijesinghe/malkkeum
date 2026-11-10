@@ -6,6 +6,7 @@
 //! Saving swaps the live keys in [`crate::providers::Providers`] without a restart.
 
 use crate::{
+    ai::{self, AiConfig, Mode},
     config::{Config, PortOne, SolapiConfig},
     crypto,
     providers::fcm::ServiceAccount,
@@ -25,6 +26,8 @@ pub struct Integrations {
     pub portone: PortOne,
     pub solapi: Option<SolapiConfig>,
     pub fcm: Option<ServiceAccount>,
+    /// AI support agent. Console-only (no env fallback).
+    pub ai: Option<AiConfig>,
 }
 
 impl Integrations {
@@ -37,6 +40,7 @@ impl Integrations {
             portone: c.portone.clone(),
             solapi: c.solapi.clone(),
             fcm: c.fcm.clone(),
+            ai: None,
         }
     }
 
@@ -50,6 +54,7 @@ impl Integrations {
             Section::Naver => self.naver_client_id.is_some(),
             Section::Google => !self.google_client_ids.is_empty(),
             Section::Apple => !self.apple_client_ids.is_empty(),
+            Section::Ai => self.ai.is_some(),
         }
     }
 }
@@ -89,10 +94,11 @@ pub enum Section {
     Naver,
     Google,
     Apple,
+    Ai,
 }
 
 impl Section {
-    pub const ALL: [Section; 7] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple];
+    pub const ALL: [Section; 8] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -103,6 +109,7 @@ impl Section {
             Self::Naver => "naver",
             Self::Google => "google",
             Self::Apple => "apple",
+            Self::Ai => "ai",
         }
     }
 
@@ -118,6 +125,7 @@ impl Section {
             Self::Kakao => &KAKAO_FIELDS,
             Self::Naver => &NAVER_FIELDS,
             Self::Google | Self::Apple => &CLIENT_ID_FIELDS,
+            Self::Ai => &AI_FIELDS,
         }
     }
 }
@@ -139,6 +147,7 @@ const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
 const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
 const NAVER_FIELDS: [Field; 1] = [f("client_id", Kind::Text, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
+const AI_FIELDS: [Field; 3] = [f("api_key", Kind::Secret, true), f("model", Kind::Text, false), f("mode", Kind::Text, false)];
 
 /// A wizard value that fails validation. The code maps to a Korean message in the console.
 #[derive(Debug, PartialEq, Eq)]
@@ -232,6 +241,14 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
         Section::Naver => out.naver_client_id = Some(required(v, "client_id")?),
+        Section::Ai => {
+            let mode = Mode::parse(text(v, "mode").as_deref()).ok_or(Invalid("invalid_mode"))?;
+            let model = text(v, "model").unwrap_or_else(|| ai::DEFAULT_MODEL.to_string());
+            if model.len() > 64 || !model.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.') {
+                return Err(Invalid("invalid_model"));
+            }
+            out.ai = Some(AiConfig { api_key: required(v, "api_key")?, model, mode });
+        }
         Section::Google | Section::Apple => {
             let ids = list(v, "client_ids");
             if ids.is_empty() {
@@ -414,6 +431,20 @@ mod tests {
         assert_eq!(preview(Kind::Secret, &json!("ab")), json!("••••ab"));
         assert_eq!(preview(Kind::File, &json!({"client_email": "push@p.iam"})), json!("push@p.iam"));
         assert_eq!(preview(Kind::Text, &json!("store-1")), json!("store-1"));
+    }
+
+    #[test]
+    fn ai_defaults_to_offline_and_validates_mode_and_model() {
+        let base = Integrations::default();
+        let out = apply(&base, Section::Ai, &obj(json!({"api_key": "sk-ant-x"}))).unwrap();
+        let ai = out.ai.clone().expect("ai config");
+        assert_eq!((ai.model.as_str(), ai.mode), (ai::DEFAULT_MODEL, Mode::Offline));
+        assert!(out.has(Section::Ai));
+        let always = json!({"api_key": "k", "mode": "always_first", "model": "claude-opus-5-5"});
+        assert_eq!(apply(&base, Section::Ai, &obj(always)).unwrap().ai.unwrap().mode, Mode::AlwaysFirst);
+        assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "mode": "daytime"}))).unwrap_err(), Invalid("invalid_mode"));
+        assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "model": "x y"}))).unwrap_err(), Invalid("invalid_model"));
+        assert_eq!(apply(&base, Section::Ai, &obj(json!({"model": "claude-opus-5-5"}))).unwrap_err(), Invalid("missing_field"));
     }
 
     #[test]

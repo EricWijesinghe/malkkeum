@@ -1,7 +1,7 @@
 //! Consultation chat. Customers and pros each talk only to staff (never each other).
 
 use crate::{
-    auth::{Auth, Role},
+    auth::{Auth, Role, Staff},
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
     realtime::{Recipient, notify},
@@ -10,7 +10,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
-    routing::{get, post},
+    routing::{get, post, put},
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -40,6 +40,7 @@ pub struct ThreadRow {
     pub unread_member: i32,
     pub unread_staff: i32,
     pub closed: bool,
+    pub ai_paused: bool,
     pub last_message_at: DateTime<Utc>,
     pub last_message: Option<Value>,
 }
@@ -54,7 +55,7 @@ pub struct MessageRow {
     pub created_at: DateTime<Utc>,
 }
 
-pub const THREAD_COLS: &str = "t.id, t.audience, t.user_id, t.pro_id, t.booking_id, t.topic, t.unread_member, t.unread_staff, t.closed, t.last_message_at,
+pub const THREAD_COLS: &str = "t.id, t.audience, t.user_id, t.pro_id, t.booking_id, t.topic, t.unread_member, t.unread_staff, t.closed, t.ai_paused, t.last_message_at,
     (SELECT jsonb_build_object('kind', m.kind, 'body', m.body, 'sender', m.sender) FROM chat_messages m WHERE m.thread_id = t.id ORDER BY m.created_at DESC LIMIT 1) AS last_message";
 
 /// Finds or creates the thread for a booking (one per booking per audience).
@@ -262,7 +263,42 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
     let msg = insert_message(&mut conn, id, sender, Some(a.id), kind, body).await?;
     drop(conn);
     broadcast_message(&s, &msg).await?;
+    if sender != "staff" {
+        crate::ai::schedule(&s, id);
+    }
     Ok(Json(msg))
+}
+
+/// Staff-only routes, mounted under /admin: per-thread AI pause and the monthly AI usage line.
+pub fn admin_routes() -> Router<AppState> {
+    Router::new()
+        .route("/threads/{id}/ai", put(set_ai_paused))
+        .route("/ai/usage", get(ai_usage))
+}
+
+#[derive(Deserialize)]
+struct AiPause {
+    paused: bool,
+}
+
+async fn set_ai_paused(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>, Json(p): Json<AiPause>) -> ApiResult<Json<Value>> {
+    let changed = sqlx::query("UPDATE chat_threads SET ai_paused = $2 WHERE id = $1")
+        .bind(id)
+        .bind(p.paused)
+        .execute(&s.db)
+        .await?
+        .rows_affected();
+    if changed == 0 {
+        return Err(ApiError::NotFound);
+    }
+    super::audit(&s.db, "staff", Some(st.id), "chat.ai_pause", &id.to_string(), json!({ "paused": p.paused })).await?;
+    Ok(Json(json!({ "id": id, "ai_paused": p.paused })))
+}
+
+async fn ai_usage(State(s): State<AppState>, Staff(_): Staff) -> ApiResult<Json<Value>> {
+    let month = crate::ai::monthly_usage(&s.db).await?;
+    let mode = s.providers.integ().ai.as_ref().map(|c| c.mode.code());
+    Ok(Json(json!({ "configured": mode.is_some(), "mode": mode, "month": month })))
 }
 
 pub async fn mark_read(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {

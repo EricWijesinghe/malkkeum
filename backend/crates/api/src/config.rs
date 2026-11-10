@@ -39,6 +39,8 @@ pub struct Config {
     pub max_threads_per_day: u32,
     /// Checkout reconciler period (seconds).
     pub reconcile_interval_secs: u64,
+    /// Anthropic API root for the AI support agent (tests point it at a fake server).
+    pub anthropic_base_url: String,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -224,6 +226,7 @@ impl Config {
             max_open_quote_requests: number("MAX_OPEN_QUOTE_REQUESTS", 3, 1)?,
             max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
+            anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
         })
     }
 }
