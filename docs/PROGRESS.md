@@ -59,3 +59,12 @@ Dev console login: admin@local.test / change-me-now-please (from backend/.env, c
 - 2026-11-10 Session 1c: Korean social sign-in (Kakao/Naver/Google/Apple) + PASS identity + PortOne checkout for all Korean methods (card, Kakao/Naver/Toss/PAYCO/Samsung/Apple Pay, transfer, virtual account, phone) with signed webhooks; 3D design system (Tilt3D, Pressable, clay glyphs, glass, aurora), dark theme default + toggle in all apps; 14 languages (ko en zh vi ja ru ne si th id mn uz fil km; tool/lang_*.py, validated by tool/check_lang.py + gen_arb). Customer booking skips address step when one address fits. Open: native-speaker review for mn/si/ne/uz/km/fil; real SDK/PG keys; card-payment recovery via PortOne customData when confirm never arrives.
 - 2026-11-10 Session 1b: review + hardening pass. Open review items (LOW): per-IP rate limiting (needs proxy IP config), push-token ownership on re-register, upload quotas, quote-request spam limits, team-member logins, refund idempotency key at the provider, large files to split (bookings.rs, booking_flow.dart, partner jobs.dart).
 - 2026-11-10 Session 1: specs, design canvas, domain + API (smoke green), Flutter workspace, customer/partner/console apps (analyze clean), 5 languages, deploy kit. Screenshots verified customer intro/home + console dashboard/bookings. Next: real provider adapters once owner has accounts, CI, widget tests, store prep.
+
+### 2026-11-11 — 1.0 push (setup wizard, installer, website, store readiness)
+- Compile/debug pass of `wip/uncompiled-expansion`: backend compiled first try; fixed test slot hour; 53 widget tests fixed (10 real UI bugs). Merged to `master` (dc0bb44).
+- Setup system: `integration_settings` (AES-GCM), providers hot-swap keys, connection tests; `/v1/setup` first-run owner with setup code; `/v1/brand`; review demo account; partner self-deletion (`0008`).
+- Deploy: single-domain Caddy (website `/`, console `/admin/`, API), `deploy/install.sh`, `malkkeum` CLI, release workflow (GHCR + installer asset), CI builds images.
+- Website (`website/`): three.js hero, live prices from `/v1/services`, footer/legal filled from `/v1/brand`.
+- Store: `scripts/store_ready.py`, icons via `F:/tools/shot/icons.js`, `codemagic.yaml`, `docs/store/*`, `docs/guide/*`.
+- Next: features plan items 1, 2, 4, 6, 7; in-app wow layer; real SDK keys; store screenshots; first real install on a VPS.
+

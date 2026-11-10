@@ -34,10 +34,10 @@ industry-grade product (installer → web setup wizard → status page).
 
 ## Status
 See `docs/PROGRESS.md` (session log) and the checklist below.
-- [ ] 1 Stabilize
-- [ ] 2 Wow layer
-- [ ] 3 Setup system
-- [ ] 4 Installer + hosting
-- [ ] 5 Website
-- [ ] 6 Store readiness
-- [ ] 7 Handover
+- [x] 1 Stabilize — branch compiled, all tests green, merged to master (2026-11-11). Features plan items 5 (phone_required label) done; 3 (payment methods) done in Setup; 1, 2, 4, 6, 7 still open (docs/verify/flutter-features-plan.md).
+- [ ] 2 Wow layer — website 3D hero done; in-app 3D renders / Rive moments / earnings chart not started.
+- [x] 3 Setup system — encrypted keys + tests, first-run owner, business profile, payment methods, store-review demo account. Owner alerts (Korean AlimTalk on failures) not done.
+- [x] 4 Installer + hosting — install.sh + malkkeum CLI + backups + weekly update; release workflow → GHCR. Never run on a real server yet. Render blueprint not done.
+- [x] 5 Website — index + legal + partners, live prices/brand, 14-language picker (5 full, others fall back to English).
+- [~] 6 Store readiness — signing, permissions, names, icons, launch screens, Codemagic, listing text, data safety, partner account deletion. Missing: store screenshots, Firebase/Kakao/Naver app SDK wiring (needs real keys).
+- [x] 7 Handover — docs/guide/01..04 (Korean).
