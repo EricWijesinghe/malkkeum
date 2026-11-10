@@ -6,8 +6,9 @@ pub mod portone;
 pub mod sms;
 pub mod social;
 
-use crate::{config::Config, error::ApiError, integrations::Integrations};
+use crate::{config::Config, error::ApiError, integrations::Integrations, ops};
 use rand::{RngCore, rngs::OsRng};
+use sqlx::PgPool;
 use serde_json::{Value, json};
 use std::{
     sync::{Arc, RwLock},
@@ -71,11 +72,22 @@ impl Live {
     }
 }
 
+/// Maps a provider result to the ops health record. A declined card or a missing payment means the
+/// provider answered, so it counts as healthy.
+pub fn outcome<T>(r: &Result<T, ProviderError>) -> Result<(), &'static str> {
+    match r {
+        Ok(_) | Err(ProviderError::Declined(_) | ProviderError::NotFound) => Ok(()),
+        Err(ProviderError::NotConfigured(_)) => Err("not_configured"),
+        Err(ProviderError::Upstream(_)) => Err("provider_error"),
+    }
+}
+
 #[derive(Clone)]
 pub struct Providers {
     cfg: Config,
     http: reqwest::Client,
     live: Arc<RwLock<Live>>,
+    db: PgPool,
 }
 
 fn random_id(prefix: &str) -> String {
@@ -85,10 +97,17 @@ fn random_id(prefix: &str) -> String {
 }
 
 impl Providers {
-    pub fn new(cfg: Config) -> Result<Self, reqwest::Error> {
+    pub fn new(cfg: Config, db: PgPool) -> Result<Self, reqwest::Error> {
         let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
         let live = Arc::new(RwLock::new(Live::new(Integrations::from_config(&cfg))));
-        Ok(Self { cfg, http, live })
+        Ok(Self { cfg, http, live, db })
+    }
+
+    /// Feeds the status page and alert rules. Live traffic only: dev fakes never count as health.
+    pub fn observe(&self, integration: &'static str, outcome: Result<(), &'static str>) {
+        if !self.dev() {
+            ops::record(&self.db, integration, outcome);
+        }
     }
 
     pub fn cfg(&self) -> &Config {
@@ -127,7 +146,9 @@ impl Providers {
         if !self.dev() {
             let integ = self.integ();
             let cfg = integ.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
-            return sms::send_sms(&self.http, cfg, phone, text).await;
+            let sent = sms::send_sms(&self.http, cfg, phone, text).await;
+            self.observe("solapi", outcome(&sent));
+            return sent;
         }
         tracing::info!(target: "fake_sms", phone, text, "sms sent");
         Ok(())
@@ -154,13 +175,15 @@ impl Providers {
             Some(pf_id) => sms::send_alimtalk(&self.http, cfg, pf_id, template, phone, &text, variables).await,
             None => Err(ProviderError::NotConfigured("alimtalk")),
         };
-        match sent {
+        let final_result = match sent {
             Ok(()) => Ok(()),
             Err(e) => {
                 tracing::warn!(error = %e, kind, "alimtalk failed; sending sms");
                 sms::send_sms(&self.http, cfg, phone, &text).await
             }
-        }
+        };
+        self.observe("solapi", outcome(&final_result));
+        final_result
     }
 
     /// Exchange the gateway's card-auth result for a reusable billing key.
@@ -184,7 +207,11 @@ impl Providers {
     /// Refunds (or cancels) a payment at the gateway that took it.
     pub async fn refund(&self, provider: &str, tx_id: &str, amount: i64) -> Result<(), ProviderError> {
         match provider {
-            "portone" if !self.dev() => portone::cancel(self, tx_id, amount).await,
+            "portone" if !self.dev() => {
+                let cancelled = portone::cancel(self, tx_id, amount).await;
+                self.observe("portone", outcome(&cancelled));
+                cancelled
+            }
             _ => {
                 self.require_dev("payments")?;
                 tracing::info!(target: "fake_pg", provider, tx_id, amount, "refunded");
@@ -196,7 +223,9 @@ impl Providers {
     /// Fetches a PortOne payment. Dev mode fakes only `dev:` ids, priced at `dev_total`.
     pub async fn payment(&self, payment_id: &str, dev_total: i64) -> Result<PaymentInfo, ProviderError> {
         if !self.dev() {
-            return portone::payment(self, payment_id).await;
+            let found = portone::payment(self, payment_id).await;
+            self.observe("portone", outcome(&found));
+            return found;
         }
         portone::dev_payment(payment_id, dev_total).ok_or(ProviderError::NotFound)
     }
@@ -204,7 +233,9 @@ impl Providers {
     /// Verifies a PortOne identity verification (PASS / 본인인증).
     pub async fn identity(&self, verification_id: &str) -> Result<IdentityInfo, ProviderError> {
         if !self.dev() {
-            return portone::identity(self, verification_id).await;
+            let verified = portone::identity(self, verification_id).await;
+            self.observe("portone", outcome(&verified));
+            return verified;
         }
         portone::dev_identity(verification_id).ok_or(ProviderError::NotFound)
     }
@@ -223,6 +254,8 @@ impl Providers {
             return Ok(Vec::new());
         }
         let fcm = self.fcm().ok_or(ProviderError::NotConfigured("push"))?;
-        fcm.send(&self.http, tokens, title, body, data).await
+        let sent = fcm.send(&self.http, tokens, title, body, data).await;
+        self.observe("push", outcome(&sent));
+        sent
     }
 }

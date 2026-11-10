@@ -3,12 +3,15 @@
 
 pub mod ai;
 pub mod auth;
+pub mod backup;
 pub mod config;
 pub mod crypto;
 pub mod demo;
 pub mod error;
 pub mod i18n;
 pub mod integrations;
+pub mod ops;
+pub mod ops_alerts;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
@@ -28,8 +31,8 @@ const DB_ACQUIRE_TIMEOUT: Duration = Duration::from_secs(5);
 /// Shared application state over a pool and config. Used by `serve` and the integration tests.
 pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Error> {
     Ok(AppState {
+        providers: Arc::new(Providers::new(config.clone(), db.clone())?),
         db,
-        providers: Arc::new(Providers::new(config.clone())?),
         config: Arc::new(config),
         hub: Hub::default(),
         ai_debounce: Default::default(),
@@ -38,6 +41,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
 
 /// Reads config, connects, migrates, seeds and serves until Ctrl+C.
 pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
+    crate::ops::mark_started();
     let config = Config::from_env()?;
     let db = PgPoolOptions::new()
         .max_connections(DB_MAX_CONNECTIONS)
@@ -56,6 +60,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     routes::setup::reload(&state).await?;
     spawn_settings_refresh(state.clone());
     reconciler::spawn(state.clone());
+    ops_alerts::spawn(state.clone());
     let listener = tokio::net::TcpListener::bind(bind).await?;
     tracing::info!(%bind, "listening");
     // ConnectInfo gives the rate limiter the peer address.

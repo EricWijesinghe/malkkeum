@@ -4,6 +4,7 @@
 use super::audit;
 use crate::{
     auth::{Admin, hash_password},
+    backup,
     error::{ApiError, ApiResult},
     integrations::{self, Invalid, Kind, Section},
     providers::{fcm, portone, sms},
@@ -452,6 +453,13 @@ async fn probe(s: &AppState, sec: Section) -> (bool, &'static str) {
             Some(cfg) => match crate::ai::check(http, &s.config.anthropic_base_url, &cfg.api_key).await {
                 Ok(st) => check_result(st, &[StatusCode::OK]),
                 Err(_) => (false, "unreachable"),
+            },
+        },
+        Section::Backup => match integ.backup.as_ref() {
+            None => (false, "not_configured"),
+            Some(cfg) => match backup::check(http, cfg).await {
+                Ok(()) => (true, "connected"),
+                Err(e) => (false, e.code()),
             },
         },
         // Login keys can only be proven by a real sign-in from the app.

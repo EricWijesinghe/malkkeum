@@ -130,7 +130,7 @@ EOF
 
 cat > /usr/local/bin/malkkeum <<EOF
 #!/usr/bin/env bash
-# 말끔 관리 명령. 사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|demo load|demo clear|version]
+# 말끔 관리 명령. 사용법: malkkeum [status|update|backup|restore 파일|restore-offsite [이름]|logs|setup-code|demo load|demo clear|version]
 set -euo pipefail
 cd $DIR
 dc() { docker compose --env-file .env "\$@"; }
@@ -147,11 +147,19 @@ case "\${1:-status}" in
     dc exec -T db pg_dump -U app -d cleaning --clean --if-exists | gzip > backups/db-\$ts.sql.gz
     dc run --rm --no-deps -T --entrypoint tar api czf - -C /data uploads > backups/uploads-\$ts.tar.gz 2>/dev/null || true
     find backups -type f -mtime +$BACKUP_KEEP_DAYS -delete
+    # Offsite copy (console: 설정 > 외부 백업). Local backup stays good if this fails.
+    dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-upload "/backups/uploads-\$ts.tar.gz" >> backups/backup.log 2>&1 || true
+    dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-upload "/backups/db-\$ts.sql.gz" >> backups/backup.log 2>&1 || echo "⚠ 외부 백업 실패 또는 미설정 — 'malkkeum logs' 나 설정 > 외부 백업을 확인하세요"
     echo "✔ 백업 완료: $DIR/backups/db-\$ts.sql.gz" ;;
   restore)
     f="\${2:?복원할 백업 파일을 지정하세요. 예: malkkeum restore backups/db-20261110-0330.sql.gz}"
     read -r -p "현재 데이터를 \$f 로 되돌릴까요? (yes 입력) " a </dev/tty; [ "\$a" = yes ] || exit 1
     gunzip -c "\$f" | dc exec -T db psql -q -U app -d cleaning >/dev/null && echo "✔ 복원 완료" ;;
+  restore-offsite)
+    name="\${2:-}"
+    if [ -z "\$name" ]; then dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-list; exit 0; fi
+    dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-fetch "\$name" "/backups/\${name%.enc}" || { echo "✘ 외부 백업을 내려받지 못했어요"; exit 1; }
+    "\$0" restore "backups/\${name%.enc}" ;;
   logs) dc logs --tail 200 -f "\${2:-api}" ;;
   setup-code) grep ^SETUP_CODE= .env | cut -d= -f2 | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
   demo)
@@ -165,7 +173,7 @@ case "\${1:-status}" in
       *) echo "사용법: malkkeum demo [load [--force] | clear]"; exit 1 ;;
     esac ;;
   version) grep ^VERSION= .env | cut -d= -f2 ;;
-  *) echo "사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|demo load|demo clear|version]"; exit 1 ;;
+  *) echo "사용법: malkkeum [status|update|backup|restore 파일|restore-offsite [이름]|logs|setup-code|demo load|demo clear|version]"; exit 1 ;;
 esac
 EOF
 chmod 755 /usr/local/bin/malkkeum
