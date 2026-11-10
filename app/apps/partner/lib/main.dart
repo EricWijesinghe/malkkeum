@@ -73,7 +73,7 @@ class PartnerApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: !session.signedIn
-            ? const PartnerIntro()
+            ? LanguageWelcome(locale: locale, child: const PartnerIntro())
             : session.role == 'member'
             ? const MemberShell()
             : const Gate(),

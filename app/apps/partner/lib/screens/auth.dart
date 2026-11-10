@@ -151,6 +151,10 @@ class _PhoneScreenState extends State<_PhoneScreen> {
   Future<void> _verify() => _run(() async {
     final deps = Deps.read(context);
     await deps.session.verifyOtp(_digits, _code.text, audience: 'partner');
+    if (deps.session.role != 'member') {
+      // The language picked before sign-in becomes the account language.
+      deps.session.api.patch('/partner/me', {'locale': deps.locale.effectiveCode}).ignore();
+    }
     if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
   });
 

@@ -117,19 +117,33 @@ class LocaleController extends ChangeNotifier {
   };
   static final supported = [for (final c in names.keys) Locale(c)];
 
+  /// True on the very first launch, before anyone signed in or registered: show the picker.
+  bool firstRun = false;
+
+  /// Stored value meaning "follow the device", so a deliberate choice is never mistaken for a first run.
+  static const _system = 'system';
+
   Future<void> restore() async {
     final code = await _storage.read(key: 'app.locale').catchError((_) => null);
-    locale = code == null ? null : Locale(code);
+    if (code == null) {
+      // First launch: save the device language right away, even if the user never registers.
+      firstRun = true;
+      locale = Locale(effectiveCode);
+      await _storage.write(key: 'app.locale', value: locale!.languageCode).catchError((_) {});
+    } else {
+      locale = code == _system ? null : Locale(code);
+    }
     notifyListeners();
   }
 
   Future<void> set(Locale? value) async {
     locale = value;
-    if (value == null) {
-      await _storage.delete(key: 'app.locale');
-    } else {
-      await _storage.write(key: 'app.locale', value: value.languageCode);
-    }
+    await _storage.write(key: 'app.locale', value: value?.languageCode ?? _system);
+    notifyListeners();
+  }
+
+  void finishFirstRun() {
+    firstRun = false;
     notifyListeners();
   }
 

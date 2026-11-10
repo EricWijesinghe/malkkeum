@@ -28,18 +28,18 @@ class TestEnv {
 
   /// Creates a signed-in (default) or signed-out environment.
   ///
-  /// [localeCode] sets the persisted app language (default Korean, matching the
+  /// [localeCode] sets the persisted app language (null = fresh install; default Korean, matching the
   /// product default). [themeMode] defaults to dark, the app's own default.
   static Future<TestEnv> create({
     FakeApi? fake,
     String namespace = 'test',
     bool signedIn = true,
-    String localeCode = 'ko',
+    String? localeCode = 'ko',
     ThemeMode themeMode = ThemeMode.dark,
     String role = 'customer',
   }) async {
     final f = fake ?? FakeApi();
-    final storage = FakeStorage({'app.locale': localeCode});
+    final storage = FakeStorage({'app.locale': ?localeCode});
     final session = Session(namespace: namespace, storage: storage);
     final api = ApiClient(baseUrl: baseUrl, session: session, client: f.client);
     if (signedIn) {

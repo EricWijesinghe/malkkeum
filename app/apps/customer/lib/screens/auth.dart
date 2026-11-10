@@ -116,6 +116,8 @@ class _PhoneScreenState extends State<PhoneScreen> {
         await nav.push<bool>(MaterialPageRoute<bool>(builder: (_) => PhoneAttachScreen(api: deps.session.api, audience: 'customer')));
         if (!mounted) return;
       }
+      // The language picked before sign-in (or the device one) becomes the account language.
+      deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
       await deps.app.loadProfile();
       if (!mounted) return;
       if (result.isNew || deps.app.name.isEmpty) {
@@ -216,6 +218,8 @@ class _CodeScreenState extends State<CodeScreen> {
     try {
       final isNew = await deps.session.verifyOtp(widget.phone, _ctrl.text, audience: 'customer');
       if (!mounted) return;
+      // The language picked before sign-in (or the device one) becomes the account language.
+      deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
       await deps.app.loadProfile();
       if (!mounted) return;
       final nav = Navigator.of(context);

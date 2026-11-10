@@ -128,8 +128,13 @@ class MoreTab extends StatelessWidget {
                       ])
                         DropdownMenuItem(value: c, child: Text(n)),
                     ],
-                    onChanged: (c) =>
-                        deps.locale.set(c == null ? null : Locale(c)),
+                    onChanged: (c) async {
+                      await deps.locale.set(c == null ? null : Locale(c));
+                      // Server-side messages (push, SMS) follow the account language too.
+                      if (deps.session.role != 'member') {
+                        deps.app.api.patch('/partner/me', {'locale': deps.locale.effectiveCode}).ignore();
+                      }
+                    },
                   ),
                 ),
                 ListTile(

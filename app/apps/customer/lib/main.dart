@@ -61,7 +61,7 @@ class CustomerApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: session.signedIn ? const Shell() : const IntroScreen(),
+        home: session.signedIn ? const Shell() : LanguageWelcome(locale: locale, child: const IntroScreen()),
       ),
     ),
   );
