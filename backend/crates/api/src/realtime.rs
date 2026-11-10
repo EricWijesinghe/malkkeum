@@ -130,6 +130,11 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
         Recipient::Staff => ("staff", None),
     };
     if let Some(owner) = owner {
+        // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
+        let locale = crate::i18n::locale_of(&state.db, to).await;
+        let (ko_title, ko_body) = (title, body);
+        let (title, body) = (crate::i18n::tr(&locale, title), crate::i18n::tr(&locale, body));
+        let (title, body) = (title.as_str(), body.as_str());
         sqlx::query("INSERT INTO notifications (owner_role, owner_id, kind, data) VALUES ($1, $2, $3, $4)")
             .bind(role)
             .bind(owner)
@@ -147,7 +152,7 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
             Err(e) => tracing::warn!(error = %e, "push failed; notification kept in inbox"),
         }
         if let Recipient::User(user) = to {
-            kakao_to_customer(state, user, kind, title, body);
+            kakao_to_customer(state, user, kind, ko_title, ko_body);
         }
     }
     state.hub.send(to, kind, data);

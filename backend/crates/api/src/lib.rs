@@ -5,6 +5,7 @@ pub mod auth;
 pub mod config;
 pub mod crypto;
 pub mod error;
+pub mod i18n;
 pub mod integrations;
 pub mod providers;
 pub mod ratelimit;

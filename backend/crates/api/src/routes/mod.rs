@@ -7,7 +7,7 @@ mod catalog;
 mod chat;
 mod checkout_policy;
 pub(crate) mod checkouts;
-mod me;
+pub(crate) mod me;
 mod member;
 mod partner;
 mod partner_jobs;

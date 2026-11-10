@@ -38,6 +38,9 @@ enum Audience {
 #[derive(Deserialize)]
 struct OtpRequest {
     phone: String,
+    /// App language, so the code SMS is readable before any account exists.
+    #[serde(default)]
+    locale: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -73,7 +76,7 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
         .await?;
     if review.is_none() {
         s.providers
-            .send_sms(&phone, &format!("[인증번호] {code}"))
+            .send_sms(&phone, &format!("[{}] {code}", crate::i18n::tr(req.locale.as_deref().unwrap_or("ko"), "인증번호")))
             .await
             .map_err(|e| ApiError::Internal(e.to_string()))?;
     }

@@ -136,7 +136,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
     setState(() => _busy = true);
     final session = Deps.read(context).session;
     try {
-      final dev = await session.requestOtp(_digits);
+      final dev = await session.requestOtp(_digits, locale: Deps.read(context).locale.effectiveCode);
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => CodeScreen(phone: _digits, devCode: dev)));
     } catch (e) {
@@ -238,7 +238,7 @@ class _CodeScreenState extends State<CodeScreen> {
 
   Future<void> _resend() async {
     try {
-      final dev = await Deps.read(context).session.requestOtp(widget.phone);
+      final dev = await Deps.read(context).session.requestOtp(widget.phone, locale: Deps.read(context).locale.effectiveCode);
       if (dev != null) _ctrl.text = dev;
       _tick();
     } catch (e) {

@@ -374,7 +374,8 @@ async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Js
         ),
     )
     .await;
-    let _ = s.providers.send_sms(&phone, "새 작업이 배정됐어요").await;
+    let locale = crate::i18n::locale_of(&s.db, Recipient::Member(x.member_id)).await;
+    let _ = s.providers.send_sms(&phone, &crate::i18n::tr(&locale, "새 작업이 배정됐어요")).await;
     Ok(Json(json!({ "ok": true })))
 }
 

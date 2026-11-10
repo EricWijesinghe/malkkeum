@@ -63,8 +63,9 @@ class Session extends ChangeNotifier {
   // --- flows -------------------------------------------------------------
 
   /// Returns the dev code when the server runs in DEV_MODE (local testing only).
-  Future<String?> requestOtp(String phone) async {
-    final r = await api.post('/auth/otp', {'phone': phone}) as Map<String, dynamic>;
+  /// [locale] is the app language, so the code SMS arrives in it.
+  Future<String?> requestOtp(String phone, {String? locale}) async {
+    final r = await api.post('/auth/otp', {'phone': phone, 'locale': ?locale}) as Map<String, dynamic>;
     return r['dev_code'] as String?;
   }
 

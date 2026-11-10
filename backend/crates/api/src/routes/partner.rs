@@ -212,7 +212,8 @@ async fn invite(State(s): State<AppState>, Pro(a): Pro, Json(i): Json<Invite>) -
     }
     let id: Uuid = sqlx::query_scalar("INSERT INTO team_members (pro_id, name, phone, role) VALUES ($1,$2,$3,'member') ON CONFLICT (pro_id, phone) DO UPDATE SET name = $2, invite_status = 'invited' RETURNING id")
         .bind(a.id).bind(i.name.trim()).bind(&phone).fetch_one(&s.db).await?;
-    let _ = s.providers.send_sms(&phone, "팀원으로 초대됐어요. 파트너 앱을 설치해 주세요.").await;
+    let locale = crate::i18n::locale_of(&s.db, crate::realtime::Recipient::Pro(a.id)).await;
+    let _ = s.providers.send_sms(&phone, &crate::i18n::tr(&locale, "팀원으로 초대됐어요. 파트너 앱을 설치해 주세요.")).await;
     Ok(Json(json!({ "id": id })))
 }
 

@@ -141,7 +141,7 @@ class _PhoneScreenState extends State<_PhoneScreen> {
   }
 
   Future<void> _send() => _run(() async {
-    final dev = await Deps.read(context).session.requestOtp(_digits);
+    final dev = await Deps.read(context).session.requestOtp(_digits, locale: Deps.read(context).locale.effectiveCode);
     setState(() {
       _sent = true;
       if (dev != null) _code.text = dev;
