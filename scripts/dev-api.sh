@@ -20,6 +20,8 @@ SEED_ADMIN_PASSWORD=change-me-now-please
 EOV
 fi
 set -a; source "$ENV"; set +a
+# `scripts/dev-api.sh demo load|clear`: sample data in the dev database (DATABASE_URL above), then exit.
+if [ "${1:-}" = demo ]; then cd /f/EC/backend && exec cargo run -q -p api -- "$@"; fi
 # Smoke runs ~25 sign-ins from one IP: lift the auth limit for local runs (production keeps 20/min).
 export RATE_LIMIT_AUTH_PER_MIN="${RATE_LIMIT_AUTH_PER_MIN:-1000}"
 cd /f/EC/backend && exec cargo run -q -p api
