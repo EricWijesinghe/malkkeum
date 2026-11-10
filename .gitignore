@@ -11,3 +11,4 @@ backend/data/
 app/**/build/
 app/packages/core/build/
 deploy/.env
+targets/
