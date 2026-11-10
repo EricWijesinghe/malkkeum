@@ -40,7 +40,8 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 - [x] Translations: 5 languages for all three apps (~580 keys)
 - [x] Deploy kit: backend/Dockerfile, deploy/docker-compose.yml (+Caddy HTTPS), deploy/.env.example, docs/DEPLOY.md; extras list docs/PITCH.md
 - [ ] Release: signing keys, store accounts, final app IDs/brand/icons (owner decisions, see DEPLOY.md §3)
-- [ ] CI pipeline (cargo test + flutter analyze + smoke on PR)
+- [x] CI pipeline `.github/workflows/ci.yml` (fmt, clippy -D warnings, tests, e2e smoke, dart analyze --fatal-infos, core tests)
+- [x] Independent reviews (security, Rust correctness, Flutter) on 2026-11-10; all HIGH and most MEDIUM fixed (see commits 2302ea7, 5b3bc56)
 - [ ] Widget tests for key flows (currently: Rust unit + e2e smoke; Flutter verified by analyze + screenshots)
 - [ ] Design canvas refresh to the colorful v1 palette (code is the source of truth now)
 
@@ -55,4 +56,5 @@ Screenshots: `node F:/tools/shot/tour.js` (Playwright on F:) against `flutter bu
 Dev console login: admin@local.test / change-me-now-please (from backend/.env, change it).
 
 ## Log
+- 2026-11-10 Session 1b: review + hardening pass. Open review items (LOW): per-IP rate limiting (needs proxy IP config), push-token ownership on re-register, upload quotas, quote-request spam limits, team-member logins, refund idempotency key at the provider, large files to split (bookings.rs, booking_flow.dart, partner jobs.dart).
 - 2026-11-10 Session 1: specs, design canvas, domain + API (smoke green), Flutter workspace, customer/partner/console apps (analyze clean), 5 languages, deploy kit. Screenshots verified customer intro/home + console dashboard/bookings. Next: real provider adapters once owner has accounts, CI, widget tests, store prep.

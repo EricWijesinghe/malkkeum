@@ -44,7 +44,15 @@ class _ServiceScreenState extends State<ServiceScreen> {
               color: context.colors.tintOf(hue),
               alignment: Alignment.center,
               padding: const EdgeInsets.only(top: 48),
-              child: Hero(tag: 'svc-${s.code}', child: ServiceGlyph(s.code, size: 112)),
+              child: Hero(
+                tag: 'svc-${s.code}',
+                // White tile lifts the glyph off the same-hue background.
+                child: Container(
+                  padding: const EdgeInsets.all(Space.sm),
+                  decoration: BoxDecoration(color: context.colors.surface, borderRadius: BorderRadius.circular(44), boxShadow: Elevation.raised),
+                  child: ServiceGlyph(s.code, size: 104),
+                ),
+              ),
             ),
           ),
         ),
