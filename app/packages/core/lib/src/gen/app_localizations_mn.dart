@@ -1,0 +1,2085 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Mongolian (`mn`).
+class TMn extends T {
+  TMn([String locale = 'mn']) : super(locale);
+
+  @override
+  String get apSocialOr => 'эсвэл';
+
+  @override
+  String get apSocialSignIn => 'Хурдан нэвтрэх';
+
+  @override
+  String get apLoginKakao => 'Kakao-гаар үргэлжлүүлэх';
+
+  @override
+  String get apLoginNaver => 'Naver-ээр үргэлжлүүлэх';
+
+  @override
+  String get apLoginGoogle => 'Google-ээр үргэлжлүүлэх';
+
+  @override
+  String get apLoginApple => 'Apple-ээр үргэлжлүүлэх';
+
+  @override
+  String get apDevSocialNote =>
+      'Хөгжүүлэлтийн горим. Жинхэнэ сошиал бүртгэлээр биш, туршилтын бүртгэлээр нэвтэрнэ.';
+
+  @override
+  String get apSocialFailed =>
+      'Хурдан нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
+
+  @override
+  String get apProviderNotConfigured =>
+      'Энэ нэвтрэх арга одоогоор бэлэн биш байна';
+
+  @override
+  String get apPhoneTaken => 'Энэ дугаар өөр бүртгэлд холбогдсон байна';
+
+  @override
+  String get apPhoneAttachTitle => 'Утасны дугаараа баталгаажуулна уу';
+
+  @override
+  String get apPhoneAttachBody =>
+      'Энэ дугаарыг захиалга болон мэргэжилтэнтэй холбогдоход ашигладаг. Нэг удаа баталгаажуулахад хангалттай.';
+
+  @override
+  String get apPayAllTitle => 'Төлбөрийн хэрэгсэл сонгох';
+
+  @override
+  String get apPaySavedTitle => 'Хадгалсан хэрэгслүүд';
+
+  @override
+  String get apPayMoreTitle => 'Бүх төлбөрийн хэрэгсэл';
+
+  @override
+  String get apPayBillingHint =>
+      'Нэг удаа бүртгээд, дараа нь нэг товшилтоор төлнө';
+
+  @override
+  String get apPayCheckoutHint => 'Төлбөрийн цонхонд дуусгана уу';
+
+  @override
+  String get apPayRegistering => 'Бүртгэж байна…';
+
+  @override
+  String get apPayManageHint =>
+      'Хадгалсан хэрэгслээр нэг товшилтоор төлнө. Хурдан төлбөрийн хэрэгслийг эндээс нэмнэ.';
+
+  @override
+  String get apMethodCard => 'Кредит ба дебит карт';
+
+  @override
+  String get apMethodKakao => 'KakaoPay';
+
+  @override
+  String get apMethodNaver => 'NaverPay';
+
+  @override
+  String get apMethodToss => 'TossPay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => 'Дансаар шилжүүлэг';
+
+  @override
+  String get apMethodVirtual => 'Виртуал данс';
+
+  @override
+  String get apMethodPhone => 'Утасны дансаар төлөх';
+
+  @override
+  String get apMethodUnknown => 'Бусад';
+
+  @override
+  String get apVaTitle => 'Урьдчилгаа төлөх дансны мэдээлэл бэлэн боллоо';
+
+  @override
+  String get apVaWaiting => 'Урьдчилгаа хүлээгдэж байна';
+
+  @override
+  String get apVaBody =>
+      'Урьдчилгаа орж ирснээр захиалга баталгаажина. Шилжүүлгийг автоматаар шалгана.';
+
+  @override
+  String get apVaBank => 'Банк';
+
+  @override
+  String get apVaAccount => 'Дансны дугаар';
+
+  @override
+  String get apVaHolder => 'Данс эзэмшигч';
+
+  @override
+  String get apVaAmount => 'Дүн';
+
+  @override
+  String apVaDue(String due) {
+    return '$due гэхээс өмнө шилжүүлнэ үү';
+  }
+
+  @override
+  String get apVaCopy => 'Хуулах';
+
+  @override
+  String get apVaCopied => 'Дансны дугаарыг хууллаа';
+
+  @override
+  String get apVaBannerTitle => 'Урьдчилгаа хүлээгдэж буй захиалга бий';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · $due хүртэл';
+  }
+
+  @override
+  String get apVaBannerAction => 'Данс харах';
+
+  @override
+  String get apPgTitle => 'Төлбөрийн цонх';
+
+  @override
+  String get apPgDevNote =>
+      'Зөвхөн хөгжүүлэлтийн орчны төлбөрийн туршилт. Бодит төлбөр хасагдахгүй.';
+
+  @override
+  String apPgPay(String amount) {
+    return '$amount төлөх';
+  }
+
+  @override
+  String get apPgIssue => 'Дансны дугаар авах';
+
+  @override
+  String get apPgCancel => 'Төлбөрийг цуцлах';
+
+  @override
+  String get apErrSlotFullRefunded =>
+      'Энэ цаг дөнгөж дүүрсэн тул төлбөрийг автоматаар цуцаллаа';
+
+  @override
+  String get apErrCheckoutExpired =>
+      'Төлбөрийн хугацаа дууслаа. Дахин оролдоно уу.';
+
+  @override
+  String get apIdentityTitle => 'Иргэний баталгаажуулалт (PASS)';
+
+  @override
+  String get apIdentityBody =>
+      'Утасны компаниараа дамжуулан таныг баталгаажуулна. Аюулгүй гүйлгээ, төлбөр тооцоонд ашиглана.';
+
+  @override
+  String get apIdentityAction => 'Баталгаажуулах';
+
+  @override
+  String get apIdentityDone => 'Таны баталгаажуулалт амжилттай боллоо';
+
+  @override
+  String get apIdentityVerified => 'Баталгаажсан';
+
+  @override
+  String get apIdentityUnverified => 'Одоогоор баталгаажаагүй';
+
+  @override
+  String get apIdentityDevTitle => 'Туршилтын баталгаажуулалт';
+
+  @override
+  String get apIdentityDevBody =>
+      'Хөгжүүлэлтийн орчинд бодит шалгалтгүйгээр автоматаар тэнцэнэ.';
+
+  @override
+  String get apIdentityDevPass => 'Тэнцсэн';
+
+  @override
+  String get apPayManageTitle => 'Хурдан төлбөр бүртгэх';
+
+  @override
+  String get cTitle => 'Үйл ажиллагааны консол';
+
+  @override
+  String get cEmail => 'Имэйл';
+
+  @override
+  String get cPassword => 'Нууц үг';
+
+  @override
+  String get cLogin => 'Нэвтрэх';
+
+  @override
+  String get cLoginFailed => 'Имэйл эсвэл нууц үг буруу байна';
+
+  @override
+  String get cDashboard => 'Хяналтын самбар';
+
+  @override
+  String get cBookings => 'Захиалга';
+
+  @override
+  String get cQuoteDesk => 'Үнийн санал';
+
+  @override
+  String get cInbox => 'Ирсэн хайрцаг';
+
+  @override
+  String get cCatalog => 'Каталог · үнэ';
+
+  @override
+  String get cMarketing => 'Купон · контент';
+
+  @override
+  String get cPartners => 'Хамтрагчид';
+
+  @override
+  String get cSettlements => 'Тооцоо';
+
+  @override
+  String get cCustomers => 'Үйлчлүүлэгчид';
+
+  @override
+  String get cStaff => 'Ажилтан';
+
+  @override
+  String get cSearchCommand => 'Хайх · шилжих';
+
+  @override
+  String get cPaletteHint => 'Цэсний нэр эсвэл захиалгын дугаар бичнэ үү';
+
+  @override
+  String get cTodayJobs => 'Өнөөдрийн ажил';
+
+  @override
+  String get cOpenQuotes => 'Хүлээгдэж буй үнийн санал';
+
+  @override
+  String get cUnassigned => 'Оноогоогүй';
+
+  @override
+  String get cUnreadThreads => 'Уншаагүй чат';
+
+  @override
+  String get cRevenue30 => '30 хоногийн орлого';
+
+  @override
+  String get cBookings30 => '30 хоногийн захиалга';
+
+  @override
+  String get cByService => 'Үйлчилгээгээр захиалга (30 хоног)';
+
+  @override
+  String get cAllStatus => 'Бүх төлөв';
+
+  @override
+  String get cAllServices => 'Бүх үйлчилгээ';
+
+  @override
+  String get cSearch => 'Хайх (дугаар, утас, нэр, хаяг)';
+
+  @override
+  String get cNoResults => 'Үр дүн алга';
+
+  @override
+  String get cNumber => 'Дугаар';
+
+  @override
+  String get cVisit => 'Очих өдөр';
+
+  @override
+  String get cService => 'Үйлчилгээ';
+
+  @override
+  String get cStatus => 'Төлөв';
+
+  @override
+  String get cTeam => 'Баг';
+
+  @override
+  String get cAmount => 'Дүн';
+
+  @override
+  String get cCustomer => 'Үйлчлүүлэгч';
+
+  @override
+  String get cPayments => 'Төлбөр';
+
+  @override
+  String get cChangeStatus => 'Төлөв өөрчлөх';
+
+  @override
+  String get cTeamName => 'Оноосон баг';
+
+  @override
+  String get cAssign => 'Баг оноох';
+
+  @override
+  String get cMarkDone => 'Дууссан гэж тэмдэглэх';
+
+  @override
+  String get cConfirm => 'Баталгаажсан гэж тэмдэглэх';
+
+  @override
+  String get cCancelRefund => 'Цуцлах · буцаан олгох';
+
+  @override
+  String get cRefundAmount => 'Буцаах дүн (хоосон бол бүтнээр)';
+
+  @override
+  String get cDone => 'Боловсруулсан';
+
+  @override
+  String get cAnswers => 'Үйлчлүүлэгчийн хариулт';
+
+  @override
+  String get cEstimateCalc => 'Автоматаар тооцсон';
+
+  @override
+  String get cBase => 'Үндсэн';
+
+  @override
+  String get cExtras => 'Нэмэлт';
+
+  @override
+  String get cSurcharge => 'Нэмэгдэл';
+
+  @override
+  String get cBeforeVat => 'НӨАТ-гүй';
+
+  @override
+  String get cProQuotes => 'Хамтрагчдын үнийн санал';
+
+  @override
+  String get cNoProQuotes => 'Одоогоор ирсэн үнийн санал алга';
+
+  @override
+  String get cFinalPrice => 'Үйлчлүүлэгчид эцсийн үнэ';
+
+  @override
+  String get cQuoteNote => 'Үйлчлүүлэгчид очих тэмдэглэл';
+
+  @override
+  String get cSendQuote => 'Үйлчлүүлэгчид үнийн санал илгээх';
+
+  @override
+  String get cQuoteSent => 'Үнийн санал илгээгдлээ';
+
+  @override
+  String get cCustomerChats => 'Үйлчлүүлэгчид';
+
+  @override
+  String get cPartnerChats => 'Хамтрагчид';
+
+  @override
+  String get cSelectBooking => 'Захиалга сонгоно уу';
+
+  @override
+  String get cRefunded => 'Буцаагдсан';
+
+  @override
+  String get cPartRefunded => 'Хэсэгчлэн буцаагдсан';
+
+  @override
+  String get cFailed => 'Амжилтгүй';
+
+  @override
+  String get cSelectThread => 'Харилцаа сонгоно уу';
+
+  @override
+  String get cReplyHint => 'Хариу бичнэ үү · Ctrl+Enter илгээнэ';
+
+  @override
+  String get cOpenBooking => 'Захиалга нээх';
+
+  @override
+  String get cShortcuts => 'J/K шилжих · Ctrl+K команд';
+
+  @override
+  String get cPricing => 'Үнэ';
+
+  @override
+  String get cMinutes => 'Үргэлжлэх хугацаа (мин)';
+
+  @override
+  String get cActive => 'Борлуулалтад';
+
+  @override
+  String get cSaved => 'Хадгалагдлаа';
+
+  @override
+  String get cSlotCapacity => 'Ирэх цаг бүрийн багтаамж';
+
+  @override
+  String get cUnlimited => 'Хязгааргүй';
+
+  @override
+  String get cFormula => 'Үнийн санал тооцох томьёо';
+
+  @override
+  String get f_base_studio => 'Үндсэн: студио';
+
+  @override
+  String get f_base_one_and_half => 'Үндсэн: 1.5 өрөө';
+
+  @override
+  String get f_base_two_rooms => 'Үндсэн: 2 өрөө';
+
+  @override
+  String get f_base_three_rooms => 'Үндсэн: 3 өрөө';
+
+  @override
+  String get f_base_four_plus => 'Үндсэн: 4+ өрөө';
+
+  @override
+  String get f_per_extra_bathroom => 'Ванны өрөө нэмэгдэх бүр';
+
+  @override
+  String get f_per_balcony => 'Тагт бүр';
+
+  @override
+  String get f_duplex => 'Дуплекс';
+
+  @override
+  String get f_no_elevator_high_floor => 'Лифтгүй + 3-р давхар ба дээш';
+
+  @override
+  String get cIssueCoupon => 'Купон олгох';
+
+  @override
+  String get cCouponName => 'Купоны нэр';
+
+  @override
+  String get cCouponPhones => 'Утасны дугаарууд (мөр бүрт нэг)';
+
+  @override
+  String get cAllCustomers => 'Бүх үйлчлүүлэгчид';
+
+  @override
+  String cIssued(String n) {
+    return '$n купон олгогдлоо';
+  }
+
+  @override
+  String get cContent => 'Контент';
+
+  @override
+  String get cKind_notice => 'Мэдэгдэл';
+
+  @override
+  String get cKind_tip => 'Зөвлөмж';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'Баннер';
+
+  @override
+  String get cKind_legal => 'Нөхцөл';
+
+  @override
+  String get cNewContent => 'Шинэ контент';
+
+  @override
+  String get cTitleField => 'Гарчиг';
+
+  @override
+  String get cBodyField => 'Агуулга';
+
+  @override
+  String get cSlug => 'Слаг (нөхцөл: privacy / terms)';
+
+  @override
+  String get cVerify => 'Зөвшөөрөх';
+
+  @override
+  String get cSuspend => 'Түр зогсоох';
+
+  @override
+  String get cPro_pending => 'Хүлээгдэж буй';
+
+  @override
+  String get cPro_verified => 'Идэвхтэй';
+
+  @override
+  String get cPro_suspended => 'Түр зогссон';
+
+  @override
+  String get cCompleted => 'Дууссан';
+
+  @override
+  String get cCancelledN => 'Цуцлагдсан';
+
+  @override
+  String get cRating => 'Үнэлгээ';
+
+  @override
+  String get cFeeRate => 'Шимтгэл %';
+
+  @override
+  String get cRunPayouts => 'Тооцоо хийх';
+
+  @override
+  String get cPayoutDate => 'Тооцоолох огноо хүртэл';
+
+  @override
+  String cPayoutDone(String n) {
+    return '$n хамтрагчид тооцоо хийгдлээ';
+  }
+
+  @override
+  String get cHold => 'Түр саатуулах';
+
+  @override
+  String get cRelease => 'Саатлыг тайлах';
+
+  @override
+  String get cNet => 'Цэвэр дүн';
+
+  @override
+  String get cAddStaff => 'Ажилтан нэмэх';
+
+  @override
+  String get cRoleAdmin => 'Админ';
+
+  @override
+  String get cRoleConsultant => 'Зөвлөх';
+
+  @override
+  String get cDeactivate => 'Идэвхгүй болгох';
+
+  @override
+  String get cActivate => 'Идэвхжүүлэх';
+
+  @override
+  String get cPasswordRule => '12-оос дээш тэмдэгт';
+
+  @override
+  String get cAdminOnly => 'Зөвхөн админ хийнэ';
+
+  @override
+  String cBookingsCount(String n) {
+    return '$n захиалга';
+  }
+
+  @override
+  String get cJoined => 'Бүртгүүлсэн';
+
+  @override
+  String get cNewBooking => 'Шинэ захиалга ирлээ';
+
+  @override
+  String get cNewMessage => 'Шинэ зурвас';
+
+  @override
+  String get ok => 'ОК';
+
+  @override
+  String get cancel => 'Болих';
+
+  @override
+  String get next => 'Дараах';
+
+  @override
+  String get close => 'Хаах';
+
+  @override
+  String get save => 'Хадгалах';
+
+  @override
+  String get delete => 'Устгах';
+
+  @override
+  String get edit => 'Засах';
+
+  @override
+  String get change => 'Солих';
+
+  @override
+  String get retry => 'Дахин оролдох';
+
+  @override
+  String get yes => 'Тийм';
+
+  @override
+  String get no => 'Үгүй';
+
+  @override
+  String get required => 'Заавал';
+
+  @override
+  String get viewAll => 'Бүгдийг харах';
+
+  @override
+  String get today => 'Өнөөдөр';
+
+  @override
+  String get errorGeneric =>
+      'Алдаа гарлаа. Хэсэг хугацааны дараа дахин оролдоно уу.';
+
+  @override
+  String get errorNetwork => 'Интернэт холболтоо шалгана уу';
+
+  @override
+  String get err_invalid_phone => 'Утасны дугаараа шалгана уу';
+
+  @override
+  String get err_otp_invalid => 'Баталгаажуулах код буруу байна';
+
+  @override
+  String get err_otp_expired => 'Кодын хугацаа дууссан. Шинэ код авна уу.';
+
+  @override
+  String get err_rate_limited =>
+      'Оролдлого хэт олон боллоо. Хэсэг хугацааны дараа оролдоно уу.';
+
+  @override
+  String get err_studio_too_large =>
+      'Студиог цэвэрлэх үйлчилгээ 10 пён хүртэлх орон сууцанд зориулагдсан';
+
+  @override
+  String get err_date_out_of_range =>
+      'Маргаашаас эхлээд 60 хоногийн дотор огноо сонгоно уу';
+
+  @override
+  String get err_slot_full => 'Энэ цаг дөнгөж дүүрлээ. Өөр цаг сонгоно уу.';
+
+  @override
+  String get err_coupon_expired => 'Энэ купоны хугацаа дууссан';
+
+  @override
+  String get err_coupon_used => 'Энэ купоныг аль хэдийн ашигласан';
+
+  @override
+  String get err_coupon_wrong_service =>
+      'Энэ купоныг энэ үйлчилгээнд ашиглах боломжгүй';
+
+  @override
+  String get err_payment_failed =>
+      'Төлбөрийг зөвшөөрөөгүй. Өөр хэрэгсэл ашиглаад үзнэ үү.';
+
+  @override
+  String get err_payment_method_required => 'Төлбөрийн хэрэгсэл сонгоно уу';
+
+  @override
+  String get err_cancellation_window_closed =>
+      'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
+
+  @override
+  String get err_address_required => 'Очих хаягаа бүртгэнэ үү';
+
+  @override
+  String get err_already_taken => 'Өөр хамтрагч түрүүлж хүлээн авлаа';
+
+  @override
+  String get err_invalid_address => 'Хаягийн бүх талбарыг бөглөнө үү';
+
+  @override
+  String get tabHome => 'Нүүр';
+
+  @override
+  String get tabBookings => 'Захиалга';
+
+  @override
+  String get tabChat => 'Чат';
+
+  @override
+  String get tabMore => 'Бусад';
+
+  @override
+  String get introTitle =>
+      'Мэргэжлийн цэвэрлэгээг\nхамгийн хялбараар захиалаарай';
+
+  @override
+  String get introBody => 'Тогтмол үнэ · Баталгаат баг · Бодит цагийн явц';
+
+  @override
+  String get introStart => 'Утасны дугаараар эхлэх';
+
+  @override
+  String get loginPhoneTitle => 'Утасны дугаараа хэлнэ үү';
+
+  @override
+  String get loginPhoneHint => '010-0000-0000';
+
+  @override
+  String get loginSendCode => 'Код авах';
+
+  @override
+  String get loginCodeTitle => '6 оронтой кодыг оруулна уу';
+
+  @override
+  String loginCodeSentTo(String phone) {
+    return '$phone руу илгээлээ';
+  }
+
+  @override
+  String get loginResend => 'Дахин авах';
+
+  @override
+  String get loginVerify => 'Баталгаажуулах';
+
+  @override
+  String get loginTerms =>
+      'Үргэлжлүүлснээр та Үйлчилгээний нөхцөл ба Нууцлалын бодлогыг зөвшөөрч байна';
+
+  @override
+  String get profileTitle => 'Танд ямар нэрээр хандах вэ?';
+
+  @override
+  String get profileNameHint => 'Нэр';
+
+  @override
+  String get profileDone => 'Эхлэх';
+
+  @override
+  String get welcomeToast => 'Танд угтах купон 2 ширхэг олгогдлоо';
+
+  @override
+  String get svc_studio => 'Студио цэвэрлэгээ';
+
+  @override
+  String get svc_kitchen => 'Гал тогоо цэвэрлэгээ';
+
+  @override
+  String get svc_bathroom => 'Угаалгын өрөө цэвэрлэгээ';
+
+  @override
+  String get svc_mattress => 'Матрас цэвэрлэгээ';
+
+  @override
+  String get svc_aircon => 'Кондиционер цэвэрлэгээ';
+
+  @override
+  String get svc_sofa => 'Диван цэвэрлэгээ';
+
+  @override
+  String get svc_move_out => 'Нүүхийн өмнөх цэвэрлэгээ';
+
+  @override
+  String get svc_move_in => 'Нүүж орохын өмнөх цэвэрлэгээ';
+
+  @override
+  String get svcShort_studio => 'Студио';
+
+  @override
+  String get svcShort_kitchen => 'Гал тогоо';
+
+  @override
+  String get svcShort_bathroom => 'Угаалгын өрөө';
+
+  @override
+  String get svcShort_mattress => 'Матрас';
+
+  @override
+  String get svcShort_aircon => 'Кондиционер';
+
+  @override
+  String get svcShort_sofa => 'Диван';
+
+  @override
+  String get svcShort_move_out => 'Нүүх';
+
+  @override
+  String get svcShort_move_in => 'Нүүж орох';
+
+  @override
+  String get svcDesc_studio =>
+      '10 пён хүртэлх студиог (нэг өрөө, нэг угаалгын өрөөтэй) 2 цагийн турш нарийвчлан цэвэрлэнэ.';
+
+  @override
+  String get svcDesc_kitchen =>
+      'Гал тогооны гол хэсгийг төвлөрүүлэн цэвэрлэнэ: угаалтуур, плита, сорогчийн гадна тал, ширээний тавцан.';
+
+  @override
+  String get svcDesc_bathroom =>
+      'Тавиур, усны кран, угаалтуур, бие засах суудлыг дотор, гадна талаас нь цэвэрлээд, шалыг хатаана.';
+
+  @override
+  String get svcDesc_mattress =>
+      'Мэргэжлийн төхөөрөмжөөр тоос, хачиг, толбыг соруулж, уураар халдваргүйтгэнэ.';
+
+  @override
+  String get svcDesc_aircon =>
+      'Задлаад, дулаан солилцогч, сэнс, шүүлтүүрийг өндөр даралтаар угааж, халдваргүйтгэнэ.';
+
+  @override
+  String get svcDesc_sofa =>
+      'Материалд тохирсон бодисоор бохирдлыг задалж, норгоод соруулах аргаар цэвэрлэнэ.';
+
+  @override
+  String get svcDesc_move_out =>
+      'Нүүхээсээ өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, эд зүйлгүй орон сууцыг цэвэрлэнэ.';
+
+  @override
+  String get svcDesc_move_in =>
+      'Шинэ орон сууцандаа орохын өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, дотоодыг цэвэрлэнэ.';
+
+  @override
+  String get svcNotes_bathroom =>
+      'Бохир ус эсвэл бие засах суудал бөглөрсөн бол үйлчилгээ хязгаарлагдаж магадгүй\nТусгай химийн бодис шаарддаг цэвэрлэгээ, тааз, агааржуулагчийн цэвэрлэгээг оруулаагүй\nХуучин мөөг болон нэвт шингэсэн бохирдол бүрэн арилахгүй байж магадгүй';
+
+  @override
+  String get svcNotes_mattress =>
+      'Энгийнээс кинг хэмжээ хүртэл адил үнэтэй\nУгаасны дараа 4–6 цагт бүрэн хатна\nПүрш гэмтэх, живэх зэрэг бүтцийн асуудлыг засах боломжгүй';
+
+  @override
+  String get svcNotes_aircon =>
+      '10 жилээс дээш настай төхөөрөмжийг задлан угаах нь аюултай байж магадгүй\nГадна нэгжийн цэвэрлэгээг оруулаагүй\nЦэвэрлэгээний өмнө, дараа нь ажиллагааг нь шалгана';
+
+  @override
+  String get svcNotes_sofa =>
+      'Арьсан диваныг цэвэрлэж, чийгшүүлэх бүрхүүлтэй хийнэ\nХуучин толбо эсвэл будгийн шилжилт бүрэн арилахгүй байж магадгүй\nБүрэн хатахад 4–6 цаг шаардагдана';
+
+  @override
+  String get unitTitle_bathroom => 'Угаалгын өрөөний тоо';
+
+  @override
+  String get unitTitle_mattress => 'Матрасны тоо';
+
+  @override
+  String get unitTitle_aircon => 'Агаарын зуухны төрөл';
+
+  @override
+  String get unitTitle_sofa => 'Дивааны хэмжээ';
+
+  @override
+  String unit_count(String n) {
+    return '$n ширхэг';
+  }
+
+  @override
+  String get unit_wall => 'Ханан дээрх 1';
+
+  @override
+  String get unit_stand => 'Шалан дээрх 1';
+
+  @override
+  String get unit_two_in_one => '2in1 (шалан дээрх + ханан дээрх)';
+
+  @override
+  String get unit_ceiling => 'Тааз суурилуулсан 1';
+
+  @override
+  String get unit_seat_1_2 => '1–2 суудалтай';
+
+  @override
+  String get unit_seat_3 => '3 суудалтай';
+
+  @override
+  String get unit_seat_4_plus => '4+ суудалтай';
+
+  @override
+  String get unit_l_shape => 'L хэлбэр · буйдан';
+
+  @override
+  String durH(String h) {
+    return '$h цаг';
+  }
+
+  @override
+  String durHM(String h, String m) {
+    return '$h цаг $m мин';
+  }
+
+  @override
+  String durM(String m) {
+    return '$m мин';
+  }
+
+  @override
+  String about(String value) {
+    return 'ойролцоогоор $value';
+  }
+
+  @override
+  String fromPrice(String price) {
+    return '$price-ээс';
+  }
+
+  @override
+  String get quoteBadge => 'Үнийн санал';
+
+  @override
+  String get status0 => 'Зөвлөгөө авч байна';
+
+  @override
+  String get status1 => 'Захиалга баталгаажсан';
+
+  @override
+  String get status2 => 'Баг оноогдсон';
+
+  @override
+  String get status3 => 'Цэвэрлэгээ дууссан';
+
+  @override
+  String get statusCancelled => 'Цуцлагдсан';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Сайн байна уу, $name\nӨнөөдөр аль хэсгээ цэвэрлэх вэ?';
+  }
+
+  @override
+  String get homeGreetingAnon => 'Өнөөдөр аль хэсгээ\nцэвэрлэх вэ?';
+
+  @override
+  String get homeUpcoming => 'Ирэх захиалга';
+
+  @override
+  String dDay(String days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get homeServices => 'Ямар цэвэрлэгээ хэрэгтэй вэ?';
+
+  @override
+  String get homeAddAddress =>
+      'Хаягаа бүртгэвэл боломжтой үйлчилгээ, үнийг шууд харуулна';
+
+  @override
+  String get homeAddAddressCta => 'Хаяг бүртгэх';
+
+  @override
+  String homeRebook(String service) {
+    return '$service-ийг дахин захиалах';
+  }
+
+  @override
+  String get homeRebookBody => 'Өмнөх нөхцөлөөр хурдан захиална, хоёр товшилт';
+
+  @override
+  String get homeNotices => 'Шинэ мэдээ';
+
+  @override
+  String get trustVat => 'НӨАТ багтсан\nХарагдаж буй үнэ яг тэр хэвээрээ';
+
+  @override
+  String get trustCancel => 'Үнэгүй цуцлах\nочихоос 2 хоногийн өмнөх хүртэл';
+
+  @override
+  String get trustCard =>
+      'Картын мэдээллийг зөвхөн\nтөлбөр хүлээн авагч компани хадгална';
+
+  @override
+  String stepOf(String current, String total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get chooseDate => 'Огноо сонгох';
+
+  @override
+  String get notIncluded => 'Анхаарна уу';
+
+  @override
+  String studioBlockedTitle(String size) {
+    return '$size пён нь студиогийн цэвэрлэгээнд хэт том байна';
+  }
+
+  @override
+  String get studioBlockedBody =>
+      'Зөвлөх багийн манай хүмүүс таны орон сууцад тохирох үйлчилгээг санал болгоно.';
+
+  @override
+  String get consultCta => 'Зөвлөх багт асуух';
+
+  @override
+  String get addressTitle => 'Хаана очих вэ?';
+
+  @override
+  String get addressAdd => 'Шинэ хаяг нэмэх';
+
+  @override
+  String get addressLabel => 'Нэр';
+
+  @override
+  String get addressLabelHint => 'Жишээ: Гэр';
+
+  @override
+  String get addressDistrict => 'Дүүрэг';
+
+  @override
+  String get addressRoad => 'Гудамжны хаяг';
+
+  @override
+  String get addressDetail => 'Дэлгэрэнгүй (орц, давхар, тоот)';
+
+  @override
+  String get addressSize => 'Орон сууцны хэмжээ (пён)';
+
+  @override
+  String get addressSizeHelp => 'Ашиглах талбай · 1 пён ≈ 3.3 м²';
+
+  @override
+  String get addressHome => 'Гэр';
+
+  @override
+  String get addressOffice => 'Оффис';
+
+  @override
+  String get addressEmpty => 'Хадгалсан хаяг алга';
+
+  @override
+  String get addressSaved => 'Хаяг хадгалагдлаа';
+
+  @override
+  String pyeong(String n) {
+    return '$n пён';
+  }
+
+  @override
+  String get scheduleTitle => 'Хэзээ очих вэ?';
+
+  @override
+  String get scheduleArrival => 'Очих цаг';
+
+  @override
+  String get scheduleFull => 'Дүүрсэн';
+
+  @override
+  String scheduleWindow(String start, String end) {
+    return '$start–$end цагт очно';
+  }
+
+  @override
+  String scheduleEnds(String duration, String time) {
+    return '$duration · ойролцоогоор $time-д дуусна';
+  }
+
+  @override
+  String get scheduleRange => 'Маргаашаас эхлэн 60 хоногийн дотор захиална';
+
+  @override
+  String get morning => 'Өглөө';
+
+  @override
+  String get afternoon => 'Өдөр';
+
+  @override
+  String get scheduleQuoteNote => 'Очих яг цагийг чатаар баталгаажуулна';
+
+  @override
+  String get goToPayment => 'Төлбөр рүү үргэлжлүүлэх';
+
+  @override
+  String get prepTitle => 'Очихын өмнө эдгээрийг бэлдэнэ үү';
+
+  @override
+  String get prepBody => 'Эдгээр байхгүй бол зарим ажлыг хязгаарлаж магадгүй';
+
+  @override
+  String get prepAsk => 'Бэлдэх боломжгүй юу? Манай багт мэдэгдээрэй';
+
+  @override
+  String get tool_vacuum => 'Тоос сорогч';
+
+  @override
+  String get tool_trash => 'Хогны уут';
+
+  @override
+  String get tool_mop => 'Шалны моп';
+
+  @override
+  String get tool_cloth => 'Алчуур';
+
+  @override
+  String get tool_gloves => 'Резинэн бээлий';
+
+  @override
+  String get tool_sponge => 'Сивэн';
+
+  @override
+  String get tool_spray => 'Олон зориулалтын угаагч';
+
+  @override
+  String get checkoutTitle => 'Төлбөр';
+
+  @override
+  String get coupon => 'Купон';
+
+  @override
+  String get couponNone => 'Ашиглахгүй';
+
+  @override
+  String couponAvailable(String count) {
+    return '$count ашиглах боломжтой';
+  }
+
+  @override
+  String get paymentMethod => 'Төлбөрийн хэрэгсэл';
+
+  @override
+  String get addPaymentMethod => 'Төлбөрийн хэрэгсэл нэмэх';
+
+  @override
+  String get methodCard => 'Кредит / дебит карт';
+
+  @override
+  String get methodKakao => 'KakaoPay';
+
+  @override
+  String get methodNaver => 'Naver Pay';
+
+  @override
+  String get methodToss => 'Toss Pay';
+
+  @override
+  String get methodRegistered => 'Нэмэгдсэн';
+
+  @override
+  String get methodAdded => 'Төлбөрийн хэрэгсэл нэмэгдлээ';
+
+  @override
+  String get listPrice => 'Үйлчилгээний үнэ';
+
+  @override
+  String get discount => 'Купоны хөнгөлөлт';
+
+  @override
+  String get total => 'Төлөх дүн';
+
+  @override
+  String get vatIncluded => 'НӨАТ багтсан';
+
+  @override
+  String payAmount(String amount) {
+    return '$amount төлөх';
+  }
+
+  @override
+  String get needMethod => 'Эхлээд төлбөрийн хэрэгсэл нэмнэ үү';
+
+  @override
+  String freeCancelUntil(String date) {
+    return '$date хүртэл үнэгүй цуцлах боломжтой';
+  }
+
+  @override
+  String get doneTitle => 'Захиалга амжилттай боллоо!';
+
+  @override
+  String get doneBody => 'Баг оноогдмогц бид танд нэн даруй мэдэгдэнэ';
+
+  @override
+  String get doneQuoteTitle => 'Зөвлөгөөний хүсэлт хүлээн авлаа';
+
+  @override
+  String get doneQuoteBody =>
+      'Зөвлөх баг шалгаад эцсийн үнийн саналыг илгээнэ. Үнийн саналаа Чат таб дээрээс харж болно.';
+
+  @override
+  String get goHome => 'Нүүр хуудас';
+
+  @override
+  String get viewBooking => 'Захиалга харах';
+
+  @override
+  String get bookingsTitle => 'Захиалга';
+
+  @override
+  String get bookingsUpcoming => 'Ирэх';
+
+  @override
+  String get bookingsPast => 'Өнгөрсөн';
+
+  @override
+  String get bookingsEmpty => 'Одоогоор захиалга алга';
+
+  @override
+  String get bookingsEmptyBody =>
+      'Анхны захиалгадаа ашиглах угтах купон хүлээж байна';
+
+  @override
+  String get bookNow => 'Цэвэрлэгээ захиалах';
+
+  @override
+  String get detailTitle => 'Захиалгын дэлгэрэнгүй';
+
+  @override
+  String get stepRequested => 'Хүсэлт хүлээн авсан';
+
+  @override
+  String get stepConfirmed => 'Захиалга баталгаажсан';
+
+  @override
+  String get stepAssigned => 'Баг оноогдсон';
+
+  @override
+  String get stepCompleted => 'Цэвэрлэгээ дууссан';
+
+  @override
+  String teamVisiting(String team) {
+    return '$team очиж байна';
+  }
+
+  @override
+  String get photosSoon => 'Цэвэрлэгээний өмнөх, дараах зургууд энд гарна';
+
+  @override
+  String get before => 'Өмнө';
+
+  @override
+  String get after => 'Дараа';
+
+  @override
+  String get prepCheck => 'Бэлтгэх жагсаалт';
+
+  @override
+  String get prepAllSet => 'Бүгд бэлэн';
+
+  @override
+  String get visitAddress => 'Хаяг';
+
+  @override
+  String get paid => 'Төлсөн';
+
+  @override
+  String get askTeam => 'Манай багт бичих';
+
+  @override
+  String get cancelBooking => 'Захиалга цуцлах';
+
+  @override
+  String get cancelTitle => 'Энэ захиалгыг цуцлах уу?';
+
+  @override
+  String get cancelFree =>
+      'Одоо цуцалбал төлсөн дүнг бүрэн буцааж, купоныг нь эргүүлнэ.';
+
+  @override
+  String get cancelKeep => 'Хэвээр үлдээх';
+
+  @override
+  String get cancelled => 'Захиалга цуцлагдлаа';
+
+  @override
+  String get reschedule => 'Цаг солих';
+
+  @override
+  String get rescheduled => 'Цаг солигдлоо';
+
+  @override
+  String get visitNotes => 'Багт хэлэх зүйл';
+
+  @override
+  String get notesEntry => 'Орох арга (орцны код гэх мэт)';
+
+  @override
+  String get notesParking => 'Зогсоол';
+
+  @override
+  String get notesOther => 'Бусад';
+
+  @override
+  String get notesSaved => 'Тэмдэглэл хадгалагдлаа';
+
+  @override
+  String depositDue(String amount) {
+    return 'Захиалгаа баталгаажуулахын тулд $amount урьдчилгаа төлнө үү';
+  }
+
+  @override
+  String get payDeposit => 'Урьдчилгаа төлөх';
+
+  @override
+  String get waitingQuote => 'Зөвлөх баг таны үнийн саналыг бэлдэж байна';
+
+  @override
+  String get estimate => 'Урьдчилсан үнэ';
+
+  @override
+  String get finalPrice => 'Эцсийн үнэ';
+
+  @override
+  String get deposit => 'Урьдчилгаа';
+
+  @override
+  String get balance => 'Үлдэгдэл';
+
+  @override
+  String balanceDue(String amount) {
+    return '$amount үлдэгдлийг төлнө үү';
+  }
+
+  @override
+  String get payBalance => 'Үлдэгдэл төлөх';
+
+  @override
+  String get reviewTitle => 'Цэвэрлэгээ ямар байна?';
+
+  @override
+  String get reviewHint => 'Сайн талаа эсвэл сайжруулах зүйлээ бидэнд хэлээрэй';
+
+  @override
+  String ratingStars(String n) {
+    return '$n одтой';
+  }
+
+  @override
+  String get reviewSubmit => 'Сэтгэгдэл илгээх';
+
+  @override
+  String get reviewThanks => 'Сэтгэгдэлд баярлалаа';
+
+  @override
+  String get bookAgain => 'Дахин захиалах';
+
+  @override
+  String get chatTitle => 'Чат';
+
+  @override
+  String get chatTeam => 'Зөвлөх баг';
+
+  @override
+  String get chatHours => 'Ажлын өдрүүд 09:00–18:00';
+
+  @override
+  String get chatEmpty => 'Асуулт байна уу? Хүссэн үедээ асууж болно';
+
+  @override
+  String get chatNew => 'Шинэ чат';
+
+  @override
+  String get chatTopicTitle => 'Юу сонирхож байна вэ?';
+
+  @override
+  String get topicOther => 'Бусад асуулт';
+
+  @override
+  String get chatHint => 'Зурвас бичнэ үү';
+
+  @override
+  String get chatSend => 'Илгээх';
+
+  @override
+  String get chatPhoto => 'Зураг илгээх';
+
+  @override
+  String get chatTyping => 'Зөвлөх баг бичиж байна…';
+
+  @override
+  String get quick_confirm => 'Захиалгаа баталгаажуулъя';
+
+  @override
+  String get quick_price => 'Үнийн талаар асуух';
+
+  @override
+  String get quick_date => 'Огноо солихыг хүсэж байна';
+
+  @override
+  String get quick_parking => 'Зогсоол байгаа юу?';
+
+  @override
+  String get quick_hello => 'Сайн байна уу';
+
+  @override
+  String get quick_duration => 'Хэр удах вэ?';
+
+  @override
+  String get quoteArrived => 'Эцсийн үнийн санал ирлээ';
+
+  @override
+  String get quoteDepositNow => 'Одоо 10% урьдчилгаа';
+
+  @override
+  String get quoteBalanceLater => 'Цэвэрлэгээний дараа үлдэгдэл';
+
+  @override
+  String get quotePay => 'Урьдчилгаа төлөөд баталгаажуулах';
+
+  @override
+  String get quotePaid => 'Төлөгдсөн';
+
+  @override
+  String get requestCard => 'Үнийн саналын хүсэлт';
+
+  @override
+  String get sys_consultation_received => 'Таны хүсэлт хүлээн авагдлаа';
+
+  @override
+  String sys_deposit_paid(String amount) {
+    return '$amount урьдчилгаа төлөгдлөө. Захиалга баталгаажлаа.';
+  }
+
+  @override
+  String get sys_booking_cancelled => 'Захиалга цуцлагдлаа';
+
+  @override
+  String sys_status_changed(String status) {
+    return 'Төлөв \'$status\' болж өөрчлөгдлөө';
+  }
+
+  @override
+  String get sys_job_completed =>
+      'Цэвэрлэгээ дууслаа. Өмнөх, дараах зургуудыг харна уу.';
+
+  @override
+  String sys_rescheduled(String date) {
+    return 'Огноо $date болж солигдлоо';
+  }
+
+  @override
+  String get sys_reschedule_declined =>
+      'Хамтрагч шинэ цагт очиж чадахгүй байна. Манай зөвлөх баг дахин зохицуулна.';
+
+  @override
+  String get moreTitle => 'Бусад';
+
+  @override
+  String get moreScope => 'Үйлчилгээний хүрээ';
+
+  @override
+  String get morePayments => 'Төлбөрийн хэрэгсэл';
+
+  @override
+  String get moreCoupons => 'Купон';
+
+  @override
+  String get morePoints => 'Оноо';
+
+  @override
+  String get moreAccount => 'Бүртгэлийн мэдээлэл';
+
+  @override
+  String get moreAddresses => 'Хаяг';
+
+  @override
+  String get moreNotices => 'Мэдэгдэл';
+
+  @override
+  String get moreTips => 'Цэвэрлэгээний зөвлөмж';
+
+  @override
+  String get moreFaq => 'Түгээмэл асуулт';
+
+  @override
+  String get morePartner => 'Хамтрагч болох';
+
+  @override
+  String get moreLanguage => 'Хэл';
+
+  @override
+  String get langSystem => 'Төхөөрөмжийн тохиргоог дагах';
+
+  @override
+  String moreVersion(String v) {
+    return 'Хувилбар $v';
+  }
+
+  @override
+  String get morePrivacy => 'Нууцлалын бодлого';
+
+  @override
+  String get moreTerms => 'Үйлчилгээний нөхцөл';
+
+  @override
+  String get moreLicenses => 'Нээлттэй эхийн лиценз';
+
+  @override
+  String get logout => 'Гарах';
+
+  @override
+  String get deleteAccount => 'Бүртгэл устгах';
+
+  @override
+  String get deleteAccountBody =>
+      'Таны хувийн мэдээлэл устах бөгөөд сэргээх боломжгүй. Идэвхтэй захиалгуудаа эхлээд цуцална уу.';
+
+  @override
+  String get couponsEmpty => 'Одоогоор купон алга';
+
+  @override
+  String couponUntil(String date) {
+    return '$date хүртэл';
+  }
+
+  @override
+  String get couponUsed => 'Ашигласан';
+
+  @override
+  String get couponExpired => 'Хугацаа дууссан';
+
+  @override
+  String get couponAnyService => 'Бүх үйлчилгээнд';
+
+  @override
+  String get coupon_welcome_studio => 'Угтах купон: студио';
+
+  @override
+  String get coupon_welcome_any => 'Угтах купон';
+
+  @override
+  String get pointsBalance => 'Таны оноо';
+
+  @override
+  String get pointsEmpty => 'Оноо гүйлгээний түүх алга';
+
+  @override
+  String get accountName => 'Нэр';
+
+  @override
+  String get accountPhone => 'Утас';
+
+  @override
+  String get accountEmail => 'Имэйл';
+
+  @override
+  String get accountLogin => 'Нэвтрэх арга';
+
+  @override
+  String get accountLoginPhone => 'Утасны баталгаажуулалт';
+
+  @override
+  String get methodsEmpty => 'Бүртгэлтэй төлбөрийн хэрэгсэл алга';
+
+  @override
+  String get noContent => 'Одоогоор агуулга алга';
+
+  @override
+  String get quoteTypeTitle => 'Ямар цэвэрлэгээ хэрэгтэй вэ?';
+
+  @override
+  String get type_standard => 'Стандарт нүүхийн цэвэрлэгээ';
+
+  @override
+  String get type_same_day_move => 'Нүүх өдрийн цэвэрлэгээ';
+
+  @override
+  String get type_some_luggage_left => 'Зарим эд зүйл үлдсэн';
+
+  @override
+  String get type_normal_move_in => 'Энгийн нүүж орох';
+
+  @override
+  String get type_after_interior => 'Засвар хийсний дараа';
+
+  @override
+  String get type_lived_in_deep_clean => 'Амьдарч байхад бүрэн цэвэрлэгээ';
+
+  @override
+  String get luggageTitle => 'Орон сууцанд эд зүйл хэр байна вэ?';
+
+  @override
+  String get luggage_empty => 'Эд зүйлгүй';
+
+  @override
+  String get luggage_partly_unpacked => 'Хэсэгчлэн байрлуулсан';
+
+  @override
+  String get luggage_fully_lived_in => 'Бүрэн амьдарч байгаа';
+
+  @override
+  String get luggage_unknown => 'Мэдэхгүй байна';
+
+  @override
+  String get quoteBasicTitle => 'Орон сууцныхаа талаар хэлнэ үү';
+
+  @override
+  String get buildingType => 'Барилгын төрөл';
+
+  @override
+  String get building_apartment => 'Орон сууц';
+
+  @override
+  String get building_villa => 'Бага өндрийн барилга';
+
+  @override
+  String get building_officetel => 'Офистел';
+
+  @override
+  String get building_house => 'Хувийн байшин';
+
+  @override
+  String get building_other => 'Бусад';
+
+  @override
+  String get layoutTitle => 'Өрөөний тоо';
+
+  @override
+  String get layout_studio => 'Студио';
+
+  @override
+  String get layout_one_and_half => '1.5 өрөө';
+
+  @override
+  String get layout_two_rooms => '2 өрөө';
+
+  @override
+  String get layout_three_rooms => '3 өрөө';
+
+  @override
+  String get layout_four_plus => '4+ өрөө';
+
+  @override
+  String get duplexTitle => 'Дуплекс мөн үү?';
+
+  @override
+  String get quoteSpaceTitle => 'Талбайн талаар нэмэлт мэдээлэл';
+
+  @override
+  String get bathroomsLabel => 'Угаалгын өрөө';
+
+  @override
+  String get balconiesLabel => 'Тагт · угаалгын өрөө';
+
+  @override
+  String get elevatorTitle => 'Лифт байгаа юу?';
+
+  @override
+  String get floor3Label => '3-р давхар ба дээш';
+
+  @override
+  String get quoteEstimateTitle => 'Таны урьдчилсан үнэ';
+
+  @override
+  String get quoteEstimateBody =>
+      'Эцсийн үнийг зургийг харсны дараа чатаар тогтооно';
+
+  @override
+  String get quoteG1 => 'Эцсийн үнийг чатаар тохирно';
+
+  @override
+  String get quoteG2 =>
+      'Баталгаажуулахад 10% урьдчилгаа, үлдэгдлийг цэвэрлэгээний дараа';
+
+  @override
+  String get quoteG3 => 'Баталгаажуулахаас өмнө үнэгүй цуцална';
+
+  @override
+  String get quoteConfirmTitle => 'Хүсэлтээ шалгана уу';
+
+  @override
+  String get quoteRequest => 'Зөвлөгөөний хүсэлт илгээх';
+
+  @override
+  String get quoteNoPayNow => 'Одоо төлөх зүйл алга';
+
+  @override
+  String get summaryType => 'Төрөл';
+
+  @override
+  String get summaryHome => 'Орон сууц';
+
+  @override
+  String get summaryDate => 'Очих өдөр';
+
+  @override
+  String get themeTitle => 'Загвар';
+
+  @override
+  String get themeDark => 'Харанхуй';
+
+  @override
+  String get themeLight => 'Гэрэлтэй';
+
+  @override
+  String get themeSystem => 'Системийн';
+
+  @override
+  String get themeTip => 'Загвар солих';
+
+  @override
+  String get pTabJobs => 'Ажил';
+
+  @override
+  String get pTabQuotes => 'Миний үнийн санал';
+
+  @override
+  String get pTabSchedule => 'Хуваарь';
+
+  @override
+  String get pIntroTitle =>
+      'Ажил, хуваарь, төлбөр\nцэвэрлэгээний мэргэжилтнүүдэд';
+
+  @override
+  String get pIntroBody =>
+      'Хүссэн бүс, цагтаа л ажиллана. Долоо хоног бүр цалинжина.';
+
+  @override
+  String get pOnbTitle => 'Таны талаар хэлнэ үү';
+
+  @override
+  String get pOnbName => 'Таны нэр';
+
+  @override
+  String get pOnbTeam => 'Багийн нэр';
+
+  @override
+  String get pOnbServices => 'Санал болгох үйлчилгээ';
+
+  @override
+  String get pOnbAreas => 'Ажиллах бүс';
+
+  @override
+  String get pOnbDone => 'Бүртгүүлэх';
+
+  @override
+  String get pPendingTitle => 'Таны бүртгэл шалгагдаж байна';
+
+  @override
+  String get pPendingBody =>
+      'Баталгаажмагц мэдэгдэл илгээнэ. Тэр хүртэл төлбөр хүлээн авах дансаа бүртгэнэ үү.';
+
+  @override
+  String get pSuspended =>
+      'Таны бүртгэл түр зогссон байна. Үйл ажиллагааны багт холбогдоно уу.';
+
+  @override
+  String get pDirect => 'Шууд захиалга';
+
+  @override
+  String get pQuoteReq => 'Үнийн саналын хүсэлт';
+
+  @override
+  String get pShowClosed => 'Хаагдсан ажлыг харуулах';
+
+  @override
+  String get pSortNewest => 'Шинэ нь эхэнд';
+
+  @override
+  String get pSortVisit => 'Ойрын очих өдөр';
+
+  @override
+  String get pSortAmount => 'Дүн ихээс';
+
+  @override
+  String get pNoJobs => 'Одоогоор тохирох ажил алга';
+
+  @override
+  String get pNoJobsBody =>
+      'Үйлчилгээ, бүс, ажлын цагаа өргөтгөвөл илүү ажил харагдана';
+
+  @override
+  String get pPayout => 'Таны орлого';
+
+  @override
+  String get pCustomerEstimate => 'Үйлчлүүлэгчийн урьдчилсан үнэ';
+
+  @override
+  String get pNew => 'ШИНЭ';
+
+  @override
+  String get pClosed => 'Хаагдсан';
+
+  @override
+  String get pPrivacyNote =>
+      'Яг хаяг, үйлчлүүлэгчийн мэдээлэл хүлээн авсны дараа харагдана';
+
+  @override
+  String get pAccept => 'Ажил авах';
+
+  @override
+  String get pAcceptConfirm => 'Энэ ажлыг авах уу?';
+
+  @override
+  String get pAcceptBody =>
+      'Ажил таны хуваарьт нэмэгдэж, үйлчлүүлэгчид баг оноогдсон тухай мэдэгдэл очно. Очихоос 2 хоногийн дотор цуцлахад хязгаарлалт бий.';
+
+  @override
+  String get pAccepted => 'Ажил авлаа';
+
+  @override
+  String get pSendQuote => 'Үнийн санал илгээх';
+
+  @override
+  String get pQuotePrice => 'Үйлчлүүлэгчийн төлөх дүн';
+
+  @override
+  String get pQuoteNote => 'Зөвлөх багт үлдээх тэмдэглэл';
+
+  @override
+  String get pQuoteSent => 'Үнийн санал илгээгдлээ';
+
+  @override
+  String pFee(String rate) {
+    return 'Шимтгэл $rate%';
+  }
+
+  @override
+  String get pYouGet => 'Таны авах дүн';
+
+  @override
+  String get pQuoteAll => 'Бүгд';
+
+  @override
+  String get pQ_waiting => 'Хүлээгдэж байна';
+
+  @override
+  String get pQ_selected => 'Сонгогдсон';
+
+  @override
+  String get pQ_rejected => 'Сонгогдоогүй';
+
+  @override
+  String get pQ_closed => 'Хаагдсан';
+
+  @override
+  String get pUnseenOnly => 'Зөвхөн шинэ үр дүн';
+
+  @override
+  String get pNoQuotes => 'Илгээсэн үнийн санал алга';
+
+  @override
+  String get pMyQuote => 'Миний үнийн санал';
+
+  @override
+  String get pWithdraw => 'Үнийн саналаа буцаах';
+
+  @override
+  String get pWithdrawn => 'Үнийн санал буцаагдлаа';
+
+  @override
+  String get pOnlyMine => 'Зөвхөн миний';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n ажил';
+  }
+
+  @override
+  String get pNoSchedule => 'Энэ өдөр хуваарь алга';
+
+  @override
+  String get pCancelledBanner =>
+      'Үйлчлүүлэгч энэ ажлыг цуцалсан. Дууссан гэж тэмдэглэх боломжгүй.';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return 'Цаг солих хүсэлт: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => 'Очиж чадна';
+
+  @override
+  String get pRescheduleNo => 'Очиж чадахгүй';
+
+  @override
+  String get pCustomer => 'Үйлчлүүлэгч';
+
+  @override
+  String get pCall => 'Нууц дугаараар залгах';
+
+  @override
+  String get pCallSoon =>
+      'Нууц дугаараар залгах үйлчилгээ нээлтийн үед идэвхжинэ';
+
+  @override
+  String get pQuietHours => '20 цагаас хойш залгахгүй байхыг хүсье';
+
+  @override
+  String get pAssignee => 'Хариуцагч';
+
+  @override
+  String get pChangeAssignee => 'Хариуцагч солих';
+
+  @override
+  String get pCustomerRequests => 'Үйлчлүүлэгчийн хүсэлт';
+
+  @override
+  String get pTeamMemo => 'Багийн тэмдэглэл (үйлчлүүлэгчид харагдахгүй)';
+
+  @override
+  String get pMemoSaved => 'Тэмдэглэл хадгалагдлаа';
+
+  @override
+  String get pPayoutBreakdown => 'Төлбөрийн задаргаа';
+
+  @override
+  String get pAfterBalance => 'Үйлчлүүлэгч үлдэгдлээ төлсний дараа цалинжина';
+
+  @override
+  String get pChatOps => 'Үйл ажиллагааны багтай чатлах';
+
+  @override
+  String get pComplete => 'Ажлыг дуусгах';
+
+  @override
+  String get pBeforePhotos => 'Цэвэрлэгээний өмнөх зураг';
+
+  @override
+  String get pAfterPhotos => 'Цэвэрлэгээний дараах зураг';
+
+  @override
+  String get pAddPhoto => 'Зураг нэмэх';
+
+  @override
+  String get pChecklist => 'Шалгах жагсаалт';
+
+  @override
+  String get pCheck1 => 'Хүссэн бүх талбайг цэвэрлэсэн';
+
+  @override
+  String get pCheck2 => 'Хогийг зайлуулж, багажаа цуглуулсан';
+
+  @override
+  String get pCheck3 => 'Цонх, цахилгаан, усыг шалгасан';
+
+  @override
+  String get pCheck4 => 'Үйлчлүүлэгчийн хүсэлтийг биелүүлсэн';
+
+  @override
+  String get pCompleteCta => 'Дууссан гэж тэмдэглэх';
+
+  @override
+  String get pCompleteNeed =>
+      'Төрөл бүрт дор хаяж 1 зураг оруулж, бүх зүйлийг тэмдэглээрэй';
+
+  @override
+  String get pCompleted => 'Сайн ажиллалаа!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$date-нд $amount цалинжина';
+  }
+
+  @override
+  String get pPayoutWaiting =>
+      'Цалингийн өдрийг үйлчлүүлэгч төлсний дараа тогтооно';
+
+  @override
+  String get pPendingPayout => 'Хүлээгдэж буй цалин';
+
+  @override
+  String get pSettlements => 'Тооцооны түүх';
+
+  @override
+  String get pS_waiting_balance => 'Үлдэгдэл хүлээж байна';
+
+  @override
+  String get pS_pending => 'Төлөх хуваарьтай';
+
+  @override
+  String get pS_paid => 'Төлөгдсөн';
+
+  @override
+  String get pS_held => 'Түр зогсоосон';
+
+  @override
+  String get pReviews => 'Үйлчлүүлэгчийн сэтгэгдэл';
+
+  @override
+  String get pNoReviews => 'Одоогоор сэтгэгдэл алга';
+
+  @override
+  String get pReplyLater => 'Хариу бичих боломж удахгүй нээгдэнэ';
+
+  @override
+  String get pServicesAreas => 'Үйлчилгээ · бүс';
+
+  @override
+  String get pPayoutAccount => 'Цалин хүлээн авах данс';
+
+  @override
+  String get pBank => 'Банк';
+
+  @override
+  String get pAccountNumber => 'Дансны дугаар';
+
+  @override
+  String get pHolder => 'Данс эзэмшигч';
+
+  @override
+  String get pVerified => 'Баталгаажсан';
+
+  @override
+  String get pUnverified => 'Шалгагдаж байна';
+
+  @override
+  String get pAccountSaved => 'Данс хадгалагдлаа. Өөрчлөгдвөл дахин шалгана.';
+
+  @override
+  String get pWorkSchedule => 'Ажлын хуваарь';
+
+  @override
+  String get pWeekdays => 'Ажлын өдрүүд';
+
+  @override
+  String get pDayParts => 'Ажлын цаг';
+
+  @override
+  String get pDaysOff => 'Амралтын өдрүүд';
+
+  @override
+  String get pAddDayOff => 'Амралтын өдөр нэмэх';
+
+  @override
+  String get pSaved => 'Хадгалагдлаа';
+
+  @override
+  String get pTeam => 'Багийн гишүүд';
+
+  @override
+  String get pOwner => 'Эзэн';
+
+  @override
+  String get pInvited => 'Урилга илгээсэн';
+
+  @override
+  String get pInvite => 'Гишүүн урих';
+
+  @override
+  String get pInviteSent => 'Урилга илгээгдлээ';
+
+  @override
+  String get pRemove => 'Хасах';
+
+  @override
+  String get pNotifications => 'Мэдэгдлийн тохиргоо';
+
+  @override
+  String get pNotifyDirect => 'Шинэ шууд захиалгын ажил';
+
+  @override
+  String get pNotifyQuotes => 'Үнийн саналын хүсэлт · үр дүн';
+
+  @override
+  String get pNotifyChat => 'Үйл ажиллагааны зурвас';
+
+  @override
+  String get pQuietNight => 'Шөнийн дуу чимээгүй горим (22–08)';
+
+  @override
+  String get pNewInquiry => 'Шинэ асуулт';
+
+  @override
+  String get pTopic_settlement => 'Цалин';
+
+  @override
+  String get pTopic_reschedule => 'Цаг солих · цуцлах';
+
+  @override
+  String get pTopic_app => 'Аппын тусламж';
+
+  @override
+  String get pOpsTeam => 'Үйл ажиллагаа';
+
+  @override
+  String get pViewJob => 'Ажил харах';
+
+  @override
+  String pBookingNo(String n) {
+    return 'Захиалга $n';
+  }
+
+  @override
+  String get pSize => 'Талбай';
+
+  @override
+  String get pSchedule => 'Хуваарь';
+
+  @override
+  String get pSpace => 'Талбайн мэдээлэл';
+}

@@ -6,8 +6,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_fil.dart';
+import 'app_localizations_id.dart';
 import 'app_localizations_ja.dart';
+import 'app_localizations_km.dart';
 import 'app_localizations_ko.dart';
+import 'app_localizations_mn.dart';
+import 'app_localizations_ne.dart';
+import 'app_localizations_ru.dart';
+import 'app_localizations_si.dart';
+import 'app_localizations_th.dart';
+import 'app_localizations_uz.dart';
 import 'app_localizations_vi.dart';
 import 'app_localizations_zh.dart';
 
@@ -97,8 +106,17 @@ abstract class T {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('fil'),
+    Locale('id'),
     Locale('ja'),
+    Locale('km'),
     Locale('ko'),
+    Locale('mn'),
+    Locale('ne'),
+    Locale('ru'),
+    Locale('si'),
+    Locale('th'),
+    Locale('uz'),
     Locale('vi'),
     Locale('zh'),
   ];
@@ -4001,8 +4019,22 @@ class _TDelegate extends LocalizationsDelegate<T> {
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ja', 'ko', 'vi', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'en',
+    'fil',
+    'id',
+    'ja',
+    'km',
+    'ko',
+    'mn',
+    'ne',
+    'ru',
+    'si',
+    'th',
+    'uz',
+    'vi',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_TDelegate old) => false;
@@ -4013,10 +4045,28 @@ T lookupT(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return TEn();
+    case 'fil':
+      return TFil();
+    case 'id':
+      return TId();
     case 'ja':
       return TJa();
+    case 'km':
+      return TKm();
     case 'ko':
       return TKo();
+    case 'mn':
+      return TMn();
+    case 'ne':
+      return TNe();
+    case 'ru':
+      return TRu();
+    case 'si':
+      return TSi();
+    case 'th':
+      return TTh();
+    case 'uz':
+      return TUz();
     case 'vi':
       return TVi();
     case 'zh':

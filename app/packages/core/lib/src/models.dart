@@ -215,5 +215,6 @@ class ContentItem {
   /// Content is stored per language; fall back to Korean.
   String title(String lang) => _pick(j['title'], lang);
   String text(String lang) => _pick(body['text'], lang);
-  static String _pick(Object? v, String lang) => v is Map ? (v[lang] ?? v['ko'] ?? '') as String : (v as String? ?? '');
+  // Missing language: English is the better bridge for foreign residents; Korean last.
+  static String _pick(Object? v, String lang) => v is Map ? (v[lang] ?? v['en'] ?? v['ko'] ?? '') as String : (v as String? ?? '');
 }

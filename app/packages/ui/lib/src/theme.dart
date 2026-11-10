@@ -88,6 +88,11 @@ const _fallback = [
   'Noto Sans KR',
   'Noto Sans JP',
   'Noto Sans SC',
+  'Noto Sans Sinhala',
+  'Noto Sans Devanagari',
+  'Noto Sans Thai',
+  'Noto Sans Khmer',
+  'Noto Sans Mongolian',
   'Malgun Gothic',
   'sans-serif',
 ];

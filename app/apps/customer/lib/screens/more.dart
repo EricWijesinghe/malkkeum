@@ -261,14 +261,7 @@ class MoreTab extends StatelessWidget {
   }
 }
 
-String _langName(String? code, T t) => switch (code) {
-  'ko' => '한국어',
-  'en' => 'English',
-  'ja' => '日本語',
-  'zh' => '中文',
-  'vi' => 'Tiếng Việt',
-  _ => t.langSystem,
-};
+String _langName(String? code, T t) => LocaleController.names[code] ?? t.langSystem;
 
 class LanguageScreen extends StatelessWidget {
   const LanguageScreen({super.key});
@@ -283,7 +276,7 @@ class LanguageScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(Space.gutter),
         children: [
-          for (final code in [null, 'ko', 'en', 'ja', 'zh', 'vi'])
+          for (final code in [null, ...LocaleController.names.keys])
             Padding(
               padding: const EdgeInsets.only(bottom: Space.xs),
               child: OptionCard(

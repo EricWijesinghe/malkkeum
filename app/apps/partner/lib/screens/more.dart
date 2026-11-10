@@ -123,11 +123,7 @@ class MoreTab extends StatelessWidget {
                     items: [
                       for (final (c, n) in [
                         (null, t.langSystem),
-                        ('ko', '한국어'),
-                        ('en', 'English'),
-                        ('ja', '日本語'),
-                        ('zh', '中文'),
-                        ('vi', 'Tiếng Việt'),
+                        for (final e in LocaleController.names.entries) (e.key, e.value),
                       ])
                         DropdownMenuItem(value: c, child: Text(n)),
                     ],

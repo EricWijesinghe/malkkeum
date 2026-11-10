@@ -1,0 +1,2080 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Nepali (`ne`).
+class TNe extends T {
+  TNe([String locale = 'ne']) : super(locale);
+
+  @override
+  String get apSocialOr => 'वा';
+
+  @override
+  String get apSocialSignIn => 'छिटो साइन इन';
+
+  @override
+  String get apLoginKakao => 'Kakao बाट जारी राख्नुहोस्';
+
+  @override
+  String get apLoginNaver => 'Naver बाट जारी राख्नुहोस्';
+
+  @override
+  String get apLoginGoogle => 'Google बाट जारी राख्नुहोस्';
+
+  @override
+  String get apLoginApple => 'Apple बाट जारी राख्नुहोस्';
+
+  @override
+  String get apDevSocialNote =>
+      'यो विकास मोड हो। वास्तविक सामाजिक खाताको सट्टा परीक्षण खातामा साइन इन हुन्छ।';
+
+  @override
+  String get apSocialFailed =>
+      'छिटो साइन इन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get apProviderNotConfigured => 'यो साइन इन विधि अझै तयार हुँदैछ';
+
+  @override
+  String get apPhoneTaken => 'यो नम्बर अर्को खातासँग पहिले नै दर्ता छ';
+
+  @override
+  String get apPhoneAttachTitle =>
+      'कृपया आफ्नो मोबाइल नम्बर प्रमाणित गर्नुहोस्';
+
+  @override
+  String get apPhoneAttachBody =>
+      'यो नम्बर बुकिङ र पार्टनर सम्पर्कका लागि प्रयोग हुन्छ। एक पटक मात्र प्रमाणित गर्नु पर्छ।';
+
+  @override
+  String get apPayAllTitle => 'भुक्तानी विधि छान्नुहोस्';
+
+  @override
+  String get apPaySavedTitle => 'सुरक्षित गरिएका विधिहरू';
+
+  @override
+  String get apPayMoreTitle => 'सबै भुक्तानी विधिहरू';
+
+  @override
+  String get apPayBillingHint =>
+      'एक पटक दर्ता गर्नुहोस्, त्यसपछि एक ट्यापमा भुक्तानी गर्नुहोस्';
+
+  @override
+  String get apPayCheckoutHint => 'भुक्तानी विन्डोमा पूरा गर्नुहोस्';
+
+  @override
+  String get apPayRegistering => 'दर्ता गर्दै…';
+
+  @override
+  String get apPayManageHint =>
+      'सुरक्षित विधिहरूबाट एक ट्यापमा भुक्तानी गर्नुहोस्। छिटो भुक्तानी विधि यहाँ थप्न सकिन्छ।';
+
+  @override
+  String get apMethodCard => 'क्रेडिट र डेबिट कार्ड';
+
+  @override
+  String get apMethodKakao => 'KakaoPay';
+
+  @override
+  String get apMethodNaver => 'NaverPay';
+
+  @override
+  String get apMethodToss => 'TossPay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => 'बैंक ट्रान्सफर';
+
+  @override
+  String get apMethodVirtual => 'भर्चुअल खाता';
+
+  @override
+  String get apMethodPhone => 'मोबाइल बिल भुक्तानी';
+
+  @override
+  String get apMethodUnknown => 'अन्य';
+
+  @override
+  String get apVaTitle => 'जम्मा गर्ने खाता तयार छ';
+
+  @override
+  String get apVaWaiting => 'रकम जम्मा हुन बाँकी छ';
+
+  @override
+  String get apVaBody =>
+      'म्याद भित्र रकम जम्मा भएपछि बुकिङ पुष्टि हुन्छ। जम्मा स्वचालित रूपमा जाँच गरिन्छ।';
+
+  @override
+  String get apVaBank => 'बैंक';
+
+  @override
+  String get apVaAccount => 'खाता नम्बर';
+
+  @override
+  String get apVaHolder => 'खाता धनी';
+
+  @override
+  String get apVaAmount => 'जम्मा गर्ने रकम';
+
+  @override
+  String apVaDue(String due) {
+    return '$due भित्र जम्मा गर्नुहोस्';
+  }
+
+  @override
+  String get apVaCopy => 'कपी गर्नुहोस्';
+
+  @override
+  String get apVaCopied => 'खाता नम्बर कपी भयो';
+
+  @override
+  String get apVaBannerTitle => 'एउटा बुकिङ जम्मा हुन बाँकी छ';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · $due सम्म';
+  }
+
+  @override
+  String get apVaBannerAction => 'खाता हेर्नुहोस्';
+
+  @override
+  String get apPgTitle => 'भुक्तानी विन्डो';
+
+  @override
+  String get apPgDevNote =>
+      'यो विकास वातावरणका लागि मात्र भुक्तानी सिमुलेसन हो। वास्तविक भुक्तानी हुँदैन।';
+
+  @override
+  String apPgPay(String amount) {
+    return '$amount भुक्तानी गर्नुहोस्';
+  }
+
+  @override
+  String get apPgIssue => 'खाता नम्बर लिनुहोस्';
+
+  @override
+  String get apPgCancel => 'भुक्तानी रद्द गर्नुहोस्';
+
+  @override
+  String get apErrSlotFullRefunded =>
+      'त्यो समय भर्ने भएकोले भुक्तानी स्वतः रद्द गरियो';
+
+  @override
+  String get apErrCheckoutExpired =>
+      'भुक्तानीको समय सकियो। कृपया फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get apIdentityTitle => 'पहिचान प्रमाणीकरण (PASS)';
+
+  @override
+  String get apIdentityBody =>
+      'तपाईंको फोन सेवा प्रदायकमार्फत पहिचान पुष्टि गरिन्छ। सुरक्षित कारोबार र भुक्तानीका लागि प्रयोग हुन्छ।';
+
+  @override
+  String get apIdentityAction => 'पहिचान प्रमाणित गर्नुहोस्';
+
+  @override
+  String get apIdentityDone => 'पहिचान प्रमाणित भयो';
+
+  @override
+  String get apIdentityVerified => 'प्रमाणित';
+
+  @override
+  String get apIdentityUnverified => 'अझै प्रमाणित भएको छैन';
+
+  @override
+  String get apIdentityDevTitle => 'परीक्षण पहिचान प्रमाणीकरण';
+
+  @override
+  String get apIdentityDevBody =>
+      'विकास वातावरणमा वास्तविक जाँच बिना नै पास हुन्छ।';
+
+  @override
+  String get apIdentityDevPass => 'पास गर्नुहोस्';
+
+  @override
+  String get apPayManageTitle => 'छिटो भुक्तानी दर्ता गर्नुहोस्';
+
+  @override
+  String get cTitle => 'सञ्चालन कन्सोल';
+
+  @override
+  String get cEmail => 'इमेल';
+
+  @override
+  String get cPassword => 'पासवर्ड';
+
+  @override
+  String get cLogin => 'साइन इन';
+
+  @override
+  String get cLoginFailed => 'इमेल वा पासवर्ड मिलेन';
+
+  @override
+  String get cDashboard => 'ड्यासबोर्ड';
+
+  @override
+  String get cBookings => 'बुकिङ';
+
+  @override
+  String get cQuoteDesk => 'मूल्य अनुमान डेस्क';
+
+  @override
+  String get cInbox => 'परामर्श इनबक्स';
+
+  @override
+  String get cCatalog => 'सूची · मूल्य';
+
+  @override
+  String get cMarketing => 'कुपन · सामग्री';
+
+  @override
+  String get cPartners => 'पार्टनर';
+
+  @override
+  String get cSettlements => 'भुक्तानी फर्छ्यौट';
+
+  @override
+  String get cCustomers => 'ग्राहक';
+
+  @override
+  String get cStaff => 'कर्मचारी';
+
+  @override
+  String get cSearchCommand => 'खोज · आदेश';
+
+  @override
+  String get cPaletteHint => 'खण्डको नाम वा बुकिङ नम्बर टाइप गर्नुहोस्';
+
+  @override
+  String get cTodayJobs => 'आजका काम';
+
+  @override
+  String get cOpenQuotes => 'मूल्य अनुमान बाँकी';
+
+  @override
+  String get cUnassigned => 'नतोकिएको';
+
+  @override
+  String get cUnreadThreads => 'नपढिएका परामर्श';
+
+  @override
+  String get cRevenue30 => '३० दिनको भुक्तानी';
+
+  @override
+  String get cBookings30 => '३० दिनका बुकिङ';
+
+  @override
+  String get cByService => 'सेवाअनुसार बुकिङ (३० दिन)';
+
+  @override
+  String get cAllStatus => 'सबै स्थिति';
+
+  @override
+  String get cAllServices => 'सबै सेवा';
+
+  @override
+  String get cSearch => 'खोज (नम्बर, फोन, नाम, ठेगाना)';
+
+  @override
+  String get cNoResults => 'कुनै नतिजा भेटिएन';
+
+  @override
+  String get cNumber => 'नम्बर';
+
+  @override
+  String get cVisit => 'भ्रमण';
+
+  @override
+  String get cService => 'सेवा';
+
+  @override
+  String get cStatus => 'स्थिति';
+
+  @override
+  String get cTeam => 'टोली';
+
+  @override
+  String get cAmount => 'रकम';
+
+  @override
+  String get cCustomer => 'ग्राहक';
+
+  @override
+  String get cPayments => 'भुक्तानी';
+
+  @override
+  String get cChangeStatus => 'स्थिति बदल्नुहोस्';
+
+  @override
+  String get cTeamName => 'तोकिएको टोली';
+
+  @override
+  String get cAssign => 'टोली तोक्नुहोस्';
+
+  @override
+  String get cMarkDone => 'सम्पन्न चिन्ह लगाउनुहोस्';
+
+  @override
+  String get cConfirm => 'पुष्टि चिन्ह लगाउनुहोस्';
+
+  @override
+  String get cCancelRefund => 'रद्द · फिर्ता';
+
+  @override
+  String get cRefundAmount => 'फिर्ता रकम (खाली = पूरा)';
+
+  @override
+  String get cDone => 'भयो';
+
+  @override
+  String get cAnswers => 'ग्राहकका जवाफ';
+
+  @override
+  String get cEstimateCalc => 'स्वचालित गणना';
+
+  @override
+  String get cBase => 'आधार';
+
+  @override
+  String get cExtras => 'थप';
+
+  @override
+  String get cSurcharge => 'अतिरिक्त शुल्क';
+
+  @override
+  String get cBeforeVat => 'VAT अगाडि';
+
+  @override
+  String get cProQuotes => 'पार्टनरका मूल्य अनुमान';
+
+  @override
+  String get cNoProQuotes => 'पार्टनरबाट अहिलेसम्म कुनै अनुमान आएको छैन';
+
+  @override
+  String get cFinalPrice => 'ग्राहकलाई अन्तिम मूल्य';
+
+  @override
+  String get cQuoteNote => 'ग्राहकलाई पठाउने नोट';
+
+  @override
+  String get cSendQuote => 'ग्राहकलाई मूल्य अनुमान पठाउनुहोस्';
+
+  @override
+  String get cQuoteSent => 'मूल्य अनुमान पठाइयो';
+
+  @override
+  String get cCustomerChats => 'ग्राहक';
+
+  @override
+  String get cPartnerChats => 'पार्टनर';
+
+  @override
+  String get cSelectBooking => 'बुकिङ छान्नुहोस्';
+
+  @override
+  String get cRefunded => 'फिर्ता भयो';
+
+  @override
+  String get cPartRefunded => 'आंशिक फिर्ता';
+
+  @override
+  String get cFailed => 'असफल';
+
+  @override
+  String get cSelectThread => 'कुराकानी छान्नुहोस्';
+
+  @override
+  String get cReplyHint => 'जवाफ लेख्नुहोस् · पठाउन Ctrl+Enter';
+
+  @override
+  String get cOpenBooking => 'बुकिङ खोल्नुहोस्';
+
+  @override
+  String get cShortcuts => 'J/K सार्नुहोस् · Ctrl+K आदेश';
+
+  @override
+  String get cPricing => 'मूल्य';
+
+  @override
+  String get cMinutes => 'समय (मिनेट)';
+
+  @override
+  String get cActive => 'बिक्रीमा';
+
+  @override
+  String get cSaved => 'सुरक्षित भयो';
+
+  @override
+  String get cSlotCapacity => 'आगमन समयअनुसार क्षमता';
+
+  @override
+  String get cUnlimited => 'असीमित';
+
+  @override
+  String get cFormula => 'मूल्य गणना सूत्र';
+
+  @override
+  String get f_base_studio => 'आधार: स्टुडियो';
+
+  @override
+  String get f_base_one_and_half => 'आधार: १.५ कोठा';
+
+  @override
+  String get f_base_two_rooms => 'आधार: २ कोठा';
+
+  @override
+  String get f_base_three_rooms => 'आधार: ३ कोठा';
+
+  @override
+  String get f_base_four_plus => 'आधार: ४ वा बढी कोठा';
+
+  @override
+  String get f_per_extra_bathroom => 'थप बाथरुम प्रति';
+
+  @override
+  String get f_per_balcony => 'बालकोनी प्रति';
+
+  @override
+  String get f_duplex => 'डुप्लेक्स';
+
+  @override
+  String get f_no_elevator_high_floor => 'लिफ्ट छैन + ३ तल वा माथि';
+
+  @override
+  String get cIssueCoupon => 'कुपन जारी गर्नुहोस्';
+
+  @override
+  String get cCouponName => 'कुपनको नाम';
+
+  @override
+  String get cCouponPhones => 'लक्षित फोन नम्बर (प्रति लाइन एउटा)';
+
+  @override
+  String get cAllCustomers => 'सबै ग्राहकलाई';
+
+  @override
+  String cIssued(String n) {
+    return '$n वटा जारी भयो';
+  }
+
+  @override
+  String get cContent => 'सामग्री';
+
+  @override
+  String get cKind_notice => 'सूचना';
+
+  @override
+  String get cKind_tip => 'सुझाव';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'ब्यानर';
+
+  @override
+  String get cKind_legal => 'नियम';
+
+  @override
+  String get cNewContent => 'नयाँ सामग्री';
+
+  @override
+  String get cTitleField => 'शीर्षक';
+
+  @override
+  String get cBodyField => 'विवरण';
+
+  @override
+  String get cSlug => 'पहिचानकर्ता (नियम: privacy / terms)';
+
+  @override
+  String get cVerify => 'स्वीकृत';
+
+  @override
+  String get cSuspend => 'निलम्बन';
+
+  @override
+  String get cPro_pending => 'स्वीकृति बाँकी';
+
+  @override
+  String get cPro_verified => 'सक्रिय';
+
+  @override
+  String get cPro_suspended => 'निलम्बित';
+
+  @override
+  String get cCompleted => 'सम्पन्न';
+
+  @override
+  String get cCancelledN => 'रद्द';
+
+  @override
+  String get cRating => 'मूल्याङ्कन';
+
+  @override
+  String get cFeeRate => 'शुल्क %';
+
+  @override
+  String get cRunPayouts => 'भुक्तानी फर्छ्यौट चलाउनुहोस्';
+
+  @override
+  String get cPayoutDate => 'भुक्तानी मिति (सम्मको)';
+
+  @override
+  String cPayoutDone(String n) {
+    return '$n जना पार्टनरलाई भुक्तानी गरियो';
+  }
+
+  @override
+  String get cHold => 'रोक्नुहोस्';
+
+  @override
+  String get cRelease => 'रोक हटाउनुहोस्';
+
+  @override
+  String get cNet => 'भुक्तानी रकम';
+
+  @override
+  String get cAddStaff => 'कर्मचारी थप्नुहोस्';
+
+  @override
+  String get cRoleAdmin => 'एडमिन';
+
+  @override
+  String get cRoleConsultant => 'परामर्शदाता';
+
+  @override
+  String get cDeactivate => 'निष्क्रिय गर्नुहोस्';
+
+  @override
+  String get cActivate => 'सक्रिय गर्नुहोस्';
+
+  @override
+  String get cPasswordRule => 'कम्तीमा १२ अक्षर';
+
+  @override
+  String get cAdminOnly => 'एडमिनले मात्र गर्न सक्छन्';
+
+  @override
+  String cBookingsCount(String n) {
+    return '$n वटा बुकिङ';
+  }
+
+  @override
+  String get cJoined => 'सामेल भएको';
+
+  @override
+  String get cNewBooking => 'नयाँ बुकिङ आएको छ';
+
+  @override
+  String get cNewMessage => 'नयाँ सन्देश';
+
+  @override
+  String get ok => 'ठिक छ';
+
+  @override
+  String get cancel => 'रद्द';
+
+  @override
+  String get next => 'अर्को';
+
+  @override
+  String get close => 'बन्द गर्नुहोस्';
+
+  @override
+  String get save => 'सुरक्षित गर्नुहोस्';
+
+  @override
+  String get delete => 'मेटाउनुहोस्';
+
+  @override
+  String get edit => 'सम्पादन';
+
+  @override
+  String get change => 'परिवर्तन';
+
+  @override
+  String get retry => 'फेरि प्रयास';
+
+  @override
+  String get yes => 'हो';
+
+  @override
+  String get no => 'होइन';
+
+  @override
+  String get required => 'अनिवार्य';
+
+  @override
+  String get viewAll => 'सबै हेर्नुहोस्';
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get errorGeneric =>
+      'केही समस्या भयो। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get errorNetwork => 'इन्टरनेट जडान जाँच गर्नुहोस्';
+
+  @override
+  String get err_invalid_phone => 'मोबाइल नम्बर जाँच गर्नुहोस्';
+
+  @override
+  String get err_otp_invalid => 'प्रमाणीकरण कोड मिलेन';
+
+  @override
+  String get err_otp_expired => 'कोडको म्याद सकियो। नयाँ कोड माग्नुहोस्।';
+
+  @override
+  String get err_rate_limited =>
+      'धेरै प्रयास भए। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get err_studio_too_large =>
+      'स्टुडियो सफाइ १० प्योङसम्मको घरका लागि मात्र हो';
+
+  @override
+  String get err_date_out_of_range => 'भोलिदेखि ६० दिनभित्रको मिति छान्नुहोस्';
+
+  @override
+  String get err_slot_full => 'त्यो समय भरिइसक्यो। अर्को समय छान्नुहोस्।';
+
+  @override
+  String get err_coupon_expired => 'यो कुपनको म्याद सकियो';
+
+  @override
+  String get err_coupon_used => 'यो कुपन पहिले नै प्रयोग भइसकेको छ';
+
+  @override
+  String get err_coupon_wrong_service =>
+      'यो सेवाका लागि यो कुपन प्रयोग गर्न मिल्दैन';
+
+  @override
+  String get err_payment_failed =>
+      'भुक्तानी स्वीकृत भएन। अर्को विधि प्रयोग गर्नुहोस्।';
+
+  @override
+  String get err_payment_method_required => 'भुक्तानी विधि छान्नुहोस्';
+
+  @override
+  String get err_cancellation_window_closed =>
+      'भ्रमणको २ दिन अगादेखि हाम्रो परामर्श टोलीमार्फत मात्र रद्द गर्न सकिन्छ';
+
+  @override
+  String get err_address_required => 'भ्रमण ठेगाना थप्नुहोस्';
+
+  @override
+  String get err_already_taken => 'अर्को पार्टनरले पहिले स्वीकार गर्नुभयो';
+
+  @override
+  String get err_invalid_address => 'सबै ठेगाना विवरण भर्नुहोस्';
+
+  @override
+  String get tabHome => 'होम';
+
+  @override
+  String get tabBookings => 'बुकिङ';
+
+  @override
+  String get tabChat => 'परामर्श';
+
+  @override
+  String get tabMore => 'थप';
+
+  @override
+  String get introTitle => 'विज्ञ सफाइ\nएक मिनेटमै बुक गर्नुहोस्';
+
+  @override
+  String get introBody =>
+      'अग्रिम मूल्य · जाँचिएका सफाइ टोली · प्रत्यक्ष प्रगति';
+
+  @override
+  String get introStart => 'फोन नम्बरबाट सुरु गर्नुहोस्';
+
+  @override
+  String get loginPhoneTitle => 'तपाईंको मोबाइल नम्बर के हो?';
+
+  @override
+  String get loginPhoneHint => '010-0000-0000';
+
+  @override
+  String get loginSendCode => 'कोड पठाउनुहोस्';
+
+  @override
+  String get loginCodeTitle => '६ अंकको कोड हाल्नुहोस्';
+
+  @override
+  String loginCodeSentTo(String phone) {
+    return '$phone मा पठाइयो';
+  }
+
+  @override
+  String get loginResend => 'फेरि पठाउनुहोस्';
+
+  @override
+  String get loginVerify => 'पुष्टि गर्नुहोस्';
+
+  @override
+  String get loginTerms =>
+      'जारी राखेर तपाईं सेवाका सर्त र गोपनीयता नीतिमा सहमत हुनुहुन्छ';
+
+  @override
+  String get profileTitle => 'हामीले तपाईंलाई के भनेर बोलाऊँ?';
+
+  @override
+  String get profileNameHint => 'नाम';
+
+  @override
+  String get profileDone => 'सुरु गर्नुहोस्';
+
+  @override
+  String get welcomeToast => 'स्वागत कुपन २ वटा तपाईंको वालेटमा राखिएको छ';
+
+  @override
+  String get svc_studio => 'स्टुडियो सफाइ';
+
+  @override
+  String get svc_kitchen => 'भान्छा सफाइ';
+
+  @override
+  String get svc_bathroom => 'बाथरुम सफाइ';
+
+  @override
+  String get svc_mattress => 'म्याट्रेस सफाइ';
+
+  @override
+  String get svc_aircon => 'एयरकन्डिसनर सफाइ';
+
+  @override
+  String get svc_sofa => 'सोफा सफाइ';
+
+  @override
+  String get svc_move_out => 'घर सार्दाको सफाइ';
+
+  @override
+  String get svc_move_in => 'नयाँ घर पस्नुअघिको सफाइ';
+
+  @override
+  String get svcShort_studio => 'स्टुडियो';
+
+  @override
+  String get svcShort_kitchen => 'भान्छा';
+
+  @override
+  String get svcShort_bathroom => 'बाथरुम';
+
+  @override
+  String get svcShort_mattress => 'म्याट्रेस';
+
+  @override
+  String get svcShort_aircon => 'एसी';
+
+  @override
+  String get svcShort_sofa => 'सोफा';
+
+  @override
+  String get svcShort_move_out => 'घर छाड्ने';
+
+  @override
+  String get svcShort_move_in => 'घर पस्ने';
+
+  @override
+  String get svcDesc_studio =>
+      '१० प्योङसम्मको स्टुडियो (एउटा कोठा, एउटा बाथरुम) २ घण्टामा राम्रोसँग सफा गरिन्छ।';
+
+  @override
+  String get svcDesc_kitchen =>
+      'सिंक, ग्यास चुल्हो, चिम्नीको बाहिरी भाग र काउन्टरमा केन्द्रित भान्छा सफाइ।';
+
+  @override
+  String get svcDesc_bathroom =>
+      'सेल्फ, नल, वाशबेसिन र शौचालयको भित्र-बाहिर सफा गरी भुइँ सुकाएर सकाइन्छ।';
+
+  @override
+  String get svcDesc_mattress =>
+      'विशेष उपकरणले धुलो, किर्ना र दाग निकालिन्छ, त्यसपछि स्टिमले जीवाणुरहित गरिन्छ।';
+
+  @override
+  String get svcDesc_aircon =>
+      'खोलेर कन्डेन्सर, फ्यान र फिल्टर उच्च दबाबमा धोइ जीवाणुरहित गरिन्छ।';
+
+  @override
+  String get svcDesc_sofa =>
+      'कपडाअनुसारको क्लिनरले फोहोर फुकाइन्छ, त्यसपछि भिजो एक्स्ट्र्याक्सन विधिले सफा गरिन्छ।';
+
+  @override
+  String get svcDesc_move_out =>
+      'घर छाड्नुअघि सामान निकालिएको घर उपकरणसहित विशेष सफाइ टोलीले सफा गर्छ।';
+
+  @override
+  String get svcDesc_move_in =>
+      'नयाँ घरमा बस्नुअघि उपकरणसहित विशेष सफाइ टोलीले भित्री भाग सफा गर्छ।';
+
+  @override
+  String get svcNotes_bathroom =>
+      'ड्रेन वा शौचालय जाम भएमा सेवा सीमित हुन सक्छ\nविशेष रसायन, छत वा भेन्ट सफाइ प्रदान गरिँदैन\nपुरानो ढुसी र टाँसिएको फोहोर पूर्ण रूपमा नहट्न सक्छ';
+
+  @override
+  String get svcNotes_mattress =>
+      'सिंगलदेखि किङ साइजसम्म एउटै मूल्य\nधोएपछि पूर्ण सुक्न ४–६ घण्टा लाग्छ\nस्प्रिङ बिग्रिएको वा ओह्रालिएको जस्ता संरचनात्मक समस्या सुधार गरिँदैन';
+
+  @override
+  String get svcNotes_aircon =>
+      '१० वर्षभन्दा पुराना उपकरण खोल्न कठिन हुन सक्छ\nबाहिरी युनिट सफाइ समावेश छैन\nसफाइअघि र पछि सामान्य रूपमा चलेको छ कि छैन भनी जाँच गरिन्छ';
+
+  @override
+  String get svcNotes_sofa =>
+      'छालाको सोफा सफाइ र चिल्लो बनाउने कोटिङसहित गरिन्छ\nपुराना दाग वा रङ सर्ने समस्या पूर्ण रूपमा नहट्न सक्छ\nपूर्ण सुक्न ४–६ घण्टा लाग्छ';
+
+  @override
+  String get unitTitle_bathroom => 'बाथरुमको संख्या';
+
+  @override
+  String get unitTitle_mattress => 'म्याट्रेसको संख्या';
+
+  @override
+  String get unitTitle_aircon => 'एसीको प्रकार';
+
+  @override
+  String get unitTitle_sofa => 'सोफाको साइज';
+
+  @override
+  String unit_count(String n) {
+    return '$n वटा';
+  }
+
+  @override
+  String get unit_wall => 'भित्तामा झुण्ड्याइने, १ वटा';
+
+  @override
+  String get unit_stand => 'भुइँमा राखिने, १ वटा';
+
+  @override
+  String get unit_two_in_one => '२ इन १ (स्ट्यान्ड + भित्ता)';
+
+  @override
+  String get unit_ceiling => 'छतमा जडान, १ वटा';
+
+  @override
+  String get unit_seat_1_2 => '१–२ जनाको';
+
+  @override
+  String get unit_seat_3 => '३ जनाको';
+
+  @override
+  String get unit_seat_4_plus => '४ जना वा बढी';
+
+  @override
+  String get unit_l_shape => 'L आकार · काउच';
+
+  @override
+  String durH(String h) {
+    return '$h घण्टा';
+  }
+
+  @override
+  String durHM(String h, String m) {
+    return '$h घण्टा $m मिनेट';
+  }
+
+  @override
+  String durM(String m) {
+    return '$m मिनेट';
+  }
+
+  @override
+  String about(String value) {
+    return 'लगभग $value';
+  }
+
+  @override
+  String fromPrice(String price) {
+    return '$price बाट';
+  }
+
+  @override
+  String get quoteBadge => 'मूल्य अनुमान';
+
+  @override
+  String get status0 => 'परामर्शमा';
+
+  @override
+  String get status1 => 'बुकिङ पुष्टि भयो';
+
+  @override
+  String get status2 => 'टोली तोकियो';
+
+  @override
+  String get status3 => 'सफाइ सम्पन्न';
+
+  @override
+  String get statusCancelled => 'रद्द भयो';
+
+  @override
+  String homeGreeting(String name) {
+    return '$name जी,\nआज कुन ठाउँ सफा गरौँ?';
+  }
+
+  @override
+  String get homeGreetingAnon => 'आज कुन ठाउँ\nसफा गरौँ?';
+
+  @override
+  String get homeUpcoming => 'आगामी बुकिङ';
+
+  @override
+  String dDay(String days) {
+    return '$days दिनमा';
+  }
+
+  @override
+  String get homeServices => 'तपाईंलाई कुन सफाइ चाहिन्छ?';
+
+  @override
+  String get homeAddAddress =>
+      'ठेगाना दर्ता गर्नुहोस्, उपलब्ध सेवा र मूल्य तुरुन्तै देखाउँछौँ';
+
+  @override
+  String get homeAddAddressCta => 'ठेगाना दर्ता गर्नुहोस्';
+
+  @override
+  String homeRebook(String service) {
+    return '$service फेरि बुक गर्नुहोस्';
+  }
+
+  @override
+  String get homeRebookBody => 'गत पटकजस्तै सर्तमा छिटो बुक गर्नुहोस्';
+
+  @override
+  String get homeNotices => 'नयाँ समाचार';
+
+  @override
+  String get trustVat => 'VAT समावेश\nदेखाइएकै मूल्य';
+
+  @override
+  String get trustCancel => 'भ्रमणको २ दिनअघिसम्म\nनिःशुल्क रद्द';
+
+  @override
+  String get trustCard => 'कार्डको विवरण\nभुक्तानी कम्पनीमा मात्र सुरक्षित';
+
+  @override
+  String stepOf(String current, String total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get chooseDate => 'मिति छान्नुहोस्';
+
+  @override
+  String get notIncluded => 'कृपया जाँच गर्नुहोस्';
+
+  @override
+  String studioBlockedTitle(String size) {
+    return '$size प्योङ स्टुडियो सफाइका लागि ठूलो छ';
+  }
+
+  @override
+  String get studioBlockedBody =>
+      'हाम्रो परामर्श टोलीले तपाईंको घरका लागि उपयुक्त सेवा सुझाउनेछ।';
+
+  @override
+  String get consultCta => 'परामर्शमा सोध्नुहोस्';
+
+  @override
+  String get addressTitle => 'कहाँ आउनु पर्ने हो?';
+
+  @override
+  String get addressAdd => 'नयाँ ठेगाना थप्नुहोस्';
+
+  @override
+  String get addressLabel => 'नाम';
+
+  @override
+  String get addressLabelHint => 'जस्तै: घर';
+
+  @override
+  String get addressDistrict => 'जिल्ला';
+
+  @override
+  String get addressRoad => 'सडक ठेगाना';
+
+  @override
+  String get addressDetail => 'फ्ल्याट / तल्ला';
+
+  @override
+  String get addressSize => 'घरको साइज (प्योङ)';
+
+  @override
+  String get addressSizeHelp => 'प्रयोग योग्य क्षेत्रफल · १ प्योङ ≈ ३.३ m²';
+
+  @override
+  String get addressHome => 'घर';
+
+  @override
+  String get addressOffice => 'अफिस';
+
+  @override
+  String get addressEmpty => 'कुनै ठेगाना सुरक्षित गरिएको छैन';
+
+  @override
+  String get addressSaved => 'ठेगाना सुरक्षित भयो';
+
+  @override
+  String pyeong(String n) {
+    return '$n प्योङ';
+  }
+
+  @override
+  String get scheduleTitle => 'कहिले आउने?';
+
+  @override
+  String get scheduleArrival => 'आगमन समय';
+
+  @override
+  String get scheduleFull => 'भरियो';
+
+  @override
+  String scheduleWindow(String start, String end) {
+    return '$start–$end बीच आगमन';
+  }
+
+  @override
+  String scheduleEnds(String duration, String time) {
+    return '$duration · लगभग $time मा सकिन्छ';
+  }
+
+  @override
+  String get scheduleRange => 'भोलिदेखि ६० दिनभित्र बुक गर्न सकिन्छ';
+
+  @override
+  String get morning => 'बिहान';
+
+  @override
+  String get afternoon => 'दिउँसो';
+
+  @override
+  String get scheduleQuoteNote => 'सटीक आगमन समय परामर्शमा पुष्टि गरिनेछ';
+
+  @override
+  String get goToPayment => 'भुक्तानीमा जानुहोस्';
+
+  @override
+  String get prepTitle => 'भ्रमणअघि यी तयार राख्नुहोस्';
+
+  @override
+  String get prepBody => 'यी नभए केही काम सीमित हुन सक्छ';
+
+  @override
+  String get prepAsk =>
+      'तयार गर्न नसकिने भए परामर्शमा पहिले नै जानकारी दिनुहोस्';
+
+  @override
+  String get tool_vacuum => 'भ्याकुम';
+
+  @override
+  String get tool_trash => 'फोहोर झोला';
+
+  @override
+  String get tool_mop => 'मप';
+
+  @override
+  String get tool_cloth => 'कपडा';
+
+  @override
+  String get tool_gloves => 'रबर पञ्जा';
+
+  @override
+  String get tool_sponge => 'स्क्रबर';
+
+  @override
+  String get tool_spray => 'बहुउद्देश्य क्लिनर';
+
+  @override
+  String get checkoutTitle => 'भुक्तानी';
+
+  @override
+  String get coupon => 'कुपन';
+
+  @override
+  String get couponNone => 'प्रयोग नगर्ने';
+
+  @override
+  String couponAvailable(String count) {
+    return '$count वटा उपलब्ध';
+  }
+
+  @override
+  String get paymentMethod => 'भुक्तानी विधि';
+
+  @override
+  String get addPaymentMethod => 'भुक्तानी विधि थप्नुहोस्';
+
+  @override
+  String get methodCard => 'क्रेडिट / डेबिट कार्ड';
+
+  @override
+  String get methodKakao => 'KakaoPay';
+
+  @override
+  String get methodNaver => 'Naver Pay';
+
+  @override
+  String get methodToss => 'Toss Pay';
+
+  @override
+  String get methodRegistered => 'दर्ता भयो';
+
+  @override
+  String get methodAdded => 'भुक्तानी विधि थपियो';
+
+  @override
+  String get listPrice => 'सेवा शुल्क';
+
+  @override
+  String get discount => 'कुपन छुट';
+
+  @override
+  String get total => 'जम्मा रकम';
+
+  @override
+  String get vatIncluded => 'VAT समावेश';
+
+  @override
+  String payAmount(String amount) {
+    return '$amount भुक्तानी गर्नुहोस्';
+  }
+
+  @override
+  String get needMethod => 'पहिले भुक्तानी विधि दर्ता गर्नुहोस्';
+
+  @override
+  String freeCancelUntil(String date) {
+    return '$date सम्म निःशुल्क रद्द';
+  }
+
+  @override
+  String get doneTitle => 'बुकिङ सम्पन्न भयो!';
+
+  @override
+  String get doneBody => 'टोली तोकिनासाथ हामी तपाईंलाई खबर गर्नेछौँ';
+
+  @override
+  String get doneQuoteTitle => 'परामर्श अनुरोध प्राप्त भयो';
+
+  @override
+  String get doneQuoteBody =>
+      'हाम्रो टोलीले जाँचपछि अन्तिम मूल्य अनुमान पठाउनेछ। यो परामर्श ट्याबमा हेर्न सकिन्छ।';
+
+  @override
+  String get goHome => 'होममा जानुहोस्';
+
+  @override
+  String get viewBooking => 'बुकिङ हेर्नुहोस्';
+
+  @override
+  String get bookingsTitle => 'बुकिङ';
+
+  @override
+  String get bookingsUpcoming => 'आगामी';
+
+  @override
+  String get bookingsPast => 'विगतका';
+
+  @override
+  String get bookingsEmpty => 'अहिलेसम्म कुनै बुकिङ छैन';
+
+  @override
+  String get bookingsEmptyBody => 'तपाईंको पहिलो बुकिङका लागि कुपनहरू तयार छन्';
+
+  @override
+  String get bookNow => 'सफाइ बुक गर्नुहोस्';
+
+  @override
+  String get detailTitle => 'बुकिङ विवरण';
+
+  @override
+  String get stepRequested => 'परामर्श अनुरोध';
+
+  @override
+  String get stepConfirmed => 'बुकिङ पुष्टि';
+
+  @override
+  String get stepAssigned => 'टोली तोकियो';
+
+  @override
+  String get stepCompleted => 'सफाइ सम्पन्न';
+
+  @override
+  String teamVisiting(String team) {
+    return '$team भ्रमण गर्दै हुनुहुन्छ';
+  }
+
+  @override
+  String get photosSoon => 'सफाइपछि अघि र पछिका फोटो यहाँ देखिनेछन्';
+
+  @override
+  String get before => 'सफाइअघि';
+
+  @override
+  String get after => 'सफाइपछि';
+
+  @override
+  String get prepCheck => 'तयारी सूची';
+
+  @override
+  String get prepAllSet => 'सबै तयार छ';
+
+  @override
+  String get visitAddress => 'भ्रमण ठेगाना';
+
+  @override
+  String get paid => 'भुक्तानी भयो';
+
+  @override
+  String get askTeam => 'हाम्रो टोलीलाई सोध्नुहोस्';
+
+  @override
+  String get cancelBooking => 'बुकिङ रद्द गर्नुहोस्';
+
+  @override
+  String get cancelTitle => 'यो बुकिङ रद्द गर्ने हो?';
+
+  @override
+  String get cancelFree =>
+      'अहिले रद्द गर्दा भुक्तानी रकम पूरा फिर्ता हुनेछ र कुपन पनि फिर्ता दिइनेछ।';
+
+  @override
+  String get cancelKeep => 'राख्नुहोस्';
+
+  @override
+  String get cancelled => 'बुकिङ रद्द भयो';
+
+  @override
+  String get reschedule => 'मिति परिवर्तन';
+
+  @override
+  String get rescheduled => 'मिति परिवर्तन भयो';
+
+  @override
+  String get visitNotes => 'टोलीका लागि अनुरोध';
+
+  @override
+  String get notesEntry => 'भित्र कसरी पस्ने (ढोकाको कोड आदि)';
+
+  @override
+  String get notesParking => 'पार्किङ';
+
+  @override
+  String get notesOther => 'अन्य';
+
+  @override
+  String get notesSaved => 'अनुरोध सुरक्षित भयो';
+
+  @override
+  String depositDue(String amount) {
+    return '$amount अग्रिम भुक्तानी गरेपछि बुकिङ पुष्टि हुन्छ';
+  }
+
+  @override
+  String get payDeposit => 'अग्रिम भुक्तानी गर्नुहोस्';
+
+  @override
+  String get waitingQuote => 'परामर्श टोलीले तपाईंको मूल्य अनुमान तयार गर्दैछ';
+
+  @override
+  String get estimate => 'अनुमानित रकम';
+
+  @override
+  String get finalPrice => 'अन्तिम मूल्य अनुमान';
+
+  @override
+  String get deposit => 'अग्रिम रकम';
+
+  @override
+  String get balance => 'बाँकी रकम';
+
+  @override
+  String balanceDue(String amount) {
+    return 'कृपया $amount बाँकी रकम भुक्तानी गर्नुहोस्';
+  }
+
+  @override
+  String get payBalance => 'बाँकी रकम भुक्तानी गर्नुहोस्';
+
+  @override
+  String get reviewTitle => 'सफाइ कस्तो भयो?';
+
+  @override
+  String get reviewHint => 'राम्रो लागेका वा सुधार्न सकिने कुरा बताउनुहोस्';
+
+  @override
+  String ratingStars(String n) {
+    return '$n अंक';
+  }
+
+  @override
+  String get reviewSubmit => 'समीक्षा पठाउनुहोस्';
+
+  @override
+  String get reviewThanks => 'तपाईंको समीक्षाका लागि धन्यवाद!';
+
+  @override
+  String get bookAgain => 'फेरि बुक गर्नुहोस्';
+
+  @override
+  String get chatTitle => 'परामर्श';
+
+  @override
+  String get chatTeam => 'सहयोग टोली';
+
+  @override
+  String get chatHours => 'सोमबार–शुक्रबार ०९:००–१८:००';
+
+  @override
+  String get chatEmpty => 'कुनै प्रश्न छ? जुनसुकै बेला सोध्नुहोस्';
+
+  @override
+  String get chatNew => 'नयाँ परामर्श';
+
+  @override
+  String get chatTopicTitle => 'तपाईंलाई के जान्न मन छ?';
+
+  @override
+  String get topicOther => 'अन्य सोधपुछ';
+
+  @override
+  String get chatHint => 'सन्देश लेख्नुहोस्';
+
+  @override
+  String get chatSend => 'पठाउनुहोस्';
+
+  @override
+  String get chatPhoto => 'फोटो पठाउनुहोस्';
+
+  @override
+  String get chatTyping => 'टोली टाइप गर्दैछ';
+
+  @override
+  String get quick_confirm => 'कृपया बुकिङ पुष्टि गरिदिनुहोस्';
+
+  @override
+  String get quick_price => 'मूल्यबारे जान्न चाहन्छु';
+
+  @override
+  String get quick_date => 'मिति परिवर्तन गर्न चाहन्छु';
+
+  @override
+  String get quick_parking => 'पार्किङ उपलब्ध छ?';
+
+  @override
+  String get quick_hello => 'नमस्ते';
+
+  @override
+  String get quick_duration => 'कति समय लाग्छ?';
+
+  @override
+  String get quoteArrived => 'अन्तिम मूल्य अनुमान आइपुग्यो';
+
+  @override
+  String get quoteDepositNow => 'अहिले अग्रिम १०%';
+
+  @override
+  String get quoteBalanceLater => 'सफाइपछि बाँकी रकम';
+
+  @override
+  String get quotePay => 'अग्रिम भुक्तानी गरी पुष्टि गर्नुहोस्';
+
+  @override
+  String get quotePaid => 'भुक्तानी भयो';
+
+  @override
+  String get requestCard => 'मूल्य अनुमान अनुरोध';
+
+  @override
+  String get sys_consultation_received => 'परामर्श अनुरोध प्राप्त भयो';
+
+  @override
+  String sys_deposit_paid(String amount) {
+    return '$amount अग्रिम भुक्तानी भयो। बुकिङ पुष्टि भयो।';
+  }
+
+  @override
+  String get sys_booking_cancelled => 'बुकिङ रद्द भयो';
+
+  @override
+  String sys_status_changed(String status) {
+    return 'स्थिति \'$status\' मा परिवर्तन भयो';
+  }
+
+  @override
+  String get sys_job_completed => 'सफाइ सकियो। अघि र पछिका फोटो हेर्नुहोस्।';
+
+  @override
+  String sys_rescheduled(String date) {
+    return 'मिति $date मा परिवर्तन भयो';
+  }
+
+  @override
+  String get sys_reschedule_declined =>
+      'पार्टनरले परिवर्तित मितिमा आउन सक्दैनन्। हाम्रो टोलीले मिलाउनेछ।';
+
+  @override
+  String get moreTitle => 'थप';
+
+  @override
+  String get moreScope => 'सेवा दायरा';
+
+  @override
+  String get morePayments => 'भुक्तानी विधि व्यवस्थापन';
+
+  @override
+  String get moreCoupons => 'कुपन';
+
+  @override
+  String get morePoints => 'सफाइ पोइन्ट';
+
+  @override
+  String get moreAccount => 'खाताको जानकारी';
+
+  @override
+  String get moreAddresses => 'ठेगाना व्यवस्थापन';
+
+  @override
+  String get moreNotices => 'सूचना';
+
+  @override
+  String get moreTips => 'सफाइका सुझाव';
+
+  @override
+  String get moreFaq => 'बारम्बार सोधिने प्रश्न';
+
+  @override
+  String get morePartner => 'पार्टनरसँग सम्पर्क';
+
+  @override
+  String get moreLanguage => 'भाषा';
+
+  @override
+  String get langSystem => 'यन्त्रको सेटिङ अनुसार';
+
+  @override
+  String moreVersion(String v) {
+    return 'संस्करण $v';
+  }
+
+  @override
+  String get morePrivacy => 'गोपनीयता नीति';
+
+  @override
+  String get moreTerms => 'सेवाका सर्त';
+
+  @override
+  String get moreLicenses => 'ओपन-सोर्स लाइसेन्स';
+
+  @override
+  String get logout => 'साइन आउट';
+
+  @override
+  String get deleteAccount => 'खाता मेटाउनुहोस्';
+
+  @override
+  String get deleteAccountBody =>
+      'व्यक्तिगत डेटा मेटिनेछ र यो फिर्ता हुँदैन। पहिले सक्रिय बुकिङ रद्द गर्नुहोस्।';
+
+  @override
+  String get couponsEmpty => 'अहिलेसम्म कुनै कुपन छैन';
+
+  @override
+  String couponUntil(String date) {
+    return '$date सम्म';
+  }
+
+  @override
+  String get couponUsed => 'प्रयोग भयो';
+
+  @override
+  String get couponExpired => 'म्याद सकियो';
+
+  @override
+  String get couponAnyService => 'जुनसुकै सेवा';
+
+  @override
+  String get coupon_welcome_studio => 'स्वागत स्टुडियो कुपन';
+
+  @override
+  String get coupon_welcome_any => 'स्वागत कुपन';
+
+  @override
+  String get pointsBalance => 'तपाईंका पोइन्ट';
+
+  @override
+  String get pointsEmpty => 'पोइन्ट इतिहास छैन';
+
+  @override
+  String get accountName => 'नाम';
+
+  @override
+  String get accountPhone => 'मोबाइल';
+
+  @override
+  String get accountEmail => 'इमेल';
+
+  @override
+  String get accountLogin => 'साइन इन तरिका';
+
+  @override
+  String get accountLoginPhone => 'फोन प्रमाणीकरण';
+
+  @override
+  String get methodsEmpty => 'कुनै भुक्तानी विधि छैन';
+
+  @override
+  String get noContent => 'यहाँ अहिले केही छैन';
+
+  @override
+  String get quoteTypeTitle => 'तपाईंलाई कुन प्रकारको सफाइ चाहिन्छ?';
+
+  @override
+  String get type_standard => 'घर छाड्दाको सफाइ';
+
+  @override
+  String get type_same_day_move => 'सार्ने दिनको सफाइ';
+
+  @override
+  String get type_some_luggage_left => 'केही सामान बाँकी';
+
+  @override
+  String get type_normal_move_in => 'सामान्य घर पस्ने';
+
+  @override
+  String get type_after_interior => 'इन्टेरियर पछि';
+
+  @override
+  String get type_lived_in_deep_clean => 'बसोबासमा रहेको घरको गहिरो सफाइ';
+
+  @override
+  String get luggageTitle => 'घरमा सामानको अवस्था कस्तो छ?';
+
+  @override
+  String get luggage_empty => 'सामान छैन';
+
+  @override
+  String get luggage_partly_unpacked => 'केही सामान मिलाउँदै';
+
+  @override
+  String get luggage_fully_lived_in => 'पूर्ण रूपमा बसोबासमा';
+
+  @override
+  String get luggage_unknown => 'थाहा छैन';
+
+  @override
+  String get quoteBasicTitle => 'घरको बनोट बताउनुहोस्';
+
+  @override
+  String get buildingType => 'भवनको प्रकार';
+
+  @override
+  String get building_apartment => 'अपार्टमेन्ट';
+
+  @override
+  String get building_villa => 'भिला';
+
+  @override
+  String get building_officetel => 'अफिसटेल';
+
+  @override
+  String get building_house => 'एकल घर';
+
+  @override
+  String get building_other => 'अन्य';
+
+  @override
+  String get layoutTitle => 'बनोट';
+
+  @override
+  String get layout_studio => 'स्टुडियो';
+
+  @override
+  String get layout_one_and_half => '१.५ कोठा';
+
+  @override
+  String get layout_two_rooms => '२ कोठा';
+
+  @override
+  String get layout_three_rooms => '३ कोठा';
+
+  @override
+  String get layout_four_plus => '४ वा बढी कोठा';
+
+  @override
+  String get duplexTitle => 'यो डुप्लेक्स हो?';
+
+  @override
+  String get quoteSpaceTitle => 'ठाउँबारे अलि बताउनुहोस्';
+
+  @override
+  String get bathroomsLabel => 'बाथरुम';
+
+  @override
+  String get balconiesLabel => 'बालकोनी · युटिलिटी कोठा';
+
+  @override
+  String get elevatorTitle => 'लिफ्ट छ?';
+
+  @override
+  String get floor3Label => '३ तल वा माथि';
+
+  @override
+  String get quoteEstimateTitle => 'यो तपाईंको अनुमानित मूल्य हो';
+
+  @override
+  String get quoteEstimateBody => 'फोटो हेरेपछि परामर्शमा अन्तिम रकम तोकिन्छ';
+
+  @override
+  String get quoteG1 => 'अन्तिम रकम परामर्शमा तपाईंसँग सहमति गरेर तय हुन्छ';
+
+  @override
+  String get quoteG2 => 'पुष्टिका लागि १०% अग्रिम, बाँकी सफाइपछि';
+
+  @override
+  String get quoteG3 =>
+      'पुष्टि गर्नुअघि जुनसुकै बेला निःशुल्क रद्द गर्न सकिन्छ';
+
+  @override
+  String get quoteConfirmTitle => 'तपाईंको अनुरोध जाँच गर्नुहोस्';
+
+  @override
+  String get quoteRequest => 'परामर्श अनुरोध गर्नुहोस्';
+
+  @override
+  String get quoteNoPayNow => 'अहिले भुक्तानी गर्नु पर्दैन';
+
+  @override
+  String get summaryType => 'सफाइको प्रकार';
+
+  @override
+  String get summaryHome => 'घरको जानकारी';
+
+  @override
+  String get summaryDate => 'भ्रमण मिति';
+
+  @override
+  String get themeTitle => 'थिम';
+
+  @override
+  String get themeDark => 'डार्क';
+
+  @override
+  String get themeLight => 'लाइट';
+
+  @override
+  String get themeSystem => 'सिस्टम सेटिङ';
+
+  @override
+  String get themeTip => 'थिम परिवर्तन गर्नुहोस्';
+
+  @override
+  String get pTabJobs => 'काम';
+
+  @override
+  String get pTabQuotes => 'मेरा मूल्य अनुमान';
+
+  @override
+  String get pTabSchedule => 'तालिका';
+
+  @override
+  String get pIntroTitle => 'सफाइ विज्ञहरूका लागि\nकाम · तालिका · भुक्तानी';
+
+  @override
+  String get pIntroBody =>
+      'तपाईंले चाहनु भएको ठाउँ र समयमा मात्र काम गर्नुहोस्, साप्ताहिक भुक्तानी पाउनुहोस्।';
+
+  @override
+  String get pOnbTitle => 'पार्टनरको जानकारी दिनुहोस्';
+
+  @override
+  String get pOnbName => 'प्रमुखको नाम';
+
+  @override
+  String get pOnbTeam => 'टोलीको नाम';
+
+  @override
+  String get pOnbServices => 'तपाईंले दिन सक्ने सेवा';
+
+  @override
+  String get pOnbAreas => 'काम गर्ने क्षेत्र';
+
+  @override
+  String get pOnbDone => 'आवेदन पठाउनुहोस्';
+
+  @override
+  String get pPendingTitle => 'स्वीकृतिको पर्खाइमा छ';
+
+  @override
+  String get pPendingBody =>
+      'स्वीकृत भएपछि हामी सूचना पठाउनेछौँ। तबसम्म भुक्तानी खाता दर्ता गर्नुहोस्।';
+
+  @override
+  String get pSuspended =>
+      'तपाईंको खाता अस्थायी रूपमा रोकिएको छ। कृपया सञ्चालन टोलीलाई सम्पर्क गर्नुहोस्।';
+
+  @override
+  String get pDirect => 'सिधा बुकिङ';
+
+  @override
+  String get pQuoteReq => 'मूल्य अनुमान अनुरोध';
+
+  @override
+  String get pShowClosed => 'बन्द भएका काम पनि देखाउनुहोस्';
+
+  @override
+  String get pSortNewest => 'नयाँ अनुरोध पहिले';
+
+  @override
+  String get pSortVisit => 'नजिकको भ्रमण मिति पहिले';
+
+  @override
+  String get pSortAmount => 'उच्च रकम पहिले';
+
+  @override
+  String get pNoJobs => 'अहिले मिल्ने कुनै काम छैन';
+
+  @override
+  String get pNoJobsBody =>
+      'सेवा, क्षेत्र वा कामका घण्टा फराकिलो पार्दा थप काम देख्न सक्नुहुन्छ';
+
+  @override
+  String get pPayout => 'अनुमानित भुक्तानी';
+
+  @override
+  String get pCustomerEstimate => 'ग्राहकको अनुमानित मूल्य';
+
+  @override
+  String get pNew => 'नयाँ';
+
+  @override
+  String get pClosed => 'बन्द';
+
+  @override
+  String get pPrivacyNote =>
+      'सटीक ठेगाना र ग्राहकको विवरण स्वीकार गरेपछि देखिन्छ';
+
+  @override
+  String get pAccept => 'काम स्वीकार गर्नुहोस्';
+
+  @override
+  String get pAcceptConfirm => 'यो काम स्वीकार गर्ने हो?';
+
+  @override
+  String get pAcceptBody =>
+      'स्वीकार गर्दा यो तपाईंको तालिकामा थपिनेछ र ग्राहकलाई टोली तोकिएको सूचना जानेछ। भ्रमणको २ दिनअघिदेखि रद्द गर्न कठिन हुन्छ।';
+
+  @override
+  String get pAccepted => 'काम स्वीकार गरियो';
+
+  @override
+  String get pSendQuote => 'मूल्य अनुमान पठाउनुहोस्';
+
+  @override
+  String get pQuotePrice => 'ग्राहकको भुक्तानी रकम';
+
+  @override
+  String get pQuoteNote => 'टोलीलाई दिने नोट';
+
+  @override
+  String get pQuoteSent => 'मूल्य अनुमान पठाइयो';
+
+  @override
+  String pFee(String rate) {
+    return 'शुल्क $rate%';
+  }
+
+  @override
+  String get pYouGet => 'तपाईंले पाउने रकम';
+
+  @override
+  String get pQuoteAll => 'सबै';
+
+  @override
+  String get pQ_waiting => 'पर्खाइमा';
+
+  @override
+  String get pQ_selected => 'चयन भयो';
+
+  @override
+  String get pQ_rejected => 'चयन भएन';
+
+  @override
+  String get pQ_closed => 'बन्द';
+
+  @override
+  String get pUnseenOnly => 'नयाँ नतिजा मात्र';
+
+  @override
+  String get pNoQuotes => 'कुनै मूल्य अनुमान छैन';
+
+  @override
+  String get pMyQuote => 'मेरो मूल्य अनुमान';
+
+  @override
+  String get pWithdraw => 'मूल्य अनुमान फिर्ता लिनुहोस्';
+
+  @override
+  String get pWithdrawn => 'मूल्य अनुमान फिर्ता लियो';
+
+  @override
+  String get pOnlyMine => 'मेरो मात्र';
+
+  @override
+  String pJobsCount(String n) {
+    return '$n वटा काम';
+  }
+
+  @override
+  String get pNoSchedule => 'यस दिन कुनै तालिका छैन';
+
+  @override
+  String get pCancelledBanner =>
+      'ग्राहकले यो काम रद्द गर्नुभएको छ। सम्पन्न चिन्ह लगाउन सकिँदैन।';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return 'मिति परिवर्तन अनुरोध: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => 'आउन सक्छु';
+
+  @override
+  String get pRescheduleNo => 'आउन सक्दिन';
+
+  @override
+  String get pCustomer => 'ग्राहक';
+
+  @override
+  String get pCall => 'सुरक्षित नम्बरमा फोन';
+
+  @override
+  String get pCallSoon => 'सेवा सुरु हुँदा सुरक्षित कल सक्रिय हुनेछ';
+
+  @override
+  String get pQuietHours => 'राति ८ बजेपछि फोन नगर्नुहोस्';
+
+  @override
+  String get pAssignee => 'जिम्मेवार व्यक्ति';
+
+  @override
+  String get pChangeAssignee => 'जिम्मेवार व्यक्ति परिवर्तन';
+
+  @override
+  String get pCustomerRequests => 'ग्राहकका अनुरोध';
+
+  @override
+  String get pTeamMemo => 'टोली नोट (ग्राहकले देख्दैनन्)';
+
+  @override
+  String get pMemoSaved => 'नोट सुरक्षित भयो';
+
+  @override
+  String get pPayoutBreakdown => 'भुक्तानी विवरण';
+
+  @override
+  String get pAfterBalance => 'ग्राहकले बाँकी रकम तिरेपछि भुक्तानी हुन्छ';
+
+  @override
+  String get pChatOps => 'सञ्चालन टोलीसँग कुराकानी';
+
+  @override
+  String get pComplete => 'काम सम्पन्न जनाउनुहोस्';
+
+  @override
+  String get pBeforePhotos => 'सफाइअघिका फोटो';
+
+  @override
+  String get pAfterPhotos => 'सफाइपछिका फोटो';
+
+  @override
+  String get pAddPhoto => 'फोटो थप्नुहोस्';
+
+  @override
+  String get pChecklist => 'जाँच सूची';
+
+  @override
+  String get pCheck1 => 'अनुरोध गरिएका सबै ठाउँ सफा गरियो';
+
+  @override
+  String get pCheck2 => 'फोहोर व्यवस्थापन गरियो र सामान सङ्कलन गरियो';
+
+  @override
+  String get pCheck3 => 'झ्याल, बिजुली र पानी जाँच गरियो';
+
+  @override
+  String get pCheck4 => 'ग्राहकका अनुरोध पूरा गरियो';
+
+  @override
+  String get pCompleteCta => 'सम्पन्न चिन्ह लगाउनुहोस्';
+
+  @override
+  String get pCompleteNeed =>
+      'हरेक प्रकारको कम्तीमा १ फोटो राख्नुहोस् र सबै वस्तु जाँच गर्नुहोस्';
+
+  @override
+  String get pCompleted => 'उत्कृष्ट काम!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$date मा $amount भुक्तानी हुनेछ';
+  }
+
+  @override
+  String get pPayoutWaiting =>
+      'ग्राहकले बाँकी रकम तिरेपछि भुक्तानी मिति तय हुन्छ';
+
+  @override
+  String get pPendingPayout => 'भुक्तानी पर्खाइमा रकम';
+
+  @override
+  String get pSettlements => 'भुक्तानी विवरण';
+
+  @override
+  String get pS_waiting_balance => 'बाँकी रकम पर्खाइमा';
+
+  @override
+  String get pS_pending => 'तालिकामा';
+
+  @override
+  String get pS_paid => 'भुक्तानी भयो';
+
+  @override
+  String get pS_held => 'रोकिएको';
+
+  @override
+  String get pReviews => 'ग्राहक समीक्षा';
+
+  @override
+  String get pNoReviews => 'अहिलेसम्म कुनै समीक्षा छैन';
+
+  @override
+  String get pReplyLater => 'समीक्षामा जवाफ दिने सुविधा चाँडै आउँदैछ';
+
+  @override
+  String get pServicesAreas => 'सेवा · क्षेत्र';
+
+  @override
+  String get pPayoutAccount => 'भुक्तानी बैंक खाता';
+
+  @override
+  String get pBank => 'बैंक';
+
+  @override
+  String get pAccountNumber => 'खाता नम्बर';
+
+  @override
+  String get pHolder => 'खाता धनी';
+
+  @override
+  String get pVerified => 'पुष्टि भयो';
+
+  @override
+  String get pUnverified => 'जाँच हुँदैछ';
+
+  @override
+  String get pAccountSaved =>
+      'खाता सुरक्षित भयो। परिवर्तन गर्दा फेरि जाँच हुन्छ।';
+
+  @override
+  String get pWorkSchedule => 'कामको तालिका';
+
+  @override
+  String get pWeekdays => 'कामका दिन';
+
+  @override
+  String get pDayParts => 'कामका समय';
+
+  @override
+  String get pDaysOff => 'बिदाका दिन';
+
+  @override
+  String get pAddDayOff => 'बिदाको दिन थप्नुहोस्';
+
+  @override
+  String get pSaved => 'सुरक्षित भयो';
+
+  @override
+  String get pTeam => 'टोली सदस्य';
+
+  @override
+  String get pOwner => 'प्रमुख';
+
+  @override
+  String get pInvited => 'निमन्त्रणा पठाइयो';
+
+  @override
+  String get pInvite => 'टोली सदस्य निम्तो दिनुहोस्';
+
+  @override
+  String get pInviteSent => 'निमन्त्रणा सन्देश पठाइयो';
+
+  @override
+  String get pRemove => 'हटाउनुहोस्';
+
+  @override
+  String get pNotifications => 'सूचना सेटिङ';
+
+  @override
+  String get pNotifyDirect => 'नयाँ सिधा बुकिङ काम';
+
+  @override
+  String get pNotifyQuotes => 'मूल्य अनुमान अनुरोध · नतिजा';
+
+  @override
+  String get pNotifyChat => 'सञ्चालन टोलीका सन्देश';
+
+  @override
+  String get pQuietNight => 'राति शान्त समय (२२–०८)';
+
+  @override
+  String get pNewInquiry => 'नयाँ सोधपुछ';
+
+  @override
+  String get pTopic_settlement => 'भुक्तानी';
+
+  @override
+  String get pTopic_reschedule => 'मिति परिवर्तन · रद्द';
+
+  @override
+  String get pTopic_app => 'एप सहायता';
+
+  @override
+  String get pOpsTeam => 'सञ्चालन टोली';
+
+  @override
+  String get pViewJob => 'काम हेर्नुहोस्';
+
+  @override
+  String pBookingNo(String n) {
+    return 'बुकिङ $n';
+  }
+
+  @override
+  String get pSize => 'क्षेत्रफल';
+
+  @override
+  String get pSchedule => 'तालिका';
+
+  @override
+  String get pSpace => 'ठाउँको जानकारी';
+}

@@ -167,6 +167,9 @@ class BookingDraft {
   String? methodId;
   QuoteAnswers answers = QuoteAnswers();
 
+  /// Steps in this booking's flow (3 when the address step was skipped).
+  int totalSteps = 4;
+
   int get listPrice => service.type == PricingType.fixed
       ? service.price!
       : (unitIndex == null ? 0 : service.units[unitIndex!].price);

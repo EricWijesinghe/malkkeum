@@ -59,4 +59,12 @@ void main() {
     expect(seoulDistricts.every((d) => RegExp(r'^11\d{3}$').hasMatch(d.code)), isTrue);
     expect(districtByCode('11680')?.ko, '강남구');
   });
+
+  test('every language in the picker has generated translations', () {
+    final generated = T.supportedLocales.map((l) => l.languageCode).toSet();
+    for (final l in LocaleController.supported) {
+      expect(generated, contains(l.languageCode));
+    }
+    expect(LocaleController.supported.length, 14);
+  });
 }

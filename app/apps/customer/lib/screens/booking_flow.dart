@@ -172,6 +172,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             Text(t.scheduleTitle, style: context.text.headlineSmall),
             const SizedBox(height: Space.xs),
             Text(t.scheduleRange, style: context.text.bodySmall),
+            if (d.address != null) ...[
+              const SizedBox(height: Space.md),
+              AppCard(
+                padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
+                child: Row(children: [
+                  Icon(Icons.place_rounded, color: hue.tone, size: 20),
+                  const SizedBox(width: Space.xs),
+                  Expanded(child: Text('${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}', style: context.text.titleSmall)),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                      builder: (_) => AddressPickScreen(draft: d, step: widget.step, total: widget.total, onPicked: (ctx) {
+                        Navigator.of(ctx).pop();
+                        setState(() {});
+                      }),
+                    )),
+                    child: Text(t.change),
+                  ),
+                ]),
+              ),
+            ],
             const SizedBox(height: Space.lg),
           ]),
         ),
@@ -365,9 +385,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final freeUntil = d.date!.subtract(const Duration(days: 2));
     final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
     return Scaffold(
-      appBar: AppBar(title: Text(t.stepOf('4', '4'))),
+      appBar: AppBar(title: Text(t.stepOf('${d.totalSteps}', '${d.totalSteps}'))),
       body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        StepProgress(current: 4, total: 4, color: ServiceHues.of(d.service.code).tone),
+        StepProgress(current: d.totalSteps, total: d.totalSteps, color: ServiceHues.of(d.service.code).tone),
         const SizedBox(height: Space.xl),
         AppCard(
           child: Row(children: [

@@ -5,7 +5,8 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 
-const _langs = ['ko', 'en', 'ja', 'zh', 'vi'];
+// Content can be written in every app language; missing ones fall back to Korean.
+final _langs = LocaleController.names.keys.toList();
 const _kinds = ['notice', 'tip', 'faq', 'banner', 'legal'];
 
 String kindLabel(T t, String k) => switch (k) {

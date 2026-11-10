@@ -1,0 +1,2594 @@
+{
+"apSocialOr": {
+"ko": "또는",
+"en": "or"
+},
+"apSocialSignIn": {
+"ko": "간편 로그인",
+"en": "Quick sign-in"
+},
+"apLoginKakao": {
+"ko": "카카오로 계속하기",
+"en": "Continue with Kakao"
+},
+"apLoginNaver": {
+"ko": "네이버로 계속하기",
+"en": "Continue with Naver"
+},
+"apLoginGoogle": {
+"ko": "Google로 계속하기",
+"en": "Continue with Google"
+},
+"apLoginApple": {
+"ko": "Apple로 계속하기",
+"en": "Continue with Apple"
+},
+"apDevSocialNote": {
+"ko": "개발 모드예요. 실제 소셜 계정이 아니라 테스트 계정으로 로그인해요.",
+"en": "Dev mode: signs in to a test account, not a real social account."
+},
+"apSocialFailed": {
+"ko": "간편 로그인에 실패했어요. 다시 시도해 주세요.",
+"en": "Quick sign-in failed. Please try again."
+},
+"apProviderNotConfigured": {
+"ko": "이 로그인 수단은 아직 준비 중이에요",
+"en": "This sign-in method isn't available yet"
+},
+"apPhoneTaken": {
+"ko": "이미 다른 계정에 등록된 번호예요",
+"en": "This number is already linked to another account"
+},
+"apPhoneAttachTitle": {
+"ko": "휴대폰 번호를 인증해 주세요",
+"en": "Verify your mobile number"
+},
+"apPhoneAttachBody": {
+"ko": "예약과 기사 연락에 쓰는 번호예요. 한 번만 인증하면 돼요.",
+"en": "We use this number for bookings and pro contact. One-time check."
+},
+"apPayAllTitle": {
+"ko": "결제수단 선택",
+"en": "Choose a payment method"
+},
+"apPaySavedTitle": {
+"ko": "저장한 결제수단",
+"en": "Saved methods"
+},
+"apPayMoreTitle": {
+"ko": "모든 결제수단",
+"en": "All payment methods"
+},
+"apPayBillingHint": {
+"ko": "한 번 등록하면 다음부터 한 번에 결제해요",
+"en": "Save once, then pay in one tap"
+},
+"apPayCheckoutHint": {
+"ko": "결제창에서 마무리해요",
+"en": "Finish in the payment window"
+},
+"apPayRegistering": {
+"ko": "등록하는 중이에요",
+"en": "Registering…"
+},
+"apPayManageHint": {
+"ko": "등록한 결제수단으로 한 번에 결제해요. 간편결제는 여기서 추가할 수 있어요.",
+"en": "Pay in one tap with saved methods. Add quick-pay methods here."
+},
+"apMethodCard": {
+"ko": "신용·체크카드",
+"en": "Credit & debit card"
+},
+"apMethodKakao": {
+"ko": "카카오페이",
+"en": "KakaoPay"
+},
+"apMethodNaver": {
+"ko": "네이버페이",
+"en": "NaverPay"
+},
+"apMethodToss": {
+"ko": "토스페이",
+"en": "TossPay"
+},
+"apMethodPayco": {
+"ko": "페이코",
+"en": "PAYCO"
+},
+"apMethodSamsung": {
+"ko": "삼성페이",
+"en": "Samsung Pay"
+},
+"apMethodApple": {
+"ko": "애플페이",
+"en": "Apple Pay"
+},
+"apMethodTransfer": {
+"ko": "계좌이체",
+"en": "Bank transfer"
+},
+"apMethodVirtual": {
+"ko": "가상계좌",
+"en": "Virtual account"
+},
+"apMethodPhone": {
+"ko": "휴대폰 결제",
+"en": "Mobile bill"
+},
+"apMethodUnknown": {
+"ko": "기타 결제",
+"en": "Other"
+},
+"apVaTitle": {
+"ko": "입금 계좌가 준비됐어요",
+"en": "Your deposit account is ready"
+},
+"apVaWaiting": {
+"ko": "입금 대기 중",
+"en": "Waiting for your deposit"
+},
+"apVaBody": {
+"ko": "기한 안에 입금하면 예약이 확정돼요. 입금은 자동으로 확인돼요.",
+"en": "Your booking is confirmed once the deposit arrives. We check it automatically."
+},
+"apVaBank": {
+"ko": "은행",
+"en": "Bank"
+},
+"apVaAccount": {
+"ko": "계좌번호",
+"en": "Account number"
+},
+"apVaHolder": {
+"ko": "예금주",
+"en": "Account holder"
+},
+"apVaAmount": {
+"ko": "입금 금액",
+"en": "Amount"
+},
+"apVaDue": {
+"ko": "{due}까지 입금해 주세요",
+"en": "Deposit by {due}"
+},
+"apVaCopy": {
+"ko": "복사",
+"en": "Copy"
+},
+"apVaCopied": {
+"ko": "계좌번호를 복사했어요",
+"en": "Account number copied"
+},
+"apVaBannerTitle": {
+"ko": "입금 대기 중인 예약이 있어요",
+"en": "A booking is waiting for your deposit"
+},
+"apVaBannerBody": {
+"ko": "{amount} · {due}까지",
+"en": "{amount} · by {due}"
+},
+"apVaBannerAction": {
+"ko": "계좌 보기",
+"en": "View account"
+},
+"apPgTitle": {
+"ko": "결제창",
+"en": "Payment window"
+},
+"apPgDevNote": {
+"ko": "개발 환경 전용 결제 시뮬레이션이에요. 실제 결제는 일어나지 않아요.",
+"en": "Development-only payment simulation. No real charge happens."
+},
+"apPgPay": {
+"ko": "{amount} 결제하기",
+"en": "Pay {amount}"
+},
+"apPgIssue": {
+"ko": "계좌 발급받기",
+"en": "Get account number"
+},
+"apPgCancel": {
+"ko": "결제 취소",
+"en": "Cancel payment"
+},
+"apErrSlotFullRefunded": {
+"ko": "방금 그 시간이 마감돼서 결제가 자동 취소됐어요",
+"en": "That slot just filled up, so your payment was cancelled automatically"
+},
+"apErrCheckoutExpired": {
+"ko": "결제 시간이 지났어요. 다시 시도해 주세요.",
+"en": "The payment window expired. Please try again."
+},
+"apIdentityTitle": {
+"ko": "본인인증 (PASS)",
+"en": "Identity check (PASS)"
+},
+"apIdentityBody": {
+"ko": "휴대폰 명의로 본인을 확인해요. 안전한 거래와 정산에 쓰여요.",
+"en": "Confirms you with your phone carrier. Used for safe trading and payouts."
+},
+"apIdentityAction": {
+"ko": "본인인증하기",
+"en": "Verify identity"
+},
+"apIdentityDone": {
+"ko": "본인인증이 완료됐어요",
+"en": "Identity verified"
+},
+"apIdentityVerified": {
+"ko": "인증 완료",
+"en": "Verified"
+},
+"apIdentityUnverified": {
+"ko": "아직 인증하지 않았어요",
+"en": "Not verified yet"
+},
+"apIdentityDevTitle": {
+"ko": "테스트 본인인증",
+"en": "Test identity check"
+},
+"apIdentityDevBody": {
+"ko": "개발 환경에서는 실제 인증 없이 통과해요.",
+"en": "In development, this passes without a real check."
+},
+"apIdentityDevPass": {
+"ko": "통과 처리",
+"en": "Pass"
+},
+"apPayManageTitle": {
+"ko": "간편결제 등록",
+"en": "Register quick-pay"
+},
+"cTitle": {
+"ko": "운영 콘솔",
+"en": "Operations console"
+},
+"cEmail": {
+"ko": "이메일",
+"en": "Email"
+},
+"cPassword": {
+"ko": "비밀번호",
+"en": "Password"
+},
+"cLogin": {
+"ko": "로그인",
+"en": "Sign in"
+},
+"cLoginFailed": {
+"ko": "이메일 또는 비밀번호가 맞지 않아요",
+"en": "Wrong email or password"
+},
+"cDashboard": {
+"ko": "대시보드",
+"en": "Dashboard"
+},
+"cBookings": {
+"ko": "예약",
+"en": "Bookings"
+},
+"cQuoteDesk": {
+"ko": "견적 데스크",
+"en": "Quote desk"
+},
+"cInbox": {
+"ko": "상담함",
+"en": "Inbox"
+},
+"cCatalog": {
+"ko": "카탈로그 · 가격",
+"en": "Catalog & prices"
+},
+"cMarketing": {
+"ko": "쿠폰 · 콘텐츠",
+"en": "Coupons & content"
+},
+"cPartners": {
+"ko": "파트너",
+"en": "Partners"
+},
+"cSettlements": {
+"ko": "정산",
+"en": "Settlements"
+},
+"cCustomers": {
+"ko": "고객",
+"en": "Customers"
+},
+"cStaff": {
+"ko": "직원",
+"en": "Staff"
+},
+"cSearchCommand": {
+"ko": "검색 · 명령",
+"en": "Search or jump"
+},
+"cPaletteHint": {
+"ko": "메뉴 이름이나 예약번호를 입력하세요",
+"en": "Type a section or booking number"
+},
+"cTodayJobs": {
+"ko": "오늘 작업",
+"en": "Today's jobs"
+},
+"cOpenQuotes": {
+"ko": "견적 대기",
+"en": "Open quotes"
+},
+"cUnassigned": {
+"ko": "미배정",
+"en": "Unassigned"
+},
+"cUnreadThreads": {
+"ko": "안 읽은 상담",
+"en": "Unread chats"
+},
+"cRevenue30": {
+"ko": "30일 결제액",
+"en": "30-day revenue"
+},
+"cBookings30": {
+"ko": "30일 예약",
+"en": "30-day bookings"
+},
+"cByService": {
+"ko": "서비스별 예약 (30일)",
+"en": "Bookings by service (30 days)"
+},
+"cAllStatus": {
+"ko": "전체 상태",
+"en": "All statuses"
+},
+"cAllServices": {
+"ko": "전체 서비스",
+"en": "All services"
+},
+"cSearch": {
+"ko": "검색 (예약번호, 전화, 이름, 주소)",
+"en": "Search (number, phone, name, address)"
+},
+"cNoResults": {
+"ko": "결과가 없어요",
+"en": "No results"
+},
+"cNumber": {
+"ko": "예약번호",
+"en": "Number"
+},
+"cVisit": {
+"ko": "방문",
+"en": "Visit"
+},
+"cService": {
+"ko": "서비스",
+"en": "Service"
+},
+"cStatus": {
+"ko": "상태",
+"en": "Status"
+},
+"cTeam": {
+"ko": "팀",
+"en": "Team"
+},
+"cAmount": {
+"ko": "금액",
+"en": "Amount"
+},
+"cCustomer": {
+"ko": "고객",
+"en": "Customer"
+},
+"cPayments": {
+"ko": "결제",
+"en": "Payments"
+},
+"cChangeStatus": {
+"ko": "상태 변경",
+"en": "Change status"
+},
+"cTeamName": {
+"ko": "배정 팀 이름",
+"en": "Assigned team"
+},
+"cAssign": {
+"ko": "팀 배정",
+"en": "Assign team"
+},
+"cMarkDone": {
+"ko": "완료 처리",
+"en": "Mark completed"
+},
+"cConfirm": {
+"ko": "확정 처리",
+"en": "Mark confirmed"
+},
+"cCancelRefund": {
+"ko": "취소 · 환불",
+"en": "Cancel & refund"
+},
+"cRefundAmount": {
+"ko": "환불 금액 (비우면 전액)",
+"en": "Refund amount (empty = full)"
+},
+"cDone": {
+"ko": "처리했어요",
+"en": "Done"
+},
+"cAnswers": {
+"ko": "고객 답변",
+"en": "Customer answers"
+},
+"cEstimateCalc": {
+"ko": "자동 산정",
+"en": "Calculated estimate"
+},
+"cBase": {
+"ko": "기본",
+"en": "Base"
+},
+"cExtras": {
+"ko": "추가",
+"en": "Extras"
+},
+"cSurcharge": {
+"ko": "할증",
+"en": "Surcharge"
+},
+"cBeforeVat": {
+"ko": "부가세 전",
+"en": "Before VAT"
+},
+"cProQuotes": {
+"ko": "파트너 견적",
+"en": "Partner quotes"
+},
+"cNoProQuotes": {
+"ko": "아직 받은 견적이 없어요",
+"en": "No partner quotes yet"
+},
+"cFinalPrice": {
+"ko": "고객 최종 금액",
+"en": "Final price to customer"
+},
+"cQuoteNote": {
+"ko": "고객에게 보낼 메모",
+"en": "Note to customer"
+},
+"cSendQuote": {
+"ko": "고객에게 견적 보내기",
+"en": "Send quote to customer"
+},
+"cQuoteSent": {
+"ko": "견적을 보냈어요",
+"en": "Quote sent"
+},
+"cCustomerChats": {
+"ko": "고객",
+"en": "Customers"
+},
+"cPartnerChats": {
+"ko": "파트너",
+"en": "Partners"
+},
+"cSelectBooking": {
+"ko": "예약을 선택하세요",
+"en": "Pick a booking"
+},
+"cRefunded": {
+"ko": "환불됨",
+"en": "Refunded"
+},
+"cPartRefunded": {
+"ko": "부분 환불",
+"en": "Partly refunded"
+},
+"cFailed": {
+"ko": "실패",
+"en": "Failed"
+},
+"cSelectThread": {
+"ko": "대화를 선택하세요",
+"en": "Pick a conversation"
+},
+"cReplyHint": {
+"ko": "답장 입력 · Ctrl+Enter 전송",
+"en": "Reply · Ctrl+Enter to send"
+},
+"cOpenBooking": {
+"ko": "예약 열기",
+"en": "Open booking"
+},
+"cShortcuts": {
+"ko": "J/K 이동 · Ctrl+K 명령",
+"en": "J/K move · Ctrl+K command"
+},
+"cPricing": {
+"ko": "가격",
+"en": "Pricing"
+},
+"cMinutes": {
+"ko": "소요(분)",
+"en": "Minutes"
+},
+"cActive": {
+"ko": "판매 중",
+"en": "Active"
+},
+"cSaved": {
+"ko": "저장했어요",
+"en": "Saved"
+},
+"cSlotCapacity": {
+"ko": "시간대별 수용량",
+"en": "Capacity per arrival slot"
+},
+"cUnlimited": {
+"ko": "제한 없음",
+"en": "Unlimited"
+},
+"cFormula": {
+"ko": "견적 산정식",
+"en": "Quote formula"
+},
+"f_base_studio": {
+"ko": "원룸 기본",
+"en": "Base: studio"
+},
+"f_base_one_and_half": {
+"ko": "1.5룸 기본",
+"en": "Base: 1.5 rooms"
+},
+"f_base_two_rooms": {
+"ko": "방 2개 기본",
+"en": "Base: 2 rooms"
+},
+"f_base_three_rooms": {
+"ko": "방 3개 기본",
+"en": "Base: 3 rooms"
+},
+"f_base_four_plus": {
+"ko": "방 4개 이상 기본",
+"en": "Base: 4+ rooms"
+},
+"f_per_extra_bathroom": {
+"ko": "욕실 추가당",
+"en": "Per extra bathroom"
+},
+"f_per_balcony": {
+"ko": "발코니당",
+"en": "Per balcony"
+},
+"f_duplex": {
+"ko": "복층",
+"en": "Duplex"
+},
+"f_no_elevator_high_floor": {
+"ko": "엘리베이터 없음 + 3층 이상",
+"en": "No elevator & floor 3+"
+},
+"cIssueCoupon": {
+"ko": "쿠폰 발급",
+"en": "Issue coupons"
+},
+"cCouponName": {
+"ko": "쿠폰 이름",
+"en": "Coupon name"
+},
+"cCouponPhones": {
+"ko": "대상 전화번호 (줄바꿈으로 구분)",
+"en": "Phone numbers (one per line)"
+},
+"cAllCustomers": {
+"ko": "전체 고객에게",
+"en": "To all customers"
+},
+"cIssued": {
+"ko": "{n}장 발급했어요",
+"en": "Issued {n}"
+},
+"cContent": {
+"ko": "콘텐츠",
+"en": "Content"
+},
+"cKind_notice": {
+"ko": "공지",
+"en": "Notice"
+},
+"cKind_tip": {
+"ko": "팁",
+"en": "Tip"
+},
+"cKind_faq": {
+"ko": "FAQ",
+"en": "FAQ"
+},
+"cKind_banner": {
+"ko": "배너",
+"en": "Banner"
+},
+"cKind_legal": {
+"ko": "약관",
+"en": "Legal"
+},
+"cNewContent": {
+"ko": "새 콘텐츠",
+"en": "New content"
+},
+"cTitleField": {
+"ko": "제목",
+"en": "Title"
+},
+"cBodyField": {
+"ko": "본문",
+"en": "Body"
+},
+"cSlug": {
+"ko": "식별자 (약관: privacy / terms)",
+"en": "Slug (legal: privacy / terms)"
+},
+"cVerify": {
+"ko": "승인",
+"en": "Approve"
+},
+"cSuspend": {
+"ko": "중지",
+"en": "Suspend"
+},
+"cPro_pending": {
+"ko": "승인 대기",
+"en": "Pending"
+},
+"cPro_verified": {
+"ko": "활동 중",
+"en": "Active"
+},
+"cPro_suspended": {
+"ko": "중지됨",
+"en": "Suspended"
+},
+"cCompleted": {
+"ko": "완료",
+"en": "Completed"
+},
+"cCancelledN": {
+"ko": "취소",
+"en": "Cancelled"
+},
+"cRating": {
+"ko": "평점",
+"en": "Rating"
+},
+"cFeeRate": {
+"ko": "수수료율 %",
+"en": "Fee %"
+},
+"cRunPayouts": {
+"ko": "정산 지급 실행",
+"en": "Run payouts"
+},
+"cPayoutDate": {
+"ko": "지급 기준일",
+"en": "Pay up to date"
+},
+"cPayoutDone": {
+"ko": "{n}명에게 지급 처리했어요",
+"en": "Paid {n} partners"
+},
+"cHold": {
+"ko": "보류",
+"en": "Hold"
+},
+"cRelease": {
+"ko": "보류 해제",
+"en": "Release"
+},
+"cNet": {
+"ko": "지급액",
+"en": "Net"
+},
+"cAddStaff": {
+"ko": "직원 추가",
+"en": "Add staff"
+},
+"cRoleAdmin": {
+"ko": "관리자",
+"en": "Admin"
+},
+"cRoleConsultant": {
+"ko": "상담원",
+"en": "Consultant"
+},
+"cDeactivate": {
+"ko": "비활성화",
+"en": "Deactivate"
+},
+"cActivate": {
+"ko": "활성화",
+"en": "Activate"
+},
+"cPasswordRule": {
+"ko": "12자 이상",
+"en": "At least 12 characters"
+},
+"cAdminOnly": {
+"ko": "관리자만 할 수 있어요",
+"en": "Admins only"
+},
+"cBookingsCount": {
+"ko": "예약 {n}건",
+"en": "{n} bookings"
+},
+"cJoined": {
+"ko": "가입",
+"en": "Joined"
+},
+"cNewBooking": {
+"ko": "새 예약이 들어왔어요",
+"en": "New booking"
+},
+"cNewMessage": {
+"ko": "새 메시지",
+"en": "New message"
+},
+"ok": {
+"ko": "확인",
+"en": "OK"
+},
+"cancel": {
+"ko": "취소",
+"en": "Cancel"
+},
+"next": {
+"ko": "다음",
+"en": "Next"
+},
+"close": {
+"ko": "닫기",
+"en": "Close"
+},
+"save": {
+"ko": "저장",
+"en": "Save"
+},
+"delete": {
+"ko": "삭제",
+"en": "Delete"
+},
+"edit": {
+"ko": "수정",
+"en": "Edit"
+},
+"change": {
+"ko": "변경",
+"en": "Change"
+},
+"retry": {
+"ko": "다시 시도",
+"en": "Try again"
+},
+"yes": {
+"ko": "예",
+"en": "Yes"
+},
+"no": {
+"ko": "아니요",
+"en": "No"
+},
+"required": {
+"ko": "필수",
+"en": "Required"
+},
+"viewAll": {
+"ko": "전체 보기",
+"en": "See all"
+},
+"today": {
+"ko": "오늘",
+"en": "Today"
+},
+"errorGeneric": {
+"ko": "문제가 생겼어요. 잠시 후 다시 시도해 주세요.",
+"en": "Something went wrong. Please try again."
+},
+"errorNetwork": {
+"ko": "인터넷 연결을 확인해 주세요",
+"en": "Check your internet connection"
+},
+"err_invalid_phone": {
+"ko": "휴대폰 번호를 확인해 주세요",
+"en": "Check your mobile number"
+},
+"err_otp_invalid": {
+"ko": "인증번호가 맞지 않아요",
+"en": "That code is incorrect"
+},
+"err_otp_expired": {
+"ko": "인증번호가 만료됐어요. 다시 받아 주세요.",
+"en": "The code expired. Request a new one."
+},
+"err_rate_limited": {
+"ko": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
+"en": "Too many attempts. Try again later."
+},
+"err_studio_too_large": {
+"ko": "원룸 청소는 10평 이하 집만 가능해요",
+"en": "Studio cleaning is for homes up to 10 pyeong"
+},
+"err_date_out_of_range": {
+"ko": "내일부터 60일 이내로 골라 주세요",
+"en": "Pick a date from tomorrow up to 60 days ahead"
+},
+"err_slot_full": {
+"ko": "그 시간은 마감됐어요. 다른 시간을 골라 주세요.",
+"en": "That time just filled up. Pick another."
+},
+"err_coupon_expired": {
+"ko": "기간이 지난 쿠폰이에요",
+"en": "This coupon has expired"
+},
+"err_coupon_used": {
+"ko": "이미 사용한 쿠폰이에요",
+"en": "This coupon was already used"
+},
+"err_coupon_wrong_service": {
+"ko": "이 서비스에는 쓸 수 없는 쿠폰이에요",
+"en": "This coupon isn't valid for this service"
+},
+"err_payment_failed": {
+"ko": "결제가 승인되지 않았어요. 다른 결제수단을 써 주세요.",
+"en": "Payment was declined. Try another method."
+},
+"err_payment_method_required": {
+"ko": "결제수단을 선택해 주세요",
+"en": "Choose a payment method"
+},
+"err_cancellation_window_closed": {
+"ko": "방문 2일 전부터는 상담팀을 통해 취소할 수 있어요",
+"en": "Within 2 days of the visit, cancel through our team"
+},
+"err_address_required": {
+"ko": "방문할 주소를 등록해 주세요",
+"en": "Add the visit address"
+},
+"err_already_taken": {
+"ko": "다른 파트너가 먼저 수락했어요",
+"en": "Another pro accepted it first"
+},
+"err_invalid_address": {
+"ko": "주소 정보를 모두 입력해 주세요",
+"en": "Fill in every address field"
+},
+"tabHome": {
+"ko": "홈",
+"en": "Home"
+},
+"tabBookings": {
+"ko": "예약",
+"en": "Bookings"
+},
+"tabChat": {
+"ko": "상담",
+"en": "Chat"
+},
+"tabMore": {
+"ko": "더보기",
+"en": "More"
+},
+"introTitle": {
+"ko": "전문가의 청소를\n가장 쉽게 예약하세요",
+"en": "Professional cleaning,\nbooked in a minute"
+},
+"introBody": {
+"ko": "정찰 가격 · 검증된 청소팀 · 실시간 진행 상황",
+"en": "Upfront prices · Vetted teams · Live progress"
+},
+"introStart": {
+"ko": "휴대폰 번호로 시작하기",
+"en": "Continue with phone number"
+},
+"loginPhoneTitle": {
+"ko": "휴대폰 번호를 알려주세요",
+"en": "What's your mobile number?"
+},
+"loginPhoneHint": {
+"ko": "010-0000-0000",
+"en": "010-0000-0000"
+},
+"loginSendCode": {
+"ko": "인증번호 받기",
+"en": "Send code"
+},
+"loginCodeTitle": {
+"ko": "인증번호 6자리를 입력해 주세요",
+"en": "Enter the 6-digit code"
+},
+"loginCodeSentTo": {
+"ko": "{phone}(으)로 보냈어요",
+"en": "Sent to {phone}"
+},
+"loginResend": {
+"ko": "다시 받기",
+"en": "Resend"
+},
+"loginVerify": {
+"ko": "확인",
+"en": "Verify"
+},
+"loginTerms": {
+"ko": "계속하면 이용약관과 개인정보 처리방침에 동의하게 돼요",
+"en": "By continuing you agree to the Terms and Privacy Policy"
+},
+"profileTitle": {
+"ko": "이름을 알려주세요",
+"en": "What should we call you?"
+},
+"profileNameHint": {
+"ko": "이름",
+"en": "Name"
+},
+"profileDone": {
+"ko": "시작하기",
+"en": "Get started"
+},
+"welcomeToast": {
+"ko": "가입 축하 쿠폰 2장을 드렸어요",
+"en": "2 welcome coupons are in your wallet"
+},
+"svc_studio": {
+"ko": "원룸 청소",
+"en": "Studio cleaning"
+},
+"svc_kitchen": {
+"ko": "주방 청소",
+"en": "Kitchen cleaning"
+},
+"svc_bathroom": {
+"ko": "화장실 청소",
+"en": "Bathroom cleaning"
+},
+"svc_mattress": {
+"ko": "매트리스 청소",
+"en": "Mattress cleaning"
+},
+"svc_aircon": {
+"ko": "에어컨 청소",
+"en": "Air conditioner cleaning"
+},
+"svc_sofa": {
+"ko": "소파 청소",
+"en": "Sofa cleaning"
+},
+"svc_move_out": {
+"ko": "이사 청소",
+"en": "Move-out cleaning"
+},
+"svc_move_in": {
+"ko": "입주 청소",
+"en": "Move-in cleaning"
+},
+"svcShort_studio": {
+"ko": "원룸",
+"en": "Studio"
+},
+"svcShort_kitchen": {
+"ko": "주방",
+"en": "Kitchen"
+},
+"svcShort_bathroom": {
+"ko": "화장실",
+"en": "Bathroom"
+},
+"svcShort_mattress": {
+"ko": "매트리스",
+"en": "Mattress"
+},
+"svcShort_aircon": {
+"ko": "에어컨",
+"en": "Aircon"
+},
+"svcShort_sofa": {
+"ko": "소파",
+"en": "Sofa"
+},
+"svcShort_move_out": {
+"ko": "이사",
+"en": "Move-out"
+},
+"svcShort_move_in": {
+"ko": "입주",
+"en": "Move-in"
+},
+"svcDesc_studio": {
+"ko": "방 1개, 화장실 1개인 10평 이하 원룸을 2시간 동안 꼼꼼히 청소해요.",
+"en": "A 2-hour clean of a studio up to 10 pyeong: one room and one bathroom."
+},
+"svcDesc_kitchen": {
+"ko": "싱크대, 가스레인지, 후드 겉면, 상판을 중심으로 주방을 집중 청소해요.",
+"en": "Focused kitchen clean: sink, stove, hood exterior and counters."
+},
+"svcDesc_bathroom": {
+"ko": "선반, 수전, 세면대와 변기의 안팎을 청소하고 바닥 물기까지 정리해요.",
+"en": "Shelves, taps, basin and toilet inside and out, finished with a dry floor."
+},
+"svcDesc_mattress": {
+"ko": "전문 장비로 먼지, 진드기, 얼룩을 흡입하고 스팀으로 살균 세척해요.",
+"en": "Pro equipment extracts dust, mites and stains, then steam-sanitises."
+},
+"svcDesc_aircon": {
+"ko": "분해 후 열교환기, 송풍팬, 필터를 고압 세척하고 살균으로 마무리해요.",
+"en": "Disassembled, then coil, fan and filter pressure-washed and sanitised."
+},
+"svcDesc_sofa": {
+"ko": "소재에 맞는 세제로 오염을 분해하고 습식 추출 방식으로 세척해요.",
+"en": "Fabric-matched cleaner breaks down dirt, then wet extraction lifts it out."
+},
+"svcDesc_move_out": {
+"ko": "이사 나가기 전, 짐을 뺀 집을 전문 청소팀이 장비를 가지고 방문해 청소해요.",
+"en": "Before you move out, a pro team brings equipment and cleans the empty home."
+},
+"svcDesc_move_in": {
+"ko": "새 집에 들어가기 전, 전문 청소팀이 장비를 가지고 방문해 실내를 청소해요.",
+"en": "Before you move in, a pro team brings equipment and cleans the new home."
+},
+"svcNotes_bathroom": {
+"ko": "배수구·변기 막힘이 있으면 서비스가 제한될 수 있어요\n특수 약품이 필요한 청소, 천장·환풍기 청소는 제공하지 않아요\n오래된 곰팡이·찌든 때는 완전히 제거되지 않을 수 있어요",
+"en": "Blocked drains or toilets may limit the service\nNo special-chemical, ceiling or vent cleaning\nOld mould and set-in grime may not fully come off"
+},
+"svcNotes_mattress": {
+"ko": "싱글부터 킹 사이즈까지 같은 금액이에요\n세척 후 완전 건조까지 4~6시간 걸려요\n스프링 손상, 꺼짐 등 구조적인 문제는 개선되지 않아요",
+"en": "Same price from single to king\nFully dry in 4–6 hours\nSpring damage or sagging can't be fixed"
+},
+"svcNotes_aircon": {
+"ko": "제조 10년 이상 제품은 분해 세척이 어려울 수 있어요\n실외기 청소는 포함되지 않아요\n세척 전후 정상 작동 여부를 함께 확인해요",
+"en": "Units over 10 years old may not be safe to disassemble\nOutdoor unit not included\nWe check it works before and after"
+},
+"svcNotes_sofa": {
+"ko": "가죽 소파는 클리닝과 보습 코팅으로 진행돼요\n오래된 얼룩·이염은 완전히 제거되지 않을 수 있어요\n완전 건조까지 4~6시간 걸려요",
+"en": "Leather sofas get cleaning plus conditioning\nOld stains or dye transfer may not fully lift\nFully dry in 4–6 hours"
+},
+"unitTitle_bathroom": {
+"ko": "화장실 개수",
+"en": "Number of bathrooms"
+},
+"unitTitle_mattress": {
+"ko": "매트리스 개수",
+"en": "Number of mattresses"
+},
+"unitTitle_aircon": {
+"ko": "에어컨 종류",
+"en": "Unit type"
+},
+"unitTitle_sofa": {
+"ko": "소파 크기",
+"en": "Sofa size"
+},
+"unit_count": {
+"ko": "{n}개",
+"en": "{n}"
+},
+"unit_wall": {
+"ko": "벽걸이 1대",
+"en": "Wall-mounted"
+},
+"unit_stand": {
+"ko": "스탠드 1대",
+"en": "Floor-standing"
+},
+"unit_two_in_one": {
+"ko": "2in1 (스탠드+벽걸이)",
+"en": "2-in-1 (stand + wall)"
+},
+"unit_ceiling": {
+"ko": "천장형 1대",
+"en": "Ceiling cassette"
+},
+"unit_seat_1_2": {
+"ko": "1~2인용",
+"en": "1–2 seats"
+},
+"unit_seat_3": {
+"ko": "3인용",
+"en": "3 seats"
+},
+"unit_seat_4_plus": {
+"ko": "4인용 이상",
+"en": "4+ seats"
+},
+"unit_l_shape": {
+"ko": "L자 · 카우치",
+"en": "L-shape / couch"
+},
+"durH": {
+"ko": "{h}시간",
+"en": "{h} h"
+},
+"durHM": {
+"ko": "{h}시간 {m}분",
+"en": "{h} h {m} min"
+},
+"durM": {
+"ko": "{m}분",
+"en": "{m} min"
+},
+"about": {
+"ko": "약 {value}",
+"en": "about {value}"
+},
+"fromPrice": {
+"ko": "{price}~",
+"en": "from {price}"
+},
+"quoteBadge": {
+"ko": "견적",
+"en": "Quote"
+},
+"status0": {
+"ko": "상담 중",
+"en": "In consultation"
+},
+"status1": {
+"ko": "예약 확정",
+"en": "Confirmed"
+},
+"status2": {
+"ko": "팀 배정 완료",
+"en": "Team assigned"
+},
+"status3": {
+"ko": "청소 완료",
+"en": "Completed"
+},
+"statusCancelled": {
+"ko": "취소됨",
+"en": "Cancelled"
+},
+"homeGreeting": {
+"ko": "{name}님,\n오늘은 어디를 깨끗하게 할까요?",
+"en": "Hi {name},\nwhat shall we clean today?"
+},
+"homeGreetingAnon": {
+"ko": "오늘은 어디를\n깨끗하게 할까요?",
+"en": "What shall we\nclean today?"
+},
+"homeUpcoming": {
+"ko": "다가오는 예약",
+"en": "Upcoming"
+},
+"dDay": {
+"ko": "D-{days}",
+"en": "in {days} days"
+},
+"homeServices": {
+"ko": "어떤 청소가 필요하세요?",
+"en": "What do you need?"
+},
+"homeAddAddress": {
+"ko": "주소를 등록하면 가능한 서비스와 가격을 바로 보여드려요",
+"en": "Add your address to see what's available"
+},
+"homeAddAddressCta": {
+"ko": "주소 등록",
+"en": "Add address"
+},
+"homeRebook": {
+"ko": "{service} 다시 예약하기",
+"en": "Book {service} again"
+},
+"homeRebookBody": {
+"ko": "지난번과 같은 조건으로 빠르게 예약해요",
+"en": "Same options as last time, two taps"
+},
+"homeNotices": {
+"ko": "새 소식",
+"en": "What's new"
+},
+"trustVat": {
+"ko": "부가세 포함\n표시된 가격 그대로",
+"en": "VAT included,\nno surprises"
+},
+"trustCancel": {
+"ko": "방문 2일 전까지\n무료 취소",
+"en": "Free cancellation\nup to 2 days before"
+},
+"trustCard": {
+"ko": "카드 정보는\n결제사에만 보관",
+"en": "Card details stay\nwith the payment firm"
+},
+"stepOf": {
+"ko": "{current} / {total}",
+"en": "{current} of {total}"
+},
+"chooseDate": {
+"ko": "날짜 고르기",
+"en": "Choose a date"
+},
+"notIncluded": {
+"ko": "꼭 확인해 주세요",
+"en": "Good to know"
+},
+"studioBlockedTitle": {
+"ko": "{size}평은 원룸 청소 대상이 아니에요",
+"en": "{size} pyeong is too large for studio cleaning"
+},
+"studioBlockedBody": {
+"ko": "상담팀이 집에 맞는 서비스를 추천해 드릴게요.",
+"en": "Our team will suggest the right service for your home."
+},
+"consultCta": {
+"ko": "상담으로 문의하기",
+"en": "Ask our team"
+},
+"addressTitle": {
+"ko": "어디로 방문할까요?",
+"en": "Where should we go?"
+},
+"addressAdd": {
+"ko": "새 주소 추가",
+"en": "Add a new address"
+},
+"addressLabel": {
+"ko": "이름",
+"en": "Label"
+},
+"addressLabelHint": {
+"ko": "예: 우리집",
+"en": "e.g. Home"
+},
+"addressDistrict": {
+"ko": "구",
+"en": "District"
+},
+"addressRoad": {
+"ko": "도로명 주소",
+"en": "Street address"
+},
+"addressDetail": {
+"ko": "상세 주소",
+"en": "Unit / floor"
+},
+"addressSize": {
+"ko": "집 크기 (평)",
+"en": "Home size (pyeong)"
+},
+"addressSizeHelp": {
+"ko": "전용면적 기준 · 1평 ≈ 3.3㎡",
+"en": "Net floor area · 1 pyeong ≈ 3.3 m²"
+},
+"addressHome": {
+"ko": "집",
+"en": "Home"
+},
+"addressOffice": {
+"ko": "사무실",
+"en": "Office"
+},
+"addressEmpty": {
+"ko": "저장된 주소가 없어요",
+"en": "No saved addresses"
+},
+"addressSaved": {
+"ko": "주소를 저장했어요",
+"en": "Address saved"
+},
+"pyeong": {
+"ko": "{n}평",
+"en": "{n} pyeong"
+},
+"scheduleTitle": {
+"ko": "언제 방문할까요?",
+"en": "When should we come?"
+},
+"scheduleArrival": {
+"ko": "도착 시간",
+"en": "Arrival time"
+},
+"scheduleFull": {
+"ko": "마감",
+"en": "Full"
+},
+"scheduleWindow": {
+"ko": "{start}–{end} 도착",
+"en": "Arrive {start}–{end}"
+},
+"scheduleEnds": {
+"ko": "{duration} 소요 · {time}쯤 끝나요",
+"en": "{duration} · done around {time}"
+},
+"scheduleRange": {
+"ko": "내일부터 60일 이내로 예약할 수 있어요",
+"en": "Book from tomorrow up to 60 days ahead"
+},
+"morning": {
+"ko": "오전",
+"en": "Morning"
+},
+"afternoon": {
+"ko": "오후",
+"en": "Afternoon"
+},
+"scheduleQuoteNote": {
+"ko": "정확한 도착 시간은 상담에서 안내해 드려요",
+"en": "We'll confirm the exact time in chat"
+},
+"goToPayment": {
+"ko": "결제하러 가기",
+"en": "Continue to payment"
+},
+"prepTitle": {
+"ko": "방문 전에 준비해 주세요",
+"en": "Please have these ready"
+},
+"prepBody": {
+"ko": "준비되지 않으면 일부 작업이 제한될 수 있어요",
+"en": "Some tasks may be limited without them"
+},
+"prepAsk": {
+"ko": "준비가 어렵다면 상담으로 미리 알려 주세요",
+"en": "Can't prepare these? Let our team know"
+},
+"tool_vacuum": {
+"ko": "청소기",
+"en": "Vacuum"
+},
+"tool_trash": {
+"ko": "쓰레기봉투",
+"en": "Trash bags"
+},
+"tool_mop": {
+"ko": "막대걸레",
+"en": "Mop"
+},
+"tool_cloth": {
+"ko": "손걸레",
+"en": "Cloths"
+},
+"tool_gloves": {
+"ko": "고무장갑",
+"en": "Rubber gloves"
+},
+"tool_sponge": {
+"ko": "수세미",
+"en": "Scrubber"
+},
+"tool_spray": {
+"ko": "다목적세제",
+"en": "All-purpose cleaner"
+},
+"checkoutTitle": {
+"ko": "결제",
+"en": "Payment"
+},
+"coupon": {
+"ko": "쿠폰",
+"en": "Coupon"
+},
+"couponNone": {
+"ko": "사용 안 함",
+"en": "None"
+},
+"couponAvailable": {
+"ko": "사용 가능 {count}장",
+"en": "{count} available"
+},
+"paymentMethod": {
+"ko": "결제수단",
+"en": "Payment method"
+},
+"addPaymentMethod": {
+"ko": "결제수단 등록",
+"en": "Add a payment method"
+},
+"methodCard": {
+"ko": "신용·체크카드",
+"en": "Credit / debit card"
+},
+"methodKakao": {
+"ko": "카카오페이",
+"en": "KakaoPay"
+},
+"methodNaver": {
+"ko": "네이버페이",
+"en": "Naver Pay"
+},
+"methodToss": {
+"ko": "토스페이",
+"en": "Toss Pay"
+},
+"methodRegistered": {
+"ko": "등록됨",
+"en": "Added"
+},
+"methodAdded": {
+"ko": "결제수단을 등록했어요",
+"en": "Payment method added"
+},
+"listPrice": {
+"ko": "서비스 금액",
+"en": "Service"
+},
+"discount": {
+"ko": "쿠폰 할인",
+"en": "Coupon"
+},
+"total": {
+"ko": "결제 금액",
+"en": "Total"
+},
+"vatIncluded": {
+"ko": "부가세 포함",
+"en": "VAT included"
+},
+"payAmount": {
+"ko": "{amount} 결제하기",
+"en": "Pay {amount}"
+},
+"needMethod": {
+"ko": "결제수단을 등록해 주세요",
+"en": "Add a payment method first"
+},
+"freeCancelUntil": {
+"ko": "{date}까지 무료 취소",
+"en": "Free cancellation until {date}"
+},
+"doneTitle": {
+"ko": "예약이 완료됐어요",
+"en": "You're booked!"
+},
+"doneBody": {
+"ko": "청소팀이 배정되면 바로 알려드릴게요",
+"en": "We'll let you know as soon as a team is assigned"
+},
+"doneQuoteTitle": {
+"ko": "상담 요청이 접수됐어요",
+"en": "Request received"
+},
+"doneQuoteBody": {
+"ko": "상담팀이 확인 후 최종 견적을 보내드려요. 견적은 상담 탭에서 확인할 수 있어요.",
+"en": "Our team will send a final quote. Find it in the Chat tab."
+},
+"goHome": {
+"ko": "홈으로",
+"en": "Home"
+},
+"viewBooking": {
+"ko": "예약 보기",
+"en": "View booking"
+},
+"bookingsTitle": {
+"ko": "예약",
+"en": "Bookings"
+},
+"bookingsUpcoming": {
+"ko": "다가오는 예약",
+"en": "Upcoming"
+},
+"bookingsPast": {
+"ko": "지난 예약",
+"en": "Past"
+},
+"bookingsEmpty": {
+"ko": "아직 예약이 없어요",
+"en": "No bookings yet"
+},
+"bookingsEmptyBody": {
+"ko": "첫 예약에 쓸 수 있는 쿠폰이 준비돼 있어요",
+"en": "Welcome coupons are waiting for your first booking"
+},
+"bookNow": {
+"ko": "청소 예약하기",
+"en": "Book a clean"
+},
+"detailTitle": {
+"ko": "예약 상세",
+"en": "Booking"
+},
+"stepRequested": {
+"ko": "상담 접수",
+"en": "Requested"
+},
+"stepConfirmed": {
+"ko": "예약 확정",
+"en": "Confirmed"
+},
+"stepAssigned": {
+"ko": "청소팀 배정",
+"en": "Team assigned"
+},
+"stepCompleted": {
+"ko": "청소 완료",
+"en": "Completed"
+},
+"teamVisiting": {
+"ko": "{team}이(가) 방문해요",
+"en": "{team} is coming"
+},
+"photosSoon": {
+"ko": "끝나면 전후 사진이 여기에 올라와요",
+"en": "Before & after photos will appear here"
+},
+"before": {
+"ko": "청소 전",
+"en": "Before"
+},
+"after": {
+"ko": "청소 후",
+"en": "After"
+},
+"prepCheck": {
+"ko": "준비물 체크",
+"en": "Prep checklist"
+},
+"prepAllSet": {
+"ko": "모두 준비됐어요",
+"en": "All set"
+},
+"visitAddress": {
+"ko": "방문 주소",
+"en": "Address"
+},
+"paid": {
+"ko": "결제",
+"en": "Paid"
+},
+"askTeam": {
+"ko": "상담팀에 문의하기",
+"en": "Message our team"
+},
+"cancelBooking": {
+"ko": "예약 취소",
+"en": "Cancel booking"
+},
+"cancelTitle": {
+"ko": "예약을 취소할까요?",
+"en": "Cancel this booking?"
+},
+"cancelFree": {
+"ko": "지금 취소하면 결제 금액 전액이 환불되고 쿠폰도 돌려드려요.",
+"en": "You'll get a full refund and your coupon back."
+},
+"cancelKeep": {
+"ko": "유지하기",
+"en": "Keep it"
+},
+"cancelled": {
+"ko": "예약이 취소됐어요",
+"en": "Booking cancelled"
+},
+"reschedule": {
+"ko": "일정 변경",
+"en": "Reschedule"
+},
+"rescheduled": {
+"ko": "일정을 변경했어요",
+"en": "Rescheduled"
+},
+"visitNotes": {
+"ko": "방문 요청사항",
+"en": "Notes for the team"
+},
+"notesEntry": {
+"ko": "출입 방법 (공동현관 비밀번호 등)",
+"en": "How to get in (door code etc.)"
+},
+"notesParking": {
+"ko": "주차",
+"en": "Parking"
+},
+"notesOther": {
+"ko": "기타",
+"en": "Anything else"
+},
+"notesSaved": {
+"ko": "요청사항을 저장했어요",
+"en": "Notes saved"
+},
+"depositDue": {
+"ko": "예약금 {amount}을(를) 결제하면 예약이 확정돼요",
+"en": "Pay the {amount} deposit to confirm"
+},
+"payDeposit": {
+"ko": "예약금 결제하기",
+"en": "Pay deposit"
+},
+"waitingQuote": {
+"ko": "상담팀이 견적을 준비하고 있어요",
+"en": "Our team is preparing your quote"
+},
+"estimate": {
+"ko": "예상 금액",
+"en": "Estimate"
+},
+"finalPrice": {
+"ko": "최종 견적",
+"en": "Final quote"
+},
+"deposit": {
+"ko": "예약금",
+"en": "Deposit"
+},
+"balance": {
+"ko": "잔금",
+"en": "Balance"
+},
+"balanceDue": {
+"ko": "잔금 {amount}을(를) 결제해 주세요",
+"en": "Please pay the {amount} balance"
+},
+"payBalance": {
+"ko": "잔금 결제하기",
+"en": "Pay balance"
+},
+"reviewTitle": {
+"ko": "청소는 어떠셨나요?",
+"en": "How did it go?"
+},
+"reviewHint": {
+"ko": "좋았던 점이나 아쉬운 점을 알려 주세요",
+"en": "Tell us what went well or could be better"
+},
+"ratingStars": {
+"ko": "{n}점",
+"en": "{n} stars"
+},
+"reviewSubmit": {
+"ko": "후기 남기기",
+"en": "Submit review"
+},
+"reviewThanks": {
+"ko": "소중한 후기 고마워요",
+"en": "Thanks for your review"
+},
+"bookAgain": {
+"ko": "같은 조건으로 다시 예약",
+"en": "Book again"
+},
+"chatTitle": {
+"ko": "상담",
+"en": "Chat"
+},
+"chatTeam": {
+"ko": "상담팀",
+"en": "Support team"
+},
+"chatHours": {
+"ko": "평일 09:00–18:00",
+"en": "Weekdays 09:00–18:00"
+},
+"chatEmpty": {
+"ko": "궁금한 점이 있으면 언제든 물어보세요",
+"en": "Questions? Ask us anytime"
+},
+"chatNew": {
+"ko": "새 상담",
+"en": "New chat"
+},
+"chatTopicTitle": {
+"ko": "무엇이 궁금하세요?",
+"en": "What's it about?"
+},
+"topicOther": {
+"ko": "기타 문의",
+"en": "Something else"
+},
+"chatHint": {
+"ko": "메시지를 입력하세요",
+"en": "Write a message"
+},
+"chatSend": {
+"ko": "보내기",
+"en": "Send"
+},
+"chatPhoto": {
+"ko": "사진 보내기",
+"en": "Send photo"
+},
+"chatTyping": {
+"ko": "상담팀이 입력 중",
+"en": "Team is typing"
+},
+"quick_confirm": {
+"ko": "예약 확정할게요",
+"en": "Let's confirm"
+},
+"quick_price": {
+"ko": "가격이 궁금해요",
+"en": "About the price"
+},
+"quick_date": {
+"ko": "날짜를 바꾸고 싶어요",
+"en": "Change the date"
+},
+"quick_parking": {
+"ko": "주차가 가능한가요?",
+"en": "Is parking available?"
+},
+"quick_hello": {
+"ko": "안녕하세요",
+"en": "Hello"
+},
+"quick_duration": {
+"ko": "얼마나 걸리나요?",
+"en": "How long will it take?"
+},
+"quoteArrived": {
+"ko": "최종 견적이 도착했어요",
+"en": "Your final quote is here"
+},
+"quoteDepositNow": {
+"ko": "지금 예약금 10%",
+"en": "Deposit now (10%)"
+},
+"quoteBalanceLater": {
+"ko": "청소 후 잔금",
+"en": "Balance after the job"
+},
+"quotePay": {
+"ko": "예약금 결제하고 확정하기",
+"en": "Pay deposit & confirm"
+},
+"quotePaid": {
+"ko": "결제 완료",
+"en": "Paid"
+},
+"requestCard": {
+"ko": "견적 요청",
+"en": "Quote request"
+},
+"sys_consultation_received": {
+"ko": "상담이 접수됐어요",
+"en": "Your request was received"
+},
+"sys_deposit_paid": {
+"ko": "예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.",
+"en": "Deposit of {amount} paid. You're confirmed."
+},
+"sys_booking_cancelled": {
+"ko": "예약이 취소됐어요",
+"en": "The booking was cancelled"
+},
+"sys_status_changed": {
+"ko": "예약 상태가 '{status}'(으)로 바뀌었어요",
+"en": "Status changed to {status}"
+},
+"sys_job_completed": {
+"ko": "청소가 끝났어요. 전후 사진을 확인해 보세요.",
+"en": "All done! Check the before & after photos."
+},
+"sys_rescheduled": {
+"ko": "일정이 {date}(으)로 변경됐어요",
+"en": "Rescheduled to {date}"
+},
+"sys_reschedule_declined": {
+"ko": "파트너가 변경된 일정에 방문이 어려워요. 상담팀이 다시 조율할게요.",
+"en": "The pro can't make the new time. Our team will sort it out."
+},
+"moreTitle": {
+"ko": "더보기",
+"en": "More"
+},
+"moreScope": {
+"ko": "서비스 범위",
+"en": "What's included"
+},
+"morePayments": {
+"ko": "결제수단 관리",
+"en": "Payment methods"
+},
+"moreCoupons": {
+"ko": "쿠폰",
+"en": "Coupons"
+},
+"morePoints": {
+"ko": "청소 포인트",
+"en": "Points"
+},
+"moreAccount": {
+"ko": "계정 정보",
+"en": "Account"
+},
+"moreAddresses": {
+"ko": "주소 관리",
+"en": "Addresses"
+},
+"moreNotices": {
+"ko": "공지사항",
+"en": "Notices"
+},
+"moreTips": {
+"ko": "청소 팁",
+"en": "Cleaning tips"
+},
+"moreFaq": {
+"ko": "자주 묻는 질문",
+"en": "FAQ"
+},
+"morePartner": {
+"ko": "파트너 제휴 문의",
+"en": "Partner with us"
+},
+"moreLanguage": {
+"ko": "언어",
+"en": "Language"
+},
+"langSystem": {
+"ko": "기기 설정 따르기",
+"en": "Use device setting"
+},
+"moreVersion": {
+"ko": "버전 {v}",
+"en": "Version {v}"
+},
+"morePrivacy": {
+"ko": "개인정보 처리방침",
+"en": "Privacy policy"
+},
+"moreTerms": {
+"ko": "이용약관",
+"en": "Terms of service"
+},
+"moreLicenses": {
+"ko": "오픈소스 라이선스",
+"en": "Open-source licenses"
+},
+"logout": {
+"ko": "로그아웃",
+"en": "Sign out"
+},
+"deleteAccount": {
+"ko": "회원 탈퇴",
+"en": "Delete account"
+},
+"deleteAccountBody": {
+"ko": "개인정보가 삭제되고 되돌릴 수 없어요. 진행 중인 예약은 먼저 취소해 주세요.",
+"en": "Your personal data will be erased. This can't be undone. Cancel active bookings first."
+},
+"couponsEmpty": {
+"ko": "보유한 쿠폰이 없어요",
+"en": "No coupons yet"
+},
+"couponUntil": {
+"ko": "{date}까지",
+"en": "Until {date}"
+},
+"couponUsed": {
+"ko": "사용 완료",
+"en": "Used"
+},
+"couponExpired": {
+"ko": "기간 만료",
+"en": "Expired"
+},
+"couponAnyService": {
+"ko": "모든 서비스",
+"en": "Any service"
+},
+"coupon_welcome_studio": {
+"ko": "가입 축하 원룸 쿠폰",
+"en": "Welcome: studio"
+},
+"coupon_welcome_any": {
+"ko": "가입 축하 쿠폰",
+"en": "Welcome coupon"
+},
+"pointsBalance": {
+"ko": "보유 포인트",
+"en": "Your points"
+},
+"pointsEmpty": {
+"ko": "포인트 내역이 없어요",
+"en": "No point history"
+},
+"accountName": {
+"ko": "이름",
+"en": "Name"
+},
+"accountPhone": {
+"ko": "휴대폰 번호",
+"en": "Mobile"
+},
+"accountEmail": {
+"ko": "이메일",
+"en": "Email"
+},
+"accountLogin": {
+"ko": "로그인 방식",
+"en": "Sign-in method"
+},
+"accountLoginPhone": {
+"ko": "휴대폰 인증",
+"en": "Phone verification"
+},
+"methodsEmpty": {
+"ko": "등록된 결제수단이 없어요",
+"en": "No payment methods"
+},
+"noContent": {
+"ko": "아직 등록된 내용이 없어요",
+"en": "Nothing here yet"
+},
+"quoteTypeTitle": {
+"ko": "어떤 청소가 필요하세요?",
+"en": "Which kind of clean?"
+},
+"type_standard": {
+"ko": "퇴거 청소",
+"en": "Standard move-out"
+},
+"type_same_day_move": {
+"ko": "이사 당일 청소",
+"en": "Same-day move"
+},
+"type_some_luggage_left": {
+"ko": "짐 일부 남음",
+"en": "Some items left"
+},
+"type_normal_move_in": {
+"ko": "일반 입주",
+"en": "Standard move-in"
+},
+"type_after_interior": {
+"ko": "인테리어 후",
+"en": "After renovation"
+},
+"type_lived_in_deep_clean": {
+"ko": "거주 중 대청소",
+"en": "Lived-in deep clean"
+},
+"luggageTitle": {
+"ko": "짐은 어떤 상태인가요?",
+"en": "How full is the home?"
+},
+"luggage_empty": {
+"ko": "짐 없음",
+"en": "Empty"
+},
+"luggage_partly_unpacked": {
+"ko": "일부 정리 중",
+"en": "Partly unpacked"
+},
+"luggage_fully_lived_in": {
+"ko": "생활 중",
+"en": "Fully lived-in"
+},
+"luggage_unknown": {
+"ko": "잘 모르겠어요",
+"en": "Not sure"
+},
+"quoteBasicTitle": {
+"ko": "집 구조를 알려주세요",
+"en": "Tell us about the home"
+},
+"buildingType": {
+"ko": "건물 유형",
+"en": "Building type"
+},
+"building_apartment": {
+"ko": "아파트",
+"en": "Apartment"
+},
+"building_villa": {
+"ko": "빌라",
+"en": "Low-rise"
+},
+"building_officetel": {
+"ko": "오피스텔",
+"en": "Officetel"
+},
+"building_house": {
+"ko": "단독주택",
+"en": "House"
+},
+"building_other": {
+"ko": "기타",
+"en": "Other"
+},
+"layoutTitle": {
+"ko": "구조",
+"en": "Layout"
+},
+"layout_studio": {
+"ko": "원룸",
+"en": "Studio"
+},
+"layout_one_and_half": {
+"ko": "1.5룸",
+"en": "1.5 rooms"
+},
+"layout_two_rooms": {
+"ko": "방 2개",
+"en": "2 rooms"
+},
+"layout_three_rooms": {
+"ko": "방 3개",
+"en": "3 rooms"
+},
+"layout_four_plus": {
+"ko": "방 4개 이상",
+"en": "4+ rooms"
+},
+"duplexTitle": {
+"ko": "복층인가요?",
+"en": "Is it a duplex?"
+},
+"quoteSpaceTitle": {
+"ko": "공간을 알려주세요",
+"en": "A bit more about the space"
+},
+"bathroomsLabel": {
+"ko": "화장실",
+"en": "Bathrooms"
+},
+"balconiesLabel": {
+"ko": "발코니 · 다용도실",
+"en": "Balconies / utility"
+},
+"elevatorTitle": {
+"ko": "엘리베이터가 있나요?",
+"en": "Is there an elevator?"
+},
+"floor3Label": {
+"ko": "3층 이상이에요",
+"en": "Floor 3 or higher"
+},
+"quoteEstimateTitle": {
+"ko": "예상 견적이에요",
+"en": "Here's your estimate"
+},
+"quoteEstimateBody": {
+"ko": "상담에서 사진과 상황을 확인한 뒤 최종 금액이 정해져요",
+"en": "The final price is set in chat after we see photos"
+},
+"quoteG1": {
+"ko": "최종 금액은 상담에서 확정해요",
+"en": "Final price agreed with you in chat"
+},
+"quoteG2": {
+"ko": "예약금 10%로 확정, 잔금은 청소 후",
+"en": "10% deposit to confirm, rest after"
+},
+"quoteG3": {
+"ko": "확정 전에는 언제든 무료 취소",
+"en": "Free to cancel before you confirm"
+},
+"quoteConfirmTitle": {
+"ko": "요청 내용을 확인해 주세요",
+"en": "Check your request"
+},
+"quoteRequest": {
+"ko": "상담 요청하기",
+"en": "Send request"
+},
+"quoteNoPayNow": {
+"ko": "지금은 결제하지 않아요",
+"en": "Nothing to pay yet"
+},
+"summaryType": {
+"ko": "청소 종류",
+"en": "Type"
+},
+"summaryHome": {
+"ko": "집 정보",
+"en": "Home"
+},
+"summaryDate": {
+"ko": "방문 일정",
+"en": "Visit"
+},
+"themeTitle": {
+"ko": "테마",
+"en": "Theme"
+},
+"themeDark": {
+"ko": "다크",
+"en": "Dark"
+},
+"themeLight": {
+"ko": "라이트",
+"en": "Light"
+},
+"themeSystem": {
+"ko": "시스템 설정",
+"en": "System"
+},
+"themeTip": {
+"ko": "테마 바꾸기",
+"en": "Change theme"
+},
+"pTabJobs": {
+"ko": "일감",
+"en": "Jobs"
+},
+"pTabQuotes": {
+"ko": "내 견적",
+"en": "My quotes"
+},
+"pTabSchedule": {
+"ko": "일정",
+"en": "Schedule"
+},
+"pIntroTitle": {
+"ko": "청소 전문가를 위한\n일감 · 일정 · 정산",
+"en": "Jobs, schedule and payouts\nfor cleaning pros"
+},
+"pIntroBody": {
+"ko": "원하는 지역과 시간에만 일하고, 매주 정산 받으세요",
+"en": "Work only where and when you want. Get paid weekly."
+},
+"pOnbTitle": {
+"ko": "파트너 정보를 알려주세요",
+"en": "Tell us about you"
+},
+"pOnbName": {
+"ko": "대표자 이름",
+"en": "Your name"
+},
+"pOnbTeam": {
+"ko": "팀 이름",
+"en": "Team name"
+},
+"pOnbServices": {
+"ko": "할 수 있는 서비스",
+"en": "Services you offer"
+},
+"pOnbAreas": {
+"ko": "활동 지역",
+"en": "Where you work"
+},
+"pOnbDone": {
+"ko": "가입 신청",
+"en": "Apply"
+},
+"pPendingTitle": {
+"ko": "승인을 기다리고 있어요",
+"en": "Your account is under review"
+},
+"pPendingBody": {
+"ko": "운영팀이 확인 후 승인하면 알림을 보내드려요. 그동안 정산 계좌를 등록해 주세요.",
+"en": "We'll notify you once approved. Meanwhile, add your payout account."
+},
+"pSuspended": {
+"ko": "계정이 일시 중지됐어요. 운영팀에 문의해 주세요.",
+"en": "Your account is paused. Please contact operations."
+},
+"pDirect": {
+"ko": "바로 예약",
+"en": "Direct"
+},
+"pQuoteReq": {
+"ko": "견적 요청",
+"en": "Quote requests"
+},
+"pShowClosed": {
+"ko": "마감된 일감도 보기",
+"en": "Show closed jobs"
+},
+"pSortNewest": {
+"ko": "최신 요청순",
+"en": "Newest"
+},
+"pSortVisit": {
+"ko": "가까운 방문일순",
+"en": "Soonest visit"
+},
+"pSortAmount": {
+"ko": "금액 높은순",
+"en": "Highest amount"
+},
+"pNoJobs": {
+"ko": "지금 맞는 일감이 없어요",
+"en": "No matching jobs right now"
+},
+"pNoJobsBody": {
+"ko": "서비스·지역·근무 시간을 넓히면 더 많은 일감을 볼 수 있어요",
+"en": "Widen services, areas or hours to see more"
+},
+"pPayout": {
+"ko": "예상 정산",
+"en": "Your payout"
+},
+"pCustomerEstimate": {
+"ko": "고객 예상가",
+"en": "Customer estimate"
+},
+"pNew": {
+"ko": "NEW",
+"en": "NEW"
+},
+"pClosed": {
+"ko": "마감",
+"en": "Closed"
+},
+"pPrivacyNote": {
+"ko": "정확한 주소와 고객 정보는 수락 후에 보여요",
+"en": "Exact address and customer details appear after you accept"
+},
+"pAccept": {
+"ko": "수락하기",
+"en": "Accept job"
+},
+"pAcceptConfirm": {
+"ko": "이 일감을 수락할까요?",
+"en": "Accept this job?"
+},
+"pAcceptBody": {
+"ko": "수락하면 일정에 추가되고 고객에게 팀 배정 알림이 가요. 방문 2일 전부터는 취소가 어려워요.",
+"en": "It goes on your schedule and the customer is notified. Cancelling within 2 days of the visit is restricted."
+},
+"pAccepted": {
+"ko": "일감을 수락했어요",
+"en": "Job accepted"
+},
+"pSendQuote": {
+"ko": "견적 보내기",
+"en": "Send quote"
+},
+"pQuotePrice": {
+"ko": "고객 결제 금액",
+"en": "Customer price"
+},
+"pQuoteNote": {
+"ko": "상담팀에 전할 메모",
+"en": "Note for the team"
+},
+"pQuoteSent": {
+"ko": "견적을 보냈어요",
+"en": "Quote sent"
+},
+"pFee": {
+"ko": "수수료 {rate}%",
+"en": "{rate}% fee"
+},
+"pYouGet": {
+"ko": "받을 금액",
+"en": "You receive"
+},
+"pQuoteAll": {
+"ko": "전체",
+"en": "All"
+},
+"pQ_waiting": {
+"ko": "대기",
+"en": "Waiting"
+},
+"pQ_selected": {
+"ko": "선택됨",
+"en": "Selected"
+},
+"pQ_rejected": {
+"ko": "미선택",
+"en": "Not selected"
+},
+"pQ_closed": {
+"ko": "종료",
+"en": "Closed"
+},
+"pUnseenOnly": {
+"ko": "새 결과만",
+"en": "New results only"
+},
+"pNoQuotes": {
+"ko": "보낸 견적이 없어요",
+"en": "No quotes yet"
+},
+"pMyQuote": {
+"ko": "내 견적",
+"en": "My quote"
+},
+"pWithdraw": {
+"ko": "견적 철회",
+"en": "Withdraw"
+},
+"pWithdrawn": {
+"ko": "견적을 철회했어요",
+"en": "Quote withdrawn"
+},
+"pOnlyMine": {
+"ko": "내 일정만",
+"en": "Only mine"
+},
+"pJobsCount": {
+"ko": "{n}건",
+"en": "{n} jobs"
+},
+"pNoSchedule": {
+"ko": "이 날은 일정이 없어요",
+"en": "Nothing scheduled"
+},
+"pCancelledBanner": {
+"ko": "고객이 취소한 일감이에요. 완료 처리할 수 없어요.",
+"en": "This job was cancelled and can't be completed."
+},
+"pRescheduleBanner": {
+"ko": "일정 변경 요청: {from} → {to}",
+"en": "Reschedule: {from} → {to}"
+},
+"pRescheduleOk": {
+"ko": "가능해요",
+"en": "I can make it"
+},
+"pRescheduleNo": {
+"ko": "어려워요",
+"en": "Can't make it"
+},
+"pCustomer": {
+"ko": "고객",
+"en": "Customer"
+},
+"pCall": {
+"ko": "안심번호로 전화",
+"en": "Call (masked number)"
+},
+"pCallSoon": {
+"ko": "안심번호 연결은 서비스 개시 시 활성화돼요",
+"en": "Masked calling activates at launch"
+},
+"pQuietHours": {
+"ko": "20시 이후에는 전화하지 말아 주세요",
+"en": "No calls after 8 pm"
+},
+"pAssignee": {
+"ko": "담당자",
+"en": "Assignee"
+},
+"pChangeAssignee": {
+"ko": "담당자 변경",
+"en": "Change assignee"
+},
+"pCustomerRequests": {
+"ko": "고객 요청사항",
+"en": "Customer requests"
+},
+"pTeamMemo": {
+"ko": "팀 메모 (고객에게 보이지 않아요)",
+"en": "Team memo (customer can't see)"
+},
+"pMemoSaved": {
+"ko": "메모를 저장했어요",
+"en": "Memo saved"
+},
+"pPayoutBreakdown": {
+"ko": "정산 내역",
+"en": "Payout"
+},
+"pAfterBalance": {
+"ko": "고객 잔금 결제 후 정산돼요",
+"en": "Paid out after the customer pays the balance"
+},
+"pChatOps": {
+"ko": "운영팀과 채팅",
+"en": "Chat with operations"
+},
+"pComplete": {
+"ko": "작업 완료 체크",
+"en": "Complete job"
+},
+"pBeforePhotos": {
+"ko": "청소 전 사진",
+"en": "Before photos"
+},
+"pAfterPhotos": {
+"ko": "청소 후 사진",
+"en": "After photos"
+},
+"pAddPhoto": {
+"ko": "사진 추가",
+"en": "Add photo"
+},
+"pChecklist": {
+"ko": "확인 항목",
+"en": "Checklist"
+},
+"pCheck1": {
+"ko": "요청한 모든 공간을 청소했어요",
+"en": "All requested areas cleaned"
+},
+"pCheck2": {
+"ko": "쓰레기를 정리하고 도구를 회수했어요",
+"en": "Trash handled, tools collected"
+},
+"pCheck3": {
+"ko": "창문·전기·수도를 확인했어요",
+"en": "Windows, power and water checked"
+},
+"pCheck4": {
+"ko": "고객 요청사항을 반영했어요",
+"en": "Customer requests handled"
+},
+"pCompleteCta": {
+"ko": "완료 처리",
+"en": "Mark complete"
+},
+"pCompleteNeed": {
+"ko": "사진을 각 1장 이상 올리고 모든 항목을 체크해 주세요",
+"en": "Add at least one photo each and tick every item"
+},
+"pCompleted": {
+"ko": "수고하셨어요!",
+"en": "Great work!"
+},
+"pPayoutOn": {
+"ko": "{date}에 {amount} 정산 예정",
+"en": "{amount} will be paid on {date}"
+},
+"pPayoutWaiting": {
+"ko": "고객 잔금 결제 후 정산일이 정해져요",
+"en": "Payout date is set after the customer pays"
+},
+"pPendingPayout": {
+"ko": "정산 예정 금액",
+"en": "Pending payout"
+},
+"pSettlements": {
+"ko": "정산 내역",
+"en": "Settlements"
+},
+"pS_waiting_balance": {
+"ko": "잔금 대기",
+"en": "Awaiting balance"
+},
+"pS_pending": {
+"ko": "정산 예정",
+"en": "Scheduled"
+},
+"pS_paid": {
+"ko": "지급 완료",
+"en": "Paid"
+},
+"pS_held": {
+"ko": "보류",
+"en": "On hold"
+},
+"pReviews": {
+"ko": "고객 리뷰",
+"en": "Reviews"
+},
+"pNoReviews": {
+"ko": "아직 리뷰가 없어요",
+"en": "No reviews yet"
+},
+"pReplyLater": {
+"ko": "답글 기능은 곧 열려요",
+"en": "Replies are coming soon"
+},
+"pServicesAreas": {
+"ko": "서비스 · 지역",
+"en": "Services & areas"
+},
+"pPayoutAccount": {
+"ko": "정산 계좌",
+"en": "Payout account"
+},
+"pBank": {
+"ko": "은행",
+"en": "Bank"
+},
+"pAccountNumber": {
+"ko": "계좌번호",
+"en": "Account number"
+},
+"pHolder": {
+"ko": "예금주",
+"en": "Account holder"
+},
+"pVerified": {
+"ko": "확인 완료",
+"en": "Verified"
+},
+"pUnverified": {
+"ko": "확인 중",
+"en": "Verifying"
+},
+"pAccountSaved": {
+"ko": "계좌를 저장했어요. 변경 시 다시 확인돼요.",
+"en": "Saved. Changes are re-verified."
+},
+"pWorkSchedule": {
+"ko": "근무 일정",
+"en": "Work schedule"
+},
+"pWeekdays": {
+"ko": "근무 요일",
+"en": "Working days"
+},
+"pDayParts": {
+"ko": "근무 시간대",
+"en": "Working hours"
+},
+"pDaysOff": {
+"ko": "쉬는 날",
+"en": "Days off"
+},
+"pAddDayOff": {
+"ko": "쉬는 날 추가",
+"en": "Add a day off"
+},
+"pSaved": {
+"ko": "저장했어요",
+"en": "Saved"
+},
+"pTeam": {
+"ko": "팀원",
+"en": "Team"
+},
+"pOwner": {
+"ko": "대표",
+"en": "Owner"
+},
+"pInvited": {
+"ko": "초대됨",
+"en": "Invited"
+},
+"pInvite": {
+"ko": "팀원 초대",
+"en": "Invite member"
+},
+"pInviteSent": {
+"ko": "초대 문자를 보냈어요",
+"en": "Invitation sent"
+},
+"pRemove": {
+"ko": "내보내기",
+"en": "Remove"
+},
+"pNotifications": {
+"ko": "알림 설정",
+"en": "Notifications"
+},
+"pNotifyDirect": {
+"ko": "새 바로 예약 일감",
+"en": "New direct jobs"
+},
+"pNotifyQuotes": {
+"ko": "견적 요청 · 결과",
+"en": "Quote requests & results"
+},
+"pNotifyChat": {
+"ko": "운영팀 메시지",
+"en": "Operations messages"
+},
+"pQuietNight": {
+"ko": "야간 방해 금지 (22–08시)",
+"en": "Quiet at night (22–08)"
+},
+"pNewInquiry": {
+"ko": "새 문의",
+"en": "New inquiry"
+},
+"pTopic_settlement": {
+"ko": "정산",
+"en": "Payouts"
+},
+"pTopic_reschedule": {
+"ko": "일정 변경 · 취소",
+"en": "Reschedule / cancel"
+},
+"pTopic_app": {
+"ko": "앱 사용",
+"en": "App help"
+},
+"pOpsTeam": {
+"ko": "운영팀",
+"en": "Operations"
+},
+"pViewJob": {
+"ko": "일감 보기",
+"en": "View job"
+},
+"pBookingNo": {
+"ko": "예약번호 {n}",
+"en": "Booking {n}"
+},
+"pSize": {
+"ko": "면적",
+"en": "Size"
+},
+"pSchedule": {
+"ko": "일정",
+"en": "Schedule"
+},
+"pSpace": {
+"ko": "공간 정보",
+"en": "Space"
+}
+}

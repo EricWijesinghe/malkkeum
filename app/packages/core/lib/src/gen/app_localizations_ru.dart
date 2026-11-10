@@ -1,0 +1,2084 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Russian (`ru`).
+class TRu extends T {
+  TRu([String locale = 'ru']) : super(locale);
+
+  @override
+  String get apSocialOr => 'или';
+
+  @override
+  String get apSocialSignIn => 'Быстрый вход';
+
+  @override
+  String get apLoginKakao => 'Продолжить с Kakao';
+
+  @override
+  String get apLoginNaver => 'Продолжить с Naver';
+
+  @override
+  String get apLoginGoogle => 'Продолжить с Google';
+
+  @override
+  String get apLoginApple => 'Продолжить с Apple';
+
+  @override
+  String get apDevSocialNote =>
+      'Режим разработки: вход в тестовый аккаунт, а не в настоящий аккаунт соцсети.';
+
+  @override
+  String get apSocialFailed =>
+      'Не удалось выполнить быстрый вход. Попробуйте ещё раз.';
+
+  @override
+  String get apProviderNotConfigured => 'Этот способ входа пока недоступен';
+
+  @override
+  String get apPhoneTaken => 'Этот номер уже привязан к другому аккаунту';
+
+  @override
+  String get apPhoneAttachTitle => 'Подтвердите номер телефона';
+
+  @override
+  String get apPhoneAttachBody =>
+      'Номер нужен для бронирований и связи с мастером. Подтверждение нужно только один раз.';
+
+  @override
+  String get apPayAllTitle => 'Выберите способ оплаты';
+
+  @override
+  String get apPaySavedTitle => 'Сохранённые способы';
+
+  @override
+  String get apPayMoreTitle => 'Все способы оплаты';
+
+  @override
+  String get apPayBillingHint =>
+      'Сохраните один раз, и дальше оплата будет в одно касание';
+
+  @override
+  String get apPayCheckoutHint => 'Завершите оплату в окне платежа';
+
+  @override
+  String get apPayRegistering => 'Регистрируем…';
+
+  @override
+  String get apPayManageHint =>
+      'Оплачивайте в одно касание сохранённым способом. Экспресс-платежи можно добавить здесь.';
+
+  @override
+  String get apMethodCard => 'Кредитная и дебетовая карта';
+
+  @override
+  String get apMethodKakao => 'KakaoPay';
+
+  @override
+  String get apMethodNaver => 'NaverPay';
+
+  @override
+  String get apMethodToss => 'TossPay';
+
+  @override
+  String get apMethodPayco => 'PAYCO';
+
+  @override
+  String get apMethodSamsung => 'Samsung Pay';
+
+  @override
+  String get apMethodApple => 'Apple Pay';
+
+  @override
+  String get apMethodTransfer => 'Банковский перевод';
+
+  @override
+  String get apMethodVirtual => 'Виртуальный счёт';
+
+  @override
+  String get apMethodPhone => 'Оплата с телефона';
+
+  @override
+  String get apMethodUnknown => 'Другой способ';
+
+  @override
+  String get apVaTitle => 'Счёт для перевода готов';
+
+  @override
+  String get apVaWaiting => 'Ожидаем перевод';
+
+  @override
+  String get apVaBody =>
+      'Бронь подтвердится после поступления перевода в срок. Поступление проверяется автоматически.';
+
+  @override
+  String get apVaBank => 'Банк';
+
+  @override
+  String get apVaAccount => 'Номер счёта';
+
+  @override
+  String get apVaHolder => 'Владелец счёта';
+
+  @override
+  String get apVaAmount => 'Сумма перевода';
+
+  @override
+  String apVaDue(String due) {
+    return 'Переведите до $due';
+  }
+
+  @override
+  String get apVaCopy => 'Копировать';
+
+  @override
+  String get apVaCopied => 'Номер счёта скопирован';
+
+  @override
+  String get apVaBannerTitle => 'Бронь ждёт перевода';
+
+  @override
+  String apVaBannerBody(String amount, String due) {
+    return '$amount · до $due';
+  }
+
+  @override
+  String get apVaBannerAction => 'Открыть счёт';
+
+  @override
+  String get apPgTitle => 'Окно оплаты';
+
+  @override
+  String get apPgDevNote =>
+      'Симуляция оплаты только для среды разработки. Реального списания не происходит.';
+
+  @override
+  String apPgPay(String amount) {
+    return 'Оплатить $amount';
+  }
+
+  @override
+  String get apPgIssue => 'Получить номер счёта';
+
+  @override
+  String get apPgCancel => 'Отменить оплату';
+
+  @override
+  String get apErrSlotFullRefunded =>
+      'Это время только что заполнилось, поэтому оплата отменена автоматически';
+
+  @override
+  String get apErrCheckoutExpired =>
+      'Время на оплату истекло. Попробуйте ещё раз.';
+
+  @override
+  String get apIdentityTitle => 'Подтверждение личности (PASS)';
+
+  @override
+  String get apIdentityBody =>
+      'Подтверждаем вас по телефонному оператору. Это нужно для безопасных сделок и выплат.';
+
+  @override
+  String get apIdentityAction => 'Подтвердить личность';
+
+  @override
+  String get apIdentityDone => 'Личность подтверждена';
+
+  @override
+  String get apIdentityVerified => 'Подтверждено';
+
+  @override
+  String get apIdentityUnverified => 'Пока не подтверждено';
+
+  @override
+  String get apIdentityDevTitle => 'Тестовое подтверждение личности';
+
+  @override
+  String get apIdentityDevBody =>
+      'В режиме разработки проверка проходит без реального подтверждения.';
+
+  @override
+  String get apIdentityDevPass => 'Пропустить';
+
+  @override
+  String get apPayManageTitle => 'Подключить экспресс-оплату';
+
+  @override
+  String get cTitle => 'Консоль оператора';
+
+  @override
+  String get cEmail => 'Эл. почта';
+
+  @override
+  String get cPassword => 'Пароль';
+
+  @override
+  String get cLogin => 'Войти';
+
+  @override
+  String get cLoginFailed => 'Неверная почта или пароль';
+
+  @override
+  String get cDashboard => 'Панель';
+
+  @override
+  String get cBookings => 'Брони';
+
+  @override
+  String get cQuoteDesk => 'Расчёт стоимости';
+
+  @override
+  String get cInbox => 'Обращения';
+
+  @override
+  String get cCatalog => 'Каталог · цены';
+
+  @override
+  String get cMarketing => 'Купоны · контент';
+
+  @override
+  String get cPartners => 'Партнёры';
+
+  @override
+  String get cSettlements => 'Выплаты';
+
+  @override
+  String get cCustomers => 'Клиенты';
+
+  @override
+  String get cStaff => 'Сотрудники';
+
+  @override
+  String get cSearchCommand => 'Поиск · команды';
+
+  @override
+  String get cPaletteHint => 'Введите название раздела или номер брони';
+
+  @override
+  String get cTodayJobs => 'Заказы на сегодня';
+
+  @override
+  String get cOpenQuotes => 'Ожидают расчёта';
+
+  @override
+  String get cUnassigned => 'Без бригады';
+
+  @override
+  String get cUnreadThreads => 'Непрочитанные обращения';
+
+  @override
+  String get cRevenue30 => 'Оплаты за 30 дней';
+
+  @override
+  String get cBookings30 => 'Брони за 30 дней';
+
+  @override
+  String get cByService => 'Брони по услугам (30 дней)';
+
+  @override
+  String get cAllStatus => 'Все статусы';
+
+  @override
+  String get cAllServices => 'Все услуги';
+
+  @override
+  String get cSearch => 'Поиск (номер, телефон, имя, адрес)';
+
+  @override
+  String get cNoResults => 'Ничего не найдено';
+
+  @override
+  String get cNumber => 'Номер';
+
+  @override
+  String get cVisit => 'Визит';
+
+  @override
+  String get cService => 'Услуга';
+
+  @override
+  String get cStatus => 'Статус';
+
+  @override
+  String get cTeam => 'Бригада';
+
+  @override
+  String get cAmount => 'Сумма';
+
+  @override
+  String get cCustomer => 'Клиент';
+
+  @override
+  String get cPayments => 'Платежи';
+
+  @override
+  String get cChangeStatus => 'Сменить статус';
+
+  @override
+  String get cTeamName => 'Назначенная бригада';
+
+  @override
+  String get cAssign => 'Назначить бригаду';
+
+  @override
+  String get cMarkDone => 'Отметить выполненной';
+
+  @override
+  String get cConfirm => 'Отметить подтверждённой';
+
+  @override
+  String get cCancelRefund => 'Отмена · возврат';
+
+  @override
+  String get cRefundAmount => 'Сумма возврата (пусто = полная)';
+
+  @override
+  String get cDone => 'Готово';
+
+  @override
+  String get cAnswers => 'Ответы клиента';
+
+  @override
+  String get cEstimateCalc => 'Автоматический расчёт';
+
+  @override
+  String get cBase => 'Базовая';
+
+  @override
+  String get cExtras => 'Дополнительно';
+
+  @override
+  String get cSurcharge => 'Наценка';
+
+  @override
+  String get cBeforeVat => 'Без НДС';
+
+  @override
+  String get cProQuotes => 'Расчёты партнёров';
+
+  @override
+  String get cNoProQuotes => 'Пока нет расчётов от партнёров';
+
+  @override
+  String get cFinalPrice => 'Итоговая цена для клиента';
+
+  @override
+  String get cQuoteNote => 'Комментарий для клиента';
+
+  @override
+  String get cSendQuote => 'Отправить клиенту расчёт';
+
+  @override
+  String get cQuoteSent => 'Расчёт отправлен';
+
+  @override
+  String get cCustomerChats => 'Клиенты';
+
+  @override
+  String get cPartnerChats => 'Партнёры';
+
+  @override
+  String get cSelectBooking => 'Выберите бронь';
+
+  @override
+  String get cRefunded => 'Возвращено';
+
+  @override
+  String get cPartRefunded => 'Частичный возврат';
+
+  @override
+  String get cFailed => 'Ошибка';
+
+  @override
+  String get cSelectThread => 'Выберите диалог';
+
+  @override
+  String get cReplyHint => 'Введите ответ · Ctrl+Enter — отправить';
+
+  @override
+  String get cOpenBooking => 'Открыть бронь';
+
+  @override
+  String get cShortcuts => 'J/K — навигация · Ctrl+K — команды';
+
+  @override
+  String get cPricing => 'Цены';
+
+  @override
+  String get cMinutes => 'Время (мин)';
+
+  @override
+  String get cActive => 'В продаже';
+
+  @override
+  String get cSaved => 'Сохранено';
+
+  @override
+  String get cSlotCapacity => 'Вместимость по времени прибытия';
+
+  @override
+  String get cUnlimited => 'Без ограничений';
+
+  @override
+  String get cFormula => 'Формула расчёта';
+
+  @override
+  String get f_base_studio => 'База: студия';
+
+  @override
+  String get f_base_one_and_half => 'База: 1,5 комнаты';
+
+  @override
+  String get f_base_two_rooms => 'База: 2 комнаты';
+
+  @override
+  String get f_base_three_rooms => 'База: 3 комнаты';
+
+  @override
+  String get f_base_four_plus => 'База: 4+ комнаты';
+
+  @override
+  String get f_per_extra_bathroom => 'За каждую доп. ванную';
+
+  @override
+  String get f_per_balcony => 'За балкон';
+
+  @override
+  String get f_duplex => 'Двухуровневая';
+
+  @override
+  String get f_no_elevator_high_floor => 'Без лифта + 3 этаж и выше';
+
+  @override
+  String get cIssueCoupon => 'Выдать купоны';
+
+  @override
+  String get cCouponName => 'Название купона';
+
+  @override
+  String get cCouponPhones => 'Номера клиентов (каждый с новой строки)';
+
+  @override
+  String get cAllCustomers => 'Всем клиентам';
+
+  @override
+  String cIssued(String n) {
+    return 'Выдано: $n';
+  }
+
+  @override
+  String get cContent => 'Контент';
+
+  @override
+  String get cKind_notice => 'Объявление';
+
+  @override
+  String get cKind_tip => 'Совет';
+
+  @override
+  String get cKind_faq => 'FAQ';
+
+  @override
+  String get cKind_banner => 'Баннер';
+
+  @override
+  String get cKind_legal => 'Условия';
+
+  @override
+  String get cNewContent => 'Новый контент';
+
+  @override
+  String get cTitleField => 'Заголовок';
+
+  @override
+  String get cBodyField => 'Текст';
+
+  @override
+  String get cSlug => 'Идентификатор (условия: privacy / terms)';
+
+  @override
+  String get cVerify => 'Одобрить';
+
+  @override
+  String get cSuspend => 'Приостановить';
+
+  @override
+  String get cPro_pending => 'Ожидает одобрения';
+
+  @override
+  String get cPro_verified => 'Активен';
+
+  @override
+  String get cPro_suspended => 'Приостановлен';
+
+  @override
+  String get cCompleted => 'Выполнено';
+
+  @override
+  String get cCancelledN => 'Отменено';
+
+  @override
+  String get cRating => 'Рейтинг';
+
+  @override
+  String get cFeeRate => 'Комиссия %';
+
+  @override
+  String get cRunPayouts => 'Запустить выплаты';
+
+  @override
+  String get cPayoutDate => 'Выплатить за период до';
+
+  @override
+  String cPayoutDone(String n) {
+    return 'Выплата отправлена: $n партнёрам';
+  }
+
+  @override
+  String get cHold => 'Удержать';
+
+  @override
+  String get cRelease => 'Снять удержание';
+
+  @override
+  String get cNet => 'К выплате';
+
+  @override
+  String get cAddStaff => 'Добавить сотрудника';
+
+  @override
+  String get cRoleAdmin => 'Администратор';
+
+  @override
+  String get cRoleConsultant => 'Консультант';
+
+  @override
+  String get cDeactivate => 'Деактивировать';
+
+  @override
+  String get cActivate => 'Активировать';
+
+  @override
+  String get cPasswordRule => 'Не менее 12 символов';
+
+  @override
+  String get cAdminOnly => 'Только для администраторов';
+
+  @override
+  String cBookingsCount(String n) {
+    return 'Броней: $n';
+  }
+
+  @override
+  String get cJoined => 'Регистрация';
+
+  @override
+  String get cNewBooking => 'Пришла новая бронь';
+
+  @override
+  String get cNewMessage => 'Новое сообщение';
+
+  @override
+  String get ok => 'ОК';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get next => 'Далее';
+
+  @override
+  String get close => 'Закрыть';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get delete => 'Удалить';
+
+  @override
+  String get edit => 'Изменить';
+
+  @override
+  String get change => 'Изменить';
+
+  @override
+  String get retry => 'Повторить';
+
+  @override
+  String get yes => 'Да';
+
+  @override
+  String get no => 'Нет';
+
+  @override
+  String get required => 'Обязательно';
+
+  @override
+  String get viewAll => 'Смотреть все';
+
+  @override
+  String get today => 'Сегодня';
+
+  @override
+  String get errorGeneric =>
+      'Что-то пошло не так. Попробуйте ещё раз немного позже.';
+
+  @override
+  String get errorNetwork => 'Проверьте подключение к интернету';
+
+  @override
+  String get err_invalid_phone => 'Проверьте номер телефона';
+
+  @override
+  String get err_otp_invalid => 'Неверный код подтверждения';
+
+  @override
+  String get err_otp_expired => 'Срок действия кода истёк. Запросите новый.';
+
+  @override
+  String get err_rate_limited => 'Слишком много попыток. Попробуйте позже.';
+
+  @override
+  String get err_studio_too_large =>
+      'Уборка студии доступна только для квартир до 10 пхён';
+
+  @override
+  String get err_date_out_of_range =>
+      'Выберите дату от завтрашнего дня и не позднее чем через 60 дней';
+
+  @override
+  String get err_slot_full => 'Это время уже занято. Выберите другое.';
+
+  @override
+  String get err_coupon_expired => 'Срок действия купона истёк';
+
+  @override
+  String get err_coupon_used => 'Этот купон уже использован';
+
+  @override
+  String get err_coupon_wrong_service =>
+      'Этот купон нельзя использовать для данной услуги';
+
+  @override
+  String get err_payment_failed =>
+      'Оплата не прошла. Попробуйте другой способ.';
+
+  @override
+  String get err_payment_method_required => 'Выберите способ оплаты';
+
+  @override
+  String get err_cancellation_window_closed =>
+      'Отменить бронь за 2 дня до визита можно только через нашу команду';
+
+  @override
+  String get err_address_required => 'Добавьте адрес визита';
+
+  @override
+  String get err_already_taken => 'Другой мастер уже принял этот заказ';
+
+  @override
+  String get err_invalid_address => 'Заполните все поля адреса';
+
+  @override
+  String get tabHome => 'Главная';
+
+  @override
+  String get tabBookings => 'Брони';
+
+  @override
+  String get tabChat => 'Чат';
+
+  @override
+  String get tabMore => 'Ещё';
+
+  @override
+  String get introTitle => 'Уборка от профессионалов\nзабронируйте за минуту';
+
+  @override
+  String get introBody =>
+      'Цены без сюрпризов · Проверенные бригады · Ход работ в реальном времени';
+
+  @override
+  String get introStart => 'Продолжить с номером телефона';
+
+  @override
+  String get loginPhoneTitle => 'Укажите номер телефона';
+
+  @override
+  String get loginPhoneHint => '010-0000-0000';
+
+  @override
+  String get loginSendCode => 'Получить код';
+
+  @override
+  String get loginCodeTitle => 'Введите 6-значный код';
+
+  @override
+  String loginCodeSentTo(String phone) {
+    return 'Код отправлен на $phone';
+  }
+
+  @override
+  String get loginResend => 'Отправить снова';
+
+  @override
+  String get loginVerify => 'Подтвердить';
+
+  @override
+  String get loginTerms =>
+      'Продолжая, вы соглашаетесь с Условиями использования и Политикой конфиденциальности';
+
+  @override
+  String get profileTitle => 'Как к вам обращаться?';
+
+  @override
+  String get profileNameHint => 'Имя';
+
+  @override
+  String get profileDone => 'Начать';
+
+  @override
+  String get welcomeToast =>
+      'Мы добавили в ваш кошелёк 2 купона на приветствие';
+
+  @override
+  String get svc_studio => 'Уборка студии';
+
+  @override
+  String get svc_kitchen => 'Уборка кухни';
+
+  @override
+  String get svc_bathroom => 'Уборка ванной';
+
+  @override
+  String get svc_mattress => 'Чистка матраса';
+
+  @override
+  String get svc_aircon => 'Чистка кондиционера';
+
+  @override
+  String get svc_sofa => 'Чистка дивана';
+
+  @override
+  String get svc_move_out => 'Уборка перед выездом';
+
+  @override
+  String get svc_move_in => 'Уборка перед заселением';
+
+  @override
+  String get svcShort_studio => 'Студия';
+
+  @override
+  String get svcShort_kitchen => 'Кухня';
+
+  @override
+  String get svcShort_bathroom => 'Ванная';
+
+  @override
+  String get svcShort_mattress => 'Матрас';
+
+  @override
+  String get svcShort_aircon => 'Кондиционер';
+
+  @override
+  String get svcShort_sofa => 'Диван';
+
+  @override
+  String get svcShort_move_out => 'Выезд';
+
+  @override
+  String get svcShort_move_in => 'Заезд';
+
+  @override
+  String get svcDesc_studio =>
+      'Двухчасовая тщательная уборка студии до 10 пхён: одна комната и один санузел.';
+
+  @override
+  String get svcDesc_kitchen =>
+      'Фокусная уборка кухни: мойка, плита, внешняя часть вытяжки и столешницы.';
+
+  @override
+  String get svcDesc_bathroom =>
+      'Полки, краны, раковина и унитаз снаружи и внутри, пол в конце протираем досуха.';
+
+  @override
+  String get svcDesc_mattress =>
+      'Профессиональное оборудование удаляет пыль, клещей и пятна, затем паровая санобработка.';
+
+  @override
+  String get svcDesc_aircon =>
+      'Разбираем и промываем под давлением теплообменник, вентилятор и фильтр, затем санобработка.';
+
+  @override
+  String get svcDesc_sofa =>
+      'Средство под ткань расщепляет загрязнения, затем влажная экстракция.';
+
+  @override
+  String get svcDesc_move_out =>
+      'Перед выездом профессиональная бригада с оборудованием уберёт пустую квартиру.';
+
+  @override
+  String get svcDesc_move_in =>
+      'Перед заселением профессиональная бригада с оборудованием уберёт новое жильё.';
+
+  @override
+  String get svcNotes_bathroom =>
+      'Из-за засора в сливе или унитазе услуга может быть ограничена\nСпециальная химчистка, уборка потолка и вытяжки не производится\nСтарая плесень и въевшаяся грязь могут остаться не удалёнными полностью';
+
+  @override
+  String get svcNotes_mattress =>
+      'Одинаковая цена от односпального до king-size\nПолное высыхание занимает 4–6 часов\nПовреждённые пружины и провисание устранить нельзя';
+
+  @override
+  String get svcNotes_aircon =>
+      'Для устройств старше 10 лет разборка может быть небезопасной\nНаружный блок не входит в услугу\nПроверяем работу до и после чистки';
+
+  @override
+  String get svcNotes_sofa =>
+      'Кожаные диваны чистятся с последующим увлажняющим покрытием\nСтарые пятна и перекрас могут не отойти полностью\nПолное высыхание занимает 4–6 часов';
+
+  @override
+  String get unitTitle_bathroom => 'Количество ванных';
+
+  @override
+  String get unitTitle_mattress => 'Количество матрасов';
+
+  @override
+  String get unitTitle_aircon => 'Тип кондиционера';
+
+  @override
+  String get unitTitle_sofa => 'Размер дивана';
+
+  @override
+  String unit_count(String n) {
+    return '$n шт.';
+  }
+
+  @override
+  String get unit_wall => 'Настенный, 1 шт.';
+
+  @override
+  String get unit_stand => 'Напольный, 1 шт.';
+
+  @override
+  String get unit_two_in_one => '2 в 1 (напольный + настенный)';
+
+  @override
+  String get unit_ceiling => 'Кассетный, 1 шт.';
+
+  @override
+  String get unit_seat_1_2 => '1–2 места';
+
+  @override
+  String get unit_seat_3 => '3 места';
+
+  @override
+  String get unit_seat_4_plus => '4 места и более';
+
+  @override
+  String get unit_l_shape => 'Угловой / кушетка';
+
+  @override
+  String durH(String h) {
+    return '$h ч';
+  }
+
+  @override
+  String durHM(String h, String m) {
+    return '$h ч $m мин';
+  }
+
+  @override
+  String durM(String m) {
+    return '$m мин';
+  }
+
+  @override
+  String about(String value) {
+    return 'около $value';
+  }
+
+  @override
+  String fromPrice(String price) {
+    return 'от $price';
+  }
+
+  @override
+  String get quoteBadge => 'Расчёт';
+
+  @override
+  String get status0 => 'На консультации';
+
+  @override
+  String get status1 => 'Бронь подтверждена';
+
+  @override
+  String get status2 => 'Бригада назначена';
+
+  @override
+  String get status3 => 'Уборка выполнена';
+
+  @override
+  String get statusCancelled => 'Отменено';
+
+  @override
+  String homeGreeting(String name) {
+    return '$name,\nчто будем сегодня убирать?';
+  }
+
+  @override
+  String get homeGreetingAnon => 'Что уберём\nсегодня?';
+
+  @override
+  String get homeUpcoming => 'Ближайшие брони';
+
+  @override
+  String dDay(String days) {
+    return 'через $days дн.';
+  }
+
+  @override
+  String get homeServices => 'Какая уборка нужна?';
+
+  @override
+  String get homeAddAddress =>
+      'Добавьте адрес, и мы сразу покажем доступные услуги и цены';
+
+  @override
+  String get homeAddAddressCta => 'Добавить адрес';
+
+  @override
+  String homeRebook(String service) {
+    return 'Забронировать «$service» снова';
+  }
+
+  @override
+  String get homeRebookBody =>
+      'Те же условия, что в прошлый раз, — всего два нажатия';
+
+  @override
+  String get homeNotices => 'Новости';
+
+  @override
+  String get trustVat => 'НДС включён\nцена без сюрпризов';
+
+  @override
+  String get trustCancel => 'Бесплатная отмена\nдо 2 дней до визита';
+
+  @override
+  String get trustCard => 'Данные карты хранятся\nтолько у платёжной компании';
+
+  @override
+  String stepOf(String current, String total) {
+    return '$current из $total';
+  }
+
+  @override
+  String get chooseDate => 'Выберите дату';
+
+  @override
+  String get notIncluded => 'Обязательно к прочтению';
+
+  @override
+  String studioBlockedTitle(String size) {
+    return '$size пхён — это больше, чем для уборки студии';
+  }
+
+  @override
+  String get studioBlockedBody =>
+      'Консультант подберёт подходящую услугу для вашего жилья.';
+
+  @override
+  String get consultCta => 'Написать консультанту';
+
+  @override
+  String get addressTitle => 'Куда приехать?';
+
+  @override
+  String get addressAdd => 'Добавить новый адрес';
+
+  @override
+  String get addressLabel => 'Название';
+
+  @override
+  String get addressLabelHint => 'например: Дом';
+
+  @override
+  String get addressDistrict => 'Район';
+
+  @override
+  String get addressRoad => 'Адрес (по улице)';
+
+  @override
+  String get addressDetail => 'Квартира / этаж';
+
+  @override
+  String get addressSize => 'Площадь жилья (пхён)';
+
+  @override
+  String get addressSizeHelp => 'Полезная площадь · 1 пхён ≈ 3,3 м²';
+
+  @override
+  String get addressHome => 'Дом';
+
+  @override
+  String get addressOffice => 'Офис';
+
+  @override
+  String get addressEmpty => 'Нет сохранённых адресов';
+
+  @override
+  String get addressSaved => 'Адрес сохранён';
+
+  @override
+  String pyeong(String n) {
+    return '$n пхён';
+  }
+
+  @override
+  String get scheduleTitle => 'Когда приехать?';
+
+  @override
+  String get scheduleArrival => 'Время прибытия';
+
+  @override
+  String get scheduleFull => 'Занято';
+
+  @override
+  String scheduleWindow(String start, String end) {
+    return 'Приедем $start–$end';
+  }
+
+  @override
+  String scheduleEnds(String duration, String time) {
+    return '$duration · закончим примерно в $time';
+  }
+
+  @override
+  String get scheduleRange =>
+      'Можно забронировать с завтрашнего дня и не позднее чем на 60 дней вперёд';
+
+  @override
+  String get morning => 'Утро';
+
+  @override
+  String get afternoon => 'День';
+
+  @override
+  String get scheduleQuoteNote => 'Точное время прибытия подтвердим в чате';
+
+  @override
+  String get goToPayment => 'Перейти к оплате';
+
+  @override
+  String get prepTitle => 'Подготовьте, пожалуйста';
+
+  @override
+  String get prepBody => 'Без этого некоторые работы могут быть ограничены';
+
+  @override
+  String get prepAsk => 'Не можете подготовить? Сообщите нашей команде';
+
+  @override
+  String get tool_vacuum => 'Пылесос';
+
+  @override
+  String get tool_trash => 'Мешки для мусора';
+
+  @override
+  String get tool_mop => 'Швабра';
+
+  @override
+  String get tool_cloth => 'Тряпки';
+
+  @override
+  String get tool_gloves => 'Резиновые перчатки';
+
+  @override
+  String get tool_sponge => 'Губка для мытья';
+
+  @override
+  String get tool_spray => 'Универсальное средство';
+
+  @override
+  String get checkoutTitle => 'Оплата';
+
+  @override
+  String get coupon => 'Купон';
+
+  @override
+  String get couponNone => 'Не использовать';
+
+  @override
+  String couponAvailable(String count) {
+    return 'Доступно: $count';
+  }
+
+  @override
+  String get paymentMethod => 'Способ оплаты';
+
+  @override
+  String get addPaymentMethod => 'Добавить способ оплаты';
+
+  @override
+  String get methodCard => 'Кредитная / дебетовая карта';
+
+  @override
+  String get methodKakao => 'KakaoPay';
+
+  @override
+  String get methodNaver => 'Naver Pay';
+
+  @override
+  String get methodToss => 'Toss Pay';
+
+  @override
+  String get methodRegistered => 'Добавлено';
+
+  @override
+  String get methodAdded => 'Способ оплаты добавлен';
+
+  @override
+  String get listPrice => 'Стоимость услуги';
+
+  @override
+  String get discount => 'Скидка по купону';
+
+  @override
+  String get total => 'Итого';
+
+  @override
+  String get vatIncluded => 'НДС включён';
+
+  @override
+  String payAmount(String amount) {
+    return 'Оплатить $amount';
+  }
+
+  @override
+  String get needMethod => 'Сначала добавьте способ оплаты';
+
+  @override
+  String freeCancelUntil(String date) {
+    return 'Бесплатная отмена до $date';
+  }
+
+  @override
+  String get doneTitle => 'Бронь оформлена!';
+
+  @override
+  String get doneBody => 'Сообщим, как только назначат бригаду';
+
+  @override
+  String get doneQuoteTitle => 'Заявка на консультацию принята';
+
+  @override
+  String get doneQuoteBody =>
+      'Консультант проверит заявку и пришлёт итоговый расчёт. Найти его можно во вкладке «Чат».';
+
+  @override
+  String get goHome => 'На главную';
+
+  @override
+  String get viewBooking => 'Посмотреть бронь';
+
+  @override
+  String get bookingsTitle => 'Брони';
+
+  @override
+  String get bookingsUpcoming => 'Ближайшие';
+
+  @override
+  String get bookingsPast => 'Прошедшие';
+
+  @override
+  String get bookingsEmpty => 'Броней пока нет';
+
+  @override
+  String get bookingsEmptyBody => 'Купоны на первую бронь уже ждут вас';
+
+  @override
+  String get bookNow => 'Заказать уборку';
+
+  @override
+  String get detailTitle => 'Бронь';
+
+  @override
+  String get stepRequested => 'Заявка принята';
+
+  @override
+  String get stepConfirmed => 'Бронь подтверждена';
+
+  @override
+  String get stepAssigned => 'Бригада назначена';
+
+  @override
+  String get stepCompleted => 'Уборка выполнена';
+
+  @override
+  String teamVisiting(String team) {
+    return '$team скоро приедет';
+  }
+
+  @override
+  String get photosSoon => 'После уборки здесь появятся фото до и после';
+
+  @override
+  String get before => 'До';
+
+  @override
+  String get after => 'После';
+
+  @override
+  String get prepCheck => 'Чек-лист подготовки';
+
+  @override
+  String get prepAllSet => 'Всё готово';
+
+  @override
+  String get visitAddress => 'Адрес';
+
+  @override
+  String get paid => 'Оплачено';
+
+  @override
+  String get askTeam => 'Написать нашей команде';
+
+  @override
+  String get cancelBooking => 'Отменить бронь';
+
+  @override
+  String get cancelTitle => 'Отменить бронь?';
+
+  @override
+  String get cancelFree =>
+      'При отмене сейчас вся сумма вернётся, а купон будет возвращён.';
+
+  @override
+  String get cancelKeep => 'Оставить';
+
+  @override
+  String get cancelled => 'Бронь отменена';
+
+  @override
+  String get reschedule => 'Перенести';
+
+  @override
+  String get rescheduled => 'Время изменено';
+
+  @override
+  String get visitNotes => 'Пожелания для бригады';
+
+  @override
+  String get notesEntry => 'Как попасть в дом (код домофона и т. д.)';
+
+  @override
+  String get notesParking => 'Парковка';
+
+  @override
+  String get notesOther => 'Другое';
+
+  @override
+  String get notesSaved => 'Пожелания сохранены';
+
+  @override
+  String depositDue(String amount) {
+    return 'Бронь подтвердится после оплаты предоплаты $amount';
+  }
+
+  @override
+  String get payDeposit => 'Оплатить предоплату';
+
+  @override
+  String get waitingQuote => 'Консультант готовит для вас расчёт';
+
+  @override
+  String get estimate => 'Ориентировочная сумма';
+
+  @override
+  String get finalPrice => 'Итоговый расчёт';
+
+  @override
+  String get deposit => 'Предоплата';
+
+  @override
+  String get balance => 'Остаток';
+
+  @override
+  String balanceDue(String amount) {
+    return 'Оплатите остаток: $amount';
+  }
+
+  @override
+  String get payBalance => 'Оплатить остаток';
+
+  @override
+  String get reviewTitle => 'Как прошла уборка?';
+
+  @override
+  String get reviewHint => 'Расскажите, что понравилось или что можно улучшить';
+
+  @override
+  String ratingStars(String n) {
+    return '$n из 5';
+  }
+
+  @override
+  String get reviewSubmit => 'Оставить отзыв';
+
+  @override
+  String get reviewThanks => 'Спасибо за отзыв!';
+
+  @override
+  String get bookAgain => 'Забронировать снова';
+
+  @override
+  String get chatTitle => 'Чат';
+
+  @override
+  String get chatTeam => 'Служба поддержки';
+
+  @override
+  String get chatHours => 'По будням 09:00–18:00';
+
+  @override
+  String get chatEmpty => 'Есть вопросы? Спрашивайте в любое время';
+
+  @override
+  String get chatNew => 'Новое обращение';
+
+  @override
+  String get chatTopicTitle => 'О чём вы хотите узнать?';
+
+  @override
+  String get topicOther => 'Другой вопрос';
+
+  @override
+  String get chatHint => 'Введите сообщение';
+
+  @override
+  String get chatSend => 'Отправить';
+
+  @override
+  String get chatPhoto => 'Отправить фото';
+
+  @override
+  String get chatTyping => 'Команда печатает…';
+
+  @override
+  String get quick_confirm => 'Подтвердите бронь, пожалуйста';
+
+  @override
+  String get quick_price => 'Интересует цена';
+
+  @override
+  String get quick_date => 'Хочу изменить дату';
+
+  @override
+  String get quick_parking => 'Есть ли парковка?';
+
+  @override
+  String get quick_hello => 'Здравствуйте';
+
+  @override
+  String get quick_duration => 'Сколько это займёт времени?';
+
+  @override
+  String get quoteArrived => 'Итоговый расчёт готов';
+
+  @override
+  String get quoteDepositNow => 'Предоплата сейчас: 10%';
+
+  @override
+  String get quoteBalanceLater => 'Остаток после уборки';
+
+  @override
+  String get quotePay => 'Оплатить предоплату и подтвердить';
+
+  @override
+  String get quotePaid => 'Оплачено';
+
+  @override
+  String get requestCard => 'Запрос расчёта';
+
+  @override
+  String get sys_consultation_received => 'Заявка на консультацию получена';
+
+  @override
+  String sys_deposit_paid(String amount) {
+    return 'Предоплата $amount получена. Бронь подтверждена.';
+  }
+
+  @override
+  String get sys_booking_cancelled => 'Бронь отменена';
+
+  @override
+  String sys_status_changed(String status) {
+    return 'Статус изменён на «$status»';
+  }
+
+  @override
+  String get sys_job_completed =>
+      'Уборка завершена. Посмотрите фото до и после.';
+
+  @override
+  String sys_rescheduled(String date) {
+    return 'Время перенесено на $date';
+  }
+
+  @override
+  String get sys_reschedule_declined =>
+      'Мастер не может прийти в новое время. Наша команда подберёт другое.';
+
+  @override
+  String get moreTitle => 'Ещё';
+
+  @override
+  String get moreScope => 'Что входит в услугу';
+
+  @override
+  String get morePayments => 'Способы оплаты';
+
+  @override
+  String get moreCoupons => 'Купоны';
+
+  @override
+  String get morePoints => 'Баллы за уборку';
+
+  @override
+  String get moreAccount => 'Данные аккаунта';
+
+  @override
+  String get moreAddresses => 'Адреса';
+
+  @override
+  String get moreNotices => 'Объявления';
+
+  @override
+  String get moreTips => 'Советы по уборке';
+
+  @override
+  String get moreFaq => 'Частые вопросы';
+
+  @override
+  String get morePartner => 'Стать партнёром';
+
+  @override
+  String get moreLanguage => 'Язык';
+
+  @override
+  String get langSystem => 'Как в настройках устройства';
+
+  @override
+  String moreVersion(String v) {
+    return 'Версия $v';
+  }
+
+  @override
+  String get morePrivacy => 'Политика конфиденциальности';
+
+  @override
+  String get moreTerms => 'Условия использования';
+
+  @override
+  String get moreLicenses => 'Лицензии открытого ПО';
+
+  @override
+  String get logout => 'Выйти';
+
+  @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountBody =>
+      'Персональные данные будут удалены без возможности восстановления. Сначала отмените активные брони.';
+
+  @override
+  String get couponsEmpty => 'Купонов пока нет';
+
+  @override
+  String couponUntil(String date) {
+    return 'До $date';
+  }
+
+  @override
+  String get couponUsed => 'Использован';
+
+  @override
+  String get couponExpired => 'Срок истёк';
+
+  @override
+  String get couponAnyService => 'Любая услуга';
+
+  @override
+  String get coupon_welcome_studio => 'Купон на уборку студии при регистрации';
+
+  @override
+  String get coupon_welcome_any => 'Купон на приветствие';
+
+  @override
+  String get pointsBalance => 'Ваши баллы';
+
+  @override
+  String get pointsEmpty => 'Истории баллов пока нет';
+
+  @override
+  String get accountName => 'Имя';
+
+  @override
+  String get accountPhone => 'Телефон';
+
+  @override
+  String get accountEmail => 'Эл. почта';
+
+  @override
+  String get accountLogin => 'Способ входа';
+
+  @override
+  String get accountLoginPhone => 'Подтверждение по телефону';
+
+  @override
+  String get methodsEmpty => 'Нет способов оплаты';
+
+  @override
+  String get noContent => 'Пока здесь пусто';
+
+  @override
+  String get quoteTypeTitle => 'Какая уборка нужна?';
+
+  @override
+  String get type_standard => 'Уборка перед выездом';
+
+  @override
+  String get type_same_day_move => 'Уборка в день переезда';
+
+  @override
+  String get type_some_luggage_left => 'Остались вещи';
+
+  @override
+  String get type_normal_move_in => 'Обычное заселение';
+
+  @override
+  String get type_after_interior => 'После ремонта';
+
+  @override
+  String get type_lived_in_deep_clean => 'Генеральная уборка в жилой квартире';
+
+  @override
+  String get luggageTitle => 'Насколько заполнена квартира?';
+
+  @override
+  String get luggage_empty => 'Пусто';
+
+  @override
+  String get luggage_partly_unpacked => 'Частично разобрано';
+
+  @override
+  String get luggage_fully_lived_in => 'Полностью обжито';
+
+  @override
+  String get luggage_unknown => 'Не уверен(а)';
+
+  @override
+  String get quoteBasicTitle => 'Расскажите о жилье';
+
+  @override
+  String get buildingType => 'Тип здания';
+
+  @override
+  String get building_apartment => 'Квартира';
+
+  @override
+  String get building_villa => 'Малоэтажное жильё';
+
+  @override
+  String get building_officetel => 'Офисная квартира (officetel)';
+
+  @override
+  String get building_house => 'Частный дом';
+
+  @override
+  String get building_other => 'Другое';
+
+  @override
+  String get layoutTitle => 'Планировка';
+
+  @override
+  String get layout_studio => 'Студия';
+
+  @override
+  String get layout_one_and_half => '1,5 комнаты';
+
+  @override
+  String get layout_two_rooms => '2 комнаты';
+
+  @override
+  String get layout_three_rooms => '3 комнаты';
+
+  @override
+  String get layout_four_plus => '4 комнаты и более';
+
+  @override
+  String get duplexTitle => 'Это двухуровневая квартира?';
+
+  @override
+  String get quoteSpaceTitle => 'Расскажите о пространстве';
+
+  @override
+  String get bathroomsLabel => 'Ванные';
+
+  @override
+  String get balconiesLabel => 'Балкон · подсобное помещение';
+
+  @override
+  String get elevatorTitle => 'Есть лифт?';
+
+  @override
+  String get floor3Label => '3 этаж и выше';
+
+  @override
+  String get quoteEstimateTitle => 'Ориентировочный расчёт';
+
+  @override
+  String get quoteEstimateBody =>
+      'Итоговая сумма определяется в чате после просмотра фото';
+
+  @override
+  String get quoteG1 => 'Итоговая сумма согласуется с вами в чате';
+
+  @override
+  String get quoteG2 =>
+      'Предоплата 10% для подтверждения, остаток — после уборки';
+
+  @override
+  String get quoteG3 => 'До подтверждения можно бесплатно отменить';
+
+  @override
+  String get quoteConfirmTitle => 'Проверьте заявку';
+
+  @override
+  String get quoteRequest => 'Отправить заявку';
+
+  @override
+  String get quoteNoPayNow => 'Сейчас ничего не нужно оплачивать';
+
+  @override
+  String get summaryType => 'Тип уборки';
+
+  @override
+  String get summaryHome => 'Жильё';
+
+  @override
+  String get summaryDate => 'Визит';
+
+  @override
+  String get themeTitle => 'Тема';
+
+  @override
+  String get themeDark => 'Тёмная';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get themeSystem => 'Как в системе';
+
+  @override
+  String get themeTip => 'Сменить тему';
+
+  @override
+  String get pTabJobs => 'Заказы';
+
+  @override
+  String get pTabQuotes => 'Мои расчёты';
+
+  @override
+  String get pTabSchedule => 'График';
+
+  @override
+  String get pIntroTitle =>
+      'Заказы, график и выплаты\nдля профессионалов уборки';
+
+  @override
+  String get pIntroBody =>
+      'Работайте только там и тогда, когда хотите. Выплаты каждую неделю.';
+
+  @override
+  String get pOnbTitle => 'Расскажите о себе';
+
+  @override
+  String get pOnbName => 'Имя руководителя';
+
+  @override
+  String get pOnbTeam => 'Название бригады';
+
+  @override
+  String get pOnbServices => 'Услуги, которые вы выполняете';
+
+  @override
+  String get pOnbAreas => 'Районы работы';
+
+  @override
+  String get pOnbDone => 'Подать заявку';
+
+  @override
+  String get pPendingTitle => 'Ожидаем одобрения';
+
+  @override
+  String get pPendingBody =>
+      'Мы отправим уведомление после проверки. А пока добавьте банковский счёт для выплат.';
+
+  @override
+  String get pSuspended =>
+      'Аккаунт временно приостановлен. Свяжитесь с отделом операций.';
+
+  @override
+  String get pDirect => 'Прямая бронь';
+
+  @override
+  String get pQuoteReq => 'Запросы на расчёт';
+
+  @override
+  String get pShowClosed => 'Показать закрытые заказы';
+
+  @override
+  String get pSortNewest => 'Сначала новые';
+
+  @override
+  String get pSortVisit => 'Ближайшая дата визита';
+
+  @override
+  String get pSortAmount => 'Сначала дороже';
+
+  @override
+  String get pNoJobs => 'Сейчас нет подходящих заказов';
+
+  @override
+  String get pNoJobsBody =>
+      'Расширьте услуги, районы или часы работы, чтобы увидеть больше заказов';
+
+  @override
+  String get pPayout => 'Ожидаемая выплата';
+
+  @override
+  String get pCustomerEstimate => 'Ориентировочная цена клиента';
+
+  @override
+  String get pNew => 'NEW';
+
+  @override
+  String get pClosed => 'Закрыт';
+
+  @override
+  String get pPrivacyNote =>
+      'Точный адрес и данные клиента появятся после принятия заказа';
+
+  @override
+  String get pAccept => 'Принять заказ';
+
+  @override
+  String get pAcceptConfirm => 'Принять этот заказ?';
+
+  @override
+  String get pAcceptBody =>
+      'Заказ появится в вашем графике, клиент получит уведомление о назначении бригады. За 2 дня до визита отменить будет нельзя.';
+
+  @override
+  String get pAccepted => 'Заказ принят';
+
+  @override
+  String get pSendQuote => 'Отправить расчёт';
+
+  @override
+  String get pQuotePrice => 'Цена для клиента';
+
+  @override
+  String get pQuoteNote => 'Комментарий для команды';
+
+  @override
+  String get pQuoteSent => 'Расчёт отправлен';
+
+  @override
+  String pFee(String rate) {
+    return 'Комиссия $rate%';
+  }
+
+  @override
+  String get pYouGet => 'Вы получаете';
+
+  @override
+  String get pQuoteAll => 'Все';
+
+  @override
+  String get pQ_waiting => 'Ожидание';
+
+  @override
+  String get pQ_selected => 'Выбран';
+
+  @override
+  String get pQ_rejected => 'Не выбран';
+
+  @override
+  String get pQ_closed => 'Закрыт';
+
+  @override
+  String get pUnseenOnly => 'Только новые результаты';
+
+  @override
+  String get pNoQuotes => 'Расчётов пока нет';
+
+  @override
+  String get pMyQuote => 'Мой расчёт';
+
+  @override
+  String get pWithdraw => 'Отозвать расчёт';
+
+  @override
+  String get pWithdrawn => 'Расчёт отозван';
+
+  @override
+  String get pOnlyMine => 'Только мои';
+
+  @override
+  String pJobsCount(String n) {
+    return 'Заказов: $n';
+  }
+
+  @override
+  String get pNoSchedule => 'На этот день ничего не запланировано';
+
+  @override
+  String get pCancelledBanner =>
+      'Клиент отменил этот заказ. Отметить его выполненным нельзя.';
+
+  @override
+  String pRescheduleBanner(String from, String to) {
+    return 'Запрос на перенос: $from → $to';
+  }
+
+  @override
+  String get pRescheduleOk => 'Смогу прийти';
+
+  @override
+  String get pRescheduleNo => 'Не смогу';
+
+  @override
+  String get pCustomer => 'Клиент';
+
+  @override
+  String get pCall => 'Позвонить (защищённый номер)';
+
+  @override
+  String get pCallSoon =>
+      'Защищённые звонки будут доступны после запуска сервиса';
+
+  @override
+  String get pQuietHours => 'Не звоните после 20:00';
+
+  @override
+  String get pAssignee => 'Ответственный';
+
+  @override
+  String get pChangeAssignee => 'Сменить ответственного';
+
+  @override
+  String get pCustomerRequests => 'Пожелания клиента';
+
+  @override
+  String get pTeamMemo => 'Заметка для команды (клиент её не видит)';
+
+  @override
+  String get pMemoSaved => 'Заметка сохранена';
+
+  @override
+  String get pPayoutBreakdown => 'Выплата';
+
+  @override
+  String get pAfterBalance => 'Выплата после оплаты клиентом остатка';
+
+  @override
+  String get pChatOps => 'Чат с отделом операций';
+
+  @override
+  String get pComplete => 'Отметить работу выполненной';
+
+  @override
+  String get pBeforePhotos => 'Фото до уборки';
+
+  @override
+  String get pAfterPhotos => 'Фото после уборки';
+
+  @override
+  String get pAddPhoto => 'Добавить фото';
+
+  @override
+  String get pChecklist => 'Чек-лист';
+
+  @override
+  String get pCheck1 => 'Убраны все запрошенные зоны';
+
+  @override
+  String get pCheck2 => 'Мусор вынесен, инвентарь собран';
+
+  @override
+  String get pCheck3 => 'Проверены окна, электричество и вода';
+
+  @override
+  String get pCheck4 => 'Пожелания клиента выполнены';
+
+  @override
+  String get pCompleteCta => 'Отметить выполненным';
+
+  @override
+  String get pCompleteNeed =>
+      'Добавьте хотя бы по одному фото и отметьте все пункты';
+
+  @override
+  String get pCompleted => 'Отличная работа!';
+
+  @override
+  String pPayoutOn(String date, String amount) {
+    return '$amount будут выплачены $date';
+  }
+
+  @override
+  String get pPayoutWaiting => 'Дата выплаты определится после оплаты клиентом';
+
+  @override
+  String get pPendingPayout => 'Ожидаемая выплата';
+
+  @override
+  String get pSettlements => 'Выплаты';
+
+  @override
+  String get pS_waiting_balance => 'Ждём остаток';
+
+  @override
+  String get pS_pending => 'Запланировано';
+
+  @override
+  String get pS_paid => 'Выплачено';
+
+  @override
+  String get pS_held => 'Удержано';
+
+  @override
+  String get pReviews => 'Отзывы клиентов';
+
+  @override
+  String get pNoReviews => 'Отзывов пока нет';
+
+  @override
+  String get pReplyLater => 'Ответы на отзывы скоро появятся';
+
+  @override
+  String get pServicesAreas => 'Услуги · районы';
+
+  @override
+  String get pPayoutAccount => 'Банковский счёт для выплат';
+
+  @override
+  String get pBank => 'Банк';
+
+  @override
+  String get pAccountNumber => 'Номер счёта';
+
+  @override
+  String get pHolder => 'Владелец счёта';
+
+  @override
+  String get pVerified => 'Подтверждён';
+
+  @override
+  String get pUnverified => 'Проверяется';
+
+  @override
+  String get pAccountSaved =>
+      'Счёт сохранён. При изменении он проверяется заново.';
+
+  @override
+  String get pWorkSchedule => 'Рабочий график';
+
+  @override
+  String get pWeekdays => 'Рабочие дни';
+
+  @override
+  String get pDayParts => 'Рабочее время';
+
+  @override
+  String get pDaysOff => 'Выходные';
+
+  @override
+  String get pAddDayOff => 'Добавить выходной';
+
+  @override
+  String get pSaved => 'Сохранено';
+
+  @override
+  String get pTeam => 'Участники';
+
+  @override
+  String get pOwner => 'Руководитель';
+
+  @override
+  String get pInvited => 'Приглашён';
+
+  @override
+  String get pInvite => 'Пригласить участника';
+
+  @override
+  String get pInviteSent => 'Приглашение отправлено';
+
+  @override
+  String get pRemove => 'Удалить';
+
+  @override
+  String get pNotifications => 'Уведомления';
+
+  @override
+  String get pNotifyDirect => 'Новые прямые заказы';
+
+  @override
+  String get pNotifyQuotes => 'Запросы и результаты расчётов';
+
+  @override
+  String get pNotifyChat => 'Сообщения от отдела операций';
+
+  @override
+  String get pQuietNight => 'Не беспокоить ночью (22–08)';
+
+  @override
+  String get pNewInquiry => 'Новое обращение';
+
+  @override
+  String get pTopic_settlement => 'Выплаты';
+
+  @override
+  String get pTopic_reschedule => 'Перенос / отмена';
+
+  @override
+  String get pTopic_app => 'Помощь по приложению';
+
+  @override
+  String get pOpsTeam => 'Отдел операций';
+
+  @override
+  String get pViewJob => 'Открыть заказ';
+
+  @override
+  String pBookingNo(String n) {
+    return 'Бронь $n';
+  }
+
+  @override
+  String get pSize => 'Площадь';
+
+  @override
+  String get pSchedule => 'График';
+
+  @override
+  String get pSpace => 'Информация о пространстве';
+}

@@ -98,7 +98,24 @@ class LocaleController extends ChangeNotifier {
   final FlutterSecureStorage _storage;
   Locale? locale;
 
-  static const supported = [Locale('ko'), Locale('en'), Locale('ja'), Locale('zh'), Locale('vi')];
+  /// Every app language, named in its own language (one list for all pickers).
+  static const names = {
+    'ko': '한국어',
+    'en': 'English',
+    'zh': '中文',
+    'vi': 'Tiếng Việt',
+    'ja': '日本語',
+    'ru': 'Русский',
+    'ne': 'नेपाली',
+    'si': 'සිංහල',
+    'th': 'ไทย',
+    'id': 'Bahasa Indonesia',
+    'mn': 'Монгол',
+    'uz': 'Oʻzbekcha',
+    'fil': 'Filipino',
+    'km': 'ខ្មែរ',
+  };
+  static final supported = [for (final c in names.keys) Locale(c)];
 
   Future<void> restore() async {
     final code = await _storage.read(key: 'app.locale').catchError((_) => null);

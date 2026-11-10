@@ -364,7 +364,8 @@ class _ServiceGrid extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 4,
-              childAspectRatio: 0.78,
+              childAspectRatio: 0.70,
+              mainAxisSpacing: Space.xs,
               children: [
                 for (final s in services)
                   Semantics(
@@ -394,11 +395,18 @@ class _ServiceGrid extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             // Price is visible on the tile itself, in the service hue.
-                            Tag(
-                              label: s.isQuote
-                                  ? t.quoteBadge
-                                  : t.fromPrice(context.won(s.fromPrice ?? 0)),
-                              hue: ServiceHues.of(s.code),
+                            // Scale the tag down rather than let neighbours collide on narrow phones.
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 2),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Tag(
+                                  label: s.isQuote
+                                      ? t.quoteBadge
+                                      : t.fromPrice(context.won(s.fromPrice ?? 0)),
+                                  hue: ServiceHues.of(s.code),
+                                ),
+                              ),
                             ),
                           ],
                         ),

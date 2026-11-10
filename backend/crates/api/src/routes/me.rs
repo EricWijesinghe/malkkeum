@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use uuid::Uuid;
 
-pub const SUPPORTED_LOCALES: [&str; 5] = ["ko", "en", "ja", "zh", "vi"];
+pub const SUPPORTED_LOCALES: [&str; 14] = ["ko", "en", "zh", "vi", "ja", "ru", "ne", "si", "th", "id", "mn", "uz", "fil", "km"];
 const MAX_NAME_LEN: usize = 40;
 const MAX_ADDRESS_LEN: usize = 200;
 const NOTIFICATION_PAGE: i64 = 50;
