@@ -2194,6 +2194,20 @@ class TMn extends T {
       'Ажил авахаас өмнө утасны дугаараа баталгаажуулна уу.';
 
   @override
+  String get nAlerts => 'Мэдэгдэл';
+
+  @override
+  String get nEmpty => 'Мэдэгдэл алга';
+
+  @override
+  String nUnread(String count) {
+    return 'Уншаагүй $count';
+  }
+
+  @override
+  String get pVerifyPhone => 'Баталгаажуулах';
+
+  @override
   String get cSetupSave => 'Хадгалах';
 
   @override

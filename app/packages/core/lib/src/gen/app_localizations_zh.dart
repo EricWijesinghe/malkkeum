@@ -2133,6 +2133,20 @@ class TZh extends T {
   String get err_phone_required => '接单前请先验证手机号。';
 
   @override
+  String get nAlerts => '通知';
+
+  @override
+  String get nEmpty => '暂无通知';
+
+  @override
+  String nUnread(String count) {
+    return '$count 条未读通知';
+  }
+
+  @override
+  String get pVerifyPhone => '验证手机号';
+
+  @override
   String get cSetupSave => '保存';
 
   @override

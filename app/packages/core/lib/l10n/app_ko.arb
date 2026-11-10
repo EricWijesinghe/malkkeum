@@ -985,6 +985,17 @@
  "err_has_active_jobs": "배정된 작업이 있어요. 작업을 마치거나 상담원에게 이관을 요청해 주세요.",
  "err_pending_payouts": "아직 정산이 남아 있어요. 지급이 끝난 뒤 탈퇴할 수 있어요.",
  "err_phone_required": "작업을 받으려면 먼저 휴대폰 번호를 인증해 주세요.",
+ "nAlerts": "알림",
+ "nEmpty": "새 알림이 없어요",
+ "nUnread": "안 읽은 알림 {count}개",
+ "@nUnread": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "pVerifyPhone": "번호 인증",
  "cSetupSave": "저장",
  "cSetupSaved": "저장했어요",
  "cSetupTest": "연결 테스트",

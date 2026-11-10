@@ -714,4 +714,8 @@ T = {
     "err_has_active_jobs": "Masih ada pekerjaan yang ditugaskan. Selesaikan atau minta dukungan memindahkannya.",
     "err_pending_payouts": "Masih ada pembayaran tertunda. Akun bisa dihapus setelah dibayar.",
     "err_phone_required": "Verifikasi nomor telepon sebelum menerima pekerjaan.",
+    "nAlerts": "Notifikasi",
+    "nEmpty": "Belum ada notifikasi",
+    "nUnread": "{count} belum dibaca",
+    "pVerifyPhone": "Verifikasi",
 }

@@ -2138,6 +2138,20 @@ class TJa extends T {
   String get err_phone_required => '作業を受けるには先に電話番号を認証してください。';
 
   @override
+  String get nAlerts => '通知';
+
+  @override
+  String get nEmpty => '新しい通知はありません';
+
+  @override
+  String nUnread(String count) {
+    return '未読の通知 $count件';
+  }
+
+  @override
+  String get pVerifyPhone => '番号認証';
+
+  @override
   String get cSetupSave => '保存';
 
   @override

@@ -2185,6 +2185,20 @@ class TTh extends T {
   String get err_phone_required => 'ยืนยันเบอร์โทรก่อนรับงาน';
 
   @override
+  String get nAlerts => 'การแจ้งเตือน';
+
+  @override
+  String get nEmpty => 'ยังไม่มีการแจ้งเตือน';
+
+  @override
+  String nUnread(String count) {
+    return 'ยังไม่อ่าน $count รายการ';
+  }
+
+  @override
+  String get pVerifyPhone => 'ยืนยัน';
+
+  @override
   String get cSetupSave => 'บันทึก';
 
   @override

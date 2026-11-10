@@ -2195,6 +2195,20 @@ class TSi extends T {
       'කාර්ය ලබා ගැනීමට පෙර දුරකථන අංකය තහවුරු කරන්න.';
 
   @override
+  String get nAlerts => 'දැනුම්දීම්';
+
+  @override
+  String get nEmpty => 'තවම දැනුම්දීම් නැත';
+
+  @override
+  String nUnread(String count) {
+    return 'නොකියවූ $count';
+  }
+
+  @override
+  String get pVerifyPhone => 'තහවුරු කරන්න';
+
+  @override
   String get cSetupSave => 'සුරකින්න';
 
   @override

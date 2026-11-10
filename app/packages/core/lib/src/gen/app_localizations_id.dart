@@ -2196,6 +2196,20 @@ class TId extends T {
       'Verifikasi nomor telepon sebelum menerima pekerjaan.';
 
   @override
+  String get nAlerts => 'Notifikasi';
+
+  @override
+  String get nEmpty => 'Belum ada notifikasi';
+
+  @override
+  String nUnread(String count) {
+    return '$count belum dibaca';
+  }
+
+  @override
+  String get pVerifyPhone => 'Verifikasi';
+
+  @override
   String get cSetupSave => 'Simpan';
 
   @override

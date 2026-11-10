@@ -28,39 +28,69 @@ class _GateState extends State<Gate> {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<void>(
-        future: _boot,
-        builder: (context, snap) {
-          if (snap.hasError) {
-            return Scaffold(body: ErrorRetry(message: context.t.error(snap.error!), retryLabel: context.t.retry, onRetry: () => Deps.read(context).session.logout()));
-          }
-          if (snap.connectionState != ConnectionState.done) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-          final pro = context.pro;
-          if (!pro.onboarded) return const OnboardingScreen();
-          return switch (pro.status) {
-            'verified' => const PartnerShell(),
-            'suspended' => _Blocked(message: context.t.pSuspended),
-            _ => const _Pending(),
-          };
-        },
-      );
+    future: _boot,
+    builder: (context, snap) {
+      if (snap.hasError) {
+        return Scaffold(
+          body: ErrorRetry(
+            message: context.t.error(snap.error!),
+            retryLabel: context.t.retry,
+            onRetry: () => Deps.read(context).session.logout(),
+          ),
+        );
+      }
+      if (snap.connectionState != ConnectionState.done) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      final pro = context.pro;
+      if (!pro.onboarded) return const OnboardingScreen();
+      return switch (pro.status) {
+        'verified' => const PartnerShell(),
+        'suspended' => _Blocked(message: context.t.pSuspended),
+        _ => const _Pending(),
+      };
+    },
+  );
 }
 
 class _Pending extends StatelessWidget {
   const _Pending();
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(Space.gutter),
-            child: Column(children: [
-              Expanded(child: EmptyState(icon: Icons.verified_user_rounded, title: context.t.pPendingTitle, body: context.t.pPendingBody, hue: ServiceHues.moveOut)),
-              FilledButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PayoutAccountScreen())), child: Text(context.t.pPayoutAccount)),
-              TextButton(onPressed: () => context.proRead.loadProfile(), child: Text(context.t.retry)),
-              TextButton(onPressed: Deps.read(context).session.logout, child: Text(context.t.logout)),
-            ]),
-          ),
+    body: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(Space.gutter),
+        child: Column(
+          children: [
+            Expanded(
+              child: EmptyState(
+                icon: Icons.verified_user_rounded,
+                title: context.t.pPendingTitle,
+                body: context.t.pPendingBody,
+                hue: ServiceHues.moveOut,
+              ),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const PayoutAccountScreen(),
+                ),
+              ),
+              child: Text(context.t.pPayoutAccount),
+            ),
+            TextButton(
+              onPressed: () => context.proRead.loadProfile(),
+              child: Text(context.t.retry),
+            ),
+            TextButton(
+              onPressed: Deps.read(context).session.logout,
+              child: Text(context.t.logout),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _Blocked extends StatelessWidget {
@@ -68,13 +98,16 @@ class _Blocked extends StatelessWidget {
   final String message;
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: EmptyState(
-          icon: Icons.block_rounded,
-          title: message,
-          hue: StatusHues.cancelled,
-          action: OutlinedButton(onPressed: Deps.read(context).session.logout, child: Text(context.t.logout)),
-        ),
-      );
+    body: EmptyState(
+      icon: Icons.block_rounded,
+      title: message,
+      hue: StatusHues.cancelled,
+      action: OutlinedButton(
+        onPressed: Deps.read(context).session.logout,
+        child: Text(context.t.logout),
+      ),
+    ),
+  );
 }
 
 class PartnerShell extends StatefulWidget {
@@ -90,18 +123,43 @@ class _PartnerShellState extends State<PartnerShell> {
   Widget build(BuildContext context) {
     final t = context.t;
     final pro = context.pro;
-    Widget badge(IconData i, int n) => Badge(isLabelVisible: n > 0, label: Text('$n'), child: Icon(i));
+    Widget badge(IconData i, int n) =>
+        Badge(isLabelVisible: n > 0, label: Text('$n'), child: Icon(i));
     return Scaffold(
-      body: IndexedStack(index: _tab, children: const [JobsTab(), QuotesTab(), ScheduleTab(), OpsChatTab(), MoreTab()]),
+      body: IndexedStack(
+        index: _tab,
+        children: const [
+          JobsTab(),
+          QuotesTab(),
+          ScheduleTab(),
+          OpsChatTab(),
+          MoreTab(),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: [
-          NavigationDestination(icon: const Icon(Icons.search_rounded), label: t.pTabJobs),
-          NavigationDestination(icon: badge(Icons.request_quote_outlined, pro.unseenQuotes), label: t.pTabQuotes),
-          NavigationDestination(icon: const Icon(Icons.calendar_month_outlined), label: t.pTabSchedule),
-          NavigationDestination(icon: badge(Icons.chat_bubble_outline_rounded, pro.unreadChats), label: t.tabChat),
-          NavigationDestination(icon: const Icon(Icons.menu_rounded), label: t.tabMore),
+          NavigationDestination(
+            icon: const Icon(Icons.search_rounded),
+            label: t.pTabJobs,
+          ),
+          NavigationDestination(
+            icon: badge(Icons.request_quote_outlined, pro.unseenQuotes),
+            label: t.pTabQuotes,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_month_outlined),
+            label: t.pTabSchedule,
+          ),
+          NavigationDestination(
+            icon: badge(Icons.chat_bubble_outline_rounded, pro.unreadChats),
+            label: t.tabChat,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.menu_rounded),
+            label: t.tabMore,
+          ),
         ],
       ),
     );

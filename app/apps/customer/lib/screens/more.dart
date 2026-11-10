@@ -261,7 +261,8 @@ class MoreTab extends StatelessWidget {
   }
 }
 
-String _langName(String? code, T t) => LocaleController.names[code] ?? t.langSystem;
+String _langName(String? code, T t) =>
+    LocaleController.names[code] ?? t.langSystem;
 
 class LanguageScreen extends StatelessWidget {
   const LanguageScreen({super.key});
@@ -526,27 +527,36 @@ class ContentListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(title)),
-    body: AsyncView<List<ContentItem>>(
-      load: () async =>
-          (await context.api.get('/content', query: {'kind': kind}) as List)
-              .map((e) => ContentItem(e as Json))
-              .toList(),
-      builder: (context, items, _) => items.isEmpty
-          ? EmptyState(icon: Icons.inbox_rounded, title: context.t.noContent)
-          : ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(),
-              itemBuilder: (_, i) => ListTile(
-                title: Text(items[i].title(context.lang)),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => ContentDetailScreen(item: items[i]),
-                  ),
+    body: ContentListBody(kind: kind),
+  );
+}
+
+/// Published content of one kind (notices, FAQ); also a tab in the notification inbox.
+class ContentListBody extends StatelessWidget {
+  const ContentListBody({super.key, required this.kind});
+  final String kind;
+
+  @override
+  Widget build(BuildContext context) => AsyncView<List<ContentItem>>(
+    load: () async =>
+        (await context.api.get('/content', query: {'kind': kind}) as List)
+            .map((e) => ContentItem(e as Json))
+            .toList(),
+    builder: (context, items, _) => items.isEmpty
+        ? EmptyState(icon: Icons.inbox_rounded, title: context.t.noContent)
+        : ListView.separated(
+            itemCount: items.length,
+            separatorBuilder: (_, _) => const Divider(),
+            itemBuilder: (_, i) => ListTile(
+              title: Text(items[i].title(context.lang)),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ContentDetailScreen(item: items[i]),
                 ),
               ),
             ),
-    ),
+          ),
   );
 }
 

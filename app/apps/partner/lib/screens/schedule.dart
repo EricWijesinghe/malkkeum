@@ -24,7 +24,13 @@ class _ScheduleTabState extends State<ScheduleTab> {
   Future<List<Booking>> _load() async {
     final from = DateTime(_month.year, _month.month);
     final to = DateTime(_month.year, _month.month + 1, 0);
-    return (await context.api.get('/partner/schedule', query: {'from': _iso(from), 'to': _iso(to)}) as List).map((e) => Booking.fromJson(e as Json)).toList();
+    return (await context.api.get(
+              '/partner/schedule',
+              query: {'from': _iso(from), 'to': _iso(to)},
+            )
+            as List)
+        .map((e) => Booking.fromJson(e as Json))
+        .toList();
   }
 
   @override
@@ -45,7 +51,10 @@ class _ScheduleTabState extends State<ScheduleTab> {
     final t = context.t;
     final loc = MaterialLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: Text(t.pTabSchedule, style: context.text.headlineSmall)),
+      appBar: AppBar(
+        centerTitle: false,
+        title: Text(t.pTabSchedule, style: context.text.headlineSmall),
+      ),
       body: AsyncView<List<Booking>>(
         key: _view,
         load: _load,
@@ -56,36 +65,78 @@ class _ScheduleTabState extends State<ScheduleTab> {
           }
           final lead = DateTime(_month.year, _month.month).weekday % 7;
           final days = DateUtils.getDaysInMonth(_month.year, _month.month);
-          final dayJobs = jobs.where((j) => DateUtils.isSameDay(j.visitDate, _day)).toList();
+          final dayJobs = jobs
+              .where((j) => DateUtils.isSameDay(j.visitDate, _day))
+              .toList();
           return RefreshIndicator(
             onRefresh: reload,
-            child: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-              AppCard(
-                padding: const EdgeInsets.all(Space.sm),
-                child: Column(children: [
-                  Row(children: [
-                    IconButton(tooltip: loc.previousMonthTooltip, icon: const Icon(Icons.chevron_left_rounded), onPressed: () => _shift(-1)),
-                    Expanded(child: Text(DateFormat.yMMMM(context.lang).format(_month), textAlign: TextAlign.center, style: context.text.titleMedium)),
-                    IconButton(tooltip: loc.nextMonthTooltip, icon: const Icon(Icons.chevron_right_rounded), onPressed: () => _shift(1)),
-                  ]),
-                  Row(children: [for (final w in loc.narrowWeekdays) Expanded(child: Center(child: Text(w, style: context.text.labelSmall)))]),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 7,
-                    childAspectRatio: 0.8,
+            child: ListView(
+              padding: const EdgeInsets.all(Space.gutter),
+              children: [
+                AppCard(
+                  padding: const EdgeInsets.all(Space.sm),
+                  child: Column(
                     children: [
-                      for (var i = 0; i < lead; i++) const SizedBox(),
-                      for (var d = 1; d <= days; d++) _cell(DateTime(_month.year, _month.month, d), byDay[d] ?? const []),
+                      Row(
+                        children: [
+                          IconButton(
+                            tooltip: loc.previousMonthTooltip,
+                            icon: const Icon(Icons.chevron_left_rounded),
+                            onPressed: () => _shift(-1),
+                          ),
+                          Expanded(
+                            child: Text(
+                              DateFormat.yMMMM(context.lang).format(_month),
+                              textAlign: TextAlign.center,
+                              style: context.text.titleMedium,
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: loc.nextMonthTooltip,
+                            icon: const Icon(Icons.chevron_right_rounded),
+                            onPressed: () => _shift(1),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          for (final w in loc.narrowWeekdays)
+                            Expanded(
+                              child: Center(
+                                child: Text(w, style: context.text.labelSmall),
+                              ),
+                            ),
+                        ],
+                      ),
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 7,
+                        childAspectRatio: 0.8,
+                        children: [
+                          for (var i = 0; i < lead; i++) const SizedBox(),
+                          for (var d = 1; d <= days; d++)
+                            _cell(
+                              DateTime(_month.year, _month.month, d),
+                              byDay[d] ?? const [],
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                ]),
-              ),
-              const SizedBox(height: Space.lg),
-              SectionTitle(dateLabel(_day, context.lang)),
-              if (dayJobs.isEmpty) Padding(padding: const EdgeInsets.all(Space.lg), child: Center(child: Text(t.pNoSchedule, style: context.text.bodySmall))),
-              for (final j in dayJobs) _JobRow(job: j),
-            ]),
+                ),
+                const SizedBox(height: Space.lg),
+                SectionTitle(dateLabel(_day, context.lang)),
+                if (dayJobs.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(Space.lg),
+                    child: Center(
+                      child: Text(t.pNoSchedule, style: context.text.bodySmall),
+                    ),
+                  ),
+                for (final j in dayJobs) _JobRow(job: j),
+              ],
+            ),
           );
         },
       ),
@@ -100,17 +151,37 @@ class _ScheduleTabState extends State<ScheduleTab> {
       onTap: () => setState(() => _day = date),
       child: Container(
         margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(color: selected ? context.colors.primaryTint : null, borderRadius: BorderRadius.circular(12)),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('${date.day}', style: context.text.labelLarge?.copyWith(fontWeight: selected ? FontWeight.w800 : FontWeight.w500)),
-          const SizedBox(height: 2),
-          if (active > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-              decoration: BoxDecoration(color: context.colors.ink, borderRadius: BorderRadius.circular(Radii.pill)),
-              child: Text(context.t.pJobsCount('$active'), style: context.text.labelSmall?.copyWith(color: context.colors.surface, fontSize: 10)),
+        decoration: BoxDecoration(
+          color: selected ? context.colors.primaryTint : null,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '${date.day}',
+              style: context.text.labelLarge?.copyWith(
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+              ),
             ),
-        ]),
+            const SizedBox(height: 2),
+            if (active > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: context.colors.ink,
+                  borderRadius: BorderRadius.circular(Radii.pill),
+                ),
+                child: Text(
+                  context.t.pJobsCount('$active'),
+                  style: context.text.labelSmall?.copyWith(
+                    color: context.colors.surface,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -127,26 +198,63 @@ class _JobRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.sm),
       child: AppCard(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => JobDetailScreen(id: j.id))),
-        child: Row(children: [
-          Column(children: [
-            Text(slotLabel(context, j.startHour, j.isQuote), style: context.text.titleSmall),
-            if (j.minutes != null) Text(t.duration(j.minutes!), style: context.text.labelSmall),
-          ]),
-          const SizedBox(width: Space.md),
-          Container(width: 4, height: 44, decoration: BoxDecoration(color: ServiceHues.of(j.serviceCode).tone, borderRadius: BorderRadius.circular(2))),
-          const SizedBox(width: Space.md),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(child: Text(t.service(j.serviceCode), style: context.text.titleSmall)),
-                if (j.status == -1) Tag(label: t.statusCancelled, hue: StatusHues.cancelled),
-                if (j.reschedule != null) Tag(label: t.reschedule, hue: StatusHues.consultation),
-              ]),
-              Text('${j.address['road_address']}', style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-            ]),
-          ),
-        ]),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => JobDetailScreen(id: j.id)),
+        ),
+        child: Row(
+          children: [
+            Column(
+              children: [
+                Text(
+                  slotLabel(context, j.startHour, j.isQuote),
+                  style: context.text.titleSmall,
+                ),
+                if (j.minutes != null)
+                  Text(t.duration(j.minutes!), style: context.text.labelSmall),
+              ],
+            ),
+            const SizedBox(width: Space.md),
+            Container(
+              width: 4,
+              height: 44,
+              decoration: BoxDecoration(
+                color: ServiceHues.of(j.serviceCode).tone,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: Space.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          t.service(j.serviceCode),
+                          style: context.text.titleSmall,
+                        ),
+                      ),
+                      if (j.status == -1)
+                        Tag(
+                          label: t.statusCancelled,
+                          hue: StatusHues.cancelled,
+                        ),
+                      if (j.reschedule != null)
+                        Tag(label: t.reschedule, hue: StatusHues.consultation),
+                    ],
+                  ),
+                  Text(
+                    '${j.address['road_address']}',
+                    style: context.text.bodySmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

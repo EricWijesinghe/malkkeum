@@ -4207,6 +4207,30 @@ abstract class T {
   /// **'작업을 받으려면 먼저 휴대폰 번호를 인증해 주세요.'**
   String get err_phone_required;
 
+  /// No description provided for @nAlerts.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get nAlerts;
+
+  /// No description provided for @nEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 알림이 없어요'**
+  String get nEmpty;
+
+  /// No description provided for @nUnread.
+  ///
+  /// In ko, this message translates to:
+  /// **'안 읽은 알림 {count}개'**
+  String nUnread(String count);
+
+  /// No description provided for @pVerifyPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'번호 인증'**
+  String get pVerifyPhone;
+
   /// No description provided for @cSetupSave.
   ///
   /// In ko, this message translates to:

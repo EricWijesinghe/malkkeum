@@ -714,4 +714,8 @@ T = {
     "err_has_active_jobs": "Sizda tayinlangan ishlar bor. Ularni tugating yoki yordamdan o'tkazishni so'rang.",
     "err_pending_payouts": "To'lov hali kutilmoqda. To'langandan keyin o'chirish mumkin.",
     "err_phone_required": "Ish olishdan oldin telefon raqamingizni tasdiqlang.",
+    "nAlerts": "Bildirishnomalar",
+    "nEmpty": "Hozircha bildirishnoma yo'q",
+    "nUnread": "{count} ta o'qilmagan",
+    "pVerifyPhone": "Tasdiqlash",
 }

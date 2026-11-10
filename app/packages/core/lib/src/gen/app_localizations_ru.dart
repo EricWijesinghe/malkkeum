@@ -2193,6 +2193,20 @@ class TRu extends T {
       'Подтвердите номер телефона, прежде чем брать работы.';
 
   @override
+  String get nAlerts => 'Уведомления';
+
+  @override
+  String get nEmpty => 'Пока нет уведомлений';
+
+  @override
+  String nUnread(String count) {
+    return 'Непрочитанных: $count';
+  }
+
+  @override
+  String get pVerifyPhone => 'Подтвердить';
+
+  @override
   String get cSetupSave => 'Сохранить';
 
   @override

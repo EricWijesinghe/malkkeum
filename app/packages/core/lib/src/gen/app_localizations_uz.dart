@@ -2199,6 +2199,20 @@ class TUz extends T {
       'Ish olishdan oldin telefon raqamingizni tasdiqlang.';
 
   @override
+  String get nAlerts => 'Bildirishnomalar';
+
+  @override
+  String get nEmpty => 'Hozircha bildirishnoma yo\'q';
+
+  @override
+  String nUnread(String count) {
+    return '$count ta o\'qilmagan';
+  }
+
+  @override
+  String get pVerifyPhone => 'Tasdiqlash';
+
+  @override
   String get cSetupSave => 'Saqlash';
 
   @override

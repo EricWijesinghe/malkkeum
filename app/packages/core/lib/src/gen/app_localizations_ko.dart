@@ -2139,6 +2139,20 @@ class TKo extends T {
   String get err_phone_required => '작업을 받으려면 먼저 휴대폰 번호를 인증해 주세요.';
 
   @override
+  String get nAlerts => '알림';
+
+  @override
+  String get nEmpty => '새 알림이 없어요';
+
+  @override
+  String nUnread(String count) {
+    return '안 읽은 알림 $count개';
+  }
+
+  @override
+  String get pVerifyPhone => '번호 인증';
+
+  @override
   String get cSetupSave => '저장';
 
   @override

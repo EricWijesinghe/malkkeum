@@ -2170,6 +2170,20 @@ class TVi extends T {
       'Hãy xác minh số điện thoại trước khi nhận việc.';
 
   @override
+  String get nAlerts => 'Thông báo';
+
+  @override
+  String get nEmpty => 'Chưa có thông báo';
+
+  @override
+  String nUnread(String count) {
+    return '$count thông báo chưa đọc';
+  }
+
+  @override
+  String get pVerifyPhone => 'Xác minh';
+
+  @override
   String get cSetupSave => 'Lưu';
 
   @override

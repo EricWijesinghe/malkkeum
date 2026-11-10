@@ -2204,6 +2204,20 @@ class TFil extends T {
       'I-verify muna ang numero bago tumanggap ng trabaho.';
 
   @override
+  String get nAlerts => 'Mga alerto';
+
+  @override
+  String get nEmpty => 'Wala pang alerto';
+
+  @override
+  String nUnread(String count) {
+    return '$count hindi pa nababasa';
+  }
+
+  @override
+  String get pVerifyPhone => 'I-verify';
+
+  @override
   String get cSetupSave => 'I-save';
 
   @override

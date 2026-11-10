@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -146,53 +147,60 @@ class _JobsTabState extends State<JobsTab> {
           ),
         ),
       ),
-      body: AsyncView<List<Json>>(
-        key: _view,
-        load: _load,
-        builder: (context, jobs, reload) => RefreshIndicator(
-          onRefresh: reload,
-          child: jobs.isEmpty
-              ? ListView(
-                  children: [
-                    SizedBox(
-                      height: 420,
-                      child: EmptyState(
-                        icon: Icons.travel_explore_rounded,
-                        title: t.pNoJobs,
-                        body: t.pNoJobsBody,
-                        hue: ServiceHues.moveOut,
-                      ),
-                    ),
-                  ],
-                )
-              : ListView(
-                  padding: const EdgeInsets.all(Space.gutter),
-                  children: [
-                    for (final (i, j) in jobs.indexed)
-                      StaggerIn(
-                        index: i,
-                        child: _JobCard(job: j, onChanged: reload),
-                      ),
-                    const SizedBox(height: Space.sm),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.shield_outlined,
-                          size: 16,
-                          color: context.colors.inkMuted,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            t.pPrivacyNote,
-                            style: context.text.labelSmall,
+      body: Column(
+        children: [
+          if (!pro.phoneVerified) const _PhoneGate(),
+          Expanded(
+            child: AsyncView<List<Json>>(
+              key: _view,
+              load: _load,
+              builder: (context, jobs, reload) => RefreshIndicator(
+                onRefresh: reload,
+                child: jobs.isEmpty
+                    ? ListView(
+                        children: [
+                          SizedBox(
+                            height: 420,
+                            child: EmptyState(
+                              icon: Icons.travel_explore_rounded,
+                              title: t.pNoJobs,
+                              body: t.pNoJobsBody,
+                              hue: ServiceHues.moveOut,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-        ),
+                        ],
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.all(Space.gutter),
+                        children: [
+                          for (final (i, j) in jobs.indexed)
+                            StaggerIn(
+                              index: i,
+                              child: _JobCard(job: j, onChanged: reload),
+                            ),
+                          const SizedBox(height: Space.sm),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.shield_outlined,
+                                size: 16,
+                                color: context.colors.inkMuted,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  t.pPrivacyNote,
+                                  style: context.text.labelSmall,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -930,4 +938,49 @@ Future<bool?> showQuoteSheet(
   );
   disposeAfterClose([price, memo]);
   return result;
+}
+
+/// Shown above the feed until the partner verifies a phone (social sign-ups start without one).
+class _PhoneGate extends StatelessWidget {
+  const _PhoneGate();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final pro = context.pro;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        Space.sm,
+        Space.gutter,
+        0,
+      ),
+      child: AppCard(
+        color: context.colors.sunTint,
+        child: Row(
+          children: [
+            Icon(Icons.phone_iphone_rounded, color: context.colors.sun),
+            const SizedBox(width: Space.sm),
+            Expanded(
+              child: Text(t.err_phone_required, style: context.text.bodyMedium),
+            ),
+            const SizedBox(width: Space.sm),
+            FilledButton(
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        PhoneAttachScreen(api: pro.api, audience: 'partner'),
+                  ),
+                );
+                await pro.loadProfile();
+              },
+              child: Text(t.pVerifyPhone),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -6,6 +6,7 @@ import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
 import 'more.dart';
+import 'notifications.dart';
 import 'service.dart';
 
 class HomeTab extends StatefulWidget {
@@ -19,10 +20,14 @@ class _HomeTabState extends State<HomeTab> {
   List<Booking> _bookings = const [];
   List<ContentItem> _banners = const [];
   List<ContentItem> _notices = const [];
+  int _unread = 0;
   int _seenVersion = -1;
 
   Future<void> _load() async {
     final api = context.api;
+    unreadAlerts(api).then((n) {
+      if (mounted) setState(() => _unread = n);
+    }).ignore();
     final results = await Future.wait([
       api.get('/bookings'),
       api.get('/content', query: {'kind': 'banner'}),
@@ -82,14 +87,20 @@ class _HomeTabState extends State<HomeTab> {
             title: _AddressChip(addresses: app.addresses),
             actions: [
               IconButton(
-                tooltip: t.moreNotices,
-                icon: const Icon(Icons.notifications_none_rounded),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) =>
-                        ContentListScreen(kind: 'notice', title: t.moreNotices),
-                  ),
+                tooltip: _unread > 0 ? t.nUnread('$_unread') : t.nAlerts,
+                icon: Badge(
+                  isLabelVisible: _unread > 0,
+                  label: Text('$_unread'),
+                  child: const Icon(Icons.notifications_none_rounded),
                 ),
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
+                  );
+                  if (mounted) setState(() => _unread = 0);
+                },
               ),
               const SizedBox(width: Space.xs),
             ],
@@ -398,13 +409,17 @@ class _ServiceGrid extends StatelessWidget {
                             // Price is visible on the tile itself, in the service hue.
                             // Scale the tag down rather than let neighbours collide on narrow phones.
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 2,
+                              ),
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Tag(
                                   label: s.isQuote
                                       ? t.quoteBadge
-                                      : t.fromPrice(context.won(s.fromPrice ?? 0)),
+                                      : t.fromPrice(
+                                          context.won(s.fromPrice ?? 0),
+                                        ),
                                   hue: ServiceHues.of(s.code),
                                 ),
                               ),

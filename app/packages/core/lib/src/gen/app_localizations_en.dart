@@ -2178,6 +2178,20 @@ class TEn extends T {
       'Verify your phone number before taking jobs.';
 
   @override
+  String get nAlerts => 'Alerts';
+
+  @override
+  String get nEmpty => 'No alerts yet';
+
+  @override
+  String nUnread(String count) {
+    return '$count unread alerts';
+  }
+
+  @override
+  String get pVerifyPhone => 'Verify';
+
+  @override
   String get cSetupSave => 'Save';
 
   @override

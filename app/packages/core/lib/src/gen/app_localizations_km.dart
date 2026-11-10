@@ -2192,6 +2192,20 @@ class TKm extends T {
   String get err_phone_required => 'សូមផ្ទៀងផ្ទាត់លេខទូរស័ព្ទមុនទទួលការងារ។';
 
   @override
+  String get nAlerts => 'ការជូនដំណឹង';
+
+  @override
+  String get nEmpty => 'មិនទាន់មានការជូនដំណឹង';
+
+  @override
+  String nUnread(String count) {
+    return 'មិនទាន់អាន $count';
+  }
+
+  @override
+  String get pVerifyPhone => 'ផ្ទៀងផ្ទាត់';
+
+  @override
   String get cSetupSave => 'រក្សាទុក';
 
   @override

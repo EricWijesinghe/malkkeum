@@ -17,6 +17,9 @@ class PartnerState extends ChangeNotifier {
   int jobsVersion = 0;
 
   String get status => profile['status'] as String? ?? 'pending';
+
+  /// Social sign-ups have no phone yet; the server refuses accept/quote/complete until one is verified.
+  bool get phoneVerified => profile['phone_verified'] != false;
   String get name => profile['name'] as String? ?? '';
   String get teamName => profile['team_name'] as String? ?? '';
   int get feeBps => (profile['fee_bps'] as num? ?? 2000).toInt();

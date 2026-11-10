@@ -2188,6 +2188,20 @@ class TNe extends T {
   String get err_phone_required => 'काम लिनु अघि फोन नम्बर प्रमाणित गर्नुहोस्।';
 
   @override
+  String get nAlerts => 'सूचना';
+
+  @override
+  String get nEmpty => 'अहिलेसम्म सूचना छैन';
+
+  @override
+  String nUnread(String count) {
+    return '$count नपढिएका सूचना';
+  }
+
+  @override
+  String get pVerifyPhone => 'प्रमाणित गर्नुहोस्';
+
+  @override
   String get cSetupSave => 'सेभ';
 
   @override
