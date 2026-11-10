@@ -130,7 +130,7 @@ EOF
 
 cat > /usr/local/bin/malkkeum <<EOF
 #!/usr/bin/env bash
-# 말끔 관리 명령. 사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|version]
+# 말끔 관리 명령. 사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|demo load|demo clear|version]
 set -euo pipefail
 cd $DIR
 dc() { docker compose --env-file .env "\$@"; }
@@ -154,8 +154,18 @@ case "\${1:-status}" in
     gunzip -c "\$f" | dc exec -T db psql -q -U app -d cleaning >/dev/null && echo "✔ 복원 완료" ;;
   logs) dc logs --tail 200 -f "\${2:-api}" ;;
   setup-code) grep ^SETUP_CODE= .env | cut -d= -f2 | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
+  demo)
+    case "\${2:-}" in
+      load)
+        echo "체험용 데이터를 넣을게요. 실제 예약이 이미 있으면 넣지 않아요. (강제로 넣으려면: malkkeum demo load --force)"
+        dc exec -T api api demo load "\${3:-}" && echo "✔ 체험용 데이터를 넣었어요. 지우려면: malkkeum demo clear" ;;
+      clear)
+        read -r -p "체험용 데이터를 모두 지울까요? 실제 고객·예약 데이터는 지우지 않아요. (yes 입력) " a </dev/tty; [ "\$a" = yes ] || { echo "취소했어요."; exit 1; }
+        dc exec -T api api demo clear && echo "✔ 체험용 데이터를 지웠어요" ;;
+      *) echo "사용법: malkkeum demo [load [--force] | clear]"; exit 1 ;;
+    esac ;;
   version) grep ^VERSION= .env | cut -d= -f2 ;;
-  *) echo "사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|version]"; exit 1 ;;
+  *) echo "사용법: malkkeum [status|update|backup|restore 파일|logs|setup-code|demo load|demo clear|version]"; exit 1 ;;
 esac
 EOF
 chmod 755 /usr/local/bin/malkkeum

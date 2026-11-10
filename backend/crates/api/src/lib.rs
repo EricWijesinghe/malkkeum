@@ -4,6 +4,7 @@
 pub mod auth;
 pub mod config;
 pub mod crypto;
+pub mod demo;
 pub mod error;
 pub mod integrations;
 pub mod providers;
