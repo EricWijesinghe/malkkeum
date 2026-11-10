@@ -8,4 +8,5 @@ pub struct AppState {
     pub config: Arc<Config>,
     pub providers: Arc<Providers>,
     pub hub: Hub,
+    pub ai_debounce: crate::ai::Debounce,
 }

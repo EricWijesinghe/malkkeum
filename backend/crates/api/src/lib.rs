@@ -1,6 +1,7 @@
 //! Backend HTTP API. `main.rs` calls [`serve`]; integration tests build the router from these modules.
 //! New top-level modules are declared here (not in main.rs).
 
+pub mod ai;
 pub mod auth;
 pub mod config;
 pub mod crypto;
@@ -29,6 +30,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
         providers: Arc::new(Providers::new(config.clone())?),
         config: Arc::new(config),
         hub: Hub::default(),
+        ai_debounce: Default::default(),
     })
 }
 

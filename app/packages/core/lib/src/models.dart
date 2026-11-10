@@ -153,6 +153,7 @@ class ChatThread {
   Json? get lastMessage => j['last_message'] as Json?;
   String? get userId => j['user_id'] as String?;
   String? get proId => j['pro_id'] as String?;
+  bool get aiPaused => j['ai_paused'] == true;
   factory ChatThread.fromJson(Json j) => ChatThread(j);
 }
 
@@ -164,6 +165,9 @@ class ChatMessage {
   final String kind;
   final Json body;
   final DateTime createdAt;
+
+  /// Written by the AI support agent (staff sender, body flag).
+  bool get isAi => body['ai'] == true;
 
   factory ChatMessage.fromJson(Json j) => ChatMessage(
         id: j['id'] as String,

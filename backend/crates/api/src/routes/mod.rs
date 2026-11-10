@@ -4,7 +4,7 @@ mod auth;
 mod booking_core;
 mod bookings;
 mod catalog;
-mod chat;
+pub(crate) mod chat;
 mod checkout_policy;
 pub(crate) mod checkouts;
 mod me;
@@ -62,7 +62,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(admin_content::routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
-                .merge(setup::admin_routes()),
+                .merge(setup::admin_routes())
+                .merge(chat::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()))
         .nest("/member", member::routes())

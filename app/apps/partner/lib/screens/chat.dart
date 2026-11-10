@@ -354,13 +354,28 @@ class _OpsRoomState extends State<OpsRoom> {
                               : context.colors.surface,
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: Text(
-                          m.body['text'] as String? ?? '',
-                          style: context.text.bodyMedium?.copyWith(
-                            color: mine
-                                ? context.colors.surface
-                                : context.colors.ink,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (m.isAi)
+                              Text(
+                                t.aiLabel,
+                                style: context.text.labelSmall?.copyWith(
+                                  color: mine
+                                      ? context.colors.surface
+                                      : context.colors.ink.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            Text(
+                              m.body['text'] as String? ?? '',
+                              style: context.text.bodyMedium?.copyWith(
+                                color: mine
+                                    ? context.colors.surface
+                                    : context.colors.ink,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                 return Align(

@@ -15,7 +15,13 @@ use axum::{
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::time::Duration;
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    },
+    time::Duration,
+};
 use tokio::sync::broadcast;
 use uuid::Uuid;
 
@@ -46,13 +52,24 @@ pub struct Event {
 #[derive(Clone)]
 pub struct Hub {
     tx: broadcast::Sender<Event>,
+    staff: Arc<AtomicUsize>,
 }
 
 impl Default for Hub {
     fn default() -> Self {
         Self {
             tx: broadcast::channel(HUB_CAPACITY).0,
+            staff: Arc::default(),
         }
+    }
+}
+
+/// Counts one open staff socket until dropped (the socket's pump owns it).
+pub struct StaffPresence(Arc<AtomicUsize>);
+
+impl Drop for StaffPresence {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::Relaxed);
     }
 }
 
@@ -60,6 +77,16 @@ impl Hub {
     pub fn send(&self, to: Recipient, kind: &'static str, data: Value) {
         // No receivers is normal (nobody online); push covers that case.
         let _ = self.tx.send(Event { to, kind, data });
+    }
+
+    pub fn staff_join(&self) -> StaffPresence {
+        self.staff.fetch_add(1, Ordering::Relaxed);
+        StaffPresence(self.staff.clone())
+    }
+
+    /// Open staff sockets on this node (the AI agent stays quiet while someone is connected).
+    pub fn staff_connected(&self) -> usize {
+        self.staff.load(Ordering::Relaxed)
     }
 }
 
@@ -84,10 +111,11 @@ const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MI
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
     let auth = verify_access(&state.config.jwt_secret, &q.token)?;
     let rx = state.hub.tx.subscribe();
-    Ok(ws.on_upgrade(move |socket| pump(socket, rx, auth.id, auth.role)))
+    let presence = auth.role.is_staff().then(|| state.hub.staff_join());
+    Ok(ws.on_upgrade(move |socket| pump(socket, rx, auth.id, auth.role, presence)))
 }
 
-async fn pump(socket: WebSocket, mut rx: broadcast::Receiver<Event>, id: Uuid, role: Role) {
+async fn pump(socket: WebSocket, mut rx: broadcast::Receiver<Event>, id: Uuid, role: Role, _presence: Option<StaffPresence>) {
     let (mut sink, mut stream) = socket.split();
     let mut ping = tokio::time::interval(PING_EVERY);
     let expiry = tokio::time::sleep(SOCKET_LIFETIME);

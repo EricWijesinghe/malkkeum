@@ -355,7 +355,14 @@ class _Bubble extends StatelessWidget {
               bottomRight: Radius.circular(mine ? 6 : 18),
             ),
           ),
-          child: Text(m.body['text'] as String? ?? '', style: context.text.bodyMedium?.copyWith(color: mine ? Colors.white : context.colors.ink)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (m.isAi) Text(t.aiLabel, style: context.text.labelSmall?.copyWith(color: mine ? Colors.white70 : context.colors.ink.withValues(alpha: 0.6))),
+              Text(m.body['text'] as String? ?? '', style: context.text.bodyMedium?.copyWith(color: mine ? Colors.white : context.colors.ink)),
+            ],
+          ),
         ),
     };
     return Padding(

@@ -18,6 +18,7 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
   String _audience = 'customer';
   List<ChatThread> _threads = [];
   String? _selected;
+  String? _aiLine;
   bool _loading = true;
 
   @override
@@ -42,8 +43,22 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
         _threads = r.map((e) => ChatThread.fromJson(e as Json)).toList();
         _loading = false;
       });
+      unawaited(_loadAi());
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
+    }
+  }
+
+  /// Month-to-date AI calls. Optional: when the read fails the line simply stays hidden.
+  Future<void> _loadAi() async {
+    try {
+      final r = await context.api.get('/admin/ai/usage') as Json;
+      if (!mounted) return;
+      final t = context.t;
+      final calls = ((r['month'] as Json)['calls'] as num).toInt();
+      setState(() => _aiLine = r['configured'] == true ? t.aiUsageMonth('$calls') : t.aiNotConfigured);
+    } catch (_) {
+      if (mounted) setState(() => _aiLine = null);
     }
   }
 
@@ -55,7 +70,7 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
         MaterialPageRoute<void>(
           builder: (_) => Scaffold(
             appBar: AppBar(title: Text(context.t.service(th.topic))),
-            body: ThreadView(threadId: th.id, bookingId: th.bookingId),
+            body: ThreadView(threadId: th.id, bookingId: th.bookingId, aiPaused: th.aiPaused, onAiChanged: _load),
           ),
         ),
       );
@@ -74,6 +89,11 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
     final t = context.t;
     final list = Column(
       children: [
+        if (_aiLine != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.md, 0),
+            child: Text(_aiLine!, style: context.text.labelSmall),
+          ),
         Padding(
           padding: const EdgeInsets.all(Space.md),
           child: SizedBox(
@@ -175,6 +195,8 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
                       key: ValueKey(selected.id),
                       threadId: selected.id,
                       bookingId: selected.bookingId,
+                      aiPaused: selected.aiPaused,
+                      onAiChanged: _load,
                     ),
             ),
           ],
@@ -186,9 +208,17 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
 
 /// Conversation + composer. Marks the thread read for staff on open and on new messages.
 class ThreadView extends StatefulWidget {
-  const ThreadView({super.key, required this.threadId, this.bookingId});
+  const ThreadView({
+    super.key,
+    required this.threadId,
+    this.bookingId,
+    this.aiPaused = false,
+    this.onAiChanged,
+  });
   final String threadId;
   final String? bookingId;
+  final bool aiPaused;
+  final VoidCallback? onAiChanged;
   @override
   State<ThreadView> createState() => _ThreadViewState();
 }
@@ -198,6 +228,7 @@ class _ThreadViewState extends State<ThreadView> {
   List<ChatMessage> _msgs = [];
   StreamSubscription<Json>? _sub;
   bool _sending = false;
+  late bool _aiPaused = widget.aiPaused;
 
   @override
   void initState() {
@@ -226,6 +257,19 @@ class _ThreadViewState extends State<ThreadView> {
 
   void _read() =>
       context.api.post('/admin/threads/${widget.threadId}/read').ignore();
+
+  Future<void> _toggleAi() async {
+    try {
+      final r = await context.api.put('/admin/threads/${widget.threadId}/ai', {
+        'paused': !_aiPaused,
+      }) as Json;
+      if (!mounted) return;
+      setState(() => _aiPaused = r['ai_paused'] == true);
+      widget.onAiChanged?.call();
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    }
+  }
 
   Future<void> _send() async {
     if (_input.text.trim().isEmpty) return;
@@ -261,6 +305,27 @@ class _ThreadViewState extends State<ThreadView> {
     final reversed = _msgs.reversed.toList();
     return Column(
       children: [
+        Row(
+          children: [
+            if (_aiPaused)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: Space.lg),
+                  child: Text(t.aiPausedNote, style: context.text.labelSmall),
+                ),
+              )
+            else
+              const Spacer(),
+            TextButton.icon(
+              icon: Icon(
+                _aiPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                size: 18,
+              ),
+              label: Text(_aiPaused ? t.aiResume : t.aiPause),
+              onPressed: _toggleAi,
+            ),
+          ],
+        ),
         if (widget.bookingId != null)
           Align(
             alignment: Alignment.centerRight,
@@ -378,11 +443,41 @@ class _Message extends StatelessWidget {
           children: [
             content,
             const SizedBox(height: 2),
-            Text(
-              timeLabel(m.createdAt, context.lang),
-              style: context.text.labelSmall?.copyWith(fontSize: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (m.isAi) ...[const AiBadge(), const SizedBox(width: 6)],
+                Text(
+                  timeLabel(m.createdAt, context.lang),
+                  style: context.text.labelSmall?.copyWith(fontSize: 10),
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Small "AI" tag on messages the AI support agent wrote.
+class AiBadge extends StatelessWidget {
+  const AiBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: context.primary,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        context.t.aiBadge,
+        style: context.text.labelSmall?.copyWith(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
