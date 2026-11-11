@@ -1480,6 +1480,37 @@
  "cWrongSetupCode": "설치 코드가 맞지 않아요",
  "cWeakPassword": "비밀번호는 12자 이상이어야 해요",
  "cInvalidValue": "입력값을 확인해 주세요",
+ "reviewRuleLine": "욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.",
+ "reportAction": "신고",
+ "reportSheetTitle": "이 후기를 신고할까요?",
+ "reportReasonSpam": "광고·스팸",
+ "reportReasonOffensive": "욕설·혐오 표현",
+ "reportReasonPersonal": "개인정보 포함",
+ "reportReasonOther": "기타",
+ "reportNoteHint": "자세한 내용 (선택, 300자 이내)",
+ "reportSubmit": "신고하기",
+ "reportThanks": "신고해 주셔서 감사해요. 운영팀이 확인할게요.",
+ "reportAlready": "이미 신고한 후기예요",
+ "reportFailed": "신고하지 못했어요. 다시 시도해 주세요.",
+ "reviewBlocked": "후기 작성이 제한된 계정이에요. 고객센터에 문의해 주세요.",
+ "modTitle": "후기 신고 관리",
+ "modEmpty": "대기 중인 신고가 없어요",
+ "modReports": "신고 {count}건",
+ "@modReports": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "modKeep": "유지",
+ "modHide": "숨기기",
+ "modDelete": "삭제",
+ "modBlockAuthor": "작성자 후기 제한",
+ "modUnblockAuthor": "제한 해제",
+ "modDone": "처리했어요",
+ "modFailed": "처리하지 못했어요. 다시 시도해 주세요.",
+ "modHidden": "숨겨진 후기",
  "uUpdateBanner": "새 버전 {version}이 나왔어요",
  "@uUpdateBanner": {
   "placeholders": {

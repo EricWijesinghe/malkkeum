@@ -3,7 +3,7 @@
 
 use super::{audit, uploads};
 use crate::{
-    auth::{Admin, Customer, Staff},
+    auth::{Admin, Auth, Customer, Staff},
     error::{ApiError, ApiResult},
     state::AppState,
     util::own_uploads,
@@ -19,6 +19,7 @@ use domain::{
     growth::{ReferralOffer, WelcomeOffer, check_claim, check_reward, mask_name, paid_in_full, proof_count},
 };
 use rand::{RngCore, rngs::OsRng};
+use std::time::Instant;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgExecutor, PgPool};
@@ -39,7 +40,10 @@ pub fn public_routes() -> Router<AppState> {
 }
 
 pub fn customer_routes() -> Router<AppState> {
-    Router::new().route("/me/referral", get(my_referral)).route("/me/referral/claim", post(claim_referral))
+    Router::new()
+        .route("/me/referral", get(my_referral))
+        .route("/me/referral/claim", post(claim_referral))
+        .route("/reviews/{booking_id}/report", post(report_review))
 }
 
 pub fn admin_routes() -> Router<AppState> {
@@ -49,6 +53,9 @@ pub fn admin_routes() -> Router<AppState> {
         .route("/growth/referral", put(put_referral))
         .route("/reviews", get(list_reviews))
         .route("/reviews/{booking_id}", put(moderate_review))
+        .route("/reviews/reports", get(list_reports))
+        .route("/reviews/{booking_id}/decision", put(decide_review))
+        .route("/reviews/{booking_id}/author", put(set_author_block))
 }
 
 async fn load_setting<'e, T: DeserializeOwned + Default>(ex: impl PgExecutor<'e>, key: &str) -> ApiResult<T> {
@@ -193,6 +200,7 @@ pub(crate) async fn reward_on_paid_completion(conn: &mut PgConnection, booking: 
 
 #[derive(Serialize)]
 struct PublicReview {
+    booking_id: Uuid,
     rating: i16,
     body: String,
     name: String,
@@ -208,15 +216,18 @@ async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
     )
     .fetch_one(&s.db)
     .await?;
-    let recent: Vec<(i16, String, String)> = sqlx::query_as(
-        "SELECT r.rating, left(r.body, $2), u.name FROM reviews r JOIN users u ON u.id = r.user_id
+    let recent: Vec<(Uuid, i16, String, String)> = sqlx::query_as(
+        "SELECT r.booking_id, r.rating, left(r.body, $2), u.name FROM reviews r JOIN users u ON u.id = r.user_id
          WHERE NOT r.hidden AND r.rating >= 4 AND r.body <> '' ORDER BY r.created_at DESC LIMIT $1",
     )
     .bind(RECENT_REVIEWS)
     .bind(PROOF_BODY_CHARS)
     .fetch_all(&s.db)
     .await?;
-    let reviews: Vec<PublicReview> = recent.into_iter().map(|(rating, body, name)| PublicReview { rating, body: domain::growth::redact_contacts(&body), name: mask_name(&name) }).collect();
+    let reviews: Vec<PublicReview> = recent
+        .into_iter()
+        .map(|(booking_id, rating, body, name)| PublicReview { booking_id, rating, body: domain::growth::redact_contacts(&body), name: mask_name(&name) })
+        .collect();
     let rating = proof_count(rated).and(avg).map(round_rating);
     Ok(Json(json!({
         "homes_this_month": proof_count(homes),
@@ -314,6 +325,127 @@ async fn moderate_review(State(s): State<AppState>, Admin(a): Admin, Path(bookin
     }
     audit(&s.db, "staff", Some(a.id), "review.moderate", &booking.to_string(), json!({ "hidden": m.hidden })).await?;
     Ok(Json(json!({ "ok": true, "hidden": m.hidden })))
+}
+
+const REPORT_REASONS: [&str; 4] = ["spam", "offensive", "personal_info", "other"];
+const REPORT_NOTE_CHARS: usize = 300;
+const REPORTS_PER_WINDOW: usize = 10;
+
+#[derive(Deserialize)]
+struct ReportInput {
+    reason: String,
+    #[serde(default)]
+    note: String,
+}
+
+/// Any signed-in user reports a review once. Reports from distinct users up to the threshold hide
+/// the review at once and queue it for a staff decision (`report_pending`).
+async fn report_review(State(s): State<AppState>, a: Auth, Path(booking): Path<Uuid>, Json(r): Json<ReportInput>) -> ApiResult<Json<Value>> {
+    let reason = REPORT_REASONS.iter().find(|x| **x == r.reason).ok_or(ApiError::BadRequest("invalid_report"))?;
+    let note = r.note.trim();
+    if note.chars().count() > REPORT_NOTE_CHARS {
+        return Err(ApiError::BadRequest("invalid_report"));
+    }
+    if !s.review_reports.admit(a.id, REPORTS_PER_WINDOW, Instant::now()) {
+        return Err(ApiError::RateLimited);
+    }
+    let author: Uuid = sqlx::query_scalar("SELECT user_id FROM reviews WHERE booking_id = $1")
+        .bind(booking)
+        .fetch_optional(&s.db)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+    if author == a.id {
+        return Err(ApiError::BadRequest("own_review"));
+    }
+    let inserted = sqlx::query("INSERT INTO review_reports (booking_id, reporter_id, reason, note) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING")
+        .bind(booking)
+        .bind(a.id)
+        .bind(*reason)
+        .bind(note)
+        .execute(&s.db)
+        .await?;
+    if inserted.rows_affected() == 0 {
+        return Err(ApiError::Conflict("already_reported"));
+    }
+    let reports: i64 = sqlx::query_scalar("SELECT count(*) FROM review_reports WHERE booking_id = $1").bind(booking).fetch_one(&s.db).await?;
+    if reports >= i64::from(s.config.review_report_threshold) {
+        sqlx::query("UPDATE reviews SET hidden = TRUE, report_pending = TRUE WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
+    }
+    Ok(Json(json!({ "ok": true })))
+}
+
+#[derive(Serialize, sqlx::FromRow)]
+struct ReportedReview {
+    booking_id: Uuid,
+    rating: i16,
+    body: String,
+    pro_name: Option<String>,
+    customer_name: String,
+    hidden: bool,
+    author_blocked: bool,
+    reports: Value,
+}
+
+/// Staff queue: reviews waiting for a decision, with each report's reason and note (not the reporter).
+async fn list_reports(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Vec<ReportedReview>>> {
+    let mut rows: Vec<ReportedReview> = sqlx::query_as(
+        "SELECT r.booking_id, r.rating, r.body, p.name AS pro_name, u.name AS customer_name, r.hidden, u.review_blocked AS author_blocked,
+                (SELECT coalesce(json_agg(json_build_object('reason', x.reason, 'note', x.note, 'created_at', x.created_at) ORDER BY x.created_at), '[]'::json)
+                   FROM review_reports x WHERE x.booking_id = r.booking_id) AS reports
+         FROM reviews r JOIN users u ON u.id = r.user_id LEFT JOIN pros p ON p.id = r.pro_id
+         WHERE r.report_pending ORDER BY r.created_at DESC LIMIT $1",
+    )
+    .bind(REVIEW_LIST_LIMIT)
+    .fetch_all(&s.db)
+    .await?;
+    for r in &mut rows {
+        r.customer_name = mask_name(&r.customer_name);
+    }
+    Ok(Json(rows))
+}
+
+#[derive(Deserialize)]
+struct Decision {
+    /// keep: show again and clear its reports. hide: stay hidden. delete: remove the review.
+    action: String,
+}
+
+async fn decide_review(State(s): State<AppState>, Admin(a): Admin, Path(booking): Path<Uuid>, Json(d): Json<Decision>) -> ApiResult<Json<Value>> {
+    let sql = match d.action.as_str() {
+        "keep" => "UPDATE reviews SET hidden = FALSE, report_pending = FALSE WHERE booking_id = $1",
+        "hide" => "UPDATE reviews SET hidden = TRUE, report_pending = FALSE WHERE booking_id = $1",
+        "delete" => "DELETE FROM reviews WHERE booking_id = $1",
+        _ => return Err(ApiError::BadRequest("invalid_action")),
+    };
+    let changed = sqlx::query(sql).bind(booking).execute(&s.db).await?;
+    if changed.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    if d.action == "keep" {
+        // Cleared reports let a new wave of reports count from zero again.
+        sqlx::query("DELETE FROM review_reports WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
+    }
+    audit(&s.db, "staff", Some(a.id), "review.decision", &booking.to_string(), json!({ "action": d.action })).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+#[derive(Deserialize)]
+struct AuthorBlock {
+    blocked: bool,
+}
+
+/// Stops the review author from posting new reviews (applies to every review they wrote).
+async fn set_author_block(State(s): State<AppState>, Admin(a): Admin, Path(booking): Path<Uuid>, Json(b): Json<AuthorBlock>) -> ApiResult<Json<Value>> {
+    let changed = sqlx::query("UPDATE users SET review_blocked = $2 WHERE id = (SELECT user_id FROM reviews WHERE booking_id = $1)")
+        .bind(booking)
+        .bind(b.blocked)
+        .execute(&s.db)
+        .await?;
+    if changed.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    audit(&s.db, "staff", Some(a.id), "review.author_block", &booking.to_string(), json!({ "blocked": b.blocked })).await?;
+    Ok(Json(json!({ "ok": true, "blocked": b.blocked })))
 }
 
 /// Review photos: only our own uploads, bounded in count (no foreign URLs stored). Returns the stored paths.

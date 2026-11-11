@@ -498,6 +498,10 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if b.status()? != BookingStatus::Completed {
         return Err(ApiError::Conflict("not_completed"));
     }
+    let blocked: bool = sqlx::query_scalar("SELECT review_blocked FROM users WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    if blocked {
+        return Err(ApiError::Conflict("review_blocked"));
+    }
     if !(1..=5).contains(&r.rating) || r.body.chars().count() > 1000 {
         return Err(ApiError::BadRequest("invalid_review"));
     }

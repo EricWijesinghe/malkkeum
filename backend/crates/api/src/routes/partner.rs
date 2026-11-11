@@ -285,7 +285,7 @@ async fn settlements(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<V
 
 async fn reviews(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
     let v: Value = sqlx::query_scalar(
-        "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC), '[]') FROM (SELECT r.rating, r.body, r.created_at, b.service_code FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE r.pro_id = $1 AND NOT r.hidden) x",
+        "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC), '[]') FROM (SELECT r.booking_id, r.rating, r.body, r.created_at, b.service_code FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE r.pro_id = $1 AND NOT r.hidden) x",
     )
     .bind(a.id)
     .fetch_one(&s.db)

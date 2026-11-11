@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "清掃の前後の写真をその場で撮影して送信するためにカメラを使用します。";
+"NSPhotoLibraryUsageDescription" = "清掃の前後の写真や相談用の写真をアップロードするために写真ライブラリにアクセスします。";

@@ -53,6 +53,7 @@ pub fn test_config() -> Config {
         rate_general_per_min: 10_000,
         upload_daily_quota: 1_000,
         max_open_quote_requests: 100,
+        review_report_threshold: 3,
         max_threads_per_day: 100,
         reconcile_interval_secs: 60,
         anthropic_base_url: "http://127.0.0.1:9".into(),

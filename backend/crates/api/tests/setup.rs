@@ -117,6 +117,21 @@ async fn customer_cannot_read_setup(pool: PgPool) {
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn review_samples_seed_two_bookings_once_and_only_while_active(pool: PgPool) {
+    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    common::seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    create_owner(&app, "ABCD2345EFGH").await;
+    let t = owner_token(&app).await;
+    let (st, b) = call(&app, "PUT", "/v1/admin/setup/review", Some(t.as_str()), Some(json!({"phone": "010-9999-0001", "code": "123456"}))).await;
+    assert_eq!((st, b["samples"].as_i64()), (StatusCode::OK, Some(2)), "{b}");
+    let (_, b) = call(&app, "PUT", "/v1/admin/setup/review", Some(t.as_str()), Some(json!({"phone": "010-9999-0001", "code": "123456"}))).await;
+    assert_eq!(b["samples"], 0, "saving again adds no samples");
+    let n: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings").fetch_one(&pool).await.expect("count");
+    assert_eq!(n, 2);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn review_account_signs_in_with_the_owner_code_and_no_sms_code_is_echoed(pool: PgPool) {
     ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
     let app = common::app(pool.clone());

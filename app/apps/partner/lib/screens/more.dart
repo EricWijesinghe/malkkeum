@@ -351,6 +351,7 @@ class ReviewsScreen extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: Space.xs),
                                 child: Text(r['body'] as String),
                               ),
+                            ReviewReportButton(bookingId: r['booking_id'] as String),
                             TextButton(
                               onPressed: () =>
                                   showToast(context, t.pReplyLater),

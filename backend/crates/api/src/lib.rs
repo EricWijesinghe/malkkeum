@@ -40,6 +40,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
         hub: Hub::default(),
         ai_debounce: Default::default(),
         address_search: Default::default(),
+        review_reports: Default::default(),
     })
 }
 

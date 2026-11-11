@@ -36,6 +36,8 @@ pub struct Config {
     pub rate_general_per_min: u32,
     pub upload_daily_quota: u32,
     pub max_open_quote_requests: u32,
+    /// Distinct reporters before a review is hidden pending staff decision.
+    pub review_report_threshold: u32,
     pub max_threads_per_day: u32,
     /// Checkout reconciler period (seconds).
     pub reconcile_interval_secs: u64,
@@ -222,6 +224,7 @@ impl Config {
             rate_general_per_min: number("RATE_LIMIT_GENERAL_PER_MIN", 300, 1)?,
             upload_daily_quota: number("UPLOAD_DAILY_QUOTA", 100, 1)?,
             max_open_quote_requests: number("MAX_OPEN_QUOTE_REQUESTS", 3, 1)?,
+            review_report_threshold: number("REVIEW_REPORT_THRESHOLD", 3, 1)?,
             max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),

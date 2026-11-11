@@ -10,4 +10,5 @@ pub struct AppState {
     pub hub: Hub,
     pub ai_debounce: crate::ai::Debounce,
     pub address_search: Arc<crate::routes::address::SearchGate>,
+    pub review_reports: Arc<crate::ratelimit::UserLimiter>,
 }
