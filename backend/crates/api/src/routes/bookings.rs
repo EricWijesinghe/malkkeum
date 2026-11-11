@@ -6,7 +6,7 @@ use super::{
         BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
         price_for, record_payment, take_balance, take_deposit,
     },
-    catalog::load_formula,
+    catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
 };
 use crate::{
@@ -182,10 +182,12 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     let id = Uuid::now_v7();
     let number = next_number(&mut tx).await?;
     let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
-    let est = formula.estimate(&answers)?;
+    let start = domain::peak::kst_to_utc(b.visit_date, u32::from(b.start_hour)).ok_or(ApiError::BadRequest("invalid_slot"))?;
+    let peak = domain::peak::peak_surcharge(&load_peak_config(&s.db).await?, start);
+    let est = formula.estimate_with_peak(&answers, peak.bps)?;
     sqlx::query(
-        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12)",
+        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household, peak_surcharge)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12,$13)",
     )
     .bind(id)
     .bind(&number)
@@ -199,6 +201,7 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     .bind(est.total.0)
     .bind(&prep.notes)
     .bind(&prep.household)
+    .bind(est.peak.0)
     .execute(&mut *tx)
     .await?;
     let thread = chat::booking_thread(&mut tx, "customer", user, id, &prep.service.code).await?;

@@ -157,6 +157,14 @@ impl PeakSurcharge {
     }
 }
 
+/// UTC instant of a KST visit date and start hour (hour 0-23).
+pub fn kst_to_utc(date: NaiveDate, hour: u32) -> Option<DateTime<Utc>> {
+    date.and_hms_opt(hour, 0, 0)?
+        .and_local_timezone(kst_offset())
+        .single()
+        .map(|d| d.with_timezone(&Utc))
+}
+
 /// Surcharge for a booking starting at `start` (UTC instant).
 /// Rules: day-type = max(weekend, public holiday, lunar period); evening is added on top;
 /// the total is capped at `max_bps`.
@@ -267,6 +275,13 @@ mod tests {
         let s = PeakSurcharge { bps: 1_000, day_bps: 1_000, day_kind: None, is_weekend: true, evening_bps: 0 };
         assert_eq!(s.amount_on(Won(185_000)), Won(18_500));
         assert_eq!(s.amount_on(Won(180_000 + 1_234)), Won(18_100));
+    }
+
+    #[test]
+    fn kst_to_utc_converts_visit_slot() {
+        let d = NaiveDate::from_ymd_opt(2026, 11, 11).unwrap();
+        assert_eq!(kst_to_utc(d, 10), Some(Utc.with_ymd_and_hms(2026, 11, 11, 1, 0, 0).unwrap()));
+        assert_eq!(kst_to_utc(d, 24), None);
     }
 
     #[test]
