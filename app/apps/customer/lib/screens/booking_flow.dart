@@ -353,6 +353,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       switch (result) {
         case CheckoutPaid(:final booking):
           app.bookingsChanged();
+          app.analytics.track('payment_done', screen: 'checkout');
           await app.loadCoupons();
           if (!mounted) return;
           await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)), (r) => r.isFirst);

@@ -92,6 +92,8 @@ pub const TPL_ARRIVAL: &str = "booking.arrival";
 pub const TPL_COMPLETED: &str = "booking.completed";
 pub const TPL_RECEIPT: &str = "payment.receipt";
 pub const TPL_CANCELLED: &str = "booking.cancelled";
+/// Every key the setup wizard accepts in the solapi `templates` map.
+pub const TEMPLATE_KEYS: [&str; 7] = [TPL_CONFIRMED, TPL_ASSIGNED, TPL_REMINDER, TPL_ARRIVAL, TPL_COMPLETED, TPL_RECEIPT, TPL_CANCELLED];
 
 /// Notify kind + data -> transactional alert template key. None means in-app and push only.
 /// Status codes follow `domain::booking::BookingStatus` (1 confirmed, 2 team assigned).
@@ -103,6 +105,8 @@ pub fn alert_key(kind: &str, data: &Value) -> Option<&'static str> {
             _ => None,
         },
         "booking.completed" => Some(TPL_COMPLETED),
+        "booking.arrival" => Some(TPL_ARRIVAL),
+        "payment.receipt" => Some(TPL_RECEIPT),
         "booking.cancelled" => Some(TPL_CANCELLED),
         _ => None,
     }
@@ -158,6 +162,8 @@ mod tests {
         assert_eq!(alert_key("booking.status", &json!({ "status": 1 })), Some(TPL_CONFIRMED));
         assert_eq!(alert_key("booking.status", &json!({ "status": 2 })), Some(TPL_ASSIGNED));
         assert_eq!(alert_key("booking.status", &json!({ "status": 3 })), None);
+        assert_eq!(alert_key("booking.arrival", &json!({})), Some(TPL_ARRIVAL));
+        assert_eq!(alert_key("payment.receipt", &json!({})), Some(TPL_RECEIPT));
         assert_eq!(alert_key("booking.completed", &json!({})), Some(TPL_COMPLETED));
         assert_eq!(alert_key("booking.cancelled", &json!({})), Some(TPL_CANCELLED));
         assert_eq!(alert_key("marketing.rebook", &json!({})), None);

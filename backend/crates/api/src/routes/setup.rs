@@ -264,6 +264,18 @@ async fn review_summary(db: &PgPool) -> Result<Value, sqlx::Error> {
     Ok(v.map(|v| json!({ "phone": v["phone"], "expires_at": v["expires_at"] })).unwrap_or(Value::Null))
 }
 
+/// Shop name from the business profile, sent as the `#{brand}` AlimTalk variable.
+pub async fn brand_name(db: &PgPool) -> String {
+    const DEFAULT_BRAND: &str = "말끔";
+    match business(db).await {
+        Ok(v) => v["name"].as_str().map(str::trim).filter(|s| !s.is_empty()).unwrap_or(DEFAULT_BRAND).to_owned(),
+        Err(e) => {
+            tracing::warn!(error = %e, "brand lookup failed; using default brand");
+            DEFAULT_BRAND.to_owned()
+        }
+    }
+}
+
 async fn business(db: &PgPool) -> Result<Value, sqlx::Error> {
     let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
         .bind(BUSINESS_KEY)

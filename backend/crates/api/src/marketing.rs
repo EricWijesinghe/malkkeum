@@ -187,7 +187,7 @@ enum Step {
 
 /// Runs the gate for one customer and one channel. Idempotent: a recorded dedupe key is never sent again.
 /// Capped customers are not recorded, so a later pass can still reach them.
-async fn advertise(s: &AppState, t: &Target, channel: &str, scope: &str, campaign: Option<Uuid>, copy: &Copy<'_>) -> ApiResult<Step> {
+async fn advertise(s: &AppState, t: &Target, channel: &str, scope: &str, campaign: Option<Uuid>, copy: &Copy<'_>, now: DateTime<Utc>) -> ApiResult<Step> {
     let key = format!("{scope}:{}:{channel}", t.id);
     let seen: Option<i64> = sqlx::query_scalar("SELECT 1::bigint FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&s.db).await?;
     if seen.is_some() {
@@ -195,7 +195,7 @@ async fn advertise(s: &AppState, t: &Target, channel: &str, scope: &str, campaig
     }
     let consent = privacy::marketing_allowed(&s.db, t.id).await?;
     let weekly = sent_last_week(&s.db, t.id).await?;
-    let (status, error) = match gate(consent, weekly, Utc::now()) {
+    let (status, error) = match gate(consent, weekly, now) {
         Gate::Defer(at) => return Ok(Step::Deferred(at)),
         Gate::Capped => return Ok(Step::Done),
         Gate::NoConsent => ("skipped_consent", None),
@@ -245,12 +245,12 @@ enum Run {
     Deferred(DateTime<Utc>),
 }
 
-async fn run_campaign(s: &AppState, c: &CampaignRow) -> ApiResult<Run> {
+async fn run_campaign(s: &AppState, c: &CampaignRow, now: DateTime<Utc>) -> ApiResult<Run> {
     let segments: Vec<Segment> = serde_json::from_value(c.audience.clone()).map_err(|_| ApiError::Internal("campaign audience".into()))?;
     let copy = Copy { kind: "marketing.campaign", title: &c.title, body: &c.body, optout: c.optout_number.as_deref().unwrap_or("") };
     let scope = format!("campaign:{}", c.id);
     for t in audience(&s.db, &segments).await? {
-        if let Step::Deferred(at) = advertise(s, &t, &c.channel, &scope, Some(c.id), &copy).await? {
+        if let Step::Deferred(at) = advertise(s, &t, &c.channel, &scope, Some(c.id), &copy, now).await? {
             return Ok(Run::Deferred(at));
         }
     }
@@ -264,6 +264,11 @@ async fn reopen(db: &PgPool, id: Uuid, at: DateTime<Utc>) -> sqlx::Result<u64> {
 /// Picks up due campaigns. A campaign that hits quiet hours goes back to `scheduled` for 08:00 KST and resumes
 /// there, skipping customers already recorded.
 pub async fn dispatch_due(s: &AppState) -> ApiResult<usize> {
+    dispatch_at(s, Utc::now()).await
+}
+
+/// `dispatch_due` at an explicit instant, so quiet hours can be tested without the wall clock.
+pub async fn dispatch_at(s: &AppState, now: DateTime<Utc>) -> ApiResult<usize> {
     let due: Vec<Uuid> = sqlx::query_scalar("SELECT id FROM campaigns WHERE status = 'scheduled' AND scheduled_at <= now() ORDER BY scheduled_at LIMIT 20")
         .fetch_all(&s.db)
         .await?;
@@ -277,7 +282,7 @@ pub async fn dispatch_due(s: &AppState) -> ApiResult<usize> {
             continue;
         };
         ran += 1;
-        let outcome = match run_campaign(s, &c).await {
+        let outcome = match run_campaign(s, &c, now).await {
             Ok(Run::Done) => sqlx::query("UPDATE campaigns SET status = 'sent', sent_at = now() WHERE id = $1").bind(id).execute(&s.db).await.map(|_| ()).map_err(ApiError::from),
             Ok(Run::Deferred(at)) => reopen(&s.db, id, at).await.map(|_| ()).map_err(ApiError::from),
             Err(e) => {
@@ -295,7 +300,12 @@ pub async fn dispatch_due(s: &AppState) -> ApiResult<usize> {
 /// Re-booking nudge (N days after a completed visit, no later booking) and abandoned-quote nudge (quote
 /// requested 24-48 hours ago, not paid). Both are push only and skipped in quiet hours.
 pub async fn run_nudges(s: &AppState) -> ApiResult<usize> {
-    if quiet_hours(Utc::now()) {
+    run_nudges_at(s, Utc::now()).await
+}
+
+/// `run_nudges` at an explicit instant. Quiet hours are checked against `now`; the SQL windows use DB time.
+pub async fn run_nudges_at(s: &AppState, now: DateTime<Utc>) -> ApiResult<usize> {
+    if quiet_hours(now) {
         return Ok(0);
     }
     let rebook: Vec<(Uuid, Uuid, String, String)> = sqlx::query_as(
@@ -325,13 +335,13 @@ pub async fn run_nudges(s: &AppState) -> ApiResult<usize> {
     let quote_copy = Copy { kind: "marketing.quote", title: "견적 요청이 아직 남아 있어요", body: "원하는 시간에 청소팀을 바로 받아 보세요", optout: "" };
     for (booking, user, phone, _locale) in rebook {
         let t = Target { id: user, phone };
-        if let Step::Done = advertise(s, &t, "push", &format!("nudge:rebook:{booking}"), None, &rebook_copy).await? {
+        if let Step::Done = advertise(s, &t, "push", &format!("nudge:rebook:{booking}"), None, &rebook_copy, now).await? {
             sent += 1;
         }
     }
     for (booking, user, phone, _locale) in quotes {
         let t = Target { id: user, phone };
-        if let Step::Done = advertise(s, &t, "push", &format!("nudge:quote:{booking}"), None, &quote_copy).await? {
+        if let Step::Done = advertise(s, &t, "push", &format!("nudge:quote:{booking}"), None, &quote_copy, now).await? {
             sent += 1;
         }
     }
@@ -362,7 +372,8 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
         }
         let title = crate::i18n::tr(&locale, "내일 청소 예정이에요");
         let sent_result = if locale == "ko" {
-            s.providers.send_customer_message(&phone, TPL_REMINDER, "내일 청소 예정이에요", &number).await
+            let brand = crate::routes::setup::brand_name(&s.db).await;
+            s.providers.send_customer_message(&phone, TPL_REMINDER, &brand, "내일 청소 예정이에요", &number).await
         } else {
             s.providers.send_sms(&phone, &format!("{title}\n{number}")).await
         };

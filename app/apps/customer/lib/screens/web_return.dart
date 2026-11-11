@@ -43,6 +43,7 @@ Future<void> _resumePayment(BuildContext context, Uri route) async {
     switch (result) {
       case CheckoutPaid(:final booking):
         app.bookingsChanged();
+        app.analytics.track('payment_done', screen: 'web_return');
         await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)), (r) => r.isFirst);
       case CheckoutAwaitingDeposit(:final account):
         app.bookingsChanged();

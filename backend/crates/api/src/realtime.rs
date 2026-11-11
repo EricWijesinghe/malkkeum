@@ -458,7 +458,8 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, locale: &
             return;
         };
         let sent = if korean {
-            state.providers.send_customer_message(&phone, key, &ko_title, &ko_body).await
+            let brand = crate::routes::setup::brand_name(&state.db).await;
+            state.providers.send_customer_message(&phone, key, &brand, &ko_title, &ko_body).await
         } else {
             state.providers.send_sms(&phone, &format!("{title}\n{body}")).await
         };

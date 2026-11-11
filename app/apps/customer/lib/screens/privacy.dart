@@ -41,6 +41,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
         _granted[item['kind'] as String] = item['granted'] as bool;
       }
     });
+    context.app.analytics.setConsent(_granted['marketing'] == true);
   }
 
   String _label(T t, String kind) => switch (kind) {
@@ -64,6 +65,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       final next = await context.app.api.put('/me/consents', body) as Json;
       if (!mounted) return;
       setState(() => _state = next);
+      context.app.analytics.setConsent(_granted['marketing'] == true);
       showToast(context, t.pvSaved);
     } catch (e) {
       if (mounted) showToast(context, t.error(e));

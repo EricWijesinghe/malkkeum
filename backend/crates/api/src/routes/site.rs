@@ -54,7 +54,7 @@ async fn check_in(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) 
         .await?;
     best_effort(
         "check-in: customer",
-        notify(&s, Recipient::User(b.user_id), "booking.status", "청소팀이 도착했어요", &b.number, json!({ "booking_id": id, "status": 2 })),
+        notify(&s, Recipient::User(b.user_id), "booking.arrival", "청소팀이 도착했어요", &b.number, json!({ "booking_id": id })),
     )
     .await;
     s.hub.send(Recipient::Staff, "booking.updated", json!({ "booking_id": id }));

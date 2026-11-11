@@ -169,7 +169,7 @@ impl Providers {
     /// Transactional message for an alert kind (see `sms::alert_key`), in Korean.
     /// AlimTalk when a template and channel id are configured. SMS with the same text when there is no
     /// template, or when the AlimTalk call fails. Dev mode only logs.
-    pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
+    pub async fn send_customer_message(&self, phone: &str, kind: &str, brand: &str, title: &str, body: &str) -> Result<(), ProviderError> {
         let integ = self.integ();
         let Some(cfg) = integ.solapi.as_ref() else {
             return Ok(());
@@ -185,7 +185,7 @@ impl Providers {
             self.observe("solapi", outcome(&sent)).await;
             return sent;
         };
-        let variables = json!({ "#{title}": title, "#{body}": body });
+        let variables = json!({ "#{brand}": brand, "#{title}": title, "#{body}": body });
         let sent = sms::send_alimtalk(&self.http, cfg, pf_id, template_id, phone, &text, variables).await;
         let final_result = match sent {
             Ok(()) => Ok(()),
