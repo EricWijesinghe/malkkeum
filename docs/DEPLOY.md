@@ -147,3 +147,10 @@ scripts/dev-api.sh             # Postgres on :5433 + API on :8080 (DEV_MODE fake
 python -I scripts/smoke.py     # 13 end-to-end business checks
 cd app/apps/customer && flutter run -d windows   # or chrome / an Android device
 ```
+
+## 6. Uploaded photos (operators)
+
+- Chat, completion and review photos are no longer public files. Caddy does not route `/files`; the API serves them at `/v1/files/<name>` only with a link signed for one hour. Apps get fresh links on every API read, so nothing to configure.
+- Signing key is derived from `DATA_KEY`. Rotating `DATA_KEY` ends open photo links within an hour; photos and their rows are unaffected.
+- Photos stored before this change keep working as long as `PUBLIC_BASE_URL` stays the same.
+- Backups still take the upload directory as a tar (`uploads-*.tar.gz`); no object storage is used.
