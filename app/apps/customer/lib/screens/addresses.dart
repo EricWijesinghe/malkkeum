@@ -65,6 +65,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   bool _manual = false;
   bool _searching = false;
   bool _searched = false;
+  // Localized server message for the last failed search (shown inline; typed entry stays below).
+  String? _searchError;
   List<AddressHit> _hits = const [];
 
   @override
@@ -81,7 +83,10 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       showToast(context, context.t.addressSearchMinChars);
       return;
     }
-    setState(() => _searching = true);
+    setState(() {
+      _searching = true;
+      _searchError = null;
+    });
     try {
       final hits = await searchAddresses(context.api, q);
       if (mounted) {
@@ -91,7 +96,12 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
         });
       }
     } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      if (mounted) {
+        setState(() {
+          _hits = const [];
+          _searchError = context.t.error(e);
+        });
+      }
     } finally {
       if (mounted) setState(() => _searching = false);
     }
@@ -170,6 +180,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
         TextField(controller: _label, maxLength: 40, decoration: deco(t.addressLabel, t.addressLabelHint).copyWith(counterText: ''), onChanged: (_) => setState(() {})),
         const SizedBox(height: Space.md),
         DropdownButtonFormField<String>(
+          isExpanded: true,
           initialValue: _district,
           decoration: deco(t.addressDistrict),
           items: [for (final d in seoulDistricts) DropdownMenuItem(value: d.code, child: Text(d.name(lang)))],
@@ -204,7 +215,13 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                 ]),
               ),
             ),
-          if (_searched && _hits.isEmpty) Text(t.addressNoResults, style: context.text.bodySmall),
+          if (_searching) const Padding(padding: EdgeInsets.only(top: Space.xs), child: LinearProgressIndicator()),
+          if (_searchError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: Space.xs),
+              child: Text(_searchError!, style: context.text.bodySmall?.copyWith(color: context.colors.danger)),
+            ),
+          if (_searched && _hits.isEmpty && _searchError == null) Text(t.addressNoResults, style: context.text.bodySmall),
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: TextButton(onPressed: () => setState(() => _manual = true), child: Text(t.addressManualEntry)),
