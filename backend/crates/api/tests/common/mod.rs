@@ -61,6 +61,7 @@ pub fn test_config() -> Config {
         apple_team_id: None,
         ai_chat_retention_days: 180,
         upload_orphan_days: 30,
+        db: Default::default(),
     }
 }
 

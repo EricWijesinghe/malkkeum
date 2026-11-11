@@ -1,4 +1,4 @@
-use crate::providers::fcm::ServiceAccount;
+use crate::{db::DbSettings, providers::fcm::ServiceAccount};
 use base64::{Engine, engine::general_purpose::STANDARD};
 use std::{collections::HashMap, env, net::SocketAddr, path::PathBuf};
 
@@ -51,6 +51,8 @@ pub struct Config {
     pub ai_chat_retention_days: u32,
     /// Retention purge: uploads not attached to any record after this many days are deleted.
     pub upload_orphan_days: u32,
+    /// Database pool size and server-side timeouts (see `db.rs`).
+    pub db: DbSettings,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -240,6 +242,12 @@ impl Config {
             apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
+            db: DbSettings {
+                max_connections: number("DB_MAX_CONNECTIONS", 10, 1)?,
+                statement_timeout_ms: number("DB_STATEMENT_TIMEOUT_MS", 30_000, 0)?,
+                idle_tx_timeout_ms: number("DB_IDLE_TX_TIMEOUT_MS", 60_000, 1_000)?,
+                slow_query_ms: number("DB_SLOW_QUERY_MS", 500, 1)?,
+            },
         })
     }
 }

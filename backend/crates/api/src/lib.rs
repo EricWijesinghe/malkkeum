@@ -8,6 +8,7 @@ pub mod auth;
 pub mod backup;
 pub mod config;
 pub mod crypto;
+pub mod db;
 pub mod demo;
 pub mod error;
 pub mod i18n;
@@ -28,11 +29,8 @@ pub mod state;
 pub mod util;
 
 use crate::{config::Config, providers::Providers, realtime::Hub, state::AppState};
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::PgPool;
 use std::{net::SocketAddr, sync::Arc, time::Duration};
-
-const DB_MAX_CONNECTIONS: u32 = 20;
-const DB_ACQUIRE_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Shared application state over a pool and config. Used by `serve` and the integration tests.
 pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Error> {
@@ -51,12 +49,11 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
 pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     crate::ops::mark_started();
     let config = Config::from_env()?;
-    let db = PgPoolOptions::new()
-        .max_connections(DB_MAX_CONNECTIONS)
-        .acquire_timeout(DB_ACQUIRE_TIMEOUT)
-        .connect(&config.database_url)
-        .await?;
-    sqlx::migrate!("../../migrations").run(&db).await?;
+    // Migrations get their own single connection without the statement timeout (index builds can be slow).
+    let migrate_db = db::connect(&config.database_url, &config.db.for_migrations()).await?;
+    sqlx::migrate!("../../migrations").run(&migrate_db).await?;
+    migrate_db.close().await;
+    let db = db::connect(&config.database_url, &config.db).await?;
     seed::run(&db, &config).await?;
     routes::setup::ensure_setup_code(&db, config.setup_code.as_deref()).await?;
     tokio::fs::create_dir_all(&config.upload_dir).await?;
