@@ -29,6 +29,8 @@ pub struct Integrations {
     /// AI support agent. Console-only (no env fallback).
     pub ai: Option<AiConfig>,
     pub backup: Option<S3Config>,
+    /// 도로명주소 검색 승인키 (juso.go.kr `confmKey`). Console-only.
+    pub juso_confm_key: Option<String>,
 }
 
 /// S3-compatible offsite backup target (AWS S3, Cloudflare R2, Naver Cloud Object Storage, Backblaze B2).
@@ -54,6 +56,7 @@ impl Integrations {
             fcm: c.fcm.clone(),
             ai: None,
             backup: None,
+            juso_confm_key: None,
         }
     }
 
@@ -69,6 +72,7 @@ impl Integrations {
             Section::Apple => !self.apple_client_ids.is_empty(),
             Section::Ai => self.ai.is_some(),
             Section::Backup => self.backup.is_some(),
+            Section::Juso => self.juso_confm_key.is_some(),
         }
     }
 }
@@ -110,10 +114,11 @@ pub enum Section {
     Apple,
     Ai,
     Backup,
+    Juso,
 }
 
 impl Section {
-    pub const ALL: [Section; 9] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup];
+    pub const ALL: [Section; 10] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup, Self::Juso];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -126,6 +131,7 @@ impl Section {
             Self::Apple => "apple",
             Self::Ai => "ai",
             Self::Backup => "backup",
+            Self::Juso => "juso",
         }
     }
 
@@ -143,6 +149,7 @@ impl Section {
             Self::Google | Self::Apple => &CLIENT_ID_FIELDS,
             Self::Ai => &AI_FIELDS,
             Self::Backup => &BACKUP_FIELDS,
+            Self::Juso => &JUSO_FIELDS,
         }
     }
 }
@@ -173,6 +180,7 @@ const BACKUP_FIELDS: [Field; 6] = [
     f("secret_key", Kind::Secret, true),
     f("retention_days", Kind::Text, false),
 ];
+const JUSO_FIELDS: [Field; 1] = [f("confm_key", Kind::Secret, true)];
 const BACKUP_RETENTION_DEFAULT: u32 = 30;
 const BACKUP_RETENTION_MAX: u32 = 3650;
 
@@ -315,6 +323,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Backup => out.backup = Some(s3_config(v)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
+        Section::Juso => out.juso_confm_key = Some(required(v, "confm_key")?),
         Section::Naver => out.naver_client_id = Some(required(v, "client_id")?),
         Section::Ai => {
             let mode = Mode::parse(text(v, "mode").as_deref()).ok_or(Invalid("invalid_mode"))?;
@@ -549,6 +558,15 @@ mod tests {
         let mut keep = good;
         keep["retention_days"] = json!("0");
         assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(keep)).unwrap_err(), Invalid("invalid_retention"));
+    }
+
+    #[test]
+    fn juso_key_is_a_required_console_secret() {
+        let base = Integrations::default();
+        assert_eq!(apply(&base, Section::Juso, &obj(json!({}))).unwrap_err(), Invalid("missing_field"));
+        let out = apply(&base, Section::Juso, &obj(json!({"confm_key": "U01TX"}))).unwrap();
+        assert_eq!(out.juso_confm_key.as_deref(), Some("U01TX"));
+        assert!(out.has(Section::Juso));
     }
 
     #[test]

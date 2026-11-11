@@ -1,5 +1,13 @@
 {
  "@@locale": "ko",
+ "addressSearch": "주소 검색",
+ "addressSearchHint": "도로명, 건물명, 지번으로 검색",
+ "addressSearchButton": "검색",
+ "addressSearchMinChars": "두 글자 이상 입력해 주세요",
+ "addressNoResults": "검색 결과가 없어요. 다른 단어로 검색해 보세요.",
+ "addressManualEntry": "직접 입력",
+ "cardRegisterTitle": "카드 등록",
+ "cIntJuso": "주소 검색 (도로명주소)",
  "aiLabel": "AI 상담원",
  "aiBadge": "AI",
  "aiCardHint": "고객 채팅에 자동으로 답변해요. 메시지마다 API 요금이 발생해요.",

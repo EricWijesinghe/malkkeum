@@ -9,6 +9,30 @@ class TRu extends T {
   TRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get addressSearch => 'Поиск адреса';
+
+  @override
+  String get addressSearchHint => 'Поиск по названию улицы, зданию или участку';
+
+  @override
+  String get addressSearchButton => 'Найти';
+
+  @override
+  String get addressSearchMinChars => 'Введите не менее 2 символов';
+
+  @override
+  String get addressNoResults => 'Ничего не найдено. Попробуйте другие слова.';
+
+  @override
+  String get addressManualEntry => 'Ввести вручную';
+
+  @override
+  String get cardRegisterTitle => 'Добавить карту';
+
+  @override
+  String get cIntJuso => 'Поиск адреса (juso.go.kr)';
+
+  @override
   String get aiLabel => 'ИИ-ассистент';
 
   @override

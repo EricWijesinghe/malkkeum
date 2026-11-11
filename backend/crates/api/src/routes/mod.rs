@@ -1,3 +1,4 @@
+mod address;
 mod admin;
 mod admin_content;
 mod auth;
@@ -67,6 +68,7 @@ pub fn router(state: AppState) -> Router {
         .merge(payments::routes())
         .merge(webhooks::routes())
         .merge(setup::public_routes())
+        .merge(address::public_routes())
         .nest(
             "/admin",
             admin::routes()

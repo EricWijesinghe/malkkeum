@@ -9,6 +9,31 @@ class TFil extends T {
   TFil([String locale = 'fil']) : super(locale);
 
   @override
+  String get addressSearch => 'Maghanap ng address';
+
+  @override
+  String get addressSearchHint =>
+      'Maghanap sa pangalan ng kalsada, gusali o lot';
+
+  @override
+  String get addressSearchButton => 'Hanapin';
+
+  @override
+  String get addressSearchMinChars => 'Maglagay ng hindi bababa sa 2 karakter';
+
+  @override
+  String get addressNoResults => 'Walang resulta. Subukan ang ibang salita.';
+
+  @override
+  String get addressManualEntry => 'Ilagay nang manwal';
+
+  @override
+  String get cardRegisterTitle => 'Magrehistro ng card';
+
+  @override
+  String get cIntJuso => 'Paghahanap ng address (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI na katulong';
 
   @override

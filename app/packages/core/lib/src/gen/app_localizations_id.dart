@@ -9,6 +9,31 @@ class TId extends T {
   TId([String locale = 'id']) : super(locale);
 
   @override
+  String get addressSearch => 'Cari alamat';
+
+  @override
+  String get addressSearchHint =>
+      'Cari dengan nama jalan, gedung, atau nomor lot';
+
+  @override
+  String get addressSearchButton => 'Cari';
+
+  @override
+  String get addressSearchMinChars => 'Masukkan minimal 2 karakter';
+
+  @override
+  String get addressNoResults => 'Tidak ada hasil. Coba kata lain.';
+
+  @override
+  String get addressManualEntry => 'Isi manual';
+
+  @override
+  String get cardRegisterTitle => 'Daftar kartu';
+
+  @override
+  String get cIntJuso => 'Pencarian alamat (juso.go.kr)';
+
+  @override
   String get aiLabel => 'Asisten AI';
 
   @override

@@ -1,5 +1,13 @@
 {
  "@@locale": "fil",
+ "addressSearch": "Maghanap ng address",
+ "addressSearchHint": "Maghanap sa pangalan ng kalsada, gusali o lot",
+ "addressSearchButton": "Hanapin",
+ "addressSearchMinChars": "Maglagay ng hindi bababa sa 2 karakter",
+ "addressNoResults": "Walang resulta. Subukan ang ibang salita.",
+ "addressManualEntry": "Ilagay nang manwal",
+ "cardRegisterTitle": "Magrehistro ng card",
+ "cIntJuso": "Paghahanap ng address (juso.go.kr)",
  "aiLabel": "AI na katulong",
  "aiBadge": "AI",
  "aiCardHint": "Awtomatikong sumasagot sa chat ng mga customer. May bayad sa API ang bawat mensahe.",

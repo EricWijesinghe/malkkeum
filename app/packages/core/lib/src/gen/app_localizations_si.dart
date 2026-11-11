@@ -9,6 +9,31 @@ class TSi extends T {
   TSi([String locale = 'si']) : super(locale);
 
   @override
+  String get addressSearch => 'ලිපිනය සොයන්න';
+
+  @override
+  String get addressSearchHint => 'මාර්ග නම, ගොඩනැගිල්ල හෝ ලොට් අංකයෙන් සොයන්න';
+
+  @override
+  String get addressSearchButton => 'සොයන්න';
+
+  @override
+  String get addressSearchMinChars =>
+      'අක්ෂර 2ක් හෝ වැඩි ප්‍රමාණයක් ඇතුළු කරන්න';
+
+  @override
+  String get addressNoResults => 'ප්‍රතිඵල නැත. වෙනත් වචන උත්සාහ කරන්න.';
+
+  @override
+  String get addressManualEntry => 'අතින් ඇතුළු කරන්න';
+
+  @override
+  String get cardRegisterTitle => 'කාඩ්පත ලියාපදිංචි කරන්න';
+
+  @override
+  String get cIntJuso => 'ලිපින සෙවීම (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI සහායක';
 
   @override

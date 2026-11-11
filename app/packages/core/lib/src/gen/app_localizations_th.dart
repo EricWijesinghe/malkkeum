@@ -9,6 +9,30 @@ class TTh extends T {
   TTh([String locale = 'th']) : super(locale);
 
   @override
+  String get addressSearch => 'ค้นหาที่อยู่';
+
+  @override
+  String get addressSearchHint => 'ค้นหาด้วยชื่อถนน อาคาร หรือเลขที่แปลง';
+
+  @override
+  String get addressSearchButton => 'ค้นหา';
+
+  @override
+  String get addressSearchMinChars => 'กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร';
+
+  @override
+  String get addressNoResults => 'ไม่พบผลลัพธ์ ลองใช้คำอื่น';
+
+  @override
+  String get addressManualEntry => 'กรอกเอง';
+
+  @override
+  String get cardRegisterTitle => 'ลงทะเบียนบัตร';
+
+  @override
+  String get cIntJuso => 'ค้นหาที่อยู่ (juso.go.kr)';
+
+  @override
   String get aiLabel => 'ผู้ช่วย AI';
 
   @override

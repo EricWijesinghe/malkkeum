@@ -1,5 +1,13 @@
 {
  "@@locale": "ru",
+ "addressSearch": "Поиск адреса",
+ "addressSearchHint": "Поиск по названию улицы, зданию или участку",
+ "addressSearchButton": "Найти",
+ "addressSearchMinChars": "Введите не менее 2 символов",
+ "addressNoResults": "Ничего не найдено. Попробуйте другие слова.",
+ "addressManualEntry": "Ввести вручную",
+ "cardRegisterTitle": "Добавить карту",
+ "cIntJuso": "Поиск адреса (juso.go.kr)",
  "aiLabel": "ИИ-ассистент",
  "aiBadge": "ИИ",
  "aiCardHint": "Автоматически отвечает в чатах клиентов. Каждое сообщение оплачивается по тарифу API.",

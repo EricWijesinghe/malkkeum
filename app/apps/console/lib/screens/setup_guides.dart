@@ -270,6 +270,25 @@ final guides = <String, Guide>{
     ],
     fields: const {'client_ids': FieldGuide(Tr('번들 ID 목록', 'Bundle IDs'))},
   ),
+  'juso': Guide(
+    title: (t) => t.cIntJuso,
+    site: 'https://business.juso.go.kr',
+    steps: const [
+      Tr(
+        'business.juso.go.kr 에 가입한 뒤 [도로명주소 검색 API] 를 신청해요. 승인까지 하루 정도 걸릴 수 있어요.',
+        'Sign up at business.juso.go.kr and apply for the road address search API. Approval can take about a day.',
+      ),
+      Tr(
+        '승인되면 발급된 승인키(confmKey)를 복사해 아래 칸에 붙여넣어요.',
+        'Once approved, copy the confirm key (confmKey) and paste it in the box below.',
+      ),
+      Tr(
+        '저장한 뒤 [연결 테스트] 를 눌러 초록색이 나오면 끝! 키가 없으면 고객 앱은 주소를 직접 입력해요.',
+        'Save, then press Test connection. Green means done! Without a key the customer app takes typed addresses.',
+      ),
+    ],
+    fields: const {'confm_key': FieldGuide(Tr('승인키', 'Confirm key'), hint: Tr('confmKey 값', 'The confmKey value'))},
+  ),
   'ai': Guide(
     title: (t) => t.aiLabel,
     site: 'https://console.anthropic.com',

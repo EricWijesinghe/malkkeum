@@ -9,6 +9,31 @@ class TNe extends T {
   TNe([String locale = 'ne']) : super(locale);
 
   @override
+  String get addressSearch => 'ठेगाना खोज्नुहोस्';
+
+  @override
+  String get addressSearchHint => 'सडकको नाम, भवन वा लट नम्बरले खोज्नुहोस्';
+
+  @override
+  String get addressSearchButton => 'खोज्नुहोस्';
+
+  @override
+  String get addressSearchMinChars => 'कम्तीमा २ अक्षर लेख्नुहोस्';
+
+  @override
+  String get addressNoResults =>
+      'कुनै नतिजा भेटिएन। अर्को शब्द प्रयास गर्नुहोस्।';
+
+  @override
+  String get addressManualEntry => 'आफै लेख्नुहोस्';
+
+  @override
+  String get cardRegisterTitle => 'कार्ड दर्ता गर्नुहोस्';
+
+  @override
+  String get cIntJuso => 'ठेगाना खोज (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI सहायक';
 
   @override

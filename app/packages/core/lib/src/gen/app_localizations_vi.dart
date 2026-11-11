@@ -9,6 +9,30 @@ class TVi extends T {
   TVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get addressSearch => 'Tìm địa chỉ';
+
+  @override
+  String get addressSearchHint => 'Tìm theo tên đường, tòa nhà hoặc số thửa';
+
+  @override
+  String get addressSearchButton => 'Tìm';
+
+  @override
+  String get addressSearchMinChars => 'Nhập ít nhất 2 ký tự';
+
+  @override
+  String get addressNoResults => 'Không có kết quả. Hãy thử từ khác.';
+
+  @override
+  String get addressManualEntry => 'Nhập thủ công';
+
+  @override
+  String get cardRegisterTitle => 'Đăng ký thẻ';
+
+  @override
+  String get cIntJuso => 'Tìm địa chỉ (juso.go.kr)';
+
+  @override
   String get aiLabel => 'Trợ lý AI';
 
   @override

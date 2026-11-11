@@ -9,6 +9,32 @@ class TUz extends T {
   TUz([String locale = 'uz']) : super(locale);
 
   @override
+  String get addressSearch => 'Manzil qidirish';
+
+  @override
+  String get addressSearchHint =>
+      'Ko\'cha nomi, bino yoki uchastka raqami bo\'yicha qidiring';
+
+  @override
+  String get addressSearchButton => 'Qidirish';
+
+  @override
+  String get addressSearchMinChars => 'Kamida 2 ta belgi kiriting';
+
+  @override
+  String get addressNoResults =>
+      'Natija topilmadi. Boshqa so\'zlar bilan urinib ko\'ring.';
+
+  @override
+  String get addressManualEntry => 'Qo\'lda kiritish';
+
+  @override
+  String get cardRegisterTitle => 'Karta ro\'yxatdan o\'tkazish';
+
+  @override
+  String get cIntJuso => 'Manzil qidiruv (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI yordamchi';
 
   @override

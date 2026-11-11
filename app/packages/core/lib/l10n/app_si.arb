@@ -1,5 +1,13 @@
 {
  "@@locale": "si",
+ "addressSearch": "ලිපිනය සොයන්න",
+ "addressSearchHint": "මාර්ග නම, ගොඩනැගිල්ල හෝ ලොට් අංකයෙන් සොයන්න",
+ "addressSearchButton": "සොයන්න",
+ "addressSearchMinChars": "අක්ෂර 2ක් හෝ වැඩි ප්‍රමාණයක් ඇතුළු කරන්න",
+ "addressNoResults": "ප්‍රතිඵල නැත. වෙනත් වචන උත්සාහ කරන්න.",
+ "addressManualEntry": "අතින් ඇතුළු කරන්න",
+ "cardRegisterTitle": "කාඩ්පත ලියාපදිංචි කරන්න",
+ "cIntJuso": "ලිපින සෙවීම (juso.go.kr)",
  "aiLabel": "AI සහායක",
  "aiBadge": "AI",
  "aiCardHint": "පාරිභෝගික කථාවලට ස්වයංක්‍රීයව පිළිතුරු දෙයි. සෑම පණිවිඩයකටම API ගාස්තු අයවේ.",

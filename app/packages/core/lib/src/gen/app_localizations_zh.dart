@@ -9,6 +9,30 @@ class TZh extends T {
   TZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get addressSearch => '搜索地址';
+
+  @override
+  String get addressSearchHint => '按道路名、建筑名或地号搜索';
+
+  @override
+  String get addressSearchButton => '搜索';
+
+  @override
+  String get addressSearchMinChars => '请至少输入 2 个字符';
+
+  @override
+  String get addressNoResults => '没有结果，请换个词再试。';
+
+  @override
+  String get addressManualEntry => '手动输入';
+
+  @override
+  String get cardRegisterTitle => '注册卡片';
+
+  @override
+  String get cIntJuso => '地址搜索（道路名地址）';
+
+  @override
   String get aiLabel => 'AI 助手';
 
   @override

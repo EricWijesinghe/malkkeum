@@ -9,6 +9,31 @@ class TMn extends T {
   TMn([String locale = 'mn']) : super(locale);
 
   @override
+  String get addressSearch => 'Хаяг хайх';
+
+  @override
+  String get addressSearchHint =>
+      'Замын нэр, барилга эсвэл хашааны дугаараар хайх';
+
+  @override
+  String get addressSearchButton => 'Хайх';
+
+  @override
+  String get addressSearchMinChars => 'Дор хаяж 2 тэмдэгт оруулна уу';
+
+  @override
+  String get addressNoResults => 'Үр дүн олдсонгүй. Өөр үгээр оролдоно уу.';
+
+  @override
+  String get addressManualEntry => 'Гараар оруулах';
+
+  @override
+  String get cardRegisterTitle => 'Карт бүртгэх';
+
+  @override
+  String get cIntJuso => 'Хаяг хайлт (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI туслах';
 
   @override

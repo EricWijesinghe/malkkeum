@@ -9,6 +9,30 @@ class TJa extends T {
   TJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get addressSearch => '住所検索';
+
+  @override
+  String get addressSearchHint => '道路名・建物名・地番で検索';
+
+  @override
+  String get addressSearchButton => '検索';
+
+  @override
+  String get addressSearchMinChars => '2文字以上入力してください';
+
+  @override
+  String get addressNoResults => '結果がありません。別の言葉で検索してください。';
+
+  @override
+  String get addressManualEntry => '手入力';
+
+  @override
+  String get cardRegisterTitle => 'カード登録';
+
+  @override
+  String get cIntJuso => '住所検索（道路名住所）';
+
+  @override
   String get aiLabel => 'AIアシスタント';
 
   @override

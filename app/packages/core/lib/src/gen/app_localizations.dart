@@ -121,6 +121,54 @@ abstract class T {
     Locale('zh'),
   ];
 
+  /// No description provided for @addressSearch.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소 검색'**
+  String get addressSearch;
+
+  /// No description provided for @addressSearchHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'도로명, 건물명, 지번으로 검색'**
+  String get addressSearchHint;
+
+  /// No description provided for @addressSearchButton.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색'**
+  String get addressSearchButton;
+
+  /// No description provided for @addressSearchMinChars.
+  ///
+  /// In ko, this message translates to:
+  /// **'두 글자 이상 입력해 주세요'**
+  String get addressSearchMinChars;
+
+  /// No description provided for @addressNoResults.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 결과가 없어요. 다른 단어로 검색해 보세요.'**
+  String get addressNoResults;
+
+  /// No description provided for @addressManualEntry.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력'**
+  String get addressManualEntry;
+
+  /// No description provided for @cardRegisterTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'카드 등록'**
+  String get cardRegisterTitle;
+
+  /// No description provided for @cIntJuso.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소 검색 (도로명주소)'**
+  String get cIntJuso;
+
   /// No description provided for @aiLabel.
   ///
   /// In ko, this message translates to:

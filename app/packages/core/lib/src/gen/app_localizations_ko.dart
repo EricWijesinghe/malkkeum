@@ -9,6 +9,30 @@ class TKo extends T {
   TKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get addressSearch => '주소 검색';
+
+  @override
+  String get addressSearchHint => '도로명, 건물명, 지번으로 검색';
+
+  @override
+  String get addressSearchButton => '검색';
+
+  @override
+  String get addressSearchMinChars => '두 글자 이상 입력해 주세요';
+
+  @override
+  String get addressNoResults => '검색 결과가 없어요. 다른 단어로 검색해 보세요.';
+
+  @override
+  String get addressManualEntry => '직접 입력';
+
+  @override
+  String get cardRegisterTitle => '카드 등록';
+
+  @override
+  String get cIntJuso => '주소 검색 (도로명주소)';
+
+  @override
   String get aiLabel => 'AI 상담원';
 
   @override

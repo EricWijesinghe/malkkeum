@@ -1,5 +1,13 @@
 {
  "@@locale": "th",
+ "addressSearch": "ค้นหาที่อยู่",
+ "addressSearchHint": "ค้นหาด้วยชื่อถนน อาคาร หรือเลขที่แปลง",
+ "addressSearchButton": "ค้นหา",
+ "addressSearchMinChars": "กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร",
+ "addressNoResults": "ไม่พบผลลัพธ์ ลองใช้คำอื่น",
+ "addressManualEntry": "กรอกเอง",
+ "cardRegisterTitle": "ลงทะเบียนบัตร",
+ "cIntJuso": "ค้นหาที่อยู่ (juso.go.kr)",
  "aiLabel": "ผู้ช่วย AI",
  "aiBadge": "AI",
  "aiCardHint": "ตอบแชทลูกค้าโดยอัตโนมัติ ทุกข้อความมีค่า API",

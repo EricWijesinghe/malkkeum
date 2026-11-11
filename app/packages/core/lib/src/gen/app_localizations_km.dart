@@ -9,6 +9,30 @@ class TKm extends T {
   TKm([String locale = 'km']) : super(locale);
 
   @override
+  String get addressSearch => 'ស្វែងរកអាសយដ្ឋាន';
+
+  @override
+  String get addressSearchHint => 'ស្វែងរកតាមឈ្មោះផ្លូវ អាគារ ឬលេខឡូត៍';
+
+  @override
+  String get addressSearchButton => 'ស្វែងរក';
+
+  @override
+  String get addressSearchMinChars => 'សូមបញ្ចូលយ៉ាងហោចណាស់ 2 តួអក្សរ';
+
+  @override
+  String get addressNoResults => 'គ្មានលទ្ធផល។ សូមសាកពាក្យផ្សេង។';
+
+  @override
+  String get addressManualEntry => 'បញ្ចូលដោយដៃ';
+
+  @override
+  String get cardRegisterTitle => 'ចុះឈ្មោះកាត';
+
+  @override
+  String get cIntJuso => 'ស្វែងរកអាសយដ្ឋាន (juso.go.kr)';
+
+  @override
   String get aiLabel => 'ជំនួយការ AI';
 
   @override

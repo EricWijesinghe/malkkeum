@@ -9,6 +9,30 @@ class TEn extends T {
   TEn([String locale = 'en']) : super(locale);
 
   @override
+  String get addressSearch => 'Search address';
+
+  @override
+  String get addressSearchHint => 'Road name, building or lot number';
+
+  @override
+  String get addressSearchButton => 'Search';
+
+  @override
+  String get addressSearchMinChars => 'Enter at least 2 characters';
+
+  @override
+  String get addressNoResults => 'No results. Try different words.';
+
+  @override
+  String get addressManualEntry => 'Enter manually';
+
+  @override
+  String get cardRegisterTitle => 'Register card';
+
+  @override
+  String get cIntJuso => 'Address search (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI assistant';
 
   @override

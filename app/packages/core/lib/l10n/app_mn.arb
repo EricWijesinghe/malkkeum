@@ -1,5 +1,13 @@
 {
  "@@locale": "mn",
+ "addressSearch": "Хаяг хайх",
+ "addressSearchHint": "Замын нэр, барилга эсвэл хашааны дугаараар хайх",
+ "addressSearchButton": "Хайх",
+ "addressSearchMinChars": "Дор хаяж 2 тэмдэгт оруулна уу",
+ "addressNoResults": "Үр дүн олдсонгүй. Өөр үгээр оролдоно уу.",
+ "addressManualEntry": "Гараар оруулах",
+ "cardRegisterTitle": "Карт бүртгэх",
+ "cIntJuso": "Хаяг хайлт (juso.go.kr)",
  "aiLabel": "AI туслах",
  "aiBadge": "AI",
  "aiCardHint": "Хэрэглэгчийн чатад автоматаар хариулна. Мессеж бүр API төлбөртэй.",

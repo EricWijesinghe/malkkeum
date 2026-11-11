@@ -1,5 +1,13 @@
 {
  "@@locale": "uz",
+ "addressSearch": "Manzil qidirish",
+ "addressSearchHint": "Ko'cha nomi, bino yoki uchastka raqami bo'yicha qidiring",
+ "addressSearchButton": "Qidirish",
+ "addressSearchMinChars": "Kamida 2 ta belgi kiriting",
+ "addressNoResults": "Natija topilmadi. Boshqa so'zlar bilan urinib ko'ring.",
+ "addressManualEntry": "Qo'lda kiritish",
+ "cardRegisterTitle": "Karta ro'yxatdan o'tkazish",
+ "cIntJuso": "Manzil qidiruv (juso.go.kr)",
  "aiLabel": "AI yordamchi",
  "aiBadge": "AI",
  "aiCardHint": "Mijozlar chatiga avtomatik javob beradi. Har bir xabar uchun API to'lovi olinadi.",

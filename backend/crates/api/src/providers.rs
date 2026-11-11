@@ -187,8 +187,13 @@ impl Providers {
     }
 
     /// Exchange the gateway's card-auth result for a reusable billing key.
+    /// Dev mode fakes it. Live: the key from PortOne's browser SDK must be `ISSUED` before it is stored.
     pub async fn issue_billing_key(&self, auth_key: &str) -> Result<String, ProviderError> {
-        self.require_dev("payments")?;
+        if !self.dev() {
+            let verified = portone::verify_billing_key(self, auth_key).await;
+            self.observe("portone", outcome(&verified));
+            return verified.map(|()| auth_key.to_string());
+        }
         if auth_key == FAKE_DECLINE_KEY {
             return Ok(FAKE_DECLINE_KEY.into());
         }

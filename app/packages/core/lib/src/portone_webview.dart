@@ -102,25 +102,31 @@ class PortOneWebViewLauncher extends PaymentLauncher {
     return Navigator.of(context).push<PaymentOutcome?>(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => _PayPage(
+        builder: (_) => HostedPage<PaymentOutcome?>(
           uri: portOnePageUri(apiBase, intent, phone: phone),
-          checkoutId: intent.id,
+          donePath: '/pay/done.html',
+          title: context.t.apPgTitle,
+          onDone: (done) => outcomeFromRedirect(done, intent.id),
         ),
       ),
     );
   }
 }
 
-class _PayPage extends StatefulWidget {
-  const _PayPage({required this.uri, required this.checkoutId});
+/// Our hosted PortOne page in a WebView. The page ends by redirecting to [donePath]; [onDone]
+/// turns that redirect into the pop result. Card and wallet apps are handed to the OS.
+class HostedPage<T> extends StatefulWidget {
+  const HostedPage({required this.uri, required this.donePath, required this.title, required this.onDone, super.key});
   final Uri uri;
-  final String checkoutId;
+  final String donePath;
+  final String title;
+  final T? Function(Uri done) onDone;
 
   @override
-  State<_PayPage> createState() => _PayPageState();
+  State<HostedPage<T>> createState() => _HostedPageState<T>();
 }
 
-class _PayPageState extends State<_PayPage> {
+class _HostedPageState<T> extends State<HostedPage<T>> {
   late final WebViewController _web;
   bool _finished = false;
 
@@ -133,17 +139,17 @@ class _PayPageState extends State<_PayPage> {
       ..loadRequest(widget.uri);
   }
 
-  void _finish(PaymentOutcome? outcome) {
+  void _finish(T? outcome) {
     if (_finished) return;
     _finished = true;
-    Navigator.of(context).pop(outcome);
+    Navigator.of(context).pop<T>(outcome);
   }
 
   Future<NavigationDecision> _route(NavigationRequest req) async {
     final uri = Uri.tryParse(req.url);
     if (uri == null) return NavigationDecision.prevent;
-    if (uri.path.endsWith('/pay/done.html') && uri.host == widget.uri.host) {
-      _finish(outcomeFromRedirect(uri, widget.checkoutId));
+    if (uri.path.endsWith(widget.donePath) && uri.host == widget.uri.host) {
+      _finish(widget.onDone(uri));
       return NavigationDecision.prevent;
     }
     if (uri.scheme == 'http' ||
@@ -169,7 +175,7 @@ class _PayPageState extends State<_PayPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(context.t.apPgTitle),
+      title: Text(widget.title),
       leading: IconButton(
         icon: const Icon(Icons.close_rounded),
         tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
