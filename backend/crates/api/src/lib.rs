@@ -1,6 +1,7 @@
 //! Backend HTTP API. `main.rs` calls [`serve`]; integration tests build the router from these modules.
 //! New top-level modules are declared here (not in main.rs).
 
+pub mod acquisition;
 pub mod address;
 pub mod app_links;
 pub mod ai;
@@ -33,6 +34,7 @@ pub mod realtime;
 pub mod reconciler;
 pub mod routes;
 pub mod seed;
+pub mod seo;
 pub mod state;
 pub mod telemetry;
 pub mod totp;

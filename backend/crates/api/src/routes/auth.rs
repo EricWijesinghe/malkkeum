@@ -109,6 +109,9 @@ struct VerifyRequest {
     phone: String,
     code: String,
     audience: Audience,
+    /// First-touch UTM / referral the app captured; only used when the account is created.
+    #[serde(default)]
+    attribution: Option<Value>,
 }
 
 #[derive(Serialize)]
@@ -176,12 +179,21 @@ async fn verify_otp(
         Audience::Partner => ("pros", Role::Pro),
     };
     // Upsert keeps sign-up and login a single step; xmax = 0 means the row was inserted.
-    let (id, is_new): (Uuid, bool) = sqlx::query_as(&format!(
-        "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
-    ))
-    .bind(&phone)
-    .fetch_one(&s.db)
-    .await?;
+    let (id, is_new): (Uuid, bool) = match role {
+        Role::Customer => sqlx::query_as(
+            "INSERT INTO users (phone, acquisition) VALUES ($1, $2) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)",
+        )
+        .bind(&phone)
+        .bind(crate::acquisition::clean(req.attribution.as_ref()).map(sqlx::types::Json))
+        .fetch_one(&s.db)
+        .await?,
+        _ => sqlx::query_as(&format!(
+            "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
+        ))
+        .bind(&phone)
+        .fetch_one(&s.db)
+        .await?,
+    };
     if role == Role::Pro && is_new {
         sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING")
             .bind(id)
@@ -465,6 +477,8 @@ struct SocialLogin {
     #[serde(default)]
     nonce: Option<String>,
     audience: Audience,
+    #[serde(default)]
+    attribution: Option<Value>,
 }
 
 #[derive(Serialize)]
@@ -488,7 +502,8 @@ async fn social_login(State(s): State<AppState>, Json(req): Json<SocialLogin>) -
         Audience::Customer => Role::Customer,
         Audience::Partner => Role::Pro,
     };
-    let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role).await?;
+    let attribution = crate::acquisition::clean(req.attribution.as_ref());
+    let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role, attribution).await?;
     ensure_active(&s, id, role).await?;
     let needs_phone = phone_missing(&s, id, role).await?;
     let tokens = issue_tokens(&s, id, role, is_new, None).await?;
@@ -505,15 +520,19 @@ async fn find_identity(s: &AppState, provider: &str, social: &SocialUser, role: 
 }
 
 /// Finds the account behind a provider identity, or creates it with its identity row in one transaction.
-async fn find_or_create_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role) -> ApiResult<(Uuid, bool)> {
+async fn find_or_create_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role, attribution: Option<Value>) -> ApiResult<(Uuid, bool)> {
     if let Some(id) = find_identity(s, provider, social, role).await? {
         return Ok((id, false));
     }
     let mut tx = s.db.begin().await?;
-    let table = if role == Role::Pro { "pros" } else { "users" };
-    let id: Uuid = sqlx::query_scalar(&format!("INSERT INTO {table} DEFAULT VALUES RETURNING id"))
-        .fetch_one(&mut *tx)
-        .await?;
+    let id: Uuid = if role == Role::Pro {
+        sqlx::query_scalar("INSERT INTO pros DEFAULT VALUES RETURNING id").fetch_one(&mut *tx).await?
+    } else {
+        sqlx::query_scalar("INSERT INTO users (acquisition) VALUES ($1) RETURNING id")
+            .bind(attribution.map(sqlx::types::Json))
+            .fetch_one(&mut *tx)
+            .await?
+    };
     let linked =
         sqlx::query("INSERT INTO user_identities (provider, provider_user_id, role, subject_id, email) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING")
             .bind(provider)

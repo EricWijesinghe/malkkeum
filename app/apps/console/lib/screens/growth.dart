@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'acquisition.dart';
 import 'cases.dart';
 import 'review_reports.dart';
 
@@ -120,6 +121,7 @@ class _GrowthSettingsState extends State<GrowthSettings> {
     return ListView(
       padding: const EdgeInsets.all(Space.lg),
       children: [
+        const AcquisitionTable(),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
           child: Column(
