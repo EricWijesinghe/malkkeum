@@ -26,6 +26,7 @@ services:
       DB_MAX_CONNECTIONS: "10"
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
+      HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}

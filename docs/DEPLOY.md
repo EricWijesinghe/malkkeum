@@ -192,3 +192,12 @@ Not covered by unit tests, so check in the sandbox:
 - A sandbox payout reaches `COMPLETED` through the poll path (`payout_sync.rs`).
 
 Not in the docs (do not assume): the webhook signature scheme (none documented, so no signature check) and the seller response `status` field name.
+
+## 8. Uptime monitoring (outside the server)
+
+The server cannot report its own outage, so watch it from outside.
+
+- **Heartbeat (required):** create a check at healthchecks.io (or any compatible service) with period 5 min, grace 15 min. Put its ping URL in `.env` as `HEARTBEAT_URL=` (or run install with `MALKKEUM_HEARTBEAT_URL=`), then `sudo malkkeum-heartbeat` once to test. Cron runs `/usr/local/bin/malkkeum-heartbeat` every 5 minutes. It pings only when `https://DOMAIN/health` returns `"ok":true`, so a dead API stops the pings and the service alerts you by email/SMS.
+- **Missing config:** without `HEARTBEAT_URL`, `malkkeum status` prints a warning and the heartbeat log says so. Nothing is alerted until the URL is set.
+- **HTTP checks (optional, free tiers):** UptimeRobot or BetterStack, HTTPS `GET https://DOMAIN/health`, expect keyword `"ok":true`, interval 5 min. Use this to catch a crashed proxy as well.
+- Logs: `DIR/backups/heartbeat.log`. Server metrics and request ids are covered by the ops screens, not here.

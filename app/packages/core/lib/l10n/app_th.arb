@@ -690,6 +690,8 @@
  "growthReferralConversion": "อัตราการแนะนำสำเร็จ",
  "growthTab": "การเติบโต",
  "growthReferralValue": "{rewarded} จาก {invited}",
+ "uMaintenanceTitle": "กำลังปิดปรับปรุงระบบ",
+ "uMaintenanceBody": "เรากำลังปรับปรุงระบบเพื่อให้บริการดียิ่งขึ้น กรุณากลับมาใหม่ในภายหลัง",
  "cOps": "สถานะระบบ",
  "oLevelGreen": "ปกติ",
  "oLevelYellow": "ควรตรวจสอบ",

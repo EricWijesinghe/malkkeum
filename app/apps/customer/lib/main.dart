@@ -52,7 +52,7 @@ class CustomerApp extends StatelessWidget {
           child: UpdateGate(
             api: session.api,
             app: 'customer',
-            child: child ?? const SizedBox.shrink(),
+            child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
           ),
         ),
         onGenerateTitle: (c) => BrandConfig.placeholder.name,

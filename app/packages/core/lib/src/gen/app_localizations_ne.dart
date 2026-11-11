@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2233,6 +2234,13 @@ class TNe extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$invited मध्ये $rewarded';
   }
+
+  @override
+  String get uMaintenanceTitle => 'मर्मत हुँदैछ';
+
+  @override
+  String get uMaintenanceBody =>
+      'हामी सेवा सुधार्न मर्मत गरिरहेका छौं। केही समयपछि फेरि आउनुहोस्।';
 
   @override
   String get cOps => 'प्रणाली स्थिति';

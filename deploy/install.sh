@@ -16,6 +16,7 @@
 #   MALKKEUM_TLS=internal             공인 인증서 대신 내부 인증 기관 사용 (테스트용)
 #   MALKKEUM_SKIP_DNS_CHECK=1         도메인 IP 확인 생략
 #   MALKKEUM_HEALTH_WAIT=300          기동 확인 대기 시간(초)
+#   MALKKEUM_HEARTBEAT_URL=<핑 주소>    외부 가동 확인(healthchecks.io 등). 없으면 경고만 해요
 set -euo pipefail
 
 IMAGE_REPO_DEFAULT=ghcr.io/ericwijesinghe
@@ -167,6 +168,7 @@ env_set VERSION "$VERSION"
 env_set API_IMAGE "$IMAGE_REPO/malkkeum-api:$VERSION"
 env_set WEB_IMAGE "$IMAGE_REPO/malkkeum-web:$VERSION"
 env_set IMAGE_SOURCE "$IMAGE_SOURCE"
+if [ -n "${MALKKEUM_HEARTBEAT_URL:-}" ]; then env_set HEARTBEAT_URL "$MALKKEUM_HEARTBEAT_URL"; fi
 
 cat > docker-compose.yml <<'EOF'
 # Managed by install.sh — re-run the installer or `malkkeum update` instead of editing.
@@ -345,6 +347,7 @@ cmd_version() {
 cmd_status() {
   dc ps
   if health_ok; then ok "서비스 정상"; else warn "서비스 응답 없음 — 'malkkeum logs' 로 확인하세요"; fi
+  if [ -n "$(env_get HEARTBEAT_URL)" ]; then ok "외부 가동 확인(heartbeat) 설정됨"; else warn "외부 가동 확인이 없어요 — .env 에 HEARTBEAT_URL 을 넣으세요 (docs/OPERATIONS.md)"; fi
 }
 
 cmd_restore() {
@@ -396,8 +399,23 @@ timedatectl set-timezone Asia/Seoul 2>/dev/null || true
 cat > /etc/cron.d/malkkeum <<EOF
 30 3 * * * root /usr/local/bin/malkkeum backup >> $DIR/backups/backup.log 2>&1
 0 4 * * 1 root /usr/local/bin/malkkeum update >> $DIR/backups/update.log 2>&1
+*/5 * * * * root /usr/local/bin/malkkeum-heartbeat >> $DIR/backups/heartbeat.log 2>&1
 EOF
 ok "매일 새벽 3시 30분 자동 백업, 매주 월요일 자동 업데이트를 예약했어요"
+# 5분마다 /health 가 정상일 때만 HEARTBEAT_URL 로 핑을 보내요. 핑이 끊기면 외부 서비스가 알려줘요.
+cat > /usr/local/bin/malkkeum-heartbeat <<'HB'
+#!/usr/bin/env bash
+# 말끔 외부 가동 확인 핑 (healthchecks.io 등). HEARTBEAT_URL 이 없으면 로그만 남기고 끝나요.
+DIR=__DIR__
+URL=$(grep -E '^HEARTBEAT_URL=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
+DOMAIN=$(grep -E '^DOMAIN=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
+if [ -z "$URL" ]; then echo "$(date -Is) HEARTBEAT_URL 없음 - 외부 가동 확인이 꺼져 있어요" >&2; exit 0; fi
+if curl -fsSk --max-time 10 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" 2>/dev/null | grep -q '"ok":true'; then
+  curl -fsS --max-time 10 -o /dev/null "$URL" || echo "$(date -Is) 핑 전송 실패" >&2
+fi
+HB
+sed -i "s|__DIR__|$DIR|" /usr/local/bin/malkkeum-heartbeat
+chmod 755 /usr/local/bin/malkkeum-heartbeat
 
 if command -v ufw >/dev/null && ufw status | grep -q active; then
   ufw allow 22/tcp >/dev/null; ufw allow 80/tcp >/dev/null; ufw allow 443 >/dev/null

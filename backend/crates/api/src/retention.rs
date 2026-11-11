@@ -39,6 +39,7 @@ pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::err
         .await?
         .rows_affected();
     crate::ops::prune(db).await?;
+    crate::client_errors::prune(db).await?;
     let ai_messages = sqlx::query(
         "DELETE FROM chat_messages WHERE created_at < now() - make_interval(days => $1) AND thread_id IN (SELECT DISTINCT thread_id FROM ai_usage WHERE thread_id IS NOT NULL)",
     )
