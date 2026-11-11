@@ -3,6 +3,8 @@ FROM rust:1-bookworm AS build
 WORKDIR /src
 COPY . .
 ARG APP_VERSION=dev
+# Optional: --build-arg CARGO_BUILD_JOBS=2 caps compile memory on small machines (unset = all cores).
+ARG CARGO_BUILD_JOBS
 RUN cargo build --release -p api
 
 FROM debian:bookworm-slim

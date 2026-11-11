@@ -10,6 +10,7 @@
 # 자동 설치·테스트용 환경 변수 (보통은 필요 없어요):
 #   MALKKEUM_DOMAIN, MALKKEUM_EMAIL   질문 대신 값 지정
 #   MALKKEUM_IMAGES                   이미지 저장소 (기본: 릴리스 저장소)
+#   MALKKEUM_IMAGES_TAR=<파일.tar>    인터넷 없이 미리 받아 둔 이미지 묶음 설치 (체험·오프라인용, 버전 기본: local)
 #   MALKKEUM_CHANNEL                  stable | beta
 #   MALKKEUM_VERSION                  채널 대신 쓸 이미지 태그 (테스트용)
 #   MALKKEUM_TLS=internal             공인 인증서 대신 내부 인증 기관 사용 (테스트용)
@@ -57,6 +58,15 @@ env_set() { # env_set 키 값 : .env 에 키가 있으면 바꾸고, 없으면 �
   cat "$tmp" > .env; rm -f "$tmp"
 }
 
+load_images() { # load_images 파일 이미지... : tar 를 docker load 하고, 필요한 이미지가 다 있는지 확인해요
+  local f="$1" img; shift
+  [ -f "$f" ] || die "이미지 파일을 찾을 수 없어요: $f"
+  docker load -i "$f" >/dev/null || die "이미지 파일을 불러오지 못했어요: $f"
+  for img in "$@"; do
+    docker image inspect "$img" >/dev/null 2>&1 || die "이미지 파일에 $img 이 없어요. 같은 버전으로 만든 파일인지 확인하세요."
+  done
+}
+
 wait_healthy() { # 도메인을 이 서버로 직접 불러서 응답을 기다려요 (DNS 설정과 무관)
   local waited=0
   until curl -fsSk --max-time 5 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" >/dev/null 2>&1; do
@@ -88,6 +98,13 @@ IMAGE_REPO=${MALKKEUM_IMAGES:-${IMAGE_REPO:-$IMAGE_REPO_DEFAULT}}
 TLS_MODE=${MALKKEUM_TLS:-${TLS_MODE:-}}
 CHANNEL=${MALKKEUM_CHANNEL:-${CHANNEL:-$DEFAULT_CHANNEL}}
 VERSION=${MALKKEUM_VERSION:-${MALKKEUM_CHANNEL:-${VERSION:-$CHANNEL}}}
+IMAGES_TAR=${MALKKEUM_IMAGES_TAR:-}
+if [ -n "$IMAGES_TAR" ]; then
+  IMAGE_SOURCE=local
+  VERSION=${MALKKEUM_VERSION:-local}
+else
+  IMAGE_SOURCE=${IMAGE_SOURCE:-remote} # 한번 local 로 설치했으면 계속 local (이미지는 이 서버에 있어요)
+fi
 case "$CHANNEL" in stable|beta) ;; *) die "채널은 stable 또는 beta 중 하나예요." ;; esac
 case "$TLS_MODE" in ""|internal) ;; *) die "MALKKEUM_TLS 는 internal 만 쓸 수 있어요." ;; esac
 
@@ -148,6 +165,7 @@ env_set CHANNEL "$CHANNEL"
 env_set VERSION "$VERSION"
 env_set API_IMAGE "$IMAGE_REPO/malkkeum-api:$VERSION"
 env_set WEB_IMAGE "$IMAGE_REPO/malkkeum-web:$VERSION"
+env_set IMAGE_SOURCE "$IMAGE_SOURCE"
 
 cat > docker-compose.yml <<'EOF'
 # Managed by install.sh — re-run the installer or `malkkeum update` instead of editing.
@@ -187,7 +205,7 @@ EOF
 # 관리 명령. 본문은 따옴표 heredoc 이라 그대로 옮겨지고, __DIR__ 만 바꿔 넣어요.
 cat > /usr/local/bin/malkkeum <<'CLI'
 #!/usr/bin/env bash
-# 말끔 관리 명령. 사용법: malkkeum [status|update|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]
+# 말끔 관리 명령. 사용법: malkkeum [status|update [태그]|load 파일.tar|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]
 set -euo pipefail
 DIR=__DIR__
 BACKUP_KEEP_DAYS=14
@@ -244,16 +262,31 @@ cmd_backup() {
   ok "백업 완료: $DIR/backups/db-$ts.sql.gz"
 }
 
-cmd_update() {
+cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터넷 없이 업데이트할 때 써요.
+  local f="${1:?사용법: malkkeum load 파일.tar}"
+  [ -f "$f" ] || die "파일을 찾을 수 없어요: $f"
+  docker load -i "$f" || die "이미지 파일을 불러오지 못했어요: $f"
+  env_set IMAGE_SOURCE local
+  ok "이미지를 불러왔어요. 적용하려면: malkkeum update <태그>  (위 Loaded image 의 태그)"
+}
+
+cmd_update() { # malkkeum update [태그]: 태그를 주면 그 버전으로 바꿔요 (로컬 이미지면 먼저 malkkeum load)
   local repo ver cur_api cur_web
   printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
   cmd_backup || die "백업에 실패해서 업데이트를 멈췄어요. 'malkkeum logs' 로 확인하세요."
-  repo=$(env_get IMAGE_REPO); ver=$(env_get VERSION)
+  repo=$(env_get IMAGE_REPO); ver=${1:-$(env_get VERSION)}
   cur_api=$(digest_ref "$(env_get API_IMAGE)"); cur_web=$(digest_ref "$(env_get WEB_IMAGE)")
-  dc pull -q api web || die "새 버전을 내려받지 못했어요. 지금 서비스는 그대로 돌고 있어요."
+  if [ "$(env_get IMAGE_SOURCE)" = local ]; then
+    docker image inspect "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver" >/dev/null 2>&1 \
+      || die "이미지 $ver 이 없어요. 먼저 'malkkeum load 파일.tar' 를 실행하세요."
+  else
+    docker pull -q "$repo/malkkeum-api:$ver" >/dev/null && docker pull -q "$repo/malkkeum-web:$ver" >/dev/null \
+      || die "새 버전을 내려받지 못했어요. 지금 서비스는 그대로 돌고 있어요."
+  fi
   env_set PREV_API_IMAGE "$cur_api"; env_set PREV_WEB_IMAGE "$cur_web"
   set_images "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver"
   if wait_healthy; then
+    env_set VERSION "$ver"
     dc image prune -f --filter until=336h >/dev/null 2>&1 || true
     ok "최신 버전($ver)으로 업데이트했어요"
     return 0
@@ -316,7 +349,8 @@ cmd_restore() {
 
 case "${1:-status}" in
   status) cmd_status ;;
-  update) cmd_update ;;
+  update) shift; cmd_update "$@" ;;
+  load) shift; cmd_load "$@" ;;
   rollback) cmd_rollback ;;
   channel) shift; cmd_channel "$@" ;;
   version) cmd_version ;;
@@ -341,7 +375,7 @@ case "${1:-status}" in
   logs) dc logs --tail 200 -f "${2:-api}" ;;
   setup-code) env_get SETUP_CODE | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
   *)
-    echo "사용법: malkkeum [status|update|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]"
+    echo "사용법: malkkeum [status|update [태그]|load 파일.tar|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]"
     exit 1 ;;
 esac
 CLI
@@ -361,8 +395,14 @@ if command -v ufw >/dev/null && ufw status | grep -q active; then
   ufw allow 22/tcp >/dev/null; ufw allow 80/tcp >/dev/null; ufw allow 443 >/dev/null
 fi
 
+if [ -n "$IMAGES_TAR" ]; then
+  say "미리 받아 둔 이미지를 불러와요 (인터넷에서 받지 않아요)"
+  load_images "$IMAGES_TAR" "$IMAGE_REPO/malkkeum-api:$VERSION" "$IMAGE_REPO/malkkeum-web:$VERSION"
+  ok "이미지를 불러왔어요: $IMAGES_TAR"
+fi
+
 say "서비스 시작 (처음에는 몇 분 걸릴 수 있어요)"
-dc pull -q api web
+[ "$IMAGE_SOURCE" = local ] || dc pull -q api web
 dc up -d --remove-orphans
 
 wait_healthy || warn "서비스가 아직 응답하지 않아요. 'malkkeum logs' 로 확인하세요."
