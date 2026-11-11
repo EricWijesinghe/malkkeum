@@ -259,6 +259,9 @@ pub fn validate_outgoing(o: &Outgoing, public_base: &str) -> ApiResult<(&'static
 pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json(o): Json<Outgoing>) -> ApiResult<Json<MessageRow>> {
     authorize_thread(&s.db, &a, id).await?;
     let (kind, body) = validate_outgoing(&o, &s.config.public_base_url)?;
+    if kind == "photo" && !uploads::owned(&s.db, Some(a.id), &[body["url"].as_str().unwrap_or_default().to_string()]).await? {
+        return Err(ApiError::BadRequest("invalid_message"));
+    }
     let sender = match a.role {
         Role::Customer => "customer",
         Role::Pro => "partner",

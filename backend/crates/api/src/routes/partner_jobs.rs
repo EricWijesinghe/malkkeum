@@ -4,6 +4,7 @@ use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
     chat, growth,
 };
+use super::uploads;
 use crate::{
     auth::{Pro, mask_name},
     error::{ApiError, ApiResult},
@@ -415,6 +416,9 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
     };
     let photos_ok = (1..=MAX_PHOTOS).contains(&before.len()) && (1..=MAX_PHOTOS).contains(&after.len());
     if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
+        return Err(ApiError::BadRequest("completion_incomplete"));
+    }
+    if !uploads::owned_by_team(&s.db, a.id, &before).await? || !uploads::owned_by_team(&s.db, a.id, &after).await? {
         return Err(ApiError::BadRequest("completion_incomplete"));
     }
     let b = load_booking(&s.db, id).await?;

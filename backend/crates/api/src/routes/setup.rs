@@ -2,6 +2,7 @@
 //! integration cards (save, clear, test connection). The console's wizard is the only client.
 
 use super::audit;
+use super::uploads;
 use crate::{
     auth::{Admin, hash_password},
     backup,
@@ -281,7 +282,7 @@ pub fn is_hex_color(s: &str) -> bool {
 
 /// Only our own uploads or https images: the logo is shown in every app and on the website.
 pub fn is_logo_url(base: &str, s: &str) -> bool {
-    crate::util::own_upload(base, s).is_some() || (s.starts_with("/files/") && !s.contains("..")) || (s.starts_with("https://") && !s.contains(char::is_whitespace))
+    crate::util::own_upload(base, s).is_some() || (s.starts_with("https://") && !s.contains(char::is_whitespace))
 }
 
 /// Validated business profile; unknown keys are dropped.
@@ -332,6 +333,11 @@ pub fn clean_business(base: &str, input: &Value) -> Result<Value, ApiError> {
 
 async fn put_business(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Value>) -> ApiResult<Json<Value>> {
     let value = clean_business(&s.config.public_base_url, &input)?;
+    if let Some(logo) = value["logo_url"].as_str().filter(|l| l.starts_with("/files/"))
+        && !uploads::owned(&s.db, None, &[logo.to_string()]).await?
+    {
+        return Err(ApiError::BadRequest("invalid_logo"));
+    }
     sqlx::query("INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")
         .bind(BUSINESS_KEY)
         .bind(&value)
@@ -538,7 +544,7 @@ mod tests {
         let v = clean_business(
             "http://127.0.0.1:8080",
             &json!({
-                "name": "  말끔 ", "primary_color": "#3b5bfd", "logo_url": "/files/logo.png",
+                "name": "  말끔 ", "primary_color": "#3b5bfd", "logo_url": "/files/0123456789abcdef0123456789abcdef.png",
                 "company": { "ceo": "홍길동", "unknown": "x" }, "evil": 1
             }),
         )

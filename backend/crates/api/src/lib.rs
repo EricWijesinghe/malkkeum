@@ -14,6 +14,7 @@ pub mod integrations;
 pub mod ops;
 pub mod ops_alerts;
 pub mod payout;
+pub mod payout_sync;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
@@ -38,6 +39,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
         config: Arc::new(config),
         hub: Hub::default(),
         ai_debounce: Default::default(),
+        address_search: Default::default(),
     })
 }
 
@@ -63,6 +65,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     spawn_settings_refresh(state.clone());
     reconciler::spawn(state.clone());
     ops_alerts::spawn(state.clone());
+    payout_sync::spawn(state.clone());
     let listener = tokio::net::TcpListener::bind(bind).await?;
     tracing::info!(%bind, "listening");
     // ConnectInfo gives the rate limiter the peer address.

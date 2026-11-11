@@ -23,13 +23,26 @@ const TOSS_PAYOUTS: &str = "/v2/payouts";
 const TOSS_DESCRIPTION_MAX: usize = 7;
 
 /// One transfer to a pro's bank account. `amount` is whole won.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Transfer {
     pub amount: i64,
     pub bank_code: &'static str,
     pub account: String,
     pub holder: String,
     pub memo: String,
+}
+
+/// The account number is redacted: a transfer must never reach logs through `{:?}`.
+impl std::fmt::Debug for Transfer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Transfer")
+            .field("amount", &self.amount)
+            .field("bank_code", &self.bank_code)
+            .field("account", &"<redacted>")
+            .field("holder", &"<redacted>")
+            .field("memo", &self.memo)
+            .finish()
+    }
 }
 
 /// Provider's answer about a transfer we already sent.
@@ -151,6 +164,13 @@ mod tests {
         assert_eq!(sent["amount"], json!(120_000));
         assert_eq!(sent["refPayoutId"], "payout-1");
         assert_eq!(sent["bankCode"], "004");
+    }
+
+    #[test]
+    fn debug_output_never_shows_the_account() {
+        let shown = format!("{:?}", transfer());
+        assert!(!shown.contains("12345678901") && !shown.contains("홍길동"), "{shown}");
+        assert!(shown.contains("120000"));
     }
 
     #[test]

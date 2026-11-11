@@ -143,6 +143,7 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
         .execute(&pool)
         .await
         .expect("visit today");
+    common::register_photo(&pool, member_id.parse().expect("member uuid")).await;
     let done_body = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
     let (st, done) = call(&app, "POST", &format!("/v1/member/jobs/{job_a}/complete"), Some(m.as_str()), Some(done_body)).await;
     assert_eq!(st, StatusCode::OK, "{done}");
