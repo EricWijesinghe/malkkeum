@@ -3887,6 +3887,101 @@ class TKm extends T {
   String get uLatestVersion => 'កំណែចុងក្រោយ';
 
   @override
+  String get walletTitle => 'កាបូបពិន្ទុ';
+
+  @override
+  String get walletBalance => 'ពិន្ទុដែលប្រើបាន';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return 'ពិន្ទុ $count P នឹងផុតកំណត់ក្នុង $days ថ្ងៃ';
+  }
+
+  @override
+  String get walletOff => 'កម្មវិធីពិន្ទុមិនទាន់បើកទេ';
+
+  @override
+  String get walletEmpty => 'មិនទាន់មានសកម្មភាពពិន្ទុទេ';
+
+  @override
+  String get walletHistory => 'សកម្មភាពថ្មីៗ';
+
+  @override
+  String get walletKindEarn => 'ប្រាក់ត្រឡប់ពីការកក់';
+
+  @override
+  String get walletKindWelcome => 'ពិន្ទុស្វាគមន៍';
+
+  @override
+  String get walletKindReferral => 'រង្វាន់ណែនាំមិត្ត';
+
+  @override
+  String get walletKindRefund => 'ពិន្ទុត្រឡប់មកវិញ';
+
+  @override
+  String get walletKindSpend => 'បានប្រើសម្រាប់ការកក់';
+
+  @override
+  String get walletKindExpire => 'បានផុតកំណត់';
+
+  @override
+  String get walletKindOther => 'ការកែសម្រួលពិន្ទុ';
+
+  @override
+  String get moreWallet => 'កាបូបពិន្ទុ';
+
+  @override
+  String get payHistoryTitle => 'ประវត្តិការបង់ប្រាក់';
+
+  @override
+  String get payHistoryEmpty => 'មិនទាន់មានការបង់ប្រាក់ទេ';
+
+  @override
+  String get payStatusPaid => 'បានបង់ហើយ';
+
+  @override
+  String get payStatusRefunded => 'បានសងប្រាក់វិញ';
+
+  @override
+  String get payStatusPending => 'កំពុងរង់ចាំការបង់';
+
+  @override
+  String get payStatusClosed => 'មិនទាន់បានបង់';
+
+  @override
+  String get receiptTitle => 'បង្កាន់ដៃ';
+
+  @override
+  String get receiptLegal => 'ឈ្មោះអាជីវកម្ម';
+
+  @override
+  String get receiptRegNo => 'លេខចុះបញ្ជីអាជីវកម្ម';
+
+  @override
+  String get receiptAddr => 'អាសយដ្ឋាន';
+
+  @override
+  String get receiptPhone => 'ជំនួយអតិថិជន';
+
+  @override
+  String get receiptDate => 'ថ្ងៃបង់ប្រាក់';
+
+  @override
+  String get receiptCopy => 'ចម្លងបង្កាន់ដៃ';
+
+  @override
+  String get receiptCopied => 'បានចម្លងបង្កាន់ដៃ';
+
+  @override
+  String get receiptNote =>
+      'ជាឯកសារបញ្ជាក់ការបង់ប្រាក់តែប៉ុណ្ណោះ។ សម្រាប់វិក្កយបត្រពន្ធ សូមស្នើពីព័ត៌មានកក់។';
+
+  @override
   String get webBookNow => 'កក់នៅលើវេប';
 
   @override

@@ -3874,6 +3874,101 @@ class TEn extends T {
   String get uLatestVersion => 'Latest version';
 
   @override
+  String get walletTitle => 'Points wallet';
+
+  @override
+  String get walletBalance => 'Available points';
+
+  @override
+  String walletPoints(String count) {
+    return '$count pts';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count pts expire within $days days';
+  }
+
+  @override
+  String get walletOff => 'Points rewards are not open yet';
+
+  @override
+  String get walletEmpty => 'No points activity yet';
+
+  @override
+  String get walletHistory => 'Recent activity';
+
+  @override
+  String get walletKindEarn => 'Booking cashback';
+
+  @override
+  String get walletKindWelcome => 'Welcome points';
+
+  @override
+  String get walletKindReferral => 'Referral reward';
+
+  @override
+  String get walletKindRefund => 'Points returned after cancellation';
+
+  @override
+  String get walletKindSpend => 'Used for a booking';
+
+  @override
+  String get walletKindExpire => 'Expired';
+
+  @override
+  String get walletKindOther => 'Points adjustment';
+
+  @override
+  String get moreWallet => 'Points wallet';
+
+  @override
+  String get payHistoryTitle => 'Payment history';
+
+  @override
+  String get payHistoryEmpty => 'No payments yet';
+
+  @override
+  String get payStatusPaid => 'Paid';
+
+  @override
+  String get payStatusRefunded => 'Refunded';
+
+  @override
+  String get payStatusPending => 'Awaiting payment';
+
+  @override
+  String get payStatusClosed => 'Not paid';
+
+  @override
+  String get receiptTitle => 'Receipt';
+
+  @override
+  String get receiptLegal => 'Business name';
+
+  @override
+  String get receiptRegNo => 'Business reg. no.';
+
+  @override
+  String get receiptAddr => 'Address';
+
+  @override
+  String get receiptPhone => 'Support';
+
+  @override
+  String get receiptDate => 'Paid on';
+
+  @override
+  String get receiptCopy => 'Copy receipt';
+
+  @override
+  String get receiptCopied => 'Receipt copied';
+
+  @override
+  String get receiptNote =>
+      'Proof of payment only. For a tax invoice, request one from the booking details.';
+
+  @override
   String get webBookNow => 'Book on the web';
 
   @override

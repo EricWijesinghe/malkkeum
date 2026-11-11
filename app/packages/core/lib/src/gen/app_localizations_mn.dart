@@ -3900,6 +3900,101 @@ class TMn extends T {
   String get uLatestVersion => 'Хамгийн сүүлийн хувилбар';
 
   @override
+  String get walletTitle => 'Оноогоо хэтэвч';
+
+  @override
+  String get walletBalance => 'Ашиглах боломжтой оноо';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days хоногийн дотор $count P дуусна';
+  }
+
+  @override
+  String get walletOff => 'Оноо цуглуулах хөтөлбөр хараахан нээгдээгүй';
+
+  @override
+  String get walletEmpty => 'Оноогийн түүх одоохондоо алга';
+
+  @override
+  String get walletHistory => 'Сүүлийн үйл явдал';
+
+  @override
+  String get walletKindEarn => 'Захиалгын буцаан олголт';
+
+  @override
+  String get walletKindWelcome => 'Тавтай морилсон оноо';
+
+  @override
+  String get walletKindReferral => 'Найз урилгын шагнал';
+
+  @override
+  String get walletKindRefund => 'Цуцлалтаар буцаасан оноо';
+
+  @override
+  String get walletKindSpend => 'Захиалгад зарцуулсан';
+
+  @override
+  String get walletKindExpire => 'Хугацаа дууссан';
+
+  @override
+  String get walletKindOther => 'Оноо тохируулга';
+
+  @override
+  String get moreWallet => 'Оноогоо хэтэвч';
+
+  @override
+  String get payHistoryTitle => 'Төлбөрийн түүх';
+
+  @override
+  String get payHistoryEmpty => 'Төлбөр одоохондоо алга';
+
+  @override
+  String get payStatusPaid => 'Төлсөн';
+
+  @override
+  String get payStatusRefunded => 'Буцаан олгосон';
+
+  @override
+  String get payStatusPending => 'Төлбөр хүлээгдэж байна';
+
+  @override
+  String get payStatusClosed => 'Төлөгдөөгүй';
+
+  @override
+  String get receiptTitle => 'Цахим баримт';
+
+  @override
+  String get receiptLegal => 'Байгууллагын нэр';
+
+  @override
+  String get receiptRegNo => 'Бүртгэлийн дугаар';
+
+  @override
+  String get receiptAddr => 'Хаяг';
+
+  @override
+  String get receiptPhone => 'Харилцагчийн үйлчилгээ';
+
+  @override
+  String get receiptDate => 'Төлсөн огноо';
+
+  @override
+  String get receiptCopy => 'Баримтыг хуулах';
+
+  @override
+  String get receiptCopied => 'Баримтыг хуулсан';
+
+  @override
+  String get receiptNote =>
+      'Зөвхөн төлбөрийн баталгаа. Татварын нэхэмжлэх хэрэгтэй бол захиалгын мэдээллээс хүсэлт гаргана уу.';
+
+  @override
   String get webBookNow => 'Вэбээр шууд захиалах';
 
   @override

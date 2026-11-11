@@ -3858,6 +3858,101 @@ class TVi extends T {
   String get uLatestVersion => 'Phiên bản mới nhất';
 
   @override
+  String get walletTitle => 'Ví điểm';
+
+  @override
+  String get walletBalance => 'Điểm khả dụng';
+
+  @override
+  String walletPoints(String count) {
+    return '$count điểm';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count điểm hết hạn trong $days ngày';
+  }
+
+  @override
+  String get walletOff => 'Chương trình điểm chưa mở';
+
+  @override
+  String get walletEmpty => 'Chưa có lịch sử điểm';
+
+  @override
+  String get walletHistory => 'Lịch sử gần đây';
+
+  @override
+  String get walletKindEarn => 'Hoàn tiền đặt lịch';
+
+  @override
+  String get walletKindWelcome => 'Điểm chào mừng';
+
+  @override
+  String get walletKindReferral => 'Thưởng giới thiệu bạn';
+
+  @override
+  String get walletKindRefund => 'Điểm hoàn lại sau khi hủy';
+
+  @override
+  String get walletKindSpend => 'Dùng cho đặt lịch';
+
+  @override
+  String get walletKindExpire => 'Hết hạn';
+
+  @override
+  String get walletKindOther => 'Điều chỉnh điểm';
+
+  @override
+  String get moreWallet => 'Ví điểm';
+
+  @override
+  String get payHistoryTitle => 'Lịch sử thanh toán';
+
+  @override
+  String get payHistoryEmpty => 'Chưa có giao dịch';
+
+  @override
+  String get payStatusPaid => 'Đã thanh toán';
+
+  @override
+  String get payStatusRefunded => 'Đã hoàn tiền';
+
+  @override
+  String get payStatusPending => 'Chờ thanh toán';
+
+  @override
+  String get payStatusClosed => 'Chưa thanh toán';
+
+  @override
+  String get receiptTitle => 'Biên lai điện tử';
+
+  @override
+  String get receiptLegal => 'Tên doanh nghiệp';
+
+  @override
+  String get receiptRegNo => 'Mã số doanh nghiệp';
+
+  @override
+  String get receiptAddr => 'Địa chỉ';
+
+  @override
+  String get receiptPhone => 'Hỗ trợ khách hàng';
+
+  @override
+  String get receiptDate => 'Ngày thanh toán';
+
+  @override
+  String get receiptCopy => 'Sao chép biên lai';
+
+  @override
+  String get receiptCopied => 'Đã sao chép biên lai';
+
+  @override
+  String get receiptNote =>
+      'Chỉ là chứng từ thanh toán. Cần hóa đơn thuế, hãy yêu cầu trong chi tiết đặt lịch.';
+
+  @override
   String get webBookNow => 'Đặt lịch ngay trên web';
 
   @override

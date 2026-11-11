@@ -3896,6 +3896,101 @@ class TId extends T {
   String get uLatestVersion => 'Versi terbaru';
 
   @override
+  String get walletTitle => 'Dompet poin';
+
+  @override
+  String get walletBalance => 'Poin tersedia';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P akan hangus dalam $days hari';
+  }
+
+  @override
+  String get walletOff => 'Program poin belum dibuka';
+
+  @override
+  String get walletEmpty => 'Belum ada aktivitas poin';
+
+  @override
+  String get walletHistory => 'Aktivitas terbaru';
+
+  @override
+  String get walletKindEarn => 'Cashback pemesanan';
+
+  @override
+  String get walletKindWelcome => 'Poin selamat datang';
+
+  @override
+  String get walletKindReferral => 'Hadiah rujukan';
+
+  @override
+  String get walletKindRefund => 'Poin dikembalikan';
+
+  @override
+  String get walletKindSpend => 'Dipakai untuk pemesanan';
+
+  @override
+  String get walletKindExpire => 'Hangus';
+
+  @override
+  String get walletKindOther => 'Penyesuaian poin';
+
+  @override
+  String get moreWallet => 'Dompet poin';
+
+  @override
+  String get payHistoryTitle => 'Riwayat pembayaran';
+
+  @override
+  String get payHistoryEmpty => 'Belum ada pembayaran';
+
+  @override
+  String get payStatusPaid => 'Lunas';
+
+  @override
+  String get payStatusRefunded => 'Sudah dikembalikan';
+
+  @override
+  String get payStatusPending => 'Menunggu pembayaran';
+
+  @override
+  String get payStatusClosed => 'Belum dibayar';
+
+  @override
+  String get receiptTitle => 'Struk elektronik';
+
+  @override
+  String get receiptLegal => 'Nama usaha';
+
+  @override
+  String get receiptRegNo => 'No. registrasi usaha';
+
+  @override
+  String get receiptAddr => 'Alamat';
+
+  @override
+  String get receiptPhone => 'Layanan pelanggan';
+
+  @override
+  String get receiptDate => 'Tanggal bayar';
+
+  @override
+  String get receiptCopy => 'Salin struk';
+
+  @override
+  String get receiptCopied => 'Struk disalin';
+
+  @override
+  String get receiptNote =>
+      'Hanya bukti pembayaran. Untuk faktur pajak, ajukan dari detail pemesanan.';
+
+  @override
   String get webBookNow => 'Pesan lewat web';
 
   @override

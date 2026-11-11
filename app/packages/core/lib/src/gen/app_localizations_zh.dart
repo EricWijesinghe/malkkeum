@@ -3761,6 +3761,100 @@ class TZh extends T {
   String get uLatestVersion => '最新版本';
 
   @override
+  String get walletTitle => '积分钱包';
+
+  @override
+  String get walletBalance => '可用积分';
+
+  @override
+  String walletPoints(String count) {
+    return '$count 积分';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days天内 $count 积分将到期';
+  }
+
+  @override
+  String get walletOff => '积分奖励尚未开放';
+
+  @override
+  String get walletEmpty => '暂无积分记录';
+
+  @override
+  String get walletHistory => '最近记录';
+
+  @override
+  String get walletKindEarn => '预约返现';
+
+  @override
+  String get walletKindWelcome => '欢迎积分';
+
+  @override
+  String get walletKindReferral => '好友推荐奖励';
+
+  @override
+  String get walletKindRefund => '取消后退还的积分';
+
+  @override
+  String get walletKindSpend => '用于预约支付';
+
+  @override
+  String get walletKindExpire => '到期失效';
+
+  @override
+  String get walletKindOther => '积分调整';
+
+  @override
+  String get moreWallet => '积分钱包';
+
+  @override
+  String get payHistoryTitle => '支付记录';
+
+  @override
+  String get payHistoryEmpty => '暂无支付记录';
+
+  @override
+  String get payStatusPaid => '已支付';
+
+  @override
+  String get payStatusRefunded => '已退款';
+
+  @override
+  String get payStatusPending => '等待付款';
+
+  @override
+  String get payStatusClosed => '未付款';
+
+  @override
+  String get receiptTitle => '电子收据';
+
+  @override
+  String get receiptLegal => '商号';
+
+  @override
+  String get receiptRegNo => '营业执照号';
+
+  @override
+  String get receiptAddr => '地址';
+
+  @override
+  String get receiptPhone => '客服';
+
+  @override
+  String get receiptDate => '支付日期';
+
+  @override
+  String get receiptCopy => '复制收据内容';
+
+  @override
+  String get receiptCopied => '收据内容已复制';
+
+  @override
+  String get receiptNote => '仅作支付凭证。如需税务发票，请在预约详情中另行申请。';
+
+  @override
   String get webBookNow => '网页直接预约';
 
   @override

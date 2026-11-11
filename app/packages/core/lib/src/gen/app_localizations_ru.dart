@@ -3890,6 +3890,101 @@ class TRu extends T {
   String get uLatestVersion => 'Последняя версия';
 
   @override
+  String get walletTitle => 'Кошелёк баллов';
+
+  @override
+  String get walletBalance => 'Доступные баллы';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P сгорят в течение $days дн.';
+  }
+
+  @override
+  String get walletOff => 'Программа баллов пока не открыта';
+
+  @override
+  String get walletEmpty => 'Пока нет операций с баллами';
+
+  @override
+  String get walletHistory => 'Последние операции';
+
+  @override
+  String get walletKindEarn => 'Кешбэк за услугу';
+
+  @override
+  String get walletKindWelcome => 'Приветственные баллы';
+
+  @override
+  String get walletKindReferral => 'Бонус за приглашение';
+
+  @override
+  String get walletKindRefund => 'Возврат баллов после отмены';
+
+  @override
+  String get walletKindSpend => 'Списано за услугу';
+
+  @override
+  String get walletKindExpire => 'Сгорели';
+
+  @override
+  String get walletKindOther => 'Корректировка баллов';
+
+  @override
+  String get moreWallet => 'Кошелёк баллов';
+
+  @override
+  String get payHistoryTitle => 'История платежей';
+
+  @override
+  String get payHistoryEmpty => 'Платежей пока нет';
+
+  @override
+  String get payStatusPaid => 'Оплачено';
+
+  @override
+  String get payStatusRefunded => 'Возвращено';
+
+  @override
+  String get payStatusPending => 'Ожидает оплаты';
+
+  @override
+  String get payStatusClosed => 'Не оплачено';
+
+  @override
+  String get receiptTitle => 'Электронный чек';
+
+  @override
+  String get receiptLegal => 'Наименование';
+
+  @override
+  String get receiptRegNo => 'Рег. номер бизнеса';
+
+  @override
+  String get receiptAddr => 'Адрес';
+
+  @override
+  String get receiptPhone => 'Поддержка';
+
+  @override
+  String get receiptDate => 'Дата оплаты';
+
+  @override
+  String get receiptCopy => 'Скопировать чек';
+
+  @override
+  String get receiptCopied => 'Чек скопирован';
+
+  @override
+  String get receiptNote =>
+      'Подтверждение оплаты. Для налогового счёта запросите его в деталях бронирования.';
+
+  @override
   String get webBookNow => 'Забронировать в браузере';
 
   @override

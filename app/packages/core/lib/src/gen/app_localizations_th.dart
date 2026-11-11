@@ -3868,6 +3868,101 @@ class TTh extends T {
   String get uLatestVersion => 'เวอร์ชันล่าสุด';
 
   @override
+  String get walletTitle => 'กระเป๋าพอยท์';
+
+  @override
+  String get walletBalance => 'พอยท์ที่ใช้ได้';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return 'พอยท์ $count P จะหมดอายุภายใน $days วัน';
+  }
+
+  @override
+  String get walletOff => 'ยังไม่เปิดโปรแกรมพอยท์';
+
+  @override
+  String get walletEmpty => 'ยังไม่มีรายการพอยท์';
+
+  @override
+  String get walletHistory => 'รายการล่าสุด';
+
+  @override
+  String get walletKindEarn => 'คืนเงินจากการจอง';
+
+  @override
+  String get walletKindWelcome => 'พอยท์ต้อนรับ';
+
+  @override
+  String get walletKindReferral => 'รางวัลแนะนำเพื่อน';
+
+  @override
+  String get walletKindRefund => 'พอยท์คืนหลังยกเลิก';
+
+  @override
+  String get walletKindSpend => 'ใช้กับการจอง';
+
+  @override
+  String get walletKindExpire => 'หมดอายุ';
+
+  @override
+  String get walletKindOther => 'ปรับยอดพอยท์';
+
+  @override
+  String get moreWallet => 'กระเป๋าพอยท์';
+
+  @override
+  String get payHistoryTitle => 'ប្រវត្តិការបង់ប្រាក់';
+
+  @override
+  String get payHistoryEmpty => 'ยังไม่มีการชำระเงิน';
+
+  @override
+  String get payStatusPaid => 'ชำระแล้ว';
+
+  @override
+  String get payStatusRefunded => 'คืนเงินแล้ว';
+
+  @override
+  String get payStatusPending => 'รอชำระเงิน';
+
+  @override
+  String get payStatusClosed => 'ยังไม่ได้ชำระ';
+
+  @override
+  String get receiptTitle => 'ใบเสร็จอิเล็กทรอนิกส์';
+
+  @override
+  String get receiptLegal => 'ชื่อกิจการ';
+
+  @override
+  String get receiptRegNo => 'เลขทะเบียนธุรกิจ';
+
+  @override
+  String get receiptAddr => 'ที่อยู่';
+
+  @override
+  String get receiptPhone => 'ฝ่ายช่วยเหลือลูกค้า';
+
+  @override
+  String get receiptDate => 'วันที่ชำระ';
+
+  @override
+  String get receiptCopy => 'คัดลอกใบเสร็จ';
+
+  @override
+  String get receiptCopied => 'คัดลอกใบเสร็จแล้ว';
+
+  @override
+  String get receiptNote =>
+      'ใช้เป็นหลักฐานการชำระเงินเท่านั้น หากต้องการใบกำกับภาษี ขอได้จากรายละเอียดการจอง';
+
+  @override
   String get webBookNow => 'จองบนเว็บเลย';
 
   @override

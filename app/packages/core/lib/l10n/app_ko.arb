@@ -1814,6 +1814,53 @@
  "uAppVersionHint": "최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0",
  "uMinVersion": "최소 버전",
  "uLatestVersion": "최신 버전",
+ "walletTitle": "포인트 지갑",
+ "walletBalance": "사용 가능한 포인트",
+ "walletPoints": "{count} P",
+ "@walletPoints": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "walletExpiring": "{days}일 안에 {count} P가 사라져요",
+ "@walletExpiring": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   },
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "walletOff": "포인트 적립은 아직 열리지 않았어요",
+ "walletEmpty": "아직 포인트 내역이 없어요",
+ "walletHistory": "최근 내역",
+ "walletKindEarn": "예약 적립",
+ "walletKindWelcome": "가입 환영 포인트",
+ "walletKindReferral": "친구 추천 보상",
+ "walletKindRefund": "취소로 돌려받은 포인트",
+ "walletKindSpend": "예약 결제에 사용",
+ "walletKindExpire": "기간 만료로 소멸",
+ "walletKindOther": "포인트 조정",
+ "moreWallet": "포인트 지갑",
+ "payHistoryTitle": "결제 내역",
+ "payHistoryEmpty": "결제 내역이 없어요",
+ "payStatusPaid": "결제 완료",
+ "payStatusRefunded": "환불 완료",
+ "payStatusPending": "결제·입금 대기",
+ "payStatusClosed": "결제되지 않음",
+ "receiptTitle": "전자 영수증",
+ "receiptLegal": "상호",
+ "receiptRegNo": "사업자등록번호",
+ "receiptAddr": "사업장 주소",
+ "receiptPhone": "고객센터",
+ "receiptDate": "결제일",
+ "receiptCopy": "영수증 내용 복사",
+ "receiptCopied": "영수증 내용을 복사했어요",
+ "receiptNote": "결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.",
  "webBookNow": "웹에서 바로 예약",
  "webBookSub": "앱 설치 없이 바로 예약해요",
  "apPgBrowserNote": "브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.",

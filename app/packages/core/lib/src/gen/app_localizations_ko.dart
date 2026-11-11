@@ -3780,6 +3780,100 @@ class TKo extends T {
   String get uLatestVersion => '최신 버전';
 
   @override
+  String get walletTitle => '포인트 지갑';
+
+  @override
+  String get walletBalance => '사용 가능한 포인트';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days일 안에 $count P가 사라져요';
+  }
+
+  @override
+  String get walletOff => '포인트 적립은 아직 열리지 않았어요';
+
+  @override
+  String get walletEmpty => '아직 포인트 내역이 없어요';
+
+  @override
+  String get walletHistory => '최근 내역';
+
+  @override
+  String get walletKindEarn => '예약 적립';
+
+  @override
+  String get walletKindWelcome => '가입 환영 포인트';
+
+  @override
+  String get walletKindReferral => '친구 추천 보상';
+
+  @override
+  String get walletKindRefund => '취소로 돌려받은 포인트';
+
+  @override
+  String get walletKindSpend => '예약 결제에 사용';
+
+  @override
+  String get walletKindExpire => '기간 만료로 소멸';
+
+  @override
+  String get walletKindOther => '포인트 조정';
+
+  @override
+  String get moreWallet => '포인트 지갑';
+
+  @override
+  String get payHistoryTitle => '결제 내역';
+
+  @override
+  String get payHistoryEmpty => '결제 내역이 없어요';
+
+  @override
+  String get payStatusPaid => '결제 완료';
+
+  @override
+  String get payStatusRefunded => '환불 완료';
+
+  @override
+  String get payStatusPending => '결제·입금 대기';
+
+  @override
+  String get payStatusClosed => '결제되지 않음';
+
+  @override
+  String get receiptTitle => '전자 영수증';
+
+  @override
+  String get receiptLegal => '상호';
+
+  @override
+  String get receiptRegNo => '사업자등록번호';
+
+  @override
+  String get receiptAddr => '사업장 주소';
+
+  @override
+  String get receiptPhone => '고객센터';
+
+  @override
+  String get receiptDate => '결제일';
+
+  @override
+  String get receiptCopy => '영수증 내용 복사';
+
+  @override
+  String get receiptCopied => '영수증 내용을 복사했어요';
+
+  @override
+  String get receiptNote => '결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.';
+
+  @override
   String get webBookNow => '웹에서 바로 예약';
 
   @override

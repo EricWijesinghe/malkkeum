@@ -9,6 +9,7 @@ import 'booking_flow.dart';
 import 'payments.dart';
 import 'privacy.dart';
 import 'service.dart';
+import 'wallet.dart';
 
 const appVersion = '1.0.0';
 
@@ -103,6 +104,18 @@ class MoreTab extends StatelessWidget {
               ServiceHues.bathroom,
               t.morePayments,
               () => _push(context, const PaymentMethodsScreen()),
+            ),
+            tile(
+              Icons.account_balance_wallet_rounded,
+              ServiceHues.studio,
+              t.moreWallet,
+              () => _push(context, const WalletScreen()),
+            ),
+            tile(
+              Icons.receipt_long_rounded,
+              ServiceHues.bathroom,
+              t.payHistoryTitle,
+              () => _push(context, const PaymentHistoryScreen()),
             ),
             tile(
               Icons.confirmation_number_rounded,

@@ -3885,6 +3885,101 @@ class TNe extends T {
   String get uLatestVersion => 'नवीनतम संस्करण';
 
   @override
+  String get walletTitle => 'पोइन्ट वालेट';
+
+  @override
+  String get walletBalance => 'प्रयोग गर्न मिल्ने पोइन्ट';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days दिनभित्र $count P सकिनेछ';
+  }
+
+  @override
+  String get walletOff => 'पोइन्ट कार्यक्रम अहिले खुलेको छैन';
+
+  @override
+  String get walletEmpty => 'अहिलेसम्म पोइन्ट गतिविधि छैन';
+
+  @override
+  String get walletHistory => 'हालैका गतिविधि';
+
+  @override
+  String get walletKindEarn => 'बुकिङ क्यासब्याक';
+
+  @override
+  String get walletKindWelcome => 'स्वागत पोइन्ट';
+
+  @override
+  String get walletKindReferral => 'रेफरल पुरस्कार';
+
+  @override
+  String get walletKindRefund => 'रद्दबाट फिर्ता भएको पोइन्ट';
+
+  @override
+  String get walletKindSpend => 'बुकिङमा प्रयोग';
+
+  @override
+  String get walletKindExpire => 'म्याद सकियो';
+
+  @override
+  String get walletKindOther => 'पोइन्ट समायोजन';
+
+  @override
+  String get moreWallet => 'पोइन्ट वालेट';
+
+  @override
+  String get payHistoryTitle => 'भुक्तानी इतिहास';
+
+  @override
+  String get payHistoryEmpty => 'अहिलेसम्म भुक्तानी छैन';
+
+  @override
+  String get payStatusPaid => 'भुक्तानी भयो';
+
+  @override
+  String get payStatusRefunded => 'फिर्ता भयो';
+
+  @override
+  String get payStatusPending => 'भुक्तानी बाँकी';
+
+  @override
+  String get payStatusClosed => 'भुक्तानी भएन';
+
+  @override
+  String get receiptTitle => 'इलेक्ट्रोनिक रसिद';
+
+  @override
+  String get receiptLegal => 'व्यवसायको नाम';
+
+  @override
+  String get receiptRegNo => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get receiptAddr => 'ठेगाना';
+
+  @override
+  String get receiptPhone => 'ग्राहक सेवा';
+
+  @override
+  String get receiptDate => 'भुक्तानी मिति';
+
+  @override
+  String get receiptCopy => 'रसिद प्रतिलिपि गर्नुहोस्';
+
+  @override
+  String get receiptCopied => 'रसिद प्रतिलिपि गरियो';
+
+  @override
+  String get receiptNote =>
+      'यो भुक्तानी प्रमाण मात्र हो। कर इनभ्वाइसका लागि बुकिङ विवरणबाट अनुरोध गर्नुहोस्।';
+
+  @override
   String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';
 
   @override

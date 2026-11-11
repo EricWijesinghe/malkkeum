@@ -7296,6 +7296,186 @@ abstract class T {
   /// **'최신 버전'**
   String get uLatestVersion;
 
+  /// No description provided for @walletTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 지갑'**
+  String get walletTitle;
+
+  /// No description provided for @walletBalance.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 포인트'**
+  String get walletBalance;
+
+  /// No description provided for @walletPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count} P'**
+  String walletPoints(String count);
+
+  /// No description provided for @walletExpiring.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 안에 {count} P가 사라져요'**
+  String walletExpiring(String days, String count);
+
+  /// No description provided for @walletOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 적립은 아직 열리지 않았어요'**
+  String get walletOff;
+
+  /// No description provided for @walletEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 포인트 내역이 없어요'**
+  String get walletEmpty;
+
+  /// No description provided for @walletHistory.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 내역'**
+  String get walletHistory;
+
+  /// No description provided for @walletKindEarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 적립'**
+  String get walletKindEarn;
+
+  /// No description provided for @walletKindWelcome.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 환영 포인트'**
+  String get walletKindWelcome;
+
+  /// No description provided for @walletKindReferral.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 추천 보상'**
+  String get walletKindReferral;
+
+  /// No description provided for @walletKindRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소로 돌려받은 포인트'**
+  String get walletKindRefund;
+
+  /// No description provided for @walletKindSpend.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 결제에 사용'**
+  String get walletKindSpend;
+
+  /// No description provided for @walletKindExpire.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간 만료로 소멸'**
+  String get walletKindExpire;
+
+  /// No description provided for @walletKindOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 조정'**
+  String get walletKindOther;
+
+  /// No description provided for @moreWallet.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 지갑'**
+  String get moreWallet;
+
+  /// No description provided for @payHistoryTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 내역'**
+  String get payHistoryTitle;
+
+  /// No description provided for @payHistoryEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 내역이 없어요'**
+  String get payHistoryEmpty;
+
+  /// No description provided for @payStatusPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 완료'**
+  String get payStatusPaid;
+
+  /// No description provided for @payStatusRefunded.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 완료'**
+  String get payStatusRefunded;
+
+  /// No description provided for @payStatusPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제·입금 대기'**
+  String get payStatusPending;
+
+  /// No description provided for @payStatusClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제되지 않음'**
+  String get payStatusClosed;
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'전자 영수증'**
+  String get receiptTitle;
+
+  /// No description provided for @receiptLegal.
+  ///
+  /// In ko, this message translates to:
+  /// **'상호'**
+  String get receiptLegal;
+
+  /// No description provided for @receiptRegNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호'**
+  String get receiptRegNo;
+
+  /// No description provided for @receiptAddr.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업장 주소'**
+  String get receiptAddr;
+
+  /// No description provided for @receiptPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객센터'**
+  String get receiptPhone;
+
+  /// No description provided for @receiptDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제일'**
+  String get receiptDate;
+
+  /// No description provided for @receiptCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 내용 복사'**
+  String get receiptCopy;
+
+  /// No description provided for @receiptCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 내용을 복사했어요'**
+  String get receiptCopied;
+
+  /// No description provided for @receiptNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.'**
+  String get receiptNote;
+
   /// No description provided for @webBookNow.
   ///
   /// In ko, this message translates to:

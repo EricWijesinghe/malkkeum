@@ -3778,6 +3778,100 @@ class TJa extends T {
   String get uLatestVersion => '最新バージョン';
 
   @override
+  String get walletTitle => 'ポイントウォレット';
+
+  @override
+  String get walletBalance => '利用可能なポイント';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days日以内に$count Pが失効します';
+  }
+
+  @override
+  String get walletOff => 'ポイント特典はまだ開始していません';
+
+  @override
+  String get walletEmpty => 'ポイントの履歴はまだありません';
+
+  @override
+  String get walletHistory => '最近の履歴';
+
+  @override
+  String get walletKindEarn => '予約の還元';
+
+  @override
+  String get walletKindWelcome => 'ウェルカムポイント';
+
+  @override
+  String get walletKindReferral => '友達紹介の特典';
+
+  @override
+  String get walletKindRefund => 'キャンセルで戻ったポイント';
+
+  @override
+  String get walletKindSpend => '予約の支払いに使用';
+
+  @override
+  String get walletKindExpire => '期限切れで失効';
+
+  @override
+  String get walletKindOther => 'ポイント調整';
+
+  @override
+  String get moreWallet => 'ポイントウォレット';
+
+  @override
+  String get payHistoryTitle => '決済履歴';
+
+  @override
+  String get payHistoryEmpty => '決済履歴はありません';
+
+  @override
+  String get payStatusPaid => '決済完了';
+
+  @override
+  String get payStatusRefunded => '返金済み';
+
+  @override
+  String get payStatusPending => '決済・入金待ち';
+
+  @override
+  String get payStatusClosed => '未決済';
+
+  @override
+  String get receiptTitle => '領収書';
+
+  @override
+  String get receiptLegal => '屋号';
+
+  @override
+  String get receiptRegNo => '事業者登録番号';
+
+  @override
+  String get receiptAddr => '所在地';
+
+  @override
+  String get receiptPhone => 'カスタマーサポート';
+
+  @override
+  String get receiptDate => '決済日';
+
+  @override
+  String get receiptCopy => '領収書の内容をコピー';
+
+  @override
+  String get receiptCopied => '領収書の内容をコピーしました';
+
+  @override
+  String get receiptNote => '決済確認用の領収書です。税金計算書が必要な場合は予約詳細から申請してください。';
+
+  @override
   String get webBookNow => 'ウェブで今すぐ予約';
 
   @override

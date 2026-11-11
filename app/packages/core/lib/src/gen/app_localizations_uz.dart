@@ -3909,6 +3909,101 @@ class TUz extends T {
   String get uLatestVersion => 'So\'nggi versiya';
 
   @override
+  String get walletTitle => 'Ball hamyoni';
+
+  @override
+  String get walletBalance => 'Foydalanish mumkin bo\'lgan ball';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days kun ichida $count P muddati tugaydi';
+  }
+
+  @override
+  String get walletOff => 'Ball dasturi hali ochilmagan';
+
+  @override
+  String get walletEmpty => 'Hozircha ball faolligi yo\'q';
+
+  @override
+  String get walletHistory => 'So\'nggi faollik';
+
+  @override
+  String get walletKindEarn => 'Buyurtma uchun keshbek';
+
+  @override
+  String get walletKindWelcome => 'Xush kelibsiz ballari';
+
+  @override
+  String get walletKindReferral => 'Do\'st taklif mukofoti';
+
+  @override
+  String get walletKindRefund => 'Bekor qilingach qaytarilgan ball';
+
+  @override
+  String get walletKindSpend => 'Buyurtmaga ishlatilgan';
+
+  @override
+  String get walletKindExpire => 'Muddati tugagan';
+
+  @override
+  String get walletKindOther => 'Ball tuzatish';
+
+  @override
+  String get moreWallet => 'Ball hamyoni';
+
+  @override
+  String get payHistoryTitle => 'To\'lovlar tarixi';
+
+  @override
+  String get payHistoryEmpty => 'Hozircha to\'lovlar yo\'q';
+
+  @override
+  String get payStatusPaid => 'To\'landi';
+
+  @override
+  String get payStatusRefunded => 'Qaytarildi';
+
+  @override
+  String get payStatusPending => 'To\'lov kutilmoqda';
+
+  @override
+  String get payStatusClosed => 'To\'lanmagan';
+
+  @override
+  String get receiptTitle => 'Elektron kvitansiya';
+
+  @override
+  String get receiptLegal => 'Tashkilot nomi';
+
+  @override
+  String get receiptRegNo => 'Ro\'yxat raqami';
+
+  @override
+  String get receiptAddr => 'Manzil';
+
+  @override
+  String get receiptPhone => 'Mijozlar xizmati';
+
+  @override
+  String get receiptDate => 'To\'lov sanasi';
+
+  @override
+  String get receiptCopy => 'Kvitansiyani nusxalash';
+
+  @override
+  String get receiptCopied => 'Kvitansiya nusxalandi';
+
+  @override
+  String get receiptNote =>
+      'Faqat to\'lov tasdig\'i. Soliq hisobvarag\'i kerak bo\'lsa, buyurtma tafsilotlaridan so\'rang.';
+
+  @override
   String get webBookNow => 'Veb orqali darhol band qiling';
 
   @override

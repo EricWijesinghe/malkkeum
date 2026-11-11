@@ -3919,6 +3919,101 @@ class TFil extends T {
   String get uLatestVersion => 'Pinakabagong bersyon';
 
   @override
+  String get walletTitle => 'Wallet ng puntos';
+
+  @override
+  String get walletBalance => 'Magagamit na puntos';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P ang mawawala sa loob ng $days araw';
+  }
+
+  @override
+  String get walletOff => 'Hindi pa bukas ang puntos';
+
+  @override
+  String get walletEmpty => 'Wala pang aktibidad sa puntos';
+
+  @override
+  String get walletHistory => 'Kamakailang aktibidad';
+
+  @override
+  String get walletKindEarn => 'Cashback sa booking';
+
+  @override
+  String get walletKindWelcome => 'Welcome na puntos';
+
+  @override
+  String get walletKindReferral => 'Gantimpala sa referral';
+
+  @override
+  String get walletKindRefund => 'Ibinalik na puntos';
+
+  @override
+  String get walletKindSpend => 'Ginamit sa booking';
+
+  @override
+  String get walletKindExpire => 'Nag-expire';
+
+  @override
+  String get walletKindOther => 'Pagsasaayos ng puntos';
+
+  @override
+  String get moreWallet => 'Wallet ng puntos';
+
+  @override
+  String get payHistoryTitle => 'Kasaysayan ng bayad';
+
+  @override
+  String get payHistoryEmpty => 'Wala pang bayad';
+
+  @override
+  String get payStatusPaid => 'Bayad na';
+
+  @override
+  String get payStatusRefunded => 'Naibalik na ang bayad';
+
+  @override
+  String get payStatusPending => 'Naghihintay ng bayad';
+
+  @override
+  String get payStatusClosed => 'Hindi nabayaran';
+
+  @override
+  String get receiptTitle => 'Resibo';
+
+  @override
+  String get receiptLegal => 'Pangalan ng negosyo';
+
+  @override
+  String get receiptRegNo => 'Numero ng rehistro';
+
+  @override
+  String get receiptAddr => 'Address';
+
+  @override
+  String get receiptPhone => 'Customer support';
+
+  @override
+  String get receiptDate => 'Petsa ng bayad';
+
+  @override
+  String get receiptCopy => 'Kopyahin ang resibo';
+
+  @override
+  String get receiptCopied => 'Nakopya ang resibo';
+
+  @override
+  String get receiptNote =>
+      'Patunay lamang ng bayad. Para sa tax invoice, humiling sa detalye ng booking.';
+
+  @override
   String get webBookNow => 'Mag-book sa web';
 
   @override
