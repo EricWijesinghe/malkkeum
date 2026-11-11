@@ -20,11 +20,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
   Json? _state;
   final Map<String, bool> _granted = {};
   bool _saving = false;
+  bool _started = false;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // context.app reads an inherited widget, so loading starts here rather than in initState.
+    if (!_started) {
+      _started = true;
+      _load();
+    }
   }
 
   Future<void> _load() async {

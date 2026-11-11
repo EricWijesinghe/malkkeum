@@ -865,7 +865,8 @@ class TZh extends T {
   String get svcDesc_move_in => '入住前，专业团队携带设备清洁新家。';
 
   @override
-  String get svcNotes_bathroom => '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
+  String get svcNotes_bathroom =>
+      '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
 
   @override
   String get svcNotes_mattress => '单人到特大床同价\n完全干燥需4~6小时\n弹簧损坏、塌陷等结构问题无法改善';
@@ -2275,7 +2276,8 @@ class TZh extends T {
   String get oActDisk => '磁盘剩余不足10%。请删除旧备份文件或扩大磁盘。';
 
   @override
-  String get oActBackup => '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
+  String get oActBackup =>
+      '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
 
   @override
   String get oActErrors => '服务器错误较多。请在 malkkeum logs 中查看 error 行，反复出现请反馈给开发方。';
@@ -2788,7 +2790,12 @@ class TZh extends T {
   String get poAccountTitle => '转账信息';
 
   @override
-  String poAccountBody(String holder, String bank, String account, String amount) {
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
     return '请向 $holder · $bank · $account 转账 $amount 韩元，然后点击确认。';
   }
 

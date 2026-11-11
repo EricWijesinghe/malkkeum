@@ -74,7 +74,8 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the T.supportedLocales
 /// property.
 abstract class T {
-  T(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  T(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -94,12 +95,13 @@ abstract class T {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -116,7 +118,7 @@ abstract class T {
     Locale('th'),
     Locale('uz'),
     Locale('vi'),
-    Locale('zh')
+    Locale('zh'),
   ];
 
   /// No description provided for @addressSearch.
@@ -5445,7 +5447,12 @@ abstract class T {
   ///
   /// In ko, this message translates to:
   /// **'{holder} · {bank} · {account}\n{amount}원을 위 계좌로 보낸 뒤 확인을 눌러 주세요.'**
-  String poAccountBody(String holder, String bank, String account, String amount);
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  );
 
   /// No description provided for @poConfirmPaid.
   ///
@@ -6123,37 +6130,64 @@ class _TDelegate extends LocalizationsDelegate<T> {
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'fil', 'id', 'ja', 'km', 'ko', 'mn', 'ne', 'ru', 'si', 'th', 'uz', 'vi', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'en',
+    'fil',
+    'id',
+    'ja',
+    'km',
+    'ko',
+    'mn',
+    'ne',
+    'ru',
+    'si',
+    'th',
+    'uz',
+    'vi',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_TDelegate old) => false;
 }
 
 T lookupT(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return TEn();
-    case 'fil': return TFil();
-    case 'id': return TId();
-    case 'ja': return TJa();
-    case 'km': return TKm();
-    case 'ko': return TKo();
-    case 'mn': return TMn();
-    case 'ne': return TNe();
-    case 'ru': return TRu();
-    case 'si': return TSi();
-    case 'th': return TTh();
-    case 'uz': return TUz();
-    case 'vi': return TVi();
-    case 'zh': return TZh();
+    case 'en':
+      return TEn();
+    case 'fil':
+      return TFil();
+    case 'id':
+      return TId();
+    case 'ja':
+      return TJa();
+    case 'km':
+      return TKm();
+    case 'ko':
+      return TKo();
+    case 'mn':
+      return TMn();
+    case 'ne':
+      return TNe();
+    case 'ru':
+      return TRu();
+    case 'si':
+      return TSi();
+    case 'th':
+      return TTh();
+    case 'uz':
+      return TUz();
+    case 'vi':
+      return TVi();
+    case 'zh':
+      return TZh();
   }
 
   throw FlutterError(
     'T.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

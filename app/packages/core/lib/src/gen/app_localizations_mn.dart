@@ -12,7 +12,8 @@ class TMn extends T {
   String get addressSearch => 'Хаяг хайх';
 
   @override
-  String get addressSearchHint => 'Замын нэр, барилга эсвэл хашааны дугаараар хайх';
+  String get addressSearchHint =>
+      'Замын нэр, барилга эсвэл хашааны дугаараар хайх';
 
   @override
   String get addressSearchButton => 'Хайх';
@@ -39,7 +40,8 @@ class TMn extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'Хэрэглэгчийн чатад автоматаар хариулна. Мессеж бүр API төлбөртэй.';
+  String get aiCardHint =>
+      'Хэрэглэгчийн чатад автоматаар хариулна. Мессеж бүр API төлбөртэй.';
 
   @override
   String get aiModeOffline => 'Ажилтан байхгүй үед л хариулна';
@@ -74,7 +76,8 @@ class TMn extends T {
   String get aiCapDailyLabel => 'Өдөрт нийт хариулах хязгаар';
 
   @override
-  String get aiCapHint => 'Зөвхөн тоо оруулна. Хоосон орхивол анхдагч утга ашиглана.';
+  String get aiCapHint =>
+      'Зөвхөн тоо оруулна. Хоосон орхивол анхдагч утга ашиглана.';
 
   @override
   String get apSocialOr => 'эсвэл';
@@ -95,13 +98,16 @@ class TMn extends T {
   String get apLoginApple => 'Apple-ээр үргэлжлүүлэх';
 
   @override
-  String get apDevSocialNote => 'Хөгжүүлэлтийн горим. Жинхэнэ сошиал бүртгэлээр биш, туршилтын бүртгэлээр нэвтэрнэ.';
+  String get apDevSocialNote =>
+      'Хөгжүүлэлтийн горим. Жинхэнэ сошиал бүртгэлээр биш, туршилтын бүртгэлээр нэвтэрнэ.';
 
   @override
-  String get apSocialFailed => 'Хурдан нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
+  String get apSocialFailed =>
+      'Хурдан нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
 
   @override
-  String get apProviderNotConfigured => 'Энэ нэвтрэх арга одоогоор бэлэн биш байна';
+  String get apProviderNotConfigured =>
+      'Энэ нэвтрэх арга одоогоор бэлэн биш байна';
 
   @override
   String get apPhoneTaken => 'Энэ дугаар өөр бүртгэлд холбогдсон байна';
@@ -110,7 +116,8 @@ class TMn extends T {
   String get apPhoneAttachTitle => 'Утасны дугаараа баталгаажуулна уу';
 
   @override
-  String get apPhoneAttachBody => 'Энэ дугаарыг захиалга болон мэргэжилтэнтэй холбогдоход ашигладаг. Нэг удаа баталгаажуулахад хангалттай.';
+  String get apPhoneAttachBody =>
+      'Энэ дугаарыг захиалга болон мэргэжилтэнтэй холбогдоход ашигладаг. Нэг удаа баталгаажуулахад хангалттай.';
 
   @override
   String get apPayAllTitle => 'Төлбөрийн хэрэгсэл сонгох';
@@ -122,7 +129,8 @@ class TMn extends T {
   String get apPayMoreTitle => 'Бүх төлбөрийн хэрэгсэл';
 
   @override
-  String get apPayBillingHint => 'Нэг удаа бүртгээд, дараа нь нэг товшилтоор төлнө';
+  String get apPayBillingHint =>
+      'Нэг удаа бүртгээд, дараа нь нэг товшилтоор төлнө';
 
   @override
   String get apPayCheckoutHint => 'Төлбөрийн цонхонд дуусгана уу';
@@ -131,7 +139,8 @@ class TMn extends T {
   String get apPayRegistering => 'Бүртгэж байна…';
 
   @override
-  String get apPayManageHint => 'Хадгалсан хэрэгслээр нэг товшилтоор төлнө. Хурдан төлбөрийн хэрэгслийг эндээс нэмнэ.';
+  String get apPayManageHint =>
+      'Хадгалсан хэрэгслээр нэг товшилтоор төлнө. Хурдан төлбөрийн хэрэгслийг эндээс нэмнэ.';
 
   @override
   String get apMethodCard => 'Кредит ба дебит карт';
@@ -173,7 +182,8 @@ class TMn extends T {
   String get apVaWaiting => 'Урьдчилгаа хүлээгдэж байна';
 
   @override
-  String get apVaBody => 'Урьдчилгаа орж ирснээр захиалга баталгаажина. Шилжүүлгийг автоматаар шалгана.';
+  String get apVaBody =>
+      'Урьдчилгаа орж ирснээр захиалга баталгаажина. Шилжүүлгийг автоматаар шалгана.';
 
   @override
   String get apVaBank => 'Банк';
@@ -213,7 +223,8 @@ class TMn extends T {
   String get apPgTitle => 'Төлбөрийн цонх';
 
   @override
-  String get apPgDevNote => 'Зөвхөн хөгжүүлэлтийн орчны төлбөрийн туршилт. Бодит төлбөр хасагдахгүй.';
+  String get apPgDevNote =>
+      'Зөвхөн хөгжүүлэлтийн орчны төлбөрийн туршилт. Бодит төлбөр хасагдахгүй.';
 
   @override
   String apPgPay(String amount) {
@@ -227,16 +238,19 @@ class TMn extends T {
   String get apPgCancel => 'Төлбөрийг цуцлах';
 
   @override
-  String get apErrSlotFullRefunded => 'Энэ цаг дөнгөж дүүрсэн тул төлбөрийг автоматаар цуцаллаа';
+  String get apErrSlotFullRefunded =>
+      'Энэ цаг дөнгөж дүүрсэн тул төлбөрийг автоматаар цуцаллаа';
 
   @override
-  String get apErrCheckoutExpired => 'Төлбөрийн хугацаа дууслаа. Дахин оролдоно уу.';
+  String get apErrCheckoutExpired =>
+      'Төлбөрийн хугацаа дууслаа. Дахин оролдоно уу.';
 
   @override
   String get apIdentityTitle => 'Иргэний баталгаажуулалт (PASS)';
 
   @override
-  String get apIdentityBody => 'Утасны компаниараа дамжуулан таныг баталгаажуулна. Аюулгүй гүйлгээ, төлбөр тооцоонд ашиглана.';
+  String get apIdentityBody =>
+      'Утасны компаниараа дамжуулан таныг баталгаажуулна. Аюулгүй гүйлгээ, төлбөр тооцоонд ашиглана.';
 
   @override
   String get apIdentityAction => 'Баталгаажуулах';
@@ -254,7 +268,8 @@ class TMn extends T {
   String get apIdentityDevTitle => 'Туршилтын баталгаажуулалт';
 
   @override
-  String get apIdentityDevBody => 'Хөгжүүлэлтийн орчинд бодит шалгалтгүйгээр автоматаар тэнцэнэ.';
+  String get apIdentityDevBody =>
+      'Хөгжүүлэлтийн орчинд бодит шалгалтгүйгээр автоматаар тэнцэнэ.';
 
   @override
   String get apIdentityDevPass => 'Тэнцсэн';
@@ -680,7 +695,8 @@ class TMn extends T {
   String get today => 'Өнөөдөр';
 
   @override
-  String get errorGeneric => 'Алдаа гарлаа. Хэсэг хугацааны дараа дахин оролдоно уу.';
+  String get errorGeneric =>
+      'Алдаа гарлаа. Хэсэг хугацааны дараа дахин оролдоно уу.';
 
   @override
   String get errorNetwork => 'Интернэт холболтоо шалгана уу';
@@ -695,13 +711,16 @@ class TMn extends T {
   String get err_otp_expired => 'Кодын хугацаа дууссан. Шинэ код авна уу.';
 
   @override
-  String get err_rate_limited => 'Оролдлого хэт олон боллоо. Хэсэг хугацааны дараа оролдоно уу.';
+  String get err_rate_limited =>
+      'Оролдлого хэт олон боллоо. Хэсэг хугацааны дараа оролдоно уу.';
 
   @override
-  String get err_studio_too_large => 'Студиог цэвэрлэх үйлчилгээ 10 пён хүртэлх орон сууцанд зориулагдсан';
+  String get err_studio_too_large =>
+      'Студиог цэвэрлэх үйлчилгээ 10 пён хүртэлх орон сууцанд зориулагдсан';
 
   @override
-  String get err_date_out_of_range => 'Маргаашаас эхлээд 60 хоногийн дотор огноо сонгоно уу';
+  String get err_date_out_of_range =>
+      'Маргаашаас эхлээд 60 хоногийн дотор огноо сонгоно уу';
 
   @override
   String get err_slot_full => 'Энэ цаг дөнгөж дүүрлээ. Өөр цаг сонгоно уу.';
@@ -713,16 +732,19 @@ class TMn extends T {
   String get err_coupon_used => 'Энэ купоныг аль хэдийн ашигласан';
 
   @override
-  String get err_coupon_wrong_service => 'Энэ купоныг энэ үйлчилгээнд ашиглах боломжгүй';
+  String get err_coupon_wrong_service =>
+      'Энэ купоныг энэ үйлчилгээнд ашиглах боломжгүй';
 
   @override
-  String get err_payment_failed => 'Төлбөрийг зөвшөөрөөгүй. Өөр хэрэгсэл ашиглаад үзнэ үү.';
+  String get err_payment_failed =>
+      'Төлбөрийг зөвшөөрөөгүй. Өөр хэрэгсэл ашиглаад үзнэ үү.';
 
   @override
   String get err_payment_method_required => 'Төлбөрийн хэрэгсэл сонгоно уу';
 
   @override
-  String get err_cancellation_window_closed => 'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
+  String get err_cancellation_window_closed =>
+      'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
 
   @override
   String get err_address_required => 'Очих хаягаа бүртгэнэ үү';
@@ -746,7 +768,8 @@ class TMn extends T {
   String get tabMore => 'Бусад';
 
   @override
-  String get introTitle => 'Мэргэжлийн цэвэрлэгээг\nхамгийн хялбараар захиалаарай';
+  String get introTitle =>
+      'Мэргэжлийн цэвэрлэгээг\nхамгийн хялбараар захиалаарай';
 
   @override
   String get introBody => 'Тогтмол үнэ · Баталгаат баг · Бодит цагийн явц';
@@ -778,7 +801,8 @@ class TMn extends T {
   String get loginVerify => 'Баталгаажуулах';
 
   @override
-  String get loginTerms => 'Үргэлжлүүлснээр та Үйлчилгээний нөхцөл ба Нууцлалын бодлогыг зөвшөөрч байна';
+  String get loginTerms =>
+      'Үргэлжлүүлснээр та Үйлчилгээний нөхцөл ба Нууцлалын бодлогыг зөвшөөрч байна';
 
   @override
   String get profileTitle => 'Танд ямар нэрээр хандах вэ?';
@@ -841,40 +865,52 @@ class TMn extends T {
   String get svcShort_move_in => 'Нүүж орох';
 
   @override
-  String get svcDesc_studio => '10 пён хүртэлх студиог (нэг өрөө, нэг угаалгын өрөөтэй) 2 цагийн турш нарийвчлан цэвэрлэнэ.';
+  String get svcDesc_studio =>
+      '10 пён хүртэлх студиог (нэг өрөө, нэг угаалгын өрөөтэй) 2 цагийн турш нарийвчлан цэвэрлэнэ.';
 
   @override
-  String get svcDesc_kitchen => 'Гал тогооны гол хэсгийг төвлөрүүлэн цэвэрлэнэ: угаалтуур, плита, сорогчийн гадна тал, ширээний тавцан.';
+  String get svcDesc_kitchen =>
+      'Гал тогооны гол хэсгийг төвлөрүүлэн цэвэрлэнэ: угаалтуур, плита, сорогчийн гадна тал, ширээний тавцан.';
 
   @override
-  String get svcDesc_bathroom => 'Тавиур, усны кран, угаалтуур, бие засах суудлыг дотор, гадна талаас нь цэвэрлээд, шалыг хатаана.';
+  String get svcDesc_bathroom =>
+      'Тавиур, усны кран, угаалтуур, бие засах суудлыг дотор, гадна талаас нь цэвэрлээд, шалыг хатаана.';
 
   @override
-  String get svcDesc_mattress => 'Мэргэжлийн төхөөрөмжөөр тоос, хачиг, толбыг соруулж, уураар халдваргүйтгэнэ.';
+  String get svcDesc_mattress =>
+      'Мэргэжлийн төхөөрөмжөөр тоос, хачиг, толбыг соруулж, уураар халдваргүйтгэнэ.';
 
   @override
-  String get svcDesc_aircon => 'Задлаад, дулаан солилцогч, сэнс, шүүлтүүрийг өндөр даралтаар угааж, халдваргүйтгэнэ.';
+  String get svcDesc_aircon =>
+      'Задлаад, дулаан солилцогч, сэнс, шүүлтүүрийг өндөр даралтаар угааж, халдваргүйтгэнэ.';
 
   @override
-  String get svcDesc_sofa => 'Материалд тохирсон бодисоор бохирдлыг задалж, норгоод соруулах аргаар цэвэрлэнэ.';
+  String get svcDesc_sofa =>
+      'Материалд тохирсон бодисоор бохирдлыг задалж, норгоод соруулах аргаар цэвэрлэнэ.';
 
   @override
-  String get svcDesc_move_out => 'Нүүхээсээ өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, эд зүйлгүй орон сууцыг цэвэрлэнэ.';
+  String get svcDesc_move_out =>
+      'Нүүхээсээ өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, эд зүйлгүй орон сууцыг цэвэрлэнэ.';
 
   @override
-  String get svcDesc_move_in => 'Шинэ орон сууцандаа орохын өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, дотоодыг цэвэрлэнэ.';
+  String get svcDesc_move_in =>
+      'Шинэ орон сууцандаа орохын өмнө мэргэжлийн баг төхөөрөмжтэйгээр ирж, дотоодыг цэвэрлэнэ.';
 
   @override
-  String get svcNotes_bathroom => 'Бохир ус эсвэл бие засах суудал бөглөрсөн бол үйлчилгээ хязгаарлагдаж магадгүй\nТусгай химийн бодис шаарддаг цэвэрлэгээ, тааз, агааржуулагчийн цэвэрлэгээг оруулаагүй\nХуучин мөөг болон нэвт шингэсэн бохирдол бүрэн арилахгүй байж магадгүй';
+  String get svcNotes_bathroom =>
+      'Бохир ус эсвэл бие засах суудал бөглөрсөн бол үйлчилгээ хязгаарлагдаж магадгүй\nТусгай химийн бодис шаарддаг цэвэрлэгээ, тааз, агааржуулагчийн цэвэрлэгээг оруулаагүй\nХуучин мөөг болон нэвт шингэсэн бохирдол бүрэн арилахгүй байж магадгүй';
 
   @override
-  String get svcNotes_mattress => 'Энгийнээс кинг хэмжээ хүртэл адил үнэтэй\nУгаасны дараа 4–6 цагт бүрэн хатна\nПүрш гэмтэх, живэх зэрэг бүтцийн асуудлыг засах боломжгүй';
+  String get svcNotes_mattress =>
+      'Энгийнээс кинг хэмжээ хүртэл адил үнэтэй\nУгаасны дараа 4–6 цагт бүрэн хатна\nПүрш гэмтэх, живэх зэрэг бүтцийн асуудлыг засах боломжгүй';
 
   @override
-  String get svcNotes_aircon => '10 жилээс дээш настай төхөөрөмжийг задлан угаах нь аюултай байж магадгүй\nГадна нэгжийн цэвэрлэгээг оруулаагүй\nЦэвэрлэгээний өмнө, дараа нь ажиллагааг нь шалгана';
+  String get svcNotes_aircon =>
+      '10 жилээс дээш настай төхөөрөмжийг задлан угаах нь аюултай байж магадгүй\nГадна нэгжийн цэвэрлэгээг оруулаагүй\nЦэвэрлэгээний өмнө, дараа нь ажиллагааг нь шалгана';
 
   @override
-  String get svcNotes_sofa => 'Арьсан диваныг цэвэрлэж, чийгшүүлэх бүрхүүлтэй хийнэ\nХуучин толбо эсвэл будгийн шилжилт бүрэн арилахгүй байж магадгүй\nБүрэн хатахад 4–6 цаг шаардагдана';
+  String get svcNotes_sofa =>
+      'Арьсан диваныг цэвэрлэж, чийгшүүлэх бүрхүүлтэй хийнэ\nХуучин толбо эсвэл будгийн шилжилт бүрэн арилахгүй байж магадгүй\nБүрэн хатахад 4–6 цаг шаардагдана';
 
   @override
   String get unitTitle_bathroom => 'Угаалгын өрөөний тоо';
@@ -980,7 +1016,8 @@ class TMn extends T {
   String get homeServices => 'Ямар цэвэрлэгээ хэрэгтэй вэ?';
 
   @override
-  String get homeAddAddress => 'Хаягаа бүртгэвэл боломжтой үйлчилгээ, үнийг шууд харуулна';
+  String get homeAddAddress =>
+      'Хаягаа бүртгэвэл боломжтой үйлчилгээ, үнийг шууд харуулна';
 
   @override
   String get homeAddAddressCta => 'Хаяг бүртгэх';
@@ -1003,7 +1040,8 @@ class TMn extends T {
   String get trustCancel => 'Үнэгүй цуцлах\nочихоос 2 хоногийн өмнөх хүртэл';
 
   @override
-  String get trustCard => 'Картын мэдээллийг зөвхөн\nтөлбөр хүлээн авагч компани хадгална';
+  String get trustCard =>
+      'Картын мэдээллийг зөвхөн\nтөлбөр хүлээн авагч компани хадгална';
 
   @override
   String stepOf(String current, String total) {
@@ -1022,7 +1060,8 @@ class TMn extends T {
   }
 
   @override
-  String get studioBlockedBody => 'Зөвлөх багийн манай хүмүүс таны орон сууцад тохирох үйлчилгээг санал болгоно.';
+  String get studioBlockedBody =>
+      'Зөвлөх багийн манай хүмүүс таны орон сууцад тохирох үйлчилгээг санал болгоно.';
 
   @override
   String get consultCta => 'Зөвлөх багт асуух';
@@ -1208,7 +1247,8 @@ class TMn extends T {
   String get doneQuoteTitle => 'Зөвлөгөөний хүсэлт хүлээн авлаа';
 
   @override
-  String get doneQuoteBody => 'Зөвлөх баг шалгаад эцсийн үнийн саналыг илгээнэ. Үнийн саналаа Чат таб дээрээс харж болно.';
+  String get doneQuoteBody =>
+      'Зөвлөх баг шалгаад эцсийн үнийн саналыг илгээнэ. Үнийн саналаа Чат таб дээрээс харж болно.';
 
   @override
   String get goHome => 'Нүүр хуудас';
@@ -1229,7 +1269,8 @@ class TMn extends T {
   String get bookingsEmpty => 'Одоогоор захиалга алга';
 
   @override
-  String get bookingsEmptyBody => 'Анхны захиалгадаа ашиглах угтах купон хүлээж байна';
+  String get bookingsEmptyBody =>
+      'Анхны захиалгадаа ашиглах угтах купон хүлээж байна';
 
   @override
   String get bookNow => 'Цэвэрлэгээ захиалах';
@@ -1285,7 +1326,8 @@ class TMn extends T {
   String get cancelTitle => 'Энэ захиалгыг цуцлах уу?';
 
   @override
-  String get cancelFree => 'Одоо цуцалбал төлсөн дүнг бүрэн буцааж, купоныг нь эргүүлнэ.';
+  String get cancelFree =>
+      'Одоо цуцалбал төлсөн дүнг бүрэн буцааж, купоныг нь эргүүлнэ.';
 
   @override
   String get cancelKeep => 'Хэвээр үлдээх';
@@ -1451,7 +1493,8 @@ class TMn extends T {
   }
 
   @override
-  String get sys_job_completed => 'Цэвэрлэгээ дууслаа. Өмнөх, дараах зургуудыг харна уу.';
+  String get sys_job_completed =>
+      'Цэвэрлэгээ дууслаа. Өмнөх, дараах зургуудыг харна уу.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1459,7 +1502,8 @@ class TMn extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'Хамтрагч шинэ цагт очиж чадахгүй байна. Манай зөвлөх баг дахин зохицуулна.';
+  String get sys_reschedule_declined =>
+      'Хамтрагч шинэ цагт очиж чадахгүй байна. Манай зөвлөх баг дахин зохицуулна.';
 
   @override
   String get moreTitle => 'Бусад';
@@ -1521,7 +1565,8 @@ class TMn extends T {
   String get deleteAccount => 'Бүртгэл устгах';
 
   @override
-  String get deleteAccountBody => 'Таны хувийн мэдээлэл устах бөгөөд сэргээх боломжгүй. Идэвхтэй захиалгуудаа эхлээд цуцална уу.';
+  String get deleteAccountBody =>
+      'Таны хувийн мэдээлэл устах бөгөөд сэргээх боломжгүй. Идэвхтэй захиалгуудаа эхлээд цуцална уу.';
 
   @override
   String get couponsEmpty => 'Одоогоор купон алга';
@@ -1670,13 +1715,15 @@ class TMn extends T {
   String get quoteEstimateTitle => 'Таны урьдчилсан үнэ';
 
   @override
-  String get quoteEstimateBody => 'Эцсийн үнийг зургийг харсны дараа чатаар тогтооно';
+  String get quoteEstimateBody =>
+      'Эцсийн үнийг зургийг харсны дараа чатаар тогтооно';
 
   @override
   String get quoteG1 => 'Эцсийн үнийг чатаар тохирно';
 
   @override
-  String get quoteG2 => 'Баталгаажуулахад 10% урьдчилгаа, үлдэгдлийг цэвэрлэгээний дараа';
+  String get quoteG2 =>
+      'Баталгаажуулахад 10% урьдчилгаа, үлдэгдлийг цэвэрлэгээний дараа';
 
   @override
   String get quoteG3 => 'Баталгаажуулахаас өмнө үнэгүй цуцална';
@@ -1715,49 +1762,62 @@ class TMn extends T {
   String get themeTip => 'Загвар солих';
 
   @override
-  String get err_price_changed => 'Үнэ өөрчлөгдсөн байна. Шинэ үнийн саналаа шалгаад дахин оролдоно уу.';
+  String get err_price_changed =>
+      'Үнэ өөрчлөгдсөн байна. Шинэ үнийн саналаа шалгаад дахин оролдоно уу.';
 
   @override
-  String get err_checkout_closed => 'Энэ төлбөр хаагдсан байна. Дахин эхлүүлнэ үү.';
+  String get err_checkout_closed =>
+      'Энэ төлбөр хаагдсан байна. Дахин эхлүүлнэ үү.';
 
   @override
-  String get err_checkout_refunded => 'Энэ төлбөрийг цуцалж, буцаан олгосон байна.';
+  String get err_checkout_refunded =>
+      'Энэ төлбөрийг цуцалж, буцаан олгосон байна.';
 
   @override
   String get err_already_paid => 'Энэ төлбөр аль хэдийн төлөгдсөн байна.';
 
   @override
-  String get err_quote_not_payable => 'Энэ үнийн саналыг одоохондоо төлөх боломжгүй байна. Манай багтай холбогдоно уу.';
+  String get err_quote_not_payable =>
+      'Энэ үнийн саналыг одоохондоо төлөх боломжгүй байна. Манай багтай холбогдоно уу.';
 
   @override
-  String get err_payment_method_disabled => 'Энэ төлбөрийн хэрэгсэл одоогоор боломжгүй байна.';
+  String get err_payment_method_disabled =>
+      'Энэ төлбөрийн хэрэгсэл одоогоор боломжгүй байна.';
 
   @override
-  String get err_invalid_payment_method => 'Сонгосон төлбөрийн хэрэгсэл ашиглах боломжгүй байна. Өөрийг сонгоно уу.';
+  String get err_invalid_payment_method =>
+      'Сонгосон төлбөрийн хэрэгсэл ашиглах боломжгүй байна. Өөрийг сонгоно уу.';
 
   @override
-  String get err_balance_not_due => 'Үлдэгдэл төлбөр одоогоор төлөх хугацаа болоогүй байна.';
+  String get err_balance_not_due =>
+      'Үлдэгдэл төлбөр одоогоор төлөх хугацаа болоогүй байна.';
 
   @override
-  String get err_invalid_slot => 'Энэ үйлчилгээнд сонгосон цаг боломжгүй байна.';
+  String get err_invalid_slot =>
+      'Энэ үйлчилгээнд сонгосон цаг боломжгүй байна.';
 
   @override
-  String get err_booking_changed => 'Захиалга өөрчлөгдсөн байна. Шинэчилж дэлгэрэнгүйг шалгана уу.';
+  String get err_booking_changed =>
+      'Захиалга өөрчлөгдсөн байна. Шинэчилж дэлгэрэнгүйг шалгана уу.';
 
   @override
   String get err_booking_closed => 'Энэ захиалгыг цаашид өөрчлөх боломжгүй.';
 
   @override
-  String get err_reschedule_closed => 'Одоо очих өдрийг өөрчлөх боломжгүй. Манай багтай холбогдоно уу.';
+  String get err_reschedule_closed =>
+      'Одоо очих өдрийг өөрчлөх боломжгүй. Манай багтай холбогдоно уу.';
 
   @override
-  String get err_too_many_open_requests => 'Нээлттэй хүсэлт хэт олон байна. Эхлээд нэгийг дуусгана уу.';
+  String get err_too_many_open_requests =>
+      'Нээлттэй хүсэлт хэт олон байна. Эхлээд нэгийг дуусгана уу.';
 
   @override
-  String get err_already_reviewed => 'Та энэ үйлчилгээнд аль хэдийн сэтгэгдэл үлдээсэн байна.';
+  String get err_already_reviewed =>
+      'Та энэ үйлчилгээнд аль хэдийн сэтгэгдэл үлдээсэн байна.';
 
   @override
-  String get err_identity_not_verified => 'Эхлээд иргэний үнэмлэхийн баталгаажуулалтаа дуусгана уу.';
+  String get err_identity_not_verified =>
+      'Эхлээд иргэний үнэмлэхийн баталгаажуулалтаа дуусгана уу.';
 
   @override
   String get err_email_taken => 'Энэ имэйл аль хэдийн ашиглагдсан байна.';
@@ -1766,22 +1826,28 @@ class TMn extends T {
   String get err_invalid_email => 'Имэйл хаягаа шалгана уу.';
 
   @override
-  String get err_file_too_large => 'Файл хэт том байна. Илүү жижиг файл оруулна уу.';
+  String get err_file_too_large =>
+      'Файл хэт том байна. Илүү жижиг файл оруулна уу.';
 
   @override
-  String get err_unsupported_image => 'Энэ зургийн формат дэмжигдэхгүй. JPG эсвэл PNG оруулна уу.';
+  String get err_unsupported_image =>
+      'Энэ зургийн формат дэмжигдэхгүй. JPG эсвэл PNG оруулна уу.';
 
   @override
-  String get err_upload_quota => 'Өнөөдрийн байршуулалтын хязгаарт хүрсэн байна. Маргааш дахин оролдоно уу.';
+  String get err_upload_quota =>
+      'Өнөөдрийн байршуулалтын хязгаарт хүрсэн байна. Маргааш дахин оролдоно уу.';
 
   @override
-  String get err_provider_unreachable => 'Үйлчилгээтэй холбогдож чадсангүй. Удахгүй дахин оролдоно уу.';
+  String get err_provider_unreachable =>
+      'Үйлчилгээтэй холбогдож чадсангүй. Удахгүй дахин оролдоно уу.';
 
   @override
-  String get err_invalid_token => 'Нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
+  String get err_invalid_token =>
+      'Нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
 
   @override
-  String get err_invalid_transition => 'Төлөвийг одоо ийм байдлаар өөрчлөх боломжгүй.';
+  String get err_invalid_transition =>
+      'Төлөвийг одоо ийм байдлаар өөрчлөх боломжгүй.';
 
   @override
   String get err_job_not_started => 'Эхлээд ажлаа эхлүүлнэ үү.';
@@ -1799,7 +1865,8 @@ class TMn extends T {
   String get err_team_full => 'Баг дүүрсэн байна.';
 
   @override
-  String get err_invalid_webhook_secret => 'Webhook secret нь whsec_-ээр эхлэх ёстой.';
+  String get err_invalid_webhook_secret =>
+      'Webhook secret нь whsec_-ээр эхлэх ёстой.';
 
   @override
   String get err_invalid_endpoint => 'Endpoint нь https://-ээр эхлэх ёстой.';
@@ -1811,7 +1878,8 @@ class TMn extends T {
   String get err_invalid_region => 'Бүс буруу байна.';
 
   @override
-  String get err_invalid_retention => 'Хадгалах хугацаа хязгаараас гадуур байна.';
+  String get err_invalid_retention =>
+      'Хадгалах хугацаа хязгаараас гадуур байна.';
 
   @override
   String get err_invalid_service_account => 'Service account файл буруу байна.';
@@ -1829,7 +1897,8 @@ class TMn extends T {
   String get err_invalid_amount => 'Зөв дүн оруулна уу.';
 
   @override
-  String get err_cannot_deactivate_self => 'Өөрийн бүртгэлээ идэвхгүй болгох боломжгүй.';
+  String get err_cannot_deactivate_self =>
+      'Өөрийн бүртгэлээ идэвхгүй болгох боломжгүй.';
 
   @override
   String get err_invalid_coupon => 'Энэ купон буруу байна.';
@@ -1838,19 +1907,23 @@ class TMn extends T {
   String get err_settlement_state => 'Тооцоог одоо өөрчлөх боломжгүй.';
 
   @override
-  String get err_deposit_required => 'Эхлээд урьдчилгаа төлбөр төлөх шаардлагатай.';
+  String get err_deposit_required =>
+      'Эхлээд урьдчилгаа төлбөр төлөх шаардлагатай.';
 
   @override
-  String get err_payout_state => 'Төлбөрийн төлөв өөрчлөгдсөн байна. Шинэчилж дахин шалгана уу.';
+  String get err_payout_state =>
+      'Төлбөрийн төлөв өөрчлөгдсөн байна. Шинэчилж дахин шалгана уу.';
 
   @override
-  String get err_payout_provider => 'Энэ төлбөрийн арга одоогоор боломжгүй байна.';
+  String get err_payout_provider =>
+      'Энэ төлбөрийн арга одоогоор боломжгүй байна.';
 
   @override
   String get err_unsupported_bank => 'Энэ банкад төлбөр шилжүүлэх боломжгүй.';
 
   @override
-  String get err_toss_unverified => 'Toss төлбөр одоогоор боломжгүй. Гараар шилжүүлэг ашиглана уу.';
+  String get err_toss_unverified =>
+      'Toss төлбөр одоогоор боломжгүй. Гараар шилжүүлэг ашиглана уу.';
 
   @override
   String get err_invalid_cap => 'Зөвшөөрөгдсөн хязгаарт багтах тоо оруулна уу.';
@@ -1904,7 +1977,8 @@ class TMn extends T {
   String get fVatEstimate => 'НӨАТ (тооцоолол)';
 
   @override
-  String get fVatNote => 'Платформын шимтгэлийн 10%-иар тооцсон таамаглал. Нягтлагчтайгаа баталгаажуулна уу.';
+  String get fVatNote =>
+      'Платформын шимтгэлийн 10%-иар тооцсон таамаглал. Нягтлагчтайгаа баталгаажуулна уу.';
 
   @override
   String get fAov => 'Захиалгын дундаж дүн';
@@ -2054,7 +2128,8 @@ class TMn extends T {
   String get reviewSaved => 'Сэтгэгдэл өгсөнд баярлалаа';
 
   @override
-  String get reviewPhotoFailed => 'Зургийг илгээж чадсангүй. Дахин оролдоно уу.';
+  String get reviewPhotoFailed =>
+      'Зургийг илгээж чадсангүй. Дахин оролдоно уу.';
 
   @override
   String get referralTitle => 'Найзаа урьж купон аваарай';
@@ -2091,7 +2166,8 @@ class TMn extends T {
   String get err_self_referral => 'Өөрийн кодыг ашиглах боломжгүй';
 
   @override
-  String get err_referee_already_booked => 'Кодыг зөвхөн анхны захиалгын өмнө оруулна';
+  String get err_referee_already_booked =>
+      'Кодыг зөвхөн анхны захиалгын өмнө оруулна';
 
   @override
   String get err_already_referred => 'Урилгын код аль хэдийн бүртгэгдсэн';
@@ -2103,13 +2179,15 @@ class TMn extends T {
   String get err_referral_disabled => 'Одоогоор урилга түр зогссон';
 
   @override
-  String get err_invalid_photos => 'Зөвхөн Malkkeum-оор байршуулсан зургийг хавсаргана';
+  String get err_invalid_photos =>
+      'Зөвхөн Malkkeum-оор байршуулсан зургийг хавсаргана';
 
   @override
   String get welcomeOfferTitle => 'Анхны захиалгын хөнгөлөлт';
 
   @override
-  String get welcomeOfferBody => 'Шинэ үйлчлүүлэгчийн анхны захиалгад автоматаар хэрэглэгдэнэ. Купонтой хамт болохгүй.';
+  String get welcomeOfferBody =>
+      'Шинэ үйлчлүүлэгчийн анхны захиалгад автоматаар хэрэглэгдэнэ. Купонтой хамт болохгүй.';
 
   @override
   String get offerKindAmount => 'Тогтмол (вон)';
@@ -2130,7 +2208,8 @@ class TMn extends T {
   String get referralSettingsTitle => 'Найз урьсны шагнал';
 
   @override
-  String get referralSettingsBody => 'Найзын анхны захиалга дуусаж, төлбөр хийгдсэний дараа олгоно. Өөрийгөө урих, ижил дугаарыг хориглоно.';
+  String get referralSettingsBody =>
+      'Найзын анхны захиалга дуусаж, төлбөр хийгдсэний дараа олгоно. Өөрийгөө урих, ижил дугаарыг хориглоно.';
 
   @override
   String get referralRewardAmount => 'Шагналын дүн (вон)';
@@ -2269,34 +2348,43 @@ class TMn extends T {
   String get oIntNever => 'Ашиглалт хараахан байхгүй';
 
   @override
-  String get oActDb => 'Өгөгдлийн сантай холбогдож чадсангүй. Серверт malkkeum logs ажиллуулж, үргэлжлэвэл дахин эхлүүлнэ үү.';
+  String get oActDb =>
+      'Өгөгдлийн сантай холбогдож чадсангүй. Серверт malkkeum logs ажиллуулж, үргэлжлэвэл дахин эхлүүлнэ үү.';
 
   @override
-  String get oActDisk => 'Диск чөлөөт орон 10%-иас доош байна. Хуучин нөөцийг устгах эсвэл дискээ нэмнэ үү.';
+  String get oActDisk =>
+      'Диск чөлөөт орон 10%-иас доош байна. Хуучин нөөцийг устгах эсвэл дискээ нэмнэ үү.';
 
   @override
-  String get oActBackup => 'Автомат нөөцлөлт хоцорсон. Серверт malkkeum backup ажиллуулж, backups/backup.log-ийг шалгана уу.';
+  String get oActBackup =>
+      'Автомат нөөцлөлт хоцорсон. Серверт malkkeum backup ажиллуулж, backups/backup.log-ийг шалгана уу.';
 
   @override
-  String get oActErrors => 'Серверийн алдаа олон байна. malkkeum logs-ийн error мөрүүдийг шалгаж, давтагдвал хөгжүүлэгчид илгээнэ үү.';
+  String get oActErrors =>
+      'Серверийн алдаа олон байна. malkkeum logs-ийн error мөрүүдийг шалгаж, давтагдвал хөгжүүлэгчид илгээнэ үү.';
 
   @override
-  String get oActPayments => 'Төлбөр хийгдсэн ч автоматаар боловсрогдоогүй байж магадгүй. PortOne дээр шалгаад шаардлагатай бол буцаан олгоно уу.';
+  String get oActPayments =>
+      'Төлбөр хийгдсэн ч автоматаар боловсрогдоогүй байж магадгүй. PortOne дээр шалгаад шаардлагатай бол буцаан олгоно уу.';
 
   @override
-  String get oActWebhook => 'Төлбөрийн мэдэгдлийн гарын үсгийн шалгалт амжилтгүй. Тохиргоо > Төлбөр (PortOne) дээр webhook secret-ээ дахин оруулна уу.';
+  String get oActWebhook =>
+      'Төлбөрийн мэдэгдлийн гарын үсгийн шалгалт амжилтгүй. Тохиргоо > Төлбөр (PortOne) дээр webhook secret-ээ дахин оруулна уу.';
 
   @override
-  String get oActIntegration => 'Энэ холболт амжилтгүй байна. Тохиргоон дахь түлхүүрүүдээ шалгаад Test connection дарна уу.';
+  String get oActIntegration =>
+      'Энэ холболт амжилтгүй байна. Тохиргоон дахь түлхүүрүүдээ шалгаад Test connection дарна уу.';
 
   @override
-  String get oActNotSet => 'Хараахан тохируулаагүй. Тохиргоонд түлхүүр оруулна уу.';
+  String get oActNotSet =>
+      'Хараахан тохируулаагүй. Тохиргоонд түлхүүр оруулна уу.';
 
   @override
   String get oAlerts => 'Сэрэмжлүүлгийн тохиргоо';
 
   @override
-  String get oAlertsHint => 'Асуудал гарвал хүлээн авах хайрцагт болон эзэмшигчийн утсанд SMS-ээр мэдэгдэнэ. Нэг асуудлыг 6 цаг тутамд нэг удаа илгээнэ.';
+  String get oAlertsHint =>
+      'Асуудал гарвал хүлээн авах хайрцагт болон эзэмшигчийн утсанд SMS-ээр мэдэгдэнэ. Нэг асуудлыг 6 цаг тутамд нэг удаа илгээнэ.';
 
   @override
   String get oRuleSms => 'SMS илгээх алдаатай';
@@ -2334,13 +2422,15 @@ class TMn extends T {
   }
 
   @override
-  String get oQuietHint => 'Эдгээр цагт мэдэгдэхгүй; дууссаны дараа нэг мэдэгдэл очно.';
+  String get oQuietHint =>
+      'Эдгээр цагт мэдэгдэхгүй; дууссаны дараа нэг мэдэгдэл очно.';
 
   @override
   String get oAlertPhone => 'Мэдэгдэл авах утас';
 
   @override
-  String get oAlertPhoneHint => 'Хоосон орхивол бизнесийн мэдээлэл дэх дэмжлэгийн дугаар руу илгээнэ.';
+  String get oAlertPhoneHint =>
+      'Хоосон орхивол бизнесийн мэдээлэл дэх дэмжлэгийн дугаар руу илгээнэ.';
 
   @override
   String get oSave => 'Хадгалах';
@@ -2358,7 +2448,8 @@ class TMn extends T {
   String get oBackupOffsite => 'Гадаад нөөцлөлт (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'Унтарсан. Тохиргоо > Гадаад нөөцлөлт дээр асаана уу.';
+  String get oBackupOffsiteOff =>
+      'Унтарсан. Тохиргоо > Гадаад нөөцлөлт дээр асаана уу.';
 
   @override
   String get oLastBackup => 'Сүүлийн нөөцлөлт';
@@ -2382,10 +2473,12 @@ class TMn extends T {
   String get pTabSchedule => 'Хуваарь';
 
   @override
-  String get pIntroTitle => 'Ажил, хуваарь, төлбөр\nцэвэрлэгээний мэргэжилтнүүдэд';
+  String get pIntroTitle =>
+      'Ажил, хуваарь, төлбөр\nцэвэрлэгээний мэргэжилтнүүдэд';
 
   @override
-  String get pIntroBody => 'Хүссэн бүс, цагтаа л ажиллана. Долоо хоног бүр цалинжина.';
+  String get pIntroBody =>
+      'Хүссэн бүс, цагтаа л ажиллана. Долоо хоног бүр цалинжина.';
 
   @override
   String get pOnbTitle => 'Таны талаар хэлнэ үү';
@@ -2409,10 +2502,12 @@ class TMn extends T {
   String get pPendingTitle => 'Таны бүртгэл шалгагдаж байна';
 
   @override
-  String get pPendingBody => 'Баталгаажмагц мэдэгдэл илгээнэ. Тэр хүртэл төлбөр хүлээн авах дансаа бүртгэнэ үү.';
+  String get pPendingBody =>
+      'Баталгаажмагц мэдэгдэл илгээнэ. Тэр хүртэл төлбөр хүлээн авах дансаа бүртгэнэ үү.';
 
   @override
-  String get pSuspended => 'Таны бүртгэл түр зогссон байна. Үйл ажиллагааны багт холбогдоно уу.';
+  String get pSuspended =>
+      'Таны бүртгэл түр зогссон байна. Үйл ажиллагааны багт холбогдоно уу.';
 
   @override
   String get pDirect => 'Шууд захиалга';
@@ -2436,7 +2531,8 @@ class TMn extends T {
   String get pNoJobs => 'Одоогоор тохирох ажил алга';
 
   @override
-  String get pNoJobsBody => 'Үйлчилгээ, бүс, ажлын цагаа өргөтгөвөл илүү ажил харагдана';
+  String get pNoJobsBody =>
+      'Үйлчилгээ, бүс, ажлын цагаа өргөтгөвөл илүү ажил харагдана';
 
   @override
   String get pPayout => 'Таны орлого';
@@ -2451,7 +2547,8 @@ class TMn extends T {
   String get pClosed => 'Хаагдсан';
 
   @override
-  String get pPrivacyNote => 'Яг хаяг, үйлчлүүлэгчийн мэдээлэл хүлээн авсны дараа харагдана';
+  String get pPrivacyNote =>
+      'Яг хаяг, үйлчлүүлэгчийн мэдээлэл хүлээн авсны дараа харагдана';
 
   @override
   String get pAccept => 'Ажил авах';
@@ -2460,7 +2557,8 @@ class TMn extends T {
   String get pAcceptConfirm => 'Энэ ажлыг авах уу?';
 
   @override
-  String get pAcceptBody => 'Ажил таны хуваарьт нэмэгдэж, үйлчлүүлэгчид баг оноогдсон тухай мэдэгдэл очно. Очихоос 2 хоногийн дотор цуцлахад хязгаарлалт бий.';
+  String get pAcceptBody =>
+      'Ажил таны хуваарьт нэмэгдэж, үйлчлүүлэгчид баг оноогдсон тухай мэдэгдэл очно. Очихоос 2 хоногийн дотор цуцлахад хязгаарлалт бий.';
 
   @override
   String get pAccepted => 'Ажил авлаа';
@@ -2527,7 +2625,8 @@ class TMn extends T {
   String get pNoSchedule => 'Энэ өдөр хуваарь алга';
 
   @override
-  String get pCancelledBanner => 'Үйлчлүүлэгч энэ ажлыг цуцалсан. Дууссан гэж тэмдэглэх боломжгүй.';
+  String get pCancelledBanner =>
+      'Үйлчлүүлэгч энэ ажлыг цуцалсан. Дууссан гэж тэмдэглэх боломжгүй.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2547,7 +2646,8 @@ class TMn extends T {
   String get pCall => 'Нууц дугаараар залгах';
 
   @override
-  String get pCallSoon => 'Нууц дугаараар залгах үйлчилгээ нээлтийн үед идэвхжинэ';
+  String get pCallSoon =>
+      'Нууц дугаараар залгах үйлчилгээ нээлтийн үед идэвхжинэ';
 
   @override
   String get pQuietHours => '20 цагаас хойш залгахгүй байхыг хүсье';
@@ -2607,7 +2707,8 @@ class TMn extends T {
   String get pCompleteCta => 'Дууссан гэж тэмдэглэх';
 
   @override
-  String get pCompleteNeed => 'Төрөл бүрт дор хаяж 1 зураг оруулж, бүх зүйлийг тэмдэглээрэй';
+  String get pCompleteNeed =>
+      'Төрөл бүрт дор хаяж 1 зураг оруулж, бүх зүйлийг тэмдэглээрэй';
 
   @override
   String get pCompleted => 'Сайн ажиллалаа!';
@@ -2618,7 +2719,8 @@ class TMn extends T {
   }
 
   @override
-  String get pPayoutWaiting => 'Цалингийн өдрийг үйлчлүүлэгч төлсний дараа тогтооно';
+  String get pPayoutWaiting =>
+      'Цалингийн өдрийг үйлчлүүлэгч төлсний дараа тогтооно';
 
   @override
   String get pPendingPayout => 'Хүлээгдэж буй цалин';
@@ -2788,7 +2890,12 @@ class TMn extends T {
   String get poAccountTitle => 'Шилжүүлгийн мэдээлэл';
 
   @override
-  String poAccountBody(String holder, String bank, String account, String amount) {
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
     return '$holder · $bank · $account руу $amount вон илгээгээд баталгаажуулна уу.';
   }
 
@@ -2846,10 +2953,12 @@ class TMn extends T {
   String get pvMarketing => 'Маркетингийн мэдээлэл';
 
   @override
-  String get pvMarketingHint => 'Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.';
+  String get pvMarketingHint =>
+      'Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.';
 
   @override
-  String get pvReconsent => 'Нууцлалын бодлого өөрчлөгдлөө. Дахин үзэж зөвшөөрнө үү.';
+  String get pvReconsent =>
+      'Нууцлалын бодлого өөрчлөгдлөө. Дахин үзэж зөвшөөрнө үү.';
 
   @override
   String get pvSaved => 'Зөвшөөрлийн тохиргоог хадгаллаа';
@@ -2858,7 +2967,8 @@ class TMn extends T {
   String get pvExport => 'Миний мэдээллийг татах';
 
   @override
-  String get pvExportHint => 'Таны талаар бидний хадгалсан бүх мэдээллийг JSON хэлбэрээр харуулна. Хуулж хадгалж болно.';
+  String get pvExportHint =>
+      'Таны талаар бидний хадгалсан бүх мэдээллийг JSON хэлбэрээр харуулна. Хуулж хадгалж болно.';
 
   @override
   String get pvCopy => 'Хуулах';
@@ -2867,7 +2977,8 @@ class TMn extends T {
   String get pvCopied => 'Хуулагдлаа';
 
   @override
-  String get pvExportFailed => 'Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.';
+  String get pvExportFailed =>
+      'Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.';
 
   @override
   String get cSetup => 'Тохиргоо';
@@ -2926,7 +3037,8 @@ class TMn extends T {
   String get cSetupPrivacyOfficer => 'Нууцлалын хариуцагч';
 
   @override
-  String get cSetupStoreLinks => 'Апп дэлгүүрийн холбоос (бөглөсний дараа вэбийн товч идэвхжинэ)';
+  String get cSetupStoreLinks =>
+      'Апп дэлгүүрийн холбоос (бөглөсний дараа вэбийн товч идэвхжинэ)';
 
   @override
   String get cSetupCustomerApp => 'Хэрэглэгчийн апп';
@@ -2938,13 +3050,15 @@ class TMn extends T {
   String get cSetupPayMethods => 'Төлбөрийн арга';
 
   @override
-  String get cSetupPayMethodsHint => 'Хэрэглэгчдэд харагдах төлбөрийн аргыг асаах/унтраах. Шууд хэрэгжинэ.';
+  String get cSetupPayMethodsHint =>
+      'Хэрэглэгчдэд харагдах төлбөрийн аргыг асаах/унтраах. Шууд хэрэгжинэ.';
 
   @override
   String get cReviewTitle => 'Дэлгүүрийн шалгалтын демо бүртгэл';
 
   @override
-  String get cReviewHint => 'Шалгагч Солонгос SMS хүлээж авахгүй. Дугаар болон 6 оронтой кодыг шалгалтын тэмдэглэлд бичнэ үү. Автоматаар унтарна.';
+  String get cReviewHint =>
+      'Шалгагч Солонгос SMS хүлээж авахгүй. Дугаар болон 6 оронтой кодыг шалгалтын тэмдэглэлд бичнэ үү. Автоматаар унтарна.';
 
   @override
   String get cReviewPhone => 'Демо утасны дугаар';
@@ -2961,16 +3075,20 @@ class TMn extends T {
   String get cReviewEnable => 'Асаах (14 хоног)';
 
   @override
-  String get pDeleteAccountBody => 'Таны баг болон хувийн мэдээлэл бүрмөсөн устна. Эхлээд хуваарилсан ажил, үлдэгдэл төлбөрөө дуусгана уу.';
+  String get pDeleteAccountBody =>
+      'Таны баг болон хувийн мэдээлэл бүрмөсөн устна. Эхлээд хуваарилсан ажил, үлдэгдэл төлбөрөө дуусгана уу.';
 
   @override
-  String get err_has_active_jobs => 'Танд хуваарилсан ажил байна. Дуусгах эсвэл тусламжаас шилжүүлэхийг хүснэ үү.';
+  String get err_has_active_jobs =>
+      'Танд хуваарилсан ажил байна. Дуусгах эсвэл тусламжаас шилжүүлэхийг хүснэ үү.';
 
   @override
-  String get err_pending_payouts => 'Төлөгдөөгүй төлбөр байна. Төлсний дараа устгаж болно.';
+  String get err_pending_payouts =>
+      'Төлөгдөөгүй төлбөр байна. Төлсний дараа устгаж болно.';
 
   @override
-  String get err_phone_required => 'Ажил авахаас өмнө утасны дугаараа баталгаажуулна уу.';
+  String get err_phone_required =>
+      'Ажил авахаас өмнө утасны дугаараа баталгаажуулна уу.';
 
   @override
   String get nAlerts => 'Мэдэгдэл';
@@ -2990,7 +3108,8 @@ class TMn extends T {
   String get mMyJobs => 'Миний ажил';
 
   @override
-  String get mNoJobs => 'Хуваарилсан ажил алга. Багийн ахлагчийн өгсөн ажил энд харагдана.';
+  String get mNoJobs =>
+      'Хуваарилсан ажил алга. Багийн ахлагчийн өгсөн ажил энд харагдана.';
 
   @override
   String mTeam(String team) {
@@ -3025,7 +3144,8 @@ class TMn extends T {
   String get cSetupInvalidKey => 'Түлхүүр буруу. Хуулсан утгаа шалгана уу';
 
   @override
-  String get cSetupUnreachable => 'Үйлчилгээнд холбогдож чадсангүй. Дараа дахин оролдоно уу';
+  String get cSetupUnreachable =>
+      'Үйлчилгээнд холбогдож чадсангүй. Дараа дахин оролдоно уу';
 
   @override
   String get cSetupKeepValue => 'Хадгалсан (солих үед л оруулна)';
@@ -3073,7 +3193,8 @@ class TMn extends T {
   String get cFirstRunTitle => 'Тавтай морил! Эзэмшигчийн бүртгэл үүсгэнэ үү';
 
   @override
-  String get cFirstRunBody => 'Суулгах үед гарсан 12 тэмдэгт кодыг оруулна уу. Энэ бүртгэл бүх тохиргоог удирдана.';
+  String get cFirstRunBody =>
+      'Суулгах үед гарсан 12 тэмдэгт кодыг оруулна уу. Энэ бүртгэл бүх тохиргоог удирдана.';
 
   @override
   String get cFirstRunCode => 'Суулгацын код';
@@ -3108,13 +3229,15 @@ class TMn extends T {
   String get uUpdateRequiredTitle => 'Шинэчлэх шаардлагатай';
 
   @override
-  String get uUpdateRequiredBody => 'Энэ хувилбарыг дэмжихээ больсон. Дэлгүүрээс шинэчилнэ үү.';
+  String get uUpdateRequiredBody =>
+      'Энэ хувилбарыг дэмжихээ больсон. Дэлгүүрээс шинэчилнэ үү.';
 
   @override
   String get uUpdateStore => 'Дэлгүүрээс шинэчлэх';
 
   @override
-  String get uUpdateStoreMissing => 'Шинэчлэх холбоос бэлэн болоогүй байна. Дараа дахин оролдоно уу.';
+  String get uUpdateStoreMissing =>
+      'Шинэчлэх холбоос бэлэн болоогүй байна. Дараа дахин оролдоно уу.';
 
   @override
   String uCurrentVersion(String version) {
@@ -3125,7 +3248,8 @@ class TMn extends T {
   String get uAppVersionTitle => 'Аппын хувилбарууд';
 
   @override
-  String get uAppVersionHint => 'Хамгийн бага хувилбараас доош аппууд шинэчлэх дэлгэцэд зогсоно. Жишээ: 1.2.0';
+  String get uAppVersionHint =>
+      'Хамгийн бага хувилбараас доош аппууд шинэчлэх дэлгэцэд зогсоно. Жишээ: 1.2.0';
 
   @override
   String get uMinVersion => 'Хамгийн бага хувилбар';

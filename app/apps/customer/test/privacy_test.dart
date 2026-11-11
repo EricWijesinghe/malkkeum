@@ -1,7 +1,8 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:customer/screens/more.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
+import 'package:ui/ui.dart';
 
 import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
@@ -19,17 +20,12 @@ Map<String, Object?> _consents({bool marketing = false}) => {
   ],
 };
 
-/// More -> 계정 (AccountScreen). The More list is lazy, so the row is scrolled to first.
+/// More -> profile card (AccountScreen). The card is the first AppCard on the More tab.
 Future<void> _openAccount(WidgetTester tester) async {
   await pumpUntilFound(tester, find.text(koT.tabMore));
   await tester.tap(find.text(koT.tabMore));
   await settle(tester);
-  await tester.scrollUntilVisible(
-    find.text(koT.moreAccount),
-    200,
-    scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
-  );
-  await tester.tap(find.text(koT.moreAccount));
+  await tester.tap(find.descendant(of: find.byType(MoreTab), matching: find.byType(AppCard)).first);
   await settle(tester);
 }
 
@@ -74,7 +70,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text(koT.pvExport),
       200,
-      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
+      scrollable: find.descendant(of: find.byType(AccountScreen), matching: find.byType(Scrollable)),
     );
     await tester.tap(find.text(koT.pvExport));
     await settle(tester);

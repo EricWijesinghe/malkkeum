@@ -198,3 +198,29 @@ async fn staff_reads_of_customer_contacts_are_audit_logged(pool: PgPool) {
     let logged: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE actor_id = $1 AND action LIKE 'customer.pii_%'").bind(staff).fetch_one(&pool).await.expect("audit");
     assert_eq!(logged, 2, "both contact views recorded");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn partner_export_omits_account_number_and_delete_clears_notifications(pool: PgPool) {
+    let app = app(pool.clone());
+    let (token, pro) = common::verified_pro(&app, &pool, "010-8100-0007").await;
+    sqlx::query("INSERT INTO payout_accounts (pro_id, bank, account_enc, account_last4, holder) VALUES ($1, '신한', 'SECRET-CIPHER-TEXT', '1234', '홍길동')")
+        .bind(pro)
+        .execute(&pool)
+        .await
+        .expect("payout account");
+    sqlx::query("INSERT INTO notifications (owner_role, owner_id, kind, data) VALUES ('pro', $1, 'booking.status', '{}')")
+        .bind(pro)
+        .execute(&pool)
+        .await
+        .expect("notification");
+
+    let (st, doc) = call(&app, "GET", "/v1/partner/export", Some(token.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{doc}");
+    assert_eq!(doc["payout_account"]["account_last4"], "1234");
+    assert!(!doc.to_string().contains("SECRET-CIPHER-TEXT"), "encrypted account number never leaves the server");
+
+    let (st, body) = call(&app, "DELETE", "/v1/partner/me", Some(token.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let left: i64 = sqlx::query_scalar("SELECT count(*) FROM notifications WHERE owner_id = $1").bind(pro).fetch_one(&pool).await.expect("count");
+    assert_eq!(left, 0, "partner notifications removed");
+}
