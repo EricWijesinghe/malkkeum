@@ -72,7 +72,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Installer and scripts pass shellcheck
-        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh
+        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh scripts/ci/backup-drill.sh
+
+  # Released migrations are immutable; new ones must be safe on big tables (scripts/ci/check-migrations.py).
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 }
+      - name: Migration gate unit tests
+        run: python3 -I -m unittest discover -s scripts/ci -p 'test_*.py'
+      - name: Migration safety against the base branch
+        run: python3 -I scripts/ci/check-migrations.py --base "origin/${{ github.base_ref || 'master' }}"
 
   # Static iOS/Android store-build checks (plists, entitlements, pbxproj, gradle); no Mac needed.
   native:
