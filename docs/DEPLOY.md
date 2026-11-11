@@ -81,7 +81,7 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 |---|---|
 | `API_BASE` | `https://<client domain>` |
 | `KAKAO_NATIVE_KEY` | developers.kakao.com → app → 앱 키 → 네이티브 앱 키. Register Android key hash (Play App Signing SHA-1 → base64) and iOS bundle id under 플랫폼 |
-| `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` / `NAVER_CLIENT_NAME` | developers.naver.com → 애플리케이션 → 네아로. iOS URL scheme must be exactly `malkkeumnaver`; Android package names |
+| `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL scheme must be exactly `malkkeumnaver` (`malkkeumnaver://naverlogin`). The secret stays on the server |
 | `GOOGLE_SERVER_CLIENT_ID` | Google Cloud console → Credentials → *Web* OAuth client id (also put it in the console wizard Google card) |
 | `GOOGLE_IOS_CLIENT_ID` | Google Cloud console → *iOS* OAuth client for each bundle id (the reversed id is derived) |
 | `GOOGLE_SERVICES_JSON_B64`, `GOOGLE_SERVICE_INFO_PLIST_B64` | Firebase project → customer Android/iOS app config files, `base64 -w0` |
@@ -91,7 +91,7 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 iOS, once per bundle id in the Apple Developer portal: enable **Sign in with Apple** and **Push
 Notifications**, upload an APNs key (.p8) to Firebase → Cloud Messaging. In Xcode the Runner target
 needs both capabilities (Codemagic automatic signing picks them up from the App ID).
-Server side (console wizard): Firebase service-account key (Push card), Kakao REST key, Naver client id,
+Server side (console wizard): Firebase service-account key (Push card), Kakao REST key, Naver client id + secret,
 Google + Apple client ids — these verify the tokens the apps send.
 
 ## 4. Before launch: real services to sign up for
@@ -103,7 +103,7 @@ The code has an adapter point for each. Dev mode uses safe fakes until then.
 | Payment gateway (PortOne V2) | One-off checkout (cards, KakaoPay, NaverPay, TossPay, PayCO, Samsung Pay, Apple Pay, bank transfer, virtual account, phone billing), saved one-tap billing, refunds | PortOne. One PortOne channel per method; put the keys in `PORTONE_CHANNEL_KEYS` (`{"kakaopay":"channel-key-…"}`). Also set `PORTONE_API_SECRET`, `PORTONE_WEBHOOK_SECRET` (webhook URL `https://<API_DOMAIN>/v1/webhooks/portone`), `PORTONE_STORE_ID` | `backend/crates/api/src/providers/portone.rs`, `routes/checkouts.rs`, `routes/webhooks.rs`; method switches in console (`/v1/admin/payment-methods`) |
 | Identity (본인인증 / PASS) | Verified name and a CI hash (never the raw CI) | PortOne identity verification (same `PORTONE_API_SECRET`) | `providers/portone.rs::identity`, `POST /v1/me/identity` |
 | Kakao login | Sign-in with Kakao | Kakao Developers app: REST key → `KAKAO_APP_ID` (checked against each token) | `providers/social.rs::kakao` |
-| Naver login | Sign-in with Naver | Naver Developers app. No server env: the profile call is the check (see shortcut in `providers/social.rs`) | `providers/social.rs::naver` |
+| Naver login | Sign-in with Naver | Naver Developers app: client id + secret in the console wizard (Naver card). The app sends a login code; the server redeems it with the secret, so the token is ours | `providers/social.rs::naver` |
 | Google login | Sign-in with Google | OAuth client ids (one per Android/iOS/web) → `GOOGLE_CLIENT_IDS` | `providers/social.rs::google` |
 | Apple login | Sign in with Apple | Bundle id and Services ID → `APPLE_CLIENT_IDS`; signing keys are fetched from appleid.apple.com and cached | `providers/social.rs::apple` |
 | SMS | Login codes, invites | NHN Cloud, Aligo, Solapi | `providers.rs::send_sms` |
@@ -113,6 +113,7 @@ The code has an adapter point for each. Dev mode uses safe fakes until then.
 | AlimTalk (optional) | KakaoTalk booking notices | Kakao business channel | alongside push in `realtime::notify` |
 | Solapi SMS + AlimTalk (adapter built) | SMS fallback and AlimTalk for customer booking events | Solapi: `SOLAPI_API_KEY`, `SOLAPI_API_SECRET`, `SMS_SENDER`, `ALIMTALK_PF_ID`, `ALIMTALK_TEMPLATES` (kind → approved template id). Env vars in `deploy/.env.example` | `providers/sms.rs`, `Providers::send_sms` / `send_customer_message` |
 | FCM push (adapter built) | Push to customer, pro and team-member devices | Firebase project; service-account key as `FCM_SERVICE_ACCOUNT` (path or JSON). Dead device tokens are pruned on UNREGISTERED | `providers/fcm.rs`, `Providers::push_collect`, `realtime::notify` |
+| Partner payouts (built; default manual) | Weekly pro payouts go requested → sent → paid, or failed (retryable). Default `manual`: owner transfers from the bank app and confirms; no contract needed. Optional `toss`: Toss Payments 지급대행, set in the setup wizard "payout" card (mode `toss` + test or live secret key). Toss mode needs a payout contract, and its endpoints were not verified against live docs (docs.tosspayments.com returned 404 when built); check them in a sandbox first | `providers/payout.rs`, `routes/payouts.rs`, `payout.rs` (state machine), migration `0014`; owner guide `guide/02` §7 |
 | Team-member login (built) | Team members sign in on the partner app with their invited phone; they see only assigned jobs and never payouts | No external account. Owner invites by phone (`POST /v1/partner/team`) | `routes/member.rs`, `routes/auth.rs::verify_otp`, migration `0006` |
 
 Legal: publish a privacy policy and terms (PIPA). Add them in the console under Coupons & content → Legal (slugs `privacy` and `terms`). The apps show them automatically.
@@ -131,7 +132,7 @@ To wire each provider:
 | Provider | Add to `app/apps/customer/pubspec.yaml` and `app/apps/partner/pubspec.yaml` | Native setup | Then |
 |---|---|---|---|
 | Kakao | `kakao_flutter_sdk_user` | Android: `<meta-data android:name="com.kakao.sdk.AppKey" .../>` and the `kakao{NATIVE_APP_KEY}` intent-filter in `AndroidManifest.xml`. Register the Android key hash (debug and release) in the Kakao console. iOS: `KAKAO_NATIVE_APP_KEY` in `Info.plist` plus a `kakao{key}` URL scheme and `LSApplicationQueriesSchemes` (`kakaokompassauth`, `kakaolink`). | `UserApi.instance.loginWithKakaoTalk()` (fallback `loginWithKakaoAccount()`), return `token.accessToken` |
-| Naver | `flutter_naver_login` | Client id/secret/name in the Naver developer console; Android and iOS URL schemes; `naverlogin` and `naversearchapp` in `LSApplicationQueriesSchemes` | `FlutterNaverLogin.logIn()`, return `accessToken` |
+| Naver | `flutter_web_auth_2` | Client id (`NAVER_CLIENT_ID`); `malkkeumnaver` scheme: `CallbackActivity` in `AndroidManifest.xml`, `Info.plist` URL type. Browser login returns `code` + `state`; app sends `code:state` | `social_native_io.dart::NaverSocialSignIn` |
 | Google | `google_sign_in` | Android: OAuth client per package and SHA-1 (debug and release). iOS: reversed client id URL scheme and `GIDClientID` | `GoogleSignIn().signIn()`, return the access token the backend expects |
 | Apple | `sign_in_with_apple` | Xcode: enable the *Sign in with Apple* capability; Apple developer console: App ID capability and a Services ID for web/Android | `SignInWithApple.getAppleIDCredential()`, return `identityToken` |
 | PortOne payments | `portone_flutter_v2` (or a WebView) | Store id and channel keys from the PortOne console per method; add the app return scheme | Implement `PortOneLauncher.pay`: return `PaymentApproved(paymentId)` from the callback |
@@ -147,3 +148,10 @@ scripts/dev-api.sh             # Postgres on :5433 + API on :8080 (DEV_MODE fake
 python -I scripts/smoke.py     # 13 end-to-end business checks
 cd app/apps/customer && flutter run -d windows   # or chrome / an Android device
 ```
+
+## 6. Uploaded photos (operators)
+
+- Chat, completion and review photos are no longer public files. Caddy does not route `/files`; the API serves them at `/v1/files/<name>` only with a link signed for one hour. Apps get fresh links on every API read, so nothing to configure.
+- Signing key is derived from `DATA_KEY`. Rotating `DATA_KEY` ends open photo links within an hour; photos and their rows are unaffected.
+- Photos stored before this change keep working as long as `PUBLIC_BASE_URL` stays the same.
+- Backups still take the upload directory as a tar (`uploads-*.tar.gz`); no object storage is used.

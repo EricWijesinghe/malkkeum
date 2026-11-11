@@ -280,7 +280,7 @@ pub fn is_hex_color(s: &str) -> bool {
 
 /// Only our own uploads or https images: the logo is shown in every app and on the website.
 pub fn is_logo_url(base: &str, s: &str) -> bool {
-    crate::util::is_own_upload(base, s) || (s.starts_with("/files/") && !s.contains("..")) || (s.starts_with("https://") && !s.contains(char::is_whitespace))
+    crate::util::own_upload(base, s).is_some() || (s.starts_with("/files/") && !s.contains("..")) || (s.starts_with("https://") && !s.contains(char::is_whitespace))
 }
 
 /// Validated business profile; unknown keys are dropped.
@@ -301,7 +301,7 @@ pub fn clean_business(base: &str, input: &Value) -> Result<Value, ApiError> {
         if !is_logo_url(base, &u) {
             return Err(ApiError::BadRequest("invalid_logo"));
         }
-        out.insert("logo_url".into(), json!(u));
+        out.insert("logo_url".into(), json!(crate::util::own_upload(base, &u).unwrap_or(u)));
     }
     for k in STORE_LINKS {
         if let Some(u) = clean_text(input, k)? {

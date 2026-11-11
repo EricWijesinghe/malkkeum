@@ -10,7 +10,7 @@ use crate::{
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
     state::AppState,
-    util::{best_effort, is_own_upload, today_kst},
+    util::{best_effort, own_uploads, today_kst},
 };
 use axum::{
     Json, Router,
@@ -105,10 +105,11 @@ struct Completion {
 /// Same rules and writes as the owner's completion (`partner_jobs::complete`), with no payout in the response.
 /// Kept as a copy: the owner handler carries the team-phone gate, and the shared body is not factored out yet.
 async fn complete(State(s): State<AppState>, Member(a): Member, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
-    let own_file = |u: &String| is_own_upload(&s.config.public_base_url, u);
-    let photos_ok = (1..=MAX_PHOTOS).contains(&c.before_photos.len())
-        && (1..=MAX_PHOTOS).contains(&c.after_photos.len())
-        && c.before_photos.iter().chain(&c.after_photos).all(own_file);
+    let base = &s.config.public_base_url;
+    let (Some(before), Some(after)) = (own_uploads(base, &c.before_photos), own_uploads(base, &c.after_photos)) else {
+        return Err(ApiError::BadRequest("completion_incomplete"));
+    };
+    let photos_ok = (1..=MAX_PHOTOS).contains(&before.len()) && (1..=MAX_PHOTOS).contains(&after.len());
     if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
         return Err(ApiError::BadRequest("completion_incomplete"));
     }
@@ -136,8 +137,8 @@ async fn complete(State(s): State<AppState>, Member(a): Member, Path(id): Path<U
     }
     sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by) VALUES ($1,$2,$3,$4,$5)")
         .bind(id)
-        .bind(&c.before_photos)
-        .bind(&c.after_photos)
+        .bind(&before)
+        .bind(&after)
         .bind(json!(c.checklist))
         .bind(a.id)
         .execute(&mut *tx)

@@ -72,13 +72,22 @@ pub fn sanitize_notes(v: &Value) -> Option<Value> {
     Some(Value::Object(out))
 }
 
-/// Our own upload URLs only: `<base>/files/<32 hex>.<ext>` — no traversal, no foreign hosts.
-pub fn is_own_upload(base: &str, url: &str) -> bool {
-    let Some(name) = url.strip_prefix(&format!("{base}/files/")) else {
-        return false;
-    };
-    let Some((stem, ext)) = name.split_once('.') else { return false };
-    stem.len() == 32 && stem.chars().all(|c| c.is_ascii_hexdigit()) && matches!(ext, "jpg" | "png" | "webp" | "heic")
+pub const IMAGE_EXTS: [&str; 4] = ["jpg", "png", "webp", "heic"];
+
+/// Stored form of one of our upload URLs (`/files/<32 hex>.<ext>`), or None for anything else.
+/// Accepts the relative or base-prefixed form, with `/v1` and a signed query string; no traversal, no foreign hosts.
+pub fn own_upload(base: &str, url: &str) -> Option<String> {
+    let path = url.strip_prefix(base).unwrap_or(url);
+    let path = path.strip_prefix("/v1").unwrap_or(path);
+    let name = path.strip_prefix("/files/")?.split('?').next()?;
+    let (stem, ext) = name.split_once('.')?;
+    let ok = stem.len() == 32 && stem.chars().all(|c| c.is_ascii_hexdigit()) && IMAGE_EXTS.contains(&ext);
+    ok.then(|| format!("/files/{name}"))
+}
+
+/// Stored paths for a list of upload URLs; None if any entry is not one of ours.
+pub fn own_uploads(base: &str, urls: &[String]) -> Option<Vec<String>> {
+    urls.iter().map(|u| own_upload(base, u)).collect()
 }
 
 #[cfg(test)]
@@ -96,9 +105,13 @@ mod tests {
     #[test]
     fn upload_urls() {
         let b = "https://api.x";
-        assert!(is_own_upload(b, "https://api.x/files/0123456789abcdef0123456789abcdef.jpg"));
-        assert!(!is_own_upload(b, "https://api.x/files/../etc/passwd"));
-        assert!(!is_own_upload(b, "https://evil.x/files/0123456789abcdef0123456789abcdef.jpg"));
-        assert!(!is_own_upload(b, "https://api.x/files/0123456789abcdef0123456789abcdef.svg"));
+        let stem = "0123456789abcdef0123456789abcdef";
+        assert_eq!(own_upload(b, &format!("https://api.x/files/{stem}.jpg")).as_deref(), Some(&*format!("/files/{stem}.jpg")));
+        assert_eq!(own_upload(b, &format!("https://api.x/v1/files/{stem}.png?exp=5&sig=ab")).as_deref(), Some(&*format!("/files/{stem}.png")));
+        assert_eq!(own_upload(b, &format!("/files/{stem}.webp")).as_deref(), Some(&*format!("/files/{stem}.webp")));
+        assert!(own_upload(b, "https://api.x/files/../etc/passwd").is_none());
+        assert!(own_upload(b, &format!("https://evil.x/files/{stem}.jpg")).is_none());
+        assert!(own_upload(b, &format!("https://api.x.evil/files/{stem}.jpg")).is_none());
+        assert!(own_upload(b, &format!("https://api.x/files/{stem}.svg")).is_none());
     }
 }

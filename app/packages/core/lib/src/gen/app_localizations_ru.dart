@@ -1867,6 +1867,22 @@ class TRu extends T {
   String get err_deposit_required => 'Сначала нужно внести депозит.';
 
   @override
+  String get err_payout_state =>
+      'Статус выплаты изменился. Обновите и проверьте снова.';
+
+  @override
+  String get err_payout_provider => 'Этот способ выплаты сейчас недоступен.';
+
+  @override
+  String get err_unsupported_bank => 'Этот банк не поддерживается для выплат.';
+
+  @override
+  String get err_toss_unverified => 'Сначала подтвердите аккаунт Toss.';
+
+  @override
+  String get err_invalid_capacity => 'Введите корректную вместимость.';
+
+  @override
   String get fFinance => 'Финансы';
 
   @override
@@ -2789,6 +2805,81 @@ class TRu extends T {
 
   @override
   String get pSpace => 'Информация о пространстве';
+
+  @override
+  String get poTabSettlements => 'Расчёты';
+
+  @override
+  String get poTabPayouts => 'Выплаты';
+
+  @override
+  String get poState_requested => 'Запрошено';
+
+  @override
+  String get poState_sent => 'Отправлено';
+
+  @override
+  String get poState_paid => 'Оплачено';
+
+  @override
+  String get poState_failed => 'Ошибка';
+
+  @override
+  String get poProviderManual => 'Ручной перевод';
+
+  @override
+  String get poProviderToss => 'Выплаты через Toss';
+
+  @override
+  String get poShowAccount => 'Показать счёт';
+
+  @override
+  String get poAccountTitle => 'Реквизиты перевода';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'Отправьте $amount вон на $holder · $bank · $account, затем нажмите «Подтвердить».';
+  }
+
+  @override
+  String get poConfirmPaid => 'Отметить как переведено';
+
+  @override
+  String get poMarkFailed => 'Отметить как неудачное';
+
+  @override
+  String get poReasonTitle => 'Причина ошибки';
+
+  @override
+  String get poReasonHint => 'напр.: неверный счёт, перевод отменён';
+
+  @override
+  String get poSend => 'Отправить через Toss';
+
+  @override
+  String get poSync => 'Проверить статус';
+
+  @override
+  String get poRetry => 'Повторить';
+
+  @override
+  String get poNoPayouts => 'Выплат пока нет';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'Создано запросов на выплату: $n';
+  }
+
+  @override
+  String get poReasonRequired => 'Укажите причину';
+
+  @override
+  String get poRevealNote => 'Просмотр реквизитов фиксируется';
 
   @override
   String get cSetup => 'Настройка';

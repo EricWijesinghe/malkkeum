@@ -1868,6 +1868,23 @@ class TId extends T {
   String get err_deposit_required => 'Uang muka harus dibayar dulu.';
 
   @override
+  String get err_payout_state =>
+      'Status pencairan berubah. Muat ulang dan cek lagi.';
+
+  @override
+  String get err_payout_provider =>
+      'Metode pencairan ini sedang tidak tersedia.';
+
+  @override
+  String get err_unsupported_bank => 'Bank ini belum didukung untuk pencairan.';
+
+  @override
+  String get err_toss_unverified => 'Verifikasi akun Toss dulu.';
+
+  @override
+  String get err_invalid_capacity => 'Masukkan kapasitas yang valid.';
+
+  @override
   String get fFinance => 'Keuangan';
 
   @override
@@ -2790,6 +2807,81 @@ class TId extends T {
 
   @override
   String get pSpace => 'Info ruang';
+
+  @override
+  String get poTabSettlements => 'Penyelesaian';
+
+  @override
+  String get poTabPayouts => 'Pencairan';
+
+  @override
+  String get poState_requested => 'Diminta';
+
+  @override
+  String get poState_sent => 'Dikirim';
+
+  @override
+  String get poState_paid => 'Dibayar';
+
+  @override
+  String get poState_failed => 'Gagal';
+
+  @override
+  String get poProviderManual => 'Transfer manual';
+
+  @override
+  String get poProviderToss => 'Pencairan Toss';
+
+  @override
+  String get poShowAccount => 'Tampilkan rekening';
+
+  @override
+  String get poAccountTitle => 'Detail transfer';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'Kirim $amount won ke $holder · $bank · $account, lalu tekan konfirmasi.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Tandai sudah ditransfer';
+
+  @override
+  String get poMarkFailed => 'Tandai gagal';
+
+  @override
+  String get poReasonTitle => 'Alasan gagal';
+
+  @override
+  String get poReasonHint => 'mis. rekening salah, transfer dibatalkan';
+
+  @override
+  String get poSend => 'Kirim lewat Toss';
+
+  @override
+  String get poSync => 'Cek status';
+
+  @override
+  String get poRetry => 'Coba lagi';
+
+  @override
+  String get poNoPayouts => 'Belum ada pencairan';
+
+  @override
+  String poRequestedToast(String n) {
+    return '$n permintaan pencairan dibuat';
+  }
+
+  @override
+  String get poReasonRequired => 'Masukkan alasan';
+
+  @override
+  String get poRevealNote => 'Melihat detail rekening dicatat';
 
   @override
   String get cSetup => 'Pengaturan';

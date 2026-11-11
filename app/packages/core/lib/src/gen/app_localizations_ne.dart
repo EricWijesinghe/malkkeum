@@ -1864,6 +1864,22 @@ class TNe extends T {
   String get err_deposit_required => 'पहिले धरौटी रकम तिर्नुपर्छ।';
 
   @override
+  String get err_payout_state =>
+      'भुक्तानी स्थिति परिवर्तन भयो। रिफ्रेस गरेर फेरि जाँच गर्नुहोस्।';
+
+  @override
+  String get err_payout_provider => 'यो भुक्तानी विधि अहिले उपलब्ध छैन।';
+
+  @override
+  String get err_unsupported_bank => 'यो बैंकमा भुक्तानी गर्न समर्थित छैन।';
+
+  @override
+  String get err_toss_unverified => 'पहिले Toss खाता प्रमाणित गर्नुहोस्।';
+
+  @override
+  String get err_invalid_capacity => 'मान्य क्षमता प्रविष्ट गर्नुहोस्।';
+
+  @override
   String get fFinance => 'वित्त';
 
   @override
@@ -2784,6 +2800,81 @@ class TNe extends T {
 
   @override
   String get pSpace => 'ठाउँको जानकारी';
+
+  @override
+  String get poTabSettlements => 'सेटलमेन्ट';
+
+  @override
+  String get poTabPayouts => 'भुक्तानी';
+
+  @override
+  String get poState_requested => 'अनुरोध गरिएको';
+
+  @override
+  String get poState_sent => 'पठाइयो';
+
+  @override
+  String get poState_paid => 'भुक्तानी भयो';
+
+  @override
+  String get poState_failed => 'असफल';
+
+  @override
+  String get poProviderManual => 'म्यानुअल ट्रान्सफर';
+
+  @override
+  String get poProviderToss => 'Toss मार्फत भुक्तानी';
+
+  @override
+  String get poShowAccount => 'खाता देखाउनुहोस्';
+
+  @override
+  String get poAccountTitle => 'ट्रान्सफर विवरण';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder · $bank · $account मा $amount वोन पठाउनुहोस्, त्यसपछि पुष्टि थिच्नुहोस्।';
+  }
+
+  @override
+  String get poConfirmPaid => 'ट्रान्सफर भएको चिन्ह लगाउनुहोस्';
+
+  @override
+  String get poMarkFailed => 'असफल चिन्ह लगाउनुहोस्';
+
+  @override
+  String get poReasonTitle => 'असफलताको कारण';
+
+  @override
+  String get poReasonHint => 'जस्तै: गलत खाता, ट्रान्सफर रद्द';
+
+  @override
+  String get poSend => 'Toss मार्फत पठाउनुहोस्';
+
+  @override
+  String get poSync => 'स्थिति जाँच गर्नुहोस्';
+
+  @override
+  String get poRetry => 'फेरि प्रयास गर्नुहोस्';
+
+  @override
+  String get poNoPayouts => 'अहिलेसम्म कुनै भुक्तानी छैन';
+
+  @override
+  String poRequestedToast(String n) {
+    return '$n भुक्तानी अनुरोध सिर्जना गरियो';
+  }
+
+  @override
+  String get poReasonRequired => 'कारण लेख्नुहोस्';
+
+  @override
+  String get poRevealNote => 'खाता विवरण हेर्ने कार्य लग गरिन्छ';
 
   @override
   String get cSetup => 'सेटअप';

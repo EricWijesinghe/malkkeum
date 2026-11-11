@@ -113,6 +113,8 @@ class SettlementsScreen extends StatefulWidget {
 class _SettlementsState extends State<SettlementsScreen> {
   final _view = GlobalKey<AsyncViewState<List<Json>>>();
   String? _state;
+  bool _payouts = false;
+  final _payoutsView = GlobalKey<AsyncViewState<List<Json>>>();
 
   Future<void> _run() async {
     final t = context.t;
@@ -125,39 +127,129 @@ class _SettlementsState extends State<SettlementsScreen> {
     );
     if (date == null || !mounted) return;
     try {
-      final lines =
+      final rows =
           (await context.api.post('/admin/settlements/run-payouts', {
                     'date': DateFormat('yyyy-MM-dd').format(date),
                   })
                   as List)
               .cast<Json>();
       if (!mounted) return;
-      showToast(context, t.cPayoutDone('${lines.length}'));
-      await showDialog<void>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(t.cRunPayouts),
-          // Transfer sheet for the bank (or the future bank API): holder, bank, account, amount.
-          content: SelectableText(
-            lines
-                .map(
-                  (l) =>
-                      '${l['holder']}\t${l['bank']}\t${l['account']}\t${l['total']}',
-                )
-                .join('\n'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(t.close),
-            ),
-          ],
-        ),
-      );
-      await _view.currentState?.reload();
+      showToast(context, t.poRequestedToast('${rows.length}'));
+      // A new tab mounts and loads its own list, so no reload is needed here.
+      setState(() => _payouts = true);
     } catch (e) {
       if (mounted) showToast(context, t.error(e));
     }
+  }
+
+  Widget _payoutList(BuildContext context, bool admin) {
+    final t = context.t;
+    return AsyncView<List<Json>>(
+      key: _payoutsView,
+      load: () async => (await context.api.get('/admin/settlements/payouts') as List).cast<Json>(),
+      builder: (context, rows, reload) => rows.isEmpty
+          ? Center(child: Text(t.poNoPayouts))
+          : ListView(
+              padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+              children: [for (final p in rows) _payoutCard(context, p, admin, reload)],
+            ),
+    );
+  }
+
+  Widget _payoutCard(BuildContext context, Json p, bool admin, Future<void> Function() reload) {
+    final t = context.t;
+    final id = p['id'] as String;
+    final state = p['state'] as String;
+    final manual = p['provider'] == 'manual';
+    final team = (p['team_name'] as String? ?? '').isEmpty ? '' : ' · ${p['team_name']}';
+    final failure = p['failure_reason'] == null ? '' : '\n${p['failure_reason']}';
+    Future<void> post(String path) => _act(context, () => context.api.post('/admin/settlements/payouts/$id/$path', {}), reload);
+    return Card(
+      elevation: 0,
+      child: ListTile(
+        title: Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}'),
+        subtitle: Text(
+          '${context.won((p['amount'] as num).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
+        ),
+        trailing: Wrap(
+          spacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Tag(
+              label: switch (state) {
+                'requested' => t.poState_requested,
+                'sent' => t.poState_sent,
+                'paid' => t.poState_paid,
+                _ => t.poState_failed,
+              },
+              hue: switch (state) {
+                'paid' => StatusHues.assigned,
+                'sent' => StatusHues.confirmed,
+                'failed' => StatusHues.cancelled,
+                _ => StatusHues.consultation,
+              },
+            ),
+            if (admin && state == 'requested' && manual)
+              TextButton(onPressed: () => _showAccount(context, id), child: Text(t.poShowAccount)),
+            if (admin && state == 'requested' && manual) TextButton(onPressed: () => post('confirm'), child: Text(t.poConfirmPaid)),
+            if (admin && state == 'requested' && !manual) TextButton(onPressed: () => post('send'), child: Text(t.poSend)),
+            if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
+            if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
+            if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Bank details for a manual transfer. Each reveal is audit-logged on the server.
+  Future<void> _showAccount(BuildContext context, Object id) async {
+    final t = context.t;
+    try {
+      final a = (await context.api.get('/admin/settlements/payouts/$id/account')) as Json;
+      if (!context.mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(t.poAccountTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectableText(t.poAccountBody(a['holder'] as String, a['bank'] as String, a['account'] as String, '${a['amount']}')),
+              const SizedBox(height: Space.sm),
+              Text(t.poRevealNote, style: ctx.text.bodySmall),
+            ],
+          ),
+          actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(t.close))],
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) showToast(context, t.error(e));
+    }
+  }
+
+  Future<void> _fail(BuildContext context, Object id, Future<void> Function() reload) async {
+    final t = context.t;
+    final c = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.poReasonTitle),
+        content: TextField(controller: c, decoration: InputDecoration(hintText: t.poReasonHint)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(t.close)),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(c.text.trim()), child: Text(t.poMarkFailed)),
+        ],
+      ),
+    );
+    c.dispose();
+    if (reason == null || !context.mounted) return;
+    if (reason.isEmpty) {
+      showToast(context, t.poReasonRequired);
+      return;
+    }
+    await _act(context, () => context.api.post('/admin/settlements/payouts/$id/fail', {'reason': reason}), reload);
   }
 
   @override
@@ -176,6 +268,16 @@ class _SettlementsState extends State<SettlementsScreen> {
           padding: const EdgeInsets.all(Space.md),
           child: Row(
             children: [
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(value: false, label: Text(t.poTabSettlements)),
+                  ButtonSegment(value: true, label: Text(t.poTabPayouts)),
+                ],
+                selected: {_payouts},
+                onSelectionChanged: (s) => setState(() => _payouts = s.first),
+              ),
+              const SizedBox(width: Space.md),
+              if (!_payouts)
               DropdownButton<String?>(
                 value: _state,
                 items: [
@@ -204,7 +306,9 @@ class _SettlementsState extends State<SettlementsScreen> {
           ),
         ),
         Expanded(
-          child: AsyncView<List<Json>>(
+          child: _payouts
+              ? _payoutList(context, admin)
+              : AsyncView<List<Json>>(
             key: _view,
             load: () async =>
                 (await context.api.get(

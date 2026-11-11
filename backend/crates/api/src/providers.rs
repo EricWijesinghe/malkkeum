@@ -2,11 +2,19 @@
 //! whole system runs offline; production adapters plug in behind the same API.
 
 pub mod fcm;
+pub mod payout;
 pub mod portone;
 pub mod sms;
 pub mod social;
 
-use crate::{config::Config, error::ApiError, integrations::Integrations, ops};
+use crate::{
+    config::Config,
+    error::ApiError,
+    integrations::{Integrations, PayoutMode},
+    ops,
+};
+use payout::{Transfer, TransferStatus};
+use reqwest::Request;
 use rand::{RngCore, rngs::OsRng};
 use sqlx::PgPool;
 use serde_json::{Value, json};
@@ -238,6 +246,44 @@ impl Providers {
             return verified;
         }
         portone::dev_identity(verification_id).ok_or(ProviderError::NotFound)
+    }
+
+    /// Provider for new payouts: `manual` unless the owner configured Toss in the setup wizard.
+    pub fn payout_mode(&self) -> PayoutMode {
+        self.integ().payout.as_ref().map_or(PayoutMode::Manual, |p| p.mode)
+    }
+
+    /// Sends a transfer through Toss. `idempotency_key` must stay the same for every retry of one
+    /// payout. Returns the provider's transfer id.
+    pub async fn send_transfer(&self, idempotency_key: &str, ref_id: &str, t: &Transfer) -> Result<String, ProviderError> {
+        if self.dev() {
+            return Ok(format!("dev_{ref_id}"));
+        }
+        let secret = self.payout_secret()?;
+        let req = payout::send_request(&self.http, &secret, idempotency_key, ref_id, t)?;
+        let body = self.payout_call(req).await?;
+        payout::parse_sent(&body)
+    }
+
+    /// Current state of a Toss transfer, looked up by our reference id.
+    pub async fn transfer_status(&self, ref_id: &str) -> Result<TransferStatus, ProviderError> {
+        if self.dev() {
+            return Ok(TransferStatus::Paid);
+        }
+        let secret = self.payout_secret()?;
+        let req = payout::status_request(&self.http, &secret, ref_id)?;
+        Ok(payout::parse_status(&self.payout_call(req).await?))
+    }
+
+    fn payout_secret(&self) -> Result<String, ProviderError> {
+        self.integ().payout.as_ref().and_then(|p| p.secret_key.clone()).ok_or(ProviderError::NotConfigured("payout"))
+    }
+
+    async fn payout_call(&self, req: Request) -> Result<serde_json::Value, ProviderError> {
+        let resp = self.http.execute(req).await.map_err(|e| ProviderError::Upstream(e.to_string()))?;
+        let status = resp.status();
+        let body = resp.json::<serde_json::Value>().await.unwrap_or(serde_json::Value::Null);
+        if status.is_success() { Ok(body) } else { Err(payout::classify(status, &body)) }
     }
 
     pub async fn push(&self, tokens: &[String], title: &str, body: &str, data: &Value) -> Result<(), ProviderError> {

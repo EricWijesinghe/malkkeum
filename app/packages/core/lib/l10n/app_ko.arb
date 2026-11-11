@@ -829,6 +829,11 @@
  "err_invalid_coupon": "쿠폰 정보가 올바르지 않아요.",
  "err_settlement_state": "지금은 정산 상태를 바꿀 수 없어요.",
  "err_deposit_required": "예약금을 먼저 받아야 해요.",
+ "err_payout_state": "정산 상태가 바뀌었어요. 새로고침 후 다시 확인해 주세요.",
+ "err_payout_provider": "이 지급 방식은 지금 쓸 수 없어요.",
+ "err_unsupported_bank": "이 은행은 지급을 지원하지 않아요.",
+ "err_toss_unverified": "토스 계정 인증을 먼저 완료해 주세요.",
+ "err_invalid_capacity": "정원은 숫자로 입력해 주세요.",
  "fFinance": "재무",
  "fPeriodDay": "일",
  "fPeriodWeek": "주",
@@ -1313,6 +1318,51 @@
  "pSize": "면적",
  "pSchedule": "일정",
  "pSpace": "공간 정보",
+ "poTabSettlements": "정산",
+ "poTabPayouts": "지급 내역",
+ "poState_requested": "요청됨",
+ "poState_sent": "전송됨",
+ "poState_paid": "지급 완료",
+ "poState_failed": "실패",
+ "poProviderManual": "직접 이체",
+ "poProviderToss": "토스 지급대행",
+ "poShowAccount": "계좌 보기",
+ "poAccountTitle": "이체 정보",
+ "poAccountBody": "{holder} · {bank} · {account}\n{amount}원을 위 계좌로 보낸 뒤 확인을 눌러 주세요.",
+ "@poAccountBody": {
+  "placeholders": {
+   "holder": {
+    "type": "String"
+   },
+   "bank": {
+    "type": "String"
+   },
+   "account": {
+    "type": "String"
+   },
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "poConfirmPaid": "이체 완료로 표시",
+ "poMarkFailed": "실패로 표시",
+ "poReasonTitle": "실패 사유",
+ "poReasonHint": "예: 계좌 오류, 이체 취소",
+ "poSend": "토스로 지급 요청",
+ "poSync": "상태 확인",
+ "poRetry": "다시 시도",
+ "poNoPayouts": "지급 내역이 없어요",
+ "poRequestedToast": "지급 요청 {n}건을 만들었어요",
+ "@poRequestedToast": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "poReasonRequired": "사유를 입력해 주세요",
+ "poRevealNote": "계좌 정보는 조회 기록에 남아요",
  "cSetup": "설정",
  "cSetupTitle": "서비스 시작 준비",
  "cSetupProgress": "{done}/{total} 완료",

@@ -27,7 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- Kakao login returns here (scheme kakao<native app key>, set from --dart-define). -->
+        <!-- Kakao login returns here; the scheme is kakao plus KAKAO_NATIVE_KEY, passed as a dart-define. -->
         <activity
             android:name="com.kakao.sdk.flutter.auth.AuthCodeHandlerActivity"
             android:exported="true">
@@ -47,6 +47,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Naver login returns here (malkkeumnaver://naverlogin) from the browser; see social_native_io.dart. -->
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="malkkeumnaver" />
+            </intent-filter>
+        </activity>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

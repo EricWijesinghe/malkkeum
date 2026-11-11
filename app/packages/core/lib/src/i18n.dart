@@ -15,9 +15,14 @@ extension L10nX on BuildContext {
 /// so screens never switch on raw strings.
 extension Labels on T {
   String error(Object e) {
-    if (e is ApiException) {
-      if (e.isNetwork) return errorNetwork;
-      return switch (e.code) {
+    if (e is! ApiException) return errorGeneric;
+    if (e.isNetwork) return errorNetwork;
+    return _codeMessage(e.code) ?? errorGeneric;
+  }
+
+  /// Copy for one backend code; null means no dedicated copy. Codes listed in
+  /// test/fixtures/backend_error_codes.json as 'localized' must return non-null.
+  String? _codeMessage(String code) => switch (code) {
         'invalid_phone' => err_invalid_phone,
         'otp_invalid' => err_otp_invalid,
         'otp_expired' => err_otp_expired,
@@ -43,11 +48,55 @@ extension Labels on T {
         'invalid_referral_code' => err_invalid_referral_code,
         'referral_disabled' => err_referral_disabled,
         'invalid_photos' => err_invalid_photos,
-        _ => errorGeneric,
+        'price_changed' => err_price_changed,
+        'checkout_closed' => err_checkout_closed,
+        'checkout_refunded' => err_checkout_refunded,
+        'already_paid' => err_already_paid,
+        'quote_not_payable' => err_quote_not_payable,
+        'payment_method_disabled' => err_payment_method_disabled,
+        'invalid_payment_method' => err_invalid_payment_method,
+        'balance_not_due' => err_balance_not_due,
+        'invalid_slot' => err_invalid_slot,
+        'booking_changed' => err_booking_changed,
+        'booking_closed' => err_booking_closed,
+        'reschedule_closed' => err_reschedule_closed,
+        'too_many_open_requests' => err_too_many_open_requests,
+        'already_reviewed' => err_already_reviewed,
+        'identity_not_verified' => err_identity_not_verified,
+        'email_taken' => err_email_taken,
+        'invalid_email' => err_invalid_email,
+        'file_too_large' => err_file_too_large,
+        'unsupported_image' => err_unsupported_image,
+        'upload_quota' => err_upload_quota,
+        'provider_unreachable' => err_provider_unreachable,
+        'invalid_token' => err_invalid_token,
+        'invalid_transition' => err_invalid_transition,
+        'job_not_started' => err_job_not_started,
+        'job_not_active' => err_job_not_active,
+        'quote_locked' => err_quote_locked,
+        'request_closed' => err_request_closed,
+        'team_full' => err_team_full,
+        'invalid_webhook_secret' => err_invalid_webhook_secret,
+        'invalid_endpoint' => err_invalid_endpoint,
+        'invalid_bucket' => err_invalid_bucket,
+        'invalid_region' => err_invalid_region,
+        'invalid_retention' => err_invalid_retention,
+        'invalid_service_account' => err_invalid_service_account,
+        'invalid_mode' => err_invalid_mode,
+        'invalid_model' => err_invalid_model,
+        'missing_field' => err_missing_field,
+        'invalid_amount' => err_invalid_amount,
+        'cannot_deactivate_self' => err_cannot_deactivate_self,
+        'invalid_coupon' => err_invalid_coupon,
+        'settlement_state' => err_settlement_state,
+        'deposit_required' => err_deposit_required,
+        'payout_state' => err_payout_state,
+        'payout_provider' => err_payout_provider,
+        'unsupported_bank' => err_unsupported_bank,
+        'toss_unverified' => err_toss_unverified,
+        'invalid_capacity' => err_invalid_capacity,
+        _ => null,
       };
-    }
-    return errorGeneric;
-  }
 
   String service(String code) => switch (code) {
         'studio' => svc_studio,

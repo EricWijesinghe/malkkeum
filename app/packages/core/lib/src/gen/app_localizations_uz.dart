@@ -1874,6 +1874,23 @@ class TUz extends T {
   String get err_deposit_required => 'Avval depozit to‘lanishi kerak.';
 
   @override
+  String get err_payout_state =>
+      'To‘lov holati o‘zgardi. Yangilab, qayta tekshiring.';
+
+  @override
+  String get err_payout_provider => 'Bu to‘lov usuli hozircha mavjud emas.';
+
+  @override
+  String get err_unsupported_bank =>
+      'Bu bank to‘lovlar uchun qo‘llab-quvvatlanmaydi.';
+
+  @override
+  String get err_toss_unverified => 'Avval Toss hisobini tasdiqlang.';
+
+  @override
+  String get err_invalid_capacity => 'To‘g‘ri sig‘imni kiriting.';
+
+  @override
   String get fFinance => 'Moliya';
 
   @override
@@ -2799,6 +2816,81 @@ class TUz extends T {
 
   @override
   String get pSpace => 'Joy ma\'lumoti';
+
+  @override
+  String get poTabSettlements => 'Hisob-kitoblar';
+
+  @override
+  String get poTabPayouts => 'To‘lovlar';
+
+  @override
+  String get poState_requested => 'So‘ralgan';
+
+  @override
+  String get poState_sent => 'Yuborilgan';
+
+  @override
+  String get poState_paid => 'To‘langan';
+
+  @override
+  String get poState_failed => 'Muvaffaqiyatsiz';
+
+  @override
+  String get poProviderManual => 'Qo‘lda o‘tkazma';
+
+  @override
+  String get poProviderToss => 'Toss orqali to‘lovlar';
+
+  @override
+  String get poShowAccount => 'Hisobni ko‘rsatish';
+
+  @override
+  String get poAccountTitle => 'O‘tkazma tafsilotlari';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder · $bank · $account ga $amount von yuboring, so‘ng tasdiqlashni bosing.';
+  }
+
+  @override
+  String get poConfirmPaid => 'O‘tkazilgan deb belgilash';
+
+  @override
+  String get poMarkFailed => 'Muvaffaqiyatsiz deb belgilash';
+
+  @override
+  String get poReasonTitle => 'Muvaffaqiyatsizlik sababi';
+
+  @override
+  String get poReasonHint => 'masalan: noto‘g‘ri hisob, o‘tkazma bekor qilindi';
+
+  @override
+  String get poSend => 'Toss orqali yuborish';
+
+  @override
+  String get poSync => 'Holatni tekshirish';
+
+  @override
+  String get poRetry => 'Qayta urinish';
+
+  @override
+  String get poNoPayouts => 'Hozircha to‘lovlar yo‘q';
+
+  @override
+  String poRequestedToast(String n) {
+    return '$n ta to‘lov so‘rovi yaratildi';
+  }
+
+  @override
+  String get poReasonRequired => 'Sababni kiriting';
+
+  @override
+  String get poRevealNote => 'Hisob tafsilotlarini ko‘rish qayd etiladi';
 
   @override
   String get cSetup => 'Sozlash';

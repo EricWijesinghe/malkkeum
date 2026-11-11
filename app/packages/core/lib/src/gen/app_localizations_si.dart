@@ -1867,6 +1867,22 @@ class TSi extends T {
   String get err_deposit_required => 'පළමුව තැන්පතුව ගෙවිය යුතුය.';
 
   @override
+  String get err_payout_state =>
+      'ගෙවීම් තත්ත්වය වෙනස් වී ඇත. නැවුම් කර නැවත පරීක්ෂා කරන්න.';
+
+  @override
+  String get err_payout_provider => 'මෙම ගෙවීම් ක්‍රමය දැනට ලබා ගත නොහැක.';
+
+  @override
+  String get err_unsupported_bank => 'මෙම බැංකුවට ගෙවීම් සඳහා සහාය නොදක්වයි.';
+
+  @override
+  String get err_toss_unverified => 'පළමුව Toss ගිණුම තහවුරු කරන්න.';
+
+  @override
+  String get err_invalid_capacity => 'වලංගු ධාරිතාවක් ඇතුළත් කරන්න.';
+
+  @override
   String get fFinance => 'මූල්‍ය';
 
   @override
@@ -2787,6 +2803,81 @@ class TSi extends T {
 
   @override
   String get pSpace => 'ඉඩ තොරතුරු';
+
+  @override
+  String get poTabSettlements => 'ගෙවීම්';
+
+  @override
+  String get poTabPayouts => 'ගෙවීම් ලබාදීම්';
+
+  @override
+  String get poState_requested => 'ඉල්ලුම් කළා';
+
+  @override
+  String get poState_sent => 'යවා ඇත';
+
+  @override
+  String get poState_paid => 'ගෙවා ඇත';
+
+  @override
+  String get poState_failed => 'අසමත්';
+
+  @override
+  String get poProviderManual => 'අතින් මාරු කිරීම';
+
+  @override
+  String get poProviderToss => 'Toss හරහා ගෙවීම්';
+
+  @override
+  String get poShowAccount => 'ගිණුම පෙන්වන්න';
+
+  @override
+  String get poAccountTitle => 'මාරු කිරීමේ විස්තර';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder · $bank · $account වෙත $amount වොන් යවා, තහවුරු කරන්න ඔබන්න.';
+  }
+
+  @override
+  String get poConfirmPaid => 'මාරු කළ ලෙස සලකුණු කරන්න';
+
+  @override
+  String get poMarkFailed => 'අසමත් ලෙස සලකුණු කරන්න';
+
+  @override
+  String get poReasonTitle => 'අසමත් වීමේ හේතුව';
+
+  @override
+  String get poReasonHint => 'උදා: වැරදි ගිණුම, මාරුව අවලංගු';
+
+  @override
+  String get poSend => 'Toss හරහා යවන්න';
+
+  @override
+  String get poSync => 'තත්ත්වය පරීක්ෂා කරන්න';
+
+  @override
+  String get poRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get poNoPayouts => 'තවම ගෙවීම් නැත';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'ගෙවීම් ඉල්ලීම් $nක් සාදන ලදී';
+  }
+
+  @override
+  String get poReasonRequired => 'හේතුව ඇතුළත් කරන්න';
+
+  @override
+  String get poRevealNote => 'ගිණුම් විස්තර බැලීම සටහන් වේ';
 
   @override
   String get cSetup => 'සැකසුම';

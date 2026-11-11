@@ -3577,6 +3577,36 @@ abstract class T {
   /// **'예약금을 먼저 받아야 해요.'**
   String get err_deposit_required;
 
+  /// No description provided for @err_payout_state.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 상태가 바뀌었어요. 새로고침 후 다시 확인해 주세요.'**
+  String get err_payout_state;
+
+  /// No description provided for @err_payout_provider.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 지급 방식은 지금 쓸 수 없어요.'**
+  String get err_payout_provider;
+
+  /// No description provided for @err_unsupported_bank.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 은행은 지급을 지원하지 않아요.'**
+  String get err_unsupported_bank;
+
+  /// No description provided for @err_toss_unverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 계정 인증을 먼저 완료해 주세요.'**
+  String get err_toss_unverified;
+
+  /// No description provided for @err_invalid_capacity.
+  ///
+  /// In ko, this message translates to:
+  /// **'정원은 숫자로 입력해 주세요.'**
+  String get err_invalid_capacity;
+
   /// No description provided for @fFinance.
   ///
   /// In ko, this message translates to:
@@ -5268,6 +5298,143 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'공간 정보'**
   String get pSpace;
+
+  /// No description provided for @poTabSettlements.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get poTabSettlements;
+
+  /// No description provided for @poTabPayouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 내역'**
+  String get poTabPayouts;
+
+  /// No description provided for @poState_requested.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청됨'**
+  String get poState_requested;
+
+  /// No description provided for @poState_sent.
+  ///
+  /// In ko, this message translates to:
+  /// **'전송됨'**
+  String get poState_sent;
+
+  /// No description provided for @poState_paid.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 완료'**
+  String get poState_paid;
+
+  /// No description provided for @poState_failed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get poState_failed;
+
+  /// No description provided for @poProviderManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 이체'**
+  String get poProviderManual;
+
+  /// No description provided for @poProviderToss.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 지급대행'**
+  String get poProviderToss;
+
+  /// No description provided for @poShowAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 보기'**
+  String get poShowAccount;
+
+  /// No description provided for @poAccountTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이체 정보'**
+  String get poAccountTitle;
+
+  /// No description provided for @poAccountBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{holder} · {bank} · {account}\n{amount}원을 위 계좌로 보낸 뒤 확인을 눌러 주세요.'**
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  );
+
+  /// No description provided for @poConfirmPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'이체 완료로 표시'**
+  String get poConfirmPaid;
+
+  /// No description provided for @poMarkFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패로 표시'**
+  String get poMarkFailed;
+
+  /// No description provided for @poReasonTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패 사유'**
+  String get poReasonTitle;
+
+  /// No description provided for @poReasonHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 계좌 오류, 이체 취소'**
+  String get poReasonHint;
+
+  /// No description provided for @poSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스로 지급 요청'**
+  String get poSend;
+
+  /// No description provided for @poSync.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태 확인'**
+  String get poSync;
+
+  /// No description provided for @poRetry.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get poRetry;
+
+  /// No description provided for @poNoPayouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 내역이 없어요'**
+  String get poNoPayouts;
+
+  /// No description provided for @poRequestedToast.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 요청 {n}건을 만들었어요'**
+  String poRequestedToast(String n);
+
+  /// No description provided for @poReasonRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'사유를 입력해 주세요'**
+  String get poReasonRequired;
+
+  /// No description provided for @poRevealNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 정보는 조회 기록에 남아요'**
+  String get poRevealNote;
 
   /// No description provided for @cSetup.
   ///

@@ -1810,6 +1810,21 @@ class TKo extends T {
   String get err_deposit_required => '예약금을 먼저 받아야 해요.';
 
   @override
+  String get err_payout_state => '정산 상태가 바뀌었어요. 새로고침 후 다시 확인해 주세요.';
+
+  @override
+  String get err_payout_provider => '이 지급 방식은 지금 쓸 수 없어요.';
+
+  @override
+  String get err_unsupported_bank => '이 은행은 지급을 지원하지 않아요.';
+
+  @override
+  String get err_toss_unverified => '토스 계정 인증을 먼저 완료해 주세요.';
+
+  @override
+  String get err_invalid_capacity => '정원은 숫자로 입력해 주세요.';
+
+  @override
   String get fFinance => '재무';
 
   @override
@@ -2713,6 +2728,81 @@ class TKo extends T {
 
   @override
   String get pSpace => '공간 정보';
+
+  @override
+  String get poTabSettlements => '정산';
+
+  @override
+  String get poTabPayouts => '지급 내역';
+
+  @override
+  String get poState_requested => '요청됨';
+
+  @override
+  String get poState_sent => '전송됨';
+
+  @override
+  String get poState_paid => '지급 완료';
+
+  @override
+  String get poState_failed => '실패';
+
+  @override
+  String get poProviderManual => '직접 이체';
+
+  @override
+  String get poProviderToss => '토스 지급대행';
+
+  @override
+  String get poShowAccount => '계좌 보기';
+
+  @override
+  String get poAccountTitle => '이체 정보';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder · $bank · $account\n$amount원을 위 계좌로 보낸 뒤 확인을 눌러 주세요.';
+  }
+
+  @override
+  String get poConfirmPaid => '이체 완료로 표시';
+
+  @override
+  String get poMarkFailed => '실패로 표시';
+
+  @override
+  String get poReasonTitle => '실패 사유';
+
+  @override
+  String get poReasonHint => '예: 계좌 오류, 이체 취소';
+
+  @override
+  String get poSend => '토스로 지급 요청';
+
+  @override
+  String get poSync => '상태 확인';
+
+  @override
+  String get poRetry => '다시 시도';
+
+  @override
+  String get poNoPayouts => '지급 내역이 없어요';
+
+  @override
+  String poRequestedToast(String n) {
+    return '지급 요청 $n건을 만들었어요';
+  }
+
+  @override
+  String get poReasonRequired => '사유를 입력해 주세요';
+
+  @override
+  String get poRevealNote => '계좌 정보는 조회 기록에 남아요';
 
   @override
   String get cSetup => '설정';

@@ -1865,6 +1865,22 @@ class TKm extends T {
   String get err_deposit_required => 'ត្រូវបង់ប្រាក់កក់ជាមុនសិន។';
 
   @override
+  String get err_payout_state =>
+      'ស្ថានភាពការបង់ប្រាក់បានប្តូរ។ សូមផ្ទុកឡើងវិញ ហើយពិនិត្យម្តងទៀត។';
+
+  @override
+  String get err_payout_provider => 'វិធីបង់ប្រាក់នេះមិនអាចប្រើបានឥឡូវនេះទេ។';
+
+  @override
+  String get err_unsupported_bank => 'ធនាគារនេះមិនគាំទ្រការបង់ប្រាក់ទេ។';
+
+  @override
+  String get err_toss_unverified => 'សូមផ្ទៀងផ្ទាត់គណនី Toss ជាមុនសិន។';
+
+  @override
+  String get err_invalid_capacity => 'បញ្ចូលចំណុះត្រឹមត្រូវ។';
+
+  @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
 
   @override
@@ -2786,6 +2802,81 @@ class TKm extends T {
 
   @override
   String get pSpace => 'ព័ត៌មានលំហ';
+
+  @override
+  String get poTabSettlements => 'ការបោះស្រាយ';
+
+  @override
+  String get poTabPayouts => 'ការបង់ប្រាក់';
+
+  @override
+  String get poState_requested => 'បានស្នើសុំ';
+
+  @override
+  String get poState_sent => 'បានផ្ញើ';
+
+  @override
+  String get poState_paid => 'បានបង់';
+
+  @override
+  String get poState_failed => 'បរាជ័យ';
+
+  @override
+  String get poProviderManual => 'ផ្ទេរដោយដៃ';
+
+  @override
+  String get poProviderToss => 'ការបង់តាម Toss';
+
+  @override
+  String get poShowAccount => 'បង្ហាញគណនី';
+
+  @override
+  String get poAccountTitle => 'ព័ត៌មានផ្ទេរ';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'ផ្ញើ $amount វ៉ុន ទៅ $holder · $bank · $account បន្ទាប់មកចុចបញ្ជាក់។';
+  }
+
+  @override
+  String get poConfirmPaid => 'សម្គាល់ថាបានផ្ទេរ';
+
+  @override
+  String get poMarkFailed => 'សម្គាល់ថាបរាជ័យ';
+
+  @override
+  String get poReasonTitle => 'មូលហេតុបរាជ័យ';
+
+  @override
+  String get poReasonHint => 'ឧ. គណនីខុស ការផ្ទេរត្រូវបានលុបចោល';
+
+  @override
+  String get poSend => 'ផ្ញើតាម Toss';
+
+  @override
+  String get poSync => 'ពិនិត្យស្ថានភាព';
+
+  @override
+  String get poRetry => 'ព្យាយាមម្តងទៀត';
+
+  @override
+  String get poNoPayouts => 'មិនទាន់មានការបង់ប្រាក់ទេ';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'បានបង្កើតសំណើបង់ប្រាក់ $n';
+  }
+
+  @override
+  String get poReasonRequired => 'បញ្ចូលមូលហេតុ';
+
+  @override
+  String get poRevealNote => 'ការមើលព័ត៌មានគណនីត្រូវបានកត់ត្រា';
 
   @override
   String get cSetup => 'ការកំណត់';

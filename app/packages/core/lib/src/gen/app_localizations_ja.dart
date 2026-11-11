@@ -1810,6 +1810,21 @@ class TJa extends T {
   String get err_deposit_required => '先に予約金のお支払いが必要です。';
 
   @override
+  String get err_payout_state => '支払いの状態が変わりました。更新して再度確認してください。';
+
+  @override
+  String get err_payout_provider => 'この支払い方法は現在利用できません。';
+
+  @override
+  String get err_unsupported_bank => 'この銀行への支払いはサポートされていません。';
+
+  @override
+  String get err_toss_unverified => '先にTossアカウントの認証を完了してください。';
+
+  @override
+  String get err_invalid_capacity => '定員は正しい数字で入力してください。';
+
+  @override
   String get fFinance => '財務';
 
   @override
@@ -2710,6 +2725,81 @@ class TJa extends T {
 
   @override
   String get pSpace => '空間情報';
+
+  @override
+  String get poTabSettlements => '精算';
+
+  @override
+  String get poTabPayouts => '支払い';
+
+  @override
+  String get poState_requested => '依頼済み';
+
+  @override
+  String get poState_sent => '送信済み';
+
+  @override
+  String get poState_paid => '支払い済み';
+
+  @override
+  String get poState_failed => '失敗';
+
+  @override
+  String get poProviderManual => '手動振込';
+
+  @override
+  String get poProviderToss => 'Toss 支払い代行';
+
+  @override
+  String get poShowAccount => '口座を表示';
+
+  @override
+  String get poAccountTitle => '振込先情報';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder・$bank・$account に$amountウォンを振り込んだら確認を押してください。';
+  }
+
+  @override
+  String get poConfirmPaid => '振込完了にする';
+
+  @override
+  String get poMarkFailed => '失敗にする';
+
+  @override
+  String get poReasonTitle => '失敗理由';
+
+  @override
+  String get poReasonHint => '例: 口座誤り、振込取消';
+
+  @override
+  String get poSend => 'Tossで支払い';
+
+  @override
+  String get poSync => '状態を確認';
+
+  @override
+  String get poRetry => '再試行';
+
+  @override
+  String get poNoPayouts => '支払いはまだありません';
+
+  @override
+  String poRequestedToast(String n) {
+    return '支払い依頼を$n件作成しました';
+  }
+
+  @override
+  String get poReasonRequired => '理由を入力してください';
+
+  @override
+  String get poRevealNote => '口座情報の閲覧は記録されます';
 
   @override
   String get cSetup => '設定';

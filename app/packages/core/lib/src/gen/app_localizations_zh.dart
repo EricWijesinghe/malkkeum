@@ -1806,6 +1806,21 @@ class TZh extends T {
   String get err_deposit_required => '需先支付定金。';
 
   @override
+  String get err_payout_state => '支付状态已变更，请刷新后重新确认。';
+
+  @override
+  String get err_payout_provider => '该支付方式当前不可用。';
+
+  @override
+  String get err_unsupported_bank => '不支持向该银行付款。';
+
+  @override
+  String get err_toss_unverified => '请先完成 Toss 账户验证。';
+
+  @override
+  String get err_invalid_capacity => '请输入有效的容量。';
+
+  @override
   String get fFinance => '财务';
 
   @override
@@ -2701,6 +2716,81 @@ class TZh extends T {
 
   @override
   String get pSpace => '空间信息';
+
+  @override
+  String get poTabSettlements => '结算';
+
+  @override
+  String get poTabPayouts => '支付记录';
+
+  @override
+  String get poState_requested => '已请求';
+
+  @override
+  String get poState_sent => '已发送';
+
+  @override
+  String get poState_paid => '已支付';
+
+  @override
+  String get poState_failed => '失败';
+
+  @override
+  String get poProviderManual => '手动转账';
+
+  @override
+  String get poProviderToss => 'Toss 代付';
+
+  @override
+  String get poShowAccount => '查看账户';
+
+  @override
+  String get poAccountTitle => '转账信息';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '请向 $holder · $bank · $account 转账 $amount 韩元，然后点击确认。';
+  }
+
+  @override
+  String get poConfirmPaid => '标记为已转账';
+
+  @override
+  String get poMarkFailed => '标记为失败';
+
+  @override
+  String get poReasonTitle => '失败原因';
+
+  @override
+  String get poReasonHint => '例如：账户错误、转账取消';
+
+  @override
+  String get poSend => '通过 Toss 发送';
+
+  @override
+  String get poSync => '查询状态';
+
+  @override
+  String get poRetry => '重试';
+
+  @override
+  String get poNoPayouts => '暂无支付记录';
+
+  @override
+  String poRequestedToast(String n) {
+    return '已创建 $n 笔支付请求';
+  }
+
+  @override
+  String get poReasonRequired => '请输入原因';
+
+  @override
+  String get poRevealNote => '查看账户信息会被记录';
 
   @override
   String get cSetup => '设置';

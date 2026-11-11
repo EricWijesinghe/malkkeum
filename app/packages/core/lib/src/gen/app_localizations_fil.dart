@@ -1881,6 +1881,24 @@ class TFil extends T {
   String get err_deposit_required => 'Kailangan munang bayaran ang deposito.';
 
   @override
+  String get err_payout_state =>
+      'Nagbago ang status ng bayad. I-refresh at tingnan ulit.';
+
+  @override
+  String get err_payout_provider =>
+      'Hindi available ang paraan ng bayad na ito ngayon.';
+
+  @override
+  String get err_unsupported_bank =>
+      'Hindi suportado ang bangkong ito para sa bayad.';
+
+  @override
+  String get err_toss_unverified => 'I-verify muna ang Toss account.';
+
+  @override
+  String get err_invalid_capacity => 'Maglagay ng valid na kapasidad.';
+
+  @override
   String get fFinance => 'Pananalapi';
 
   @override
@@ -2805,6 +2823,81 @@ class TFil extends T {
 
   @override
   String get pSpace => 'Impormasyon ng espasyo';
+
+  @override
+  String get poTabSettlements => 'Mga settlement';
+
+  @override
+  String get poTabPayouts => 'Mga bayad';
+
+  @override
+  String get poState_requested => 'Hiniling';
+
+  @override
+  String get poState_sent => 'Naipadala';
+
+  @override
+  String get poState_paid => 'Nabayaran';
+
+  @override
+  String get poState_failed => 'Nabigo';
+
+  @override
+  String get poProviderManual => 'Manu-manong paglipat';
+
+  @override
+  String get poProviderToss => 'Bayad sa Toss';
+
+  @override
+  String get poShowAccount => 'Ipakita ang account';
+
+  @override
+  String get poAccountTitle => 'Detalye ng transfer';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'Ipadala ang $amount won kay $holder · $bank · $account, saka i-tap ang kumpirmasyon.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Markahang nailipat';
+
+  @override
+  String get poMarkFailed => 'Markahang nabigo';
+
+  @override
+  String get poReasonTitle => 'Dahilan ng pagkabigo';
+
+  @override
+  String get poReasonHint => 'hal. maling account, nakansela ang transfer';
+
+  @override
+  String get poSend => 'Ipadala sa pamamagitan ng Toss';
+
+  @override
+  String get poSync => 'Tingnan ang status';
+
+  @override
+  String get poRetry => 'Subukan muli';
+
+  @override
+  String get poNoPayouts => 'Wala pang bayad';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'Gumawa ng $n na kahilingan sa bayad';
+  }
+
+  @override
+  String get poReasonRequired => 'Maglagay ng dahilan';
+
+  @override
+  String get poRevealNote => 'Naitatala ang pagtingin sa detalye ng account';
 
   @override
   String get cSetup => 'Pag-setup';

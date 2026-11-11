@@ -6,7 +6,7 @@ use crate::{
     auth::{Admin, Customer, Staff},
     error::{ApiError, ApiResult},
     state::AppState,
-    util::is_own_upload,
+    util::own_uploads,
 };
 use axum::{
     Json, Router,
@@ -316,12 +316,12 @@ async fn moderate_review(State(s): State<AppState>, Admin(a): Admin, Path(bookin
     Ok(Json(json!({ "ok": true, "hidden": m.hidden })))
 }
 
-/// Review photos: only our own uploads, bounded in count (no foreign URLs stored).
-pub(crate) fn check_photos(base: &str, photos: &[String]) -> ApiResult<()> {
-    if photos.len() > MAX_PHOTOS || !photos.iter().all(|p| is_own_upload(base, p)) {
-        return Err(ApiError::BadRequest("invalid_photos"));
+/// Review photos: only our own uploads, bounded in count (no foreign URLs stored). Returns the stored paths.
+pub(crate) fn check_photos(base: &str, photos: &[String]) -> ApiResult<Vec<String>> {
+    match own_uploads(base, photos) {
+        Some(paths) if paths.len() <= MAX_PHOTOS => Ok(paths),
+        _ => Err(ApiError::BadRequest("invalid_photos")),
     }
-    Ok(())
 }
 
 /// One decimal place for the public rating.

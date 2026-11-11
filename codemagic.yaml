@@ -17,6 +17,7 @@ definitions:
     name: Strings and packages
     script: |
       cd app
+      python3 -I ../scripts/ci/check-native.py
       python3 -I tool/gen_arb.py
       flutter pub get
       (cd packages/core && flutter gen-l10n)

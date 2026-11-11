@@ -1857,6 +1857,23 @@ class TEn extends T {
   String get err_deposit_required => 'The deposit must be paid first.';
 
   @override
+  String get err_payout_state =>
+      'The payout status changed. Refresh and check again.';
+
+  @override
+  String get err_payout_provider =>
+      'This payout method isn\'t available right now.';
+
+  @override
+  String get err_unsupported_bank => 'This bank isn\'t supported for payouts.';
+
+  @override
+  String get err_toss_unverified => 'Verify your Toss account first.';
+
+  @override
+  String get err_invalid_capacity => 'Enter a valid capacity.';
+
+  @override
   String get fFinance => 'Finance';
 
   @override
@@ -2772,6 +2789,81 @@ class TEn extends T {
 
   @override
   String get pSpace => 'Space';
+
+  @override
+  String get poTabSettlements => 'Settlements';
+
+  @override
+  String get poTabPayouts => 'Payouts';
+
+  @override
+  String get poState_requested => 'Requested';
+
+  @override
+  String get poState_sent => 'Sent';
+
+  @override
+  String get poState_paid => 'Paid';
+
+  @override
+  String get poState_failed => 'Failed';
+
+  @override
+  String get poProviderManual => 'Manual transfer';
+
+  @override
+  String get poProviderToss => 'Toss payouts';
+
+  @override
+  String get poShowAccount => 'Show account';
+
+  @override
+  String get poAccountTitle => 'Transfer details';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Mark as transferred';
+
+  @override
+  String get poMarkFailed => 'Mark as failed';
+
+  @override
+  String get poReasonTitle => 'Failure reason';
+
+  @override
+  String get poReasonHint => 'e.g. wrong account, transfer cancelled';
+
+  @override
+  String get poSend => 'Send via Toss';
+
+  @override
+  String get poSync => 'Check status';
+
+  @override
+  String get poRetry => 'Retry';
+
+  @override
+  String get poNoPayouts => 'No payouts yet';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'Created $n payout requests';
+  }
+
+  @override
+  String get poReasonRequired => 'Enter a reason';
+
+  @override
+  String get poRevealNote => 'Viewing account details is logged';
 
   @override
   String get cSetup => 'Setup';

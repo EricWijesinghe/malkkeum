@@ -1854,6 +1854,23 @@ class TVi extends T {
   String get err_deposit_required => 'Cần thanh toán tiền đặt cọc trước.';
 
   @override
+  String get err_payout_state =>
+      'Trạng thái chi trả đã thay đổi. Hãy làm mới và kiểm tra lại.';
+
+  @override
+  String get err_payout_provider =>
+      'Phương thức chi trả này hiện không dùng được.';
+
+  @override
+  String get err_unsupported_bank => 'Ngân hàng này chưa được hỗ trợ chi trả.';
+
+  @override
+  String get err_toss_unverified => 'Vui lòng xác minh tài khoản Toss trước.';
+
+  @override
+  String get err_invalid_capacity => 'Hãy nhập sức chứa hợp lệ.';
+
+  @override
   String get fFinance => 'Tài chính';
 
   @override
@@ -2763,6 +2780,81 @@ class TVi extends T {
 
   @override
   String get pSpace => 'Không gian';
+
+  @override
+  String get poTabSettlements => 'Quyết toán';
+
+  @override
+  String get poTabPayouts => 'Chi trả';
+
+  @override
+  String get poState_requested => 'Đã yêu cầu';
+
+  @override
+  String get poState_sent => 'Đã gửi';
+
+  @override
+  String get poState_paid => 'Đã trả';
+
+  @override
+  String get poState_failed => 'Thất bại';
+
+  @override
+  String get poProviderManual => 'Chuyển khoản tay';
+
+  @override
+  String get poProviderToss => 'Toss chi hộ';
+
+  @override
+  String get poShowAccount => 'Xem tài khoản';
+
+  @override
+  String get poAccountTitle => 'Thông tin chuyển khoản';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'Chuyển $amount won tới $holder · $bank · $account, rồi bấm xác nhận.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Đánh dấu đã chuyển';
+
+  @override
+  String get poMarkFailed => 'Đánh dấu thất bại';
+
+  @override
+  String get poReasonTitle => 'Lý do thất bại';
+
+  @override
+  String get poReasonHint => 'VD: sai tài khoản, đã hủy';
+
+  @override
+  String get poSend => 'Gửi qua Toss';
+
+  @override
+  String get poSync => 'Kiểm tra trạng thái';
+
+  @override
+  String get poRetry => 'Thử lại';
+
+  @override
+  String get poNoPayouts => 'Chưa có khoản chi trả';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'Đã tạo $n yêu cầu chi trả';
+  }
+
+  @override
+  String get poReasonRequired => 'Nhập lý do';
+
+  @override
+  String get poRevealNote => 'Việc xem tài khoản được ghi lại';
 
   @override
   String get cSetup => 'Thiết lập';

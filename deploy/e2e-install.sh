@@ -35,6 +35,13 @@ api_healthy() { get /health | grep -q '"ok":true'; }
 api_version_is_test() { get /health | grep -q "\"version\":\"$TAG\""; }
 website_served() { [ "$(code /)" = 200 ] && get / | grep -qi '<html'; }
 console_served() { [ "$(code /admin/)" = 200 ] && get /admin/ | grep -q 'base href="/admin/"'; }
+csp_tight() { # CSP on the site: PortOne-only connect-src, no unsafe-eval, nothing may frame us
+  local h; h="$(curl -sk --max-time 10 -D - -o /dev/null --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/")"
+  local csp; csp="$(echo "$h" | grep -i '^content-security-policy:')"
+  echo "$csp" | grep -q "connect-src 'self' https://\*\.portone\.io" \
+    && echo "$csp" | grep -q "frame-ancestors 'none'" \
+    && ! echo "$csp" | grep -qi 'unsafe-eval'
+}
 needs_owner() { get /v1/setup | grep -q '"needs_admin":true'; }
 owner_is_set_up() { get /v1/setup | grep -q '"needs_admin":false'; }
 one_staff() { [ "$(dbq 'select count(*) from staff')" = 1 ]; }
@@ -61,6 +68,7 @@ expect "API health" api_healthy
 expect "API reports the image version" api_version_is_test
 expect "website served" website_served
 expect "console served at /admin/" console_served
+expect "CSP limits connect-src to PortOne and forbids eval" csp_tight
 expect "setup wizard waits for the owner" needs_owner
 expect "malkkeum status" malkkeum status
 expect "malkkeum version shows the image version" version_shown

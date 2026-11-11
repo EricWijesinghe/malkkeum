@@ -78,6 +78,12 @@ void main() {
       expect(await DevSocialSignIn('naver', storage: storage).devToken(), isNot(first));
     });
 
+    test('Naver is offered once its client id is set; the secret never ships in the app', () {
+      final keys = {'NAVER_CLIENT_ID': 'id'};
+      expect(providersForKeys(requested: '', keys: keys, ios: false), contains('naver'));
+      expect(providersForKeys(requested: '', keys: {'NAVER_CLIENT_ID': ''}, ios: false), isNot(contains('naver')));
+    });
+
     test('local API base offers every provider as a dev stub, Apple only where allowed', () {
       final storage = _MemStorage();
       final all = socialSignInsFor(apiBase: 'http://127.0.0.1:8080', storage: storage, appleOk: true);

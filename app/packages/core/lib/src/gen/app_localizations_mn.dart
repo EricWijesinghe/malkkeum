@@ -1873,6 +1873,23 @@ class TMn extends T {
       'Эхлээд урьдчилгаа төлбөр төлөх шаардлагатай.';
 
   @override
+  String get err_payout_state =>
+      'Төлбөрийн төлөв өөрчлөгдсөн байна. Шинэчилж дахин шалгана уу.';
+
+  @override
+  String get err_payout_provider =>
+      'Энэ төлбөрийн арга одоогоор боломжгүй байна.';
+
+  @override
+  String get err_unsupported_bank => 'Энэ банкад төлбөр шилжүүлэх боломжгүй.';
+
+  @override
+  String get err_toss_unverified => 'Эхлээд Toss дансаа баталгаажуулна уу.';
+
+  @override
+  String get err_invalid_capacity => 'Зөв багтаамж оруулна уу.';
+
+  @override
   String get fFinance => 'Санхүү';
 
   @override
@@ -2796,6 +2813,81 @@ class TMn extends T {
 
   @override
   String get pSpace => 'Талбайн мэдээлэл';
+
+  @override
+  String get poTabSettlements => 'Тооцоо';
+
+  @override
+  String get poTabPayouts => 'Төлбөр олголт';
+
+  @override
+  String get poState_requested => 'Хүсэлт илгээсэн';
+
+  @override
+  String get poState_sent => 'Илгээсэн';
+
+  @override
+  String get poState_paid => 'Төлсөн';
+
+  @override
+  String get poState_failed => 'Амжилтгүй';
+
+  @override
+  String get poProviderManual => 'Гараар шилжүүлэг';
+
+  @override
+  String get poProviderToss => 'Toss-оор төлбөр';
+
+  @override
+  String get poShowAccount => 'Дансыг харуулах';
+
+  @override
+  String get poAccountTitle => 'Шилжүүлгийн мэдээлэл';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return '$holder · $bank · $account руу $amount вон илгээгээд баталгаажуулна уу.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Шилжүүлсэн гэж тэмдэглэх';
+
+  @override
+  String get poMarkFailed => 'Амжилтгүй гэж тэмдэглэх';
+
+  @override
+  String get poReasonTitle => 'Амжилтгүйн шалтгаан';
+
+  @override
+  String get poReasonHint => 'жнь: буруу данс, шилжүүлэг цуцлагдсан';
+
+  @override
+  String get poSend => 'Toss-оор илгээх';
+
+  @override
+  String get poSync => 'Төлөв шалгах';
+
+  @override
+  String get poRetry => 'Дахин оролдох';
+
+  @override
+  String get poNoPayouts => 'Одоогоор төлбөр алга';
+
+  @override
+  String poRequestedToast(String n) {
+    return '$n төлбөрийн хүсэлт үүсгэлээ';
+  }
+
+  @override
+  String get poReasonRequired => 'Шалтгаанаа оруулна уу';
+
+  @override
+  String get poRevealNote => 'Дансны мэдээллийг үзсэн нь бүртгэгдэнэ';
 
   @override
   String get cSetup => 'Тохиргоо';

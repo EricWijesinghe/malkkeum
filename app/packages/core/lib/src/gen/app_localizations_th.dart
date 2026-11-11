@@ -1855,6 +1855,22 @@ class TTh extends T {
   String get err_deposit_required => 'ต้องชำระเงินมัดจำก่อน';
 
   @override
+  String get err_payout_state =>
+      'สถานะการจ่ายเงินเปลี่ยนแล้ว กรุณารีเฟรชแล้วตรวจสอบอีกครั้ง';
+
+  @override
+  String get err_payout_provider => 'วิธีจ่ายเงินนี้ใช้ไม่ได้ในขณะนี้';
+
+  @override
+  String get err_unsupported_bank => 'ธนาคารนี้ยังไม่รองรับการจ่ายเงิน';
+
+  @override
+  String get err_toss_unverified => 'กรุณายืนยันบัญชี Toss ก่อน';
+
+  @override
+  String get err_invalid_capacity => 'กรุณากรอกความจุที่ถูกต้อง';
+
+  @override
   String get fFinance => 'การเงิน';
 
   @override
@@ -2774,6 +2790,81 @@ class TTh extends T {
 
   @override
   String get pSpace => 'ข้อมูลพื้นที่';
+
+  @override
+  String get poTabSettlements => 'การชำระเงิน';
+
+  @override
+  String get poTabPayouts => 'การจ่ายเงิน';
+
+  @override
+  String get poState_requested => 'ขอแล้ว';
+
+  @override
+  String get poState_sent => 'ส่งแล้ว';
+
+  @override
+  String get poState_paid => 'จ่ายแล้ว';
+
+  @override
+  String get poState_failed => 'ล้มเหลว';
+
+  @override
+  String get poProviderManual => 'โอนด้วยตนเอง';
+
+  @override
+  String get poProviderToss => 'จ่ายผ่าน Toss';
+
+  @override
+  String get poShowAccount => 'แสดงบัญชี';
+
+  @override
+  String get poAccountTitle => 'รายละเอียดการโอน';
+
+  @override
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
+    return 'โอนเงิน $amount วอน ไปยัง $holder · $bank · $account แล้วแตะยืนยัน';
+  }
+
+  @override
+  String get poConfirmPaid => 'ทำเครื่องหมายว่าโอนแล้ว';
+
+  @override
+  String get poMarkFailed => 'ทำเครื่องหมายว่าล้มเหลว';
+
+  @override
+  String get poReasonTitle => 'สาเหตุที่ล้มเหลว';
+
+  @override
+  String get poReasonHint => 'เช่น บัญชีผิด, ยกเลิกการโอน';
+
+  @override
+  String get poSend => 'ส่งผ่าน Toss';
+
+  @override
+  String get poSync => 'ตรวจสอบสถานะ';
+
+  @override
+  String get poRetry => 'ลองอีกครั้ง';
+
+  @override
+  String get poNoPayouts => 'ยังไม่มีการจ่ายเงิน';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'สร้างคำขอจ่ายเงิน $n รายการแล้ว';
+  }
+
+  @override
+  String get poReasonRequired => 'กรุณาใส่สาเหตุ';
+
+  @override
+  String get poRevealNote => 'การดูรายละเอียดบัญชีจะถูกบันทึกไว้';
 
   @override
   String get cSetup => 'ตั้งค่า';

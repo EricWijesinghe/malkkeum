@@ -5,7 +5,9 @@ use crate::{
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
     realtime::{Recipient, notify},
+    routes::uploads,
     state::AppState,
+    util::own_upload,
 };
 use axum::{
     Json, Router,
@@ -115,12 +117,15 @@ pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> 
         .await?;
     let member = user_id.map(Recipient::User).or(pro_id.map(Recipient::Pro)).ok_or(ApiError::NotFound)?;
     let data = json!({ "message": msg });
-    s.hub.send(Recipient::Staff, "chat.message", data.clone());
+    // Live sockets get signed photo URLs; the stored notification keeps the plain path.
+    let mut live = data.clone();
+    uploads::sign_urls(&s.config, &mut live);
+    s.hub.send(Recipient::Staff, "chat.message", live.clone());
     if msg.sender == "staff" || msg.sender == "system" {
         let preview = msg.body.get("text").and_then(Value::as_str).unwrap_or("").chars().take(80).collect::<String>();
         notify(s, member, "chat.message", "상담팀", &preview, data).await?;
     } else {
-        s.hub.send(member, "chat.message", data);
+        s.hub.send(member, "chat.message", live);
     }
     Ok(())
 }
@@ -246,7 +251,7 @@ pub fn validate_outgoing(o: &Outgoing, public_base: &str) -> ApiResult<(&'static
     match o {
         Outgoing::Text { text } if !text.trim().is_empty() && text.chars().count() <= MAX_TEXT => Ok(("text", json!({ "text": text.trim() }))),
         // Only our own upload URLs, so chats cannot carry arbitrary links as images.
-        Outgoing::Photo { url } if crate::util::is_own_upload(public_base, url) => Ok(("photo", json!({ "url": url }))),
+        Outgoing::Photo { url } => own_upload(public_base, url).map(|p| ("photo", json!({ "url": p }))).ok_or(ApiError::BadRequest("invalid_message")),
         _ => Err(ApiError::BadRequest("invalid_message")),
     }
 }

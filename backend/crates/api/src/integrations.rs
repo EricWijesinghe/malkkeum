@@ -21,6 +21,8 @@ use std::collections::HashMap;
 pub struct Integrations {
     pub kakao_app_id: Option<String>,
     pub naver_client_id: Option<String>,
+    /// Naver app secret: the server exchanges each Naver login code with it (providers/social.rs).
+    pub naver_client_secret: Option<String>,
     pub google_client_ids: Vec<String>,
     pub apple_client_ids: Vec<String>,
     pub portone: PortOne,
@@ -29,6 +31,21 @@ pub struct Integrations {
     /// AI support agent. Console-only (no env fallback).
     pub ai: Option<AiConfig>,
     pub backup: Option<S3Config>,
+    /// Partner payout provider. None means `manual` (owner transfers and confirms).
+    pub payout: Option<PayoutSettings>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PayoutMode {
+    Manual,
+    Toss,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PayoutSettings {
+    pub mode: PayoutMode,
+    /// Toss payouts secret key. Required when mode is `toss`.
+    pub secret_key: Option<String>,
 }
 
 /// S3-compatible offsite backup target (AWS S3, Cloudflare R2, Naver Cloud Object Storage, Backblaze B2).
@@ -47,6 +64,7 @@ impl Integrations {
         Self {
             kakao_app_id: c.kakao_app_id.clone(),
             naver_client_id: None,
+            naver_client_secret: None,
             google_client_ids: c.google_client_ids.clone(),
             apple_client_ids: c.apple_client_ids.clone(),
             portone: c.portone.clone(),
@@ -54,6 +72,7 @@ impl Integrations {
             fcm: c.fcm.clone(),
             ai: None,
             backup: None,
+            payout: None,
         }
     }
 
@@ -64,11 +83,12 @@ impl Integrations {
             Section::Solapi => self.solapi.is_some(),
             Section::Push => self.fcm.is_some(),
             Section::Kakao => self.kakao_app_id.is_some(),
-            Section::Naver => self.naver_client_id.is_some(),
+            Section::Naver => self.naver_client_id.is_some() && self.naver_client_secret.is_some(),
             Section::Google => !self.google_client_ids.is_empty(),
             Section::Apple => !self.apple_client_ids.is_empty(),
             Section::Ai => self.ai.is_some(),
             Section::Backup => self.backup.is_some(),
+            Section::Payout => self.payout.is_some(),
         }
     }
 }
@@ -110,10 +130,11 @@ pub enum Section {
     Apple,
     Ai,
     Backup,
+    Payout,
 }
 
 impl Section {
-    pub const ALL: [Section; 9] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup];
+    pub const ALL: [Section; 10] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup, Self::Payout];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -126,6 +147,7 @@ impl Section {
             Self::Apple => "apple",
             Self::Ai => "ai",
             Self::Backup => "backup",
+            Self::Payout => "payout",
         }
     }
 
@@ -143,6 +165,7 @@ impl Section {
             Self::Google | Self::Apple => &CLIENT_ID_FIELDS,
             Self::Ai => &AI_FIELDS,
             Self::Backup => &BACKUP_FIELDS,
+            Self::Payout => &PAYOUT_FIELDS,
         }
     }
 }
@@ -162,7 +185,7 @@ const SOLAPI_FIELDS: [Field; 5] = [
 ];
 const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
 const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
-const NAVER_FIELDS: [Field; 1] = [f("client_id", Kind::Text, true)];
+const NAVER_FIELDS: [Field; 2] = [f("client_id", Kind::Text, true), f("client_secret", Kind::Secret, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
 const AI_FIELDS: [Field; 3] = [f("api_key", Kind::Secret, true), f("model", Kind::Text, false), f("mode", Kind::Text, false)];
 const BACKUP_FIELDS: [Field; 6] = [
@@ -173,6 +196,7 @@ const BACKUP_FIELDS: [Field; 6] = [
     f("secret_key", Kind::Secret, true),
     f("retention_days", Kind::Text, false),
 ];
+const PAYOUT_FIELDS: [Field; 2] = [f("mode", Kind::Text, true), f("secret_key", Kind::Secret, false)];
 const BACKUP_RETENTION_DEFAULT: u32 = 30;
 const BACKUP_RETENTION_MAX: u32 = 3650;
 
@@ -270,6 +294,24 @@ fn s3_config(v: &Map<String, Value>) -> Result<S3Config, Invalid> {
     })
 }
 
+fn payout_settings(v: &Map<String, Value>) -> Result<PayoutSettings, Invalid> {
+    let mode = match text(v, "mode").as_deref() {
+        Some("manual") => PayoutMode::Manual,
+        Some("toss") => PayoutMode::Toss,
+        _ => return Err(Invalid("invalid_mode")),
+    };
+    let secret_key = text(v, "secret_key");
+    if mode == PayoutMode::Toss && secret_key.is_none() {
+        return Err(Invalid("missing_field"));
+    }
+    // shortcut: the Toss payout API shape is unverified (docs unreachable), so only sandbox keys are
+    // accepted; drop this check after a sandbox run confirms providers/payout.rs.
+    if mode == PayoutMode::Toss && !secret_key.as_deref().is_some_and(|k| k.starts_with("test_")) {
+        return Err(Invalid("toss_unverified"));
+    }
+    Ok(PayoutSettings { mode, secret_key })
+}
+
 fn service_account(v: &Map<String, Value>) -> Result<ServiceAccount, Invalid> {
     let parsed = match v.get("service_account") {
         Some(Value::String(s)) => serde_json::from_str::<ServiceAccount>(s.trim()),
@@ -314,8 +356,12 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         }
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Backup => out.backup = Some(s3_config(v)?),
+        Section::Payout => out.payout = Some(payout_settings(v)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
-        Section::Naver => out.naver_client_id = Some(required(v, "client_id")?),
+        Section::Naver => {
+            out.naver_client_id = Some(required(v, "client_id")?);
+            out.naver_client_secret = Some(required(v, "client_secret")?);
+        }
         Section::Ai => {
             let mode = Mode::parse(text(v, "mode").as_deref()).ok_or(Invalid("invalid_mode"))?;
             let model = text(v, "model").unwrap_or_else(|| ai::DEFAULT_MODEL.to_string());
@@ -549,6 +595,24 @@ mod tests {
         let mut keep = good;
         keep["retention_days"] = json!("0");
         assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(keep)).unwrap_err(), Invalid("invalid_retention"));
+    }
+
+    #[test]
+    fn payout_defaults_to_manual_and_toss_needs_a_secret() {
+        let base = Integrations::default();
+        assert!(base.payout.is_none(), "no section means manual");
+        let manual = apply(&base, Section::Payout, &obj(json!({"mode": "manual"}))).unwrap();
+        assert_eq!(manual.payout.map(|p| p.mode), Some(PayoutMode::Manual));
+        assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "toss"}))).unwrap_err(), Invalid("missing_field"));
+        assert_eq!(
+            apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "live_sk_x"}))).unwrap_err(),
+            Invalid("toss_unverified")
+        );
+        let toss = apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "test_sk_x"}))).unwrap();
+        assert!(toss.has(Section::Payout));
+        let p = toss.payout.expect("payout settings");
+        assert_eq!((p.mode, p.secret_key.as_deref()), (PayoutMode::Toss, Some("test_sk_x")));
+        assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(), Invalid("invalid_mode"));
     }
 
     #[test]
