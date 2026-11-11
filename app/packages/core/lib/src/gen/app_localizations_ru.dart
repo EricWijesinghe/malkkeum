@@ -677,6 +677,9 @@ class TRu extends T {
   String get cNewMessage => 'Новое сообщение';
 
   @override
+  String get cConfirmAsk => 'Вы уверены?';
+
+  @override
   String get ok => 'ОК';
 
   @override
@@ -2003,6 +2006,14 @@ class TRu extends T {
   String get err_invalid_capacity => 'Введите корректную вместимость.';
 
   @override
+  String get err_seller_declined =>
+      'Toss не одобрил регистрацию продавца. Проверьте данные бизнеса.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'У этого партнёра ещё нет подтверждённого счёта для выплат. Сначала подтвердите счёт.';
+
+  @override
   String get fFinance => 'Финансы';
 
   @override
@@ -3051,6 +3062,45 @@ class TRu extends T {
 
   @override
   String get poRevealNote => 'Просмотр реквизитов фиксируется';
+
+  @override
+  String get poSellerAction => 'Регистрация продавца';
+
+  @override
+  String get poSellerTitle => 'Регистрация продавца Toss';
+
+  @override
+  String get poSellerHint =>
+      'Используется подтверждённый счёт партнёра. Укажите только данные бизнеса.';
+
+  @override
+  String get poSellerIndividual => 'Физлицо';
+
+  @override
+  String get poSellerCompany => 'Бизнес';
+
+  @override
+  String get poSellerName => 'Имя';
+
+  @override
+  String get poSellerRepresentative => 'ФИО руководителя';
+
+  @override
+  String get poSellerRegNo => 'Регистрационный номер бизнеса (10 цифр)';
+
+  @override
+  String get poSellerEmail => 'Эл. почта для расчётов';
+
+  @override
+  String get poSellerPhone => 'Телефон';
+
+  @override
+  String get poSellerSubmit => 'Зарегистрировать';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Статус продавца: $status';
+  }
 
   @override
   String get pvManage => 'Управление согласиями';

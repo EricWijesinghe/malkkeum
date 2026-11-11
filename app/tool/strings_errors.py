@@ -55,6 +55,8 @@ S = {
   "err_toss_unverified": ["토스 지급대행은 아직 연결할 수 없어요. 직접 이체를 써 주세요.", "Toss payouts aren't available yet. Use manual transfer.", "Toss支払い代行はまだ接続できません。手動振込をご利用ください。", "暂不支持 Toss 代付，请使用手动转账。", "Chưa thể kết nối Toss chi hộ. Vui lòng dùng chuyển khoản thủ công."],
   "err_invalid_cap": ["한도는 정해진 범위 안의 숫자로 입력해 주세요.", "Enter a number within the allowed range.", "上限は許可された範囲の数字で入力してください。", "请输入允许范围内的数字。", "Vui lòng nhập số trong phạm vi cho phép."],
   "err_invalid_capacity": ["정원은 숫자로 입력해 주세요.", "Enter a valid capacity.", "定員は正しい数字で入力してください。", "请输入有效的容量。", "Hãy nhập sức chứa hợp lệ."],
+  "err_seller_declined": ["토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.", "Toss did not approve the seller registration. Check the business details.", "Tossが販売者登録を承認しませんでした。事業者情報を確認してください。", "Toss 未通过卖家注册，请检查营业信息。", "Toss chưa duyệt đăng ký người bán. Hãy kiểm tra thông tin doanh nghiệp."],
+  "err_payout_account_unverified": ["확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.", "This partner has no verified payout account yet. Verify the account first.", "この受取人には確認済みの口座がありません。先に口座を確認してください。", "该合作伙伴还没有已验证的收款账户，请先验证账户。", "Đối tác này chưa có tài khoản nhận tiền đã xác minh. Hãy xác minh tài khoản trước."],
 }
 
 X = {
@@ -107,6 +109,8 @@ X = {
     "err_toss_unverified": "Hindi pa available ang Toss payouts. Gumamit ng manual na transfer.",
     "err_invalid_cap": "Maglagay ng numero sa pinapayagang saklaw.",
     "err_invalid_capacity": "Maglagay ng valid na kapasidad.",
+    "err_seller_declined": "Hindi inaprubahan ng Toss ang pagpaparehistro ng seller. Suriin ang impormasyon ng negosyo.",
+    "err_payout_account_unverified": "Walang na-verify na payout account ang partner na ito. I-verify muna ang account.",
   },
   "id": {
     "err_price_changed": "Harga berubah. Cek penawaran baru lalu coba lagi.",
@@ -157,6 +161,8 @@ X = {
     "err_toss_unverified": "Pembayaran Toss belum tersedia. Gunakan transfer manual.",
     "err_invalid_cap": "Masukkan angka dalam rentang yang diizinkan.",
     "err_invalid_capacity": "Masukkan kapasitas yang valid.",
+    "err_seller_declined": "Toss tidak menyetujui pendaftaran penjual. Periksa data usaha.",
+    "err_payout_account_unverified": "Partner ini belum punya rekening pencairan yang diverifikasi. Verifikasi rekening dulu.",
   },
   "km": {
     "err_price_changed": "តម្លៃបានប្តូរ។ សូមពិនិត្យសម្រង់ថ្មី ហើយព្យាយាមម្តងទៀត។",
@@ -207,6 +213,8 @@ X = {
     "err_toss_unverified": "ការទូទាត់ Toss មិនទាន់អាចប្រើបានទេ។ សូមប្រើការផ្ទេរដោយដៃ។",
     "err_invalid_cap": "សូមបញ្ចូលលេខក្នុងចន្លោះដែលអនុញ្ញាត។",
     "err_invalid_capacity": "បញ្ចូលចំណុះត្រឹមត្រូវ។",
+    "err_seller_declined": "Toss មិនបានអនុម័តការចុះឈ្មោះអ្នកលក់ទេ។ សូមពិនិត្យព័ត៌មានអាជីវកម្ម។",
+    "err_payout_account_unverified": "ដៃគូនេះមិនទាន់មានគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់ទេ។ សូមផ្ទៀងផ្ទាត់គណនីជាមុនសិន។",
   },
   "mn": {
     "err_price_changed": "Үнэ өөрчлөгдсөн байна. Шинэ үнийн саналаа шалгаад дахин оролдоно уу.",
@@ -257,6 +265,8 @@ X = {
     "err_toss_unverified": "Toss төлбөр одоогоор боломжгүй. Гараар шилжүүлэг ашиглана уу.",
     "err_invalid_cap": "Зөвшөөрөгдсөн хязгаарт багтах тоо оруулна уу.",
     "err_invalid_capacity": "Зөв багтаамж оруулна уу.",
+    "err_seller_declined": "Toss худалдагчийн бүртгэлийг зөвшөөрөөгүй. Бизнесийн мэдээллээ шалгана уу.",
+    "err_payout_account_unverified": "Энэ хамтрагч баталгаажсан төлбөрийн дансгүй байна. Эхлээд дансаа баталгаажуулна уу.",
   },
   "ne": {
     "err_price_changed": "मूल्य परिवर्तन भयो। नयाँ कोटेसन हेरेर फेरि प्रयास गर्नुहोस्।",
@@ -307,6 +317,8 @@ X = {
     "err_toss_unverified": "Toss भुक्तानी अहिले उपलब्ध छैन। म्यानुअल ट्रान्सफर प्रयोग गर्नुहोस्।",
     "err_invalid_cap": "अनुमति दिइएको दायराभित्रको संख्या लेख्नुहोस्।",
     "err_invalid_capacity": "मान्य क्षमता प्रविष्ट गर्नुहोस्।",
+    "err_seller_declined": "Toss ले विक्रेता दर्ता स्वीकृत गरेन। व्यवसायको विवरण जाँच गर्नुहोस्।",
+    "err_payout_account_unverified": "यो साझेदारसँग प्रमाणित भुक्तानी खाता छैन। पहिले खाता प्रमाणित गर्नुहोस्।",
   },
   "ru": {
     "err_price_changed": "Цена изменилась. Проверьте новое предложение и попробуйте снова.",
@@ -357,6 +369,8 @@ X = {
     "err_toss_unverified": "Выплаты Toss пока недоступны. Используйте ручной перевод.",
     "err_invalid_cap": "Введите число в допустимом диапазоне.",
     "err_invalid_capacity": "Введите корректную вместимость.",
+    "err_seller_declined": "Toss не одобрил регистрацию продавца. Проверьте данные бизнеса.",
+    "err_payout_account_unverified": "У этого партнёра ещё нет подтверждённого счёта для выплат. Сначала подтвердите счёт.",
   },
   "si": {
     "err_price_changed": "මිල වෙනස් වී ඇත. නව මිල ගණන පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
@@ -407,6 +421,8 @@ X = {
     "err_toss_unverified": "Toss ගෙවීම් තවම ලබා ගත නොහැක. අතින් මුදල් යැවීම භාවිත කරන්න.",
     "err_invalid_cap": "අවසර ලත් පරාසය තුළ අංකයක් ඇතුළත් කරන්න.",
     "err_invalid_capacity": "වලංගු ධාරිතාවක් ඇතුළත් කරන්න.",
+    "err_seller_declined": "Toss මගින් විකුණුම්කරු ලියාපදිංචිය අනුමත කළේ නැත. ව්‍යාපාර තොරතුරු පරීක්ෂා කරන්න.",
+    "err_payout_account_unverified": "මෙම partner ට තවමත් සත්‍යාපිත ගෙවීම් ගිණුමක් නැත. පළමුව ගිණුම සත්‍යාපනය කරන්න.",
   },
   "th": {
     "err_price_changed": "ราคาเปลี่ยนแล้ว กรุณาตรวจสอบใบเสนอราคาใหม่แล้วลองอีกครั้ง",
@@ -457,6 +473,8 @@ X = {
     "err_toss_unverified": "ยังใช้ Toss จ่ายเงินไม่ได้ กรุณาโอนเงินเอง",
     "err_invalid_cap": "กรุณาใส่ตัวเลขในช่วงที่อนุญาต",
     "err_invalid_capacity": "กรุณากรอกความจุที่ถูกต้อง",
+    "err_seller_declined": "Toss ไม่อนุมัติการลงทะเบียนผู้ขาย กรุณาตรวจสอบข้อมูลธุรกิจ",
+    "err_payout_account_unverified": "พาร์ทเนอร์นี้ยังไม่มีบัญชีรับเงินที่ยืนยันแล้ว กรุณายืนยันบัญชีก่อน",
   },
   "uz": {
     "err_price_changed": "Narx o‘zgardi. Yangi taklifni ko‘rib, qayta urinib ko‘ring.",
@@ -507,5 +525,7 @@ X = {
     "err_toss_unverified": "Toss to‘lovlari hozircha mavjud emas. Qo‘lda o‘tkazmadan foydalaning.",
     "err_invalid_cap": "Ruxsat etilgan oraliqdagi sonni kiriting.",
     "err_invalid_capacity": "To‘g‘ri sig‘imni kiriting.",
+    "err_seller_declined": "Toss sotuvchini ro‘yxatdan o‘tkazishni tasdiqlamadi. Biznes ma’lumotlarini tekshiring.",
+    "err_payout_account_unverified": "Bu hamkorda hali tasdiqlangan to‘lov hisobi yo‘q. Avval hisobni tasdiqlang.",
   },
 }

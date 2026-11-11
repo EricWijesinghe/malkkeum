@@ -678,6 +678,9 @@ class TSi extends T {
   String get cNewMessage => 'නව පණිවිඩයක්';
 
   @override
+  String get cConfirmAsk => 'ඔබට විශ්වාසද?';
+
+  @override
   String get ok => 'හරි';
 
   @override
@@ -2002,6 +2005,14 @@ class TSi extends T {
   String get err_invalid_capacity => 'වලංගු ධාරිතාවක් ඇතුළත් කරන්න.';
 
   @override
+  String get err_seller_declined =>
+      'Toss මගින් විකුණුම්කරු ලියාපදිංචිය අනුමත කළේ නැත. ව්‍යාපාර තොරතුරු පරීක්ෂා කරන්න.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'මෙම partner ට තවමත් සත්‍යාපිත ගෙවීම් ගිණුමක් නැත. පළමුව ගිණුම සත්‍යාපනය කරන්න.';
+
+  @override
   String get fFinance => 'මූල්‍ය';
 
   @override
@@ -3048,6 +3059,45 @@ class TSi extends T {
 
   @override
   String get poRevealNote => 'ගිණුම් විස්තර බැලීම සටහන් වේ';
+
+  @override
+  String get poSellerAction => 'විකුණුම්කරු ලියාපදිංචි කරන්න';
+
+  @override
+  String get poSellerTitle => 'Toss විකුණුම්කරු ලෙස ලියාපදිංචිය';
+
+  @override
+  String get poSellerHint =>
+      'partner ගේ සත්‍යාපිත ගෙවීම් ගිණුම භාවිතා වේ. ව්‍යාපාර තොරතුරු පමණක් ඇතුළු කරන්න.';
+
+  @override
+  String get poSellerIndividual => 'පුද්ගලික';
+
+  @override
+  String get poSellerCompany => 'ව්‍යාපාර';
+
+  @override
+  String get poSellerName => 'නම';
+
+  @override
+  String get poSellerRepresentative => 'නියෝජිතයාගේ නම';
+
+  @override
+  String get poSellerRegNo => 'ව්‍යාපාර ලියාපදිංචි අංකය (ඉලක්කම් 10)';
+
+  @override
+  String get poSellerEmail => 'ගෙවීම් ඊමේල්';
+
+  @override
+  String get poSellerPhone => 'දුරකථන';
+
+  @override
+  String get poSellerSubmit => 'ලියාපදිංචි කරන්න';
+
+  @override
+  String poSellerDone(String status) {
+    return 'විකුණුම්කරුගේ තත්ත්වය: $status';
+  }
 
   @override
   String get pvManage => 'එකඟතා කළමනාකරණය';

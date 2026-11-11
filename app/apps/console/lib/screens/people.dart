@@ -5,6 +5,8 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'finance_tax.dart';
+import 'confirm_action.dart';
+import 'payout_seller_dialog.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -85,14 +87,17 @@ class PartnersScreen extends StatelessWidget {
                                   ),
                                 if (p['status'] == 'verified')
                                   OutlinedButton(
-                                    onPressed: () => _act(
-                                      context,
-                                      () => context.api.post(
-                                        '/admin/pros/${p['id']}/status',
-                                        {'status': 'suspended'},
-                                      ),
-                                      reload,
-                                    ),
+                                    onPressed: () async {
+                                      if (!await confirmAction(context, t.cSuspend) || !context.mounted) return;
+                                      await _act(
+                                        context,
+                                        () => context.api.post(
+                                          '/admin/pros/${p['id']}/status',
+                                          {'status': 'suspended'},
+                                        ),
+                                        reload,
+                                      );
+                                    },
                                     child: Text(t.cSuspend),
                                   ),
                               ],
@@ -208,12 +213,20 @@ class _SettlementsState extends State<SettlementsScreen> {
               if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
               if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
               if (admin) TextButton(onPressed: () => setPartnerTaxType(context, p, reload), child: Text(t.tTaxType)),
+              if (admin && !manual && (state == 'requested' || state == 'failed'))
+                TextButton(onPressed: () => _seller(context, p['pro_id'] as String), child: Text(t.poSellerAction)),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// Toss needs the partner registered as a seller before it can send money. Re-registering is safe after an account change.
+  Future<void> _seller(BuildContext context, String proId) async {
+    final status = await showTossSellerDialog(context, proId);
+    if (status != null && context.mounted) showToast(context, context.t.poSellerDone(status));
   }
 
   /// Bank details for a manual transfer. Each reveal is audit-logged on the server.
@@ -576,13 +589,17 @@ class _StaffState extends State<StaffScreen> {
                   s['role'] == 'admin' ? t.cRoleAdmin : t.cRoleConsultant,
                 ),
                 trailing: TextButton(
-                  onPressed: () => _act(
-                    context,
-                    () => context.api.post('/admin/staff/${s['id']}/active', {
-                      'active': s['active'] != true,
-                    }),
-                    reload,
-                  ),
+                  onPressed: () async {
+                    // Only deactivation needs a confirm; reactivating is harmless.
+                    final deactivating = s['active'] == true;
+                    if (deactivating && !await confirmAction(context, t.cDeactivate)) return;
+                    if (!context.mounted) return;
+                    await _act(
+                      context,
+                      () => context.api.post('/admin/staff/${s['id']}/active', {'active': !deactivating}),
+                      reload,
+                    );
+                  },
                   child: Text(
                     s['active'] == true ? t.cDeactivate : t.cActivate,
                   ),

@@ -93,6 +93,8 @@ extension Labels on T {
         'payout_state' => err_payout_state,
         'payout_provider' => err_payout_provider,
         'unsupported_bank' => err_unsupported_bank,
+        'seller_declined' => err_seller_declined,
+        'payout_account_unverified' => err_payout_account_unverified,
         'toss_unverified' => err_toss_unverified,
         'invalid_cap' => err_invalid_cap,
         'invalid_capacity' => err_invalid_capacity,

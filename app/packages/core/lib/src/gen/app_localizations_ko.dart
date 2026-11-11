@@ -660,6 +660,9 @@ class TKo extends T {
   String get cNewMessage => '새 메시지';
 
   @override
+  String get cConfirmAsk => '정말 진행할까요?';
+
+  @override
   String get ok => '확인';
 
   @override
@@ -1940,6 +1943,12 @@ class TKo extends T {
   String get err_invalid_capacity => '정원은 숫자로 입력해 주세요.';
 
   @override
+  String get err_seller_declined => '토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.';
+
+  @override
+  String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
+
+  @override
   String get fFinance => '재무';
 
   @override
@@ -2968,6 +2977,44 @@ class TKo extends T {
 
   @override
   String get poRevealNote => '계좌 정보는 조회 기록에 남아요';
+
+  @override
+  String get poSellerAction => '판매자 등록';
+
+  @override
+  String get poSellerTitle => '토스 판매자 등록';
+
+  @override
+  String get poSellerHint => '이 파트너의 확인된 정산 계좌로 등록해요. 사업자 정보만 입력해 주세요.';
+
+  @override
+  String get poSellerIndividual => '개인';
+
+  @override
+  String get poSellerCompany => '사업자';
+
+  @override
+  String get poSellerName => '이름';
+
+  @override
+  String get poSellerRepresentative => '대표자명';
+
+  @override
+  String get poSellerRegNo => '사업자등록번호 (숫자 10자리)';
+
+  @override
+  String get poSellerEmail => '정산 이메일';
+
+  @override
+  String get poSellerPhone => '연락처';
+
+  @override
+  String get poSellerSubmit => '등록하기';
+
+  @override
+  String poSellerDone(String status) {
+    return '판매자 상태: $status';
+  }
 
   @override
   String get pvManage => '동의 관리';

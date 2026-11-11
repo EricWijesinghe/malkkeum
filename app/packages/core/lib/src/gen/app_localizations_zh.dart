@@ -660,6 +660,9 @@ class TZh extends T {
   String get cNewMessage => '新消息';
 
   @override
+  String get cConfirmAsk => '确定要继续吗？';
+
+  @override
   String get ok => '确定';
 
   @override
@@ -1935,6 +1938,12 @@ class TZh extends T {
   String get err_invalid_capacity => '请输入有效的容量。';
 
   @override
+  String get err_seller_declined => 'Toss 未通过卖家注册，请检查营业信息。';
+
+  @override
+  String get err_payout_account_unverified => '该合作伙伴还没有已验证的收款账户，请先验证账户。';
+
+  @override
   String get fFinance => '财务';
 
   @override
@@ -2955,6 +2964,44 @@ class TZh extends T {
 
   @override
   String get poRevealNote => '查看账户信息会被记录';
+
+  @override
+  String get poSellerAction => '注册卖家';
+
+  @override
+  String get poSellerTitle => '注册为 Toss 卖家';
+
+  @override
+  String get poSellerHint => '将使用该合作伙伴已验证的收款账户注册，只需填写营业信息。';
+
+  @override
+  String get poSellerIndividual => '个人';
+
+  @override
+  String get poSellerCompany => '企业';
+
+  @override
+  String get poSellerName => '姓名';
+
+  @override
+  String get poSellerRepresentative => '代表人姓名';
+
+  @override
+  String get poSellerRegNo => '营业执照号（10位）';
+
+  @override
+  String get poSellerEmail => '结算邮箱';
+
+  @override
+  String get poSellerPhone => '电话';
+
+  @override
+  String get poSellerSubmit => '注册';
+
+  @override
+  String poSellerDone(String status) {
+    return '卖家状态：$status';
+  }
 
   @override
   String get pvManage => '同意管理';

@@ -130,6 +130,7 @@ S = {
   "cJoined": ["가입", "Joined", "登録", "注册", "Tham gia"],
   "cNewBooking": ["새 예약이 들어왔어요", "New booking", "新しい予約", "新预约", "Lịch mới"],
   "cNewMessage": ["새 메시지", "New message", "新着メッセージ", "新消息", "Tin nhắn mới"],
+  "cConfirmAsk": ["정말 진행할까요?", "Are you sure?", "よろしいですか？", "确定要继续吗？", "Bạn có chắc chắn không?"],
 }
 
 # Extra-language texts (fil, id, km, mn, ne, ru, si, th, uz) for this area's keys.

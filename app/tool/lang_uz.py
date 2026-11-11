@@ -721,4 +721,5 @@ T = {
     "mMyJobs": "Mening ishlarim",
     "mNoJobs": "Hozircha tayinlangan ish yo'q. Jamoa rahbari bergan ishlar shu yerda ko'rinadi.",
     "mTeam": "{team} a'zosi",
+    "cConfirmAsk": "Ishonchingiz komilmi?",
 }

@@ -1393,6 +1393,12 @@ abstract class T {
   /// **'새 메시지'**
   String get cNewMessage;
 
+  /// No description provided for @cConfirmAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'정말 진행할까요?'**
+  String get cConfirmAsk;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:
@@ -3817,6 +3823,18 @@ abstract class T {
   /// **'정원은 숫자로 입력해 주세요.'**
   String get err_invalid_capacity;
 
+  /// No description provided for @err_seller_declined.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.'**
+  String get err_seller_declined;
+
+  /// No description provided for @err_payout_account_unverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.'**
+  String get err_payout_account_unverified;
+
   /// No description provided for @fFinance.
   ///
   /// In ko, this message translates to:
@@ -5741,6 +5759,78 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'계좌 정보는 조회 기록에 남아요'**
   String get poRevealNote;
+
+  /// No description provided for @poSellerAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'판매자 등록'**
+  String get poSellerAction;
+
+  /// No description provided for @poSellerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 판매자 등록'**
+  String get poSellerTitle;
+
+  /// No description provided for @poSellerHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 파트너의 확인된 정산 계좌로 등록해요. 사업자 정보만 입력해 주세요.'**
+  String get poSellerHint;
+
+  /// No description provided for @poSellerIndividual.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인'**
+  String get poSellerIndividual;
+
+  /// No description provided for @poSellerCompany.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자'**
+  String get poSellerCompany;
+
+  /// No description provided for @poSellerName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get poSellerName;
+
+  /// No description provided for @poSellerRepresentative.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자명'**
+  String get poSellerRepresentative;
+
+  /// No description provided for @poSellerRegNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호 (숫자 10자리)'**
+  String get poSellerRegNo;
+
+  /// No description provided for @poSellerEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 이메일'**
+  String get poSellerEmail;
+
+  /// No description provided for @poSellerPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'연락처'**
+  String get poSellerPhone;
+
+  /// No description provided for @poSellerSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록하기'**
+  String get poSellerSubmit;
+
+  /// No description provided for @poSellerDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'판매자 상태: {status}'**
+  String poSellerDone(String status);
 
   /// No description provided for @pvManage.
   ///

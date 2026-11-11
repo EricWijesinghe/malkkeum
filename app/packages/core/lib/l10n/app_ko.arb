@@ -264,6 +264,7 @@
  "cJoined": "가입",
  "cNewBooking": "새 예약이 들어왔어요",
  "cNewMessage": "새 메시지",
+ "cConfirmAsk": "정말 진행할까요?",
  "ok": "확인",
  "cancel": "취소",
  "next": "다음",
@@ -906,6 +907,8 @@
  "err_toss_unverified": "토스 지급대행은 아직 연결할 수 없어요. 직접 이체를 써 주세요.",
  "err_invalid_cap": "한도는 정해진 범위 안의 숫자로 입력해 주세요.",
  "err_invalid_capacity": "정원은 숫자로 입력해 주세요.",
+ "err_seller_declined": "토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.",
+ "err_payout_account_unverified": "확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.",
  "fFinance": "재무",
  "fPeriodDay": "일",
  "fPeriodWeek": "주",
@@ -1474,6 +1477,25 @@
  },
  "poReasonRequired": "사유를 입력해 주세요",
  "poRevealNote": "계좌 정보는 조회 기록에 남아요",
+ "poSellerAction": "판매자 등록",
+ "poSellerTitle": "토스 판매자 등록",
+ "poSellerHint": "이 파트너의 확인된 정산 계좌로 등록해요. 사업자 정보만 입력해 주세요.",
+ "poSellerIndividual": "개인",
+ "poSellerCompany": "사업자",
+ "poSellerName": "이름",
+ "poSellerRepresentative": "대표자명",
+ "poSellerRegNo": "사업자등록번호 (숫자 10자리)",
+ "poSellerEmail": "정산 이메일",
+ "poSellerPhone": "연락처",
+ "poSellerSubmit": "등록하기",
+ "poSellerDone": "판매자 상태: {status}",
+ "@poSellerDone": {
+  "placeholders": {
+   "status": {
+    "type": "String"
+   }
+  }
+ },
  "pvManage": "동의 관리",
  "pvOptional": "선택",
  "pvTerms": "이용약관 동의",
