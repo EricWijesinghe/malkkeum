@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2336,6 +2337,128 @@ class TSi extends T {
   @override
   String get uMaintenanceBody =>
       'සේවාව වැඩිදියුණු කිරීම සඳහා නඩත්තු කරමින් සිටිමු. ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cmTab => 'ව්‍යාපාර';
+
+  @override
+  String get cmNew => 'නව ව්‍යාපාරය';
+
+  @override
+  String get cmAudience => 'ඉලක්ක පාරිභෝගිකයින්';
+
+  @override
+  String get cmSegAll => 'සියලු පාරිභෝගිකයින්';
+
+  @override
+  String get cmSegNever => 'කවදාවත් වෙන්කර නැත';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'අවසන් වෙන්කිරීම $days+ දින කට පෙර';
+  }
+
+  @override
+  String get cmDays => 'දින ගණන';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total න් $consented දෙනා අලෙවිකරණ එකඟතාව ඇත';
+  }
+
+  @override
+  String get cmChannel => 'නාලිකාව';
+
+  @override
+  String get cmPush => 'යෙදුම් තල්ලුව';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'මාතෘකාව';
+
+  @override
+  String get cmBody => 'පණිවිඩය';
+
+  @override
+  String get cmOptout => 'ඉවත් වීමේ අංකය (080)';
+
+  @override
+  String get cmPreview => 'පෙරදසුන';
+
+  @override
+  String get cmSchedule => 'යැවීමේ වේලාව';
+
+  @override
+  String get cmSendNow => 'දැන් යවන්න';
+
+  @override
+  String get cmTestSend => 'මගේ දුරකථනයට පරීක්ෂා යවන්න';
+
+  @override
+  String get cmCreate => 'ව්‍යාපාරය සුරකින්න';
+
+  @override
+  String get cmNeedOptout => 'SMS සඳහා 080 ඉවත් වීමේ අංකය අවශ්‍යයි';
+
+  @override
+  String get cmLog => 'යැවීම් වාර්තාව';
+
+  @override
+  String cmStatSent(String count) {
+    return 'යවන ලද $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'එකඟතාව නැත $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'අසාර්ථක $count';
+  }
+
+  @override
+  String get cmSaved => 'ව්‍යාපාරය සුරැකිණි';
+
+  @override
+  String anFunnel(String days) {
+    return 'ලියාපදිංචි පෙරට (අවසන් දින $days)';
+  }
+
+  @override
+  String get anInstalls => 'යෙදුම විවෘත (එකඟ)';
+
+  @override
+  String get anSignedUp => 'ලියාපදිංචි වූවන්';
+
+  @override
+  String get anQuoted => 'මිල උපුටා ඉල්ලූවන්';
+
+  @override
+  String get anBooked => 'වෙන්කළ';
+
+  @override
+  String get anPaid => 'ගෙවූ';
+
+  @override
+  String get anRepeat => 'නැවත (2+)';
+
+  @override
+  String get anCohorts =>
+      'සති කණ්ඩායම් (ලියාපදිංචි සතිය අනුව වෙන්කිරීම් අනුපාතය)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'ලියාපදිංචි $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'සතිය $n තුළ වෙන්කළ';
+  }
 
   @override
   String get cOps => 'පද්ධති තත්ත්වය';

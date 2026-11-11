@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2267,6 +2268,127 @@ class TJa extends T {
 
   @override
   String get uMaintenanceBody => 'サービス改善のためメンテナンスを行っています。しばらくしてから再度お試しください。';
+
+  @override
+  String get cmTab => 'キャンペーン';
+
+  @override
+  String get cmNew => '新規キャンペーン';
+
+  @override
+  String get cmAudience => '対象のお客様';
+
+  @override
+  String get cmSegAll => '全顧客';
+
+  @override
+  String get cmSegNever => '予約履歴なし';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '最終予約から$days日以上';
+  }
+
+  @override
+  String get cmDays => '日数';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total人中、マーケティング同意 $consented人';
+  }
+
+  @override
+  String get cmChannel => '配信チャネル';
+
+  @override
+  String get cmPush => 'アプリ通知';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'タイトル';
+
+  @override
+  String get cmBody => '本文';
+
+  @override
+  String get cmOptout => '配信停止番号 (080)';
+
+  @override
+  String get cmPreview => 'プレビュー';
+
+  @override
+  String get cmSchedule => '配信日時';
+
+  @override
+  String get cmSendNow => '今すぐ配信';
+
+  @override
+  String get cmTestSend => '自分の番号にテスト送信';
+
+  @override
+  String get cmCreate => 'キャンペーンを保存';
+
+  @override
+  String get cmNeedOptout => 'SMSには080の配信停止番号が必要です';
+
+  @override
+  String get cmLog => '配信履歴';
+
+  @override
+  String cmStatSent(String count) {
+    return '送信 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '同意なし $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '失敗 $count';
+  }
+
+  @override
+  String get cmSaved => 'キャンペーンを保存しました';
+
+  @override
+  String anFunnel(String days) {
+    return '登録後ファネル（直近$days日）';
+  }
+
+  @override
+  String get anInstalls => 'アプリ起動（同意済み）';
+
+  @override
+  String get anSignedUp => '登録';
+
+  @override
+  String get anQuoted => '見積依頼';
+
+  @override
+  String get anBooked => '予約';
+
+  @override
+  String get anPaid => '支払い';
+
+  @override
+  String get anRepeat => 'リピート（2回以上）';
+
+  @override
+  String get anCohorts => '週次コホート（登録週別の予約率）';
+
+  @override
+  String anCohortSize(String count) {
+    return '登録 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n週目に予約';
+  }
 
   @override
   String get cOps => 'システム状態';

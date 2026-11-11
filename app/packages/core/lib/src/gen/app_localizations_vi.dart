@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2318,6 +2319,127 @@ class TVi extends T {
   @override
   String get uMaintenanceBody =>
       'Chúng tôi đang bảo trì để nâng cao dịch vụ. Vui lòng quay lại sau.';
+
+  @override
+  String get cmTab => 'Chiến dịch';
+
+  @override
+  String get cmNew => 'Chiến dịch mới';
+
+  @override
+  String get cmAudience => 'Khách hàng nhận';
+
+  @override
+  String get cmSegAll => 'Tất cả khách';
+
+  @override
+  String get cmSegNever => 'Chưa từng đặt';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Đặt lần cuối từ $days+ ngày trước';
+  }
+
+  @override
+  String get cmDays => 'Số ngày';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented/$total khách đồng ý nhận tiếp thị';
+  }
+
+  @override
+  String get cmChannel => 'Kênh gửi';
+
+  @override
+  String get cmPush => 'Thông báo ứng dụng';
+
+  @override
+  String get cmSms => 'Tin nhắn (SMS)';
+
+  @override
+  String get cmTitle => 'Tiêu đề';
+
+  @override
+  String get cmBody => 'Nội dung';
+
+  @override
+  String get cmOptout => 'Số từ chối (080)';
+
+  @override
+  String get cmPreview => 'Xem trước';
+
+  @override
+  String get cmSchedule => 'Thời gian gửi';
+
+  @override
+  String get cmSendNow => 'Gửi ngay';
+
+  @override
+  String get cmTestSend => 'Gửi thử đến số của tôi';
+
+  @override
+  String get cmCreate => 'Lưu chiến dịch';
+
+  @override
+  String get cmNeedOptout => 'SMS cần số từ chối 080';
+
+  @override
+  String get cmLog => 'Nhật ký gửi';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Đã gửi $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Không đồng ý $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Lỗi $count';
+  }
+
+  @override
+  String get cmSaved => 'Đã lưu chiến dịch';
+
+  @override
+  String anFunnel(String days) {
+    return 'Phễu sau đăng ký ($days ngày gần đây)';
+  }
+
+  @override
+  String get anInstalls => 'Mở ứng dụng (đã đồng ý)';
+
+  @override
+  String get anSignedUp => 'Đã đăng ký';
+
+  @override
+  String get anQuoted => 'Yêu cầu báo giá';
+
+  @override
+  String get anBooked => 'Đã đặt';
+
+  @override
+  String get anPaid => 'Đã thanh toán';
+
+  @override
+  String get anRepeat => 'Mua lại (từ 2 lần)';
+
+  @override
+  String get anCohorts => 'Nhóm theo tuần (tỷ lệ đặt theo tuần đăng ký)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Đăng ký $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Đặt trong tuần $n';
+  }
 
   @override
   String get cOps => 'Trạng thái hệ thống';

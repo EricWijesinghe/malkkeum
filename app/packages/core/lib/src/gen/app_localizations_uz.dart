@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2350,6 +2351,128 @@ class TUz extends T {
   @override
   String get uMaintenanceBody =>
       'Xizmatni yaxshilash uchun texnik ishlar olib borilmoqda. Iltimos, keyinroq qayta urinib ko\'ring.';
+
+  @override
+  String get cmTab => 'Kampaniyalar';
+
+  @override
+  String get cmNew => 'Yangi kampaniya';
+
+  @override
+  String get cmAudience => 'Auditoriya';
+
+  @override
+  String get cmSegAll => 'Barcha mijozlar';
+
+  @override
+  String get cmSegNever => 'Hech qachon band qilmagan';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Oxirgi buyurtma $days+ kun oldin';
+  }
+
+  @override
+  String get cmDays => 'Kunlar soni';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total tadan $consented tasi marketing rozilik bergan';
+  }
+
+  @override
+  String get cmChannel => 'Kanal';
+
+  @override
+  String get cmPush => 'Ilova push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Sarlavha';
+
+  @override
+  String get cmBody => 'Matn';
+
+  @override
+  String get cmOptout => 'Rad etish raqami (080)';
+
+  @override
+  String get cmPreview => 'Ko‘rib chiqish';
+
+  @override
+  String get cmSchedule => 'Yuborish vaqti';
+
+  @override
+  String get cmSendNow => 'Hozir yuborish';
+
+  @override
+  String get cmTestSend => 'Test xabarni o‘z raqamimga yuborish';
+
+  @override
+  String get cmCreate => 'Kampaniyani saqlash';
+
+  @override
+  String get cmNeedOptout => 'SMS uchun 080 rad etish raqami kerak';
+
+  @override
+  String get cmLog => 'Yuborish jurnali';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Yuborildi $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Rozilik yo‘q $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Xato $count';
+  }
+
+  @override
+  String get cmSaved => 'Kampaniya saqlandi';
+
+  @override
+  String anFunnel(String days) {
+    return 'Ro‘yxatdan o‘tish voronkasi (so‘nggi $days kun)';
+  }
+
+  @override
+  String get anInstalls => 'Ilova ochilgan (rozilik bilan)';
+
+  @override
+  String get anSignedUp => 'Ro‘yxatdan o‘tgan';
+
+  @override
+  String get anQuoted => 'Narx so‘raganlar';
+
+  @override
+  String get anBooked => 'Band qilgan';
+
+  @override
+  String get anPaid => 'To‘lagan';
+
+  @override
+  String get anRepeat => 'Qayta (2+)';
+
+  @override
+  String get anCohorts =>
+      'Haftalik kogortalar (ro‘yxatdan o‘tgan hafta bo‘yicha bron ulushi)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Ro‘yxat $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n-haftada band qilgan';
+  }
 
   @override
   String get cOps => 'Tizim holati';

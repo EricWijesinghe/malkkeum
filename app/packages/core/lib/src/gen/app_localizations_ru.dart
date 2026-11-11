@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2337,6 +2338,128 @@ class TRu extends T {
   @override
   String get uMaintenanceBody =>
       'Мы улучшаем сервис. Пожалуйста, зайдите немного позже.';
+
+  @override
+  String get cmTab => 'Кампании';
+
+  @override
+  String get cmNew => 'Новая кампания';
+
+  @override
+  String get cmAudience => 'Аудитория';
+
+  @override
+  String get cmSegAll => 'Все клиенты';
+
+  @override
+  String get cmSegNever => 'Ни разу не бронировали';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Последний заказ $days+ дн. назад';
+  }
+
+  @override
+  String get cmDays => 'Дней';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return 'Маркетинговое согласие: $consented из $total';
+  }
+
+  @override
+  String get cmChannel => 'Канал';
+
+  @override
+  String get cmPush => 'Push в приложении';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Заголовок';
+
+  @override
+  String get cmBody => 'Текст';
+
+  @override
+  String get cmOptout => 'Номер для отказа (080)';
+
+  @override
+  String get cmPreview => 'Предпросмотр';
+
+  @override
+  String get cmSchedule => 'Время отправки';
+
+  @override
+  String get cmSendNow => 'Отправить сейчас';
+
+  @override
+  String get cmTestSend => 'Тест на мой телефон';
+
+  @override
+  String get cmCreate => 'Сохранить кампанию';
+
+  @override
+  String get cmNeedOptout => 'Для SMS нужен номер для отказа 080';
+
+  @override
+  String get cmLog => 'Журнал отправок';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Отправлено $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Без согласия $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Ошибок $count';
+  }
+
+  @override
+  String get cmSaved => 'Кампания сохранена';
+
+  @override
+  String anFunnel(String days) {
+    return 'Воронка регистраций (последние $days дн.)';
+  }
+
+  @override
+  String get anInstalls => 'Открыли приложение (с согласием)';
+
+  @override
+  String get anSignedUp => 'Зарегистрировались';
+
+  @override
+  String get anQuoted => 'Запросили расчёт';
+
+  @override
+  String get anBooked => 'Забронировали';
+
+  @override
+  String get anPaid => 'Оплатили';
+
+  @override
+  String get anRepeat => 'Повторные (2+)';
+
+  @override
+  String get anCohorts =>
+      'Недельные когорты (доля заказов по неделе регистрации)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Регистраций $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Заказ на неделе $n';
+  }
 
   @override
   String get cOps => 'Состояние системы';
