@@ -83,6 +83,7 @@ pub fn router(state: AppState) -> Router {
         .merge(address::public_routes())
         .merge(config::routes())
         .merge(crate::client_errors::routes())
+        .merge(crate::analytics::public_routes())
         .nest(
             "/admin",
             admin::routes()
@@ -100,7 +101,9 @@ pub fn router(state: AppState) -> Router {
                 .merge(tax_invoices::admin_routes())
                 .merge(ops::admin_routes())
                 .merge(cases::admin_routes())
-                .merge(site::admin_routes()),
+                .merge(site::admin_routes())
+                .merge(crate::marketing::admin_routes())
+                .merge(crate::analytics::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()).merge(cases::partner_routes()).merge(site::partner_routes()))
         .nest("/member", member::routes())

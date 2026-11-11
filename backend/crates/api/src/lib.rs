@@ -2,6 +2,7 @@
 //! New top-level modules are declared here (not in main.rs).
 
 pub mod address;
+pub mod analytics;
 pub mod app_links;
 pub mod ai;
 pub mod auth;
@@ -16,6 +17,7 @@ pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
 pub mod lifecycle;
+pub mod marketing;
 pub mod metrics;
 pub mod openapi;
 pub mod noshow;
@@ -88,6 +90,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         payout_sync::spawn(state.clone()),
         retention::spawn(state.clone()),
         noshow::spawn(state.clone()),
+        marketing::spawn(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;
