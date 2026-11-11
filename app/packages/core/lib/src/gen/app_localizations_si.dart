@@ -1726,6 +1726,147 @@ class TSi extends T {
   String get themeTip => 'තේමාව වෙනස් කරන්න';
 
   @override
+  String get err_price_changed =>
+      'මිල වෙනස් වී ඇත. නව මිල ගණන පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get err_checkout_closed => 'මෙම ගෙවීම දැන් වසා ඇත. නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get err_checkout_refunded => 'මෙම ගෙවීම අවලංගු කර මුදල ආපසු ගෙවා ඇත.';
+
+  @override
+  String get err_already_paid => 'මෙම ගෙවීම දැනටමත් සම්පූර්ණ කර ඇත.';
+
+  @override
+  String get err_quote_not_payable =>
+      'මෙම මිල ගණන දැනට ගෙවිය නොහැක. අපගේ කණ්ඩායම සම්බන්ධ කරගන්න.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'මෙම ගෙවීම් ක්‍රමය දැනට ලබා ගත නොහැක.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'තේරූ ගෙවීම් ක්‍රමය භාවිත කළ නොහැක. වෙනත් එකක් තෝරන්න.';
+
+  @override
+  String get err_balance_not_due => 'ශේෂය ගෙවීමට තවම කල් ඉකුත් වී නැත.';
+
+  @override
+  String get err_invalid_slot => 'මෙම සේවාව සඳහා එම වේලාව ලබා දෙන්නේ නැත.';
+
+  @override
+  String get err_booking_changed =>
+      'වෙන්කිරීම වෙනස් වී ඇත. නැවුම් කර විස්තර පරීක්ෂා කරන්න.';
+
+  @override
+  String get err_booking_closed => 'මෙම වෙන්කිරීම තවදුරටත් වෙනස් කළ නොහැක.';
+
+  @override
+  String get err_reschedule_closed =>
+      'දැන් සංචාර දිනය වෙනස් කළ නොහැක. අපගේ කණ්ඩායම සම්බන්ධ කරගන්න.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'විවෘත ඉල්ලීම් ගණන වැඩියි. පළමුව එකක් සම්පූර්ණ කරන්න.';
+
+  @override
+  String get err_already_reviewed =>
+      'ඔබ මෙම සංචාරය සඳහා දැනටමත් සමාලෝචනයක් ලියා ඇත.';
+
+  @override
+  String get err_identity_not_verified =>
+      'පළමුව අනන්‍යතා තහවුරු කිරීම සම්පූර්ණ කරන්න.';
+
+  @override
+  String get err_email_taken => 'මෙම ඊමේල් ලිපිනය දැනටමත් භාවිතයේ ඇත.';
+
+  @override
+  String get err_invalid_email => 'ඊමේල් ලිපිනය පරීක්ෂා කරන්න.';
+
+  @override
+  String get err_file_too_large =>
+      'ගොනුව වැඩිය විශාලයි. කුඩා ගොනුවක් උඩුගත කරන්න.';
+
+  @override
+  String get err_unsupported_image =>
+      'මෙම ඡායාරූප ආකෘතිය සහාය නොදක්වයි. JPG හෝ PNG උඩුගත කරන්න.';
+
+  @override
+  String get err_upload_quota =>
+      'අද දින උඩුගත කිරීමේ සීමාවට ළඟා වී ඇත. හෙට නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get err_provider_unreachable =>
+      'සේවාව වෙත සම්බන්ධ විය නොහැක. මඳ වේලාවකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get err_invalid_token => 'පිවිසීම සාර්ථක නොවීය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get err_invalid_transition => 'දැන් තත්ත්වය එසේ වෙනස් කළ නොහැක.';
+
+  @override
+  String get err_job_not_started => 'පළමුව වැඩ ආරම්භ කරන්න.';
+
+  @override
+  String get err_job_not_active => 'මෙම වැඩ සක්‍රිය නොවේ.';
+
+  @override
+  String get err_quote_locked =>
+      'මිල ගණන අගුලු දමා ඇති නිසා සංස්කරණය කළ නොහැක.';
+
+  @override
+  String get err_request_closed => 'මෙම ඉල්ලීම වසා ඇත.';
+
+  @override
+  String get err_team_full => 'කණ්ඩායම පිරී ඇත.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret එක whsec_ න් ආරම්භ විය යුතුය.';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint එක https:// න් ආරම්භ විය යුතුය.';
+
+  @override
+  String get err_invalid_bucket => 'Bucket නම වලංගු නොවේ.';
+
+  @override
+  String get err_invalid_region => 'කලාපය වලංගු නොවේ.';
+
+  @override
+  String get err_invalid_retention => 'රඳවා තබා ගැනීමේ කාලය සීමාවෙන් පිටය.';
+
+  @override
+  String get err_invalid_service_account => 'Service account ගොනුව වලංගු නොවේ.';
+
+  @override
+  String get err_invalid_mode => 'වලංගු AI mode එකක් තෝරන්න.';
+
+  @override
+  String get err_invalid_model => 'AI model නම වලංගු නොවේ.';
+
+  @override
+  String get err_missing_field => 'අවශ්‍ය සියලු ක්ෂේත්‍ර පුරවන්න.';
+
+  @override
+  String get err_invalid_amount => 'වලංගු මුදලක් ඇතුළත් කරන්න.';
+
+  @override
+  String get err_cannot_deactivate_self => 'ඔබේම ගිණුම අක්‍රිය කළ නොහැක.';
+
+  @override
+  String get err_invalid_coupon => 'මෙම කූපනය වලංගු නොවේ.';
+
+  @override
+  String get err_settlement_state => 'දැන් පියවර වෙනස් කළ නොහැක.';
+
+  @override
+  String get err_deposit_required => 'පළමුව තැන්පතුව ගෙවිය යුතුය.';
+
+  @override
   String get fFinance => 'මූල්‍ය';
 
   @override

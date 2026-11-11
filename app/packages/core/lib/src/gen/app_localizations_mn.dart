@@ -1724,6 +1724,155 @@ class TMn extends T {
   String get themeTip => 'Загвар солих';
 
   @override
+  String get err_price_changed =>
+      'Үнэ өөрчлөгдсөн байна. Шинэ үнийн саналаа шалгаад дахин оролдоно уу.';
+
+  @override
+  String get err_checkout_closed =>
+      'Энэ төлбөр хаагдсан байна. Дахин эхлүүлнэ үү.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Энэ төлбөрийг цуцалж, буцаан олгосон байна.';
+
+  @override
+  String get err_already_paid => 'Энэ төлбөр аль хэдийн төлөгдсөн байна.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Энэ үнийн саналыг одоохондоо төлөх боломжгүй байна. Манай багтай холбогдоно уу.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Энэ төлбөрийн хэрэгсэл одоогоор боломжгүй байна.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Сонгосон төлбөрийн хэрэгсэл ашиглах боломжгүй байна. Өөрийг сонгоно уу.';
+
+  @override
+  String get err_balance_not_due =>
+      'Үлдэгдэл төлбөр одоогоор төлөх хугацаа болоогүй байна.';
+
+  @override
+  String get err_invalid_slot =>
+      'Энэ үйлчилгээнд сонгосон цаг боломжгүй байна.';
+
+  @override
+  String get err_booking_changed =>
+      'Захиалга өөрчлөгдсөн байна. Шинэчилж дэлгэрэнгүйг шалгана уу.';
+
+  @override
+  String get err_booking_closed => 'Энэ захиалгыг цаашид өөрчлөх боломжгүй.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Одоо очих өдрийг өөрчлөх боломжгүй. Манай багтай холбогдоно уу.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Нээлттэй хүсэлт хэт олон байна. Эхлээд нэгийг дуусгана уу.';
+
+  @override
+  String get err_already_reviewed =>
+      'Та энэ үйлчилгээнд аль хэдийн сэтгэгдэл үлдээсэн байна.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Эхлээд иргэний үнэмлэхийн баталгаажуулалтаа дуусгана уу.';
+
+  @override
+  String get err_email_taken => 'Энэ имэйл аль хэдийн ашиглагдсан байна.';
+
+  @override
+  String get err_invalid_email => 'Имэйл хаягаа шалгана уу.';
+
+  @override
+  String get err_file_too_large =>
+      'Файл хэт том байна. Илүү жижиг файл оруулна уу.';
+
+  @override
+  String get err_unsupported_image =>
+      'Энэ зургийн формат дэмжигдэхгүй. JPG эсвэл PNG оруулна уу.';
+
+  @override
+  String get err_upload_quota =>
+      'Өнөөдрийн байршуулалтын хязгаарт хүрсэн байна. Маргааш дахин оролдоно уу.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Үйлчилгээтэй холбогдож чадсангүй. Удахгүй дахин оролдоно уу.';
+
+  @override
+  String get err_invalid_token =>
+      'Нэвтрэлт амжилтгүй боллоо. Дахин оролдоно уу.';
+
+  @override
+  String get err_invalid_transition =>
+      'Төлөвийг одоо ийм байдлаар өөрчлөх боломжгүй.';
+
+  @override
+  String get err_job_not_started => 'Эхлээд ажлаа эхлүүлнэ үү.';
+
+  @override
+  String get err_job_not_active => 'Энэ ажил идэвхгүй байна.';
+
+  @override
+  String get err_quote_locked => 'Үнийн санал түгжигдсэн тул засах боломжгүй.';
+
+  @override
+  String get err_request_closed => 'Энэ хүсэлт хаагдсан байна.';
+
+  @override
+  String get err_team_full => 'Баг дүүрсэн байна.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret нь whsec_-ээр эхлэх ёстой.';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint нь https://-ээр эхлэх ёстой.';
+
+  @override
+  String get err_invalid_bucket => 'Bucket-ийн нэр буруу байна.';
+
+  @override
+  String get err_invalid_region => 'Бүс буруу байна.';
+
+  @override
+  String get err_invalid_retention =>
+      'Хадгалах хугацаа хязгаараас гадуур байна.';
+
+  @override
+  String get err_invalid_service_account => 'Service account файл буруу байна.';
+
+  @override
+  String get err_invalid_mode => 'Зөв AI горим сонгоно уу.';
+
+  @override
+  String get err_invalid_model => 'AI загварын нэр буруу байна.';
+
+  @override
+  String get err_missing_field => 'Шаардлагатай бүх талбарыг бөглөнө үү.';
+
+  @override
+  String get err_invalid_amount => 'Зөв дүн оруулна уу.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Өөрийн бүртгэлээ идэвхгүй болгох боломжгүй.';
+
+  @override
+  String get err_invalid_coupon => 'Энэ купон буруу байна.';
+
+  @override
+  String get err_settlement_state => 'Тооцоог одоо өөрчлөх боломжгүй.';
+
+  @override
+  String get err_deposit_required =>
+      'Эхлээд урьдчилгаа төлбөр төлөх шаардлагатай.';
+
+  @override
   String get fFinance => 'Санхүү';
 
   @override

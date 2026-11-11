@@ -1680,6 +1680,132 @@ class TZh extends T {
   String get themeTip => '切换主题';
 
   @override
+  String get err_price_changed => '价格已变动，请查看新报价后重试。';
+
+  @override
+  String get err_checkout_closed => '该付款已结束，请重新开始。';
+
+  @override
+  String get err_checkout_refunded => '该付款已取消并退款。';
+
+  @override
+  String get err_already_paid => '已完成付款。';
+
+  @override
+  String get err_quote_not_payable => '该报价暂时无法付款，请联系客服确认。';
+
+  @override
+  String get err_payment_method_disabled => '当前无法使用该付款方式。';
+
+  @override
+  String get err_invalid_payment_method => '无法使用所选付款方式，请选择其他方式。';
+
+  @override
+  String get err_balance_not_due => '尾款尚未到期。';
+
+  @override
+  String get err_invalid_slot => '该服务不提供这个时段。';
+
+  @override
+  String get err_booking_changed => '预约内容已变更，请刷新后确认。';
+
+  @override
+  String get err_booking_closed => '该预约已无法更改。';
+
+  @override
+  String get err_reschedule_closed => '现在无法改期，请联系客服。';
+
+  @override
+  String get err_too_many_open_requests => '进行中的请求过多，请先处理一个。';
+
+  @override
+  String get err_already_reviewed => '您已评价过此次服务。';
+
+  @override
+  String get err_identity_not_verified => '请先完成实名认证。';
+
+  @override
+  String get err_email_taken => '该邮箱已被使用。';
+
+  @override
+  String get err_invalid_email => '请检查邮箱地址。';
+
+  @override
+  String get err_file_too_large => '文件太大，请上传更小的文件。';
+
+  @override
+  String get err_unsupported_image => '不支持该图片格式，请上传 JPG 或 PNG。';
+
+  @override
+  String get err_upload_quota => '今天的上传次数已达上限，请明天再试。';
+
+  @override
+  String get err_provider_unreachable => '无法连接服务，请稍后重试。';
+
+  @override
+  String get err_invalid_token => '登录信息无效，请重试。';
+
+  @override
+  String get err_invalid_transition => '当前无法更改为该状态。';
+
+  @override
+  String get err_job_not_started => '请先开始工作。';
+
+  @override
+  String get err_job_not_active => '该工作当前不可操作。';
+
+  @override
+  String get err_quote_locked => '报价已锁定，无法修改。';
+
+  @override
+  String get err_request_closed => '该请求已关闭。';
+
+  @override
+  String get err_team_full => '团队人数已满。';
+
+  @override
+  String get err_invalid_webhook_secret => 'Webhook 密钥必须以 whsec_ 开头。';
+
+  @override
+  String get err_invalid_endpoint => '端点必须以 https:// 开头。';
+
+  @override
+  String get err_invalid_bucket => '存储桶名称无效。';
+
+  @override
+  String get err_invalid_region => '区域无效。';
+
+  @override
+  String get err_invalid_retention => '保留天数超出范围。';
+
+  @override
+  String get err_invalid_service_account => '服务账号文件无效。';
+
+  @override
+  String get err_invalid_mode => '请重新选择有效的 AI 模式。';
+
+  @override
+  String get err_invalid_model => 'AI 模型名称无效。';
+
+  @override
+  String get err_missing_field => '请填写所有必填项。';
+
+  @override
+  String get err_invalid_amount => '请输入有效金额。';
+
+  @override
+  String get err_cannot_deactivate_self => '不能停用自己的账号。';
+
+  @override
+  String get err_invalid_coupon => '优惠券无效。';
+
+  @override
+  String get err_settlement_state => '当前无法更改结算状态。';
+
+  @override
+  String get err_deposit_required => '需先支付定金。';
+
+  @override
   String get fFinance => '财务';
 
   @override

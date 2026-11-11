@@ -1723,6 +1723,148 @@ class TKm extends T {
   String get themeTip => 'ប្តូរធីម';
 
   @override
+  String get err_price_changed =>
+      'តម្លៃបានប្តូរ។ សូមពិនិត្យសម្រង់ថ្មី ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get err_checkout_closed =>
+      'ការទូទាត់នេះបានបិទហើយ។ សូមចាប់ផ្តើមឡើងវិញ។';
+
+  @override
+  String get err_checkout_refunded =>
+      'ការទូទាត់នេះត្រូវបានលុបចោល និងសងប្រាក់វិញរួចហើយ។';
+
+  @override
+  String get err_already_paid => 'បានទូទាត់រួចហើយ។';
+
+  @override
+  String get err_quote_not_payable =>
+      'សម្រង់នេះមិនទាន់អាចទូទាត់បានទេ។ សូមទាក់ទងក្រុមរបស់យើង។';
+
+  @override
+  String get err_payment_method_disabled =>
+      'វិធីទូទាត់នេះមិនអាចប្រើបានឥឡូវនេះទេ។';
+
+  @override
+  String get err_invalid_payment_method =>
+      'វិធីទូទាត់ដែលបានជ្រើសមិនអាចប្រើបានទេ។ សូមជ្រើសវិធីផ្សេង។';
+
+  @override
+  String get err_balance_not_due => 'សមតុល្យមិនទាន់ដល់កាលកំណត់ទូទាត់ទេ។';
+
+  @override
+  String get err_invalid_slot => 'ម៉ោងនេះមិនមានសម្រាប់សេវានេះទេ។';
+
+  @override
+  String get err_booking_changed =>
+      'ការកក់បានប្តូរ។ សូមផ្ទុកឡើងវិញ ហើយពិនិត្យព័ត៌មាន។';
+
+  @override
+  String get err_booking_closed => 'ការកក់នេះមិនអាចផ្លាស់ប្តូរបានទៀតទេ។';
+
+  @override
+  String get err_reschedule_closed =>
+      'មិនអាចប្តូរកាលវិភាគទៅថ្ងៃផ្សេងឥឡូវនេះទេ។ សូមទាក់ទងក្រុមរបស់យើង។';
+
+  @override
+  String get err_too_many_open_requests =>
+      'មានសំណើដែលមិនទាន់បញ្ចប់ច្រើនពេក។ សូមបញ្ចប់មួយជាមុនសិន។';
+
+  @override
+  String get err_already_reviewed => 'អ្នកបានវាយតម្លៃការចុះសេវានេះរួចហើយ។';
+
+  @override
+  String get err_identity_not_verified =>
+      'សូមបញ្ចប់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណជាមុនសិន។';
+
+  @override
+  String get err_email_taken => 'អ៊ីមែលនេះត្រូវបានប្រើរួចហើយ។';
+
+  @override
+  String get err_invalid_email => 'សូមពិនិត្យអាសយដ្ឋានអ៊ីមែល។';
+
+  @override
+  String get err_file_too_large => 'ឯកសារធំពេក។ សូមផ្ទុកឡើងឯកសារតូចជាង។';
+
+  @override
+  String get err_unsupported_image =>
+      'ទម្រង់រូបភាពនេះមិនគាំទ្រទេ។ សូមផ្ទុកឡើង JPG ឬ PNG។';
+
+  @override
+  String get err_upload_quota =>
+      'ដល់កម្រិតផ្ទុកឡើងសម្រាប់ថ្ងៃនេះហើយ។ សូមព្យាយាមថ្ងៃស្អែក។';
+
+  @override
+  String get err_provider_unreachable =>
+      'មិនអាចភ្ជាប់ទៅសេវាបានទេ។ សូមព្យាយាមម្តងទៀតក្នុងពេលឆាប់ៗ។';
+
+  @override
+  String get err_invalid_token => 'ការចូលគណនីមិនបានសម្រេច។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get err_invalid_transition =>
+      'មិនអាចប្តូរស្ថានភាពតាមរបៀបនេះឥឡូវនេះទេ។';
+
+  @override
+  String get err_job_not_started => 'សូមចាប់ផ្តើមការងារជាមុនសិន។';
+
+  @override
+  String get err_job_not_active => 'ការងារនេះមិនសកម្មទេ។';
+
+  @override
+  String get err_quote_locked => 'សម្រង់ត្រូវបានចាក់សោ មិនអាចកែបានទេ។';
+
+  @override
+  String get err_request_closed => 'សំណើនេះត្រូវបានបិទហើយ។';
+
+  @override
+  String get err_team_full => 'ក្រុមពេញហើយ។';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret ត្រូវចាប់ផ្តើមដោយ whsec_។';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint ត្រូវចាប់ផ្តើមដោយ https://។';
+
+  @override
+  String get err_invalid_bucket => 'ឈ្មោះ bucket មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_region => 'Region មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_retention => 'រយៈពេលរក្សាទុកនៅក្រៅជួរដែលអនុញ្ញាត។';
+
+  @override
+  String get err_invalid_service_account =>
+      'ឯកសារ service account មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_mode => 'សូមជ្រើស AI mode ដែលត្រឹមត្រូវ។';
+
+  @override
+  String get err_invalid_model => 'ឈ្មោះ AI model មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_missing_field => 'សូមបំពេញចន្លោះដែលត្រូវការទាំងអស់។';
+
+  @override
+  String get err_invalid_amount => 'សូមបញ្ចូលចំនួនទឹកប្រាក់ដែលត្រឹមត្រូវ។';
+
+  @override
+  String get err_cannot_deactivate_self => 'អ្នកមិនអាចបិទគណនីរបស់ខ្លួនឯងបានទេ។';
+
+  @override
+  String get err_invalid_coupon => 'គូប៉ុងនេះមិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_settlement_state => 'មិនអាចប្តូរការបោះស្រាយឥឡូវនេះទេ។';
+
+  @override
+  String get err_deposit_required => 'ត្រូវបង់ប្រាក់កក់ជាមុនសិន។';
+
+  @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
 
   @override

@@ -2,7 +2,7 @@
 # {name} placeholders are filled by the app; money/dates arrive pre-formatted.
 S = {
   # common
-  "ok": ["확인", "OK", "OK", "确定", "OK"],
+  "ok": ["확인", "OK", "確認", "确定", "Xác nhận"],
   "cancel": ["취소", "Cancel", "キャンセル", "取消", "Hủy"],
   "next": ["다음", "Next", "次へ", "下一步", "Tiếp"],
   "close": ["닫기", "Close", "閉じる", "关闭", "Đóng"],
@@ -300,7 +300,7 @@ S = {
   "pointsEmpty": ["포인트 내역이 없어요", "No point history", "ポイント履歴はありません", "暂无积分记录", "Chưa có lịch sử điểm"],
   "accountName": ["이름", "Name", "名前", "姓名", "Tên"],
   "accountPhone": ["휴대폰 번호", "Mobile", "携帯番号", "手机号", "Số điện thoại"],
-  "accountEmail": ["이메일", "Email", "メール", "邮箱", "Email"],
+  "accountEmail": ["이메일", "Email", "メール", "邮箱", "Thư điện tử"],
   "accountLogin": ["로그인 방식", "Sign-in method", "ログイン方法", "登录方式", "Cách đăng nhập"],
   "accountLoginPhone": ["휴대폰 인증", "Phone verification", "電話番号認証", "手机验证", "Xác thực điện thoại"],
   "methodsEmpty": ["등록된 결제수단이 없어요", "No payment methods", "登録された支払い方法はありません", "暂无付款方式", "Chưa có phương thức"],

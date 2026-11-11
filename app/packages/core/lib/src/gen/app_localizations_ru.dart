@@ -1723,6 +1723,150 @@ class TRu extends T {
   String get themeTip => 'Сменить тему';
 
   @override
+  String get err_price_changed =>
+      'Цена изменилась. Проверьте новое предложение и попробуйте снова.';
+
+  @override
+  String get err_checkout_closed => 'Этот платёж уже закрыт. Начните заново.';
+
+  @override
+  String get err_checkout_refunded => 'Этот платёж отменён, деньги возвращены.';
+
+  @override
+  String get err_already_paid => 'Этот платёж уже оплачен.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Это предложение пока нельзя оплатить. Свяжитесь с нашей командой.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Этот способ оплаты сейчас недоступен.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Этот способ оплаты нельзя использовать. Выберите другой.';
+
+  @override
+  String get err_balance_not_due => 'Остаток пока не нужно оплачивать.';
+
+  @override
+  String get err_invalid_slot => 'Это время недоступно для выбранной услуги.';
+
+  @override
+  String get err_booking_changed =>
+      'Бронирование изменилось. Обновите страницу и проверьте детали.';
+
+  @override
+  String get err_booking_closed => 'Это бронирование больше нельзя изменить.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Сейчас перенести визит нельзя. Свяжитесь с нашей командой.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Слишком много открытых запросов. Сначала завершите один из них.';
+
+  @override
+  String get err_already_reviewed => 'Вы уже оставили отзыв об этом визите.';
+
+  @override
+  String get err_identity_not_verified => 'Сначала пройдите проверку личности.';
+
+  @override
+  String get err_email_taken => 'Этот email уже используется.';
+
+  @override
+  String get err_invalid_email => 'Проверьте адрес email.';
+
+  @override
+  String get err_file_too_large =>
+      'Файл слишком большой. Загрузите файл меньшего размера.';
+
+  @override
+  String get err_unsupported_image =>
+      'Этот формат фото не поддерживается. Загрузите JPG или PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Достигнут лимит загрузок на сегодня. Попробуйте завтра.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Не удалось связаться с сервисом. Попробуйте чуть позже.';
+
+  @override
+  String get err_invalid_token => 'Не удалось войти. Попробуйте снова.';
+
+  @override
+  String get err_invalid_transition =>
+      'Сейчас нельзя изменить статус таким образом.';
+
+  @override
+  String get err_job_not_started => 'Сначала начните работу.';
+
+  @override
+  String get err_job_not_active => 'Эта работа не активна.';
+
+  @override
+  String get err_quote_locked =>
+      'Предложение заблокировано и не может быть изменено.';
+
+  @override
+  String get err_request_closed => 'Этот запрос закрыт.';
+
+  @override
+  String get err_team_full => 'Команда заполнена.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret должен начинаться с whsec_.';
+
+  @override
+  String get err_invalid_endpoint =>
+      'Адрес endpoint должен начинаться с https://.';
+
+  @override
+  String get err_invalid_bucket => 'Некорректное имя bucket.';
+
+  @override
+  String get err_invalid_region => 'Некорректный регион.';
+
+  @override
+  String get err_invalid_retention =>
+      'Срок хранения вне допустимого диапазона.';
+
+  @override
+  String get err_invalid_service_account =>
+      'Некорректный файл service account.';
+
+  @override
+  String get err_invalid_mode => 'Выберите корректный режим AI.';
+
+  @override
+  String get err_invalid_model => 'Некорректное название модели AI.';
+
+  @override
+  String get err_missing_field => 'Заполните все обязательные поля.';
+
+  @override
+  String get err_invalid_amount => 'Введите корректную сумму.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Нельзя деактивировать собственный аккаунт.';
+
+  @override
+  String get err_invalid_coupon => 'Этот купон недействителен.';
+
+  @override
+  String get err_settlement_state => 'Сейчас нельзя изменить расчёт.';
+
+  @override
+  String get err_deposit_required => 'Сначала нужно внести депозит.';
+
+  @override
   String get fFinance => 'Финансы';
 
   @override

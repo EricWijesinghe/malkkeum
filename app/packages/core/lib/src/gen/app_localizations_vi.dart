@@ -242,7 +242,7 @@ class TVi extends T {
   String get cTitle => 'Bảng điều hành';
 
   @override
-  String get cEmail => 'Email';
+  String get cEmail => 'Thư điện tử';
 
   @override
   String get cPassword => 'Mật khẩu';
@@ -514,7 +514,7 @@ class TVi extends T {
   String get cKind_faq => 'FAQ';
 
   @override
-  String get cKind_banner => 'Banner';
+  String get cKind_banner => 'Biểu ngữ';
 
   @override
   String get cKind_legal => 'Pháp lý';
@@ -614,7 +614,7 @@ class TVi extends T {
   String get cNewMessage => 'Tin nhắn mới';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Xác nhận';
 
   @override
   String get cancel => 'Hủy';
@@ -1553,7 +1553,7 @@ class TVi extends T {
   String get accountPhone => 'Số điện thoại';
 
   @override
-  String get accountEmail => 'Email';
+  String get accountEmail => 'Thư điện tử';
 
   @override
   String get accountLogin => 'Cách đăng nhập';
@@ -1708,6 +1708,150 @@ class TVi extends T {
 
   @override
   String get themeTip => 'Đổi giao diện';
+
+  @override
+  String get err_price_changed =>
+      'Giá đã thay đổi. Hãy xem báo giá mới và thử lại.';
+
+  @override
+  String get err_checkout_closed => 'Thanh toán này đã đóng. Hãy bắt đầu lại.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Thanh toán này đã được hủy và hoàn tiền.';
+
+  @override
+  String get err_already_paid => 'Đã thanh toán rồi.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Báo giá này chưa thể thanh toán. Vui lòng liên hệ đội hỗ trợ.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Hiện không dùng được phương thức thanh toán này.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Không dùng được phương thức đã chọn. Hãy chọn cách khác.';
+
+  @override
+  String get err_balance_not_due => 'Chưa đến hạn thanh toán số dư.';
+
+  @override
+  String get err_invalid_slot => 'Dịch vụ này không có khung giờ đó.';
+
+  @override
+  String get err_booking_changed =>
+      'Thông tin đặt lịch đã thay đổi. Hãy làm mới và kiểm tra lại.';
+
+  @override
+  String get err_booking_closed => 'Lịch đặt này không thể thay đổi nữa.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Hiện không thể dời lịch. Vui lòng liên hệ đội hỗ trợ.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Bạn có quá nhiều yêu cầu đang mở. Hãy hoàn tất một yêu cầu trước.';
+
+  @override
+  String get err_already_reviewed => 'Bạn đã đánh giá lần đặt này rồi.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Vui lòng hoàn tất xác minh danh tính trước.';
+
+  @override
+  String get err_email_taken => 'Email này đã được sử dụng.';
+
+  @override
+  String get err_invalid_email => 'Hãy kiểm tra địa chỉ email.';
+
+  @override
+  String get err_file_too_large => 'Tệp quá lớn. Hãy tải lên tệp nhỏ hơn.';
+
+  @override
+  String get err_unsupported_image =>
+      'Định dạng ảnh không được hỗ trợ. Hãy tải lên JPG hoặc PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Đã đạt giới hạn tải lên hôm nay. Hãy thử lại ngày mai.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Không kết nối được dịch vụ. Hãy thử lại sau.';
+
+  @override
+  String get err_invalid_token =>
+      'Thông tin đăng nhập không hợp lệ. Hãy thử lại.';
+
+  @override
+  String get err_invalid_transition =>
+      'Hiện không thể chuyển sang trạng thái này.';
+
+  @override
+  String get err_job_not_started => 'Hãy bắt đầu công việc trước.';
+
+  @override
+  String get err_job_not_active => 'Công việc này hiện không hoạt động.';
+
+  @override
+  String get err_quote_locked => 'Báo giá đã khóa nên không thể sửa.';
+
+  @override
+  String get err_request_closed => 'Yêu cầu này đã đóng.';
+
+  @override
+  String get err_team_full => 'Nhóm đã đủ người.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret phải bắt đầu bằng whsec_.';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint phải bắt đầu bằng https://.';
+
+  @override
+  String get err_invalid_bucket => 'Tên bucket không hợp lệ.';
+
+  @override
+  String get err_invalid_region => 'Vùng không hợp lệ.';
+
+  @override
+  String get err_invalid_retention => 'Thời gian lưu giữ nằm ngoài giới hạn.';
+
+  @override
+  String get err_invalid_service_account =>
+      'Tệp tài khoản dịch vụ không hợp lệ.';
+
+  @override
+  String get err_invalid_mode => 'Hãy chọn lại chế độ AI hợp lệ.';
+
+  @override
+  String get err_invalid_model => 'Tên mô hình AI không hợp lệ.';
+
+  @override
+  String get err_missing_field => 'Hãy điền đầy đủ các mục bắt buộc.';
+
+  @override
+  String get err_invalid_amount => 'Hãy nhập số tiền hợp lệ.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Bạn không thể vô hiệu hóa tài khoản của chính mình.';
+
+  @override
+  String get err_invalid_coupon => 'Phiếu giảm giá không hợp lệ.';
+
+  @override
+  String get err_settlement_state =>
+      'Hiện không thể thay đổi trạng thái thanh toán.';
+
+  @override
+  String get err_deposit_required => 'Cần thanh toán tiền đặt cọc trước.';
 
   @override
   String get fFinance => 'Tài chính';

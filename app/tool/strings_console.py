@@ -1,7 +1,7 @@
 # Console (staff) strings. Columns: ko, en, ja, zh, vi.
 S = {
   "cTitle": ["운영 콘솔", "Operations console", "運営コンソール", "运营控制台", "Bảng điều hành"],
-  "cEmail": ["이메일", "Email", "メール", "邮箱", "Email"],
+  "cEmail": ["이메일", "Email", "メール", "邮箱", "Thư điện tử"],
   "cPassword": ["비밀번호", "Password", "パスワード", "密码", "Mật khẩu"],
   "cLogin": ["로그인", "Sign in", "ログイン", "登录", "Đăng nhập"],
   "cLoginFailed": ["이메일 또는 비밀번호가 맞지 않아요", "Wrong email or password", "メールまたはパスワードが違います", "邮箱或密码错误", "Sai email hoặc mật khẩu"],
@@ -91,7 +91,7 @@ S = {
   "cKind_notice": ["공지", "Notice", "お知らせ", "公告", "Thông báo"],
   "cKind_tip": ["팁", "Tip", "ヒント", "贴士", "Mẹo"],
   "cKind_faq": ["FAQ", "FAQ", "FAQ", "FAQ", "FAQ"],
-  "cKind_banner": ["배너", "Banner", "バナー", "横幅", "Banner"],
+  "cKind_banner": ["배너", "Banner", "バナー", "横幅", "Biểu ngữ"],
   "cKind_legal": ["약관", "Legal", "規約", "条款", "Pháp lý"],
   "cNewContent": ["새 콘텐츠", "New content", "新規コンテンツ", "新内容", "Nội dung mới"],
   "cTitleField": ["제목", "Title", "タイトル", "标题", "Tiêu đề"],

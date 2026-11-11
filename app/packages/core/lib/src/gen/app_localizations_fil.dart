@@ -126,13 +126,13 @@ class TFil extends T {
   String get apMethodApple => 'Apple Pay';
 
   @override
-  String get apMethodTransfer => 'Bank transfer';
+  String get apMethodTransfer => 'Paglipat sa bangko';
 
   @override
-  String get apMethodVirtual => 'Virtual account';
+  String get apMethodVirtual => 'Virtual na account';
 
   @override
-  String get apMethodPhone => 'Mobile bill';
+  String get apMethodPhone => 'Bayad sa mobile bill';
 
   @override
   String get apMethodUnknown => 'Iba pa';
@@ -151,10 +151,10 @@ class TFil extends T {
   String get apVaBank => 'Bangko';
 
   @override
-  String get apVaAccount => 'Account number';
+  String get apVaAccount => 'Numero ng account';
 
   @override
-  String get apVaHolder => 'Account holder';
+  String get apVaHolder => 'May-ari ng account';
 
   @override
   String get apVaAmount => 'Halaga';
@@ -182,7 +182,7 @@ class TFil extends T {
   String get apVaBannerAction => 'Tingnan ang account';
 
   @override
-  String get apPgTitle => 'Payment window';
+  String get apPgTitle => 'Bintana ng bayad';
 
   @override
   String get apPgDevNote =>
@@ -208,7 +208,7 @@ class TFil extends T {
       'Nag-expire na ang payment window. Pakisubukang muli.';
 
   @override
-  String get apIdentityTitle => 'Identity check (PASS)';
+  String get apIdentityTitle => 'Pagpapatunay ng pagkakakilanlan (PASS)';
 
   @override
   String get apIdentityBody =>
@@ -221,13 +221,13 @@ class TFil extends T {
   String get apIdentityDone => 'Na-verify na ang identity';
 
   @override
-  String get apIdentityVerified => 'Verified';
+  String get apIdentityVerified => 'Napatunayan';
 
   @override
   String get apIdentityUnverified => 'Hindi pa na-verify';
 
   @override
-  String get apIdentityDevTitle => 'Test identity check';
+  String get apIdentityDevTitle => 'Test na pagpapatunay ng pagkakakilanlan';
 
   @override
   String get apIdentityDevBody =>
@@ -240,7 +240,7 @@ class TFil extends T {
   String get apPayManageTitle => 'Magparehistro ng quick-pay';
 
   @override
-  String get cTitle => 'Operations console';
+  String get cTitle => 'Console ng operasyon';
 
   @override
   String get cEmail => 'Email';
@@ -261,10 +261,10 @@ class TFil extends T {
   String get cBookings => 'Mga booking';
 
   @override
-  String get cQuoteDesk => 'Quote desk';
+  String get cQuoteDesk => 'Desk ng quote';
 
   @override
-  String get cInbox => 'Inbox';
+  String get cInbox => 'Mga mensahe';
 
   @override
   String get cCatalog => 'Catalog at presyo';
@@ -273,16 +273,16 @@ class TFil extends T {
   String get cMarketing => 'Coupons at content';
 
   @override
-  String get cPartners => 'Partners';
+  String get cPartners => 'Mga partner';
 
   @override
-  String get cSettlements => 'Settlements';
+  String get cSettlements => 'Mga settlement';
 
   @override
-  String get cCustomers => 'Customers';
+  String get cCustomers => 'Mga customer';
 
   @override
-  String get cStaff => 'Staff';
+  String get cStaff => 'Tauhan';
 
   @override
   String get cSearchCommand => 'Maghanap o lumipat';
@@ -324,7 +324,7 @@ class TFil extends T {
   String get cNoResults => 'Walang resulta';
 
   @override
-  String get cNumber => 'Number';
+  String get cNumber => 'Numero';
 
   @override
   String get cVisit => 'Bisita';
@@ -333,16 +333,16 @@ class TFil extends T {
   String get cService => 'Serbisyo';
 
   @override
-  String get cStatus => 'Status';
+  String get cStatus => 'Katayuan';
 
   @override
-  String get cTeam => 'Team';
+  String get cTeam => 'Koponan';
 
   @override
   String get cAmount => 'Halaga';
 
   @override
-  String get cCustomer => 'Customer';
+  String get cCustomer => 'Kliyente';
 
   @override
   String get cPayments => 'Mga bayad';
@@ -378,13 +378,13 @@ class TFil extends T {
   String get cEstimateCalc => 'Awtomatikong kalkulasyon';
 
   @override
-  String get cBase => 'Base';
+  String get cBase => 'Batayan';
 
   @override
   String get cExtras => 'Dagdag';
 
   @override
-  String get cSurcharge => 'Surcharge';
+  String get cSurcharge => 'Dagdag na singil';
 
   @override
   String get cBeforeVat => 'Bago ang VAT';
@@ -408,10 +408,10 @@ class TFil extends T {
   String get cQuoteSent => 'Naipadala na ang quote';
 
   @override
-  String get cCustomerChats => 'Customers';
+  String get cCustomerChats => 'Chat ng customer';
 
   @override
-  String get cPartnerChats => 'Partners';
+  String get cPartnerChats => 'Chat ng partner';
 
   @override
   String get cSelectBooking => 'Pumili ng booking';
@@ -459,19 +459,19 @@ class TFil extends T {
   String get cFormula => 'Formula ng quote';
 
   @override
-  String get f_base_studio => 'Base: studio';
+  String get f_base_studio => 'Batayan: studio';
 
   @override
-  String get f_base_one_and_half => 'Base: 1.5 rooms';
+  String get f_base_one_and_half => 'Batayan: 1.5 kuwarto';
 
   @override
-  String get f_base_two_rooms => 'Base: 2 rooms';
+  String get f_base_two_rooms => 'Batayan: 2 kuwarto';
 
   @override
-  String get f_base_three_rooms => 'Base: 3 rooms';
+  String get f_base_three_rooms => 'Batayan: 3 kuwarto';
 
   @override
-  String get f_base_four_plus => 'Base: 4+ rooms';
+  String get f_base_four_plus => 'Batayan: 4+ kuwarto';
 
   @override
   String get f_per_extra_bathroom => 'Kada karagdagang banyo';
@@ -503,13 +503,13 @@ class TFil extends T {
   }
 
   @override
-  String get cContent => 'Content';
+  String get cContent => 'Nilalaman';
 
   @override
-  String get cKind_notice => 'Notice';
+  String get cKind_notice => 'Paunawa';
 
   @override
-  String get cKind_tip => 'Tip';
+  String get cKind_tip => 'Payo';
 
   @override
   String get cKind_faq => 'FAQ';
@@ -518,7 +518,7 @@ class TFil extends T {
   String get cKind_banner => 'Banner';
 
   @override
-  String get cKind_legal => 'Legal';
+  String get cKind_legal => 'Tuntunin';
 
   @override
   String get cNewContent => 'Bagong content';
@@ -530,7 +530,7 @@ class TFil extends T {
   String get cBodyField => 'Nilalaman';
 
   @override
-  String get cSlug => 'Slug (legal: privacy / terms)';
+  String get cSlug => 'Slug (tuntunin: privacy / terms)';
 
   @override
   String get cVerify => 'I-approve';
@@ -557,7 +557,7 @@ class TFil extends T {
   String get cRating => 'Rating';
 
   @override
-  String get cFeeRate => 'Fee %';
+  String get cFeeRate => 'Bayarin %';
 
   @override
   String get cRunPayouts => 'Patakbuhin ang payouts';
@@ -583,10 +583,10 @@ class TFil extends T {
   String get cAddStaff => 'Magdagdag ng staff';
 
   @override
-  String get cRoleAdmin => 'Admin';
+  String get cRoleAdmin => 'Tagapamahala';
 
   @override
-  String get cRoleConsultant => 'Consultant';
+  String get cRoleConsultant => 'Konsultant';
 
   @override
   String get cDeactivate => 'I-deactivate';
@@ -615,7 +615,7 @@ class TFil extends T {
   String get cNewMessage => 'Bagong mensahe';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Sige';
 
   @override
   String get cancel => 'Kanselahin';
@@ -719,13 +719,13 @@ class TFil extends T {
   String get err_invalid_address => 'Pakisagutan lahat ng field ng address';
 
   @override
-  String get tabHome => 'Home';
+  String get tabHome => 'Simula';
 
   @override
   String get tabBookings => 'Mga booking';
 
   @override
-  String get tabChat => 'Chat';
+  String get tabChat => 'Usapan';
 
   @override
   String get tabMore => 'Iba pa';
@@ -781,40 +781,40 @@ class TFil extends T {
   String get welcomeToast => 'May 2 welcome coupon na sa wallet mo';
 
   @override
-  String get svc_studio => 'Studio cleaning';
+  String get svc_studio => 'Paglilinis ng studio';
 
   @override
-  String get svc_kitchen => 'Kitchen cleaning';
+  String get svc_kitchen => 'Paglilinis ng kusina';
 
   @override
-  String get svc_bathroom => 'Bathroom cleaning';
+  String get svc_bathroom => 'Paglilinis ng banyo';
 
   @override
-  String get svc_mattress => 'Mattress cleaning';
+  String get svc_mattress => 'Paglilinis ng kutson';
 
   @override
   String get svc_aircon => 'Aircon cleaning';
 
   @override
-  String get svc_sofa => 'Sofa cleaning';
+  String get svc_sofa => 'Paglilinis ng sofa';
 
   @override
-  String get svc_move_out => 'Move-out cleaning';
+  String get svc_move_out => 'Paglilinis sa paglipat-labas';
 
   @override
-  String get svc_move_in => 'Move-in cleaning';
+  String get svc_move_in => 'Paglilinis bago lumipat';
 
   @override
   String get svcShort_studio => 'Studio';
 
   @override
-  String get svcShort_kitchen => 'Kitchen';
+  String get svcShort_kitchen => 'Kusina';
 
   @override
   String get svcShort_bathroom => 'Banyo';
 
   @override
-  String get svcShort_mattress => 'Mattress';
+  String get svcShort_mattress => 'Kutson';
 
   @override
   String get svcShort_aircon => 'Aircon';
@@ -823,10 +823,10 @@ class TFil extends T {
   String get svcShort_sofa => 'Sofa';
 
   @override
-  String get svcShort_move_out => 'Move-out';
+  String get svcShort_move_out => 'Paglipat-labas';
 
   @override
-  String get svcShort_move_in => 'Move-in';
+  String get svcShort_move_in => 'Paglipat-pasok';
 
   @override
   String get svcDesc_studio =>
@@ -900,7 +900,7 @@ class TFil extends T {
   String get unit_stand => 'Stand, 1 unit';
 
   @override
-  String get unit_two_in_one => '2-in-1 (stand + wall)';
+  String get unit_two_in_one => '2-in-1 (stand + nakasabit)';
 
   @override
   String get unit_ceiling => 'Ceiling cassette, 1 unit';
@@ -915,7 +915,7 @@ class TFil extends T {
   String get unit_seat_4_plus => '4+ upuan';
 
   @override
-  String get unit_l_shape => 'L-shape / couch';
+  String get unit_l_shape => 'Hugis-L · couch';
 
   @override
   String durH(String h) {
@@ -943,7 +943,7 @@ class TFil extends T {
   }
 
   @override
-  String get quoteBadge => 'Quote';
+  String get quoteBadge => 'Presyo';
 
   @override
   String get status0 => 'Nasa konsultasyon';
@@ -1037,7 +1037,7 @@ class TFil extends T {
   String get addressAdd => 'Magdagdag ng bagong address';
 
   @override
-  String get addressLabel => 'Label';
+  String get addressLabel => 'Pangalan';
 
   @override
   String get addressLabelHint => 'hal. Bahay';
@@ -1046,7 +1046,7 @@ class TFil extends T {
   String get addressDistrict => 'Distrito';
 
   @override
-  String get addressRoad => 'Street address';
+  String get addressRoad => 'Address sa kalsada';
 
   @override
   String get addressDetail => 'Unit / palapag';
@@ -1133,19 +1133,19 @@ class TFil extends T {
   String get tool_cloth => 'Basahan';
 
   @override
-  String get tool_gloves => 'Rubber gloves';
+  String get tool_gloves => 'Gomang guwantes';
 
   @override
-  String get tool_sponge => 'Scrubber';
+  String get tool_sponge => 'Espongha';
 
   @override
-  String get tool_spray => 'All-purpose cleaner';
+  String get tool_spray => 'Panlinis na pangkalahatan';
 
   @override
   String get checkoutTitle => 'Bayad';
 
   @override
-  String get coupon => 'Coupon';
+  String get coupon => 'Kupon';
 
   @override
   String get couponNone => 'Hindi gagamitin';
@@ -1162,7 +1162,7 @@ class TFil extends T {
   String get addPaymentMethod => 'Magdagdag ng paraan ng bayad';
 
   @override
-  String get methodCard => 'Credit / debit card';
+  String get methodCard => 'Kard (credit / debit)';
 
   @override
   String get methodKakao => 'KakaoPay';
@@ -1278,7 +1278,7 @@ class TFil extends T {
   String get prepAllSet => 'Handa na lahat';
 
   @override
-  String get visitAddress => 'Address';
+  String get visitAddress => 'Lugar ng pagbisita';
 
   @override
   String get paid => 'Bayad na';
@@ -1315,7 +1315,7 @@ class TFil extends T {
   String get notesEntry => 'Paano makapasok (door code atbp.)';
 
   @override
-  String get notesParking => 'Parking';
+  String get notesParking => 'Paradahan';
 
   @override
   String get notesOther => 'Iba pa';
@@ -1338,13 +1338,13 @@ class TFil extends T {
   String get estimate => 'Tinatayang halaga';
 
   @override
-  String get finalPrice => 'Final quote';
+  String get finalPrice => 'Huling presyo';
 
   @override
-  String get deposit => 'Deposit';
+  String get deposit => 'Paunang bayad';
 
   @override
-  String get balance => 'Balance';
+  String get balance => 'Natitirang bayad';
 
   @override
   String balanceDue(String amount) {
@@ -1376,13 +1376,13 @@ class TFil extends T {
   String get bookAgain => 'Mag-book ulit ng ganoon';
 
   @override
-  String get chatTitle => 'Chat';
+  String get chatTitle => 'Usapan';
 
   @override
-  String get chatTeam => 'Support team';
+  String get chatTeam => 'Team ng suporta';
 
   @override
-  String get chatHours => 'Weekdays 09:00–18:00';
+  String get chatHours => 'Lunes–Biyernes 09:00–18:00';
 
   @override
   String get chatEmpty => 'May tanong? Puwede mo kaming tanungin anytime';
@@ -1442,7 +1442,7 @@ class TFil extends T {
   String get quotePaid => 'Bayad na';
 
   @override
-  String get requestCard => 'Quote request';
+  String get requestCard => 'Hiling na quote';
 
   @override
   String get sys_consultation_received => 'Natanggap na ang request ninyo';
@@ -1483,13 +1483,13 @@ class TFil extends T {
   String get morePayments => 'Mga paraan ng bayad';
 
   @override
-  String get moreCoupons => 'Coupons';
+  String get moreCoupons => 'Mga kupon';
 
   @override
-  String get morePoints => 'Points';
+  String get morePoints => 'Puntos sa paglilinis';
 
   @override
-  String get moreAccount => 'Account';
+  String get moreAccount => 'Impormasyon ng account';
 
   @override
   String get moreAddresses => 'Mga address';
@@ -1501,7 +1501,7 @@ class TFil extends T {
   String get moreTips => 'Mga tip sa paglilinis';
 
   @override
-  String get moreFaq => 'FAQ';
+  String get moreFaq => 'Mga madalas itanong';
 
   @override
   String get morePartner => 'Maging partner';
@@ -1518,13 +1518,13 @@ class TFil extends T {
   }
 
   @override
-  String get morePrivacy => 'Privacy policy';
+  String get morePrivacy => 'Patakaran sa privacy';
 
   @override
-  String get moreTerms => 'Terms of service';
+  String get moreTerms => 'Mga tuntunin ng serbisyo';
 
   @override
-  String get moreLicenses => 'Open-source licenses';
+  String get moreLicenses => 'Mga lisensya ng open-source';
 
   @override
   String get logout => 'Mag-sign out';
@@ -1548,7 +1548,7 @@ class TFil extends T {
   String get couponUsed => 'Nagamit na';
 
   @override
-  String get couponExpired => 'Expired';
+  String get couponExpired => 'Nag-expire na';
 
   @override
   String get couponAnyService => 'Lahat ng serbisyo';
@@ -1557,7 +1557,7 @@ class TFil extends T {
   String get coupon_welcome_studio => 'Welcome coupon para sa studio';
 
   @override
-  String get coupon_welcome_any => 'Welcome coupon';
+  String get coupon_welcome_any => 'Kupon sa pagsali';
 
   @override
   String get pointsBalance => 'Points mo';
@@ -1569,7 +1569,7 @@ class TFil extends T {
   String get accountName => 'Pangalan';
 
   @override
-  String get accountPhone => 'Mobile';
+  String get accountPhone => 'Numero ng cellphone';
 
   @override
   String get accountEmail => 'Email';
@@ -1578,7 +1578,7 @@ class TFil extends T {
   String get accountLogin => 'Paraan ng pag-login';
 
   @override
-  String get accountLoginPhone => 'Phone verification';
+  String get accountLoginPhone => 'Pagpapatunay sa telepono';
 
   @override
   String get methodsEmpty => 'Walang paraan ng bayad';
@@ -1633,7 +1633,7 @@ class TFil extends T {
   String get building_apartment => 'Apartment';
 
   @override
-  String get building_villa => 'Low-rise';
+  String get building_villa => 'Mababang gusali';
 
   @override
   String get building_officetel => 'Officetel';
@@ -1645,22 +1645,22 @@ class TFil extends T {
   String get building_other => 'Iba pa';
 
   @override
-  String get layoutTitle => 'Layout';
+  String get layoutTitle => 'Ayos ng kuwarto';
 
   @override
   String get layout_studio => 'Studio';
 
   @override
-  String get layout_one_and_half => '1.5 rooms';
+  String get layout_one_and_half => '1.5 kuwarto';
 
   @override
-  String get layout_two_rooms => '2 rooms';
+  String get layout_two_rooms => '2 kuwarto';
 
   @override
-  String get layout_three_rooms => '3 rooms';
+  String get layout_three_rooms => '3 kuwarto';
 
   @override
-  String get layout_four_plus => '4+ rooms';
+  String get layout_four_plus => '4+ kuwarto';
 
   @override
   String get duplexTitle => 'Duplex po ba ito?';
@@ -1716,19 +1716,169 @@ class TFil extends T {
   String get summaryDate => 'Bisita';
 
   @override
-  String get themeTitle => 'Theme';
+  String get themeTitle => 'Tema';
 
   @override
-  String get themeDark => 'Dark';
+  String get themeDark => 'Madilim';
 
   @override
-  String get themeLight => 'Light';
+  String get themeLight => 'Maliwanag';
 
   @override
-  String get themeSystem => 'System';
+  String get themeSystem => 'Ayon sa system';
 
   @override
   String get themeTip => 'Palitan ang theme';
+
+  @override
+  String get err_price_changed =>
+      'Nagbago ang presyo. Tingnan ang bagong quote at subukan ulit.';
+
+  @override
+  String get err_checkout_closed =>
+      'Tapos na ang bayad na ito. Magsimula ulit.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Nakansela na ang bayad na ito at na-refund na.';
+
+  @override
+  String get err_already_paid => 'Bayad na ito.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Hindi pa puwedeng bayaran ang quote na ito. Makipag-ugnayan sa team.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Hindi available ang paraan ng bayad na ito ngayon.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Hindi magamit ang napiling paraan ng bayad. Pumili ng iba.';
+
+  @override
+  String get err_balance_not_due => 'Hindi pa due ang balanse.';
+
+  @override
+  String get err_invalid_slot =>
+      'Hindi available ang oras na ito para sa serbisyong ito.';
+
+  @override
+  String get err_booking_changed =>
+      'Nagbago ang booking. I-refresh at tingnan ulit ang detalye.';
+
+  @override
+  String get err_booking_closed =>
+      'Hindi na puwedeng baguhin ang booking na ito.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Hindi na puwedeng ilipat ang petsa ngayon. Makipag-ugnayan sa team.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Masyado nang maraming bukas na request. Tapusin muna ang isa.';
+
+  @override
+  String get err_already_reviewed =>
+      'Nakapag-review ka na para sa visit na ito.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Kumpletuhin muna ang pag-verify ng pagkakakilanlan.';
+
+  @override
+  String get err_email_taken => 'Ginagamit na ang email na ito.';
+
+  @override
+  String get err_invalid_email => 'Pakitingnan ang email address.';
+
+  @override
+  String get err_file_too_large =>
+      'Masyadong malaki ang file. Mag-upload ng mas maliit.';
+
+  @override
+  String get err_unsupported_image =>
+      'Hindi suportado ang format ng larawang ito. Mag-upload ng JPG o PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Naabot na ang limitasyon sa upload ngayong araw. Subukan bukas.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Hindi maabot ang serbisyo. Subukan ulit maya-maya.';
+
+  @override
+  String get err_invalid_token =>
+      'Hindi natuloy ang pag-sign in. Subukan ulit.';
+
+  @override
+  String get err_invalid_transition =>
+      'Hindi puwedeng baguhin sa ganitong paraan ang status ngayon.';
+
+  @override
+  String get err_job_not_started => 'Simulan muna ang trabaho.';
+
+  @override
+  String get err_job_not_active => 'Hindi aktibo ang trabahong ito.';
+
+  @override
+  String get err_quote_locked => 'Naka-lock ang quote at hindi na mae-edit.';
+
+  @override
+  String get err_request_closed => 'Sarado na ang request na ito.';
+
+  @override
+  String get err_team_full => 'Puno na ang team.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Dapat magsimula sa whsec_ ang webhook secret.';
+
+  @override
+  String get err_invalid_endpoint =>
+      'Dapat magsimula sa https:// ang endpoint.';
+
+  @override
+  String get err_invalid_bucket => 'Hindi valid ang pangalan ng bucket.';
+
+  @override
+  String get err_invalid_region => 'Hindi valid ang region.';
+
+  @override
+  String get err_invalid_retention => 'Wala sa saklaw ang haba ng pag-iimbak.';
+
+  @override
+  String get err_invalid_service_account =>
+      'Hindi valid ang file ng service account.';
+
+  @override
+  String get err_invalid_mode => 'Pumili ng valid na AI mode.';
+
+  @override
+  String get err_invalid_model => 'Hindi valid ang pangalan ng AI model.';
+
+  @override
+  String get err_missing_field => 'Punan ang lahat ng kinakailangang field.';
+
+  @override
+  String get err_invalid_amount => 'Maglagay ng valid na halaga.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Hindi mo puwedeng i-deactivate ang sarili mong account.';
+
+  @override
+  String get err_invalid_coupon => 'Hindi valid ang coupon na ito.';
+
+  @override
+  String get err_settlement_state =>
+      'Hindi puwedeng baguhin ang settlement ngayon.';
+
+  @override
+  String get err_deposit_required => 'Kailangan munang bayaran ang deposito.';
 
   @override
   String get fFinance => 'Pananalapi';
@@ -1795,7 +1945,7 @@ class TFil extends T {
   String get fMethods => 'Paraan ng bayad';
 
   @override
-  String get fTrend => 'Trend';
+  String get fTrend => 'Takbo';
 
   @override
   String fRangeDays(String n) {
@@ -1845,7 +1995,7 @@ class TFil extends T {
   String get fRetry => 'Subukan muli';
 
   @override
-  String get fColPartner => 'Partner';
+  String get fColPartner => 'Kasosyo';
 
   @override
   String get fColJobs => 'Bilang';
@@ -2268,7 +2418,7 @@ class TFil extends T {
   String get pTabQuotes => 'Mga quote ko';
 
   @override
-  String get pTabSchedule => 'Schedule';
+  String get pTabSchedule => 'Iskedyul';
 
   @override
   String get pIntroTitle =>
@@ -2308,7 +2458,7 @@ class TFil extends T {
       'Pansamantalang na-suspend ang account ninyo. Pakikontak ang operations team.';
 
   @override
-  String get pDirect => 'Direct';
+  String get pDirect => 'Direktang booking';
 
   @override
   String get pQuoteReq => 'Mga quote request';
@@ -2438,7 +2588,7 @@ class TFil extends T {
   String get pRescheduleNo => 'Hindi ako puwede';
 
   @override
-  String get pCustomer => 'Customer';
+  String get pCustomer => 'Kliyente';
 
   @override
   String get pCall => 'Tumawag gamit ang masked number';
@@ -2479,16 +2629,16 @@ class TFil extends T {
   String get pComplete => 'Markahang tapos ang trabaho';
 
   @override
-  String get pBeforePhotos => 'Before photos';
+  String get pBeforePhotos => 'Mga larawan bago linisin';
 
   @override
-  String get pAfterPhotos => 'After photos';
+  String get pAfterPhotos => 'Mga larawan pagkatapos linisin';
 
   @override
   String get pAddPhoto => 'Magdagdag ng photo';
 
   @override
-  String get pChecklist => 'Checklist';
+  String get pChecklist => 'Listahan ng gagawin';
 
   @override
   String get pCheck1 => 'Nalinis na ang lahat ng hiniling na lugar';
@@ -2525,7 +2675,7 @@ class TFil extends T {
   String get pPendingPayout => 'Naghihintay na payout';
 
   @override
-  String get pSettlements => 'Settlements';
+  String get pSettlements => 'Kasaysayan ng bayad';
 
   @override
   String get pS_waiting_balance => 'Naghihintay ng balance';
@@ -2552,19 +2702,19 @@ class TFil extends T {
   String get pServicesAreas => 'Mga serbisyo at lugar';
 
   @override
-  String get pPayoutAccount => 'Payout account';
+  String get pPayoutAccount => 'Account para sa bayad';
 
   @override
   String get pBank => 'Bangko';
 
   @override
-  String get pAccountNumber => 'Account number';
+  String get pAccountNumber => 'Numero ng account';
 
   @override
-  String get pHolder => 'Account holder';
+  String get pHolder => 'May-ari ng account';
 
   @override
-  String get pVerified => 'Verified';
+  String get pVerified => 'Napatunayan';
 
   @override
   String get pUnverified => 'Sini-verify';
@@ -2574,7 +2724,7 @@ class TFil extends T {
       'Na-save ang account. Kapag may binago, muling ive-verify ito.';
 
   @override
-  String get pWorkSchedule => 'Work schedule';
+  String get pWorkSchedule => 'Iskedyul ng trabaho';
 
   @override
   String get pWeekdays => 'Mga araw ng trabaho';
@@ -2595,7 +2745,7 @@ class TFil extends T {
   String get pTeam => 'Mga miyembro';
 
   @override
-  String get pOwner => 'Owner';
+  String get pOwner => 'May-ari';
 
   @override
   String get pInvited => 'Inimbitahan';
@@ -2628,7 +2778,7 @@ class TFil extends T {
   String get pNewInquiry => 'Bagong tanong';
 
   @override
-  String get pTopic_settlement => 'Payouts';
+  String get pTopic_settlement => 'Bayad';
 
   @override
   String get pTopic_reschedule => 'Reschedule / kanselasyon';
@@ -2637,27 +2787,27 @@ class TFil extends T {
   String get pTopic_app => 'Tulong sa app';
 
   @override
-  String get pOpsTeam => 'Operations';
+  String get pOpsTeam => 'Team ng operasyon';
 
   @override
   String get pViewJob => 'Tingnan ang trabaho';
 
   @override
   String pBookingNo(String n) {
-    return 'Booking $n';
+    return 'Booking #$n';
   }
 
   @override
   String get pSize => 'Laki';
 
   @override
-  String get pSchedule => 'Schedule';
+  String get pSchedule => 'Iskedyul';
 
   @override
   String get pSpace => 'Impormasyon ng espasyo';
 
   @override
-  String get cSetup => 'Setup';
+  String get cSetup => 'Pag-setup';
 
   @override
   String get cSetupTitle => 'Paghahanda sa paglulunsad';
@@ -2711,7 +2861,7 @@ class TFil extends T {
   String get cSetupAddress => 'Address';
 
   @override
-  String get cSetupPrivacyOfficer => 'Privacy officer';
+  String get cSetupPrivacyOfficer => 'Opisyal ng privacy';
 
   @override
   String get cSetupStoreLinks =>
@@ -2857,16 +3007,16 @@ class TFil extends T {
   String get cIntPush => 'Push ng app (Firebase)';
 
   @override
-  String get cIntKakao => 'Kakao login';
+  String get cIntKakao => 'Login gamit ang Kakao';
 
   @override
-  String get cIntNaver => 'Naver login';
+  String get cIntNaver => 'Login gamit ang Naver';
 
   @override
-  String get cIntGoogle => 'Google login';
+  String get cIntGoogle => 'Login gamit ang Google';
 
   @override
-  String get cIntApple => 'Apple login';
+  String get cIntApple => 'Login gamit ang Apple';
 
   @override
   String get cFirstRunTitle =>
@@ -2877,7 +3027,7 @@ class TFil extends T {
       'Ilagay ang 12-character na code na ipinakita sa pag-install. Ang account na ito ang mamamahala sa lahat ng setting.';
 
   @override
-  String get cFirstRunCode => 'Setup code';
+  String get cFirstRunCode => 'Code sa pag-setup';
 
   @override
   String get cName => 'Pangalan';

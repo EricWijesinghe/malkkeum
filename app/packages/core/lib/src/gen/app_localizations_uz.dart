@@ -242,7 +242,7 @@ class TUz extends T {
   String get cTitle => 'Operatsion konsol';
 
   @override
-  String get cEmail => 'Email';
+  String get cEmail => 'Elektron pochta';
 
   @override
   String get cPassword => 'Parol';
@@ -515,7 +515,7 @@ class TUz extends T {
   String get cKind_faq => 'FAQ';
 
   @override
-  String get cKind_banner => 'Banner';
+  String get cKind_banner => 'Reklama';
 
   @override
   String get cKind_legal => 'Huquqiy';
@@ -615,7 +615,7 @@ class TUz extends T {
   String get cNewMessage => 'Yangi xabar';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Tayyor';
 
   @override
   String get cancel => 'Bekor qilish';
@@ -726,7 +726,7 @@ class TUz extends T {
   String get tabBookings => 'Bronlar';
 
   @override
-  String get tabChat => 'Chat';
+  String get tabChat => 'Suhbat';
 
   @override
   String get tabMore => 'Yana';
@@ -1374,7 +1374,7 @@ class TUz extends T {
   String get bookAgain => 'Xuddi shunday qayta bron qilish';
 
   @override
-  String get chatTitle => 'Chat';
+  String get chatTitle => 'Suhbat';
 
   @override
   String get chatTeam => 'Qo\'llab-quvvatlash jamoasi';
@@ -1570,7 +1570,7 @@ class TUz extends T {
   String get accountPhone => 'Telefon';
 
   @override
-  String get accountEmail => 'Email';
+  String get accountEmail => 'Elektron pochta';
 
   @override
   String get accountLogin => 'Kirish usuli';
@@ -1726,6 +1726,152 @@ class TUz extends T {
 
   @override
   String get themeTip => 'Mavzuni o\'zgartirish';
+
+  @override
+  String get err_price_changed =>
+      'Narx o‘zgardi. Yangi taklifni ko‘rib, qayta urinib ko‘ring.';
+
+  @override
+  String get err_checkout_closed => 'Bu to‘lov yopilgan. Qaytadan boshlang.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Bu to‘lov bekor qilingan va pul qaytarilgan.';
+
+  @override
+  String get err_already_paid => 'Bu to‘lov allaqachon to‘langan.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Bu taklif hozircha to‘lanmaydi. Jamoamiz bilan bog‘laning.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Bu to‘lov usuli hozircha mavjud emas.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Tanlangan to‘lov usulidan foydalanib bo‘lmaydi. Boshqasini tanlang.';
+
+  @override
+  String get err_balance_not_due => 'Qoldiq to‘lov hali muddati kelmagan.';
+
+  @override
+  String get err_invalid_slot => 'Bu xizmat uchun tanlangan vaqt mavjud emas.';
+
+  @override
+  String get err_booking_changed =>
+      'Buyurtma o‘zgargan. Yangilab, tafsilotlarni tekshiring.';
+
+  @override
+  String get err_booking_closed => 'Bu buyurtmani endi o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Hozir tashrif sanasini o‘zgartirib bo‘lmaydi. Jamoamiz bilan bog‘laning.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Ochiq so‘rovlar juda ko‘p. Avval bittasini yakunlang.';
+
+  @override
+  String get err_already_reviewed =>
+      'Siz bu tashrif uchun allaqachon sharh qoldirgansiz.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Avval shaxsni tasdiqlashni yakunlang.';
+
+  @override
+  String get err_email_taken => 'Bu elektron pochta allaqachon band.';
+
+  @override
+  String get err_invalid_email => 'Elektron pochta manzilini tekshiring.';
+
+  @override
+  String get err_file_too_large => 'Fayl juda katta. Kichikroq fayl yuklang.';
+
+  @override
+  String get err_unsupported_image =>
+      'Bu rasm formati qo‘llab-quvvatlanmaydi. JPG yoki PNG yuklang.';
+
+  @override
+  String get err_upload_quota =>
+      'Bugungi yuklash limiti tugadi. Ertaga qayta urining.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Xizmatga ulanib bo‘lmadi. Biroz keyin qayta urinib ko‘ring.';
+
+  @override
+  String get err_invalid_token =>
+      'Kirish amalga oshmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get err_invalid_transition =>
+      'Holatni hozir bunday o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_job_not_started => 'Avval ishni boshlang.';
+
+  @override
+  String get err_job_not_active => 'Bu ish faol emas.';
+
+  @override
+  String get err_quote_locked => 'Taklif qulflangan, tahrirlab bo‘lmaydi.';
+
+  @override
+  String get err_request_closed => 'Bu so‘rov yopilgan.';
+
+  @override
+  String get err_team_full => 'Jamoa to‘lgan.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret whsec_ bilan boshlanishi kerak.';
+
+  @override
+  String get err_invalid_endpoint =>
+      'Endpoint https:// bilan boshlanishi kerak.';
+
+  @override
+  String get err_invalid_bucket => 'Bucket nomi noto‘g‘ri.';
+
+  @override
+  String get err_invalid_region => 'Hudud noto‘g‘ri.';
+
+  @override
+  String get err_invalid_retention =>
+      'Saqlash muddati ruxsat etilgan chegaradan tashqarida.';
+
+  @override
+  String get err_invalid_service_account => 'Service account fayli noto‘g‘ri.';
+
+  @override
+  String get err_invalid_mode => 'To‘g‘ri AI rejimini tanlang.';
+
+  @override
+  String get err_invalid_model => 'AI model nomi noto‘g‘ri.';
+
+  @override
+  String get err_missing_field => 'Barcha majburiy maydonlarni to‘ldiring.';
+
+  @override
+  String get err_invalid_amount => 'To‘g‘ri summani kiriting.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'O‘z hisobingizni o‘chirib bo‘lmaydi.';
+
+  @override
+  String get err_invalid_coupon => 'Bu kupon yaroqsiz.';
+
+  @override
+  String get err_settlement_state =>
+      'Hisob-kitobni hozir o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_deposit_required => 'Avval depozit to‘lanishi kerak.';
 
   @override
   String get fFinance => 'Moliya';

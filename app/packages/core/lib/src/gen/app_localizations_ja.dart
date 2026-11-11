@@ -602,7 +602,7 @@ class TJa extends T {
   String get cNewMessage => '新着メッセージ';
 
   @override
-  String get ok => 'OK';
+  String get ok => '確認';
 
   @override
   String get cancel => 'キャンセル';
@@ -1681,6 +1681,133 @@ class TJa extends T {
 
   @override
   String get themeTip => 'テーマを変更';
+
+  @override
+  String get err_price_changed => '料金が変わりました。新しい見積もりを確認して再度お試しください。';
+
+  @override
+  String get err_checkout_closed => 'この決済はすでに終了しています。もう一度お試しください。';
+
+  @override
+  String get err_checkout_refunded => 'この決済は取り消され、返金済みです。';
+
+  @override
+  String get err_already_paid => 'すでに支払い済みです。';
+
+  @override
+  String get err_quote_not_payable => 'この見積もりはまだ支払えません。サポートにご確認ください。';
+
+  @override
+  String get err_payment_method_disabled => '現在この支払い方法はご利用いただけません。';
+
+  @override
+  String get err_invalid_payment_method => 'その支払い方法はご利用いただけません。別の方法を選んでください。';
+
+  @override
+  String get err_balance_not_due => '残金はまだお支払いの時期ではありません。';
+
+  @override
+  String get err_invalid_slot => 'このサービスではその時間をお選びいただけません。';
+
+  @override
+  String get err_booking_changed => '予約内容が変更されました。更新して確認してください。';
+
+  @override
+  String get err_booking_closed => 'この予約はこれ以上変更できません。';
+
+  @override
+  String get err_reschedule_closed => '現在、訪問日は変更できません。サポートにお問い合わせください。';
+
+  @override
+  String get err_too_many_open_requests => '進行中のリクエストが多すぎます。一つ完了してから再度お試しください。';
+
+  @override
+  String get err_already_reviewed => 'この訪問にはすでにレビューを投稿済みです。';
+
+  @override
+  String get err_identity_not_verified => '先に本人確認を完了してください。';
+
+  @override
+  String get err_email_taken => 'このメールアドレスは既に使用されています。';
+
+  @override
+  String get err_invalid_email => 'メールアドレスをご確認ください。';
+
+  @override
+  String get err_file_too_large => 'ファイルが大きすぎます。小さいファイルをアップロードしてください。';
+
+  @override
+  String get err_unsupported_image =>
+      'この画像形式はサポートされていません。JPGかPNGをアップロードしてください。';
+
+  @override
+  String get err_upload_quota => '本日のアップロード上限に達しました。明日もう一度お試しください。';
+
+  @override
+  String get err_provider_unreachable => 'サービスに接続できません。しばらくしてから再度お試しください。';
+
+  @override
+  String get err_invalid_token => 'ログイン情報が正しくありません。もう一度お試しください。';
+
+  @override
+  String get err_invalid_transition => '現在このステータスには変更できません。';
+
+  @override
+  String get err_job_not_started => '先に作業を開始してください。';
+
+  @override
+  String get err_job_not_active => 'この作業は現在進行中ではありません。';
+
+  @override
+  String get err_quote_locked => '確定済みの見積もりのため編集できません。';
+
+  @override
+  String get err_request_closed => 'このリクエストは締め切られています。';
+
+  @override
+  String get err_team_full => 'チームの人数が上限に達しています。';
+
+  @override
+  String get err_invalid_webhook_secret => 'Webhookシークレットは whsec_ で始まる必要があります。';
+
+  @override
+  String get err_invalid_endpoint => 'エンドポイントは https:// で始めてください。';
+
+  @override
+  String get err_invalid_bucket => 'バケット名が正しくありません。';
+
+  @override
+  String get err_invalid_region => 'リージョンが正しくありません。';
+
+  @override
+  String get err_invalid_retention => '保存期間の値が範囲外です。';
+
+  @override
+  String get err_invalid_service_account => 'サービスアカウントのファイルが正しくありません。';
+
+  @override
+  String get err_invalid_mode => 'AIの応答モードを選び直してください。';
+
+  @override
+  String get err_invalid_model => 'AIモデル名が正しくありません。';
+
+  @override
+  String get err_missing_field => '必須項目をすべて入力してください。';
+
+  @override
+  String get err_invalid_amount => '金額を正しく入力してください。';
+
+  @override
+  String get err_cannot_deactivate_self => '自分のアカウントは無効化できません。';
+
+  @override
+  String get err_invalid_coupon => 'クーポンが正しくありません。';
+
+  @override
+  String get err_settlement_state => '現在、精算の状態は変更できません。';
+
+  @override
+  String get err_deposit_required => '先に予約金のお支払いが必要です。';
 
   @override
   String get fFinance => '財務';

@@ -1716,6 +1716,145 @@ class TTh extends T {
   String get themeTip => 'เปลี่ยนธีม';
 
   @override
+  String get err_price_changed =>
+      'ราคาเปลี่ยนแล้ว กรุณาตรวจสอบใบเสนอราคาใหม่แล้วลองอีกครั้ง';
+
+  @override
+  String get err_checkout_closed => 'การชำระเงินนี้ปิดแล้ว กรุณาเริ่มใหม่';
+
+  @override
+  String get err_checkout_refunded => 'การชำระเงินนี้ถูกยกเลิกและคืนเงินแล้ว';
+
+  @override
+  String get err_already_paid => 'ชำระเงินแล้ว';
+
+  @override
+  String get err_quote_not_payable =>
+      'ยังชำระใบเสนอราคานี้ไม่ได้ กรุณาติดต่อทีมงาน';
+
+  @override
+  String get err_payment_method_disabled => 'วิธีชำระเงินนี้ใช้ไม่ได้ในขณะนี้';
+
+  @override
+  String get err_invalid_payment_method =>
+      'ใช้วิธีชำระเงินที่เลือกไม่ได้ กรุณาเลือกวิธีอื่น';
+
+  @override
+  String get err_balance_not_due => 'ยังไม่ถึงกำหนดชำระยอดคงเหลือ';
+
+  @override
+  String get err_invalid_slot => 'บริการนี้ไม่มีเวลาที่เลือก';
+
+  @override
+  String get err_booking_changed =>
+      'การจองมีการเปลี่ยนแปลง กรุณารีเฟรชและตรวจสอบรายละเอียด';
+
+  @override
+  String get err_booking_closed => 'ไม่สามารถเปลี่ยนแปลงการจองนี้ได้อีก';
+
+  @override
+  String get err_reschedule_closed =>
+      'ตอนนี้เลื่อนวันเข้าบริการไม่ได้ กรุณาติดต่อทีมงาน';
+
+  @override
+  String get err_too_many_open_requests =>
+      'มีคำขอที่ยังไม่เสร็จมากเกินไป กรุณาทำให้เสร็จหนึ่งรายการก่อน';
+
+  @override
+  String get err_already_reviewed => 'คุณรีวิวการเข้าบริการนี้ไปแล้ว';
+
+  @override
+  String get err_identity_not_verified => 'กรุณายืนยันตัวตนให้เสร็จก่อน';
+
+  @override
+  String get err_email_taken => 'อีเมลนี้ถูกใช้แล้ว';
+
+  @override
+  String get err_invalid_email => 'กรุณาตรวจสอบอีเมล';
+
+  @override
+  String get err_file_too_large =>
+      'ไฟล์มีขนาดใหญ่เกินไป กรุณาอัปโหลดไฟล์ที่เล็กกว่า';
+
+  @override
+  String get err_unsupported_image =>
+      'ไม่รองรับรูปแบบรูปภาพนี้ กรุณาอัปโหลด JPG หรือ PNG';
+
+  @override
+  String get err_upload_quota =>
+      'ถึงขีดจำกัดการอัปโหลดของวันนี้แล้ว กรุณาลองพรุ่งนี้';
+
+  @override
+  String get err_provider_unreachable =>
+      'เชื่อมต่อบริการไม่ได้ กรุณาลองอีกครั้งในไม่กี่นาที';
+
+  @override
+  String get err_invalid_token => 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองอีกครั้ง';
+
+  @override
+  String get err_invalid_transition => 'ไม่สามารถเปลี่ยนสถานะแบบนี้ได้ในตอนนี้';
+
+  @override
+  String get err_job_not_started => 'กรุณาเริ่มงานก่อน';
+
+  @override
+  String get err_job_not_active => 'งานนี้ไม่ได้อยู่ในสถานะดำเนินการ';
+
+  @override
+  String get err_quote_locked => 'ใบเสนอราคาถูกล็อกแล้ว แก้ไขไม่ได้';
+
+  @override
+  String get err_request_closed => 'คำขอนี้ปิดแล้ว';
+
+  @override
+  String get err_team_full => 'ทีมเต็มแล้ว';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret ต้องขึ้นต้นด้วย whsec_';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint ต้องขึ้นต้นด้วย https://';
+
+  @override
+  String get err_invalid_bucket => 'ชื่อ bucket ไม่ถูกต้อง';
+
+  @override
+  String get err_invalid_region => 'ภูมิภาคไม่ถูกต้อง';
+
+  @override
+  String get err_invalid_retention => 'ระยะเวลาเก็บข้อมูลอยู่นอกช่วงที่กำหนด';
+
+  @override
+  String get err_invalid_service_account => 'ไฟล์ service account ไม่ถูกต้อง';
+
+  @override
+  String get err_invalid_mode => 'กรุณาเลือกโหมด AI ที่ถูกต้อง';
+
+  @override
+  String get err_invalid_model => 'ชื่อโมเดล AI ไม่ถูกต้อง';
+
+  @override
+  String get err_missing_field => 'กรุณากรอกข้อมูลที่จำเป็นให้ครบ';
+
+  @override
+  String get err_invalid_amount => 'กรุณากรอกจำนวนเงินที่ถูกต้อง';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'ไม่สามารถปิดใช้งานบัญชีของตัวเองได้';
+
+  @override
+  String get err_invalid_coupon => 'คูปองนี้ไม่ถูกต้อง';
+
+  @override
+  String get err_settlement_state =>
+      'ตอนนี้ไม่สามารถเปลี่ยนสถานะการชำระเงินได้';
+
+  @override
+  String get err_deposit_required => 'ต้องชำระเงินมัดจำก่อน';
+
+  @override
   String get fFinance => 'การเงิน';
 
   @override

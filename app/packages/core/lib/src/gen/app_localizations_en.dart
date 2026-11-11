@@ -1713,6 +1713,150 @@ class TEn extends T {
   String get themeTip => 'Change theme';
 
   @override
+  String get err_price_changed =>
+      'The price changed. Review the new quote and try again.';
+
+  @override
+  String get err_checkout_closed =>
+      'This payment is no longer open. Start again.';
+
+  @override
+  String get err_checkout_refunded =>
+      'This payment was cancelled and refunded.';
+
+  @override
+  String get err_already_paid => 'This is already paid.';
+
+  @override
+  String get err_quote_not_payable =>
+      'This quote can\'t be paid yet. Check with our team.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'This payment method isn\'t available right now.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'That payment method can\'t be used. Choose another.';
+
+  @override
+  String get err_balance_not_due => 'The balance isn\'t due yet.';
+
+  @override
+  String get err_invalid_slot => 'That time isn\'t offered for this service.';
+
+  @override
+  String get err_booking_changed =>
+      'The booking changed. Refresh and check the details.';
+
+  @override
+  String get err_booking_closed => 'This booking can\'t be changed anymore.';
+
+  @override
+  String get err_reschedule_closed =>
+      'The visit can\'t be rescheduled now. Contact our team.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'You have too many open requests. Finish one first.';
+
+  @override
+  String get err_already_reviewed => 'You already reviewed this visit.';
+
+  @override
+  String get err_identity_not_verified => 'Finish identity verification first.';
+
+  @override
+  String get err_email_taken => 'This email is already in use.';
+
+  @override
+  String get err_invalid_email => 'Check the email address.';
+
+  @override
+  String get err_file_too_large =>
+      'That file is too large. Upload a smaller one.';
+
+  @override
+  String get err_unsupported_image =>
+      'This photo format isn\'t supported. Upload a JPG or PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Upload limit reached for today. Try again tomorrow.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Couldn\'t reach the service. Try again shortly.';
+
+  @override
+  String get err_invalid_token => 'Sign-in didn\'t go through. Try again.';
+
+  @override
+  String get err_invalid_transition =>
+      'The status can\'t be changed that way right now.';
+
+  @override
+  String get err_job_not_started => 'Start the job first.';
+
+  @override
+  String get err_job_not_active => 'This job isn\'t active.';
+
+  @override
+  String get err_quote_locked => 'This quote is locked and can\'t be edited.';
+
+  @override
+  String get err_request_closed => 'This request is closed.';
+
+  @override
+  String get err_team_full => 'Your team is full.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'The webhook secret must start with whsec_.';
+
+  @override
+  String get err_invalid_endpoint => 'The endpoint must start with https://.';
+
+  @override
+  String get err_invalid_bucket => 'The bucket name isn\'t valid.';
+
+  @override
+  String get err_invalid_region => 'The region isn\'t valid.';
+
+  @override
+  String get err_invalid_retention => 'The retention period is out of range.';
+
+  @override
+  String get err_invalid_service_account =>
+      'The service account file isn\'t valid.';
+
+  @override
+  String get err_invalid_mode => 'Pick a valid AI mode.';
+
+  @override
+  String get err_invalid_model => 'The AI model name isn\'t valid.';
+
+  @override
+  String get err_missing_field => 'Fill in every required field.';
+
+  @override
+  String get err_invalid_amount => 'Enter a valid amount.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'You can\'t deactivate your own account.';
+
+  @override
+  String get err_invalid_coupon => 'This coupon isn\'t valid.';
+
+  @override
+  String get err_settlement_state =>
+      'The settlement can\'t be changed right now.';
+
+  @override
+  String get err_deposit_required => 'The deposit must be paid first.';
+
+  @override
   String get fFinance => 'Finance';
 
   @override

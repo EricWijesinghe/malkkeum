@@ -1720,6 +1720,150 @@ class TNe extends T {
   String get themeTip => 'थिम परिवर्तन गर्नुहोस्';
 
   @override
+  String get err_price_changed =>
+      'मूल्य परिवर्तन भयो। नयाँ कोटेसन हेरेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get err_checkout_closed =>
+      'यो भुक्तानी बन्द भइसक्यो। फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get err_checkout_refunded => 'यो भुक्तानी रद्द भई रकम फिर्ता भइसक्यो।';
+
+  @override
+  String get err_already_paid => 'यो भुक्तानी पहिल्यै भइसकेको छ।';
+
+  @override
+  String get err_quote_not_payable =>
+      'यो कोटेसन अहिले भुक्तानी गर्न मिल्दैन। हाम्रो टोलीसँग सम्पर्क गर्नुहोस्।';
+
+  @override
+  String get err_payment_method_disabled =>
+      'यो भुक्तानी विधि अहिले उपलब्ध छैन।';
+
+  @override
+  String get err_invalid_payment_method =>
+      'छानिएको भुक्तानी विधि प्रयोग गर्न मिल्दैन। अर्को छान्नुहोस्।';
+
+  @override
+  String get err_balance_not_due =>
+      'ब्यालेन्स भुक्तानी गर्ने मिति अझै आएको छैन।';
+
+  @override
+  String get err_invalid_slot => 'यो सेवाको लागि त्यो समय उपलब्ध छैन।';
+
+  @override
+  String get err_booking_changed =>
+      'बुकिङ परिवर्तन भयो। रिफ्रेस गरेर विवरण जाँच गर्नुहोस्।';
+
+  @override
+  String get err_booking_closed => 'यो बुकिङ अब परिवर्तन गर्न मिल्दैन।';
+
+  @override
+  String get err_reschedule_closed =>
+      'अहिले भ्रमण मिति परिवर्तन गर्न मिल्दैन। हाम्रो टोलीलाई सम्पर्क गर्नुहोस्।';
+
+  @override
+  String get err_too_many_open_requests =>
+      'खुला अनुरोधहरू धेरै छन्। पहिले एउटा सम्पन्न गर्नुहोस्।';
+
+  @override
+  String get err_already_reviewed =>
+      'तपाईंले यो भ्रमणको समीक्षा पहिल्यै गरिसक्नुभएको छ।';
+
+  @override
+  String get err_identity_not_verified =>
+      'पहिले पहिचान प्रमाणीकरण पूरा गर्नुहोस्।';
+
+  @override
+  String get err_email_taken => 'यो इमेल पहिल्यै प्रयोगमा छ।';
+
+  @override
+  String get err_invalid_email => 'इमेल ठेगाना जाँच गर्नुहोस्।';
+
+  @override
+  String get err_file_too_large =>
+      'फाइल धेरै ठूलो छ। सानो फाइल अपलोड गर्नुहोस्।';
+
+  @override
+  String get err_unsupported_image =>
+      'यो फोटोको ढाँचा समर्थित छैन। JPG वा PNG अपलोड गर्नुहोस्।';
+
+  @override
+  String get err_upload_quota =>
+      'आजको अपलोड सीमा पुगिसक्यो। भोलि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get err_provider_unreachable =>
+      'सेवामा जडान हुन सकेन। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get err_invalid_token => 'साइन इन सफल भएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get err_invalid_transition =>
+      'स्थिति अहिले यसरी परिवर्तन गर्न मिल्दैन।';
+
+  @override
+  String get err_job_not_started => 'पहिले काम सुरु गर्नुहोस्।';
+
+  @override
+  String get err_job_not_active => 'यो काम सक्रिय छैन।';
+
+  @override
+  String get err_quote_locked => 'कोटेसन लक गरिएको छ, सम्पादन गर्न मिल्दैन।';
+
+  @override
+  String get err_request_closed => 'यो अनुरोध बन्द भइसकेको छ।';
+
+  @override
+  String get err_team_full => 'टोली भरिसकेको छ।';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret whsec_ बाट सुरु हुनुपर्छ।';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint https:// बाट सुरु हुनुपर्छ।';
+
+  @override
+  String get err_invalid_bucket => 'Bucket नाम मान्य छैन।';
+
+  @override
+  String get err_invalid_region => 'Region मान्य छैन।';
+
+  @override
+  String get err_invalid_retention => 'अवधारण अवधि सीमाभन्दा बाहिर छ।';
+
+  @override
+  String get err_invalid_service_account => 'Service account फाइल मान्य छैन।';
+
+  @override
+  String get err_invalid_mode => 'मान्य AI mode छान्नुहोस्।';
+
+  @override
+  String get err_invalid_model => 'AI model नाम मान्य छैन।';
+
+  @override
+  String get err_missing_field => 'आवश्यक सबै फिल्ड भर्नुहोस्।';
+
+  @override
+  String get err_invalid_amount => 'मान्य रकम प्रविष्ट गर्नुहोस्।';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'तपाईं आफ्नो खाता निष्क्रिय गर्न सक्नुहुन्न।';
+
+  @override
+  String get err_invalid_coupon => 'यो कुपन मान्य छैन।';
+
+  @override
+  String get err_settlement_state => 'सेटलमेन्ट अहिले परिवर्तन गर्न मिल्दैन।';
+
+  @override
+  String get err_deposit_required => 'पहिले धरौटी रकम तिर्नुपर्छ।';
+
+  @override
   String get fFinance => 'वित्त';
 
   @override

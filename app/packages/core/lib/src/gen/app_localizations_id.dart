@@ -127,7 +127,7 @@ class TId extends T {
   String get apMethodTransfer => 'Transfer bank';
 
   @override
-  String get apMethodVirtual => 'Virtual account';
+  String get apMethodVirtual => 'Rekening virtual';
 
   @override
   String get apMethodPhone => 'Tagihan ponsel';
@@ -331,7 +331,7 @@ class TId extends T {
   String get cService => 'Layanan';
 
   @override
-  String get cStatus => 'Status';
+  String get cStatus => 'Kondisi';
 
   @override
   String get cTeam => 'Tim';
@@ -478,7 +478,7 @@ class TId extends T {
   String get f_per_balcony => 'Per balkon';
 
   @override
-  String get f_duplex => 'Duplex';
+  String get f_duplex => 'Dupleks';
 
   @override
   String get f_no_elevator_high_floor => 'Tanpa lift & lantai 3+';
@@ -513,7 +513,7 @@ class TId extends T {
   String get cKind_faq => 'FAQ';
 
   @override
-  String get cKind_banner => 'Banner';
+  String get cKind_banner => 'Spanduk';
 
   @override
   String get cKind_legal => 'Ketentuan';
@@ -552,7 +552,7 @@ class TId extends T {
   String get cCancelledN => 'Dibatalkan';
 
   @override
-  String get cRating => 'Rating';
+  String get cRating => 'Penilaian';
 
   @override
   String get cFeeRate => 'Biaya %';
@@ -581,7 +581,7 @@ class TId extends T {
   String get cAddStaff => 'Tambah staf';
 
   @override
-  String get cRoleAdmin => 'Admin';
+  String get cRoleAdmin => 'Pengelola';
 
   @override
   String get cRoleConsultant => 'Konsultan';
@@ -613,7 +613,7 @@ class TId extends T {
   String get cNewMessage => 'Pesan baru';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Oke';
 
   @override
   String get cancel => 'Batal';
@@ -719,7 +719,7 @@ class TId extends T {
   String get tabBookings => 'Pemesanan';
 
   @override
-  String get tabChat => 'Chat';
+  String get tabChat => 'Obrolan';
 
   @override
   String get tabMore => 'Lainnya';
@@ -1030,7 +1030,7 @@ class TId extends T {
   String get addressAdd => 'Tambah alamat baru';
 
   @override
-  String get addressLabel => 'Label';
+  String get addressLabel => 'Nama';
 
   @override
   String get addressLabelHint => 'mis. Rumah';
@@ -1334,7 +1334,7 @@ class TId extends T {
   String get finalPrice => 'Penawaran final';
 
   @override
-  String get deposit => 'Deposit';
+  String get deposit => 'Uang muka';
 
   @override
   String get balance => 'Sisa pembayaran';
@@ -1369,7 +1369,7 @@ class TId extends T {
   String get bookAgain => 'Pesan lagi';
 
   @override
-  String get chatTitle => 'Chat';
+  String get chatTitle => 'Obrolan';
 
   @override
   String get chatTeam => 'Tim konsultan';
@@ -1494,7 +1494,7 @@ class TId extends T {
   String get moreTips => 'Tips membersihkan';
 
   @override
-  String get moreFaq => 'FAQ';
+  String get moreFaq => 'Pertanyaan umum';
 
   @override
   String get morePartner => 'Jadi mitra';
@@ -1722,6 +1722,150 @@ class TId extends T {
 
   @override
   String get themeTip => 'Ganti tema';
+
+  @override
+  String get err_price_changed =>
+      'Harga berubah. Cek penawaran baru lalu coba lagi.';
+
+  @override
+  String get err_checkout_closed => 'Pembayaran ini sudah ditutup. Mulai lagi.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Pembayaran ini sudah dibatalkan dan dikembalikan.';
+
+  @override
+  String get err_already_paid => 'Pembayaran ini sudah lunas.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Penawaran ini belum bisa dibayar. Hubungi tim kami.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Metode pembayaran ini sedang tidak tersedia.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Metode pembayaran ini tidak bisa dipakai. Pilih yang lain.';
+
+  @override
+  String get err_balance_not_due => 'Sisa pembayaran belum jatuh tempo.';
+
+  @override
+  String get err_invalid_slot => 'Jam ini tidak tersedia untuk layanan ini.';
+
+  @override
+  String get err_booking_changed =>
+      'Pesanan berubah. Muat ulang dan periksa detailnya.';
+
+  @override
+  String get err_booking_closed => 'Pesanan ini tidak bisa diubah lagi.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Jadwal kunjungan tidak bisa diubah sekarang. Hubungi tim kami.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Terlalu banyak permintaan yang masih terbuka. Selesaikan satu dulu.';
+
+  @override
+  String get err_already_reviewed =>
+      'Anda sudah memberi ulasan untuk kunjungan ini.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Selesaikan verifikasi identitas dulu.';
+
+  @override
+  String get err_email_taken => 'Email ini sudah dipakai.';
+
+  @override
+  String get err_invalid_email => 'Periksa alamat email.';
+
+  @override
+  String get err_file_too_large =>
+      'Berkas terlalu besar. Unggah berkas yang lebih kecil.';
+
+  @override
+  String get err_unsupported_image =>
+      'Format foto ini tidak didukung. Unggah JPG atau PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Batas unggah hari ini sudah tercapai. Coba lagi besok.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Tidak bisa terhubung ke layanan. Coba lagi sebentar lagi.';
+
+  @override
+  String get err_invalid_token => 'Gagal masuk. Coba lagi.';
+
+  @override
+  String get err_invalid_transition =>
+      'Status tidak bisa diubah seperti itu sekarang.';
+
+  @override
+  String get err_job_not_started => 'Mulai pekerjaan dulu.';
+
+  @override
+  String get err_job_not_active => 'Pekerjaan ini tidak aktif.';
+
+  @override
+  String get err_quote_locked =>
+      'Penawaran sudah dikunci dan tidak bisa diubah.';
+
+  @override
+  String get err_request_closed => 'Permintaan ini sudah ditutup.';
+
+  @override
+  String get err_team_full => 'Tim sudah penuh.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret harus diawali whsec_.';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint harus diawali https://.';
+
+  @override
+  String get err_invalid_bucket => 'Nama bucket tidak valid.';
+
+  @override
+  String get err_invalid_region => 'Region tidak valid.';
+
+  @override
+  String get err_invalid_retention => 'Masa retensi di luar batas.';
+
+  @override
+  String get err_invalid_service_account => 'File service account tidak valid.';
+
+  @override
+  String get err_invalid_mode => 'Pilih mode AI yang valid.';
+
+  @override
+  String get err_invalid_model => 'Nama model AI tidak valid.';
+
+  @override
+  String get err_missing_field => 'Isi semua kolom yang wajib.';
+
+  @override
+  String get err_invalid_amount => 'Masukkan jumlah yang valid.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Anda tidak bisa menonaktifkan akun sendiri.';
+
+  @override
+  String get err_invalid_coupon => 'Kupon ini tidak valid.';
+
+  @override
+  String get err_settlement_state => 'Settlement tidak bisa diubah sekarang.';
+
+  @override
+  String get err_deposit_required => 'Uang muka harus dibayar dulu.';
 
   @override
   String get fFinance => 'Keuangan';
@@ -2069,7 +2213,7 @@ class TId extends T {
   String get oChecks => 'Pemeriksaan';
 
   @override
-  String get oCheckDb => 'Database';
+  String get oCheckDb => 'Basis data';
 
   @override
   String oCheckDbValue(String ms, String mb) {
