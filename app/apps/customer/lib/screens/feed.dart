@@ -52,10 +52,10 @@ class ForYouChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    // Short service names, not the card headings, so chips never repeat a heading verbatim.
     final chips = [
       for (final c in cards)
-        if (FeedCardTile.title(t, c['kind'] as String? ?? '') case final String label)
-          (label: label, card: c),
+        if (c['service'] is String) (label: t.serviceShort(c['service'] as String), card: c),
     ];
     if (chips.isEmpty) return const SizedBox.shrink();
     return SizedBox(

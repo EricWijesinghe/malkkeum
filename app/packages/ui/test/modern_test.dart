@@ -67,7 +67,7 @@ void main() {
     );
     expect(find.text('hi'), findsOneWidget);
     // No pending animation timers left behind.
-    expect(tester.binding.hasScheduledFrame, isFalse);
+    expect(tester.hasRunningAnimations, isFalse);
   });
 
   testWidgets('PriceTag formats won amount', (tester) async {
