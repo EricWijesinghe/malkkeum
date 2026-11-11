@@ -134,6 +134,48 @@ pub fn tax_invoice_document(rows: &[InvoiceRow]) -> Vec<Vec<Cell>> {
     doc
 }
 
+/// Withholding for a payout, by the partner's tax type as snapshotted on the payout.
+/// `freelancer` and `unset` (not yet classified; withheld as the conservative default) get the 사업소득 split.
+/// `business` (issues invoices) and `untracked` (paid before this rule existed) get none.
+pub fn payout_withholding(tax_type: &str, gross: Won) -> Withholding {
+    match tax_type {
+        "freelancer" | "unset" => business_withholding(gross),
+        _ => Withholding { gross, income_tax: Won::ZERO, local_tax: Won::ZERO, net: gross },
+    }
+}
+
+/// One 지급명세서 line: a paid payout to a withheld partner.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WithholdingLine {
+    pub day: NaiveDate,
+    pub payee: String,
+    pub team: String,
+    pub split: Withholding,
+}
+
+/// Column layout of the 지급명세서 / 간이지급명세서 upload sheet. UNVERIFIED against the 홈택스 layout, and it needs
+/// the payee's resident registration number, which the system does not collect yet (see docs/finance-tax.md).
+pub const WITHHOLDING_HEADERS: [&str; 8] = ["지급일", "상호", "팀명", "소득구분", "지급총액", "소득세", "지방소득세", "실지급액"];
+
+/// Rows for the owner's withholding statement, in payment order.
+pub fn withholding_document(lines: &[WithholdingLine]) -> Vec<Vec<Cell>> {
+    let text = |s: &str| Cell::Text(s.to_string());
+    let mut doc = vec![WITHHOLDING_HEADERS.iter().map(|h| text(h)).collect::<Vec<_>>()];
+    for l in lines {
+        doc.push(vec![
+            text(&l.day.to_string()),
+            text(&l.payee),
+            text(&l.team),
+            text("사업소득"),
+            Cell::Number(l.split.gross.0),
+            Cell::Number(l.split.income_tax.0),
+            Cell::Number(l.split.local_tax.0),
+            Cell::Number(l.split.net.0),
+        ]);
+    }
+    doc
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -162,6 +204,29 @@ mod tests {
         assert_eq!(quarter_range(2026, 4).unwrap().1, NaiveDate::from_ymd_opt(2026, 12, 31).unwrap());
         assert!(quarter_range(2026, 0).is_err());
         assert!(quarter_range(2026, 5).is_err());
+    }
+
+    #[test]
+    fn payout_withholding_follows_the_snapshot() {
+        assert_eq!(payout_withholding("freelancer", Won(100_000)).net, Won(96_700));
+        assert_eq!(payout_withholding("unset", Won(100_000)).income_tax, Won(3_000));
+        for t in ["business", "untracked"] {
+            let w = payout_withholding(t, Won(100_000));
+            assert_eq!((w.income_tax, w.local_tax, w.net), (Won(0), Won(0), Won(100_000)), "{t}");
+        }
+    }
+
+    #[test]
+    fn withholding_statement_matches_golden() {
+        let lines = vec![WithholdingLine {
+            day: NaiveDate::from_ymd_opt(2026, 8, 20).unwrap(),
+            payee: "홍길동".into(),
+            team: "말끔팀".into(),
+            split: business_withholding(Won(100_000)),
+        }];
+        let out = finance::csv_document(&withholding_document(&lines));
+        let golden = include_str!("../tests/golden/withholding_2026.csv");
+        assert_eq!(out.trim_start_matches(finance::CSV_BOM).replace("\r\n", "\n"), golden.replace("\r\n", "\n"));
     }
 
     #[test]

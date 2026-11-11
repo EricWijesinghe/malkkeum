@@ -90,6 +90,7 @@ pub fn routes() -> Router<AppState> {
         .route("/finance/export/settlements", get(export_settlements))
         .route("/finance/export/monthly", get(export_monthly))
         .route("/finance/export/vat", get(export_vat))
+        .route("/finance/export/withholding", get(export_withholding))
 }
 
 pub fn partner_routes() -> Router<AppState> {
@@ -401,6 +402,11 @@ struct Earnings {
     pending_total: i64,
     paid_total: i64,
     series: Vec<EarnRow>,
+    /// Partner's current tax type; `estimated_*` apply it to `pending_total` (the actual split is fixed per payout).
+    tax_type: String,
+    estimated_income_tax: i64,
+    estimated_local_tax: i64,
+    estimated_net: i64,
 }
 
 async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<EarningsQuery>) -> ApiResult<Json<Earnings>> {
@@ -447,11 +453,17 @@ async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Quer
         .bind(a.id)
         .fetch_one(&s.db)
         .await?;
+    let tax_type: String = sqlx::query_scalar("SELECT tax_type FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let estimate = tax::payout_withholding(&tax_type, Won(pending_total));
     Ok(Json(Earnings {
         next_payout,
         pending_total,
         paid_total,
         series,
+        tax_type,
+        estimated_income_tax: estimate.income_tax.0,
+        estimated_local_tax: estimate.local_tax.0,
+        estimated_net: estimate.net.0,
     }))
 }
 
@@ -640,6 +652,29 @@ async fn export_monthly(State(s): State<AppState>, Admin(a): Admin, Query(q): Qu
     doc.push(total_row);
     audit(&s.db, "staff", Some(a.id), "finance.export", "monthly", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("monthly", from, to), finance::csv_document(&doc))
+}
+
+/// 지급명세서 for paid payouts to withheld partners, by KST payment date. The monthly 간이지급명세서 and the
+/// annual 지급명세서 are both this range. Layout UNVERIFIED; see domain::tax::WITHHOLDING_HEADERS.
+async fn export_withholding(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
+    let (from, to) = resolve(&q)?;
+    let rows: Vec<(NaiveDate, String, String, i64, String)> = sqlx::query_as(
+        "SELECT (p.paid_at AT TIME ZONE 'Asia/Seoul')::date, pr.name, pr.team_name, p.amount, p.tax_type
+         FROM payouts p JOIN pros pr ON pr.id = p.pro_id
+         WHERE p.state = 'paid' AND p.tax_type IN ('freelancer', 'unset')
+           AND (p.paid_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
+         ORDER BY p.paid_at, p.id",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_all(&s.db)
+    .await?;
+    let lines: Vec<tax::WithholdingLine> = rows
+        .into_iter()
+        .map(|(day, payee, team, gross, tax_type)| tax::WithholdingLine { day, payee, team, split: tax::payout_withholding(&tax_type, Won(gross)) })
+        .collect();
+    audit(&s.db, "staff", Some(a.id), "finance.export", "withholding", json!({ "from": from, "to": to })).await?;
+    csv_response(&export_name("withholding", from, to), finance::csv_document(&tax::withholding_document(&lines)))
 }
 
 #[derive(Deserialize)]
