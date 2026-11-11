@@ -119,6 +119,11 @@ void main() {
       expect(isDevApiBase('http://10.0.2.2:8080'), isTrue);
       expect(isDevApiBase('http://localhost:8080'), isTrue);
       expect(isDevApiBase('https://api.example.com'), isFalse);
+      expect(isDevApiBase('http://172.25.243.168:8080'), isTrue, reason: 'demo server on office Wi-Fi');
+      expect(isDevApiBase('http://192.168.0.7:8080'), isTrue);
+      expect(isDevApiBase('http://10.1.2.3:8080'), isTrue);
+      expect(isDevApiBase('http://172.32.0.1:8080'), isFalse);
+      expect(isDevApiBase('http://8.8.8.8'), isFalse);
     });
 
     test('phone attach routes differ by audience', () {
