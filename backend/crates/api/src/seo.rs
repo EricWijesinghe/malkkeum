@@ -674,7 +674,7 @@ mod tests {
         let x = rss_xml("https://example.com", "말끔", &items);
         assert!(x.contains("<title>점검 &amp; 안내</title>"));
         assert!(x.contains("<description>&lt;b&gt;x&lt;/b&gt;</description>"));
-        assert!(x.contains("<pubDate>Sun, 01 Nov 2026 00:00:00 +0000</pubDate>"));
+        assert!(x.contains("<pubDate>Sun, 1 Nov 2026 00:00:00 +0000</pubDate>"));
     }
 
     #[test]
