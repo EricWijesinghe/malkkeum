@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Runs one heavy command (cargo / flutter build or test) in one of 2 shared build slots, so parallel
+# Runs one heavy command (cargo / flutter build or test) in the single shared build slot (builds queue one at a time), so parallel
 # Malkkeum work never overloads this PC (another project shares it). Waits while free commit
 # charge is under 6 GB. Usage:  scripts/build-slot.sh cargo test -p api
 set -uo pipefail
 LOCKS=D:/Temp/malkkeum-locks
-SLOTS=2
+SLOTS=1
 MIN_FREE_KB=$((6 * 1024 * 1024))
 export CARGO_BUILD_JOBS=2
 # Each git worktree gets its own cargo target so branches never link each other's builds.
