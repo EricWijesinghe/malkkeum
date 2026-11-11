@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3122,6 +3123,52 @@ class TNe extends T {
   String poSellerDone(String status) {
     return 'विक्रेता स्थिति: $status';
   }
+
+  @override
+  String get oFlags => 'सुविधा स्विच';
+
+  @override
+  String get oFlagBooking => 'बुकिङ';
+
+  @override
+  String get oFlagChat => 'च्याट';
+
+  @override
+  String get oFlagAi => 'AI सहायक';
+
+  @override
+  String get oFlagPayments => 'भुक्तानी';
+
+  @override
+  String get oMaintenance => 'मर्मत मोड';
+
+  @override
+  String get oMaintenanceHint =>
+      'खुला हुँदा ग्राहक र साझेदार एपमा मर्मत स्क्रिन देखिन्छ। कन्सोल चलिरहन्छ।';
+
+  @override
+  String get oMaintenanceMessage => 'मर्मत सूचना';
+
+  @override
+  String get oClientErrors => 'एप त्रुटि रिपोर्ट';
+
+  @override
+  String get oClientErrorsHint =>
+      'वेब, Windows र कन्सोलबाट भर्खरका त्रुटिहरू। व्यक्तिगत जानकारी स्वतः लुकाइन्छ।';
+
+  @override
+  String get oClientErrorsEmpty => 'हालैका त्रुटि छैनन्';
+
+  @override
+  String get oHeartbeat => 'अपटाइम हार्टबिट';
+
+  @override
+  String get oHeartbeatOn =>
+      'जडान भयो। सर्भर चल्दा बाहिरी सेवालाई सूचना जान्छ।';
+
+  @override
+  String get oHeartbeatOff =>
+      'सेट गरिएको छैन: install.sh मा MALKKEUM_HEARTBEAT_URL थप्नुहोस्।';
 
   @override
   String get pvManage => 'सहमति व्यवस्थापन';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3128,6 +3129,52 @@ class TRu extends T {
   String poSellerDone(String status) {
     return 'Статус продавца: $status';
   }
+
+  @override
+  String get oFlags => 'Переключатели функций';
+
+  @override
+  String get oFlagBooking => 'Бронирования';
+
+  @override
+  String get oFlagChat => 'Чат';
+
+  @override
+  String get oFlagAi => 'ИИ-помощник';
+
+  @override
+  String get oFlagPayments => 'Платежи';
+
+  @override
+  String get oMaintenance => 'Режим технических работ';
+
+  @override
+  String get oMaintenanceHint =>
+      'Когда включено, приложения клиентов и партнёров показывают экран технических работ. Консоль работает.';
+
+  @override
+  String get oMaintenanceMessage => 'Текст для технических работ';
+
+  @override
+  String get oClientErrors => 'Отчёты об ошибках приложений';
+
+  @override
+  String get oClientErrorsHint =>
+      'Последние ошибки из веба, Windows и консоли. Персональные данные скрываются автоматически.';
+
+  @override
+  String get oClientErrorsEmpty => 'Недавних ошибок нет';
+
+  @override
+  String get oHeartbeat => 'Heartbeat-мониторинг';
+
+  @override
+  String get oHeartbeatOn =>
+      'Подключено. Внешний сервис получает сигнал, пока сервер работает.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Не настроено: добавьте MALKKEUM_HEARTBEAT_URL в install.sh.';
 
   @override
   String get pvManage => 'Управление согласиями';

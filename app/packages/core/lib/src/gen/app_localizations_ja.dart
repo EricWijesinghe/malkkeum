@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3037,6 +3038,50 @@ class TJa extends T {
   String poSellerDone(String status) {
     return '販売者の状態：$status';
   }
+
+  @override
+  String get oFlags => '機能スイッチ';
+
+  @override
+  String get oFlagBooking => '予約';
+
+  @override
+  String get oFlagChat => 'チャット';
+
+  @override
+  String get oFlagAi => 'AI相談';
+
+  @override
+  String get oFlagPayments => '決済';
+
+  @override
+  String get oMaintenance => 'メンテナンスモード';
+
+  @override
+  String get oMaintenanceHint => 'ONにすると顧客・パートナーアプリにメンテナンス画面を表示します。コンソールは使えます。';
+
+  @override
+  String get oMaintenanceMessage => 'メンテナンス案内文';
+
+  @override
+  String get oClientErrors => 'アプリのエラー報告';
+
+  @override
+  String get oClientErrorsHint =>
+      'Web・Windows・コンソールから報告された最近のエラーです。個人情報は自動的に伏せられます。';
+
+  @override
+  String get oClientErrorsEmpty => '最近のエラーはありません';
+
+  @override
+  String get oHeartbeat => '稼働監視ハートビート';
+
+  @override
+  String get oHeartbeatOn => '接続済み。サーバー稼働中は外部に通知されます。';
+
+  @override
+  String get oHeartbeatOff =>
+      '未設定: install.sh に MALKKEUM_HEARTBEAT_URL を追加してください。';
 
   @override
   String get pvManage => '同意の管理';

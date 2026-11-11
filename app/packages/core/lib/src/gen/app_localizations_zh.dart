@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3026,6 +3027,48 @@ class TZh extends T {
   String poSellerDone(String status) {
     return '卖家状态：$status';
   }
+
+  @override
+  String get oFlags => '功能开关';
+
+  @override
+  String get oFlagBooking => '预约';
+
+  @override
+  String get oFlagChat => '聊天';
+
+  @override
+  String get oFlagAi => 'AI 咨询';
+
+  @override
+  String get oFlagPayments => '支付';
+
+  @override
+  String get oMaintenance => '维护模式';
+
+  @override
+  String get oMaintenanceHint => '开启后，客户和服务者应用将显示维护页面。控制台仍可使用。';
+
+  @override
+  String get oMaintenanceMessage => '维护提示文案';
+
+  @override
+  String get oClientErrors => '应用错误报告';
+
+  @override
+  String get oClientErrorsHint => '网页、Windows 和控制台报告的最近错误。个人信息会自动隐藏。';
+
+  @override
+  String get oClientErrorsEmpty => '近期没有错误';
+
+  @override
+  String get oHeartbeat => '运行心跳';
+
+  @override
+  String get oHeartbeatOn => '已连接。服务器运行时会通知外部服务。';
+
+  @override
+  String get oHeartbeatOff => '未设置：请在 install.sh 中添加 MALKKEUM_HEARTBEAT_URL。';
 
   @override
   String get pvManage => '同意管理';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3125,6 +3126,52 @@ class TSi extends T {
   String poSellerDone(String status) {
     return 'විකුණුම්කරුගේ තත්ත්වය: $status';
   }
+
+  @override
+  String get oFlags => 'විශේෂාංග ස්විච්';
+
+  @override
+  String get oFlagBooking => 'වෙන්කිරීම්';
+
+  @override
+  String get oFlagChat => 'කතාබස්';
+
+  @override
+  String get oFlagAi => 'AI සහායක';
+
+  @override
+  String get oFlagPayments => 'ගෙවීම්';
+
+  @override
+  String get oMaintenance => 'නඩත්තු මාදිලිය';
+
+  @override
+  String get oMaintenanceHint =>
+      'ක්‍රියාත්මක විට පාරිභෝගික හා හවුල්කරු යෙදුම් නඩත්තු තිරය පෙන්වයි. කොන්සෝලය වැඩ කරයි.';
+
+  @override
+  String get oMaintenanceMessage => 'නඩත්තු පණිවිඩය';
+
+  @override
+  String get oClientErrors => 'යෙදුම් දෝෂ වාර්තා';
+
+  @override
+  String get oClientErrorsHint =>
+      'වෙබ්, Windows සහ කොන්සෝලයෙන් මෑත දෝෂ. පුද්ගලික දත්ත ස්වයංක්‍රීයව සඟවයි.';
+
+  @override
+  String get oClientErrorsEmpty => 'මෑත දෝෂ නැත';
+
+  @override
+  String get oHeartbeat => 'ක්‍රියාකාරිත්ව හෘදස්පන්දන';
+
+  @override
+  String get oHeartbeatOn =>
+      'සම්බන්ධයි. සේවාදායකය ක්‍රියාත්මක වන විට බාහිර සේවාවට දැන්වේ.';
+
+  @override
+  String get oHeartbeatOff =>
+      'සකසා නැත: install.sh වෙත MALKKEUM_HEARTBEAT_URL එක් කරන්න.';
 
   @override
   String get pvManage => 'එකඟතා කළමනාකරණය';

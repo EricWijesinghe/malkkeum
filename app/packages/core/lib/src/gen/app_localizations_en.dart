@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3109,6 +3110,52 @@ class TEn extends T {
   String poSellerDone(String status) {
     return 'Seller status: $status';
   }
+
+  @override
+  String get oFlags => 'Feature switches';
+
+  @override
+  String get oFlagBooking => 'Bookings';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI assistant';
+
+  @override
+  String get oFlagPayments => 'Payments';
+
+  @override
+  String get oMaintenance => 'Maintenance mode';
+
+  @override
+  String get oMaintenanceHint =>
+      'When on, customer and partner apps show a maintenance screen. The console keeps working.';
+
+  @override
+  String get oMaintenanceMessage => 'Maintenance message';
+
+  @override
+  String get oClientErrors => 'App error reports';
+
+  @override
+  String get oClientErrorsHint =>
+      'Recent errors reported by web, Windows and console. Personal data is masked automatically.';
+
+  @override
+  String get oClientErrorsEmpty => 'No recent errors';
+
+  @override
+  String get oHeartbeat => 'Uptime heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Connected. An outside service is notified while the server is up.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Not set: add MALKKEUM_HEARTBEAT_URL to install.sh.';
 
   @override
   String get pvManage => 'Consent settings';

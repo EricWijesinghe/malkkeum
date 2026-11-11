@@ -57,6 +57,8 @@ class _SetupScreenState extends State<SetupScreen> {
                   current: data['review_account'] as Json?,
                   onChanged: _reload,
                 ),
+                const SizedBox(height: Space.md),
+                HeartbeatCard(configured: data['heartbeat_configured'] == true),
                 for (final c in cards) ...[
                   const SizedBox(height: Space.md),
                   IntegrationCard(
@@ -476,4 +478,33 @@ class _CopyRow extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Read-only checklist item: the uptime ping URL is set by install.sh, never typed in the console.
+class HeartbeatCard extends StatelessWidget {
+  const HeartbeatCard({required this.configured});
+  final bool configured;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final color = configured ? context.colors.fresh : context.colors.sun;
+    return AppCard(
+      child: Row(
+        children: [
+          Icon(configured ? Icons.favorite_rounded : Icons.heart_broken_rounded, color: color),
+          const SizedBox(width: Space.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(t.oHeartbeat, style: context.text.titleSmall),
+                Text(configured ? t.oHeartbeatOn : t.oHeartbeatOff, style: context.text.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

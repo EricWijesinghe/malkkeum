@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3143,6 +3144,52 @@ class TUz extends T {
   String poSellerDone(String status) {
     return 'Sotuvchi holati: $status';
   }
+
+  @override
+  String get oFlags => 'Funksiya kalitlari';
+
+  @override
+  String get oFlagBooking => 'Bronlar';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI yordamchi';
+
+  @override
+  String get oFlagPayments => 'To\'lovlar';
+
+  @override
+  String get oMaintenance => 'Texnik xizmat rejimi';
+
+  @override
+  String get oMaintenanceHint =>
+      'Yoqilsa, mijoz va hamkor ilovalari texnik xizmat ekranini ko\'rsatadi. Konsol ishlashda davom etadi.';
+
+  @override
+  String get oMaintenanceMessage => 'Texnik xizmat xabari';
+
+  @override
+  String get oClientErrors => 'Ilova xatolari hisoboti';
+
+  @override
+  String get oClientErrorsHint =>
+      'Veb, Windows va konsoldan so\'nggi xatolar. Shaxsiy ma\'lumotlar avtomatik yashiriladi.';
+
+  @override
+  String get oClientErrorsEmpty => 'So\'nggi xatolar yo\'q';
+
+  @override
+  String get oHeartbeat => 'Ishlash heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Ulangan. Server ishlaganda tashqi xizmat xabardor qilinadi.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Sozlanmagan: install.sh ga MALKKEUM_HEARTBEAT_URL ni qo\'shing.';
 
   @override
   String get pvManage => 'Rozilik sozlamalari';

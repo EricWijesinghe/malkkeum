@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+
 /// Downloads one CSV for the given path and query. Owned by the finance screen, which knows how to save.
 typedef ExportAt = Future<void> Function(String path, Map<String, String?> query, String fileName);
 
