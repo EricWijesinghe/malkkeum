@@ -41,6 +41,10 @@ pub struct Config {
     pub reconcile_interval_secs: u64,
     /// Anthropic API root for the AI support agent (tests point it at a fake server).
     pub anthropic_base_url: String,
+    /// Retention purge (see `retention.rs`): AI-assisted chat messages older than this many days are deleted.
+    pub ai_chat_retention_days: u32,
+    /// Retention purge: uploads not attached to any record after this many days are deleted.
+    pub upload_orphan_days: u32,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -227,6 +231,8 @@ impl Config {
             max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
+            ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
+            upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
         })
     }
 }

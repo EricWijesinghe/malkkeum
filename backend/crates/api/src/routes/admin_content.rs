@@ -276,8 +276,9 @@ struct Search {
     q: Option<String>,
 }
 
-async fn customers(State(s): State<AppState>, _st: Staff, Query(q): Query<Search>) -> ApiResult<Json<Value>> {
+async fn customers(State(s): State<AppState>, Staff(st): Staff, Query(q): Query<Search>) -> ApiResult<Json<Value>> {
     let like = q.q.map(|x| format!("%{}%", x.replace(['%', '_'], "")));
+    audit(&s.db, "staff", Some(st.id), "customer.pii_list", "users", json!({ "searched": like.is_some() })).await?;
     let v: Value = sqlx::query_scalar(
         "SELECT COALESCE(jsonb_agg(x), '[]') FROM (SELECT u.id, u.name, u.phone, u.created_at, (SELECT count(*) FROM bookings b WHERE b.user_id = u.id) AS bookings
          FROM users u WHERE u.deleted_at IS NULL AND ($1::text IS NULL OR u.phone LIKE $1 OR u.name ILIKE $1) ORDER BY u.created_at DESC LIMIT $2) x",

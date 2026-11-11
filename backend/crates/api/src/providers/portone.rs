@@ -170,6 +170,24 @@ pub async fn billing_key_at(http: &reqwest::Client, base: &str, secret: &str, ke
     read_json(resp).await
 }
 
+/// `DELETE /billing-keys/{key}`: stops the saved card at the gateway. A key already gone (404) counts as deleted.
+/// Source: https://developers.portone.io/api/rest-v2/payment.billingKey (verify the delete path against the live docs).
+pub async fn delete_billing_key(p: &Providers, key: &str) -> Result<(), ProviderError> {
+    check_id(key)?;
+    let resp = p
+        .http()
+        .delete(format!("{API}/billing-keys/{key}"))
+        .header(AUTHORIZATION, auth(p)?)
+        .send()
+        .await
+        .map_err(upstream)?;
+    match resp.status() {
+        StatusCode::NOT_FOUND => Ok(()),
+        s if s.is_success() => Ok(()),
+        s => Err(ProviderError::Upstream(format!("status {s}"))),
+    }
+}
+
 fn issued(info: &Value) -> Result<(), ProviderError> {
     match info["status"].as_str() {
         Some("ISSUED") => Ok(()),

@@ -865,8 +865,7 @@ class TZh extends T {
   String get svcDesc_move_in => '入住前，专业团队携带设备清洁新家。';
 
   @override
-  String get svcNotes_bathroom =>
-      '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
+  String get svcNotes_bathroom => '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
 
   @override
   String get svcNotes_mattress => '单人到特大床同价\n完全干燥需4~6小时\n弹簧损坏、塌陷等结构问题无法改善';
@@ -2276,8 +2275,7 @@ class TZh extends T {
   String get oActDisk => '磁盘剩余不足10%。请删除旧备份文件或扩大磁盘。';
 
   @override
-  String get oActBackup =>
-      '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
+  String get oActBackup => '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
 
   @override
   String get oActErrors => '服务器错误较多。请在 malkkeum logs 中查看 error 行，反复出现请反馈给开发方。';
@@ -2790,12 +2788,7 @@ class TZh extends T {
   String get poAccountTitle => '转账信息';
 
   @override
-  String poAccountBody(
-    String holder,
-    String bank,
-    String account,
-    String amount,
-  ) {
+  String poAccountBody(String holder, String bank, String account, String amount) {
     return '请向 $holder · $bank · $account 转账 $amount 韩元，然后点击确认。';
   }
 
@@ -2833,6 +2826,48 @@ class TZh extends T {
 
   @override
   String get poRevealNote => '查看账户信息会被记录';
+
+  @override
+  String get pvManage => '同意管理';
+
+  @override
+  String get pvOptional => '可选';
+
+  @override
+  String get pvTerms => '同意服务条款';
+
+  @override
+  String get pvPrivacy => '同意收集和使用个人信息';
+
+  @override
+  String get pvOverseas => '同意个人信息跨境传输';
+
+  @override
+  String get pvMarketing => '同意接收营销信息';
+
+  @override
+  String get pvMarketingHint => '通过短信、KakaoTalk 和应用推送接收优惠券与活动消息。可随时关闭。';
+
+  @override
+  String get pvReconsent => '隐私政策已更新，请重新查看并同意。';
+
+  @override
+  String get pvSaved => '同意设置已保存';
+
+  @override
+  String get pvExport => '下载我的数据';
+
+  @override
+  String get pvExportHint => '以 JSON 格式显示我们保存的您的全部信息，可复制保存。';
+
+  @override
+  String get pvCopy => '复制';
+
+  @override
+  String get pvCopied => '已复制';
+
+  @override
+  String get pvExportFailed => '无法加载您的数据，请稍后再试。';
 
   @override
   String get cSetup => '设置';

@@ -151,6 +151,13 @@ async fn pump(socket: WebSocket, mut rx: broadcast::Receiver<Event>, id: Uuid, r
 
 /// Stores a notification, emits it live, and pushes to the owner's devices.
 pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: &str, body: &str, data: Value) -> ApiResult<()> {
+    if let Recipient::User(user) = to
+        && crate::privacy::is_marketing(kind)
+        && !crate::privacy::marketing_allowed(&state.db, user).await?
+    {
+        // 정보통신망법: advertising goes out only while the customer's marketing consent stands.
+        return Ok(());
+    }
     let (role, owner) = match to {
         Recipient::User(id) => ("customer", Some(id)),
         Recipient::Pro(id) => ("pro", Some(id)),

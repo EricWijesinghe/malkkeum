@@ -7,6 +7,7 @@ import 'account_identity.dart';
 import 'addresses.dart';
 import 'booking_flow.dart';
 import 'payments.dart';
+import 'privacy.dart';
 import 'service.dart';
 
 const appVersion = '1.0.0';
@@ -456,6 +457,16 @@ class AccountScreen extends StatelessWidget {
                   trailing: Text(t.accountLoginPhone),
                 ),
                 const IdentityEntryTile(),
+                ListTile(
+                  title: Text(t.pvManage),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _push(context, const ConsentScreen()),
+                ),
+                ListTile(
+                  title: Text(t.pvExport),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => showDataExport(context),
+                ),
               ],
             ),
           ),
@@ -463,6 +474,10 @@ class AccountScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _push(BuildContext context, Widget screen) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => screen));
 }
 
 /// "What's included": every service with its description and limits.

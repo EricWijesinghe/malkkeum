@@ -1,12 +1,16 @@
 # Generates the website's legal and partner pages from one shared layout.
-# Run from the repo root:  python -I website/build_legal.py website
+# Run from the repo root:  python -I scripts/build_legal.py website
 # Business details (상호, 대표, 사업자번호 ...) are filled in the browser from /v1/brand,
 # i.e. from what the owner typed in the console setup wizard. No editing needed here.
+import os
 import pathlib
 import sys
 
 OUT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else pathlib.Path(__file__).parent)
 EFFECTIVE = "2026년 11월 17일"
+# Retention windows shown in the policy; keep equal to the server defaults (AI_CHAT_RETENTION_DAYS, UPLOAD_ORPHAN_DAYS).
+AI_DAYS = os.environ.get("AI_CHAT_RETENTION_DAYS", "180")
+ORPHAN_DAYS = os.environ.get("UPLOAD_ORPHAN_DAYS", "30")
 
 HEAD = """<!doctype html>
 <html lang="ko" data-theme="dark">
@@ -52,37 +56,60 @@ PRIVACY = f"""
     <table>
       <tr><th>구분</th><th>항목</th><th>수집 방법</th></tr>
       <tr><td>고객 회원가입</td><td>휴대전화번호, 이름(선택), 소셜 로그인 식별자(카카오·네이버·구글·애플), 이메일(소셜 제공 시)</td><td>앱 입력, 소셜 로그인</td></tr>
-      <tr><td>예약·서비스 제공</td><td>주소, 집 크기·구조 정보, 방문 메모, 청소 전후 사진, 상담 내용</td><td>앱 입력</td></tr>
-      <tr><td>결제</td><td>결제 수단 종류, 결제 승인 정보, 가상계좌 입금 정보 (카드번호 등은 결제대행사가 처리하며 회사는 저장하지 않음)</td><td>결제대행사</td></tr>
-      <tr><td>본인인증(선택)</td><td>이름, 생년월일, 연계정보(CI)</td><td>본인인증기관</td></tr>
+      <tr><td>예약·서비스 제공</td><td>주소(도로명주소 검색 결과 포함), 집 크기·구조 정보, 방문 메모, 청소 전후 사진, 상담 내용</td><td>앱 입력</td></tr>
+      <tr><td>AI 상담</td><td>고객이 AI 상담에 입력한 문장과 AI 응답, 상담 기록</td><td>앱 입력</td></tr>
+      <tr><td>결제</td><td>결제 수단 종류, 결제 승인 정보, 가상계좌 입금 정보, 자동결제 키(카드번호는 결제대행사가 처리하며 회사는 저장하지 않음)</td><td>결제대행사</td></tr>
+      <tr><td>본인인증(선택)</td><td>이름, 생년월일, 연계정보(CI는 해시값으로만 저장)</td><td>본인인증기관</td></tr>
+      <tr><td>동의 기록</td><td>약관·방침 버전, 동의 또는 철회 여부와 일시, 마케팅 수신 동의 여부</td><td>앱 입력</td></tr>
       <tr><td>파트너(청소 전문가)</td><td>이름, 휴대전화번호, 활동 지역, 정산 계좌(암호화 저장), 팀원 정보</td><td>파트너 앱 입력</td></tr>
-      <tr><td>자동 수집</td><td>푸시 알림 토큰, 접속 IP, 접속 기록, 언어 설정</td><td>서비스 이용 과정</td></tr>
+      <tr><td>자동 수집</td><td>푸시 알림 토큰, 기기 종류, 접속 IP, 접속 기록, 언어 설정</td><td>서비스 이용 과정</td></tr>
     </table>
+    <p>회사는 기기의 실시간 위치(GPS)를 수집하지 않습니다. 주소는 이용자가 직접 입력하거나 검색해 고른 값만 사용합니다.</p>
     <h2>2. 이용 목적</h2>
-    <ul><li>회원 식별, 로그인, 부정 이용 방지</li><li>예약, 견적, 파트너 배정, 방문 서비스 제공과 상담</li><li>결제, 환불, 정산</li><li>예약 알림(문자, 카카오 알림톡, 앱 푸시) 발송</li><li>분쟁 처리, 민원 응대, 법령상 의무 이행</li></ul>
+    <ul><li>회원 식별, 로그인, 부정 이용 방지</li><li>예약, 견적, 파트너 배정, 방문 서비스 제공과 상담(AI 상담 포함)</li><li>결제, 환불, 정산</li><li>예약 알림(문자, 카카오 알림톡, 앱 푸시) 발송</li><li>마케팅 정보 발송 (마케팅 수신에 동의한 고객에 한함, 언제든지 철회 가능)</li><li>분쟁 처리, 민원 응대, 법령상 의무 이행, 동의 사실 증빙</li></ul>
     <h2>3. 보유 및 이용 기간</h2>
     <p>회원 탈퇴 시 지체 없이 파기합니다. 다만 관계 법령에 따라 다음 정보는 정해진 기간 동안 보관합니다.</p>
-    <ul><li>계약·청약철회, 대금결제, 재화 등의 공급 기록: 5년 (전자상거래법)</li><li>소비자 불만·분쟁처리 기록: 3년 (전자상거래법)</li><li>접속 기록: 3개월 (통신비밀보호법)</li></ul>
+    <table><tr><th>정보</th><th>보유 기간</th><th>근거</th></tr>
+      <tr><td>계약·청약철회, 대금결제, 재화 등의 공급 기록</td><td>5년</td><td>전자상거래법</td></tr>
+      <tr><td>소비자 불만·분쟁처리 기록</td><td>3년</td><td>전자상거래법</td></tr>
+      <tr><td>접속 기록</td><td>3개월</td><td>통신비밀보호법</td></tr>
+      <tr><td>동의 기록(버전, 일시, 동의·철회 여부)</td><td>탈퇴 후 5년</td><td>동의 사실 증빙(회사 내부 기준)</td></tr>
+      <tr><td>AI 상담 대화 내용</td><td>상담일로부터 {AI_DAYS}일</td><td>회사 운영 기준 (설정값)</td></tr>
+      <tr><td>연결되지 않은 업로드 사진</td><td>업로드일로부터 {ORPHAN_DAYS}일</td><td>회사 운영 기준 (설정값)</td></tr>
+      <tr><td>인증번호(OTP)</td><td>발급일로부터 1일</td><td>회사 운영 기준</td></tr>
+    </table>
     <h2>4. 제3자 제공</h2>
     <table><tr><th>받는 자</th><th>목적</th><th>항목</th><th>보유 기간</th></tr>
       <tr><td>배정된 청소 파트너</td><td>방문 서비스 수행</td><td>예약 정보, 주소, 이름(일부 가림), 방문 메모</td><td>작업 완료 후 30일</td></tr></table>
     <h2>5. 처리 위탁</h2>
-    <table><tr><th>수탁자</th><th>위탁 업무</th></tr>
-      <tr><td>PortOne 및 각 결제대행사</td><td>결제 처리, 본인인증</td></tr>
-      <tr><td>Solapi</td><td>문자 메시지·카카오 알림톡 발송</td></tr>
-      <tr><td>Google (Firebase Cloud Messaging)</td><td>앱 푸시 알림 발송</td></tr>
-      <tr><td>서버 호스팅 사업자</td><td>서비스 운영 데이터 보관</td></tr></table>
-    <h2>6. 파기</h2>
-    <p>보유 기간이 끝나거나 목적이 달성된 개인정보는 복구할 수 없는 방법으로 지체 없이 파기합니다.</p>
-    <h2>7. 이용자의 권리</h2>
-    <p>이용자는 언제든지 열람, 정정, 삭제, 처리 정지를 요구할 수 있으며 앱의 [더보기 → 계정]에서 탈퇴할 수 있습니다. <a href="delete-account.html">계정 삭제 안내</a></p>
-    <h2>8. 안전성 확보 조치</h2>
-    <ul><li>전 구간 암호화 통신(HTTPS)</li><li>정산 계좌·연동 키 암호화 저장(AES-256-GCM)</li><li>관리자 비밀번호 해시 저장, 로그인 실패 잠금, 권한 최소화, 작업 기록 보관</li></ul>
-    <h2>9. 개인정보 보호책임자</h2>
+    <table><tr><th>수탁자</th><th>위탁 업무</th><th>처리 장소</th></tr>
+      <tr><td>PortOne 및 각 결제대행사</td><td>결제 처리, 자동결제 키 관리, 본인인증</td><td>국내</td></tr>
+      <tr><td>Solapi</td><td>문자 메시지·카카오 알림톡 발송</td><td>국내</td></tr>
+      <tr><td>도로명주소 개발자센터(행정안전부, 주소 검색 API)</td><td>주소 검색</td><td>국내</td></tr>
+      <tr><td>Google LLC (Firebase Cloud Messaging)</td><td>앱 푸시 알림 발송</td><td>미국 (국외 이전, 아래 6항)</td></tr>
+      <tr><td>Anthropic, PBC</td><td>AI 상담 응답 생성</td><td>미국 (국외 이전, 아래 6항)</td></tr>
+      <tr><td>서버 호스팅 사업자</td><td>서비스 운영 데이터 보관</td><td>국내</td></tr>
+      <tr><td>백업 저장소 사업자(S3 호환)</td><td>데이터베이스 백업 보관</td><td>운영자가 설정한 저장소 위치 (국외일 수 있음, 아래 6항)</td></tr></table>
+    <p>소셜 로그인(카카오, 네이버, 구글, 애플)은 이용자가 선택한 경우에 한해 각 사에서 본인 확인을 받기 위해 사용하며, 각 사의 개인정보처리방침이 적용됩니다.</p>
+    <h2>6. 개인정보의 국외 이전</h2>
+    <table><tr><th>이전받는 자</th><th>이전 국가</th><th>이전 항목</th><th>이전 목적</th><th>이전 방법·시기</th><th>보유 기간</th></tr>
+      <tr><td>Google LLC (Firebase)</td><td>미국</td><td>푸시 토큰, 알림 제목·본문</td><td>앱 푸시 알림 발송</td><td>서비스 이용 중 네트워크 전송</td><td>푸시 토큰은 앱 삭제 또는 탈퇴 시까지</td></tr>
+      <tr><td>Anthropic, PBC</td><td>미국</td><td>AI 상담 중 고객이 입력한 문장과 상담 맥락</td><td>AI 상담 응답 생성</td><td>AI 상담 이용 시 네트워크 전송</td><td>회사 보관 기간과 동일(AI 상담 보관 기간 참고). 제공자 정책에 따라 처리</td></tr>
+      <tr><td>백업 저장소 사업자</td><td>운영자 설정에 따름</td><td>데이터베이스 백업 파일(AES-256-GCM 암호화)</td><td>장애 복구</td><td>정기 백업 실행 시 전송</td><td>백업 보관 기간(운영자 설정, 기본 30일)</td></tr></table>
+    <p>이용자는 국외 이전에 동의하지 않을 권리가 있습니다. 동의하지 않으면 해당 기능(푸시 알림, AI 상담)을 사용할 수 없고, 필요한 경우 문자 알림이나 상담원 상담으로 대신합니다. 국외 이전 동의는 앱의 [더보기 → 계정 → 동의 관리]에서 확인하고 철회할 수 있습니다.</p>
+    <h2>7. 파기</h2>
+    <p>보유 기간이 끝나거나 목적이 달성된 개인정보는 복구할 수 없는 방법으로 지체 없이 파기합니다. 파기는 매일 자동으로 실행되는 정리 작업으로 처리하며, 데이터베이스 백업은 보관 기간이 지나면 자동 삭제합니다.</p>
+    <h2>8. 이용자의 권리와 행사 방법</h2>
+    <p>이용자는 언제든지 개인정보의 열람, 정정, 삭제, 처리 정지, 동의 철회를 요구할 수 있습니다.</p>
+    <ul><li>열람: 앱 [더보기 → 계정 → 내 데이터 내려받기]에서 JSON 파일로 받을 수 있습니다.</li><li>마케팅 수신 동의 철회: 앱 [더보기 → 계정 → 동의 관리]</li><li>정정·삭제·탈퇴: 앱 [더보기 → 계정 → 회원 탈퇴] 또는 <a href="delete-account.html">계정 삭제 안내</a></li></ul>
+    <p>앱을 쓸 수 없는 경우 고객센터로 요청할 수 있으며, 회사는 10일 이내에 처리 결과를 알려 드립니다.</p>
+    <h2>9. 안전성 확보 조치</h2>
+    <ul><li>전 구간 암호화 통신(HTTPS)</li><li>정산 계좌·연동 키 암호화 저장(AES-256-GCM), 자동결제 키와 본인확인 정보(CI) 해시 저장</li><li>관리자 비밀번호 해시 저장, 로그인 실패 잠금, 권한 최소화</li><li>직원의 고객 연락처·정산 계좌 조회 기록 보관, 정기 점검</li><li>개인정보 보관 기간이 지난 정보의 자동 파기</li></ul>
+    <h2>10. 개인정보 보호책임자</h2>
     <p>성명: {OFFICER}<br>연락처: {CONTACT}</p>
     <p>개인정보침해신고센터(privacy.kisa.or.kr, 118), 개인정보분쟁조정위원회(www.kopico.go.kr, 1833-6972)에 문의할 수도 있습니다.</p>
-    <h2>10. 변경 고지</h2>
-    <p>이 방침이 바뀌면 시행 7일 전부터 앱과 웹사이트에 공지합니다.</p>
+    <h2>11. 변경 고지</h2>
+    <p>이 방침이 바뀌면 시행 7일 전부터 앱과 웹사이트에 공지합니다. 국외 이전 항목이나 필수 동의 내용이 바뀌면 다시 동의를 받습니다.</p>
 """
 
 TERMS = f"""
@@ -116,11 +143,11 @@ DELETE = f"""
     <h2>앱에서 바로 삭제하기</h2>
     <ol><li>{SVC} 앱을 열고 [더보기] 탭으로 이동합니다.</li><li>[계정] → [회원 탈퇴]를 누릅니다.</li><li>안내를 확인하고 [탈퇴하기]를 누르면 계정과 개인정보가 삭제됩니다.</li></ol>
     <h2>앱을 쓸 수 없을 때</h2>
-    <p>가입한 휴대전화번호로 고객센터({CONTACT})에 요청하면 본인 확인 후 7일 안에 처리합니다.</p>
+    <p>가입한 휴대전화번호로 고객센터({CONTACT})에 요청하면 본인 확인 후 10일 안에 처리합니다.</p>
     <h2>삭제되는 정보와 보관되는 정보</h2>
-    <p>계정, 프로필, 주소, 쿠폰, 푸시 토큰, 상담 내용은 삭제됩니다. 결제·환불 기록은 전자상거래법에 따라 5년간 따로 보관한 뒤 파기합니다.</p>
+    <p>이름·이메일·휴대전화번호, 주소, 자동결제 카드 키, 푸시 토큰, 알림 기록은 삭제됩니다. 상담 대화는 고객을 식별할 수 없도록 연결을 끊고, AI 상담 기록은 보관 기간이 지나면 삭제됩니다. 예약·결제·환불 기록은 전자상거래법에 따라 5년간 따로 보관한 뒤 파기합니다.</p>
     <h2>In English</h2>
-    <p>Open the app → More → Account → Delete account. If you cannot use the app, contact support from the phone number you signed up with and we delete the account within 7 days. Payment records are kept for 5 years as Korean e-commerce law requires.</p>
+    <p>Open the app → More → Account → Delete account. If you cannot use the app, contact support from the phone number you signed up with and we delete the account within 10 days. Payment records are kept for 5 years as Korean e-commerce law requires. Anything still needed for legal retention is kept only as long as the law requires.</p>
 """
 
 PARTNERS = f"""
