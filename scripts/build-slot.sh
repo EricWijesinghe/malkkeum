@@ -7,11 +7,11 @@ LOCKS=D:/Temp/malkkeum-locks
 SLOTS=1
 MIN_FREE_KB=$((6 * 1024 * 1024))
 export CARGO_BUILD_JOBS=2
-# Worktrees share one cargo target (builds are serialized by the slot, so no clashes).
+# Each worktree gets its own cargo target: a shared one mixes up same-named path crates across worktrees (stale artifacts).
 top=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 case "$top" in
   /f/EC|F:/EC) ;;
-  *) export CARGO_TARGET_DIR="F:/EC/targets/shared" ;;  # one cache for all worktrees: deps build once
+  *) export CARGO_TARGET_DIR="F:/EC/targets/$(basename "$top")" ;;
 esac
 mkdir -p "$LOCKS"
 
