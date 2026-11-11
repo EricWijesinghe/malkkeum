@@ -338,7 +338,16 @@ class _Photos extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (_, i) => InkWell(
                 onTap: () => showDialog<void>(context: context, builder: (_) => Dialog(child: InteractiveViewer(child: Image.network(urls[i])))),
-                child: ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(urls[i], width: 96, height: 96, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(width: 96, color: context.colors.line))),
+                child: Semantics(
+                  button: true,
+                  image: true,
+                  label: context.t.photoThumb('${i + 1}'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    // Decode at 2x the 96dp thumbnail: smaller cache entries, sharp on 3x screens.
+                    child: Image.network(urls[i], width: 96, height: 96, cacheWidth: 192, cacheHeight: 192, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(width: 96, color: context.colors.line)),
+                  ),
+                ),
               ),
             ),
           ),

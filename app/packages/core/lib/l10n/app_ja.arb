@@ -399,6 +399,7 @@
  "stepCompleted": "清掃完了",
  "teamVisiting": "{team}が伺います",
  "photosSoon": "完了後にビフォーアフター写真が表示されます",
+ "photoThumb": "写真 {n}",
  "before": "ビフォー",
  "after": "アフター",
  "prepCheck": "準備物チェック",

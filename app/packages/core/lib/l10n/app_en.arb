@@ -399,6 +399,7 @@
  "stepCompleted": "Completed",
  "teamVisiting": "{team} is coming",
  "photosSoon": "Before & after photos will appear here",
+ "photoThumb": "Photo {n}",
  "before": "Before",
  "after": "After",
  "prepCheck": "Prep checklist",

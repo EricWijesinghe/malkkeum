@@ -596,6 +596,14 @@
   }
  },
  "photosSoon": "끝나면 전후 사진이 여기에 올라와요",
+ "photoThumb": "사진 {n}",
+ "@photoThumb": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
  "before": "청소 전",
  "after": "청소 후",
  "prepCheck": "준비물 체크",

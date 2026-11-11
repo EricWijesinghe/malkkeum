@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Selesai",
     "teamVisiting": "{team} sedang menuju lokasi",
     "photosSoon": "Foto sebelum & sesudah akan muncul di sini",
+    "photoThumb": "Foto {n}",
     "before": "Sebelum",
     "after": "Sesudah",
     "prepCheck": "Daftar persiapan",

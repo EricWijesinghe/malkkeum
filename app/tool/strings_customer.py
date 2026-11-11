@@ -203,6 +203,7 @@ S = {
   "stepCompleted": ["청소 완료", "Completed", "清掃完了", "已完成", "Hoàn tất"],
   "teamVisiting": ["{team}이(가) 방문해요", "{team} is coming", "{team}が伺います", "{team}将上门", "{team} sẽ đến"],
   "photosSoon": ["끝나면 전후 사진이 여기에 올라와요", "Before & after photos will appear here", "完了後にビフォーアフター写真が表示されます", "完成后将在此展示前后对比照", "Ảnh trước & sau sẽ hiện ở đây"],
+  "photoThumb": ["사진 {n}", "Photo {n}", "写真 {n}", "照片 {n}", "Ảnh {n}"],
   "before": ["청소 전", "Before", "ビフォー", "清洁前", "Trước"],
   "after": ["청소 후", "After", "アフター", "清洁后", "Sau"],
   "prepCheck": ["준비물 체크", "Prep checklist", "準備物チェック", "准备清单", "Danh sách chuẩn bị"],

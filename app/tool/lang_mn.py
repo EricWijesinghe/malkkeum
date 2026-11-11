@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Цэвэрлэгээ дууссан",
     "teamVisiting": "{team} очиж байна",
     "photosSoon": "Цэвэрлэгээний өмнөх, дараах зургууд энд гарна",
+    "photoThumb": "Зураг {n}",
     "before": "Өмнө",
     "after": "Дараа",
     "prepCheck": "Бэлтгэх жагсаалт",

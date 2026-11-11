@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Tapos na ang paglilinis",
     "teamVisiting": "Pupunta ang {team}",
     "photosSoon": "Lalabas dito ang before at after photos pagtapos",
+    "photoThumb": "Larawan {n}",
     "before": "Bago",
     "after": "Pagkatapos",
     "prepCheck": "Checklist ng dapat ihanda",

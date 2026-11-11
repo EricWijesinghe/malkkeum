@@ -399,6 +399,7 @@
  "stepCompleted": "已完成",
  "teamVisiting": "{team}将上门",
  "photosSoon": "完成后将在此展示前后对比照",
+ "photoThumb": "照片 {n}",
  "before": "清洁前",
  "after": "清洁后",
  "prepCheck": "准备清单",
