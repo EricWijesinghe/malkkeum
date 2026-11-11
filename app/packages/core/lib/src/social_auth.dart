@@ -75,8 +75,6 @@ class UnconfiguredSocialSignIn extends SocialSignIn {
 abstract final class SocialKeys {
   static const kakaoNativeKey = String.fromEnvironment('KAKAO_NATIVE_KEY');
   static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
-  static const naverClientSecret = String.fromEnvironment('NAVER_CLIENT_SECRET');
-  static const naverClientName = String.fromEnvironment('NAVER_CLIENT_NAME');
   static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
   static const googleIosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
   static const requested = String.fromEnvironment('SOCIAL_PROVIDERS');
@@ -84,8 +82,6 @@ abstract final class SocialKeys {
   static const values = {
     'KAKAO_NATIVE_KEY': kakaoNativeKey,
     'NAVER_CLIENT_ID': naverClientId,
-    'NAVER_CLIENT_SECRET': naverClientSecret,
-    'NAVER_CLIENT_NAME': naverClientName,
     'GOOGLE_SERVER_CLIENT_ID': googleServerClientId,
     'GOOGLE_IOS_CLIENT_ID': googleIosClientId,
   };
@@ -100,7 +96,7 @@ Set<String> providersForKeys({required String requested, required Map<String, St
       : requested.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
   final available = {
     if (has('KAKAO_NATIVE_KEY')) SocialProviders.kakao,
-    if (has('NAVER_CLIENT_ID') && has('NAVER_CLIENT_SECRET') && has('NAVER_CLIENT_NAME')) SocialProviders.naver,
+    if (has('NAVER_CLIENT_ID')) SocialProviders.naver,
     if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID'))) SocialProviders.google,
     SocialProviders.apple,
   };

@@ -21,6 +21,8 @@ use std::collections::HashMap;
 pub struct Integrations {
     pub kakao_app_id: Option<String>,
     pub naver_client_id: Option<String>,
+    /// Naver app secret: the server exchanges each Naver login code with it (providers/social.rs).
+    pub naver_client_secret: Option<String>,
     pub google_client_ids: Vec<String>,
     pub apple_client_ids: Vec<String>,
     pub portone: PortOne,
@@ -47,6 +49,7 @@ impl Integrations {
         Self {
             kakao_app_id: c.kakao_app_id.clone(),
             naver_client_id: None,
+            naver_client_secret: None,
             google_client_ids: c.google_client_ids.clone(),
             apple_client_ids: c.apple_client_ids.clone(),
             portone: c.portone.clone(),
@@ -64,7 +67,7 @@ impl Integrations {
             Section::Solapi => self.solapi.is_some(),
             Section::Push => self.fcm.is_some(),
             Section::Kakao => self.kakao_app_id.is_some(),
-            Section::Naver => self.naver_client_id.is_some(),
+            Section::Naver => self.naver_client_id.is_some() && self.naver_client_secret.is_some(),
             Section::Google => !self.google_client_ids.is_empty(),
             Section::Apple => !self.apple_client_ids.is_empty(),
             Section::Ai => self.ai.is_some(),
@@ -162,7 +165,7 @@ const SOLAPI_FIELDS: [Field; 5] = [
 ];
 const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
 const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
-const NAVER_FIELDS: [Field; 1] = [f("client_id", Kind::Text, true)];
+const NAVER_FIELDS: [Field; 2] = [f("client_id", Kind::Text, true), f("client_secret", Kind::Secret, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
 const AI_FIELDS: [Field; 3] = [f("api_key", Kind::Secret, true), f("model", Kind::Text, false), f("mode", Kind::Text, false)];
 const BACKUP_FIELDS: [Field; 6] = [
@@ -315,7 +318,10 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Backup => out.backup = Some(s3_config(v)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
-        Section::Naver => out.naver_client_id = Some(required(v, "client_id")?),
+        Section::Naver => {
+            out.naver_client_id = Some(required(v, "client_id")?);
+            out.naver_client_secret = Some(required(v, "client_secret")?);
+        }
         Section::Ai => {
             let mode = Mode::parse(text(v, "mode").as_deref()).ok_or(Invalid("invalid_mode"))?;
             let model = text(v, "model").unwrap_or_else(|| ai::DEFAULT_MODEL.to_string());
