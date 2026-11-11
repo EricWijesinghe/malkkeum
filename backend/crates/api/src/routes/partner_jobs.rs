@@ -408,6 +408,15 @@ struct Completion {
     checklist: Vec<bool>,
 }
 
+/// A completion that already landed (the app retried after a lost response): the first result, no second write.
+pub(crate) async fn settled_once(db: &sqlx::PgPool, booking: Uuid, pro: Uuid) -> ApiResult<Option<(i64, Option<NaiveDate>)>> {
+    Ok(sqlx::query_as("SELECT net, payout_date FROM settlements WHERE booking_id = $1 AND pro_id = $2")
+        .bind(booking)
+        .bind(pro)
+        .fetch_optional(db)
+        .await?)
+}
+
 async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
     let base = &s.config.public_base_url;
@@ -424,6 +433,9 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
     let b = load_booking(&s.db, id).await?;
     if b.pro_id != Some(a.id) {
         return Err(ApiError::NotFound);
+    }
+    if let Some((net, date)) = settled_once(&s.db, id, a.id).await? {
+        return Ok(Json(json!({ "ok": true, "payout_date": date, "net": net })));
     }
     let today = today_kst();
     // A job can't be completed (and paid) before it has happened.

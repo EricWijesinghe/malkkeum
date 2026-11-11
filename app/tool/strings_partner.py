@@ -1,4 +1,34 @@
-# Partner (pro) app strings. Columns: ko, en, ja, zh, vi.
+# Partner (pro) app strings. Columns: ko, en, ja, zh, vi. X holds the other languages.
+X = {
+  "fil": {
+    "pNavigate": "Mga direksyon", "pNavHint": "Bubuksan ang address ng bisita sa map app. Kung walang app, bubuksan ang web map.", "pOfflineSaved": "Walang signal. Naka-save at ipapadala kapag may koneksyon na.", "pPhotoRetry": "Subukan ulit", "pPhotoWaiting": "Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.", "pUploadedCount": "{done} sa {total} ang na-upload",
+  },
+  "id": {
+    "pNavigate": "Petunjuk arah", "pNavHint": "Membuka alamat kunjungan di aplikasi peta. Tanpa aplikasi, peta web yang dibuka.", "pOfflineSaved": "Tidak ada sinyal. Disimpan dan akan dikirim saat online.", "pPhotoRetry": "Coba unggah lagi", "pPhotoWaiting": "Foto yang belum terunggah akan dikirim otomatis saat online.", "pUploadedCount": "{done} dari {total} terunggah",
+  },
+  "km": {
+    "pNavigate": "ផ្លូវទៅ", "pNavHint": "បើកអាសយដ្ឋានក្នុងកម្មវិធីផែនទី។ បើគ្មានកម្មវិធី នឹងបើកផែនទីតាមវែប។", "pOfflineSaved": "គ្មានសញ្ញា។ បានរក្សាទុក ហើយនឹងផ្ញើនៅពេលមានអ៊ីនធឺណិត។", "pPhotoRetry": "ផ្ទុកឡើងម្តងទៀត", "pPhotoWaiting": "រូបថតដែលមិនបានផ្ទុកឡើង នឹងផ្ញើដោយស្វ័យប្រវត្តិនៅពេលមានអ៊ីនធឺណិត។", "pUploadedCount": "បានផ្ទុកឡើង {done}/{total}",
+  },
+  "mn": {
+    "pNavigate": "Чиглэл", "pNavHint": "Очих хаягийг газрын зургийн аппликейшнд нээнэ. Аппгүй бол вэб газрын зураг нээгдэнэ.", "pOfflineSaved": "Дохио алга. Хадгалсан, интернэт холбогдоход автоматаар илгээнэ.", "pPhotoRetry": "Дахин илгээх", "pPhotoWaiting": "Илгээгдээгүй зургууд интернэт холбогдоход автоматаар илгээгдэнэ.", "pUploadedCount": "{total}-с {done} илгээсэн",
+  },
+  "ne": {
+    "pNavigate": "दिशानिर्देश", "pNavHint": "नक्सा एपमा भ्रमण ठेगाना खुल्छ। एप नभए वेब नक्सा खुल्छ।", "pOfflineSaved": "सिग्नल छैन। सुरक्षित गरियो, जडान भएपछि पठाइनेछ।", "pPhotoRetry": "फेरि अपलोड", "pPhotoWaiting": "अपलोड नभएका फोटोहरू जडान भएपछि स्वतः पठाइनेछन्।", "pUploadedCount": "{total} मध्ये {done} अपलोड",
+  },
+  "ru": {
+    "pNavigate": "Маршрут", "pNavHint": "Откроет адрес выезда в приложении карт. Если его нет, откроется веб-карта.", "pOfflineSaved": "Нет сети. Сохранено и отправится, когда появится связь.", "pPhotoRetry": "Повторить загрузку", "pPhotoWaiting": "Фото, которые не загрузились, отправятся автоматически при появлении связи.", "pUploadedCount": "Загружено {done} из {total}",
+  },
+  "si": {
+    "pNavigate": "දිශානතිය", "pNavHint": "සිතියම් යෙදුමේ ගමන් ලිපිනය විවෘත කරයි. යෙදුම නැත්නම් වෙබ් සිතියම විවෘත වේ.", "pOfflineSaved": "සංඥාව නැත. සුරකින ලද අතර සම්බන්ධ වූ විට යවනු ඇත.", "pPhotoRetry": "නැවත උඩුගත කරන්න", "pPhotoWaiting": "උඩුගත නොවූ ඡායාරූප සම්බන්ධ වූ විට ස්වයංක්‍රීයව යවනු ඇත.", "pUploadedCount": "{total} න් {done} උඩුගත කර ඇත",
+  },
+  "th": {
+    "pNavigate": "เส้นทาง", "pNavHint": "เปิดที่อยู่ในแอปแผนที่ ถ้าไม่มีแอป จะเปิดแผนที่บนเว็บ", "pOfflineSaved": "ไม่มีสัญญาณ บันทึกไว้แล้วและจะส่งเมื่อกลับมาออนไลน์", "pPhotoRetry": "อัปโหลดอีกครั้ง", "pPhotoWaiting": "รูปที่อัปโหลดไม่สำเร็จจะส่งอัตโนมัติเมื่อออนไลน์", "pUploadedCount": "อัปโหลดแล้ว {done}/{total}",
+  },
+  "uz": {
+    "pNavigate": "Yo'nalish", "pNavHint": "Manzilni xarita ilovasida ochadi. Ilova bo'lmasa, veb-xarita ochiladi.", "pOfflineSaved": "Signal yo'q. Saqlandi, ulanish qaytgach yuboriladi.", "pPhotoRetry": "Qayta yuklash", "pPhotoWaiting": "Yuklanmagan suratlar ulanish qaytgach avtomatik yuboriladi.", "pUploadedCount": "{total} tadan {done} yuklandi",
+  },
+}
+
 S = {
   "pTabJobs": ["일감", "Jobs", "仕事", "接单", "Việc"],
   "pTabQuotes": ["내 견적", "My quotes", "見積", "我的报价", "Báo giá"],
@@ -124,4 +154,10 @@ S = {
   "pSize": ["면적", "Size", "面積", "面积", "Diện tích"],
   "pSchedule": ["일정", "Schedule", "日程", "日程", "Lịch"],
   "pSpace": ["공간 정보", "Space", "空間情報", "空间信息", "Không gian"],
+  "pNavigate": ["길찾기", "Directions", "道案内", "导航", "Chỉ đường"],
+  "pNavHint": ["방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.", "Opens the visit address in a map app. Without the app, the web map opens.", "訪問先の住所を地図アプリで開きます。アプリがなければWeb地図を開きます。", "在地图应用中打开上门地址，未安装应用则打开网页地图。", "Mở địa chỉ trong ứng dụng bản đồ. Nếu chưa cài, sẽ mở bản đồ web."],
+  "pOfflineSaved": ["신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.", "No signal. Saved, and it will send once you're back online.", "電波がありません。保存して、つながったら自動で送信します。", "没有信号。已保存，恢复网络后自动发送。", "Không có sóng. Đã lưu, sẽ gửi khi có mạng."],
+  "pPhotoRetry": ["다시 올리기", "Retry upload", "再アップロード", "重新上传", "Tải lại"],
+  "pPhotoWaiting": ["올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.", "Photos that didn't upload will send automatically once you're online.", "アップロードできなかった写真は、つながったら自動で送信されます。", "未上传的照片将在恢复网络后自动上传。", "Ảnh chưa tải lên sẽ tự gửi khi có mạng."],
+  "pUploadedCount": ["{total}장 중 {done}장 업로드됨", "{done} of {total} uploaded", "{total}枚中{done}枚アップロード済み", "已上传 {done}/{total} 张", "Đã tải {done}/{total} ảnh"],
 }

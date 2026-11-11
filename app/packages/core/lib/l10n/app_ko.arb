@@ -1331,6 +1331,22 @@
  "pSize": "면적",
  "pSchedule": "일정",
  "pSpace": "공간 정보",
+ "pNavigate": "길찾기",
+ "pNavHint": "방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.",
+ "pOfflineSaved": "신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.",
+ "pPhotoRetry": "다시 올리기",
+ "pPhotoWaiting": "올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.",
+ "pUploadedCount": "{total}장 중 {done}장 업로드됨",
+ "@pUploadedCount": {
+  "placeholders": {
+   "total": {
+    "type": "String"
+   },
+   "done": {
+    "type": "String"
+   }
+  }
+ },
  "cIntPayout": "파트너 지급",
  "poTabSettlements": "정산",
  "poTabPayouts": "지급 내역",

@@ -3,7 +3,7 @@
 
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
-    chat, growth, uploads,
+    chat, growth, partner_jobs, uploads,
 };
 use crate::{
     auth::{Member, mask_name},
@@ -120,6 +120,9 @@ async fn complete(State(s): State<AppState>, Member(a): Member, Path(id): Path<U
     let Some(pro) = b.pro_id else {
         return Err(ApiError::NotFound);
     };
+    if partner_jobs::settled_once(&s.db, id, pro).await?.is_some() {
+        return Ok(Json(json!({ "ok": true })));
+    }
     let today = today_kst();
     // A job can't be completed (and paid) before it has happened.
     if b.visit_date > today {
