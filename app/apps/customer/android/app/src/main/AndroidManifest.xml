@@ -27,7 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- Kakao login returns here (scheme kakao<native app key>, set from --dart-define). -->
+        <!-- Kakao login returns here; the scheme is kakao plus KAKAO_NATIVE_KEY, passed as a dart-define. -->
         <activity
             android:name="com.kakao.sdk.flutter.auth.AuthCodeHandlerActivity"
             android:exported="true">
