@@ -2608,6 +2608,9 @@ class TEn extends T {
   String get oRuleDisk => 'Disk nearly full';
 
   @override
+  String get oRuleAuth => 'Suspicious sign-in activity';
+
+  @override
   String get oQuietHours => 'Quiet hours';
 
   @override

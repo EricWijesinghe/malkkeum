@@ -2548,6 +2548,9 @@ class TJa extends T {
   String get oRuleDisk => 'ディスク不足';
 
   @override
+  String get oRuleAuth => '不審なログイン活動';
+
+  @override
   String get oQuietHours => 'おやすみ時間';
 
   @override

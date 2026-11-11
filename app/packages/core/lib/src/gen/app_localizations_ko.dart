@@ -2549,6 +2549,9 @@ class TKo extends T {
   String get oRuleDisk => '디스크 부족';
 
   @override
+  String get oRuleAuth => '계정 보안 이상(로그인 잠금 등)';
+
+  @override
   String get oQuietHours => '조용한 시간';
 
   @override

@@ -798,6 +798,7 @@
  "oRuleSocial": "Login sosial gagal",
  "oRuleBackup": "Cadangan otomatis terlewat",
  "oRuleDisk": "Disk hampir penuh",
+ "oRuleAuth": "Aktivitas login mencurigakan",
  "oQuietHours": "Jam tenang",
  "oQuietFrom": "Dari",
  "oQuietTo": "Sampai",

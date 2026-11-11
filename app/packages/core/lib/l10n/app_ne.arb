@@ -798,6 +798,7 @@
  "oRuleSocial": "सामाजिक लगइन असफल",
  "oRuleBackup": "स्वचालित ब्याकअप छुट्यो",
  "oRuleDisk": "डिस्क लगभग भरियो",
+ "oRuleAuth": "शंकास्पद लगइन गतिविधि",
  "oQuietHours": "शान्त समय",
  "oQuietFrom": "सुरु",
  "oQuietTo": "सम्म",

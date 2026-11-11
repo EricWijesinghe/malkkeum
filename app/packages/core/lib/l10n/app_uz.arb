@@ -798,6 +798,7 @@
  "oRuleSocial": "Ijtimoiy tarmoq orqali kirish xato",
  "oRuleBackup": "Avtomatik zaxira o‘tkazib yuborildi",
  "oRuleDisk": "Disk deyarli to‘lgan",
+ "oRuleAuth": "Shubhali kirish faolligi",
  "oQuietHours": "Jim soatlar",
  "oQuietFrom": "Dan",
  "oQuietTo": "Gacha",

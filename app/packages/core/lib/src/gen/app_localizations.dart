@@ -4909,6 +4909,12 @@ abstract class T {
   /// **'디스크 부족'**
   String get oRuleDisk;
 
+  /// No description provided for @oRuleAuth.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정 보안 이상(로그인 잠금 등)'**
+  String get oRuleAuth;
+
   /// No description provided for @oQuietHours.
   ///
   /// In ko, this message translates to:

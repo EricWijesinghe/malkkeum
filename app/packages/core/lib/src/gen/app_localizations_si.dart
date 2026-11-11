@@ -2621,6 +2621,9 @@ class TSi extends T {
   String get oRuleDisk => 'තැටිය පිරී ආසන්නයි';
 
   @override
+  String get oRuleAuth => 'සැකකටයුතු ප්‍රවේශ ක්‍රියාකාරකම්';
+
+  @override
   String get oQuietHours => 'නිශ්ශබ්ද වේලා';
 
   @override

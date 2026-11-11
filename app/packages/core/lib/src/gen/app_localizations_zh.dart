@@ -2537,6 +2537,9 @@ class TZh extends T {
   String get oRuleDisk => '磁盘不足';
 
   @override
+  String get oRuleAuth => '可疑登录活动';
+
+  @override
   String get oQuietHours => '勿扰时段';
 
   @override

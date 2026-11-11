@@ -2631,6 +2631,9 @@ class TMn extends T {
   String get oRuleDisk => 'Диск дүүрэх дөхсөн';
 
   @override
+  String get oRuleAuth => 'Сэжигтэй нэвтрэлт';
+
+  @override
   String get oQuietHours => 'Тайван цаг';
 
   @override

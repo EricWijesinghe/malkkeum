@@ -2619,6 +2619,9 @@ class TNe extends T {
   String get oRuleDisk => 'डिस्क लगभग भरियो';
 
   @override
+  String get oRuleAuth => 'शंकास्पद लगइन गतिविधि';
+
+  @override
   String get oQuietHours => 'शान्त समय';
 
   @override

@@ -340,6 +340,7 @@ final _ruleLabels = <String, String Function(T)>{
   'social_failing': (T t) => t.oRuleSocial,
   'backup_stale': (T t) => t.oRuleBackup,
   'disk_low': (T t) => t.oRuleDisk,
+  'auth_suspicious': (T t) => t.oRuleAuth,
 };
 
 class _AlertsCard extends StatefulWidget {

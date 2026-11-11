@@ -2635,6 +2635,9 @@ class TUz extends T {
   String get oRuleDisk => 'Disk deyarli to‘lgan';
 
   @override
+  String get oRuleAuth => 'Shubhali kirish faolligi';
+
+  @override
   String get oQuietHours => 'Jim soatlar';
 
   @override

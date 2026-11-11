@@ -2640,6 +2640,9 @@ class TFil extends T {
   String get oRuleDisk => 'Halos puno ang disk';
 
   @override
+  String get oRuleAuth => 'Kahina-hinalang aktibidad sa pag-login';
+
+  @override
   String get oQuietHours => 'Tahimik na oras';
 
   @override

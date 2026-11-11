@@ -1308,6 +1308,7 @@
  "oRuleSocial": "소셜 로그인 실패",
  "oRuleBackup": "자동 백업 누락",
  "oRuleDisk": "디스크 부족",
+ "oRuleAuth": "계정 보안 이상(로그인 잠금 등)",
  "oQuietHours": "조용한 시간",
  "oQuietFrom": "시작",
  "oQuietTo": "끝",

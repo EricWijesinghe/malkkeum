@@ -798,6 +798,7 @@
  "oRuleSocial": "Đăng nhập mạng xã hội lỗi",
  "oRuleBackup": "Thiếu sao lưu tự động",
  "oRuleDisk": "Hết dung lượng đĩa",
+ "oRuleAuth": "Hoạt động đăng nhập đáng ngờ",
  "oQuietHours": "Giờ yên tĩnh",
  "oQuietFrom": "Từ",
  "oQuietTo": "Đến",

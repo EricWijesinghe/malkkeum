@@ -2602,6 +2602,9 @@ class TVi extends T {
   String get oRuleDisk => 'Hết dung lượng đĩa';
 
   @override
+  String get oRuleAuth => 'Hoạt động đăng nhập đáng ngờ';
+
+  @override
   String get oQuietHours => 'Giờ yên tĩnh';
 
   @override

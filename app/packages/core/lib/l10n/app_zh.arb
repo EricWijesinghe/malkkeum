@@ -798,6 +798,7 @@
  "oRuleSocial": "社交登录失败",
  "oRuleBackup": "自动备份缺失",
  "oRuleDisk": "磁盘不足",
+ "oRuleAuth": "可疑登录活动",
  "oQuietHours": "勿扰时段",
  "oQuietFrom": "开始",
  "oQuietTo": "结束",

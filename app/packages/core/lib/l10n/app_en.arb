@@ -798,6 +798,7 @@
  "oRuleSocial": "Social sign-in fails",
  "oRuleBackup": "Automatic backup missed",
  "oRuleDisk": "Disk nearly full",
+ "oRuleAuth": "Suspicious sign-in activity",
  "oQuietHours": "Quiet hours",
  "oQuietFrom": "From",
  "oQuietTo": "To",

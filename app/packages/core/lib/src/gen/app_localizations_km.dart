@@ -2616,6 +2616,9 @@ class TKm extends T {
   String get oRuleDisk => 'ថាសជិតពេញ';
 
   @override
+  String get oRuleAuth => 'សកម្មភាពចូលគណនីគួរឱ្យសង្ស័យ';
+
+  @override
   String get oQuietHours => 'ម៉ោងស្ងាត់';
 
   @override

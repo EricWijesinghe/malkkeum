@@ -2622,6 +2622,9 @@ class TRu extends T {
   String get oRuleDisk => 'Диск почти заполнен';
 
   @override
+  String get oRuleAuth => 'Подозрительная активность входа';
+
+  @override
   String get oQuietHours => 'Тихие часы';
 
   @override

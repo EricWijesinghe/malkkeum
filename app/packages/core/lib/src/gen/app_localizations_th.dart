@@ -2604,6 +2604,9 @@ class TTh extends T {
   String get oRuleDisk => 'ดิสก์เกือบเต็ม';
 
   @override
+  String get oRuleAuth => 'กิจกรรมเข้าสู่ระบบที่น่าสงสัย';
+
+  @override
   String get oQuietHours => 'ช่วงเวลาเงียบ';
 
   @override

@@ -798,6 +798,7 @@
  "oRuleSocial": "ソーシャルログインの失敗",
  "oRuleBackup": "自動バックアップの欠落",
  "oRuleDisk": "ディスク不足",
+ "oRuleAuth": "不審なログイン活動",
  "oQuietHours": "おやすみ時間",
  "oQuietFrom": "開始",
  "oQuietTo": "終了",

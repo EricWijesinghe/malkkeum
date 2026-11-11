@@ -798,6 +798,7 @@
  "oRuleSocial": "Pumapalya ang social sign-in",
  "oRuleBackup": "Nalaktawan ang awtomatikong backup",
  "oRuleDisk": "Halos puno ang disk",
+ "oRuleAuth": "Kahina-hinalang aktibidad sa pag-login",
  "oQuietHours": "Tahimik na oras",
  "oQuietFrom": "Mula",
  "oQuietTo": "Hanggang",

@@ -2622,6 +2622,9 @@ class TId extends T {
   String get oRuleDisk => 'Disk hampir penuh';
 
   @override
+  String get oRuleAuth => 'Aktivitas login mencurigakan';
+
+  @override
   String get oQuietHours => 'Jam tenang';
 
   @override
