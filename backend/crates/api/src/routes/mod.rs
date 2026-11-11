@@ -16,7 +16,7 @@ mod partner;
 mod partner_jobs;
 pub(crate) mod payments;
 pub mod setup;
-mod uploads;
+pub mod uploads;
 mod webhooks;
 
 use crate::{realtime, state::AppState};
@@ -36,8 +36,6 @@ pub const APP_VERSION: &str = match option_env!("APP_VERSION") {
 use tower_http::{
     cors::{AllowOrigin, CorsLayer},
     limit::RequestBodyLimitLayer,
-    services::ServeDir,
-    set_header::SetResponseHeaderLayer,
     timeout::TimeoutLayer,
     trace::TraceLayer,
 };
@@ -51,7 +49,6 @@ pub fn router(state: AppState) -> Router {
         .allow_origin(AllowOrigin::list(origins))
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
         .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
-    let files = ServeDir::new(state.config.upload_dir.clone());
     let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, std::time::Instant::now()));
 
     let api = Router::new()
@@ -86,18 +83,10 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(|| async { Json(json!({ "ok": true, "version": APP_VERSION })) }))
         .nest("/v1", api)
-        .nest_service(
-            "/files",
-            tower::ServiceBuilder::new()
-                .layer(SetResponseHeaderLayer::overriding(
-                    header::X_CONTENT_TYPE_OPTIONS,
-                    HeaderValue::from_static("nosniff"),
-                ))
-                .service(files),
-        )
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))
         .layer(TimeoutLayer::with_status_code(axum::http::StatusCode::REQUEST_TIMEOUT, REQUEST_TIMEOUT))
         .layer(cors)
+        .layer(axum::middleware::from_fn_with_state(state.clone(), uploads::sign_json))
         .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
         // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
         .layer(

@@ -200,6 +200,11 @@ struct ContentInput {
 }
 
 impl ContentInput {
+    /// Our uploads are stored as plain `/files/<name>` paths, never as expiring signed links.
+    fn stored_image(&self, base: &str) -> Option<String> {
+        self.image_url.as_deref().map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
+    }
+
     fn validate(&self) -> ApiResult<()> {
         // Links and images end up in customer apps: allow only https or in-app routes, and our own uploads.
         let safe_link = self
@@ -219,7 +224,7 @@ impl ContentInput {
 async fn create_content(State(s): State<AppState>, Admin(st): Admin, Json(c): Json<ContentInput>) -> ApiResult<Json<Value>> {
     c.validate()?;
     let id: Uuid = sqlx::query_scalar("INSERT INTO content_items (kind, slug, title, body, image_url, link, sort_order, starts_at, ends_at, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id")
-        .bind(&c.kind).bind(&c.slug).bind(&c.title).bind(&c.body).bind(&c.image_url).bind(&c.link).bind(c.sort_order).bind(c.starts_at).bind(c.ends_at).bind(c.active)
+        .bind(&c.kind).bind(&c.slug).bind(&c.title).bind(&c.body).bind(c.stored_image(&s.config.public_base_url)).bind(&c.link).bind(c.sort_order).bind(c.starts_at).bind(c.ends_at).bind(c.active)
         .fetch_one(&s.db)
         .await?;
     audit(&s.db, "staff", Some(st.id), "content.create", &id.to_string(), json!({ "kind": c.kind })).await?;
@@ -236,7 +241,7 @@ async fn update_content(State(s): State<AppState>, Admin(st): Admin, Path(id): P
     .bind(&c.slug)
     .bind(&c.title)
     .bind(&c.body)
-    .bind(&c.image_url)
+    .bind(c.stored_image(&s.config.public_base_url))
     .bind(&c.link)
     .bind(c.sort_order)
     .bind(c.starts_at)

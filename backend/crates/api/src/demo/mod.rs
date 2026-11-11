@@ -26,7 +26,7 @@ use uuid::Uuid;
 const DEMO_SEED: u64 = 0x004D_414C_4B45_554D;
 /// Advisory lock so two loads or a load and a clear never interleave.
 const DEMO_LOCK: i64 = 0x6D61_6C6B;
-/// Placeholder photo: one 1x1 PNG, named with a fixed 32-hex stem so `is_own_upload` accepts it.
+/// Placeholder photo: one 1x1 PNG, named with a fixed 32-hex stem so `own_upload` accepts it.
 const PLACEHOLDER_FILE: &str = "de30de30de30de30de30de30de30de30.png";
 const PLACEHOLDER_PNG: &str = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 const KST_OFFSET_SECS: i32 = 9 * 3600;

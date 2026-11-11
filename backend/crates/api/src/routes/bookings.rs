@@ -496,14 +496,14 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if !(1..=5).contains(&r.rating) || r.body.chars().count() > 1000 {
         return Err(ApiError::BadRequest("invalid_review"));
     }
-    growth::check_photos(&s.config.public_base_url, &r.photos)?;
+    let photos = growth::check_photos(&s.config.public_base_url, &r.photos)?;
     let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
         .bind(id)
         .bind(a.id)
         .bind(b.pro_id)
         .bind(r.rating)
         .bind(r.body.trim())
-        .bind(sqlx::types::Json(&r.photos))
+        .bind(sqlx::types::Json(&photos))
         .execute(&s.db)
         .await?;
     if inserted.rows_affected() == 0 {

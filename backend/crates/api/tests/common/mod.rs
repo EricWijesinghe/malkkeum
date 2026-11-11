@@ -25,6 +25,8 @@ pub const SECRET: &[u8] = b"flow-test-secret-flow-test-secret-0000";
 pub const PHOTO: &str = "http://127.0.0.1:8080/files/0123456789abcdef0123456789abcdef.jpg";
 /// District of every test address; the test pros cover it.
 pub const DISTRICT: &str = "11680";
+/// Public base URL of the test config; signed file URLs are built on it.
+pub const BASE_URL: &str = "http://127.0.0.1:8080";
 
 /// Dev-mode configuration: fake SMS, payments and push. Keep in step with `Config` fields.
 pub fn test_config() -> Config {
@@ -34,7 +36,7 @@ pub fn test_config() -> Config {
         jwt_secret: SECRET.to_vec(),
         data_key: [7u8; 32],
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
-        public_base_url: "http://127.0.0.1:8080".into(),
+        public_base_url: BASE_URL.into(),
         dev_mode: true,
         allowed_origins: Vec::new(),
         seed_admin: None,
