@@ -20,3 +20,12 @@ scripts/store/.local/
 docs/store/screenshots/*/
 docs/store/graphics/
 __pycache__/
+
+# Release signing: upload keystores, their passwords, Gradle key files and release kits (never commit).
+*.jks
+*.keystore
+*.p12
+*.pfx
+PASSWORD.txt
+key.properties
+signing/
