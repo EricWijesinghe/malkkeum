@@ -51,6 +51,8 @@ pub struct Config {
     pub ai_chat_retention_days: u32,
     /// Retention purge: uploads not attached to any record after this many days are deleted.
     pub upload_orphan_days: u32,
+    /// Bearer token for `GET /metrics`. None: only loopback clients may scrape.
+    pub metrics_token: Option<String>,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -111,6 +113,14 @@ where
         return Err(ConfigError::Invalid(key, format!("must be at least {min}")));
     }
     Ok(value)
+}
+
+/// Scrape token for `/metrics`. Short tokens are refused so a typo cannot open the endpoint to guessing.
+fn metrics_token() -> Result<Option<String>, ConfigError> {
+    match opt("METRICS_TOKEN") {
+        Some(t) if t.len() < MIN_SECRET_BYTES => Err(ConfigError::Invalid("METRICS_TOKEN", format!("needs at least {MIN_SECRET_BYTES} bytes"))),
+        t => Ok(t),
+    }
 }
 
 fn list(key: &str) -> Vec<String> {
@@ -240,6 +250,7 @@ impl Config {
             apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
+            metrics_token: metrics_token()?,
         })
     }
 }

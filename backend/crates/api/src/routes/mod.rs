@@ -22,13 +22,12 @@ pub mod setup;
 pub mod uploads;
 mod webhooks;
 
-use crate::{realtime, state::AppState};
+use crate::{lifecycle, metrics, realtime, state::AppState, telemetry};
 use axum::{
-    Json, Router,
+    Router,
     http::{HeaderValue, Method, header},
     routing::get,
 };
-use serde_json::json;
 use std::time::Duration;
 
 /// Release version baked in at image build (`--build-arg APP_VERSION=1.2.3`); `dev` for local builds.
@@ -89,7 +88,10 @@ pub fn router(state: AppState) -> Router {
         .route("/ws", get(realtime::ws_handler));
 
     Router::new()
-        .route("/health", get(|| async { Json(json!({ "ok": true, "version": APP_VERSION })) }))
+        // Liveness never touches the DB; readiness does. Neither is proxied publicly (see deploy/Caddyfile).
+        .route("/health", get(lifecycle::live))
+        .route("/ready", get(lifecycle::ready))
+        .route("/metrics", get(metrics::handler))
         .merge(crate::app_links::routes())
         .nest("/v1", api)
         .layer(axum::middleware::from_fn_with_state(state.clone(), config::enforce))
@@ -99,11 +101,14 @@ pub fn router(state: AppState) -> Router {
         .layer(axum::middleware::from_fn_with_state(state.clone(), uploads::sign_json))
         .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
         // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(|req: &axum::http::Request<_>| tracing::info_span!("http", method = %req.method(), path = %req.uri().path())),
-        )
+        .layer(TraceLayer::new_for_http().make_span_with(|req: &axum::http::Request<_>| {
+            let request_id = req.extensions().get::<telemetry::RequestId>().map_or("", |r| r.0.as_str());
+            tracing::info_span!("http", method = %req.method(), path = %req.uri().path(), request_id)
+        }))
         .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
+        .layer(axum::middleware::from_fn(metrics::track))
+        // Outermost: every request (and every error body) gets its id before anything else runs.
+        .layer(axum::middleware::from_fn(telemetry::request_id))
         .with_state(state)
 }
 

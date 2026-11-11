@@ -4,6 +4,7 @@
 use crate::{config::Config, state::AppState};
 use sqlx::PgPool;
 use std::{path::Path, time::Duration};
+use tokio::task::JoinHandle;
 
 const EVERY: Duration = Duration::from_secs(60 * 60);
 /// Tables that can hold a reference to an upload URL. A file named in any of them is not orphaned.
@@ -17,18 +18,18 @@ pub struct Report {
     pub uploads: u64,
 }
 
-pub fn spawn(state: AppState) {
+pub fn spawn(state: AppState) -> JoinHandle<()> {
+    let mut stop = state.hub.drain_signal();
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(EVERY);
-        loop {
-            tick.tick().await;
+        while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
             let cfg = &state.config;
             match purge(&state.db, cfg).await {
                 Ok(r) => tracing::info!(?r, "retention purge done"),
                 Err(e) => tracing::warn!(error = %e, "retention purge failed"),
             }
         }
-    });
+    })
 }
 
 /// One pass over every purge rule. Stops at the first database error so the run is retried whole.

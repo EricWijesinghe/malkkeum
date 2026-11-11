@@ -5,6 +5,8 @@
 
 use crate::{
     error::{ApiError, ApiResult},
+    lifecycle::next_tick,
+    metrics::job_pass,
     ops::{self, Level},
     realtime::{Recipient, notify},
     state::AppState,
@@ -13,6 +15,7 @@ use chrono::{DateTime, Duration, FixedOffset, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::PgPool;
+use tokio::task::JoinHandle;
 use std::{collections::{BTreeMap, HashMap}, time::Duration as StdDuration};
 
 pub const RULES: [&str; 7] = ["sms_failing", "push_failing", "payment_failing", "payment_stuck", "social_failing", "backup_stale", "disk_low"];
@@ -294,18 +297,25 @@ pub async fn run_once(s: &AppState) -> ApiResult<usize> {
 }
 
 /// Starts the periodic pass. Errors are logged and the loop goes on.
-pub fn spawn(state: AppState) {
+pub fn spawn(state: AppState) -> JoinHandle<()> {
+    let mut stop = state.hub.drain_signal();
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(PASS_EVERY);
-        loop {
-            tick.tick().await;
-            match run_once(&state).await {
-                Ok(0) => {}
-                Ok(fired) => tracing::warn!(fired, "owner alerts sent"),
-                Err(e) => tracing::warn!(error = %e, "ops alert pass failed"),
-            }
+        while next_tick(&mut tick, &mut stop).await {
+            let ok = match run_once(&state).await {
+                Ok(0) => true,
+                Ok(fired) => {
+                    tracing::warn!(fired, "owner alerts sent");
+                    true
+                }
+                Err(e) => {
+                    tracing::warn!(error = %e, "ops alert pass failed");
+                    false
+                }
+            };
+            job_pass("ops_alerts", ok);
         }
-    });
+    })
 }
 
 #[cfg(test)]
