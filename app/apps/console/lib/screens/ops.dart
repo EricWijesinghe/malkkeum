@@ -118,11 +118,14 @@ class _Overall extends StatelessWidget {
           Expanded(
             child: Text(t.oOverall, style: context.text.titleLarge),
           ),
-          Text(levelLabel(t, level), style: context.text.titleSmall),
+          Flexible(child: Text(levelLabel(t, level), textAlign: TextAlign.end, style: context.text.titleSmall)),
           const SizedBox(width: Space.lg),
-          Text(
-            '${t.oVersion} ${status['version']} · ${t.oUptime} ${t.oUptimeValue('${uptime ~/ 3600}', '${(uptime % 3600) ~/ 60}')}',
-            style: context.text.bodySmall,
+          Flexible(
+            child: Text(
+              '${t.oVersion} ${status['version']} · ${t.oUptime} ${t.oUptimeValue('${uptime ~/ 3600}', '${(uptime % 3600) ~/ 60}')}',
+              textAlign: TextAlign.end,
+              style: context.text.bodySmall,
+            ),
           ),
         ],
       ),
@@ -187,7 +190,7 @@ class _Checks extends StatelessWidget {
                       _Dot(c['level'] as String),
                       const SizedBox(width: Space.xs),
                       Expanded(child: Text(_checkTitle(t, c['key'] as String), style: context.text.titleSmall)),
-                      Text(levelLabel(t, c['level'] as String), style: context.text.bodySmall),
+                      Flexible(child: Text(levelLabel(t, c['level'] as String), textAlign: TextAlign.end, style: context.text.bodySmall)),
                     ],
                   ),
                   const SizedBox(height: Space.xs),
@@ -395,6 +398,7 @@ class _HourPicker extends StatelessWidget {
     final t = context.t;
     return Expanded(
       child: DropdownButtonFormField<int>(
+        isExpanded: true,
         initialValue: value,
         decoration: InputDecoration(labelText: label),
         items: [

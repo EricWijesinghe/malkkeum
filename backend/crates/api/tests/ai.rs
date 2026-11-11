@@ -4,7 +4,7 @@
 mod common;
 
 use api::{
-    ai::{AiConfig, DEFAULT_MODEL, Mode, answer},
+    ai::{AiConfig, Caps, DEFAULT_MODEL, Mode, answer},
     auth::{self, Role},
     build_state,
     integrations::Integrations,
@@ -78,7 +78,7 @@ async fn world(db: PgPool, mode: Mode) -> World {
     cfg.anthropic_base_url = fake_anthropic(fake.clone()).await;
     let state = build_state(db.clone(), cfg.clone()).expect("state");
     let mut integ = Integrations::from_config(&cfg);
-    integ.ai = Some(AiConfig { api_key: "sk-ant-test-key".into(), model: DEFAULT_MODEL.into(), mode });
+    integ.ai = Some(AiConfig { api_key: "sk-ant-test-key".into(), model: DEFAULT_MODEL.into(), mode, caps: Caps::default() });
     state.providers.set_integrations(integ);
     let app = routes::router(state.clone());
     let (customer, _) = login(&app, "010-5100-0001", "customer").await;
@@ -117,6 +117,16 @@ async fn ai_replies(db: &PgPool, thread: Uuid) -> Vec<Value> {
         .fetch_all(db)
         .await
         .expect("ai replies")
+}
+
+async fn admin_token(db: &PgPool) -> String {
+    let id: Uuid = sqlx::query_scalar(
+        "INSERT INTO staff (email, name, password_hash, role) VALUES ('ai-admin@test.local', 'Owner', 'unused', 'admin') RETURNING id",
+    )
+    .fetch_one(db)
+    .await
+    .expect("admin row");
+    auth::issue_access(SECRET, id, Role::StaffAdmin).expect("admin token")
 }
 
 async fn staff_token(db: &PgPool) -> String {
@@ -253,6 +263,33 @@ async fn per_thread_hourly_cap_stops_repeat_spend(pool: PgPool) {
     customer_says(&pool, w.thread, "또 질문이요").await;
     answer(&w.state, w.thread).await.expect("answer");
     assert!(w.fake.calls.lock().expect("calls").is_empty());
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn caps_saved_in_the_console_limit_replies(pool: PgPool) {
+    let w = world(pool.clone(), Mode::AlwaysFirst).await;
+    let admin = admin_token(&pool).await;
+    let saved = json!({ "api_key": "sk-ant-test-key", "mode": "always_first", "thread_hourly_cap": "1" });
+    let (st, body) = call(&w.app, "PUT", "/v1/admin/setup/ai", Some(admin.as_str()), Some(saved)).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    sqlx::query("INSERT INTO ai_usage (thread_id, model, outcome) VALUES ($1, 'x', 'answered')")
+        .bind(w.thread)
+        .execute(&pool)
+        .await
+        .expect("usage row");
+    customer_says(&pool, w.thread, "또 질문이요").await;
+    answer(&w.state, w.thread).await.expect("answer");
+    assert!(w.fake.calls.lock().expect("calls").is_empty(), "the saved cap of 1 per hour is already used");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn cap_values_outside_their_bounds_are_refused(pool: PgPool) {
+    let w = world(pool.clone(), Mode::AlwaysFirst).await;
+    let admin = admin_token(&pool).await;
+    let bad = json!({ "api_key": "sk-ant-test-key", "daily_cap": "0" });
+    let (st, body) = call(&w.app, "PUT", "/v1/admin/setup/ai", Some(admin.as_str()), Some(bad)).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "{body}");
+    assert_eq!(body["error"]["code"], "invalid_cap", "{body}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]

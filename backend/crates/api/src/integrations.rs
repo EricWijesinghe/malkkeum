@@ -6,7 +6,7 @@
 //! Saving swaps the live keys in [`crate::providers::Providers`] without a restart.
 
 use crate::{
-    ai::{self, AiConfig, Mode},
+    ai::{self, AiConfig, Caps, Mode},
     config::{Config, PortOne, SolapiConfig},
     crypto,
     providers::fcm::ServiceAccount,
@@ -14,7 +14,7 @@ use crate::{
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde_json::{Map, Value, json};
 use sqlx::PgPool;
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::RangeInclusive};
 
 /// Live keys for every external service. Built from env, then overlaid with console sections.
 #[derive(Clone, Debug, Default)]
@@ -194,7 +194,14 @@ const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
 const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
 const NAVER_FIELDS: [Field; 2] = [f("client_id", Kind::Text, true), f("client_secret", Kind::Secret, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
-const AI_FIELDS: [Field; 3] = [f("api_key", Kind::Secret, true), f("model", Kind::Text, false), f("mode", Kind::Text, false)];
+const AI_FIELDS: [Field; 6] = [
+    f("api_key", Kind::Secret, true),
+    f("model", Kind::Text, false),
+    f("mode", Kind::Text, false),
+    f("thread_hourly_cap", Kind::Text, false),
+    f("member_daily_cap", Kind::Text, false),
+    f("daily_cap", Kind::Text, false),
+];
 const BACKUP_FIELDS: [Field; 6] = [
     f("endpoint", Kind::Text, true),
     f("region", Kind::Text, true),
@@ -244,6 +251,18 @@ fn string_map(v: &Map<String, Value>, k: &str) -> Result<HashMap<String, String>
     obj.iter()
         .map(|(key, val)| val.as_str().map(|s| (key.clone(), s.trim().to_string())).ok_or(Invalid("invalid_map")))
         .collect()
+}
+
+/// An optional reply cap. Blank or missing keeps the default; a number outside `range` is refused.
+fn cap(v: &Map<String, Value>, k: &str, default: u32, range: RangeInclusive<u32>) -> Result<u32, Invalid> {
+    let raw = match v.get(k) {
+        None | Some(Value::Null) => return Ok(default),
+        Some(Value::String(s)) if s.trim().is_empty() => return Ok(default),
+        Some(Value::String(s)) => s.trim().to_string(),
+        Some(Value::Number(n)) => n.to_string(),
+        Some(_) => return Err(Invalid("invalid_cap")),
+    };
+    raw.parse::<u32>().ok().filter(|n| range.contains(n)).ok_or(Invalid("invalid_cap"))
 }
 
 fn digits(s: &str) -> String {
@@ -377,7 +396,12 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
             if model.len() > 64 || !model.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.') {
                 return Err(Invalid("invalid_model"));
             }
-            out.ai = Some(AiConfig { api_key: required(v, "api_key")?, model, mode });
+            let caps = Caps {
+                thread_hourly: cap(v, "thread_hourly_cap", ai::DEFAULT_THREAD_HOURLY_CAP, ai::THREAD_HOURLY_RANGE)?,
+                member_daily: cap(v, "member_daily_cap", ai::DEFAULT_MEMBER_DAILY_CAP, ai::MEMBER_DAILY_RANGE)?,
+                daily: cap(v, "daily_cap", ai::DEFAULT_DAILY_CAP, ai::DAILY_RANGE)?,
+            };
+            out.ai = Some(AiConfig { api_key: required(v, "api_key")?, model, mode, caps });
         }
         Section::Google | Section::Apple => {
             let ids = list(v, "client_ids");
@@ -575,6 +599,39 @@ mod tests {
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "mode": "daytime"}))).unwrap_err(), Invalid("invalid_mode"));
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "model": "x y"}))).unwrap_err(), Invalid("invalid_model"));
         assert_eq!(apply(&base, Section::Ai, &obj(json!({"model": "claude-opus-5-5"}))).unwrap_err(), Invalid("missing_field"));
+    }
+
+    #[test]
+    fn ai_caps_default_when_unset_and_read_when_saved() {
+        let base = Integrations::default();
+        let plain = apply(&base, Section::Ai, &obj(json!({"api_key": "k"}))).unwrap().ai.unwrap();
+        assert_eq!(plain.caps, Caps::default());
+        let saved = json!({"api_key": "k", "thread_hourly_cap": "5", "member_daily_cap": 20, "daily_cap": " 300 "});
+        let caps = apply(&base, Section::Ai, &obj(saved)).unwrap().ai.unwrap().caps;
+        assert_eq!(caps, Caps { thread_hourly: 5, member_daily: 20, daily: 300 });
+    }
+
+    #[test]
+    fn ai_caps_accept_only_whole_numbers_inside_their_bounds() {
+        let base = Integrations::default();
+        let with = |field: &str, v: Value| apply(&base, Section::Ai, &obj(json!({"api_key": "k", field: v})));
+        assert!(with("thread_hourly_cap", json!("1")).is_ok());
+        assert!(with("thread_hourly_cap", json!("60")).is_ok());
+        assert!(with("member_daily_cap", json!("500")).is_ok());
+        assert!(with("daily_cap", json!("10000")).is_ok());
+        for (field, bad) in [
+            ("thread_hourly_cap", json!("0")),
+            ("thread_hourly_cap", json!("61")),
+            ("member_daily_cap", json!("501")),
+            ("daily_cap", json!("10001")),
+            ("daily_cap", json!("-5")),
+            ("daily_cap", json!("12.5")),
+            ("member_daily_cap", json!("ten")),
+            ("daily_cap", json!(0)),
+            ("daily_cap", json!([1])),
+        ] {
+            assert_eq!(with(field, bad.clone()).unwrap_err(), Invalid("invalid_cap"), "{field} = {bad}");
+        }
     }
 
     #[test]

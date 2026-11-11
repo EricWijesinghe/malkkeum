@@ -40,8 +40,7 @@ class TFil extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint =>
-      'Awtomatikong sumasagot sa chat ng mga customer. May bayad sa API ang bawat mensahe.';
+  String get aiCardHint => 'Awtomatikong sumasagot sa chat ng mga customer. May bayad sa API ang bawat mensahe.';
 
   @override
   String get aiModeOffline => 'Sumagot lang kapag walang staff';
@@ -67,6 +66,18 @@ class TFil extends T {
   String get aiNotConfigured => 'Naka-off ang AI na tagasagot';
 
   @override
+  String get aiCapThreadLabel => 'Limitasyon ng sagot kada chat bawat oras';
+
+  @override
+  String get aiCapMemberLabel => 'Limitasyon ng sagot kada customer bawat araw';
+
+  @override
+  String get aiCapDailyLabel => 'Limitasyon ng sagot bawat araw, lahat ng chat';
+
+  @override
+  String get aiCapHint => 'Numero lang. Iwan na blangko para sa default.';
+
+  @override
   String get apSocialOr => 'o';
 
   @override
@@ -85,16 +96,13 @@ class TFil extends T {
   String get apLoginApple => 'Magpatuloy gamit ang Apple';
 
   @override
-  String get apDevSocialNote =>
-      'Dev mode po ito. Test account ang gagamitin sa pag-login, hindi totoong social account.';
+  String get apDevSocialNote => 'Dev mode po ito. Test account ang gagamitin sa pag-login, hindi totoong social account.';
 
   @override
-  String get apSocialFailed =>
-      'Hindi natuloy ang mabilis na pag-sign in. Pakisubukang muli.';
+  String get apSocialFailed => 'Hindi natuloy ang mabilis na pag-sign in. Pakisubukang muli.';
 
   @override
-  String get apProviderNotConfigured =>
-      'Hindi pa available ang paraan ng pag-login na ito';
+  String get apProviderNotConfigured => 'Hindi pa available ang paraan ng pag-login na ito';
 
   @override
   String get apPhoneTaken => 'Nakakabit na sa ibang account ang numerong ito';
@@ -103,8 +111,7 @@ class TFil extends T {
   String get apPhoneAttachTitle => 'I-verify ang iyong mobile number';
 
   @override
-  String get apPhoneAttachBody =>
-      'Ginagamit ang numerong ito para sa booking at pakikipag-ugnayan sa pro. One-time check lang po ito.';
+  String get apPhoneAttachBody => 'Ginagamit ang numerong ito para sa booking at pakikipag-ugnayan sa pro. One-time check lang po ito.';
 
   @override
   String get apPayAllTitle => 'Pumili ng paraan ng bayad';
@@ -116,8 +123,7 @@ class TFil extends T {
   String get apPayMoreTitle => 'Lahat ng paraan ng bayad';
 
   @override
-  String get apPayBillingHint =>
-      'I-save minsan, tapos isang tap na lang sa susunod';
+  String get apPayBillingHint => 'I-save minsan, tapos isang tap na lang sa susunod';
 
   @override
   String get apPayCheckoutHint => 'Tapusin sa payment window';
@@ -126,8 +132,7 @@ class TFil extends T {
   String get apPayRegistering => 'Nire-register…';
 
   @override
-  String get apPayManageHint =>
-      'Mag-bayad nang isang tap gamit ang naka-save na paraan. Dito mo maidadagdag ang mga quick-pay.';
+  String get apPayManageHint => 'Mag-bayad nang isang tap gamit ang naka-save na paraan. Dito mo maidadagdag ang mga quick-pay.';
 
   @override
   String get apMethodCard => 'Credit at debit card';
@@ -169,8 +174,7 @@ class TFil extends T {
   String get apVaWaiting => 'Naghihintay ng deposit';
 
   @override
-  String get apVaBody =>
-      'Makukumpirma ang booking kapag pumasok ang deposit sa loob ng takdang oras. Awtomatiko itong chine-check.';
+  String get apVaBody => 'Makukumpirma ang booking kapag pumasok ang deposit sa loob ng takdang oras. Awtomatiko itong chine-check.';
 
   @override
   String get apVaBank => 'Bangko';
@@ -210,8 +214,7 @@ class TFil extends T {
   String get apPgTitle => 'Payment window';
 
   @override
-  String get apPgDevNote =>
-      'Simulation lang ito ng bayad para sa dev environment. Walang totoong sisingilin.';
+  String get apPgDevNote => 'Simulation lang ito ng bayad para sa dev environment. Walang totoong sisingilin.';
 
   @override
   String apPgPay(String amount) {
@@ -225,19 +228,16 @@ class TFil extends T {
   String get apPgCancel => 'Kanselahin ang bayad';
 
   @override
-  String get apErrSlotFullRefunded =>
-      'Napuno na ang oras na iyon, kaya awtomatikong kinansela ang bayad mo';
+  String get apErrSlotFullRefunded => 'Napuno na ang oras na iyon, kaya awtomatikong kinansela ang bayad mo';
 
   @override
-  String get apErrCheckoutExpired =>
-      'Nag-expire na ang payment window. Pakisubukang muli.';
+  String get apErrCheckoutExpired => 'Nag-expire na ang payment window. Pakisubukang muli.';
 
   @override
   String get apIdentityTitle => 'Identity check (PASS)';
 
   @override
-  String get apIdentityBody =>
-      'Kinukumpirma ka gamit ang pangalan sa mobile carrier mo. Ginagamit ito para sa ligtas na transaksyon at bayad.';
+  String get apIdentityBody => 'Kinukumpirma ka gamit ang pangalan sa mobile carrier mo. Ginagamit ito para sa ligtas na transaksyon at bayad.';
 
   @override
   String get apIdentityAction => 'I-verify ang identity';
@@ -255,8 +255,7 @@ class TFil extends T {
   String get apIdentityDevTitle => 'Test identity check';
 
   @override
-  String get apIdentityDevBody =>
-      'Sa dev environment, pumapasa ito nang walang totoong check.';
+  String get apIdentityDevBody => 'Sa dev environment, pumapasa ito nang walang totoong check.';
 
   @override
   String get apIdentityDevPass => 'Ipasa';
@@ -682,8 +681,7 @@ class TFil extends T {
   String get today => 'Ngayon';
 
   @override
-  String get errorGeneric =>
-      'May nangyaring problema. Pakisubukan ulit maya-maya.';
+  String get errorGeneric => 'May nangyaring problema. Pakisubukan ulit maya-maya.';
 
   @override
   String get errorNetwork => 'Pakitingnan ang internet connection mo';
@@ -695,20 +693,16 @@ class TFil extends T {
   String get err_otp_invalid => 'Mali ang verification code';
 
   @override
-  String get err_otp_expired =>
-      'Nag-expire na ang verification code. Humingi ng bago.';
+  String get err_otp_expired => 'Nag-expire na ang verification code. Humingi ng bago.';
 
   @override
-  String get err_rate_limited =>
-      'Sobrang dami ng attempt. Subukan ulit maya-maya.';
+  String get err_rate_limited => 'Sobrang dami ng attempt. Subukan ulit maya-maya.';
 
   @override
-  String get err_studio_too_large =>
-      'Para lang sa bahay na hanggang 10 pyeong ang studio cleaning';
+  String get err_studio_too_large => 'Para lang sa bahay na hanggang 10 pyeong ang studio cleaning';
 
   @override
-  String get err_date_out_of_range =>
-      'Pumili ng petsa mula bukas hanggang 60 araw';
+  String get err_date_out_of_range => 'Pumili ng petsa mula bukas hanggang 60 araw';
 
   @override
   String get err_slot_full => 'Napuno na ang oras na iyon. Pumili ng iba.';
@@ -720,19 +714,16 @@ class TFil extends T {
   String get err_coupon_used => 'Nagamit na ang coupon na ito';
 
   @override
-  String get err_coupon_wrong_service =>
-      'Hindi puwedeng gamitin ang coupon na ito sa serbisyong ito';
+  String get err_coupon_wrong_service => 'Hindi puwedeng gamitin ang coupon na ito sa serbisyong ito';
 
   @override
-  String get err_payment_failed =>
-      'Hindi inaprubahan ang bayad. Subukan ang ibang paraan ng bayad.';
+  String get err_payment_failed => 'Hindi inaprubahan ang bayad. Subukan ang ibang paraan ng bayad.';
 
   @override
   String get err_payment_method_required => 'Pumili ng paraan ng bayad';
 
   @override
-  String get err_cancellation_window_closed =>
-      'Dalawang araw bago ang bisita, sa team natin na lang puwedeng magkansela';
+  String get err_cancellation_window_closed => 'Dalawang araw bago ang bisita, sa team natin na lang puwedeng magkansela';
 
   @override
   String get err_address_required => 'Maglagay ng address para sa bisita';
@@ -756,12 +747,10 @@ class TFil extends T {
   String get tabMore => 'Iba pa';
 
   @override
-  String get introTitle =>
-      'Mag-book ng propesyonal na paglilinis\nnang mas madali';
+  String get introTitle => 'Mag-book ng propesyonal na paglilinis\nnang mas madali';
 
   @override
-  String get introBody =>
-      'Malinaw na presyo · Vetted na team · Live na progress';
+  String get introBody => 'Malinaw na presyo · Vetted na team · Live na progress';
 
   @override
   String get introStart => 'Magsimula gamit ang mobile number';
@@ -790,8 +779,7 @@ class TFil extends T {
   String get loginVerify => 'I-verify';
 
   @override
-  String get loginTerms =>
-      'Sa pagpapatuloy, sumasang-ayon ka sa Terms of Service at Privacy Policy';
+  String get loginTerms => 'Sa pagpapatuloy, sumasang-ayon ka sa Terms of Service at Privacy Policy';
 
   @override
   String get profileTitle => 'Ano po ang pangalan ninyo?';
@@ -854,52 +842,40 @@ class TFil extends T {
   String get svcShort_move_in => 'Move-in';
 
   @override
-  String get svcDesc_studio =>
-      '2 oras na masusing paglilinis ng studio na hanggang 10 pyeong, may isang kuwarto at isang banyo.';
+  String get svcDesc_studio => '2 oras na masusing paglilinis ng studio na hanggang 10 pyeong, may isang kuwarto at isang banyo.';
 
   @override
-  String get svcDesc_kitchen =>
-      'Nakatutok na paglilinis ng kitchen: lababo, kalan, labas ng hood at countertop.';
+  String get svcDesc_kitchen => 'Nakatutok na paglilinis ng kitchen: lababo, kalan, labas ng hood at countertop.';
 
   @override
-  String get svcDesc_bathroom =>
-      'Nililinis ang shelves, gripo, lababo at toilet sa loob at labas, at pinatutuyo ang sahig.';
+  String get svcDesc_bathroom => 'Nililinis ang shelves, gripo, lababo at toilet sa loob at labas, at pinatutuyo ang sahig.';
 
   @override
-  String get svcDesc_mattress =>
-      'Sinisipsip ng pro equipment ang alikabok, mites at mantsa, saka sinasanitize gamit ang steam.';
+  String get svcDesc_mattress => 'Sinisipsip ng pro equipment ang alikabok, mites at mantsa, saka sinasanitize gamit ang steam.';
 
   @override
-  String get svcDesc_aircon =>
-      'Binubuwag, saka hinuhugasan sa high pressure ang coil, fan at filter, at sinasanitize.';
+  String get svcDesc_aircon => 'Binubuwag, saka hinuhugasan sa high pressure ang coil, fan at filter, at sinasanitize.';
 
   @override
-  String get svcDesc_sofa =>
-      'Binubuwag ng panlinis na akma sa tela ang dumi, saka hinuhugasan gamit ang wet extraction.';
+  String get svcDesc_sofa => 'Binubuwag ng panlinis na akma sa tela ang dumi, saka hinuhugasan gamit ang wet extraction.';
 
   @override
-  String get svcDesc_move_out =>
-      'Bago kayo umalis, pupunta ang pro team na may dalang kagamitan para linisin ang walang laman na bahay.';
+  String get svcDesc_move_out => 'Bago kayo umalis, pupunta ang pro team na may dalang kagamitan para linisin ang walang laman na bahay.';
 
   @override
-  String get svcDesc_move_in =>
-      'Bago kayo pumasok sa bagong bahay, pupunta ang pro team na may dalang kagamitan para linisin ang loob.';
+  String get svcDesc_move_in => 'Bago kayo pumasok sa bagong bahay, pupunta ang pro team na may dalang kagamitan para linisin ang loob.';
 
   @override
-  String get svcNotes_bathroom =>
-      'Puwedeng ma-limit ang serbisyo kung may barado na drain o toilet\nWalang special-chemical cleaning, ceiling o vent cleaning\nHindi man lubusang matanggal ang lumang amag at matigas na dumi';
+  String get svcNotes_bathroom => 'Puwedeng ma-limit ang serbisyo kung may barado na drain o toilet\nWalang special-chemical cleaning, ceiling o vent cleaning\nHindi man lubusang matanggal ang lumang amag at matigas na dumi';
 
   @override
-  String get svcNotes_mattress =>
-      'Iisang presyo mula single hanggang king size\nMatutuyo nang lubusan sa loob ng 4–6 na oras\nHindi maaayos ang sira ng spring o paglubog ng kutson';
+  String get svcNotes_mattress => 'Iisang presyo mula single hanggang king size\nMatutuyo nang lubusan sa loob ng 4–6 na oras\nHindi maaayos ang sira ng spring o paglubog ng kutson';
 
   @override
-  String get svcNotes_aircon =>
-      'Maaaring mahirap buwagin ang units na mahigit 10 taon na\nHindi kasama ang paglilinis ng outdoor unit\nChine-check namin kung gumagana bago at pagkatapos';
+  String get svcNotes_aircon => 'Maaaring mahirap buwagin ang units na mahigit 10 taon na\nHindi kasama ang paglilinis ng outdoor unit\nChine-check namin kung gumagana bago at pagkatapos';
 
   @override
-  String get svcNotes_sofa =>
-      'Leather sofa ay may cleaning at moisturizing coating\nHindi man lubusang matanggal ang lumang mantsa o pagkapuwing ng kulay\nMatutuyo nang lubusan sa loob ng 4–6 na oras';
+  String get svcNotes_sofa => 'Leather sofa ay may cleaning at moisturizing coating\nHindi man lubusang matanggal ang lumang mantsa o pagkapuwing ng kulay\nMatutuyo nang lubusan sa loob ng 4–6 na oras';
 
   @override
   String get unitTitle_bathroom => 'Bilang ng banyo';
@@ -1005,8 +981,7 @@ class TFil extends T {
   String get homeServices => 'Anong paglilinis ang kailangan mo?';
 
   @override
-  String get homeAddAddress =>
-      'I-add ang address mo para makita agad ang available na serbisyo at presyo';
+  String get homeAddAddress => 'I-add ang address mo para makita agad ang available na serbisyo at presyo';
 
   @override
   String get homeAddAddressCta => 'Mag-add ng address';
@@ -1026,8 +1001,7 @@ class TFil extends T {
   String get trustVat => 'Kasama na ang VAT\nEksaktong presyo ang nakikita mo';
 
   @override
-  String get trustCancel =>
-      'Libreng kanselasyon\nhanggang 2 araw bago ang bisita';
+  String get trustCancel => 'Libreng kanselasyon\nhanggang 2 araw bago ang bisita';
 
   @override
   String get trustCard => 'Ang detalye ng card\nay nasa payment provider lang';
@@ -1049,8 +1023,7 @@ class TFil extends T {
   }
 
   @override
-  String get studioBlockedBody =>
-      'Magmumungkahi ang team namin ng tamang serbisyo para sa bahay ninyo.';
+  String get studioBlockedBody => 'Magmumungkahi ang team namin ng tamang serbisyo para sa bahay ninyo.';
 
   @override
   String get consultCta => 'Magtanong sa team';
@@ -1119,8 +1092,7 @@ class TFil extends T {
   }
 
   @override
-  String get scheduleRange =>
-      'Puwede kang mag-book mula bukas hanggang 60 araw';
+  String get scheduleRange => 'Puwede kang mag-book mula bukas hanggang 60 araw';
 
   @override
   String get morning => 'Umaga';
@@ -1129,8 +1101,7 @@ class TFil extends T {
   String get afternoon => 'Hapon';
 
   @override
-  String get scheduleQuoteNote =>
-      'Kukumpirmahin namin ang eksaktong oras sa chat';
+  String get scheduleQuoteNote => 'Kukumpirmahin namin ang eksaktong oras sa chat';
 
   @override
   String get goToPayment => 'Magpatuloy sa bayad';
@@ -1139,8 +1110,7 @@ class TFil extends T {
   String get prepTitle => 'Pakihanda bago kami dumating';
 
   @override
-  String get prepBody =>
-      'Maaaring ma-limit ang ilang gawain kapag hindi ito handa';
+  String get prepBody => 'Maaaring ma-limit ang ilang gawain kapag hindi ito handa';
 
   @override
   String get prepAsk => 'Hindi ba kayo makakapaghanda? Ipaalam sa chat';
@@ -1239,8 +1209,7 @@ class TFil extends T {
   String get doneQuoteTitle => 'Natanggap ang request';
 
   @override
-  String get doneQuoteBody =>
-      'Kukumpirmahin ng team namin at magpapadala ng final quote. Makikita ito sa Chat tab.';
+  String get doneQuoteBody => 'Kukumpirmahin ng team namin at magpapadala ng final quote. Makikita ito sa Chat tab.';
 
   @override
   String get goHome => 'Pumunta sa Home';
@@ -1261,8 +1230,7 @@ class TFil extends T {
   String get bookingsEmpty => 'Wala pang booking';
 
   @override
-  String get bookingsEmptyBody =>
-      'May mga coupon na naghihintay para sa first booking mo';
+  String get bookingsEmptyBody => 'May mga coupon na naghihintay para sa first booking mo';
 
   @override
   String get bookNow => 'Mag-book ng paglilinis';
@@ -1318,8 +1286,7 @@ class TFil extends T {
   String get cancelTitle => 'Kanselahin ang booking na ito?';
 
   @override
-  String get cancelFree =>
-      'Kapag kinansela mo ngayon, buong refund ng bayad ang makukuha mo at ibabalik din ang coupon mo.';
+  String get cancelFree => 'Kapag kinansela mo ngayon, buong refund ng bayad ang makukuha mo at ibabalik din ang coupon mo.';
 
   @override
   String get cancelKeep => 'Ituloy';
@@ -1383,8 +1350,7 @@ class TFil extends T {
   String get reviewTitle => 'Kumusta ang paglilinis?';
 
   @override
-  String get reviewHint =>
-      'Sabihin sa amin ang magaling at ang puwedeng mapabuti';
+  String get reviewHint => 'Sabihin sa amin ang magaling at ang puwedeng mapabuti';
 
   @override
   String ratingStars(String n) {
@@ -1486,8 +1452,7 @@ class TFil extends T {
   }
 
   @override
-  String get sys_job_completed =>
-      'Tapos na ang paglilinis! Tingnan ang before at after photos.';
+  String get sys_job_completed => 'Tapos na ang paglilinis! Tingnan ang before at after photos.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1495,8 +1460,7 @@ class TFil extends T {
   }
 
   @override
-  String get sys_reschedule_declined =>
-      'Hindi makakapunta ang pro sa bagong oras. Aayusin ito ng team namin.';
+  String get sys_reschedule_declined => 'Hindi makakapunta ang pro sa bagong oras. Aayusin ito ng team namin.';
 
   @override
   String get moreTitle => 'Iba pa';
@@ -1558,8 +1522,7 @@ class TFil extends T {
   String get deleteAccount => 'Burahin ang account';
 
   @override
-  String get deleteAccountBody =>
-      'Mabubura ang personal data ninyo at hindi na ito maibabalik. Pakikansela muna ang mga aktibong booking.';
+  String get deleteAccountBody => 'Mabubura ang personal data ninyo at hindi na ito maibabalik. Pakikansela muna ang mga aktibong booking.';
 
   @override
   String get couponsEmpty => 'Wala ka pang coupon';
@@ -1630,8 +1593,7 @@ class TFil extends T {
   String get type_after_interior => 'Pagkatapos ng renovation';
 
   @override
-  String get type_lived_in_deep_clean =>
-      'Malalim na paglilinis habang nakatira';
+  String get type_lived_in_deep_clean => 'Malalim na paglilinis habang nakatira';
 
   @override
   String get luggageTitle => 'Ano po ang kalagayan ng gamit?';
@@ -1709,15 +1671,13 @@ class TFil extends T {
   String get quoteEstimateTitle => 'Ito po ang tinatayang presyo';
 
   @override
-  String get quoteEstimateBody =>
-      'Pagkatapos naming makita ang mga litrato at sitwasyon sa chat, saka pa mapagkakasunduan ang final na presyo';
+  String get quoteEstimateBody => 'Pagkatapos naming makita ang mga litrato at sitwasyon sa chat, saka pa mapagkakasunduan ang final na presyo';
 
   @override
   String get quoteG1 => 'Ang final na presyo ay pagkakasunduan sa chat';
 
   @override
-  String get quoteG2 =>
-      '10% deposit para kumpirmahin, ang natitira ay pagkatapos ng trabaho';
+  String get quoteG2 => '10% deposit para kumpirmahin, ang natitira ay pagkatapos ng trabaho';
 
   @override
   String get quoteG3 => 'Libre ang kanselasyon bago ka mag-confirm';
@@ -1801,8 +1761,7 @@ class TFil extends T {
   String get fVatEstimate => 'Tinatayang VAT';
 
   @override
-  String get fVatNote =>
-      'Tinatayang 10% ng bayad sa platform. Kumpirmahin sa iyong accountant.';
+  String get fVatNote => 'Tinatayang 10% ng bayad sa platform. Kumpirmahin sa iyong accountant.';
 
   @override
   String get fAov => 'Average na order';
@@ -1989,8 +1948,7 @@ class TFil extends T {
   String get err_self_referral => 'Hindi mo magagamit ang sarili mong code';
 
   @override
-  String get err_referee_already_booked =>
-      'Mailalagay lang ang code bago ang unang booking';
+  String get err_referee_already_booked => 'Mailalagay lang ang code bago ang unang booking';
 
   @override
   String get err_already_referred => 'May referral code ka na';
@@ -2002,15 +1960,13 @@ class TFil extends T {
   String get err_referral_disabled => 'Pansamantalang naka-pause ang referral';
 
   @override
-  String get err_invalid_photos =>
-      'Mga larawang galing sa Malkkeum lang ang maaaring ilakip';
+  String get err_invalid_photos => 'Mga larawang galing sa Malkkeum lang ang maaaring ilakip';
 
   @override
   String get welcomeOfferTitle => 'Diskuwento sa unang booking';
 
   @override
-  String get welcomeOfferBody =>
-      'Awtomatikong ilalapat sa unang booking ng bagong customer. Hindi kasama ang kupon.';
+  String get welcomeOfferBody => 'Awtomatikong ilalapat sa unang booking ng bagong customer. Hindi kasama ang kupon.';
 
   @override
   String get offerKindAmount => 'Nakapirmi (won)';
@@ -2031,8 +1987,7 @@ class TFil extends T {
   String get referralSettingsTitle => 'Gantimpala sa referral';
 
   @override
-  String get referralSettingsBody =>
-      'Ibibigay kapag natapos at nabayaran ang unang booking ng kaibigan. Hinaharang ang sariling referral at paulit na numero.';
+  String get referralSettingsBody => 'Ibibigay kapag natapos at nabayaran ang unang booking ng kaibigan. Hinaharang ang sariling referral at paulit na numero.';
 
   @override
   String get referralRewardAmount => 'Halaga ng gantimpala (won)';
@@ -2171,43 +2126,34 @@ class TFil extends T {
   String get oIntNever => 'Wala pang gumamit';
 
   @override
-  String get oActDb =>
-      'Hindi makakonekta sa database. Patakbuhin ang malkkeum logs sa server; i-restart kung paulit-ulit.';
+  String get oActDb => 'Hindi makakonekta sa database. Patakbuhin ang malkkeum logs sa server; i-restart kung paulit-ulit.';
 
   @override
-  String get oActDisk =>
-      'Wala pang 10% ang bakanteng disk. Burahin ang lumang backup o dagdagan ang disk.';
+  String get oActDisk => 'Wala pang 10% ang bakanteng disk. Burahin ang lumang backup o dagdagan ang disk.';
 
   @override
-  String get oActBackup =>
-      'Lampas na sa oras ang awtomatikong backup. Patakbuhin ang malkkeum backup sa server at tingnan ang backups/backup.log.';
+  String get oActBackup => 'Lampas na sa oras ang awtomatikong backup. Patakbuhin ang malkkeum backup sa server at tingnan ang backups/backup.log.';
 
   @override
-  String get oActErrors =>
-      'Maraming error ng server. Tingnan ang error sa malkkeum logs at ipasa sa developer kung paulit-ulit.';
+  String get oActErrors => 'Maraming error ng server. Tingnan ang error sa malkkeum logs at ipasa sa developer kung paulit-ulit.';
 
   @override
-  String get oActPayments =>
-      'Maaaring nabayaran na pero hindi naproseso nang awtomatiko. Tingnan sa PortOne at mag-refund nang manwal kung kailangan.';
+  String get oActPayments => 'Maaaring nabayaran na pero hindi naproseso nang awtomatiko. Tingnan sa PortOne at mag-refund nang manwal kung kailangan.';
 
   @override
-  String get oActWebhook =>
-      'Pumapalya ang pagsusuri ng pirma ng abiso ng bayad. Ilagay muli ang webhook secret sa Setup > Payments (PortOne).';
+  String get oActWebhook => 'Pumapalya ang pagsusuri ng pirma ng abiso ng bayad. Ilagay muli ang webhook secret sa Setup > Payments (PortOne).';
 
   @override
-  String get oActIntegration =>
-      'Pumapalya ang koneksyon na ito. Tingnan ang mga key sa Setup at pindutin ang Test connection.';
+  String get oActIntegration => 'Pumapalya ang koneksyon na ito. Tingnan ang mga key sa Setup at pindutin ang Test connection.';
 
   @override
-  String get oActNotSet =>
-      'Hindi pa naka-set up. Maglagay ng mga key sa Setup.';
+  String get oActNotSet => 'Hindi pa naka-set up. Maglagay ng mga key sa Setup.';
 
   @override
   String get oAlerts => 'Mga setting ng alerto';
 
   @override
-  String get oAlertsHint =>
-      'Ipapaalam sa inbox at sa telepono ng may-ari sa SMS ang mga problema. Isang beses lang kada 6 na oras ang parehong problema.';
+  String get oAlertsHint => 'Ipapaalam sa inbox at sa telepono ng may-ari sa SMS ang mga problema. Isang beses lang kada 6 na oras ang parehong problema.';
 
   @override
   String get oRuleSms => 'Pumapalya ang pagpapadala ng SMS';
@@ -2245,15 +2191,13 @@ class TFil extends T {
   }
 
   @override
-  String get oQuietHint =>
-      'Walang alerto sa mga oras na ito; isang mensahe ang ipapadala pagkatapos.';
+  String get oQuietHint => 'Walang alerto sa mga oras na ito; isang mensahe ang ipapadala pagkatapos.';
 
   @override
   String get oAlertPhone => 'Telepono para sa alerto';
 
   @override
-  String get oAlertPhoneHint =>
-      'Iwanang blangko para sa numero ng suporta sa business info.';
+  String get oAlertPhoneHint => 'Iwanang blangko para sa numero ng suporta sa business info.';
 
   @override
   String get oSave => 'I-save';
@@ -2271,8 +2215,7 @@ class TFil extends T {
   String get oBackupOffsite => 'External na backup (S3)';
 
   @override
-  String get oBackupOffsiteOff =>
-      'Naka-off. I-on sa Setup > External na backup.';
+  String get oBackupOffsiteOff => 'Naka-off. I-on sa Setup > External na backup.';
 
   @override
   String get oLastBackup => 'Huling backup';
@@ -2296,12 +2239,10 @@ class TFil extends T {
   String get pTabSchedule => 'Schedule';
 
   @override
-  String get pIntroTitle =>
-      'Trabaho, schedule at payout\npara sa mga cleaning pro';
+  String get pIntroTitle => 'Trabaho, schedule at payout\npara sa mga cleaning pro';
 
   @override
-  String get pIntroBody =>
-      'Magtrabaho kung saan at kailan mo gusto. Sumahod linggo-linggo.';
+  String get pIntroBody => 'Magtrabaho kung saan at kailan mo gusto. Sumahod linggo-linggo.';
 
   @override
   String get pOnbTitle => 'Sabihin po ang tungkol sa inyo';
@@ -2325,12 +2266,10 @@ class TFil extends T {
   String get pPendingTitle => 'Naghihintay ng approval ang account ninyo';
 
   @override
-  String get pPendingBody =>
-      'Magpapadala kami ng notification kapag na-approve na ng operations team. Habang naghihintay, i-register na ang payout account ninyo.';
+  String get pPendingBody => 'Magpapadala kami ng notification kapag na-approve na ng operations team. Habang naghihintay, i-register na ang payout account ninyo.';
 
   @override
-  String get pSuspended =>
-      'Pansamantalang na-suspend ang account ninyo. Pakikontak ang operations team.';
+  String get pSuspended => 'Pansamantalang na-suspend ang account ninyo. Pakikontak ang operations team.';
 
   @override
   String get pDirect => 'Direct';
@@ -2354,8 +2293,7 @@ class TFil extends T {
   String get pNoJobs => 'Walang angkop na trabaho ngayon';
 
   @override
-  String get pNoJobsBody =>
-      'Palawakin ang serbisyo, lugar o oras para makakita ng mas maraming trabaho';
+  String get pNoJobsBody => 'Palawakin ang serbisyo, lugar o oras para makakita ng mas maraming trabaho';
 
   @override
   String get pPayout => 'Inaasahang payout';
@@ -2370,8 +2308,7 @@ class TFil extends T {
   String get pClosed => 'Sarado';
 
   @override
-  String get pPrivacyNote =>
-      'Lalabas ang eksaktong address at detalye ng customer pagkatapos mong mag-accept';
+  String get pPrivacyNote => 'Lalabas ang eksaktong address at detalye ng customer pagkatapos mong mag-accept';
 
   @override
   String get pAccept => 'Mag-accept';
@@ -2380,8 +2317,7 @@ class TFil extends T {
   String get pAcceptConfirm => 'I-accept ang trabahong ito?';
 
   @override
-  String get pAcceptBody =>
-      'Idaragdag ito sa schedule mo at makakatanggap ng notification ang customer na naka-assign na ang team. Hindi na puwedeng kanselahin kapag dalawang araw na lang bago ang bisita.';
+  String get pAcceptBody => 'Idaragdag ito sa schedule mo at makakatanggap ng notification ang customer na naka-assign na ang team. Hindi na puwedeng kanselahin kapag dalawang araw na lang bago ang bisita.';
 
   @override
   String get pAccepted => 'Na-accept ang trabaho';
@@ -2448,8 +2384,7 @@ class TFil extends T {
   String get pNoSchedule => 'Walang schedule sa araw na ito';
 
   @override
-  String get pCancelledBanner =>
-      'Kinansela ng customer ang trabahong ito. Hindi ito puwedeng markahang tapos.';
+  String get pCancelledBanner => 'Kinansela ng customer ang trabahong ito. Hindi ito puwedeng markahang tapos.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2469,8 +2404,7 @@ class TFil extends T {
   String get pCall => 'Tumawag gamit ang masked number';
 
   @override
-  String get pCallSoon =>
-      'Magiging aktibo ang masked calling pagbukas ng serbisyo';
+  String get pCallSoon => 'Magiging aktibo ang masked calling pagbukas ng serbisyo';
 
   @override
   String get pQuietHours => 'Pakisuyong huwag tumawag pagkatapos ng 8 pm';
@@ -2494,8 +2428,7 @@ class TFil extends T {
   String get pPayoutBreakdown => 'Breakdown ng payout';
 
   @override
-  String get pAfterBalance =>
-      'Ibabayad pagkatapos bayaran ng customer ang balance';
+  String get pAfterBalance => 'Ibabayad pagkatapos bayaran ng customer ang balance';
 
   @override
   String get pChatOps => 'Mag-chat sa operations';
@@ -2531,8 +2464,7 @@ class TFil extends T {
   String get pCompleteCta => 'Markahang tapos';
 
   @override
-  String get pCompleteNeed =>
-      'Maglagay ng kahit isang photo sa bawat kategorya at i-check ang lahat ng item';
+  String get pCompleteNeed => 'Maglagay ng kahit isang photo sa bawat kategorya at i-check ang lahat ng item';
 
   @override
   String get pCompleted => 'Salamat po sa inyong trabaho!';
@@ -2543,8 +2475,7 @@ class TFil extends T {
   }
 
   @override
-  String get pPayoutWaiting =>
-      'Matatakda ang petsa ng payout pagkatapos bayaran ng customer ang balance';
+  String get pPayoutWaiting => 'Matatakda ang petsa ng payout pagkatapos bayaran ng customer ang balance';
 
   @override
   String get pPendingPayout => 'Naghihintay na payout';
@@ -2595,8 +2526,7 @@ class TFil extends T {
   String get pUnverified => 'Sini-verify';
 
   @override
-  String get pAccountSaved =>
-      'Na-save ang account. Kapag may binago, muling ive-verify ito.';
+  String get pAccountSaved => 'Na-save ang account. Kapag may binago, muling ive-verify ito.';
 
   @override
   String get pWorkSchedule => 'Work schedule';
@@ -2795,8 +2725,7 @@ class TFil extends T {
   String get cSetupLogo => 'Mag-upload ng logo';
 
   @override
-  String get cSetupCompany =>
-      'Detalye ng kumpanya (makikita sa ibaba ng app at website)';
+  String get cSetupCompany => 'Detalye ng kumpanya (makikita sa ibaba ng app at website)';
 
   @override
   String get cSetupLegalName => 'Legal na pangalan';
@@ -2817,8 +2746,7 @@ class TFil extends T {
   String get cSetupPrivacyOfficer => 'Privacy officer';
 
   @override
-  String get cSetupStoreLinks =>
-      'Mga store link (gagana ang mga button sa website kapag napunan)';
+  String get cSetupStoreLinks => 'Mga store link (gagana ang mga button sa website kapag napunan)';
 
   @override
   String get cSetupCustomerApp => 'App ng customer';
@@ -2830,15 +2758,13 @@ class TFil extends T {
   String get cSetupPayMethods => 'Mga paraan ng bayad';
 
   @override
-  String get cSetupPayMethodsHint =>
-      'I-on o i-off ang mga paraang nakikita ng customer. Agad na epekto.';
+  String get cSetupPayMethodsHint => 'I-on o i-off ang mga paraang nakikita ng customer. Agad na epekto.';
 
   @override
   String get cReviewTitle => 'Demo account para sa store review';
 
   @override
-  String get cReviewHint =>
-      'Hindi nakakatanggap ng Korean SMS ang reviewer. Ilagay ang numero at 6-digit na code sa review notes. Kusang mag-o-off.';
+  String get cReviewHint => 'Hindi nakakatanggap ng Korean SMS ang reviewer. Ilagay ang numero at 6-digit na code sa review notes. Kusang mag-o-off.';
 
   @override
   String get cReviewPhone => 'Demo na numero';
@@ -2855,20 +2781,16 @@ class TFil extends T {
   String get cReviewEnable => 'I-on (14 araw)';
 
   @override
-  String get pDeleteAccountBody =>
-      'Permanenteng mabubura ang team at personal na data. Tapusin muna ang mga naka-assign na trabaho at nakabinbing bayad.';
+  String get pDeleteAccountBody => 'Permanenteng mabubura ang team at personal na data. Tapusin muna ang mga naka-assign na trabaho at nakabinbing bayad.';
 
   @override
-  String get err_has_active_jobs =>
-      'May naka-assign ka pang trabaho. Tapusin o hilingin sa support na ilipat.';
+  String get err_has_active_jobs => 'May naka-assign ka pang trabaho. Tapusin o hilingin sa support na ilipat.';
 
   @override
-  String get err_pending_payouts =>
-      'May nakabinbing bayad pa. Maaaring burahin pagkatapos mabayaran.';
+  String get err_pending_payouts => 'May nakabinbing bayad pa. Maaaring burahin pagkatapos mabayaran.';
 
   @override
-  String get err_phone_required =>
-      'I-verify muna ang numero bago tumanggap ng trabaho.';
+  String get err_phone_required => 'I-verify muna ang numero bago tumanggap ng trabaho.';
 
   @override
   String get nAlerts => 'Mga alerto';
@@ -2888,8 +2810,7 @@ class TFil extends T {
   String get mMyJobs => 'Mga trabaho ko';
 
   @override
-  String get mNoJobs =>
-      'Wala pang naka-assign. Lalabas dito ang mga trabahong ibibigay ng team lead.';
+  String get mNoJobs => 'Wala pang naka-assign. Lalabas dito ang mga trabahong ibibigay ng team lead.';
 
   @override
   String mTeam(String team) {
@@ -2918,16 +2839,13 @@ class TFil extends T {
   String get cSetupFromEnv => 'Gamit ang server settings';
 
   @override
-  String get cSetupCheckInApp =>
-      'Na-save · kumpirmahin sa pag-sign in mula sa app';
+  String get cSetupCheckInApp => 'Na-save · kumpirmahin sa pag-sign in mula sa app';
 
   @override
-  String get cSetupInvalidKey =>
-      'Tinanggihan ang key. Suriin ang kinopyang value';
+  String get cSetupInvalidKey => 'Tinanggihan ang key. Suriin ang kinopyang value';
 
   @override
-  String get cSetupUnreachable =>
-      'Hindi maabot ang serbisyo. Subukan muli mamaya';
+  String get cSetupUnreachable => 'Hindi maabot ang serbisyo. Subukan muli mamaya';
 
   @override
   String get cSetupKeepValue => 'Naka-save (i-type lang kung papalitan)';
@@ -2972,12 +2890,10 @@ class TFil extends T {
   String get cIntApple => 'Apple login';
 
   @override
-  String get cFirstRunTitle =>
-      'Maligayang pagdating! Gumawa ng account ng may-ari';
+  String get cFirstRunTitle => 'Maligayang pagdating! Gumawa ng account ng may-ari';
 
   @override
-  String get cFirstRunBody =>
-      'Ilagay ang 12-character na code na ipinakita sa pag-install. Ang account na ito ang mamamahala sa lahat ng setting.';
+  String get cFirstRunBody => 'Ilagay ang 12-character na code na ipinakita sa pag-install. Ang account na ito ang mamamahala sa lahat ng setting.';
 
   @override
   String get cFirstRunCode => 'Setup code';
@@ -2992,8 +2908,7 @@ class TFil extends T {
   String get cWrongSetupCode => 'Mali ang setup code';
 
   @override
-  String get cWeakPassword =>
-      'Kailangan ng hindi bababa sa 12 character ang password';
+  String get cWeakPassword => 'Kailangan ng hindi bababa sa 12 character ang password';
 
   @override
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
@@ -3013,15 +2928,13 @@ class TFil extends T {
   String get uUpdateRequiredTitle => 'Kailangan ng bagong bersyon';
 
   @override
-  String get uUpdateRequiredBody =>
-      'Hindi na suportado ang bersyong ito. Mag-update mula sa tindahan para magpatuloy.';
+  String get uUpdateRequiredBody => 'Hindi na suportado ang bersyong ito. Mag-update mula sa tindahan para magpatuloy.';
 
   @override
   String get uUpdateStore => 'Mag-update sa tindahan';
 
   @override
-  String get uUpdateStoreMissing =>
-      'Inihahanda pa ang link ng update. Subukan ulit mamaya.';
+  String get uUpdateStoreMissing => 'Inihahanda pa ang link ng update. Subukan ulit mamaya.';
 
   @override
   String uCurrentVersion(String version) {
@@ -3032,8 +2945,7 @@ class TFil extends T {
   String get uAppVersionTitle => 'Mga bersyon ng app';
 
   @override
-  String get uAppVersionHint =>
-      'Hihinto sa screen ng update ang app na mas mababa sa minimum. Makakakita ng banner ang mas luma sa pinakabago. Halimbawa: 1.2.0';
+  String get uAppVersionHint => 'Hihinto sa screen ng update ang app na mas mababa sa minimum. Makakakita ng banner ang mas luma sa pinakabago. Halimbawa: 1.2.0';
 
   @override
   String get uMinVersion => 'Pinakamababang bersyon';

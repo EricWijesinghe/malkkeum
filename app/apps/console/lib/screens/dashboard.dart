@@ -86,14 +86,9 @@ class DashboardScreen extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, c) {
                 final cols = c.maxWidth > 1000 ? 6 : (c.maxWidth > 560 ? 3 : 2);
-                return GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: cols,
-                  mainAxisSpacing: Space.sm,
-                  crossAxisSpacing: Space.sm,
-                  childAspectRatio: 1.3,
-                  children: [
+                return _KpiGrid(
+                  columns: cols,
+                  tiles: [
                     for (final (label, value, icon, hue) in kpis)
                       // Hover tilt is desktop-first; touch gets the same card with the press spring only.
                       Tilt3D(
@@ -207,4 +202,36 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// KPI tiles in rows of [columns]. Tiles size to their text instead of a fixed aspect ratio, so
+/// large system fonts and long translations grow the card rather than overflow it. A row stretches
+/// to its tallest tile, and short last rows keep the column lines.
+class _KpiGrid extends StatelessWidget {
+  const _KpiGrid({required this.columns, required this.tiles});
+
+  final int columns;
+  final List<Widget> tiles;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      for (var start = 0; start < tiles.length; start += columns) ...[
+        if (start > 0) const SizedBox(height: Space.sm),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = start; i < start + columns; i++) ...[
+                if (i > start) const SizedBox(width: Space.sm),
+                Expanded(
+                  child: i < tiles.length ? tiles[i] : const SizedBox.shrink(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    ],
+  );
 }

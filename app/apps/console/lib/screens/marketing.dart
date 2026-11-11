@@ -114,6 +114,7 @@ class _CouponsState extends State<_Coupons> {
               ),
               const SizedBox(height: Space.sm),
               DropdownButtonFormField<String?>(
+                isExpanded: true,
                 initialValue: _service,
                 decoration: InputDecoration(labelText: t.cService),
                 items: [
@@ -203,7 +204,10 @@ class _ContentState extends State<_Content> {
                 children: [
                   Row(
                     children: [
-                      DropdownButton<String>(
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 180),
+                        child: DropdownButton<String>(
+                        isExpanded: true,
                         value: kind,
                         items: [
                           for (final k in _kinds)
@@ -213,6 +217,7 @@ class _ContentState extends State<_Content> {
                             ),
                         ],
                         onChanged: (v) => set(() => kind = v!),
+                      ),
                       ),
                       const SizedBox(width: Space.md),
                       Expanded(

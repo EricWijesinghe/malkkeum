@@ -40,8 +40,7 @@ class TSi extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint =>
-      'පාරිභෝගික කථාවලට ස්වයංක්‍රීයව පිළිතුරු දෙයි. සෑම පණිවිඩයකටම API ගාස්තු අයවේ.';
+  String get aiCardHint => 'පාරිභෝගික කථාවලට ස්වයංක්‍රීයව පිළිතුරු දෙයි. සෑම පණිවිඩයකටම API ගාස්තු අයවේ.';
 
   @override
   String get aiModeOffline => 'කාර්ය මණ්ඩලය නැති විට පමණක් පිළිතුරු දෙයි';
@@ -67,6 +66,18 @@ class TSi extends T {
   String get aiNotConfigured => 'AI සහායක ක්‍රියාවිරහිතයි';
 
   @override
+  String get aiCapThreadLabel => 'කථාවකට පැයකට පිළිතුරු සීමාව';
+
+  @override
+  String get aiCapMemberLabel => 'පාරිභෝගිකයෙකුට දිනකට පිළිතුරු සීමාව';
+
+  @override
+  String get aiCapDailyLabel => 'සියලු කථාවලට දිනකට පිළිතුරු සීමාව';
+
+  @override
+  String get aiCapHint => 'ඉලක්කම් පමණක් ඇතුළත් කරන්න. පෙරනිමිය සඳහා හිස්ව තබන්න.';
+
+  @override
   String get apSocialOr => 'හෝ';
 
   @override
@@ -85,27 +96,22 @@ class TSi extends T {
   String get apLoginApple => 'Apple මගින් දිගටම කරගෙන යන්න';
 
   @override
-  String get apDevSocialNote =>
-      'මෙය සංවර්ධන ප්‍රකාරයයි. සැබෑ සමාජ ගිණුමක් වෙනුවට පරීක්ෂණ ගිණුමකට ඇතුළු වේ.';
+  String get apDevSocialNote => 'මෙය සංවර්ධන ප්‍රකාරයයි. සැබෑ සමාජ ගිණුමක් වෙනුවට පරීක්ෂණ ගිණුමකට ඇතුළු වේ.';
 
   @override
-  String get apSocialFailed =>
-      'ඉක්මන් පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+  String get apSocialFailed => 'ඉක්මන් පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.';
 
   @override
-  String get apProviderNotConfigured =>
-      'මෙම පිවිසුම් ක්‍රමය තවමත් සූදානම් වෙමින් පවතී';
+  String get apProviderNotConfigured => 'මෙම පිවිසුම් ක්‍රමය තවමත් සූදානම් වෙමින් පවතී';
 
   @override
-  String get apPhoneTaken =>
-      'මෙම දුරකථන අංකය වෙනත් ගිණුමකට දැනටමත් සම්බන්ධ කර ඇත';
+  String get apPhoneTaken => 'මෙම දුරකථන අංකය වෙනත් ගිණුමකට දැනටමත් සම්බන්ධ කර ඇත';
 
   @override
   String get apPhoneAttachTitle => 'කරුණාකර ඔබේ ජංගම අංකය සත්‍යාපනය කරන්න';
 
   @override
-  String get apPhoneAttachBody =>
-      'මෙම අංකය වෙන්කිරීම් සහ වෘත්තිකයා සම්බන්ධ කර ගැනීම සඳහා භාවිත කරයි. එක් වරක් සත්‍යාපනය කිරීම ප්‍රමාණවත්ය.';
+  String get apPhoneAttachBody => 'මෙම අංකය වෙන්කිරීම් සහ වෘත්තිකයා සම්බන්ධ කර ගැනීම සඳහා භාවිත කරයි. එක් වරක් සත්‍යාපනය කිරීම ප්‍රමාණවත්ය.';
 
   @override
   String get apPayAllTitle => 'ගෙවීම් ක්‍රමයක් තෝරන්න';
@@ -117,8 +123,7 @@ class TSi extends T {
   String get apPayMoreTitle => 'සියලු ගෙවීම් ක්‍රම';
 
   @override
-  String get apPayBillingHint =>
-      'එක් වරක් ලියාපදිංචි කරන්න, ඊළඟ වාරයේ එක් ස්පර්ශයකින් ගෙවන්න';
+  String get apPayBillingHint => 'එක් වරක් ලියාපදිංචි කරන්න, ඊළඟ වාරයේ එක් ස්පර්ශයකින් ගෙවන්න';
 
   @override
   String get apPayCheckoutHint => 'ගෙවීම් කවුළුවෙන් අවසන් කරන්න';
@@ -127,8 +132,7 @@ class TSi extends T {
   String get apPayRegistering => 'ලියාපදිංචි වෙමින්…';
 
   @override
-  String get apPayManageHint =>
-      'සුරැකි ක්‍රමවලින් එක් ස්පර්ශයකින් ගෙවන්න. ඉක්මන් ගෙවීම් ක්‍රම මෙහි එකතු කළ හැක.';
+  String get apPayManageHint => 'සුරැකි ක්‍රමවලින් එක් ස්පර්ශයකින් ගෙවන්න. ඉක්මන් ගෙවීම් ක්‍රම මෙහි එකතු කළ හැක.';
 
   @override
   String get apMethodCard => 'ණය සහ හර කාඩ්පත';
@@ -170,8 +174,7 @@ class TSi extends T {
   String get apVaWaiting => 'තැන්පතුව බලා සිටී';
 
   @override
-  String get apVaBody =>
-      'නියමිත කාලය තුළ තැන්පතුව ලැබුණු පසු වෙන්කිරීම තහවුරු වේ. තැන්පතුව ස්වයංක්‍රීයව පරීක්ෂා කරයි.';
+  String get apVaBody => 'නියමිත කාලය තුළ තැන්පතුව ලැබුණු පසු වෙන්කිරීම තහවුරු වේ. තැන්පතුව ස්වයංක්‍රීයව පරීක්ෂා කරයි.';
 
   @override
   String get apVaBank => 'බැංකුව';
@@ -211,8 +214,7 @@ class TSi extends T {
   String get apPgTitle => 'ගෙවීම් කවුළුව';
 
   @override
-  String get apPgDevNote =>
-      'මෙය සංවර්ධන පරිසරය සඳහා පමණක් වූ ගෙවීම් අනුකරණයකි. සැබෑ මුදල් අයකිරීමක් සිදු නොවේ.';
+  String get apPgDevNote => 'මෙය සංවර්ධන පරිසරය සඳහා පමණක් වූ ගෙවීම් අනුකරණයකි. සැබෑ මුදල් අයකිරීමක් සිදු නොවේ.';
 
   @override
   String apPgPay(String amount) {
@@ -226,19 +228,16 @@ class TSi extends T {
   String get apPgCancel => 'ගෙවීම අවලංගු කරන්න';
 
   @override
-  String get apErrSlotFullRefunded =>
-      'එම වේලාව දැන් පිරී ගියේය, එබැවින් ගෙවීම ස්වයංක්‍රීයව අවලංගු කරන ලදී';
+  String get apErrSlotFullRefunded => 'එම වේලාව දැන් පිරී ගියේය, එබැවින් ගෙවීම ස්වයංක්‍රීයව අවලංගු කරන ලදී';
 
   @override
-  String get apErrCheckoutExpired =>
-      'ගෙවීම් කාලය ඉක්මවා ගියේය. කරුණාකර නැවත උත්සාහ කරන්න.';
+  String get apErrCheckoutExpired => 'ගෙවීම් කාලය ඉක්මවා ගියේය. කරුණාකර නැවත උත්සාහ කරන්න.';
 
   @override
   String get apIdentityTitle => 'අනන්‍යතා සත්‍යාපනය (PASS)';
 
   @override
-  String get apIdentityBody =>
-      'ඔබේ දුරකථන සේවා සපයන්නා හරහා ඔබව තහවුරු කරයි. ආරක්ෂිත ගනුදෙනු සහ ගෙවීම් සඳහා භාවිත වේ.';
+  String get apIdentityBody => 'ඔබේ දුරකථන සේවා සපයන්නා හරහා ඔබව තහවුරු කරයි. ආරක්ෂිත ගනුදෙනු සහ ගෙවීම් සඳහා භාවිත වේ.';
 
   @override
   String get apIdentityAction => 'අනන්‍යතාව සත්‍යාපනය කරන්න';
@@ -256,8 +255,7 @@ class TSi extends T {
   String get apIdentityDevTitle => 'පරීක්ෂණ අනන්‍යතා සත්‍යාපනය';
 
   @override
-  String get apIdentityDevBody =>
-      'සංවර්ධන පරිසරයේ සැබෑ පරීක්ෂාවකින් තොරව මෙය සමත් වේ.';
+  String get apIdentityDevBody => 'සංවර්ධන පරිසරයේ සැබෑ පරීක්ෂාවකින් තොරව මෙය සමත් වේ.';
 
   @override
   String get apIdentityDevPass => 'සමත් කරන්න';
@@ -683,8 +681,7 @@ class TSi extends T {
   String get today => 'අද';
 
   @override
-  String get errorGeneric =>
-      'යම් ගැටලුවක් ඇතිවිය. කරුණාකර මද වේලාවකින් නැවත උත්සාහ කරන්න.';
+  String get errorGeneric => 'යම් ගැටලුවක් ඇතිවිය. කරුණාකර මද වේලාවකින් නැවත උත්සාහ කරන්න.';
 
   @override
   String get errorNetwork => 'කරුණාකර අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න';
@@ -696,16 +693,13 @@ class TSi extends T {
   String get err_otp_invalid => 'සත්‍යාපන කේතය වැරදියි';
 
   @override
-  String get err_otp_expired =>
-      'සත්‍යාපන කේතයේ කල් ඉකුත් වී ඇත. කරුණාකර නව කේතයක් ඉල්ලන්න.';
+  String get err_otp_expired => 'සත්‍යාපන කේතයේ කල් ඉකුත් වී ඇත. කරුණාකර නව කේතයක් ඉල්ලන්න.';
 
   @override
-  String get err_rate_limited =>
-      'උත්සාහයන් ඉතා වැඩියි. කරුණාකර පසුව නැවත උත්සාහ කරන්න.';
+  String get err_rate_limited => 'උත්සාහයන් ඉතා වැඩියි. කරුණාකර පසුව නැවත උත්සාහ කරන්න.';
 
   @override
-  String get err_studio_too_large =>
-      'ස්ටුඩියෝ පිරිසිදු කිරීම පියොං 10 දක්වා නිවාස සඳහා පමණි';
+  String get err_studio_too_large => 'ස්ටුඩියෝ පිරිසිදු කිරීම පියොං 10 දක්වා නිවාස සඳහා පමණි';
 
   @override
   String get err_date_out_of_range => 'හෙට සිට දින 60ක් ඇතුළත දිනයක් තෝරන්න';
@@ -720,19 +714,16 @@ class TSi extends T {
   String get err_coupon_used => 'මෙම කූපනය දැනටමත් භාවිත කර ඇත';
 
   @override
-  String get err_coupon_wrong_service =>
-      'මෙම සේවාව සඳහා මෙම කූපනය භාවිත කළ නොහැක';
+  String get err_coupon_wrong_service => 'මෙම සේවාව සඳහා මෙම කූපනය භාවිත කළ නොහැක';
 
   @override
-  String get err_payment_failed =>
-      'ගෙවීම අනුමත නොවීය. වෙනත් ක්‍රමයක් උත්සාහ කරන්න.';
+  String get err_payment_failed => 'ගෙවීම අනුමත නොවීය. වෙනත් ක්‍රමයක් උත්සාහ කරන්න.';
 
   @override
   String get err_payment_method_required => 'කරුණාකර ගෙවීම් ක්‍රමයක් තෝරන්න';
 
   @override
-  String get err_cancellation_window_closed =>
-      'පැමිණීමට දින 2කට පෙර සිට අපේ කණ්ඩායම හරහා පමණක් අවලංගු කළ හැක';
+  String get err_cancellation_window_closed => 'පැමිණීමට දින 2කට පෙර සිට අපේ කණ්ඩායම හරහා පමණක් අවලංගු කළ හැක';
 
   @override
   String get err_address_required => 'පැමිණීමේ ලිපිනය එකතු කරන්න';
@@ -759,8 +750,7 @@ class TSi extends T {
   String get introTitle => 'වෘත්තීය පිරිසිදු කිරීම\nමිනිත්තුවකින් වෙන් කරන්න';
 
   @override
-  String get introBody =>
-      'පෙර නිශ්චිත මිල · සත්‍යාපිත කණ්ඩායම් · සජීවී ප්‍රගතිය';
+  String get introBody => 'පෙර නිශ්චිත මිල · සත්‍යාපිත කණ්ඩායම් · සජීවී ප්‍රගතිය';
 
   @override
   String get introStart => 'දුරකථන අංකයෙන් ආරම්භ කරන්න';
@@ -789,8 +779,7 @@ class TSi extends T {
   String get loginVerify => 'තහවුරු කරන්න';
 
   @override
-  String get loginTerms =>
-      'දිගටම කරගෙන යාමෙන් ඔබ සේවා කොන්දේසි සහ පෞද්ගලිකත්ව ප්‍රතිපත්තියට එකඟ වේ';
+  String get loginTerms => 'දිගටම කරගෙන යාමෙන් ඔබ සේවා කොන්දේසි සහ පෞද්ගලිකත්ව ප්‍රතිපත්තියට එකඟ වේ';
 
   @override
   String get profileTitle => 'අපි ඔබව කුමන නමින් ඇමතිය යුතුද?';
@@ -853,52 +842,40 @@ class TSi extends T {
   String get svcShort_move_in => 'ගෙදරට ඇතුළුවීම';
 
   @override
-  String get svcDesc_studio =>
-      'පියොං 10 දක්වා ස්ටුඩියෝවක් (කාමරය 1ක්, නාන කාමරය 1ක්) පැය 2ක් පුරා සවිස්තරාත්මකව පිරිසිදු කරයි.';
+  String get svcDesc_studio => 'පියොං 10 දක්වා ස්ටුඩියෝවක් (කාමරය 1ක්, නාන කාමරය 1ක්) පැය 2ක් පුරා සවිස්තරාත්මකව පිරිසිදු කරයි.';
 
   @override
-  String get svcDesc_kitchen =>
-      'සින්ක්, ගෑස් උදුන, චිමනියේ පිටත කොටස සහ මේස් මුදුන කේන්ද්‍රගත කරමින් මුළුතැන්ගෙය පිරිසිදු කරයි.';
+  String get svcDesc_kitchen => 'සින්ක්, ගෑස් උදුන, චිමනියේ පිටත කොටස සහ මේස් මුදුන කේන්ද්‍රගත කරමින් මුළුතැන්ගෙය පිරිසිදු කරයි.';
 
   @override
-  String get svcDesc_bathroom =>
-      'රාක්ක, ජලනළ, මුට්ටිය සහ වැසිකිළියේ ඇතුළත සහ පිට පිරිසිදු කර, බිම වියළි කර අවසන් කරයි.';
+  String get svcDesc_bathroom => 'රාක්ක, ජලනළ, මුට්ටිය සහ වැසිකිළියේ ඇතුළත සහ පිට පිරිසිදු කර, බිම වියළි කර අවසන් කරයි.';
 
   @override
-  String get svcDesc_mattress =>
-      'විශේෂ උපකරණවලින් දූවිලි, ක්ෂුද්‍ර ජීවීන් සහ කරකි ඉවත් කර, වාෂ්පයෙන් විෂබීජ නාශනය කරයි.';
+  String get svcDesc_mattress => 'විශේෂ උපකරණවලින් දූවිලි, ක්ෂුද්‍ර ජීවීන් සහ කරකි ඉවත් කර, වාෂ්පයෙන් විෂබීජ නාශනය කරයි.';
 
   @override
-  String get svcDesc_aircon =>
-      'වෙන් කර, සිසිලන දඟර, සුළං පංකාව සහ පෙරහන පීඩනයෙන් සෝදා විෂබීජ නාශනයෙන් අවසන් කරයි.';
+  String get svcDesc_aircon => 'වෙන් කර, සිසිලන දඟර, සුළං පංකාව සහ පෙරහන පීඩනයෙන් සෝදා විෂබීජ නාශනයෙන් අවසන් කරයි.';
 
   @override
-  String get svcDesc_sofa =>
-      'රෙදි වර්ගයට ගැලපෙන ද්‍රව්‍යයකින් අපද්‍රව්‍ය බිඳ දමා, තෙත් නිස්සාරණ ක්‍රමයෙන් ඉවත් කරයි.';
+  String get svcDesc_sofa => 'රෙදි වර්ගයට ගැලපෙන ද්‍රව්‍යයකින් අපද්‍රව්‍ය බිඳ දමා, තෙත් නිස්සාරණ ක්‍රමයෙන් ඉවත් කරයි.';
 
   @override
-  String get svcDesc_move_out =>
-      'ගෙදර හැර යාමට පෙර, විශේෂ උපකරණ සහිත වෘත්තීය කණ්ඩායමක් හිස් නිවස පිරිසිදු කරයි.';
+  String get svcDesc_move_out => 'ගෙදර හැර යාමට පෙර, විශේෂ උපකරණ සහිත වෘත්තීය කණ්ඩායමක් හිස් නිවස පිරිසිදු කරයි.';
 
   @override
-  String get svcDesc_move_in =>
-      'නව ගෙදරට ඇතුළුවීමට පෙර, විශේෂ උපකරණ සහිත වෘත්තීය කණ්ඩායමක් නිවස පිරිසිදු කරයි.';
+  String get svcDesc_move_in => 'නව ගෙදරට ඇතුළුවීමට පෙර, විශේෂ උපකරණ සහිත වෘත්තීය කණ්ඩායමක් නිවස පිරිසිදු කරයි.';
 
   @override
-  String get svcNotes_bathroom =>
-      'ජල බැස යාම හෝ වැසිකිළිය අවහිර වී ඇත්නම් සේවාව සීමා විය හැක\nවිශේෂ රසායනික, සිවිලිම හෝ වෙන්ටිලේටර් පිරිසිදු කිරීම ලබා නොදේ\nපැරණි දිලීර සහ ඇලී ඇති මළ සම්පූර්ණයෙන් ඉවත් නොවිය හැක';
+  String get svcNotes_bathroom => 'ජල බැස යාම හෝ වැසිකිළිය අවහිර වී ඇත්නම් සේවාව සීමා විය හැක\nවිශේෂ රසායනික, සිවිලිම හෝ වෙන්ටිලේටර් පිරිසිදු කිරීම ලබා නොදේ\nපැරණි දිලීර සහ ඇලී ඇති මළ සම්පූර්ණයෙන් ඉවත් නොවිය හැක';
 
   @override
-  String get svcNotes_mattress =>
-      'තනි සිට කිං ප්‍රමාණය දක්වා එකම මිල\nසම්පූර්ණයෙන් වියළීමට පැය 4–6ක් ගත වේ\nස්ප්‍රිං හානි හෝ ඇද වැටීම නිවැරදි කළ නොහැක';
+  String get svcNotes_mattress => 'තනි සිට කිං ප්‍රමාණය දක්වා එකම මිල\nසම්පූර්ණයෙන් වියළීමට පැය 4–6ක් ගත වේ\nස්ප්‍රිං හානි හෝ ඇද වැටීම නිවැරදි කළ නොහැක';
 
   @override
-  String get svcNotes_aircon =>
-      'වසර 10කට වැඩි පැරණි උපකරණ වෙන් කිරීම ආරක්ෂිත නොවිය හැක\nබාහිර ඒකකය පිරිසිදු කිරීම ඇතුළත් නොවේ\nපිරිසිදු කිරීමට පෙර සහ පසු එය නිසි ලෙස ක්‍රියා කරන බව පරීක්ෂා කරයි';
+  String get svcNotes_aircon => 'වසර 10කට වැඩි පැරණි උපකරණ වෙන් කිරීම ආරක්ෂිත නොවිය හැක\nබාහිර ඒකකය පිරිසිදු කිරීම ඇතුළත් නොවේ\nපිරිසිදු කිරීමට පෙර සහ පසු එය නිසි ලෙස ක්‍රියා කරන බව පරීක්ෂා කරයි';
 
   @override
-  String get svcNotes_sofa =>
-      'සම් සෝෆා පිරිසිදු කර ආර්ද්‍රතා ආලේපනයක් ලබා දේ\nපැරණි කැළැල් හෝ වර්ණ මාරුවීම සම්පූර්ණයෙන් ඉවත් නොවිය හැක\nසම්පූර්ණයෙන් වියළීමට පැය 4–6ක් ගත වේ';
+  String get svcNotes_sofa => 'සම් සෝෆා පිරිසිදු කර ආර්ද්‍රතා ආලේපනයක් ලබා දේ\nපැරණි කැළැල් හෝ වර්ණ මාරුවීම සම්පූර්ණයෙන් ඉවත් නොවිය හැක\nසම්පූර්ණයෙන් වියළීමට පැය 4–6ක් ගත වේ';
 
   @override
   String get unitTitle_bathroom => 'නාන කාමර ගණන';
@@ -1004,8 +981,7 @@ class TSi extends T {
   String get homeServices => 'ඔබට කුමන පිරිසිදු කිරීමක් අවශ්‍යද?';
 
   @override
-  String get homeAddAddress =>
-      'ලිපිනය එකතු කරන්න, ලබා ගත හැකි සේවා සහ මිල වහාම පෙන්වමු';
+  String get homeAddAddress => 'ලිපිනය එකතු කරන්න, ලබා ගත හැකි සේවා සහ මිල වහාම පෙන්වමු';
 
   @override
   String get homeAddAddressCta => 'ලිපිනය එකතු කරන්න';
@@ -1016,8 +992,7 @@ class TSi extends T {
   }
 
   @override
-  String get homeRebookBody =>
-      'පසුගිය වතාවේ මෙන්ම එම කොන්දේසි යටතේ ඉක්මනින් වෙන් කරන්න';
+  String get homeRebookBody => 'පසුගිය වතාවේ මෙන්ම එම කොන්දේසි යටතේ ඉක්මනින් වෙන් කරන්න';
 
   @override
   String get homeNotices => 'නව පුවත්';
@@ -1048,8 +1023,7 @@ class TSi extends T {
   }
 
   @override
-  String get studioBlockedBody =>
-      'අපගේ උපදේශක කණ්ඩායම ඔබේ නිවසට ගැළපෙන සේවාව යෝජනා කරයි.';
+  String get studioBlockedBody => 'අපගේ උපදේශක කණ්ඩායම ඔබේ නිවසට ගැළපෙන සේවාව යෝජනා කරයි.';
 
   @override
   String get consultCta => 'උපදේශනයෙන් විමසන්න';
@@ -1127,8 +1101,7 @@ class TSi extends T {
   String get afternoon => 'දහවල්';
 
   @override
-  String get scheduleQuoteNote =>
-      'නිශ්චිත පැමිණෙන වේලාව උපදේශනයේදී තහවුරු කරමු';
+  String get scheduleQuoteNote => 'නිශ්චිත පැමිණෙන වේලාව උපදේශනයේදී තහවුරු කරමු';
 
   @override
   String get goToPayment => 'ගෙවීමට යන්න';
@@ -1236,8 +1209,7 @@ class TSi extends T {
   String get doneQuoteTitle => 'උපදේශන ඉල්ලීම ලැබිණි';
 
   @override
-  String get doneQuoteBody =>
-      'අපගේ කණ්ඩායම පරීක්ෂා කර අවසාන මිල ගණන් යවයි. එය උපදේශනය ටැබයේ බලන්න.';
+  String get doneQuoteBody => 'අපගේ කණ්ඩායම පරීක්ෂා කර අවසාන මිල ගණන් යවයි. එය උපදේශනය ටැබයේ බලන්න.';
 
   @override
   String get goHome => 'මුල්පිටුවට';
@@ -1258,8 +1230,7 @@ class TSi extends T {
   String get bookingsEmpty => 'තවම වෙන්කිරීම් නැත';
 
   @override
-  String get bookingsEmptyBody =>
-      'ඔබේ පළමු වෙන්කිරීම සඳහා සාදරයෙන් පිළිගැනීමේ කූපන් ඔබ වෙනුවෙන් රැඳී සිටී';
+  String get bookingsEmptyBody => 'ඔබේ පළමු වෙන්කිරීම සඳහා සාදරයෙන් පිළිගැනීමේ කූපන් ඔබ වෙනුවෙන් රැඳී සිටී';
 
   @override
   String get bookNow => 'පිරිසිදු කිරීමක් වෙන් කරන්න';
@@ -1315,8 +1286,7 @@ class TSi extends T {
   String get cancelTitle => 'මෙම වෙන්කිරීම අවලංගු කරන්නද?';
 
   @override
-  String get cancelFree =>
-      'දැන් අවලංගු කළහොත් ගෙවූ මුළු මුදලම ආපසු ලැබෙන අතර කූපනයද ලැබෙනු ඇත.';
+  String get cancelFree => 'දැන් අවලංගු කළහොත් ගෙවූ මුළු මුදලම ආපසු ලැබෙන අතර කූපනයද ලැබෙනු ඇත.';
 
   @override
   String get cancelKeep => 'තබා ගන්න';
@@ -1482,8 +1452,7 @@ class TSi extends T {
   }
 
   @override
-  String get sys_job_completed =>
-      'පිරිසිදු කිරීම අවසන්! කලින් සහ පසු ඡායාරූප බලන්න.';
+  String get sys_job_completed => 'පිරිසිදු කිරීම අවසන්! කලින් සහ පසු ඡායාරූප බලන්න.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1491,8 +1460,7 @@ class TSi extends T {
   }
 
   @override
-  String get sys_reschedule_declined =>
-      'හවුල්කරුවාට වෙනස් කළ වේලාවට පැමිණීමට නොහැක. අපගේ කණ්ඩායම එය නැවත සකස් කරයි.';
+  String get sys_reschedule_declined => 'හවුල්කරුවාට වෙනස් කළ වේලාවට පැමිණීමට නොහැක. අපගේ කණ්ඩායම එය නැවත සකස් කරයි.';
 
   @override
   String get moreTitle => 'තවත්';
@@ -1554,8 +1522,7 @@ class TSi extends T {
   String get deleteAccount => 'ගිණුම මකන්න';
 
   @override
-  String get deleteAccountBody =>
-      'පුද්ගලික දත්ත මැකෙන අතර එය අහෝසි කළ නොහැක. පළමුව සක්‍රිය වෙන්කිරීම් අවලංගු කරන්න.';
+  String get deleteAccountBody => 'පුද්ගලික දත්ත මැකෙන අතර එය අහෝසි කළ නොහැක. පළමුව සක්‍රිය වෙන්කිරීම් අවලංගු කරන්න.';
 
   @override
   String get couponsEmpty => 'තවම කූපන් නැත';
@@ -1704,15 +1671,13 @@ class TSi extends T {
   String get quoteEstimateTitle => 'ඔබේ දළ මිල ගණන්';
 
   @override
-  String get quoteEstimateBody =>
-      'ඡායාරූප බැලීමෙන් පසු උපදේශනයේදී අවසාන මුදල තීරණය වේ';
+  String get quoteEstimateBody => 'ඡායාරූප බැලීමෙන් පසු උපදේශනයේදී අවසාන මුදල තීරණය වේ';
 
   @override
   String get quoteG1 => 'අවසාන මුදල උපදේශනයේදී ඔබ සමඟ තීරණය කරයි';
 
   @override
-  String get quoteG2 =>
-      'තහවුරු කිරීමට අත්තිකාරම 10%, ඉතිරිය පිරිසිදු කිරීමෙන් පසු';
+  String get quoteG2 => 'තහවුරු කිරීමට අත්තිකාරම 10%, ඉතිරිය පිරිසිදු කිරීමෙන් පසු';
 
   @override
   String get quoteG3 => 'තහවුරු කිරීමට පෙර ඕනෑම වේලාවක නොමිලේ අවලංගු කළ හැක';
@@ -1796,8 +1761,7 @@ class TSi extends T {
   String get fVatEstimate => 'VAT ඇස්තමේන්තුව';
 
   @override
-  String get fVatNote =>
-      'වේදිකා ගාස්තුවෙන් 10%ක ඇස්තමේන්තුවකි. ගණකාධිකාරී සමඟ තහවුරු කරන්න.';
+  String get fVatNote => 'වේදිකා ගාස්තුවෙන් 10%ක ඇස්තමේන්තුවකි. ගණකාධිකාරී සමඟ තහවුරු කරන්න.';
 
   @override
   String get fAov => 'සාමාන්‍ය ඇණවුම් අගය';
@@ -1947,8 +1911,7 @@ class TSi extends T {
   String get reviewSaved => 'සමාලෝචනයට ස්තූතියි';
 
   @override
-  String get reviewPhotoFailed =>
-      'ඡායාරූපය උඩුගත කළ නොහැකි විය. නැවත උත්සාහ කරන්න.';
+  String get reviewPhotoFailed => 'ඡායාරූපය උඩුගත කළ නොහැකි විය. නැවත උත්සාහ කරන්න.';
 
   @override
   String get referralTitle => 'මිතුරෙකු ආරාධනා කර කූපනයක් ලබාගන්න';
@@ -1985,8 +1948,7 @@ class TSi extends T {
   String get err_self_referral => 'ඔබේම කේතය භාවිත කළ නොහැක';
 
   @override
-  String get err_referee_already_booked =>
-      'පළමු වෙන්කිරීමට පෙර පමණක් කේතය ඇතුළත් කළ හැක';
+  String get err_referee_already_booked => 'පළමු වෙන්කිරීමට පෙර පමණක් කේතය ඇතුළත් කළ හැක';
 
   @override
   String get err_already_referred => 'යොමු කේතය දැනටමත් යොදා ඇත';
@@ -1998,15 +1960,13 @@ class TSi extends T {
   String get err_referral_disabled => 'දැනට යොමු කිරීම් විරාම කර ඇත';
 
   @override
-  String get err_invalid_photos =>
-      'Malkkeum හරහා උඩුගත කළ ඡායාරූප පමණක් අමුණන්න පුළුවන්';
+  String get err_invalid_photos => 'Malkkeum හරහා උඩුගත කළ ඡායාරූප පමණක් අමුණන්න පුළුවන්';
 
   @override
   String get welcomeOfferTitle => 'පළමු වෙන්කිරීම් වට්ටම';
 
   @override
-  String get welcomeOfferBody =>
-      'නව පාරිභෝගිකයාගේ පළමු වෙන්කිරීමට ස්වයංක්‍රීයව යොදයි. කූපන සමග එකතු නොවේ.';
+  String get welcomeOfferBody => 'නව පාරිභෝගිකයාගේ පළමු වෙන්කිරීමට ස්වයංක්‍රීයව යොදයි. කූපන සමග එකතු නොවේ.';
 
   @override
   String get offerKindAmount => 'ස්ථිර (වොන්)';
@@ -2027,8 +1987,7 @@ class TSi extends T {
   String get referralSettingsTitle => 'යොමු කිරීමේ ප්‍රතිලාභය';
 
   @override
-  String get referralSettingsBody =>
-      'මිතුරාගේ පළමු වෙන්කිරීම නිම වී ගෙවූ පසු ලබා දේ. ස්වයං-යොමු සහ එකම දුරකථන අංකය අවහිර වේ.';
+  String get referralSettingsBody => 'මිතුරාගේ පළමු වෙන්කිරීම නිම වී ගෙවූ පසු ලබා දේ. ස්වයං-යොමු සහ එකම දුරකථන අංකය අවහිර වේ.';
 
   @override
   String get referralRewardAmount => 'ප්‍රතිලාභ මුදල (වොන්)';
@@ -2167,32 +2126,25 @@ class TSi extends T {
   String get oIntNever => 'භාවිතයක් තවම නැත';
 
   @override
-  String get oActDb =>
-      'දත්ත ගබඩාවට සම්බන්ධ විය නොහැක. සේවාදායකයේ malkkeum logs ධාවනය කරන්න; දිගටම නම් නැවත ආරම්භ කරන්න.';
+  String get oActDb => 'දත්ත ගබඩාවට සම්බන්ධ විය නොහැක. සේවාදායකයේ malkkeum logs ධාවනය කරන්න; දිගටම නම් නැවත ආරම්භ කරන්න.';
 
   @override
-  String get oActDisk =>
-      'තැටියේ නිදහස් ඉඩ 10% ට අඩුයි. පැරණි උපස්ථ මකන්න හෝ තැටිය වැඩි කරන්න.';
+  String get oActDisk => 'තැටියේ නිදහස් ඉඩ 10% ට අඩුයි. පැරණි උපස්ථ මකන්න හෝ තැටිය වැඩි කරන්න.';
 
   @override
-  String get oActBackup =>
-      'ස්වයංක්‍රීය උපස්ථය ප්‍රමාද වී ඇත. සේවාදායකයේ malkkeum backup ධාවනය කර backups/backup.log පරීක්ෂා කරන්න.';
+  String get oActBackup => 'ස්වයංක්‍රීය උපස්ථය ප්‍රමාද වී ඇත. සේවාදායකයේ malkkeum backup ධාවනය කර backups/backup.log පරීක්ෂා කරන්න.';
 
   @override
-  String get oActErrors =>
-      'සේවාදායක දෝෂ බොහොමයි. malkkeum logs හි error පේළි බලා නැවත නැවත වේ නම් සංවර්ධකයාට යවන්න.';
+  String get oActErrors => 'සේවාදායක දෝෂ බොහොමයි. malkkeum logs හි error පේළි බලා නැවත නැවත වේ නම් සංවර්ධකයාට යවන්න.';
 
   @override
-  String get oActPayments =>
-      'ගෙවීම සිදු වී ඇති නමුත් ස්වයංක්‍රීයව සකසා නැත. PortOne හි පරීක්ෂා කර අවශ්‍ය නම් අතින් ආපසු ගෙවන්න.';
+  String get oActPayments => 'ගෙවීම සිදු වී ඇති නමුත් ස්වයංක්‍රීයව සකසා නැත. PortOne හි පරීක්ෂා කර අවශ්‍ය නම් අතින් ආපසු ගෙවන්න.';
 
   @override
-  String get oActWebhook =>
-      'ගෙවීම් දැනුම්දීමේ අත්සන් පරීක්ෂාව අසමත් වේ. සැකසුම් > ගෙවීම් (PortOne) හි webhook secret නැවත ඇතුළු කරන්න.';
+  String get oActWebhook => 'ගෙවීම් දැනුම්දීමේ අත්සන් පරීක්ෂාව අසමත් වේ. සැකසුම් > ගෙවීම් (PortOne) හි webhook secret නැවත ඇතුළු කරන්න.';
 
   @override
-  String get oActIntegration =>
-      'මෙම සම්බන්ධතාවය අසමත් වේ. සැකසුම් හි යතුරු පරීක්ෂා කර Test connection ඔබන්න.';
+  String get oActIntegration => 'මෙම සම්බන්ධතාවය අසමත් වේ. සැකසුම් හි යතුරු පරීක්ෂා කර Test connection ඔබන්න.';
 
   @override
   String get oActNotSet => 'තවම සකසා නැත. සැකසුම් හි යතුරු ඇතුළු කරන්න.';
@@ -2201,8 +2153,7 @@ class TSi extends T {
   String get oAlerts => 'ඇඟවීම් සැකසුම්';
 
   @override
-  String get oAlertsHint =>
-      'ගැටලු ඇති වූ විට inbox සහ හිමිකරුගේ දුරකථනයට SMS මගින් දන්වයි. එම ගැටලුව පැය 6 කට වරක් පමණි.';
+  String get oAlertsHint => 'ගැටලු ඇති වූ විට inbox සහ හිමිකරුගේ දුරකථනයට SMS මගින් දන්වයි. එම ගැටලුව පැය 6 කට වරක් පමණි.';
 
   @override
   String get oRuleSms => 'SMS යැවීම අසමත්';
@@ -2240,8 +2191,7 @@ class TSi extends T {
   }
 
   @override
-  String get oQuietHint =>
-      'මෙම වේලාවන්හි දැනුම්දීම් නැත; අවසන් වූ පසු එක් පණිවිඩයක් යයි.';
+  String get oQuietHint => 'මෙම වේලාවන්හි දැනුම්දීම් නැත; අවසන් වූ පසු එක් පණිවිඩයක් යයි.';
 
   @override
   String get oAlertPhone => 'ඇඟවීම් ලැබෙන දුරකථනය';
@@ -2265,8 +2215,7 @@ class TSi extends T {
   String get oBackupOffsite => 'බාහිර උපස්ථය (S3)';
 
   @override
-  String get oBackupOffsiteOff =>
-      'ක්‍රියාවිරහිතයි. සැකසුම් > බාහිර උපස්ථය තුළ ක්‍රියාත්මක කරන්න.';
+  String get oBackupOffsiteOff => 'ක්‍රියාවිරහිතයි. සැකසුම් > බාහිර උපස්ථය තුළ ක්‍රියාත්මක කරන්න.';
 
   @override
   String get oLastBackup => 'අවසන් උපස්ථය';
@@ -2290,12 +2239,10 @@ class TSi extends T {
   String get pTabSchedule => 'කාලසටහන';
 
   @override
-  String get pIntroTitle =>
-      'පිරිසිදු කිරීමේ වෘත්තිකයන් සඳහා\nකාර්යයන් · කාලසටහන · ගෙවීම්';
+  String get pIntroTitle => 'පිරිසිදු කිරීමේ වෘත්තිකයන් සඳහා\nකාර්යයන් · කාලසටහන · ගෙවීම්';
 
   @override
-  String get pIntroBody =>
-      'ඔබට අවශ්‍ය ස්ථානයේ සහ වේලාවේදී පමණක් වැඩ කරන්න. සතිපතා ගෙවීම් ලබා ගන්න.';
+  String get pIntroBody => 'ඔබට අවශ්‍ය ස්ථානයේ සහ වේලාවේදී පමණක් වැඩ කරන්න. සතිපතා ගෙවීම් ලබා ගන්න.';
 
   @override
   String get pOnbTitle => 'ඔබ ගැන කියන්න';
@@ -2319,12 +2266,10 @@ class TSi extends T {
   String get pPendingTitle => 'ඔබගේ ගිණුම සමාලෝචනය වෙමින් පවතී';
 
   @override
-  String get pPendingBody =>
-      'අනුමත වූ පසු අපි ඔබට දන්වන්නෙමු. ඒ දක්වා ගෙවීම් ගිණුම එකතු කරන්න.';
+  String get pPendingBody => 'අනුමත වූ පසු අපි ඔබට දන්වන්නෙමු. ඒ දක්වා ගෙවීම් ගිණුම එකතු කරන්න.';
 
   @override
-  String get pSuspended =>
-      'ඔබගේ ගිණුම තාවකාලිකව අත්හිටුවා ඇත. කරුණාකර මෙහෙයුම් කණ්ඩායමට සම්බන්ධ වන්න.';
+  String get pSuspended => 'ඔබගේ ගිණුම තාවකාලිකව අත්හිටුවා ඇත. කරුණාකර මෙහෙයුම් කණ්ඩායමට සම්බන්ධ වන්න.';
 
   @override
   String get pDirect => 'සෘජු වෙන්කිරීම';
@@ -2348,8 +2293,7 @@ class TSi extends T {
   String get pNoJobs => 'දැනට ගැළපෙන කාර්යයන් නැත';
 
   @override
-  String get pNoJobsBody =>
-      'සේවා, ප්‍රදේශ හෝ වැඩ කරන වේලා පුළුල් කර තවත් කාර්යයන් බලන්න';
+  String get pNoJobsBody => 'සේවා, ප්‍රදේශ හෝ වැඩ කරන වේලා පුළුල් කර තවත් කාර්යයන් බලන්න';
 
   @override
   String get pPayout => 'අපේක්ෂිත ගෙවීම';
@@ -2364,8 +2308,7 @@ class TSi extends T {
   String get pClosed => 'වසා ඇත';
 
   @override
-  String get pPrivacyNote =>
-      'නිශ්චිත ලිපිනය සහ පාරිභෝගික විස්තර පිළිගැනීමෙන් පසු පෙන්වයි';
+  String get pPrivacyNote => 'නිශ්චිත ලිපිනය සහ පාරිභෝගික විස්තර පිළිගැනීමෙන් පසු පෙන්වයි';
 
   @override
   String get pAccept => 'කාර්යය පිළිගන්න';
@@ -2374,8 +2317,7 @@ class TSi extends T {
   String get pAcceptConfirm => 'මෙම කාර්යය පිළිගන්නද?';
 
   @override
-  String get pAcceptBody =>
-      'පිළිගත් පසු එය ඔබේ කාලසටහනට එක් වන අතර පාරිභෝගිකයාට කණ්ඩායම පවරා ඇති බව දැනුම් දෙයි. පැමිණීමට දින 2කට පෙර අවලංගු කිරීම සීමිතය.';
+  String get pAcceptBody => 'පිළිගත් පසු එය ඔබේ කාලසටහනට එක් වන අතර පාරිභෝගිකයාට කණ්ඩායම පවරා ඇති බව දැනුම් දෙයි. පැමිණීමට දින 2කට පෙර අවලංගු කිරීම සීමිතය.';
 
   @override
   String get pAccepted => 'කාර්යය පිළිගන්නා ලදී';
@@ -2442,8 +2384,7 @@ class TSi extends T {
   String get pNoSchedule => 'මෙදින කිසිම කාලසටහනක් නැත';
 
   @override
-  String get pCancelledBanner =>
-      'පාරිභෝගිකයා මෙම කාර්යය අවලංගු කර ඇත. එය සම්පූර්ණ ලෙස සලකුණු කළ නොහැක.';
+  String get pCancelledBanner => 'පාරිභෝගිකයා මෙම කාර්යය අවලංගු කර ඇත. එය සම්පූර්ණ ලෙස සලකුණු කළ නොහැක.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2523,8 +2464,7 @@ class TSi extends T {
   String get pCompleteCta => 'සම්පූර්ණ ලෙස සලකුණු කරන්න';
 
   @override
-  String get pCompleteNeed =>
-      'එක් එක් වර්ගයේ ඡායාරූප අවම වශයෙන් 1 බැගින් එකතු කර සියලු අයිතම සලකුණු කරන්න';
+  String get pCompleteNeed => 'එක් එක් වර්ගයේ ඡායාරූප අවම වශයෙන් 1 බැගින් එකතු කර සියලු අයිතම සලකුණු කරන්න';
 
   @override
   String get pCompleted => 'විශිෂ්ට වැඩ!';
@@ -2535,8 +2475,7 @@ class TSi extends T {
   }
 
   @override
-  String get pPayoutWaiting =>
-      'පාරිභෝගිකයා ශේෂය ගෙවීමෙන් පසු ගෙවීම් දිනය තීරණය වේ';
+  String get pPayoutWaiting => 'පාරිභෝගිකයා ශේෂය ගෙවීමෙන් පසු ගෙවීම් දිනය තීරණය වේ';
 
   @override
   String get pPendingPayout => 'අපේක්ෂිත ගෙවීම';
@@ -2807,8 +2746,7 @@ class TSi extends T {
   String get cSetupPrivacyOfficer => 'පෞද්ගලිකත්ව නිලධාරී';
 
   @override
-  String get cSetupStoreLinks =>
-      'ස්ටෝර් සබැඳි (පුරවූ පසු වෙබ් බොත්තම් සක්‍රිය වේ)';
+  String get cSetupStoreLinks => 'ස්ටෝර් සබැඳි (පුරවූ පසු වෙබ් බොත්තම් සක්‍රිය වේ)';
 
   @override
   String get cSetupCustomerApp => 'පාරිභෝගික යෙදුම';
@@ -2820,15 +2758,13 @@ class TSi extends T {
   String get cSetupPayMethods => 'ගෙවීම් ක්‍රම';
 
   @override
-  String get cSetupPayMethodsHint =>
-      'පාරිභෝගිකයන්ට පෙනෙන ගෙවීම් ක්‍රම සක්‍රිය/අක්‍රිය කරන්න. වහාම යෙදේ.';
+  String get cSetupPayMethodsHint => 'පාරිභෝගිකයන්ට පෙනෙන ගෙවීම් ක්‍රම සක්‍රිය/අක්‍රිය කරන්න. වහාම යෙදේ.';
 
   @override
   String get cReviewTitle => 'ස්ටෝර් සමාලෝචන ආදර්ශ ගිණුම';
 
   @override
-  String get cReviewHint =>
-      'සමාලෝචකයින්ට කොරියානු SMS ලැබෙන්නේ නැත. අංකය සහ ඉලක්කම් 6 කේතය සමාලෝචන සටහනේ ලියන්න. ස්වයංක්‍රීයව අක්‍රිය වේ.';
+  String get cReviewHint => 'සමාලෝචකයින්ට කොරියානු SMS ලැබෙන්නේ නැත. අංකය සහ ඉලක්කම් 6 කේතය සමාලෝචන සටහනේ ලියන්න. ස්වයංක්‍රීයව අක්‍රිය වේ.';
 
   @override
   String get cReviewPhone => 'ආදර්ශ දුරකථන අංකය';
@@ -2845,20 +2781,16 @@ class TSi extends T {
   String get cReviewEnable => 'සක්‍රිය කරන්න (දින 14)';
 
   @override
-  String get pDeleteAccountBody =>
-      'ඔබේ කණ්ඩායම සහ පුද්ගලික දත්ත ස්ථිරවම මැකේ. පවරා ඇති කාර්ය සහ ඉතිරි ගෙවීම් පළමුව අවසන් කරන්න.';
+  String get pDeleteAccountBody => 'ඔබේ කණ්ඩායම සහ පුද්ගලික දත්ත ස්ථිරවම මැකේ. පවරා ඇති කාර්ය සහ ඉතිරි ගෙවීම් පළමුව අවසන් කරන්න.';
 
   @override
-  String get err_has_active_jobs =>
-      'ඔබට පවරා ඇති කාර්ය තිබේ. ඒවා අවසන් කරන්න හෝ සහාය ලබාගන්න.';
+  String get err_has_active_jobs => 'ඔබට පවරා ඇති කාර්ය තිබේ. ඒවා අවසන් කරන්න හෝ සහාය ලබාගන්න.';
 
   @override
-  String get err_pending_payouts =>
-      'ගෙවීමක් තවම ඉතිරිය. ගෙවූ පසු ගිණුම මැකිය හැක.';
+  String get err_pending_payouts => 'ගෙවීමක් තවම ඉතිරිය. ගෙවූ පසු ගිණුම මැකිය හැක.';
 
   @override
-  String get err_phone_required =>
-      'කාර්ය ලබා ගැනීමට පෙර දුරකථන අංකය තහවුරු කරන්න.';
+  String get err_phone_required => 'කාර්ය ලබා ගැනීමට පෙර දුරකථන අංකය තහවුරු කරන්න.';
 
   @override
   String get nAlerts => 'දැනුම්දීම්';
@@ -2878,8 +2810,7 @@ class TSi extends T {
   String get mMyJobs => 'මගේ කාර්ය';
 
   @override
-  String get mNoJobs =>
-      'තවම පවරා ඇති කාර්ය නැත. කණ්ඩායම් නායකයා පවරන කාර්ය මෙහි පෙන්වයි.';
+  String get mNoJobs => 'තවම පවරා ඇති කාර්ය නැත. කණ්ඩායම් නායකයා පවරන කාර්ය මෙහි පෙන්වයි.';
 
   @override
   String mTeam(String team) {
@@ -2911,8 +2842,7 @@ class TSi extends T {
   String get cSetupCheckInApp => 'සුරැකිණි · යෙදුමෙන් පිවිසී තහවුරු කරන්න';
 
   @override
-  String get cSetupInvalidKey =>
-      'යතුර ප්‍රතික්ෂේප විය. පිටපත් කළ අගය පරීක්ෂා කරන්න';
+  String get cSetupInvalidKey => 'යතුර ප්‍රතික්ෂේප විය. පිටපත් කළ අගය පරීක්ෂා කරන්න';
 
   @override
   String get cSetupUnreachable => 'සේවාවට ළඟා විය නොහැක. පසුව උත්සාහ කරන්න';
@@ -2963,8 +2893,7 @@ class TSi extends T {
   String get cFirstRunTitle => 'සාදරයෙන් පිළිගනිමු! හිමිකරු ගිණුම සාදන්න';
 
   @override
-  String get cFirstRunBody =>
-      'ස්ථාපනයේදී පෙන්වූ අකුරු 12 කේතය ඇතුළත් කරන්න. මෙම ගිණුම සියලු සැකසුම් කළමනාකරණය කරයි.';
+  String get cFirstRunBody => 'ස්ථාපනයේදී පෙන්වූ අකුරු 12 කේතය ඇතුළත් කරන්න. මෙම ගිණුම සියලු සැකසුම් කළමනාකරණය කරයි.';
 
   @override
   String get cFirstRunCode => 'සැකසුම් කේතය';
@@ -2999,15 +2928,13 @@ class TSi extends T {
   String get uUpdateRequiredTitle => 'යාවත්කාලීනයක් අවශ්‍යයි';
 
   @override
-  String get uUpdateRequiredBody =>
-      'මෙම අනුවාදය තවදුරටත් සහාය නොදක්වයි. කරුණාකර ගබඩාවෙන් යාවත්කාලීන කරන්න.';
+  String get uUpdateRequiredBody => 'මෙම අනුවාදය තවදුරටත් සහාය නොදක්වයි. කරුණාකර ගබඩාවෙන් යාවත්කාලීන කරන්න.';
 
   @override
   String get uUpdateStore => 'ගබඩාවෙන් යාවත්කාලීන කරන්න';
 
   @override
-  String get uUpdateStoreMissing =>
-      'යාවත්කාලීන සබැඳිය තවම සූදානම් නැත. පසුව නැවත උත්සාහ කරන්න.';
+  String get uUpdateStoreMissing => 'යාවත්කාලීන සබැඳිය තවම සූදානම් නැත. පසුව නැවත උත්සාහ කරන්න.';
 
   @override
   String uCurrentVersion(String version) {
@@ -3018,8 +2945,7 @@ class TSi extends T {
   String get uAppVersionTitle => 'යෙදුම් අනුවාද';
 
   @override
-  String get uAppVersionHint =>
-      'අවම අනුවාදයට පහළ යෙදුම් යාවත්කාලීන තිරයේ නතර වේ. උදාහරණ: 1.2.0';
+  String get uAppVersionHint => 'අවම අනුවාදයට පහළ යෙදුම් යාවත්කාලීන තිරයේ නතර වේ. උදාහරණ: 1.2.0';
 
   @override
   String get uMinVersion => 'අවම අනුවාදය';

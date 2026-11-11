@@ -29,7 +29,10 @@ class _GrowthSettingsState extends State<GrowthSettings> {
   @override
   void initState() {
     super.initState();
-    _load();
+    // _load reads context (api, t); after the first frame the inherited widgets are reachable.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _load();
+    });
   }
 
   @override
@@ -125,6 +128,7 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                   onChanged: (v) => setState(() => _welcomeOn = v),
                 ),
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _kind,
                   decoration: const InputDecoration(),
                   items: [

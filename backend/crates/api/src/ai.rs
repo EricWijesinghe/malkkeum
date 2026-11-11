@@ -15,6 +15,7 @@ use serde_json::{Value, json};
 use sqlx::PgPool;
 use std::{
     collections::HashMap,
+    ops::RangeInclusive,
     sync::{
         Arc, Mutex, MutexGuard,
         atomic::{AtomicU64, Ordering},
@@ -31,12 +32,14 @@ const EFFORT: &str = "low";
 /// Customer messages that arrive this close together get one answer, written for the last one.
 const DEBOUNCE: Duration = Duration::from_secs(3);
 const HISTORY_LIMIT: i64 = 20;
-/// shortcut: fixed caps on API calls (per thread per hour, all threads per day); make them config
-/// when an owner needs other numbers.
-const THREAD_HOURLY_CAP: u32 = 12;
-const DAILY_CAP: u32 = 1000;
-/// Replies one customer (or partner) can get per day across all their threads.
-const MEMBER_DAILY_CAP: u32 = 40;
+/// Defaults for the reply caps; the owner sets other numbers in the console's AI card.
+pub const DEFAULT_THREAD_HOURLY_CAP: u32 = 12;
+pub const DEFAULT_MEMBER_DAILY_CAP: u32 = 40;
+pub const DEFAULT_DAILY_CAP: u32 = 1000;
+/// Values the console may save for each cap. Anything outside is refused.
+pub const THREAD_HOURLY_RANGE: RangeInclusive<u32> = 1..=60;
+pub const MEMBER_DAILY_RANGE: RangeInclusive<u32> = 1..=500;
+pub const DAILY_RANGE: RangeInclusive<u32> = 1..=10_000;
 const KST_OFFSET_SECS: i32 = 9 * 3600;
 
 /// Who answers when a customer writes.
@@ -66,12 +69,30 @@ impl Mode {
     }
 }
 
+/// Reply caps from the saved AI section. Reaching one stops the model call, not the chat.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Caps {
+    /// Replies per thread in the last hour.
+    pub thread_hourly: u32,
+    /// Replies to one customer (or partner) across all their threads in the last day.
+    pub member_daily: u32,
+    /// Replies to everyone in the last day.
+    pub daily: u32,
+}
+
+impl Default for Caps {
+    fn default() -> Self {
+        Self { thread_hourly: DEFAULT_THREAD_HOURLY_CAP, member_daily: DEFAULT_MEMBER_DAILY_CAP, daily: DEFAULT_DAILY_CAP }
+    }
+}
+
 /// Saved console section "ai", validated.
 #[derive(Clone, Debug)]
 pub struct AiConfig {
     pub api_key: String,
     pub model: String,
     pub mode: Mode,
+    pub caps: Caps,
 }
 
 /// What the decision needs to know about one thread at one moment.
@@ -379,7 +400,12 @@ async fn business_hours(db: &PgPool) -> Result<Value, sqlx::Error> {
     Ok(v.unwrap_or(Value::Null))
 }
 
-async fn within_caps(db: &PgPool, thread: Uuid) -> Result<bool, sqlx::Error> {
+/// True while every count is under its cap. Pure so the limits can be tested without a database.
+pub fn under_caps(per_thread: i64, per_member: i64, per_day: i64, caps: Caps) -> bool {
+    within_quota(per_thread, caps.thread_hourly) && within_quota(per_member, caps.member_daily) && within_quota(per_day, caps.daily)
+}
+
+async fn within_caps(db: &PgPool, thread: Uuid, caps: Caps) -> Result<bool, sqlx::Error> {
     let (per_thread, per_day): (i64, i64) = sqlx::query_as(
         "SELECT (SELECT count(*) FROM ai_usage WHERE thread_id = $1 AND created_at > now() - interval '1 hour'),
                 (SELECT count(*) FROM ai_usage WHERE created_at > now() - interval '1 day')",
@@ -396,7 +422,7 @@ async fn within_caps(db: &PgPool, thread: Uuid) -> Result<bool, sqlx::Error> {
     .bind(thread)
     .fetch_one(db)
     .await?;
-    Ok(within_quota(per_thread, THREAD_HOURLY_CAP) && within_quota(per_member, MEMBER_DAILY_CAP) && within_quota(per_day, DAILY_CAP))
+    Ok(under_caps(per_thread, per_member, per_day, caps))
 }
 
 async fn record_usage(db: &PgPool, thread: Uuid, model: &str, outcome: &str, u: Usage) -> Result<(), sqlx::Error> {
@@ -467,7 +493,7 @@ pub async fn answer(s: &AppState, thread: Uuid) -> ApiResult<()> {
         staff_online: s.hub.staff_connected() > 0,
         open_hours: open_at(&hours, Utc::now()),
     };
-    if !should_answer(cfg.mode, facts) || !within_caps(&s.db, thread).await? {
+    if !should_answer(cfg.mode, facts) || !within_caps(&s.db, thread, cfg.caps).await? {
         return Ok(());
     }
     let rows: Vec<HistoryRow> = sqlx::query_as(
@@ -610,7 +636,7 @@ mod tests {
 
     #[test]
     fn request_has_fallback_effort_and_no_sampling_knobs() {
-        let cfg = AiConfig { api_key: "k".into(), model: DEFAULT_MODEL.into(), mode: Mode::Offline };
+        let cfg = AiConfig { api_key: "k".into(), model: DEFAULT_MODEL.into(), mode: Mode::Offline, caps: Caps::default() };
         let body = request_body(&cfg, system_blocks(&json!({}), "ko", &Value::Null), vec![json!({"role": "user", "content": "x"})]);
         assert_eq!(body["fallbacks"], "default");
         assert_eq!(body["output_config"]["effort"], "low");
@@ -655,5 +681,19 @@ mod tests {
         assert_eq!(Mode::parse(Some("always_first")), Some(Mode::AlwaysFirst));
         assert_eq!(Mode::parse(Some("sometimes")), None);
         assert_eq!(handoff_text("xx"), "A staff member will check this and reply to you shortly.");
+    }
+
+    #[test]
+    fn default_caps_are_the_shipped_numbers() {
+        assert_eq!(Caps::default(), Caps { thread_hourly: 12, member_daily: 40, daily: 1000 });
+    }
+
+    #[test]
+    fn each_cap_stops_replies_once_reached() {
+        let caps = Caps { thread_hourly: 2, member_daily: 5, daily: 7 };
+        assert!(under_caps(1, 4, 6, caps), "one under every cap");
+        assert!(!under_caps(2, 0, 0, caps), "thread hourly cap reached");
+        assert!(!under_caps(0, 5, 0, caps), "member daily cap reached");
+        assert!(!under_caps(0, 0, 7, caps), "shop daily cap reached");
     }
 }

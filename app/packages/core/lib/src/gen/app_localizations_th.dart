@@ -65,6 +65,18 @@ class TTh extends T {
   String get aiNotConfigured => 'ยังไม่ได้เปิดผู้ช่วย AI';
 
   @override
+  String get aiCapThreadLabel => 'จำกัดคำตอบต่อแชทต่อชั่วโมง';
+
+  @override
+  String get aiCapMemberLabel => 'จำกัดคำตอบต่อลูกค้าต่อวัน';
+
+  @override
+  String get aiCapDailyLabel => 'จำกัดคำตอบต่อวันทุกแชท';
+
+  @override
+  String get aiCapHint => 'กรอกเฉพาะตัวเลข เว้นว่างเพื่อใช้ค่าเริ่มต้น';
+
+  @override
   String get apSocialOr => 'หรือ';
 
   @override
@@ -83,8 +95,7 @@ class TTh extends T {
   String get apLoginApple => 'ดำเนินการต่อด้วย Apple';
 
   @override
-  String get apDevSocialNote =>
-      'โหมดพัฒนา จะเข้าสู่ระบบด้วยบัญชีทดสอบ ไม่ใช่บัญชีโซเชียลจริง';
+  String get apDevSocialNote => 'โหมดพัฒนา จะเข้าสู่ระบบด้วยบัญชีทดสอบ ไม่ใช่บัญชีโซเชียลจริง';
 
   @override
   String get apSocialFailed => 'เข้าสู่ระบบด่วนไม่สำเร็จ กรุณาลองอีกครั้ง';
@@ -99,8 +110,7 @@ class TTh extends T {
   String get apPhoneAttachTitle => 'กรุณายืนยันหมายเลขโทรศัพท์มือถือของคุณ';
 
   @override
-  String get apPhoneAttachBody =>
-      'ใช้หมายเลขนี้สำหรับการจองและการติดต่อผู้ให้บริการ ยืนยันเพียงครั้งเดียว';
+  String get apPhoneAttachBody => 'ใช้หมายเลขนี้สำหรับการจองและการติดต่อผู้ให้บริการ ยืนยันเพียงครั้งเดียว';
 
   @override
   String get apPayAllTitle => 'เลือกวิธีชำระเงิน';
@@ -112,8 +122,7 @@ class TTh extends T {
   String get apPayMoreTitle => 'วิธีชำระเงินทั้งหมด';
 
   @override
-  String get apPayBillingHint =>
-      'บันทึกครั้งเดียว ครั้งต่อไปชำระได้ในคลิกเดียว';
+  String get apPayBillingHint => 'บันทึกครั้งเดียว ครั้งต่อไปชำระได้ในคลิกเดียว';
 
   @override
   String get apPayCheckoutHint => 'ดำเนินการต่อในหน้าชำระเงิน';
@@ -122,8 +131,7 @@ class TTh extends T {
   String get apPayRegistering => 'กำลังลงทะเบียน…';
 
   @override
-  String get apPayManageHint =>
-      'ชำระด้วยวิธีที่บันทึกไว้ในคลิกเดียว เพิ่มวิธีชำระเงินด่วนได้ที่นี่';
+  String get apPayManageHint => 'ชำระด้วยวิธีที่บันทึกไว้ในคลิกเดียว เพิ่มวิธีชำระเงินด่วนได้ที่นี่';
 
   @override
   String get apMethodCard => 'บัตรเครดิต/เดบิต';
@@ -165,8 +173,7 @@ class TTh extends T {
   String get apVaWaiting => 'รอการโอนมัดจำ';
 
   @override
-  String get apVaBody =>
-      'การจองจะได้รับการยืนยันเมื่อได้รับเงินมัดจำ เราตรวจสอบการโอนให้อัตโนมัติ';
+  String get apVaBody => 'การจองจะได้รับการยืนยันเมื่อได้รับเงินมัดจำ เราตรวจสอบการโอนให้อัตโนมัติ';
 
   @override
   String get apVaBank => 'ธนาคาร';
@@ -206,8 +213,7 @@ class TTh extends T {
   String get apPgTitle => 'หน้าชำระเงิน';
 
   @override
-  String get apPgDevNote =>
-      'การจำลองการชำระเงินสำหรับโหมดพัฒนาเท่านั้น จะไม่มีการตัดเงินจริง';
+  String get apPgDevNote => 'การจำลองการชำระเงินสำหรับโหมดพัฒนาเท่านั้น จะไม่มีการตัดเงินจริง';
 
   @override
   String apPgPay(String amount) {
@@ -221,8 +227,7 @@ class TTh extends T {
   String get apPgCancel => 'ยกเลิกการชำระเงิน';
 
   @override
-  String get apErrSlotFullRefunded =>
-      'เวลานี้เพิ่งเต็ม จึงยกเลิกการชำระเงินให้อัตโนมัติ';
+  String get apErrSlotFullRefunded => 'เวลานี้เพิ่งเต็ม จึงยกเลิกการชำระเงินให้อัตโนมัติ';
 
   @override
   String get apErrCheckoutExpired => 'หมดเวลาชำระเงินแล้ว กรุณาลองอีกครั้ง';
@@ -231,8 +236,7 @@ class TTh extends T {
   String get apIdentityTitle => 'ยืนยันตัวตน (PASS)';
 
   @override
-  String get apIdentityBody =>
-      'ยืนยันตัวตนผ่านผู้ให้บริการโทรศัพท์มือถือ ใช้เพื่อความปลอดภัยในการทำธุรกรรมและการจ่ายเงิน';
+  String get apIdentityBody => 'ยืนยันตัวตนผ่านผู้ให้บริการโทรศัพท์มือถือ ใช้เพื่อความปลอดภัยในการทำธุรกรรมและการจ่ายเงิน';
 
   @override
   String get apIdentityAction => 'ยืนยันตัวตน';
@@ -250,8 +254,7 @@ class TTh extends T {
   String get apIdentityDevTitle => 'ยืนยันตัวตนทดสอบ';
 
   @override
-  String get apIdentityDevBody =>
-      'ในโหมดพัฒนา จะผ่านการยืนยันโดยไม่ตรวจสอบจริง';
+  String get apIdentityDevBody => 'ในโหมดพัฒนา จะผ่านการยืนยันโดยไม่ตรวจสอบจริง';
 
   @override
   String get apIdentityDevPass => 'ผ่าน';
@@ -695,12 +698,10 @@ class TTh extends T {
   String get err_rate_limited => 'ส่งคำขอมากเกินไป กรุณาลองใหม่ในภายหลัง';
 
   @override
-  String get err_studio_too_large =>
-      'บริการทำความสะอาดสตูดิโอใช้ได้กับบ้านไม่เกิน 10 พยอง';
+  String get err_studio_too_large => 'บริการทำความสะอาดสตูดิโอใช้ได้กับบ้านไม่เกิน 10 พยอง';
 
   @override
-  String get err_date_out_of_range =>
-      'กรุณาเลือกวันที่ตั้งแต่พรุ่งนี้ ไม่เกิน 60 วันข้างหน้า';
+  String get err_date_out_of_range => 'กรุณาเลือกวันที่ตั้งแต่พรุ่งนี้ ไม่เกิน 60 วันข้างหน้า';
 
   @override
   String get err_slot_full => 'เวลานั้นเต็มแล้ว กรุณาเลือกเวลาอื่น';
@@ -715,15 +716,13 @@ class TTh extends T {
   String get err_coupon_wrong_service => 'คูปองนี้ใช้กับบริการนี้ไม่ได้';
 
   @override
-  String get err_payment_failed =>
-      'การชำระเงินไม่ได้รับการอนุมัติ กรุณาใช้วิธีอื่น';
+  String get err_payment_failed => 'การชำระเงินไม่ได้รับการอนุมัติ กรุณาใช้วิธีอื่น';
 
   @override
   String get err_payment_method_required => 'กรุณาเลือกวิธีชำระเงิน';
 
   @override
-  String get err_cancellation_window_closed =>
-      'ภายใน 2 วันก่อนวันเข้าบริการ กรุณายกเลิกผ่านทีมงานของเรา';
+  String get err_cancellation_window_closed => 'ภายใน 2 วันก่อนวันเข้าบริการ กรุณายกเลิกผ่านทีมงานของเรา';
 
   @override
   String get err_address_required => 'กรุณาเพิ่มที่อยู่สำหรับเข้าบริการ';
@@ -750,8 +749,7 @@ class TTh extends T {
   String get introTitle => 'จองบริการทำความสะอาดมืออาชีพ\nได้ในไม่กี่นาที';
 
   @override
-  String get introBody =>
-      'ราคาชัดเจน · ทีมที่ผ่านการตรวจสอบ · ติดตามความคืบหน้าแบบเรียลไทม์';
+  String get introBody => 'ราคาชัดเจน · ทีมที่ผ่านการตรวจสอบ · ติดตามความคืบหน้าแบบเรียลไทม์';
 
   @override
   String get introStart => 'เริ่มต้นด้วยหมายเลขโทรศัพท์';
@@ -780,8 +778,7 @@ class TTh extends T {
   String get loginVerify => 'ยืนยัน';
 
   @override
-  String get loginTerms =>
-      'เมื่อดำเนินการต่อ แสดงว่าคุณยอมรับข้อกำหนดการใช้งานและนโยบายความเป็นส่วนตัว';
+  String get loginTerms => 'เมื่อดำเนินการต่อ แสดงว่าคุณยอมรับข้อกำหนดการใช้งานและนโยบายความเป็นส่วนตัว';
 
   @override
   String get profileTitle => 'ขอทราบชื่อของคุณหน่อย';
@@ -844,52 +841,40 @@ class TTh extends T {
   String get svcShort_move_in => 'ย้ายเข้า';
 
   @override
-  String get svcDesc_studio =>
-      'ทำความสะอาดสตูดิโอขนาดไม่เกิน 10 พยอง (1 ห้อง 1 ห้องน้ำ) อย่างละเอียดในเวลา 2 ชั่วโมง';
+  String get svcDesc_studio => 'ทำความสะอาดสตูดิโอขนาดไม่เกิน 10 พยอง (1 ห้อง 1 ห้องน้ำ) อย่างละเอียดในเวลา 2 ชั่วโมง';
 
   @override
-  String get svcDesc_kitchen =>
-      'ทำความสะอาดห้องครัวแบบเจาะจง: อ่างล้างจาน เตาแก๊ส ด้านนอกของเครื่องดูดควัน และหน้าท็อป';
+  String get svcDesc_kitchen => 'ทำความสะอาดห้องครัวแบบเจาะจง: อ่างล้างจาน เตาแก๊ส ด้านนอกของเครื่องดูดควัน และหน้าท็อป';
 
   @override
-  String get svcDesc_bathroom =>
-      'ทำความสะอาดชั้นวาง ก๊อกน้ำ อ่างล้างหน้า และโถสุขภัณฑ์ทั้งด้านในและด้านนอก พร้อมเช็ดพื้นให้แห้ง';
+  String get svcDesc_bathroom => 'ทำความสะอาดชั้นวาง ก๊อกน้ำ อ่างล้างหน้า และโถสุขภัณฑ์ทั้งด้านในและด้านนอก พร้อมเช็ดพื้นให้แห้ง';
 
   @override
-  String get svcDesc_mattress =>
-      'ใช้อุปกรณ์มืออาชีพดูดฝุ่น ไรฝุ่น และคราบ แล้วฆ่าเชื้อด้วยไอน้ำ';
+  String get svcDesc_mattress => 'ใช้อุปกรณ์มืออาชีพดูดฝุ่น ไรฝุ่น และคราบ แล้วฆ่าเชื้อด้วยไอน้ำ';
 
   @override
-  String get svcDesc_aircon =>
-      'ถอดประกอบ แล้วล้างแรงดันสูงที่คอยล์ พัดลม และฟิลเตอร์ ปิดท้ายด้วยการฆ่าเชื้อ';
+  String get svcDesc_aircon => 'ถอดประกอบ แล้วล้างแรงดันสูงที่คอยล์ พัดลม และฟิลเตอร์ ปิดท้ายด้วยการฆ่าเชื้อ';
 
   @override
-  String get svcDesc_sofa =>
-      'ใช้น้ำยาที่เหมาะกับวัสดุเพื่อย่อยคราบสกปรก แล้วดูดออกด้วยวิธีซักแบบเปียก';
+  String get svcDesc_sofa => 'ใช้น้ำยาที่เหมาะกับวัสดุเพื่อย่อยคราบสกปรก แล้วดูดออกด้วยวิธีซักแบบเปียก';
 
   @override
-  String get svcDesc_move_out =>
-      'ก่อนย้ายออก ทีมมืออาชีพนำอุปกรณ์มาทำความสะอาดบ้านที่ขนของออกแล้ว';
+  String get svcDesc_move_out => 'ก่อนย้ายออก ทีมมืออาชีพนำอุปกรณ์มาทำความสะอาดบ้านที่ขนของออกแล้ว';
 
   @override
-  String get svcDesc_move_in =>
-      'ก่อนย้ายเข้า ทีมมืออาชีพนำอุปกรณ์มาทำความสะอาดภายในบ้านใหม่';
+  String get svcDesc_move_in => 'ก่อนย้ายเข้า ทีมมืออาชีพนำอุปกรณ์มาทำความสะอาดภายในบ้านใหม่';
 
   @override
-  String get svcNotes_bathroom =>
-      'หากท่อระบายน้ำหรือโถสุขภัณฑ์อุดตัน บริการอาจถูกจำกัด\nไม่รวมการทำความสะอาดที่ต้องใช้สารเคมีพิเศษ เพดาน หรือพัดลมระบายอากาศ\nเชื้อราเก่าและคราบฝังลึกอาจไม่หลุดออกทั้งหมด';
+  String get svcNotes_bathroom => 'หากท่อระบายน้ำหรือโถสุขภัณฑ์อุดตัน บริการอาจถูกจำกัด\nไม่รวมการทำความสะอาดที่ต้องใช้สารเคมีพิเศษ เพดาน หรือพัดลมระบายอากาศ\nเชื้อราเก่าและคราบฝังลึกอาจไม่หลุดออกทั้งหมด';
 
   @override
-  String get svcNotes_mattress =>
-      'ราคาเดียวกันตั้งแต่ขนาดเดี่ยวถึงคิงไซส์\nใช้เวลาแห้งสนิท 4–6 ชั่วโมงหลังซัก\nความเสียหายของสปริงหรือที่นอนยุบไม่สามารถแก้ไขได้';
+  String get svcNotes_mattress => 'ราคาเดียวกันตั้งแต่ขนาดเดี่ยวถึงคิงไซส์\nใช้เวลาแห้งสนิท 4–6 ชั่วโมงหลังซัก\nความเสียหายของสปริงหรือที่นอนยุบไม่สามารถแก้ไขได้';
 
   @override
-  String get svcNotes_aircon =>
-      'เครื่องที่ผลิตเกิน 10 ปี อาจถอดล้างได้ยาก\nไม่รวมการทำความสะอาดคอยล์ร้อนภายนอก\nเราตรวจสอบการทำงานก่อนและหลังการล้าง';
+  String get svcNotes_aircon => 'เครื่องที่ผลิตเกิน 10 ปี อาจถอดล้างได้ยาก\nไม่รวมการทำความสะอาดคอยล์ร้อนภายนอก\nเราตรวจสอบการทำงานก่อนและหลังการล้าง';
 
   @override
-  String get svcNotes_sofa =>
-      'โซฟาหนังจะทำความสะอาดและเคลือบบำรุง\nคราบเก่าหรือการย้อมสีที่ซึมอาจไม่หลุดออกทั้งหมด\nใช้เวลาแห้งสนิท 4–6 ชั่วโมง';
+  String get svcNotes_sofa => 'โซฟาหนังจะทำความสะอาดและเคลือบบำรุง\nคราบเก่าหรือการย้อมสีที่ซึมอาจไม่หลุดออกทั้งหมด\nใช้เวลาแห้งสนิท 4–6 ชั่วโมง';
 
   @override
   String get unitTitle_bathroom => 'จำนวนห้องน้ำ';
@@ -995,8 +980,7 @@ class TTh extends T {
   String get homeServices => 'ต้องการบริการแบบไหน';
 
   @override
-  String get homeAddAddress =>
-      'เพิ่มที่อยู่เพื่อดูบริการและราคาที่ให้บริการได้ทันที';
+  String get homeAddAddress => 'เพิ่มที่อยู่เพื่อดูบริการและราคาที่ให้บริการได้ทันที';
 
   @override
   String get homeAddAddressCta => 'เพิ่มที่อยู่';
@@ -1007,8 +991,7 @@ class TTh extends T {
   }
 
   @override
-  String get homeRebookBody =>
-      'ใช้ตัวเลือกเดิมจากครั้งที่แล้ว จองได้ในไม่กี่คลิก';
+  String get homeRebookBody => 'ใช้ตัวเลือกเดิมจากครั้งที่แล้ว จองได้ในไม่กี่คลิก';
 
   @override
   String get homeNotices => 'ข่าวสาร';
@@ -1020,8 +1003,7 @@ class TTh extends T {
   String get trustCancel => 'ยกเลิกฟรี\nจนถึง 2 วันก่อนวันเข้าบริการ';
 
   @override
-  String get trustCard =>
-      'ข้อมูลบัตรจะเก็บไว้\nกับผู้ให้บริการชำระเงินเท่านั้น';
+  String get trustCard => 'ข้อมูลบัตรจะเก็บไว้\nกับผู้ให้บริการชำระเงินเท่านั้น';
 
   @override
   String stepOf(String current, String total) {
@@ -1040,8 +1022,7 @@ class TTh extends T {
   }
 
   @override
-  String get studioBlockedBody =>
-      'ทีมที่ปรึกษาจะแนะนำบริการที่เหมาะกับบ้านของคุณ';
+  String get studioBlockedBody => 'ทีมที่ปรึกษาจะแนะนำบริการที่เหมาะกับบ้านของคุณ';
 
   @override
   String get consultCta => 'สอบถามทีมที่ปรึกษา';
@@ -1227,8 +1208,7 @@ class TTh extends T {
   String get doneQuoteTitle => 'ได้รับคำขอปรึกษาแล้ว';
 
   @override
-  String get doneQuoteBody =>
-      'ทีมที่ปรึกษาจะตรวจสอบและส่งใบเสนอราคาสุดท้ายให้ คุณดูได้ในแท็บแชท';
+  String get doneQuoteBody => 'ทีมที่ปรึกษาจะตรวจสอบและส่งใบเสนอราคาสุดท้ายให้ คุณดูได้ในแท็บแชท';
 
   @override
   String get goHome => 'กลับหน้าหลัก';
@@ -1249,8 +1229,7 @@ class TTh extends T {
   String get bookingsEmpty => 'ยังไม่มีการจอง';
 
   @override
-  String get bookingsEmptyBody =>
-      'มีคูปองต้อนรับรอให้ใช้กับการจองครั้งแรกของคุณ';
+  String get bookingsEmptyBody => 'มีคูปองต้อนรับรอให้ใช้กับการจองครั้งแรกของคุณ';
 
   @override
   String get bookNow => 'จองบริการทำความสะอาด';
@@ -1306,8 +1285,7 @@ class TTh extends T {
   String get cancelTitle => 'ยืนยันยกเลิกการจองนี้ไหม';
 
   @override
-  String get cancelFree =>
-      'หากยกเลิกตอนนี้ คุณจะได้รับเงินคืนเต็มจำนวน และคูปองจะถูกคืนให้ด้วย';
+  String get cancelFree => 'หากยกเลิกตอนนี้ คุณจะได้รับเงินคืนเต็มจำนวน และคูปองจะถูกคืนให้ด้วย';
 
   @override
   String get cancelKeep => 'ไม่ยกเลิก';
@@ -1481,8 +1459,7 @@ class TTh extends T {
   }
 
   @override
-  String get sys_reschedule_declined =>
-      'พาร์ทเนอร์ไม่สามารถเข้าบริการในเวลาที่เปลี่ยนได้ ทีมที่ปรึกษาจะประสานงานให้อีกครั้ง';
+  String get sys_reschedule_declined => 'พาร์ทเนอร์ไม่สามารถเข้าบริการในเวลาที่เปลี่ยนได้ ทีมที่ปรึกษาจะประสานงานให้อีกครั้ง';
 
   @override
   String get moreTitle => 'เพิ่มเติม';
@@ -1544,8 +1521,7 @@ class TTh extends T {
   String get deleteAccount => 'ลบบัญชี';
 
   @override
-  String get deleteAccountBody =>
-      'ข้อมูลส่วนตัวของคุณจะถูกลบและไม่สามารถกู้คืนได้ กรุณายกเลิกการจองที่ยังดำเนินการอยู่ก่อน';
+  String get deleteAccountBody => 'ข้อมูลส่วนตัวของคุณจะถูกลบและไม่สามารถกู้คืนได้ กรุณายกเลิกการจองที่ยังดำเนินการอยู่ก่อน';
 
   @override
   String get couponsEmpty => 'ยังไม่มีคูปอง';
@@ -1694,8 +1670,7 @@ class TTh extends T {
   String get quoteEstimateTitle => 'นี่คือราคาประมาณการ';
 
   @override
-  String get quoteEstimateBody =>
-      'ราคาสุดท้ายจะยืนยันในแชท หลังจากเราดูรูปภาพและสภาพบ้านแล้ว';
+  String get quoteEstimateBody => 'ราคาสุดท้ายจะยืนยันในแชท หลังจากเราดูรูปภาพและสภาพบ้านแล้ว';
 
   @override
   String get quoteG1 => 'ราคาสุดท้ายจะตกลงกันในแชท';
@@ -1785,8 +1760,7 @@ class TTh extends T {
   String get fVatEstimate => 'VAT (ประมาณการ)';
 
   @override
-  String get fVatNote =>
-      'ประมาณการจาก 10% ของค่าธรรมเนียมแพลตฟอร์ม โปรดตรวจสอบกับนักบัญชี';
+  String get fVatNote => 'ประมาณการจาก 10% ของค่าธรรมเนียมแพลตฟอร์ม โปรดตรวจสอบกับนักบัญชี';
 
   @override
   String get fAov => 'มูลค่าออเดอร์เฉลี่ย';
@@ -1973,8 +1947,7 @@ class TTh extends T {
   String get err_self_referral => 'ใช้รหัสของตัวเองไม่ได้';
 
   @override
-  String get err_referee_already_booked =>
-      'กรอกรหัสได้ก่อนการจองครั้งแรกเท่านั้น';
+  String get err_referee_already_booked => 'กรอกรหัสได้ก่อนการจองครั้งแรกเท่านั้น';
 
   @override
   String get err_already_referred => 'ใช้รหัสแนะนำไปแล้ว';
@@ -1992,8 +1965,7 @@ class TTh extends T {
   String get welcomeOfferTitle => 'ส่วนลดการจองครั้งแรก';
 
   @override
-  String get welcomeOfferBody =>
-      'ใช้อัตโนมัติกับการจองครั้งแรกของลูกค้าใหม่ ไม่รวมกับคูปอง';
+  String get welcomeOfferBody => 'ใช้อัตโนมัติกับการจองครั้งแรกของลูกค้าใหม่ ไม่รวมกับคูปอง';
 
   @override
   String get offerKindAmount => 'จำนวนเงินคงที่ (วอน)';
@@ -2014,8 +1986,7 @@ class TTh extends T {
   String get referralSettingsTitle => 'รางวัลแนะนำเพื่อน';
 
   @override
-  String get referralSettingsBody =>
-      'จ่ายเมื่อการจองครั้งแรกของเพื่อนเสร็จและชำระเงินแล้ว บล็อกการแนะนำตัวเองและเบอร์ซ้ำ';
+  String get referralSettingsBody => 'จ่ายเมื่อการจองครั้งแรกของเพื่อนเสร็จและชำระเงินแล้ว บล็อกการแนะนำตัวเองและเบอร์ซ้ำ';
 
   @override
   String get referralRewardAmount => 'มูลค่ารางวัล (วอน)';
@@ -2154,32 +2125,25 @@ class TTh extends T {
   String get oIntNever => 'ยังไม่มีการใช้งาน';
 
   @override
-  String get oActDb =>
-      'เชื่อมต่อฐานข้อมูลไม่ได้ รัน malkkeum logs บนเซิร์ฟเวอร์ และรีสตาร์ตหากยังเกิดซ้ำ';
+  String get oActDb => 'เชื่อมต่อฐานข้อมูลไม่ได้ รัน malkkeum logs บนเซิร์ฟเวอร์ และรีสตาร์ตหากยังเกิดซ้ำ';
 
   @override
-  String get oActDisk =>
-      'พื้นที่ว่างในดิสก์น้อยกว่า 10% ลบไฟล์สำรองเก่าหรือเพิ่มพื้นที่ดิสก์';
+  String get oActDisk => 'พื้นที่ว่างในดิสก์น้อยกว่า 10% ลบไฟล์สำรองเก่าหรือเพิ่มพื้นที่ดิสก์';
 
   @override
-  String get oActBackup =>
-      'การสำรองข้อมูลอัตโนมัติเลยกำหนด รัน malkkeum backup บนเซิร์ฟเวอร์และตรวจ backups/backup.log';
+  String get oActBackup => 'การสำรองข้อมูลอัตโนมัติเลยกำหนด รัน malkkeum backup บนเซิร์ฟเวอร์และตรวจ backups/backup.log';
 
   @override
-  String get oActErrors =>
-      'มีข้อผิดพลาดของเซิร์ฟเวอร์มาก ดูบรรทัด error ใน malkkeum logs และส่งให้ผู้พัฒนาหากเกิดซ้ำ';
+  String get oActErrors => 'มีข้อผิดพลาดของเซิร์ฟเวอร์มาก ดูบรรทัด error ใน malkkeum logs และส่งให้ผู้พัฒนาหากเกิดซ้ำ';
 
   @override
-  String get oActPayments =>
-      'อาจชำระเงินสำเร็จแล้วแต่ยังไม่ได้ดำเนินการอัตโนมัติ ตรวจใน PortOne และคืนเงินเองหากจำเป็น';
+  String get oActPayments => 'อาจชำระเงินสำเร็จแล้วแต่ยังไม่ได้ดำเนินการอัตโนมัติ ตรวจใน PortOne และคืนเงินเองหากจำเป็น';
 
   @override
-  String get oActWebhook =>
-      'การตรวจลายเซ็นการแจ้งเตือนการชำระเงินไม่ผ่าน ใส่ webhook secret ใหม่ที่ ตั้งค่า > การชำระเงิน (PortOne)';
+  String get oActWebhook => 'การตรวจลายเซ็นการแจ้งเตือนการชำระเงินไม่ผ่าน ใส่ webhook secret ใหม่ที่ ตั้งค่า > การชำระเงิน (PortOne)';
 
   @override
-  String get oActIntegration =>
-      'การเชื่อมต่อนี้ล้มเหลว ตรวจคีย์ในหน้าตั้งค่าแล้วกด Test connection';
+  String get oActIntegration => 'การเชื่อมต่อนี้ล้มเหลว ตรวจคีย์ในหน้าตั้งค่าแล้วกด Test connection';
 
   @override
   String get oActNotSet => 'ยังไม่ได้ตั้งค่า ใส่คีย์ในหน้าตั้งค่า';
@@ -2188,8 +2152,7 @@ class TTh extends T {
   String get oAlerts => 'การตั้งค่าการแจ้งเตือน';
 
   @override
-  String get oAlertsHint =>
-      'หากมีปัญหา จะแจ้งในกล่องข้อความและส่ง SMS ถึงโทรศัพท์เจ้าของ ปัญหาเดิมจะส่งทุก 6 ชั่วโมง';
+  String get oAlertsHint => 'หากมีปัญหา จะแจ้งในกล่องข้อความและส่ง SMS ถึงโทรศัพท์เจ้าของ ปัญหาเดิมจะส่งทุก 6 ชั่วโมง';
 
   @override
   String get oRuleSms => 'ส่ง SMS ไม่สำเร็จ';
@@ -2227,15 +2190,13 @@ class TTh extends T {
   }
 
   @override
-  String get oQuietHint =>
-      'ไม่แจ้งเตือนในช่วงนี้ และจะส่งหนึ่งข้อความหลังจบช่วง';
+  String get oQuietHint => 'ไม่แจ้งเตือนในช่วงนี้ และจะส่งหนึ่งข้อความหลังจบช่วง';
 
   @override
   String get oAlertPhone => 'โทรศัพท์รับการแจ้งเตือน';
 
   @override
-  String get oAlertPhoneHint =>
-      'เว้นว่างเพื่อใช้เบอร์ฝ่ายสนับสนุนในข้อมูลธุรกิจ';
+  String get oAlertPhoneHint => 'เว้นว่างเพื่อใช้เบอร์ฝ่ายสนับสนุนในข้อมูลธุรกิจ';
 
   @override
   String get oSave => 'บันทึก';
@@ -2253,8 +2214,7 @@ class TTh extends T {
   String get oBackupOffsite => 'สำรองข้อมูลภายนอก (S3)';
 
   @override
-  String get oBackupOffsiteOff =>
-      'ปิดอยู่ เปิดได้ที่ ตั้งค่า > สำรองข้อมูลภายนอก';
+  String get oBackupOffsiteOff => 'ปิดอยู่ เปิดได้ที่ ตั้งค่า > สำรองข้อมูลภายนอก';
 
   @override
   String get oLastBackup => 'สำรองล่าสุด';
@@ -2278,12 +2238,10 @@ class TTh extends T {
   String get pTabSchedule => 'ตารางงาน';
 
   @override
-  String get pIntroTitle =>
-      'งาน · ตารางงาน · การจ่ายเงิน\nสำหรับผู้เชี่ยวชาญด้านการทำความสะอาด';
+  String get pIntroTitle => 'งาน · ตารางงาน · การจ่ายเงิน\nสำหรับผู้เชี่ยวชาญด้านการทำความสะอาด';
 
   @override
-  String get pIntroBody =>
-      'ทำงานเฉพาะพื้นที่และเวลาที่คุณต้องการ รับเงินทุกสัปดาห์';
+  String get pIntroBody => 'ทำงานเฉพาะพื้นที่และเวลาที่คุณต้องการ รับเงินทุกสัปดาห์';
 
   @override
   String get pOnbTitle => 'ขอทราบข้อมูลของคุณหน่อย';
@@ -2307,12 +2265,10 @@ class TTh extends T {
   String get pPendingTitle => 'บัญชีของคุณอยู่ระหว่างตรวจสอบ';
 
   @override
-  String get pPendingBody =>
-      'เราจะแจ้งเตือนเมื่อได้รับการอนุมัติ ระหว่างนี้กรุณาเพิ่มบัญชีรับเงิน';
+  String get pPendingBody => 'เราจะแจ้งเตือนเมื่อได้รับการอนุมัติ ระหว่างนี้กรุณาเพิ่มบัญชีรับเงิน';
 
   @override
-  String get pSuspended =>
-      'บัญชีของคุณถูกระงับชั่วคราว กรุณาติดต่อฝ่ายปฏิบัติการ';
+  String get pSuspended => 'บัญชีของคุณถูกระงับชั่วคราว กรุณาติดต่อฝ่ายปฏิบัติการ';
 
   @override
   String get pDirect => 'จองทันที';
@@ -2336,8 +2292,7 @@ class TTh extends T {
   String get pNoJobs => 'ตอนนี้ยังไม่มีงานที่เหมาะกับคุณ';
 
   @override
-  String get pNoJobsBody =>
-      'ลองขยายบริการ พื้นที่ หรือเวลาทำงาน เพื่อดูงานได้มากขึ้น';
+  String get pNoJobsBody => 'ลองขยายบริการ พื้นที่ หรือเวลาทำงาน เพื่อดูงานได้มากขึ้น';
 
   @override
   String get pPayout => 'รายได้ที่คาดว่าจะได้รับ';
@@ -2352,8 +2307,7 @@ class TTh extends T {
   String get pClosed => 'ปิดรับแล้ว';
 
   @override
-  String get pPrivacyNote =>
-      'ที่อยู่ที่แน่นอนและข้อมูลลูกค้าจะแสดงหลังจากคุณรับงาน';
+  String get pPrivacyNote => 'ที่อยู่ที่แน่นอนและข้อมูลลูกค้าจะแสดงหลังจากคุณรับงาน';
 
   @override
   String get pAccept => 'รับงาน';
@@ -2362,8 +2316,7 @@ class TTh extends T {
   String get pAcceptConfirm => 'ต้องการรับงานนี้ไหม';
 
   @override
-  String get pAcceptBody =>
-      'งานจะถูกเพิ่มในตารางงานของคุณ และระบบจะแจ้งลูกค้าว่ามอบหมายทีมแล้ว หากยกเลิกภายใน 2 วันก่อนวันเข้าบริการจะถูกจำกัด';
+  String get pAcceptBody => 'งานจะถูกเพิ่มในตารางงานของคุณ และระบบจะแจ้งลูกค้าว่ามอบหมายทีมแล้ว หากยกเลิกภายใน 2 วันก่อนวันเข้าบริการจะถูกจำกัด';
 
   @override
   String get pAccepted => 'รับงานแล้ว';
@@ -2430,8 +2383,7 @@ class TTh extends T {
   String get pNoSchedule => 'ไม่มีงานในวันนี้';
 
   @override
-  String get pCancelledBanner =>
-      'ลูกค้ายกเลิกงานนี้แล้ว ไม่สามารถทำเครื่องหมายว่าเสร็จได้';
+  String get pCancelledBanner => 'ลูกค้ายกเลิกงานนี้แล้ว ไม่สามารถทำเครื่องหมายว่าเสร็จได้';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2511,8 +2463,7 @@ class TTh extends T {
   String get pCompleteCta => 'ทำเครื่องหมายว่าเสร็จ';
 
   @override
-  String get pCompleteNeed =>
-      'กรุณาอัปโหลดรูปอย่างน้อยอย่างละ 1 รูป และติ๊กรายการทุกข้อ';
+  String get pCompleteNeed => 'กรุณาอัปโหลดรูปอย่างน้อยอย่างละ 1 รูป และติ๊กรายการทุกข้อ';
 
   @override
   String get pCompleted => 'เยี่ยมมาก ขอบคุณสำหรับการทำงาน!';
@@ -2574,8 +2525,7 @@ class TTh extends T {
   String get pUnverified => 'กำลังตรวจสอบ';
 
   @override
-  String get pAccountSaved =>
-      'บันทึกบัญชีแล้ว เมื่อมีการเปลี่ยนแปลงจะตรวจสอบอีกครั้ง';
+  String get pAccountSaved => 'บันทึกบัญชีแล้ว เมื่อมีการเปลี่ยนแปลงจะตรวจสอบอีกครั้ง';
 
   @override
   String get pWorkSchedule => 'ตารางการทำงาน';
@@ -2795,8 +2745,7 @@ class TTh extends T {
   String get cSetupPrivacyOfficer => 'เจ้าหน้าที่คุ้มครองข้อมูล';
 
   @override
-  String get cSetupStoreLinks =>
-      'ลิงก์ร้านค้าแอป (กรอกแล้วปุ่มบนเว็บจะเปิดใช้)';
+  String get cSetupStoreLinks => 'ลิงก์ร้านค้าแอป (กรอกแล้วปุ่มบนเว็บจะเปิดใช้)';
 
   @override
   String get cSetupCustomerApp => 'แอปลูกค้า';
@@ -2808,15 +2757,13 @@ class TTh extends T {
   String get cSetupPayMethods => 'วิธีชำระเงิน';
 
   @override
-  String get cSetupPayMethodsHint =>
-      'เปิดหรือปิดวิธีชำระเงินที่ลูกค้าเห็น มีผลทันที';
+  String get cSetupPayMethodsHint => 'เปิดหรือปิดวิธีชำระเงินที่ลูกค้าเห็น มีผลทันที';
 
   @override
   String get cReviewTitle => 'บัญชีเดโมสำหรับการตรวจสอบแอป';
 
   @override
-  String get cReviewHint =>
-      'ผู้ตรวจสอบรับ SMS เกาหลีไม่ได้ ใส่หมายเลขและรหัส 6 หลักในบันทึกการตรวจสอบ ปิดอัตโนมัติเมื่อหมดเวลา';
+  String get cReviewHint => 'ผู้ตรวจสอบรับ SMS เกาหลีไม่ได้ ใส่หมายเลขและรหัส 6 หลักในบันทึกการตรวจสอบ ปิดอัตโนมัติเมื่อหมดเวลา';
 
   @override
   String get cReviewPhone => 'เบอร์โทรเดโม';
@@ -2833,16 +2780,13 @@ class TTh extends T {
   String get cReviewEnable => 'เปิด (14 วัน)';
 
   @override
-  String get pDeleteAccountBody =>
-      'ทีมและข้อมูลส่วนตัวจะถูกลบถาวร กรุณาทำงานที่ได้รับและยอดค้างจ่ายให้เสร็จก่อน';
+  String get pDeleteAccountBody => 'ทีมและข้อมูลส่วนตัวจะถูกลบถาวร กรุณาทำงานที่ได้รับและยอดค้างจ่ายให้เสร็จก่อน';
 
   @override
-  String get err_has_active_jobs =>
-      'คุณยังมีงานที่ได้รับอยู่ ทำให้เสร็จหรือขอให้ฝ่ายบริการโอนงาน';
+  String get err_has_active_jobs => 'คุณยังมีงานที่ได้รับอยู่ ทำให้เสร็จหรือขอให้ฝ่ายบริการโอนงาน';
 
   @override
-  String get err_pending_payouts =>
-      'ยังมียอดค้างจ่าย ลบบัญชีได้หลังได้รับเงินแล้ว';
+  String get err_pending_payouts => 'ยังมียอดค้างจ่าย ลบบัญชีได้หลังได้รับเงินแล้ว';
 
   @override
   String get err_phone_required => 'ยืนยันเบอร์โทรก่อนรับงาน';
@@ -2865,8 +2809,7 @@ class TTh extends T {
   String get mMyJobs => 'งานของฉัน';
 
   @override
-  String get mNoJobs =>
-      'ยังไม่มีงานที่ได้รับ งานที่หัวหน้าทีมมอบหมายจะแสดงที่นี่';
+  String get mNoJobs => 'ยังไม่มีงานที่ได้รับ งานที่หัวหน้าทีมมอบหมายจะแสดงที่นี่';
 
   @override
   String mTeam(String team) {
@@ -2949,8 +2892,7 @@ class TTh extends T {
   String get cFirstRunTitle => 'ยินดีต้อนรับ! สร้างบัญชีเจ้าของ';
 
   @override
-  String get cFirstRunBody =>
-      'กรอกรหัส 12 ตัวที่แสดงตอนติดตั้ง บัญชีนี้จัดการการตั้งค่าทั้งหมด';
+  String get cFirstRunBody => 'กรอกรหัส 12 ตัวที่แสดงตอนติดตั้ง บัญชีนี้จัดการการตั้งค่าทั้งหมด';
 
   @override
   String get cFirstRunCode => 'รหัสติดตั้ง';
@@ -2985,15 +2927,13 @@ class TTh extends T {
   String get uUpdateRequiredTitle => 'ต้องอัปเดตแอป';
 
   @override
-  String get uUpdateRequiredBody =>
-      'เวอร์ชันนี้ไม่รองรับแล้ว กรุณาอัปเดตจากสโตร์';
+  String get uUpdateRequiredBody => 'เวอร์ชันนี้ไม่รองรับแล้ว กรุณาอัปเดตจากสโตร์';
 
   @override
   String get uUpdateStore => 'อัปเดตจากสโตร์';
 
   @override
-  String get uUpdateStoreMissing =>
-      'ลิงก์อัปเดตยังไม่พร้อม กรุณาลองใหม่ภายหลัง';
+  String get uUpdateStoreMissing => 'ลิงก์อัปเดตยังไม่พร้อม กรุณาลองใหม่ภายหลัง';
 
   @override
   String uCurrentVersion(String version) {
@@ -3004,8 +2944,7 @@ class TTh extends T {
   String get uAppVersionTitle => 'เวอร์ชันแอป';
 
   @override
-  String get uAppVersionHint =>
-      'แอปที่ต่ำกว่าเวอร์ชันขั้นต่ำจะค้างที่หน้าอัปเดต ตัวอย่าง: 1.2.0';
+  String get uAppVersionHint => 'แอปที่ต่ำกว่าเวอร์ชันขั้นต่ำจะค้างที่หน้าอัปเดต ตัวอย่าง: 1.2.0';
 
   @override
   String get uMinVersion => 'เวอร์ชันขั้นต่ำ';
