@@ -67,7 +67,7 @@ async fn portone(State(s): State<AppState>, headers: HeaderMap, body: Bytes) -> 
     let secret = integ.portone.webhook_secret.as_deref();
     match (webhook_auth(s.config.dev_mode, secret), secret) {
         (WebhookAuth::Verify, Some(secret)) => {
-            verify_webhook(
+            let verified = verify_webhook(
                 secret,
                 header(&headers, "webhook-id"),
                 header(&headers, "webhook-timestamp"),
@@ -75,12 +75,15 @@ async fn portone(State(s): State<AppState>, headers: HeaderMap, body: Bytes) -> 
                 &body,
                 Utc::now().timestamp(),
             )
-            .map_err(|e: WebhookError| {
-                tracing::warn!(error = ?e, "portone webhook rejected");
-                s.providers.observe("portone_webhook", Err("bad_signature"));
-                ApiError::Unauthorized
-            })?;
-            s.providers.observe("portone_webhook", Ok(()));
+            .inspect_err(|e: &WebhookError| tracing::warn!(error = ?e, "portone webhook rejected"))
+            .map_err(|_| ApiError::Unauthorized);
+            match verified {
+                Ok(()) => s.providers.observe("portone_webhook", Ok(())).await,
+                Err(e) => {
+                    s.providers.observe("portone_webhook", Err("bad_signature")).await;
+                    return Err(e);
+                }
+            }
         }
         (WebhookAuth::UnsignedDev, _) => {
             tracing::warn!("unsigned portone webhook accepted: DEV_MODE without PORTONE_WEBHOOK_SECRET");

@@ -164,3 +164,19 @@ cd app/apps/customer && flutter run -d windows   # or chrome / an Android device
 - Signing key is derived from `DATA_KEY`. Rotating `DATA_KEY` ends open photo links within an hour; photos and their rows are unaffected.
 - Photos stored before this change keep working as long as `PUBLIC_BASE_URL` stays the same.
 - Backups still take the upload directory as a tar (`uploads-*.tar.gz`); no object storage is used.
+
+## 7. Operations: probes, logs, metrics, shutdown (operators)
+
+- **Liveness** `GET /health` answers while the process is up; it never touches the database.
+- **Readiness** `GET /ready` returns 200 only when the database answers and every migration shipped with the image is applied (503 otherwise). The compose healthcheck runs `api --ready`. Caddy does not route `/ready` or `/metrics` to the internet (404).
+- **Logs.** Production sets `LOG_FORMAT=json`: one JSON object per event, with the request span (`method`, `path`, `request_id`) attached. Local runs keep the readable format; set `LOG_FORMAT=json` to try the production format. `RUST_LOG` still controls the level.
+- **Request ids.** Every response carries `x-request-id`. A client-sent id is kept when it is at most 128 characters of `[A-Za-z0-9-_.:]`; otherwise the API generates one. Error bodies repeat it as `error.request_id`, and it is the value to grep for in the logs. No other internal detail reaches a client.
+- **Metrics** `GET /metrics` (Prometheus text format 0.0.4). Set `METRICS_TOKEN` (32+ characters) in the server environment and scrape with `Authorization: Bearer <token>`. Without a token, only loopback clients can scrape, so a scraper must run on the host or in the same network namespace. Series:
+  - `malkkeum_http_requests_total{method,route,status}` and `malkkeum_http_request_duration_seconds` (histogram). `route` is the route template (`/v1/bookings/{id}`); unmatched paths share `route="unmatched"`, so cardinality stays bounded.
+  - `malkkeum_db_pool_connections{state="open"|"idle"}`.
+  - `malkkeum_payouts_pending`: payouts requested or sent and not yet settled.
+  - `malkkeum_job_last_run_timestamp_seconds{job}` and `malkkeum_job_errors_total{job}` for `reconciler`, `ops_alerts`, `payout_sync`, `settings_refresh`. Alert when a timestamp is older than a few intervals.
+  - `malkkeum_realtime_listening`: 0 means this replica is not receiving events from the others.
+  - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
+- **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).
+- **Several API replicas.** Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.

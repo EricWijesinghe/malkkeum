@@ -41,6 +41,8 @@ pub struct Config {
     pub reconcile_interval_secs: u64,
     /// Anthropic API root for the AI support agent (tests point it at a fake server).
     pub anthropic_base_url: String,
+    /// Bearer token for `GET /metrics`. None: only loopback clients may scrape.
+    pub metrics_token: Option<String>,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -101,6 +103,14 @@ where
         return Err(ConfigError::Invalid(key, format!("must be at least {min}")));
     }
     Ok(value)
+}
+
+/// Scrape token for `/metrics`. Short tokens are refused so a typo cannot open the endpoint to guessing.
+fn metrics_token() -> Result<Option<String>, ConfigError> {
+    match opt("METRICS_TOKEN") {
+        Some(t) if t.len() < MIN_SECRET_BYTES => Err(ConfigError::Invalid("METRICS_TOKEN", format!("needs at least {MIN_SECRET_BYTES} bytes"))),
+        t => Ok(t),
+    }
 }
 
 fn list(key: &str) -> Vec<String> {
@@ -227,6 +237,7 @@ impl Config {
             max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
+            metrics_token: metrics_token()?,
         })
     }
 }

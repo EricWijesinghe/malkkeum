@@ -32,6 +32,10 @@
 		-Server
 	}
 
+	# Probes and metrics are for the container runtime and the scraper on the server, never the internet.
+	@internal path /ready /metrics
+	respond @internal 404
+
 	@api path /v1/* /health
 	handle @api {
 		reverse_proxy api:8080
