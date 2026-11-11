@@ -397,7 +397,8 @@ class _IntegrationCardState extends State<IntegrationCard> {
           labelText: label,
           helperText: hidden && saved
               ? '${t.cSetupKeepValue} · ${preview ?? ''}'
-              : localFields['$_code.$name']?.hint(t) ?? g?.hint?.of(context.lang),
+              : localFields['$_code.$name']?.hint(t) ??
+                    g?.hint?.of(context.lang),
         ),
       ),
     );

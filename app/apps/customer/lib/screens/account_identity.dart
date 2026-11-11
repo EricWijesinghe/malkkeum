@@ -12,12 +12,14 @@ class IdentityEntryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        leading: const Icon(Icons.verified_user_outlined),
-        title: Text(context.t.apIdentityTitle),
-        subtitle: Text(context.t.apIdentityUnverified),
-        trailing: const Icon(Icons.chevron_right_rounded),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AccountIdentityScreen())),
-      );
+    leading: const Icon(Icons.verified_user_outlined),
+    title: Text(context.t.apIdentityTitle),
+    subtitle: Text(context.t.apIdentityUnverified),
+    trailing: const Icon(Icons.chevron_right_rounded),
+    onTap: () => Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const AccountIdentityScreen()),
+    ),
+  );
 }
 
 class AccountIdentityScreen extends StatefulWidget {
@@ -30,13 +32,20 @@ class AccountIdentityScreen extends StatefulWidget {
 class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
   bool _verified = false;
   bool _busy = false;
+  // Off when the server has no identity channel or the platform has no WebView: the action is hidden.
+  bool _available = false;
 
   @override
   void initState() {
     super.initState();
     // Status comes from /me when the server reports it; absent means not verified yet.
     context.appRead.api.get('/me').then((v) {
-      if (mounted && v is Json) setState(() => _verified = v['identity_verified'] as bool? ?? false);
+      if (mounted && v is Json) {
+        setState(() => _verified = v['identity_verified'] as bool? ?? false);
+      }
+    }).ignore();
+    identityAvailable(context.appRead.api).then((ok) {
+      if (mounted) setState(() => _available = ok);
     }).ignore();
   }
 
@@ -44,7 +53,7 @@ class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
     final app = context.appRead;
     setState(() => _busy = true);
     try {
-      final id = await identityVerifierFor(app.api.baseUrl).verify(context);
+      final id = await identityVerifierFor(app.api).verify(context);
       if (id == null) return;
       await submitIdentity(app.api, id);
       if (!mounted) return;
@@ -62,24 +71,51 @@ class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
     final t = context.t;
     return Scaffold(
       appBar: AppBar(title: Text(t.apIdentityTitle)),
-      body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        AppCard(
-          child: Row(children: [
-            Icon(_verified ? Icons.verified_rounded : Icons.verified_user_outlined, size: 40, color: _verified ? context.colors.fresh : context.colors.inkMuted),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(_verified ? t.apIdentityVerified : t.apIdentityUnverified, style: context.text.titleMedium),
-                const SizedBox(height: Space.xxs),
-                Text(t.apIdentityBody, style: context.text.bodySmall),
-              ]),
+      body: ListView(
+        padding: const EdgeInsets.all(Space.gutter),
+        children: [
+          AppCard(
+            child: Row(
+              children: [
+                Icon(
+                  _verified
+                      ? Icons.verified_rounded
+                      : Icons.verified_user_outlined,
+                  size: 40,
+                  color: _verified
+                      ? context.colors.fresh
+                      : context.colors.inkMuted,
+                ),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _verified
+                            ? t.apIdentityVerified
+                            : t.apIdentityUnverified,
+                        style: context.text.titleMedium,
+                      ),
+                      const SizedBox(height: Space.xxs),
+                      Text(t.apIdentityBody, style: context.text.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ),
-      ]),
-      bottomNavigationBar: _verified
+          ),
+        ],
+      ),
+      bottomNavigationBar: _verified || !_available
           ? null
-          : BottomActionBar(child: PrimaryButton(label: t.apIdentityAction, busy: _busy, onPressed: _verify)),
+          : BottomActionBar(
+              child: PrimaryButton(
+                label: t.apIdentityAction,
+                busy: _busy,
+                onPressed: _verify,
+              ),
+            ),
     );
   }
 }

@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Selesai",
     "teamVisiting": "{team} sedang menuju lokasi",
     "photosSoon": "Foto sebelum & sesudah akan muncul di sini",
+    "photoThumb": "Foto {n}",
     "before": "Sebelum",
     "after": "Sesudah",
     "prepCheck": "Daftar persiapan",
@@ -721,4 +722,5 @@ T = {
     "mMyJobs": "Pekerjaan saya",
     "mNoJobs": "Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.",
     "mTeam": "Anggota {team}",
+    "cConfirmAsk": "Yakin ingin melanjutkan?",
 }

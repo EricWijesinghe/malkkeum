@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -492,6 +491,29 @@ class TTh extends T {
   String get cFormula => 'สูตรคำนวณใบเสนอราคา';
 
   @override
+  String get cTabCancelPolicy => 'นโยบายการยกเลิก';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'นี่คือค่าเริ่มต้น กรุณาตรวจสอบและบันทึกเพื่อยืนยัน';
+
+  @override
+  String get cPolicyDaysBefore => 'ก่อนวันเข้าบริการกี่วัน (ตั้งแต่)';
+
+  @override
+  String get cPolicyPercent => 'ค่าธรรมเนียม % (ว่าง = ยกเลิกในแอปไม่ได้)';
+
+  @override
+  String get cPolicyMinFee => 'ค่าธรรมเนียมขั้นต่ำ (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'เลื่อนนัดได้ (ก่อนวันเข้าบริการกี่วัน)';
+
+  @override
+  String get cPolicyHint =>
+      'มีผลทันทีบนหน้าจอยกเลิกของแอปลูกค้า ข้อกำหนดจะอัปเดตในบิลด์กฎหมายครั้งถัดไป';
+
+  @override
   String get f_base_studio => 'ฐาน: สตูดิโอ';
 
   @override
@@ -648,6 +670,9 @@ class TTh extends T {
   String get cNewMessage => 'ข้อความใหม่';
 
   @override
+  String get cConfirmAsk => 'แน่ใจหรือไม่?';
+
+  @override
   String get ok => 'ตกลง';
 
   @override
@@ -736,7 +761,7 @@ class TTh extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'ภายใน 2 วันก่อนวันเข้าบริการ กรุณายกเลิกผ่านทีมงานของเรา';
+      'ไม่สามารถยกเลิกการจองนี้ในแอปได้แล้ว กรุณาติดต่อทีมงานของเรา';
 
   @override
   String get err_address_required => 'กรุณาเพิ่มที่อยู่สำหรับเข้าบริการ';
@@ -1292,6 +1317,11 @@ class TTh extends T {
   String get photosSoon => 'ภาพก่อนและหลังการทำความสะอาดจะแสดงที่นี่เมื่อเสร็จ';
 
   @override
+  String photoThumb(String n) {
+    return 'รูปที่ $n';
+  }
+
+  @override
   String get before => 'ก่อนทำความสะอาด';
 
   @override
@@ -1324,6 +1354,16 @@ class TTh extends T {
 
   @override
   String get cancelKeep => 'ไม่ยกเลิก';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'หากยกเลิกตอนนี้ จะมีค่าธรรมเนียม $fee และคืนเงิน $refund';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'ยอมรับค่าธรรมเนียม $fee และยกเลิก';
+  }
 
   @override
   String get cancelled => 'ยกเลิกการจองแล้ว';
@@ -1738,6 +1778,49 @@ class TTh extends T {
   String get summaryDate => 'วันเข้าบริการ';
 
   @override
+  String get cpTitle => 'นโยบายการยกเลิก';
+
+  @override
+  String cpWhen(String days) {
+    return 'ก่อนวันเข้าบริการ $days วันขึ้นไป';
+  }
+
+  @override
+  String get cpWhenSameDay => 'ในวันเข้าบริการ';
+
+  @override
+  String get cpFree => 'คืนเงินเต็มจำนวน';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ค่าธรรมเนียม $percent% ($fee) คืนเงิน $refund';
+  }
+
+  @override
+  String get cpClosed => 'ยกเลิกในแอปไม่ได้ (ทีมงานตรวจสอบ)';
+
+  @override
+  String get hhTitle => 'ข้อมูลครัวเรือน';
+
+  @override
+  String get hhAddPet => 'เพิ่มสัตว์เลี้ยง';
+
+  @override
+  String get hhPetCount => 'จำนวน';
+
+  @override
+  String get hhFloorLabel => 'ชั้น (ใส่ค่าลบสำหรับชั้นใต้ดิน)';
+
+  @override
+  String get hhElevator => 'มีลิฟต์';
+
+  @override
+  String get hhNotes => 'บันทึก';
+
+  @override
+  String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
+
+  @override
   String get themeTitle => 'ธีม';
 
   @override
@@ -1910,6 +1993,14 @@ class TTh extends T {
 
   @override
   String get err_invalid_capacity => 'กรุณากรอกความจุที่ถูกต้อง';
+
+  @override
+  String get err_seller_declined =>
+      'Toss ไม่อนุมัติการลงทะเบียนผู้ขาย กรุณาตรวจสอบข้อมูลธุรกิจ';
+
+  @override
+  String get err_payout_account_unverified =>
+      'พาร์ทเนอร์นี้ยังไม่มีบัญชีรับเงินที่ยืนยันแล้ว กรุณายืนยันบัญชีก่อน';
 
   @override
   String get fFinance => 'การเงิน';
@@ -2645,6 +2736,47 @@ class TTh extends T {
   String get pCustomerRequests => 'ความต้องการของลูกค้า';
 
   @override
+  String get pHousehold => 'ข้อมูลครัวเรือน';
+
+  @override
+  String get pPets => 'สัตว์เลี้ยง';
+
+  @override
+  String get pPetDog => 'สุนัข';
+
+  @override
+  String get pPetCat => 'แมว';
+
+  @override
+  String get pPetBird => 'นก';
+
+  @override
+  String get pPetFish => 'ปลา';
+
+  @override
+  String get pPetOther => 'สัตว์อื่น';
+
+  @override
+  String get pAllergies => 'อาการแพ้และความไว';
+
+  @override
+  String get pPreferredProducts => 'ผลิตภัณฑ์ที่ต้องการ';
+
+  @override
+  String get pParking => 'ที่จอดรถ';
+
+  @override
+  String pFloor(String floor) {
+    return 'ชั้น $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'มีลิฟต์';
+
+  @override
+  String get pElevatorNo => 'ไม่มีลิฟต์';
+
+  @override
   String get pTeamMemo => 'บันทึกของทีม (ลูกค้าจะไม่เห็น)';
 
   @override
@@ -2840,6 +2972,29 @@ class TTh extends T {
   String get pSpace => 'ข้อมูลพื้นที่';
 
   @override
+  String get pNavigate => 'เส้นทาง';
+
+  @override
+  String get pNavHint =>
+      'เปิดที่อยู่ในแอปแผนที่ ถ้าไม่มีแอป จะเปิดแผนที่บนเว็บ';
+
+  @override
+  String get pOfflineSaved =>
+      'ไม่มีสัญญาณ บันทึกไว้แล้วและจะส่งเมื่อกลับมาออนไลน์';
+
+  @override
+  String get pPhotoRetry => 'อัปโหลดอีกครั้ง';
+
+  @override
+  String get pPhotoWaiting =>
+      'รูปที่อัปโหลดไม่สำเร็จจะส่งอัตโนมัติเมื่อออนไลน์';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'อัปโหลดแล้ว $done/$total';
+  }
+
+  @override
   String get cIntPayout => 'การจ่ายเงินพาร์ทเนอร์';
 
   @override
@@ -2918,6 +3073,45 @@ class TTh extends T {
   String get poRevealNote => 'การดูรายละเอียดบัญชีจะถูกบันทึกไว้';
 
   @override
+  String get poSellerAction => 'ลงทะเบียนผู้ขาย';
+
+  @override
+  String get poSellerTitle => 'ลงทะเบียนเป็นผู้ขาย Toss';
+
+  @override
+  String get poSellerHint =>
+      'ใช้บัญชีรับเงินที่ยืนยันแล้วของพาร์ทเนอร์ กรอกเฉพาะข้อมูลธุรกิจ';
+
+  @override
+  String get poSellerIndividual => 'บุคคลธรรมดา';
+
+  @override
+  String get poSellerCompany => 'ธุรกิจ';
+
+  @override
+  String get poSellerName => 'ชื่อ';
+
+  @override
+  String get poSellerRepresentative => 'ชื่อผู้แทน';
+
+  @override
+  String get poSellerRegNo => 'เลขทะเบียนธุรกิจ (10 หลัก)';
+
+  @override
+  String get poSellerEmail => 'อีเมลสำหรับการชำระ';
+
+  @override
+  String get poSellerPhone => 'โทรศัพท์';
+
+  @override
+  String get poSellerSubmit => 'ลงทะเบียน';
+
+  @override
+  String poSellerDone(String status) {
+    return 'สถานะผู้ขาย: $status';
+  }
+
+  @override
   String get pvManage => 'จัดการความยินยอม';
 
   @override
@@ -2962,6 +3156,121 @@ class TTh extends T {
   @override
   String get pvExportFailed =>
       'ไม่สามารถโหลดข้อมูลของคุณได้ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get safetyEmergency => 'ติดต่อฉุกเฉิน';
+
+  @override
+  String get emergencyPolice => '112 ตำรวจ';
+
+  @override
+  String get emergencyFire => '119 ดับเพลิงและกู้ภัย';
+
+  @override
+  String get emergencyShop => 'ฝ่ายบริการลูกค้า';
+
+  @override
+  String get caseReportAction => 'แจ้งปัญหา';
+
+  @override
+  String get caseReportTitle => 'เกิดอะไรขึ้น?';
+
+  @override
+  String get caseKindDamage => 'ความเสียหาย';
+
+  @override
+  String get caseKindLoss => 'สูญหาย';
+
+  @override
+  String get caseKindComplaint => 'ร้องเรียน';
+
+  @override
+  String get caseKindNoShow => 'ทีมทำความสะอาดไม่มา';
+
+  @override
+  String get caseKindSafety => 'ปัญหาความปลอดภัย';
+
+  @override
+  String get caseKindPayment => 'ข้อพิพาทการชำระเงิน';
+
+  @override
+  String get caseSummaryHint => 'อธิบายสิ่งที่เกิดขึ้น (ไม่เกิน 300 ตัวอักษร)';
+
+  @override
+  String get caseSubmit => 'ส่ง';
+
+  @override
+  String get caseSubmitted => 'รับเรื่องแล้ว ทีมงานจะตอบกลับภายใน 24 ชั่วโมง';
+
+  @override
+  String get caseFailed => 'ส่งไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get checkInAction => 'เช็คอิน';
+
+  @override
+  String get checkOutAction => 'เช็คเอาต์';
+
+  @override
+  String checkedInAt(String time) {
+    return 'มาถึง $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ออกเมื่อ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'แสดงรหัสเข้าอาคาร';
+
+  @override
+  String get entryCodeTitle => 'รหัสเข้าอาคาร';
+
+  @override
+  String get entryCodeNotToday => 'ดูได้เฉพาะวันที่เข้าบริการ';
+
+  @override
+  String get entryCodeEmpty => 'ยังไม่มีรหัสเข้าอาคาร';
+
+  @override
+  String get actionFailed => 'ดำเนินการไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get consoleCasesTitle => 'คิวเคส';
+
+  @override
+  String get consoleCasesEmpty => 'ไม่มีเคสที่เปิดอยู่';
+
+  @override
+  String get caseOverdue => 'เกินกำหนด';
+
+  @override
+  String get caseStatusOpen => 'เปิดแล้ว';
+
+  @override
+  String get caseStatusInvestigating => 'กำลังตรวจสอบ';
+
+  @override
+  String get caseStatusResolved => 'แก้ไขแล้ว';
+
+  @override
+  String get caseStatusRejected => 'ปฏิเสธ';
+
+  @override
+  String get caseReassign => 'มอบหมายพาร์ทเนอร์ใหม่';
+
+  @override
+  String get caseRefund => 'คืนเงิน';
+
+  @override
+  String get caseHold => 'พักการโอนเงิน';
+
+  @override
+  String get caseNoteHint => 'บันทึกภายใน';
+
+  @override
+  String get caseSave => 'บันทึก';
 
   @override
   String get cSetup => 'ตั้งค่า';
@@ -3194,6 +3503,214 @@ class TTh extends T {
 
   @override
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
+
+  @override
+  String get cMfaTitle => 'การยืนยันสองขั้นตอน';
+
+  @override
+  String get cMfaCode => 'รหัส 6 หลักจากแอปยืนยันตัวตน';
+
+  @override
+  String get cMfaRecovery => 'รหัสกู้คืน';
+
+  @override
+  String get cMfaUseRecovery => 'ใช้รหัสกู้คืนแทน';
+
+  @override
+  String get cMfaUseCode => 'ใช้รหัสจากแอปยืนยันตัวตนแทน';
+
+  @override
+  String get cMfaVerify => 'ยืนยัน';
+
+  @override
+  String get cMfaBack => 'กลับไปหน้าเข้าสู่ระบบ';
+
+  @override
+  String get cMfaEnrolTitle => 'ตั้งค่าการยืนยันสองขั้นตอน';
+
+  @override
+  String get cMfaEnrolBody =>
+      'ผู้ดูแลต้องใช้แอปยืนยันตัวตน เพิ่มคีย์ด้านล่างลงใน Google Authenticator, 1Password หรือแอปที่คล้ายกัน แล้วกรอกรหัส 6 หลักที่แอปแสดง';
+
+  @override
+  String get cMfaSecret => 'คีย์ตั้งค่า';
+
+  @override
+  String get cMfaLink => 'ลิงก์ตั้งค่า (otpauth)';
+
+  @override
+  String get cMfaCopy => 'คัดลอก';
+
+  @override
+  String get cMfaCopied => 'คัดลอกแล้ว';
+
+  @override
+  String get cMfaConfirm => 'ยืนยันและเปิดใช้งาน';
+
+  @override
+  String get cMfaCodesTitle => 'บันทึกรหัสกู้คืนของคุณ';
+
+  @override
+  String get cMfaCodesBody =>
+      'หากทำแอปยืนยันตัวตนหาย แต่ละรหัสใช้เข้าสู่ระบบได้หนึ่งครั้ง แสดงเพียงครั้งเดียวตอนนี้';
+
+  @override
+  String get cMfaDownload => 'ดาวน์โหลด';
+
+  @override
+  String get cMfaSaveFailed =>
+      'อุปกรณ์นี้บันทึกไฟล์ไม่ได้ กรุณาคัดลอกรหัสและเก็บไว้ให้ปลอดภัย';
+
+  @override
+  String get cMfaContinue => 'ไปที่คอนโซล';
+
+  @override
+  String get cMfaInvalid =>
+      'รหัสไม่ตรงกัน ตรวจสอบว่านาฬิกาในโทรศัพท์ถูกต้อง แล้วลองอีกครั้ง';
+
+  @override
+  String get cMfaExpired =>
+      'การเข้าสู่ระบบหมดอายุ เริ่มใหม่ตั้งแต่ขั้นตอนรหัสผ่าน';
+
+  @override
+  String get cMfaLocked => 'พยายามหลายครั้งเกินไป รอสักครู่แล้วลองอีกครั้ง';
+
+  @override
+  String get cStaffReset => 'รีเซ็ตรหัสผ่าน';
+
+  @override
+  String get cStaffResetConfirm =>
+      'รีเซ็ตรหัสผ่านของพนักงานคนนี้ไหม? พนักงานจะถูกออกจากระบบทุกที่';
+
+  @override
+  String get cStaffResetTitle => 'โทเคนรีเซ็ต';
+
+  @override
+  String get cStaffResetBody =>
+      'ส่งโทเคนนี้ให้พนักงาน ใช้ได้ครั้งเดียวภายใน 30 นาที ปิดหน้านี้แล้วจะดูอีกไม่ได้';
+
+  @override
+  String get tTaxSection => 'ภาษี';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV ภาษีมูลค่าเพิ่ม ไตรมาส $q';
+  }
+
+  @override
+  String get tVatYear => 'ปี';
+
+  @override
+  String get tExportWithholding => 'CSV หนังสือรับรองการหักภาษี';
+
+  @override
+  String get tExportTaxInvoices => 'CSV สำหรับอัปโหลดใบกำกับภาษี';
+
+  @override
+  String get tTaxLayoutNote =>
+      'ตรวจคอลัมน์กับแม่แบบ 홈택스 ก่อนอัปโหลด ยังไม่ได้ยืนยันรูปแบบ';
+
+  @override
+  String get tCashReceipts => 'ใบเสร็จเงินสด';
+
+  @override
+  String get tCashIssued => 'ออกแล้ว';
+
+  @override
+  String get tCashFailed => 'ล้มเหลว';
+
+  @override
+  String get tCashPending => 'รอดำเนินการ';
+
+  @override
+  String get tCashCancelled => 'ยกเลิกแล้ว';
+
+  @override
+  String get tReissue => 'ออกใหม่';
+
+  @override
+  String get tTaxInvoices => 'ใบกำกับภาษี';
+
+  @override
+  String get tApprovalNumber => 'เลขที่อนุมัติ';
+
+  @override
+  String get tIssuedOn => 'วันที่ออก';
+
+  @override
+  String get tMarkIssued => 'ทำเครื่องหมายว่าออกแล้ว';
+
+  @override
+  String get tQueueEmpty => 'ไม่มีคำขอที่รอดำเนินการ';
+
+  @override
+  String get tWithholdingLabel => 'หัก ณ ที่จ่าย';
+
+  @override
+  String get tGrossAmount => 'ยอดรวม';
+
+  @override
+  String get tIncomeTax => 'ภาษีเงินได้';
+
+  @override
+  String get tLocalTax => 'ภาษีเงินได้ท้องถิ่น';
+
+  @override
+  String get tNetAmount => 'ยอดสุทธิ';
+
+  @override
+  String get tNoWithholding => 'ไม่หัก ณ ที่จ่าย (ธุรกิจจดทะเบียน)';
+
+  @override
+  String get tEstWithholding => 'ประมาณการหัก ณ ที่จ่าย (รอจ่าย)';
+
+  @override
+  String get tReceiptOptions => 'ตัวเลือกใบเสร็จ';
+
+  @override
+  String get tWantCashReceipt => 'ขอใบเสร็จเงินสด';
+
+  @override
+  String get tCashForIncome => 'สำหรับลดหย่อนภาษี (เบอร์โทร)';
+
+  @override
+  String get tCashForBusiness => 'สำหรับค่าใช้จ่ายธุรกิจ (เลขธุรกิจ)';
+
+  @override
+  String get tWantTaxInvoice => 'ขอใบกำกับภาษี (ธุรกิจ)';
+
+  @override
+  String get tPhoneForReceipt => 'เบอร์โทรศัพท์';
+
+  @override
+  String get tBusinessNumber => 'เลขทะเบียนธุรกิจ';
+
+  @override
+  String get tCompanyName => 'ชื่อบริษัท';
+
+  @override
+  String get tRepresentative => 'ผู้แทน';
+
+  @override
+  String get tInvoiceEmail => 'อีเมลสำหรับใบกำกับภาษี';
+
+  @override
+  String get tReceiptSave => 'บันทึกและชำระเงิน';
+
+  @override
+  String get tReceiptSaveFailed => 'บันทึกข้อมูลใบเสร็จไม่สำเร็จ';
+
+  @override
+  String get tTaxType => 'ประเภทภาษี';
+
+  @override
+  String get tTaxFreelancer => 'ฟรีแลนซ์ (หักภาษี)';
+
+  @override
+  String get tTaxBusiness => 'ธุรกิจจดทะเบียน (ไม่หักภาษี)';
+
+  @override
+  String get tReceiptSettings => 'การตั้งค่าใบเสร็จ';
 
   @override
   String get reviewRuleLine =>

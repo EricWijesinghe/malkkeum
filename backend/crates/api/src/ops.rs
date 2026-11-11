@@ -99,34 +99,34 @@ pub async fn record_failure(db: &PgPool, integration: &str, code: &str) -> Resul
         .map(|_| ())
 }
 
-/// Fire-and-forget: a provider call never waits for its own bookkeeping.
-pub fn record(db: &PgPool, integration: &'static str, outcome: Result<(), &'static str>) {
-    let db = db.clone();
-    tokio::spawn(async move {
-        if let Err(e) = write_outcome(&db, integration, outcome).await {
-            tracing::warn!(error = %e, integration, "ops record failed");
-        }
-    });
+/// Records one outcome and waits for it. Awaited (not spawned) so the row exists before the caller
+/// answers: status and alert rules never race a request or a shutdown. A write failure only logs.
+pub async fn record(db: &PgPool, integration: &'static str, outcome: Result<(), &'static str>) {
+    if let Err(e) = write_outcome(db, integration, outcome).await {
+        tracing::warn!(error = %e, integration, "ops record failed");
+    }
 }
 
-/// Counts every 5xx answer in the current hour (one row per hour).
+/// Counts every 5xx answer in the current hour (one row per hour). Awaited, like `record`.
 pub async fn count_5xx(State(s): State<AppState>, req: Request, next: Next) -> Response {
     let resp = next.run(req).await;
     if resp.status().is_server_error() {
-        let db = s.db.clone();
-        tokio::spawn(async move {
-            let res = sqlx::query(
-                "INSERT INTO ops_http_errors (hour, count) VALUES (date_trunc('hour', now()), 1)
-                 ON CONFLICT (hour) DO UPDATE SET count = ops_http_errors.count + 1",
-            )
-            .execute(&db)
-            .await;
-            if let Err(e) = res {
-                tracing::warn!(error = %e, "5xx counter failed");
-            }
-        });
+        let res = sqlx::query(
+            "INSERT INTO ops_http_errors (hour, count) VALUES (date_trunc('hour', now()), 1)
+             ON CONFLICT (hour) DO UPDATE SET count = ops_http_errors.count + 1",
+        )
+        .execute(&s.db)
+        .await;
+        if let Err(e) = res {
+            tracing::warn!(error = %e, "5xx counter failed");
+        }
     }
     resp
+}
+
+/// Seconds since start-up, for the metrics page.
+pub fn uptime_secs() -> u64 {
+    STARTED.get_or_init(Instant::now).elapsed().as_secs()
 }
 
 /// Parses `df -Pk` output (POSIX format, 1K blocks). None when the line is not there.
@@ -286,7 +286,7 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
     Ok(json!({
         "level": level,
         "version": env!("CARGO_PKG_VERSION"),
-        "uptime_secs": STARTED.get_or_init(Instant::now).elapsed().as_secs(),
+        "uptime_secs": uptime_secs(),
         "dev_mode": s.config.dev_mode,
         "db": { "ok": ping, "latency_ms": latency_ms, "size_bytes": db_size, "sessions": sessions, "pool_open": s.db.size(), "pool_idle": s.db.num_idle() },
         "disk": disk.map(|d| json!({ "total_bytes": d.total, "free_bytes": d.free, "free_pct": d.free_pct() })),
@@ -313,7 +313,8 @@ pub async fn backup_status(db: &PgPool) -> Result<Option<Value>, sqlx::Error> {
 pub async fn prune(db: &PgPool) -> Result<(), sqlx::Error> {
     sqlx::query("DELETE FROM ops_failures WHERE at < now() - interval '3 days'").execute(db).await?;
     sqlx::query("DELETE FROM ops_http_errors WHERE hour < now() - interval '3 days'").execute(db).await?;
-    Ok(())
+    crate::realtime::prune_stored(db).await
+    
 }
 
 /// Used by the alert rules: failures of one integration in the last `minutes`.

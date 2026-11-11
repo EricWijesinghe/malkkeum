@@ -3,32 +3,38 @@ mod admin;
 mod admin_content;
 mod auth;
 mod booking_core;
-mod bookings;
+pub(crate) mod bookings;
+pub mod cases;
 mod catalog;
 pub(crate) mod chat;
+mod cash_receipts;
 mod checkout_policy;
+mod tax_invoices;
 pub(crate) mod config;
-pub(crate) mod growth;
 pub(crate) mod checkouts;
 mod finance;
-pub(crate) mod payouts;
+pub(crate) mod growth;
 pub(crate) mod me;
 mod member;
 mod ops;
 mod partner;
-mod partner_jobs;
+pub(crate) mod partner_jobs;
+pub mod site;
 pub(crate) mod payments;
+pub(crate) mod payouts;
 pub mod setup;
 pub mod uploads;
+mod staff_mfa;
+mod staff_password;
 mod webhooks;
 
-use crate::{realtime, state::AppState};
+use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
 use axum::{
-    Json, Router,
-    http::{HeaderValue, Method, header},
+    Router,
+    extract::DefaultBodyLimit,
+    http::{HeaderName, HeaderValue, Method, header},
     routing::get,
 };
-use serde_json::json;
 use std::time::Duration;
 
 /// Release version baked in at image build (`--build-arg APP_VERSION=1.2.3`); `dev` for local builds.
@@ -51,17 +57,24 @@ pub fn router(state: AppState) -> Router {
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::list(origins))
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
-        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE, HeaderName::from_static("idempotency-key")])
+        .expose_headers([contract::NEXT_CURSOR]);
     let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, std::time::Instant::now()));
 
     let api = Router::new()
-        .merge(auth::routes())
+        .merge(auth::routes().layer(DefaultBodyLimit::max(contract::AUTH_BODY_LIMIT)))
+        .merge(staff_mfa::routes())
+        .merge(staff_password::public_routes())
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(bookings::routes())
+        .merge(cases::customer_routes())
+        .merge(bookings::public_routes())
         .merge(chat::routes())
-        .merge(uploads::routes())
+        .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
+        .merge(cash_receipts::routes())
+        .merge(tax_invoices::routes())
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
@@ -73,6 +86,7 @@ pub fn router(state: AppState) -> Router {
         .nest(
             "/admin",
             admin::routes()
+                .merge(staff_password::admin_routes())
                 .merge(admin_content::routes())
                 .merge(growth::admin_routes())
                 .merge(payments::admin_routes())
@@ -82,14 +96,23 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
-                .merge(ops::admin_routes()),
+                .merge(cash_receipts::admin_routes())
+                .merge(tax_invoices::admin_routes())
+                .merge(ops::admin_routes())
+                .merge(cases::admin_routes())
+                .merge(site::admin_routes()),
         )
-        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))
+        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()).merge(cases::partner_routes()).merge(site::partner_routes()))
         .nest("/member", member::routes())
-        .route("/ws", get(realtime::ws_handler));
+        .route("/ws", get(realtime::ws_handler))
+        .route("/openapi.json", get(crate::openapi::spec))
+        .layer(DefaultBodyLimit::max(contract::JSON_BODY_LIMIT));
 
     Router::new()
-        .route("/health", get(|| async { Json(json!({ "ok": true, "version": APP_VERSION })) }))
+        // Liveness never touches the DB; readiness does. Neither is proxied publicly (see deploy/Caddyfile).
+        .route("/health", get(lifecycle::live))
+        .route("/ready", get(lifecycle::ready))
+        .route("/metrics", get(metrics::handler))
         .merge(crate::app_links::routes())
         .nest("/v1", api)
         .layer(axum::middleware::from_fn_with_state(state.clone(), config::enforce))
@@ -99,11 +122,17 @@ pub fn router(state: AppState) -> Router {
         .layer(axum::middleware::from_fn_with_state(state.clone(), uploads::sign_json))
         .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
         // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(|req: &axum::http::Request<_>| tracing::info_span!("http", method = %req.method(), path = %req.uri().path())),
-        )
+        .layer(TraceLayer::new_for_http().make_span_with(|req: &axum::http::Request<_>| {
+            let request_id = req.extensions().get::<telemetry::RequestId>().map_or("", |r| r.0.as_str());
+            tracing::info_span!("http", method = %req.method(), path = %req.uri().path(), request_id)
+        }))
         .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
+        .layer(axum::middleware::from_fn(metrics::track))
+        // Idempotency replay reads the pool from an extension (route layers cannot take state).
+        .layer(axum::Extension(state.db.clone()))
+        .layer(axum::middleware::from_fn(contract::error_envelope))
+        // Outermost: every request (and every error body) gets its id before anything else runs.
+        .layer(axum::middleware::from_fn(telemetry::request_id))
         .with_state(state)
 }
 

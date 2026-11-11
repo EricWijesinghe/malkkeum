@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -483,6 +482,27 @@ class TKo extends T {
   String get cFormula => '견적 산정식';
 
   @override
+  String get cTabCancelPolicy => '취소 정책';
+
+  @override
+  String get cPolicyDefaultBanner => '기본값이에요. 아래 내용을 확인하고 저장해 주세요.';
+
+  @override
+  String get cPolicyDaysBefore => '방문 며칠 전부터 (일)';
+
+  @override
+  String get cPolicyPercent => '수수료 % (비우면 앱 취소 불가)';
+
+  @override
+  String get cPolicyMinFee => '최소 수수료 (원)';
+
+  @override
+  String get cPolicyReschedule => '일정 변경 가능 (방문 며칠 전부터)';
+
+  @override
+  String get cPolicyHint => '고객 앱 취소 화면에 바로 반영돼요. 이용약관은 빌드 후 갱신돼요.';
+
+  @override
   String get f_base_studio => '원룸 기본';
 
   @override
@@ -639,6 +659,9 @@ class TKo extends T {
   String get cNewMessage => '새 메시지';
 
   @override
+  String get cConfirmAsk => '정말 진행할까요?';
+
+  @override
   String get ok => '확인';
 
   @override
@@ -723,7 +746,8 @@ class TKo extends T {
   String get err_payment_method_required => '결제수단을 선택해 주세요';
 
   @override
-  String get err_cancellation_window_closed => '방문 2일 전부터는 상담팀을 통해 취소할 수 있어요';
+  String get err_cancellation_window_closed =>
+      '이 시점부터는 앱에서 취소할 수 없어요. 상담팀에 문의해 주세요';
 
   @override
   String get err_address_required => '방문할 주소를 등록해 주세요';
@@ -1263,6 +1287,11 @@ class TKo extends T {
   String get photosSoon => '끝나면 전후 사진이 여기에 올라와요';
 
   @override
+  String photoThumb(String n) {
+    return '사진 $n';
+  }
+
+  @override
   String get before => '청소 전';
 
   @override
@@ -1294,6 +1323,16 @@ class TKo extends T {
 
   @override
   String get cancelKeep => '유지하기';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return '지금 취소하면 취소 수수료 $fee이 적용되고 $refund이 환불돼요.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '수수료 $fee 확인하고 취소';
+  }
 
   @override
   String get cancelled => '예약이 취소됐어요';
@@ -1705,6 +1744,49 @@ class TKo extends T {
   String get summaryDate => '방문 일정';
 
   @override
+  String get cpTitle => '취소·변경 정책';
+
+  @override
+  String cpWhen(String days) {
+    return '방문 $days일 이상 전';
+  }
+
+  @override
+  String get cpWhenSameDay => '방문 당일';
+
+  @override
+  String get cpFree => '전액 환불';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '수수료 $percent% ($fee), 환불 $refund';
+  }
+
+  @override
+  String get cpClosed => '앱에서 취소 불가 (상담팀 확인)';
+
+  @override
+  String get hhTitle => '가구 정보';
+
+  @override
+  String get hhAddPet => '반려동물 추가';
+
+  @override
+  String get hhPetCount => '마리 수';
+
+  @override
+  String get hhFloorLabel => '층 (지하는 음수)';
+
+  @override
+  String get hhElevator => '엘리베이터 있음';
+
+  @override
+  String get hhNotes => '메모';
+
+  @override
+  String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
+
+  @override
   String get themeTitle => '테마';
 
   @override
@@ -1863,6 +1945,12 @@ class TKo extends T {
 
   @override
   String get err_invalid_capacity => '정원은 숫자로 입력해 주세요.';
+
+  @override
+  String get err_seller_declined => '토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.';
+
+  @override
+  String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
 
   @override
   String get fFinance => '재무';
@@ -2583,6 +2671,47 @@ class TKo extends T {
   String get pCustomerRequests => '고객 요청사항';
 
   @override
+  String get pHousehold => '가구 정보';
+
+  @override
+  String get pPets => '반려동물';
+
+  @override
+  String get pPetDog => '강아지';
+
+  @override
+  String get pPetCat => '고양이';
+
+  @override
+  String get pPetBird => '새';
+
+  @override
+  String get pPetFish => '물고기';
+
+  @override
+  String get pPetOther => '기타 동물';
+
+  @override
+  String get pAllergies => '알레르기·민감 사항';
+
+  @override
+  String get pPreferredProducts => '선호 제품';
+
+  @override
+  String get pParking => '주차';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor층';
+  }
+
+  @override
+  String get pElevatorYes => '엘리베이터 있음';
+
+  @override
+  String get pElevatorNo => '엘리베이터 없음';
+
+  @override
   String get pTeamMemo => '팀 메모 (고객에게 보이지 않아요)';
 
   @override
@@ -2776,6 +2905,26 @@ class TKo extends T {
   String get pSpace => '공간 정보';
 
   @override
+  String get pNavigate => '길찾기';
+
+  @override
+  String get pNavHint => '방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.';
+
+  @override
+  String get pOfflineSaved => '신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.';
+
+  @override
+  String get pPhotoRetry => '다시 올리기';
+
+  @override
+  String get pPhotoWaiting => '올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total장 중 $done장 업로드됨';
+  }
+
+  @override
   String get cIntPayout => '파트너 지급';
 
   @override
@@ -2854,6 +3003,44 @@ class TKo extends T {
   String get poRevealNote => '계좌 정보는 조회 기록에 남아요';
 
   @override
+  String get poSellerAction => '판매자 등록';
+
+  @override
+  String get poSellerTitle => '토스 판매자 등록';
+
+  @override
+  String get poSellerHint => '이 파트너의 확인된 정산 계좌로 등록해요. 사업자 정보만 입력해 주세요.';
+
+  @override
+  String get poSellerIndividual => '개인';
+
+  @override
+  String get poSellerCompany => '사업자';
+
+  @override
+  String get poSellerName => '이름';
+
+  @override
+  String get poSellerRepresentative => '대표자명';
+
+  @override
+  String get poSellerRegNo => '사업자등록번호 (숫자 10자리)';
+
+  @override
+  String get poSellerEmail => '정산 이메일';
+
+  @override
+  String get poSellerPhone => '연락처';
+
+  @override
+  String get poSellerSubmit => '등록하기';
+
+  @override
+  String poSellerDone(String status) {
+    return '판매자 상태: $status';
+  }
+
+  @override
   String get pvManage => '동의 관리';
 
   @override
@@ -2894,6 +3081,121 @@ class TKo extends T {
 
   @override
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get safetyEmergency => '긴급 연락처';
+
+  @override
+  String get emergencyPolice => '112 경찰·응급';
+
+  @override
+  String get emergencyFire => '119 소방·구급';
+
+  @override
+  String get emergencyShop => '고객센터';
+
+  @override
+  String get caseReportAction => '문제 신고하기';
+
+  @override
+  String get caseReportTitle => '어떤 문제가 있었나요?';
+
+  @override
+  String get caseKindDamage => '파손';
+
+  @override
+  String get caseKindLoss => '분실';
+
+  @override
+  String get caseKindComplaint => '불만·서비스 문제';
+
+  @override
+  String get caseKindNoShow => '청소팀이 오지 않았어요';
+
+  @override
+  String get caseKindSafety => '안전 문제';
+
+  @override
+  String get caseKindPayment => '결제 이의';
+
+  @override
+  String get caseSummaryHint => '자세히 적어 주세요 (300자 이내)';
+
+  @override
+  String get caseSubmit => '접수하기';
+
+  @override
+  String get caseSubmitted => '접수했어요. 담당자가 24시간 안에 확인할게요.';
+
+  @override
+  String get caseFailed => '접수하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get checkInAction => '도착 체크인';
+
+  @override
+  String get checkOutAction => '작업 완료 체크아웃';
+
+  @override
+  String checkedInAt(String time) {
+    return '도착 $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '종료 $time';
+  }
+
+  @override
+  String get entryCodeAction => '출입 비밀번호 보기';
+
+  @override
+  String get entryCodeTitle => '출입 비밀번호';
+
+  @override
+  String get entryCodeNotToday => '방문 당일에만 볼 수 있어요';
+
+  @override
+  String get entryCodeEmpty => '등록된 비밀번호가 없어요';
+
+  @override
+  String get actionFailed => '처리하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get consoleCasesTitle => '사건 접수함';
+
+  @override
+  String get consoleCasesEmpty => '열린 사건이 없어요';
+
+  @override
+  String get caseOverdue => '기한 초과';
+
+  @override
+  String get caseStatusOpen => '접수';
+
+  @override
+  String get caseStatusInvestigating => '조사 중';
+
+  @override
+  String get caseStatusResolved => '해결';
+
+  @override
+  String get caseStatusRejected => '기각';
+
+  @override
+  String get caseReassign => '기사 재배정';
+
+  @override
+  String get caseRefund => '환불';
+
+  @override
+  String get caseHold => '정산 보류';
+
+  @override
+  String get caseNoteHint => '내부 메모';
+
+  @override
+  String get caseSave => '저장';
 
   @override
   String get cSetup => '설정';
@@ -3121,6 +3423,208 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String get cMfaTitle => '2단계 인증';
+
+  @override
+  String get cMfaCode => '인증 앱의 6자리 코드';
+
+  @override
+  String get cMfaRecovery => '복구 코드';
+
+  @override
+  String get cMfaUseRecovery => '복구 코드 사용';
+
+  @override
+  String get cMfaUseCode => '인증 앱 코드 사용';
+
+  @override
+  String get cMfaVerify => '확인';
+
+  @override
+  String get cMfaBack => '로그인 화면으로';
+
+  @override
+  String get cMfaEnrolTitle => '2단계 인증 설정';
+
+  @override
+  String get cMfaEnrolBody =>
+      '관리자는 인증 앱 사용이 필요해요. Google Authenticator, 1Password 같은 앱에 아래 키를 추가한 뒤 앱에 표시된 6자리 코드를 입력하세요.';
+
+  @override
+  String get cMfaSecret => '설정 키';
+
+  @override
+  String get cMfaLink => '설정 링크 (otpauth)';
+
+  @override
+  String get cMfaCopy => '복사';
+
+  @override
+  String get cMfaCopied => '복사했어요';
+
+  @override
+  String get cMfaConfirm => '확인하고 2단계 인증 켜기';
+
+  @override
+  String get cMfaCodesTitle => '복구 코드를 저장하세요';
+
+  @override
+  String get cMfaCodesBody => '인증 앱을 잃어버리면 각 코드를 한 번씩 쓸 수 있어요. 이 화면에서만 보여요.';
+
+  @override
+  String get cMfaDownload => '파일로 저장';
+
+  @override
+  String get cMfaSaveFailed => '이 기기에서 파일을 저장할 수 없어요. 복사해서 보관하세요.';
+
+  @override
+  String get cMfaContinue => '콘솔로 들어가기';
+
+  @override
+  String get cMfaInvalid => '코드가 맞지 않아요. 휴대폰 시간이 맞는지 확인하고 다시 입력하세요.';
+
+  @override
+  String get cMfaExpired => '로그인 시간이 지났어요. 비밀번호부터 다시 입력하세요.';
+
+  @override
+  String get cMfaLocked => '시도가 너무 많아요. 몇 분 뒤에 다시 시도하세요.';
+
+  @override
+  String get cStaffReset => '비밀번호 재설정';
+
+  @override
+  String get cStaffResetConfirm => '이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.';
+
+  @override
+  String get cStaffResetTitle => '재설정 토큰';
+
+  @override
+  String get cStaffResetBody =>
+      '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+
+  @override
+  String get tTaxSection => '세무';
+
+  @override
+  String tVatQuarter(String q) {
+    return '$q분기 부가세 CSV';
+  }
+
+  @override
+  String get tVatYear => '연도';
+
+  @override
+  String get tExportWithholding => '지급명세서 CSV';
+
+  @override
+  String get tExportTaxInvoices => '세금계산서 업로드 CSV';
+
+  @override
+  String get tTaxLayoutNote => '홈택스 실제 양식과 대조한 뒤 올려주세요. 열 구성은 아직 확인되지 않았어요.';
+
+  @override
+  String get tCashReceipts => '현금영수증';
+
+  @override
+  String get tCashIssued => '발급 완료';
+
+  @override
+  String get tCashFailed => '발급 실패';
+
+  @override
+  String get tCashPending => '대기';
+
+  @override
+  String get tCashCancelled => '취소됨';
+
+  @override
+  String get tReissue => '재발급';
+
+  @override
+  String get tTaxInvoices => '세금계산서';
+
+  @override
+  String get tApprovalNumber => '승인번호';
+
+  @override
+  String get tIssuedOn => '발행일';
+
+  @override
+  String get tMarkIssued => '발행 완료 표시';
+
+  @override
+  String get tQueueEmpty => '대기 중인 요청이 없어요';
+
+  @override
+  String get tWithholdingLabel => '원천징수';
+
+  @override
+  String get tGrossAmount => '지급총액';
+
+  @override
+  String get tIncomeTax => '소득세';
+
+  @override
+  String get tLocalTax => '지방소득세';
+
+  @override
+  String get tNetAmount => '실지급액';
+
+  @override
+  String get tNoWithholding => '원천징수 없음 (사업자 등록)';
+
+  @override
+  String get tEstWithholding => '예상 원천징수 (미지급분 기준)';
+
+  @override
+  String get tReceiptOptions => '영수증 선택';
+
+  @override
+  String get tWantCashReceipt => '현금영수증 받기';
+
+  @override
+  String get tCashForIncome => '소득공제용 (휴대폰 번호)';
+
+  @override
+  String get tCashForBusiness => '지출증빙용 (사업자번호)';
+
+  @override
+  String get tWantTaxInvoice => '세금계산서 받기 (사업자)';
+
+  @override
+  String get tPhoneForReceipt => '휴대폰 번호';
+
+  @override
+  String get tBusinessNumber => '사업자등록번호';
+
+  @override
+  String get tCompanyName => '상호';
+
+  @override
+  String get tRepresentative => '대표자';
+
+  @override
+  String get tInvoiceEmail => '세금계산서 받을 이메일';
+
+  @override
+  String get tReceiptSave => '저장하고 결제';
+
+  @override
+  String get tReceiptSaveFailed => '영수증 정보를 저장하지 못했어요';
+
+  @override
+  String get tTaxType => '세무 유형';
+
+  @override
+  String get tTaxFreelancer => '프리랜서 (원천징수)';
+
+  @override
+  String get tTaxBusiness => '사업자 등록 (원천징수 없음)';
+
+  @override
+  String get tReceiptSettings => '영수증 설정';
 
   @override
   String get reviewRuleLine => '욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.';

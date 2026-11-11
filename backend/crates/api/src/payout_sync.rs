@@ -4,6 +4,8 @@
 
 use crate::{
     error::ApiResult,
+    lifecycle::next_tick,
+    metrics::job_pass,
     payout::State,
     routes::{audit, payouts},
     state::AppState,
@@ -14,6 +16,7 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
+use tokio::task::JoinHandle;
 use uuid::Uuid;
 
 pub const SYNC_EVERY: Duration = Duration::from_secs(600);
@@ -74,19 +77,26 @@ pub fn kick(state: AppState) {
 }
 
 /// Starts the periodic sync. Dev mode never starts it: the fake provider would report every transfer paid.
-pub fn spawn(state: AppState) {
+pub fn spawn(state: AppState) -> JoinHandle<()> {
     if state.config.dev_mode {
-        return;
+        return tokio::spawn(std::future::ready(()));
     }
+    let mut stop = state.hub.drain_signal();
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(SYNC_EVERY);
-        loop {
-            tick.tick().await;
-            match sync_pass(&state).await {
-                Ok(0) => {}
-                Ok(n) => tracing::info!(settled = n, "payout sync pass"),
-                Err(e) => tracing::warn!(error = ?e, "payout sync pass failed"),
-            }
+        while next_tick(&mut tick, &mut stop).await {
+            let ok = match sync_pass(&state).await {
+                Ok(0) => true,
+                Ok(n) => {
+                    tracing::info!(settled = n, "payout sync pass");
+                    true
+                }
+                Err(e) => {
+                    tracing::warn!(error = ?e, "payout sync pass failed");
+                    false
+                }
+            };
+            job_pass("payout_sync", ok);
         }
-    });
+    })
 }

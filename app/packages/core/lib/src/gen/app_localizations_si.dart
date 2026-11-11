@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -499,6 +498,29 @@ class TSi extends T {
   String get cFormula => 'මිල ගණන් සූත්‍රය';
 
   @override
+  String get cTabCancelPolicy => 'අවලංගු කිරීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'මෙය පෙරනිශ්චිත අගයයි. පරීක්ෂා කර සුරකින්න.';
+
+  @override
+  String get cPolicyDaysBefore => 'පැමිණීමට දින කීයකට පෙර (සිට)';
+
+  @override
+  String get cPolicyPercent => 'ගාස්තුව % (හිස් = යෙදුමෙන් අවලංගු කළ නොහැක)';
+
+  @override
+  String get cPolicyMinFee => 'අවම ගාස්තුව (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'දින වෙනස් කළ හැක (පැමිණීමට දින කීයකට පෙර)';
+
+  @override
+  String get cPolicyHint =>
+      'ගනුදෙනුකරු යෙදුමේ අවලංගු තිරයට වහාම අදාළ වේ. නියමයන් ඊළඟ නෛතික build එකෙන් යාවත්කාලීන වේ.';
+
+  @override
   String get f_base_studio => 'මූලික: ස්ටුඩියෝ';
 
   @override
@@ -655,6 +677,9 @@ class TSi extends T {
   String get cNewMessage => 'නව පණිවිඩයක්';
 
   @override
+  String get cConfirmAsk => 'ඔබට විශ්වාසද?';
+
+  @override
   String get ok => 'හරි';
 
   @override
@@ -746,7 +771,7 @@ class TSi extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'පැමිණීමට දින 2කට පෙර සිට අපේ කණ්ඩායම හරහා පමණක් අවලංගු කළ හැක';
+      'මෙම වෙන්කිරීම දැන් යෙදුම හරහා අවලංගු කළ නොහැක. කරුණාකර අපේ කණ්ඩායම අමතන්න';
 
   @override
   String get err_address_required => 'පැමිණීමේ ලිපිනය එකතු කරන්න';
@@ -1302,6 +1327,11 @@ class TSi extends T {
   String get photosSoon => 'අවසන් වූ පසු කලින් සහ පසු ඡායාරූප මෙහි දිස් වේ';
 
   @override
+  String photoThumb(String n) {
+    return 'ඡායාරූපය $n';
+  }
+
+  @override
   String get before => 'පිරිසිදු කිරීමට පෙර';
 
   @override
@@ -1334,6 +1364,16 @@ class TSi extends T {
 
   @override
   String get cancelKeep => 'තබා ගන්න';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'දැන් අවලංගු කළහොත් $fee ගාස්තුවක් අය කරන අතර $refund ආපසු ලැබේ.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee ගාස්තුව පිළිගෙන අවලංගු කරන්න';
+  }
 
   @override
   String get cancelled => 'වෙන්කිරීම අවලංගු විය';
@@ -1750,6 +1790,49 @@ class TSi extends T {
   String get summaryDate => 'පැමිණීම';
 
   @override
+  String get cpTitle => 'අවලංගු කිරීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String cpWhen(String days) {
+    return 'පැමිණීමට දින $days හෝ ඊට වැඩි කාලයකට පෙර';
+  }
+
+  @override
+  String get cpWhenSameDay => 'පැමිණෙන දිනයේ';
+
+  @override
+  String get cpFree => 'සම්පූර්ණ ආපසු ගෙවීම';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% ගාස්තුව ($fee), ආපසු $refund';
+  }
+
+  @override
+  String get cpClosed => 'යෙදුමෙන් අවලංගු කළ නොහැක (කණ්ඩායම සමාලෝචනය)';
+
+  @override
+  String get hhTitle => 'නිවසේ තොරතුරු';
+
+  @override
+  String get hhAddPet => 'සුරතල් සත්වයෙකු එක් කරන්න';
+
+  @override
+  String get hhPetCount => 'ගණන';
+
+  @override
+  String get hhFloorLabel => 'මහල (බේස්මන්ට් සඳහා සෘණ)';
+
+  @override
+  String get hhElevator => 'ලිෆ්ට් ඇත';
+
+  @override
+  String get hhNotes => 'සටහන්';
+
+  @override
+  String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override
@@ -1924,6 +2007,14 @@ class TSi extends T {
 
   @override
   String get err_invalid_capacity => 'වලංගු ධාරිතාවක් ඇතුළත් කරන්න.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss මගින් විකුණුම්කරු ලියාපදිංචිය අනුමත කළේ නැත. ව්‍යාපාර තොරතුරු පරීක්ෂා කරන්න.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'මෙම partner ට තවමත් සත්‍යාපිත ගෙවීම් ගිණුමක් නැත. පළමුව ගිණුම සත්‍යාපනය කරන්න.';
 
   @override
   String get fFinance => 'මූල්‍ය';
@@ -2660,6 +2751,47 @@ class TSi extends T {
   String get pCustomerRequests => 'පාරිභෝගික ඉල්ලීම්';
 
   @override
+  String get pHousehold => 'නිවසේ තොරතුරු';
+
+  @override
+  String get pPets => 'සුරතල් සත්ව';
+
+  @override
+  String get pPetDog => 'බල්ලා';
+
+  @override
+  String get pPetCat => 'බළලා';
+
+  @override
+  String get pPetBird => 'කුරුල්ලා';
+
+  @override
+  String get pPetFish => 'මාළු';
+
+  @override
+  String get pPetOther => 'වෙනත් සත්ව';
+
+  @override
+  String get pAllergies => 'අසාත්මිකතා සහ සංවේදීතා';
+
+  @override
+  String get pPreferredProducts => 'කැමති නිෂ්පාදන';
+
+  @override
+  String get pParking => 'වාහන නැවැත්වීම';
+
+  @override
+  String pFloor(String floor) {
+    return 'මහල $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'ලිෆ්ට් ඇත';
+
+  @override
+  String get pElevatorNo => 'ලිෆ්ට් නැත';
+
+  @override
   String get pTeamMemo => 'කණ්ඩායම් සටහන (පාරිභෝගිකයාට නොපෙනේ)';
 
   @override
@@ -2855,6 +2987,29 @@ class TSi extends T {
   String get pSpace => 'ඉඩ තොරතුරු';
 
   @override
+  String get pNavigate => 'දිශානතිය';
+
+  @override
+  String get pNavHint =>
+      'සිතියම් යෙදුමේ ගමන් ලිපිනය විවෘත කරයි. යෙදුම නැත්නම් වෙබ් සිතියම විවෘත වේ.';
+
+  @override
+  String get pOfflineSaved =>
+      'සංඥාව නැත. සුරකින ලද අතර සම්බන්ධ වූ විට යවනු ඇත.';
+
+  @override
+  String get pPhotoRetry => 'නැවත උඩුගත කරන්න';
+
+  @override
+  String get pPhotoWaiting =>
+      'උඩුගත නොවූ ඡායාරූප සම්බන්ධ වූ විට ස්වයංක්‍රීයව යවනු ඇත.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total න් $done උඩුගත කර ඇත';
+  }
+
+  @override
   String get cIntPayout => 'හවුල්කරු ගෙවීම්';
 
   @override
@@ -2933,6 +3088,45 @@ class TSi extends T {
   String get poRevealNote => 'ගිණුම් විස්තර බැලීම සටහන් වේ';
 
   @override
+  String get poSellerAction => 'විකුණුම්කරු ලියාපදිංචි කරන්න';
+
+  @override
+  String get poSellerTitle => 'Toss විකුණුම්කරු ලෙස ලියාපදිංචිය';
+
+  @override
+  String get poSellerHint =>
+      'partner ගේ සත්‍යාපිත ගෙවීම් ගිණුම භාවිතා වේ. ව්‍යාපාර තොරතුරු පමණක් ඇතුළු කරන්න.';
+
+  @override
+  String get poSellerIndividual => 'පුද්ගලික';
+
+  @override
+  String get poSellerCompany => 'ව්‍යාපාර';
+
+  @override
+  String get poSellerName => 'නම';
+
+  @override
+  String get poSellerRepresentative => 'නියෝජිතයාගේ නම';
+
+  @override
+  String get poSellerRegNo => 'ව්‍යාපාර ලියාපදිංචි අංකය (ඉලක්කම් 10)';
+
+  @override
+  String get poSellerEmail => 'ගෙවීම් ඊමේල්';
+
+  @override
+  String get poSellerPhone => 'දුරකථන';
+
+  @override
+  String get poSellerSubmit => 'ලියාපදිංචි කරන්න';
+
+  @override
+  String poSellerDone(String status) {
+    return 'විකුණුම්කරුගේ තත්ත්වය: $status';
+  }
+
+  @override
   String get pvManage => 'එකඟතා කළමනාකරණය';
 
   @override
@@ -2977,6 +3171,121 @@ class TSi extends T {
   @override
   String get pvExportFailed =>
       'ඔබේ දත්ත පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get safetyEmergency => 'හදිසි සම්බන්ධතා';
+
+  @override
+  String get emergencyPolice => '112 පොලිසිය';
+
+  @override
+  String get emergencyFire => '119 ගින්නෙන් ආරක්ෂාව';
+
+  @override
+  String get emergencyShop => 'පාරිභෝගික සේවාව';
+
+  @override
+  String get caseReportAction => 'ගැටළුවක් වාර්තා කරන්න';
+
+  @override
+  String get caseReportTitle => 'කුමක් සිදුවුණාද?';
+
+  @override
+  String get caseKindDamage => 'හානි';
+
+  @override
+  String get caseKindLoss => 'නැතිවීම';
+
+  @override
+  String get caseKindComplaint => 'පැමිණිල්ල';
+
+  @override
+  String get caseKindNoShow => 'පිරිසිදුකරු පැමිණියේ නැත';
+
+  @override
+  String get caseKindSafety => 'ආරක්ෂක ගැටළුව';
+
+  @override
+  String get caseKindPayment => 'ගෙවීම් ආරවුල';
+
+  @override
+  String get caseSummaryHint => 'සිදුවූ දේ විස්තර කරන්න (අක්ෂර 300 දක්වා)';
+
+  @override
+  String get caseSubmit => 'ඉදිරිපත් කරන්න';
+
+  @override
+  String get caseSubmitted => 'ලැබුණා. කණ්ඩායම පැය 24ක් ඇතුළත පිළිතුරු දෙයි.';
+
+  @override
+  String get caseFailed => 'යැවිය නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get checkInAction => 'පැමිණීම සටහන් කරන්න';
+
+  @override
+  String get checkOutAction => 'ඉවත්වීම සටහන් කරන්න';
+
+  @override
+  String checkedInAt(String time) {
+    return 'පැමිණියේ $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ඉවත්වූයේ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'ඇතුළත් කේතය පෙන්වන්න';
+
+  @override
+  String get entryCodeTitle => 'ඇතුළත් කේතය';
+
+  @override
+  String get entryCodeNotToday => 'සේවා දිනයේ පමණක් බැලිය හැක';
+
+  @override
+  String get entryCodeEmpty => 'ඇතුළත් කේතයක් නැත';
+
+  @override
+  String get actionFailed => 'සම්පූර්ණ කළ නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get consoleCasesTitle => 'නඩු පෝලිමය';
+
+  @override
+  String get consoleCasesEmpty => 'විවෘත නඩු නැත';
+
+  @override
+  String get caseOverdue => 'කල් ඉක්මවා ඇත';
+
+  @override
+  String get caseStatusOpen => 'විවෘත';
+
+  @override
+  String get caseStatusInvestigating => 'විමර්ශනය වෙමින්';
+
+  @override
+  String get caseStatusResolved => 'විසඳා ඇත';
+
+  @override
+  String get caseStatusRejected => 'ප්‍රතික්ෂේප කළා';
+
+  @override
+  String get caseReassign => 'හවුල්කරු නැවත පවරන්න';
+
+  @override
+  String get caseRefund => 'ආපසු ගෙවීම';
+
+  @override
+  String get caseHold => 'ගෙවීම රඳවන්න';
+
+  @override
+  String get caseNoteHint => 'අභ්‍යන්තර සටහන';
+
+  @override
+  String get caseSave => 'සුරකින්න';
 
   @override
   String get cSetup => 'සැකසුම';
@@ -3211,6 +3520,215 @@ class TSi extends T {
 
   @override
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
+
+  @override
+  String get cMfaTitle => 'පියවර දෙකේ පිවිසීම';
+
+  @override
+  String get cMfaCode => 'සත්‍යාපන යෙදුමෙන් ඉලක්කම් 6 කේතය';
+
+  @override
+  String get cMfaRecovery => 'යථා තත්ත්ව කේතය';
+
+  @override
+  String get cMfaUseRecovery => 'ඒ වෙනුවට යථා තත්ත්ව කේතය භාවිත කරන්න';
+
+  @override
+  String get cMfaUseCode => 'ඒ වෙනුවට සත්‍යාපන කේතය භාවිත කරන්න';
+
+  @override
+  String get cMfaVerify => 'සත්‍යාපනය කරන්න';
+
+  @override
+  String get cMfaBack => 'පිවිසීමට ආපසු යන්න';
+
+  @override
+  String get cMfaEnrolTitle => 'පියවර දෙකේ පිවිසීම සකසන්න';
+
+  @override
+  String get cMfaEnrolBody =>
+      'පරිපාලකයින්ට සත්‍යාපන යෙදුමක් අවශ්‍යයි. පහත යතුර Google Authenticator, 1Password වැනි යෙදුමට එක් කර, එහි පෙන්වන ඉලක්කම් 6 කේතය ඇතුළත් කරන්න.';
+
+  @override
+  String get cMfaSecret => 'සැකසුම් යතුර';
+
+  @override
+  String get cMfaLink => 'සැකසුම් සබැඳිය (otpauth)';
+
+  @override
+  String get cMfaCopy => 'පිටපත් කරන්න';
+
+  @override
+  String get cMfaCopied => 'පිටපත් විය';
+
+  @override
+  String get cMfaConfirm => 'තහවුරු කර ක්‍රියාත්මක කරන්න';
+
+  @override
+  String get cMfaCodesTitle => 'ඔබේ යථා තත්ත්ව කේත සුරකින්න';
+
+  @override
+  String get cMfaCodesBody =>
+      'සත්‍යාපන යෙදුම නැති වුවහොත්, සෑම කේතයකින්ම එක් වරක් පිවිසිය හැක. මේවා දැන් පමණක් පෙන්වයි.';
+
+  @override
+  String get cMfaDownload => 'බාගන්න';
+
+  @override
+  String get cMfaSaveFailed =>
+      'මෙම උපාංගයට ගොනුව සුරැකිය නොහැක. කේත පිටපත් කර ආරක්ෂිතව තබා ගන්න.';
+
+  @override
+  String get cMfaContinue => 'කන්සෝලය වෙත යන්න';
+
+  @override
+  String get cMfaInvalid =>
+      'කේතය නොගැලපේ. දුරකථනයේ වේලාව නිවැරදිදැයි බලා නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cMfaExpired =>
+      'පිවිසීමේ කාලය අවසන් විය. මුරපද පියවරෙන් නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get cMfaLocked =>
+      'උත්සාහයන් වැඩි වැඩියි. විනාඩි කිහිපයකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cStaffReset => 'මුරපදය යළි සකසන්න';
+
+  @override
+  String get cStaffResetConfirm =>
+      'මෙම කාර්ය මණ්ඩල සාමාජිකයාගේ මුරපදය යළි සකසන්නද? ඔවුන් සියලු තැන්වලින් ඉවත් වේ.';
+
+  @override
+  String get cStaffResetTitle => 'යළි සැකසීමේ ටෝකනය';
+
+  @override
+  String get cStaffResetBody =>
+      'මෙම ටෝකනය කාර්ය මණ්ඩල සාමාජිකයාට දෙන්න. එය එක් වරක්, මිනිත්තු 30ක් ඇතුළත පමණක් ක්‍රියා කරයි. වසා දැමූ පසු නැවත බැලිය නොහැක.';
+
+  @override
+  String get tTaxSection => 'බදු';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'වර්ෂය';
+
+  @override
+  String get tExportWithholding => 'අය කිරීම් ප්‍රකාශය CSV';
+
+  @override
+  String get tExportTaxInvoices => 'බදු ඉන්වොයිසි උඩුගත කිරීම CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'උඩුගත කිරීමට පෙර 홈택스 සැකිල්ල සමඟ තීරු පරීක්ෂා කරන්න. පිරිසැලසුම තවම තහවුරු වී නැත.';
+
+  @override
+  String get tCashReceipts => 'මුදල් රිසිට්පත්';
+
+  @override
+  String get tCashIssued => 'නිකුත් කළා';
+
+  @override
+  String get tCashFailed => 'අසාර්ථකයි';
+
+  @override
+  String get tCashPending => 'බලාපොරොත්තුවෙන්';
+
+  @override
+  String get tCashCancelled => 'අවලංගු කළා';
+
+  @override
+  String get tReissue => 'නැවත නිකුත් කරන්න';
+
+  @override
+  String get tTaxInvoices => 'බදු ඉන්වොයිසි';
+
+  @override
+  String get tApprovalNumber => 'අනුමැතිය අංකය';
+
+  @override
+  String get tIssuedOn => 'නිකුත් කළ දිනය';
+
+  @override
+  String get tMarkIssued => 'නිකුත් කළ ලෙස සලකුණු කරන්න';
+
+  @override
+  String get tQueueEmpty => 'බලාපොරොත්තු ඉල්ලීම් නැත';
+
+  @override
+  String get tWithholdingLabel => 'අය කිරීම';
+
+  @override
+  String get tGrossAmount => 'සමස්ත';
+
+  @override
+  String get tIncomeTax => 'ආදායම් බදු';
+
+  @override
+  String get tLocalTax => 'දේශීය ආදායම් බදු';
+
+  @override
+  String get tNetAmount => 'ශුද්ධ';
+
+  @override
+  String get tNoWithholding => 'අය කිරීමක් නැත (ලියාපදිංචි ව්‍යාපාරය)';
+
+  @override
+  String get tEstWithholding => 'ඇස්තමේන්තුගත අය කිරීම (ගෙවීමට ඇති)';
+
+  @override
+  String get tReceiptOptions => 'රිසිට්පත් විකල්ප';
+
+  @override
+  String get tWantCashReceipt => 'මුදල් රිසිට්පතක් ලබාගන්න';
+
+  @override
+  String get tCashForIncome => 'බදු අඩුකිරීම සඳහා (දුරකථන අංකය)';
+
+  @override
+  String get tCashForBusiness => 'ව්‍යාපාර වියදම් සඳහා (ව්‍යාපාර අංකය)';
+
+  @override
+  String get tWantTaxInvoice => 'බදු ඉන්වොයිසියක් ලබාගන්න (ව්‍යාපාර)';
+
+  @override
+  String get tPhoneForReceipt => 'දුරකථන අංකය';
+
+  @override
+  String get tBusinessNumber => 'ව්‍යාපාර ලියාපදිංචි අංකය';
+
+  @override
+  String get tCompanyName => 'සමාගමේ නම';
+
+  @override
+  String get tRepresentative => 'නියෝජිතයා';
+
+  @override
+  String get tInvoiceEmail => 'ඉන්වොයිසිය සඳහා ඊමේල්';
+
+  @override
+  String get tReceiptSave => 'සුරකිත් ගෙවන්න';
+
+  @override
+  String get tReceiptSaveFailed => 'රිසිට්පත් විස්තර සුරැකීමට නොහැකි විය';
+
+  @override
+  String get tTaxType => 'බදු වර්ගය';
+
+  @override
+  String get tTaxFreelancer => 'ස්වාධීන (අය කිරීමෙන්)';
+
+  @override
+  String get tTaxBusiness => 'ලියාපදිංචි ව්‍යාපාරය (අය කිරීමක් නැත)';
+
+  @override
+  String get tReceiptSettings => 'රිසිට්පත් සැකසුම්';
 
   @override
   String get reviewRuleLine =>

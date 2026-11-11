@@ -1,0 +1,9 @@
+{
+  "tiers": [
+    { "min_days": 2, "percent": 0 },
+    { "min_days": 1, "percent": null },
+    { "min_days": 0, "percent": null }
+  ],
+  "min_fee": 0,
+  "reschedule_min_days": 2
+}

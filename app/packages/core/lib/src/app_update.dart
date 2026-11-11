@@ -21,7 +21,11 @@ class AppVersionPolicy {
   final String? storeUrl;
 
   /// [app] is `customer` or `partner`. Missing or malformed fields mean "no rule".
-  factory AppVersionPolicy.from(Json brand, String app, {TargetPlatform? platform}) {
+  factory AppVersionPolicy.from(
+    Json brand,
+    String app, {
+    TargetPlatform? platform,
+  }) {
     final versions = (brand['app_versions'] as Json?)?[app] as Json?;
     final ios = (platform ?? defaultTargetPlatform) == TargetPlatform.iOS;
     final partner = app == 'partner';
@@ -38,14 +42,21 @@ class AppVersionPolicy {
     );
   }
 
-  static String? _version(Object? v) => v is String && RegExp(r'^\d+\.\d+\.\d+$').hasMatch(v) ? v : null;
-  static String? _https(Object? v) => v is String && v.startsWith('https://') ? v : null;
+  static String? _version(Object? v) =>
+      v is String && RegExp(r'^\d+\.\d+\.\d+$').hasMatch(v) ? v : null;
+  static String? _https(Object? v) =>
+      v is String && v.startsWith('https://') ? v : null;
 }
 
 /// Compares `major.minor.patch` strings (a `+build` suffix is ignored). Negative when [a] is older.
 int compareAppVersions(String a, String b) {
   List<int> parts(String v) {
-    final nums = v.split('+').first.split('.').map((p) => int.tryParse(p) ?? 0).toList();
+    final nums = v
+        .split('+')
+        .first
+        .split('.')
+        .map((p) => int.tryParse(p) ?? 0)
+        .toList();
     return [for (var i = 0; i < 3; i++) i < nums.length ? nums[i] : 0];
   }
 
@@ -106,7 +117,8 @@ class _UpdateGateState extends State<UpdateGate> {
     }
   }
 
-  static Future<String> _installedVersion() async => (await PackageInfo.fromPlatform()).version;
+  static Future<String> _installedVersion() async =>
+      (await PackageInfo.fromPlatform()).version;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +129,11 @@ class _UpdateGateState extends State<UpdateGate> {
       return _RequiredUpdate(current: current, storeUrl: policy.storeUrl);
     }
     final latest = policy.latest;
-    if (latest == null || _dismissed || compareAppVersions(current, latest) >= 0) return widget.child;
+    if (latest == null ||
+        _dismissed ||
+        compareAppVersions(current, latest) >= 0) {
+      return widget.child;
+    }
     return Column(
       children: [
         _UpdateBanner(
@@ -153,17 +169,31 @@ class _RequiredUpdate extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.system_update_rounded, size: 72, color: theme.colorScheme.primary),
+              Icon(
+                Icons.system_update_rounded,
+                size: 72,
+                color: theme.colorScheme.primary,
+              ),
               const SizedBox(height: 24),
-              Text(t.uUpdateRequiredTitle, textAlign: TextAlign.center, style: theme.textTheme.headlineSmall),
+              Text(
+                t.uUpdateRequiredTitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall,
+              ),
               const SizedBox(height: 12),
               Text(t.uUpdateRequiredBody, textAlign: TextAlign.center),
               const SizedBox(height: 8),
-              Text(t.uCurrentVersion(current), textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+              Text(
+                t.uCurrentVersion(current),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall,
+              ),
               const SizedBox(height: 32),
               FilledButton(
                 onPressed: storeUrl == null ? null : () => _openStore(storeUrl),
-                child: Text(storeUrl == null ? t.uUpdateStoreMissing : t.uUpdateStore),
+                child: Text(
+                  storeUrl == null ? t.uUpdateStoreMissing : t.uUpdateStore,
+                ),
               ),
             ],
           ),
@@ -174,7 +204,11 @@ class _RequiredUpdate extends StatelessWidget {
 }
 
 class _UpdateBanner extends StatelessWidget {
-  const _UpdateBanner({required this.version, required this.storeUrl, required this.onLater});
+  const _UpdateBanner({
+    required this.version,
+    required this.storeUrl,
+    required this.onLater,
+  });
   final String version;
   final String? storeUrl;
   final VoidCallback onLater;
@@ -191,7 +225,12 @@ class _UpdateBanner extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
           child: Row(
             children: [
-              Expanded(child: Text(t.uUpdateBanner(version), style: TextStyle(color: scheme.onSecondaryContainer))),
+              Expanded(
+                child: Text(
+                  t.uUpdateBanner(version),
+                  style: TextStyle(color: scheme.onSecondaryContainer),
+                ),
+              ),
               TextButton(onPressed: onLater, child: Text(t.uUpdateLater)),
               FilledButton.tonal(
                 onPressed: storeUrl == null ? null : () => _openStore(storeUrl),

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -495,6 +494,29 @@ class TVi extends T {
   String get cFormula => 'Công thức báo giá';
 
   @override
+  String get cTabCancelPolicy => 'Chính sách hủy';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Đây là giá trị mặc định. Hãy xem lại và lưu để xác nhận.';
+
+  @override
+  String get cPolicyDaysBefore => 'Trước lịch bao nhiêu ngày';
+
+  @override
+  String get cPolicyPercent => 'Phí % (để trống = không hủy trong app)';
+
+  @override
+  String get cPolicyMinFee => 'Phí tối thiểu (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'Cho đổi lịch (trước lịch bao nhiêu ngày)';
+
+  @override
+  String get cPolicyHint =>
+      'Áp dụng ngay trên màn hình hủy của app khách. Điều khoản cập nhật ở bản build sau.';
+
+  @override
   String get f_base_studio => 'Cơ bản: studio';
 
   @override
@@ -651,6 +673,9 @@ class TVi extends T {
   String get cNewMessage => 'Tin nhắn mới';
 
   @override
+  String get cConfirmAsk => 'Bạn có chắc chắn không?';
+
+  @override
   String get ok => 'Xác nhận';
 
   @override
@@ -737,7 +762,7 @@ class TVi extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Trong vòng 2 ngày trước lịch, hãy hủy qua đội tư vấn';
+      'Không thể hủy trong ứng dụng lúc này. Vui lòng liên hệ đội hỗ trợ';
 
   @override
   String get err_address_required => 'Thêm địa chỉ';
@@ -1287,6 +1312,11 @@ class TVi extends T {
   String get photosSoon => 'Ảnh trước & sau sẽ hiện ở đây';
 
   @override
+  String photoThumb(String n) {
+    return 'Ảnh $n';
+  }
+
+  @override
   String get before => 'Trước';
 
   @override
@@ -1318,6 +1348,16 @@ class TVi extends T {
 
   @override
   String get cancelKeep => 'Giữ lịch';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Hủy ngay sẽ mất phí $fee và hoàn lại $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Chấp nhận phí $fee và hủy';
+  }
 
   @override
   String get cancelled => 'Đã hủy lịch';
@@ -1732,6 +1772,49 @@ class TVi extends T {
   String get summaryDate => 'Lịch';
 
   @override
+  String get cpTitle => 'Chính sách hủy và đổi lịch';
+
+  @override
+  String cpWhen(String days) {
+    return 'Từ $days ngày trở lên trước lịch';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Ngay ngày hẹn';
+
+  @override
+  String get cpFree => 'Hoàn tiền đầy đủ';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Phí $percent% ($fee), hoàn $refund';
+  }
+
+  @override
+  String get cpClosed => 'Không hủy được trong app (đội tư vấn xem xét)';
+
+  @override
+  String get hhTitle => 'Thông tin hộ gia đình';
+
+  @override
+  String get hhAddPet => 'Thêm thú cưng';
+
+  @override
+  String get hhPetCount => 'Số con';
+
+  @override
+  String get hhFloorLabel => 'Tầng (âm nếu là hầm)';
+
+  @override
+  String get hhElevator => 'Có thang máy';
+
+  @override
+  String get hhNotes => 'Ghi chú';
+
+  @override
+  String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override
@@ -1910,6 +1993,14 @@ class TVi extends T {
 
   @override
   String get err_invalid_capacity => 'Hãy nhập sức chứa hợp lệ.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss chưa duyệt đăng ký người bán. Hãy kiểm tra thông tin doanh nghiệp.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Đối tác này chưa có tài khoản nhận tiền đã xác minh. Hãy xác minh tài khoản trước.';
 
   @override
   String get fFinance => 'Tài chính';
@@ -2637,6 +2728,47 @@ class TVi extends T {
   String get pCustomerRequests => 'Yêu cầu của khách';
 
   @override
+  String get pHousehold => 'Thông tin hộ gia đình';
+
+  @override
+  String get pPets => 'Thú cưng';
+
+  @override
+  String get pPetDog => 'Chó';
+
+  @override
+  String get pPetCat => 'Mèo';
+
+  @override
+  String get pPetBird => 'Chim';
+
+  @override
+  String get pPetFish => 'Cá';
+
+  @override
+  String get pPetOther => 'Thú khác';
+
+  @override
+  String get pAllergies => 'Dị ứng & nhạy cảm';
+
+  @override
+  String get pPreferredProducts => 'Sản phẩm ưa thích';
+
+  @override
+  String get pParking => 'Đỗ xe';
+
+  @override
+  String pFloor(String floor) {
+    return 'Tầng $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'Có thang máy';
+
+  @override
+  String get pElevatorNo => 'Không có thang máy';
+
+  @override
   String get pTeamMemo => 'Ghi chú đội (khách không thấy)';
 
   @override
@@ -2830,6 +2962,27 @@ class TVi extends T {
   String get pSpace => 'Không gian';
 
   @override
+  String get pNavigate => 'Chỉ đường';
+
+  @override
+  String get pNavHint =>
+      'Mở địa chỉ trong ứng dụng bản đồ. Nếu chưa cài, sẽ mở bản đồ web.';
+
+  @override
+  String get pOfflineSaved => 'Không có sóng. Đã lưu, sẽ gửi khi có mạng.';
+
+  @override
+  String get pPhotoRetry => 'Tải lại';
+
+  @override
+  String get pPhotoWaiting => 'Ảnh chưa tải lên sẽ tự gửi khi có mạng.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'Đã tải $done/$total ảnh';
+  }
+
+  @override
   String get cIntPayout => 'Chi trả đối tác';
 
   @override
@@ -2908,6 +3061,45 @@ class TVi extends T {
   String get poRevealNote => 'Việc xem tài khoản được ghi lại';
 
   @override
+  String get poSellerAction => 'Đăng ký người bán';
+
+  @override
+  String get poSellerTitle => 'Đăng ký làm người bán Toss';
+
+  @override
+  String get poSellerHint =>
+      'Dùng tài khoản nhận tiền đã xác minh của đối tác. Chỉ nhập thông tin kinh doanh.';
+
+  @override
+  String get poSellerIndividual => 'Cá nhân';
+
+  @override
+  String get poSellerCompany => 'Doanh nghiệp';
+
+  @override
+  String get poSellerName => 'Họ tên';
+
+  @override
+  String get poSellerRepresentative => 'Tên người đại diện';
+
+  @override
+  String get poSellerRegNo => 'Mã số doanh nghiệp (10 chữ số)';
+
+  @override
+  String get poSellerEmail => 'Email đối soát';
+
+  @override
+  String get poSellerPhone => 'Số điện thoại';
+
+  @override
+  String get poSellerSubmit => 'Đăng ký';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Trạng thái người bán: $status';
+  }
+
+  @override
   String get pvManage => 'Quản lý đồng ý';
 
   @override
@@ -2952,6 +3144,122 @@ class TVi extends T {
   @override
   String get pvExportFailed =>
       'Không thể tải dữ liệu của bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get safetyEmergency => 'Liên hệ khẩn cấp';
+
+  @override
+  String get emergencyPolice => '112 Cảnh sát';
+
+  @override
+  String get emergencyFire => '119 Cứu hỏa & cứu thương';
+
+  @override
+  String get emergencyShop => 'Hỗ trợ khách hàng';
+
+  @override
+  String get caseReportAction => 'Báo cáo sự cố';
+
+  @override
+  String get caseReportTitle => 'Có chuyện gì đã xảy ra?';
+
+  @override
+  String get caseKindDamage => 'Hư hỏng';
+
+  @override
+  String get caseKindLoss => 'Thất lạc';
+
+  @override
+  String get caseKindComplaint => 'Khiếu nại';
+
+  @override
+  String get caseKindNoShow => 'Nhân viên không đến';
+
+  @override
+  String get caseKindSafety => 'Vấn đề an toàn';
+
+  @override
+  String get caseKindPayment => 'Tranh chấp thanh toán';
+
+  @override
+  String get caseSummaryHint => 'Mô tả chi tiết (tối đa 300 ký tự)';
+
+  @override
+  String get caseSubmit => 'Gửi';
+
+  @override
+  String get caseSubmitted =>
+      'Đã tiếp nhận. Nhân viên sẽ phản hồi trong 24 giờ.';
+
+  @override
+  String get caseFailed => 'Không gửi được, hãy thử lại.';
+
+  @override
+  String get checkInAction => 'Check-in';
+
+  @override
+  String get checkOutAction => 'Check-out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Đến lúc $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Rời đi lúc $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Xem mã cửa ra vào';
+
+  @override
+  String get entryCodeTitle => 'Mã cửa ra vào';
+
+  @override
+  String get entryCodeNotToday => 'Chỉ xem được vào ngày đến';
+
+  @override
+  String get entryCodeEmpty => 'Chưa có mã cửa';
+
+  @override
+  String get actionFailed => 'Không thực hiện được, hãy thử lại.';
+
+  @override
+  String get consoleCasesTitle => 'Hàng đợi vụ việc';
+
+  @override
+  String get consoleCasesEmpty => 'Không có vụ việc đang mở';
+
+  @override
+  String get caseOverdue => 'Quá hạn';
+
+  @override
+  String get caseStatusOpen => 'Mở';
+
+  @override
+  String get caseStatusInvestigating => 'Đang xem xét';
+
+  @override
+  String get caseStatusResolved => 'Đã giải quyết';
+
+  @override
+  String get caseStatusRejected => 'Từ chối';
+
+  @override
+  String get caseReassign => 'Phân công lại';
+
+  @override
+  String get caseRefund => 'Hoàn tiền';
+
+  @override
+  String get caseHold => 'Tạm giữ thanh toán';
+
+  @override
+  String get caseNoteHint => 'Ghi chú nội bộ';
+
+  @override
+  String get caseSave => 'Lưu';
 
   @override
   String get cSetup => 'Thiết lập';
@@ -3184,6 +3492,214 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String get cMfaTitle => 'Xác minh 2 bước';
+
+  @override
+  String get cMfaCode => 'Mã 6 số từ ứng dụng xác thực';
+
+  @override
+  String get cMfaRecovery => 'Mã khôi phục';
+
+  @override
+  String get cMfaUseRecovery => 'Dùng mã khôi phục thay thế';
+
+  @override
+  String get cMfaUseCode => 'Dùng mã từ ứng dụng xác thực';
+
+  @override
+  String get cMfaVerify => 'Xác minh';
+
+  @override
+  String get cMfaBack => 'Quay lại đăng nhập';
+
+  @override
+  String get cMfaEnrolTitle => 'Thiết lập xác minh 2 bước';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Quản trị viên cần ứng dụng xác thực. Thêm khóa bên dưới vào Google Authenticator, 1Password hoặc ứng dụng tương tự, rồi nhập mã 6 số hiển thị trên đó.';
+
+  @override
+  String get cMfaSecret => 'Khóa thiết lập';
+
+  @override
+  String get cMfaLink => 'Liên kết thiết lập (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Sao chép';
+
+  @override
+  String get cMfaCopied => 'Đã sao chép';
+
+  @override
+  String get cMfaConfirm => 'Xác nhận và bật';
+
+  @override
+  String get cMfaCodesTitle => 'Lưu mã khôi phục của bạn';
+
+  @override
+  String get cMfaCodesBody =>
+      'Nếu mất ứng dụng xác thực, mỗi mã đăng nhập được một lần. Mã chỉ hiển thị lúc này.';
+
+  @override
+  String get cMfaDownload => 'Tải xuống';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Thiết bị này không lưu được tệp. Hãy sao chép mã và giữ an toàn.';
+
+  @override
+  String get cMfaContinue => 'Vào bảng điều hành';
+
+  @override
+  String get cMfaInvalid =>
+      'Mã không khớp. Kiểm tra đồng hồ điện thoại rồi thử lại.';
+
+  @override
+  String get cMfaExpired =>
+      'Phiên đăng nhập đã hết hạn. Bắt đầu lại từ bước mật khẩu.';
+
+  @override
+  String get cMfaLocked => 'Thử quá nhiều lần. Chờ vài phút rồi thử lại.';
+
+  @override
+  String get cStaffReset => 'Đặt lại mật khẩu';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Đặt lại mật khẩu của nhân viên này? Họ sẽ bị đăng xuất khỏi mọi nơi.';
+
+  @override
+  String get cStaffResetTitle => 'Mã đặt lại';
+
+  @override
+  String get cStaffResetBody =>
+      'Gửi mã này cho nhân viên. Chỉ dùng được một lần, trong 30 phút. Đóng lại là không xem lại được.';
+
+  @override
+  String get tTaxSection => 'Thuế';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Thuế GTGT Q$q CSV';
+  }
+
+  @override
+  String get tVatYear => 'Năm';
+
+  @override
+  String get tExportWithholding => 'Bảng khấu trừ CSV';
+
+  @override
+  String get tExportTaxInvoices => 'CSV tải hóa đơn thuế';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Kiểm tra cột với mẫu 홈택스 trước khi tải lên. Bố cục chưa được xác minh.';
+
+  @override
+  String get tCashReceipts => 'Biên lai tiền mặt';
+
+  @override
+  String get tCashIssued => 'Đã phát hành';
+
+  @override
+  String get tCashFailed => 'Phát hành lỗi';
+
+  @override
+  String get tCashPending => 'Đang chờ';
+
+  @override
+  String get tCashCancelled => 'Đã hủy';
+
+  @override
+  String get tReissue => 'Phát hành lại';
+
+  @override
+  String get tTaxInvoices => 'Hóa đơn thuế';
+
+  @override
+  String get tApprovalNumber => 'Số phê duyệt';
+
+  @override
+  String get tIssuedOn => 'Ngày phát hành';
+
+  @override
+  String get tMarkIssued => 'Đánh dấu đã phát hành';
+
+  @override
+  String get tQueueEmpty => 'Không có yêu cầu đang chờ';
+
+  @override
+  String get tWithholdingLabel => 'Khấu trừ thuế';
+
+  @override
+  String get tGrossAmount => 'Tổng gộp';
+
+  @override
+  String get tIncomeTax => 'Thuế thu nhập';
+
+  @override
+  String get tLocalTax => 'Thuế thu nhập địa phương';
+
+  @override
+  String get tNetAmount => 'Thực nhận';
+
+  @override
+  String get tNoWithholding => 'Không khấu trừ (doanh nghiệp đã đăng ký)';
+
+  @override
+  String get tEstWithholding => 'Khấu trừ dự kiến (phần chờ)';
+
+  @override
+  String get tReceiptOptions => 'Tùy chọn biên lai';
+
+  @override
+  String get tWantCashReceipt => 'Nhận biên lai tiền mặt';
+
+  @override
+  String get tCashForIncome => 'Khấu trừ thu nhập (số điện thoại)';
+
+  @override
+  String get tCashForBusiness => 'Chứng từ chi phí (mã doanh nghiệp)';
+
+  @override
+  String get tWantTaxInvoice => 'Nhận hóa đơn thuế (doanh nghiệp)';
+
+  @override
+  String get tPhoneForReceipt => 'Số điện thoại';
+
+  @override
+  String get tBusinessNumber => 'Mã số đăng ký doanh nghiệp';
+
+  @override
+  String get tCompanyName => 'Tên công ty';
+
+  @override
+  String get tRepresentative => 'Người đại diện';
+
+  @override
+  String get tInvoiceEmail => 'Email nhận hóa đơn';
+
+  @override
+  String get tReceiptSave => 'Lưu và thanh toán';
+
+  @override
+  String get tReceiptSaveFailed => 'Không lưu được thông tin biên lai';
+
+  @override
+  String get tTaxType => 'Loại thuế';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (khấu trừ)';
+
+  @override
+  String get tTaxBusiness => 'Doanh nghiệp đã đăng ký (không khấu trừ)';
+
+  @override
+  String get tReceiptSettings => 'Cài đặt biên lai';
 
   @override
   String get reviewRuleLine =>

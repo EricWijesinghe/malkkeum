@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../download.dart';
 import '../state.dart';
+import 'finance_tax.dart';
 
 /// Owner finance: period KPIs, trend charts, payment mix, partner and service tables, accountant CSVs.
 /// Every figure is integer won from the API. Charts only convert to double for drawing.
@@ -37,7 +38,11 @@ class _FinanceScreenState extends State<FinanceScreen> {
   }
 
   Map<String, String?> get _periodQuery => switch (_period) {
-    _Period.custom when _custom != null => {'period': 'custom', 'from': _ymd(_custom!.start), 'to': _ymd(_custom!.end)},
+    _Period.custom when _custom != null => {
+      'period': 'custom',
+      'from': _ymd(_custom!.start),
+      'to': _ymd(_custom!.end),
+    },
     _Period.custom || _Period.month => {'period': 'month'},
     _Period.week => {'period': 'week'},
     _Period.day => {'period': 'day'},
@@ -100,13 +105,25 @@ class _FinanceScreenState extends State<FinanceScreen> {
     return _load();
   }
 
-  Future<void> _export(String kind) async {
+  Future<void> _export(String kind) => _exportAt(
+    '/admin/finance/export/$kind',
+    _periodQuery,
+    'malkkeum-$kind.csv',
+  );
+
+  Future<void> _exportAt(
+    String path,
+    Map<String, String?> query,
+    String fileName,
+  ) async {
     final messenger = ScaffoldMessenger.of(context);
     final t = context.t;
     try {
-      final bytes = await context.api.getBytes('/admin/finance/export/$kind', query: _periodQuery);
-      final saved = await saveCsv(bytes, 'malkkeum-$kind.csv');
-      messenger.showSnackBar(SnackBar(content: Text(saved ? t.fDownload : t.fDownloadWebOnly)));
+      final bytes = await context.api.getBytes(path, query: query);
+      final saved = await saveCsv(bytes, fileName);
+      messenger.showSnackBar(
+        SnackBar(content: Text(saved ? t.fDownload : t.fDownloadWebOnly)),
+      );
     } on ApiException {
       messenger.showSnackBar(SnackBar(content: Text(t.fDownloadFailed)));
     }
@@ -127,16 +144,25 @@ class _FinanceScreenState extends State<FinanceScreen> {
           if (_failed)
             _ErrorCard(onRetry: _load)
           else if (_loading && _summary.isEmpty)
-            const Center(child: Padding(padding: EdgeInsets.all(Space.xl), child: CircularProgressIndicator()))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(Space.xl),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else ...[
             _KpiGrid(summary: _summary),
             const SizedBox(height: Space.sm),
             Text(t.fVatNote, style: context.text.labelSmall),
             const SizedBox(height: Space.xl),
-            _TrendCard(series: _series, grain: _grain, onGrain: (g) {
-              setState(() => _grain = g);
-              _load();
-            }),
+            _TrendCard(
+              series: _series,
+              grain: _grain,
+              onGrain: (g) {
+                setState(() => _grain = g);
+                _load();
+              },
+            ),
             const SizedBox(height: Space.xl),
             _MixRow(summary: _summary),
             const SizedBox(height: Space.xl),
@@ -145,6 +171,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
             _ServiceCard(services: _services),
             const SizedBox(height: Space.xl),
             _ExportCard(onExport: _export),
+            const SizedBox(height: Space.xl),
+            TaxSection(periodQuery: _periodQuery, onExport: _exportAt),
           ],
         ],
       ),
@@ -152,16 +180,23 @@ class _FinanceScreenState extends State<FinanceScreen> {
   }
 }
 
-String _ymd(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+String _ymd(DateTime d) =>
+    '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-List<Json> _rows(Object? v) => [for (final e in (v as List? ?? const [])) e as Json];
+List<Json> _rows(Object? v) => [
+  for (final e in (v as List? ?? const [])) e as Json,
+];
 
 int _n(Json m, String k) => (m[k] as num? ?? 0).toInt();
 
 int _payout(Json m, String k) => _n((m['payouts'] as Json?) ?? const {}, k);
 
 class _PeriodBar extends StatelessWidget {
-  const _PeriodBar({required this.period, required this.custom, required this.onPick});
+  const _PeriodBar({
+    required this.period,
+    required this.custom,
+    required this.onPick,
+  });
   final _Period period;
   final DateTimeRange? custom;
   final ValueChanged<_Period> onPick;
@@ -185,7 +220,10 @@ class _PeriodBar extends StatelessWidget {
           onSelectionChanged: (s) => onPick(s.first),
         ),
         if (custom != null && period == _Period.custom)
-          Text('${_ymd(custom!.start)} ~ ${_ymd(custom!.end)}', style: context.text.labelMedium),
+          Text(
+            '${_ymd(custom!.start)} ~ ${_ymd(custom!.end)}',
+            style: context.text.labelMedium,
+          ),
       ],
     );
   }
@@ -199,14 +237,54 @@ class _KpiGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     final tiles = [
-      (t.fGross, context.won(_n(summary, 'gross')), Icons.receipt_long_rounded, ServiceHues.studio),
-      (t.fNetRevenue, context.won(_n(summary, 'net_revenue')), Icons.trending_up_rounded, ServiceHues.moveOut),
-      (t.fPlatformFee, context.won(_n(summary, 'platform_fee')), Icons.percent_rounded, ServiceHues.bathroom),
-      (t.fVatEstimate, context.won(_n(summary, 'vat_estimate')), Icons.account_balance_rounded, ServiceHues.kitchen),
-      (t.fPaidOut, context.won(_payout(summary, 'paid')), Icons.payments_rounded, ServiceHues.aircon),
-      (t.fPendingOut, context.won(_payout(summary, 'pending')), Icons.schedule_rounded, ServiceHues.mattress),
-      (t.fAov, context.won(_n(summary, 'avg_order_value')), Icons.shopping_bag_rounded, ServiceHues.sofa),
-      (t.fCancelRate, '${(_n(summary, 'cancellation_bps') / 100).toStringAsFixed(1)}%', Icons.event_busy_rounded, ServiceHues.moveIn),
+      (
+        t.fGross,
+        context.won(_n(summary, 'gross')),
+        Icons.receipt_long_rounded,
+        ServiceHues.studio,
+      ),
+      (
+        t.fNetRevenue,
+        context.won(_n(summary, 'net_revenue')),
+        Icons.trending_up_rounded,
+        ServiceHues.moveOut,
+      ),
+      (
+        t.fPlatformFee,
+        context.won(_n(summary, 'platform_fee')),
+        Icons.percent_rounded,
+        ServiceHues.bathroom,
+      ),
+      (
+        t.fVatEstimate,
+        context.won(_n(summary, 'vat_estimate')),
+        Icons.account_balance_rounded,
+        ServiceHues.kitchen,
+      ),
+      (
+        t.fPaidOut,
+        context.won(_payout(summary, 'paid')),
+        Icons.payments_rounded,
+        ServiceHues.aircon,
+      ),
+      (
+        t.fPendingOut,
+        context.won(_payout(summary, 'pending')),
+        Icons.schedule_rounded,
+        ServiceHues.mattress,
+      ),
+      (
+        t.fAov,
+        context.won(_n(summary, 'avg_order_value')),
+        Icons.shopping_bag_rounded,
+        ServiceHues.sofa,
+      ),
+      (
+        t.fCancelRate,
+        '${(_n(summary, 'cancellation_bps') / 100).toStringAsFixed(1)}%',
+        Icons.event_busy_rounded,
+        ServiceHues.moveIn,
+      ),
     ];
     return LayoutBuilder(
       builder: (context, c) {
@@ -230,11 +308,27 @@ class _KpiGrid extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(color: context.colors.tintOf(hue), borderRadius: BorderRadius.circular(10)),
-                        child: Icon(icon, size: 20, color: context.colors.isDark ? hue.tint : hue.tone),
+                        decoration: BoxDecoration(
+                          color: context.colors.tintOf(hue),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          icon,
+                          size: 20,
+                          color: context.colors.isDark ? hue.tint : hue.tone,
+                        ),
                       ),
-                      FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(value, style: context.text.headlineSmall)),
-                      Text(label, style: context.text.labelSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(value, style: context.text.headlineSmall),
+                      ),
+                      Text(
+                        label,
+                        style: context.text.labelSmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
@@ -247,7 +341,11 @@ class _KpiGrid extends StatelessWidget {
 }
 
 class _TrendCard extends StatelessWidget {
-  const _TrendCard({required this.series, required this.grain, required this.onGrain});
+  const _TrendCard({
+    required this.series,
+    required this.grain,
+    required this.onGrain,
+  });
   final List<Json> series;
   final _Grain grain;
   final ValueChanged<_Grain> onGrain;
@@ -258,7 +356,9 @@ class _TrendCard extends StatelessWidget {
     final net = [for (final p in series) _n(p, 'net_revenue').toDouble()];
     final fee = [for (final p in series) _n(p, 'platform_fee').toDouble()];
     final paid = [for (final p in series) _payout(p, 'paid').toDouble()];
-    final hasData = series.any((p) => _n(p, 'gross') > 0 || _payout(p, 'paid') > 0);
+    final hasData = series.any(
+      (p) => _n(p, 'gross') > 0 || _payout(p, 'paid') > 0,
+    );
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,18 +375,43 @@ class _TrendCard extends StatelessWidget {
                     (_Grain.week, t.fPeriodWeek),
                     (_Grain.month, t.fPeriodMonth),
                   ])
-                    ChoiceChip(label: Text(label), selected: grain == g, onSelected: (_) => onGrain(g)),
+                    ChoiceChip(
+                      label: Text(label),
+                      selected: grain == g,
+                      onSelected: (_) => onGrain(g),
+                    ),
                 ],
               ),
             ],
           ),
           const SizedBox(height: Space.md),
           if (!hasData)
-            Padding(padding: const EdgeInsets.all(Space.lg), child: Text(t.fNoRecords, style: context.text.bodySmall))
+            Padding(
+              padding: const EdgeInsets.all(Space.lg),
+              child: Text(t.fNoRecords, style: context.text.bodySmall),
+            )
           else ...[
-            SizedBox(height: 200, child: _Lines(net: net, fee: fee, netLabel: t.fNetRevenue, feeLabel: t.fPlatformFee, colors: context.colors)),
+            SizedBox(
+              height: 200,
+              child: _Lines(
+                net: net,
+                fee: fee,
+                netLabel: t.fNetRevenue,
+                feeLabel: t.fPlatformFee,
+                colors: context.colors,
+              ),
+            ),
             const SizedBox(height: Space.lg),
-            SizedBox(height: 160, child: _Bars(fee: fee, paid: paid, feeLabel: t.fPlatformFee, paidLabel: t.fPaidOut, colors: context.colors)),
+            SizedBox(
+              height: 160,
+              child: _Bars(
+                fee: fee,
+                paid: paid,
+                feeLabel: t.fPlatformFee,
+                paidLabel: t.fPaidOut,
+                colors: context.colors,
+              ),
+            ),
           ],
         ],
       ),
@@ -295,7 +420,13 @@ class _TrendCard extends StatelessWidget {
 }
 
 class _Lines extends StatelessWidget {
-  const _Lines({required this.net, required this.fee, required this.netLabel, required this.feeLabel, required this.colors});
+  const _Lines({
+    required this.net,
+    required this.fee,
+    required this.netLabel,
+    required this.feeLabel,
+    required this.colors,
+  });
   final List<double> net;
   final List<double> fee;
   final String netLabel;
@@ -304,16 +435,34 @@ class _Lines extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<FlSpot> spots(List<double> v) => [for (var i = 0; i < v.length; i++) FlSpot(i.toDouble(), v[i])];
+    List<FlSpot> spots(List<double> v) => [
+      for (var i = 0; i < v.length; i++) FlSpot(i.toDouble(), v[i]),
+    ];
     return LineChart(
       LineChartData(
-        gridData: FlGridData(drawVerticalLine: false, getDrawingHorizontalLine: (_) => FlLine(color: colors.line, strokeWidth: 1)),
+        gridData: FlGridData(
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) =>
+              FlLine(color: colors.line, strokeWidth: 1),
+        ),
         titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         lineTouchData: const LineTouchData(enabled: true),
         lineBarsData: [
-          LineChartBarData(spots: spots(net), isCurved: true, color: ServiceHues.moveOut.tone, barWidth: 3, dotData: const FlDotData(show: false)),
-          LineChartBarData(spots: spots(fee), isCurved: true, color: ServiceHues.bathroom.tone, barWidth: 3, dotData: const FlDotData(show: false)),
+          LineChartBarData(
+            spots: spots(net),
+            isCurved: true,
+            color: ServiceHues.moveOut.tone,
+            barWidth: 3,
+            dotData: const FlDotData(show: false),
+          ),
+          LineChartBarData(
+            spots: spots(fee),
+            isCurved: true,
+            color: ServiceHues.bathroom.tone,
+            barWidth: 3,
+            dotData: const FlDotData(show: false),
+          ),
         ],
       ),
       duration: const Duration(milliseconds: 300),
@@ -322,7 +471,13 @@ class _Lines extends StatelessWidget {
 }
 
 class _Bars extends StatelessWidget {
-  const _Bars({required this.fee, required this.paid, required this.feeLabel, required this.paidLabel, required this.colors});
+  const _Bars({
+    required this.fee,
+    required this.paid,
+    required this.feeLabel,
+    required this.paidLabel,
+    required this.colors,
+  });
   final List<double> fee;
   final List<double> paid;
   final String feeLabel;
@@ -333,7 +488,11 @@ class _Bars extends StatelessWidget {
   Widget build(BuildContext context) {
     return BarChart(
       BarChartData(
-        gridData: FlGridData(drawVerticalLine: false, getDrawingHorizontalLine: (_) => FlLine(color: colors.line, strokeWidth: 1)),
+        gridData: FlGridData(
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) =>
+              FlLine(color: colors.line, strokeWidth: 1),
+        ),
         titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         barGroups: [
@@ -341,8 +500,18 @@ class _Bars extends StatelessWidget {
             BarChartGroupData(
               x: i,
               barRods: [
-                BarChartRodData(toY: fee[i], color: ServiceHues.bathroom.tone, width: 6, borderRadius: BorderRadius.circular(2)),
-                BarChartRodData(toY: paid[i], color: ServiceHues.aircon.tone, width: 6, borderRadius: BorderRadius.circular(2)),
+                BarChartRodData(
+                  toY: fee[i],
+                  color: ServiceHues.bathroom.tone,
+                  width: 6,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                BarChartRodData(
+                  toY: paid[i],
+                  color: ServiceHues.aircon.tone,
+                  width: 6,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ],
             ),
         ],
@@ -360,7 +529,14 @@ class _MixRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     final methods = _rows(summary['payment_methods']);
-    final hues = [ServiceHues.studio, ServiceHues.bathroom, ServiceHues.kitchen, ServiceHues.mattress, ServiceHues.aircon, ServiceHues.sofa];
+    final hues = [
+      ServiceHues.studio,
+      ServiceHues.bathroom,
+      ServiceHues.kitchen,
+      ServiceHues.mattress,
+      ServiceHues.aircon,
+      ServiceHues.sofa,
+    ];
     final total = methods.fold<int>(0, (a, m) => a + _n(m, 'amount'));
     return AppCard(
       child: Column(
@@ -381,7 +557,12 @@ class _MixRow extends StatelessWidget {
                       centerSpaceRadius: 42,
                       sections: [
                         for (var i = 0; i < methods.length; i++)
-                          PieChartSectionData(value: _n(methods[i], 'amount').toDouble(), color: hues[i % hues.length].tone, radius: 22, title: ''),
+                          PieChartSectionData(
+                            value: _n(methods[i], 'amount').toDouble(),
+                            color: hues[i % hues.length].tone,
+                            radius: 22,
+                            title: '',
+                          ),
                       ],
                     ),
                   ),
@@ -443,7 +624,11 @@ class _PartnerCard extends StatelessWidget {
                   for (final p in partners)
                     DataRow(
                       cells: [
-                        DataCell(Text('${p['name']}${(p['team_name'] as String? ?? '').isEmpty ? '' : ' · ${p['team_name']}'}')),
+                        DataCell(
+                          Text(
+                            '${p['name']}${(p['team_name'] as String? ?? '').isEmpty ? '' : ' · ${p['team_name']}'}',
+                          ),
+                        ),
                         DataCell(Text('${_n(p, 'jobs')}')),
                         DataCell(Text(context.won(_n(p, 'settled_gross')))),
                         DataCell(Text(context.won(_n(p, 'fee')))),
@@ -468,35 +653,56 @@ class _ServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final max = services.fold<int>(1, (a, s) => _n(s, 'gross') > a ? _n(s, 'gross') : a);
+    final max = services.fold<int>(
+      1,
+      (a, s) => _n(s, 'gross') > a ? _n(s, 'gross') : a,
+    );
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(t.fByService, style: context.text.titleMedium),
           const SizedBox(height: Space.md),
-          if (services.isEmpty) Text(t.fNoRecords, style: context.text.bodySmall),
+          if (services.isEmpty)
+            Text(t.fNoRecords, style: context.text.bodySmall),
           for (final s in services)
             Padding(
               padding: const EdgeInsets.only(bottom: Space.sm),
               child: Row(
                 children: [
-                  SizedBox(width: 110, child: Text(t.service(s['service_code'] as String), style: context.text.bodySmall, overflow: TextOverflow.ellipsis)),
+                  SizedBox(
+                    width: 110,
+                    child: Text(
+                      t.service(s['service_code'] as String),
+                      style: context.text.bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   Expanded(
                     child: Semantics(
-                      label: '${t.service(s['service_code'] as String)} ${context.won(_n(s, 'gross'))}',
+                      label:
+                          '${t.service(s['service_code'] as String)} ${context.won(_n(s, 'gross'))}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(6),
                         child: LinearProgressIndicator(
                           value: _n(s, 'gross') / max,
                           minHeight: 14,
                           backgroundColor: context.colors.line,
-                          color: ServiceHues.of(s['service_code'] as String).tone,
+                          color: ServiceHues.of(
+                            s['service_code'] as String,
+                          ).tone,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 110, child: Text(context.won(_n(s, 'gross')), textAlign: TextAlign.right, style: context.text.labelMedium)),
+                  SizedBox(
+                    width: 110,
+                    child: Text(
+                      context.won(_n(s, 'gross')),
+                      textAlign: TextAlign.right,
+                      style: context.text.labelMedium,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -523,9 +729,21 @@ class _ExportCard extends StatelessWidget {
             spacing: Space.sm,
             runSpacing: Space.sm,
             children: [
-              OutlinedButton.icon(onPressed: () => onExport('ledger'), icon: const Icon(Icons.download_rounded), label: Text(t.fExportLedger)),
-              OutlinedButton.icon(onPressed: () => onExport('settlements'), icon: const Icon(Icons.download_rounded), label: Text(t.fExportSettlements)),
-              FilledButton.icon(onPressed: () => onExport('monthly'), icon: const Icon(Icons.download_rounded), label: Text(t.fExportMonthly)),
+              OutlinedButton.icon(
+                onPressed: () => onExport('ledger'),
+                icon: const Icon(Icons.download_rounded),
+                label: Text(t.fExportLedger),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => onExport('settlements'),
+                icon: const Icon(Icons.download_rounded),
+                label: Text(t.fExportSettlements),
+              ),
+              FilledButton.icon(
+                onPressed: () => onExport('monthly'),
+                icon: const Icon(Icons.download_rounded),
+                label: Text(t.fExportMonthly),
+              ),
             ],
           ),
         ],

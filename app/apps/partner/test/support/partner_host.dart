@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:partner/main.dart';
+import 'package:partner/outbox.dart';
 import 'package:partner/state.dart';
 import 'package:test_support/test_support.dart';
 import 'package:ui/ui.dart';
@@ -42,16 +45,19 @@ class PartnerTestHost extends StatelessWidget {
       );
 }
 
+/// A throwaway on-disk outbox per test.
+CompletionOutbox testOutbox() => CompletionOutbox(Directory.systemTemp.createTempSync('outbox'));
+
 /// Pumps [home] inside the partner app wiring (no sign-in gate) and returns the state.
 Future<PartnerState> pumpPartnerScreen(WidgetTester tester, TestEnv env, Widget home) async {
-  final app = PartnerState(env.api, FakeRealtime(env.api));
+  final app = PartnerState(env.api, FakeRealtime(env.api), outbox: testOutbox());
   await tester.pumpWidget(PartnerTestHost(env: env, app: app, home: home));
   return app;
 }
 
 /// Pumps the real [PartnerApp] root (sign-in gate, onboarding/pending/shell routing).
 Future<PartnerState> pumpPartnerApp(WidgetTester tester, TestEnv env) async {
-  final app = PartnerState(env.api, FakeRealtime(env.api));
+  final app = PartnerState(env.api, FakeRealtime(env.api), outbox: testOutbox());
   await tester.pumpWidget(PartnerApp(session: env.session, app: app, locale: env.locale, theme: env.theme));
   return app;
 }

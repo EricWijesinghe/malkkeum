@@ -1,15 +1,18 @@
 //! Customer account: profile, addresses, coupons, payment methods, devices, notifications.
 
 use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
+use super::booking_core::checked_household;
 use crate::{
     auth::{Auth, Customer, normalize_phone, sha256_hex},
+    contract::{PageQuery, cursor_part, decode_cursor, encode_cursor, page_limit, paged, ts_key},
     error::{ApiError, ApiResult},
     providers::{ProviderError, portone},
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    response::Response,
     routing::{delete, get, post, put},
 };
 use chrono::{DateTime, Utc};
@@ -20,13 +23,15 @@ use uuid::Uuid;
 pub const SUPPORTED_LOCALES: [&str; 14] = ["ko", "en", "zh", "vi", "ja", "ru", "ne", "si", "th", "id", "mn", "uz", "fil", "km"];
 const MAX_NAME_LEN: usize = 40;
 const MAX_ADDRESS_LEN: usize = 200;
-const NOTIFICATION_PAGE: i64 = 50;
+
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/me", get(profile).patch(update_profile).delete(delete_account))
         .route("/me/phone", post(bind_phone))
         .route("/me/identity", post(verify_identity))
+        .route("/me/identity/setup", get(identity_setup))
+        .route("/me/identity/session", post(identity_session))
         .route("/me/addresses", get(list_addresses).post(create_address))
         .route("/me/addresses/{id}", put(update_address).delete(delete_address))
         .route("/me/coupons", get(list_coupons))
@@ -45,6 +50,7 @@ struct Profile {
     id: Uuid,
     phone: Option<String>,
     phone_verified: bool,
+    identity_verified: bool,
     name: String,
     email: Option<String>,
     locale: String,
@@ -53,7 +59,7 @@ struct Profile {
 
 async fn profile(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Profile>> {
     let p = sqlx::query_as(
-        "SELECT id, phone, phone IS NOT NULL AS phone_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
+        "SELECT id, phone, phone IS NOT NULL AS phone_verified, identity_verified_at IS NOT NULL AS identity_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(a.id)
     .fetch_one(&s.db)
@@ -79,23 +85,78 @@ struct IdentityInput {
     identity_verification_id: String,
 }
 
-/// PASS / 본인인증: PortOne confirms the verification; only a hash of the CI is kept.
+/// Whether PASS can run here: dev mode always, otherwise a store id and an `identity` channel key.
+fn identity_enabled(s: &AppState) -> bool {
+    s.config.dev_mode || (s.config.portone.store_id.is_some() && s.config.portone.channel_keys.contains_key("identity"))
+}
+
+#[derive(Serialize)]
+struct IdentitySetup {
+    enabled: bool,
+}
+
+async fn identity_setup(State(s): State<AppState>, Customer(_): Customer) -> Json<IdentitySetup> {
+    Json(IdentitySetup { enabled: identity_enabled(&s) })
+}
+
+#[derive(Serialize)]
+struct IdentitySession {
+    store_id: String,
+    channel_key: String,
+    identity_verification_id: String,
+}
+
+/// Issues a single-use verification id bound to this customer, before the PASS page opens.
+async fn identity_session(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<IdentitySession>> {
+    if !identity_enabled(&s) {
+        return Err(ApiError::Unavailable("provider_not_configured"));
+    }
+    // Dev ids keep the `dev:` prefix the dev provider accepts; live ids are opaque.
+    let id = if s.config.dev_mode { format!("dev:{}", Uuid::now_v7().simple()) } else { format!("idv-{}", Uuid::now_v7().simple()) };
+    sqlx::query("INSERT INTO identity_sessions (id, user_id) VALUES ($1, $2)").bind(&id).bind(a.id).execute(&s.db).await?;
+    Ok(Json(IdentitySession {
+        store_id: s.config.portone.store_id.clone().unwrap_or_default(),
+        channel_key: s.config.portone.channel_keys.get("identity").cloned().unwrap_or_default(),
+        identity_verification_id: id,
+    }))
+}
+
+/// PASS / 본인인증: only an id issued to this customer and still unused is checked with PortOne.
+/// The id is burnt on success; only a hash of the CI is kept.
 async fn verify_identity(State(s): State<AppState>, Customer(a): Customer, Json(i): Json<IdentityInput>) -> ApiResult<Json<Profile>> {
-    let info = s.providers.identity(&i.identity_verification_id).await.map_err(|e| match e {
+    let id = i.identity_verification_id;
+    let issued: Option<String> = sqlx::query_scalar("SELECT id FROM identity_sessions WHERE id = $1 AND user_id = $2 AND used_at IS NULL")
+        .bind(&id)
+        .bind(a.id)
+        .fetch_optional(&s.db)
+        .await?;
+    if issued.is_none() {
+        return Err(ApiError::BadRequest("identity_not_found"));
+    }
+    let info = s.providers.identity(&id).await.map_err(|e| match e {
         ProviderError::NotFound => ApiError::BadRequest("identity_not_found"),
         other => other.into(),
     })?;
-    let ci = match (info.status.as_str(), info.ci) {
-        ("VERIFIED", Some(ci)) => ci,
+    let ci = match (info.status.as_str(), info.id == id, info.ci) {
+        ("VERIFIED", true, Some(ci)) => ci,
         _ => return Err(ApiError::BadRequest("identity_not_verified")),
     };
+    let mut tx = s.db.begin().await?;
+    let burnt = sqlx::query("UPDATE identity_sessions SET used_at = now() WHERE id = $1 AND used_at IS NULL")
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    if burnt.rows_affected() == 0 {
+        return Err(ApiError::BadRequest("identity_not_found"));
+    }
     sqlx::query("UPDATE users SET identity_verified_at = now(), ci_hash = $2, name = CASE WHEN name = '' THEN COALESCE($3, '') ELSE name END WHERE id = $1 AND deleted_at IS NULL")
         .bind(a.id)
         .bind(sha256_hex(ci.as_bytes()))
         .bind(info.name)
-        .execute(&s.db)
+        .execute(&mut *tx)
         .await
         .map_err(|e| conflict_on_unique(e, "identity_taken"))?;
+    tx.commit().await?;
     profile(State(s), Customer(a)).await
 }
 
@@ -170,6 +231,7 @@ pub struct Address {
     pub detail: String,
     pub district_code: String,
     pub size_pyeong: i16,
+    pub household: Value,
 }
 
 #[derive(Deserialize)]
@@ -180,6 +242,9 @@ struct AddressInput {
     detail: String,
     district_code: String,
     size_pyeong: i16,
+    /// Omitted on update keeps the saved household.
+    #[serde(default)]
+    household: Option<Value>,
 }
 
 impl AddressInput {
@@ -197,7 +262,7 @@ impl AddressInput {
     }
 }
 
-const ADDRESS_COLS: &str = "id, kind, label, road_address, detail, district_code, size_pyeong";
+const ADDRESS_COLS: &str = "id, kind, label, road_address, detail, district_code, size_pyeong, household";
 
 async fn list_addresses(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<Address>>> {
     let rows = sqlx::query_as(&format!(
@@ -211,8 +276,9 @@ async fn list_addresses(State(s): State<AppState>, Customer(a): Customer) -> Api
 
 async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i): Json<AddressInput>) -> ApiResult<Json<Address>> {
     i.validate()?;
+    let household = checked_household(&i.household.clone().unwrap_or_else(|| json!({})))?;
     let row = sqlx::query_as(&format!(
-        "INSERT INTO addresses (user_id, kind, label, road_address, detail, district_code, size_pyeong) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING {ADDRESS_COLS}"
+        "INSERT INTO addresses (user_id, kind, label, road_address, detail, district_code, size_pyeong, household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING {ADDRESS_COLS}"
     ))
     .bind(a.id)
     .bind(&i.kind)
@@ -221,6 +287,7 @@ async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i
     .bind(i.detail.trim())
     .bind(&i.district_code)
     .bind(i.size_pyeong)
+    .bind(household)
     .fetch_one(&s.db)
     .await?;
     Ok(Json(row))
@@ -228,9 +295,10 @@ async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i
 
 async fn update_address(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(i): Json<AddressInput>) -> ApiResult<Json<Address>> {
     i.validate()?;
+    let household = i.household.as_ref().map(checked_household).transpose()?;
     // Bookings keep an address snapshot, so editing never rewrites history.
     let row = sqlx::query_as(&format!(
-        "UPDATE addresses SET kind=$3, label=$4, road_address=$5, detail=$6, district_code=$7, size_pyeong=$8 WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING {ADDRESS_COLS}"
+        "UPDATE addresses SET kind=$3, label=$4, road_address=$5, detail=$6, district_code=$7, size_pyeong=$8, household=COALESCE($9, household) WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING {ADDRESS_COLS}"
     ))
     .bind(id)
     .bind(a.id)
@@ -240,6 +308,7 @@ async fn update_address(State(s): State<AppState>, Customer(a): Customer, Path(i
     .bind(i.detail.trim())
     .bind(&i.district_code)
     .bind(i.size_pyeong)
+    .bind(household)
     .fetch_optional(&s.db)
     .await?
     .ok_or(ApiError::NotFound)?;
@@ -342,7 +411,10 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
         .issue_billing_key(&r.auth_key, &a.id.to_string(), &issue.to_string())
         .await
         .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1").bind(issue).execute(&mut *tx).await?;
+    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1")
+        .bind(issue)
+        .execute(&mut *tx)
+        .await?;
     let row = sqlx::query_as(
         "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at",
     )
@@ -414,16 +486,26 @@ struct NotificationRow {
     created_at: DateTime<Utc>,
 }
 
-async fn list_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Vec<NotificationRow>>> {
-    let rows = sqlx::query_as(
-        "SELECT id, kind, data, read_at, created_at FROM notifications WHERE owner_role = $1 AND owner_id = $2 ORDER BY created_at DESC LIMIT $3",
+/// Newest first; keyset cursor over (created_at, id).
+async fn list_notifications(State(s): State<AppState>, a: Auth, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = match decode_cursor(q.cursor.as_deref(), 2)? {
+        Some(p) => (Some(cursor_part::<DateTime<Utc>>(&p[0])?), Some(cursor_part::<Uuid>(&p[1])?)),
+        None => (None, None),
+    };
+    let rows: Vec<NotificationRow> = sqlx::query_as(
+        "SELECT id, kind, data, read_at, created_at FROM notifications
+         WHERE owner_role = $1 AND owner_id = $2 AND ($3::timestamptz IS NULL OR (created_at, id) < ($3, $4))
+         ORDER BY created_at DESC, id DESC LIMIT $5",
     )
     .bind(a.role.as_str())
     .bind(a.id)
-    .bind(NOTIFICATION_PAGE)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
 async fn read_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Value>> {

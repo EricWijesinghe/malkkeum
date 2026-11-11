@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -496,6 +495,31 @@ class TRu extends T {
   String get cFormula => 'Формула расчёта';
 
   @override
+  String get cTabCancelPolicy => 'Политика отмены';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Это значение по умолчанию. Проверьте и сохраните, чтобы подтвердить.';
+
+  @override
+  String get cPolicyDaysBefore => 'Дней до визита (от)';
+
+  @override
+  String get cPolicyPercent =>
+      'Комиссия % (пусто = отмена в приложении недоступна)';
+
+  @override
+  String get cPolicyMinFee => 'Минимальная комиссия (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Перенос разрешён (за сколько дней до визита)';
+
+  @override
+  String get cPolicyHint =>
+      'Сразу применяется на экране отмены в приложении клиента. Условия обновятся в следующей сборке.';
+
+  @override
   String get f_base_studio => 'База: студия';
 
   @override
@@ -652,6 +676,9 @@ class TRu extends T {
   String get cNewMessage => 'Новое сообщение';
 
   @override
+  String get cConfirmAsk => 'Вы уверены?';
+
+  @override
   String get ok => 'ОК';
 
   @override
@@ -742,7 +769,7 @@ class TRu extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Отменить бронь за 2 дня до визита можно только через нашу команду';
+      'Эту бронь уже нельзя отменить в приложении. Свяжитесь с нашей командой';
 
   @override
   String get err_address_required => 'Добавьте адрес визита';
@@ -1298,6 +1325,11 @@ class TRu extends T {
   String get photosSoon => 'После уборки здесь появятся фото до и после';
 
   @override
+  String photoThumb(String n) {
+    return 'Фото $n';
+  }
+
+  @override
   String get before => 'До';
 
   @override
@@ -1330,6 +1362,16 @@ class TRu extends T {
 
   @override
   String get cancelKeep => 'Оставить';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Если отменить сейчас, будет удержано $fee, а $refund вернётся вам.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Принять комиссию $fee и отменить';
+  }
 
   @override
   String get cancelled => 'Бронь отменена';
@@ -1746,6 +1788,49 @@ class TRu extends T {
   String get summaryDate => 'Визит';
 
   @override
+  String get cpTitle => 'Политика отмены';
+
+  @override
+  String cpWhen(String days) {
+    return 'за $days и более дней до визита';
+  }
+
+  @override
+  String get cpWhenSameDay => 'В день визита';
+
+  @override
+  String get cpFree => 'Полный возврат';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Комиссия $percent% ($fee), возврат $refund';
+  }
+
+  @override
+  String get cpClosed => 'Отмена в приложении недоступна (проверка командой)';
+
+  @override
+  String get hhTitle => 'Данные о доме';
+
+  @override
+  String get hhAddPet => 'Добавить питомца';
+
+  @override
+  String get hhPetCount => 'Кол-во';
+
+  @override
+  String get hhFloorLabel => 'Этаж (для подвала — минус)';
+
+  @override
+  String get hhElevator => 'Есть лифт';
+
+  @override
+  String get hhNotes => 'Заметки';
+
+  @override
+  String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
+
+  @override
   String get themeTitle => 'Тема';
 
   @override
@@ -1923,6 +2008,14 @@ class TRu extends T {
 
   @override
   String get err_invalid_capacity => 'Введите корректную вместимость.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss не одобрил регистрацию продавца. Проверьте данные бизнеса.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'У этого партнёра ещё нет подтверждённого счёта для выплат. Сначала подтвердите счёт.';
 
   @override
   String get fFinance => 'Финансы';
@@ -2661,6 +2754,47 @@ class TRu extends T {
   String get pCustomerRequests => 'Пожелания клиента';
 
   @override
+  String get pHousehold => 'Данные о доме';
+
+  @override
+  String get pPets => 'Домашние животные';
+
+  @override
+  String get pPetDog => 'Собака';
+
+  @override
+  String get pPetCat => 'Кошка';
+
+  @override
+  String get pPetBird => 'Птица';
+
+  @override
+  String get pPetFish => 'Рыба';
+
+  @override
+  String get pPetOther => 'Другое животное';
+
+  @override
+  String get pAllergies => 'Аллергия и чувствительность';
+
+  @override
+  String get pPreferredProducts => 'Предпочитаемые средства';
+
+  @override
+  String get pParking => 'Парковка';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor этаж';
+  }
+
+  @override
+  String get pElevatorYes => 'Есть лифт';
+
+  @override
+  String get pElevatorNo => 'Без лифта';
+
+  @override
   String get pTeamMemo => 'Заметка для команды (клиент её не видит)';
 
   @override
@@ -2856,6 +2990,29 @@ class TRu extends T {
   String get pSpace => 'Информация о пространстве';
 
   @override
+  String get pNavigate => 'Маршрут';
+
+  @override
+  String get pNavHint =>
+      'Откроет адрес выезда в приложении карт. Если его нет, откроется веб-карта.';
+
+  @override
+  String get pOfflineSaved =>
+      'Нет сети. Сохранено и отправится, когда появится связь.';
+
+  @override
+  String get pPhotoRetry => 'Повторить загрузку';
+
+  @override
+  String get pPhotoWaiting =>
+      'Фото, которые не загрузились, отправятся автоматически при появлении связи.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'Загружено $done из $total';
+  }
+
+  @override
   String get cIntPayout => 'Выплаты партнёрам';
 
   @override
@@ -2934,6 +3091,45 @@ class TRu extends T {
   String get poRevealNote => 'Просмотр реквизитов фиксируется';
 
   @override
+  String get poSellerAction => 'Регистрация продавца';
+
+  @override
+  String get poSellerTitle => 'Регистрация продавца Toss';
+
+  @override
+  String get poSellerHint =>
+      'Используется подтверждённый счёт партнёра. Укажите только данные бизнеса.';
+
+  @override
+  String get poSellerIndividual => 'Физлицо';
+
+  @override
+  String get poSellerCompany => 'Бизнес';
+
+  @override
+  String get poSellerName => 'Имя';
+
+  @override
+  String get poSellerRepresentative => 'ФИО руководителя';
+
+  @override
+  String get poSellerRegNo => 'Регистрационный номер бизнеса (10 цифр)';
+
+  @override
+  String get poSellerEmail => 'Эл. почта для расчётов';
+
+  @override
+  String get poSellerPhone => 'Телефон';
+
+  @override
+  String get poSellerSubmit => 'Зарегистрировать';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Статус продавца: $status';
+  }
+
+  @override
   String get pvManage => 'Управление согласиями';
 
   @override
@@ -2978,6 +3174,121 @@ class TRu extends T {
   @override
   String get pvExportFailed =>
       'Не удалось загрузить ваши данные. Попробуйте позже.';
+
+  @override
+  String get safetyEmergency => 'Экстренные контакты';
+
+  @override
+  String get emergencyPolice => '112 Полиция';
+
+  @override
+  String get emergencyFire => '119 Пожарные и спасатели';
+
+  @override
+  String get emergencyShop => 'Поддержка';
+
+  @override
+  String get caseReportAction => 'Сообщить о проблеме';
+
+  @override
+  String get caseReportTitle => 'Что произошло?';
+
+  @override
+  String get caseKindDamage => 'Повреждение';
+
+  @override
+  String get caseKindLoss => 'Пропажа';
+
+  @override
+  String get caseKindComplaint => 'Жалоба';
+
+  @override
+  String get caseKindNoShow => 'Исполнитель не пришёл';
+
+  @override
+  String get caseKindSafety => 'Вопрос безопасности';
+
+  @override
+  String get caseKindPayment => 'Спор по оплате';
+
+  @override
+  String get caseSummaryHint => 'Опишите, что произошло (до 300 символов)';
+
+  @override
+  String get caseSubmit => 'Отправить';
+
+  @override
+  String get caseSubmitted => 'Принято. Мы ответим в течение 24 часов.';
+
+  @override
+  String get caseFailed => 'Не удалось отправить. Попробуйте ещё раз.';
+
+  @override
+  String get checkInAction => 'Отметить прибытие';
+
+  @override
+  String get checkOutAction => 'Отметить уход';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Прибыл в $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Ушёл в $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Показать код домофона';
+
+  @override
+  String get entryCodeTitle => 'Код домофона';
+
+  @override
+  String get entryCodeNotToday => 'Доступно только в день визита';
+
+  @override
+  String get entryCodeEmpty => 'Код не указан';
+
+  @override
+  String get actionFailed => 'Не удалось выполнить. Попробуйте ещё раз.';
+
+  @override
+  String get consoleCasesTitle => 'Очередь обращений';
+
+  @override
+  String get consoleCasesEmpty => 'Открытых обращений нет';
+
+  @override
+  String get caseOverdue => 'Просрочено';
+
+  @override
+  String get caseStatusOpen => 'Открыто';
+
+  @override
+  String get caseStatusInvestigating => 'На рассмотрении';
+
+  @override
+  String get caseStatusResolved => 'Решено';
+
+  @override
+  String get caseStatusRejected => 'Отклонено';
+
+  @override
+  String get caseReassign => 'Переназначить исполнителя';
+
+  @override
+  String get caseRefund => 'Возврат';
+
+  @override
+  String get caseHold => 'Приостановить выплату';
+
+  @override
+  String get caseNoteHint => 'Внутренняя заметка';
+
+  @override
+  String get caseSave => 'Сохранить';
 
   @override
   String get cSetup => 'Настройка';
@@ -3213,6 +3524,214 @@ class TRu extends T {
 
   @override
   String get cInvalidValue => 'Проверьте введённое значение';
+
+  @override
+  String get cMfaTitle => 'Вход в два шага';
+
+  @override
+  String get cMfaCode => '6-значный код из приложения-аутентификатора';
+
+  @override
+  String get cMfaRecovery => 'Код восстановления';
+
+  @override
+  String get cMfaUseRecovery => 'Использовать код восстановления';
+
+  @override
+  String get cMfaUseCode => 'Использовать код из приложения';
+
+  @override
+  String get cMfaVerify => 'Подтвердить';
+
+  @override
+  String get cMfaBack => 'Назад ко входу';
+
+  @override
+  String get cMfaEnrolTitle => 'Настройте вход в два шага';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Администраторам нужно приложение-аутентификатор. Добавьте ключ ниже в Google Authenticator, 1Password или похожее приложение и введите 6-значный код из него.';
+
+  @override
+  String get cMfaSecret => 'Ключ настройки';
+
+  @override
+  String get cMfaLink => 'Ссылка настройки (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Копировать';
+
+  @override
+  String get cMfaCopied => 'Скопировано';
+
+  @override
+  String get cMfaConfirm => 'Подтвердить и включить';
+
+  @override
+  String get cMfaCodesTitle => 'Сохраните коды восстановления';
+
+  @override
+  String get cMfaCodesBody =>
+      'Если вы потеряете приложение-аутентификатор, каждый код позволит войти один раз. Они показываются только сейчас.';
+
+  @override
+  String get cMfaDownload => 'Скачать';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Это устройство не может сохранить файл. Скопируйте коды и храните их в безопасном месте.';
+
+  @override
+  String get cMfaContinue => 'Перейти в консоль';
+
+  @override
+  String get cMfaInvalid =>
+      'Код не подходит. Проверьте, верно ли время на телефоне, и попробуйте снова.';
+
+  @override
+  String get cMfaExpired => 'Время входа истекло. Начните снова с пароля.';
+
+  @override
+  String get cMfaLocked =>
+      'Слишком много попыток. Подождите несколько минут и попробуйте снова.';
+
+  @override
+  String get cStaffReset => 'Сбросить пароль';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Сбросить пароль этого сотрудника? Он будет выведен со всех устройств.';
+
+  @override
+  String get cStaffResetTitle => 'Токен сброса';
+
+  @override
+  String get cStaffResetBody =>
+      'Передайте этот токен сотруднику. Он работает один раз в течение 30 минут. После закрытия его не покажут снова.';
+
+  @override
+  String get tTaxSection => 'Налоги';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV НДС, кв. $q';
+  }
+
+  @override
+  String get tVatYear => 'Год';
+
+  @override
+  String get tExportWithholding => 'CSV удержания НДФЛ';
+
+  @override
+  String get tExportTaxInvoices => 'CSV для загрузки счетов-фактур';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Сверьте столбцы с шаблоном 홈택스 перед загрузкой. Структура ещё не проверена.';
+
+  @override
+  String get tCashReceipts => 'Кассовые чеки';
+
+  @override
+  String get tCashIssued => 'Выдан';
+
+  @override
+  String get tCashFailed => 'Ошибка';
+
+  @override
+  String get tCashPending => 'Ожидает';
+
+  @override
+  String get tCashCancelled => 'Отменён';
+
+  @override
+  String get tReissue => 'Выдать повторно';
+
+  @override
+  String get tTaxInvoices => 'Счета-фактуры';
+
+  @override
+  String get tApprovalNumber => 'Номер одобрения';
+
+  @override
+  String get tIssuedOn => 'Дата выдачи';
+
+  @override
+  String get tMarkIssued => 'Отметить как выданный';
+
+  @override
+  String get tQueueEmpty => 'Нет ожидающих запросов';
+
+  @override
+  String get tWithholdingLabel => 'Удержание';
+
+  @override
+  String get tGrossAmount => 'Начислено';
+
+  @override
+  String get tIncomeTax => 'Подоходный налог';
+
+  @override
+  String get tLocalTax => 'Местный подоходный налог';
+
+  @override
+  String get tNetAmount => 'К выплате';
+
+  @override
+  String get tNoWithholding => 'Без удержания (зарегистрированный бизнес)';
+
+  @override
+  String get tEstWithholding => 'Ожидаемое удержание (к выплате)';
+
+  @override
+  String get tReceiptOptions => 'Параметры чека';
+
+  @override
+  String get tWantCashReceipt => 'Получить кассовый чек';
+
+  @override
+  String get tCashForIncome => 'Для вычета (номер телефона)';
+
+  @override
+  String get tCashForBusiness => 'Для расходов бизнеса (номер бизнеса)';
+
+  @override
+  String get tWantTaxInvoice => 'Получить счёт-фактуру (бизнес)';
+
+  @override
+  String get tPhoneForReceipt => 'Номер телефона';
+
+  @override
+  String get tBusinessNumber => 'Регистрационный номер бизнеса';
+
+  @override
+  String get tCompanyName => 'Название компании';
+
+  @override
+  String get tRepresentative => 'Представитель';
+
+  @override
+  String get tInvoiceEmail => 'Email для счёта-фактуры';
+
+  @override
+  String get tReceiptSave => 'Сохранить и оплатить';
+
+  @override
+  String get tReceiptSaveFailed => 'Не удалось сохранить данные чека';
+
+  @override
+  String get tTaxType => 'Тип налога';
+
+  @override
+  String get tTaxFreelancer => 'Фрилансер (с удержанием)';
+
+  @override
+  String get tTaxBusiness => 'Зарегистрированный бизнес (без удержания)';
+
+  @override
+  String get tReceiptSettings => 'Настройки чека';
 
   @override
   String get reviewRuleLine =>

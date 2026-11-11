@@ -123,12 +123,24 @@ final guides = <String, Guide>{
       ),
     ],
     fields: const {
-      'endpoint': FieldGuide(Tr('엔드포인트', 'Endpoint'), hint: Tr('https://...', 'https://...')),
-      'region': FieldGuide(Tr('리전', 'Region'), hint: Tr('R2: auto · 네이버: kr-standard', 'R2: auto · Naver: kr-standard')),
+      'endpoint': FieldGuide(
+        Tr('엔드포인트', 'Endpoint'),
+        hint: Tr('https://...', 'https://...'),
+      ),
+      'region': FieldGuide(
+        Tr('리전', 'Region'),
+        hint: Tr(
+          'R2: auto · 네이버: kr-standard',
+          'R2: auto · Naver: kr-standard',
+        ),
+      ),
       'bucket': FieldGuide(Tr('버킷 이름', 'Bucket name')),
       'access_key': FieldGuide(Tr('Access Key', 'Access Key')),
       'secret_key': FieldGuide(Tr('Secret Key', 'Secret Key')),
-      'retention_days': FieldGuide(Tr('보관 기간(일)', 'Keep for (days)'), hint: Tr('기본 30', 'default 30')),
+      'retention_days': FieldGuide(
+        Tr('보관 기간(일)', 'Keep for (days)'),
+        hint: Tr('기본 30', 'default 30'),
+      ),
     },
   ),
   'solapi': Guide(
@@ -287,7 +299,12 @@ final guides = <String, Guide>{
         'Save, then press Test connection. Green means done! Without a key the customer app takes typed addresses.',
       ),
     ],
-    fields: const {'confm_key': FieldGuide(Tr('승인키', 'Confirm key'), hint: Tr('confmKey 값', 'The confmKey value'))},
+    fields: const {
+      'confm_key': FieldGuide(
+        Tr('승인키', 'Confirm key'),
+        hint: Tr('confmKey 값', 'The confmKey value'),
+      ),
+    },
   ),
   'payout': Guide(
     title: (t) => t.cIntPayout,
@@ -303,8 +320,15 @@ final guides = <String, Guide>{
       ),
     ],
     fields: const {
-      'mode': FieldGuide(Tr('방식', 'Mode'), hint: Tr('manual 또는 toss', 'manual or toss'), suggestions: ['manual', 'toss']),
-      'secret_key': FieldGuide(Tr('토스 시크릿 키', 'Toss secret key'), hint: Tr('toss 일 때만', 'Only for toss')),
+      'mode': FieldGuide(
+        Tr('방식', 'Mode'),
+        hint: Tr('manual 또는 toss', 'manual or toss'),
+        suggestions: ['manual', 'toss'],
+      ),
+      'secret_key': FieldGuide(
+        Tr('토스 시크릿 키', 'Toss secret key'),
+        hint: Tr('toss 일 때만', 'Only for toss'),
+      ),
     },
   ),
   'ai': Guide(
@@ -356,8 +380,14 @@ final guides = <String, Guide>{
 /// Labels and hints that come from the generated strings (every app language), keyed by
 /// `<section>.<field>`. Fields not listed here use their [Tr] text above.
 final localFields = <String, LocalField>{
-  'ai.thread_hourly_cap': LocalField((t) => t.aiCapThreadLabel, (t) => t.aiCapHint),
-  'ai.member_daily_cap': LocalField((t) => t.aiCapMemberLabel, (t) => t.aiCapHint),
+  'ai.thread_hourly_cap': LocalField(
+    (t) => t.aiCapThreadLabel,
+    (t) => t.aiCapHint,
+  ),
+  'ai.member_daily_cap': LocalField(
+    (t) => t.aiCapMemberLabel,
+    (t) => t.aiCapHint,
+  ),
   'ai.daily_cap': LocalField((t) => t.aiCapDailyLabel, (t) => t.aiCapHint),
 };
 

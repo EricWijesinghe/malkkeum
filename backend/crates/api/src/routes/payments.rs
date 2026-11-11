@@ -96,6 +96,7 @@ async fn admin_list(State(s): State<AppState>, Admin(_): Admin) -> ApiResult<Jso
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct Update {
     enabled: Vec<String>,
 }

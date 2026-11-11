@@ -25,22 +25,32 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   void _continue() {
     if (s.isQuote) {
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => QuoteFlowScreen(service: s)));
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => QuoteFlowScreen(service: s)),
+      );
       return;
     }
     final d = _draft.draft;
     final addresses = context.appRead.addresses;
     final only = addresses.length == 1 ? addresses.first : null;
-    final fits = only != null && (s.maxPyeong == null || only.sizePyeong <= s.maxPyeong!);
+    final fits =
+        only != null &&
+        (s.maxPyeong == null || only.sizePyeong <= s.maxPyeong!);
     // One saved address that fits: skip the address step (the schedule screen shows it with "change").
     if (fits) {
       d
         ..address = only
         ..totalSteps = 3;
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ScheduleScreen(draft: d, step: 2, total: 3)));
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ScheduleScreen(draft: d, step: 2, total: 3),
+        ),
+      );
       return;
     }
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => AddressPickScreen(draft: d)));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => AddressPickScreen(draft: d)),
+    );
   }
 
   @override

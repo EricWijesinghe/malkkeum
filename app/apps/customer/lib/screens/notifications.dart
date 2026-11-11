@@ -37,7 +37,10 @@ class NotificationsScreen extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          children: [_Alerts(), ContentListBody(kind: 'notice')],
+          children: [
+            _Alerts(),
+            ContentListBody(kind: 'notice'),
+          ],
         ),
       ),
     );
@@ -65,7 +68,8 @@ class _AlertsState extends State<_Alerts> {
     'chat.message' => Icons.forum_rounded,
     'booking.cancelled' => Icons.event_busy_rounded,
     final String k when k.startsWith('quote') => Icons.request_quote_rounded,
-    final String k when k.startsWith('booking') => Icons.event_available_rounded,
+    final String k when k.startsWith('booking') =>
+      Icons.event_available_rounded,
     _ => Icons.notifications_rounded,
   };
 

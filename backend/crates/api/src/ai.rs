@@ -3,13 +3,13 @@
 //! live here; `routes::chat::send` only calls [`schedule`] after a customer or partner message.
 
 use crate::{
-    error::ApiResult,
+    error::{ApiError, ApiResult},
     ratelimit::within_quota,
-    routes::chat,
+    routes::{bookings::load_cancel_policy, cases, chat},
     state::AppState,
+    util::best_effort,
 };
 use chrono::{DateTime, Datelike, FixedOffset, NaiveTime, Utc};
-use domain::booking::FREE_CANCEL_DAYS;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::PgPool;
@@ -82,7 +82,11 @@ pub struct Caps {
 
 impl Default for Caps {
     fn default() -> Self {
-        Self { thread_hourly: DEFAULT_THREAD_HOURLY_CAP, member_daily: DEFAULT_MEMBER_DAILY_CAP, daily: DEFAULT_DAILY_CAP }
+        Self {
+            thread_hourly: DEFAULT_THREAD_HOURLY_CAP,
+            member_daily: DEFAULT_MEMBER_DAILY_CAP,
+            daily: DEFAULT_DAILY_CAP,
+        }
     }
 }
 
@@ -122,7 +126,9 @@ pub fn should_answer(mode: Mode, f: Facts) -> bool {
 pub fn open_at(hours: &Value, now: DateTime<Utc>) -> bool {
     let kst = now.with_timezone(&FixedOffset::east_opt(KST_OFFSET_SECS).expect("KST offset is valid"));
     let weekday = i64::from(kst.weekday().num_days_from_monday());
-    let on_day = hours["weekdays"].as_array().is_some_and(|days| days.iter().any(|d| d.as_i64() == Some(weekday)));
+    let on_day = hours["weekdays"]
+        .as_array()
+        .is_some_and(|days| days.iter().any(|d| d.as_i64() == Some(weekday)));
     let clock = |key: &str| hours[key].as_str().and_then(|s| NaiveTime::parse_from_str(s, "%H:%M").ok());
     match (clock("open"), clock("close")) {
         (Some(open), Some(close)) => on_day && (open..close).contains(&kst.time()),
@@ -161,7 +167,7 @@ pub fn system_blocks(shop: &Value, locale: &str, booking: &Value) -> Vec<Value> 
 }
 
 /// Shop data for the cached block: hours, active catalogue with pricing, cancellation rule.
-pub async fn shop_data(db: &PgPool, hours: &Value) -> Result<Value, sqlx::Error> {
+pub async fn shop_data(db: &PgPool, hours: &Value) -> ApiResult<Value> {
     let services: Value = sqlx::query_scalar(
         "SELECT COALESCE(jsonb_agg(jsonb_build_object('code', code, 'pricing', pricing, 'max_pyeong', max_pyeong) ORDER BY sort_order), '[]'::jsonb)
          FROM services WHERE active",
@@ -171,7 +177,8 @@ pub async fn shop_data(db: &PgPool, hours: &Value) -> Result<Value, sqlx::Error>
     Ok(json!({
         "business_hours": hours,
         "services": services,
-        "cancellation_policy": format!("Free cancellation until {FREE_CANCEL_DAYS} days before the visit; later cancellations are reviewed by staff."),
+        // Tiers are days before the visit; a null percent means staff review (no self-serve cancel).
+        "cancellation_policy": serde_json::to_value(load_cancel_policy(db).await?.0).map_err(|e| ApiError::Internal(e.to_string()))?,
     }))
 }
 
@@ -191,7 +198,11 @@ fn turn_of(row: &HistoryRow) -> Option<(&'static str, String)> {
     if row.kind == "system" {
         return Some(("user", format!("<event>{}</event>", row.body["code"].as_str().unwrap_or("unknown"))));
     }
-    let text = if row.kind == "photo" { "[photo]".to_string() } else { row.body["text"].as_str()?.to_string() };
+    let text = if row.kind == "photo" {
+        "[photo]".to_string()
+    } else {
+        row.body["text"].as_str()?.to_string()
+    };
     Some(match row.sender.as_str() {
         "staff" if row.body["ai"].as_bool() == Some(true) => ("assistant", text),
         "staff" => ("user", format!("<staff>{}</staff>", neutralize(&text))),
@@ -363,11 +374,13 @@ struct ThreadFacts {
     ai_paused: bool,
     locale: String,
     booking: Option<Value>,
+    booking_id: Option<Uuid>,
+    user_id: Option<Uuid>,
 }
 
 async fn load_thread(db: &PgPool, thread: Uuid) -> Result<Option<ThreadFacts>, sqlx::Error> {
     sqlx::query_as(
-        "SELECT t.closed, t.ai_paused,
+        "SELECT t.closed, t.ai_paused, t.booking_id, t.user_id,
             COALESCE((SELECT u.locale FROM users u WHERE u.id = t.user_id), (SELECT p.locale FROM pros p WHERE p.id = t.pro_id), 'ko') AS locale,
             (SELECT CASE WHEN t.audience = 'customer'
                 THEN jsonb_build_object('number', b.number, 'service', b.service_code, 'visit_date', b.visit_date, 'start_hour', b.start_hour,
@@ -513,6 +526,9 @@ pub async fn answer(s: &AppState, thread: Uuid) -> ApiResult<()> {
     let body = request_body(&cfg, system_blocks(&shop, &t.locale, &t.booking.unwrap_or(Value::Null)), turns);
     let attempt = call_model(s, &cfg, &body).await;
     let outcome = if attempt.text.is_some() { "answered" } else { "handoff" };
+    if outcome == "handoff" {
+        best_effort("ai handoff case", cases::open_from_ai(&s.db, t.booking_id, t.user_id, thread)).await;
+    }
     let text = attempt.text.unwrap_or_else(|| handoff_text(&t.locale).to_string());
     record_usage(&s.db, thread, &cfg.model, outcome, attempt.usage).await?;
     let mut conn = s.db.acquire().await?;
@@ -547,7 +563,13 @@ mod tests {
     use chrono::TimeZone;
 
     fn facts() -> Facts {
-        Facts { closed: false, paused: false, staff_recent: false, staff_online: false, open_hours: true }
+        Facts {
+            closed: false,
+            paused: false,
+            staff_recent: false,
+            staff_online: false,
+            open_hours: true,
+        }
     }
 
     #[test]
@@ -593,7 +615,11 @@ mod tests {
     }
 
     fn row(sender: &str, kind: &str, body: Value) -> HistoryRow {
-        HistoryRow { sender: sender.into(), kind: kind.into(), body }
+        HistoryRow {
+            sender: sender.into(),
+            kind: kind.into(),
+            body,
+        }
     }
 
     #[test]
@@ -608,9 +634,15 @@ mod tests {
         ];
         let turns = to_turns(&rows);
         // Staff-human, customer and system lines are all user-role, so they merge into one turn.
-        assert_eq!(turns[0], json!({"role": "user", "content": "<staff>old staff</staff>\n<customer>hi</customer>\n<customer>price?</customer>"}));
+        assert_eq!(
+            turns[0],
+            json!({"role": "user", "content": "<staff>old staff</staff>\n<customer>hi</customer>\n<customer>price?</customer>"})
+        );
         assert_eq!(turns[1], json!({"role": "assistant", "content": "hello"}));
-        assert_eq!(turns[2], json!({"role": "user", "content": "<customer>refund</customer>\n<event>booking.status</event>"}));
+        assert_eq!(
+            turns[2],
+            json!({"role": "user", "content": "<customer>refund</customer>\n<event>booking.status</event>"})
+        );
         assert_eq!(turns.len(), 3);
     }
 
@@ -636,8 +668,17 @@ mod tests {
 
     #[test]
     fn request_has_fallback_effort_and_no_sampling_knobs() {
-        let cfg = AiConfig { api_key: "k".into(), model: DEFAULT_MODEL.into(), mode: Mode::Offline, caps: Caps::default() };
-        let body = request_body(&cfg, system_blocks(&json!({}), "ko", &Value::Null), vec![json!({"role": "user", "content": "x"})]);
+        let cfg = AiConfig {
+            api_key: "k".into(),
+            model: DEFAULT_MODEL.into(),
+            mode: Mode::Offline,
+            caps: Caps::default(),
+        };
+        let body = request_body(
+            &cfg,
+            system_blocks(&json!({}), "ko", &Value::Null),
+            vec![json!({"role": "user", "content": "x"})],
+        );
         assert_eq!(body["fallbacks"], "default");
         assert_eq!(body["output_config"]["effort"], "low");
         assert_eq!(body["max_tokens"], 1024);
@@ -685,12 +726,23 @@ mod tests {
 
     #[test]
     fn default_caps_are_the_shipped_numbers() {
-        assert_eq!(Caps::default(), Caps { thread_hourly: 12, member_daily: 40, daily: 1000 });
+        assert_eq!(
+            Caps::default(),
+            Caps {
+                thread_hourly: 12,
+                member_daily: 40,
+                daily: 1000
+            }
+        );
     }
 
     #[test]
     fn each_cap_stops_replies_once_reached() {
-        let caps = Caps { thread_hourly: 2, member_daily: 5, daily: 7 };
+        let caps = Caps {
+            thread_hourly: 2,
+            member_daily: 5,
+            daily: 7,
+        };
         assert!(under_caps(1, 4, 6, caps), "one under every cap");
         assert!(!under_caps(2, 0, 0, caps), "thread hourly cap reached");
         assert!(!under_caps(0, 5, 0, caps), "member daily cap reached");

@@ -56,7 +56,11 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
       if (!mounted) return;
       final t = context.t;
       final calls = ((r['month'] as Json)['calls'] as num).toInt();
-      setState(() => _aiLine = r['configured'] == true ? t.aiUsageMonth('$calls') : t.aiNotConfigured);
+      setState(
+        () => _aiLine = r['configured'] == true
+            ? t.aiUsageMonth('$calls')
+            : t.aiNotConfigured,
+      );
     } catch (_) {
       if (mounted) setState(() => _aiLine = null);
     }
@@ -70,7 +74,12 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
         MaterialPageRoute<void>(
           builder: (_) => Scaffold(
             appBar: AppBar(title: Text(context.t.service(th.topic))),
-            body: ThreadView(threadId: th.id, bookingId: th.bookingId, aiPaused: th.aiPaused, onAiChanged: _load),
+            body: ThreadView(
+              threadId: th.id,
+              bookingId: th.bookingId,
+              aiPaused: th.aiPaused,
+              onAiChanged: _load,
+            ),
           ),
         ),
       );
@@ -260,9 +269,11 @@ class _ThreadViewState extends State<ThreadView> {
 
   Future<void> _toggleAi() async {
     try {
-      final r = await context.api.put('/admin/threads/${widget.threadId}/ai', {
-        'paused': !_aiPaused,
-      }) as Json;
+      final r =
+          await context.api.put('/admin/threads/${widget.threadId}/ai', {
+                'paused': !_aiPaused,
+              })
+              as Json;
       if (!mounted) return;
       setState(() => _aiPaused = r['ai_paused'] == true);
       widget.onAiChanged?.call();

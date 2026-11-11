@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'confirm_action.dart';
 import 'growth.dart';
 
 // Content can be written in every app language; missing ones fall back to Korean.
@@ -36,7 +37,11 @@ class MarketingScreen extends StatelessWidget {
               Tab(text: t.growthTab),
             ],
           ),
-          const Expanded(child: TabBarView(children: [_Coupons(), _Content(), GrowthSettings()])),
+          const Expanded(
+            child: TabBarView(
+              children: [_Coupons(), _Content(), GrowthSettings()],
+            ),
+          ),
         ],
       ),
     );
@@ -207,17 +212,17 @@ class _ContentState extends State<_Content> {
                       ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 180),
                         child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: kind,
-                        items: [
-                          for (final k in _kinds)
-                            DropdownMenuItem(
-                              value: k,
-                              child: Text(kindLabel(t, k)),
-                            ),
-                        ],
-                        onChanged: (v) => set(() => kind = v!),
-                      ),
+                          isExpanded: true,
+                          value: kind,
+                          items: [
+                            for (final k in _kinds)
+                              DropdownMenuItem(
+                                value: k,
+                                child: Text(kindLabel(t, k)),
+                              ),
+                          ],
+                          onChanged: (v) => set(() => kind = v!),
+                        ),
                       ),
                       const SizedBox(width: Space.md),
                       Expanded(
@@ -355,6 +360,10 @@ class _ContentState extends State<_Content> {
                     tooltip: t.delete,
                     icon: const Icon(Icons.delete_outline_rounded),
                     onPressed: () async {
+                      if (!await confirmAction(context, t.delete) ||
+                          !context.mounted) {
+                        return;
+                      }
                       try {
                         await context.api.delete('/admin/content/${c['id']}');
                         await reload();

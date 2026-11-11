@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -494,6 +493,29 @@ class TEn extends T {
   String get cFormula => 'Quote formula';
 
   @override
+  String get cTabCancelPolicy => 'Cancellation policy';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'This is the built-in default. Review it and save to confirm.';
+
+  @override
+  String get cPolicyDaysBefore => 'Days before visit (from)';
+
+  @override
+  String get cPolicyPercent => 'Fee % (blank = not cancellable in app)';
+
+  @override
+  String get cPolicyMinFee => 'Minimum fee (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'Reschedule allowed (days before visit)';
+
+  @override
+  String get cPolicyHint =>
+      'Applies to the customer app cancel screen right away. Terms update on the next legal build.';
+
+  @override
   String get f_base_studio => 'Base: studio';
 
   @override
@@ -650,6 +672,9 @@ class TEn extends T {
   String get cNewMessage => 'New message';
 
   @override
+  String get cConfirmAsk => 'Are you sure?';
+
+  @override
   String get ok => 'OK';
 
   @override
@@ -738,7 +763,7 @@ class TEn extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Within 2 days of the visit, cancel through our team';
+      'This booking can no longer be cancelled in the app. Please contact our team';
 
   @override
   String get err_address_required => 'Add the visit address';
@@ -1290,6 +1315,11 @@ class TEn extends T {
   String get photosSoon => 'Before & after photos will appear here';
 
   @override
+  String photoThumb(String n) {
+    return 'Photo $n';
+  }
+
+  @override
   String get before => 'Before';
 
   @override
@@ -1321,6 +1351,16 @@ class TEn extends T {
 
   @override
   String get cancelKeep => 'Keep it';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Cancelling now charges a $fee fee and refunds $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Accept $fee fee and cancel';
+  }
 
   @override
   String get cancelled => 'Booking cancelled';
@@ -1735,6 +1775,49 @@ class TEn extends T {
   String get summaryDate => 'Visit';
 
   @override
+  String get cpTitle => 'Cancellation policy';
+
+  @override
+  String cpWhen(String days) {
+    return '$days or more days before the visit';
+  }
+
+  @override
+  String get cpWhenSameDay => 'On the day of the visit';
+
+  @override
+  String get cpFree => 'Full refund';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% fee ($fee), refund $refund';
+  }
+
+  @override
+  String get cpClosed => 'Not cancellable in the app (team review)';
+
+  @override
+  String get hhTitle => 'Household';
+
+  @override
+  String get hhAddPet => 'Add pet';
+
+  @override
+  String get hhPetCount => 'Count';
+
+  @override
+  String get hhFloorLabel => 'Floor (negative for basement)';
+
+  @override
+  String get hhElevator => 'Elevator available';
+
+  @override
+  String get hhNotes => 'Notes';
+
+  @override
+  String get hhHint => 'Saved to this address and editable per booking.';
+
+  @override
   String get themeTitle => 'Theme';
 
   @override
@@ -1913,6 +1996,14 @@ class TEn extends T {
 
   @override
   String get err_invalid_capacity => 'Enter a valid capacity.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss did not approve the seller registration. Check the business details.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'This partner has no verified payout account yet. Verify the account first.';
 
   @override
   String get fFinance => 'Finance';
@@ -2646,6 +2737,47 @@ class TEn extends T {
   String get pCustomerRequests => 'Customer requests';
 
   @override
+  String get pHousehold => 'Household';
+
+  @override
+  String get pPets => 'Pets';
+
+  @override
+  String get pPetDog => 'Dog';
+
+  @override
+  String get pPetCat => 'Cat';
+
+  @override
+  String get pPetBird => 'Bird';
+
+  @override
+  String get pPetFish => 'Fish';
+
+  @override
+  String get pPetOther => 'Other pet';
+
+  @override
+  String get pAllergies => 'Allergies & sensitivities';
+
+  @override
+  String get pPreferredProducts => 'Preferred products';
+
+  @override
+  String get pParking => 'Parking';
+
+  @override
+  String pFloor(String floor) {
+    return 'Floor $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'Elevator';
+
+  @override
+  String get pElevatorNo => 'No elevator';
+
+  @override
   String get pTeamMemo => 'Team memo (customer can\'t see)';
 
   @override
@@ -2839,6 +2971,29 @@ class TEn extends T {
   String get pSpace => 'Space';
 
   @override
+  String get pNavigate => 'Directions';
+
+  @override
+  String get pNavHint =>
+      'Opens the visit address in a map app. Without the app, the web map opens.';
+
+  @override
+  String get pOfflineSaved =>
+      'No signal. Saved, and it will send once you\'re back online.';
+
+  @override
+  String get pPhotoRetry => 'Retry upload';
+
+  @override
+  String get pPhotoWaiting =>
+      'Photos that didn\'t upload will send automatically once you\'re online.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$done of $total uploaded';
+  }
+
+  @override
   String get cIntPayout => 'Partner payouts';
 
   @override
@@ -2917,6 +3072,45 @@ class TEn extends T {
   String get poRevealNote => 'Viewing account details is logged';
 
   @override
+  String get poSellerAction => 'Register seller';
+
+  @override
+  String get poSellerTitle => 'Register as Toss seller';
+
+  @override
+  String get poSellerHint =>
+      'Uses the partner\'s verified payout account. Enter business details only.';
+
+  @override
+  String get poSellerIndividual => 'Individual';
+
+  @override
+  String get poSellerCompany => 'Business';
+
+  @override
+  String get poSellerName => 'Name';
+
+  @override
+  String get poSellerRepresentative => 'Representative name';
+
+  @override
+  String get poSellerRegNo => 'Business registration no. (10 digits)';
+
+  @override
+  String get poSellerEmail => 'Settlement email';
+
+  @override
+  String get poSellerPhone => 'Phone';
+
+  @override
+  String get poSellerSubmit => 'Register';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Seller status: $status';
+  }
+
+  @override
   String get pvManage => 'Consent settings';
 
   @override
@@ -2961,6 +3155,121 @@ class TEn extends T {
   @override
   String get pvExportFailed =>
       'Could not load your data. Please try again later.';
+
+  @override
+  String get safetyEmergency => 'Emergency contacts';
+
+  @override
+  String get emergencyPolice => '112 Police';
+
+  @override
+  String get emergencyFire => '119 Fire & rescue';
+
+  @override
+  String get emergencyShop => 'Support';
+
+  @override
+  String get caseReportAction => 'Report a problem';
+
+  @override
+  String get caseReportTitle => 'What happened?';
+
+  @override
+  String get caseKindDamage => 'Damage';
+
+  @override
+  String get caseKindLoss => 'Loss';
+
+  @override
+  String get caseKindComplaint => 'Complaint';
+
+  @override
+  String get caseKindNoShow => 'Cleaner did not arrive';
+
+  @override
+  String get caseKindSafety => 'Safety concern';
+
+  @override
+  String get caseKindPayment => 'Payment dispute';
+
+  @override
+  String get caseSummaryHint => 'Describe what happened (up to 300 characters)';
+
+  @override
+  String get caseSubmit => 'Submit';
+
+  @override
+  String get caseSubmitted => 'Received. Our team will reply within 24 hours.';
+
+  @override
+  String get caseFailed => 'Couldn\'t send it. Try again.';
+
+  @override
+  String get checkInAction => 'Check in';
+
+  @override
+  String get checkOutAction => 'Check out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Arrived $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Left $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Show entry code';
+
+  @override
+  String get entryCodeTitle => 'Entry code';
+
+  @override
+  String get entryCodeNotToday => 'Available on the visit day only';
+
+  @override
+  String get entryCodeEmpty => 'No entry code on file';
+
+  @override
+  String get actionFailed => 'Couldn\'t complete that. Try again.';
+
+  @override
+  String get consoleCasesTitle => 'Case queue';
+
+  @override
+  String get consoleCasesEmpty => 'No open cases';
+
+  @override
+  String get caseOverdue => 'Overdue';
+
+  @override
+  String get caseStatusOpen => 'Open';
+
+  @override
+  String get caseStatusInvestigating => 'Investigating';
+
+  @override
+  String get caseStatusResolved => 'Resolved';
+
+  @override
+  String get caseStatusRejected => 'Rejected';
+
+  @override
+  String get caseReassign => 'Reassign partner';
+
+  @override
+  String get caseRefund => 'Refund';
+
+  @override
+  String get caseHold => 'Hold settlement';
+
+  @override
+  String get caseNoteHint => 'Internal note';
+
+  @override
+  String get caseSave => 'Save';
 
   @override
   String get cSetup => 'Setup';
@@ -3198,6 +3507,215 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String get cMfaTitle => 'Two-step sign-in';
+
+  @override
+  String get cMfaCode => '6-digit code from your authenticator app';
+
+  @override
+  String get cMfaRecovery => 'Recovery code';
+
+  @override
+  String get cMfaUseRecovery => 'Use a recovery code instead';
+
+  @override
+  String get cMfaUseCode => 'Use an authenticator code instead';
+
+  @override
+  String get cMfaVerify => 'Verify';
+
+  @override
+  String get cMfaBack => 'Back to sign-in';
+
+  @override
+  String get cMfaEnrolTitle => 'Set up two-step sign-in';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Admins need an authenticator app. Add this key to Google Authenticator, 1Password or similar, then enter the 6-digit code it shows.';
+
+  @override
+  String get cMfaSecret => 'Setup key';
+
+  @override
+  String get cMfaLink => 'Setup link (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Copy';
+
+  @override
+  String get cMfaCopied => 'Copied';
+
+  @override
+  String get cMfaConfirm => 'Confirm and turn on';
+
+  @override
+  String get cMfaCodesTitle => 'Save your recovery codes';
+
+  @override
+  String get cMfaCodesBody =>
+      'If you lose your authenticator, each code signs you in once. They are shown only now.';
+
+  @override
+  String get cMfaDownload => 'Download';
+
+  @override
+  String get cMfaSaveFailed =>
+      'This device cannot save the file here. Copy the codes and keep them safe.';
+
+  @override
+  String get cMfaContinue => 'Continue to the console';
+
+  @override
+  String get cMfaInvalid =>
+      'That code does not match. Check that your phone\'s clock is right, then try again.';
+
+  @override
+  String get cMfaExpired =>
+      'Sign-in expired. Start again from the password step.';
+
+  @override
+  String get cMfaLocked =>
+      'Too many attempts. Wait a few minutes and try again.';
+
+  @override
+  String get cStaffReset => 'Reset password';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Reset this staff member\'s password? They will be signed out everywhere.';
+
+  @override
+  String get cStaffResetTitle => 'Reset token';
+
+  @override
+  String get cStaffResetBody =>
+      'Give this token to the staff member. It works once, for 30 minutes. You cannot see it again after closing.';
+
+  @override
+  String get tTaxSection => 'Tax';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'Year';
+
+  @override
+  String get tExportWithholding => 'Withholding statement CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Tax invoice upload CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Check the columns against the 홈택스 template before uploading. Layout not yet verified.';
+
+  @override
+  String get tCashReceipts => 'Cash receipts';
+
+  @override
+  String get tCashIssued => 'Issued';
+
+  @override
+  String get tCashFailed => 'Failed';
+
+  @override
+  String get tCashPending => 'Pending';
+
+  @override
+  String get tCashCancelled => 'Cancelled';
+
+  @override
+  String get tReissue => 'Reissue';
+
+  @override
+  String get tTaxInvoices => 'Tax invoices';
+
+  @override
+  String get tApprovalNumber => 'Approval no.';
+
+  @override
+  String get tIssuedOn => 'Issued on';
+
+  @override
+  String get tMarkIssued => 'Mark as issued';
+
+  @override
+  String get tQueueEmpty => 'No requests waiting';
+
+  @override
+  String get tWithholdingLabel => 'Withholding';
+
+  @override
+  String get tGrossAmount => 'Gross';
+
+  @override
+  String get tIncomeTax => 'Income tax';
+
+  @override
+  String get tLocalTax => 'Local income tax';
+
+  @override
+  String get tNetAmount => 'Net';
+
+  @override
+  String get tNoWithholding => 'No withholding (registered business)';
+
+  @override
+  String get tEstWithholding => 'Estimated withholding (pending)';
+
+  @override
+  String get tReceiptOptions => 'Receipt options';
+
+  @override
+  String get tWantCashReceipt => 'Get a cash receipt';
+
+  @override
+  String get tCashForIncome => 'For tax deduction (phone number)';
+
+  @override
+  String get tCashForBusiness => 'For business expense (business no.)';
+
+  @override
+  String get tWantTaxInvoice => 'Get a tax invoice (business)';
+
+  @override
+  String get tPhoneForReceipt => 'Phone number';
+
+  @override
+  String get tBusinessNumber => 'Business registration no.';
+
+  @override
+  String get tCompanyName => 'Company name';
+
+  @override
+  String get tRepresentative => 'Representative';
+
+  @override
+  String get tInvoiceEmail => 'Email for the invoice';
+
+  @override
+  String get tReceiptSave => 'Save and pay';
+
+  @override
+  String get tReceiptSaveFailed => 'Could not save the receipt details';
+
+  @override
+  String get tTaxType => 'Tax type';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (withheld)';
+
+  @override
+  String get tTaxBusiness => 'Registered business (no withholding)';
+
+  @override
+  String get tReceiptSettings => 'Receipt settings';
 
   @override
   String get reviewRuleLine =>

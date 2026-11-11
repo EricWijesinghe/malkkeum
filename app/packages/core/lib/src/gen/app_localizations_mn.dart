@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -498,6 +497,30 @@ class TMn extends T {
   String get cFormula => 'Үнийн санал тооцох томьёо';
 
   @override
+  String get cTabCancelPolicy => 'Цуцлалтын бодлого';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Энэ бол анхдагч тохиргоо. Шалгаад хадгалж баталгаажуулна уу.';
+
+  @override
+  String get cPolicyDaysBefore => 'Айлчлалаас хэдэн өдрийн өмнөөс (эхлэх)';
+
+  @override
+  String get cPolicyPercent => 'Шимтгэл % (хоосон = аппаар цуцлах боломжгүй)';
+
+  @override
+  String get cPolicyMinFee => 'Доод шимтгэл (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Цаг товлолт өөрчлөх (айлчлалаас хэдэн өдрийн өмнө)';
+
+  @override
+  String get cPolicyHint =>
+      'Үйлчлүүлэгчийн аппын цуцлах дэлгэцэд шууд хэрэгжинэ. Нөхцөл дараагийн хуулийн build-д шинэчлэгдэнэ.';
+
+  @override
   String get f_base_studio => 'Үндсэн: студио';
 
   @override
@@ -654,6 +677,9 @@ class TMn extends T {
   String get cNewMessage => 'Шинэ зурвас';
 
   @override
+  String get cConfirmAsk => 'Итгэлтэй байна уу?';
+
+  @override
   String get ok => 'ОК';
 
   @override
@@ -745,7 +771,7 @@ class TMn extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
+      'Энэ захиалгыг аппликейшнээр цуцлах боломжгүй. Манай багтай холбогдоно уу';
 
   @override
   String get err_address_required => 'Очих хаягаа бүртгэнэ үү';
@@ -1300,6 +1326,11 @@ class TMn extends T {
   String get photosSoon => 'Цэвэрлэгээний өмнөх, дараах зургууд энд гарна';
 
   @override
+  String photoThumb(String n) {
+    return 'Зураг $n';
+  }
+
+  @override
   String get before => 'Өмнө';
 
   @override
@@ -1332,6 +1363,16 @@ class TMn extends T {
 
   @override
   String get cancelKeep => 'Хэвээр үлдээх';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Одоо цуцлавал $fee шимтгэл төлөгдөж, $refund буцаан олгогдоно.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee шимтгэлийг зөвшөөрч цуцлах';
+  }
 
   @override
   String get cancelled => 'Захиалга цуцлагдлаа';
@@ -1748,6 +1789,50 @@ class TMn extends T {
   String get summaryDate => 'Очих өдөр';
 
   @override
+  String get cpTitle => 'Цуцлалтын бодлого';
+
+  @override
+  String cpWhen(String days) {
+    return 'Айлчлалаас $days ба түүнээс дээш өдрийн өмнө';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Айлчлах өдөр';
+
+  @override
+  String get cpFree => 'Бүрэн буцаан олголт';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% шимтгэл ($fee), буцаан олголт $refund';
+  }
+
+  @override
+  String get cpClosed => 'Аппаар цуцлах боломжгүй (баг шалгана)';
+
+  @override
+  String get hhTitle => 'Өрхийн мэдээлэл';
+
+  @override
+  String get hhAddPet => 'Амьтан нэмэх';
+
+  @override
+  String get hhPetCount => 'Тоо';
+
+  @override
+  String get hhFloorLabel => 'Давхар (хашаанд сөрөг)';
+
+  @override
+  String get hhElevator => 'Лифттэй';
+
+  @override
+  String get hhNotes => 'Тэмдэглэл';
+
+  @override
+  String get hhHint =>
+      'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override
@@ -1931,6 +2016,14 @@ class TMn extends T {
 
   @override
   String get err_invalid_capacity => 'Зөв багтаамж оруулна уу.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss худалдагчийн бүртгэлийг зөвшөөрөөгүй. Бизнесийн мэдээллээ шалгана уу.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Энэ хамтрагч баталгаажсан төлбөрийн дансгүй байна. Эхлээд дансаа баталгаажуулна уу.';
 
   @override
   String get fFinance => 'Санхүү';
@@ -2670,6 +2763,47 @@ class TMn extends T {
   String get pCustomerRequests => 'Үйлчлүүлэгчийн хүсэлт';
 
   @override
+  String get pHousehold => 'Өрхийн мэдээлэл';
+
+  @override
+  String get pPets => 'Гэр оронд амьтан';
+
+  @override
+  String get pPetDog => 'Нохой';
+
+  @override
+  String get pPetCat => 'Муур';
+
+  @override
+  String get pPetBird => 'Шувуу';
+
+  @override
+  String get pPetFish => 'Загас';
+
+  @override
+  String get pPetOther => 'Бусад амьтан';
+
+  @override
+  String get pAllergies => 'Харшил ба мэдрэмж';
+
+  @override
+  String get pPreferredProducts => 'Дуртай бүтээгдэхүүн';
+
+  @override
+  String get pParking => 'Зогсоол';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor давхар';
+  }
+
+  @override
+  String get pElevatorYes => 'Лифттэй';
+
+  @override
+  String get pElevatorNo => 'Лифтгүй';
+
+  @override
   String get pTeamMemo => 'Багийн тэмдэглэл (үйлчлүүлэгчид харагдахгүй)';
 
   @override
@@ -2865,6 +2999,29 @@ class TMn extends T {
   String get pSpace => 'Талбайн мэдээлэл';
 
   @override
+  String get pNavigate => 'Чиглэл';
+
+  @override
+  String get pNavHint =>
+      'Очих хаягийг газрын зургийн аппликейшнд нээнэ. Аппгүй бол вэб газрын зураг нээгдэнэ.';
+
+  @override
+  String get pOfflineSaved =>
+      'Дохио алга. Хадгалсан, интернэт холбогдоход автоматаар илгээнэ.';
+
+  @override
+  String get pPhotoRetry => 'Дахин илгээх';
+
+  @override
+  String get pPhotoWaiting =>
+      'Илгээгдээгүй зургууд интернэт холбогдоход автоматаар илгээгдэнэ.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total-с $done илгээсэн';
+  }
+
+  @override
   String get cIntPayout => 'Түншийн төлбөр';
 
   @override
@@ -2943,6 +3100,45 @@ class TMn extends T {
   String get poRevealNote => 'Дансны мэдээллийг үзсэн нь бүртгэгдэнэ';
 
   @override
+  String get poSellerAction => 'Худалдагч бүртгэх';
+
+  @override
+  String get poSellerTitle => 'Toss худалдагчаар бүртгүүлэх';
+
+  @override
+  String get poSellerHint =>
+      'Хамтрагчийн баталгаажсан данс ашиглана. Зөвхөн бизнесийн мэдээлэл оруулна уу.';
+
+  @override
+  String get poSellerIndividual => 'Хувь хүн';
+
+  @override
+  String get poSellerCompany => 'Байгууллага';
+
+  @override
+  String get poSellerName => 'Нэр';
+
+  @override
+  String get poSellerRepresentative => 'Төлөөлөгчийн нэр';
+
+  @override
+  String get poSellerRegNo => 'Бизнесийн бүртгэлийн дугаар (10 оронтой)';
+
+  @override
+  String get poSellerEmail => 'Тооцооны имэйл';
+
+  @override
+  String get poSellerPhone => 'Утас';
+
+  @override
+  String get poSellerSubmit => 'Бүртгэх';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Худалдагчийн төлөв: $status';
+  }
+
+  @override
   String get pvManage => 'Зөвшөөрлийн тохиргоо';
 
   @override
@@ -2987,6 +3183,122 @@ class TMn extends T {
   @override
   String get pvExportFailed =>
       'Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.';
+
+  @override
+  String get safetyEmergency => 'Яаралтай холбоо барих';
+
+  @override
+  String get emergencyPolice => '112 Цагдаа';
+
+  @override
+  String get emergencyFire => '119 Гал түймэр ба аврах';
+
+  @override
+  String get emergencyShop => 'Харилцагчийн үйлчилгээ';
+
+  @override
+  String get caseReportAction => 'Асуудал мэдээлэх';
+
+  @override
+  String get caseReportTitle => 'Юу болсон бэ?';
+
+  @override
+  String get caseKindDamage => 'Гэмтэл';
+
+  @override
+  String get caseKindLoss => 'Алдсан';
+
+  @override
+  String get caseKindComplaint => 'Гомдол';
+
+  @override
+  String get caseKindNoShow => 'Цэвэрлэгч ирээгүй';
+
+  @override
+  String get caseKindSafety => 'Аюулгүй байдлын асуудал';
+
+  @override
+  String get caseKindPayment => 'Төлбөрийн маргаан';
+
+  @override
+  String get caseSummaryHint =>
+      'Юу болсныг тайлбарлана уу (300 тэмдэгт хүртэл)';
+
+  @override
+  String get caseSubmit => 'Илгээх';
+
+  @override
+  String get caseSubmitted => 'Хүлээн авлаа. Баг 24 цагийн дотор хариулна.';
+
+  @override
+  String get caseFailed => 'Илгээж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get checkInAction => 'Бүртгүүлэх';
+
+  @override
+  String get checkOutAction => 'Гарах бүртгэл';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Ирсэн $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Гарсан $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Орцны код харах';
+
+  @override
+  String get entryCodeTitle => 'Орцны код';
+
+  @override
+  String get entryCodeNotToday => 'Зөвхөн үйлчилгээний өдөр харагдана';
+
+  @override
+  String get entryCodeEmpty => 'Орцны код бүртгэгдээгүй';
+
+  @override
+  String get actionFailed => 'Хийж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get consoleCasesTitle => 'Хэргийн дараалал';
+
+  @override
+  String get consoleCasesEmpty => 'Нээлттэй хэрэг алга';
+
+  @override
+  String get caseOverdue => 'Хугацаа хэтэрсэн';
+
+  @override
+  String get caseStatusOpen => 'Нээлттэй';
+
+  @override
+  String get caseStatusInvestigating => 'Шалгаж байна';
+
+  @override
+  String get caseStatusResolved => 'Шийдсэн';
+
+  @override
+  String get caseStatusRejected => 'Татгалзсан';
+
+  @override
+  String get caseReassign => 'Ажилтан дахин оноох';
+
+  @override
+  String get caseRefund => 'Буцаан олгох';
+
+  @override
+  String get caseHold => 'Тооцоог түр зогсоох';
+
+  @override
+  String get caseNoteHint => 'Дотоод тэмдэглэл';
+
+  @override
+  String get caseSave => 'Хадгалах';
 
   @override
   String get cSetup => 'Тохиргоо';
@@ -3221,6 +3533,215 @@ class TMn extends T {
 
   @override
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
+
+  @override
+  String get cMfaTitle => 'Хоёр шаттай нэвтрэлт';
+
+  @override
+  String get cMfaCode => 'Баталгаажуулагчийн аппаас 6 оронтой код';
+
+  @override
+  String get cMfaRecovery => 'Сэргээх код';
+
+  @override
+  String get cMfaUseRecovery => 'Оронд нь сэргээх код ашиглах';
+
+  @override
+  String get cMfaUseCode => 'Оронд нь баталгаажуулагчийн код ашиглах';
+
+  @override
+  String get cMfaVerify => 'Баталгаажуулах';
+
+  @override
+  String get cMfaBack => 'Нэвтрэх рүү буцах';
+
+  @override
+  String get cMfaEnrolTitle => 'Хоёр шаттай нэвтрэлтийг тохируулах';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Админд баталгаажуулах апп хэрэгтэй. Доорх түлхүүрийг Google Authenticator, 1Password гэх мэт апп-д нэмээд, тэнд гарсан 6 оронтой кодыг оруулна уу.';
+
+  @override
+  String get cMfaSecret => 'Тохируулах түлхүүр';
+
+  @override
+  String get cMfaLink => 'Тохируулах холбоос (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Хуулах';
+
+  @override
+  String get cMfaCopied => 'Хуулагдлаа';
+
+  @override
+  String get cMfaConfirm => 'Баталгаажуулж асаах';
+
+  @override
+  String get cMfaCodesTitle => 'Сэргээх кодоо хадгалаарай';
+
+  @override
+  String get cMfaCodesBody =>
+      'Баталгаажуулагчаа алдвал код бүр нэвтрэхэд нэг удаа ашиглагдана. Эдгээрийг одоо л харуулна.';
+
+  @override
+  String get cMfaDownload => 'Татах';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Энэ төхөөрөмж файл хадгалж чадахгүй. Кодыг хуулж аюулгүй газар хадгална уу.';
+
+  @override
+  String get cMfaContinue => 'Консол руу үргэлжлүүлэх';
+
+  @override
+  String get cMfaInvalid =>
+      'Код таарахгүй байна. Утасныхаа цагийг шалгаад дахин оролдоно уу.';
+
+  @override
+  String get cMfaExpired =>
+      'Нэвтрэлтийн хугацаа дууссан. Нууц үгийн алхмаас дахин эхлүүлнэ үү.';
+
+  @override
+  String get cMfaLocked =>
+      'Оролдлого хэт олон боллоо. Хэдэн минутын дараа дахин оролдоно уу.';
+
+  @override
+  String get cStaffReset => 'Нууц үг шинэчлэх';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Энэ ажилтны нууц үгийг шинэчлэх үү? Бүх төхөөрөмжөөс гаргана.';
+
+  @override
+  String get cStaffResetTitle => 'Шинэчлэх токен';
+
+  @override
+  String get cStaffResetBody =>
+      'Энэ токеныг ажилтанд өгнө үү. Нэг удаа, 30 минутын дотор ашиглагдана. Хаасны дараа дахин харах боломжгүй.';
+
+  @override
+  String get tTaxSection => 'Татвар';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q НӨАТ CSV';
+  }
+
+  @override
+  String get tVatYear => 'Жил';
+
+  @override
+  String get tExportWithholding => 'Суутгалын тайлан CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Татварын нэхэмжлэх байршуулах CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Байршуулахаас өмнө 홈택스-ийн загвартай багануудыг шалгана уу. Бүтэц баталгаажаагүй.';
+
+  @override
+  String get tCashReceipts => 'Бэлэн мөнгөний баримт';
+
+  @override
+  String get tCashIssued => 'Олгосон';
+
+  @override
+  String get tCashFailed => 'Амжилтгүй';
+
+  @override
+  String get tCashPending => 'Хүлээгдэж буй';
+
+  @override
+  String get tCashCancelled => 'Цуцлагдсан';
+
+  @override
+  String get tReissue => 'Дахин олгох';
+
+  @override
+  String get tTaxInvoices => 'Татварын нэхэмжлэх';
+
+  @override
+  String get tApprovalNumber => 'Зөвшөөрлийн дугаар';
+
+  @override
+  String get tIssuedOn => 'Олгосон огноо';
+
+  @override
+  String get tMarkIssued => 'Олгосон гэж тэмдэглэх';
+
+  @override
+  String get tQueueEmpty => 'Хүлээгдэж буй хүсэлт алга';
+
+  @override
+  String get tWithholdingLabel => 'Суутгал';
+
+  @override
+  String get tGrossAmount => 'Нийт дүн';
+
+  @override
+  String get tIncomeTax => 'Орлогын татвар';
+
+  @override
+  String get tLocalTax => 'Орон нутгийн орлогын татвар';
+
+  @override
+  String get tNetAmount => 'Гарт авах дүн';
+
+  @override
+  String get tNoWithholding => 'Суутгалгүй (бүртгэлтэй бизнес)';
+
+  @override
+  String get tEstWithholding => 'Тооцоолсон суутгал (хүлээгдэж буй)';
+
+  @override
+  String get tReceiptOptions => 'Баримтын сонголт';
+
+  @override
+  String get tWantCashReceipt => 'Бэлэн мөнгөний баримт авах';
+
+  @override
+  String get tCashForIncome => 'Татвар хасалтад (утасны дугаар)';
+
+  @override
+  String get tCashForBusiness => 'Бизнесийн зардалд (бизнесийн дугаар)';
+
+  @override
+  String get tWantTaxInvoice => 'Татварын нэхэмжлэх авах (бизнес)';
+
+  @override
+  String get tPhoneForReceipt => 'Утасны дугаар';
+
+  @override
+  String get tBusinessNumber => 'Бизнесийн бүртгэлийн дугаар';
+
+  @override
+  String get tCompanyName => 'Компанийн нэр';
+
+  @override
+  String get tRepresentative => 'Төлөөлөгч';
+
+  @override
+  String get tInvoiceEmail => 'Нэхэмжлэх хүлээн авах имэйл';
+
+  @override
+  String get tReceiptSave => 'Хадгалаад төлөх';
+
+  @override
+  String get tReceiptSaveFailed => 'Баримтын мэдээллийг хадгалж чадсангүй';
+
+  @override
+  String get tTaxType => 'Татварын төрөл';
+
+  @override
+  String get tTaxFreelancer => 'Фрилансер (суутгалтай)';
+
+  @override
+  String get tTaxBusiness => 'Бүртгэлтэй бизнес (суутгалгүй)';
+
+  @override
+  String get tReceiptSettings => 'Баримтын тохиргоо';
 
   @override
   String get reviewRuleLine =>

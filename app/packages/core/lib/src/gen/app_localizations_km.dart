@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -493,6 +492,29 @@ class TKm extends T {
   String get cFormula => 'រូបមន្តគណនាតម្លៃ';
 
   @override
+  String get cTabCancelPolicy => 'គោលនយោបាយបោះបង់';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'នេះជាការកំណត់លំនាំដើម។ សូមពិនិត្យ និងរក្សាទុកដើម្បីបញ្ជាក់។';
+
+  @override
+  String get cPolicyDaysBefore => 'ថ្ងៃមុនការមក (ចាប់ផ្តើម)';
+
+  @override
+  String get cPolicyPercent => 'ថ្លៃ % (ទុកទទេ = បោះបង់ក្នុងកម្មវិធីមិនបាន)';
+
+  @override
+  String get cPolicyMinFee => 'ថ្លៃអប្បបរមា (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'អាចផ្លាស់ប្តូរកាលវិភាគ (ចាប់ពីថ្ងៃមុន)';
+
+  @override
+  String get cPolicyHint =>
+      'អនុវត្តភ្លាមៗនៅអេក្រង់បោះបង់របស់កម្មវិធីអតិថិជន។ លក្ខខណ្ឌនឹងកែប្រែនៅការកសាងបន្ទាប់។';
+
+  @override
   String get f_base_studio => 'មូលដ្ឋាន៖ ស្ទូឌីយ៉ូ';
 
   @override
@@ -649,6 +671,9 @@ class TKm extends T {
   String get cNewMessage => 'សារថ្មី';
 
   @override
+  String get cConfirmAsk => 'តើអ្នកច្បាស់ទេ?';
+
+  @override
   String get ok => 'យល់ព្រម';
 
   @override
@@ -740,7 +765,7 @@ class TKm extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក អាចបោះបង់តាមរយៈក្រុមការងាររបស់យើងប៉ុណ្ណោះ';
+      'ការកក់នេះមិនអាចបោះបង់នៅក្នុងកម្មវិធីទៀតទេ។ សូមទាក់ទងក្រុមការងារយើង';
 
   @override
   String get err_address_required => 'សូមបញ្ចូលអាសយដ្ឋានសម្រាប់ការមក';
@@ -1298,6 +1323,11 @@ class TKm extends T {
   String get photosSoon => 'រូបថតមុន-ក្រោយ នឹងបង្ហាញនៅទីនេះ នៅពេលបញ្ចប់';
 
   @override
+  String photoThumb(String n) {
+    return 'រូបថតទី $n';
+  }
+
+  @override
   String get before => 'មុនសម្អាត';
 
   @override
@@ -1330,6 +1360,16 @@ class TKm extends T {
 
   @override
   String get cancelKeep => 'រក្សាទុក';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'ប្រសិនបើបោះបង់ឥឡូវនេះ គិតថ្លៃ $fee ហើយនឹងបង្វិលប្រាក់ $refund វិញ។';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'ទទួលយកថ្លៃ $fee ហើយបោះបង់';
+  }
 
   @override
   String get cancelled => 'បានបោះបង់ការកក់';
@@ -1745,6 +1785,50 @@ class TKm extends T {
   String get summaryDate => 'ការមក';
 
   @override
+  String get cpTitle => 'គោលនយោបាយបោះបង់';
+
+  @override
+  String cpWhen(String days) {
+    return 'ច្រើនជាង ឬស្មើ $days ថ្ងៃមុនការមក';
+  }
+
+  @override
+  String get cpWhenSameDay => 'នៅថ្ងៃមក';
+
+  @override
+  String get cpFree => 'បង្វិលប្រាក់ពេញ';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ថ្លៃ $percent% ($fee) បង្វិលប្រាក់ $refund';
+  }
+
+  @override
+  String get cpClosed => 'បោះបង់ក្នុងកម្មវិធីមិនបាន (ក្រុមការងារពិនិត្យ)';
+
+  @override
+  String get hhTitle => 'ព័ត៌មានគ្រួសារ';
+
+  @override
+  String get hhAddPet => 'បន្ថែមសត្វចិញ្ចឹម';
+
+  @override
+  String get hhPetCount => 'ចំនួន';
+
+  @override
+  String get hhFloorLabel => 'ជាន់ (អវិជ្ជមានសម្រាប់ដីក្រោម)';
+
+  @override
+  String get hhElevator => 'មានជណ្តើរយន្ត';
+
+  @override
+  String get hhNotes => 'កំណត់ចំណាំ';
+
+  @override
+  String get hhHint =>
+      'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
+
+  @override
   String get themeTitle => 'ធីម';
 
   @override
@@ -1920,6 +2004,14 @@ class TKm extends T {
 
   @override
   String get err_invalid_capacity => 'បញ្ចូលចំណុះត្រឹមត្រូវ។';
+
+  @override
+  String get err_seller_declined =>
+      'Toss មិនបានអនុម័តការចុះឈ្មោះអ្នកលក់ទេ។ សូមពិនិត្យព័ត៌មានអាជីវកម្ម។';
+
+  @override
+  String get err_payout_account_unverified =>
+      'ដៃគូនេះមិនទាន់មានគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់ទេ។ សូមផ្ទៀងផ្ទាត់គណនីជាមុនសិន។';
 
   @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
@@ -2656,6 +2748,47 @@ class TKm extends T {
   String get pCustomerRequests => 'សំណើរបស់អតិថិជន';
 
   @override
+  String get pHousehold => 'ព័ត៌មានគ្រួសារ';
+
+  @override
+  String get pPets => 'សត្វចិញ្ចឹម';
+
+  @override
+  String get pPetDog => 'ឆ្កែ';
+
+  @override
+  String get pPetCat => 'ឆ្មា';
+
+  @override
+  String get pPetBird => 'សត្វស្លាប';
+
+  @override
+  String get pPetFish => 'ត្រី';
+
+  @override
+  String get pPetOther => 'សត្វផ្សេងទៀត';
+
+  @override
+  String get pAllergies => 'អាឡែហ្ស៊ី និងការប៉ះពាល់';
+
+  @override
+  String get pPreferredProducts => 'ផលិតផលដែលចូលចិត្ត';
+
+  @override
+  String get pParking => 'កន្លែងចត';
+
+  @override
+  String pFloor(String floor) {
+    return 'ជាន់ទី $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'មានជណ្តើរយន្ត';
+
+  @override
+  String get pElevatorNo => 'គ្មានជណ្តើរយន្ត';
+
+  @override
   String get pTeamMemo => 'កំណត់ចំណាំក្រុម (អតិថិជនមិនអាចមើលឃើញ)';
 
   @override
@@ -2852,6 +2985,29 @@ class TKm extends T {
   String get pSpace => 'ព័ត៌មានលំហ';
 
   @override
+  String get pNavigate => 'ផ្លូវទៅ';
+
+  @override
+  String get pNavHint =>
+      'បើកអាសយដ្ឋានក្នុងកម្មវិធីផែនទី។ បើគ្មានកម្មវិធី នឹងបើកផែនទីតាមវែប។';
+
+  @override
+  String get pOfflineSaved =>
+      'គ្មានសញ្ញា។ បានរក្សាទុក ហើយនឹងផ្ញើនៅពេលមានអ៊ីនធឺណិត។';
+
+  @override
+  String get pPhotoRetry => 'ផ្ទុកឡើងម្តងទៀត';
+
+  @override
+  String get pPhotoWaiting =>
+      'រូបថតដែលមិនបានផ្ទុកឡើង នឹងផ្ញើដោយស្វ័យប្រវត្តិនៅពេលមានអ៊ីនធឺណិត។';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'បានផ្ទុកឡើង $done/$total';
+  }
+
+  @override
   String get cIntPayout => 'ការទូទាត់ដៃគូ';
 
   @override
@@ -2930,6 +3086,45 @@ class TKm extends T {
   String get poRevealNote => 'ការមើលព័ត៌មានគណនីត្រូវបានកត់ត្រា';
 
   @override
+  String get poSellerAction => 'ចុះឈ្មោះអ្នកលក់';
+
+  @override
+  String get poSellerTitle => 'ចុះឈ្មោះជាអ្នកលក់ Toss';
+
+  @override
+  String get poSellerHint =>
+      'ប្រើគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់របស់ដៃគូ។ បញ្ចូលតែព័ត៌មានអាជីវកម្ម។';
+
+  @override
+  String get poSellerIndividual => 'បុគ្គល';
+
+  @override
+  String get poSellerCompany => 'អាជីវកម្ម';
+
+  @override
+  String get poSellerName => 'ឈ្មោះ';
+
+  @override
+  String get poSellerRepresentative => 'ឈ្មោះតំណាង';
+
+  @override
+  String get poSellerRegNo => 'លេខចុះបញ្ជីអាជីវកម្ម (ខ្ទង់ 10)';
+
+  @override
+  String get poSellerEmail => 'អ៊ីមែលសម្រាប់ការបោះប្រាក់';
+
+  @override
+  String get poSellerPhone => 'លេខទូរស័ព្ទ';
+
+  @override
+  String get poSellerSubmit => 'ចុះឈ្មោះ';
+
+  @override
+  String poSellerDone(String status) {
+    return 'ស្ថានភាពអ្នកលក់៖ $status';
+  }
+
+  @override
   String get pvManage => 'ការគ្រប់គ្រងការយល់ព្រម';
 
   @override
@@ -2975,6 +3170,123 @@ class TKm extends T {
   @override
   String get pvExportFailed =>
       'មិនអាចផ្ទុកទិន្នន័យរបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។';
+
+  @override
+  String get safetyEmergency => 'ទំនាក់ទំនងបន្ទាន់';
+
+  @override
+  String get emergencyPolice => '112 ប៉ូលិស';
+
+  @override
+  String get emergencyFire => '119 អគ្គិភ័យ និងសង្គ្រោះ';
+
+  @override
+  String get emergencyShop => 'សេវាអតិថិជន';
+
+  @override
+  String get caseReportAction => 'រាយការណ៍បញ្ហា';
+
+  @override
+  String get caseReportTitle => 'តើមានអ្វីកើតឡើង?';
+
+  @override
+  String get caseKindDamage => 'ខូចខាត';
+
+  @override
+  String get caseKindLoss => 'បាត់បង់';
+
+  @override
+  String get caseKindComplaint => 'បណ្តឹងរដ្ឋ';
+
+  @override
+  String get caseKindNoShow => 'អ្នកសម្អាតមិនមកដល់';
+
+  @override
+  String get caseKindSafety => 'បញ្ហាសុវត្ថិភាព';
+
+  @override
+  String get caseKindPayment => 'ជម្លោះការបង់ប្រាក់';
+
+  @override
+  String get caseSummaryHint =>
+      'ពិពណ៌នាអំពីអ្វីដែលបានកើតឡើង (រហូតដល់ 300 តួអក្សរ)';
+
+  @override
+  String get caseSubmit => 'ដាក់ស្នើ';
+
+  @override
+  String get caseSubmitted =>
+      'បានទទួល។ ក្រុមការងារនឹងឆ្លើយតបក្នុងរយៈពេល 24 ម៉ោង។';
+
+  @override
+  String get caseFailed => 'មិនអាចផ្ញើបានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get checkInAction => 'ចុះឈ្មោះចូល';
+
+  @override
+  String get checkOutAction => 'ចុះឈ្មោះចេញ';
+
+  @override
+  String checkedInAt(String time) {
+    return 'មកដល់ $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ចាកចេញ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'បង្ហាញលេខកូដចូល';
+
+  @override
+  String get entryCodeTitle => 'លេខកូដចូល';
+
+  @override
+  String get entryCodeNotToday => 'អាចមើលបានតែនៅថ្ងៃទៅដល់ប៉ុណ្ណោះ';
+
+  @override
+  String get entryCodeEmpty => 'មិនមានលេខកូដចូលទេ';
+
+  @override
+  String get actionFailed => 'មិនអាចបញ្ចប់បានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get consoleCasesTitle => 'បញ្ជីករណី';
+
+  @override
+  String get consoleCasesEmpty => 'មិនមានករណីបើកទេ';
+
+  @override
+  String get caseOverdue => 'ហួសកំណត់';
+
+  @override
+  String get caseStatusOpen => 'បើក';
+
+  @override
+  String get caseStatusInvestigating => 'កំពុងស៊ើបអង្កេត';
+
+  @override
+  String get caseStatusResolved => 'បានដោះស្រាយ';
+
+  @override
+  String get caseStatusRejected => 'បានបដិសេធ';
+
+  @override
+  String get caseReassign => 'ផ្ទេរដៃគូឡើងវិញ';
+
+  @override
+  String get caseRefund => 'សងប្រាក់វិញ';
+
+  @override
+  String get caseHold => 'ផ្អាកការទូទាត់';
+
+  @override
+  String get caseNoteHint => 'កំណត់ចំណាំផ្ទៃក្នុង';
+
+  @override
+  String get caseSave => 'រក្សាទុក';
 
   @override
   String get cSetup => 'ការកំណត់';
@@ -3208,6 +3520,215 @@ class TKm extends T {
 
   @override
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
+
+  @override
+  String get cMfaTitle => 'ការចូលពីរជំហាន';
+
+  @override
+  String get cMfaCode => 'កូដ 6 ខ្ទង់ពីកម្មវិធីផ្ទៀងផ្ទាត់';
+
+  @override
+  String get cMfaRecovery => 'កូដស្តារឡើងវិញ';
+
+  @override
+  String get cMfaUseRecovery => 'ប្រើកូដស្តារវិញ';
+
+  @override
+  String get cMfaUseCode => 'ប្រើកូដពីកម្មវិធីផ្ទៀងផ្ទាត់វិញ';
+
+  @override
+  String get cMfaVerify => 'ផ្ទៀងផ្ទាត់';
+
+  @override
+  String get cMfaBack => 'ត្រឡប់ទៅចូល';
+
+  @override
+  String get cMfaEnrolTitle => 'រៀបចំការចូលពីរជំហាន';
+
+  @override
+  String get cMfaEnrolBody =>
+      'អ្នកគ្រប់គ្រងត្រូវការកម្មវិធីផ្ទៀងផ្ទាត់។ បញ្ចូលកូដខាងក្រោមទៅក្នុង Google Authenticator, 1Password ឬស្រដៀងគ្នា ហើយបញ្ចូលកូដ 6 ខ្ទង់ដែលវាបង្ហាញ។';
+
+  @override
+  String get cMfaSecret => 'កូដកំណត់';
+
+  @override
+  String get cMfaLink => 'តំណកំណត់ (otpauth)';
+
+  @override
+  String get cMfaCopy => 'ចម្លង';
+
+  @override
+  String get cMfaCopied => 'បានចម្លង';
+
+  @override
+  String get cMfaConfirm => 'បញ្ជាក់ និងបើក';
+
+  @override
+  String get cMfaCodesTitle => 'រក្សាទុកកូដស្តារឡើងវិញរបស់អ្នក';
+
+  @override
+  String get cMfaCodesBody =>
+      'បើអ្នកបាត់កម្មវិធីផ្ទៀងផ្ទាត់ កូដនីមួយៗអាចចូលបានម្តង។ កូដទាំងនេះបង្ហាញតែឥឡូវនេះប៉ុណ្ណោះ។';
+
+  @override
+  String get cMfaDownload => 'ទាញយក';
+
+  @override
+  String get cMfaSaveFailed =>
+      'ឧបករណ៍នេះមិនអាចរក្សាទុកឯកសារបានទេ។ ចម្លងកូដ ហើយរក្សាទុកឲ្យបានល្អ។';
+
+  @override
+  String get cMfaContinue => 'បន្តទៅកុងសូល';
+
+  @override
+  String get cMfaInvalid =>
+      'កូដមិនត្រូវទេ។ ពិនិត្យនាឡិកាទូរសព្ទ ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get cMfaExpired =>
+      'ការចូលបានផុតកំណត់។ ចាប់ផ្តើមឡើងវិញពីជំហានពាក្យសម្ងាត់។';
+
+  @override
+  String get cMfaLocked =>
+      'ព្យាយាមច្រើនដងពេក។ រង់ចាំប៉ុន្មាននាទី ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get cStaffReset => 'កំណត់ពាក្យសម្ងាត់ឡើងវិញ';
+
+  @override
+  String get cStaffResetConfirm =>
+      'កំណត់ពាក្យសម្ងាត់បុគ្គលិកនេះឡើងវិញ? គាត់នឹងចេញពីគ្រប់ទីកន្លែង។';
+
+  @override
+  String get cStaffResetTitle => 'តូកែនកំណត់ឡើងវិញ';
+
+  @override
+  String get cStaffResetBody =>
+      'ផ្តល់តូកែននេះឲ្យបុគ្គលិក។ ប្រើបានតែម្តង ក្នុងរយៈពេល 30 នាទី។ បិទហើយនឹងមើលមិនឃើញទៀតទេ។';
+
+  @override
+  String get tTaxSection => 'ពន្ធ';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV ពន្ធ VAT ត្រីមាស $q';
+  }
+
+  @override
+  String get tVatYear => 'ឆ្នាំ';
+
+  @override
+  String get tExportWithholding => 'CSV ការកាត់ពន្ធ';
+
+  @override
+  String get tExportTaxInvoices => 'CSV ផ្ទុកវិក្កយបត្រពន្ធ';
+
+  @override
+  String get tTaxLayoutNote =>
+      'សូមផ្ទៀងផ្ទាត់ជួរឈរជាមួយគំរូ 홈택스 មុនផ្ទុកឡើង។ ទម្រង់មិនទាន់បានបញ្ជាក់។';
+
+  @override
+  String get tCashReceipts => 'វិក្កយបត្រសាច់ប្រាក់';
+
+  @override
+  String get tCashIssued => 'បានចេញ';
+
+  @override
+  String get tCashFailed => 'បរាជ័យ';
+
+  @override
+  String get tCashPending => 'កំពុងរង់ចាំ';
+
+  @override
+  String get tCashCancelled => 'បានលុបចោល';
+
+  @override
+  String get tReissue => 'ចេញឡើងវិញ';
+
+  @override
+  String get tTaxInvoices => 'វិក្កយបត្រពន្ធ';
+
+  @override
+  String get tApprovalNumber => 'លេខអនុម័ត';
+
+  @override
+  String get tIssuedOn => 'ថ្ងៃចេញ';
+
+  @override
+  String get tMarkIssued => 'សម្គាល់ថាបានចេញ';
+
+  @override
+  String get tQueueEmpty => 'មិនមានសំណើរង់ចាំទេ';
+
+  @override
+  String get tWithholdingLabel => 'ការកាត់ពន្ធ';
+
+  @override
+  String get tGrossAmount => 'ចំនួនសរុប';
+
+  @override
+  String get tIncomeTax => 'ពន្ធលើប្រាក់ចំណូល';
+
+  @override
+  String get tLocalTax => 'ពន្ធលើប្រាក់ចំណូលមូលដ្ឋាន';
+
+  @override
+  String get tNetAmount => 'ចំនួនទទួលជាក់ស្តែង';
+
+  @override
+  String get tNoWithholding => 'មិនកាត់ពន្ធ (អាជីវកម្មចុះបញ្ជី)';
+
+  @override
+  String get tEstWithholding => 'ការកាត់ពន្ធប៉ាន់ស្មាន (មិនទាន់បង់)';
+
+  @override
+  String get tReceiptOptions => 'ជម្រើសវិក្កយបត្រ';
+
+  @override
+  String get tWantCashReceipt => 'ទទួលវិក្កយបត្រសាច់ប្រាក់';
+
+  @override
+  String get tCashForIncome => 'សម្រាប់កាត់ពន្ធ (លេខទូរស័ព្ទ)';
+
+  @override
+  String get tCashForBusiness => 'សម្រាប់ការចំណាយអាជីវកម្ម (លេខអាជីវកម្ម)';
+
+  @override
+  String get tWantTaxInvoice => 'ទទួលវិក្កយបត្រពន្ធ (អាជីវកម្ម)';
+
+  @override
+  String get tPhoneForReceipt => 'លេខទូរស័ព្ទ';
+
+  @override
+  String get tBusinessNumber => 'លេខចុះបញ្ជីអាជីវកម្ម';
+
+  @override
+  String get tCompanyName => 'ឈ្មោះក្រុមហ៊ុន';
+
+  @override
+  String get tRepresentative => 'តំណាង';
+
+  @override
+  String get tInvoiceEmail => 'អ៊ីមែលសម្រាប់វិក្កយបត្រ';
+
+  @override
+  String get tReceiptSave => 'រក្សាទុក និងបង់';
+
+  @override
+  String get tReceiptSaveFailed => 'មិនអាចរក្សាទុកព័ត៌មានវិក្កយបត្របានទេ';
+
+  @override
+  String get tTaxType => 'ប្រភេទពន្ធ';
+
+  @override
+  String get tTaxFreelancer => 'អ្នកធ្វើការឯករាជ្យ (កាត់ពន្ធ)';
+
+  @override
+  String get tTaxBusiness => 'អាជីវកម្មចុះបញ្ជី (គ្មានកាត់ពន្ធ)';
+
+  @override
+  String get tReceiptSettings => 'ការកំណត់វិក្កយបត្រ';
 
   @override
   String get reviewRuleLine =>

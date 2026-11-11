@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Tozalash tugadi",
     "teamVisiting": "{team} tashrif buyuradi",
     "photosSoon": "Tugagach, oldin-keyin suratlar shu yerda chiqadi",
+    "photoThumb": "Foto {n}",
     "before": "Oldin",
     "after": "Keyin",
     "prepCheck": "Tayyorgarlik ro'yxati",
@@ -721,4 +722,5 @@ T = {
     "mMyJobs": "Mening ishlarim",
     "mNoJobs": "Hozircha tayinlangan ish yo'q. Jamoa rahbari bergan ishlar shu yerda ko'rinadi.",
     "mTeam": "{team} a'zosi",
+    "cConfirmAsk": "Ishonchingiz komilmi?",
 }

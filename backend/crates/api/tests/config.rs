@@ -22,6 +22,36 @@ async fn owner_login(app: &axum::Router) -> (StatusCode, Value) {
     .await
 }
 
+fn code_now(secret: &[u8]) -> String {
+    let counter = (chrono::Utc::now().timestamp() / api::totp::STEP_SECS) as u64;
+    format!("{:06}", api::totp::code_at(secret, counter))
+}
+
+/// First sign-in: admins must enrol a TOTP factor before tokens. Returns the token and one recovery
+/// code (a TOTP step can be used only once, and later sign-ins in this test happen within one step).
+async fn owner_enrol(app: &axum::Router) -> (String, String) {
+    let (st, b) = owner_login(app).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let mfa = b["mfa_token"].as_str().expect("mfa_token");
+    let (st, e) = call(app, "POST", "/v1/auth/staff/mfa/enrol", None, Some(json!({ "mfa_token": mfa }))).await;
+    assert_eq!(st, StatusCode::OK, "{e}");
+    let secret = api::totp::decode_secret(e["secret"].as_str().expect("secret")).expect("base32 secret");
+    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/enrol/confirm", None, Some(json!({ "mfa_token": mfa, "code": code_now(&secret) }))).await;
+    assert_eq!(st, StatusCode::OK, "{c}");
+    let recovery = c["recovery_codes"][0].as_str().expect("recovery code").to_string();
+    (c["access_token"].as_str().expect("token").to_string(), recovery)
+}
+
+/// Later sign-in: password, then one recovery code.
+async fn owner_verify(app: &axum::Router, recovery: &str) -> String {
+    let (st, b) = owner_login(app).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let mfa = b["mfa_token"].as_str().expect("mfa_token");
+    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/verify", None, Some(json!({ "mfa_token": mfa, "recovery_code": recovery }))).await;
+    assert_eq!(st, StatusCode::OK, "{c}");
+    c["access_token"].as_str().expect("token").to_string()
+}
+
 #[sqlx::test(migrations = "../../migrations")]
 async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     ensure_setup_code(&pool, Some(CODE)).await.expect("code");
@@ -36,9 +66,7 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
 
-    let (st, b) = owner_login(&app).await;
-    assert_eq!(st, StatusCode::OK, "{b}");
-    let token = b["access_token"].as_str().expect("token").to_string();
+    let (token, recovery) = owner_enrol(&app).await;
 
     let (st, _) = call(
         &app,
@@ -56,9 +84,7 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     assert_eq!(b["error"]["code"], "maintenance");
 
     // The owner can still sign in, refresh and reach the admin config during maintenance.
-    let (st, b) = owner_login(&app).await;
-    assert_eq!(st, StatusCode::OK, "staff login must stay open in maintenance: {b}");
-    let token = b["access_token"].as_str().expect("token").to_string();
+    let token = owner_verify(&app, &recovery).await;
     let (st, _) = call(&app, "GET", "/v1/admin/config", Some(&token), None).await;
     assert_eq!(st, StatusCode::OK);
 

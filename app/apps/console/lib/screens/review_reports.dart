@@ -6,9 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 class ReviewReportQueue extends StatefulWidget {
-  const ReviewReportQueue({super.key, required this.fetch, required this.decide, required this.setAuthorBlocked});
+  const ReviewReportQueue({
+    super.key,
+    required this.fetch,
+    required this.decide,
+    required this.setAuthorBlocked,
+  });
 
   final Future<List<Json>> Function() fetch;
+
   /// action: keep | hide | delete
   final Future<void> Function(String bookingId, String action) decide;
   final Future<void> Function(String bookingId, bool blocked) setAuthorBlocked;
@@ -60,14 +66,31 @@ class _ReviewReportQueueState extends State<ReviewReportQueue> {
         Text(t.modTitle, style: context.text.titleMedium),
         const SizedBox(height: Space.xs),
         if (rows.isEmpty) Text(t.modEmpty, style: context.text.bodySmall),
-        for (final r in rows) _ReportCard(row: r, busy: _busy, onAction: (action) => _run(() => widget.decide(r['booking_id'] as String, action)), onBlock: () => _run(() => widget.setAuthorBlocked(r['booking_id'] as String, r['author_blocked'] != true))),
+        for (final r in rows)
+          _ReportCard(
+            row: r,
+            busy: _busy,
+            onAction: (action) =>
+                _run(() => widget.decide(r['booking_id'] as String, action)),
+            onBlock: () => _run(
+              () => widget.setAuthorBlocked(
+                r['booking_id'] as String,
+                r['author_blocked'] != true,
+              ),
+            ),
+          ),
       ],
     );
   }
 }
 
 class _ReportCard extends StatelessWidget {
-  const _ReportCard({required this.row, required this.busy, required this.onAction, required this.onBlock});
+  const _ReportCard({
+    required this.row,
+    required this.busy,
+    required this.onAction,
+    required this.onBlock,
+  });
 
   final Json row;
   final bool busy;
@@ -85,10 +108,18 @@ class _ReportCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('★${row['rating']}  ${row['customer_name']} · ${row['pro_name'] ?? ''}', style: context.text.labelLarge),
-            if ((row['body'] as String? ?? '').isNotEmpty) Text(row['body'] as String, style: context.text.bodyMedium),
-            if (row['hidden'] == true) Text(t.modHidden, style: context.text.labelSmall),
-            Text(t.modReports('${reports.length}'), style: context.text.labelMedium),
+            Text(
+              '★${row['rating']}  ${row['customer_name']} · ${row['pro_name'] ?? ''}',
+              style: context.text.labelLarge,
+            ),
+            if ((row['body'] as String? ?? '').isNotEmpty)
+              Text(row['body'] as String, style: context.text.bodyMedium),
+            if (row['hidden'] == true)
+              Text(t.modHidden, style: context.text.labelSmall),
+            Text(
+              t.modReports('${reports.length}'),
+              style: context.text.labelMedium,
+            ),
             for (final rep in reports)
               Text(
                 '· ${reviewReportLabel(t, rep['reason'] as String)}${(rep['note'] as String? ?? '').isEmpty ? '' : ': ${rep['note']}'}',
@@ -98,10 +129,22 @@ class _ReportCard extends StatelessWidget {
             Wrap(
               spacing: Space.xs,
               children: [
-                OutlinedButton(onPressed: busy ? null : () => onAction('keep'), child: Text(t.modKeep)),
-                OutlinedButton(onPressed: busy ? null : () => onAction('hide'), child: Text(t.modHide)),
-                OutlinedButton(onPressed: busy ? null : () => onAction('delete'), child: Text(t.modDelete)),
-                TextButton(onPressed: busy ? null : onBlock, child: Text(blocked ? t.modUnblockAuthor : t.modBlockAuthor)),
+                OutlinedButton(
+                  onPressed: busy ? null : () => onAction('keep'),
+                  child: Text(t.modKeep),
+                ),
+                OutlinedButton(
+                  onPressed: busy ? null : () => onAction('hide'),
+                  child: Text(t.modHide),
+                ),
+                OutlinedButton(
+                  onPressed: busy ? null : () => onAction('delete'),
+                  child: Text(t.modDelete),
+                ),
+                TextButton(
+                  onPressed: busy ? null : onBlock,
+                  child: Text(blocked ? t.modUnblockAuthor : t.modBlockAuthor),
+                ),
               ],
             ),
           ],

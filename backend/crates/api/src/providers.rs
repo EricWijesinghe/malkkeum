@@ -4,6 +4,7 @@
 pub mod fcm;
 pub mod payout;
 pub mod portone;
+pub mod portone_cash_receipt;
 pub mod sms;
 pub mod social;
 pub mod toss_jwe;
@@ -63,6 +64,8 @@ pub struct PaymentInfo {
 
 /// Identity verification result (PASS / 본인인증).
 pub struct IdentityInfo {
+    /// The verification id the provider reports; must equal the id we asked about.
+    pub id: String,
     pub status: String,
     pub ci: Option<String>,
     pub name: Option<String>,
@@ -113,9 +116,9 @@ impl Providers {
     }
 
     /// Feeds the status page and alert rules. Live traffic only: dev fakes never count as health.
-    pub fn observe(&self, integration: &'static str, outcome: Result<(), &'static str>) {
+    pub async fn observe(&self, integration: &'static str, outcome: Result<(), &'static str>) {
         if !self.dev() {
-            ops::record(&self.db, integration, outcome);
+            ops::record(&self.db, integration, outcome).await;
         }
     }
 
@@ -156,7 +159,7 @@ impl Providers {
             let integ = self.integ();
             let cfg = integ.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
             let sent = sms::send_sms(&self.http, cfg, phone, text).await;
-            self.observe("solapi", outcome(&sent));
+            self.observe("solapi", outcome(&sent)).await;
             return sent;
         }
         tracing::info!(target: "fake_sms", phone, text, "sms sent");
@@ -191,7 +194,7 @@ impl Providers {
                 sms::send_sms(&self.http, cfg, phone, &text).await
             }
         };
-        self.observe("solapi", outcome(&final_result));
+        self.observe("solapi", outcome(&final_result)).await;
         final_result
     }
 
@@ -200,7 +203,7 @@ impl Providers {
     pub async fn issue_billing_key(&self, auth_key: &str, customer: &str, issue: &str) -> Result<String, ProviderError> {
         if !self.dev() {
             let verified = portone::verify_billing_key(self, auth_key, customer, issue).await;
-            self.observe("portone", outcome(&verified));
+            self.observe("portone", outcome(&verified)).await;
             return verified.map(|()| auth_key.to_string());
         }
         if auth_key == FAKE_DECLINE_KEY {
@@ -223,7 +226,7 @@ impl Providers {
         match provider {
             "portone" if !self.dev() => {
                 let cancelled = portone::cancel(self, tx_id, amount).await;
-                self.observe("portone", outcome(&cancelled));
+                self.observe("portone", outcome(&cancelled)).await;
                 cancelled
             }
             _ => {
@@ -238,7 +241,7 @@ impl Providers {
     pub async fn payment(&self, payment_id: &str, dev_total: i64) -> Result<PaymentInfo, ProviderError> {
         if !self.dev() {
             let found = portone::payment(self, payment_id).await;
-            self.observe("portone", outcome(&found));
+            self.observe("portone", outcome(&found)).await;
             return found;
         }
         portone::dev_payment(payment_id, dev_total).ok_or(ProviderError::NotFound)
@@ -248,7 +251,7 @@ impl Providers {
     pub async fn identity(&self, verification_id: &str) -> Result<IdentityInfo, ProviderError> {
         if !self.dev() {
             let verified = portone::identity(self, verification_id).await;
-            self.observe("portone", outcome(&verified));
+            self.observe("portone", outcome(&verified)).await;
             return verified;
         }
         portone::dev_identity(verification_id).ok_or(ProviderError::NotFound)
@@ -342,7 +345,7 @@ impl Providers {
         }
         let fcm = self.fcm().ok_or(ProviderError::NotConfigured("push"))?;
         let sent = fcm.send(&self.http, tokens, title, body, data).await;
-        self.observe("push", outcome(&sent));
+        self.observe("push", outcome(&sent)).await;
         sent
     }
 }

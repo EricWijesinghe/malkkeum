@@ -400,6 +400,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
                 webhook_secret,
                 store_id: Some(required(v, "store_id")?),
                 channel_keys: string_map(v, "channel_keys")?,
+                cash_receipts: base.portone.cash_receipts,
             };
         }
         Section::Solapi => {

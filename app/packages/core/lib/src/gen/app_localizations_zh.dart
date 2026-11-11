@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -483,6 +482,27 @@ class TZh extends T {
   String get cFormula => '报价公式';
 
   @override
+  String get cTabCancelPolicy => '取消政策';
+
+  @override
+  String get cPolicyDefaultBanner => '这是内置默认值，请确认后保存。';
+
+  @override
+  String get cPolicyDaysBefore => '访问前几天起（天）';
+
+  @override
+  String get cPolicyPercent => '手续费％（留空则不可在应用内取消）';
+
+  @override
+  String get cPolicyMinFee => '最低手续费（韩元）';
+
+  @override
+  String get cPolicyReschedule => '可改期（访问前几天起）';
+
+  @override
+  String get cPolicyHint => '立即作用于客户应用的取消页面，条款在下次构建后更新。';
+
+  @override
   String get f_base_studio => '基础：单间';
 
   @override
@@ -639,6 +659,9 @@ class TZh extends T {
   String get cNewMessage => '新消息';
 
   @override
+  String get cConfirmAsk => '确定要继续吗？';
+
+  @override
   String get ok => '确定';
 
   @override
@@ -723,7 +746,7 @@ class TZh extends T {
   String get err_payment_method_required => '请选择付款方式';
 
   @override
-  String get err_cancellation_window_closed => '上门前2天内需通过客服取消';
+  String get err_cancellation_window_closed => '此时已无法在应用内取消，请联系客服';
 
   @override
   String get err_address_required => '请添加上门地址';
@@ -1260,6 +1283,11 @@ class TZh extends T {
   String get photosSoon => '完成后将在此展示前后对比照';
 
   @override
+  String photoThumb(String n) {
+    return '照片 $n';
+  }
+
+  @override
   String get before => '清洁前';
 
   @override
@@ -1291,6 +1319,16 @@ class TZh extends T {
 
   @override
   String get cancelKeep => '保留预约';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return '现在取消将收取$fee手续费，退款$refund。';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '同意$fee手续费并取消';
+  }
 
   @override
   String get cancelled => '预约已取消';
@@ -1702,6 +1740,49 @@ class TZh extends T {
   String get summaryDate => '上门时间';
 
   @override
+  String get cpTitle => '取消与变更政策';
+
+  @override
+  String cpWhen(String days) {
+    return '访问前$days天或更早';
+  }
+
+  @override
+  String get cpWhenSameDay => '上门当天';
+
+  @override
+  String get cpFree => '全额退款';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '手续费$percent%（$fee），退款$refund';
+  }
+
+  @override
+  String get cpClosed => '应用内不可取消（客服审核）';
+
+  @override
+  String get hhTitle => '住户信息';
+
+  @override
+  String get hhAddPet => '添加宠物';
+
+  @override
+  String get hhPetCount => '数量';
+
+  @override
+  String get hhFloorLabel => '楼层（地下为负）';
+
+  @override
+  String get hhElevator => '有电梯';
+
+  @override
+  String get hhNotes => '备注';
+
+  @override
+  String get hhHint => '保存到该地址，每次预约可单独修改。';
+
+  @override
   String get themeTitle => '主题';
 
   @override
@@ -1859,6 +1940,12 @@ class TZh extends T {
 
   @override
   String get err_invalid_capacity => '请输入有效的容量。';
+
+  @override
+  String get err_seller_declined => 'Toss 未通过卖家注册，请检查营业信息。';
+
+  @override
+  String get err_payout_account_unverified => '该合作伙伴还没有已验证的收款账户，请先验证账户。';
 
   @override
   String get fFinance => '财务';
@@ -2571,6 +2658,47 @@ class TZh extends T {
   String get pCustomerRequests => '客户要求';
 
   @override
+  String get pHousehold => '住户信息';
+
+  @override
+  String get pPets => '宠物';
+
+  @override
+  String get pPetDog => '狗';
+
+  @override
+  String get pPetCat => '猫';
+
+  @override
+  String get pPetBird => '鸟';
+
+  @override
+  String get pPetFish => '鱼';
+
+  @override
+  String get pPetOther => '其他宠物';
+
+  @override
+  String get pAllergies => '过敏与注意';
+
+  @override
+  String get pPreferredProducts => '偏好产品';
+
+  @override
+  String get pParking => '停车';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor层';
+  }
+
+  @override
+  String get pElevatorYes => '有电梯';
+
+  @override
+  String get pElevatorNo => '无电梯';
+
+  @override
   String get pTeamMemo => '团队备注（客户不可见）';
 
   @override
@@ -2764,6 +2892,26 @@ class TZh extends T {
   String get pSpace => '空间信息';
 
   @override
+  String get pNavigate => '导航';
+
+  @override
+  String get pNavHint => '在地图应用中打开上门地址，未安装应用则打开网页地图。';
+
+  @override
+  String get pOfflineSaved => '没有信号。已保存，恢复网络后自动发送。';
+
+  @override
+  String get pPhotoRetry => '重新上传';
+
+  @override
+  String get pPhotoWaiting => '未上传的照片将在恢复网络后自动上传。';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '已上传 $done/$total 张';
+  }
+
+  @override
   String get cIntPayout => '合作伙伴付款';
 
   @override
@@ -2842,6 +2990,44 @@ class TZh extends T {
   String get poRevealNote => '查看账户信息会被记录';
 
   @override
+  String get poSellerAction => '注册卖家';
+
+  @override
+  String get poSellerTitle => '注册为 Toss 卖家';
+
+  @override
+  String get poSellerHint => '将使用该合作伙伴已验证的收款账户注册，只需填写营业信息。';
+
+  @override
+  String get poSellerIndividual => '个人';
+
+  @override
+  String get poSellerCompany => '企业';
+
+  @override
+  String get poSellerName => '姓名';
+
+  @override
+  String get poSellerRepresentative => '代表人姓名';
+
+  @override
+  String get poSellerRegNo => '营业执照号（10位）';
+
+  @override
+  String get poSellerEmail => '结算邮箱';
+
+  @override
+  String get poSellerPhone => '电话';
+
+  @override
+  String get poSellerSubmit => '注册';
+
+  @override
+  String poSellerDone(String status) {
+    return '卖家状态：$status';
+  }
+
+  @override
   String get pvManage => '同意管理';
 
   @override
@@ -2882,6 +3068,121 @@ class TZh extends T {
 
   @override
   String get pvExportFailed => '无法加载您的数据，请稍后再试。';
+
+  @override
+  String get safetyEmergency => '紧急联系方式';
+
+  @override
+  String get emergencyPolice => '112 警察';
+
+  @override
+  String get emergencyFire => '119 消防·急救';
+
+  @override
+  String get emergencyShop => '客服中心';
+
+  @override
+  String get caseReportAction => '报告问题';
+
+  @override
+  String get caseReportTitle => '发生了什么问题？';
+
+  @override
+  String get caseKindDamage => '损坏';
+
+  @override
+  String get caseKindLoss => '遗失';
+
+  @override
+  String get caseKindComplaint => '投诉';
+
+  @override
+  String get caseKindNoShow => '清洁人员未到场';
+
+  @override
+  String get caseKindSafety => '安全问题';
+
+  @override
+  String get caseKindPayment => '支付异议';
+
+  @override
+  String get caseSummaryHint => '请详细描述（300字以内）';
+
+  @override
+  String get caseSubmit => '提交';
+
+  @override
+  String get caseSubmitted => '已接收，工作人员将在24小时内确认。';
+
+  @override
+  String get caseFailed => '提交失败，请重试。';
+
+  @override
+  String get checkInAction => '到达签到';
+
+  @override
+  String get checkOutAction => '离场签退';
+
+  @override
+  String checkedInAt(String time) {
+    return '$time 到达';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '$time 离场';
+  }
+
+  @override
+  String get entryCodeAction => '查看门禁密码';
+
+  @override
+  String get entryCodeTitle => '门禁密码';
+
+  @override
+  String get entryCodeNotToday => '仅在上门当天可查看';
+
+  @override
+  String get entryCodeEmpty => '没有登记的门禁密码';
+
+  @override
+  String get actionFailed => '处理失败，请重试。';
+
+  @override
+  String get consoleCasesTitle => '案件队列';
+
+  @override
+  String get consoleCasesEmpty => '没有待处理案件';
+
+  @override
+  String get caseOverdue => '已超期';
+
+  @override
+  String get caseStatusOpen => '待处理';
+
+  @override
+  String get caseStatusInvestigating => '调查中';
+
+  @override
+  String get caseStatusResolved => '已解决';
+
+  @override
+  String get caseStatusRejected => '已驳回';
+
+  @override
+  String get caseReassign => '重新分配清洁人员';
+
+  @override
+  String get caseRefund => '退款';
+
+  @override
+  String get caseHold => '暂停结算';
+
+  @override
+  String get caseNoteHint => '内部备注';
+
+  @override
+  String get caseSave => '保存';
 
   @override
   String get cSetup => '设置';
@@ -3106,6 +3407,207 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String get cMfaTitle => '两步验证';
+
+  @override
+  String get cMfaCode => '验证器应用中的6位验证码';
+
+  @override
+  String get cMfaRecovery => '恢复代码';
+
+  @override
+  String get cMfaUseRecovery => '改用恢复代码';
+
+  @override
+  String get cMfaUseCode => '改用验证器代码';
+
+  @override
+  String get cMfaVerify => '验证';
+
+  @override
+  String get cMfaBack => '返回登录';
+
+  @override
+  String get cMfaEnrolTitle => '设置两步验证';
+
+  @override
+  String get cMfaEnrolBody =>
+      '管理员需要使用验证器应用。请在 Google Authenticator、1Password 等应用中添加下方密钥，然后输入其显示的6位验证码。';
+
+  @override
+  String get cMfaSecret => '设置密钥';
+
+  @override
+  String get cMfaLink => '设置链接（otpauth）';
+
+  @override
+  String get cMfaCopy => '复制';
+
+  @override
+  String get cMfaCopied => '已复制';
+
+  @override
+  String get cMfaConfirm => '确认并开启';
+
+  @override
+  String get cMfaCodesTitle => '请保存恢复代码';
+
+  @override
+  String get cMfaCodesBody => '如果丢失验证器，每个代码可用于登录一次。这些代码只会显示这一次。';
+
+  @override
+  String get cMfaDownload => '下载';
+
+  @override
+  String get cMfaSaveFailed => '此设备无法保存文件。请复制代码并妥善保管。';
+
+  @override
+  String get cMfaContinue => '进入控制台';
+
+  @override
+  String get cMfaInvalid => '验证码不正确。请检查手机时间是否准确后重试。';
+
+  @override
+  String get cMfaExpired => '登录已过期，请从密码步骤重新开始。';
+
+  @override
+  String get cMfaLocked => '尝试次数过多，请几分钟后再试。';
+
+  @override
+  String get cStaffReset => '重置密码';
+
+  @override
+  String get cStaffResetConfirm => '重置该员工的密码？其所有设备将被登出。';
+
+  @override
+  String get cStaffResetTitle => '重置令牌';
+
+  @override
+  String get cStaffResetBody => '请将此令牌交给员工。只能使用一次，有效期30分钟。关闭后将无法再次查看。';
+
+  @override
+  String get tTaxSection => '税务';
+
+  @override
+  String tVatQuarter(String q) {
+    return '第$q季度增值税 CSV';
+  }
+
+  @override
+  String get tVatYear => '年份';
+
+  @override
+  String get tExportWithholding => '代扣代缴明细 CSV';
+
+  @override
+  String get tExportTaxInvoices => '税务发票上传 CSV';
+
+  @override
+  String get tTaxLayoutNote => '上传前请与홈택스实际模板核对，列结构尚未验证。';
+
+  @override
+  String get tCashReceipts => '现金收据';
+
+  @override
+  String get tCashIssued => '已开具';
+
+  @override
+  String get tCashFailed => '开具失败';
+
+  @override
+  String get tCashPending => '待处理';
+
+  @override
+  String get tCashCancelled => '已取消';
+
+  @override
+  String get tReissue => '重新开具';
+
+  @override
+  String get tTaxInvoices => '税务发票';
+
+  @override
+  String get tApprovalNumber => '审批号';
+
+  @override
+  String get tIssuedOn => '开具日期';
+
+  @override
+  String get tMarkIssued => '标记为已开具';
+
+  @override
+  String get tQueueEmpty => '暂无待处理请求';
+
+  @override
+  String get tWithholdingLabel => '代扣税';
+
+  @override
+  String get tGrossAmount => '应付总额';
+
+  @override
+  String get tIncomeTax => '所得税';
+
+  @override
+  String get tLocalTax => '地方所得税';
+
+  @override
+  String get tNetAmount => '实发金额';
+
+  @override
+  String get tNoWithholding => '无代扣税（已注册企业）';
+
+  @override
+  String get tEstWithholding => '预计代扣税（待结算部分）';
+
+  @override
+  String get tReceiptOptions => '收据选项';
+
+  @override
+  String get tWantCashReceipt => '开具现金收据';
+
+  @override
+  String get tCashForIncome => '用于收入扣除（手机号）';
+
+  @override
+  String get tCashForBusiness => '用于费用凭证（营业执照号）';
+
+  @override
+  String get tWantTaxInvoice => '开具税务发票（企业）';
+
+  @override
+  String get tPhoneForReceipt => '手机号';
+
+  @override
+  String get tBusinessNumber => '营业执照号';
+
+  @override
+  String get tCompanyName => '公司名称';
+
+  @override
+  String get tRepresentative => '法人代表';
+
+  @override
+  String get tInvoiceEmail => '接收发票的邮箱';
+
+  @override
+  String get tReceiptSave => '保存并支付';
+
+  @override
+  String get tReceiptSaveFailed => '无法保存收据信息';
+
+  @override
+  String get tTaxType => '税务类型';
+
+  @override
+  String get tTaxFreelancer => '自由职业者（代扣）';
+
+  @override
+  String get tTaxBusiness => '已注册企业（无代扣）';
+
+  @override
+  String get tReceiptSettings => '收据设置';
 
   @override
   String get reviewRuleLine => '禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。';

@@ -1051,6 +1051,48 @@ abstract class T {
   /// **'견적 산정식'**
   String get cFormula;
 
+  /// No description provided for @cTabCancelPolicy.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소 정책'**
+  String get cTabCancelPolicy;
+
+  /// No description provided for @cPolicyDefaultBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값이에요. 아래 내용을 확인하고 저장해 주세요.'**
+  String get cPolicyDefaultBanner;
+
+  /// No description provided for @cPolicyDaysBefore.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 며칠 전부터 (일)'**
+  String get cPolicyDaysBefore;
+
+  /// No description provided for @cPolicyPercent.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 % (비우면 앱 취소 불가)'**
+  String get cPolicyPercent;
+
+  /// No description provided for @cPolicyMinFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 수수료 (원)'**
+  String get cPolicyMinFee;
+
+  /// No description provided for @cPolicyReschedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경 가능 (방문 며칠 전부터)'**
+  String get cPolicyReschedule;
+
+  /// No description provided for @cPolicyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 앱 취소 화면에 바로 반영돼요. 이용약관은 빌드 후 갱신돼요.'**
+  String get cPolicyHint;
+
   /// No description provided for @f_base_studio.
   ///
   /// In ko, this message translates to:
@@ -1351,6 +1393,12 @@ abstract class T {
   /// **'새 메시지'**
   String get cNewMessage;
 
+  /// No description provided for @cConfirmAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'정말 진행할까요?'**
+  String get cConfirmAsk;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:
@@ -1522,7 +1570,7 @@ abstract class T {
   /// No description provided for @err_cancellation_window_closed.
   ///
   /// In ko, this message translates to:
-  /// **'방문 2일 전부터는 상담팀을 통해 취소할 수 있어요'**
+  /// **'이 시점부터는 앱에서 취소할 수 없어요. 상담팀에 문의해 주세요'**
   String get err_cancellation_window_closed;
 
   /// No description provided for @err_address_required.
@@ -2515,6 +2563,12 @@ abstract class T {
   /// **'끝나면 전후 사진이 여기에 올라와요'**
   String get photosSoon;
 
+  /// No description provided for @photoThumb.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 {n}'**
+  String photoThumb(String n);
+
   /// No description provided for @before.
   ///
   /// In ko, this message translates to:
@@ -2580,6 +2634,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'유지하기'**
   String get cancelKeep;
+
+  /// No description provided for @cancelFeeNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 취소하면 취소 수수료 {fee}이 적용되고 {refund}이 환불돼요.'**
+  String cancelFeeNow(String fee, String refund);
+
+  /// No description provided for @cancelFeeAccept.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 {fee} 확인하고 취소'**
+  String cancelFeeAccept(String fee);
 
   /// No description provided for @cancelled.
   ///
@@ -3367,6 +3433,84 @@ abstract class T {
   /// **'방문 일정'**
   String get summaryDate;
 
+  /// No description provided for @cpTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소·변경 정책'**
+  String get cpTitle;
+
+  /// No description provided for @cpWhen.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 {days}일 이상 전'**
+  String cpWhen(String days);
+
+  /// No description provided for @cpWhenSameDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 당일'**
+  String get cpWhenSameDay;
+
+  /// No description provided for @cpFree.
+  ///
+  /// In ko, this message translates to:
+  /// **'전액 환불'**
+  String get cpFree;
+
+  /// No description provided for @cpFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 {percent}% ({fee}), 환불 {refund}'**
+  String cpFee(String percent, String fee, String refund);
+
+  /// No description provided for @cpClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱에서 취소 불가 (상담팀 확인)'**
+  String get cpClosed;
+
+  /// No description provided for @hhTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'가구 정보'**
+  String get hhTitle;
+
+  /// No description provided for @hhAddPet.
+  ///
+  /// In ko, this message translates to:
+  /// **'반려동물 추가'**
+  String get hhAddPet;
+
+  /// No description provided for @hhPetCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'마리 수'**
+  String get hhPetCount;
+
+  /// No description provided for @hhFloorLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'층 (지하는 음수)'**
+  String get hhFloorLabel;
+
+  /// No description provided for @hhElevator.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 있음'**
+  String get hhElevator;
+
+  /// No description provided for @hhNotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모'**
+  String get hhNotes;
+
+  /// No description provided for @hhHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소에 저장되고, 예약마다 바꿀 수 있어요.'**
+  String get hhHint;
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:
@@ -3684,6 +3828,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'정원은 숫자로 입력해 주세요.'**
   String get err_invalid_capacity;
+
+  /// No description provided for @err_seller_declined.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.'**
+  String get err_seller_declined;
+
+  /// No description provided for @err_payout_account_unverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.'**
+  String get err_payout_account_unverified;
 
   /// No description provided for @fFinance.
   ///
@@ -5011,6 +5167,84 @@ abstract class T {
   /// **'고객 요청사항'**
   String get pCustomerRequests;
 
+  /// No description provided for @pHousehold.
+  ///
+  /// In ko, this message translates to:
+  /// **'가구 정보'**
+  String get pHousehold;
+
+  /// No description provided for @pPets.
+  ///
+  /// In ko, this message translates to:
+  /// **'반려동물'**
+  String get pPets;
+
+  /// No description provided for @pPetDog.
+  ///
+  /// In ko, this message translates to:
+  /// **'강아지'**
+  String get pPetDog;
+
+  /// No description provided for @pPetCat.
+  ///
+  /// In ko, this message translates to:
+  /// **'고양이'**
+  String get pPetCat;
+
+  /// No description provided for @pPetBird.
+  ///
+  /// In ko, this message translates to:
+  /// **'새'**
+  String get pPetBird;
+
+  /// No description provided for @pPetFish.
+  ///
+  /// In ko, this message translates to:
+  /// **'물고기'**
+  String get pPetFish;
+
+  /// No description provided for @pPetOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 동물'**
+  String get pPetOther;
+
+  /// No description provided for @pAllergies.
+  ///
+  /// In ko, this message translates to:
+  /// **'알레르기·민감 사항'**
+  String get pAllergies;
+
+  /// No description provided for @pPreferredProducts.
+  ///
+  /// In ko, this message translates to:
+  /// **'선호 제품'**
+  String get pPreferredProducts;
+
+  /// No description provided for @pParking.
+  ///
+  /// In ko, this message translates to:
+  /// **'주차'**
+  String get pParking;
+
+  /// No description provided for @pFloor.
+  ///
+  /// In ko, this message translates to:
+  /// **'{floor}층'**
+  String pFloor(String floor);
+
+  /// No description provided for @pElevatorYes.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 있음'**
+  String get pElevatorYes;
+
+  /// No description provided for @pElevatorNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 없음'**
+  String get pElevatorNo;
+
   /// No description provided for @pTeamMemo.
   ///
   /// In ko, this message translates to:
@@ -5389,6 +5623,42 @@ abstract class T {
   /// **'공간 정보'**
   String get pSpace;
 
+  /// No description provided for @pNavigate.
+  ///
+  /// In ko, this message translates to:
+  /// **'길찾기'**
+  String get pNavigate;
+
+  /// No description provided for @pNavHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.'**
+  String get pNavHint;
+
+  /// No description provided for @pOfflineSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.'**
+  String get pOfflineSaved;
+
+  /// No description provided for @pPhotoRetry.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 올리기'**
+  String get pPhotoRetry;
+
+  /// No description provided for @pPhotoWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.'**
+  String get pPhotoWaiting;
+
+  /// No description provided for @pUploadedCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{total}장 중 {done}장 업로드됨'**
+  String pUploadedCount(String total, String done);
+
   /// No description provided for @cIntPayout.
   ///
   /// In ko, this message translates to:
@@ -5532,6 +5802,78 @@ abstract class T {
   /// **'계좌 정보는 조회 기록에 남아요'**
   String get poRevealNote;
 
+  /// No description provided for @poSellerAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'판매자 등록'**
+  String get poSellerAction;
+
+  /// No description provided for @poSellerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 판매자 등록'**
+  String get poSellerTitle;
+
+  /// No description provided for @poSellerHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 파트너의 확인된 정산 계좌로 등록해요. 사업자 정보만 입력해 주세요.'**
+  String get poSellerHint;
+
+  /// No description provided for @poSellerIndividual.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인'**
+  String get poSellerIndividual;
+
+  /// No description provided for @poSellerCompany.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자'**
+  String get poSellerCompany;
+
+  /// No description provided for @poSellerName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get poSellerName;
+
+  /// No description provided for @poSellerRepresentative.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자명'**
+  String get poSellerRepresentative;
+
+  /// No description provided for @poSellerRegNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호 (숫자 10자리)'**
+  String get poSellerRegNo;
+
+  /// No description provided for @poSellerEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 이메일'**
+  String get poSellerEmail;
+
+  /// No description provided for @poSellerPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'연락처'**
+  String get poSellerPhone;
+
+  /// No description provided for @poSellerSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록하기'**
+  String get poSellerSubmit;
+
+  /// No description provided for @poSellerDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'판매자 상태: {status}'**
+  String poSellerDone(String status);
+
   /// No description provided for @pvManage.
   ///
   /// In ko, this message translates to:
@@ -5615,6 +5957,228 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
+
+  /// No description provided for @safetyEmergency.
+  ///
+  /// In ko, this message translates to:
+  /// **'긴급 연락처'**
+  String get safetyEmergency;
+
+  /// No description provided for @emergencyPolice.
+  ///
+  /// In ko, this message translates to:
+  /// **'112 경찰·응급'**
+  String get emergencyPolice;
+
+  /// No description provided for @emergencyFire.
+  ///
+  /// In ko, this message translates to:
+  /// **'119 소방·구급'**
+  String get emergencyFire;
+
+  /// No description provided for @emergencyShop.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객센터'**
+  String get emergencyShop;
+
+  /// No description provided for @caseReportAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'문제 신고하기'**
+  String get caseReportAction;
+
+  /// No description provided for @caseReportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 문제가 있었나요?'**
+  String get caseReportTitle;
+
+  /// No description provided for @caseKindDamage.
+  ///
+  /// In ko, this message translates to:
+  /// **'파손'**
+  String get caseKindDamage;
+
+  /// No description provided for @caseKindLoss.
+  ///
+  /// In ko, this message translates to:
+  /// **'분실'**
+  String get caseKindLoss;
+
+  /// No description provided for @caseKindComplaint.
+  ///
+  /// In ko, this message translates to:
+  /// **'불만·서비스 문제'**
+  String get caseKindComplaint;
+
+  /// No description provided for @caseKindNoShow.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소팀이 오지 않았어요'**
+  String get caseKindNoShow;
+
+  /// No description provided for @caseKindSafety.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 문제'**
+  String get caseKindSafety;
+
+  /// No description provided for @caseKindPayment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 이의'**
+  String get caseKindPayment;
+
+  /// No description provided for @caseSummaryHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'자세히 적어 주세요 (300자 이내)'**
+  String get caseSummaryHint;
+
+  /// No description provided for @caseSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수하기'**
+  String get caseSubmit;
+
+  /// No description provided for @caseSubmitted.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수했어요. 담당자가 24시간 안에 확인할게요.'**
+  String get caseSubmitted;
+
+  /// No description provided for @caseFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수하지 못했어요. 다시 시도해 주세요.'**
+  String get caseFailed;
+
+  /// No description provided for @checkInAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 체크인'**
+  String get checkInAction;
+
+  /// No description provided for @checkOutAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 완료 체크아웃'**
+  String get checkOutAction;
+
+  /// No description provided for @checkedInAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 {time}'**
+  String checkedInAt(String time);
+
+  /// No description provided for @checkedOutAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료 {time}'**
+  String checkedOutAt(String time);
+
+  /// No description provided for @entryCodeAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'출입 비밀번호 보기'**
+  String get entryCodeAction;
+
+  /// No description provided for @entryCodeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'출입 비밀번호'**
+  String get entryCodeTitle;
+
+  /// No description provided for @entryCodeNotToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 당일에만 볼 수 있어요'**
+  String get entryCodeNotToday;
+
+  /// No description provided for @entryCodeEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 비밀번호가 없어요'**
+  String get entryCodeEmpty;
+
+  /// No description provided for @actionFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 다시 시도해 주세요.'**
+  String get actionFailed;
+
+  /// No description provided for @consoleCasesTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 접수함'**
+  String get consoleCasesTitle;
+
+  /// No description provided for @consoleCasesEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'열린 사건이 없어요'**
+  String get consoleCasesEmpty;
+
+  /// No description provided for @caseOverdue.
+  ///
+  /// In ko, this message translates to:
+  /// **'기한 초과'**
+  String get caseOverdue;
+
+  /// No description provided for @caseStatusOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수'**
+  String get caseStatusOpen;
+
+  /// No description provided for @caseStatusInvestigating.
+  ///
+  /// In ko, this message translates to:
+  /// **'조사 중'**
+  String get caseStatusInvestigating;
+
+  /// No description provided for @caseStatusResolved.
+  ///
+  /// In ko, this message translates to:
+  /// **'해결'**
+  String get caseStatusResolved;
+
+  /// No description provided for @caseStatusRejected.
+  ///
+  /// In ko, this message translates to:
+  /// **'기각'**
+  String get caseStatusRejected;
+
+  /// No description provided for @caseReassign.
+  ///
+  /// In ko, this message translates to:
+  /// **'기사 재배정'**
+  String get caseReassign;
+
+  /// No description provided for @caseRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불'**
+  String get caseRefund;
+
+  /// No description provided for @caseHold.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 보류'**
+  String get caseHold;
+
+  /// No description provided for @caseNoteHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'내부 메모'**
+  String get caseNoteHint;
+
+  /// No description provided for @caseSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get caseSave;
 
   /// No description provided for @cSetup.
   ///
@@ -6047,6 +6611,402 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
+
+  /// No description provided for @cMfaTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증'**
+  String get cMfaTitle;
+
+  /// No description provided for @cMfaCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱의 6자리 코드'**
+  String get cMfaCode;
+
+  /// No description provided for @cMfaRecovery.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드'**
+  String get cMfaRecovery;
+
+  /// No description provided for @cMfaUseRecovery.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드 사용'**
+  String get cMfaUseRecovery;
+
+  /// No description provided for @cMfaUseCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱 코드 사용'**
+  String get cMfaUseCode;
+
+  /// No description provided for @cMfaVerify.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get cMfaVerify;
+
+  /// No description provided for @cMfaBack.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 화면으로'**
+  String get cMfaBack;
+
+  /// No description provided for @cMfaEnrolTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증 설정'**
+  String get cMfaEnrolTitle;
+
+  /// No description provided for @cMfaEnrolBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자는 인증 앱 사용이 필요해요. Google Authenticator, 1Password 같은 앱에 아래 키를 추가한 뒤 앱에 표시된 6자리 코드를 입력하세요.'**
+  String get cMfaEnrolBody;
+
+  /// No description provided for @cMfaSecret.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 키'**
+  String get cMfaSecret;
+
+  /// No description provided for @cMfaLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 링크 (otpauth)'**
+  String get cMfaLink;
+
+  /// No description provided for @cMfaCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get cMfaCopy;
+
+  /// No description provided for @cMfaCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사했어요'**
+  String get cMfaCopied;
+
+  /// No description provided for @cMfaConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인하고 2단계 인증 켜기'**
+  String get cMfaConfirm;
+
+  /// No description provided for @cMfaCodesTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드를 저장하세요'**
+  String get cMfaCodesTitle;
+
+  /// No description provided for @cMfaCodesBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱을 잃어버리면 각 코드를 한 번씩 쓸 수 있어요. 이 화면에서만 보여요.'**
+  String get cMfaCodesBody;
+
+  /// No description provided for @cMfaDownload.
+  ///
+  /// In ko, this message translates to:
+  /// **'파일로 저장'**
+  String get cMfaDownload;
+
+  /// No description provided for @cMfaSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기에서 파일을 저장할 수 없어요. 복사해서 보관하세요.'**
+  String get cMfaSaveFailed;
+
+  /// No description provided for @cMfaContinue.
+  ///
+  /// In ko, this message translates to:
+  /// **'콘솔로 들어가기'**
+  String get cMfaContinue;
+
+  /// No description provided for @cMfaInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'코드가 맞지 않아요. 휴대폰 시간이 맞는지 확인하고 다시 입력하세요.'**
+  String get cMfaInvalid;
+
+  /// No description provided for @cMfaExpired.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 시간이 지났어요. 비밀번호부터 다시 입력하세요.'**
+  String get cMfaExpired;
+
+  /// No description provided for @cMfaLocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'시도가 너무 많아요. 몇 분 뒤에 다시 시도하세요.'**
+  String get cMfaLocked;
+
+  /// No description provided for @cStaffReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호 재설정'**
+  String get cStaffReset;
+
+  /// No description provided for @cStaffResetConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.'**
+  String get cStaffResetConfirm;
+
+  /// No description provided for @cStaffResetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'재설정 토큰'**
+  String get cStaffResetTitle;
+
+  /// No description provided for @cStaffResetBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
+  String get cStaffResetBody;
+
+  /// No description provided for @tTaxSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'세무'**
+  String get tTaxSection;
+
+  /// No description provided for @tVatQuarter.
+  ///
+  /// In ko, this message translates to:
+  /// **'{q}분기 부가세 CSV'**
+  String tVatQuarter(String q);
+
+  /// No description provided for @tVatYear.
+  ///
+  /// In ko, this message translates to:
+  /// **'연도'**
+  String get tVatYear;
+
+  /// No description provided for @tExportWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급명세서 CSV'**
+  String get tExportWithholding;
+
+  /// No description provided for @tExportTaxInvoices.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 업로드 CSV'**
+  String get tExportTaxInvoices;
+
+  /// No description provided for @tTaxLayoutNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'홈택스 실제 양식과 대조한 뒤 올려주세요. 열 구성은 아직 확인되지 않았어요.'**
+  String get tTaxLayoutNote;
+
+  /// No description provided for @tCashReceipts.
+  ///
+  /// In ko, this message translates to:
+  /// **'현금영수증'**
+  String get tCashReceipts;
+
+  /// No description provided for @tCashIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'발급 완료'**
+  String get tCashIssued;
+
+  /// No description provided for @tCashFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'발급 실패'**
+  String get tCashFailed;
+
+  /// No description provided for @tCashPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기'**
+  String get tCashPending;
+
+  /// No description provided for @tCashCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소됨'**
+  String get tCashCancelled;
+
+  /// No description provided for @tReissue.
+  ///
+  /// In ko, this message translates to:
+  /// **'재발급'**
+  String get tReissue;
+
+  /// No description provided for @tTaxInvoices.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서'**
+  String get tTaxInvoices;
+
+  /// No description provided for @tApprovalNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인번호'**
+  String get tApprovalNumber;
+
+  /// No description provided for @tIssuedOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'발행일'**
+  String get tIssuedOn;
+
+  /// No description provided for @tMarkIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'발행 완료 표시'**
+  String get tMarkIssued;
+
+  /// No description provided for @tQueueEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 요청이 없어요'**
+  String get tQueueEmpty;
+
+  /// No description provided for @tWithholdingLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수'**
+  String get tWithholdingLabel;
+
+  /// No description provided for @tGrossAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급총액'**
+  String get tGrossAmount;
+
+  /// No description provided for @tIncomeTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득세'**
+  String get tIncomeTax;
+
+  /// No description provided for @tLocalTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'지방소득세'**
+  String get tLocalTax;
+
+  /// No description provided for @tNetAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'실지급액'**
+  String get tNetAmount;
+
+  /// No description provided for @tNoWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수 없음 (사업자 등록)'**
+  String get tNoWithholding;
+
+  /// No description provided for @tEstWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 원천징수 (미지급분 기준)'**
+  String get tEstWithholding;
+
+  /// No description provided for @tReceiptOptions.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 선택'**
+  String get tReceiptOptions;
+
+  /// No description provided for @tWantCashReceipt.
+  ///
+  /// In ko, this message translates to:
+  /// **'현금영수증 받기'**
+  String get tWantCashReceipt;
+
+  /// No description provided for @tCashForIncome.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득공제용 (휴대폰 번호)'**
+  String get tCashForIncome;
+
+  /// No description provided for @tCashForBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'지출증빙용 (사업자번호)'**
+  String get tCashForBusiness;
+
+  /// No description provided for @tWantTaxInvoice.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 받기 (사업자)'**
+  String get tWantTaxInvoice;
+
+  /// No description provided for @tPhoneForReceipt.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 번호'**
+  String get tPhoneForReceipt;
+
+  /// No description provided for @tBusinessNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호'**
+  String get tBusinessNumber;
+
+  /// No description provided for @tCompanyName.
+  ///
+  /// In ko, this message translates to:
+  /// **'상호'**
+  String get tCompanyName;
+
+  /// No description provided for @tRepresentative.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자'**
+  String get tRepresentative;
+
+  /// No description provided for @tInvoiceEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 받을 이메일'**
+  String get tInvoiceEmail;
+
+  /// No description provided for @tReceiptSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하고 결제'**
+  String get tReceiptSave;
+
+  /// No description provided for @tReceiptSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 정보를 저장하지 못했어요'**
+  String get tReceiptSaveFailed;
+
+  /// No description provided for @tTaxType.
+  ///
+  /// In ko, this message translates to:
+  /// **'세무 유형'**
+  String get tTaxType;
+
+  /// No description provided for @tTaxFreelancer.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리랜서 (원천징수)'**
+  String get tTaxFreelancer;
+
+  /// No description provided for @tTaxBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자 등록 (원천징수 없음)'**
+  String get tTaxBusiness;
+
+  /// No description provided for @tReceiptSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 설정'**
+  String get tReceiptSettings;
 
   /// No description provided for @reviewRuleLine.
   ///

@@ -31,8 +31,9 @@ services:
       # App Links for Naver login (/.well-known/*). Set in .env; empty = not served.
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
+      LOG_FORMAT: json
     volumes: [uploads:/data/uploads]
-    healthcheck: { test: ["CMD", "api", "--health"], interval: 15s, retries: 10, start_period: 20s }
+    healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
     image: ${WEB_IMAGE:-${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-web:${VERSION:-stable}}

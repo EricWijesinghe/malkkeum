@@ -2590,5 +2590,47 @@
 "pSpace": {
 "ko": "공간 정보",
 "en": "Space"
-}
+},
+  "pNavigate": {
+    "ko": "길찾기",
+    "en": "Directions",
+    "ja": "道案内",
+    "zh": "导航",
+    "vi": "Chỉ đường"
+  },
+  "pNavHint": {
+    "ko": "방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.",
+    "en": "Opens the visit address in a map app. Without the app, the web map opens.",
+    "ja": "訪問先の住所を地図アプリで開きます。アプリがなければWeb地図を開きます。",
+    "zh": "在地图应用中打开上门地址，未安装应用则打开网页地图。",
+    "vi": "Mở địa chỉ trong ứng dụng bản đồ. Nếu chưa cài, sẽ mở bản đồ web."
+  },
+  "pOfflineSaved": {
+    "ko": "신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.",
+    "en": "No signal. Saved, and it will send once you're back online.",
+    "ja": "電波がありません。保存して、つながったら自動で送信します。",
+    "zh": "没有信号。已保存，恢复网络后自动发送。",
+    "vi": "Không có sóng. Đã lưu, sẽ gửi khi có mạng."
+  },
+  "pPhotoRetry": {
+    "ko": "다시 올리기",
+    "en": "Retry upload",
+    "ja": "再アップロード",
+    "zh": "重新上传",
+    "vi": "Tải lại"
+  },
+  "pPhotoWaiting": {
+    "ko": "올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.",
+    "en": "Photos that didn't upload will send automatically once you're online.",
+    "ja": "アップロードできなかった写真は、つながったら自動で送信されます。",
+    "zh": "未上传的照片将在恢复网络后自动上传。",
+    "vi": "Ảnh chưa tải lên sẽ tự gửi khi có mạng."
+  },
+  "pUploadedCount": {
+    "ko": "{total}장 중 {done}장 업로드됨",
+    "en": "{done} of {total} uploaded",
+    "ja": "{total}枚中{done}枚アップロード済み",
+    "zh": "已上传 {done}/{total} 张",
+    "vi": "Đã tải {done}/{total} ảnh"
+  }
 }
