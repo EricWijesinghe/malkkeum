@@ -180,6 +180,13 @@ function Step-DemoKit {
   [IO.File]::WriteAllText("$Demo\Malkkeum Demo.cmd", $cmd, [Text.Encoding]::ASCII)
   Copy-Item -LiteralPath (Join-Path $root 'scripts\release\kit\demo-README.txt') -Destination "$Demo\README.txt" -Force
   New-Item -ItemType Directory -Force -Path "$Demo\uploads" | Out-Null
+  # Presenter material: the markdown as-is plus a rendered HTML copy. A missing file fails the step.
+  foreach ($doc in 'DEMO-SCRIPT', 'PITCH', 'FAQ-AUDIENCE') {
+    $src = Join-Path $root "docs\demo\$doc.md"
+    if (-not (Test-Path -LiteralPath $src)) { throw "Missing demo doc: $src (merge master first)" }
+    Copy-Item -LiteralPath $src -Destination $Demo -Force
+    Render-Md $src "$Demo\$doc.html" $doc
+  }
 }
 
 function Step-Keystore {
