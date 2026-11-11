@@ -125,9 +125,12 @@ class Tag extends StatelessWidget {
             Icon(icon, size: 14, color: fg),
             const SizedBox(width: 4),
           ],
-          Text(
-            label,
-            style: context.text.labelMedium?.copyWith(color: fg, fontSize: 12),
+          // Flexible: a long translation wraps inside its pill instead of overflowing the row.
+          Flexible(
+            child: Text(
+              label,
+              style: context.text.labelMedium?.copyWith(color: fg, fontSize: 12),
+            ),
           ),
         ],
       ),

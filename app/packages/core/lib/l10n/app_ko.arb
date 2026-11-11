@@ -17,6 +17,10 @@
   }
  },
  "aiNotConfigured": "AI 상담원이 꺼져 있어요",
+ "aiCapThreadLabel": "대화당 시간당 답변 한도",
+ "aiCapMemberLabel": "고객 한 명당 하루 답변 한도",
+ "aiCapDailyLabel": "하루 전체 답변 한도",
+ "aiCapHint": "숫자만 입력해요. 비워두면 기본값을 써요.",
  "apSocialOr": "또는",
  "apSocialSignIn": "간편 로그인",
  "apLoginKakao": "카카오로 계속하기",

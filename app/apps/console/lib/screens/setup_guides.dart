@@ -316,6 +316,20 @@ final guides = <String, Guide>{
   ),
 };
 
+/// Labels and hints that come from the generated strings (every app language), keyed by
+/// `<section>.<field>`. Fields not listed here use their [Tr] text above.
+final localFields = <String, LocalField>{
+  'ai.thread_hourly_cap': LocalField((t) => t.aiCapThreadLabel, (t) => t.aiCapHint),
+  'ai.member_daily_cap': LocalField((t) => t.aiCapMemberLabel, (t) => t.aiCapHint),
+  'ai.daily_cap': LocalField((t) => t.aiCapDailyLabel, (t) => t.aiCapHint),
+};
+
+class LocalField {
+  const LocalField(this.label, this.hint);
+  final String Function(T) label;
+  final String Function(T) hint;
+}
+
 /// Plain-language message for a setup error or test result code from the server.
 String setupMessage(T t, String code) => switch (code) {
   'connected' => t.cSetupConnected,

@@ -41,6 +41,18 @@ class TZh extends T {
   String get aiNotConfigured => 'AI 客服未开启';
 
   @override
+  String get aiCapThreadLabel => '每个对话每小时回复上限';
+
+  @override
+  String get aiCapMemberLabel => '每位客户每天回复上限';
+
+  @override
+  String get aiCapDailyLabel => '每天所有对话回复上限';
+
+  @override
+  String get aiCapHint => '仅输入数字。留空则使用默认值。';
+
+  @override
   String get apSocialOr => '或';
 
   @override
@@ -829,8 +841,7 @@ class TZh extends T {
   String get svcDesc_move_in => '入住前，专业团队携带设备清洁新家。';
 
   @override
-  String get svcNotes_bathroom =>
-      '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
+  String get svcNotes_bathroom => '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
 
   @override
   String get svcNotes_mattress => '单人到特大床同价\n完全干燥需4~6小时\n弹簧损坏、塌陷等结构问题无法改善';
@@ -2096,8 +2107,7 @@ class TZh extends T {
   String get oActDisk => '磁盘剩余不足10%。请删除旧备份文件或扩大磁盘。';
 
   @override
-  String get oActBackup =>
-      '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
+  String get oActBackup => '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
 
   @override
   String get oActErrors => '服务器错误较多。请在 malkkeum logs 中查看 error 行，反复出现请反馈给开发方。';

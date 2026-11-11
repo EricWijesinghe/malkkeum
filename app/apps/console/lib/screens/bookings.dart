@@ -82,7 +82,10 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   if (!widget.quoteDesk)
-                    DropdownButton<int?>(
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 240),
+                      child: DropdownButton<int?>(
+                      isExpanded: true,
                       value: _status,
                       hint: Text(t.cAllStatus),
                       items: [
@@ -98,7 +101,11 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
                         _list.currentState?.reload();
                       },
                     ),
-                  DropdownButton<String?>(
+                    ),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 240),
+                    child: DropdownButton<String?>(
+                    isExpanded: true,
                     value: _service,
                     hint: Text(t.cAllServices),
                     items: [
@@ -125,6 +132,7 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
                       setState(() => _service = v);
                       _list.currentState?.reload();
                     },
+                  ),
                   ),
                 ],
               ),
@@ -204,7 +212,7 @@ class _Row extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          StatusBadge(status: b.status, label: t.status(b.status)),
+          Flexible(child: StatusBadge(status: b.status, label: t.status(b.status))),
         ],
       ),
       subtitle: Text(

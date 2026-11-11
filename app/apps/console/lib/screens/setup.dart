@@ -115,9 +115,12 @@ class _Header extends StatelessWidget {
                   style: context.text.titleLarge,
                 ),
               ),
-              Text(
-                t.cSetupProgress('$done', '$total'),
-                style: context.text.titleSmall,
+              Flexible(
+                child: Text(
+                  t.cSetupProgress('$done', '$total'),
+                  textAlign: TextAlign.end,
+                  style: context.text.titleSmall,
+                ),
               ),
             ],
           ),
@@ -357,7 +360,7 @@ class _IntegrationCardState extends State<IntegrationCard> {
     final kind = f['kind'] as String;
     final g = _guide.fields[name];
     final label =
-        '${g?.label.of(context.lang) ?? name}${f['required'] == true ? '' : ' (${t.cSetupOptional})'}';
+        '${localFields['$_code.$name']?.label(t) ?? g?.label.of(context.lang) ?? name}${f['required'] == true ? '' : ' (${t.cSetupOptional})'}';
     final saved = f['set'] == true;
     if (kind == 'map') {
       return Padding(
@@ -394,7 +397,7 @@ class _IntegrationCardState extends State<IntegrationCard> {
           labelText: label,
           helperText: hidden && saved
               ? '${t.cSetupKeepValue} · ${preview ?? ''}'
-              : g?.hint?.of(context.lang),
+              : localFields['$_code.$name']?.hint(t) ?? g?.hint?.of(context.lang),
         ),
       ),
     );

@@ -174,9 +174,15 @@ class _SettlementsState extends State<SettlementsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(Space.md),
-          child: Row(
+          child: Wrap(
+            spacing: Space.sm,
+            runSpacing: Space.sm,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              DropdownButton<String?>(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: DropdownButton<String?>(
+                isExpanded: true,
                 value: _state,
                 items: [
                   DropdownMenuItem(value: null, child: Text(t.cAllStatus)),
@@ -193,7 +199,7 @@ class _SettlementsState extends State<SettlementsScreen> {
                   _view.currentState?.reload();
                 },
               ),
-              const Spacer(),
+              ),
               if (admin)
                 FilledButton.icon(
                   icon: const Icon(Icons.send_rounded),
