@@ -40,6 +40,8 @@ class _EarningsScreenState extends State<EarningsScreen> {
             const SizedBox(height: Space.md),
             _NextPayoutCard(data: data),
             const SizedBox(height: Space.md),
+            _WithholdingCard(data: data),
+            const SizedBox(height: Space.md),
             _ChartCard(series: [for (final p in (data['series'] as List)) p as Json]),
             const SizedBox(height: Space.md),
             TextButton(
@@ -80,6 +82,33 @@ class _NextPayoutCard extends StatelessWidget {
               Expanded(child: Text('${t.pPaidTotal}\n${context.won((data['paid_total'] as num).toInt())}', style: context.text.bodySmall)),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Gross, withholding and net on the pending total. Estimate only: each payout fixes its own split when created.
+class _WithholdingCard extends StatelessWidget {
+  const _WithholdingCard({required this.data});
+  final Json data;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final gross = (data['pending_total'] as num).toInt();
+    final tax = ((data['estimated_income_tax'] as num?) ?? 0).toInt() + ((data['estimated_local_tax'] as num?) ?? 0).toInt();
+    final net = ((data['estimated_net'] as num?) ?? gross).toInt();
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(t.tEstWithholding, style: context.text.labelMedium),
+          const SizedBox(height: Space.xs),
+          Text('${t.tGrossAmount}  ${context.won(gross)}', style: context.text.bodyMedium),
+          Text('${t.tWithholdingLabel}  −${context.won(tax)}', style: context.text.bodyMedium),
+          Text('${t.tNetAmount}  ${context.won(net)}', style: context.text.titleSmall),
+          if (data['tax_type'] == 'business') Text(t.tNoWithholding, style: context.text.bodySmall),
         ],
       ),
     );

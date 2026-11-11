@@ -3328,6 +3328,129 @@ class TSi extends T {
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
 
   @override
+  String get tTaxSection => 'බදු';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'වර්ෂය';
+
+  @override
+  String get tExportWithholding => 'අය කිරීම් ප්‍රකාශය CSV';
+
+  @override
+  String get tExportTaxInvoices => 'බදු ඉන්වොයිසි උඩුගත කිරීම CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'උඩුගත කිරීමට පෙර 홈택스 සැකිල්ල සමඟ තීරු පරීක්ෂා කරන්න. පිරිසැලසුම තවම තහවුරු වී නැත.';
+
+  @override
+  String get tCashReceipts => 'මුදල් රිසිට්පත්';
+
+  @override
+  String get tCashIssued => 'නිකුත් කළා';
+
+  @override
+  String get tCashFailed => 'අසාර්ථකයි';
+
+  @override
+  String get tCashPending => 'බලාපොරොත්තුවෙන්';
+
+  @override
+  String get tCashCancelled => 'අවලංගු කළා';
+
+  @override
+  String get tReissue => 'නැවත නිකුත් කරන්න';
+
+  @override
+  String get tTaxInvoices => 'බදු ඉන්වොයිසි';
+
+  @override
+  String get tApprovalNumber => 'අනුමැතිය අංකය';
+
+  @override
+  String get tIssuedOn => 'නිකුත් කළ දිනය';
+
+  @override
+  String get tMarkIssued => 'නිකුත් කළ ලෙස සලකුණු කරන්න';
+
+  @override
+  String get tQueueEmpty => 'බලාපොරොත්තු ඉල්ලීම් නැත';
+
+  @override
+  String get tWithholdingLabel => 'අය කිරීම';
+
+  @override
+  String get tGrossAmount => 'සමස්ත';
+
+  @override
+  String get tIncomeTax => 'ආදායම් බදු';
+
+  @override
+  String get tLocalTax => 'දේශීය ආදායම් බදු';
+
+  @override
+  String get tNetAmount => 'ශුද්ධ';
+
+  @override
+  String get tNoWithholding => 'අය කිරීමක් නැත (ලියාපදිංචි ව්‍යාපාරය)';
+
+  @override
+  String get tEstWithholding => 'ඇස්තමේන්තුගත අය කිරීම (ගෙවීමට ඇති)';
+
+  @override
+  String get tReceiptOptions => 'රිසිට්පත් විකල්ප';
+
+  @override
+  String get tWantCashReceipt => 'මුදල් රිසිට්පතක් ලබාගන්න';
+
+  @override
+  String get tCashForIncome => 'බදු අඩුකිරීම සඳහා (දුරකථන අංකය)';
+
+  @override
+  String get tCashForBusiness => 'ව්‍යාපාර වියදම් සඳහා (ව්‍යාපාර අංකය)';
+
+  @override
+  String get tWantTaxInvoice => 'බදු ඉන්වොයිසියක් ලබාගන්න (ව්‍යාපාර)';
+
+  @override
+  String get tPhoneForReceipt => 'දුරකථන අංකය';
+
+  @override
+  String get tBusinessNumber => 'ව්‍යාපාර ලියාපදිංචි අංකය';
+
+  @override
+  String get tCompanyName => 'සමාගමේ නම';
+
+  @override
+  String get tRepresentative => 'නියෝජිතයා';
+
+  @override
+  String get tInvoiceEmail => 'ඉන්වොයිසිය සඳහා ඊමේල්';
+
+  @override
+  String get tReceiptSave => 'සුරකිත් ගෙවන්න';
+
+  @override
+  String get tReceiptSaveFailed => 'රිසිට්පත් විස්තර සුරැකීමට නොහැකි විය';
+
+  @override
+  String get tTaxType => 'බදු වර්ගය';
+
+  @override
+  String get tTaxFreelancer => 'ස්වාධීන (අය කිරීමෙන්)';
+
+  @override
+  String get tTaxBusiness => 'ලියාපදිංචි ව්‍යාපාරය (අය කිරීමක් නැත)';
+
+  @override
+  String get tReceiptSettings => 'රිසිට්පත් සැකසුම්';
+
+  @override
   String get reviewRuleLine =>
       'අපහාසාත්මක වචන, පෞද්ගලික තොරතුරු, ව්‍යාජ හෝ ප්‍රචාරක අන්තර්ගතය තහනම්ය. වාර්තා කළ සමාලෝචන සඟවනු ඇත.';
 

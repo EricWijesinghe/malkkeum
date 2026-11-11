@@ -3335,6 +3335,129 @@ class TId extends T {
   String get cInvalidValue => 'Periksa nilai yang diisi';
 
   @override
+  String get tTaxSection => 'Pajak';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV PPN K$q';
+  }
+
+  @override
+  String get tVatYear => 'Tahun';
+
+  @override
+  String get tExportWithholding => 'CSV bukti potong';
+
+  @override
+  String get tExportTaxInvoices => 'CSV unggah faktur pajak';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Periksa kolom dengan template 홈택스 asli sebelum mengunggah. Tata letak belum diverifikasi.';
+
+  @override
+  String get tCashReceipts => 'Kuitansi tunai';
+
+  @override
+  String get tCashIssued => 'Diterbitkan';
+
+  @override
+  String get tCashFailed => 'Gagal';
+
+  @override
+  String get tCashPending => 'Menunggu';
+
+  @override
+  String get tCashCancelled => 'Dibatalkan';
+
+  @override
+  String get tReissue => 'Terbitkan ulang';
+
+  @override
+  String get tTaxInvoices => 'Faktur pajak';
+
+  @override
+  String get tApprovalNumber => 'No. persetujuan';
+
+  @override
+  String get tIssuedOn => 'Tanggal terbit';
+
+  @override
+  String get tMarkIssued => 'Tandai sudah diterbitkan';
+
+  @override
+  String get tQueueEmpty => 'Tidak ada permintaan menunggu';
+
+  @override
+  String get tWithholdingLabel => 'Pemotongan pajak';
+
+  @override
+  String get tGrossAmount => 'Bruto';
+
+  @override
+  String get tIncomeTax => 'PPh';
+
+  @override
+  String get tLocalTax => 'PPh daerah';
+
+  @override
+  String get tNetAmount => 'Bersih';
+
+  @override
+  String get tNoWithholding => 'Tanpa pemotongan (usaha terdaftar)';
+
+  @override
+  String get tEstWithholding => 'Perkiraan pemotongan (belum dibayar)';
+
+  @override
+  String get tReceiptOptions => 'Opsi kuitansi';
+
+  @override
+  String get tWantCashReceipt => 'Minta kuitansi tunai';
+
+  @override
+  String get tCashForIncome => 'Untuk pengurangan pajak (nomor telepon)';
+
+  @override
+  String get tCashForBusiness => 'Untuk biaya usaha (no. usaha)';
+
+  @override
+  String get tWantTaxInvoice => 'Minta faktur pajak (usaha)';
+
+  @override
+  String get tPhoneForReceipt => 'Nomor telepon';
+
+  @override
+  String get tBusinessNumber => 'No. registrasi usaha';
+
+  @override
+  String get tCompanyName => 'Nama perusahaan';
+
+  @override
+  String get tRepresentative => 'Perwakilan';
+
+  @override
+  String get tInvoiceEmail => 'Email untuk faktur';
+
+  @override
+  String get tReceiptSave => 'Simpan dan bayar';
+
+  @override
+  String get tReceiptSaveFailed => 'Detail kuitansi tidak tersimpan';
+
+  @override
+  String get tTaxType => 'Jenis pajak';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (dipotong pajak)';
+
+  @override
+  String get tTaxBusiness => 'Usaha terdaftar (tanpa pemotongan)';
+
+  @override
+  String get tReceiptSettings => 'Pengaturan kuitansi';
+
+  @override
   String get reviewRuleLine =>
       'Dilarang ujaran kebencian, informasi pribadi, konten palsu atau promosi. Ulasan yang dilaporkan akan disembunyikan.';
 

@@ -81,6 +81,8 @@ pub struct PortOne {
     pub store_id: Option<String>,
     /// Payment method code -> PortOne channel key.
     pub channel_keys: HashMap<String, String>,
+    /// 현금영수증 issuing and cancelling. Off by default until verified in the PortOne sandbox.
+    pub cash_receipts: bool,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -152,6 +154,7 @@ fn portone() -> Result<PortOne, ConfigError> {
         webhook_secret,
         store_id: opt("PORTONE_STORE_ID"),
         channel_keys,
+        cash_receipts: flag("PORTONE_CASH_RECEIPTS"),
     })
 }
 

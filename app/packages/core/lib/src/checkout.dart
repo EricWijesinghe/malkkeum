@@ -28,6 +28,7 @@ class CheckoutIntent {
     required this.method,
     required this.storeId,
     required this.channelKey,
+    this.cashReceipts = false,
   });
 
   final String id;
@@ -36,6 +37,8 @@ class CheckoutIntent {
   final String method;
   final String storeId;
   final String channelKey;
+  /// Server has 현금영수증 switched on; receipt options are shown only then.
+  final bool cashReceipts;
 
   factory CheckoutIntent.fromJson(Json j) => CheckoutIntent(
         id: j['id'] as String,
@@ -44,6 +47,7 @@ class CheckoutIntent {
         method: j['method'] as String,
         storeId: j['store_id'] as String? ?? '',
         channelKey: j['channel_key'] as String? ?? '',
+        cashReceipts: j['cash_receipts'] == true,
       );
 }
 

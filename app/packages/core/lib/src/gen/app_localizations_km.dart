@@ -3327,6 +3327,129 @@ class TKm extends T {
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
 
   @override
+  String get tTaxSection => 'ពន្ធ';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV ពន្ធ VAT ត្រីមាស $q';
+  }
+
+  @override
+  String get tVatYear => 'ឆ្នាំ';
+
+  @override
+  String get tExportWithholding => 'CSV ការកាត់ពន្ធ';
+
+  @override
+  String get tExportTaxInvoices => 'CSV ផ្ទុកវិក្កយបត្រពន្ធ';
+
+  @override
+  String get tTaxLayoutNote =>
+      'សូមផ្ទៀងផ្ទាត់ជួរឈរជាមួយគំរូ 홈택스 មុនផ្ទុកឡើង។ ទម្រង់មិនទាន់បានបញ្ជាក់។';
+
+  @override
+  String get tCashReceipts => 'វិក្កយបត្រសាច់ប្រាក់';
+
+  @override
+  String get tCashIssued => 'បានចេញ';
+
+  @override
+  String get tCashFailed => 'បរាជ័យ';
+
+  @override
+  String get tCashPending => 'កំពុងរង់ចាំ';
+
+  @override
+  String get tCashCancelled => 'បានលុបចោល';
+
+  @override
+  String get tReissue => 'ចេញឡើងវិញ';
+
+  @override
+  String get tTaxInvoices => 'វិក្កយបត្រពន្ធ';
+
+  @override
+  String get tApprovalNumber => 'លេខអនុម័ត';
+
+  @override
+  String get tIssuedOn => 'ថ្ងៃចេញ';
+
+  @override
+  String get tMarkIssued => 'សម្គាល់ថាបានចេញ';
+
+  @override
+  String get tQueueEmpty => 'មិនមានសំណើរង់ចាំទេ';
+
+  @override
+  String get tWithholdingLabel => 'ការកាត់ពន្ធ';
+
+  @override
+  String get tGrossAmount => 'ចំនួនសរុប';
+
+  @override
+  String get tIncomeTax => 'ពន្ធលើប្រាក់ចំណូល';
+
+  @override
+  String get tLocalTax => 'ពន្ធលើប្រាក់ចំណូលមូលដ្ឋាន';
+
+  @override
+  String get tNetAmount => 'ចំនួនទទួលជាក់ស្តែង';
+
+  @override
+  String get tNoWithholding => 'មិនកាត់ពន្ធ (អាជីវកម្មចុះបញ្ជី)';
+
+  @override
+  String get tEstWithholding => 'ការកាត់ពន្ធប៉ាន់ស្មាន (មិនទាន់បង់)';
+
+  @override
+  String get tReceiptOptions => 'ជម្រើសវិក្កយបត្រ';
+
+  @override
+  String get tWantCashReceipt => 'ទទួលវិក្កយបត្រសាច់ប្រាក់';
+
+  @override
+  String get tCashForIncome => 'សម្រាប់កាត់ពន្ធ (លេខទូរស័ព្ទ)';
+
+  @override
+  String get tCashForBusiness => 'សម្រាប់ការចំណាយអាជីវកម្ម (លេខអាជីវកម្ម)';
+
+  @override
+  String get tWantTaxInvoice => 'ទទួលវិក្កយបត្រពន្ធ (អាជីវកម្ម)';
+
+  @override
+  String get tPhoneForReceipt => 'លេខទូរស័ព្ទ';
+
+  @override
+  String get tBusinessNumber => 'លេខចុះបញ្ជីអាជីវកម្ម';
+
+  @override
+  String get tCompanyName => 'ឈ្មោះក្រុមហ៊ុន';
+
+  @override
+  String get tRepresentative => 'តំណាង';
+
+  @override
+  String get tInvoiceEmail => 'អ៊ីមែលសម្រាប់វិក្កយបត្រ';
+
+  @override
+  String get tReceiptSave => 'រក្សាទុក និងបង់';
+
+  @override
+  String get tReceiptSaveFailed => 'មិនអាចរក្សាទុកព័ត៌មានវិក្កយបត្របានទេ';
+
+  @override
+  String get tTaxType => 'ប្រភេទពន្ធ';
+
+  @override
+  String get tTaxFreelancer => 'អ្នកធ្វើការឯករាជ្យ (កាត់ពន្ធ)';
+
+  @override
+  String get tTaxBusiness => 'អាជីវកម្មចុះបញ្ជី (គ្មានកាត់ពន្ធ)';
+
+  @override
+  String get tReceiptSettings => 'ការកំណត់វិក្កយបត្រ';
+
+  @override
   String get reviewRuleLine =>
       'មិនអនុញ្ញាតឱ្យប្រើពាក្យជេរ ព័ត៌មានផ្ទាល់ខ្លួន ខ្លឹមសារក្លែងក្លាយ ឬការផ្សព្វផ្សាយទេ។ វាយតម្លៃដែលត្រូវបានរាយការណ៍នឹងត្រូវបានលាក់។';
 

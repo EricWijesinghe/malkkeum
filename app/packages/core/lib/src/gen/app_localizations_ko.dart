@@ -3238,6 +3238,128 @@ class TKo extends T {
   String get cInvalidValue => '입력값을 확인해 주세요';
 
   @override
+  String get tTaxSection => '세무';
+
+  @override
+  String tVatQuarter(String q) {
+    return '$q분기 부가세 CSV';
+  }
+
+  @override
+  String get tVatYear => '연도';
+
+  @override
+  String get tExportWithholding => '지급명세서 CSV';
+
+  @override
+  String get tExportTaxInvoices => '세금계산서 업로드 CSV';
+
+  @override
+  String get tTaxLayoutNote => '홈택스 실제 양식과 대조한 뒤 올려주세요. 열 구성은 아직 확인되지 않았어요.';
+
+  @override
+  String get tCashReceipts => '현금영수증';
+
+  @override
+  String get tCashIssued => '발급 완료';
+
+  @override
+  String get tCashFailed => '발급 실패';
+
+  @override
+  String get tCashPending => '대기';
+
+  @override
+  String get tCashCancelled => '취소됨';
+
+  @override
+  String get tReissue => '재발급';
+
+  @override
+  String get tTaxInvoices => '세금계산서';
+
+  @override
+  String get tApprovalNumber => '승인번호';
+
+  @override
+  String get tIssuedOn => '발행일';
+
+  @override
+  String get tMarkIssued => '발행 완료 표시';
+
+  @override
+  String get tQueueEmpty => '대기 중인 요청이 없어요';
+
+  @override
+  String get tWithholdingLabel => '원천징수';
+
+  @override
+  String get tGrossAmount => '지급총액';
+
+  @override
+  String get tIncomeTax => '소득세';
+
+  @override
+  String get tLocalTax => '지방소득세';
+
+  @override
+  String get tNetAmount => '실지급액';
+
+  @override
+  String get tNoWithholding => '원천징수 없음 (사업자 등록)';
+
+  @override
+  String get tEstWithholding => '예상 원천징수 (미지급분 기준)';
+
+  @override
+  String get tReceiptOptions => '영수증 선택';
+
+  @override
+  String get tWantCashReceipt => '현금영수증 받기';
+
+  @override
+  String get tCashForIncome => '소득공제용 (휴대폰 번호)';
+
+  @override
+  String get tCashForBusiness => '지출증빙용 (사업자번호)';
+
+  @override
+  String get tWantTaxInvoice => '세금계산서 받기 (사업자)';
+
+  @override
+  String get tPhoneForReceipt => '휴대폰 번호';
+
+  @override
+  String get tBusinessNumber => '사업자등록번호';
+
+  @override
+  String get tCompanyName => '상호';
+
+  @override
+  String get tRepresentative => '대표자';
+
+  @override
+  String get tInvoiceEmail => '세금계산서 받을 이메일';
+
+  @override
+  String get tReceiptSave => '저장하고 결제';
+
+  @override
+  String get tReceiptSaveFailed => '영수증 정보를 저장하지 못했어요';
+
+  @override
+  String get tTaxType => '세무 유형';
+
+  @override
+  String get tTaxFreelancer => '프리랜서 (원천징수)';
+
+  @override
+  String get tTaxBusiness => '사업자 등록 (원천징수 없음)';
+
+  @override
+  String get tReceiptSettings => '영수증 설정';
+
+  @override
   String get reviewRuleLine => '욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.';
 
   @override

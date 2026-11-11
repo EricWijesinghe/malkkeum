@@ -3347,6 +3347,129 @@ class TUz extends T {
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
 
   @override
+  String get tTaxSection => 'Soliq';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q QQS CSV';
+  }
+
+  @override
+  String get tVatYear => 'Yil';
+
+  @override
+  String get tExportWithholding => 'Ushlab qolish hisoboti CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Soliq hisob-fakturasini yuklash CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Yuklashdan oldin ustunlarni 홈택스 shabloni bilan tekshiring. Tuzilma hali tasdiqlanmagan.';
+
+  @override
+  String get tCashReceipts => 'Naqd kvitansiyalar';
+
+  @override
+  String get tCashIssued => 'Berilgan';
+
+  @override
+  String get tCashFailed => 'Xatolik';
+
+  @override
+  String get tCashPending => 'Kutilmoqda';
+
+  @override
+  String get tCashCancelled => 'Bekor qilingan';
+
+  @override
+  String get tReissue => 'Qayta berish';
+
+  @override
+  String get tTaxInvoices => 'Soliq hisob-fakturalari';
+
+  @override
+  String get tApprovalNumber => 'Tasdiqlash raqami';
+
+  @override
+  String get tIssuedOn => 'Berilgan sana';
+
+  @override
+  String get tMarkIssued => 'Berilgan deb belgilash';
+
+  @override
+  String get tQueueEmpty => 'Kutilayotgan so‘rovlar yo‘q';
+
+  @override
+  String get tWithholdingLabel => 'Ushlab qolish';
+
+  @override
+  String get tGrossAmount => 'Yalpi summa';
+
+  @override
+  String get tIncomeTax => 'Daromad solig‘i';
+
+  @override
+  String get tLocalTax => 'Mahalliy daromad solig‘i';
+
+  @override
+  String get tNetAmount => 'Sof summa';
+
+  @override
+  String get tNoWithholding => 'Ushlab qolinmaydi (ro‘yxatdan o‘tgan biznes)';
+
+  @override
+  String get tEstWithholding => 'Taxminiy ushlab qolish (to‘lanmagan)';
+
+  @override
+  String get tReceiptOptions => 'Kvitansiya sozlamalari';
+
+  @override
+  String get tWantCashReceipt => 'Naqd kvitansiya olish';
+
+  @override
+  String get tCashForIncome => 'Soliq chegirmasi uchun (telefon raqami)';
+
+  @override
+  String get tCashForBusiness => 'Biznes xarajatlari uchun (biznes raqami)';
+
+  @override
+  String get tWantTaxInvoice => 'Soliq hisob-fakturasi olish (biznes)';
+
+  @override
+  String get tPhoneForReceipt => 'Telefon raqami';
+
+  @override
+  String get tBusinessNumber => 'Biznes ro‘yxat raqami';
+
+  @override
+  String get tCompanyName => 'Kompaniya nomi';
+
+  @override
+  String get tRepresentative => 'Vakil';
+
+  @override
+  String get tInvoiceEmail => 'Hisob-faktura uchun email';
+
+  @override
+  String get tReceiptSave => 'Saqlab to‘lash';
+
+  @override
+  String get tReceiptSaveFailed => 'Kvitansiya ma’lumotlari saqlanmadi';
+
+  @override
+  String get tTaxType => 'Soliq turi';
+
+  @override
+  String get tTaxFreelancer => 'Frilanser (ushlab qolinadi)';
+
+  @override
+  String get tTaxBusiness => 'Ro‘yxatdan o‘tgan biznes (ushlanmaydi)';
+
+  @override
+  String get tReceiptSettings => 'Kvitansiya sozlamalari';
+
+  @override
   String get reviewRuleLine =>
       'Haqorat, shaxsiy ma\'lumot, soxta yoki reklama mazmuni taqiqlanadi. Shikoyat qilingan sharhlar yashiriladi.';
 

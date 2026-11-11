@@ -37,10 +37,13 @@ WITH due AS (
   WHERE st.state = 'pending' AND st.payout_date <= $1 AND st.payout_id IS NULL
     AND st.pro_id IN (SELECT pro_id FROM payout_accounts WHERE verified_at IS NOT NULL)
 ),
-sums AS (SELECT pro_id, sum(net)::bigint AS amount, count(*)::int AS items FROM due GROUP BY pro_id),
+sums AS (
+  SELECT d.pro_id, pr.tax_type, sum(d.net)::bigint AS amount, count(*)::int AS items
+  FROM due d JOIN pros pr ON pr.id = d.pro_id GROUP BY d.pro_id, pr.tax_type
+),
 ins AS (
-  INSERT INTO payouts (pro_id, payout_date, amount, items, provider, state, bank, holder, account_enc, account_last4)
-  SELECT s.pro_id, $1, s.amount, s.items, $2, 'requested', pa.bank, pa.holder, pa.account_enc, pa.account_last4
+  INSERT INTO payouts (pro_id, payout_date, amount, items, provider, state, bank, holder, account_enc, account_last4, tax_type)
+  SELECT s.pro_id, $1, s.amount, s.items, $2, 'requested', pa.bank, pa.holder, pa.account_enc, pa.account_last4, s.tax_type
   FROM sums s JOIN payout_accounts pa ON pa.pro_id = s.pro_id
   ON CONFLICT (pro_id, payout_date) WHERE state IN ('requested', 'sent') DO NOTHING
   RETURNING id, pro_id
@@ -55,7 +58,7 @@ SELECT id FROM ins";
 /// Payout rows for the console. Account numbers are never included here (see `reveal_account`).
 const LIST_SQL: &str = "SELECT COALESCE(jsonb_agg(x), '[]') FROM (
   SELECT p.id, p.pro_id, pr.name AS pro_name, pr.team_name, p.payout_date, p.amount, p.items, p.provider, p.state,
-         p.bank, p.account_last4, p.attempts, p.failure_reason, p.provider_transfer_id, p.created_at, p.paid_at
+         p.bank, p.account_last4, p.attempts, p.failure_reason, p.provider_transfer_id, p.created_at, p.paid_at, p.tax_type
   FROM payouts p JOIN pros pr ON pr.id = p.pro_id
   WHERE ($1::text IS NULL OR p.state = $1) AND ($2::uuid[] IS NULL OR p.id = ANY($2))
   ORDER BY p.created_at DESC LIMIT 200) x";
@@ -81,6 +84,7 @@ struct Row {
     pro_id: Uuid,
     payout_date: NaiveDate,
     amount: i64,
+    tax_type: String,
     provider: String,
     state: String,
     bank: String,
@@ -114,7 +118,37 @@ async fn rows(db: &PgPool, state: Option<&str>, ids: Option<&[Uuid]>) -> ApiResu
 }
 
 pub async fn list_payouts(AxState(s): AxState<AppState>, _a: Admin, axum::extract::Query(f): axum::extract::Query<PayoutFilter>) -> ApiResult<Json<Value>> {
-    Ok(Json(rows(&s.db, f.state.as_deref(), None).await?))
+    let mut list = rows(&s.db, f.state.as_deref(), None).await?;
+    if let Some(items) = list.as_array_mut() {
+        items.iter_mut().for_each(add_split);
+    }
+    Ok(Json(list))
+}
+
+/// Adds gross / withholding / net to a payout row. `amount` is the gross settlement total.
+fn add_split(p: &mut Value) {
+    let split = domain::tax::payout_withholding(p["tax_type"].as_str().unwrap_or("untracked"), domain::Won(p["amount"].as_i64().unwrap_or(0)));
+    p["income_tax"] = json!(split.income_tax.0);
+    p["local_tax"] = json!(split.local_tax.0);
+    p["net"] = json!(split.net.0);
+}
+
+#[derive(Deserialize)]
+pub struct TaxTypeBody {
+    tax_type: String,
+}
+
+/// Owner classifies a partner for withholding. Affects payouts created after this, never ones already made.
+pub async fn set_tax_type(AxState(s): AxState<AppState>, Admin(a): Admin, Path(pro): Path<Uuid>, Json(b): Json<TaxTypeBody>) -> ApiResult<Json<Value>> {
+    if !matches!(b.tax_type.as_str(), "freelancer" | "business") {
+        return Err(ApiError::BadRequest("tax_type"));
+    }
+    let n = sqlx::query("UPDATE pros SET tax_type = $2 WHERE id = $1").bind(pro).bind(&b.tax_type).execute(&s.db).await?;
+    if n.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    audit(&s.db, "staff", Some(a.id), "pro.tax_type", &pro.to_string(), json!({ "tax_type": b.tax_type })).await?;
+    Ok(Json(json!({ "tax_type": b.tax_type })))
 }
 
 /// Creates one requested payout per pro for everything due by the date. Future dates are refused.
@@ -136,11 +170,21 @@ pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r)
 
 /// Bank details for a manual transfer. Owner only; every reveal is audit-logged and never cached.
 pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path(id): Path<Uuid>) -> ApiResult<Response> {
-    let (bank, holder, enc, amount): (String, String, String, i64) =
-        sqlx::query_as("SELECT bank, holder, account_enc, amount FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await?;
+    let (bank, holder, enc, gross, tax_type): (String, String, String, i64, String) =
+        sqlx::query_as("SELECT bank, holder, account_enc, amount, tax_type FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await?;
     let account = crypto::decrypt(&s.config.data_key, &enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     audit(&s.db, "staff", Some(a.id), "payout.reveal", &id.to_string(), json!({})).await?;
-    let body = Json(json!({ "bank": bank, "holder": holder, "account": account, "amount": amount }));
+    // `amount` is what to transfer (net of withholding); `gross` and the taxes are shown for the record.
+    let split = domain::tax::payout_withholding(&tax_type, domain::Won(gross));
+    let body = Json(json!({
+        "bank": bank,
+        "holder": holder,
+        "account": account,
+        "amount": split.net.0,
+        "gross": gross,
+        "income_tax": split.income_tax.0,
+        "local_tax": split.local_tax.0,
+    }));
     Ok(([(header::CACHE_CONTROL, "no-store")], body).into_response())
 }
 
@@ -265,9 +309,14 @@ pub async fn register_seller(AxState(s): AxState<AppState>, Admin(a): Admin, Pat
     Ok(Json(json!({ "seller_status": status, "rev": rev })))
 }
 
+/// What actually moves: the gross settlement total less the withholding snapshotted on the payout.
+fn transfer_amount(row: &Row) -> i64 {
+    domain::tax::payout_withholding(&row.tax_type, domain::Won(row.amount)).net.0
+}
+
 async fn lock(tx: &mut Transaction<'_, Postgres>, id: Uuid) -> ApiResult<Row> {
     Ok(sqlx::query_as(
-        "SELECT pro_id, payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key, provider_transfer_id, failure_reason
+        "SELECT pro_id, payout_date, amount, tax_type, provider, state, bank, holder, account_enc, idempotency_key, provider_transfer_id, failure_reason
          FROM payouts WHERE id = $1 FOR UPDATE",
     )
     .bind(id)
@@ -367,7 +416,7 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
         return Err(ApiError::Conflict("seller_account_changed"));
     }
     let transfer = adapter::Transfer {
-        amount: row.amount,
+        amount: transfer_amount(&row),
         bank_code,
         account,
         holder: row.holder.clone(),

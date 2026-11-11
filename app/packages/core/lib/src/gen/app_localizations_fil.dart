@@ -3355,6 +3355,129 @@ class TFil extends T {
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
 
   @override
+  String get tTaxSection => 'Buwis';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'VAT CSV Q$q';
+  }
+
+  @override
+  String get tVatYear => 'Taon';
+
+  @override
+  String get tExportWithholding => 'CSV ng withholding statement';
+
+  @override
+  String get tExportTaxInvoices => 'CSV para sa tax invoice upload';
+
+  @override
+  String get tTaxLayoutNote =>
+      'I-check sa aktuwal na template ng 홈택스 bago mag-upload. Hindi pa beripikado ang layout.';
+
+  @override
+  String get tCashReceipts => 'Cash receipts';
+
+  @override
+  String get tCashIssued => 'Naibigay na';
+
+  @override
+  String get tCashFailed => 'Nabigo';
+
+  @override
+  String get tCashPending => 'Naghihintay';
+
+  @override
+  String get tCashCancelled => 'Kinansela';
+
+  @override
+  String get tReissue => 'Muling ibigay';
+
+  @override
+  String get tTaxInvoices => 'Tax invoices';
+
+  @override
+  String get tApprovalNumber => 'Approval no.';
+
+  @override
+  String get tIssuedOn => 'Petsa ng isyu';
+
+  @override
+  String get tMarkIssued => 'Markahang naibigay';
+
+  @override
+  String get tQueueEmpty => 'Walang nakabinbing request';
+
+  @override
+  String get tWithholdingLabel => 'Withholding';
+
+  @override
+  String get tGrossAmount => 'Kabuuan';
+
+  @override
+  String get tIncomeTax => 'Buwis sa kita';
+
+  @override
+  String get tLocalTax => 'Lokal na buwis sa kita';
+
+  @override
+  String get tNetAmount => 'Netong natanggap';
+
+  @override
+  String get tNoWithholding => 'Walang withholding (rehistradong negosyo)';
+
+  @override
+  String get tEstWithholding => 'Tinatayang withholding (nakabinbin)';
+
+  @override
+  String get tReceiptOptions => 'Mga opsyon sa resibo';
+
+  @override
+  String get tWantCashReceipt => 'Kumuha ng cash receipt';
+
+  @override
+  String get tCashForIncome => 'Para sa tax deduction (numero ng telepono)';
+
+  @override
+  String get tCashForBusiness => 'Para sa gastos ng negosyo (business no.)';
+
+  @override
+  String get tWantTaxInvoice => 'Kumuha ng tax invoice (negosyo)';
+
+  @override
+  String get tPhoneForReceipt => 'Numero ng telepono';
+
+  @override
+  String get tBusinessNumber => 'Business registration no.';
+
+  @override
+  String get tCompanyName => 'Pangalan ng kumpanya';
+
+  @override
+  String get tRepresentative => 'Kinatawan';
+
+  @override
+  String get tInvoiceEmail => 'Email para sa invoice';
+
+  @override
+  String get tReceiptSave => 'I-save at magbayad';
+
+  @override
+  String get tReceiptSaveFailed => 'Hindi na-save ang detalye ng resibo';
+
+  @override
+  String get tTaxType => 'Uri ng buwis';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (may withholding)';
+
+  @override
+  String get tTaxBusiness => 'Rehistradong negosyo (walang withholding)';
+
+  @override
+  String get tReceiptSettings => 'Mga setting ng resibo';
+
+  @override
   String get reviewRuleLine =>
       'Bawal ang panlalait, personal na impormasyon, peke o promotional na nilalaman. Itatago ang mga na-report na review.';
 

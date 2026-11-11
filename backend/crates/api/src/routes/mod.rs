@@ -7,7 +7,9 @@ mod bookings;
 pub mod cases;
 mod catalog;
 pub(crate) mod chat;
+mod cash_receipts;
 mod checkout_policy;
+mod tax_invoices;
 pub(crate) mod config;
 pub(crate) mod growth;
 pub(crate) mod checkouts;
@@ -70,6 +72,8 @@ pub fn router(state: AppState) -> Router {
         .merge(chat::routes())
         .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
+        .merge(cash_receipts::routes())
+        .merge(tax_invoices::routes())
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
@@ -91,6 +95,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
+                .merge(cash_receipts::admin_routes())
+                .merge(tax_invoices::admin_routes())
                 .merge(ops::admin_routes())
                 .merge(cases::admin_routes())
                 .merge(site::admin_routes()),

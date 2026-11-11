@@ -90,6 +90,8 @@ struct CheckoutIntent {
     method: String,
     store_id: Option<String>,
     channel_key: Option<String>,
+    /// 현금영수증 request is offered only when the server has it switched on.
+    cash_receipts: bool,
 }
 
 #[derive(sqlx::FromRow)]
@@ -186,6 +188,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
         method: method.to_string(),
         store_id: portone.store_id.clone(),
         channel_key: portone.channel_keys.get(method).cloned(),
+        cash_receipts: portone.cash_receipts,
     }))
 }
 
@@ -426,6 +429,8 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    super::cash_receipts::on_settled(s, ck.id, payment_id).await;
+    super::tax_invoices::on_settled(s, ck.id, payment_id).await;
     match number {
         Some(n) => after_booking_created(s, booking_id, &n).await,
         None if db_kind == "deposit" => {
@@ -451,7 +456,7 @@ async fn book(tx: &mut Transaction<'_, Postgres>, key: &[u8; 32], user: Uuid, pr
     Ok((id, number))
 }
 
-async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
+pub(super) async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
     sqlx::query_as(&format!("SELECT {CHECKOUT_COLS} FROM checkouts WHERE id = $1 AND user_id = $2"))
         .bind(id)
         .bind(user)

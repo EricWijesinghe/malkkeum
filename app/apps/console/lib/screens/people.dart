@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'finance_tax.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -175,7 +176,7 @@ class _SettlementsState extends State<SettlementsScreen> {
             Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}', style: context.text.titleSmall),
             const SizedBox(height: Space.xxs),
             Text(
-              '${context.won((p['amount'] as num).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
+              '${t.tGrossAmount} ${context.won((p['amount'] as num).toInt())} · ${t.tWithholdingLabel} ${context.won(((p['income_tax'] as num?) ?? 0).toInt() + ((p['local_tax'] as num?) ?? 0).toInt())} · ${t.tNetAmount} ${context.won(((p['net'] as num?) ?? (p['amount'] as num)).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
               style: context.text.bodySmall,
             ),
             const SizedBox(height: Space.xs),
@@ -206,6 +207,7 @@ class _SettlementsState extends State<SettlementsScreen> {
               if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
               if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
               if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+              if (admin) TextButton(onPressed: () => setPartnerTaxType(context, p, reload), child: Text(t.tTaxType)),
               ],
             ),
           ],

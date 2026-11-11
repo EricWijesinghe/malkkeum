@@ -39,6 +39,7 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements/run-payouts", post(super::payouts::run_payouts))
         .route("/settlements/toss-sellers/{pro_id}", post(super::payouts::register_seller))
         .route("/settlements/payouts/{id}/account", get(super::payouts::reveal_account))
+        .route("/settlements/partners/{pro_id}/tax-type", post(super::payouts::set_tax_type))
         .route("/settlements/payouts/{id}/{action}", crate::idempotency::replayable(post(super::payouts::act)))
         .route("/settlements/{id}/hold", post(hold_settlement))
         .route("/staff", get(list_staff).post(create_staff))
