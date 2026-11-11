@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1946,6 +1947,82 @@ class TZh extends T {
 
   @override
   String get err_payout_account_unverified => '该合作伙伴还没有已验证的收款账户，请先验证账户。';
+
+  @override
+  String get guestSheetTitle => '登录后即可继续';
+
+  @override
+  String get guestSheetBody => '您已填写的内容会保留，验证后直接从原处继续。';
+
+  @override
+  String get greetMorning => '早上好';
+
+  @override
+  String get greetAfternoon => '下午好';
+
+  @override
+  String get greetEvening => '晚上好';
+
+  @override
+  String get feedHeading => '为你推荐';
+
+  @override
+  String get feedTitleDue => '该安排下次清洁了';
+
+  @override
+  String get feedTitleRebook => '再次预约五星服务者';
+
+  @override
+  String get feedTitleDraft => '继续完成未完成的报价';
+
+  @override
+  String get feedTitleSeasonal => '当下季节的合适清洁';
+
+  @override
+  String get feedTitleSize => '按已保存的面积快速报价';
+
+  @override
+  String get feedTitleSubscription => '订阅更省钱';
+
+  @override
+  String get feedTitleDistrict => '您附近也有人在预约';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '距上次清洁已过去 $days 天';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days 天前您给这位服务者打了 5 星';
+  }
+
+  @override
+  String get feedWhyDraft => '您在此设备上有未完成的报价';
+
+  @override
+  String get feedWhySummer => '夏天前清洗空调的好时机';
+
+  @override
+  String get feedWhyMoving => '入住和搬家高峰期';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '距节日大扫除还有 $days 天';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '按已保存的 $pyeong 坪房屋即时报价';
+  }
+
+  @override
+  String get feedWhyRepeat => '经常预约的话，订阅更划算';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '本周 $district 有 $count 户预约';
+  }
 
   @override
   String get fFinance => '财务';

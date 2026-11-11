@@ -3841,6 +3841,138 @@ abstract class T {
   /// **'확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.'**
   String get err_payout_account_unverified;
 
+  /// No description provided for @guestSheetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속하려면 전화번호로 로그인하세요'**
+  String get guestSheetTitle;
+
+  /// No description provided for @guestSheetBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력하신 내용은 그대로 남아 있어요. 인증 후 바로 이어서 진행됩니다.'**
+  String get guestSheetBody;
+
+  /// No description provided for @greetMorning.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 아침이에요'**
+  String get greetMorning;
+
+  /// No description provided for @greetAfternoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 오후예요'**
+  String get greetAfternoon;
+
+  /// No description provided for @greetEvening.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 저녁이에요'**
+  String get greetEvening;
+
+  /// No description provided for @feedHeading.
+  ///
+  /// In ko, this message translates to:
+  /// **'회원님을 위한 추천'**
+  String get feedHeading;
+
+  /// No description provided for @feedTitleDue.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 청소 시기가 됐어요'**
+  String get feedTitleDue;
+
+  /// No description provided for @feedTitleRebook.
+  ///
+  /// In ko, this message translates to:
+  /// **'지난번 파트너를 다시 예약하세요'**
+  String get feedTitleRebook;
+
+  /// No description provided for @feedTitleDraft.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성 중이던 견적을 이어서 보세요'**
+  String get feedTitleDraft;
+
+  /// No description provided for @feedTitleSeasonal.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 계절에 꼭 필요한 청소예요'**
+  String get feedTitleSeasonal;
+
+  /// No description provided for @feedTitleSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 집 크기로 바로 견적 보기'**
+  String get feedTitleSize;
+
+  /// No description provided for @feedTitleSubscription.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 구독으로 더 저렴하게'**
+  String get feedTitleSubscription;
+
+  /// No description provided for @feedTitleDistrict.
+  ///
+  /// In ko, this message translates to:
+  /// **'우리 동네에서도 예약이 이어지고 있어요'**
+  String get feedTitleDistrict;
+
+  /// No description provided for @feedWhyCadence.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 청소 후 {days}일이 지났어요'**
+  String feedWhyCadence(String days);
+
+  /// No description provided for @feedWhyRated.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 전 5점을 드린 파트너예요'**
+  String feedWhyRated(String days);
+
+  /// No description provided for @feedWhyDraft.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기에서 견적을 끝내지 않았어요'**
+  String get feedWhyDraft;
+
+  /// No description provided for @feedWhySummer.
+  ///
+  /// In ko, this message translates to:
+  /// **'여름 전에 에어컨을 청소하기 좋은 때예요'**
+  String get feedWhySummer;
+
+  /// No description provided for @feedWhyMoving.
+  ///
+  /// In ko, this message translates to:
+  /// **'입주·이사가 몰리는 시기예요'**
+  String get feedWhyMoving;
+
+  /// No description provided for @feedWhyHoliday.
+  ///
+  /// In ko, this message translates to:
+  /// **'명절 대청소까지 {days}일 남았어요'**
+  String feedWhyHoliday(String days);
+
+  /// No description provided for @feedWhySize.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 {pyeong}평 기준으로 바로 견적을 볼 수 있어요'**
+  String feedWhySize(String pyeong);
+
+  /// No description provided for @feedWhyRepeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'자주 예약하신다면 구독이 더 저렴해요'**
+  String get feedWhyRepeat;
+
+  /// No description provided for @feedWhyDistrict.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 {district}에서 {count}집이 예약했어요'**
+  String feedWhyDistrict(String district, String count);
+
   /// No description provided for @fFinance.
   ///
   /// In ko, this message translates to:

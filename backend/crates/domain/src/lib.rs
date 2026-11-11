@@ -8,6 +8,7 @@ pub mod catalog;
 pub mod coupon;
 pub mod error;
 pub mod finance;
+pub mod feed;
 pub mod growth;
 pub mod household;
 pub mod money;

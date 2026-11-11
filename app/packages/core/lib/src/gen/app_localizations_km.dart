@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2012,6 +2013,83 @@ class TKm extends T {
   @override
   String get err_payout_account_unverified =>
       'ដៃគូនេះមិនទាន់មានគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់ទេ។ សូមផ្ទៀងផ្ទាត់គណនីជាមុនសិន។';
+
+  @override
+  String get guestSheetTitle => 'ចូលគណនីដើម្បីបន្ត';
+
+  @override
+  String get guestSheetBody =>
+      'ព័ត៌មានដែលអ្នកបានបញ្ចូលនឹងនៅតែមាន។ អ្នកនឹងបន្តត្រង់កន្លែងដែលបានឈប់។';
+
+  @override
+  String get greetMorning => 'អរុណសួស្តី';
+
+  @override
+  String get greetAfternoon => 'សួស្តីពេលរសៀល';
+
+  @override
+  String get greetEvening => 'សួស្តីពេលល្ងាច';
+
+  @override
+  String get feedHeading => 'ជ្រើសរើសសម្រាប់អ្នក';
+
+  @override
+  String get feedTitleDue => 'ដល់ពេលសម្អាតលើកក្រោយ';
+
+  @override
+  String get feedTitleRebook => 'កក់អ្នកជំនួយ ៥ ផ្កាយម្តងទៀត';
+
+  @override
+  String get feedTitleDraft => 'បន្តការដកស្រង់តម្លៃដែលមិនទាន់បញ្ចប់';
+
+  @override
+  String get feedTitleSeasonal => 'ការសម្អាតសមស្របនឹងរដូវនេះ';
+
+  @override
+  String get feedTitleSize => 'តម្លៃតាមទំហំផ្ទះដែលបានរក្សាទុក';
+
+  @override
+  String get feedTitleSubscription => 'សន្សំច្រើនជាងដោយការជាវ';
+
+  @override
+  String get feedTitleDistrict => 'អ្នកជិតខាងក៏កំពុងកក់ដែរ';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'ថ្ងៃ $days ចាប់តាំងពីការសម្អាតចុងក្រោយ';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'អ្នកបានដាក់ ៥ ផ្កាយឱ្យអ្នកជំនួយនេះ ថ្ងៃ $days មុន';
+  }
+
+  @override
+  String get feedWhyDraft => 'អ្នកមានការដកស្រង់តម្លៃមិនទាន់បញ្ចប់នៅលើឧបករណ៍នេះ';
+
+  @override
+  String get feedWhySummer => 'ពេលល្អសម្រាប់សម្អាតម៉ាស៊ីនត្រជាក់មុនរដូវក្ដៅ';
+
+  @override
+  String get feedWhyMoving => 'រដូវចូលផ្ទះ និងផ្លាស់ទីលំនៅកំពុងមមាញឹក';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'ថ្ងៃ $days ទៀតដល់ការសម្អាតធំមុនបុណ្យ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'តម្លៃភ្លាមៗសម្រាប់ផ្ទះ $pyeong pyeong ដែលបានរក្សាទុក';
+  }
+
+  @override
+  String get feedWhyRepeat => 'បើអ្នកកក់ញឹកញាប់ ការជាវថ្លៃជាង';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'ផ្ទះ $count នៅ $district បានកក់ក្នុងសប្តាហ៍នេះ';
+  }
 
   @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
