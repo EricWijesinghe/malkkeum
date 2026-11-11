@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2001,6 +2002,83 @@ class TVi extends T {
   @override
   String get err_payout_account_unverified =>
       'Đối tác này chưa có tài khoản nhận tiền đã xác minh. Hãy xác minh tài khoản trước.';
+
+  @override
+  String get guestSheetTitle => 'Đăng nhập để tiếp tục';
+
+  @override
+  String get guestSheetBody =>
+      'Thông tin bạn đã nhập vẫn được giữ. Sau khi xác thực, bạn tiếp tục ngay.';
+
+  @override
+  String get greetMorning => 'Chào buổi sáng';
+
+  @override
+  String get greetAfternoon => 'Chào buổi chiều';
+
+  @override
+  String get greetEvening => 'Chào buổi tối';
+
+  @override
+  String get feedHeading => 'Dành cho bạn';
+
+  @override
+  String get feedTitleDue => 'Đã đến lúc dọn tiếp theo';
+
+  @override
+  String get feedTitleRebook => 'Đặt lại đối tác 5 sao';
+
+  @override
+  String get feedTitleDraft => 'Tiếp tục báo giá bạn đang làm';
+
+  @override
+  String get feedTitleSeasonal => 'Dọn dẹp hợp mùa này';
+
+  @override
+  String get feedTitleSize => 'Báo giá theo diện tích đã lưu';
+
+  @override
+  String get feedTitleSubscription => 'Đăng ký định kỳ tiết kiệm hơn';
+
+  @override
+  String get feedTitleDistrict => 'Hàng xóm cũng đang đặt lịch';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'Đã $days ngày kể từ lần dọn trước';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Bạn đã chấm 5 sao cho đối tác này $days ngày trước';
+  }
+
+  @override
+  String get feedWhyDraft => 'Bạn còn báo giá dở dang trên thiết bị này';
+
+  @override
+  String get feedWhySummer => 'Thời điểm tốt để vệ sinh máy lạnh trước mùa hè';
+
+  @override
+  String get feedWhyMoving => 'Mùa chuyển nhà, nhận nhà đang đông';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Còn $days ngày đến đợt dọn dẹp lớn trước lễ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Báo giá ngay cho nhà $pyeong pyeong đã lưu';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Nếu đặt thường xuyên, đăng ký định kỳ rẻ hơn';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Tuần này $district có $count nhà đã đặt';
+  }
 
   @override
   String get fFinance => 'Tài chính';

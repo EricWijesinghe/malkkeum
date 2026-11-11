@@ -33,7 +33,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return channels.where((c) => c.isBilling && _setup.supports(c.code)).toList();
   }
 
-  void _reload() => setState(() => _billing = _loadBilling());
+  void _reload() {
+    _billing = _loadBilling();
+    setState(() {});
+  }
 
   Future<void> _add(PayChannel ch) async {
     final t = context.t;

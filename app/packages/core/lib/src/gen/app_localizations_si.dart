@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2015,6 +2016,84 @@ class TSi extends T {
   @override
   String get err_payout_account_unverified =>
       'මෙම partner ට තවමත් සත්‍යාපිත ගෙවීම් ගිණුමක් නැත. පළමුව ගිණුම සත්‍යාපනය කරන්න.';
+
+  @override
+  String get guestSheetTitle => 'දිගටම කරගෙන යාමට පිවිසෙන්න';
+
+  @override
+  String get guestSheetBody =>
+      'ඔබ ඇතුළත් කළ සියල්ල තබා ගනී. නැවතුණු තැනින්ම දිගටම යයි.';
+
+  @override
+  String get greetMorning => 'සුභ උදෑසනක්';
+
+  @override
+  String get greetAfternoon => 'සුභ දහවලක්';
+
+  @override
+  String get greetEvening => 'සුභ සන්ධ්‍යාවක්';
+
+  @override
+  String get feedHeading => 'ඔබ වෙනුවෙන්';
+
+  @override
+  String get feedTitleDue => 'ඊළඟ පිරිසිදු කිරීමේ වේලාව';
+
+  @override
+  String get feedTitleRebook => 'තරු 5ක් දුන් හවුල්කරු නැවත වෙන්කර ගන්න';
+
+  @override
+  String get feedTitleDraft => 'ආරම්භ කළ උපුටා දැක්වීම අවසන් කරන්න';
+
+  @override
+  String get feedTitleSeasonal => 'මේ කාලයට ගැලපෙන පිරිසිදු කිරීම';
+
+  @override
+  String get feedTitleSize => 'සුරැකි නිවසේ ප්‍රමාණයෙන් උපුටා දැක්වීම';
+
+  @override
+  String get feedTitleSubscription => 'දායකත්වයෙන් වැඩියෙන් ඉතිරි කරන්න';
+
+  @override
+  String get feedTitleDistrict => 'අසල්වාසීන් ද වෙන්කරමින් සිටිති';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'අවසන් පිරිසිදු කිරීමෙන් දින $daysක් ගත වී ඇත';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'දින $daysකට පෙර ඔබ මෙම හවුල්කරුට තරු 5ක් දුන්නා';
+  }
+
+  @override
+  String get feedWhyDraft => 'මෙම උපාංගයේ උපුටා දැක්වීමක් අසම්පූර්ණයි';
+
+  @override
+  String get feedWhySummer =>
+      'ගිම්හානයට පෙර වායු සමීකරණය පිරිසිදු කරන හොඳ කාලයයි';
+
+  @override
+  String get feedWhyMoving => 'නිවාස ගැනීම සහ මාරුවීම් කාලය කාර්යබහුලයි';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'නිවාඩු සමය සඳහා ගැඹුරු පිරිසිදු කිරීමට දින $daysයි';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'සුරැකි $pyeong පියොං නිවසට ක්ෂණික උපුටා දැක්වීම';
+  }
+
+  @override
+  String get feedWhyRepeat => 'නිතර වෙන් කරන්නේ නම් දායකත්වය වඩා ලාබයි';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'මේ සතියේ $district හි නිවාස $countක් වෙන් කර ඇත';
+  }
 
   @override
   String get fFinance => 'මූල්‍ය';

@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import 'api.dart';
 import 'checkout.dart';
 import 'i18n.dart';
+import 'models.dart';
 
 /// Payment methods that can carry a 현금영수증 (bank transfer and virtual account). Mirrors the server rule.
 const cashReceiptMethods = {'transfer', 'virtual_account'};

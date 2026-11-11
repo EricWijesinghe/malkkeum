@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2028,6 +2029,84 @@ class TUz extends T {
   @override
   String get err_payout_account_unverified =>
       'Bu hamkorda hali tasdiqlangan to‘lov hisobi yo‘q. Avval hisobni tasdiqlang.';
+
+  @override
+  String get guestSheetTitle => 'Davom etish uchun kiring';
+
+  @override
+  String get guestSheetBody =>
+      'Kiritgan ma\'lumotlaringiz saqlanadi. To\'xtagan joyingizdan davom etasiz.';
+
+  @override
+  String get greetMorning => 'Xayrli tong';
+
+  @override
+  String get greetAfternoon => 'Xayrli kun';
+
+  @override
+  String get greetEvening => 'Xayrli kech';
+
+  @override
+  String get feedHeading => 'Siz uchun tanlangan';
+
+  @override
+  String get feedTitleDue => 'Keyingi tozalash vaqti keldi';
+
+  @override
+  String get feedTitleRebook => '5 yulduzli hamkoringizni qayta band qiling';
+
+  @override
+  String get feedTitleDraft => 'Boshlagan hisob-kitobni davom ettiring';
+
+  @override
+  String get feedTitleSeasonal => 'Shu fasl uchun mos tozalash';
+
+  @override
+  String get feedTitleSize => 'Saqlangan uy o\'lchami bo\'yicha narx';
+
+  @override
+  String get feedTitleSubscription => 'Obuna bilan ko\'proq tejang';
+
+  @override
+  String get feedTitleDistrict => 'Qo\'shnilaringiz ham band qilmoqda';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'So\'nggi tozalashdan $days kun o\'tdi';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Siz bu hamkorga $days kun oldin 5 yulduz qo\'ygansiz';
+  }
+
+  @override
+  String get feedWhyDraft => 'Bu qurilmada yakunlanmagan hisob-kitob bor';
+
+  @override
+  String get feedWhySummer =>
+      'Yozdan oldin konditsionerni tozalash uchun yaxshi payt';
+
+  @override
+  String get feedWhyMoving => 'Ko\'chish va ko\'chib kirish mavsumi gavjum';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Bayram oldi katta tozalashgacha $days kun qoldi';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Saqlangan $pyeong pyong uy uchun darhol narx';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Tez-tez buyurtma qilsangiz, obuna arzonroq';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Bu hafta ${district}da $count ta uy band qildi';
+  }
 
   @override
   String get fFinance => 'Moliya';

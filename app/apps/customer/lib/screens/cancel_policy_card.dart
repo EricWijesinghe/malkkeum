@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+
 /// Cancellation fee tiers priced for this checkout total, shown before the customer pays.
 /// Mirrors the server rule: fee = max(min_fee, total * percent / 100), capped at the total.
 class CancelPolicyCard extends StatelessWidget {

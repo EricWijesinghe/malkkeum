@@ -53,7 +53,10 @@ class _PayMethodPickerState extends State<PayMethodPicker> {
     return channels.where((c) => !c.isBilling || _setup.supports(c.code)).toList();
   }
 
-  void _reload() => setState(() => _channels = _loadChannels());
+  void _reload() {
+    _channels = _loadChannels();
+    setState(() {});
+  }
 
   /// A billing channel already saved picks that method; otherwise it is registered first.
   Future<void> _billing(PayChannel ch) async {

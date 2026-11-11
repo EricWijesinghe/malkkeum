@@ -11,6 +11,7 @@ void stockCustomerApi(
   List<Json>? methods,
   List<Json>? bookings,
   List<Json>? threads,
+  List<Json>? feed,
 }) {
   api
     ..reply('GET', '/me', {'name': name, 'phone': '01012345678', 'email': null})
@@ -22,5 +23,7 @@ void stockCustomerApi(
     ..reply('GET', '/chat/threads', threads ?? const <Json>[])
     ..reply('GET', '/bookings', bookings ?? const <Json>[])
     ..reply('GET', '/content', [contentJson(kind: 'notice', title: const {'ko': '점검 안내', 'en': 'Maintenance'})])
-    ..reply('GET', '/me/notifications', const <Json>[]);
+    ..reply('GET', '/me/notifications', const <Json>[])
+    ..reply('GET', '/feed', {'cards': feed ?? const <Json>[]})
+    ..reply('GET', '/me/feed', {'cards': feed ?? const <Json>[]});
 }

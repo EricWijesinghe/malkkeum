@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1951,6 +1952,82 @@ class TKo extends T {
 
   @override
   String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
+
+  @override
+  String get guestSheetTitle => '계속하려면 전화번호로 로그인하세요';
+
+  @override
+  String get guestSheetBody => '입력하신 내용은 그대로 남아 있어요. 인증 후 바로 이어서 진행됩니다.';
+
+  @override
+  String get greetMorning => '좋은 아침이에요';
+
+  @override
+  String get greetAfternoon => '좋은 오후예요';
+
+  @override
+  String get greetEvening => '좋은 저녁이에요';
+
+  @override
+  String get feedHeading => '회원님을 위한 추천';
+
+  @override
+  String get feedTitleDue => '다음 청소 시기가 됐어요';
+
+  @override
+  String get feedTitleRebook => '지난번 파트너를 다시 예약하세요';
+
+  @override
+  String get feedTitleDraft => '작성 중이던 견적을 이어서 보세요';
+
+  @override
+  String get feedTitleSeasonal => '지금 계절에 꼭 필요한 청소예요';
+
+  @override
+  String get feedTitleSize => '저장된 집 크기로 바로 견적 보기';
+
+  @override
+  String get feedTitleSubscription => '정기 구독으로 더 저렴하게';
+
+  @override
+  String get feedTitleDistrict => '우리 동네에서도 예약이 이어지고 있어요';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '마지막 청소 후 $days일이 지났어요';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days일 전 5점을 드린 파트너예요';
+  }
+
+  @override
+  String get feedWhyDraft => '이 기기에서 견적을 끝내지 않았어요';
+
+  @override
+  String get feedWhySummer => '여름 전에 에어컨을 청소하기 좋은 때예요';
+
+  @override
+  String get feedWhyMoving => '입주·이사가 몰리는 시기예요';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '명절 대청소까지 $days일 남았어요';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '저장된 $pyeong평 기준으로 바로 견적을 볼 수 있어요';
+  }
+
+  @override
+  String get feedWhyRepeat => '자주 예약하신다면 구독이 더 저렴해요';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '이번 주 $district에서 $count집이 예약했어요';
+  }
 
   @override
   String get fFinance => '재무';

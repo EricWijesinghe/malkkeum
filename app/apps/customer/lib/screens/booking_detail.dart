@@ -283,7 +283,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text(
-            !canCancel ? t.err_cancellation_window_closed : (fee > 0 ? t.cancelFeeNow(t.won(fee), t.won(refund)) : t.cancelFree),
+            !canCancel ? t.err_cancellation_window_closed : (fee > 0 ? t.cancelFeeNow(ctx.won(fee), ctx.won(refund)) : t.cancelFree),
             style: ctx.text.bodyMedium,
           ),
           const SizedBox(height: Space.xl),
@@ -294,7 +294,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               child: FilledButton(
                 style: FilledButton.styleFrom(backgroundColor: ctx.colors.danger),
                 onPressed: canCancel ? () => Navigator.of(ctx).pop(true) : null,
-                child: Text(fee > 0 ? t.cancelFeeAccept(t.won(fee)) : t.cancelBooking),
+                child: Text(fee > 0 ? t.cancelFeeAccept(ctx.won(fee)) : t.cancelBooking),
               ),
             ),
           ]),

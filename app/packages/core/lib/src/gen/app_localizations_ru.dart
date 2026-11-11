@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2016,6 +2017,83 @@ class TRu extends T {
   @override
   String get err_payout_account_unverified =>
       'У этого партнёра ещё нет подтверждённого счёта для выплат. Сначала подтвердите счёт.';
+
+  @override
+  String get guestSheetTitle => 'Войдите, чтобы продолжить';
+
+  @override
+  String get guestSheetBody =>
+      'Все, что вы ввели, сохранится. Продолжите с того же места.';
+
+  @override
+  String get greetMorning => 'Доброе утро';
+
+  @override
+  String get greetAfternoon => 'Добрый день';
+
+  @override
+  String get greetEvening => 'Добрый вечер';
+
+  @override
+  String get feedHeading => 'Для вас';
+
+  @override
+  String get feedTitleDue => 'Пора на следующую уборку';
+
+  @override
+  String get feedTitleRebook => 'Снова запишитесь к партнёру на 5 звёзд';
+
+  @override
+  String get feedTitleDraft => 'Продолжить расчёт стоимости';
+
+  @override
+  String get feedTitleSeasonal => 'Уборка под это время года';
+
+  @override
+  String get feedTitleSize => 'Расчёт по сохранённой площади';
+
+  @override
+  String get feedTitleSubscription => 'Экономьте с подпиской';
+
+  @override
+  String get feedTitleDistrict => 'Соседи тоже записываются';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'С последней уборки прошло $days дн.';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Вы поставили этому партнёру 5 звёзд $days дн. назад';
+  }
+
+  @override
+  String get feedWhyDraft => 'На этом устройстве остался незавершённый расчёт';
+
+  @override
+  String get feedWhySummer => 'Лучшее время почистить кондиционер перед летом';
+
+  @override
+  String get feedWhyMoving => 'Сезон переездов и въездов — много заявок';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'До генеральной уборки к празднику $days дн.';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Мгновенная оценка для сохранённых $pyeong пхён';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Если вы заказываете часто, подписка выгоднее';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'На этой неделе в районе $district записались $count домов';
+  }
 
   @override
   String get fFinance => 'Финансы';

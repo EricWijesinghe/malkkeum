@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'bookings.dart';
@@ -21,14 +22,38 @@ class Shell extends StatefulWidget {
 
 class _ShellState extends State<Shell> {
   int _tab = 0;
-  bool _loaded = false;
+  bool _started = false;
+  bool _memberStarted = false;
+  Session? _session;
   StreamSubscription<PushTarget>? _pushTaps;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_loaded) return;
-    _loaded = true;
+    if (_started) return;
+    _started = true;
+    // Guests get the public catalogue only; account data starts when they sign in.
+    _session = Deps.read(context).session..addListener(_onSession);
+    context.appRead.loadServices().catchError((Object e) {
+      if (mounted) showToast(context, context.t.error(e));
+    });
+    if (_session!.signedIn) _startMember();
+    // Web deep links (/app/#/booking/..) and the return from the hosted payment page.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) openWebHashRoute(context);
+    });
+  }
+
+  void _onSession() {
+    if (!mounted) return;
+    if (_session!.signedIn) _startMember();
+    setState(() {});
+  }
+
+  /// Account data, live updates and push: once per signed-in session.
+  void _startMember() {
+    if (_memberStarted) return;
+    _memberStarted = true;
     final app = context.appRead;
     app.loadAll().catchError((Object e) {
       if (mounted) showToast(context, context.t.error(e));
@@ -42,14 +67,11 @@ class _ShellState extends State<Shell> {
         if (mounted) _openPush(launch);
       });
     }
-    // Web deep links (/app/#/booking/..) and the return from the hosted payment page.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) openWebHashRoute(context);
-    });
   }
 
   @override
   void dispose() {
+    _session?.removeListener(_onSession);
     _pushTaps?.cancel();
     super.dispose();
   }
@@ -93,10 +115,11 @@ class _ShellState extends State<Shell> {
       (Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, t.tabChat),
       (Icons.menu_rounded, Icons.menu_rounded, t.tabMore),
     ];
+    final signedIn = _session?.signedIn ?? false;
     final pages = [
       HomeTab(onOpenTab: go),
-      const BookingsTab(),
-      const ChatListTab(),
+      signedIn ? const BookingsTab() : const GuestGate(),
+      signedIn ? const ChatListTab() : const GuestGate(),
       const MoreTab(),
     ];
     final body = IndexedStack(index: _tab, children: pages);

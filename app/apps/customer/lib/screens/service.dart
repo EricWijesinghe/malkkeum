@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_flow.dart';
@@ -23,11 +24,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   Service get s => widget.service;
 
-  void _continue() {
+  /// The estimate is free to browse; booking asks for sign-in first and keeps the draft in place.
+  Future<void> _continue() async {
     if (s.isQuote) {
       Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => QuoteFlowScreen(service: s)));
       return;
     }
+    if (!await requireSignIn(context) || !mounted) return;
     final d = _draft.draft;
     final addresses = context.appRead.addresses;
     final only = addresses.length == 1 ? addresses.first : null;

@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/home.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
 import 'package:ui/ui.dart';
@@ -43,7 +44,7 @@ void main() {
     final env = await TestEnv.create(fake: fake);
 
     await pumpCustomerApp(tester, env);
-    await pumpUntilFound(tester, find.text(koT.homeGreetingAnon));
+    await pumpUntilFound(tester, find.text(timeGreeting(koT, DateTime.now())));
     expect(find.text(koT.homeServices), findsOneWidget);
     await unmount(tester);
   });
