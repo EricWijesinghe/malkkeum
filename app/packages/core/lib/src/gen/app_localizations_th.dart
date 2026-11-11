@@ -2917,6 +2917,52 @@ class TTh extends T {
   String get poRevealNote => 'การดูรายละเอียดบัญชีจะถูกบันทึกไว้';
 
   @override
+  String get pvManage => 'จัดการความยินยอม';
+
+  @override
+  String get pvOptional => 'ไม่บังคับ';
+
+  @override
+  String get pvTerms => 'ยอมรับข้อกำหนดการใช้บริการ';
+
+  @override
+  String get pvPrivacy => 'ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล';
+
+  @override
+  String get pvOverseas => 'ยินยอมให้โอนข้อมูลส่วนบุคคลไปต่างประเทศ';
+
+  @override
+  String get pvMarketing => 'รับข้อความการตลาด';
+
+  @override
+  String get pvMarketingHint =>
+      'รับข่าวคูปองและกิจกรรมทาง SMS, KakaoTalk และแจ้งเตือนในแอป ปิดได้ทุกเมื่อ';
+
+  @override
+  String get pvReconsent =>
+      'นโยบายความเป็นส่วนตัวของเราเปลี่ยนแปลงแล้ว กรุณาตรวจสอบและยอมรับอีกครั้ง';
+
+  @override
+  String get pvSaved => 'บันทึกการตั้งค่าความยินยอมแล้ว';
+
+  @override
+  String get pvExport => 'ดาวน์โหลดข้อมูลของฉัน';
+
+  @override
+  String get pvExportHint =>
+      'แสดงข้อมูลทั้งหมดที่เราเก็บเกี่ยวกับคุณในรูปแบบ JSON คัดลอกและเก็บไว้ได้';
+
+  @override
+  String get pvCopy => 'คัดลอก';
+
+  @override
+  String get pvCopied => 'คัดลอกแล้ว';
+
+  @override
+  String get pvExportFailed =>
+      'ไม่สามารถโหลดข้อมูลของคุณได้ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
   String get cSetup => 'ตั้งค่า';
 
   @override

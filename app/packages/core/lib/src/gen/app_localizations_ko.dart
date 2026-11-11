@@ -2853,6 +2853,48 @@ class TKo extends T {
   String get poRevealNote => '계좌 정보는 조회 기록에 남아요';
 
   @override
+  String get pvManage => '동의 관리';
+
+  @override
+  String get pvOptional => '선택';
+
+  @override
+  String get pvTerms => '이용약관 동의';
+
+  @override
+  String get pvPrivacy => '개인정보 수집·이용 동의';
+
+  @override
+  String get pvOverseas => '개인정보 국외 이전 동의';
+
+  @override
+  String get pvMarketing => '마케팅 정보 수신 동의';
+
+  @override
+  String get pvMarketingHint => '쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.';
+
+  @override
+  String get pvReconsent => '개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.';
+
+  @override
+  String get pvSaved => '동의 내용을 저장했어요';
+
+  @override
+  String get pvExport => '내 데이터 내려받기';
+
+  @override
+  String get pvExportHint => '회원님의 정보를 JSON 형식으로 보여 드려요. 복사해서 보관할 수 있어요.';
+
+  @override
+  String get pvCopy => '복사';
+
+  @override
+  String get pvCopied => '복사했어요';
+
+  @override
+  String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
   String get cSetup => '설정';
 
   @override

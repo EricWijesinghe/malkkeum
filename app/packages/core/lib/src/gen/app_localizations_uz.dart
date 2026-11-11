@@ -2947,6 +2947,53 @@ class TUz extends T {
   String get poRevealNote => 'Hisob tafsilotlarini ko‘rish qayd etiladi';
 
   @override
+  String get pvManage => 'Rozilik sozlamalari';
+
+  @override
+  String get pvOptional => 'Ixtiyoriy';
+
+  @override
+  String get pvTerms => 'Xizmat shartlariga rozilik';
+
+  @override
+  String get pvPrivacy =>
+      'Shaxsiy ma\'lumotlarni yig\'ish va foydalanishga rozilik';
+
+  @override
+  String get pvOverseas => 'Shaxsiy ma\'lumotlarni chet elga uzatishga rozilik';
+
+  @override
+  String get pvMarketing => 'Marketing xabarlari';
+
+  @override
+  String get pvMarketingHint =>
+      'Kupon va tadbirlar yangiliklarini SMS, KakaoTalk va ilova bildirishnomalari orqali olasiz. Istalgan vaqtda o\'chirishingiz mumkin.';
+
+  @override
+  String get pvReconsent =>
+      'Maxfiylik siyosatimiz o\'zgardi. Iltimos, qayta ko\'rib chiqing va rozilik bering.';
+
+  @override
+  String get pvSaved => 'Rozilik sozlamalari saqlandi';
+
+  @override
+  String get pvExport => 'Ma\'lumotlarimni yuklab olish';
+
+  @override
+  String get pvExportHint =>
+      'Biz siz haqingizda saqlayotgan barcha ma\'lumotlar JSON ko\'rinishida ko\'rsatiladi. Nusxalab saqlashingiz mumkin.';
+
+  @override
+  String get pvCopy => 'Nusxalash';
+
+  @override
+  String get pvCopied => 'Nusxalandi';
+
+  @override
+  String get pvExportFailed =>
+      'Ma\'lumotlaringizni yuklab bo\'lmadi. Keyinroq qayta urinib ko\'ring.';
+
+  @override
   String get cSetup => 'Sozlash';
 
   @override

@@ -36,6 +36,8 @@ pub fn routes() -> Router<AppState> {
         .route("/me/push-token", post(register_push).delete(unregister_push))
         .route("/me/notifications", get(list_notifications))
         .route("/me/notifications/read", post(read_notifications))
+        .route("/me/consents", get(crate::privacy::get_consents).put(crate::privacy::put_consents))
+        .route("/me/export", get(crate::privacy::export))
 }
 
 #[derive(Serialize, sqlx::FromRow)]
@@ -155,28 +157,7 @@ async fn issue_welcome_pack(s: &AppState, user: Uuid) -> ApiResult<()> {
 
 /// PIPA: account deletion anonymises personal data; bookings are kept for accounting.
 async fn delete_account(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
-    let mut tx = s.db.begin().await?;
-    sqlx::query("UPDATE users SET deleted_at = now(), name = '', email = NULL, phone = 'deleted:' || id::text WHERE id = $1")
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    sqlx::query("UPDATE addresses SET deleted_at = now() WHERE user_id = $1")
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1")
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1")
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1")
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    tx.commit().await?;
+    crate::privacy::delete_account(&s, a.id).await?;
     Ok(Json(json!({ "ok": true })))
 }
 

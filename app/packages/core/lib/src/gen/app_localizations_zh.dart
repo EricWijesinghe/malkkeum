@@ -2841,6 +2841,48 @@ class TZh extends T {
   String get poRevealNote => '查看账户信息会被记录';
 
   @override
+  String get pvManage => '同意管理';
+
+  @override
+  String get pvOptional => '可选';
+
+  @override
+  String get pvTerms => '同意服务条款';
+
+  @override
+  String get pvPrivacy => '同意收集和使用个人信息';
+
+  @override
+  String get pvOverseas => '同意个人信息跨境传输';
+
+  @override
+  String get pvMarketing => '同意接收营销信息';
+
+  @override
+  String get pvMarketingHint => '通过短信、KakaoTalk 和应用推送接收优惠券与活动消息。可随时关闭。';
+
+  @override
+  String get pvReconsent => '隐私政策已更新，请重新查看并同意。';
+
+  @override
+  String get pvSaved => '同意设置已保存';
+
+  @override
+  String get pvExport => '下载我的数据';
+
+  @override
+  String get pvExportHint => '以 JSON 格式显示我们保存的您的全部信息，可复制保存。';
+
+  @override
+  String get pvCopy => '复制';
+
+  @override
+  String get pvCopied => '已复制';
+
+  @override
+  String get pvExportFailed => '无法加载您的数据，请稍后再试。';
+
+  @override
   String get cSetup => '设置';
 
   @override

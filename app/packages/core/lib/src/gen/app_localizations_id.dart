@@ -2935,6 +2935,52 @@ class TId extends T {
   String get poRevealNote => 'Melihat detail rekening dicatat';
 
   @override
+  String get pvManage => 'Pengaturan persetujuan';
+
+  @override
+  String get pvOptional => 'Opsional';
+
+  @override
+  String get pvTerms => 'Persetujuan Syarat Layanan';
+
+  @override
+  String get pvPrivacy => 'Persetujuan pengumpulan dan penggunaan data pribadi';
+
+  @override
+  String get pvOverseas => 'Persetujuan transfer data pribadi ke luar negeri';
+
+  @override
+  String get pvMarketing => 'Pesan pemasaran';
+
+  @override
+  String get pvMarketingHint =>
+      'Terima info kupon dan acara lewat SMS, KakaoTalk, dan notifikasi aplikasi. Anda bisa mematikannya kapan saja.';
+
+  @override
+  String get pvReconsent =>
+      'Kebijakan privasi kami berubah. Silakan tinjau dan setujui lagi.';
+
+  @override
+  String get pvSaved => 'Pengaturan persetujuan disimpan';
+
+  @override
+  String get pvExport => 'Unduh data saya';
+
+  @override
+  String get pvExportHint =>
+      'Menampilkan semua data Anda yang kami simpan dalam format JSON. Anda bisa menyalinnya dan menyimpannya.';
+
+  @override
+  String get pvCopy => 'Salin';
+
+  @override
+  String get pvCopied => 'Tersalin';
+
+  @override
+  String get pvExportFailed =>
+      'Tidak dapat memuat data Anda. Silakan coba lagi nanti.';
+
+  @override
   String get cSetup => 'Pengaturan';
 
   @override

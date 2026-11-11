@@ -2929,6 +2929,52 @@ class TNe extends T {
   String get poRevealNote => 'खाता विवरण हेर्ने कार्य लग गरिन्छ';
 
   @override
+  String get pvManage => 'सहमति व्यवस्थापन';
+
+  @override
+  String get pvOptional => 'ऐच्छिक';
+
+  @override
+  String get pvTerms => 'सेवा सर्तहरूमा सहमति';
+
+  @override
+  String get pvPrivacy => 'व्यक्तिगत डेटा सङ्कलन र प्रयोगमा सहमति';
+
+  @override
+  String get pvOverseas => 'व्यक्तिगत डेटा विदेश पठाउने सहमति';
+
+  @override
+  String get pvMarketing => 'मार्केटिङ सन्देश';
+
+  @override
+  String get pvMarketingHint =>
+      'कुपन र कार्यक्रमका समाचार SMS, KakaoTalk र एप पुशमार्फत पाउनुहुनेछ। जुनसुकै बेला बन्द गर्न सकिन्छ।';
+
+  @override
+  String get pvReconsent =>
+      'हाम्रो गोपनीयता नीति परिवर्तन भएको छ। कृपया फेरि समीक्षा गरी सहमति दिनुहोस्।';
+
+  @override
+  String get pvSaved => 'सहमति सेटिङ सुरक्षित गरियो';
+
+  @override
+  String get pvExport => 'मेरो डेटा डाउनलोड गर्नुहोस्';
+
+  @override
+  String get pvExportHint =>
+      'हामीसँग तपाईंबारे भएका सबै डेटा JSON मा देखाइन्छ। कपी गरेर राख्न सकिन्छ।';
+
+  @override
+  String get pvCopy => 'कपी गर्नुहोस्';
+
+  @override
+  String get pvCopied => 'कपी गरियो';
+
+  @override
+  String get pvExportFailed =>
+      'तपाईंको डेटा लोड गर्न सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
   String get cSetup => 'सेटअप';
 
   @override

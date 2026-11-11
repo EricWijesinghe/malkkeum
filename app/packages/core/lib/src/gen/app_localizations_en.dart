@@ -2916,6 +2916,52 @@ class TEn extends T {
   String get poRevealNote => 'Viewing account details is logged';
 
   @override
+  String get pvManage => 'Consent settings';
+
+  @override
+  String get pvOptional => 'Optional';
+
+  @override
+  String get pvTerms => 'Terms of service';
+
+  @override
+  String get pvPrivacy => 'Personal data collection and use';
+
+  @override
+  String get pvOverseas => 'Transfer of personal data abroad';
+
+  @override
+  String get pvMarketing => 'Marketing messages';
+
+  @override
+  String get pvMarketingHint =>
+      'Get coupon and event news by SMS, KakaoTalk and app push. You can turn this off any time.';
+
+  @override
+  String get pvReconsent =>
+      'Our privacy policy changed. Please review and agree again.';
+
+  @override
+  String get pvSaved => 'Consent settings saved';
+
+  @override
+  String get pvExport => 'Download my data';
+
+  @override
+  String get pvExportHint =>
+      'Shows everything we hold about you as JSON. You can copy it and keep it.';
+
+  @override
+  String get pvCopy => 'Copy';
+
+  @override
+  String get pvCopied => 'Copied';
+
+  @override
+  String get pvExportFailed =>
+      'Could not load your data. Please try again later.';
+
+  @override
   String get cSetup => 'Setup';
 
   @override

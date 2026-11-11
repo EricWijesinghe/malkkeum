@@ -58,6 +58,8 @@ pub fn test_config() -> Config {
         anthropic_base_url: "http://127.0.0.1:9".into(),
         android_cert_sha256: Vec::new(),
         apple_team_id: None,
+        ai_chat_retention_days: 180,
+        upload_orphan_days: 30,
     }
 }
 

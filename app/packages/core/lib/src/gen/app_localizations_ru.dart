@@ -2933,6 +2933,52 @@ class TRu extends T {
   String get poRevealNote => 'Просмотр реквизитов фиксируется';
 
   @override
+  String get pvManage => 'Управление согласиями';
+
+  @override
+  String get pvOptional => 'Необязательно';
+
+  @override
+  String get pvTerms => 'Условия использования';
+
+  @override
+  String get pvPrivacy => 'Сбор и использование персональных данных';
+
+  @override
+  String get pvOverseas => 'Передача персональных данных за рубеж';
+
+  @override
+  String get pvMarketing => 'Рекламные сообщения';
+
+  @override
+  String get pvMarketingHint =>
+      'Купоны и новости акций по SMS, в KakaoTalk и push-уведомлениях приложения. Отключить можно в любой момент.';
+
+  @override
+  String get pvReconsent =>
+      'Политика конфиденциальности изменилась. Пожалуйста, ознакомьтесь и согласитесь снова.';
+
+  @override
+  String get pvSaved => 'Настройки согласий сохранены';
+
+  @override
+  String get pvExport => 'Скачать мои данные';
+
+  @override
+  String get pvExportHint =>
+      'Показывает все данные о вас, которые у нас есть, в формате JSON. Их можно скопировать и сохранить.';
+
+  @override
+  String get pvCopy => 'Копировать';
+
+  @override
+  String get pvCopied => 'Скопировано';
+
+  @override
+  String get pvExportFailed =>
+      'Не удалось загрузить ваши данные. Попробуйте позже.';
+
+  @override
   String get cSetup => 'Настройка';
 
   @override

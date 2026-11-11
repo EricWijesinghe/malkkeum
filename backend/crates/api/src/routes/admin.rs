@@ -123,7 +123,9 @@ struct BookingDetail {
     estimate_breakdown: Option<Value>,
 }
 
-async fn booking_detail(State(s): State<AppState>, _st: Staff, Path(id): Path<Uuid>) -> ApiResult<Json<BookingDetail>> {
+async fn booking_detail(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>) -> ApiResult<Json<BookingDetail>> {
+    // PIPA 제29조 안전조치: every staff read of a customer's contact details leaves a record.
+    audit(&s.db, "staff", Some(st.id), "customer.pii_view", &id.to_string(), json!({ "fields": ["phone", "email"] })).await?;
     let booking = load_booking(&s.db, id).await?;
     let customer: Value = sqlx::query_scalar("SELECT jsonb_build_object('id', id, 'name', name, 'phone', phone, 'email', email) FROM users WHERE id = $1")
         .bind(booking.user_id)

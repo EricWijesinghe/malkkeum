@@ -2850,6 +2850,49 @@ class TJa extends T {
   String get poRevealNote => '口座情報の閲覧は記録されます';
 
   @override
+  String get pvManage => '同意の管理';
+
+  @override
+  String get pvOptional => '任意';
+
+  @override
+  String get pvTerms => '利用規約への同意';
+
+  @override
+  String get pvPrivacy => '個人情報の収集・利用への同意';
+
+  @override
+  String get pvOverseas => '個人情報の国外移転への同意';
+
+  @override
+  String get pvMarketing => 'マーケティング情報の受信への同意';
+
+  @override
+  String get pvMarketingHint =>
+      'クーポンやイベント情報をSMS、KakaoTalk、アプリのプッシュ通知で受け取ります。いつでも停止できます。';
+
+  @override
+  String get pvReconsent => 'プライバシーポリシーが変更されました。内容をご確認のうえ、改めて同意してください。';
+
+  @override
+  String get pvSaved => '同意内容を保存しました';
+
+  @override
+  String get pvExport => 'マイデータをダウンロード';
+
+  @override
+  String get pvExportHint => 'お客様について保有している情報をJSON形式で表示します。コピーして保管できます。';
+
+  @override
+  String get pvCopy => 'コピー';
+
+  @override
+  String get pvCopied => 'コピーしました';
+
+  @override
+  String get pvExportFailed => 'データを読み込めませんでした。しばらくしてから再度お試しください。';
+
+  @override
   String get cSetup => '設定';
 
   @override

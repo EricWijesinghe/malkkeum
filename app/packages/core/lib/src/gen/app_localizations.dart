@@ -5532,6 +5532,90 @@ abstract class T {
   /// **'계좌 정보는 조회 기록에 남아요'**
   String get poRevealNote;
 
+  /// No description provided for @pvManage.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 관리'**
+  String get pvManage;
+
+  /// No description provided for @pvOptional.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택'**
+  String get pvOptional;
+
+  /// No description provided for @pvTerms.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용약관 동의'**
+  String get pvTerms;
+
+  /// No description provided for @pvPrivacy.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 수집·이용 동의'**
+  String get pvPrivacy;
+
+  /// No description provided for @pvOverseas.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 국외 이전 동의'**
+  String get pvOverseas;
+
+  /// No description provided for @pvMarketing.
+  ///
+  /// In ko, this message translates to:
+  /// **'마케팅 정보 수신 동의'**
+  String get pvMarketing;
+
+  /// No description provided for @pvMarketingHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.'**
+  String get pvMarketingHint;
+
+  /// No description provided for @pvReconsent.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.'**
+  String get pvReconsent;
+
+  /// No description provided for @pvSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 내용을 저장했어요'**
+  String get pvSaved;
+
+  /// No description provided for @pvExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 데이터 내려받기'**
+  String get pvExport;
+
+  /// No description provided for @pvExportHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'회원님의 정보를 JSON 형식으로 보여 드려요. 복사해서 보관할 수 있어요.'**
+  String get pvExportHint;
+
+  /// No description provided for @pvCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get pvCopy;
+
+  /// No description provided for @pvCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사했어요'**
+  String get pvCopied;
+
+  /// No description provided for @pvExportFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
+  String get pvExportFailed;
+
   /// No description provided for @cSetup.
   ///
   /// In ko, this message translates to:

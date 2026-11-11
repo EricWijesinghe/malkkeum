@@ -2929,6 +2929,53 @@ class TKm extends T {
   String get poRevealNote => 'ការមើលព័ត៌មានគណនីត្រូវបានកត់ត្រា';
 
   @override
+  String get pvManage => 'ការគ្រប់គ្រងការយល់ព្រម';
+
+  @override
+  String get pvOptional => 'ស្រេចចិត្ត';
+
+  @override
+  String get pvTerms => 'ការយល់ព្រមលើលក្ខខណ្ឌសេវាកម្ម';
+
+  @override
+  String get pvPrivacy =>
+      'ការយល់ព្រមលើការប្រមូល និងការប្រើប្រាស់ព័ត៌មានផ្ទាល់ខ្លួន';
+
+  @override
+  String get pvOverseas => 'ការយល់ព្រមលើការផ្ទេរព័ត៌មានផ្ទាល់ខ្លួនទៅបរទេស';
+
+  @override
+  String get pvMarketing => 'សារផ្សព្វផ្សាយ';
+
+  @override
+  String get pvMarketingHint =>
+      'ទទួលព័ត៌មានគូប៉ុង និងព្រឹត្តិការណ៍តាម SMS KakaoTalk និងការជូនដំណឹងក្នុងកម្មវិធី។ អ្នកអាចបិទបានគ្រប់ពេល។';
+
+  @override
+  String get pvReconsent =>
+      'គោលការណ៍ឯកជនភាពរបស់យើងបានផ្លាស់ប្តូរ។ សូមពិនិត្យ និងយល់ព្រមម្តងទៀត។';
+
+  @override
+  String get pvSaved => 'បានរក្សាទុកការកំណត់ការយល់ព្រម';
+
+  @override
+  String get pvExport => 'ទាញយកទិន្នន័យរបស់ខ្ញុំ';
+
+  @override
+  String get pvExportHint =>
+      'បង្ហាញព័ត៌មានទាំងអស់ដែលយើងមានអំពីអ្នកជាទម្រង់ JSON។ អ្នកអាចចម្លង និងរក្សាទុកបាន។';
+
+  @override
+  String get pvCopy => 'ចម្លង';
+
+  @override
+  String get pvCopied => 'បានចម្លង';
+
+  @override
+  String get pvExportFailed =>
+      'មិនអាចផ្ទុកទិន្នន័យរបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។';
+
+  @override
   String get cSetup => 'ការកំណត់';
 
   @override

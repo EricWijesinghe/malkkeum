@@ -2951,6 +2951,54 @@ class TFil extends T {
   String get poRevealNote => 'Naitatala ang pagtingin sa detalye ng account';
 
   @override
+  String get pvManage => 'Mga pahintulot';
+
+  @override
+  String get pvOptional => 'Opsyonal';
+
+  @override
+  String get pvTerms => 'Pagsang-ayon sa Mga Tuntunin ng Serbisyo';
+
+  @override
+  String get pvPrivacy =>
+      'Pagsang-ayon sa pagkolekta at paggamit ng personal na datos';
+
+  @override
+  String get pvOverseas =>
+      'Pagsang-ayon sa pagpapadala ng personal na datos sa ibang bansa';
+
+  @override
+  String get pvMarketing => 'Mga mensaheng pang-marketing';
+
+  @override
+  String get pvMarketingHint =>
+      'Makakatanggap ng balita tungkol sa coupon at event sa SMS, KakaoTalk, at app push. Maaari mo itong i-off anumang oras.';
+
+  @override
+  String get pvReconsent =>
+      'Nagbago ang aming patakaran sa privacy. Pakisuri at sumang-ayon muli.';
+
+  @override
+  String get pvSaved => 'Na-save ang mga pahintulot';
+
+  @override
+  String get pvExport => 'I-download ang aking data';
+
+  @override
+  String get pvExportHint =>
+      'Ipinapakita ang lahat ng hawak naming datos tungkol sa iyo bilang JSON. Maaari mo itong kopyahin at itago.';
+
+  @override
+  String get pvCopy => 'Kopyahin';
+
+  @override
+  String get pvCopied => 'Nakopya';
+
+  @override
+  String get pvExportFailed =>
+      'Hindi ma-load ang iyong datos. Subukan muli mamaya.';
+
+  @override
   String get cSetup => 'Pag-setup';
 
   @override

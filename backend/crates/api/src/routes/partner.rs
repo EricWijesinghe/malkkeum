@@ -30,6 +30,26 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements", get(settlements))
         .route("/reviews", get(reviews))
         .route("/threads", get(threads))
+        .route("/export", get(export))
+}
+
+/// 열람 요구 for partners: profile, team, payout account (bank and last 4 only), jobs and settlements.
+/// The encrypted account number and credentials are never included.
+async fn export(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
+    let doc: Value = sqlx::query_scalar(
+        "SELECT jsonb_build_object(
+          'exported_at', now(),
+          'profile', (SELECT jsonb_build_object('phone', phone, 'name', name, 'team_name', team_name, 'status', status, 'locale', locale, 'created_at', created_at) FROM pros WHERE id = $1),
+          'team', (SELECT COALESCE(jsonb_agg(jsonb_build_object('name', name, 'phone', phone, 'role', role, 'invite_status', invite_status, 'created_at', created_at)), '[]'::jsonb) FROM team_members WHERE pro_id = $1),
+          'payout_account', (SELECT jsonb_build_object('bank', bank, 'account_last4', account_last4, 'holder', holder) FROM payout_accounts WHERE pro_id = $1),
+          'jobs', (SELECT COALESCE(jsonb_agg(jsonb_build_object('number', b.number, 'service_code', b.service_code, 'visit_date', b.visit_date, 'status', b.status, 'final_price', b.final_price, 'created_at', b.created_at) ORDER BY b.created_at), '[]'::jsonb) FROM bookings b WHERE b.pro_id = $1),
+          'settlements', (SELECT COALESCE(jsonb_agg(to_jsonb(st) ORDER BY st.created_at), '[]'::jsonb) FROM settlements st WHERE st.pro_id = $1)
+        )",
+    )
+    .bind(a.id)
+    .fetch_one(&s.db)
+    .await?;
+    Ok(Json(doc))
 }
 
 /// Deletes the partner's account: refused while a job is assigned or money is still owed to them,
@@ -70,6 +90,10 @@ async fn delete_account(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Jso
     .execute(&mut *tx)
     .await?;
     sqlx::query("DELETE FROM push_tokens WHERE owner_id = $1 OR owner_id IN (SELECT id FROM team_members WHERE pro_id = $1)")
+        .bind(a.id)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM notifications WHERE (owner_role = 'pro' AND owner_id = $1) OR (owner_role = 'member' AND owner_id IN (SELECT id FROM team_members WHERE pro_id = $1))")
         .bind(a.id)
         .execute(&mut *tx)
         .await?;

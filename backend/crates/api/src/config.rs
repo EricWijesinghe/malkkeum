@@ -45,6 +45,10 @@ pub struct Config {
     pub android_cert_sha256: Vec<String>,
     /// Apple Team ID. None: no apple-app-site-association.
     pub apple_team_id: Option<String>,
+    /// Retention purge (see `retention.rs`): AI-assisted chat messages older than this many days are deleted.
+    pub ai_chat_retention_days: u32,
+    /// Retention purge: uploads not attached to any record after this many days are deleted.
+    pub upload_orphan_days: u32,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -231,6 +235,8 @@ impl Config {
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
             android_cert_sha256: cert_fingerprints("ANDROID_CERT_SHA256", list("ANDROID_CERT_SHA256"))?,
             apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
+            ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
+            upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
         })
     }
 }

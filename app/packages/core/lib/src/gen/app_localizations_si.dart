@@ -2932,6 +2932,52 @@ class TSi extends T {
   String get poRevealNote => 'ගිණුම් විස්තර බැලීම සටහන් වේ';
 
   @override
+  String get pvManage => 'එකඟතා කළමනාකරණය';
+
+  @override
+  String get pvOptional => 'විකල්ප';
+
+  @override
+  String get pvTerms => 'සේවා නියම එකඟතාව';
+
+  @override
+  String get pvPrivacy => 'පුද්ගලික දත්ත එකතු කිරීම සහ භාවිතය සඳහා එකඟතාව';
+
+  @override
+  String get pvOverseas => 'පුද්ගලික දත්ත විදේශයට මාරු කිරීම සඳහා එකඟතාව';
+
+  @override
+  String get pvMarketing => 'අලෙවිකරණ පණිවිඩ';
+
+  @override
+  String get pvMarketingHint =>
+      'කූපන් සහ සිදුවීම් පිළිබඳ පණිවිඩ SMS, KakaoTalk සහ යෙදුම් push මගින් ලැබේ. ඕනෑම වේලාවක නවත්වා ගත හැකිය.';
+
+  @override
+  String get pvReconsent =>
+      'අපේ රහස්‍යතා ප්‍රතිපත්තිය වෙනස් වී ඇත. කරුණාකර නැවත බලා එකඟ වන්න.';
+
+  @override
+  String get pvSaved => 'එකඟතා සැකසුම් සුරකින ලදී';
+
+  @override
+  String get pvExport => 'මගේ දත්ත බාගන්න';
+
+  @override
+  String get pvExportHint =>
+      'අප සතු ඔබ පිළිබඳ සියලු දත්ත JSON ආකාරයෙන් පෙන්වයි. පිටපත් කර තබාගත හැකිය.';
+
+  @override
+  String get pvCopy => 'පිටපත් කරන්න';
+
+  @override
+  String get pvCopied => 'පිටපත් කරන ලදී';
+
+  @override
+  String get pvExportFailed =>
+      'ඔබේ දත්ත පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න.';
+
+  @override
   String get cSetup => 'සැකසුම';
 
   @override

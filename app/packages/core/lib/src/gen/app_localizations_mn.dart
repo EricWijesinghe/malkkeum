@@ -2942,6 +2942,52 @@ class TMn extends T {
   String get poRevealNote => 'Дансны мэдээллийг үзсэн нь бүртгэгдэнэ';
 
   @override
+  String get pvManage => 'Зөвшөөрлийн тохиргоо';
+
+  @override
+  String get pvOptional => 'Сонгомол';
+
+  @override
+  String get pvTerms => 'Үйлчилгээний нөхцөлд зөвшөөрөх';
+
+  @override
+  String get pvPrivacy => 'Хувийн мэдээлэл цуглуулах, ашиглахад зөвшөөрөх';
+
+  @override
+  String get pvOverseas => 'Хувийн мэдээллийг гадаад руу шилжүүлэхэд зөвшөөрөх';
+
+  @override
+  String get pvMarketing => 'Маркетингийн мэдээлэл';
+
+  @override
+  String get pvMarketingHint =>
+      'Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.';
+
+  @override
+  String get pvReconsent =>
+      'Нууцлалын бодлого өөрчлөгдлөө. Дахин үзэж зөвшөөрнө үү.';
+
+  @override
+  String get pvSaved => 'Зөвшөөрлийн тохиргоог хадгаллаа';
+
+  @override
+  String get pvExport => 'Миний мэдээллийг татах';
+
+  @override
+  String get pvExportHint =>
+      'Таны талаар бидний хадгалсан бүх мэдээллийг JSON хэлбэрээр харуулна. Хуулж хадгалж болно.';
+
+  @override
+  String get pvCopy => 'Хуулах';
+
+  @override
+  String get pvCopied => 'Хуулагдлаа';
+
+  @override
+  String get pvExportFailed =>
+      'Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.';
+
+  @override
   String get cSetup => 'Тохиргоо';
 
   @override

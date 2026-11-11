@@ -2907,6 +2907,52 @@ class TVi extends T {
   String get poRevealNote => 'Việc xem tài khoản được ghi lại';
 
   @override
+  String get pvManage => 'Quản lý đồng ý';
+
+  @override
+  String get pvOptional => 'Tùy chọn';
+
+  @override
+  String get pvTerms => 'Đồng ý điều khoản dịch vụ';
+
+  @override
+  String get pvPrivacy => 'Đồng ý thu thập và sử dụng dữ liệu cá nhân';
+
+  @override
+  String get pvOverseas => 'Đồng ý chuyển dữ liệu cá nhân ra nước ngoài';
+
+  @override
+  String get pvMarketing => 'Nhận thông tin khuyến mãi';
+
+  @override
+  String get pvMarketingHint =>
+      'Nhận tin ưu đãi và sự kiện qua SMS, KakaoTalk và thông báo ứng dụng. Bạn có thể tắt bất cứ lúc nào.';
+
+  @override
+  String get pvReconsent =>
+      'Chính sách quyền riêng tư đã thay đổi. Vui lòng xem lại và đồng ý lại.';
+
+  @override
+  String get pvSaved => 'Đã lưu cài đặt đồng ý';
+
+  @override
+  String get pvExport => 'Tải dữ liệu của tôi';
+
+  @override
+  String get pvExportHint =>
+      'Hiển thị toàn bộ dữ liệu chúng tôi lưu về bạn dưới dạng JSON. Bạn có thể sao chép và lưu giữ.';
+
+  @override
+  String get pvCopy => 'Sao chép';
+
+  @override
+  String get pvCopied => 'Đã sao chép';
+
+  @override
+  String get pvExportFailed =>
+      'Không thể tải dữ liệu của bạn. Vui lòng thử lại sau.';
+
+  @override
   String get cSetup => 'Thiết lập';
 
   @override

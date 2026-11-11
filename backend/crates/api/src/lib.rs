@@ -16,6 +16,8 @@ pub mod ops;
 pub mod ops_alerts;
 pub mod payout;
 pub mod payout_sync;
+pub mod privacy;
+pub mod retention;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
@@ -67,6 +69,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     reconciler::spawn(state.clone());
     ops_alerts::spawn(state.clone());
     payout_sync::spawn(state.clone());
+    retention::spawn(state.clone());
     let listener = tokio::net::TcpListener::bind(bind).await?;
     tracing::info!(%bind, "listening");
     // ConnectInfo gives the rate limiter the peer address.
