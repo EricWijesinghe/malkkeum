@@ -79,9 +79,21 @@ void main() {
     });
 
     test('Naver is offered once its client id is set; the secret never ships in the app', () {
-      final keys = {'NAVER_CLIENT_ID': 'id'};
+      final keys = {'NAVER_CLIENT_ID': 'id', 'APP_LINK_DOMAIN': 'malkkeum.example'};
       expect(providersForKeys(requested: '', keys: keys, ios: false), contains('naver'));
       expect(providersForKeys(requested: '', keys: {'NAVER_CLIENT_ID': ''}, ios: false), isNot(contains('naver')));
+      expect(providersForKeys(requested: '', keys: {'NAVER_CLIENT_ID': 'id'}, ios: false), isNot(contains('naver')),
+          reason: 'Naver needs the App Link host for its https callback');
+    });
+
+    test('Naver uses the https App Link from iOS 17.4; older iOS keeps the custom scheme', () {
+      bool app(String v) => naverUsesAppLink(ios: true, osVersion: v);
+      expect(app('Version 17.4 (Build 21E213)'), isTrue);
+      expect(app('Version 18.0 (Build 22A)'), isTrue);
+      expect(app('Version 17.3.1 (Build 21D50)'), isFalse);
+      expect(app('Version 16.7 (Build 20H19)'), isFalse);
+      expect(app('unknown'), isTrue, reason: 'unknown version takes the secure path');
+      expect(naverUsesAppLink(ios: false, osVersion: 'Version 9'), isTrue);
     });
 
     test('local API base offers every provider as a dev stub, Apple only where allowed', () {

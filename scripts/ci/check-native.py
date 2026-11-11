@@ -15,7 +15,8 @@ APPS = REPO / "app" / "apps"
 NATIVE_APPS = ["customer", "partner"]
 ANDROID_NS = "{http://schemas.android.com/apk/res/android}"
 KAKAO_AUTH_ACTIVITY = "com.kakao.sdk.flutter.auth.AuthCodeHandlerActivity"
-NAVER_SCHEME = "malkkeumnaver"
+NAVER_SCHEME = "malkkeumnaver"  # legacy iOS < 17.4 only
+NAVER_PATH = "/auth/naver/callback"
 PASSED = [0]
 FAILED = []
 
@@ -129,23 +130,31 @@ def check_info_plist(app, ios):
     return info
 
 
-def check_naver_dart(app, info):
-    dart = (REPO / "app" / "packages" / "core" / "lib" / "src" / "social_native_io.dart").read_text(encoding="utf-8")
-    m = re.search(r"_naverUrlScheme = '([^']+)'", dart)
-    check(m is not None and m.group(1) == NAVER_SCHEME, "social_native_io.dart: _naverUrlScheme must be malkkeumnaver")
-    check(NAVER_SCHEME in {s for t in info.get("CFBundleURLTypes", []) for s in t.get("CFBundleURLSchemes", [])},
-          f"{app}: Naver callback scheme missing from Info.plist")
+def check_naver_dart(app):
+    lib = REPO / "app" / "packages" / "core" / "lib" / "src"
+    native = (lib / "social_native_io.dart").read_text(encoding="utf-8")
+    m = re.search(r"_naverLegacyScheme = '([^']+)'", native)
+    check(m is not None and m.group(1) == NAVER_SCHEME, "social_native_io.dart: _naverLegacyScheme must be malkkeumnaver")
+    check(f"const _naverPath = '{NAVER_PATH}'" in native, "social_native_io.dart: _naverPath must be the App Link path")
+    check("Uri.https(SocialKeys.appLinkHost, _naverPath)" in native, "social_native_io.dart: Naver redirect must be the https App Link")
+    check("naverUsesAppLink(" in native and "Platform.operatingSystemVersion" in native,
+          "social_native_io.dart: Naver must choose https by iOS version")
+    auth = (lib / "social_auth.dart").read_text(encoding="utf-8")
+    check("String.fromEnvironment('APP_LINK_DOMAIN')" in auth, "social_auth.dart: SocialKeys.appLinkHost missing")
+    check("has('NAVER_CLIENT_ID') && has('APP_LINK_DOMAIN')" in auth, "social_auth.dart: Naver must require APP_LINK_DOMAIN")
 
 
 def check_xcconfig(app, ios):
     for name in ["Debug", "Release"]:
         text = (ios / "Flutter" / f"{name}.xcconfig").read_text(encoding="utf-8")
         inc = text.find('#include? "Keys.xcconfig"')
-        keys = ["KAKAO_URL_SCHEME", "GOOGLE_IOS_CLIENT_ID", "GOOGLE_REVERSED_CLIENT_ID"]
+        keys = ["KAKAO_URL_SCHEME", "GOOGLE_IOS_CLIENT_ID", "GOOGLE_REVERSED_CLIENT_ID", "APP_LINK_HOST"]
         defaults = [text.find(k + " =") for k in keys]
         check(inc >= 0 and all(0 <= d < inc for d in defaults),
               f"{app} {name}.xcconfig: defaults must come before the optional #include? Keys.xcconfig")
     writer = (REPO / "scripts" / "ci" / "native-keys.sh").read_text(encoding="utf-8")
+    check('APP_LINK_HOST = ${APP_LINK_DOMAIN:-' in writer, "native-keys.sh: Keys.xcconfig must set APP_LINK_HOST")
+    check('"APP_LINK_DOMAIN"' in writer, "native-keys.sh: APP_LINK_DOMAIN must be passed as a dart-define")
     check('KAKAO_URL_SCHEME = kakao${KAKAO_NATIVE_KEY' in writer,
           "native-keys.sh: KAKAO_URL_SCHEME must include the kakao prefix (Info.plist uses it as-is)")
 
@@ -155,6 +164,8 @@ def check_entitlements_and_privacy(app, ios):
     check(ent.get("aps-environment") == "production", f"{app} Runner.entitlements: aps-environment must be production")
     check("Default" in ent.get("com.apple.developer.applesignin", []),
           f"{app} Runner.entitlements: Sign in with Apple entitlement missing")
+    check("applinks:$(APP_LINK_HOST)" in ent.get("com.apple.developer.associated-domains", []),
+          f"{app} Runner.entitlements: associated-domains applinks:$(APP_LINK_HOST) missing (Naver Universal Link)")
     priv = plist(ios / "Runner" / "PrivacyInfo.xcprivacy")
     check(priv.get("NSPrivacyTracking") is False, f"{app} PrivacyInfo: NSPrivacyTracking must be false")
     apis = {a.get("NSPrivacyAccessedAPIType"): a.get("NSPrivacyAccessedAPITypeReasons", [])
@@ -188,8 +199,8 @@ def check_pbxproj(app, ios):
 
 def check_ios(app):
     ios = APPS / app / "ios"
-    info = check_info_plist(app, ios)
-    check_naver_dart(app, info)
+    check_info_plist(app, ios)
+    check_naver_dart(app)
     check_xcconfig(app, ios)
     check_entitlements_and_privacy(app, ios)
     check_pbxproj(app, ios)
@@ -208,10 +219,14 @@ def check_android(app):
     datas = [d.attrib for a in kakao for f in a.iter("intent-filter") for d in f.iter("data")]
     check(any(d.get(ANDROID_NS + "scheme") == "kakao${kakaoNativeKey}" and d.get(ANDROID_NS + "host") == "oauth"
               for d in datas), f"{app} AndroidManifest: Kakao AuthCodeHandlerActivity scheme kakao${{kakaoNativeKey}}")
-    naver = [d.attrib for a in root.iter("activity") if a.get(ANDROID_NS + "name") == "com.linusu.flutter_web_auth_2.CallbackActivity"
+    naver = [(f, d.attrib) for a in root.iter("activity") if a.get(ANDROID_NS + "name") == "com.linusu.flutter_web_auth_2.CallbackActivity"
              for f in a.iter("intent-filter") for d in f.iter("data")]
-    check(any(d.get(ANDROID_NS + "scheme") == "malkkeumnaver" for d in naver),
-          f"{app} AndroidManifest: flutter_web_auth_2 CallbackActivity for malkkeumnaver (Naver login)")
+    check(any(f.get(ANDROID_NS + "autoVerify") == "true" and d.get(ANDROID_NS + "scheme") == "https"
+              and d.get(ANDROID_NS + "host") == "${appLinkHost}" and d.get(ANDROID_NS + "path") == NAVER_PATH
+              for f, d in naver),
+          f"{app} AndroidManifest: CallbackActivity needs an autoVerify https App Link ${{appLinkHost}}{NAVER_PATH}")
+    check(not any(d.get(ANDROID_NS + "scheme") == NAVER_SCHEME for _, d in naver),
+          f"{app} AndroidManifest: the malkkeumnaver custom scheme must not be registered on Android")
     check('manifestPlaceholders["kakaoNativeKey"]' in gradle, f"{app} build.gradle.kts: kakaoNativeKey placeholder")
     check('file("google-services.json").exists()' in gradle and 'apply(plugin = "com.google.gms.google-services")' in gradle,
           f"{app} build.gradle.kts: google-services plugin must be conditional")
@@ -219,6 +234,7 @@ def check_android(app):
           f"{app} settings.gradle.kts: google-services plugin not declared")
     m = re.search(r"targetSdk = (\d+)", gradle)
     check(m is not None and int(m.group(1)) >= 36, f"{app} build.gradle.kts: targetSdk must be >= 36 (Play rule)")
+    check('manifestPlaceholders["appLinkHost"]' in gradle, f"{app} build.gradle.kts: appLinkHost placeholder")
     for env in ["CM_KEYSTORE_PATH", "CM_KEYSTORE_PASSWORD", "CM_KEY_ALIAS", "CM_KEY_PASSWORD"]:
         check(f'"{env}"' in gradle, f"{app} build.gradle.kts: release signing does not read {env}")
     check(not re.search(r'(storePassword|keyPassword|keyAlias)\s*=\s*"', gradle), f"{app} build.gradle.kts: literal signing secret")
@@ -233,6 +249,25 @@ def check_gitignore(app):
     for pat in ["keys.json", "ios/Flutter/Keys.xcconfig", "android/app/google-services.json",
                 "ios/Runner/GoogleService-Info.plist", "key.properties"]:
         check(re.search(rf"^{re.escape(pat)}$", text, re.M) is not None, f"{app} .gitignore lacks {pat}")
+
+
+# --- Website: App Link fallback page and the API-served well-known files ---------------------
+
+def check_web():
+    page = (REPO / "website" / "auth" / "naver" / "callback.html").read_text(encoding="utf-8")
+    check('name="referrer" content="no-referrer"' in page, "website/auth/naver/callback.html: must send no Referer")
+    check("<script" not in page.lower(), "website/auth/naver/callback.html: no script may read the one-time code")
+    caddy = (REPO / "deploy" / "Caddyfile").read_text(encoding="utf-8")
+    m = re.search(r"@api path ([^\n]+)", caddy)
+    api_paths = m.group(1).split() if m else []
+    for want in ["/.well-known/assetlinks.json", "/.well-known/apple-app-site-association"]:
+        check(want in api_paths, f"deploy/Caddyfile: {want} must be proxied to the API")
+    api = (REPO / "backend" / "crates" / "api" / "src" / "app_links.rs").read_text(encoding="utf-8")
+    check('"/.well-known/assetlinks.json"' in api and '"/.well-known/apple-app-site-association"' in api,
+          "backend app_links.rs: both well-known routes must exist")
+    compose = (REPO / "deploy" / "docker-compose.yml").read_text(encoding="utf-8")
+    check("ANDROID_CERT_SHA256" in compose and "APPLE_TEAM_ID" in compose,
+          "deploy/docker-compose.yml: API needs ANDROID_CERT_SHA256 and APPLE_TEAM_ID")
 
 
 def check_ci():
@@ -257,6 +292,10 @@ def main():
             check_gitignore(app)
         except (OSError, ValueError, KeyError, ET.ParseError, plistlib.InvalidFileException) as e:
             failures_before.append(f"{app}: {type(e).__name__}: {e}")
+    try:
+        check_web()
+    except (OSError, ValueError) as e:
+        failures_before.append(f"web: {type(e).__name__}: {e}")
     try:
         check_ci()
     except (OSError, ValueError) as e:

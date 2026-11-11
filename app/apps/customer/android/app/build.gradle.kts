@@ -55,8 +55,10 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // Kakao login redirect scheme is kakao<native app key>; Naver needs none on Android.
+        // Kakao login redirect scheme is kakao<native app key>.
         manifestPlaceholders["kakaoNativeKey"] = dartDefines["KAKAO_NATIVE_KEY"].orEmpty()
+        // Naver App Link host (https://<host>/auth/naver/callback); the Naver button is hidden without it.
+        manifestPlaceholders["appLinkHost"] = dartDefines["APP_LINK_DOMAIN"].orEmpty()
     }
 
     signingConfigs {

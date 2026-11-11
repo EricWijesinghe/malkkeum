@@ -74,7 +74,7 @@ class PushService {
             >()
             ?.requestNotificationsPermission();
       }
-      // shortcut: getToken/onTokenRefresh are deprecated in firebase_messaging 17 but still work; move to register()/onRegistered once tested on devices.
+      // shortcut: getToken/onTokenRefresh are deprecated in firebase_messaging 17. register()/onRegistered emit the Firebase Installation ID (FID), not the FCM token the backend sends to (providers/fcm.rs messages:send). Migrate only together with a backend change to FID direct send.
       // ignore: deprecated_member_use
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) await registrar.register(token);

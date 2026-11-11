@@ -81,21 +81,31 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 |---|---|
 | `API_BASE` | `https://<client domain>` |
 | `KAKAO_NATIVE_KEY` | developers.kakao.com → app → 앱 키 → 네이티브 앱 키. Register Android key hash (Play App Signing SHA-1 → base64) and iOS bundle id under 플랫폼 |
-| `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL scheme is `malkkeumnaver` (`malkkeumnaver://naverlogin`) for now; see the Naver residual risk below. The secret stays on the server |
+| `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL: `https://<APP_LINK_DOMAIN>/auth/naver/callback` (see Naver App Link below). The secret stays on the server |
+| `APP_LINK_DOMAIN` | bare server host, same as the server `DOMAIN` (e.g. `malkkeum.co.kr`). Android App Link host and iOS `applinks:` domain. Naver is hidden without it |
 | `GOOGLE_SERVER_CLIENT_ID` | Google Cloud console → Credentials → *Web* OAuth client id (also put it in the console wizard Google card) |
 | `GOOGLE_IOS_CLIENT_ID` | Google Cloud console → *iOS* OAuth client for each bundle id (the reversed id is derived) |
 | `GOOGLE_SERVICES_JSON_B64`, `GOOGLE_SERVICE_INFO_PLIST_B64` | Firebase project → customer Android/iOS app config files, `base64 -w0` |
 | `PARTNER_GOOGLE_SERVICES_JSON_B64`, `PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64` | same for the partner apps |
 | `SOCIAL_PROVIDERS` | optional override, e.g. `kakao,naver` |
 
-**Naver residual risk (open).** The login code returns through the custom scheme `malkkeumnaver://`, which
-any app can register on Android. Naver has no PKCE, and `state` is echoed to the redirect, so an
-interceptor can read both `code` and `state`. A device-bound nonce in `state` does not help for that reason.
-The fix is an HTTPS App Link / Universal Link on our domain (`https://<API_BASE host>/auth/naver/callback`):
-serve `/.well-known/assetlinks.json` (Play app-signing SHA-256) and `apple-app-site-association` (Team ID +
-bundle ids), add `android:autoVerify` intent filters and `applinks:` entitlements, and register the same URL
-as the Naver callback. It needs the Play signing fingerprint and Apple Team ID, which are not in the repo, so it
-is not implemented yet. Until then, Naver is the weakest social provider on Android.
+**Naver App Link (M3).** Naver returns the login code to `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
+Android verifies an `android:autoVerify` intent filter (`https`, host, path) against
+`/.well-known/assetlinks.json`; iOS 17.4+ uses ASWebAuthenticationSession with the `applinks:` entitlement
+against `/.well-known/apple-app-site-association`. Only the app can take that URL. Setup:
+1. Server `.env` (the API serves both files from these; empty = 404, so the link does not verify):
+   `ANDROID_CERT_SHA256=AA:BB:…` (comma list: Play Console → Release → App integrity → *App signing key certificate* SHA-256,
+   plus the upload key if you sideload) and `APPLE_TEAM_ID=ABCDE12345`. Then
+   `sudo docker compose --env-file .env up -d api` in `/opt/malkkeum`.
+2. Naver Developers app: add the callback URL `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
+3. Apple Developer portal: enable **Associated Domains** on both bundle ids (`com.malkkeum.customer`,
+   `com.malkkeum.partner`) so the entitlement can be signed. Codemagic signing fails without it.
+4. Check: `curl -s https://<DOMAIN>/.well-known/assetlinks.json` and `…/apple-app-site-association` return JSON.
+   On Android, `adb shell pm get-app-links com.malkkeum.customer` must show `verified`.
+
+**Residual risk (iOS below 17.4).** `ASWebAuthenticationSession` cannot finish an https callback there, so the
+app keeps `malkkeumnaver://naverlogin` on those devices. Another app can register that scheme, and Naver has no
+PKCE. Remove the scheme (`Info.plist` URL type, `social_native_io.dart::_naverLegacyScheme`) when the minimum iOS is 17.4.
 
 iOS, once per bundle id in the Apple Developer portal: enable **Sign in with Apple** and **Push
 Notifications**, upload an APNs key (.p8) to Firebase → Cloud Messaging. In Xcode the Runner target
@@ -141,7 +151,7 @@ To wire each provider:
 | Provider | Add to `app/apps/customer/pubspec.yaml` and `app/apps/partner/pubspec.yaml` | Native setup | Then |
 |---|---|---|---|
 | Kakao | `kakao_flutter_sdk_user` | Android: `<meta-data android:name="com.kakao.sdk.AppKey" .../>` and the `kakao{NATIVE_APP_KEY}` intent-filter in `AndroidManifest.xml`. Register the Android key hash (debug and release) in the Kakao console. iOS: `KAKAO_NATIVE_APP_KEY` in `Info.plist` plus a `kakao{key}` URL scheme and `LSApplicationQueriesSchemes` (`kakaokompassauth`, `kakaolink`). | `UserApi.instance.loginWithKakaoTalk()` (fallback `loginWithKakaoAccount()`), return `token.accessToken` |
-| Naver | `flutter_web_auth_2` | Client id (`NAVER_CLIENT_ID`); `malkkeumnaver` scheme: `CallbackActivity` in `AndroidManifest.xml`, `Info.plist` URL type. Browser login returns `code` + `state`; app sends `code:state` | `social_native_io.dart::NaverSocialSignIn` |
+| Naver | `flutter_web_auth_2` | Client id (`NAVER_CLIENT_ID`) + `APP_LINK_DOMAIN`. Android: `CallbackActivity` `autoVerify` https intent filter (`${appLinkHost}`). iOS: `applinks:$(APP_LINK_HOST)` entitlement; `malkkeumnaver` URL type only for iOS < 17.4. Browser login returns `code` + `state`; app sends `code:state` | `social_native_io.dart::NaverSocialSignIn` |
 | Google | `google_sign_in` | Android: OAuth client per package and SHA-1 (debug and release). iOS: reversed client id URL scheme and `GIDClientID` | `GoogleSignIn().signIn()`, return the access token the backend expects |
 | Apple | `sign_in_with_apple` | Xcode: enable the *Sign in with Apple* capability; Apple developer console: App ID capability and a Services ID for web/Android | `SignInWithApple.getAppleIDCredential()`, return `identityToken` |
 | PortOne payments | `portone_flutter_v2` (or a WebView) | Store id and channel keys from the PortOne console per method; add the app return scheme | Implement `PortOneLauncher.pay`: return `PaymentApproved(paymentId)` from the callback |

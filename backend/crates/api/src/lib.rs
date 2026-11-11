@@ -2,6 +2,7 @@
 //! New top-level modules are declared here (not in main.rs).
 
 pub mod address;
+pub mod app_links;
 pub mod ai;
 pub mod auth;
 pub mod backup;
