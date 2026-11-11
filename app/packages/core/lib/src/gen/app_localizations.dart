@@ -6270,6 +6270,12 @@ abstract class T {
   /// **'사업자 등록 (원천징수 없음)'**
   String get tTaxBusiness;
 
+  /// No description provided for @tReceiptSettings.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 설정'**
+  String get tReceiptSettings;
+
   /// No description provided for @reviewRuleLine.
   ///
   /// In ko, this message translates to:

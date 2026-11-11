@@ -3313,6 +3313,9 @@ class TEn extends T {
   String get tTaxBusiness => 'Registered business (no withholding)';
 
   @override
+  String get tReceiptSettings => 'Receipt settings';
+
+  @override
   String get reviewRuleLine =>
       'No insults, personal information, fake or promotional content. Reported reviews are hidden.';
 

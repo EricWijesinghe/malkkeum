@@ -3326,6 +3326,9 @@ class TSi extends T {
   String get tTaxBusiness => 'ලියාපදිංචි ව්‍යාපාරය (අය කිරීමක් නැත)';
 
   @override
+  String get tReceiptSettings => 'රිසිට්පත් සැකසුම්';
+
+  @override
   String get reviewRuleLine =>
       'අපහාසාත්මක වචන, පෞද්ගලික තොරතුරු, ව්‍යාජ හෝ ප්‍රචාරක අන්තර්ගතය තහනම්ය. වාර්තා කළ සමාලෝචන සඟවනු ඇත.';
 

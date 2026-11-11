@@ -1024,6 +1024,7 @@
  "tTaxType": "Soliq turi",
  "tTaxFreelancer": "Frilanser (ushlab qolinadi)",
  "tTaxBusiness": "Ro‘yxatdan o‘tgan biznes (ushlanmaydi)",
+ "tReceiptSettings": "Kvitansiya sozlamalari",
  "reviewRuleLine": "Haqorat, shaxsiy ma'lumot, soxta yoki reklama mazmuni taqiqlanadi. Shikoyat qilingan sharhlar yashiriladi.",
  "reportAction": "Shikoyat",
  "reportSheetTitle": "Ushbu sharhni shikoyat qilasizmi?",

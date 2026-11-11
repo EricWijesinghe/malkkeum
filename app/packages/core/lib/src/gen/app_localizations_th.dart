@@ -3309,6 +3309,9 @@ class TTh extends T {
   String get tTaxBusiness => 'ธุรกิจจดทะเบียน (ไม่หักภาษี)';
 
   @override
+  String get tReceiptSettings => 'การตั้งค่าใบเสร็จ';
+
+  @override
   String get reviewRuleLine =>
       'ห้ามใช้ถ้อยคำหยาบคาย ข้อมูลส่วนบุคคล เนื้อหาปลอมหรือโฆษณา รีวิวที่ถูกรายงานจะถูกซ่อน';
 

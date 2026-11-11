@@ -3299,6 +3299,9 @@ class TVi extends T {
   String get tTaxBusiness => 'Doanh nghiệp đã đăng ký (không khấu trừ)';
 
   @override
+  String get tReceiptSettings => 'Cài đặt biên lai';
+
+  @override
   String get reviewRuleLine =>
       'Cấm lời lẽ xúc phạm, thông tin cá nhân, nội dung giả mạo hoặc quảng cáo. Đánh giá bị báo cáo sẽ bị ẩn.';
 

@@ -1540,6 +1540,7 @@
  "tTaxType": "세무 유형",
  "tTaxFreelancer": "프리랜서 (원천징수)",
  "tTaxBusiness": "사업자 등록 (원천징수 없음)",
+ "tReceiptSettings": "영수증 설정",
  "reviewRuleLine": "욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.",
  "reportAction": "신고",
  "reportSheetTitle": "이 후기를 신고할까요?",

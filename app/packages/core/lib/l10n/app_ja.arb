@@ -1024,6 +1024,7 @@
  "tTaxType": "税務区分",
  "tTaxFreelancer": "フリーランス（源泉徴収）",
  "tTaxBusiness": "事業者登録（源泉徴収なし）",
+ "tReceiptSettings": "領収書設定",
  "reviewRuleLine": "暴言・個人情報・虚偽や宣伝の内容は禁止です。通報されたレビューは非表示になります。",
  "reportAction": "通報",
  "reportSheetTitle": "このレビューを通報しますか？",

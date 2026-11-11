@@ -3332,6 +3332,9 @@ class TId extends T {
   String get tTaxBusiness => 'Usaha terdaftar (tanpa pemotongan)';
 
   @override
+  String get tReceiptSettings => 'Pengaturan kuitansi';
+
+  @override
   String get reviewRuleLine =>
       'Dilarang ujaran kebencian, informasi pribadi, konten palsu atau promosi. Ulasan yang dilaporkan akan disembunyikan.';
 

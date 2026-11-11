@@ -3323,6 +3323,9 @@ class TKm extends T {
   String get tTaxBusiness => 'អាជីវកម្មចុះបញ្ជី (គ្មានកាត់ពន្ធ)';
 
   @override
+  String get tReceiptSettings => 'ការកំណត់វិក្កយបត្រ';
+
+  @override
   String get reviewRuleLine =>
       'មិនអនុញ្ញាតឱ្យប្រើពាក្យជេរ ព័ត៌មានផ្ទាល់ខ្លួន ខ្លឹមសារក្លែងក្លាយ ឬការផ្សព្វផ្សាយទេ។ វាយតម្លៃដែលត្រូវបានរាយការណ៍នឹងត្រូវបានលាក់។';
 

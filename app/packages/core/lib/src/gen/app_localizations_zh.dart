@@ -3221,6 +3221,9 @@ class TZh extends T {
   String get tTaxBusiness => '已注册企业（无代扣）';
 
   @override
+  String get tReceiptSettings => '收据设置';
+
+  @override
   String get reviewRuleLine => '禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。';
 
   @override

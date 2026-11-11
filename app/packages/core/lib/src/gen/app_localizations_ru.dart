@@ -3328,6 +3328,9 @@ class TRu extends T {
   String get tTaxBusiness => 'Зарегистрированный бизнес (без удержания)';
 
   @override
+  String get tReceiptSettings => 'Настройки чека';
+
+  @override
   String get reviewRuleLine =>
       'Запрещены оскорбления, личные данные, ложный или рекламный контент. Отмеченные отзывы скрываются.';
 

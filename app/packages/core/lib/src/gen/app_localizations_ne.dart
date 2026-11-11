@@ -3323,6 +3323,9 @@ class TNe extends T {
   String get tTaxBusiness => 'दर्ता व्यवसाय (कर कट्टी छैन)';
 
   @override
+  String get tReceiptSettings => 'रसिद सेटिङ';
+
+  @override
   String get reviewRuleLine =>
       'अपमानजनक भाषा, व्यक्तिगत जानकारी, झुटो वा विज्ञापनयुक्त सामग्री निषेधित छ। रिपोर्ट गरिएका समीक्षा लुकाइनेछन्।';
 

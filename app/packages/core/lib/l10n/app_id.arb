@@ -1024,6 +1024,7 @@
  "tTaxType": "Jenis pajak",
  "tTaxFreelancer": "Freelancer (dipotong pajak)",
  "tTaxBusiness": "Usaha terdaftar (tanpa pemotongan)",
+ "tReceiptSettings": "Pengaturan kuitansi",
  "reviewRuleLine": "Dilarang ujaran kebencian, informasi pribadi, konten palsu atau promosi. Ulasan yang dilaporkan akan disembunyikan.",
  "reportAction": "Laporkan",
  "reportSheetTitle": "Laporkan ulasan ini?",

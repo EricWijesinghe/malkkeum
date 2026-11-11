@@ -3236,6 +3236,9 @@ class TKo extends T {
   String get tTaxBusiness => '사업자 등록 (원천징수 없음)';
 
   @override
+  String get tReceiptSettings => '영수증 설정';
+
+  @override
   String get reviewRuleLine => '욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.';
 
   @override

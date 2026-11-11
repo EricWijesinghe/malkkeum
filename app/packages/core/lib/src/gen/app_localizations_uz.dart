@@ -3344,6 +3344,9 @@ class TUz extends T {
   String get tTaxBusiness => 'Ro‘yxatdan o‘tgan biznes (ushlanmaydi)';
 
   @override
+  String get tReceiptSettings => 'Kvitansiya sozlamalari';
+
+  @override
   String get reviewRuleLine =>
       'Haqorat, shaxsiy ma\'lumot, soxta yoki reklama mazmuni taqiqlanadi. Shikoyat qilingan sharhlar yashiriladi.';
 

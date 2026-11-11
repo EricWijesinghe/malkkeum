@@ -1024,6 +1024,7 @@
  "tTaxType": "Tax type",
  "tTaxFreelancer": "Freelancer (withheld)",
  "tTaxBusiness": "Registered business (no withholding)",
+ "tReceiptSettings": "Receipt settings",
  "reviewRuleLine": "No insults, personal information, fake or promotional content. Reported reviews are hidden.",
  "reportAction": "Report",
  "reportSheetTitle": "Report this review?",

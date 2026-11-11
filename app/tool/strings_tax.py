@@ -88,3 +88,12 @@ _TAX_TYPE_X = {
 }
 for _code, _texts in _TAX_TYPE_X.items():
     X[_code].update(_texts)
+
+# Receipt settings line in the payment picker (customer app).
+S["tReceiptSettings"] = ["영수증 설정", "Receipt settings", "領収書設定", "收据设置", "Cài đặt biên lai"]
+_RECEIPT_SETTINGS_X = {
+  "fil": "Mga setting ng resibo", "id": "Pengaturan kuitansi", "km": "ការកំណត់វិក្កយបត្រ", "mn": "Баримтын тохиргоо",
+  "ne": "रसिद सेटिङ", "ru": "Настройки чека", "si": "රිසිට්පත් සැකසුම්", "th": "การตั้งค่าใบเสร็จ", "uz": "Kvitansiya sozlamalari",
+}
+for _code, _text in _RECEIPT_SETTINGS_X.items():
+    X[_code]["tReceiptSettings"] = _text

@@ -24,7 +24,7 @@ use axum::{
 use chrono::{DateTime, NaiveDate, Utc};
 use domain::cash_receipt::{self as rules, cash_eligible};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
@@ -244,9 +244,16 @@ async fn reissue(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<Uuid
     Ok(Json(view(&s.db, id).await?))
 }
 
+/// Whether the app should offer receipt options. Carries no customer data, so it needs no login.
+async fn options(State(s): State<AppState>) -> Json<Value> {
+    Json(json!({ "cash_receipts": s.providers.integ().portone.cash_receipts }))
+}
+
 /// Customer routes, merged at the top level like the checkout routes.
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/checkouts/{id}/cash-receipt", put(request))
+    Router::new()
+        .route("/checkouts/{id}/cash-receipt", put(request))
+        .route("/receipt-options", get(options))
 }
 
 /// Owner routes, merged under `/admin`.

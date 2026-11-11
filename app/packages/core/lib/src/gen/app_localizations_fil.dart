@@ -3352,6 +3352,9 @@ class TFil extends T {
   String get tTaxBusiness => 'Rehistradong negosyo (walang withholding)';
 
   @override
+  String get tReceiptSettings => 'Mga setting ng resibo';
+
+  @override
   String get reviewRuleLine =>
       'Bawal ang panlalait, personal na impormasyon, peke o promotional na nilalaman. Itatago ang mga na-report na review.';
 

@@ -1024,6 +1024,7 @@
  "tTaxType": "税务类型",
  "tTaxFreelancer": "自由职业者（代扣）",
  "tTaxBusiness": "已注册企业（无代扣）",
+ "tReceiptSettings": "收据设置",
  "reviewRuleLine": "禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。",
  "reportAction": "举报",
  "reportSheetTitle": "要举报这条评价吗？",

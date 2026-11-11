@@ -3336,6 +3336,9 @@ class TMn extends T {
   String get tTaxBusiness => 'Бүртгэлтэй бизнес (суутгалгүй)';
 
   @override
+  String get tReceiptSettings => 'Баримтын тохиргоо';
+
+  @override
   String get reviewRuleLine =>
       'Доромжлол, хувийн мэдээлэл, худал эсвэл сурталчилгаатай агуулга хориотой. Мэдээлэгдсэн сэтгэгдлийг нуух болно.';
 

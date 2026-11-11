@@ -1024,6 +1024,7 @@
  "tTaxType": "Uri ng buwis",
  "tTaxFreelancer": "Freelancer (may withholding)",
  "tTaxBusiness": "Rehistradong negosyo (walang withholding)",
+ "tReceiptSettings": "Mga setting ng resibo",
  "reviewRuleLine": "Bawal ang panlalait, personal na impormasyon, peke o promotional na nilalaman. Itatago ang mga na-report na review.",
  "reportAction": "I-report",
  "reportSheetTitle": "I-report ang review na ito?",
