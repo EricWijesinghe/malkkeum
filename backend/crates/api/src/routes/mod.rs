@@ -6,6 +6,7 @@ mod booking_core;
 pub(crate) mod bookings;
 pub mod cases;
 mod catalog;
+mod feed;
 pub(crate) mod chat;
 mod cash_receipts;
 mod checkout_policy;
@@ -67,6 +68,7 @@ pub fn router(state: AppState) -> Router {
         .merge(staff_password::public_routes())
         .merge(me::routes())
         .merge(catalog::routes())
+        .merge(feed::routes())
         .merge(bookings::routes())
         .merge(cases::customer_routes())
         .merge(bookings::public_routes())
