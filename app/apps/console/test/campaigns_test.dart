@@ -75,6 +75,7 @@ void main() {
 
     await tester.enterText(find.widgetWithText(TextField, t.cmOptout), '080-123-4567');
     await tester.pumpAndSettle();
+    await tester.ensureVisible(send);
     await tester.tap(send);
     await tester.pumpAndSettle();
     expect(submitted, hasLength(1));
