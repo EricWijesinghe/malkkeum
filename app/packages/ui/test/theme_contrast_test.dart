@@ -25,6 +25,12 @@ void main() {
         (c.danger, c.surface),
         (c.danger, c.canvas),
         (Colors.white, dark ? BrandConfig.placeholder.primaryDeep : BrandConfig.placeholder.primary),
+        // Modern components: price pill, mint/primary tinted chips, gradient end.
+        (c.ink, c.sunTint),
+        (c.ink, c.freshTint),
+        (c.ink, c.primaryTint),
+        (c.inkMuted, c.surfaceHigh),
+        (Colors.white, BrandConfig.placeholder.primaryDeep),
       ]) {
         expect(_ratio(fg, bg), greaterThanOrEqualTo(4.5), reason: '$fg on $bg');
       }
