@@ -149,7 +149,12 @@ mod tests {
     use super::*;
 
     fn report(app: &str, message: &str) -> Report {
-        Report { app: app.into(), version: "1.0.0".into(), message: message.into(), stack: String::new() }
+        Report {
+            app: app.into(),
+            version: "1.0.0".into(),
+            message: message.into(),
+            stack: String::new(),
+        }
     }
 
     #[test]
@@ -171,7 +176,13 @@ mod tests {
     #[test]
     fn message_and_stack_are_capped() {
         let big = "x".repeat(MAX_MESSAGE_CHARS + 50);
-        let (_, _, msg, _) = clean(Report { app: "web".into(), version: "1".into(), message: big, stack: "s".repeat(MAX_STACK_CHARS + 9) }).unwrap();
+        let (_, _, msg, _) = clean(Report {
+            app: "web".into(),
+            version: "1".into(),
+            message: big,
+            stack: "s".repeat(MAX_STACK_CHARS + 9),
+        })
+        .unwrap();
         assert_eq!(msg.chars().count(), MAX_MESSAGE_CHARS);
     }
 

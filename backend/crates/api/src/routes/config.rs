@@ -113,7 +113,10 @@ fn remember(v: &Value) {
 }
 
 async fn load(db: &PgPool, key: &str) -> Result<Value, sqlx::Error> {
-    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(key).fetch_optional(db).await?;
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(key)
+        .fetch_optional(db)
+        .await?;
     Ok(v.unwrap_or_else(|| json!({})))
 }
 
