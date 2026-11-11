@@ -91,10 +91,53 @@ async fn kakao(p: &Providers, token: &str) -> ApiResult<SocialUser> {
     })
 }
 
+/// Naver tokens are issued per app and its profile call does not name the app, so a token from another app
+/// would pass a profile check. The app sends the login code instead; we redeem it with our own client id and
+/// secret, so the access token we get back was issued to our app.
 async fn naver(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    // shortcut: Naver's profile call does not name the issuing app, so a Naver token from another app
-    // would pass; add a client-id check once NAVER_CLIENT_ID is available to compare against.
-    let v = bearer_json(p, "https://openapi.naver.com/v1/nid/me", token).await?;
+    let (code, state) = split_naver_code(token).ok_or(ApiError::BadRequest("invalid_token"))?;
+    let integ = p.integ();
+    let (Some(client_id), Some(secret)) = (integ.naver_client_id.as_deref(), integ.naver_client_secret.as_deref()) else {
+        return Err(ApiError::Unavailable("provider_not_configured"));
+    };
+    let resp = p
+        .http()
+        .get(NAVER_TOKEN_URL)
+        .query(&[("grant_type", "authorization_code"), ("client_id", client_id), ("client_secret", secret), ("code", code), ("state", state)])
+        .send()
+        .await
+        .map_err(unreachable_provider)?;
+    let status = resp.status();
+    if status.is_server_error() {
+        return Err(ApiError::Unavailable("provider_unreachable"));
+    }
+    if !status.is_success() {
+        return Err(ApiError::Unauthorized);
+    }
+    let access = naver_access_token(&resp.json::<Value>().await.map_err(unreachable_provider)?)?;
+    naver_profile(&bearer_json(p, NAVER_PROFILE_URL, &access).await?)
+}
+
+const NAVER_TOKEN_URL: &str = "https://nid.naver.com/oauth2.0/token";
+const NAVER_PROFILE_URL: &str = "https://openapi.naver.com/v1/nid/me";
+const NAVER_PARAM_MAX: usize = 512;
+
+/// The app sends `code:state`. Both are opaque strings; neither may be empty or contain a colon.
+fn split_naver_code(token: &str) -> Option<(&str, &str)> {
+    let (code, state) = token.split_once(':')?;
+    let ok = |s: &str| !s.is_empty() && s.len() <= NAVER_PARAM_MAX && !s.contains(':');
+    (ok(code) && ok(state)).then_some((code, state))
+}
+
+/// Token endpoint reply: `access_token` on success; a rejected or reused code has no `access_token`.
+fn naver_access_token(v: &Value) -> ApiResult<String> {
+    match v["access_token"].as_str() {
+        Some(t) if !t.is_empty() => Ok(t.to_string()),
+        _ => Err(ApiError::Unauthorized),
+    }
+}
+
+fn naver_profile(v: &Value) -> ApiResult<SocialUser> {
     let id = json_text(&v["response"]["id"]);
     if id.is_empty() {
         return Err(ApiError::Unauthorized);
@@ -268,6 +311,35 @@ mod tests {
         let json = r#"{"iss":"accounts.google.com","aud":"x","sub":"1","exp":"1800000060"}"#;
         let info: TokenInfo = serde_json::from_str(json).expect("tokeninfo shape");
         assert_eq!(info.exp, NOW + 60);
+    }
+
+    #[test]
+    fn naver_code_needs_code_and_state_without_colons() {
+        assert_eq!(split_naver_code("abc:xyz"), Some(("abc", "xyz")));
+        assert_eq!(split_naver_code("abc"), None);
+        assert_eq!(split_naver_code(":xyz"), None);
+        assert_eq!(split_naver_code("abc:"), None);
+        assert_eq!(split_naver_code("abc:x:y"), None);
+        let long = "a".repeat(NAVER_PARAM_MAX + 1);
+        assert_eq!(split_naver_code(&format!("{long}:xyz")), None);
+    }
+
+    #[test]
+    fn naver_token_reply_needs_access_token() {
+        let ok = serde_json::json!({"access_token": "t0k", "token_type": "bearer", "expires_in": "3600"});
+        assert_eq!(naver_access_token(&ok).ok().as_deref(), Some("t0k"));
+        let rejected = serde_json::json!({"error": "invalid_request", "error_description": "reused code"});
+        assert!(naver_access_token(&rejected).is_err());
+        assert!(naver_access_token(&serde_json::json!({"access_token": ""})).is_err());
+    }
+
+    #[test]
+    fn naver_profile_needs_id() {
+        let me = serde_json::json!({"resultcode": "00", "response": {"id": "12345", "email": "a@example.com"}});
+        let user = naver_profile(&me).expect("profile");
+        assert_eq!(user.provider_user_id, "12345");
+        assert_eq!(user.email.as_deref(), Some("a@example.com"));
+        assert!(naver_profile(&serde_json::json!({"response": {}})).is_err());
     }
 
     #[test]

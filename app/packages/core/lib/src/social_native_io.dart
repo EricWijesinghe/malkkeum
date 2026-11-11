@@ -1,18 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'api.dart';
 import 'social_auth.dart';
 
-/// Must match the URL scheme in ios/Runner/Info.plist (Naver's iOS callback).
+/// Must match the URL scheme in ios/Runner/Info.plist and the Android CallbackActivity; register it as the Naver callback.
 const _naverUrlScheme = 'malkkeumnaver';
 
 /// Native SDK for each provider. Returns what the backend verifies (backend/crates/api/src/providers/social.rs):
-/// Kakao and Naver: access token. Google: ID token. Apple: identity token.
+/// Kakao: access token. Naver: `code:state` (server redeems it). Google: ID token. Apple: identity token.
 SocialSignIn? nativeSocialSignIn(String provider) => switch (provider) {
       SocialProviders.kakao => const KakaoSocialSignIn(),
       SocialProviders.naver => const NaverSocialSignIn(),
@@ -46,29 +49,44 @@ class KakaoSocialSignIn extends SocialSignIn {
   }
 }
 
-bool _naverReady = false;
-
 class NaverSocialSignIn extends SocialSignIn {
   const NaverSocialSignIn();
   @override
   String get provider => SocialProviders.naver;
 
+  /// Browser login with a one-time code. The server redeems the code with our client secret, so the
+  /// token is provably ours; the secret never ships in the app.
   @override
   Future<String?> obtainToken(BuildContext context) async {
-    if (!_naverReady) {
-      await NaverLoginSDK.initialize(
-        urlScheme: _naverUrlScheme,
-        clientId: SocialKeys.naverClientId,
-        clientSecret: SocialKeys.naverClientSecret,
-        clientName: SocialKeys.naverClientName,
-      );
-      _naverReady = true;
+    final state = _naverState();
+    final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
+      'response_type': 'code',
+      'client_id': SocialKeys.naverClientId,
+      'redirect_uri': '$_naverUrlScheme://naverlogin',
+      'state': state,
+    });
+    final String callback;
+    try {
+      callback = await FlutterWebAuth2.authenticate(url: url.toString(), callbackUrlScheme: _naverUrlScheme);
+    } on PlatformException catch (e) {
+      if (e.code == 'CANCELED') return null;
+      rethrow;
     }
-    // false = cancelled or failed; the SDK's failure reason only reaches callbacks, so both read as "not signed in".
-    final ok = await NaverLoginSDK.login();
-    if (!ok) return null;
-    return NaverLoginSDK.getAccessToken();
+    final query = Uri.parse(callback).queryParameters;
+    // access_denied or a user cancel comes back as `error`: not signed in, not a failure.
+    if (query.containsKey('error')) return null;
+    final code = query['code'];
+    if (code == null || code.isEmpty || query['state'] != state) {
+      throw const ApiException(502, 'naver_code_missing');
+    }
+    return '$code:$state';
   }
+}
+
+/// Random per attempt; Naver echoes it back and the server checks the echo (CSRF).
+String _naverState() {
+  final random = Random.secure();
+  return List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
 }
 
 bool _googleReady = false;

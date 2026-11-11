@@ -17,10 +17,18 @@
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
-		# Site-wide CSP. 'unsafe-inline' scripts: the website's theme snippet and Flutter's bootstrap.
-		# PortOne's SDK and payment windows need cdn.portone.io and https: frames/connections.
-		# wasm-unsafe-eval: Flutter's skwasm renderer. frame-ancestors none: nothing may embed us.
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
+		# Site-wide CSP. Every API, websocket and PWA call is same-origin ('self' also covers ws/wss).
+		# script-src: 'unsafe-inline' for the website theme snippet, the PortOne page and Flutter's
+		#   bootstrap (no hashes: Flutter rewrites its bootstrap per build). cdn.portone.io = PortOne V2 browser SDK
+		#   (website/pay/index.html). No 'unsafe-eval': the web build is compiled with --wasm (skwasm).
+		# wasm-unsafe-eval: WebAssembly compile for skwasm/CanvasKit (self-hosted, --no-web-resources-cdn).
+		# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts.
+		# connect-src: *.portone.io = PortOne API (api.portone.io) and SDK calls. Social sign-in (Kakao, Naver,
+		#   Google, Apple) runs in the native apps only; the web build offers no social SDK, so no hosts here.
+		# frame-src / form-action: PG payment windows (card, KakaoPay, NaverPay...) are hosted by many PGs whose
+		#   hosts PortOne does not publish as a fixed list; keep https: or checkout breaks.
+		# frame-ancestors none: nothing may embed us.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://*.portone.io; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
 		-Server
 	}
 
