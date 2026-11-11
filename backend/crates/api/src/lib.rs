@@ -24,6 +24,7 @@ pub mod ops_alerts;
 pub mod payout;
 pub mod payout_sync;
 pub mod privacy;
+pub mod quality;
 pub mod retention;
 pub mod safety;
 pub mod providers;
@@ -88,6 +89,8 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         payout_sync::spawn(state.clone()),
         retention::spawn(state.clone()),
         noshow::spawn(state.clone()),
+        quality::spawn(state.clone()),
+        routes::waitlist::spawn(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;
