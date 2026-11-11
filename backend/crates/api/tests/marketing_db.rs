@@ -129,7 +129,7 @@ async fn rebook_nudge_is_held_during_quiet_hours(pool: PgPool) {
     let app = app(pool.clone());
     let c = customer(&app, &pool, "010-5400-0006").await;
     grant_marketing(&pool, c.user, true).await;
-    let (booking, _) = book(&app, &c, 1, None).await;
+    let (booking, _) = book(&app, &c, 3, None).await;
     sqlx::query("UPDATE bookings SET status = 3, visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date - 30 WHERE id = $1")
         .bind(booking)
         .execute(&pool)
@@ -157,7 +157,7 @@ async fn funnel_and_cohorts_count_installs_signups_and_bookings(pool: PgPool) {
     assert_eq!(st, StatusCode::OK);
     let (st, _) = call(&app, "POST", "/v1/events", None, Some(json!({ "anon_id": quoted, "events": [{ "name": "quote_view", "screen": "quote" }] }))).await;
     assert_eq!(st, StatusCode::OK);
-    book(&app, &buyer, 1, None).await;
+    book(&app, &buyer, 3, None).await;
     let token = staff_token();
 
     let (st, funnel) = call(&app, "GET", "/v1/admin/analytics/funnel?days=30", Some(&token), None).await;
