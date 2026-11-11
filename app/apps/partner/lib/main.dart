@@ -63,7 +63,7 @@ class PartnerApp extends StatelessWidget {
           child: UpdateGate(
             api: session.api,
             app: 'partner',
-            child: child ?? const SizedBox.shrink(),
+            child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
           ),
         ),
         onGenerateTitle: (_) => partnerBrand.name,

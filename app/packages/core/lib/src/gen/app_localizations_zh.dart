@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2166,6 +2167,12 @@ class TZh extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded/$invited 人';
   }
+
+  @override
+  String get uMaintenanceTitle => '系统维护中';
+
+  @override
+  String get uMaintenanceBody => '我们正在维护以提升服务，请稍后再试。';
 
   @override
   String get cOps => '系统状态';

@@ -2,7 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:core/core.dart';
 
 void main() {
-  StoreReview fake({bool asked = false, bool available = true, Object? error, List<String>? log}) {
+  StoreReview fake({
+    bool asked = false,
+    bool available = true,
+    Object? error,
+    List<String>? log,
+  }) {
     var wasAsked = asked;
     return StoreReview(
       wasAsked: () async => wasAsked,
@@ -32,11 +37,14 @@ void main() {
     expect(log, isEmpty);
   });
 
-  test('marks the flag but does not request when the platform says no', () async {
-    final log = <String>[];
-    await fake(available: false, log: log).maybeAsk();
-    expect(log, ['mark']);
-  });
+  test(
+    'marks the flag but does not request when the platform says no',
+    () async {
+      final log = <String>[];
+      await fake(available: false, log: log).maybeAsk();
+      expect(log, ['mark']);
+    },
+  );
 
   test('a failing review API never reaches the customer', () async {
     await expectLater(fake(error: StateError('boom')).maybeAsk(), completes);
