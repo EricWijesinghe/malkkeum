@@ -69,7 +69,7 @@ async fn reset_enforces_the_password_policy(db: PgPool) {
     assert_eq!(st, StatusCode::BAD_REQUEST, "{b}");
     assert_eq!(b["error"]["code"], json!("weak_password"));
 
-    let (st, b) = call(&app, "POST", "/v1/auth/staff/password/reset", None, Some(json!({ "token": token, "password": "Password1234" }))).await;
+    let (st, b) = call(&app, "POST", "/v1/auth/staff/password/reset", None, Some(json!({ "token": token, "password": "MasterBating" }))).await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "{b}");
     assert_eq!(b["error"]["code"], json!("breached_password"));
 }

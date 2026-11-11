@@ -36,7 +36,7 @@ async fn wrong_passwords_lock_the_pair_even_for_the_right_password(db: PgPool) {
     // Locked: even the correct password is refused until the backoff ends.
     let (st, b) = staff_login(&app, "lock@test.local", PASSWORD).await;
     assert_eq!(st, StatusCode::TOO_MANY_REQUESTS, "{b}");
-    assert_eq!(b["error"], "rate_limited");
+    assert_eq!(b["error"]["code"], "rate_limited");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
