@@ -21,7 +21,7 @@ use axum::{
     extract::{Path, Query, State},
     routing::{get, post, put},
 };
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, Utc};
 use domain::cash_receipt::{self as rules, cash_eligible};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};

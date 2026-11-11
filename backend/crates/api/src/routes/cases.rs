@@ -260,10 +260,8 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
     if money && st.role != Role::StaffAdmin {
         return Err(ApiError::Forbidden);
     }
-    if let Some(to) = &u.status {
-        if to != &case.status && !safety::can_move(&case.status, to) {
-            return Err(ApiError::Conflict("case_move_invalid"));
-        }
+    if u.status.as_ref().is_some_and(|to| to != &case.status && !safety::can_move(&case.status, to)) {
+        return Err(ApiError::Conflict("case_move_invalid"));
     }
     if u.note.as_deref().is_some_and(|n| n.trim().len() > MAX_TEXT) {
         return Err(ApiError::BadRequest("invalid_note"));
