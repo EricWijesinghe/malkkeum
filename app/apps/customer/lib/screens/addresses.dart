@@ -16,7 +16,11 @@ class AddressesScreen extends StatelessWidget {
       appBar: AppBar(title: Text(t.moreAddresses)),
       body: app.addresses.isEmpty
           ? EmptyState(icon: Icons.home_work_rounded, title: t.addressEmpty, hue: ServiceHues.moveIn)
-          : ListView(padding: const EdgeInsets.all(Space.gutter), children: [
+          : RefreshIndicator(
+              onRefresh: () => app.loadAddresses().catchError((Object e) {
+                if (context.mounted) showToast(context, t.error(e));
+              }),
+              child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(Space.gutter), children: [
               for (final a in app.addresses)
                 Padding(
                   padding: const EdgeInsets.only(bottom: Space.xs),
@@ -35,7 +39,7 @@ class AddressesScreen extends StatelessWidget {
                     ]),
                   ),
                 ),
-            ]),
+            ])),
       bottomNavigationBar: BottomActionBar(
         child: PrimaryButton(label: t.addressAdd, onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AddressFormScreen()))),
       ),
