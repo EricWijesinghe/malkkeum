@@ -141,8 +141,10 @@ mod tests {
         let mut days = rng.range(0, 10);
         let mut pct: u8 = 0;
         let mut tiers = Vec::new();
+        let mut closed = false;
         for _ in 0..n {
-            let closed = rng.range(0, 9) == 0;
+            // Closed is the most severe outcome, so nothing after a closed tier can reopen.
+            closed = closed || rng.range(0, 9) == 0;
             tiers.push((days, if closed { None } else { Some(pct) }));
             days -= rng.range(1, 4);
             if !closed {

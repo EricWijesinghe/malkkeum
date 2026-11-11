@@ -18,7 +18,7 @@ pub(crate) mod me;
 mod member;
 mod ops;
 mod partner;
-mod partner_jobs;
+pub(crate) mod partner_jobs;
 pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
@@ -128,8 +128,9 @@ pub fn router(state: AppState) -> Router {
         }))
         .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
         .layer(axum::middleware::from_fn(metrics::track))
+        // Idempotency replay reads the pool from an extension (route layers cannot take state).
+        .layer(axum::Extension(state.db.clone()))
         .layer(axum::middleware::from_fn(contract::error_envelope))
-        .fallback_layer(axum::middleware::from_fn(contract::error_envelope))
         // Outermost: every request (and every error body) gets its id before anything else runs.
         .layer(axum::middleware::from_fn(telemetry::request_id))
         .with_state(state)

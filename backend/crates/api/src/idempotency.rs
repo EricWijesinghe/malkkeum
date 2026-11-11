@@ -9,7 +9,7 @@ use crate::{
 };
 use axum::{
     body::{Body, to_bytes},
-    extract::{Request, State},
+    extract::{Extension, Request},
     http::{HeaderName, Method, StatusCode, header},
     middleware::Next,
     response::{IntoResponse, Response},
@@ -47,7 +47,7 @@ enum Slot {
     Done(StatusCode, String),
 }
 
-pub async fn replay(State(s): State<AppState>, req: Request, next: Next) -> ApiResult<Response> {
+pub async fn replay(Extension(db): Extension<PgPool>, req: Request, next: Next) -> ApiResult<Response> {
     if req.method() != Method::POST {
         return Ok(next.run(req).await);
     }
@@ -63,11 +63,11 @@ pub async fn replay(State(s): State<AppState>, req: Request, next: Next) -> ApiR
     let caller = parts.headers.get(header::AUTHORIZATION).map_or_else(|| "anon".to_owned(), |v| hex(&Sha256::digest(v.as_bytes())));
     let scope = format!("{caller}:{}", parts.uri.path());
     let body_hash = hex(&Sha256::digest(&bytes));
-    match claim(&s.db, &scope, &key, &body_hash).await? {
+    match claim(&db, &scope, &key, &body_hash).await? {
         Slot::Done(status, text) => Ok(replayed(status, text)),
         Slot::Fresh => {
             let res = next.run(Request::from_parts(parts, Body::from(bytes))).await;
-            finish(&s.db, &scope, &key, res).await
+            finish(&db, &scope, &key, res).await
         }
     }
 }
