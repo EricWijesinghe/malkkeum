@@ -29,8 +29,14 @@ class DevIdentityVerifier extends IdentityVerifier {
         title: Text(ctx.t.apIdentityDevTitle),
         content: Text(ctx.t.apIdentityDevBody),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(ctx.t.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(ctx.t.apIdentityDevPass)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(ctx.t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(ctx.t.apIdentityDevPass),
+          ),
         ],
       ),
     );
@@ -92,9 +98,16 @@ Future<bool> identityAvailable(ApiClient api) async {
 }
 
 /// POST /v1/me/identity. The server checks the verification with the PG before saving.
-Future<void> submitIdentity(ApiClient api, String identityVerificationId) async {
-  await api.post('/me/identity', {'identity_verification_id': identityVerificationId});
+Future<void> submitIdentity(
+  ApiClient api,
+  String identityVerificationId,
+) async {
+  await api.post('/me/identity', {
+    'identity_verification_id': identityVerificationId,
+  });
 }
 
 /// Dev base URL: confirm dialog. Anything else: the PortOne identity integration point.
-IdentityVerifier identityVerifierFor(ApiClient api) => isDevApiBase(api.baseUrl) ? DevIdentityVerifier() : PortOneIdentityVerifier(api);
+IdentityVerifier identityVerifierFor(ApiClient api) => isDevApiBase(api.baseUrl)
+    ? DevIdentityVerifier()
+    : PortOneIdentityVerifier(api);

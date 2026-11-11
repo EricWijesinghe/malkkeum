@@ -33,7 +33,8 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  ApiClient({required this.baseUrl, required this.session, http.Client? client}) : _http = client ?? http.Client() {
+  ApiClient({required this.baseUrl, required this.session, http.Client? client})
+    : _http = client ?? http.Client() {
     session.attach(this);
   }
 
@@ -44,11 +45,18 @@ class ApiClient {
   Future<bool>? _refreshing;
 
   Uri _uri(String path, [Map<String, String?>? query]) {
-    final q = {for (final e in (query ?? {}).entries) if (e.value != null) e.key: e.value!};
-    return Uri.parse('$baseUrl/v1$path').replace(queryParameters: q.isEmpty ? null : q);
+    final q = {
+      for (final e in (query ?? {}).entries)
+        if (e.value != null) e.key: e.value!,
+    };
+    return Uri.parse(
+      '$baseUrl/v1$path',
+    ).replace(queryParameters: q.isEmpty ? null : q);
   }
 
-  Future<dynamic> get(String path, {Map<String, String?>? query}) => _send('GET', path, query: query);
+  Future<dynamic> get(String path, {Map<String, String?>? query}) =>
+      _send('GET', path, query: query);
+
   /// [idempotencyKey]: send the same key on every retry of one user action (server replays the first answer for 24h).
   Future<dynamic> post(String path, [Object? body, String? idempotencyKey]) =>
       _send('POST', path, body: body, idempotencyKey: idempotencyKey);
@@ -56,44 +64,77 @@ class ApiClient {
   /// A fresh key for one user action: 128 bits from a secure RNG, hex.
   static String newIdempotencyKey() {
     final r = Random.secure();
-    return List.generate(16, (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+    return List.generate(
+      16,
+      (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
   }
-  Future<dynamic> put(String path, [Object? body]) => _send('PUT', path, body: body);
-  Future<dynamic> patch(String path, [Object? body]) => _send('PATCH', path, body: body);
-  Future<dynamic> delete(String path, [Object? body]) => _send('DELETE', path, body: body);
+
+  Future<dynamic> put(String path, [Object? body]) =>
+      _send('PUT', path, body: body);
+  Future<dynamic> patch(String path, [Object? body]) =>
+      _send('PATCH', path, body: body);
+  Future<dynamic> delete(String path, [Object? body]) =>
+      _send('DELETE', path, body: body);
 
   /// Raw response bytes (CSV exports). The bearer token stays in the header, never in the URL.
   Future<List<int>> getBytes(String path, {Map<String, String?>? query}) async {
-    final bytes = await _exec(path, () => http.Request('GET', _uri(path, query)), raw: true);
+    final bytes = await _exec(
+      path,
+      () => http.Request('GET', _uri(path, query)),
+      raw: true,
+    );
     return bytes as List<int>;
   }
 
-  Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query, String? idempotencyKey}) => _exec(path, () {
-        final req = http.Request(method, _uri(path, query))..headers['Content-Type'] = 'application/json';
-        if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
-        if (body != null) req.body = jsonEncode(body);
-        return req;
-      });
+  Future<dynamic> _send(
+    String method,
+    String path, {
+    Object? body,
+    Map<String, String?>? query,
+    String? idempotencyKey,
+  }) => _exec(path, () {
+    final req = http.Request(method, _uri(path, query))
+      ..headers['Content-Type'] = 'application/json';
+    if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
+    if (body != null) req.body = jsonEncode(body);
+    return req;
+  });
 
   /// Sends a request (rebuilt on retry), refreshing the access token once on 401.
-  Future<dynamic> _exec(String path, http.BaseRequest Function() build, {Duration timeout = _timeout, bool retried = false, bool raw = false}) async {
+  Future<dynamic> _exec(
+    String path,
+    http.BaseRequest Function() build, {
+    Duration timeout = _timeout,
+    bool retried = false,
+    bool raw = false,
+  }) async {
     final req = build();
     final token = session.accessToken;
     if (token != null) req.headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
-      res = await http.Response.fromStream(await _http.send(req).timeout(timeout));
+      res = await http.Response.fromStream(
+        await _http.send(req).timeout(timeout),
+      );
     } on TimeoutException {
       throw const ApiException(0, 'timeout');
     } catch (_) {
       throw const ApiException(0, 'network');
     }
-    if (res.statusCode == 401 && !retried && session.refreshToken != null && !path.startsWith('/auth/')) {
-      if (await _refresh()) return _exec(path, build, timeout: timeout, retried: true, raw: raw);
+    if (res.statusCode == 401 &&
+        !retried &&
+        session.refreshToken != null &&
+        !path.startsWith('/auth/')) {
+      if (await _refresh()) {
+        return _exec(path, build, timeout: timeout, retried: true, raw: raw);
+      }
     }
     final decoded = raw ? res.bodyBytes : _decode(res);
     if (res.statusCode >= 200 && res.statusCode < 300) return decoded;
-    final code = decoded is Map ? ((decoded['error'] as Map?)?['code'] as String?) : null;
+    final code = decoded is Map
+        ? ((decoded['error'] as Map?)?['code'] as String?)
+        : null;
     throw ApiException(res.statusCode, code ?? 'http_${res.statusCode}');
   }
 
@@ -110,27 +151,34 @@ class ApiClient {
   /// Single-flight refresh so parallel 401s rotate the token once. Only a rejected refresh
   /// token signs the user out; a network blip keeps the session for the next attempt.
   Future<bool> _refresh() => _refreshing ??= () async {
-        try {
-          final r = await _exec('/auth/refresh', () {
-            return http.Request('POST', _uri('/auth/refresh'))
-              ..headers['Content-Type'] = 'application/json'
-              ..body = jsonEncode({'refresh_token': session.refreshToken});
-          }, retried: true) as Map<String, dynamic>;
-          await session.save(r);
-          return true;
-        } on ApiException catch (e) {
-          if (e.status == 400 || e.status == 401 || e.status == 403) await session.clear();
-          return false;
-        } finally {
-          _refreshing = null;
-        }
-      }();
+    try {
+      final r =
+          await _exec('/auth/refresh', () {
+                return http.Request('POST', _uri('/auth/refresh'))
+                  ..headers['Content-Type'] = 'application/json'
+                  ..body = jsonEncode({'refresh_token': session.refreshToken});
+              }, retried: true)
+              as Map<String, dynamic>;
+      await session.save(r);
+      return true;
+    } on ApiException catch (e) {
+      if (e.status == 400 || e.status == 401 || e.status == 403) {
+        await session.clear();
+      }
+      return false;
+    } finally {
+      _refreshing = null;
+    }
+  }();
 
   /// Multipart image upload; returns the stored file URL.
   Future<String> upload(List<int> bytes, String filename) async {
     final r = await _exec(
       '/uploads',
-      () => http.MultipartRequest('POST', _uri('/uploads'))..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename)),
+      () => http.MultipartRequest('POST', _uri('/uploads'))
+        ..files.add(
+          http.MultipartFile.fromBytes('file', bytes, filename: filename),
+        ),
       timeout: const Duration(seconds: 60),
     );
     final url = r is Map ? r['url'] as String? : null;
@@ -140,6 +188,10 @@ class ApiClient {
 
   Uri wsUri() {
     final base = Uri.parse(baseUrl);
-    return base.replace(scheme: base.scheme == 'https' ? 'wss' : 'ws', path: '/v1/ws', queryParameters: {'token': session.accessToken ?? ''});
+    return base.replace(
+      scheme: base.scheme == 'https' ? 'wss' : 'ws',
+      path: '/v1/ws',
+      queryParameters: {'token': session.accessToken ?? ''},
+    );
   }
 }

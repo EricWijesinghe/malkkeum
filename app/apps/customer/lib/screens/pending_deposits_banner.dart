@@ -25,23 +25,53 @@ class PendingDepositsBanner extends StatelessWidget {
         final due = first.account.due;
         final amount = context.won(first.amount);
         return Padding(
-          padding: const EdgeInsets.fromLTRB(Space.gutter, Space.gutter, Space.gutter, 0),
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            Space.gutter,
+            Space.gutter,
+            0,
+          ),
           child: AppCard(
             child: InkWell(
               borderRadius: BorderRadius.circular(Radii.card),
-              onTap: () => showVirtualAccount(context, first.account, amount: first.amount),
-              child: Row(children: [
-                Icon(Icons.account_balance_rounded, color: context.colors.sun),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(t.apVaBannerTitle, style: context.text.titleSmall),
-                    Text(due == null ? amount : t.apVaBannerBody(amount, dateTimeLabel(due, context.lang)), style: context.text.bodySmall),
-                  ]),
-                ),
-                Text(t.apVaBannerAction, style: context.text.labelLarge?.copyWith(color: context.primary)),
-                const Icon(Icons.chevron_right_rounded),
-              ]),
+              onTap: () => showVirtualAccount(
+                context,
+                first.account,
+                amount: first.amount,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.account_balance_rounded,
+                    color: context.colors.sun,
+                  ),
+                  const SizedBox(width: Space.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t.apVaBannerTitle, style: context.text.titleSmall),
+                        Text(
+                          due == null
+                              ? amount
+                              : t.apVaBannerBody(
+                                  amount,
+                                  dateTimeLabel(due, context.lang),
+                                ),
+                          style: context.text.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    t.apVaBannerAction,
+                    style: context.text.labelLarge?.copyWith(
+                      color: context.primary,
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
+              ),
             ),
           ),
         );

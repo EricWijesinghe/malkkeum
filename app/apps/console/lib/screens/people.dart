@@ -7,6 +7,7 @@ import '../state.dart';
 import 'finance_tax.dart';
 import 'confirm_action.dart';
 import 'payout_seller_dialog.dart';
+import 'staff_reset.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -88,7 +89,13 @@ class PartnersScreen extends StatelessWidget {
                                 if (p['status'] == 'verified')
                                   OutlinedButton(
                                     onPressed: () async {
-                                      if (!await confirmAction(context, t.cSuspend) || !context.mounted) return;
+                                      if (!await confirmAction(
+                                            context,
+                                            t.cSuspend,
+                                          ) ||
+                                          !context.mounted) {
+                                        return;
+                                      }
                                       await _act(
                                         context,
                                         () => context.api.post(
@@ -153,24 +160,49 @@ class _SettlementsState extends State<SettlementsScreen> {
     final t = context.t;
     return AsyncView<List<Json>>(
       key: _payoutsView,
-      load: () async => (await context.api.get('/admin/settlements/payouts') as List).cast<Json>(),
+      load: () async =>
+          (await context.api.get('/admin/settlements/payouts') as List)
+              .cast<Json>(),
       builder: (context, rows, reload) => rows.isEmpty
-          ? EmptyState(icon: Icons.payments_rounded, title: t.poNoPayouts, hue: StatusHues.consultation)
+          ? EmptyState(
+              icon: Icons.payments_rounded,
+              title: t.poNoPayouts,
+              hue: StatusHues.consultation,
+            )
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-              children: [for (final p in rows) _payoutCard(context, p, admin, reload)],
+              children: [
+                for (final p in rows) _payoutCard(context, p, admin, reload),
+              ],
             ),
     );
   }
 
-  Widget _payoutCard(BuildContext context, Json p, bool admin, Future<void> Function() reload) {
+  Widget _payoutCard(
+    BuildContext context,
+    Json p,
+    bool admin,
+    Future<void> Function() reload,
+  ) {
     final t = context.t;
     final id = p['id'] as String;
     final state = p['state'] as String;
     final manual = p['provider'] == 'manual';
-    final team = (p['team_name'] as String? ?? '').isEmpty ? '' : ' · ${p['team_name']}';
-    final failure = p['failure_reason'] == null ? '' : '\n${p['failure_reason']}';
-    Future<void> post(String path) => _act(context, () => context.api.post('/admin/settlements/payouts/$id/$path', {}, ApiClient.newIdempotencyKey()), reload);
+    final team = (p['team_name'] as String? ?? '').isEmpty
+        ? ''
+        : ' · ${p['team_name']}';
+    final failure = p['failure_reason'] == null
+        ? ''
+        : '\n${p['failure_reason']}';
+    Future<void> post(String path) => _act(
+      context,
+      () => context.api.post(
+        '/admin/settlements/payouts/$id/$path',
+        {},
+        ApiClient.newIdempotencyKey(),
+      ),
+      reload,
+    );
     return Card(
       elevation: 0,
       child: Padding(
@@ -178,7 +210,10 @@ class _SettlementsState extends State<SettlementsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}', style: context.text.titleSmall),
+            Text(
+              '${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}',
+              style: context.text.titleSmall,
+            ),
             const SizedBox(height: Space.xxs),
             Text(
               '${t.tGrossAmount} ${context.won((p['amount'] as num).toInt())} · ${t.tWithholdingLabel} ${context.won(((p['income_tax'] as num?) ?? 0).toInt() + ((p['local_tax'] as num?) ?? 0).toInt())} · ${t.tNetAmount} ${context.won(((p['net'] as num?) ?? (p['amount'] as num)).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
@@ -191,30 +226,62 @@ class _SettlementsState extends State<SettlementsScreen> {
               runSpacing: 6,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-              Tag(
-                label: switch (state) {
-                  'requested' => t.poState_requested,
-                  'sent' => t.poState_sent,
-                  'paid' => t.poState_paid,
-                  _ => t.poState_failed,
-                },
-                hue: switch (state) {
-                  'paid' => StatusHues.assigned,
-                  'sent' => StatusHues.confirmed,
-                  'failed' => StatusHues.cancelled,
-                  _ => StatusHues.consultation,
-                },
-              ),
-              if (admin && state == 'requested' && manual)
-                TextButton(onPressed: () => _showAccount(context, id), child: Text(t.poShowAccount)),
-              if (admin && state == 'requested' && manual) TextButton(onPressed: () => post('confirm'), child: Text(t.poConfirmPaid)),
-              if (admin && state == 'requested' && !manual) TextButton(onPressed: () => post('send'), child: Text(t.poSend)),
-              if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
-              if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
-              if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
-              if (admin) TextButton(onPressed: () => setPartnerTaxType(context, p, reload), child: Text(t.tTaxType)),
-              if (admin && !manual && (state == 'requested' || state == 'failed'))
-                TextButton(onPressed: () => _seller(context, p['pro_id'] as String), child: Text(t.poSellerAction)),
+                Tag(
+                  label: switch (state) {
+                    'requested' => t.poState_requested,
+                    'sent' => t.poState_sent,
+                    'paid' => t.poState_paid,
+                    _ => t.poState_failed,
+                  },
+                  hue: switch (state) {
+                    'paid' => StatusHues.assigned,
+                    'sent' => StatusHues.confirmed,
+                    'failed' => StatusHues.cancelled,
+                    _ => StatusHues.consultation,
+                  },
+                ),
+                if (admin && state == 'requested' && manual)
+                  TextButton(
+                    onPressed: () => _showAccount(context, id),
+                    child: Text(t.poShowAccount),
+                  ),
+                if (admin && state == 'requested' && manual)
+                  TextButton(
+                    onPressed: () => post('confirm'),
+                    child: Text(t.poConfirmPaid),
+                  ),
+                if (admin && state == 'requested' && !manual)
+                  TextButton(
+                    onPressed: () => post('send'),
+                    child: Text(t.poSend),
+                  ),
+                if (admin && state == 'sent')
+                  TextButton(
+                    onPressed: () => post('sync'),
+                    child: Text(t.poSync),
+                  ),
+                if (admin && state == 'failed')
+                  TextButton(
+                    onPressed: () => post('retry'),
+                    child: Text(t.poRetry),
+                  ),
+                if (admin && state == 'requested')
+                  TextButton(
+                    onPressed: () => _fail(context, id, reload),
+                    child: Text(t.poMarkFailed),
+                  ),
+                if (admin)
+                  TextButton(
+                    onPressed: () => setPartnerTaxType(context, p, reload),
+                    child: Text(t.tTaxType),
+                  ),
+                if (admin &&
+                    !manual &&
+                    (state == 'requested' || state == 'failed'))
+                  TextButton(
+                    onPressed: () => _seller(context, p['pro_id'] as String),
+                    child: Text(t.poSellerAction),
+                  ),
               ],
             ),
           ],
@@ -226,14 +293,18 @@ class _SettlementsState extends State<SettlementsScreen> {
   /// Toss needs the partner registered as a seller before it can send money. Re-registering is safe after an account change.
   Future<void> _seller(BuildContext context, String proId) async {
     final status = await showTossSellerDialog(context, proId);
-    if (status != null && context.mounted) showToast(context, context.t.poSellerDone(status));
+    if (status != null && context.mounted) {
+      showToast(context, context.t.poSellerDone(status));
+    }
   }
 
   /// Bank details for a manual transfer. Each reveal is audit-logged on the server.
   Future<void> _showAccount(BuildContext context, Object id) async {
     final t = context.t;
     try {
-      final a = (await context.api.get('/admin/settlements/payouts/$id/account')) as Json;
+      final a =
+          (await context.api.get('/admin/settlements/payouts/$id/account'))
+              as Json;
       if (!context.mounted) return;
       await showDialog<void>(
         context: context,
@@ -243,12 +314,24 @@ class _SettlementsState extends State<SettlementsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SelectableText(t.poAccountBody(a['holder'] as String, a['bank'] as String, a['account'] as String, '${a['amount']}')),
+              SelectableText(
+                t.poAccountBody(
+                  a['holder'] as String,
+                  a['bank'] as String,
+                  a['account'] as String,
+                  '${a['amount']}',
+                ),
+              ),
               const SizedBox(height: Space.sm),
               Text(t.poRevealNote, style: ctx.text.bodySmall),
             ],
           ),
-          actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(t.close))],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(t.close),
+            ),
+          ],
         ),
       );
     } catch (e) {
@@ -256,17 +339,30 @@ class _SettlementsState extends State<SettlementsScreen> {
     }
   }
 
-  Future<void> _fail(BuildContext context, Object id, Future<void> Function() reload) async {
+  Future<void> _fail(
+    BuildContext context,
+    Object id,
+    Future<void> Function() reload,
+  ) async {
     final t = context.t;
     final c = TextEditingController();
     final reason = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(t.poReasonTitle),
-        content: TextField(controller: c, decoration: InputDecoration(hintText: t.poReasonHint)),
+        content: TextField(
+          controller: c,
+          decoration: InputDecoration(hintText: t.poReasonHint),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(t.close)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(c.text.trim()), child: Text(t.poMarkFailed)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(t.close),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(c.text.trim()),
+            child: Text(t.poMarkFailed),
+          ),
         ],
       ),
     );
@@ -276,7 +372,13 @@ class _SettlementsState extends State<SettlementsScreen> {
       showToast(context, t.poReasonRequired);
       return;
     }
-    await _act(context, () => context.api.post('/admin/settlements/payouts/$id/fail', {'reason': reason}, ApiClient.newIdempotencyKey()), reload);
+    await _act(
+      context,
+      () => context.api.post('/admin/settlements/payouts/$id/fail', {
+        'reason': reason,
+      }, ApiClient.newIdempotencyKey()),
+      reload,
+    );
   }
 
   @override
@@ -307,27 +409,27 @@ class _SettlementsState extends State<SettlementsScreen> {
                 onSelectionChanged: (s) => setState(() => _payouts = s.first),
               ),
               if (!_payouts)
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 240),
-                child: DropdownButton<String?>(
-                isExpanded: true,
-                value: _state,
-                items: [
-                  DropdownMenuItem(value: null, child: Text(t.cAllStatus)),
-                  for (final s in const [
-                    'waiting_balance',
-                    'pending',
-                    'paid',
-                    'held',
-                  ])
-                    DropdownMenuItem(value: s, child: Text(stateLabel(s))),
-                ],
-                onChanged: (v) {
-                  setState(() => _state = v);
-                  _view.currentState?.reload();
-                },
-              ),
-              ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 240),
+                  child: DropdownButton<String?>(
+                    isExpanded: true,
+                    value: _state,
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(t.cAllStatus)),
+                      for (final s in const [
+                        'waiting_balance',
+                        'pending',
+                        'paid',
+                        'held',
+                      ])
+                        DropdownMenuItem(value: s, child: Text(stateLabel(s))),
+                    ],
+                    onChanged: (v) {
+                      setState(() => _state = v);
+                      _view.currentState?.reload();
+                    },
+                  ),
+                ),
               if (admin)
                 FilledButton.icon(
                   icon: const Icon(Icons.send_rounded),
@@ -341,69 +443,69 @@ class _SettlementsState extends State<SettlementsScreen> {
           child: _payouts
               ? _payoutList(context, admin)
               : AsyncView<List<Json>>(
-            key: _view,
-            load: () async =>
-                (await context.api.get(
-                          '/admin/settlements',
-                          query: {'state': _state},
-                        )
-                        as List)
-                    .cast<Json>(),
-            builder: (context, rows, reload) => ListView(
-              padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-              children: [
-                for (final s in rows)
-                  Card(
-                    elevation: 0,
-                    child: ListTile(
-                      title: Text('${s['team_name']} · ${s['number']}'),
-                      subtitle: Text(
-                        '${t.cNet} ${context.won((s['net'] as num).toInt())} · ${s['payout_date'] ?? '-'}',
-                      ),
-                      trailing: Wrap(
-                        spacing: 6,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Tag(
-                            label: stateLabel(s['state'] as String),
-                            hue: switch (s['state']) {
-                              'paid' => StatusHues.assigned,
-                              'pending' => StatusHues.confirmed,
-                              'held' => StatusHues.cancelled,
-                              _ => StatusHues.consultation,
-                            },
+                  key: _view,
+                  load: () async =>
+                      (await context.api.get(
+                                '/admin/settlements',
+                                query: {'state': _state},
+                              )
+                              as List)
+                          .cast<Json>(),
+                  builder: (context, rows, reload) => ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+                    children: [
+                      for (final s in rows)
+                        Card(
+                          elevation: 0,
+                          child: ListTile(
+                            title: Text('${s['team_name']} · ${s['number']}'),
+                            subtitle: Text(
+                              '${t.cNet} ${context.won((s['net'] as num).toInt())} · ${s['payout_date'] ?? '-'}',
+                            ),
+                            trailing: Wrap(
+                              spacing: 6,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Tag(
+                                  label: stateLabel(s['state'] as String),
+                                  hue: switch (s['state']) {
+                                    'paid' => StatusHues.assigned,
+                                    'pending' => StatusHues.confirmed,
+                                    'held' => StatusHues.cancelled,
+                                    _ => StatusHues.consultation,
+                                  },
+                                ),
+                                if (admin && s['state'] == 'pending')
+                                  TextButton(
+                                    onPressed: () => _act(
+                                      context,
+                                      () => context.api.post(
+                                        '/admin/settlements/${s['id']}/hold',
+                                        {'hold': true},
+                                      ),
+                                      reload,
+                                    ),
+                                    child: Text(t.cHold),
+                                  ),
+                                if (admin && s['state'] == 'held')
+                                  TextButton(
+                                    onPressed: () => _act(
+                                      context,
+                                      () => context.api.post(
+                                        '/admin/settlements/${s['id']}/hold',
+                                        {'hold': false},
+                                      ),
+                                      reload,
+                                    ),
+                                    child: Text(t.cRelease),
+                                  ),
+                              ],
+                            ),
                           ),
-                          if (admin && s['state'] == 'pending')
-                            TextButton(
-                              onPressed: () => _act(
-                                context,
-                                () => context.api.post(
-                                  '/admin/settlements/${s['id']}/hold',
-                                  {'hold': true},
-                                ),
-                                reload,
-                              ),
-                              child: Text(t.cHold),
-                            ),
-                          if (admin && s['state'] == 'held')
-                            TextButton(
-                              onPressed: () => _act(
-                                context,
-                                () => context.api.post(
-                                  '/admin/settlements/${s['id']}/hold',
-                                  {'hold': false},
-                                ),
-                                reload,
-                              ),
-                              child: Text(t.cRelease),
-                            ),
-                        ],
-                      ),
-                    ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
         ),
       ],
     );
@@ -588,21 +690,37 @@ class _StaffState extends State<StaffScreen> {
                 subtitle: Text(
                   s['role'] == 'admin' ? t.cRoleAdmin : t.cRoleConsultant,
                 ),
-                trailing: TextButton(
-                  onPressed: () async {
-                    // Only deactivation needs a confirm; reactivating is harmless.
-                    final deactivating = s['active'] == true;
-                    if (deactivating && !await confirmAction(context, t.cDeactivate)) return;
-                    if (!context.mounted) return;
-                    await _act(
-                      context,
-                      () => context.api.post('/admin/staff/${s['id']}/active', {'active': !deactivating}),
-                      reload,
-                    );
-                  },
-                  child: Text(
-                    s['active'] == true ? t.cDeactivate : t.cActivate,
-                  ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (s['active'] == true)
+                      TextButton(
+                        onPressed: () => issueStaffPasswordReset(context, s),
+                        child: Text(t.cStaffReset),
+                      ),
+                    TextButton(
+                      onPressed: () async {
+                        // Only deactivation needs a confirm; reactivating is harmless.
+                        final deactivating = s['active'] == true;
+                        if (deactivating &&
+                            !await confirmAction(context, t.cDeactivate)) {
+                          return;
+                        }
+                        if (!context.mounted) return;
+                        await _act(
+                          context,
+                          () => context.api.post(
+                            '/admin/staff/${s['id']}/active',
+                            {'active': !deactivating},
+                          ),
+                          reload,
+                        );
+                      },
+                      child: Text(
+                        s['active'] == true ? t.cDeactivate : t.cActivate,
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],

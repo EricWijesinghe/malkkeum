@@ -292,34 +292,39 @@ class _UpcomingCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: Space.xs),
-                            Flexible(child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.18),
-                                borderRadius: BorderRadius.circular(Radii.pill),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const _LiveDot(),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(
-                                      t.status(b.status),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: context.text.labelMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 12,
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(
+                                    Radii.pill,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const _LiveDot(),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        t.status(b.status),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: context.text.labelMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            )),
+                            ),
                           ],
                         ),
                         const SizedBox(height: Space.sm),
@@ -407,43 +412,48 @@ class _ServiceGrid extends StatelessWidget {
                         ),
                         // Large system fonts scale the tile down instead of overflowing it. The fixed
                         // width keeps every tile the same size; only height can trigger the scaling.
-                        child: LayoutBuilder(builder: (context, box) => FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: SizedBox(width: box.maxWidth, child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Hero(
-                              tag: 'svc-${s.code}',
-                              child: ServiceGlyph(s.code, size: 58),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              t.serviceShort(s.code),
-                              style: context.text.labelMedium,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            // Price is visible on the tile itself, in the service hue.
-                            // Scale the tag down rather than let neighbours collide on narrow phones.
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 2,
+                        child: LayoutBuilder(
+                          builder: (context, box) => FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: SizedBox(
+                              width: box.maxWidth,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Hero(
+                                    tag: 'svc-${s.code}',
+                                    child: ServiceGlyph(s.code, size: 58),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    t.serviceShort(s.code),
+                                    style: context.text.labelMedium,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  // Price is visible on the tile itself, in the service hue.
+                                  // Scale the tag down rather than let neighbours collide on narrow phones.
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 2,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Tag(
+                                        label: s.isQuote
+                                            ? t.quoteBadge
+                                            : t.fromPrice(
+                                                context.won(s.fromPrice ?? 0),
+                                              ),
+                                        hue: ServiceHues.of(s.code),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Tag(
-                                  label: s.isQuote
-                                      ? t.quoteBadge
-                                      : t.fromPrice(
-                                          context.won(s.fromPrice ?? 0),
-                                        ),
-                                  hue: ServiceHues.of(s.code),
-                                ),
-                              ),
                             ),
-                          ],
-                          )),
-                        )),
+                          ),
+                        ),
                       ),
                     ),
                   ),

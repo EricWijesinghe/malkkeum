@@ -64,7 +64,9 @@ class _TossSellerDialogState extends State<_TossSellerDialog> {
                 _body(),
               )
               as Json;
-      if (mounted) Navigator.of(context).pop(r['seller_status'] as String? ?? '');
+      if (mounted) {
+        Navigator.of(context).pop(r['seller_status'] as String? ?? '');
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _busy = false);
@@ -73,11 +75,14 @@ class _TossSellerDialogState extends State<_TossSellerDialog> {
     }
   }
 
-  String? _required(String? v) => (v ?? '').trim().isEmpty ? context.t.required : null;
+  String? _required(String? v) =>
+      (v ?? '').trim().isEmpty ? context.t.required : null;
 
   String? _digits(String? v, int count) {
     if (_required(v) != null) return context.t.required;
-    return v!.replaceAll(RegExp(r'\D'), '').length == count ? null : context.t.required;
+    return v!.replaceAll(RegExp(r'\D'), '').length == count
+        ? null
+        : context.t.required;
   }
 
   @override
@@ -96,11 +101,19 @@ class _TossSellerDialogState extends State<_TossSellerDialog> {
               const SizedBox(height: Space.sm),
               SegmentedButton<String>(
                 segments: [
-                  ButtonSegment(value: 'individual', label: Text(t.poSellerIndividual)),
-                  ButtonSegment(value: 'company', label: Text(t.poSellerCompany)),
+                  ButtonSegment(
+                    value: 'individual',
+                    label: Text(t.poSellerIndividual),
+                  ),
+                  ButtonSegment(
+                    value: 'company',
+                    label: Text(t.poSellerCompany),
+                  ),
                 ],
                 selected: {_type},
-                onSelectionChanged: _busy ? null : (s) => setState(() => _type = s.first),
+                onSelectionChanged: _busy
+                    ? null
+                    : (s) => setState(() => _type = s.first),
               ),
               const SizedBox(height: Space.sm),
               TextFormField(
@@ -113,7 +126,9 @@ class _TossSellerDialogState extends State<_TossSellerDialog> {
                 TextFormField(
                   controller: _representative,
                   enabled: !_busy,
-                  decoration: InputDecoration(labelText: t.poSellerRepresentative),
+                  decoration: InputDecoration(
+                    labelText: t.poSellerRepresentative,
+                  ),
                   validator: _required,
                 ),
                 TextFormField(
@@ -129,7 +144,9 @@ class _TossSellerDialogState extends State<_TossSellerDialog> {
                 enabled: !_busy,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(labelText: t.poSellerEmail),
-                validator: (v) => _required(v) ?? (_emailPattern.hasMatch(v!.trim()) ? null : t.required),
+                validator: (v) =>
+                    _required(v) ??
+                    (_emailPattern.hasMatch(v!.trim()) ? null : t.required),
               ),
               TextFormField(
                 controller: _phone,

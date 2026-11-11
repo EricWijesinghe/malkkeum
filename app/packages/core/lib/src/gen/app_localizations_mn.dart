@@ -3535,6 +3535,92 @@ class TMn extends T {
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
 
   @override
+  String get cMfaTitle => 'Хоёр шаттай нэвтрэлт';
+
+  @override
+  String get cMfaCode => 'Баталгаажуулагчийн аппаас 6 оронтой код';
+
+  @override
+  String get cMfaRecovery => 'Сэргээх код';
+
+  @override
+  String get cMfaUseRecovery => 'Оронд нь сэргээх код ашиглах';
+
+  @override
+  String get cMfaUseCode => 'Оронд нь баталгаажуулагчийн код ашиглах';
+
+  @override
+  String get cMfaVerify => 'Баталгаажуулах';
+
+  @override
+  String get cMfaBack => 'Нэвтрэх рүү буцах';
+
+  @override
+  String get cMfaEnrolTitle => 'Хоёр шаттай нэвтрэлтийг тохируулах';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Админд баталгаажуулах апп хэрэгтэй. Доорх түлхүүрийг Google Authenticator, 1Password гэх мэт апп-д нэмээд, тэнд гарсан 6 оронтой кодыг оруулна уу.';
+
+  @override
+  String get cMfaSecret => 'Тохируулах түлхүүр';
+
+  @override
+  String get cMfaLink => 'Тохируулах холбоос (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Хуулах';
+
+  @override
+  String get cMfaCopied => 'Хуулагдлаа';
+
+  @override
+  String get cMfaConfirm => 'Баталгаажуулж асаах';
+
+  @override
+  String get cMfaCodesTitle => 'Сэргээх кодоо хадгалаарай';
+
+  @override
+  String get cMfaCodesBody =>
+      'Баталгаажуулагчаа алдвал код бүр нэвтрэхэд нэг удаа ашиглагдана. Эдгээрийг одоо л харуулна.';
+
+  @override
+  String get cMfaDownload => 'Татах';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Энэ төхөөрөмж файл хадгалж чадахгүй. Кодыг хуулж аюулгүй газар хадгална уу.';
+
+  @override
+  String get cMfaContinue => 'Консол руу үргэлжлүүлэх';
+
+  @override
+  String get cMfaInvalid =>
+      'Код таарахгүй байна. Утасныхаа цагийг шалгаад дахин оролдоно уу.';
+
+  @override
+  String get cMfaExpired =>
+      'Нэвтрэлтийн хугацаа дууссан. Нууц үгийн алхмаас дахин эхлүүлнэ үү.';
+
+  @override
+  String get cMfaLocked =>
+      'Оролдлого хэт олон боллоо. Хэдэн минутын дараа дахин оролдоно уу.';
+
+  @override
+  String get cStaffReset => 'Нууц үг шинэчлэх';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Энэ ажилтны нууц үгийг шинэчлэх үү? Бүх төхөөрөмжөөс гаргана.';
+
+  @override
+  String get cStaffResetTitle => 'Шинэчлэх токен';
+
+  @override
+  String get cStaffResetBody =>
+      'Энэ токеныг ажилтанд өгнө үү. Нэг удаа, 30 минутын дотор ашиглагдана. Хаасны дараа дахин харах боломжгүй.';
+
+  @override
   String get tTaxSection => 'Татвар';
 
   @override

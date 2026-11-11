@@ -29,7 +29,8 @@ class Realtime {
   Stream<Map<String, dynamic>> get events => _events.stream;
 
   /// Events of [type], plus `resync` (sent after any gap so screens refetch).
-  Stream<Map<String, dynamic>> on(String type) => events.where((e) => e['type'] == type || e['type'] == 'resync');
+  Stream<Map<String, dynamic>> on(String type) =>
+      events.where((e) => e['type'] == type || e['type'] == 'resync');
 
   void connect() {
     _wanted = true;
@@ -54,7 +55,12 @@ class Realtime {
       final ch = WebSocketChannel.connect(api.wsUri());
       _ch = ch;
       ch.ready.then((_) => _attempt = 0, onError: (Object _) {});
-      _sub = ch.stream.listen(_onFrame, onDone: _dropped, onError: (Object _) => _dropped(), cancelOnError: true);
+      _sub = ch.stream.listen(
+        _onFrame,
+        onDone: _dropped,
+        onError: (Object _) => _dropped(),
+        cancelOnError: true,
+      );
     } catch (_) {
       _dropped();
     }
@@ -80,7 +86,9 @@ class Realtime {
   void _schedule() {
     if (!_wanted) return;
     _retry?.cancel();
-    final seconds = min(_maxBackoffSeconds, pow(2, _attempt).toInt()) + Random().nextDouble();
+    final seconds =
+        min(_maxBackoffSeconds, pow(2, _attempt).toInt()) +
+        Random().nextDouble();
     _attempt++;
     _retry = Timer(Duration(milliseconds: (seconds * 1000).round()), () async {
       // Access tokens are short-lived; a cheap authenticated call refreshes it if needed.

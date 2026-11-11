@@ -3425,6 +3425,86 @@ class TKo extends T {
   String get cInvalidValue => '입력값을 확인해 주세요';
 
   @override
+  String get cMfaTitle => '2단계 인증';
+
+  @override
+  String get cMfaCode => '인증 앱의 6자리 코드';
+
+  @override
+  String get cMfaRecovery => '복구 코드';
+
+  @override
+  String get cMfaUseRecovery => '복구 코드 사용';
+
+  @override
+  String get cMfaUseCode => '인증 앱 코드 사용';
+
+  @override
+  String get cMfaVerify => '확인';
+
+  @override
+  String get cMfaBack => '로그인 화면으로';
+
+  @override
+  String get cMfaEnrolTitle => '2단계 인증 설정';
+
+  @override
+  String get cMfaEnrolBody =>
+      '관리자는 인증 앱 사용이 필요해요. Google Authenticator, 1Password 같은 앱에 아래 키를 추가한 뒤 앱에 표시된 6자리 코드를 입력하세요.';
+
+  @override
+  String get cMfaSecret => '설정 키';
+
+  @override
+  String get cMfaLink => '설정 링크 (otpauth)';
+
+  @override
+  String get cMfaCopy => '복사';
+
+  @override
+  String get cMfaCopied => '복사했어요';
+
+  @override
+  String get cMfaConfirm => '확인하고 2단계 인증 켜기';
+
+  @override
+  String get cMfaCodesTitle => '복구 코드를 저장하세요';
+
+  @override
+  String get cMfaCodesBody => '인증 앱을 잃어버리면 각 코드를 한 번씩 쓸 수 있어요. 이 화면에서만 보여요.';
+
+  @override
+  String get cMfaDownload => '파일로 저장';
+
+  @override
+  String get cMfaSaveFailed => '이 기기에서 파일을 저장할 수 없어요. 복사해서 보관하세요.';
+
+  @override
+  String get cMfaContinue => '콘솔로 들어가기';
+
+  @override
+  String get cMfaInvalid => '코드가 맞지 않아요. 휴대폰 시간이 맞는지 확인하고 다시 입력하세요.';
+
+  @override
+  String get cMfaExpired => '로그인 시간이 지났어요. 비밀번호부터 다시 입력하세요.';
+
+  @override
+  String get cMfaLocked => '시도가 너무 많아요. 몇 분 뒤에 다시 시도하세요.';
+
+  @override
+  String get cStaffReset => '비밀번호 재설정';
+
+  @override
+  String get cStaffResetConfirm => '이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.';
+
+  @override
+  String get cStaffResetTitle => '재설정 토큰';
+
+  @override
+  String get cStaffResetBody =>
+      '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+
+  @override
   String get tTaxSection => '세무';
 
   @override

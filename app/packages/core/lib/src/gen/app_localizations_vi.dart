@@ -3494,6 +3494,91 @@ class TVi extends T {
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
 
   @override
+  String get cMfaTitle => 'Xác minh 2 bước';
+
+  @override
+  String get cMfaCode => 'Mã 6 số từ ứng dụng xác thực';
+
+  @override
+  String get cMfaRecovery => 'Mã khôi phục';
+
+  @override
+  String get cMfaUseRecovery => 'Dùng mã khôi phục thay thế';
+
+  @override
+  String get cMfaUseCode => 'Dùng mã từ ứng dụng xác thực';
+
+  @override
+  String get cMfaVerify => 'Xác minh';
+
+  @override
+  String get cMfaBack => 'Quay lại đăng nhập';
+
+  @override
+  String get cMfaEnrolTitle => 'Thiết lập xác minh 2 bước';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Quản trị viên cần ứng dụng xác thực. Thêm khóa bên dưới vào Google Authenticator, 1Password hoặc ứng dụng tương tự, rồi nhập mã 6 số hiển thị trên đó.';
+
+  @override
+  String get cMfaSecret => 'Khóa thiết lập';
+
+  @override
+  String get cMfaLink => 'Liên kết thiết lập (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Sao chép';
+
+  @override
+  String get cMfaCopied => 'Đã sao chép';
+
+  @override
+  String get cMfaConfirm => 'Xác nhận và bật';
+
+  @override
+  String get cMfaCodesTitle => 'Lưu mã khôi phục của bạn';
+
+  @override
+  String get cMfaCodesBody =>
+      'Nếu mất ứng dụng xác thực, mỗi mã đăng nhập được một lần. Mã chỉ hiển thị lúc này.';
+
+  @override
+  String get cMfaDownload => 'Tải xuống';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Thiết bị này không lưu được tệp. Hãy sao chép mã và giữ an toàn.';
+
+  @override
+  String get cMfaContinue => 'Vào bảng điều hành';
+
+  @override
+  String get cMfaInvalid =>
+      'Mã không khớp. Kiểm tra đồng hồ điện thoại rồi thử lại.';
+
+  @override
+  String get cMfaExpired =>
+      'Phiên đăng nhập đã hết hạn. Bắt đầu lại từ bước mật khẩu.';
+
+  @override
+  String get cMfaLocked => 'Thử quá nhiều lần. Chờ vài phút rồi thử lại.';
+
+  @override
+  String get cStaffReset => 'Đặt lại mật khẩu';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Đặt lại mật khẩu của nhân viên này? Họ sẽ bị đăng xuất khỏi mọi nơi.';
+
+  @override
+  String get cStaffResetTitle => 'Mã đặt lại';
+
+  @override
+  String get cStaffResetBody =>
+      'Gửi mã này cho nhân viên. Chỉ dùng được một lần, trong 30 phút. Đóng lại là không xem lại được.';
+
+  @override
   String get tTaxSection => 'Thuế';
 
   @override

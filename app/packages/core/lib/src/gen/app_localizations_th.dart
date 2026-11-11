@@ -3505,6 +3505,91 @@ class TTh extends T {
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
 
   @override
+  String get cMfaTitle => 'การยืนยันสองขั้นตอน';
+
+  @override
+  String get cMfaCode => 'รหัส 6 หลักจากแอปยืนยันตัวตน';
+
+  @override
+  String get cMfaRecovery => 'รหัสกู้คืน';
+
+  @override
+  String get cMfaUseRecovery => 'ใช้รหัสกู้คืนแทน';
+
+  @override
+  String get cMfaUseCode => 'ใช้รหัสจากแอปยืนยันตัวตนแทน';
+
+  @override
+  String get cMfaVerify => 'ยืนยัน';
+
+  @override
+  String get cMfaBack => 'กลับไปหน้าเข้าสู่ระบบ';
+
+  @override
+  String get cMfaEnrolTitle => 'ตั้งค่าการยืนยันสองขั้นตอน';
+
+  @override
+  String get cMfaEnrolBody =>
+      'ผู้ดูแลต้องใช้แอปยืนยันตัวตน เพิ่มคีย์ด้านล่างลงใน Google Authenticator, 1Password หรือแอปที่คล้ายกัน แล้วกรอกรหัส 6 หลักที่แอปแสดง';
+
+  @override
+  String get cMfaSecret => 'คีย์ตั้งค่า';
+
+  @override
+  String get cMfaLink => 'ลิงก์ตั้งค่า (otpauth)';
+
+  @override
+  String get cMfaCopy => 'คัดลอก';
+
+  @override
+  String get cMfaCopied => 'คัดลอกแล้ว';
+
+  @override
+  String get cMfaConfirm => 'ยืนยันและเปิดใช้งาน';
+
+  @override
+  String get cMfaCodesTitle => 'บันทึกรหัสกู้คืนของคุณ';
+
+  @override
+  String get cMfaCodesBody =>
+      'หากทำแอปยืนยันตัวตนหาย แต่ละรหัสใช้เข้าสู่ระบบได้หนึ่งครั้ง แสดงเพียงครั้งเดียวตอนนี้';
+
+  @override
+  String get cMfaDownload => 'ดาวน์โหลด';
+
+  @override
+  String get cMfaSaveFailed =>
+      'อุปกรณ์นี้บันทึกไฟล์ไม่ได้ กรุณาคัดลอกรหัสและเก็บไว้ให้ปลอดภัย';
+
+  @override
+  String get cMfaContinue => 'ไปที่คอนโซล';
+
+  @override
+  String get cMfaInvalid =>
+      'รหัสไม่ตรงกัน ตรวจสอบว่านาฬิกาในโทรศัพท์ถูกต้อง แล้วลองอีกครั้ง';
+
+  @override
+  String get cMfaExpired =>
+      'การเข้าสู่ระบบหมดอายุ เริ่มใหม่ตั้งแต่ขั้นตอนรหัสผ่าน';
+
+  @override
+  String get cMfaLocked => 'พยายามหลายครั้งเกินไป รอสักครู่แล้วลองอีกครั้ง';
+
+  @override
+  String get cStaffReset => 'รีเซ็ตรหัสผ่าน';
+
+  @override
+  String get cStaffResetConfirm =>
+      'รีเซ็ตรหัสผ่านของพนักงานคนนี้ไหม? พนักงานจะถูกออกจากระบบทุกที่';
+
+  @override
+  String get cStaffResetTitle => 'โทเคนรีเซ็ต';
+
+  @override
+  String get cStaffResetBody =>
+      'ส่งโทเคนนี้ให้พนักงาน ใช้ได้ครั้งเดียวภายใน 30 นาที ปิดหน้านี้แล้วจะดูอีกไม่ได้';
+
+  @override
   String get tTaxSection => 'ภาษี';
 
   @override

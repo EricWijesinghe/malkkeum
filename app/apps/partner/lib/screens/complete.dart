@@ -39,7 +39,8 @@ class _CompleteScreenState extends State<CompleteScreen> {
   /// Set once the job is completed or queued, so leaving the screen does not keep a draft.
   bool _finished = false;
 
-  bool get _ready => _before.isNotEmpty && _after.isNotEmpty && _checks.every((c) => c);
+  bool get _ready =>
+      _before.isNotEmpty && _after.isNotEmpty && _checks.every((c) => c);
 
   @override
   void initState() {
@@ -115,7 +116,9 @@ class _CompleteScreenState extends State<CompleteScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _failed.add(p));
-        if (e is! ApiException || !e.isNetwork) showToast(context, context.t.error(e));
+        if (e is! ApiException || !e.isNetwork) {
+          showToast(context, context.t.error(e));
+        }
       }
     } finally {
       if (mounted) setState(() => _sending.remove(p));
@@ -130,10 +133,11 @@ class _CompleteScreenState extends State<CompleteScreen> {
 
   Future<void> _complete() async {
     final entry = _entry(ready: true);
+    final api = context.api;
     setState(() => _busy = true);
     try {
       await _box.save(entry);
-      final r = await _box.send(context.api, entry);
+      final r = await _box.send(api, entry);
       _finished = true;
       if (!mounted) return;
       if (!widget.isMember) {
@@ -259,7 +263,10 @@ class _CompleteScreenState extends State<CompleteScreen> {
       children: [
         SectionTitle('$title (${list.length})'),
         if (_sending.any(list.contains))
-          Text(context.t.pUploadedCount('${list.length}', '$uploaded'), style: context.text.labelSmall),
+          Text(
+            context.t.pUploadedCount('${list.length}', '$uploaded'),
+            style: context.text.labelSmall,
+          ),
         SizedBox(
           height: 96,
           child: ListView(

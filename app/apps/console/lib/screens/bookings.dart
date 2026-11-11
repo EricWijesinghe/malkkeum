@@ -85,54 +85,57 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 240),
                       child: DropdownButton<int?>(
-                      isExpanded: true,
-                      value: _status,
-                      hint: Text(t.cAllStatus),
-                      items: [
-                        DropdownMenuItem(
-                          value: null,
-                          child: Text(t.cAllStatus),
-                        ),
-                        for (final s in const [0, 1, 2, 3, -1])
-                          DropdownMenuItem(value: s, child: Text(t.status(s))),
-                      ],
-                      onChanged: (v) {
-                        setState(() => _status = v);
-                        _list.currentState?.reload();
-                      },
-                    ),
+                        isExpanded: true,
+                        value: _status,
+                        hint: Text(t.cAllStatus),
+                        items: [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text(t.cAllStatus),
+                          ),
+                          for (final s in const [0, 1, 2, 3, -1])
+                            DropdownMenuItem(
+                              value: s,
+                              child: Text(t.status(s)),
+                            ),
+                        ],
+                        onChanged: (v) {
+                          setState(() => _status = v);
+                          _list.currentState?.reload();
+                        },
+                      ),
                     ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 240),
                     child: DropdownButton<String?>(
-                    isExpanded: true,
-                    value: _service,
-                    hint: Text(t.cAllServices),
-                    items: [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text(t.cAllServices),
-                      ),
-                      for (final c
-                          in widget.quoteDesk
-                              ? const ['move_out', 'move_in']
-                              : const [
-                                  'studio',
-                                  'kitchen',
-                                  'bathroom',
-                                  'mattress',
-                                  'aircon',
-                                  'sofa',
-                                  'move_out',
-                                  'move_in',
-                                ])
-                        DropdownMenuItem(value: c, child: Text(t.service(c))),
-                    ],
-                    onChanged: (v) {
-                      setState(() => _service = v);
-                      _list.currentState?.reload();
-                    },
-                  ),
+                      isExpanded: true,
+                      value: _service,
+                      hint: Text(t.cAllServices),
+                      items: [
+                        DropdownMenuItem(
+                          value: null,
+                          child: Text(t.cAllServices),
+                        ),
+                        for (final c
+                            in widget.quoteDesk
+                                ? const ['move_out', 'move_in']
+                                : const [
+                                    'studio',
+                                    'kitchen',
+                                    'bathroom',
+                                    'mattress',
+                                    'aircon',
+                                    'sofa',
+                                    'move_out',
+                                    'move_in',
+                                  ])
+                          DropdownMenuItem(value: c, child: Text(t.service(c))),
+                      ],
+                      onChanged: (v) {
+                        setState(() => _service = v);
+                        _list.currentState?.reload();
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -212,7 +215,9 @@ class _Row extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Flexible(child: StatusBadge(status: b.status, label: t.status(b.status))),
+          Flexible(
+            child: StatusBadge(status: b.status, label: t.status(b.status)),
+          ),
         ],
       ),
       subtitle: Text(

@@ -3553,6 +3553,92 @@ class TFil extends T {
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
 
   @override
+  String get cMfaTitle => 'Dalawang-hakbang na pag-sign in';
+
+  @override
+  String get cMfaCode => '6-digit na code mula sa authenticator app';
+
+  @override
+  String get cMfaRecovery => 'Recovery code';
+
+  @override
+  String get cMfaUseRecovery => 'Gumamit ng recovery code';
+
+  @override
+  String get cMfaUseCode => 'Gumamit ng code mula sa authenticator';
+
+  @override
+  String get cMfaVerify => 'I-verify';
+
+  @override
+  String get cMfaBack => 'Bumalik sa sign-in';
+
+  @override
+  String get cMfaEnrolTitle => 'I-set up ang dalawang-hakbang na sign-in';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Kailangan ng admin ng authenticator app. Idagdag ang key sa ibaba sa Google Authenticator, 1Password o katulad, pagkatapos ilagay ang 6-digit na code na ipinapakita nito.';
+
+  @override
+  String get cMfaSecret => 'Setup key';
+
+  @override
+  String get cMfaLink => 'Setup link (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Kopyahin';
+
+  @override
+  String get cMfaCopied => 'Nakopya';
+
+  @override
+  String get cMfaConfirm => 'Kumpirmahin at i-on';
+
+  @override
+  String get cMfaCodesTitle => 'I-save ang iyong recovery codes';
+
+  @override
+  String get cMfaCodesBody =>
+      'Kung mawala ang authenticator, bawat code ay magagamit nang isang beses sa pag-sign in. Ipinapakita lamang ang mga ito ngayon.';
+
+  @override
+  String get cMfaDownload => 'I-download';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Hindi maisave ang file sa device na ito. Kopyahin ang mga code at itago nang ligtas.';
+
+  @override
+  String get cMfaContinue => 'Magpatuloy sa console';
+
+  @override
+  String get cMfaInvalid =>
+      'Hindi tugma ang code. Tiyaking tama ang oras ng telepono at subukan muli.';
+
+  @override
+  String get cMfaExpired =>
+      'Nag-expire ang sign-in. Magsimulang muli sa hakbang ng password.';
+
+  @override
+  String get cMfaLocked =>
+      'Napakaraming pagsubok. Maghintay ng ilang minuto at subukan muli.';
+
+  @override
+  String get cStaffReset => 'I-reset ang password';
+
+  @override
+  String get cStaffResetConfirm =>
+      'I-reset ang password ng staff na ito? Made-log out siya sa lahat ng lugar.';
+
+  @override
+  String get cStaffResetTitle => 'Reset token';
+
+  @override
+  String get cStaffResetBody =>
+      'Ibigay ang token na ito sa staff. Isang beses lang magagamit, sa loob ng 30 minuto. Hindi na ito makikita pagkasara.';
+
+  @override
   String get tTaxSection => 'Buwis';
 
   @override

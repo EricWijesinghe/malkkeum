@@ -19,26 +19,76 @@ class IntroScreen extends StatelessWidget {
       body: AuroraBackground(
         child: SafeArea(
           // Fills the screen on normal phones; scrolls instead of overflowing on small ones with large text.
-          child: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: box.maxHeight),
-              child: IntrinsicHeight(child: Padding(
-            padding: const EdgeInsets.all(Space.gutter),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const SizedBox(height: Space.xl),
-              StaggerIn(index: 0, child: Text(BrandConfig.placeholder.name, style: context.text.titleLarge?.copyWith(color: context.primary, fontWeight: FontWeight.w800))),
-              Expanded(child: Center(child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 120), child: const _OrbField()))),
-              StaggerIn(index: 1, child: Text(t.introTitle, style: context.text.displaySmall)),
-              const SizedBox(height: Space.sm),
-              StaggerIn(index: 2, child: Text(t.introBody, style: context.text.bodyLarge?.copyWith(color: context.colors.inkSoft))),
-              const SizedBox(height: Space.xxl),
-              PrimaryButton(label: t.introStart, onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PhoneScreen()))),
-              const SizedBox(height: Space.sm),
-              Center(child: Text(t.loginTerms, style: context.text.labelSmall, textAlign: TextAlign.center)),
-            ]),
-          )),
+          child: LayoutBuilder(
+            builder: (context, box) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: box.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Space.gutter),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: Space.xl),
+                        StaggerIn(
+                          index: 0,
+                          child: Text(
+                            BrandConfig.placeholder.name,
+                            style: context.text.titleLarge?.copyWith(
+                              color: context.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: 120),
+                              child: const _OrbField(),
+                            ),
+                          ),
+                        ),
+                        StaggerIn(
+                          index: 1,
+                          child: Text(
+                            t.introTitle,
+                            style: context.text.displaySmall,
+                          ),
+                        ),
+                        const SizedBox(height: Space.sm),
+                        StaggerIn(
+                          index: 2,
+                          child: Text(
+                            t.introBody,
+                            style: context.text.bodyLarge?.copyWith(
+                              color: context.colors.inkSoft,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: Space.xxl),
+                        PrimaryButton(
+                          label: t.introStart,
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const PhoneScreen(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: Space.sm),
+                        Center(
+                          child: Text(
+                            t.loginTerms,
+                            style: context.text.labelSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          )),
+          ),
         ),
       ),
     );
@@ -51,22 +101,62 @@ class _OrbField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const AspectRatio(
-        aspectRatio: 1,
-        child: ParallaxField(
-          range: 22,
-          items: [
-            ParallaxItem(alignment: Alignment(-0.62, -0.78), depth: 0.6, phase: 0.0, child: ServiceGlyph('studio', size: 72)),
-            ParallaxItem(alignment: Alignment(0.02, -0.95), depth: 0.9, phase: 0.2, child: ServiceGlyph('kitchen', size: 64)),
-            ParallaxItem(alignment: Alignment(0.68, -0.7), depth: 0.5, phase: 0.4, child: ServiceGlyph('bathroom', size: 78)),
-            ParallaxItem(alignment: Alignment(-0.9, -0.05), depth: 1.0, phase: 0.6, child: ServiceGlyph('mattress', size: 74)),
-            ParallaxItem(alignment: Alignment(0.86, 0.02), depth: 0.7, phase: 0.8, child: ServiceGlyph('aircon', size: 66)),
-            ParallaxItem(alignment: Alignment(-0.38, 0.5), depth: 0.4, phase: 0.1, child: ServiceGlyph('sofa', size: 60)),
-            ParallaxItem(alignment: Alignment(0.42, 0.62), depth: 0.8, phase: 0.3, child: ServiceGlyph('move_out', size: 72)),
-            ParallaxItem(alignment: Alignment(-0.84, 0.72), depth: 0.6, phase: 0.5, child: ServiceGlyph('move_in', size: 58)),
-            ParallaxItem(alignment: Alignment.center, depth: 0.2, child: _Sun()),
-          ],
+    aspectRatio: 1,
+    child: ParallaxField(
+      range: 22,
+      items: [
+        ParallaxItem(
+          alignment: Alignment(-0.62, -0.78),
+          depth: 0.6,
+          phase: 0.0,
+          child: ServiceGlyph('studio', size: 72),
         ),
-      );
+        ParallaxItem(
+          alignment: Alignment(0.02, -0.95),
+          depth: 0.9,
+          phase: 0.2,
+          child: ServiceGlyph('kitchen', size: 64),
+        ),
+        ParallaxItem(
+          alignment: Alignment(0.68, -0.7),
+          depth: 0.5,
+          phase: 0.4,
+          child: ServiceGlyph('bathroom', size: 78),
+        ),
+        ParallaxItem(
+          alignment: Alignment(-0.9, -0.05),
+          depth: 1.0,
+          phase: 0.6,
+          child: ServiceGlyph('mattress', size: 74),
+        ),
+        ParallaxItem(
+          alignment: Alignment(0.86, 0.02),
+          depth: 0.7,
+          phase: 0.8,
+          child: ServiceGlyph('aircon', size: 66),
+        ),
+        ParallaxItem(
+          alignment: Alignment(-0.38, 0.5),
+          depth: 0.4,
+          phase: 0.1,
+          child: ServiceGlyph('sofa', size: 60),
+        ),
+        ParallaxItem(
+          alignment: Alignment(0.42, 0.62),
+          depth: 0.8,
+          phase: 0.3,
+          child: ServiceGlyph('move_out', size: 72),
+        ),
+        ParallaxItem(
+          alignment: Alignment(-0.84, 0.72),
+          depth: 0.6,
+          phase: 0.5,
+          child: ServiceGlyph('move_in', size: 58),
+        ),
+        ParallaxItem(alignment: Alignment.center, depth: 0.2, child: _Sun()),
+      ],
+    ),
+  );
 }
 
 class _Sun extends StatelessWidget {
@@ -80,17 +170,31 @@ class _Sun extends StatelessWidget {
       height: 84,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: RadialGradient(colors: [sun.withValues(alpha: 0.9), sun.withValues(alpha: 0.35)]),
-        boxShadow: [BoxShadow(color: sun.withValues(alpha: 0.35), blurRadius: 36, spreadRadius: 2)],
+        gradient: RadialGradient(
+          colors: [sun.withValues(alpha: 0.9), sun.withValues(alpha: 0.35)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: sun.withValues(alpha: 0.35),
+            blurRadius: 36,
+            spreadRadius: 2,
+          ),
+        ],
       ),
-      child: const Icon(Icons.auto_awesome_rounded, size: 40, color: Colors.white),
+      child: const Icon(
+        Icons.auto_awesome_rounded,
+        size: 40,
+        color: Colors.white,
+      ),
     );
   }
 }
 
 String _pretty(String digits) {
   if (digits.length < 4) return digits;
-  if (digits.length < 8) return '${digits.substring(0, 3)}-${digits.substring(3)}';
+  if (digits.length < 8) {
+    return '${digits.substring(0, 3)}-${digits.substring(3)}';
+  }
   final mid = digits.length == 11 ? 7 : 6;
   return '${digits.substring(0, 3)}-${digits.substring(3, mid)}-${digits.substring(mid)}';
 }
@@ -116,10 +220,21 @@ class _PhoneScreenState extends State<PhoneScreen> {
     final nav = Navigator.of(context);
     setState(() => _busyProvider = provider.provider);
     try {
-      final result = await signInWithSocial(context: context, api: deps.session.api, session: deps.session, provider: provider, audience: 'customer');
+      final result = await signInWithSocial(
+        context: context,
+        api: deps.session.api,
+        session: deps.session,
+        provider: provider,
+        audience: 'customer',
+      );
       if (result == null || !mounted) return;
       if (result.needsPhone) {
-        await nav.push<bool>(MaterialPageRoute<bool>(builder: (_) => PhoneAttachScreen(api: deps.session.api, audience: 'customer')));
+        await nav.push<bool>(
+          MaterialPageRoute<bool>(
+            builder: (_) =>
+                PhoneAttachScreen(api: deps.session.api, audience: 'customer'),
+          ),
+        );
         if (!mounted) return;
       }
       // The language picked before sign-in (or the device one) becomes the account language.
@@ -127,7 +242,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
       await deps.app.loadProfile();
       if (!mounted) return;
       if (result.isNew || deps.app.name.isEmpty) {
-        await nav.pushReplacement(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
+        await nav.pushReplacement(
+          MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
+        );
       } else {
         nav.popUntil((route) => route.isFirst);
       }
@@ -142,9 +259,16 @@ class _PhoneScreenState extends State<PhoneScreen> {
     setState(() => _busy = true);
     final session = Deps.read(context).session;
     try {
-      final dev = await session.requestOtp(_digits, locale: Deps.read(context).locale.effectiveCode);
+      final dev = await session.requestOtp(
+        _digits,
+        locale: Deps.read(context).locale.effectiveCode,
+      );
       if (!mounted) return;
-      await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => CodeScreen(phone: _digits, devCode: dev)));
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => CodeScreen(phone: _digits, devCode: dev),
+        ),
+      );
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {
@@ -160,35 +284,53 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(),
-        body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-          Text(context.t.loginPhoneTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.xl),
-          TextField(
-            controller: _ctrl,
-            autofocus: true,
-            keyboardType: TextInputType.phone,
-            autofillHints: const [AutofillHints.telephoneNumber],
-            style: context.text.headlineSmall,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(11),
-              TextInputFormatter.withFunction((_, v) => TextEditingValue(text: _pretty(v.text), selection: TextSelection.collapsed(offset: _pretty(v.text).length))),
-            ],
-            decoration: InputDecoration(hintText: context.t.loginPhoneHint),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => _valid ? _send() : null,
+    appBar: AppBar(),
+    body: ListView(
+      padding: const EdgeInsets.all(Space.gutter),
+      children: [
+        Text(context.t.loginPhoneTitle, style: context.text.headlineSmall),
+        const SizedBox(height: Space.xl),
+        TextField(
+          controller: _ctrl,
+          autofocus: true,
+          keyboardType: TextInputType.phone,
+          autofillHints: const [AutofillHints.telephoneNumber],
+          style: context.text.headlineSmall,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(11),
+            TextInputFormatter.withFunction(
+              (_, v) => TextEditingValue(
+                text: _pretty(v.text),
+                selection: TextSelection.collapsed(
+                  offset: _pretty(v.text).length,
+                ),
+              ),
+            ),
+          ],
+          decoration: InputDecoration(hintText: context.t.loginPhoneHint),
+          onChanged: (_) => setState(() {}),
+          onSubmitted: (_) => _valid ? _send() : null,
+        ),
+        const SizedBox(height: Space.xl),
+        SocialSignInRow(
+          providers: defaultSocialSignIns(
+            Deps.read(context).session.api.baseUrl,
           ),
-          const SizedBox(height: Space.xl),
-          SocialSignInRow(
-            providers: defaultSocialSignIns(Deps.read(context).session.api.baseUrl),
-            busyProvider: _busyProvider,
-            devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
-            onSelected: _socialSignIn,
-          ),
-        ]),
-        bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: context.t.loginSendCode, busy: _busy, onPressed: _valid ? _send : null)),
-      );
+          busyProvider: _busyProvider,
+          devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
+          onSelected: _socialSignIn,
+        ),
+      ],
+    ),
+    bottomNavigationBar: BottomActionBar(
+      child: PrimaryButton(
+        label: context.t.loginSendCode,
+        busy: _busy,
+        onPressed: _valid ? _send : null,
+      ),
+    ),
+  );
 }
 
 class CodeScreen extends StatefulWidget {
@@ -214,7 +356,10 @@ class _CodeScreenState extends State<CodeScreen> {
   void _tick() {
     _timer?.cancel();
     _left = 60;
-    _timer = Timer.periodic(const Duration(seconds: 1), (t) => setState(() => _left > 0 ? _left-- : t.cancel()));
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (t) => setState(() => _left > 0 ? _left-- : t.cancel()),
+    );
   }
 
   Future<void> _verify() async {
@@ -222,7 +367,11 @@ class _CodeScreenState extends State<CodeScreen> {
     setState(() => _busy = true);
     final deps = Deps.read(context);
     try {
-      final isNew = await deps.session.verifyOtp(widget.phone, _ctrl.text, audience: 'customer');
+      final isNew = await deps.session.verifyOtp(
+        widget.phone,
+        _ctrl.text,
+        audience: 'customer',
+      );
       if (!mounted) return;
       // The language picked before sign-in (or the device one) becomes the account language.
       deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
@@ -230,7 +379,9 @@ class _CodeScreenState extends State<CodeScreen> {
       if (!mounted) return;
       final nav = Navigator.of(context);
       if (isNew || deps.app.name.isEmpty) {
-        await nav.pushReplacement(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
+        await nav.pushReplacement(
+          MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
+        );
       } else {
         nav.popUntil((r) => r.isFirst);
       }
@@ -244,7 +395,10 @@ class _CodeScreenState extends State<CodeScreen> {
 
   Future<void> _resend() async {
     try {
-      final dev = await Deps.read(context).session.requestOtp(widget.phone, locale: Deps.read(context).locale.effectiveCode);
+      final dev = await Deps.read(context).session.requestOtp(
+        widget.phone,
+        locale: Deps.read(context).locale.effectiveCode,
+      );
       if (dev != null) _ctrl.text = dev;
       _tick();
     } catch (e) {
@@ -261,33 +415,54 @@ class _CodeScreenState extends State<CodeScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(),
-        body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-          Text(context.t.loginCodeTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.xs),
-          Text(context.t.loginCodeSentTo(_pretty(widget.phone)), style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
-          const SizedBox(height: Space.xl),
-          TextField(
-            controller: _ctrl,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            textAlign: TextAlign.center,
-            style: context.text.headlineMedium?.copyWith(letterSpacing: 12),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
-            onChanged: (v) => v.length == 6 ? _verify() : setState(() {}),
-            decoration: const InputDecoration(hintText: '••••••'),
+    appBar: AppBar(),
+    body: ListView(
+      padding: const EdgeInsets.all(Space.gutter),
+      children: [
+        Text(context.t.loginCodeTitle, style: context.text.headlineSmall),
+        const SizedBox(height: Space.xs),
+        Text(
+          context.t.loginCodeSentTo(_pretty(widget.phone)),
+          style: context.text.bodyMedium?.copyWith(
+            color: context.colors.inkMuted,
           ),
-          const SizedBox(height: Space.md),
-          Center(
-            child: TextButton(
-              onPressed: _left == 0 ? _resend : null,
-              child: Text(_left == 0 ? context.t.loginResend : '${context.t.loginResend} ($_left)'),
+        ),
+        const SizedBox(height: Space.xl),
+        TextField(
+          controller: _ctrl,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          autofillHints: const [AutofillHints.oneTimeCode],
+          textAlign: TextAlign.center,
+          style: context.text.headlineMedium?.copyWith(letterSpacing: 12),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(6),
+          ],
+          onChanged: (v) => v.length == 6 ? _verify() : setState(() {}),
+          decoration: const InputDecoration(hintText: '••••••'),
+        ),
+        const SizedBox(height: Space.md),
+        Center(
+          child: TextButton(
+            onPressed: _left == 0 ? _resend : null,
+            child: Text(
+              _left == 0
+                  ? context.t.loginResend
+                  : '${context.t.loginResend} ($_left)',
             ),
           ),
-        ]),
-        bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: context.t.loginVerify, busy: _busy, onPressed: _ctrl.text.length == 6 ? _verify : null)),
-      );
+        ),
+      ],
+    ),
+    bottomNavigationBar: BottomActionBar(
+      child: PrimaryButton(
+        label: context.t.loginVerify,
+        busy: _busy,
+        onPressed: _ctrl.text.length == 6 ? _verify : null,
+      ),
+    ),
+  );
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -304,7 +479,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _busy = true);
     final app = context.appRead;
     try {
-      await app.api.patch('/me', {'name': _ctrl.text.trim(), 'locale': context.lang});
+      await app.api.patch('/me', {
+        'name': _ctrl.text.trim(),
+        'locale': context.lang,
+      });
       await Future.wait([app.loadProfile(), app.loadCoupons()]);
       if (!mounted) return;
       showToast(context, context.t.welcomeToast);
@@ -324,20 +502,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(automaticallyImplyLeading: false),
-        body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-          Text(context.t.profileTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.xl),
-          TextField(
-            controller: _ctrl,
-            autofocus: true,
-            maxLength: 40,
-            textInputAction: TextInputAction.done,
-            autofillHints: const [AutofillHints.name],
-            decoration: InputDecoration(hintText: context.t.profileNameHint, counterText: ''),
-            onChanged: (_) => setState(() {}),
+    appBar: AppBar(automaticallyImplyLeading: false),
+    body: ListView(
+      padding: const EdgeInsets.all(Space.gutter),
+      children: [
+        Text(context.t.profileTitle, style: context.text.headlineSmall),
+        const SizedBox(height: Space.xl),
+        TextField(
+          controller: _ctrl,
+          autofocus: true,
+          maxLength: 40,
+          textInputAction: TextInputAction.done,
+          autofillHints: const [AutofillHints.name],
+          decoration: InputDecoration(
+            hintText: context.t.profileNameHint,
+            counterText: '',
           ),
-        ]),
-        bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: context.t.profileDone, busy: _busy, onPressed: _ctrl.text.trim().isEmpty ? null : _save)),
-      );
+          onChanged: (_) => setState(() {}),
+        ),
+      ],
+    ),
+    bottomNavigationBar: BottomActionBar(
+      child: PrimaryButton(
+        label: context.t.profileDone,
+        busy: _busy,
+        onPressed: _ctrl.text.trim().isEmpty ? null : _save,
+      ),
+    ),
+  );
 }

@@ -101,13 +101,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
                               ? Text(t.pvMarketingHint)
                               : null,
                           secondary: Text(
-                            item['required'] == true ? t.required : t.pvOptional,
+                            item['required'] == true
+                                ? t.required
+                                : t.pvOptional,
                             style: context.text.labelSmall,
                           ),
                           onChanged: item['required'] == true
                               ? null
                               : (v) => setState(
-                                  () => _granted[item['kind'] as String] = v ?? false,
+                                  () => _granted[item['kind'] as String] =
+                                      v ?? false,
                                 ),
                         ),
                     ],

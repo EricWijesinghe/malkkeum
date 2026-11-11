@@ -3519,6 +3519,92 @@ class TNe extends T {
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
 
   @override
+  String get cMfaTitle => 'दुई-चरण साइन-इन';
+
+  @override
+  String get cMfaCode => 'प्रमाणिकरण एपबाट ६ अंकको कोड';
+
+  @override
+  String get cMfaRecovery => 'रिकभरी कोड';
+
+  @override
+  String get cMfaUseRecovery => 'बरु रिकभरी कोड प्रयोग गर्नुहोस्';
+
+  @override
+  String get cMfaUseCode => 'बरु प्रमाणिकरण एपको कोड प्रयोग गर्नुहोस्';
+
+  @override
+  String get cMfaVerify => 'प्रमाणित गर्नुहोस्';
+
+  @override
+  String get cMfaBack => 'साइन-इनमा फर्कनुहोस्';
+
+  @override
+  String get cMfaEnrolTitle => 'दुई-चरण साइन-इन सेटअप गर्नुहोस्';
+
+  @override
+  String get cMfaEnrolBody =>
+      'एडमिनलाई प्रमाणिकरण एप चाहिन्छ। तलको कुञ्जी Google Authenticator, 1Password वा त्यस्तै एपमा थप्नुहोस्, त्यसपछि देखिएको ६ अंकको कोड हाल्नुहोस्।';
+
+  @override
+  String get cMfaSecret => 'सेटअप कुञ्जी';
+
+  @override
+  String get cMfaLink => 'सेटअप लिङ्क (otpauth)';
+
+  @override
+  String get cMfaCopy => 'प्रतिलिपि गर्नुहोस्';
+
+  @override
+  String get cMfaCopied => 'प्रतिलिपि गरियो';
+
+  @override
+  String get cMfaConfirm => 'पुष्टि गरेर सक्रिय गर्नुहोस्';
+
+  @override
+  String get cMfaCodesTitle => 'तपाईंका रिकभरी कोडहरू सुरक्षित गर्नुहोस्';
+
+  @override
+  String get cMfaCodesBody =>
+      'प्रमाणिकरण एप हराएमा प्रत्येक कोडले एक पटक साइन-इन गर्न दिन्छ। यी अहिले मात्र देखिन्छन्।';
+
+  @override
+  String get cMfaDownload => 'डाउनलोड गर्नुहोस्';
+
+  @override
+  String get cMfaSaveFailed =>
+      'यो उपकरणमा फाइल सुरक्षित गर्न सकिँदैन। कोडहरू प्रतिलिपि गरी सुरक्षित राख्नुहोस्।';
+
+  @override
+  String get cMfaContinue => 'कन्सोलमा जानुहोस्';
+
+  @override
+  String get cMfaInvalid =>
+      'कोड मिलेन। फोनको समय सही छ कि छैन जाँचेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get cMfaExpired =>
+      'साइन-इनको समय सकियो। पासवर्ड चरणबाट फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get cMfaLocked =>
+      'धेरै प्रयासहरू भए। केही मिनेट पर्खेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get cStaffReset => 'पासवर्ड रिसेट गर्नुहोस्';
+
+  @override
+  String get cStaffResetConfirm =>
+      'यस कर्मचारीको पासवर्ड रिसेट गर्ने हो? उनीहरू सबै ठाउँबाट साइन-आउट हुनेछन्।';
+
+  @override
+  String get cStaffResetTitle => 'रिसेट टोकन';
+
+  @override
+  String get cStaffResetBody =>
+      'यो टोकन कर्मचारीलाई दिनुहोस्। यो एक पटक, ३० मिनेटभित्र मात्र काम गर्छ। बन्द गरेपछि फेरि देखिँदैन।';
+
+  @override
   String get tTaxSection => 'कर';
 
   @override

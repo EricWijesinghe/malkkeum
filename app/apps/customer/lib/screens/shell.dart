@@ -61,11 +61,27 @@ class _ShellState extends State<Shell> {
     try {
       switch (target) {
         case BookingTarget(:final bookingId):
-          await nav.push(MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: bookingId)));
+          await nav.push(
+            MaterialPageRoute<void>(
+              builder: (_) => BookingDetailScreen(id: bookingId),
+            ),
+          );
         case ChatTarget(:final threadId):
-          final thread = await findChatThread(app.api, '/chat/threads', threadId);
+          final thread = await findChatThread(
+            app.api,
+            '/chat/threads',
+            threadId,
+          );
           if (thread == null) return;
-          await nav.push(MaterialPageRoute<void>(builder: (_) => ChatRoomScreen(threadId: thread.id, topic: thread.topic, bookingId: thread.bookingId)));
+          await nav.push(
+            MaterialPageRoute<void>(
+              builder: (_) => ChatRoomScreen(
+                threadId: thread.id,
+                topic: thread.topic,
+                bookingId: thread.bookingId,
+              ),
+            ),
+          );
       }
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));

@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'login.dart';
+import 'staff_mfa.dart';
 
 /// Signed-out entry: a fresh install (no staff yet) asks for the owner account,
 /// otherwise the normal login. A failed check falls back to login.
@@ -44,6 +45,7 @@ class FirstRunScreen extends StatefulWidget {
 }
 
 class _FirstRunScreenState extends State<FirstRunScreen> {
+  StaffMfaChallenge? _challenge;
   static const _minPassword = 12;
   final _code = TextEditingController();
   final _name = TextEditingController();
@@ -78,7 +80,11 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
         'email': _email.text.trim(),
         'password': _password.text,
       });
-      await deps.session.staffLogin(_email.text.trim(), _password.text);
+      final challenge = await deps.session.staffLogin(
+        _email.text.trim(),
+        _password.text,
+      );
+      if (mounted && challenge != null) setState(() => _challenge = challenge);
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(
@@ -105,72 +111,83 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
               child: AppCard(
-                child: AutofillGroup(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final c in const [
-                            'bathroom',
-                            'kitchen',
-                            'aircon',
-                            'sofa',
-                            'move_in',
-                          ])
-                            ServiceGlyph(c, size: 40),
-                        ],
-                      ),
-                      const SizedBox(height: Space.lg),
-                      Text(t.cFirstRunTitle, style: context.text.headlineSmall),
-                      const SizedBox(height: Space.sm),
-                      Text(t.cFirstRunBody, style: context.text.bodyMedium),
-                      const SizedBox(height: Space.lg),
-                      TextField(
-                        controller: _code,
-                        textCapitalization: TextCapitalization.characters,
-                        autocorrect: false,
-                        decoration: InputDecoration(
-                          labelText: t.cFirstRunCode,
-                          hintText: 'ABCD-2345-EFGH',
+                child: _challenge != null
+                    ? StaffMfaPanel(
+                        challenge: _challenge!,
+                        onCancel: () => setState(() => _challenge = null),
+                      )
+                    : AutofillGroup(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final c in const [
+                                  'bathroom',
+                                  'kitchen',
+                                  'aircon',
+                                  'sofa',
+                                  'move_in',
+                                ])
+                                  ServiceGlyph(c, size: 40),
+                              ],
+                            ),
+                            const SizedBox(height: Space.lg),
+                            Text(
+                              t.cFirstRunTitle,
+                              style: context.text.headlineSmall,
+                            ),
+                            const SizedBox(height: Space.sm),
+                            Text(
+                              t.cFirstRunBody,
+                              style: context.text.bodyMedium,
+                            ),
+                            const SizedBox(height: Space.lg),
+                            TextField(
+                              controller: _code,
+                              textCapitalization: TextCapitalization.characters,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                labelText: t.cFirstRunCode,
+                                hintText: 'ABCD-2345-EFGH',
+                              ),
+                            ),
+                            const SizedBox(height: Space.sm),
+                            TextField(
+                              controller: _name,
+                              autofillHints: const [AutofillHints.name],
+                              decoration: InputDecoration(labelText: t.cName),
+                            ),
+                            const SizedBox(height: Space.sm),
+                            TextField(
+                              controller: _email,
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: const [AutofillHints.newUsername],
+                              decoration: InputDecoration(labelText: t.cEmail),
+                            ),
+                            const SizedBox(height: Space.sm),
+                            TextField(
+                              controller: _password,
+                              obscureText: true,
+                              autofillHints: const [AutofillHints.newPassword],
+                              decoration: InputDecoration(
+                                labelText: t.cPassword,
+                                helperText: t.cPasswordRule,
+                                errorText: _error,
+                              ),
+                              onSubmitted: (_) => _create(),
+                            ),
+                            const SizedBox(height: Space.lg),
+                            PrimaryButton(
+                              label: t.cFirstRunCreate,
+                              busy: _busy,
+                              onPressed: _create,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: Space.sm),
-                      TextField(
-                        controller: _name,
-                        autofillHints: const [AutofillHints.name],
-                        decoration: InputDecoration(labelText: t.cName),
-                      ),
-                      const SizedBox(height: Space.sm),
-                      TextField(
-                        controller: _email,
-                        keyboardType: TextInputType.emailAddress,
-                        autofillHints: const [AutofillHints.newUsername],
-                        decoration: InputDecoration(labelText: t.cEmail),
-                      ),
-                      const SizedBox(height: Space.sm),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        autofillHints: const [AutofillHints.newPassword],
-                        decoration: InputDecoration(
-                          labelText: t.cPassword,
-                          helperText: t.cPasswordRule,
-                          errorText: _error,
-                        ),
-                        onSubmitted: (_) => _create(),
-                      ),
-                      const SizedBox(height: Space.lg),
-                      PrimaryButton(
-                        label: t.cFirstRunCreate,
-                        busy: _busy,
-                        onPressed: _create,
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ),

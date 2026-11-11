@@ -3423,6 +3423,86 @@ class TJa extends T {
   String get cInvalidValue => '入力内容を確認してください';
 
   @override
+  String get cMfaTitle => '2段階認証';
+
+  @override
+  String get cMfaCode => '認証アプリの6桁のコード';
+
+  @override
+  String get cMfaRecovery => 'リカバリーコード';
+
+  @override
+  String get cMfaUseRecovery => 'リカバリーコードを使う';
+
+  @override
+  String get cMfaUseCode => '認証アプリのコードを使う';
+
+  @override
+  String get cMfaVerify => '確認';
+
+  @override
+  String get cMfaBack => 'ログイン画面に戻る';
+
+  @override
+  String get cMfaEnrolTitle => '2段階認証を設定';
+
+  @override
+  String get cMfaEnrolBody =>
+      '管理者は認証アプリが必要です。Google Authenticator や 1Password などに下のキーを追加し、表示される6桁のコードを入力してください。';
+
+  @override
+  String get cMfaSecret => '設定キー';
+
+  @override
+  String get cMfaLink => '設定リンク（otpauth）';
+
+  @override
+  String get cMfaCopy => 'コピー';
+
+  @override
+  String get cMfaCopied => 'コピーしました';
+
+  @override
+  String get cMfaConfirm => '確認して有効にする';
+
+  @override
+  String get cMfaCodesTitle => 'リカバリーコードを保存してください';
+
+  @override
+  String get cMfaCodesBody => '認証アプリを紛失した場合、各コードで一度だけサインインできます。この画面にのみ表示されます。';
+
+  @override
+  String get cMfaDownload => 'ファイルに保存';
+
+  @override
+  String get cMfaSaveFailed => 'この端末ではファイルを保存できません。コピーして安全に保管してください。';
+
+  @override
+  String get cMfaContinue => 'コンソールへ進む';
+
+  @override
+  String get cMfaInvalid => 'コードが一致しません。スマホの時刻が正しいか確認して、もう一度入力してください。';
+
+  @override
+  String get cMfaExpired => 'サインインの有効期限が切れました。パスワードから入力し直してください。';
+
+  @override
+  String get cMfaLocked => '試行回数が多すぎます。数分後にもう一度お試しください。';
+
+  @override
+  String get cStaffReset => 'パスワードをリセット';
+
+  @override
+  String get cStaffResetConfirm => 'このスタッフのパスワードをリセットしますか？すべての端末からサインアウトされます。';
+
+  @override
+  String get cStaffResetTitle => 'リセットトークン';
+
+  @override
+  String get cStaffResetBody =>
+      'このトークンをスタッフに渡してください。1回限りで、30分間有効です。閉じると二度と表示されません。';
+
+  @override
   String get tTaxSection => '税務';
 
   @override

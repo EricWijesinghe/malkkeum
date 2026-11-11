@@ -12,13 +12,19 @@ class LanguageWelcome extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => ListenableBuilder(listenable: locale, builder: (context, _) => _build(context));
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: locale,
+    builder: (context, _) => _build(context),
+  );
 
   Widget _build(BuildContext context) {
     if (!locale.firstRun) return child;
     final current = locale.locale?.languageCode;
     return Scaffold(
-      appBar: AppBar(title: Text(context.t.moreLanguage), automaticallyImplyLeading: false),
+      appBar: AppBar(
+        title: Text(context.t.moreLanguage),
+        automaticallyImplyLeading: false,
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -40,7 +46,10 @@ class LanguageWelcome extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(Space.gutter),
-              child: PrimaryButton(label: context.t.next, onPressed: locale.finishFirstRun),
+              child: PrimaryButton(
+                label: context.t.next,
+                onPressed: locale.finishFirstRun,
+              ),
             ),
           ],
         ),

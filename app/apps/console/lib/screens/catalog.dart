@@ -28,7 +28,14 @@ class CatalogScreen extends StatelessWidget {
             ],
           ),
           const Expanded(
-            child: TabBarView(children: [_Services(), _Capacity(), _Formula(), CancelPolicyTab()]),
+            child: TabBarView(
+              children: [
+                _Services(),
+                _Capacity(),
+                _Formula(),
+                CancelPolicyTab(),
+              ],
+            ),
           ),
         ],
       ),

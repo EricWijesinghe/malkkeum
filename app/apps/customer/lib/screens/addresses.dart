@@ -16,33 +16,67 @@ class AddressesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(t.moreAddresses)),
       body: app.addresses.isEmpty
-          ? EmptyState(icon: Icons.home_work_rounded, title: t.addressEmpty, hue: ServiceHues.moveIn)
+          ? EmptyState(
+              icon: Icons.home_work_rounded,
+              title: t.addressEmpty,
+              hue: ServiceHues.moveIn,
+            )
           : RefreshIndicator(
               onRefresh: () => app.loadAddresses().catchError((Object e) {
                 if (context.mounted) showToast(context, t.error(e));
               }),
-              child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(Space.gutter), children: [
-              for (final a in app.addresses)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: Space.xs),
-                  child: AppCard(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => AddressFormScreen(existing: a))),
-                    child: Row(children: [
-                      Icon(a.kind == 'office' ? Icons.business_rounded : Icons.home_rounded, color: context.primary),
-                      const SizedBox(width: Space.md),
-                      Expanded(
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('${a.label} · ${t.pyeong('${a.sizePyeong}')}', style: context.text.titleSmall),
-                          Text('${a.roadAddress} ${a.detail}', style: context.text.bodySmall),
-                        ]),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(Space.gutter),
+                children: [
+                  for (final a in app.addresses)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Space.xs),
+                      child: AppCard(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => AddressFormScreen(existing: a),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              a.kind == 'office'
+                                  ? Icons.business_rounded
+                                  : Icons.home_rounded,
+                              color: context.primary,
+                            ),
+                            const SizedBox(width: Space.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
+                                    style: context.text.titleSmall,
+                                  ),
+                                  Text(
+                                    '${a.roadAddress} ${a.detail}',
+                                    style: context.text.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right_rounded),
+                          ],
+                        ),
                       ),
-                      const Icon(Icons.chevron_right_rounded),
-                    ]),
-                  ),
-                ),
-            ])),
+                    ),
+                ],
+              ),
+            ),
       bottomNavigationBar: BottomActionBar(
-        child: PrimaryButton(label: t.addressAdd, onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AddressFormScreen()))),
+        child: PrimaryButton(
+          label: t.addressAdd,
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const AddressFormScreen()),
+          ),
+        ),
       ),
     );
   }
@@ -58,9 +92,15 @@ class AddressFormScreen extends StatefulWidget {
 
 class _AddressFormScreenState extends State<AddressFormScreen> {
   late final _label = TextEditingController(text: widget.existing?.label ?? '');
-  late final _road = TextEditingController(text: widget.existing?.roadAddress ?? '');
-  late final _detail = TextEditingController(text: widget.existing?.detail ?? '');
-  late final _size = TextEditingController(text: widget.existing?.sizePyeong.toString() ?? '');
+  late final _road = TextEditingController(
+    text: widget.existing?.roadAddress ?? '',
+  );
+  late final _detail = TextEditingController(
+    text: widget.existing?.detail ?? '',
+  );
+  late final _size = TextEditingController(
+    text: widget.existing?.sizePyeong.toString() ?? '',
+  );
   late String _kind = widget.existing?.kind ?? 'home';
   late String? _district = widget.existing?.districtCode;
   final _query = TextEditingController();
@@ -125,7 +165,12 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   bool get _valid {
     final size = int.tryParse(_size.text);
-    return _label.text.trim().isNotEmpty && _road.text.trim().isNotEmpty && _district != null && size != null && size >= 1 && size <= 500;
+    return _label.text.trim().isNotEmpty &&
+        _road.text.trim().isNotEmpty &&
+        _district != null &&
+        size != null &&
+        size >= 1 &&
+        size <= 500;
   }
 
   Future<void> _save() async {
@@ -171,85 +216,164 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   Widget build(BuildContext context) {
     final t = context.t;
     final lang = context.lang;
-    InputDecoration deco(String label, [String? hint, String? helper]) => InputDecoration(labelText: label, hintText: hint, helperText: helper);
+    InputDecoration deco(String label, [String? hint, String? helper]) =>
+        InputDecoration(labelText: label, hintText: hint, helperText: helper);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.existing == null ? t.addressAdd : t.edit),
-        actions: [if (widget.existing != null) IconButton(tooltip: t.delete, icon: const Icon(Icons.delete_outline_rounded), onPressed: _delete)],
+        actions: [
+          if (widget.existing != null)
+            IconButton(
+              tooltip: t.delete,
+              icon: const Icon(Icons.delete_outline_rounded),
+              onPressed: _delete,
+            ),
+        ],
       ),
-      body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        SegmentedButton<String>(
-          showSelectedIcon: false,
-          segments: [ButtonSegment(value: 'home', label: Text(t.addressHome), icon: const Icon(Icons.home_rounded)), ButtonSegment(value: 'office', label: Text(t.addressOffice), icon: const Icon(Icons.business_rounded))],
-          selected: {_kind},
-          onSelectionChanged: (s) => setState(() => _kind = s.first),
-        ),
-        const SizedBox(height: Space.lg),
-        TextField(controller: _label, maxLength: 40, decoration: deco(t.addressLabel, t.addressLabelHint).copyWith(counterText: ''), onChanged: (_) => setState(() {})),
-        const SizedBox(height: Space.md),
-        DropdownButtonFormField<String>(
-          isExpanded: true,
-          initialValue: _district,
-          decoration: deco(t.addressDistrict),
-          items: [for (final d in seoulDistricts) DropdownMenuItem(value: d.code, child: Text(d.name(lang)))],
-          onChanged: (v) => setState(() => _district = v),
-        ),
-        const SizedBox(height: Space.md),
-        if (_searchOn == true && !_manual) ...[
-          Row(children: [
-            Expanded(
-              child: TextField(
-                controller: _query,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (_) => _search(),
-                decoration: deco(t.addressSearch, t.addressSearchHint),
+      body: ListView(
+        padding: const EdgeInsets.all(Space.gutter),
+        children: [
+          SegmentedButton<String>(
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(
+                value: 'home',
+                label: Text(t.addressHome),
+                icon: const Icon(Icons.home_rounded),
+              ),
+              ButtonSegment(
+                value: 'office',
+                label: Text(t.addressOffice),
+                icon: const Icon(Icons.business_rounded),
+              ),
+            ],
+            selected: {_kind},
+            onSelectionChanged: (s) => setState(() => _kind = s.first),
+          ),
+          const SizedBox(height: Space.lg),
+          TextField(
+            controller: _label,
+            maxLength: 40,
+            decoration: deco(
+              t.addressLabel,
+              t.addressLabelHint,
+            ).copyWith(counterText: ''),
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: Space.md),
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            initialValue: _district,
+            decoration: deco(t.addressDistrict),
+            items: [
+              for (final d in seoulDistricts)
+                DropdownMenuItem(value: d.code, child: Text(d.name(lang))),
+            ],
+            onChanged: (v) => setState(() => _district = v),
+          ),
+          const SizedBox(height: Space.md),
+          if (_searchOn == true && !_manual) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _query,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _search(),
+                    decoration: deco(t.addressSearch, t.addressSearchHint),
+                  ),
+                ),
+                const SizedBox(width: Space.xs),
+                IconButton.filledTonal(
+                  tooltip: t.addressSearchButton,
+                  icon: const Icon(Icons.search_rounded),
+                  onPressed: _searching ? null : _search,
+                ),
+              ],
+            ),
+            for (final h in _hits)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: AppCard(
+                  onTap: () => _pick(h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(h.road, style: context.text.titleSmall),
+                      Text(
+                        [
+                          h.building,
+                          h.jibun,
+                          h.zip,
+                        ].where((x) => x.isNotEmpty).join(' · '),
+                        style: context.text.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            if (_searching)
+              const Padding(
+                padding: EdgeInsets.only(top: Space.xs),
+                child: LinearProgressIndicator(),
+              ),
+            if (_searchError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: Text(
+                  _searchError!,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.danger,
+                  ),
+                ),
+              ),
+            if (_searched && _hits.isEmpty && _searchError == null)
+              Text(t.addressNoResults, style: context.text.bodySmall),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                onPressed: () => setState(() => _manual = true),
+                child: Text(t.addressManualEntry),
               ),
             ),
-            const SizedBox(width: Space.xs),
-            IconButton.filledTonal(
-              tooltip: t.addressSearchButton,
-              icon: const Icon(Icons.search_rounded),
-              onPressed: _searching ? null : _search,
-            ),
-          ]),
-          for (final h in _hits)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.xs),
-              child: AppCard(
-                onTap: () => _pick(h),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(h.road, style: context.text.titleSmall),
-                  Text([h.building, h.jibun, h.zip].where((x) => x.isNotEmpty).join(' · '), style: context.text.bodySmall),
-                ]),
-              ),
-            ),
-          if (_searching) const Padding(padding: EdgeInsets.only(top: Space.xs), child: LinearProgressIndicator()),
-          if (_searchError != null)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.xs),
-              child: Text(_searchError!, style: context.text.bodySmall?.copyWith(color: context.colors.danger)),
-            ),
-          if (_searched && _hits.isEmpty && _searchError == null) Text(t.addressNoResults, style: context.text.bodySmall),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: TextButton(onPressed: () => setState(() => _manual = true), child: Text(t.addressManualEntry)),
+          ],
+          TextField(
+            controller: _road,
+            maxLength: 200,
+            decoration: deco(t.addressRoad).copyWith(counterText: ''),
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: Space.md),
+          TextField(
+            controller: _detail,
+            maxLength: 200,
+            decoration: deco(t.addressDetail).copyWith(counterText: ''),
+          ),
+          const SizedBox(height: Space.md),
+          TextField(
+            controller: _size,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(3),
+            ],
+            decoration: deco(t.addressSize, null, t.addressSizeHelp),
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: Space.lg),
+          HouseholdEditor(
+            initial: widget.existing?.household ?? const {},
+            onChanged: (h) => _household = h,
           ),
         ],
-        TextField(controller: _road, maxLength: 200, decoration: deco(t.addressRoad).copyWith(counterText: ''), onChanged: (_) => setState(() {})),
-        const SizedBox(height: Space.md),
-        TextField(controller: _detail, maxLength: 200, decoration: deco(t.addressDetail).copyWith(counterText: '')),
-        const SizedBox(height: Space.md),
-        TextField(
-          controller: _size,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
-          decoration: deco(t.addressSize, null, t.addressSizeHelp),
-          onChanged: (_) => setState(() {}),
+      ),
+      bottomNavigationBar: BottomActionBar(
+        child: PrimaryButton(
+          label: t.save,
+          busy: _busy,
+          onPressed: _valid ? _save : null,
         ),
-        const SizedBox(height: Space.lg),
-        HouseholdEditor(initial: widget.existing?.household ?? const {}, onChanged: (h) => _household = h),
-      ]),
-      bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: t.save, busy: _busy, onPressed: _valid ? _save : null)),
+      ),
     );
   }
 }

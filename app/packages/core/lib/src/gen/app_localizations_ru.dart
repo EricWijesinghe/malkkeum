@@ -3526,6 +3526,91 @@ class TRu extends T {
   String get cInvalidValue => 'Проверьте введённое значение';
 
   @override
+  String get cMfaTitle => 'Вход в два шага';
+
+  @override
+  String get cMfaCode => '6-значный код из приложения-аутентификатора';
+
+  @override
+  String get cMfaRecovery => 'Код восстановления';
+
+  @override
+  String get cMfaUseRecovery => 'Использовать код восстановления';
+
+  @override
+  String get cMfaUseCode => 'Использовать код из приложения';
+
+  @override
+  String get cMfaVerify => 'Подтвердить';
+
+  @override
+  String get cMfaBack => 'Назад ко входу';
+
+  @override
+  String get cMfaEnrolTitle => 'Настройте вход в два шага';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Администраторам нужно приложение-аутентификатор. Добавьте ключ ниже в Google Authenticator, 1Password или похожее приложение и введите 6-значный код из него.';
+
+  @override
+  String get cMfaSecret => 'Ключ настройки';
+
+  @override
+  String get cMfaLink => 'Ссылка настройки (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Копировать';
+
+  @override
+  String get cMfaCopied => 'Скопировано';
+
+  @override
+  String get cMfaConfirm => 'Подтвердить и включить';
+
+  @override
+  String get cMfaCodesTitle => 'Сохраните коды восстановления';
+
+  @override
+  String get cMfaCodesBody =>
+      'Если вы потеряете приложение-аутентификатор, каждый код позволит войти один раз. Они показываются только сейчас.';
+
+  @override
+  String get cMfaDownload => 'Скачать';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Это устройство не может сохранить файл. Скопируйте коды и храните их в безопасном месте.';
+
+  @override
+  String get cMfaContinue => 'Перейти в консоль';
+
+  @override
+  String get cMfaInvalid =>
+      'Код не подходит. Проверьте, верно ли время на телефоне, и попробуйте снова.';
+
+  @override
+  String get cMfaExpired => 'Время входа истекло. Начните снова с пароля.';
+
+  @override
+  String get cMfaLocked =>
+      'Слишком много попыток. Подождите несколько минут и попробуйте снова.';
+
+  @override
+  String get cStaffReset => 'Сбросить пароль';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Сбросить пароль этого сотрудника? Он будет выведен со всех устройств.';
+
+  @override
+  String get cStaffResetTitle => 'Токен сброса';
+
+  @override
+  String get cStaffResetBody =>
+      'Передайте этот токен сотруднику. Он работает один раз в течение 30 минут. После закрытия его не покажут снова.';
+
+  @override
   String get tTaxSection => 'Налоги';
 
   @override

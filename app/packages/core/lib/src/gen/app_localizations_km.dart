@@ -3522,6 +3522,92 @@ class TKm extends T {
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
 
   @override
+  String get cMfaTitle => 'ការចូលពីរជំហាន';
+
+  @override
+  String get cMfaCode => 'កូដ 6 ខ្ទង់ពីកម្មវិធីផ្ទៀងផ្ទាត់';
+
+  @override
+  String get cMfaRecovery => 'កូដស្តារឡើងវិញ';
+
+  @override
+  String get cMfaUseRecovery => 'ប្រើកូដស្តារវិញ';
+
+  @override
+  String get cMfaUseCode => 'ប្រើកូដពីកម្មវិធីផ្ទៀងផ្ទាត់វិញ';
+
+  @override
+  String get cMfaVerify => 'ផ្ទៀងផ្ទាត់';
+
+  @override
+  String get cMfaBack => 'ត្រឡប់ទៅចូល';
+
+  @override
+  String get cMfaEnrolTitle => 'រៀបចំការចូលពីរជំហាន';
+
+  @override
+  String get cMfaEnrolBody =>
+      'អ្នកគ្រប់គ្រងត្រូវការកម្មវិធីផ្ទៀងផ្ទាត់។ បញ្ចូលកូដខាងក្រោមទៅក្នុង Google Authenticator, 1Password ឬស្រដៀងគ្នា ហើយបញ្ចូលកូដ 6 ខ្ទង់ដែលវាបង្ហាញ។';
+
+  @override
+  String get cMfaSecret => 'កូដកំណត់';
+
+  @override
+  String get cMfaLink => 'តំណកំណត់ (otpauth)';
+
+  @override
+  String get cMfaCopy => 'ចម្លង';
+
+  @override
+  String get cMfaCopied => 'បានចម្លង';
+
+  @override
+  String get cMfaConfirm => 'បញ្ជាក់ និងបើក';
+
+  @override
+  String get cMfaCodesTitle => 'រក្សាទុកកូដស្តារឡើងវិញរបស់អ្នក';
+
+  @override
+  String get cMfaCodesBody =>
+      'បើអ្នកបាត់កម្មវិធីផ្ទៀងផ្ទាត់ កូដនីមួយៗអាចចូលបានម្តង។ កូដទាំងនេះបង្ហាញតែឥឡូវនេះប៉ុណ្ណោះ។';
+
+  @override
+  String get cMfaDownload => 'ទាញយក';
+
+  @override
+  String get cMfaSaveFailed =>
+      'ឧបករណ៍នេះមិនអាចរក្សាទុកឯកសារបានទេ។ ចម្លងកូដ ហើយរក្សាទុកឲ្យបានល្អ។';
+
+  @override
+  String get cMfaContinue => 'បន្តទៅកុងសូល';
+
+  @override
+  String get cMfaInvalid =>
+      'កូដមិនត្រូវទេ។ ពិនិត្យនាឡិកាទូរសព្ទ ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get cMfaExpired =>
+      'ការចូលបានផុតកំណត់។ ចាប់ផ្តើមឡើងវិញពីជំហានពាក្យសម្ងាត់។';
+
+  @override
+  String get cMfaLocked =>
+      'ព្យាយាមច្រើនដងពេក។ រង់ចាំប៉ុន្មាននាទី ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get cStaffReset => 'កំណត់ពាក្យសម្ងាត់ឡើងវិញ';
+
+  @override
+  String get cStaffResetConfirm =>
+      'កំណត់ពាក្យសម្ងាត់បុគ្គលិកនេះឡើងវិញ? គាត់នឹងចេញពីគ្រប់ទីកន្លែង។';
+
+  @override
+  String get cStaffResetTitle => 'តូកែនកំណត់ឡើងវិញ';
+
+  @override
+  String get cStaffResetBody =>
+      'ផ្តល់តូកែននេះឲ្យបុគ្គលិក។ ប្រើបានតែម្តង ក្នុងរយៈពេល 30 នាទី។ បិទហើយនឹងមើលមិនឃើញទៀតទេ។';
+
+  @override
   String get tTaxSection => 'ពន្ធ';
 
   @override

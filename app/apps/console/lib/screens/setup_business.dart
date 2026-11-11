@@ -119,9 +119,11 @@ class _BusinessCardState extends State<BusinessCard> {
     'partner_app_store_url' => 'App Store · ${t.cSetupPartnerApp}',
     'partner_play_store_url' => 'Google Play · ${t.cSetupPartnerApp}',
     'customer.min_app_version' => '${t.cSetupCustomerApp} · ${t.uMinVersion}',
-    'customer.latest_app_version' => '${t.cSetupCustomerApp} · ${t.uLatestVersion}',
+    'customer.latest_app_version' =>
+      '${t.cSetupCustomerApp} · ${t.uLatestVersion}',
     'partner.min_app_version' => '${t.cSetupPartnerApp} · ${t.uMinVersion}',
-    'partner.latest_app_version' => '${t.cSetupPartnerApp} · ${t.uLatestVersion}',
+    'partner.latest_app_version' =>
+      '${t.cSetupPartnerApp} · ${t.uLatestVersion}',
     _ => t.cSetupPrivacyOfficer,
   };
 

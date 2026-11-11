@@ -22,12 +22,12 @@ const _naverLegacyScheme = 'malkkeumnaver';
 /// Native SDK for each provider. Returns what the backend verifies (backend/crates/api/src/providers/social.rs):
 /// Kakao: access token. Naver: `code:state` (server redeems it). Google: ID token. Apple: identity token.
 SocialSignIn? nativeSocialSignIn(String provider) => switch (provider) {
-      SocialProviders.kakao => const KakaoSocialSignIn(),
-      SocialProviders.naver => const NaverSocialSignIn(),
-      SocialProviders.google => const GoogleSocialSignIn(),
-      SocialProviders.apple => const AppleSocialSignIn(),
-      _ => null,
-    };
+  SocialProviders.kakao => const KakaoSocialSignIn(),
+  SocialProviders.naver => const NaverSocialSignIn(),
+  SocialProviders.google => const GoogleSocialSignIn(),
+  SocialProviders.apple => const AppleSocialSignIn(),
+  _ => null,
+};
 
 bool _kakaoReady = false;
 
@@ -64,8 +64,13 @@ class NaverSocialSignIn extends SocialSignIn {
   @override
   Future<String?> obtainToken(BuildContext context) async {
     final state = _naverState();
-    final appLink = naverUsesAppLink(ios: Platform.isIOS, osVersion: Platform.operatingSystemVersion);
-    final redirect = appLink ? Uri.https(SocialKeys.appLinkHost, _naverPath).toString() : '$_naverLegacyScheme://naverlogin';
+    final appLink = naverUsesAppLink(
+      ios: Platform.isIOS,
+      osVersion: Platform.operatingSystemVersion,
+    );
+    final redirect = appLink
+        ? Uri.https(SocialKeys.appLinkHost, _naverPath).toString()
+        : '$_naverLegacyScheme://naverlogin';
     final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
       'response_type': 'code',
       'client_id': SocialKeys.naverClientId,
@@ -77,7 +82,10 @@ class NaverSocialSignIn extends SocialSignIn {
       callback = await FlutterWebAuth2.authenticate(
         url: url.toString(),
         callbackUrlScheme: appLink ? 'https' : _naverLegacyScheme,
-        options: FlutterWebAuth2Options(httpsHost: SocialKeys.appLinkHost, httpsPath: _naverPath),
+        options: const FlutterWebAuth2Options(
+          httpsHost: SocialKeys.appLinkHost,
+          httpsPath: _naverPath,
+        ),
       );
     } on PlatformException catch (e) {
       if (e.code == 'CANCELED') return null;
@@ -97,7 +105,10 @@ class NaverSocialSignIn extends SocialSignIn {
 /// Random per attempt; Naver echoes it back and the server checks the echo (CSRF).
 String _naverState() {
   final random = Random.secure();
-  return List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+  return List.generate(
+    16,
+    (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
 }
 
 bool _googleReady = false;
@@ -112,14 +123,19 @@ class GoogleSocialSignIn extends SocialSignIn {
     if (!_googleReady) {
       await GoogleSignIn.instance.initialize(
         // iOS needs its own OAuth client id; Android reads its client from google-services.json.
-        clientId: defaultTargetPlatform == TargetPlatform.iOS ? SocialKeys.googleIosClientId : null,
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? SocialKeys.googleIosClientId
+            : null,
         serverClientId: SocialKeys.googleServerClientId,
       );
       _googleReady = true;
     }
     try {
       final account = await GoogleSignIn.instance.authenticate();
-      return _requireToken(account.authentication.idToken, SocialProviders.google);
+      return _requireToken(
+        account.authentication.idToken,
+        SocialProviders.google,
+      );
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return null;
       rethrow;
@@ -136,7 +152,10 @@ class AppleSocialSignIn extends SocialSignIn {
   Future<String?> obtainToken(BuildContext context) async {
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
       );
       return _requireToken(credential.identityToken, SocialProviders.apple);
     } on SignInWithAppleAuthorizationException catch (e) {
@@ -148,6 +167,8 @@ class AppleSocialSignIn extends SocialSignIn {
 
 /// A signed-in account without its token cannot be verified by the backend: report it, do not sign in.
 String _requireToken(String? token, String provider) {
-  if (token == null || token.isEmpty) throw ApiException(502, '${provider}_token_missing');
+  if (token == null || token.isEmpty) {
+    throw ApiException(502, '${provider}_token_missing');
+  }
   return token;
 }

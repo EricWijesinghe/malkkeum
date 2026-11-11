@@ -34,7 +34,11 @@ class _CancelPolicyTabState extends State<CancelPolicyTab> {
     _isDefault = data['is_default'] == true;
     for (final tier in (policy['tiers'] as List).cast<Json>()) {
       _days.add(TextEditingController(text: '${tier['min_days']}'));
-      _percents.add(TextEditingController(text: tier['percent'] == null ? '' : '${tier['percent']}'));
+      _percents.add(
+        TextEditingController(
+          text: tier['percent'] == null ? '' : '${tier['percent']}',
+        ),
+      );
     }
     _minFee.text = '${policy['min_fee']}';
     _reschedule.text = '${policy['reschedule_min_days']}';
@@ -45,7 +49,9 @@ class _CancelPolicyTabState extends State<CancelPolicyTab> {
       for (var i = 0; i < _days.length; i++)
         {
           'min_days': int.tryParse(_days[i].text) ?? 0,
-          'percent': _percents[i].text.trim().isEmpty ? null : int.tryParse(_percents[i].text),
+          'percent': _percents[i].text.trim().isEmpty
+              ? null
+              : int.tryParse(_percents[i].text),
         },
     ],
     'min_fee': int.tryParse(_minFee.text) ?? 0,
@@ -81,7 +87,8 @@ class _CancelPolicyTabState extends State<CancelPolicyTab> {
         return ListView(
           padding: const EdgeInsets.all(Space.lg),
           children: [
-            if (_isDefault) Text(t.cPolicyDefaultBanner, style: context.text.bodyMedium),
+            if (_isDefault)
+              Text(t.cPolicyDefaultBanner, style: context.text.bodyMedium),
             const SizedBox(height: Space.sm),
             for (var i = 0; i < _days.length; i++)
               Padding(
@@ -100,7 +107,10 @@ class _CancelPolicyTabState extends State<CancelPolicyTab> {
             const SizedBox(height: Space.sm),
             Text(t.cPolicyHint, style: context.text.bodySmall),
             const SizedBox(height: Space.md),
-            FilledButton(onPressed: !context.console.isAdmin ? null : _save, child: Text(t.save)),
+            FilledButton(
+              onPressed: !context.console.isAdmin ? null : _save,
+              child: Text(t.save),
+            ),
           ],
         );
       },

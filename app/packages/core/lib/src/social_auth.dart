@@ -83,10 +83,15 @@ class UnconfiguredSocialSignIn extends SocialSignIn {
 abstract final class SocialKeys {
   static const kakaoNativeKey = String.fromEnvironment('KAKAO_NATIVE_KEY');
   static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
+
   /// Host of the https App Link / Universal Link that Naver redirects to (the server's DOMAIN).
   static const appLinkHost = String.fromEnvironment('APP_LINK_DOMAIN');
-  static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
-  static const googleIosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
+  static const googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+  );
+  static const googleIosClientId = String.fromEnvironment(
+    'GOOGLE_IOS_CLIENT_ID',
+  );
   static const requested = String.fromEnvironment('SOCIAL_PROVIDERS');
 
   static const values = {
@@ -126,7 +131,8 @@ Set<String> providersForKeys({
   final available = {
     if (has('KAKAO_NATIVE_KEY')) SocialProviders.kakao,
     if (has('NAVER_CLIENT_ID') && has('APP_LINK_DOMAIN')) SocialProviders.naver,
-    if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID'))) SocialProviders.google,
+    if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID')))
+      SocialProviders.google,
     SocialProviders.apple,
   };
   return wanted.intersection(available);

@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import 'api.dart';
 import 'checkout.dart';
 import 'i18n.dart';
+import 'models.dart';
 
 /// Payment methods that can carry a 현금영수증 (bank transfer and virtual account). Mirrors the server rule.
 const cashReceiptMethods = {'transfer', 'virtual_account'};
@@ -18,7 +19,12 @@ class CashReceiptRequest {
 
 /// A 세금계산서 request with the buyer's business details.
 class InvoiceRequest {
-  const InvoiceRequest({required this.businessNumber, required this.companyName, required this.representative, required this.email});
+  const InvoiceRequest({
+    required this.businessNumber,
+    required this.companyName,
+    required this.representative,
+    required this.email,
+  });
   final String businessNumber;
   final String companyName;
   final String representative;
@@ -39,7 +45,11 @@ enum CashChoice { none, phone, business }
 
 /// The remembered choice. The identity is personal data, so it lives in secure storage on this device only.
 class RememberedReceipt {
-  const RememberedReceipt({this.seen = false, this.kind = CashChoice.none, this.identity = ''});
+  const RememberedReceipt({
+    this.seen = false,
+    this.kind = CashChoice.none,
+    this.identity = '',
+  });
   final bool seen;
   final CashChoice kind;
   final String identity;
@@ -56,14 +66,22 @@ class RememberedReceipt {
 
   /// The request this choice implies for a checkout. Empty when the method cannot carry a receipt or nothing is remembered.
   ReceiptChoice toChoice({required bool cashAllowed}) {
-    if (kind == CashChoice.none || identity.isEmpty || !cashAllowed) return const ReceiptChoice();
-    return ReceiptChoice(cash: CashReceiptRequest(corporate: kind == CashChoice.business, identity: identity));
+    if (kind == CashChoice.none || identity.isEmpty || !cashAllowed) {
+      return const ReceiptChoice();
+    }
+    return ReceiptChoice(
+      cash: CashReceiptRequest(
+        corporate: kind == CashChoice.business,
+        identity: identity,
+      ),
+    );
   }
 }
 
 /// Reads and writes the remembered choice. Storage failures count as "never asked", so checkout still works.
 class ReceiptMemory {
-  ReceiptMemory({FlutterSecureStorage? storage}) : _storage = storage ?? const FlutterSecureStorage();
+  ReceiptMemory({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
   static const _seen = 'receipt.seen';
@@ -72,11 +90,16 @@ class ReceiptMemory {
 
   Future<RememberedReceipt> load() async {
     try {
-      if (await _storage.read(key: _seen) != '1') return const RememberedReceipt();
+      if (await _storage.read(key: _seen) != '1') {
+        return const RememberedReceipt();
+      }
       final kind = await _storage.read(key: _kind);
       return RememberedReceipt(
         seen: true,
-        kind: CashChoice.values.firstWhere((k) => k.name == kind, orElse: () => CashChoice.none),
+        kind: CashChoice.values.firstWhere(
+          (k) => k.name == kind,
+          orElse: () => CashChoice.none,
+        ),
         identity: await _storage.read(key: _identity) ?? '',
       );
     } on Exception {
@@ -96,15 +119,22 @@ class ReceiptMemory {
 }
 
 /// Asks for receipts before the PG window opens. Pre-selects [initial]. Null when the customer closes the sheet.
-Future<ReceiptChoice?> showReceiptOptions(BuildContext context, {required bool cashAllowed, RememberedReceipt initial = const RememberedReceipt()}) =>
-    showAppSheet<ReceiptChoice>(
-      context,
-      title: context.t.tReceiptOptions,
-      builder: (_) => _ReceiptForm(cashAllowed: cashAllowed, initial: initial),
-    );
+Future<ReceiptChoice?> showReceiptOptions(
+  BuildContext context, {
+  required bool cashAllowed,
+  RememberedReceipt initial = const RememberedReceipt(),
+}) => showAppSheet<ReceiptChoice>(
+  context,
+  title: context.t.tReceiptOptions,
+  builder: (_) => _ReceiptForm(cashAllowed: cashAllowed, initial: initial),
+);
 
 /// Saves a choice against a checkout that is not paid yet. Returns an error code, or null on success.
-Future<String?> saveReceiptChoice(ApiClient api, String checkoutId, ReceiptChoice choice) async {
+Future<String?> saveReceiptChoice(
+  ApiClient api,
+  String checkoutId,
+  ReceiptChoice choice,
+) async {
   try {
     final cash = choice.cash;
     if (cash != null) {
@@ -130,27 +160,36 @@ Future<String?> saveReceiptChoice(ApiClient api, String checkoutId, ReceiptChoic
 
 /// The step CheckoutService runs before paying. Hidden entirely while the server flag is off.
 /// First checkout: asks, then remembers. Later checkouts: applies the remembered cash choice silently.
-Future<String?> Function(CheckoutIntent intent) receiptStep(BuildContext context, ApiClient api, ReceiptMemory memory) => (intent) async {
-      if (!intent.cashReceipts) return null;
-      final cashAllowed = cashReceiptMethods.contains(intent.method);
-      final remembered = await memory.load();
-      final ReceiptChoice choice;
-      if (remembered.seen) {
-        choice = remembered.toChoice(cashAllowed: cashAllowed);
-      } else {
-        final asked = await showReceiptOptions(context, cashAllowed: cashAllowed);
-        if (asked == null) return null;
-        await memory.save(RememberedReceipt.fromChoice(asked));
-        choice = asked;
-      }
-      if (choice.isEmpty) return null;
-      return saveReceiptChoice(api, intent.id, choice);
-    };
+Future<String?> Function(CheckoutIntent intent) receiptStep(
+  BuildContext context,
+  ApiClient api,
+  ReceiptMemory memory,
+) => (intent) async {
+  if (!intent.cashReceipts) return null;
+  final cashAllowed = cashReceiptMethods.contains(intent.method);
+  final remembered = await memory.load();
+  final ReceiptChoice choice;
+  if (remembered.seen) {
+    choice = remembered.toChoice(cashAllowed: cashAllowed);
+  } else {
+    if (!context.mounted) return null;
+    final asked = await showReceiptOptions(context, cashAllowed: cashAllowed);
+    if (asked == null) return null;
+    await memory.save(RememberedReceipt.fromChoice(asked));
+    choice = asked;
+  }
+  if (choice.isEmpty) return null;
+  return saveReceiptChoice(api, intent.id, choice);
+};
 
 /// Small "영수증 설정" line for the payment picker. Shown only when the server flag is on.
 /// Tapping it edits the remembered choice without paying.
 class ReceiptSettingsLine extends StatelessWidget {
-  const ReceiptSettingsLine({super.key, required this.api, required this.memory});
+  const ReceiptSettingsLine({
+    super.key,
+    required this.api,
+    required this.memory,
+  });
   final ApiClient api;
   final ReceiptMemory memory;
 
@@ -184,7 +223,11 @@ class ReceiptSettingsLine extends StatelessWidget {
   Future<void> _edit(BuildContext context) async {
     final remembered = await memory.load();
     if (!context.mounted) return;
-    final choice = await showReceiptOptions(context, cashAllowed: true, initial: remembered);
+    final choice = await showReceiptOptions(
+      context,
+      cashAllowed: true,
+      initial: remembered,
+    );
     if (choice == null) return;
     await memory.save(RememberedReceipt.fromChoice(choice));
   }
@@ -203,8 +246,16 @@ class _ReceiptFormState extends State<_ReceiptForm> {
   late bool _cash = widget.initial.kind != CashChoice.none;
   late bool _corporate = widget.initial.kind == CashChoice.business;
   bool _invoice = false;
-  late final _phone = TextEditingController(text: widget.initial.kind == CashChoice.phone ? widget.initial.identity : '');
-  late final _business = TextEditingController(text: widget.initial.kind == CashChoice.business ? widget.initial.identity : '');
+  late final _phone = TextEditingController(
+    text: widget.initial.kind == CashChoice.phone
+        ? widget.initial.identity
+        : '',
+  );
+  late final _business = TextEditingController(
+    text: widget.initial.kind == CashChoice.business
+        ? widget.initial.identity
+        : '',
+  );
   final _company = TextEditingController();
   final _representative = TextEditingController();
   final _email = TextEditingController();
@@ -218,10 +269,21 @@ class _ReceiptFormState extends State<_ReceiptForm> {
   }
 
   void _save() {
-    final cash = _cash && (_corporate ? _business.text.trim().isNotEmpty : _phone.text.trim().isNotEmpty)
-        ? CashReceiptRequest(corporate: _corporate, identity: _corporate ? _business.text.trim() : _phone.text.trim())
+    final cash =
+        _cash &&
+            (_corporate
+                ? _business.text.trim().isNotEmpty
+                : _phone.text.trim().isNotEmpty)
+        ? CashReceiptRequest(
+            corporate: _corporate,
+            identity: _corporate ? _business.text.trim() : _phone.text.trim(),
+          )
         : null;
-    final invoice = _invoice && _business.text.trim().isNotEmpty && _company.text.trim().isNotEmpty && _email.text.trim().isNotEmpty
+    final invoice =
+        _invoice &&
+            _business.text.trim().isNotEmpty &&
+            _company.text.trim().isNotEmpty &&
+            _email.text.trim().isNotEmpty
         ? InvoiceRequest(
             businessNumber: _business.text.trim(),
             companyName: _company.text.trim(),
@@ -236,7 +298,12 @@ class _ReceiptFormState extends State<_ReceiptForm> {
   Widget build(BuildContext context) {
     final t = context.t;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter),
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        0,
+        Space.gutter,
+        Space.gutter,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -259,9 +326,17 @@ class _ReceiptFormState extends State<_ReceiptForm> {
               ),
               const SizedBox(height: Space.sm),
               if (!_corporate)
-                TextField(controller: _phone, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: t.tPhoneForReceipt))
+                TextField(
+                  controller: _phone,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(labelText: t.tPhoneForReceipt),
+                )
               else if (!_invoice)
-                TextField(controller: _business, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: t.tBusinessNumber)),
+                TextField(
+                  controller: _business,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: t.tBusinessNumber),
+                ),
             ],
           ],
           SwitchListTile(
@@ -271,10 +346,24 @@ class _ReceiptFormState extends State<_ReceiptForm> {
             onChanged: (v) => setState(() => _invoice = v),
           ),
           if (_invoice) ...[
-            TextField(controller: _business, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: t.tBusinessNumber)),
-            TextField(controller: _company, decoration: InputDecoration(labelText: t.tCompanyName)),
-            TextField(controller: _representative, decoration: InputDecoration(labelText: t.tRepresentative)),
-            TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: t.tInvoiceEmail)),
+            TextField(
+              controller: _business,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: t.tBusinessNumber),
+            ),
+            TextField(
+              controller: _company,
+              decoration: InputDecoration(labelText: t.tCompanyName),
+            ),
+            TextField(
+              controller: _representative,
+              decoration: InputDecoration(labelText: t.tRepresentative),
+            ),
+            TextField(
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(labelText: t.tInvoiceEmail),
+            ),
           ],
           const SizedBox(height: Space.md),
           FilledButton(onPressed: _save, child: Text(t.tReceiptSave)),

@@ -3531,6 +3531,92 @@ class TId extends T {
   String get cInvalidValue => 'Periksa nilai yang diisi';
 
   @override
+  String get cMfaTitle => 'Verifikasi dua langkah';
+
+  @override
+  String get cMfaCode => 'Kode 6 digit dari aplikasi autentikator';
+
+  @override
+  String get cMfaRecovery => 'Kode pemulihan';
+
+  @override
+  String get cMfaUseRecovery => 'Gunakan kode pemulihan';
+
+  @override
+  String get cMfaUseCode => 'Gunakan kode autentikator';
+
+  @override
+  String get cMfaVerify => 'Verifikasi';
+
+  @override
+  String get cMfaBack => 'Kembali ke masuk';
+
+  @override
+  String get cMfaEnrolTitle => 'Siapkan verifikasi dua langkah';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Admin perlu aplikasi autentikator. Tambahkan kunci di bawah ke Google Authenticator, 1Password, atau sejenisnya, lalu masukkan kode 6 digit yang ditampilkan.';
+
+  @override
+  String get cMfaSecret => 'Kunci pengaturan';
+
+  @override
+  String get cMfaLink => 'Tautan pengaturan (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Salin';
+
+  @override
+  String get cMfaCopied => 'Disalin';
+
+  @override
+  String get cMfaConfirm => 'Konfirmasi dan aktifkan';
+
+  @override
+  String get cMfaCodesTitle => 'Simpan kode pemulihan Anda';
+
+  @override
+  String get cMfaCodesBody =>
+      'Jika kehilangan autentikator, setiap kode bisa dipakai masuk sekali. Kode hanya ditampilkan sekarang.';
+
+  @override
+  String get cMfaDownload => 'Unduh';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Perangkat ini tidak bisa menyimpan file. Salin kode dan simpan dengan aman.';
+
+  @override
+  String get cMfaContinue => 'Lanjutkan ke konsol';
+
+  @override
+  String get cMfaInvalid =>
+      'Kode tidak cocok. Pastikan jam ponsel benar, lalu coba lagi.';
+
+  @override
+  String get cMfaExpired =>
+      'Masuk sudah kedaluwarsa. Mulai lagi dari langkah kata sandi.';
+
+  @override
+  String get cMfaLocked =>
+      'Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.';
+
+  @override
+  String get cStaffReset => 'Atur ulang kata sandi';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Atur ulang kata sandi staf ini? Staf akan keluar dari semua perangkat.';
+
+  @override
+  String get cStaffResetTitle => 'Token atur ulang';
+
+  @override
+  String get cStaffResetBody =>
+      'Berikan token ini kepada staf. Hanya bisa dipakai sekali, selama 30 menit. Tidak bisa dilihat lagi setelah ditutup.';
+
+  @override
   String get tTaxSection => 'Pajak';
 
   @override

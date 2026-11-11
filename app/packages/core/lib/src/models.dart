@@ -2,7 +2,8 @@
 
 typedef Json = Map<String, dynamic>;
 
-DateTime? _date(Object? v) => v == null ? null : DateTime.parse(v as String).toLocal();
+DateTime? _date(Object? v) =>
+    v == null ? null : DateTime.parse(v as String).toLocal();
 int? _int(Object? v) => (v as num?)?.toInt();
 
 class UnitOption {
@@ -10,13 +11,26 @@ class UnitOption {
   final String labelKey;
   final int minutes;
   final int price;
-  factory UnitOption.fromJson(Json j) => UnitOption(j['label_key'] as String, _int(j['minutes'])!, _int(j['price'])!);
+  factory UnitOption.fromJson(Json j) => UnitOption(
+    j['label_key'] as String,
+    _int(j['minutes'])!,
+    _int(j['price'])!,
+  );
 }
 
 enum PricingType { fixed, unit, quote }
 
 class Service {
-  const Service({required this.code, required this.type, this.price, this.minutes, this.units = const [], this.needsPreparation = false, this.maxPyeong, this.content = const {}});
+  const Service({
+    required this.code,
+    required this.type,
+    this.price,
+    this.minutes,
+    this.units = const [],
+    this.needsPreparation = false,
+    this.maxPyeong,
+    this.content = const {},
+  });
   final String code;
   final PricingType type;
   final int? price;
@@ -28,10 +42,13 @@ class Service {
 
   bool get isQuote => type == PricingType.quote;
   int? get fromPrice => switch (type) {
-        PricingType.fixed => price,
-        PricingType.unit => units.isEmpty ? null : units.map((u) => u.price).reduce((a, b) => a < b ? a : b),
-        PricingType.quote => null,
-      };
+    PricingType.fixed => price,
+    PricingType.unit =>
+      units.isEmpty
+          ? null
+          : units.map((u) => u.price).reduce((a, b) => a < b ? a : b),
+    PricingType.quote => null,
+  };
 
   factory Service.fromJson(Json j) {
     final p = j['pricing'] as Json;
@@ -41,7 +58,9 @@ class Service {
       type: type,
       price: _int(p['price']),
       minutes: _int(p['minutes']),
-      units: ((p['units'] as List?) ?? const []).map((u) => UnitOption.fromJson(u as Json)).toList(),
+      units: ((p['units'] as List?) ?? const [])
+          .map((u) => UnitOption.fromJson(u as Json))
+          .toList(),
       needsPreparation: j['needs_preparation'] as bool? ?? false,
       maxPyeong: _int(j['max_pyeong']),
       content: (j['content'] as Json?) ?? const {},
@@ -50,7 +69,16 @@ class Service {
 }
 
 class Address {
-  const Address({required this.id, required this.kind, required this.label, required this.roadAddress, required this.detail, required this.districtCode, required this.sizePyeong, this.household = const {}});
+  const Address({
+    required this.id,
+    required this.kind,
+    required this.label,
+    required this.roadAddress,
+    required this.detail,
+    required this.districtCode,
+    required this.sizePyeong,
+    this.household = const {},
+  });
   final String id;
   final String kind;
   final String label;
@@ -58,25 +86,40 @@ class Address {
   final String detail;
   final String districtCode;
   final int sizePyeong;
+
   /// Household profile saved with this address (pets, floor, parking ...). Empty when never filled in.
   final Json household;
 
   factory Address.fromJson(Json j) => Address(
-        id: j['id'] as String,
-        kind: j['kind'] as String,
-        label: j['label'] as String,
-        roadAddress: j['road_address'] as String,
-        detail: j['detail'] as String? ?? '',
-        districtCode: j['district_code'] as String,
-        sizePyeong: _int(j['size_pyeong'])!,
-        household: (j['household'] as Json?) ?? const {},
-      );
+    id: j['id'] as String,
+    kind: j['kind'] as String,
+    label: j['label'] as String,
+    roadAddress: j['road_address'] as String,
+    detail: j['detail'] as String? ?? '',
+    districtCode: j['district_code'] as String,
+    sizePyeong: _int(j['size_pyeong'])!,
+    household: (j['household'] as Json?) ?? const {},
+  );
 
-  Json toInput() => {'kind': kind, 'label': label, 'road_address': roadAddress, 'detail': detail, 'district_code': districtCode, 'size_pyeong': sizePyeong};
+  Json toInput() => {
+    'kind': kind,
+    'label': label,
+    'road_address': roadAddress,
+    'detail': detail,
+    'district_code': districtCode,
+    'size_pyeong': sizePyeong,
+  };
 }
 
 class Coupon {
-  const Coupon({required this.id, required this.name, required this.amount, this.serviceCode, required this.expiresAt, this.usedBookingId});
+  const Coupon({
+    required this.id,
+    required this.name,
+    required this.amount,
+    this.serviceCode,
+    required this.expiresAt,
+    this.usedBookingId,
+  });
   final String id;
   final String name;
   final int amount;
@@ -85,16 +128,17 @@ class Coupon {
   final String? usedBookingId;
 
   bool get usable => usedBookingId == null && expiresAt.isAfter(DateTime.now());
-  bool appliesTo(String code) => usable && (serviceCode == null || serviceCode == code);
+  bool appliesTo(String code) =>
+      usable && (serviceCode == null || serviceCode == code);
 
   factory Coupon.fromJson(Json j) => Coupon(
-        id: j['id'] as String,
-        name: j['name'] as String,
-        amount: _int(j['amount'])!,
-        serviceCode: j['service_code'] as String?,
-        expiresAt: _date(j['expires_at'])!,
-        usedBookingId: j['used_booking_id'] as String?,
-      );
+    id: j['id'] as String,
+    name: j['name'] as String,
+    amount: _int(j['amount'])!,
+    serviceCode: j['service_code'] as String?,
+    expiresAt: _date(j['expires_at'])!,
+    usedBookingId: j['used_booking_id'] as String?,
+  );
 }
 
 class PaymentMethod {
@@ -102,7 +146,11 @@ class PaymentMethod {
   final String id;
   final String provider;
   final String displayName;
-  factory PaymentMethod.fromJson(Json j) => PaymentMethod(j['id'] as String, j['provider'] as String, j['display_name'] as String);
+  factory PaymentMethod.fromJson(Json j) => PaymentMethod(
+    j['id'] as String,
+    j['provider'] as String,
+    j['display_name'] as String,
+  );
 }
 
 class Booking {
@@ -132,8 +180,10 @@ class Booking {
   String? get threadId => j['thread_id'] as String?;
   Json get visitNotes => (j['visit_notes'] as Json?) ?? const {};
   Json? get reschedule => j['reschedule'] as Json?;
-  List<String> get beforePhotos => (((j['photos'] as Json?)?['before'] as List?) ?? const []).cast<String>();
-  List<String> get afterPhotos => (((j['photos'] as Json?)?['after'] as List?) ?? const []).cast<String>();
+  List<String> get beforePhotos =>
+      (((j['photos'] as Json?)?['before'] as List?) ?? const []).cast<String>();
+  List<String> get afterPhotos =>
+      (((j['photos'] as Json?)?['after'] as List?) ?? const []).cast<String>();
   bool get reviewed => j['reviewed'] as bool? ?? false;
   DateTime get createdAt => _date(j['created_at'])!;
   DateTime? get checkedInAt => _date(j['checked_in_at']);
@@ -141,9 +191,11 @@ class Booking {
   bool get entryCodeSet => j['entry_code_set'] as bool? ?? false;
   List<dynamic> get emergency => (j['emergency'] as List?) ?? const [];
   DateTime? get completedAt => _date(j['completed_at']);
-  DateTime get visitStart => DateTime(visitDate.year, visitDate.month, visitDate.day, startHour);
+  DateTime get visitStart =>
+      DateTime(visitDate.year, visitDate.month, visitDate.day, startHour);
   bool get isActive => status >= 0 && status < 3;
-  bool get balanceDue => isQuote && status == 3 && !balancePaid && finalPrice != null;
+  bool get balanceDue =>
+      isQuote && status == 3 && !balancePaid && finalPrice != null;
 
   factory Booking.fromJson(Json j) => Booking(j);
 }
@@ -165,7 +217,14 @@ class ChatThread {
 }
 
 class ChatMessage {
-  const ChatMessage({required this.id, required this.threadId, required this.sender, required this.kind, required this.body, required this.createdAt});
+  const ChatMessage({
+    required this.id,
+    required this.threadId,
+    required this.sender,
+    required this.kind,
+    required this.body,
+    required this.createdAt,
+  });
   final String id;
   final String threadId;
   final String sender;
@@ -177,13 +236,13 @@ class ChatMessage {
   bool get isAi => body['ai'] == true;
 
   factory ChatMessage.fromJson(Json j) => ChatMessage(
-        id: j['id'] as String,
-        threadId: j['thread_id'] as String,
-        sender: j['sender'] as String,
-        kind: j['kind'] as String,
-        body: j['body'] as Json,
-        createdAt: _date(j['created_at'])!,
-      );
+    id: j['id'] as String,
+    threadId: j['thread_id'] as String,
+    sender: j['sender'] as String,
+    kind: j['kind'] as String,
+    body: j['body'] as Json,
+    createdAt: _date(j['created_at'])!,
+  );
 }
 
 /// Answers from the move-in / move-out steps. Field names match the server enums.
@@ -198,20 +257,21 @@ class QuoteAnswers {
   bool? elevator;
   bool floor3OrHigher = false;
 
-  bool get stepBasicDone => building != null && layout != null && duplex != null;
+  bool get stepBasicDone =>
+      building != null && layout != null && duplex != null;
   bool get stepSpaceDone => elevator != null;
 
   Json toJson() => {
-        'cleaning_type': cleaningType,
-        'luggage': luggage,
-        'building': building,
-        'layout': layout,
-        'duplex': duplex,
-        'bathrooms': bathrooms,
-        'balconies': balconies,
-        'elevator': elevator,
-        'floor_3_or_higher': floor3OrHigher,
-      };
+    'cleaning_type': cleaningType,
+    'luggage': luggage,
+    'building': building,
+    'layout': layout,
+    'duplex': duplex,
+    'bathrooms': bathrooms,
+    'balconies': balconies,
+    'elevator': elevator,
+    'floor_3_or_higher': floor3OrHigher,
+  };
 }
 
 class ContentItem {
@@ -227,5 +287,7 @@ class ContentItem {
   String title(String lang) => _pick(j['title'], lang);
   String text(String lang) => _pick(body['text'], lang);
   // Missing language: English is the better bridge for foreign residents; Korean last.
-  static String _pick(Object? v, String lang) => v is Map ? (v[lang] ?? v['en'] ?? v['ko'] ?? '') as String : (v as String? ?? '');
+  static String _pick(Object? v, String lang) => v is Map
+      ? (v[lang] ?? v['en'] ?? v['ko'] ?? '') as String
+      : (v as String? ?? '');
 }

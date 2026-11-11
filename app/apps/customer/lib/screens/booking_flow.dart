@@ -16,11 +16,18 @@ const _maxDaysAhead = 60;
 const _standardSlots = [8, 9, 13, 14];
 const _quoteSlots = [8, 13];
 
-String isoDate(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+String isoDate(DateTime d) =>
+    '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
 /// Step 2 (fixed/unit) — pick a saved address, or add one. Enforces the studio size rule.
 class AddressPickScreen extends StatefulWidget {
-  const AddressPickScreen({super.key, required this.draft, this.onPicked, this.step = 2, this.total = 4});
+  const AddressPickScreen({
+    super.key,
+    required this.draft,
+    this.onPicked,
+    this.step = 2,
+    this.total = 4,
+  });
   final BookingDraft draft;
   final void Function(BuildContext context)? onPicked;
   final int step;
@@ -41,27 +48,38 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
     }
     if (!mounted) return;
     if (widget.onPicked != null) return widget.onPicked!(context);
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ScheduleScreen(draft: d)));
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => ScheduleScreen(draft: d)));
   }
 
   Future<void> _studioBlocked(Address a) => showAppSheet<void>(
-        context,
-        title: context.t.studioBlockedTitle('${a.sizePyeong}'),
-        builder: (ctx) => Padding(
-          padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text(ctx.t.studioBlockedBody, style: ctx.text.bodyMedium),
-            const SizedBox(height: Space.xl),
-            PrimaryButton(
-              label: ctx.t.consultCta,
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                openTopicChat(context, d.service.code);
-              },
-            ),
-          ]),
-        ),
-      );
+    context,
+    title: context.t.studioBlockedTitle('${a.sizePyeong}'),
+    builder: (ctx) => Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        0,
+        Space.gutter,
+        Space.gutter,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(ctx.t.studioBlockedBody, style: ctx.text.bodyMedium),
+          const SizedBox(height: Space.xl),
+          PrimaryButton(
+            label: ctx.t.consultCta,
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openTopicChat(context, d.service.code);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -69,43 +87,78 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
     final t = context.t;
     d.address ??= app.addresses.firstOrNull;
     return Scaffold(
-      appBar: AppBar(title: Text(t.stepOf('${widget.step}', '${widget.total}'))),
-      body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        StepProgress(current: widget.step, total: widget.total, color: ServiceHues.of(d.service.code).tone),
-        const SizedBox(height: Space.xl),
-        Text(t.addressTitle, style: context.text.headlineSmall),
-        const SizedBox(height: Space.lg),
-        for (final a in app.addresses)
-          Padding(
-            padding: const EdgeInsets.only(bottom: Space.xs),
-            child: OptionCard(
-              leading: Icon(a.kind == 'office' ? Icons.business_rounded : Icons.home_rounded, color: context.colors.inkMuted),
-              title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
-              subtitle: '${a.roadAddress} ${a.detail}',
-              selected: d.address?.id == a.id,
-              onTap: () => setState(() => d.address = a),
-            ),
+      appBar: AppBar(
+        title: Text(t.stepOf('${widget.step}', '${widget.total}')),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(Space.gutter),
+        children: [
+          StepProgress(
+            current: widget.step,
+            total: widget.total,
+            color: ServiceHues.of(d.service.code).tone,
           ),
-        OutlinedButton.icon(
-          icon: const Icon(Icons.add_rounded),
-          label: Text(t.addressAdd),
-          onPressed: () async {
-            final added = await Navigator.of(context).push<Address>(MaterialPageRoute(builder: (_) => const AddressFormScreen()));
-            if (added != null) setState(() => d.address = added);
-          },
+          const SizedBox(height: Space.xl),
+          Text(t.addressTitle, style: context.text.headlineSmall),
+          const SizedBox(height: Space.lg),
+          for (final a in app.addresses)
+            Padding(
+              padding: const EdgeInsets.only(bottom: Space.xs),
+              child: OptionCard(
+                leading: Icon(
+                  a.kind == 'office'
+                      ? Icons.business_rounded
+                      : Icons.home_rounded,
+                  color: context.colors.inkMuted,
+                ),
+                title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
+                subtitle: '${a.roadAddress} ${a.detail}',
+                selected: d.address?.id == a.id,
+                onTap: () => setState(() => d.address = a),
+              ),
+            ),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.add_rounded),
+            label: Text(t.addressAdd),
+            onPressed: () async {
+              final added = await Navigator.of(context).push<Address>(
+                MaterialPageRoute(builder: (_) => const AddressFormScreen()),
+              );
+              if (added != null) setState(() => d.address = added);
+            },
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomActionBar(
+        child: PrimaryButton(
+          label: t.next,
+          onPressed: d.address == null ? null : _next,
         ),
-      ]),
-      bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: t.next, onPressed: d.address == null ? null : _next)),
+      ),
     );
   }
 }
 
 /// Opens (or reuses) a general consultation thread and shows it.
-Future<void> openTopicChat(BuildContext context, String topic, {String? bookingId}) async {
+Future<void> openTopicChat(
+  BuildContext context,
+  String topic, {
+  String? bookingId,
+}) async {
   try {
-    final r = await context.api.post('/chat/threads', {'topic': topic, 'booking_id': bookingId}) as Json;
+    final r =
+        await context.api.post('/chat/threads', {
+              'topic': topic,
+              'booking_id': bookingId,
+            })
+            as Json;
     if (!context.mounted) return;
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ChatRoomScreen(threadId: r['id'] as String, topic: topic)));
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            ChatRoomScreen(threadId: r['id'] as String, topic: topic),
+      ),
+    );
   } catch (e) {
     if (context.mounted) showToast(context, context.t.error(e));
   }
@@ -113,7 +166,13 @@ Future<void> openTopicChat(BuildContext context, String topic, {String? bookingI
 
 /// Date strip + arrival slots with live availability.
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({super.key, required this.draft, this.onDone, this.step = 3, this.total = 4});
+  const ScheduleScreen({
+    super.key,
+    required this.draft,
+    this.onDone,
+    this.step = 3,
+    this.total = 4,
+  });
   final BookingDraft draft;
   final void Function(BuildContext context)? onDone;
   final int step;
@@ -131,7 +190,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   List<DateTime> get _days {
     final today = DateUtils.dateOnly(DateTime.now());
-    return [for (var i = 1; i <= _maxDaysAhead; i++) today.add(Duration(days: i))];
+    return [
+      for (var i = 1; i <= _maxDaysAhead; i++) today.add(Duration(days: i)),
+    ];
   }
 
   List<int> get _slots => d.service.isQuote ? _quoteSlots : _standardSlots;
@@ -146,10 +207,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> _loadSlots() async {
     setState(() => _loading = true);
     try {
-      final r = await context.api.get('/slots', query: {'date': isoDate(d.date!), 'quote': '${d.service.isQuote}'}) as List;
+      final r =
+          await context.api.get(
+                '/slots',
+                query: {
+                  'date': isoDate(d.date!),
+                  'quote': '${d.service.isQuote}',
+                },
+              )
+              as List;
       if (!mounted) return;
-      _available = {for (final s in r.cast<Json>()) (s['start_hour'] as num).toInt(): s['available'] as bool};
-      _seatsLeft = {for (final s in r.cast<Json>()) if (s['seats_left'] != null) (s['start_hour'] as num).toInt(): (s['seats_left'] as num).toInt()};
+      _available = {
+        for (final s in r.cast<Json>())
+          (s['start_hour'] as num).toInt(): s['available'] as bool,
+      };
+      _seatsLeft = {
+        for (final s in r.cast<Json>())
+          if (s['seats_left'] != null)
+            (s['start_hour'] as num).toInt(): (s['seats_left'] as num).toInt(),
+      };
       if (d.hour != null && _available[d.hour] == false) d.hour = null;
       d.hour ??= _slots.where((h) => _available[h] ?? true).firstOrNull;
     } catch (e) {
@@ -164,112 +240,184 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final t = context.t;
     final lang = context.lang;
     final hue = ServiceHues.of(d.service.code);
-    final endHour = d.hour == null ? null : d.hour! + 1 + (d.minutes / 60).ceil();
+    final endHour = d.hour == null
+        ? null
+        : d.hour! + 1 + (d.minutes / 60).ceil();
     return Scaffold(
-      appBar: AppBar(title: Text(t.stepOf('${widget.step}', '${widget.total}'))),
-      body: ListView(padding: const EdgeInsets.symmetric(vertical: Space.gutter), children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            StepProgress(current: widget.step, total: widget.total, color: hue.tone),
-            const SizedBox(height: Space.xl),
-            Text(t.scheduleTitle, style: context.text.headlineSmall),
-            const SizedBox(height: Space.xs),
-            Text(t.scheduleRange, style: context.text.bodySmall),
-            if (d.address != null) ...[
-              const SizedBox(height: Space.md),
-              AppCard(
-                padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
-                child: Row(children: [
-                  Icon(Icons.place_rounded, color: hue.tone, size: 20),
-                  const SizedBox(width: Space.xs),
-                  Expanded(child: Text('${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}', style: context.text.titleSmall)),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                      builder: (_) => AddressPickScreen(draft: d, step: widget.step, total: widget.total, onPicked: (ctx) {
-                        Navigator.of(ctx).pop();
-                        setState(() {});
-                      }),
-                    )),
-                    child: Text(t.change),
-                  ),
-                ]),
-              ),
-            ],
-            const SizedBox(height: Space.lg),
-          ]),
-        ),
-        SizedBox(
-          height: 84,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
+      appBar: AppBar(
+        title: Text(t.stepOf('${widget.step}', '${widget.total}')),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: Space.gutter),
+        children: [
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-            itemCount: _days.length,
-            separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
-            itemBuilder: (_, i) => _DayChip(
-              day: _days[i],
-              selected: DateUtils.isSameDay(_days[i], d.date),
-              accent: hue.tone,
-              onTap: () {
-                setState(() => d.date = _days[i]);
-                _loadSlots();
-              },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StepProgress(
+                  current: widget.step,
+                  total: widget.total,
+                  color: hue.tone,
+                ),
+                const SizedBox(height: Space.xl),
+                Text(t.scheduleTitle, style: context.text.headlineSmall),
+                const SizedBox(height: Space.xs),
+                Text(t.scheduleRange, style: context.text.bodySmall),
+                if (d.address != null) ...[
+                  const SizedBox(height: Space.md),
+                  AppCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Space.md,
+                      vertical: Space.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.place_rounded, color: hue.tone, size: 20),
+                        const SizedBox(width: Space.xs),
+                        Expanded(
+                          child: Text(
+                            '${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}',
+                            style: context.text.titleSmall,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => AddressPickScreen(
+                                draft: d,
+                                step: widget.step,
+                                total: widget.total,
+                                onPicked: (ctx) {
+                                  Navigator.of(ctx).pop();
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ),
+                          child: Text(t.change),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: Space.lg),
+              ],
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(Space.gutter),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SectionTitle(t.scheduleArrival, trailing: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : null),
-            // Two per row, each row as tall as its tallest card: long translations and large
-            // system fonts wrap instead of clipping (a fixed grid aspect ratio clipped them).
-            for (var i = 0; i < _slots.length; i += 2)
-              Padding(
-                padding: const EdgeInsets.only(bottom: Space.xs),
-                child: IntrinsicHeight(
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    for (final h in _slots.skip(i).take(2)) ...[
-                      if (h != _slots[i]) const SizedBox(width: Space.xs),
-                      Expanded(child: OptionCard(
-                    title: d.service.isQuote ? (h < 12 ? t.morning : t.afternoon) : hourLabel(h, lang),
-                    subtitle: !(_available[h] ?? true)
-                        ? t.scheduleFull
-                        : _seatsLeft[h] != null
-                        ? t.seatsLeft('${_seatsLeft[h]}')
-                        : t.scheduleWindow(hourLabel(h, lang), hourLabel(h + 1, lang)),
-                    selected: d.hour == h,
-                    enabled: _available[h] ?? true,
-                    accent: hue.tone,
-                    onTap: () => setState(() => d.hour = h),
-                  )),
-                    ],
-                    if (i + 1 >= _slots.length) ...[const SizedBox(width: Space.xs), const Spacer()],
-                  ]),
+          SizedBox(
+            height: 84,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+              itemCount: _days.length,
+              separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
+              itemBuilder: (_, i) => _DayChip(
+                day: _days[i],
+                selected: DateUtils.isSameDay(_days[i], d.date),
+                accent: hue.tone,
+                onTap: () {
+                  setState(() => d.date = _days[i]);
+                  _loadSlots();
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(Space.gutter),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionTitle(
+                  t.scheduleArrival,
+                  trailing: _loading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : null,
                 ),
-              ),
-            const SizedBox(height: Space.md),
-            if (d.service.isQuote)
-              Text(t.scheduleQuoteNote, style: context.text.bodySmall)
-            else if (endHour != null)
-              AppCard(
-                color: context.colors.tintOf(hue),
-                padding: const EdgeInsets.all(Space.md),
-                child: Row(children: [
-                  Icon(Icons.schedule_rounded, color: hue.tone),
-                  const SizedBox(width: Space.xs),
-                  Expanded(child: Text(t.scheduleEnds(t.duration(d.minutes), hourLabel(endHour, lang)), style: context.text.bodyMedium)),
-                ]),
-              ),
-          ]),
-        ),
-      ]),
+                // Two per row, each row as tall as its tallest card: long translations and large
+                // system fonts wrap instead of clipping (a fixed grid aspect ratio clipped them).
+                for (var i = 0; i < _slots.length; i += 2)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: Space.xs),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final h in _slots.skip(i).take(2)) ...[
+                            if (h != _slots[i]) const SizedBox(width: Space.xs),
+                            Expanded(
+                              child: OptionCard(
+                                title: d.service.isQuote
+                                    ? (h < 12 ? t.morning : t.afternoon)
+                                    : hourLabel(h, lang),
+                                subtitle: !(_available[h] ?? true)
+                                    ? t.scheduleFull
+                                    : _seatsLeft[h] != null
+                                    ? t.seatsLeft('${_seatsLeft[h]}')
+                                    : t.scheduleWindow(
+                                        hourLabel(h, lang),
+                                        hourLabel(h + 1, lang),
+                                      ),
+                                selected: d.hour == h,
+                                enabled: _available[h] ?? true,
+                                accent: hue.tone,
+                                onTap: () => setState(() => d.hour = h),
+                              ),
+                            ),
+                          ],
+                          if (i + 1 >= _slots.length) ...[
+                            const SizedBox(width: Space.xs),
+                            const Spacer(),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: Space.md),
+                if (d.service.isQuote)
+                  Text(t.scheduleQuoteNote, style: context.text.bodySmall)
+                else if (endHour != null)
+                  AppCard(
+                    color: context.colors.tintOf(hue),
+                    padding: const EdgeInsets.all(Space.md),
+                    child: Row(
+                      children: [
+                        Icon(Icons.schedule_rounded, color: hue.tone),
+                        const SizedBox(width: Space.xs),
+                        Expanded(
+                          child: Text(
+                            t.scheduleEnds(
+                              t.duration(d.minutes),
+                              hourLabel(endHour, lang),
+                            ),
+                            style: context.text.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomActionBar(
         child: PrimaryButton(
           label: d.service.isQuote ? t.next : t.goToPayment,
           color: hue.tone,
           onPressed: d.hour == null
               ? null
-              : () => widget.onDone != null ? widget.onDone!(context) : Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => CheckoutScreen(draft: d))),
+              : () => widget.onDone != null
+                    ? widget.onDone!(context)
+                    : Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => CheckoutScreen(draft: d),
+                        ),
+                      ),
         ),
       ),
     );
@@ -277,7 +425,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 }
 
 class _DayChip extends StatelessWidget {
-  const _DayChip({required this.day, required this.selected, required this.onTap, required this.accent});
+  const _DayChip({
+    required this.day,
+    required this.selected,
+    required this.onTap,
+    required this.accent,
+  });
   final DateTime day;
   final bool selected;
   final VoidCallback onTap;
@@ -286,8 +439,16 @@ class _DayChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final weekend = day.weekday >= DateTime.saturday;
-    final dow = MaterialLocalizations.of(context).narrowWeekdays[day.weekday % 7];
-    final dowColor = selected ? Colors.white : (day.weekday == DateTime.sunday ? Semantic.sunday : weekend ? Semantic.saturday : context.colors.inkMuted);
+    final dow = MaterialLocalizations.of(
+      context,
+    ).narrowWeekdays[day.weekday % 7];
+    final dowColor = selected
+        ? Colors.white
+        : (day.weekday == DateTime.sunday
+              ? Semantic.sunday
+              : weekend
+              ? Semantic.saturday
+              : context.colors.inkMuted);
     return Semantics(
       selected: selected,
       button: true,
@@ -303,11 +464,22 @@ class _DayChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: selected ? accent : context.colors.line),
           ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(day.day == 1 || selected ? '${day.month}/${day.day}' : dow, style: context.text.labelSmall?.copyWith(color: dowColor)),
-            const SizedBox(height: 4),
-            Text('${day.day}', style: context.text.titleLarge?.copyWith(color: selected ? Colors.white : context.colors.ink)),
-          ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                day.day == 1 || selected ? '${day.month}/${day.day}' : dow,
+                style: context.text.labelSmall?.copyWith(color: dowColor),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${day.day}',
+                style: context.text.titleLarge?.copyWith(
+                  color: selected ? Colors.white : context.colors.ink,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -345,9 +517,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final CheckoutResult result;
       if (choice case ChannelChoice(:final channel)) {
-        result = await payWithChannel(context, channel, {'kind': 'booking', 'booking': _bookingBody()});
+        result = await payWithChannel(context, channel, {
+          'kind': 'booking',
+          'booking': _bookingBody(),
+        });
       } else {
-        result = CheckoutPaid(Booking.fromJson(await app.api.post('/bookings', d.toJson(), ApiClient.newIdempotencyKey()) as Json));
+        result = CheckoutPaid(
+          Booking.fromJson(
+            await app.api.post(
+                  '/bookings',
+                  d.toJson(),
+                  ApiClient.newIdempotencyKey(),
+                )
+                as Json,
+          ),
+        );
       }
       if (!mounted) return;
       switch (result) {
@@ -355,10 +539,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           app.bookingsChanged();
           await app.loadCoupons();
           if (!mounted) return;
-          await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)), (r) => r.isFirst);
+          await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<void>(
+              builder: (_) => DoneScreen(booking: booking),
+            ),
+            (r) => r.isFirst,
+          );
         case CheckoutAwaitingDeposit(:final account):
           app.bookingsChanged();
-          await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => VirtualAccountScreen(account: account, amount: total)), (r) => r.isFirst);
+          await Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<void>(
+              builder: (_) =>
+                  VirtualAccountScreen(account: account, amount: total),
+            ),
+            (r) => r.isFirst,
+          );
         case CheckoutFailed(:final code):
           showToast(context, context.t.checkoutFailure(code));
         case CheckoutCancelled():
@@ -375,7 +570,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
-    final usable = app.coupons.where((c) => c.appliesTo(d.service.code)).toList()..sort((a, b) => b.amount.compareTo(a.amount));
+    final usable =
+        app.coupons.where((c) => c.appliesTo(d.service.code)).toList()
+          ..sort((a, b) => b.amount.compareTo(a.amount));
     if (!_autoPicked) {
       // Best coupon pre-applied: customers shouldn't have to hunt for savings.
       d.couponId ??= usable.firstOrNull?.id;
@@ -396,91 +593,178 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final freeUntil = d.date!.subtract(const Duration(days: 2));
     final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
     return Scaffold(
-      appBar: AppBar(title: Text(t.stepOf('${d.totalSteps}', '${d.totalSteps}'))),
-      body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
-        StepProgress(current: d.totalSteps, total: d.totalSteps, color: ServiceHues.of(d.service.code).tone),
-        const SizedBox(height: Space.xl),
-        AppCard(
-          child: Row(children: [
-            ServiceGlyph(d.service.code, size: 52),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text([t.service(d.service.code), if (d.unitIndex != null) t.unit(d.service.units[d.unitIndex!].labelKey)].join(' · '), style: context.text.titleSmall),
-                Text('${dateLabel(d.date!, context.lang)} ${hourLabel(d.hour!, context.lang)} · ${t.about(t.duration(d.minutes))}', style: context.text.bodySmall),
-                Text('${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}', style: context.text.bodySmall),
-              ]),
+      appBar: AppBar(
+        title: Text(t.stepOf('${d.totalSteps}', '${d.totalSteps}')),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(Space.gutter),
+        children: [
+          StepProgress(
+            current: d.totalSteps,
+            total: d.totalSteps,
+            color: ServiceHues.of(d.service.code).tone,
+          ),
+          const SizedBox(height: Space.xl),
+          AppCard(
+            child: Row(
+              children: [
+                ServiceGlyph(d.service.code, size: 52),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        [
+                          t.service(d.service.code),
+                          if (d.unitIndex != null)
+                            t.unit(d.service.units[d.unitIndex!].labelKey),
+                        ].join(' · '),
+                        style: context.text.titleSmall,
+                      ),
+                      Text(
+                        '${dateLabel(d.date!, context.lang)} ${hourLabel(d.hour!, context.lang)} · ${t.about(t.duration(d.minutes))}',
+                        style: context.text.bodySmall,
+                      ),
+                      Text(
+                        '${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}',
+                        style: context.text.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ),
-        const SizedBox(height: Space.sm),
-        AppCard(
-          padding: EdgeInsets.zero,
-          child: Column(children: [
-            ListTile(
-              leading: Icon(Icons.confirmation_number_rounded, color: context.colors.sun),
-              title: Text(t.coupon),
-              subtitle: Text(coupon == null ? (usable.isEmpty ? t.couponNone : t.couponAvailable('${usable.length}')) : t.couponName(coupon.name)),
-              trailing: coupon == null ? const Icon(Icons.chevron_right_rounded) : Text('−${context.won(discount)}', style: context.text.titleSmall?.copyWith(color: context.colors.fresh)),
-              onTap: usable.isEmpty ? null : () => _pickCoupon(usable),
-            ),
-          ]),
-        ),
-        const SizedBox(height: Space.sm),
-        AppCard(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text(t.apPayAllTitle, style: context.text.titleSmall),
-            const SizedBox(height: Space.xs),
-            PayMethodPicker(
-              selectedSavedId: savedId,
-              selectedChannel: channelCode,
-              onChoose: (c) => setState(() {
-                _choice = c;
-                d.methodId = switch (c) {
-                  SavedChoice(:final methodId) => methodId,
-                  ChannelChoice() => null,
-                };
-              }),
-            ),
-          ]),
-        ),
-        const SizedBox(height: Space.sm),
-        AppCard(
-          child: Column(children: [
-            _Line(t.listPrice, context.won(d.listPrice)),
-            const SizedBox(height: Space.xs),
-            _Line(t.discount, discount == 0 ? context.won(0) : '−${context.won(discount)}', color: discount == 0 ? null : context.colors.fresh),
-            const Padding(padding: EdgeInsets.symmetric(vertical: Space.sm), child: Divider()),
-            Row(children: [
-              Text(t.total, style: context.text.titleMedium),
-              const Spacer(),
-              RollingAmount(value: total, format: context.won, style: context.text.headlineSmall),
-            ]),
-            Align(alignment: Alignment.centerRight, child: Text(t.vatIncluded, style: context.text.labelSmall)),
-          ]),
-        ),
-        const SizedBox(height: Space.sm),
-        CancelPolicyCard(total: total),
-        if (d.service.needsPreparation) ...[
+          ),
           const SizedBox(height: Space.sm),
           AppCard(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(t.prepTitle, style: context.text.titleSmall),
-              const SizedBox(height: Space.xs),
-              Wrap(spacing: 6, runSpacing: 6, children: [for (final tool in prepTools) Chip(label: Text(t.tool(tool)), visualDensity: VisualDensity.compact)]),
-              TextButton.icon(
-                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                label: Text(t.prepAsk),
-                onPressed: () => openTopicChat(context, d.service.code),
-              ),
-            ]),
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.confirmation_number_rounded,
+                    color: context.colors.sun,
+                  ),
+                  title: Text(t.coupon),
+                  subtitle: Text(
+                    coupon == null
+                        ? (usable.isEmpty
+                              ? t.couponNone
+                              : t.couponAvailable('${usable.length}'))
+                        : t.couponName(coupon.name),
+                  ),
+                  trailing: coupon == null
+                      ? const Icon(Icons.chevron_right_rounded)
+                      : Text(
+                          '−${context.won(discount)}',
+                          style: context.text.titleSmall?.copyWith(
+                            color: context.colors.fresh,
+                          ),
+                        ),
+                  onTap: usable.isEmpty ? null : () => _pickCoupon(usable),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(height: Space.sm),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(t.apPayAllTitle, style: context.text.titleSmall),
+                const SizedBox(height: Space.xs),
+                PayMethodPicker(
+                  selectedSavedId: savedId,
+                  selectedChannel: channelCode,
+                  onChoose: (c) => setState(() {
+                    _choice = c;
+                    d.methodId = switch (c) {
+                      SavedChoice(:final methodId) => methodId,
+                      ChannelChoice() => null,
+                    };
+                  }),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: Space.sm),
+          AppCard(
+            child: Column(
+              children: [
+                _Line(t.listPrice, context.won(d.listPrice)),
+                const SizedBox(height: Space.xs),
+                _Line(
+                  t.discount,
+                  discount == 0 ? context.won(0) : '−${context.won(discount)}',
+                  color: discount == 0 ? null : context.colors.fresh,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: Space.sm),
+                  child: Divider(),
+                ),
+                Row(
+                  children: [
+                    Text(t.total, style: context.text.titleMedium),
+                    const Spacer(),
+                    RollingAmount(
+                      value: total,
+                      format: context.won,
+                      style: context.text.headlineSmall,
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(t.vatIncluded, style: context.text.labelSmall),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: Space.sm),
+          CancelPolicyCard(total: total),
+          if (d.service.needsPreparation) ...[
+            const SizedBox(height: Space.sm),
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(t.prepTitle, style: context.text.titleSmall),
+                  const SizedBox(height: Space.xs),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final tool in prepTools)
+                        Chip(
+                          label: Text(t.tool(tool)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                    ],
+                  ),
+                  TextButton.icon(
+                    icon: const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 18,
+                    ),
+                    label: Text(t.prepAsk),
+                    onPressed: () => openTopicChat(context, d.service.code),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
-      ]),
+      ),
       bottomNavigationBar: BottomActionBar(
-        summary: Text(t.freeCancelUntil(dateLabel(freeUntil, context.lang)), style: context.text.labelSmall),
+        summary: Text(
+          t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
+          style: context.text.labelSmall,
+        ),
         child: PrimaryButton(
-          label: _choice == null ? t.needMethod : t.payAmount(context.won(total)),
+          label: _choice == null
+              ? t.needMethod
+              : t.payAmount(context.won(total)),
           busy: _busy,
           onPressed: _choice == null ? null : () => _pay(total),
         ),
@@ -493,22 +777,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final picked = await showAppSheet<String>(
       context,
       title: t.coupon,
-      builder: (ctx) => ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter), children: [
-        for (final c in usable)
-          Padding(
-            padding: const EdgeInsets.only(bottom: Space.xs),
-            child: OptionCard(
-              title: t.couponName(c.name),
-              subtitle: t.couponUntil(dateLabel(c.expiresAt, ctx.lang)),
-              trailing: ctx.won(c.amount),
-              selected: c.id == d.couponId,
-              onTap: () => Navigator.of(ctx).pop(c.id),
+      builder: (ctx) => ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          0,
+          Space.gutter,
+          Space.gutter,
+        ),
+        children: [
+          for (final c in usable)
+            Padding(
+              padding: const EdgeInsets.only(bottom: Space.xs),
+              child: OptionCard(
+                title: t.couponName(c.name),
+                subtitle: t.couponUntil(dateLabel(c.expiresAt, ctx.lang)),
+                trailing: ctx.won(c.amount),
+                selected: c.id == d.couponId,
+                onTap: () => Navigator.of(ctx).pop(c.id),
+              ),
             ),
+          OptionCard(
+            title: t.couponNone,
+            selected: d.couponId == null,
+            onTap: () => Navigator.of(ctx).pop(''),
           ),
-        OptionCard(title: t.couponNone, selected: d.couponId == null, onTap: () => Navigator.of(ctx).pop('')),
-      ]),
+        ],
+      ),
     );
-    if (picked != null) setState(() => d.couponId = picked.isEmpty ? null : picked);
+    if (picked != null) {
+      setState(() => d.couponId = picked.isEmpty ? null : picked);
+    }
   }
 }
 
@@ -518,11 +817,22 @@ class _Line extends StatelessWidget {
   final String value;
   final Color? color;
   @override
-  Widget build(BuildContext context) => Row(children: [
-        Text(label, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft)),
-        const Spacer(),
-        Text(value, style: context.text.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.w600)),
-      ]);
+  Widget build(BuildContext context) => Row(
+    children: [
+      Text(
+        label,
+        style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft),
+      ),
+      const Spacer(),
+      Text(
+        value,
+        style: context.text.bodyMedium?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ],
+  );
 }
 
 /// Celebration + summary.
@@ -538,38 +848,87 @@ class DoneScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(Space.gutter),
-          child: Column(children: [
-            const Spacer(),
-            FlipIn(child: SuccessMark(semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle)),
-            StaggerIn(index: 1, child: Text(b.isQuote ? t.doneQuoteTitle : t.doneTitle, style: context.text.headlineSmall, textAlign: TextAlign.center)),
-            const SizedBox(height: Space.xs),
-            Text(b.isQuote ? t.doneQuoteBody : t.doneBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft), textAlign: TextAlign.center),
-            const SizedBox(height: Space.xl),
-            StaggerIn(index: 2, child: AppCard(
-              child: Row(children: [
-                ServiceGlyph(b.serviceCode, size: 48),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(t.service(b.serviceCode), style: context.text.titleSmall),
-                    Text('${dateLabel(b.visitDate, context.lang)} ${hourLabel(b.startHour, context.lang)}', style: context.text.bodySmall),
-                  ]),
-                ),
-                if (!b.isQuote) RollingAmount(value: b.paidAmount, format: context.won, style: context.text.titleSmall),
-              ]),
-            )),
-            const Spacer(),
-            Row(children: [
-              Expanded(child: OutlinedButton(onPressed: () => Navigator.of(context).pop(), child: Text(t.goHome))),
-              const SizedBox(width: Space.xs),
-              Expanded(
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: b.id))),
-                  child: Text(t.viewBooking),
+          child: Column(
+            children: [
+              const Spacer(),
+              FlipIn(
+                child: SuccessMark(
+                  semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle,
                 ),
               ),
-            ]),
-          ]),
+              StaggerIn(
+                index: 1,
+                child: Text(
+                  b.isQuote ? t.doneQuoteTitle : t.doneTitle,
+                  style: context.text.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: Space.xs),
+              Text(
+                b.isQuote ? t.doneQuoteBody : t.doneBody,
+                style: context.text.bodyMedium?.copyWith(
+                  color: context.colors.inkSoft,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Space.xl),
+              StaggerIn(
+                index: 2,
+                child: AppCard(
+                  child: Row(
+                    children: [
+                      ServiceGlyph(b.serviceCode, size: 48),
+                      const SizedBox(width: Space.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              t.service(b.serviceCode),
+                              style: context.text.titleSmall,
+                            ),
+                            Text(
+                              '${dateLabel(b.visitDate, context.lang)} ${hourLabel(b.startHour, context.lang)}',
+                              style: context.text.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!b.isQuote)
+                        RollingAmount(
+                          value: b.paidAmount,
+                          format: context.won,
+                          style: context.text.titleSmall,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(t.goHome),
+                    ),
+                  ),
+                  const SizedBox(width: Space.xs),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(
+                          builder: (_) => BookingDetailScreen(id: b.id),
+                        ),
+                      ),
+                      child: Text(t.viewBooking),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

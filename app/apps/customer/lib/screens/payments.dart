@@ -30,7 +30,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     final api = context.api;
     final channels = await fetchPayChannels(api);
     _setup = await fetchBillingSetup(api);
-    return channels.where((c) => c.isBilling && _setup.supports(c.code)).toList();
+    return channels
+        .where((c) => c.isBilling && _setup.supports(c.code))
+        .toList();
   }
 
   void _reload() => setState(() => _billing = _loadBilling());
@@ -66,62 +68,109 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           _reload();
-          await app.loadMethods().catchError((Object e) {
+          try {
+            await app.loadMethods();
+          } catch (e) {
             if (mounted) showToast(context, t.error(e));
-          });
+          }
         },
-        child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(Space.gutter), children: [
-        Text(t.apPayManageHint, style: context.text.bodySmall?.copyWith(color: context.colors.inkSoft)),
-        const SizedBox(height: Space.md),
-        if (app.methods.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: Space.lg), child: Center(child: Text(t.methodsEmpty, style: context.text.bodySmall))),
-        for (final m in app.methods)
-          Padding(
-            padding: const EdgeInsets.only(bottom: Space.xs),
-            child: AppCard(
-              child: Row(children: [
-                PayBrandBadge(code: m.provider, height: 36),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(m.displayName, style: context.text.titleSmall),
-                    const SizedBox(height: Space.xxs),
-                    Tag(label: t.methodRegistered, hue: StatusHues.assigned),
-                  ]),
-                ),
-                IconButton(
-                  tooltip: t.delete,
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  onPressed: () => app.deleteMethod(m.id).catchError((Object e) {
-                    if (context.mounted) showToast(context, t.payError(e));
-                  }),
-                ),
-              ]),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(Space.gutter),
+          children: [
+            Text(
+              t.apPayManageHint,
+              style: context.text.bodySmall?.copyWith(
+                color: context.colors.inkSoft,
+              ),
             ),
-          ),
-        FutureBuilder<List<PayChannel>>(
-          future: _billing,
-          builder: (context, snap) {
-            if (snap.hasError) return ErrorRetry(message: t.error(snap.error!), retryLabel: t.retry, onRetry: _reload);
-            final channels = snap.data;
-            if (channels == null) return const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: CircularProgressIndicator()));
-            if (channels.isEmpty) return const SizedBox.shrink();
-            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              const SizedBox(height: Space.lg),
-              Text(t.apPayManageTitle, style: context.text.titleSmall),
-              const SizedBox(height: Space.xs),
-              Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
-                for (final ch in channels)
-                  PayChannelTile(
-                    code: ch.code,
-                    label: t.payMethod(ch.code),
-                    busy: _adding == ch.code,
-                    onTap: _adding == null ? () => _add(ch) : null,
+            const SizedBox(height: Space.md),
+            if (app.methods.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.lg),
+                child: Center(
+                  child: Text(t.methodsEmpty, style: context.text.bodySmall),
+                ),
+              ),
+            for (final m in app.methods)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.xs),
+                child: AppCard(
+                  child: Row(
+                    children: [
+                      PayBrandBadge(code: m.provider, height: 36),
+                      const SizedBox(width: Space.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(m.displayName, style: context.text.titleSmall),
+                            const SizedBox(height: Space.xxs),
+                            Tag(
+                              label: t.methodRegistered,
+                              hue: StatusHues.assigned,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: t.delete,
+                        icon: const Icon(Icons.delete_outline_rounded),
+                        onPressed: () =>
+                            app.deleteMethod(m.id).catchError((Object e) {
+                              if (context.mounted) {
+                                showToast(context, t.payError(e));
+                              }
+                            }),
+                      ),
+                    ],
                   ),
-              ]),
-            ]);
-          },
+                ),
+              ),
+            FutureBuilder<List<PayChannel>>(
+              future: _billing,
+              builder: (context, snap) {
+                if (snap.hasError) {
+                  return ErrorRetry(
+                    message: t.error(snap.error!),
+                    retryLabel: t.retry,
+                    onRetry: _reload,
+                  );
+                }
+                final channels = snap.data;
+                if (channels == null) {
+                  return const Padding(
+                    padding: EdgeInsets.all(Space.lg),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                if (channels.isEmpty) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: Space.lg),
+                    Text(t.apPayManageTitle, style: context.text.titleSmall),
+                    const SizedBox(height: Space.xs),
+                    Wrap(
+                      spacing: Space.xs,
+                      runSpacing: Space.xs,
+                      children: [
+                        for (final ch in channels)
+                          PayChannelTile(
+                            code: ch.code,
+                            label: t.payMethod(ch.code),
+                            busy: _adding == ch.code,
+                            onTap: _adding == null ? () => _add(ch) : null,
+                          ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
-      ])),
+      ),
     );
   }
 }

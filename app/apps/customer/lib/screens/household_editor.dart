@@ -15,7 +15,11 @@ class _PetRow {
 /// Household profile for an address: pets, allergies, preferred products, parking, floor, elevator, notes.
 /// Reports the whole profile through [onChanged] on every edit; the parent sends it with the address.
 class HouseholdEditor extends StatefulWidget {
-  const HouseholdEditor({super.key, required this.initial, required this.onChanged});
+  const HouseholdEditor({
+    super.key,
+    required this.initial,
+    required this.onChanged,
+  });
 
   final Json initial;
   final ValueChanged<Json> onChanged;
@@ -26,13 +30,24 @@ class HouseholdEditor extends StatefulWidget {
 
 class _HouseholdEditorState extends State<HouseholdEditor> {
   late final List<_PetRow> _pets = [
-    for (final p in (widget.initial['pets'] as List? ?? const []).cast<Json>()) _PetRow(p['kind'] as String, (p['count'] as num).toInt()),
+    for (final p in (widget.initial['pets'] as List? ?? const []).cast<Json>())
+      _PetRow(p['kind'] as String, (p['count'] as num).toInt()),
   ];
-  late final _allergies = TextEditingController(text: widget.initial['allergies'] as String? ?? '');
-  late final _preferred = TextEditingController(text: widget.initial['preferred_products'] as String? ?? '');
-  late final _parking = TextEditingController(text: widget.initial['parking'] as String? ?? '');
-  late final _notes = TextEditingController(text: widget.initial['notes'] as String? ?? '');
-  late final _floor = TextEditingController(text: widget.initial['floor'] == null ? '' : '${widget.initial['floor']}');
+  late final _allergies = TextEditingController(
+    text: widget.initial['allergies'] as String? ?? '',
+  );
+  late final _preferred = TextEditingController(
+    text: widget.initial['preferred_products'] as String? ?? '',
+  );
+  late final _parking = TextEditingController(
+    text: widget.initial['parking'] as String? ?? '',
+  );
+  late final _notes = TextEditingController(
+    text: widget.initial['notes'] as String? ?? '',
+  );
+  late final _floor = TextEditingController(
+    text: widget.initial['floor'] == null ? '' : '${widget.initial['floor']}',
+  );
   late bool _elevator = widget.initial['elevator'] == true;
 
   @override
@@ -49,7 +64,8 @@ class _HouseholdEditorState extends State<HouseholdEditor> {
   void _emit() {
     final pets = [
       for (final p in _pets)
-        if ((int.tryParse(p.count.text) ?? 0) > 0) {'kind': p.kind, 'count': int.parse(p.count.text)},
+        if ((int.tryParse(p.count.text) ?? 0) > 0)
+          {'kind': p.kind, 'count': int.parse(p.count.text)},
     ];
     final floor = int.tryParse(_floor.text);
     widget.onChanged({
@@ -87,38 +103,49 @@ class _HouseholdEditorState extends State<HouseholdEditor> {
         for (var i = 0; i < _pets.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.xs),
-            child: Row(children: [
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: _pets[i].kind,
-                  items: [for (final k in _petKinds) DropdownMenuItem(value: k, child: Text(_petLabel(context, k)))],
-                  onChanged: (v) => setState(() {
-                    _pets[i].kind = v ?? _pets[i].kind;
+            child: Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _pets[i].kind,
+                    items: [
+                      for (final k in _petKinds)
+                        DropdownMenuItem(
+                          value: k,
+                          child: Text(_petLabel(context, k)),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() {
+                      _pets[i].kind = v ?? _pets[i].kind;
+                      _emit();
+                    }),
+                  ),
+                ),
+                const SizedBox(width: Space.sm),
+                SizedBox(
+                  width: 84,
+                  child: TextField(
+                    controller: _pets[i].count,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
+                    decoration: InputDecoration(labelText: t.hhPetCount),
+                    onChanged: (_) => _emit(),
+                  ),
+                ),
+                IconButton(
+                  tooltip: t.delete,
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                  onPressed: () => setState(() {
+                    _pets.removeAt(i).count.dispose();
                     _emit();
                   }),
                 ),
-              ),
-              const SizedBox(width: Space.sm),
-              SizedBox(
-                width: 84,
-                child: TextField(
-                  controller: _pets[i].count,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
-                  decoration: InputDecoration(labelText: t.hhPetCount),
-                  onChanged: (_) => _emit(),
-                ),
-              ),
-              IconButton(
-                tooltip: t.delete,
-                icon: const Icon(Icons.remove_circle_outline_rounded),
-                onPressed: () => setState(() {
-                  _pets.removeAt(i).count.dispose();
-                  _emit();
-                }),
-              ),
-            ]),
+              ],
+            ),
           ),
         if (_pets.length < _maxPets)
           Align(
@@ -133,16 +160,33 @@ class _HouseholdEditorState extends State<HouseholdEditor> {
             ),
           ),
         fieldGap,
-        TextField(controller: _allergies, maxLength: 300, decoration: InputDecoration(labelText: t.pAllergies), onChanged: (_) => _emit()),
+        TextField(
+          controller: _allergies,
+          maxLength: 300,
+          decoration: InputDecoration(labelText: t.pAllergies),
+          onChanged: (_) => _emit(),
+        ),
         fieldGap,
-        TextField(controller: _preferred, maxLength: 300, decoration: InputDecoration(labelText: t.pPreferredProducts), onChanged: (_) => _emit()),
+        TextField(
+          controller: _preferred,
+          maxLength: 300,
+          decoration: InputDecoration(labelText: t.pPreferredProducts),
+          onChanged: (_) => _emit(),
+        ),
         fieldGap,
-        TextField(controller: _parking, maxLength: 300, decoration: InputDecoration(labelText: t.pParking), onChanged: (_) => _emit()),
+        TextField(
+          controller: _parking,
+          maxLength: 300,
+          decoration: InputDecoration(labelText: t.pParking),
+          onChanged: (_) => _emit(),
+        ),
         fieldGap,
         TextField(
           controller: _floor,
           keyboardType: const TextInputType.numberWithOptions(signed: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d{0,3}$'))],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^-?\d{0,3}$')),
+          ],
           decoration: InputDecoration(labelText: t.hhFloorLabel),
           onChanged: (_) => _emit(),
         ),
@@ -156,7 +200,13 @@ class _HouseholdEditorState extends State<HouseholdEditor> {
           }),
         ),
         fieldGap,
-        TextField(controller: _notes, maxLength: 300, maxLines: 3, decoration: InputDecoration(labelText: t.hhNotes), onChanged: (_) => _emit()),
+        TextField(
+          controller: _notes,
+          maxLength: 300,
+          maxLines: 3,
+          decoration: InputDecoration(labelText: t.hhNotes),
+          onChanged: (_) => _emit(),
+        ),
       ],
     );
   }

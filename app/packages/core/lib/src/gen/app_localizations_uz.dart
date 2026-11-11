@@ -3544,6 +3544,92 @@ class TUz extends T {
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
 
   @override
+  String get cMfaTitle => 'Ikki bosqichli kirish';
+
+  @override
+  String get cMfaCode => 'Autentifikator ilovasidagi 6 xonali kod';
+
+  @override
+  String get cMfaRecovery => 'Tiklash kodi';
+
+  @override
+  String get cMfaUseRecovery => 'O‘rniga tiklash kodidan foydalaning';
+
+  @override
+  String get cMfaUseCode => 'O‘rniga autentifikator kodidan foydalaning';
+
+  @override
+  String get cMfaVerify => 'Tasdiqlash';
+
+  @override
+  String get cMfaBack => 'Kirishga qaytish';
+
+  @override
+  String get cMfaEnrolTitle => 'Ikki bosqichli kirishni sozlang';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Administratorga autentifikator ilova kerak. Quyidagi kalitni Google Authenticator, 1Password yoki o‘xshash ilovaga qo‘shing, so‘ng u ko‘rsatgan 6 xonali kodni kiriting.';
+
+  @override
+  String get cMfaSecret => 'Sozlash kaliti';
+
+  @override
+  String get cMfaLink => 'Sozlash havolasi (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Nusxalash';
+
+  @override
+  String get cMfaCopied => 'Nusxalandi';
+
+  @override
+  String get cMfaConfirm => 'Tasdiqlab yoqish';
+
+  @override
+  String get cMfaCodesTitle => 'Tiklash kodlaringizni saqlang';
+
+  @override
+  String get cMfaCodesBody =>
+      'Autentifikator yo‘qolsa, har bir kod bilan bir marta kirish mumkin. Ular faqat hozir ko‘rsatiladi.';
+
+  @override
+  String get cMfaDownload => 'Yuklab olish';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Bu qurilma faylni saqlay olmaydi. Kodlarni nusxalab, xavfsiz saqlang.';
+
+  @override
+  String get cMfaContinue => 'Konsolga o‘tish';
+
+  @override
+  String get cMfaInvalid =>
+      'Kod mos kelmadi. Telefon vaqti to‘g‘riligini tekshirib, qayta urinib ko‘ring.';
+
+  @override
+  String get cMfaExpired =>
+      'Kirish muddati tugadi. Parol bosqichidan qayta boshlang.';
+
+  @override
+  String get cMfaLocked =>
+      'Urinishlar juda ko‘p. Bir necha daqiqa kutib, qayta urinib ko‘ring.';
+
+  @override
+  String get cStaffReset => 'Parolni tiklash';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Bu xodimning parolini tiklaysizmi? U barcha qurilmalardan chiqariladi.';
+
+  @override
+  String get cStaffResetTitle => 'Tiklash tokeni';
+
+  @override
+  String get cStaffResetBody =>
+      'Bu tokenni xodimga bering. U bir marta, 30 daqiqa ichida ishlaydi. Yopilgandan keyin qayta ko‘rsatilmaydi.';
+
+  @override
   String get tTaxSection => 'Soliq';
 
   @override

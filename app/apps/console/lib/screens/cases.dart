@@ -96,28 +96,40 @@ class _CaseQueueState extends State<CaseQueue> {
       children: [
         Text(t.consoleCasesTitle, style: context.text.titleMedium),
         const SizedBox(height: Space.xs),
-        if (rows.isEmpty) Text(t.consoleCasesEmpty, style: context.text.bodySmall),
+        if (rows.isEmpty)
+          Text(t.consoleCasesEmpty, style: context.text.bodySmall),
         for (final r in rows)
           Card(
             child: ListTile(
               title: Text(caseKindLabel(t, r['kind'] as String)),
-              subtitle: Text('${r['booking_number'] ?? '-'} · ${caseStatusLabel(t, r['status'] as String)}'),
-              trailing: r['overdue'] == true ? Chip(label: Text(t.caseOverdue)) : null,
+              subtitle: Text(
+                '${r['booking_number'] ?? '-'} · ${caseStatusLabel(t, r['status'] as String)}',
+              ),
+              trailing: r['overdue'] == true
+                  ? Chip(label: Text(t.caseOverdue))
+                  : null,
               onTap: () => _select(r['id'] as String),
             ),
           ),
-        if (_open != null) _Detail(
-          data: _open!,
-          busy: _busy,
-          isAdmin: widget.isAdmin,
-          note: _note,
-          refund: _refund,
-          onStatus: (s) => _run(() => widget.update(_caseId, {'status': s})),
-          onNote: () => _run(() => widget.update(_caseId, {'note': _note.text.trim()})),
-          onRefund: () => _run(() => widget.update(_caseId, {'refund_amount': int.tryParse(_refund.text) ?? 0})),
-          onHold: (hold) => _run(() => widget.update(_caseId, {'hold_settlement': hold})),
-          onReassign: () => _run(() => widget.reassign(_caseId, const {})),
-        ),
+        if (_open != null)
+          _Detail(
+            data: _open!,
+            busy: _busy,
+            isAdmin: widget.isAdmin,
+            note: _note,
+            refund: _refund,
+            onStatus: (s) => _run(() => widget.update(_caseId, {'status': s})),
+            onNote: () =>
+                _run(() => widget.update(_caseId, {'note': _note.text.trim()})),
+            onRefund: () => _run(
+              () => widget.update(_caseId, {
+                'refund_amount': int.tryParse(_refund.text) ?? 0,
+              }),
+            ),
+            onHold: (hold) =>
+                _run(() => widget.update(_caseId, {'hold_settlement': hold})),
+            onReassign: () => _run(() => widget.reassign(_caseId, const {})),
+          ),
       ],
     );
   }
@@ -165,37 +177,82 @@ class _Detail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${caseKindLabel(t, c['kind'] as String)} · ${caseStatusLabel(t, status)}', style: context.text.labelLarge),
+            Text(
+              '${caseKindLabel(t, c['kind'] as String)} · ${caseStatusLabel(t, status)}',
+              style: context.text.labelLarge,
+            ),
             Text(c['summary'] as String, style: context.text.bodyMedium),
-            if (checkedIn != null) Text(t.checkedInAt(_hm(checkedIn)), style: context.text.bodySmall),
-            if (checkedOut != null) Text(t.checkedOutAt(_hm(checkedOut)), style: context.text.bodySmall),
+            if (checkedIn != null)
+              Text(
+                t.checkedInAt(_hm(checkedIn)),
+                style: context.text.bodySmall,
+              ),
+            if (checkedOut != null)
+              Text(
+                t.checkedOutAt(_hm(checkedOut)),
+                style: context.text.bodySmall,
+              ),
             const SizedBox(height: Space.xs),
             Wrap(
               spacing: Space.xs,
               runSpacing: Space.xs,
               children: [
                 for (final next in caseNextStatuses(status))
-                  OutlinedButton(onPressed: busy ? null : () => onStatus(next), child: Text(caseStatusLabel(t, next))),
+                  OutlinedButton(
+                    onPressed: busy ? null : () => onStatus(next),
+                    child: Text(caseStatusLabel(t, next)),
+                  ),
                 if (c['kind'] == 'no_show' && booking != null)
-                  OutlinedButton(onPressed: busy ? null : onReassign, child: Text(t.caseReassign)),
+                  OutlinedButton(
+                    onPressed: busy ? null : onReassign,
+                    child: Text(t.caseReassign),
+                  ),
               ],
             ),
             if (isAdmin && c['booking_id'] != null) ...[
               const SizedBox(height: Space.xs),
-              Row(children: [
-                Expanded(child: TextField(controller: refund, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: t.caseRefund))),
-                const SizedBox(width: Space.xs),
-                OutlinedButton(onPressed: busy ? null : onRefund, child: Text(t.caseRefund)),
-                const SizedBox(width: Space.xs),
-                OutlinedButton(onPressed: busy ? null : () => onHold(true), child: Text(t.caseHold)),
-              ]),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: refund,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(labelText: t.caseRefund),
+                    ),
+                  ),
+                  const SizedBox(width: Space.xs),
+                  OutlinedButton(
+                    onPressed: busy ? null : onRefund,
+                    child: Text(t.caseRefund),
+                  ),
+                  const SizedBox(width: Space.xs),
+                  OutlinedButton(
+                    onPressed: busy ? null : () => onHold(true),
+                    child: Text(t.caseHold),
+                  ),
+                ],
+              ),
             ],
             const SizedBox(height: Space.xs),
-            for (final n in notes) Text('· ${n['author'] ?? '-'}: ${n['body']}', style: context.text.bodySmall),
-            Row(children: [
-              Expanded(child: TextField(controller: note, decoration: InputDecoration(labelText: t.caseNoteHint))),
-              TextButton(onPressed: busy ? null : onNote, child: Text(t.caseSave)),
-            ]),
+            for (final n in notes)
+              Text(
+                '· ${n['author'] ?? '-'}: ${n['body']}',
+                style: context.text.bodySmall,
+              ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: note,
+                    decoration: InputDecoration(labelText: t.caseNoteHint),
+                  ),
+                ),
+                TextButton(
+                  onPressed: busy ? null : onNote,
+                  child: Text(t.caseSave),
+                ),
+              ],
+            ),
           ],
         ),
       ),

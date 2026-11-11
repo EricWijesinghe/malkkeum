@@ -6612,6 +6612,162 @@ abstract class T {
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
 
+  /// No description provided for @cMfaTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증'**
+  String get cMfaTitle;
+
+  /// No description provided for @cMfaCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱의 6자리 코드'**
+  String get cMfaCode;
+
+  /// No description provided for @cMfaRecovery.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드'**
+  String get cMfaRecovery;
+
+  /// No description provided for @cMfaUseRecovery.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드 사용'**
+  String get cMfaUseRecovery;
+
+  /// No description provided for @cMfaUseCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱 코드 사용'**
+  String get cMfaUseCode;
+
+  /// No description provided for @cMfaVerify.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get cMfaVerify;
+
+  /// No description provided for @cMfaBack.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 화면으로'**
+  String get cMfaBack;
+
+  /// No description provided for @cMfaEnrolTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증 설정'**
+  String get cMfaEnrolTitle;
+
+  /// No description provided for @cMfaEnrolBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자는 인증 앱 사용이 필요해요. Google Authenticator, 1Password 같은 앱에 아래 키를 추가한 뒤 앱에 표시된 6자리 코드를 입력하세요.'**
+  String get cMfaEnrolBody;
+
+  /// No description provided for @cMfaSecret.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 키'**
+  String get cMfaSecret;
+
+  /// No description provided for @cMfaLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 링크 (otpauth)'**
+  String get cMfaLink;
+
+  /// No description provided for @cMfaCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get cMfaCopy;
+
+  /// No description provided for @cMfaCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사했어요'**
+  String get cMfaCopied;
+
+  /// No description provided for @cMfaConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인하고 2단계 인증 켜기'**
+  String get cMfaConfirm;
+
+  /// No description provided for @cMfaCodesTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드를 저장하세요'**
+  String get cMfaCodesTitle;
+
+  /// No description provided for @cMfaCodesBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱을 잃어버리면 각 코드를 한 번씩 쓸 수 있어요. 이 화면에서만 보여요.'**
+  String get cMfaCodesBody;
+
+  /// No description provided for @cMfaDownload.
+  ///
+  /// In ko, this message translates to:
+  /// **'파일로 저장'**
+  String get cMfaDownload;
+
+  /// No description provided for @cMfaSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기에서 파일을 저장할 수 없어요. 복사해서 보관하세요.'**
+  String get cMfaSaveFailed;
+
+  /// No description provided for @cMfaContinue.
+  ///
+  /// In ko, this message translates to:
+  /// **'콘솔로 들어가기'**
+  String get cMfaContinue;
+
+  /// No description provided for @cMfaInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'코드가 맞지 않아요. 휴대폰 시간이 맞는지 확인하고 다시 입력하세요.'**
+  String get cMfaInvalid;
+
+  /// No description provided for @cMfaExpired.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 시간이 지났어요. 비밀번호부터 다시 입력하세요.'**
+  String get cMfaExpired;
+
+  /// No description provided for @cMfaLocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'시도가 너무 많아요. 몇 분 뒤에 다시 시도하세요.'**
+  String get cMfaLocked;
+
+  /// No description provided for @cStaffReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호 재설정'**
+  String get cStaffReset;
+
+  /// No description provided for @cStaffResetConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.'**
+  String get cStaffResetConfirm;
+
+  /// No description provided for @cStaffResetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'재설정 토큰'**
+  String get cStaffResetTitle;
+
+  /// No description provided for @cStaffResetBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
+  String get cStaffResetBody;
+
   /// No description provided for @tTaxSection.
   ///
   /// In ko, this message translates to:

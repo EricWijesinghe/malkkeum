@@ -29,7 +29,11 @@ String caseStatusLabel(T t, String status) => switch (status) {
 
 /// Opens the problem-report form. `kinds` are the server kinds this reporter may file.
 /// Returns true when the case was accepted.
-Future<bool> showCaseReport(BuildContext context, {required List<String> kinds, required Future<dynamic> Function(String kind, String summary) submit}) async {
+Future<bool> showCaseReport(
+  BuildContext context, {
+  required List<String> kinds,
+  required Future<dynamic> Function(String kind, String summary) submit,
+}) async {
   final sent = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
@@ -88,7 +92,12 @@ class _CaseReportSheetState extends State<CaseReportSheet> {
     final t = context.t;
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     return Padding(
-      padding: EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter + bottom),
+      padding: EdgeInsets.fromLTRB(
+        Space.gutter,
+        0,
+        Space.gutter,
+        Space.gutter + bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +112,9 @@ class _CaseReportSheetState extends State<CaseReportSheet> {
                 ChoiceChip(
                   label: Text(caseKindLabel(t, kind)),
                   selected: _kind == kind,
-                  onSelected: _busy ? null : (_) => setState(() => _kind = kind),
+                  onSelected: _busy
+                      ? null
+                      : (_) => setState(() => _kind = kind),
                 ),
             ],
           ),
@@ -116,10 +127,13 @@ class _CaseReportSheetState extends State<CaseReportSheet> {
             decoration: InputDecoration(hintText: t.caseSummaryHint),
             onChanged: (_) => setState(() {}),
           ),
-          if (_error != null) Text(_error!, style: TextStyle(color: context.colors.danger)),
+          if (_error != null)
+            Text(_error!, style: TextStyle(color: context.colors.danger)),
           const SizedBox(height: Space.sm),
           FilledButton(
-            onPressed: _kind == null || _summary.text.trim().isEmpty || _busy ? null : _send,
+            onPressed: _kind == null || _summary.text.trim().isEmpty || _busy
+                ? null
+                : _send,
             child: Text(t.caseSubmit),
           ),
         ],
@@ -150,7 +164,10 @@ class EmergencyContactsCard extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   dense: true,
                   title: Text(_contactLabel(t, '${c['label']}')),
-                  trailing: Text('${c['number']}', style: context.text.titleMedium),
+                  trailing: Text(
+                    '${c['number']}',
+                    style: context.text.titleMedium,
+                  ),
                 ),
           ],
         ),

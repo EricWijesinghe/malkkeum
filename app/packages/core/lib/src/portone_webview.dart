@@ -8,19 +8,23 @@ import 'payment_launcher.dart';
 
 /// URL of our hosted PortOne page for [intent] (website/pay/index.html, same domain as the API).
 /// `paymentId` is the checkout id there: the webhook and the recovery pass depend on it.
-Uri portOnePageUri(String apiBase, CheckoutIntent intent, {String? phone, String? back}) =>
-    Uri.parse('$apiBase/pay/').replace(
-      queryParameters: {
-        'checkout': intent.id,
-        'store': intent.storeId,
-        'channel': intent.channelKey,
-        'amount': '${intent.amount}',
-        'method': intent.method,
-        'name': intent.orderName,
-        'phone': ?phone,
-        'back': ?back,
-      },
-    );
+Uri portOnePageUri(
+  String apiBase,
+  CheckoutIntent intent, {
+  String? phone,
+  String? back,
+}) => Uri.parse('$apiBase/pay/').replace(
+  queryParameters: {
+    'checkout': intent.id,
+    'store': intent.storeId,
+    'channel': intent.channelKey,
+    'amount': '${intent.amount}',
+    'method': intent.method,
+    'name': intent.orderName,
+    'phone': ?phone,
+    'back': ?back,
+  },
+);
 
 /// Where the web app resumes after the hosted page (same origin, hash route, see customer web_return).
 const webPayReturnPath = '/app/#/pay-return';
@@ -78,7 +82,12 @@ class PortOneRedirectLauncher extends PaymentLauncher {
     if (intent.storeId.isEmpty || intent.channelKey.isEmpty) {
       return const PaymentRejected('provider_not_configured');
     }
-    final uri = portOnePageUri(apiBase, intent, phone: phone, back: webPayReturnPath);
+    final uri = portOnePageUri(
+      apiBase,
+      intent,
+      phone: phone,
+      back: webPayReturnPath,
+    );
     await launchUrl(uri, webOnlyWindowName: '_self');
     // The page unloads now; a null outcome only matters if the navigation was blocked.
     return null;
@@ -116,7 +125,13 @@ class PortOneWebViewLauncher extends PaymentLauncher {
 /// Our hosted PortOne page in a WebView. The page ends by redirecting to [donePath]; [onDone]
 /// turns that redirect into the pop result. Card and wallet apps are handed to the OS.
 class HostedPage<T> extends StatefulWidget {
-  const HostedPage({required this.uri, required this.donePath, required this.title, required this.onDone, super.key});
+  const HostedPage({
+    required this.uri,
+    required this.donePath,
+    required this.title,
+    required this.onDone,
+    super.key,
+  });
   final Uri uri;
   final String donePath;
   final String title;

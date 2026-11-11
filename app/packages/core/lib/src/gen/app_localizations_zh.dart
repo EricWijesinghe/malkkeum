@@ -3409,6 +3409,85 @@ class TZh extends T {
   String get cInvalidValue => '请检查输入内容';
 
   @override
+  String get cMfaTitle => '两步验证';
+
+  @override
+  String get cMfaCode => '验证器应用中的6位验证码';
+
+  @override
+  String get cMfaRecovery => '恢复代码';
+
+  @override
+  String get cMfaUseRecovery => '改用恢复代码';
+
+  @override
+  String get cMfaUseCode => '改用验证器代码';
+
+  @override
+  String get cMfaVerify => '验证';
+
+  @override
+  String get cMfaBack => '返回登录';
+
+  @override
+  String get cMfaEnrolTitle => '设置两步验证';
+
+  @override
+  String get cMfaEnrolBody =>
+      '管理员需要使用验证器应用。请在 Google Authenticator、1Password 等应用中添加下方密钥，然后输入其显示的6位验证码。';
+
+  @override
+  String get cMfaSecret => '设置密钥';
+
+  @override
+  String get cMfaLink => '设置链接（otpauth）';
+
+  @override
+  String get cMfaCopy => '复制';
+
+  @override
+  String get cMfaCopied => '已复制';
+
+  @override
+  String get cMfaConfirm => '确认并开启';
+
+  @override
+  String get cMfaCodesTitle => '请保存恢复代码';
+
+  @override
+  String get cMfaCodesBody => '如果丢失验证器，每个代码可用于登录一次。这些代码只会显示这一次。';
+
+  @override
+  String get cMfaDownload => '下载';
+
+  @override
+  String get cMfaSaveFailed => '此设备无法保存文件。请复制代码并妥善保管。';
+
+  @override
+  String get cMfaContinue => '进入控制台';
+
+  @override
+  String get cMfaInvalid => '验证码不正确。请检查手机时间是否准确后重试。';
+
+  @override
+  String get cMfaExpired => '登录已过期，请从密码步骤重新开始。';
+
+  @override
+  String get cMfaLocked => '尝试次数过多，请几分钟后再试。';
+
+  @override
+  String get cStaffReset => '重置密码';
+
+  @override
+  String get cStaffResetConfirm => '重置该员工的密码？其所有设备将被登出。';
+
+  @override
+  String get cStaffResetTitle => '重置令牌';
+
+  @override
+  String get cStaffResetBody => '请将此令牌交给员工。只能使用一次，有效期30分钟。关闭后将无法再次查看。';
+
+  @override
   String get tTaxSection => '税务';
 
   @override

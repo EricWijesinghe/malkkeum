@@ -3522,6 +3522,92 @@ class TSi extends T {
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
 
   @override
+  String get cMfaTitle => 'පියවර දෙකේ පිවිසීම';
+
+  @override
+  String get cMfaCode => 'සත්‍යාපන යෙදුමෙන් ඉලක්කම් 6 කේතය';
+
+  @override
+  String get cMfaRecovery => 'යථා තත්ත්ව කේතය';
+
+  @override
+  String get cMfaUseRecovery => 'ඒ වෙනුවට යථා තත්ත්ව කේතය භාවිත කරන්න';
+
+  @override
+  String get cMfaUseCode => 'ඒ වෙනුවට සත්‍යාපන කේතය භාවිත කරන්න';
+
+  @override
+  String get cMfaVerify => 'සත්‍යාපනය කරන්න';
+
+  @override
+  String get cMfaBack => 'පිවිසීමට ආපසු යන්න';
+
+  @override
+  String get cMfaEnrolTitle => 'පියවර දෙකේ පිවිසීම සකසන්න';
+
+  @override
+  String get cMfaEnrolBody =>
+      'පරිපාලකයින්ට සත්‍යාපන යෙදුමක් අවශ්‍යයි. පහත යතුර Google Authenticator, 1Password වැනි යෙදුමට එක් කර, එහි පෙන්වන ඉලක්කම් 6 කේතය ඇතුළත් කරන්න.';
+
+  @override
+  String get cMfaSecret => 'සැකසුම් යතුර';
+
+  @override
+  String get cMfaLink => 'සැකසුම් සබැඳිය (otpauth)';
+
+  @override
+  String get cMfaCopy => 'පිටපත් කරන්න';
+
+  @override
+  String get cMfaCopied => 'පිටපත් විය';
+
+  @override
+  String get cMfaConfirm => 'තහවුරු කර ක්‍රියාත්මක කරන්න';
+
+  @override
+  String get cMfaCodesTitle => 'ඔබේ යථා තත්ත්ව කේත සුරකින්න';
+
+  @override
+  String get cMfaCodesBody =>
+      'සත්‍යාපන යෙදුම නැති වුවහොත්, සෑම කේතයකින්ම එක් වරක් පිවිසිය හැක. මේවා දැන් පමණක් පෙන්වයි.';
+
+  @override
+  String get cMfaDownload => 'බාගන්න';
+
+  @override
+  String get cMfaSaveFailed =>
+      'මෙම උපාංගයට ගොනුව සුරැකිය නොහැක. කේත පිටපත් කර ආරක්ෂිතව තබා ගන්න.';
+
+  @override
+  String get cMfaContinue => 'කන්සෝලය වෙත යන්න';
+
+  @override
+  String get cMfaInvalid =>
+      'කේතය නොගැලපේ. දුරකථනයේ වේලාව නිවැරදිදැයි බලා නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cMfaExpired =>
+      'පිවිසීමේ කාලය අවසන් විය. මුරපද පියවරෙන් නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get cMfaLocked =>
+      'උත්සාහයන් වැඩි වැඩියි. විනාඩි කිහිපයකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cStaffReset => 'මුරපදය යළි සකසන්න';
+
+  @override
+  String get cStaffResetConfirm =>
+      'මෙම කාර්ය මණ්ඩල සාමාජිකයාගේ මුරපදය යළි සකසන්නද? ඔවුන් සියලු තැන්වලින් ඉවත් වේ.';
+
+  @override
+  String get cStaffResetTitle => 'යළි සැකසීමේ ටෝකනය';
+
+  @override
+  String get cStaffResetBody =>
+      'මෙම ටෝකනය කාර්ය මණ්ඩල සාමාජිකයාට දෙන්න. එය එක් වරක්, මිනිත්තු 30ක් ඇතුළත පමණක් ක්‍රියා කරයි. වසා දැමූ පසු නැවත බැලිය නොහැක.';
+
+  @override
   String get tTaxSection => 'බදු';
 
   @override

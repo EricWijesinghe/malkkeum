@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:partner/outbox.dart';
 import 'package:test_support/test_support.dart';

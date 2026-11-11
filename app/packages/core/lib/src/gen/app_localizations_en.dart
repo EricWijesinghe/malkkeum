@@ -3509,6 +3509,92 @@ class TEn extends T {
   String get cInvalidValue => 'Please check the highlighted value';
 
   @override
+  String get cMfaTitle => 'Two-step sign-in';
+
+  @override
+  String get cMfaCode => '6-digit code from your authenticator app';
+
+  @override
+  String get cMfaRecovery => 'Recovery code';
+
+  @override
+  String get cMfaUseRecovery => 'Use a recovery code instead';
+
+  @override
+  String get cMfaUseCode => 'Use an authenticator code instead';
+
+  @override
+  String get cMfaVerify => 'Verify';
+
+  @override
+  String get cMfaBack => 'Back to sign-in';
+
+  @override
+  String get cMfaEnrolTitle => 'Set up two-step sign-in';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Admins need an authenticator app. Add this key to Google Authenticator, 1Password or similar, then enter the 6-digit code it shows.';
+
+  @override
+  String get cMfaSecret => 'Setup key';
+
+  @override
+  String get cMfaLink => 'Setup link (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Copy';
+
+  @override
+  String get cMfaCopied => 'Copied';
+
+  @override
+  String get cMfaConfirm => 'Confirm and turn on';
+
+  @override
+  String get cMfaCodesTitle => 'Save your recovery codes';
+
+  @override
+  String get cMfaCodesBody =>
+      'If you lose your authenticator, each code signs you in once. They are shown only now.';
+
+  @override
+  String get cMfaDownload => 'Download';
+
+  @override
+  String get cMfaSaveFailed =>
+      'This device cannot save the file here. Copy the codes and keep them safe.';
+
+  @override
+  String get cMfaContinue => 'Continue to the console';
+
+  @override
+  String get cMfaInvalid =>
+      'That code does not match. Check that your phone\'s clock is right, then try again.';
+
+  @override
+  String get cMfaExpired =>
+      'Sign-in expired. Start again from the password step.';
+
+  @override
+  String get cMfaLocked =>
+      'Too many attempts. Wait a few minutes and try again.';
+
+  @override
+  String get cStaffReset => 'Reset password';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Reset this staff member\'s password? They will be signed out everywhere.';
+
+  @override
+  String get cStaffResetTitle => 'Reset token';
+
+  @override
+  String get cStaffResetBody =>
+      'Give this token to the staff member. It works once, for 30 minutes. You cannot see it again after closing.';
+
+  @override
   String get tTaxSection => 'Tax';
 
   @override

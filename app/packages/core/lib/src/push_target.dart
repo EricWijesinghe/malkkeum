@@ -14,7 +14,8 @@ class BookingTarget extends PushTarget {
   final String bookingId;
 
   @override
-  bool operator ==(Object other) => other is BookingTarget && other.bookingId == bookingId;
+  bool operator ==(Object other) =>
+      other is BookingTarget && other.bookingId == bookingId;
   @override
   int get hashCode => bookingId.hashCode;
 }
@@ -24,7 +25,8 @@ class ChatTarget extends PushTarget {
   final String threadId;
 
   @override
-  bool operator ==(Object other) => other is ChatTarget && other.threadId == threadId;
+  bool operator ==(Object other) =>
+      other is ChatTarget && other.threadId == threadId;
   @override
   int get hashCode => threadId.hashCode;
 }
@@ -50,7 +52,14 @@ Object? _decodeOrNull(String raw) {
 }
 
 /// The chat thread with this id from the account's list (listPath: /chat/threads or /partner/threads).
-Future<ChatThread?> findChatThread(ApiClient api, String listPath, String threadId) async {
+Future<ChatThread?> findChatThread(
+  ApiClient api,
+  String listPath,
+  String threadId,
+) async {
   final list = await api.get(listPath) as List;
-  return list.map((e) => ChatThread.fromJson(e as Json)).where((t) => t.id == threadId).firstOrNull;
+  return list
+      .map((e) => ChatThread.fromJson(e as Json))
+      .where((t) => t.id == threadId)
+      .firstOrNull;
 }
