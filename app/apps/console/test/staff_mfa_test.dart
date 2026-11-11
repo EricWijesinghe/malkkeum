@@ -134,7 +134,7 @@ void main() {
         fake.lastCall('POST', '/auth/staff/mfa/enrol')!.json['mfa_token'],
         _mfaToken,
       );
-      expect(_selectable(secret), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w is SelectableText && w.data == secret), findsOneWidget);
       expect(_selectable('otpauth://totp/'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField).first, '654321');
