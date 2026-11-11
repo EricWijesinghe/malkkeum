@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// The Windows (MSIX) build. It has no native social SDKs, no FCM, and no WebView plugin.
