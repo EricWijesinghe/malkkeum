@@ -10,7 +10,10 @@ use crate::{
 };
 use serde_json::json;
 use sqlx::PgPool;
-use std::time::Duration;
+use std::{
+    sync::atomic::{AtomicBool, Ordering},
+    time::Duration,
+};
 use uuid::Uuid;
 
 pub const SYNC_EVERY: Duration = Duration::from_secs(600);
@@ -53,6 +56,21 @@ pub async fn sync_pass(s: &AppState) -> ApiResult<usize> {
 /// (stuck open transfers, recent Toss failures) for the owner's alert rules.
 pub async fn alert_counts(db: &PgPool) -> Result<(i64, i64), sqlx::Error> {
     sqlx::query_as(ALERT_SQL).bind(ALERT_AFTER_HOURS).fetch_one(db).await
+}
+
+static PASS_RUNNING: AtomicBool = AtomicBool::new(false);
+
+/// Runs one pass in the background unless one is already running (webhook bursts coalesce into one pass).
+pub fn kick(state: AppState) {
+    if state.config.dev_mode || PASS_RUNNING.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst).is_err() {
+        return;
+    }
+    tokio::spawn(async move {
+        if let Err(e) = sync_pass(&state).await {
+            tracing::warn!(error = ?e, "payout sync pass from webhook failed");
+        }
+        PASS_RUNNING.store(false, Ordering::SeqCst);
+    });
 }
 
 /// Starts the periodic sync. Dev mode never starts it: the fake provider would report every transfer paid.

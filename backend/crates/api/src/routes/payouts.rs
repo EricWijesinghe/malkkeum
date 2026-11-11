@@ -77,6 +77,7 @@ pub struct ActionBody {
 
 #[derive(sqlx::FromRow)]
 struct Row {
+    pro_id: Uuid,
     payout_date: NaiveDate,
     amount: i64,
     provider: String,
@@ -180,9 +181,92 @@ enum Owner {
     Retry,
 }
 
+#[derive(Deserialize)]
+pub struct SellerInput {
+    /// `individual` (name only) or `company` (representative and business registration number).
+    pub business_type: String,
+    pub name: Option<String>,
+    pub representative: Option<String>,
+    pub registration_no: Option<String>,
+    pub email: String,
+    pub phone: String,
+}
+
+/// Builds the Toss seller draft. The bank account is the pro's verified payout account, not typed again.
+/// The seller id is per revision, so a re-registration after an account change gets a new `refSellerId`.
+fn seller_draft(pro: Uuid, rev: i32, b: &SellerInput, bank_code: &'static str, account: &str, holder: &str) -> ApiResult<adapter::SellerDraft> {
+    let text = |v: &str| v.trim().to_string();
+    let email = text(&b.email);
+    let phone: String = b.phone.chars().filter(|c| c.is_ascii_digit()).collect();
+    if !email.contains('@') || !(10..=11).contains(&phone.len()) {
+        return Err(ApiError::BadRequest("invalid_contact"));
+    }
+    let business = match b.business_type.as_str() {
+        "individual" => {
+            let name = text(b.name.as_deref().unwrap_or_default());
+            if name.is_empty() {
+                return Err(ApiError::BadRequest("invalid_name"));
+            }
+            adapter::Business::Individual { name, email, phone }
+        }
+        "company" => {
+            let representative = text(b.representative.as_deref().unwrap_or_default());
+            let registration_no: String = b.registration_no.as_deref().unwrap_or_default().chars().filter(|c| c.is_ascii_digit()).collect();
+            if representative.is_empty() || registration_no.len() != 10 {
+                return Err(ApiError::BadRequest("invalid_business"));
+            }
+            let name = b.name.as_deref().map(text).filter(|n| !n.is_empty());
+            adapter::Business::Company { name, representative, registration_no, email, phone }
+        }
+        _ => return Err(ApiError::BadRequest("invalid_business_type")),
+    };
+    let ref_id = format!("mk{}r{rev}", &pro.simple().to_string()[..12]);
+    if !adapter::REF_SELLER_ID_RANGE.contains(&ref_id.len()) || account.len() > 14 || holder.chars().count() > 50 {
+        return Err(ApiError::BadRequest("invalid_account"));
+    }
+    Ok(adapter::SellerDraft { ref_id, business, bank_code, account: account.to_string(), holder: holder.to_string() })
+}
+
+/// Registers a pro as a Toss seller, or re-registers after the payout account changed. Stores the seller id,
+/// its status and the account fingerprint that payouts are checked against.
+pub async fn register_seller(AxState(s): AxState<AppState>, Admin(a): Admin, Path(pro): Path<Uuid>, Json(b): Json<SellerInput>) -> ApiResult<Json<Value>> {
+    if s.providers.payout_mode() != PayoutMode::Toss {
+        return Err(ApiError::Conflict("payout_provider"));
+    }
+    let (bank, account_enc, holder): (String, String, String) = sqlx::query_as(
+        "SELECT bank, account_enc, holder FROM payout_accounts WHERE pro_id = $1 AND verified_at IS NOT NULL",
+    )
+    .bind(pro)
+    .fetch_optional(&s.db)
+    .await?
+    .ok_or(ApiError::Conflict("payout_account_unverified"))?;
+    let account = crypto::decrypt(&s.config.data_key, &account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
+    let bank_code = adapter::bank_code(&bank).ok_or(ApiError::Conflict("unsupported_bank"))?;
+    let rev: i32 = sqlx::query_scalar("UPDATE pros SET toss_seller_rev = toss_seller_rev + 1 WHERE id = $1 RETURNING toss_seller_rev")
+        .bind(pro)
+        .fetch_optional(&s.db)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+    let draft = seller_draft(pro, rev, &b, bank_code, &account, &holder)?;
+    let (seller_id, status) = s.providers.register_seller(&draft).await.map_err(|e| match e {
+        ProviderError::Declined(_) => ApiError::Conflict("seller_declined"),
+        _ => ApiError::Unavailable("provider_unreachable"),
+    })?;
+    let fp = adapter::account_fingerprint(bank_code, &account, &holder);
+    sqlx::query("UPDATE pros SET toss_seller_id = $2, toss_seller_status = $3, toss_seller_fp = $4 WHERE id = $1")
+        .bind(pro)
+        .bind(&seller_id)
+        .bind(&status)
+        .bind(&fp)
+        .execute(&s.db)
+        .await?;
+    audit(&s.db, a.role.as_str(), Some(a.id), "payout.seller", &pro.to_string(), json!({ "status": status, "rev": rev })).await?;
+    Ok(Json(json!({ "seller_status": status, "rev": rev })))
+}
+
 async fn lock(tx: &mut Transaction<'_, Postgres>, id: Uuid) -> ApiResult<Row> {
     Ok(sqlx::query_as(
-        "SELECT payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key, provider_transfer_id, failure_reason
+        "SELECT pro_id, payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key, provider_transfer_id, failure_reason
          FROM payouts WHERE id = $1 FOR UPDATE",
     )
     .bind(id)
@@ -272,6 +356,15 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
     check_amount(&mut tx, id, row.amount).await?;
     let bank_code = adapter::bank_code(&row.bank).ok_or(ApiError::Conflict("unsupported_bank"))?;
     let account = crypto::decrypt(&s.config.data_key, &row.account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
+    // Toss pays the seller's registered account. Refuse when that is not the account this payout was approved for.
+    let (seller_id, seller_fp): (Option<String>, Option<String>) = sqlx::query_as("SELECT toss_seller_id, toss_seller_fp FROM pros WHERE id = $1")
+        .bind(row.pro_id)
+        .fetch_one(&mut *tx)
+        .await?;
+    let seller_id = seller_id.ok_or(ApiError::Conflict("seller_required"))?;
+    if seller_fp.as_deref() != Some(adapter::account_fingerprint(bank_code, &account, &row.holder).as_str()) {
+        return Err(ApiError::Conflict("seller_account_changed"));
+    }
     let transfer = adapter::Transfer {
         amount: row.amount,
         bank_code,
@@ -279,7 +372,7 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
         holder: row.holder.clone(),
         memo: format!("말끔 정산 {}", row.payout_date),
     };
-    match s.providers.send_transfer(&row.idempotency_key, &id.to_string(), &transfer).await {
+    match s.providers.send_transfer(&row.idempotency_key, &id.to_string(), &seller_id, &transfer).await {
         Ok(transfer_id) => {
             let r = sqlx::query(
                 "UPDATE payouts SET state = 'sent', provider_transfer_id = $2, attempts = attempts + 1, failure_reason = NULL, updated_at = now()
