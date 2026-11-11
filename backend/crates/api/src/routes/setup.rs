@@ -26,7 +26,6 @@ use serde_json::{Map, Value, json};
 use sqlx::PgPool;
 use subtle::ConstantTimeEq;
 
-const MIN_ADMIN_PASSWORD: usize = 12;
 const MAX_FIELD_CHARS: usize = 200;
 const SETUP_CODE_LEN: usize = 12;
 /// No 0/O/1/I/L: the code is read off a screen and typed by hand.
@@ -114,9 +113,7 @@ async fn create_admin(State(s): State<AppState>, Json(req): Json<NewAdmin>) -> A
     if !email.contains('@') || email.len() > MAX_FIELD_CHARS || name.is_empty() || name.chars().count() > MAX_FIELD_CHARS {
         return Err(ApiError::BadRequest("invalid_input"));
     }
-    if req.password.chars().count() < MIN_ADMIN_PASSWORD || req.password.len() > 256 {
-        return Err(ApiError::BadRequest("weak_password"));
-    }
+    crate::auth::check_password_policy(&req.password).map_err(ApiError::BadRequest)?;
     let hash = hash_password(&req.password)?;
     let mut tx = s.db.begin().await?;
     // Serialises concurrent attempts: only the first one can create the owner.

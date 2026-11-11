@@ -10,6 +10,8 @@ pub struct Config {
     pub database_url: String,
     pub bind: SocketAddr,
     pub jwt_secret: Vec<u8>,
+    /// Retired signing key still accepted during rotation (`JWT_PREVIOUS_SECRET`). Unset outside a rotation.
+    pub jwt_previous_secret: Option<Vec<u8>>,
     /// Key for encrypting payout account numbers at rest (32 bytes, hex).
     pub data_key: [u8; 32],
     pub upload_dir: PathBuf,
@@ -182,10 +184,19 @@ fn fcm_account() -> Result<Option<ServiceAccount>, ConfigError> {
 }
 
 impl Config {
+    /// Keys that may verify access tokens: the current secret, then the previous one during rotation.
+    pub fn jwt_keys(&self) -> Vec<&[u8]> {
+        std::iter::once(self.jwt_secret.as_slice()).chain(self.jwt_previous_secret.as_deref()).collect()
+    }
+
     pub fn from_env() -> Result<Self, ConfigError> {
         let jwt_secret = req("JWT_SECRET")?.into_bytes();
         if jwt_secret.len() < MIN_SECRET_BYTES {
             return Err(ConfigError::Invalid("JWT_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
+        }
+        let jwt_previous_secret = env::var("JWT_PREVIOUS_SECRET").ok().filter(|s| !s.is_empty()).map(String::into_bytes);
+        if jwt_previous_secret.as_ref().is_some_and(|k| k.len() < MIN_SECRET_BYTES) {
+            return Err(ConfigError::Invalid("JWT_PREVIOUS_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
         }
         let key_hex = req("DATA_KEY")?;
         let key_vec = hex::decode(&key_hex).map_err(|e| ConfigError::Invalid("DATA_KEY", e.to_string()))?;
@@ -211,6 +222,7 @@ impl Config {
             database_url: req("DATABASE_URL")?,
             bind: bind.parse().map_err(|_| ConfigError::Invalid("BIND_ADDR", bind.clone()))?,
             jwt_secret,
+            jwt_previous_secret,
             data_key,
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "./data/uploads".into()).into(),
             public_base_url,

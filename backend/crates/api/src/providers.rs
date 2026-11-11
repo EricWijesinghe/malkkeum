@@ -63,6 +63,8 @@ pub struct PaymentInfo {
 
 /// Identity verification result (PASS / 본인인증).
 pub struct IdentityInfo {
+    /// The verification id the provider reports; must equal the id we asked about.
+    pub id: String,
     pub status: String,
     pub ci: Option<String>,
     pub name: Option<String>,

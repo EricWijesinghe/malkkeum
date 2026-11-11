@@ -30,6 +30,8 @@ class AccountIdentityScreen extends StatefulWidget {
 class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
   bool _verified = false;
   bool _busy = false;
+  // Off when the server has no identity channel or the platform has no WebView: the action is hidden.
+  bool _available = false;
 
   @override
   void initState() {
@@ -38,13 +40,16 @@ class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
     context.appRead.api.get('/me').then((v) {
       if (mounted && v is Json) setState(() => _verified = v['identity_verified'] as bool? ?? false);
     }).ignore();
+    identityAvailable(context.appRead.api).then((ok) {
+      if (mounted) setState(() => _available = ok);
+    }).ignore();
   }
 
   Future<void> _verify() async {
     final app = context.appRead;
     setState(() => _busy = true);
     try {
-      final id = await identityVerifierFor(app.api.baseUrl).verify(context);
+      final id = await identityVerifierFor(app.api).verify(context);
       if (id == null) return;
       await submitIdentity(app.api, id);
       if (!mounted) return;
@@ -77,7 +82,7 @@ class _AccountIdentityScreenState extends State<AccountIdentityScreen> {
           ]),
         ),
       ]),
-      bottomNavigationBar: _verified
+      bottomNavigationBar: _verified || !_available
           ? null
           : BottomActionBar(child: PrimaryButton(label: t.apIdentityAction, busy: _busy, onPressed: _verify)),
     );
