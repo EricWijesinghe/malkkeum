@@ -38,7 +38,7 @@ FOOT = """  </main>
     <div><p class="company" id="company"></p><p>© <span id="year"></span> <span data-brand-name>말끔</span></p></div>
     <div><b data-t="f_support">고객센터</b><br><a data-support-phone href="#"></a><br><a data-support-email href="#"></a></div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br>
-      <a href="location.html" data-t="f_location">위치기반서비스 이용약관</a><br><a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
+      <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>
 </body>
 </html>
@@ -128,17 +128,6 @@ TERMS = f"""
     <h2>사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span></p>
 """
 
-LOCATION = f"""
-    <h1>위치기반서비스 이용약관</h1>
-    <p class="note">시행일: {EFFECTIVE}</p>
-    <h2>제1조 (목적)</h2><p>이 약관은 {CO}가 제공하는 위치기반서비스의 이용 조건을 「위치정보의 보호 및 이용 등에 관한 법률」에 따라 정합니다.</p>
-    <h2>제2조 (서비스 내용)</h2><ul><li>고객이 입력한 주소로 서비스 가능 지역 확인과 파트너 배정</li><li>파트너가 설정한 활동 지역에 맞는 작업 목록 제공</li></ul>
-    <p>회사는 기기의 실시간 위치(GPS)를 수집하지 않고, 이용자가 직접 입력한 주소만 이용합니다.</p>
-    <h2>제3조 (보유 기간)</h2><p>주소 정보는 회원 탈퇴 시 파기하며, 거래 기록은 관련 법령에 따른 기간 동안 보관합니다.</p>
-    <h2>제4조 (이용자의 권리)</h2><p>언제든지 주소 정보 삭제를 요청하거나 동의를 철회할 수 있습니다.</p>
-    <h2>제5조 (위치정보관리책임자)</h2><p>{OFFICER} · {CONTACT}</p>
-"""
-
 DELETE = f"""
     <h1>계정 삭제 안내 · Delete your account</h1>
     <h2>앱에서 바로 삭제하기</h2>
@@ -170,7 +159,6 @@ PARTNERS = f"""
 PAGES = {
     "privacy.html": ("개인정보처리방침", PRIVACY),
     "terms.html": ("이용약관", TERMS),
-    "location.html": ("위치기반서비스 이용약관", LOCATION),
     "delete-account.html": ("계정 삭제 안내", DELETE),
     "partners.html": ("파트너 지원", PARTNERS),
 }
