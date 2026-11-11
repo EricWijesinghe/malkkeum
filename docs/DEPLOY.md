@@ -81,12 +81,21 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 |---|---|
 | `API_BASE` | `https://<client domain>` |
 | `KAKAO_NATIVE_KEY` | developers.kakao.com → app → 앱 키 → 네이티브 앱 키. Register Android key hash (Play App Signing SHA-1 → base64) and iOS bundle id under 플랫폼 |
-| `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL scheme must be exactly `malkkeumnaver` (`malkkeumnaver://naverlogin`). The secret stays on the server |
+| `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL scheme is `malkkeumnaver` (`malkkeumnaver://naverlogin`) for now; see the Naver residual risk below. The secret stays on the server |
 | `GOOGLE_SERVER_CLIENT_ID` | Google Cloud console → Credentials → *Web* OAuth client id (also put it in the console wizard Google card) |
 | `GOOGLE_IOS_CLIENT_ID` | Google Cloud console → *iOS* OAuth client for each bundle id (the reversed id is derived) |
 | `GOOGLE_SERVICES_JSON_B64`, `GOOGLE_SERVICE_INFO_PLIST_B64` | Firebase project → customer Android/iOS app config files, `base64 -w0` |
 | `PARTNER_GOOGLE_SERVICES_JSON_B64`, `PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64` | same for the partner apps |
 | `SOCIAL_PROVIDERS` | optional override, e.g. `kakao,naver` |
+
+**Naver residual risk (open).** The login code returns through the custom scheme `malkkeumnaver://`, which
+any app can register on Android. Naver has no PKCE, and `state` is echoed to the redirect, so an
+interceptor can read both `code` and `state`. A device-bound nonce in `state` does not help for that reason.
+The fix is an HTTPS App Link / Universal Link on our domain (`https://<API_BASE host>/auth/naver/callback`):
+serve `/.well-known/assetlinks.json` (Play app-signing SHA-256) and `apple-app-site-association` (Team ID +
+bundle ids), add `android:autoVerify` intent filters and `applinks:` entitlements, and register the same URL
+as the Naver callback. It needs the Play signing fingerprint and Apple Team ID, which are not in the repo, so it
+is not implemented yet. Until then, Naver is the weakest social provider on Android.
 
 iOS, once per bundle id in the Apple Developer portal: enable **Sign in with Apple** and **Push
 Notifications**, upload an APNs key (.p8) to Firebase → Cloud Messaging. In Xcode the Runner target
@@ -113,7 +122,7 @@ The code has an adapter point for each. Dev mode uses safe fakes until then.
 | AlimTalk (optional) | KakaoTalk booking notices | Kakao business channel | alongside push in `realtime::notify` |
 | Solapi SMS + AlimTalk (adapter built) | SMS fallback and AlimTalk for customer booking events | Solapi: `SOLAPI_API_KEY`, `SOLAPI_API_SECRET`, `SMS_SENDER`, `ALIMTALK_PF_ID`, `ALIMTALK_TEMPLATES` (kind → approved template id). Env vars in `deploy/.env.example` | `providers/sms.rs`, `Providers::send_sms` / `send_customer_message` |
 | FCM push (adapter built) | Push to customer, pro and team-member devices | Firebase project; service-account key as `FCM_SERVICE_ACCOUNT` (path or JSON). Dead device tokens are pruned on UNREGISTERED | `providers/fcm.rs`, `Providers::push_collect`, `realtime::notify` |
-| Partner payouts (built; default manual) | Weekly pro payouts go requested → sent → paid, or failed (retryable). Default `manual`: owner transfers from the bank app and confirms; no contract needed. Optional `toss`: Toss Payments 지급대행, set in the setup wizard "payout" card (mode `toss` + test or live secret key). Toss mode needs a payout contract, and its endpoints were not verified against live docs (docs.tosspayments.com returned 404 when built); check them in a sandbox first | `providers/payout.rs`, `routes/payouts.rs`, `payout.rs` (state machine), migration `0014`; owner guide `guide/02` §7 |
+| Partner payouts (built; default manual) | Weekly pro payouts go requested → sent → paid, or failed (retryable). Default `manual`: owner transfers from the bank app and confirms; no contract needed. Optional `toss`: Toss Payments 지급대행, set in the setup wizard "payout" card (mode `toss` + test or live secret key). **Toss mode is NOT usable yet; keep `manual`.** Verified against https://docs.tosspayments.com/guides/v2/payouts and /reference/additional: endpoints (`POST /v2/payouts`, `GET /v2/payouts/{id}` by Toss id), status enum, bank codes. Still missing: (1) seller registration `POST /v2/sellers` per pro, since each payout needs a `destination` seller id and the account lives on the seller; (2) JWE body encryption (`TossPayments-api-security-mode: ENCRYPTION`, A256GCM with the secret key), both requests and responses; (3) create-payout body schema (amount shape, scheduleType/payoutDate); (4) `payout.changed` webhook signature scheme (not on the guide page; polling stays). Toss also gates payouts behind a contract/application, so check before enabling | `providers/payout.rs`, `routes/payouts.rs`, `payout.rs` (state machine), migration `0014`; owner guide `guide/02` §7 |
 | Team-member login (built) | Team members sign in on the partner app with their invited phone; they see only assigned jobs and never payouts | No external account. Owner invites by phone (`POST /v1/partner/team`) | `routes/member.rs`, `routes/auth.rs::verify_otp`, migration `0006` |
 
 Legal: publish a privacy policy and terms (PIPA). Add them in the console under Coupons & content → Legal (slugs `privacy` and `terms`). The apps show them automatically.

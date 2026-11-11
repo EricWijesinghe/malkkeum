@@ -1912,7 +1912,7 @@ class TKm extends T {
 
   @override
   String get err_toss_unverified =>
-      'ការទូទាត់ Toss ទទួលតែកូនសោសាកល្បង (test_) ប៉ុណ្ណោះសម្រាប់ពេលនេះ។';
+      'ការទូទាត់ Toss មិនទាន់អាចប្រើបានទេ។ សូមប្រើការផ្ទេរដោយដៃ។';
 
   @override
   String get err_invalid_cap => 'សូមបញ្ចូលលេខក្នុងចន្លោះដែលអនុញ្ញាត។';

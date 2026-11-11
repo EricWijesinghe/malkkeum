@@ -29,6 +29,8 @@ async fn complete_job(app: &axum::Router, pool: &PgPool, id: Uuid, pro: &str) {
         .execute(pool)
         .await
         .expect("visit today");
+    let pro_id: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1").bind(id).fetch_one(pool).await.expect("pro");
+    common::register_photo(pool, pro_id).await;
     let done = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
     let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/complete"), Some(pro), Some(done)).await;
     assert_eq!(st, StatusCode::OK, "{b}");
@@ -51,6 +53,7 @@ async fn only_the_customer_reviews_a_completed_booking_once_with_own_photos(pool
     let (pro, _) = verified_pro(&app, &pool, "010-5100-0101").await;
     let (id, _) = book(&app, &c, 10, None).await;
     let uri = format!("/v1/bookings/{id}/review");
+    common::register_photo(&pool, c.user).await;
     let ok = json!({ "rating": 5, "body": "꼼꼼해요", "photos": [PHOTO] });
 
     let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(ok.clone())).await;

@@ -3,7 +3,7 @@
 
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
-    chat, growth,
+    chat, growth, uploads,
 };
 use crate::{
     auth::{Member, mask_name},
@@ -111,6 +111,9 @@ async fn complete(State(s): State<AppState>, Member(a): Member, Path(id): Path<U
     };
     let photos_ok = (1..=MAX_PHOTOS).contains(&before.len()) && (1..=MAX_PHOTOS).contains(&after.len());
     if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
+        return Err(ApiError::BadRequest("completion_incomplete"));
+    }
+    if !uploads::owned(&s.db, Some(a.id), &before).await? || !uploads::owned(&s.db, Some(a.id), &after).await? {
         return Err(ApiError::BadRequest("completion_incomplete"));
     }
     let (b, _) = assigned(&s, a.id, id).await?;

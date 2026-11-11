@@ -591,7 +591,7 @@
  "err_payout_state": "Nagbago ang status ng bayad. I-refresh at tingnan ulit.",
  "err_payout_provider": "Hindi available ang paraan ng bayad na ito ngayon.",
  "err_unsupported_bank": "Hindi suportado ang bangkong ito para sa bayad.",
- "err_toss_unverified": "Test key (test_) lang muna ang tinatanggap ng Toss payouts.",
+ "err_toss_unverified": "Hindi pa available ang Toss payouts. Gumamit ng manual na transfer.",
  "err_invalid_cap": "Maglagay ng numero sa pinapayagang saklaw.",
  "err_invalid_capacity": "Maglagay ng valid na kapasidad.",
  "fFinance": "Pananalapi",

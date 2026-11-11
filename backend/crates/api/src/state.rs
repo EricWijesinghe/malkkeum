@@ -9,4 +9,5 @@ pub struct AppState {
     pub providers: Arc<Providers>,
     pub hub: Hub,
     pub ai_debounce: crate::ai::Debounce,
+    pub address_search: Arc<crate::routes::address::SearchGate>,
 }

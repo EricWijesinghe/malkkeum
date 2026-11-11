@@ -22,6 +22,8 @@ void main() {
         (c.inkSoft, c.surface),
         (c.inkMuted, c.surface),
         (c.inkMuted, c.surfaceHigh),
+        (c.danger, c.surface),
+        (c.danger, c.canvas),
         (Colors.white, dark ? BrandConfig.placeholder.primaryDeep : BrandConfig.placeholder.primary),
       ]) {
         expect(_ratio(fg, bg), greaterThanOrEqualTo(4.5), reason: '$fg on $bg');

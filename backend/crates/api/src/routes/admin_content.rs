@@ -1,6 +1,6 @@
 //! Console: catalogue, pricing settings, coupons, content, pros, settlements, staff, customers.
 
-use super::audit;
+use super::{audit, uploads};
 use crate::{
     auth::{Admin, Staff, hash_password, normalize_phone},
     error::{ApiError, ApiResult},
@@ -208,24 +208,33 @@ impl ContentInput {
         self.image_url.as_deref().map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
     }
 
-    fn validate(&self) -> ApiResult<()> {
+    async fn validate(&self, s: &AppState) -> ApiResult<()> {
         // Links and images end up in customer apps: allow only https or in-app routes, and our own uploads.
         let safe_link = self
             .link
             .as_deref()
             .is_none_or(|l| l.starts_with("https://") || l.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '/'));
-        let safe_image = self.image_url.as_deref().is_none_or(|u| u.starts_with("https://") || u.contains("/files/"));
+        let safe_image = self.image_url.as_deref().is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
         let ok = matches!(self.kind.as_str(), "notice" | "tip" | "faq" | "banner" | "legal")
             && self.title.is_object()
             && self.body.is_object()
             && safe_link
             && safe_image;
-        if ok { Ok(()) } else { Err(ApiError::BadRequest("invalid_content")) }
+        if !ok {
+            return Err(ApiError::BadRequest("invalid_content"));
+        }
+        // A stored image must be a real upload (any uploader: staff may pick any photo).
+        if let Some(path) = self.stored_image(&s.config.public_base_url).filter(|p| p.starts_with("/files/"))
+            && !uploads::owned(&s.db, None, &[path]).await?
+        {
+            return Err(ApiError::BadRequest("invalid_content"));
+        }
+        Ok(())
     }
 }
 
 async fn create_content(State(s): State<AppState>, Admin(st): Admin, Json(c): Json<ContentInput>) -> ApiResult<Json<Value>> {
-    c.validate()?;
+    c.validate(&s).await?;
     let id: Uuid = sqlx::query_scalar("INSERT INTO content_items (kind, slug, title, body, image_url, link, sort_order, starts_at, ends_at, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id")
         .bind(&c.kind).bind(&c.slug).bind(&c.title).bind(&c.body).bind(c.stored_image(&s.config.public_base_url)).bind(&c.link).bind(c.sort_order).bind(c.starts_at).bind(c.ends_at).bind(c.active)
         .fetch_one(&s.db)
@@ -235,7 +244,7 @@ async fn create_content(State(s): State<AppState>, Admin(st): Admin, Json(c): Js
 }
 
 async fn update_content(State(s): State<AppState>, Admin(st): Admin, Path(id): Path<Uuid>, Json(c): Json<ContentInput>) -> ApiResult<Json<Value>> {
-    c.validate()?;
+    c.validate(&s).await?;
     sqlx::query(
         "UPDATE content_items SET kind=$2, slug=$3, title=$4, body=$5, image_url=$6, link=$7, sort_order=$8, starts_at=$9, ends_at=$10, active=$11 WHERE id=$1",
     )

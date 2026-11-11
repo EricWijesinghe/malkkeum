@@ -1,4 +1,4 @@
-mod address;
+pub(crate) mod address;
 mod admin;
 mod admin_content;
 mod auth;

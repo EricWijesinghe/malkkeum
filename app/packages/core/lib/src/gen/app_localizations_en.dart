@@ -1905,7 +1905,7 @@ class TEn extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss payouts accept only test keys (test_) for now.';
+      'Toss payouts aren\'t available yet. Use manual transfer.';
 
   @override
   String get err_invalid_cap => 'Enter a number within the allowed range.';

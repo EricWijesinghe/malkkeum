@@ -1,8 +1,15 @@
+import 'dart:async';
+
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
+import 'package:customer/screens/addresses.dart';
+import 'package:customer/screens/pay_method_picker.dart';
+import 'package:customer/screens/payments.dart';
 import 'package:customer/screens/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
+import 'package:ui/ui.dart';
 
 import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
@@ -29,6 +36,25 @@ FakeApi _richApi() {
   return fake;
 }
 
+/// Saved-card channels (PortOne configured) plus one checkout channel: the picker shows both kinds.
+void _stockPayments(FakeApi fake) {
+  fake
+    ..reply('GET', '/payments/methods', [
+      {'code': 'card', 'flow': 'billing'},
+      {'code': 'kakaopay', 'flow': 'billing'},
+      {'code': 'transfer', 'flow': 'checkout'},
+    ])
+    ..reply('GET', '/features', {'address_search': true, 'card_billing': true})
+    ..reply('GET', '/me/payment-methods/setup', {'enabled': true, 'store_id': 'store-1', 'channels': {'card': 'ch-card', 'kakaopay': 'ch-kp'}, 'issue_id': 'iss-1'})
+    ..reply('GET', '/address/search', {
+      'results': [
+        for (final i in [1, 2, 3])
+          {'road_address': '서울특별시 마포구 월드컵북로 $i$i$i', 'jibun_address': '서울특별시 마포구 상암동 1$i', 'zip_code': '03922', 'building_name': '상암 아파트 $i동'},
+      ],
+      'page': 1,
+    });
+}
+
 void main() {
   for (final locale in LocaleController.supported) {
     final code = locale.languageCode;
@@ -48,6 +74,49 @@ void main() {
         await settle(tester, duration: const Duration(milliseconds: 600));
       }
       expect(tester.takeException(), isNull);
+      await unmount(tester);
+    });
+
+    testWidgets('[$code] address search results, typed fallback, saved cards and the pay picker fit a small phone', (tester) async {
+      setViewport(tester, _smallPhone);
+      tester.platformDispatcher.textScaleFactorTestValue = _bigFont;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final t = lookupT(locale);
+      final fake = _richApi();
+      _stockPayments(fake);
+      final env = await TestEnv.create(fake: fake, localeCode: code);
+
+      await pumpCustomerScreen(tester, env, const AddressFormScreen());
+      await settle(tester, duration: const Duration(milliseconds: 400));
+      await tester.enterText(find.widgetWithText(TextField, t.addressSearch), '상암동 1');
+      await tester.tap(find.byTooltip(t.addressSearchButton));
+      await pumpUntilFound(tester, find.text('서울특별시 마포구 월드컵북로 111'));
+      await settle(tester, duration: const Duration(milliseconds: 400));
+      expect(tester.takeException(), isNull, reason: 'address results');
+      // The form is a lazily built ListView: scroll until the fallback link is built, then tap it.
+      await tester.scrollUntilVisible(find.text(t.addressManualEntry), 200, scrollable: find.byType(Scrollable).first);
+      await tester.tap(find.text(t.addressManualEntry));
+      await settle(tester, duration: const Duration(milliseconds: 400));
+      expect(tester.takeException(), isNull, reason: 'typed address fallback');
+      await unmount(tester);
+
+      final picker = await pumpCustomerScreen(
+        tester,
+        env,
+        Scaffold(body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [PayMethodPicker(onChoose: (_) {})])),
+      );
+      unawaited(picker.loadMethods());
+      await pumpUntilFound(tester, find.text(t.payMethod('kakaopay')));
+      await settle(tester, duration: const Duration(milliseconds: 400));
+      expect(tester.takeException(), isNull, reason: 'pay method picker');
+      await unmount(tester);
+
+      final saved = await pumpCustomerScreen(tester, env, const PaymentMethodsScreen());
+      unawaited(saved.loadMethods());
+      await pumpUntilFound(tester, find.text(t.apPayManageTitle));
+      expect(find.text('신한 1234'), findsOneWidget, reason: 'saved card is listed');
+      await settle(tester, duration: const Duration(milliseconds: 400));
+      expect(tester.takeException(), isNull, reason: 'saved cards');
       await unmount(tester);
     });
 

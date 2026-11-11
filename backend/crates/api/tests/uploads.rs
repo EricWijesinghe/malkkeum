@@ -12,7 +12,7 @@ use axum::{
 };
 use chrono::Utc;
 use common::{BASE_URL, call, customer, seed_catalog, test_config};
-use serde_json::Value;
+use serde_json::{Value, json};
 use sqlx::PgPool;
 use std::net::SocketAddr;
 use tower::ServiceExt;
@@ -108,6 +108,37 @@ async fn traversal_names_are_not_served(pool: PgPool) {
     let sig = sign(&url_key(&test_config()), "../secret.png", exp);
     let (status, _, _) = send(&app, get(&format!("/v1/files/..%2Fsecret.png?exp={exp}&sig={sig}"))).await;
     assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_photo_can_only_be_attached_by_its_uploader(pool: PgPool) {
+    seed_catalog(&pool).await;
+    std::fs::create_dir_all(test_config().upload_dir).expect("upload dir");
+    let app = common::app(pool.clone());
+    let owner = customer(&app, &pool, "010-5000-0603").await;
+    let other = customer(&app, &pool, "010-5000-0604").await;
+    let (_, name) = path_of(&upload(&app, &owner.token).await);
+    let stored = vec![format!("/files/{name}")];
+    assert!(api::routes::uploads::owned(&pool, Some(owner.user), &stored).await.expect("check"));
+    assert!(!api::routes::uploads::owned(&pool, Some(other.user), &stored).await.expect("check"), "someone else's photo");
+    assert!(api::routes::uploads::owned(&pool, None, &stored).await.expect("check"), "staff may reference any upload");
+    assert!(!api::routes::uploads::owned(&pool, None, &["/files/ffffffffffffffffffffffffffffffff.jpg".to_string()]).await.expect("check"), "unknown file");
+}
+
+#[test]
+fn only_photo_fields_are_signed() {
+    let stored = "/files/0123456789abcdef0123456789abcdef.jpg";
+    let mut v = json!({
+        "url": stored,
+        "body": { "text": format!("look {stored}") },
+        "note": stored,
+        "photos": { "before": [stored], "after": [] },
+    });
+    api::routes::uploads::sign_urls(&test_config(), &mut v);
+    assert!(v["url"].as_str().is_some_and(|u| u.starts_with(&format!("{BASE_URL}/v1/files/"))));
+    assert!(v["photos"]["before"][0].as_str().is_some_and(|u| u.starts_with(&format!("{BASE_URL}/v1/files/"))));
+    assert_eq!(v["body"]["text"].as_str(), Some(format!("look {stored}").as_str()), "free text is not signed");
+    assert_eq!(v["note"].as_str(), Some(stored), "unknown key is not signed");
 }
 
 #[sqlx::test(migrations = "../../migrations")]

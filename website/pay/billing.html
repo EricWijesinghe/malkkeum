@@ -19,7 +19,10 @@
 <body>
   <div class="box"><div class="spin" aria-hidden="true"></div><p id="msg">카드 등록창을 여는 중…</p></div>
   <script>
-    // Opened by the app in a WebView: /pay/billing.html?store=..&channel=..&issue=..&method=..
+    // Sources: https://developers.portone.io/sdk/ko/v2-sdk/billing-key-request (storeId, channelKey, billingKeyMethod,
+    // issueId, issueName, customer.customerId, redirectUrl, easyPay.easyPayProvider) and
+    // https://developers.portone.io/sdk/ko/v2-sdk/billing-key-response (success: billingKey; failure: code, message).
+    // Opened by the app in a WebView: /pay/billing.html?store=..&channel=..&issue=..&customer=..&method=..
     // The app reads billingKey from the done address (/pay/billing-done.html). Nothing card-related is kept here.
     (function () {
       var q = new URLSearchParams(location.search);
@@ -36,6 +39,7 @@
         billingKeyMethod: easy[method] ? 'EASY_PAY' : 'CARD',
         issueId: q.get('issue'),
         issueName: '청소 서비스 결제수단',
+        customer: { customerId: q.get('customer') },
         redirectUrl: location.origin + '/pay/billing-done.html',
       };
       if (easy[method]) req.easyPay = { easyPayProvider: easy[method] };

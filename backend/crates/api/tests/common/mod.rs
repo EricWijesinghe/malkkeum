@@ -133,6 +133,16 @@ pub async fn verified_pro(app: &Router, db: &PgPool, phone: &str) -> (String, Uu
     (token, id)
 }
 
+/// Records `PHOTO` as uploaded by `owner`, as the upload route would. Completion and review refuse
+/// photos the caller did not upload, so every test that attaches `PHOTO` registers it first.
+pub async fn register_photo(db: &PgPool, owner: Uuid) {
+    sqlx::query("INSERT INTO uploads (owner_role, owner_id, file, bytes) VALUES ('test', $1, '0123456789abcdef0123456789abcdef.jpg', 1)")
+        .bind(owner)
+        .execute(db)
+        .await
+        .expect("register photo");
+}
+
 pub struct Customer {
     pub token: String,
     pub user: Uuid,
@@ -161,7 +171,7 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
     .await;
     assert_eq!(st, StatusCode::OK, "address: {addr}");
     let card: Uuid =
-        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test', 'test card') RETURNING id")
+        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id")
             .bind(user)
             .fetch_one(db)
             .await

@@ -20,16 +20,24 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
+use axum::body::Bytes;
 use chrono::Utc;
 use hmac::{Hmac, Mac};
 use rand::{RngCore, rngs::OsRng};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::Sha256;
+use sqlx::PgPool;
+use std::collections::BTreeSet;
+use tokio::io::AsyncReadExt;
+use uuid::Uuid;
 
 const MAX_IMAGE_BYTES: usize = 10 * 1024 * 1024;
-/// How long a signed file URL stays valid; apps get fresh ones on every API read.
-const URL_TTL_SECS: i64 = 3600;
+const SERVE_CHUNK_BYTES: usize = 64 * 1024;
+/// Signed URLs expire at the end of an hour bucket, so one photo keeps the same URL for up to an
+/// hour and app image caches hit. `URL_BUCKETS_AHEAD` = 2 keeps every URL valid for 1 to 2 hours.
+const URL_BUCKET_SECS: i64 = 3600;
+const URL_BUCKETS_AHEAD: i64 = 2;
 const KEY_CONTEXT: &[u8] = b"malkkeum/file-urls/v1";
 const MAX_JSON_BYTES: usize = 16 * 1024 * 1024;
 
@@ -76,6 +84,11 @@ pub fn verify(key: &[u8; 32], name: &str, exp: i64, sig: &str, now: i64) -> bool
     tag(key, name, exp).verify_slice(&raw).is_ok()
 }
 
+/// Expiry (unix seconds) for a URL issued at `now`: the hour boundary `URL_BUCKETS_AHEAD` buckets out.
+pub fn expiry_bucket(now: i64) -> i64 {
+    (now.div_euclid(URL_BUCKET_SECS) + URL_BUCKETS_AHEAD) * URL_BUCKET_SECS
+}
+
 /// Names we serve: one plain file name with an image extension. No separators, no leading dot.
 pub fn safe_name(name: &str) -> bool {
     let chars_ok = name.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_'));
@@ -93,18 +106,55 @@ fn mime(name: &str) -> &'static str {
     }
 }
 
-/// Replaces every stored `/files/<name>` (or base-prefixed legacy form) in a JSON value with a signed URL.
+/// JSON keys whose string values hold stored photo paths. Only these get signed, so free text that
+/// happens to contain a `/files/<name>` is never turned into a live link.
+const PHOTO_KEYS: [&str; 9] = ["url", "image_url", "logo_url", "photo", "photos", "before", "after", "before_photos", "after_photos"];
+
+/// Replaces every stored `/files/<name>` (or base-prefixed legacy form) under a photo key with a signed URL.
 pub fn sign_urls(config: &Config, v: &mut Value) {
+    sign_under(config, v, false);
+}
+
+fn sign_under(config: &Config, v: &mut Value, photo: bool) {
     match v {
-        Value::String(s) => {
+        Value::String(s) if photo => {
             if let Some(url) = signed_for(config, s.as_str()) {
                 *s = url;
             }
         }
-        Value::Array(items) => items.iter_mut().for_each(|x| sign_urls(config, x)),
-        Value::Object(map) => map.values_mut().for_each(|x| sign_urls(config, x)),
+        Value::Array(items) => items.iter_mut().for_each(|x| sign_under(config, x, photo)),
+        Value::Object(map) => map.iter_mut().for_each(|(k, x)| sign_under(config, x, PHOTO_KEYS.contains(&k.as_str()))),
         _ => {}
     }
+}
+
+/// True when every named file was uploaded by `owner` (or by anyone, for staff: `None`).
+/// Names are random, so this is what stops one user from attaching another user's photo.
+pub async fn owned(db: &PgPool, owner: Option<Uuid>, paths: &[String]) -> ApiResult<bool> {
+    let names: BTreeSet<String> = paths.iter().map(|p| p.trim_start_matches("/files/").to_string()).collect();
+    let names: Vec<String> = names.into_iter().collect();
+    let found: i64 = sqlx::query_scalar("SELECT count(DISTINCT file) FROM uploads WHERE file = ANY($1) AND ($2::uuid IS NULL OR owner_id = $2)")
+        .bind(&names)
+        .bind(owner)
+        .fetch_one(db)
+        .await?;
+    Ok(usize::try_from(found).is_ok_and(|n| n == names.len()))
+}
+
+/// Like [`owned`], for a pro: files uploaded by the pro or by anyone on the pro's team (a member
+/// takes the photos, the owner submits the completion report).
+pub async fn owned_by_team(db: &PgPool, pro: Uuid, paths: &[String]) -> ApiResult<bool> {
+    let names: BTreeSet<String> = paths.iter().map(|p| p.trim_start_matches("/files/").to_string()).collect();
+    let names: Vec<String> = names.into_iter().collect();
+    let found: i64 = sqlx::query_scalar(
+        "SELECT count(DISTINCT file) FROM uploads WHERE file = ANY($1)
+           AND (owner_id = $2 OR owner_id IN (SELECT id FROM team_members WHERE pro_id = $2))",
+    )
+    .bind(&names)
+    .bind(pro)
+    .fetch_one(db)
+    .await?;
+    Ok(usize::try_from(found).is_ok_and(|n| n == names.len()))
 }
 
 fn signed_for(config: &Config, stored: &str) -> Option<String> {
@@ -113,7 +163,7 @@ fn signed_for(config: &Config, stored: &str) -> Option<String> {
     if !safe_name(name) {
         return None;
     }
-    let exp = Utc::now().timestamp() + URL_TTL_SECS;
+    let exp = expiry_bucket(Utc::now().timestamp());
     let sig = sign(&url_key(config), name, exp);
     Some(format!("{}/v1/files/{name}?exp={exp}&sig={sig}", config.public_base_url))
 }
@@ -156,13 +206,25 @@ async fn serve(State(s): State<AppState>, Path(name): Path<String>, Query(q): Qu
     if !verify(&url_key(&s.config), &name, exp, &sig, Utc::now().timestamp()) {
         return Err(ApiError::Forbidden);
     }
-    let bytes = tokio::fs::read(s.config.upload_dir.join(&name)).await.map_err(|_| ApiError::NotFound)?;
+    let file = tokio::fs::File::open(s.config.upload_dir.join(&name)).await.map_err(|_| ApiError::NotFound)?;
+    // Streamed in chunks so a large photo is never held whole in memory.
+    let chunks = futures_util::stream::unfold(file, |mut f| async move {
+        let mut buf = vec![0u8; SERVE_CHUNK_BYTES];
+        match f.read(&mut buf).await {
+            Ok(0) => None,
+            Ok(n) => {
+                buf.truncate(n);
+                Some((Ok::<Bytes, std::io::Error>(Bytes::from(buf)), f))
+            }
+            Err(e) => Some((Err(e), f)),
+        }
+    });
     let headers = [
         (header::CONTENT_TYPE, HeaderValue::from_static(mime(&name))),
         (header::X_CONTENT_TYPE_OPTIONS, HeaderValue::from_static("nosniff")),
         (header::CACHE_CONTROL, HeaderValue::from_static("private, max-age=3600")),
     ];
-    Ok((headers, bytes).into_response())
+    Ok((headers, Body::from_stream(chunks)).into_response())
 }
 
 async fn upload(State(s): State<AppState>, a: Auth, mut form: Multipart) -> ApiResult<Json<Value>> {
@@ -246,6 +308,19 @@ mod tests {
         assert!(!verify(&KEY, NAME, 2_000, &sig[..60], 1_000), "truncated sig");
         assert!(!verify(&KEY, NAME, 2_000, "not-hex", 1_000));
         assert!(!verify(&[1; 32], NAME, 2_000, &sig, 1_000), "other key");
+    }
+
+    #[test]
+    fn expiry_is_shared_within_an_hour_and_lasts_one_to_two_hours() {
+        let hour_start = 1_000_000 * URL_BUCKET_SECS;
+        let exp = expiry_bucket(hour_start + 5);
+        assert_eq!(exp % URL_BUCKET_SECS, 0, "expiry lands on an hour boundary");
+        for offset in [5, 1_800, 3_599] {
+            assert_eq!(expiry_bucket(hour_start + offset), exp, "same URL for the whole hour");
+            let validity = exp - (hour_start + offset);
+            assert!(validity > URL_BUCKET_SECS && validity <= 2 * URL_BUCKET_SECS, "validity {validity}s");
+        }
+        assert_eq!(expiry_bucket(hour_start + URL_BUCKET_SECS), exp + URL_BUCKET_SECS, "next hour, next URL");
     }
 
     #[test]

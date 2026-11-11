@@ -1851,7 +1851,7 @@ class TZh extends T {
   String get err_unsupported_bank => '不支持向该银行付款。';
 
   @override
-  String get err_toss_unverified => 'Toss 代付目前仅接受测试密钥 (test_)。';
+  String get err_toss_unverified => '暂不支持 Toss 代付，请使用手动转账。';
 
   @override
   String get err_invalid_cap => '请输入允许范围内的数字。';

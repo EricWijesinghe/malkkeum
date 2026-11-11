@@ -591,7 +591,7 @@
  "err_payout_state": "The payout status changed. Refresh and check again.",
  "err_payout_provider": "This payout method isn't available right now.",
  "err_unsupported_bank": "This bank isn't supported for payouts.",
- "err_toss_unverified": "Toss payouts accept only test keys (test_) for now.",
+ "err_toss_unverified": "Toss payouts aren't available yet. Use manual transfer.",
  "err_invalid_cap": "Enter a number within the allowed range.",
  "err_invalid_capacity": "Enter a valid capacity.",
  "fFinance": "Finance",

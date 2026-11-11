@@ -1931,7 +1931,7 @@ class TFil extends T {
 
   @override
   String get err_toss_unverified =>
-      'Test key (test_) lang muna ang tinatanggap ng Toss payouts.';
+      'Hindi pa available ang Toss payouts. Gumamit ng manual na transfer.';
 
   @override
   String get err_invalid_cap => 'Maglagay ng numero sa pinapayagang saklaw.';

@@ -6,11 +6,13 @@ import 'portone_webview.dart';
 
 /// Server's answer for saving a card: PortOne store and per-method channel keys. Disabled until PortOne is configured.
 class BillingSetup {
-  const BillingSetup({required this.enabled, this.storeId = '', this.channels = const {}, this.issueId = ''});
+  const BillingSetup({required this.enabled, this.storeId = '', this.channels = const {}, this.issueId = '', this.customerId = ''});
   final bool enabled;
   final String storeId;
   final Map<String, String> channels;
   final String issueId;
+  /// PortOne `customer.customerId`: the server checks the issued key belongs to this customer.
+  final String customerId;
 
   static const off = BillingSetup(enabled: false);
 
@@ -21,6 +23,7 @@ class BillingSetup {
       storeId: j['store_id'] as String? ?? '',
       channels: {for (final e in (j['channels'] as Map? ?? {}).entries) e.key as String: e.value as String},
       issueId: j['issue_id'] as String? ?? '',
+      customerId: j['customer_id'] as String? ?? '',
     );
   }
 
@@ -52,6 +55,7 @@ Future<String?> issueBillingKey({
       'store': setup.storeId,
       'channel': setup.channels[provider] ?? '',
       'issue': setup.issueId,
+      'customer': setup.customerId,
       'method': provider,
     },
   );
