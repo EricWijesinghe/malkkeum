@@ -297,7 +297,7 @@ void main() {
     await tester.pumpAndSettle();
     final ok = await approved;
     expect(ok, isA<PaymentApproved>());
-    expect((ok as PaymentApproved).paymentId, 'dev:paid');
+    expect((ok as PaymentApproved).paymentId, 'dev:kakaopay');
 
     final va = const DevPaymentLauncher().pay(context: ctx, intent: intent);
     await tester.pumpAndSettle();
@@ -310,7 +310,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('pay-done')));
     await tester.pumpAndSettle();
-    expect(((await va) as PaymentApproved).paymentId, 'dev:va');
+    expect(((await va) as PaymentApproved).paymentId, 'dev:virtual_account');
 
     final cancelled = const DevPaymentLauncher().pay(context: ctx, intent: intent);
     await tester.pumpAndSettle();

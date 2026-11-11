@@ -15,7 +15,7 @@ use super::{
 use crate::{
     auth::{Customer, Staff},
     error::{ApiError, ApiResult},
-    providers::{PaymentInfo, ProviderError},
+    providers::{PaymentInfo, ProviderError, portone::dev_method},
     realtime::{Recipient, notify},
     state::AppState,
     util::{best_effort, refund_or_alert, today_kst},
@@ -245,6 +245,10 @@ pub async fn settle(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResu
         ProviderError::NotFound => ApiError::BadRequest("payment_not_found"),
         other => other.into(),
     })?;
+    // Dev window: the method the customer picked is the one the payment is stored under.
+    if let (Some(code), "pending") = (dev_method(payment_id), ck.status.as_str()) {
+        sqlx::query("UPDATE checkouts SET method = $2 WHERE id = $1 AND status = 'pending'").bind(ck.id).bind(code).execute(&s.db).await?;
+    }
     apply(s, ck, payment_id, Some(&info)).await
 }
 

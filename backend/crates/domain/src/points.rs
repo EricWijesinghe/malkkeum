@@ -191,7 +191,7 @@ mod tests {
     #[test]
     fn balance_excludes_expired_lots() {
         let lots = [lot(1, 1_000, 0, 10), lot(2, 500, 200, 100)];
-        assert_eq!(available(&lots, at(5)), 1_800);
+        assert_eq!(available(&lots, at(5)), 1_300, "1_000 + (500 - 200 used)");
         assert_eq!(available(&lots, at(10)), 300, "lot 1 lapses at its expiry instant");
     }
 

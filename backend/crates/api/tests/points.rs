@@ -82,7 +82,7 @@ async fn lapsed_lots_expire_once_and_stop_counting(pool: PgPool) {
         "INSERT INTO points_ledger (id, user_id, kind, amount, lot_id, expires_at, idempotency_key)
          VALUES ($1, $2, 'earn', 3000, $1, now() - interval '1 day', 'test:old')",
     )
-    .bind(Uuid::new_v4())
+    .bind(Uuid::now_v7())
     .bind(c.user)
     .execute(&pool)
     .await

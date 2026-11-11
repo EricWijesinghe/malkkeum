@@ -15,7 +15,7 @@ sealed class PaymentOutcome {
   const PaymentOutcome();
 }
 
-/// Authorized; confirm with this payment id. Dev ids: 'dev:paid' or 'dev:va'.
+/// Authorized; confirm with this payment id. Dev ids: 'dev:<method>' (e.g. 'dev:kakaopay').
 final class PaymentApproved extends PaymentOutcome {
   const PaymentApproved(this.paymentId);
   final String paymentId;
@@ -53,7 +53,8 @@ class DevPaymentLauncher extends PaymentLauncher {
       builder: (_) => DevPaymentSheet(intent: intent),
     );
     if (method == null) return null;
-    return PaymentApproved(method == 'virtual_account' ? 'dev:va' : 'dev:paid');
+    // The method the customer picked in the window, so the server stores that one (not the checkout's first pick).
+    return PaymentApproved('dev:$method');
   }
 }
 

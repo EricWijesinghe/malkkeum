@@ -70,7 +70,7 @@ async fn append(conn: &mut PgConnection, e: Entry) -> ApiResult<bool> {
         "INSERT INTO points_ledger (id, user_id, kind, amount, lot_id, expires_at, booking_id, idempotency_key, actor_id, reason)
          VALUES ($1, $2, $3, $4, COALESCE($5, $1), $6, $7, $8, $9, $10) ON CONFLICT (idempotency_key) DO NOTHING",
     )
-    .bind(Uuid::new_v4())
+    .bind(Uuid::now_v7())
     .bind(e.user)
     .bind(e.kind)
     .bind(e.amount)
@@ -292,7 +292,7 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
     if reason.is_empty() || reason.chars().count() > 200 {
         return Err(ApiError::BadRequest("points_adjust_reason"));
     }
-    let batch = Uuid::new_v4();
+    let batch = Uuid::now_v7();
     let mut tx = s.db.begin().await?;
     lock_user(&mut *tx, input.user_id).await?;
     let policy = load_policy(&mut *tx).await?;
