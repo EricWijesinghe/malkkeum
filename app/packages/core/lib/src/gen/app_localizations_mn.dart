@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3788,6 +3787,130 @@ class TMn extends T {
   @override
   String get cStaffResetBody =>
       'Энэ токеныг ажилтанд өгнө үү. Нэг удаа, 30 минутын дотор ашиглагдана. Хаасны дараа дахин харах боломжгүй.';
+
+  @override
+  String get subTitle => 'Тогтмол цэвэрлэгээ';
+
+  @override
+  String get subNew => 'Захиалга эхлүүлэх';
+
+  @override
+  String get subCadence => 'Давтамж';
+
+  @override
+  String get subWeekly => 'Долоо хоног бүр';
+
+  @override
+  String get subBiweekly => '2 долоо хоног тутам';
+
+  @override
+  String get subEvery4Weeks => '4 долоо хоног тутам';
+
+  @override
+  String get subWeekday => 'Гариг';
+
+  @override
+  String get subHour => 'Ирэх цаг';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Ирэлт бүр $percent% хөнгөлөлттэй';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Ирэлтээс нэг өдрийн өмнө хадгалсан картаас төлнө';
+
+  @override
+  String get subCreate => 'Захиалах';
+
+  @override
+  String get subCreated => 'Захиалга эхэллээ';
+
+  @override
+  String get subNeedAddress => 'Эхлээд хаяг нэмнэ үү';
+
+  @override
+  String get subListEmpty => 'Захиалга одоогоор алга';
+
+  @override
+  String get subStatusActive => 'Идэвхтэй';
+
+  @override
+  String get subStatusPaused => 'Түр зогсоосон';
+
+  @override
+  String get subStatusCancelled => 'Цуцалсан';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Дараагийн ирэлт $date';
+  }
+
+  @override
+  String get subPause => 'Түр зогсоох';
+
+  @override
+  String get subResume => 'Үргэлжлүүлэх';
+
+  @override
+  String get subCancelSub => 'Захиалгаа цуцлах';
+
+  @override
+  String get subCancelConfirm =>
+      'Цаашдын ирэлтүүд цуцлагдана. Захиалсан ирэлтийг тусад нь цуцална уу.';
+
+  @override
+  String get subSkip => 'Энэ ирэлтийг алгасах';
+
+  @override
+  String get subMove => 'Огноо солих';
+
+  @override
+  String get subVisitLocked => 'Ирэлтийн өмнөх өдрөөс хойш өөрчлөх боломжгүй';
+
+  @override
+  String get subPausedPayment =>
+      'Төлбөр дараалан амжилтгүй болсонд түр зогсоосон. Картаа солиод үргэлжлүүлнэ үү.';
+
+  @override
+  String get subStatePlanned => 'Товлосон';
+
+  @override
+  String get subStateBooked => 'Захиалсан';
+
+  @override
+  String get subStateSkipped => 'Алгассан';
+
+  @override
+  String get subStateMissed => 'Өнгөрсөн';
+
+  @override
+  String get pSubsTitle => 'Тогтмол үйлчлүүлэгчид';
+
+  @override
+  String get pSubsEmpty => 'Тогтмол үйлчлүүлэгч одоогоор алга';
+
+  @override
+  String get cSubsTitle => 'Захиалгууд';
+
+  @override
+  String get cSubsEdit => 'Үйлчлүүлэгчийн оронд засах';
+
+  @override
+  String get cMrr => 'Сарын давтагдах орлого (MRR)';
+
+  @override
+  String get cChurn => 'Цуцалтын хувь';
+
+  @override
+  String get cActiveSubs => 'Идэвхтэй захиалга';
+
+  @override
+  String get cRecognized => 'Тухайн хугацаанд хүлээн зөвшөөрсөн орлого';
+
+  @override
+  String get cSubsLoadFailed => 'Захиалгыг ачаалж чадсангүй';
 
   @override
   String get tTaxSection => 'Татвар';

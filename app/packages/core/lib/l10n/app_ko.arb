@@ -1806,6 +1806,59 @@
  "cStaffResetConfirm": "이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.",
  "cStaffResetTitle": "재설정 토큰",
  "cStaffResetBody": "이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.",
+ "subTitle": "정기 청소",
+ "subNew": "정기 청소 신청",
+ "subCadence": "주기",
+ "subWeekly": "매주",
+ "subBiweekly": "2주마다",
+ "subEvery4Weeks": "4주마다",
+ "subWeekday": "요일",
+ "subHour": "시작 시간",
+ "subDiscountNote": "정기 청소는 방문마다 {percent}% 할인돼요",
+ "@subDiscountNote": {
+  "placeholders": {
+   "percent": {
+    "type": "String"
+   }
+  }
+ },
+ "subChargeNote": "방문 하루 전에 등록된 카드로 결제해요",
+ "subCreate": "신청하기",
+ "subCreated": "정기 청소를 신청했어요",
+ "subNeedAddress": "방문할 주소를 먼저 등록해 주세요",
+ "subListEmpty": "아직 정기 청소가 없어요",
+ "subStatusActive": "이용 중",
+ "subStatusPaused": "일시 정지",
+ "subStatusCancelled": "해지됨",
+ "subNextVisit": "다음 방문 {date}",
+ "@subNextVisit": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "subPause": "일시 정지",
+ "subResume": "다시 시작",
+ "subCancelSub": "정기 청소 해지",
+ "subCancelConfirm": "앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.",
+ "subSkip": "이번 방문 건너뛰기",
+ "subMove": "날짜 변경",
+ "subVisitLocked": "방문 하루 전부터는 변경할 수 없어요",
+ "subPausedPayment": "결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.",
+ "subStatePlanned": "예정",
+ "subStateBooked": "예약됨",
+ "subStateSkipped": "건너뜀",
+ "subStateMissed": "놓침",
+ "pSubsTitle": "정기 고객",
+ "pSubsEmpty": "정기 고객이 아직 없어요",
+ "cSubsTitle": "정기 청소 구독",
+ "cSubsEdit": "고객 대신 수정",
+ "cMrr": "월 반복 매출 (MRR)",
+ "cChurn": "해지율",
+ "cActiveSubs": "이용 중 구독",
+ "cRecognized": "기간 인식 매출",
+ "cSubsLoadFailed": "구독 목록을 불러오지 못했어요",
  "tTaxSection": "세무",
  "tVatQuarter": "{q}분기 부가세 CSV",
  "@tVatQuarter": {

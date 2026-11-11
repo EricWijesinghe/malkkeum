@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3774,6 +3773,129 @@ class TKm extends T {
   @override
   String get cStaffResetBody =>
       'ផ្តល់តូកែននេះឲ្យបុគ្គលិក។ ប្រើបានតែម្តង ក្នុងរយៈពេល 30 នាទី។ បិទហើយនឹងមើលមិនឃើញទៀតទេ។';
+
+  @override
+  String get subTitle => 'សម្អាតតាមកាលកំណត់';
+
+  @override
+  String get subNew => 'ចុះឈ្មោះ';
+
+  @override
+  String get subCadence => 'ញឹកញាប់';
+
+  @override
+  String get subWeekly => 'រាល់សប្តាហ៍';
+
+  @override
+  String get subBiweekly => 'រាល់ ២ សប្តាហ៍';
+
+  @override
+  String get subEvery4Weeks => 'រាល់ ៤ សប្តាហ៍';
+
+  @override
+  String get subWeekday => 'ថ្ងៃ';
+
+  @override
+  String get subHour => 'ម៉ោងមកដល់';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'បញ្ចុះតម្លៃ $percent% ក្នុងការមកម្តងៗ';
+  }
+
+  @override
+  String get subChargeNote => 'គិតប្រាក់ពីកាតដែលបានរក្សាទុកមួយថ្ងៃមុនការមក';
+
+  @override
+  String get subCreate => 'ចុះឈ្មោះ';
+
+  @override
+  String get subCreated => 'បានចាប់ផ្តើមការជាវ';
+
+  @override
+  String get subNeedAddress => 'សូមបន្ថែមអាសយដ្ឋានជាមុនសិន';
+
+  @override
+  String get subListEmpty => 'មិនទាន់មានការជាវ';
+
+  @override
+  String get subStatusActive => 'កំពុងប្រើ';
+
+  @override
+  String get subStatusPaused => 'បានផ្អាក';
+
+  @override
+  String get subStatusCancelled => 'បានបោះបង់';
+
+  @override
+  String subNextVisit(String date) {
+    return 'ការមកលើកក្រោយ $date';
+  }
+
+  @override
+  String get subPause => 'ផ្អាក';
+
+  @override
+  String get subResume => 'បន្ត';
+
+  @override
+  String get subCancelSub => 'បោះបង់ការជាវ';
+
+  @override
+  String get subCancelConfirm =>
+      'ការមកនាពេលខាងមុខនឹងត្រូវបោះបង់។ ការមកដែលបានកក់ត្រូវបោះបង់ដាច់ដោយឡែក។';
+
+  @override
+  String get subSkip => 'រំលងការមកនេះ';
+
+  @override
+  String get subMove => 'ប្តូរកាលបរិច្ឆេទ';
+
+  @override
+  String get subVisitLocked => 'មិនអាចប្តូរបានចាប់ពីមួយថ្ងៃមុនការមក';
+
+  @override
+  String get subPausedPayment =>
+      'បានផ្អាកដោយសារការបង់ប្រាក់បរាជ័យច្រើនដង។ សូមប្តូរកាត ហើយបន្ត។';
+
+  @override
+  String get subStatePlanned => 'បានកំណត់';
+
+  @override
+  String get subStateBooked => 'បានកក់';
+
+  @override
+  String get subStateSkipped => 'បានរំលង';
+
+  @override
+  String get subStateMissed => 'ខកខាន';
+
+  @override
+  String get pSubsTitle => 'អតិថិជនប្រចាំ';
+
+  @override
+  String get pSubsEmpty => 'មិនទាន់មានអតិថិជនประจำ';
+
+  @override
+  String get cSubsTitle => 'ការជាវ';
+
+  @override
+  String get cSubsEdit => 'កែសម្រួលជំនួសអតិថិជន';
+
+  @override
+  String get cMrr => 'ចំណូលប្រចាំខែ (MRR)';
+
+  @override
+  String get cChurn => 'អត្រាបោះបង់';
+
+  @override
+  String get cActiveSubs => 'ការជាវដែលកំពុងដំណើរការ';
+
+  @override
+  String get cRecognized => 'ចំណូលដែលបានទទួលស្គាល់ក្នុងរយៈពេល';
+
+  @override
+  String get cSubsLoadFailed => 'មិនអាចផ្ទុកការជាវបានទេ';
 
   @override
   String get tTaxSection => 'ពន្ធ';

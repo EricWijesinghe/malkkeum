@@ -17,6 +17,7 @@ pub mod pricing;
 pub mod quality;
 pub mod quote;
 pub mod schedule;
+pub mod subscription;
 pub mod tax;
 pub mod tip;
 pub mod training;

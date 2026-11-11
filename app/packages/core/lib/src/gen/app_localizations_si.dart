@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3775,6 +3774,129 @@ class TSi extends T {
   @override
   String get cStaffResetBody =>
       'මෙම ටෝකනය කාර්ය මණ්ඩල සාමාජිකයාට දෙන්න. එය එක් වරක්, මිනිත්තු 30ක් ඇතුළත පමණක් ක්‍රියා කරයි. වසා දැමූ පසු නැවත බැලිය නොහැක.';
+
+  @override
+  String get subTitle => 'නිතිපතා පිරිසිදු කිරීම';
+
+  @override
+  String get subNew => 'දායකත්වය ආරම්භ කරන්න';
+
+  @override
+  String get subCadence => 'කෙතරම් නිතර ද';
+
+  @override
+  String get subWeekly => 'සෑම සතියකම';
+
+  @override
+  String get subBiweekly => 'සෑම සති 2කට වරක්';
+
+  @override
+  String get subEvery4Weeks => 'සෑම සති 4කට වරක්';
+
+  @override
+  String get subWeekday => 'සතියේ දිනය';
+
+  @override
+  String get subHour => 'පැමිණෙන වේලාව';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'සෑම පැමිණීමකටම $percent% වට්ටමක්';
+  }
+
+  @override
+  String get subChargeNote => 'පැමිණීමට දින 1කට පෙර සුරකින ලද කාඩ්පතෙන් ගෙවයි';
+
+  @override
+  String get subCreate => 'දායක වන්න';
+
+  @override
+  String get subCreated => 'දායකත්වය ආරම්භ විය';
+
+  @override
+  String get subNeedAddress => 'මුලින් පැමිණෙන ලිපිනය එක් කරන්න';
+
+  @override
+  String get subListEmpty => 'දායකත්ව තවම නැත';
+
+  @override
+  String get subStatusActive => 'සක්‍රිය';
+
+  @override
+  String get subStatusPaused => 'විරාමයි';
+
+  @override
+  String get subStatusCancelled => 'අවලංගු කළා';
+
+  @override
+  String subNextVisit(String date) {
+    return 'ඊළඟ පැමිණීම $date';
+  }
+
+  @override
+  String get subPause => 'විරාම ගන්න';
+
+  @override
+  String get subResume => 'නැවත ආරම්භ කරන්න';
+
+  @override
+  String get subCancelSub => 'දායකත්වය අවලංගු කරන්න';
+
+  @override
+  String get subCancelConfirm =>
+      'ඉදිරි පැමිණීම් අවලංගු වේ. වෙන්කළ පැමිණීම් වෙනමම අවලංගු කළ යුතුයි.';
+
+  @override
+  String get subSkip => 'මෙම පැමිණීම මඟ හරින්න';
+
+  @override
+  String get subMove => 'දිනය වෙනස් කරන්න';
+
+  @override
+  String get subVisitLocked => 'පැමිණීමට පෙර දිනයේ සිට වෙනස් කළ නොහැක';
+
+  @override
+  String get subPausedPayment =>
+      'නැවත නැවත ගෙවීම් අසාර්ථක වීමෙන් විරාමයි. කාඩ්පත වෙනස් කර නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get subStatePlanned => 'සැලසුම් කළ';
+
+  @override
+  String get subStateBooked => 'වෙන් කළ';
+
+  @override
+  String get subStateSkipped => 'මඟ හැරියා';
+
+  @override
+  String get subStateMissed => 'මග ඇරුණා';
+
+  @override
+  String get pSubsTitle => 'නිතිපතා පාරිභෝගිකයින්';
+
+  @override
+  String get pSubsEmpty => 'නිතිපතා පාරිභෝගිකයින් තවම නැත';
+
+  @override
+  String get cSubsTitle => 'දායකත්ව';
+
+  @override
+  String get cSubsEdit => 'පාරිභෝගිකයා වෙනුවෙන් සංස්කරණය';
+
+  @override
+  String get cMrr => 'මාසික නැවත එන ආදායම (MRR)';
+
+  @override
+  String get cChurn => 'අහිමි වීමේ අනුපාතය';
+
+  @override
+  String get cActiveSubs => 'සක්‍රිය දායකත්ව';
+
+  @override
+  String get cRecognized => 'කාලසීමාවේ පිළිගත් ආදායම';
+
+  @override
+  String get cSubsLoadFailed => 'දායකත්ව පූරණය කළ නොහැකි විය';
 
   @override
   String get tTaxSection => 'බදු';

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3806,6 +3805,131 @@ class TFil extends T {
   @override
   String get cStaffResetBody =>
       'Ibigay ang token na ito sa staff. Isang beses lang magagamit, sa loob ng 30 minuto. Hindi na ito makikita pagkasara.';
+
+  @override
+  String get subTitle => 'Regular na paglilinis';
+
+  @override
+  String get subNew => 'Mag-subscribe';
+
+  @override
+  String get subCadence => 'Gaano kadalas';
+
+  @override
+  String get subWeekly => 'Kada linggo';
+
+  @override
+  String get subBiweekly => 'Kada 2 linggo';
+
+  @override
+  String get subEvery4Weeks => 'Kada 4 linggo';
+
+  @override
+  String get subWeekday => 'Araw ng linggo';
+
+  @override
+  String get subHour => 'Oras ng dating';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '$percent% diskuwento sa bawat bisita';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Sisingilin ang naka-save na card isang araw bago ang bisita';
+
+  @override
+  String get subCreate => 'Mag-subscribe';
+
+  @override
+  String get subCreated => 'Nagsimula na ang subscription';
+
+  @override
+  String get subNeedAddress => 'Magdagdag muna ng address';
+
+  @override
+  String get subListEmpty => 'Wala pang subscription';
+
+  @override
+  String get subStatusActive => 'Aktibo';
+
+  @override
+  String get subStatusPaused => 'Naka-pause';
+
+  @override
+  String get subStatusCancelled => 'Kinansela';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Susunod na bisita $date';
+  }
+
+  @override
+  String get subPause => 'I-pause';
+
+  @override
+  String get subResume => 'Ituloy';
+
+  @override
+  String get subCancelSub => 'Kanselahin ang subscription';
+
+  @override
+  String get subCancelConfirm =>
+      'Makakansela ang mga susunod na bisita. Kanselahin nang hiwalay ang mga nakareserba na.';
+
+  @override
+  String get subSkip => 'Laktawan ang bisitang ito';
+
+  @override
+  String get subMove => 'Ilipat ang petsa';
+
+  @override
+  String get subVisitLocked =>
+      'Hindi na mababago mula isang araw bago ang bisita';
+
+  @override
+  String get subPausedPayment =>
+      'Naka-pause dahil paulit-ulit na nabigo ang bayad. Palitan ang card at ituloy.';
+
+  @override
+  String get subStatePlanned => 'Nakaplano';
+
+  @override
+  String get subStateBooked => 'Naka-book';
+
+  @override
+  String get subStateSkipped => 'Nilaktawan';
+
+  @override
+  String get subStateMissed => 'Hindi natuloy';
+
+  @override
+  String get pSubsTitle => 'Mga regular na customer';
+
+  @override
+  String get pSubsEmpty => 'Wala pang regular na customer';
+
+  @override
+  String get cSubsTitle => 'Mga subscription';
+
+  @override
+  String get cSubsEdit => 'I-edit para sa customer';
+
+  @override
+  String get cMrr => 'Buwanang paulit-ulit na kita (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Aktibong subscription';
+
+  @override
+  String get cRecognized => 'Kinilalang kita sa panahon';
+
+  @override
+  String get cSubsLoadFailed => 'Hindi ma-load ang mga subscription';
 
   @override
   String get tTaxSection => 'Buwis';

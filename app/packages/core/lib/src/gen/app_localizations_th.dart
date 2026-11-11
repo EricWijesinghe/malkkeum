@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3756,6 +3755,130 @@ class TTh extends T {
   @override
   String get cStaffResetBody =>
       'ส่งโทเคนนี้ให้พนักงาน ใช้ได้ครั้งเดียวภายใน 30 นาที ปิดหน้านี้แล้วจะดูอีกไม่ได้';
+
+  @override
+  String get subTitle => 'ทำความสะอาดประจำ';
+
+  @override
+  String get subNew => 'สมัครบริการ';
+
+  @override
+  String get subCadence => 'ความถี่';
+
+  @override
+  String get subWeekly => 'ทุกสัปดาห์';
+
+  @override
+  String get subBiweekly => 'ทุก 2 สัปดาห์';
+
+  @override
+  String get subEvery4Weeks => 'ทุก 4 สัปดาห์';
+
+  @override
+  String get subWeekday => 'วัน';
+
+  @override
+  String get subHour => 'เวลาที่มาถึง';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'ลด $percent% ทุกครั้งที่เข้าบริการ';
+  }
+
+  @override
+  String get subChargeNote =>
+      'เรียกเก็บเงินจากบัตรที่บันทึกไว้ล่วงหน้า 1 วันก่อนเข้าบริการ';
+
+  @override
+  String get subCreate => 'สมัคร';
+
+  @override
+  String get subCreated => 'เริ่มการสมัครแล้ว';
+
+  @override
+  String get subNeedAddress => 'กรุณาเพิ่มที่อยู่สำหรับเข้าบริการก่อน';
+
+  @override
+  String get subListEmpty => 'ยังไม่มีการสมัคร';
+
+  @override
+  String get subStatusActive => 'ใช้งานอยู่';
+
+  @override
+  String get subStatusPaused => 'หยุดชั่วคราว';
+
+  @override
+  String get subStatusCancelled => 'ยกเลิกแล้ว';
+
+  @override
+  String subNextVisit(String date) {
+    return 'การเข้าบริการครั้งถัดไป $date';
+  }
+
+  @override
+  String get subPause => 'หยุดชั่วคราว';
+
+  @override
+  String get subResume => 'ดำเนินการต่อ';
+
+  @override
+  String get subCancelSub => 'ยกเลิกการสมัคร';
+
+  @override
+  String get subCancelConfirm =>
+      'การเข้าบริการที่จะถึงจะถูกยกเลิก การเข้าบริการที่จองไว้ต้องยกเลิกแยก';
+
+  @override
+  String get subSkip => 'ข้ามครั้งนี้';
+
+  @override
+  String get subMove => 'เลื่อนวัน';
+
+  @override
+  String get subVisitLocked => 'เปลี่ยนไม่ได้ตั้งแต่วันก่อนเข้าบริการ';
+
+  @override
+  String get subPausedPayment =>
+      'หยุดชั่วคราวเพราะชำระเงินไม่สำเร็จหลายครั้ง เปลี่ยนบัตรแล้วดำเนินการต่อ';
+
+  @override
+  String get subStatePlanned => 'กำหนดไว้';
+
+  @override
+  String get subStateBooked => 'จองแล้ว';
+
+  @override
+  String get subStateSkipped => 'ข้ามแล้ว';
+
+  @override
+  String get subStateMissed => 'พลาดไป';
+
+  @override
+  String get pSubsTitle => 'ลูกค้าประจำ';
+
+  @override
+  String get pSubsEmpty => 'ยังไม่มีลูกค้าประจำ';
+
+  @override
+  String get cSubsTitle => 'การสมัครใช้บริการ';
+
+  @override
+  String get cSubsEdit => 'แก้ไขแทนลูกค้า';
+
+  @override
+  String get cMrr => 'รายได้ประจำต่อเดือน (MRR)';
+
+  @override
+  String get cChurn => 'อัตราการยกเลิก';
+
+  @override
+  String get cActiveSubs => 'การสมัครที่ใช้งานอยู่';
+
+  @override
+  String get cRecognized => 'รายได้ที่รับรู้ในช่วงเวลา';
+
+  @override
+  String get cSubsLoadFailed => 'โหลดการสมัครไม่สำเร็จ';
 
   @override
   String get tTaxSection => 'ภาษี';

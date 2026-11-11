@@ -7062,6 +7062,240 @@ abstract class T {
   /// **'이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
   String get cStaffResetBody;
 
+  /// No description provided for @subTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소'**
+  String get subTitle;
+
+  /// No description provided for @subNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 신청'**
+  String get subNew;
+
+  /// No description provided for @subCadence.
+  ///
+  /// In ko, this message translates to:
+  /// **'주기'**
+  String get subCadence;
+
+  /// No description provided for @subWeekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'매주'**
+  String get subWeekly;
+
+  /// No description provided for @subBiweekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'2주마다'**
+  String get subBiweekly;
+
+  /// No description provided for @subEvery4Weeks.
+  ///
+  /// In ko, this message translates to:
+  /// **'4주마다'**
+  String get subEvery4Weeks;
+
+  /// No description provided for @subWeekday.
+  ///
+  /// In ko, this message translates to:
+  /// **'요일'**
+  String get subWeekday;
+
+  /// No description provided for @subHour.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 시간'**
+  String get subHour;
+
+  /// No description provided for @subDiscountNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소는 방문마다 {percent}% 할인돼요'**
+  String subDiscountNote(String percent);
+
+  /// No description provided for @subChargeNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 하루 전에 등록된 카드로 결제해요'**
+  String get subChargeNote;
+
+  /// No description provided for @subCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'신청하기'**
+  String get subCreate;
+
+  /// No description provided for @subCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소를 신청했어요'**
+  String get subCreated;
+
+  /// No description provided for @subNeedAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문할 주소를 먼저 등록해 주세요'**
+  String get subNeedAddress;
+
+  /// No description provided for @subListEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 정기 청소가 없어요'**
+  String get subListEmpty;
+
+  /// No description provided for @subStatusActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용 중'**
+  String get subStatusActive;
+
+  /// No description provided for @subStatusPaused.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시 정지'**
+  String get subStatusPaused;
+
+  /// No description provided for @subStatusCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'해지됨'**
+  String get subStatusCancelled;
+
+  /// No description provided for @subNextVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 방문 {date}'**
+  String subNextVisit(String date);
+
+  /// No description provided for @subPause.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시 정지'**
+  String get subPause;
+
+  /// No description provided for @subResume.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시작'**
+  String get subResume;
+
+  /// No description provided for @subCancelSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 해지'**
+  String get subCancelSub;
+
+  /// No description provided for @subCancelConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.'**
+  String get subCancelConfirm;
+
+  /// No description provided for @subSkip.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 방문 건너뛰기'**
+  String get subSkip;
+
+  /// No description provided for @subMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜 변경'**
+  String get subMove;
+
+  /// No description provided for @subVisitLocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 하루 전부터는 변경할 수 없어요'**
+  String get subVisitLocked;
+
+  /// No description provided for @subPausedPayment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.'**
+  String get subPausedPayment;
+
+  /// No description provided for @subStatePlanned.
+  ///
+  /// In ko, this message translates to:
+  /// **'예정'**
+  String get subStatePlanned;
+
+  /// No description provided for @subStateBooked.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약됨'**
+  String get subStateBooked;
+
+  /// No description provided for @subStateSkipped.
+  ///
+  /// In ko, this message translates to:
+  /// **'건너뜀'**
+  String get subStateSkipped;
+
+  /// No description provided for @subStateMissed.
+  ///
+  /// In ko, this message translates to:
+  /// **'놓침'**
+  String get subStateMissed;
+
+  /// No description provided for @pSubsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 고객'**
+  String get pSubsTitle;
+
+  /// No description provided for @pSubsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 고객이 아직 없어요'**
+  String get pSubsEmpty;
+
+  /// No description provided for @cSubsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 구독'**
+  String get cSubsTitle;
+
+  /// No description provided for @cSubsEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 대신 수정'**
+  String get cSubsEdit;
+
+  /// No description provided for @cMrr.
+  ///
+  /// In ko, this message translates to:
+  /// **'월 반복 매출 (MRR)'**
+  String get cMrr;
+
+  /// No description provided for @cChurn.
+  ///
+  /// In ko, this message translates to:
+  /// **'해지율'**
+  String get cChurn;
+
+  /// No description provided for @cActiveSubs.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용 중 구독'**
+  String get cActiveSubs;
+
+  /// No description provided for @cRecognized.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간 인식 매출'**
+  String get cRecognized;
+
+  /// No description provided for @cSubsLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'구독 목록을 불러오지 못했어요'**
+  String get cSubsLoadFailed;
+
   /// No description provided for @tTaxSection.
   ///
   /// In ko, this message translates to:

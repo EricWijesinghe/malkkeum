@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3667,6 +3666,128 @@ class TJa extends T {
   @override
   String get cStaffResetBody =>
       'このトークンをスタッフに渡してください。1回限りで、30分間有効です。閉じると二度と表示されません。';
+
+  @override
+  String get subTitle => '定期清掃';
+
+  @override
+  String get subNew => '定期清掃を申し込む';
+
+  @override
+  String get subCadence => '頻度';
+
+  @override
+  String get subWeekly => '毎週';
+
+  @override
+  String get subBiweekly => '2週間ごと';
+
+  @override
+  String get subEvery4Weeks => '4週間ごと';
+
+  @override
+  String get subWeekday => '曜日';
+
+  @override
+  String get subHour => '到着時間';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '定期清掃は毎回$percent%割引になります';
+  }
+
+  @override
+  String get subChargeNote => '訪問の前日に登録済みのカードで決済します';
+
+  @override
+  String get subCreate => '申し込む';
+
+  @override
+  String get subCreated => '定期清掃を申し込みました';
+
+  @override
+  String get subNeedAddress => '先に訪問先住所を登録してください';
+
+  @override
+  String get subListEmpty => '定期清掃はまだありません';
+
+  @override
+  String get subStatusActive => '利用中';
+
+  @override
+  String get subStatusPaused => '一時停止中';
+
+  @override
+  String get subStatusCancelled => '解約済み';
+
+  @override
+  String subNextVisit(String date) {
+    return '次回 $date';
+  }
+
+  @override
+  String get subPause => '一時停止';
+
+  @override
+  String get subResume => '再開';
+
+  @override
+  String get subCancelSub => '定期清掃を解約';
+
+  @override
+  String get subCancelConfirm =>
+      '今後の定期訪問はキャンセルされます。予約済みの訪問は個別にキャンセルしてください（手数料がかかる場合があります）。';
+
+  @override
+  String get subSkip => 'この訪問をスキップ';
+
+  @override
+  String get subMove => '日程を変更';
+
+  @override
+  String get subVisitLocked => '前日からは変更できません';
+
+  @override
+  String get subPausedPayment => '決済が続けて失敗したため停止しました。カードを変更して再開してください。';
+
+  @override
+  String get subStatePlanned => '予定';
+
+  @override
+  String get subStateBooked => '予約済み';
+
+  @override
+  String get subStateSkipped => 'スキップ';
+
+  @override
+  String get subStateMissed => '未実施';
+
+  @override
+  String get pSubsTitle => '定期顧客';
+
+  @override
+  String get pSubsEmpty => '定期顧客はまだいません';
+
+  @override
+  String get cSubsTitle => '定期清掃';
+
+  @override
+  String get cSubsEdit => '顧客に代わって編集';
+
+  @override
+  String get cMrr => '月次経常収益（MRR）';
+
+  @override
+  String get cChurn => '解約率';
+
+  @override
+  String get cActiveSubs => '利用中の定期清掃';
+
+  @override
+  String get cRecognized => '期間内の認識売上';
+
+  @override
+  String get cSubsLoadFailed => '定期清掃を読み込めませんでした';
 
   @override
   String get tTaxSection => '税務';

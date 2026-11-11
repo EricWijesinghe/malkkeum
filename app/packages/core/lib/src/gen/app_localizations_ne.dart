@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3771,6 +3770,130 @@ class TNe extends T {
   @override
   String get cStaffResetBody =>
       'यो टोकन कर्मचारीलाई दिनुहोस्। यो एक पटक, ३० मिनेटभित्र मात्र काम गर्छ। बन्द गरेपछि फेरि देखिँदैन।';
+
+  @override
+  String get subTitle => 'नियमित सफाइ';
+
+  @override
+  String get subNew => 'सदस्यता सुरु गर्नुहोस्';
+
+  @override
+  String get subCadence => 'कति बेला';
+
+  @override
+  String get subWeekly => 'हरेक हप्ता';
+
+  @override
+  String get subBiweekly => 'हरेक २ हप्ता';
+
+  @override
+  String get subEvery4Weeks => 'हरेक ४ हप्ता';
+
+  @override
+  String get subWeekday => 'वार';
+
+  @override
+  String get subHour => 'आइपुग्ने समय';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'हरेक भ्रमणमा $percent% छुट';
+  }
+
+  @override
+  String get subChargeNote =>
+      'भ्रमणको एक दिन अगाडि सेभ गरिएको कार्डबाट शुल्क लाग्छ';
+
+  @override
+  String get subCreate => 'सदस्यता लिनुहोस्';
+
+  @override
+  String get subCreated => 'सदस्यता सुरु भयो';
+
+  @override
+  String get subNeedAddress => 'पहिले भ्रमण ठेगाना थप्नुहोस्';
+
+  @override
+  String get subListEmpty => 'अहिलेसम्म सदस्यता छैन';
+
+  @override
+  String get subStatusActive => 'सक्रिय';
+
+  @override
+  String get subStatusPaused => 'रोकिएको';
+
+  @override
+  String get subStatusCancelled => 'रद्द गरिएको';
+
+  @override
+  String subNextVisit(String date) {
+    return 'अर्को भ्रमण $date';
+  }
+
+  @override
+  String get subPause => 'रोक्नुहोस्';
+
+  @override
+  String get subResume => 'फेरि सुरु गर्नुहोस्';
+
+  @override
+  String get subCancelSub => 'सदस्यता रद्द गर्नुहोस्';
+
+  @override
+  String get subCancelConfirm =>
+      'आगामी भ्रमणहरू रद्द हुनेछन्। बुक भइसकेका भ्रमण छुट्टै रद्द गर्नुपर्छ।';
+
+  @override
+  String get subSkip => 'यो भ्रमण छोड्नुहोस्';
+
+  @override
+  String get subMove => 'मिति सार्नुहोस्';
+
+  @override
+  String get subVisitLocked => 'भ्रमणको एक दिन अगाडिदेखि परिवर्तन गर्न मिल्दैन';
+
+  @override
+  String get subPausedPayment =>
+      'बारम्बार भुक्तानी असफल भएकाले रोकियो। कार्ड बदलेर फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get subStatePlanned => 'तय गरिएको';
+
+  @override
+  String get subStateBooked => 'बुक गरिएको';
+
+  @override
+  String get subStateSkipped => 'छोडिएको';
+
+  @override
+  String get subStateMissed => 'छुटेको';
+
+  @override
+  String get pSubsTitle => 'नियमित ग्राहक';
+
+  @override
+  String get pSubsEmpty => 'अहिलेसम्म नियमित ग्राहक छैनन्';
+
+  @override
+  String get cSubsTitle => 'सदस्यताहरू';
+
+  @override
+  String get cSubsEdit => 'ग्राहकको तर्फबाट सम्पादन';
+
+  @override
+  String get cMrr => 'मासिक दोहोरिने आम्दानी (MRR)';
+
+  @override
+  String get cChurn => 'च्युर्न';
+
+  @override
+  String get cActiveSubs => 'सक्रिय सदस्यता';
+
+  @override
+  String get cRecognized => 'अवधिमा मान्यता प्राप्त आम्दानी';
+
+  @override
+  String get cSubsLoadFailed => 'सदस्यता लोड गर्न सकिएन';
 
   @override
   String get tTaxSection => 'कर';
