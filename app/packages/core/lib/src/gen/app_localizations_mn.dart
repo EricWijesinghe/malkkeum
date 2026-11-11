@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3213,6 +3214,117 @@ class TMn extends T {
 
   @override
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
+
+  @override
+  String get tTaxSection => 'Татвар';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q НӨАТ CSV';
+  }
+
+  @override
+  String get tVatYear => 'Жил';
+
+  @override
+  String get tExportWithholding => 'Суутгалын тайлан CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Татварын нэхэмжлэх байршуулах CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Байршуулахаас өмнө 홈택스-ийн загвартай багануудыг шалгана уу. Бүтэц баталгаажаагүй.';
+
+  @override
+  String get tCashReceipts => 'Бэлэн мөнгөний баримт';
+
+  @override
+  String get tCashIssued => 'Олгосон';
+
+  @override
+  String get tCashFailed => 'Амжилтгүй';
+
+  @override
+  String get tCashPending => 'Хүлээгдэж буй';
+
+  @override
+  String get tCashCancelled => 'Цуцлагдсан';
+
+  @override
+  String get tReissue => 'Дахин олгох';
+
+  @override
+  String get tTaxInvoices => 'Татварын нэхэмжлэх';
+
+  @override
+  String get tApprovalNumber => 'Зөвшөөрлийн дугаар';
+
+  @override
+  String get tIssuedOn => 'Олгосон огноо';
+
+  @override
+  String get tMarkIssued => 'Олгосон гэж тэмдэглэх';
+
+  @override
+  String get tQueueEmpty => 'Хүлээгдэж буй хүсэлт алга';
+
+  @override
+  String get tWithholdingLabel => 'Суутгал';
+
+  @override
+  String get tGrossAmount => 'Нийт дүн';
+
+  @override
+  String get tIncomeTax => 'Орлогын татвар';
+
+  @override
+  String get tLocalTax => 'Орон нутгийн орлогын татвар';
+
+  @override
+  String get tNetAmount => 'Гарт авах дүн';
+
+  @override
+  String get tNoWithholding => 'Суутгалгүй (бүртгэлтэй бизнес)';
+
+  @override
+  String get tEstWithholding => 'Тооцоолсон суутгал (хүлээгдэж буй)';
+
+  @override
+  String get tReceiptOptions => 'Баримтын сонголт';
+
+  @override
+  String get tWantCashReceipt => 'Бэлэн мөнгөний баримт авах';
+
+  @override
+  String get tCashForIncome => 'Татвар хасалтад (утасны дугаар)';
+
+  @override
+  String get tCashForBusiness => 'Бизнесийн зардалд (бизнесийн дугаар)';
+
+  @override
+  String get tWantTaxInvoice => 'Татварын нэхэмжлэх авах (бизнес)';
+
+  @override
+  String get tPhoneForReceipt => 'Утасны дугаар';
+
+  @override
+  String get tBusinessNumber => 'Бизнесийн бүртгэлийн дугаар';
+
+  @override
+  String get tCompanyName => 'Компанийн нэр';
+
+  @override
+  String get tRepresentative => 'Төлөөлөгч';
+
+  @override
+  String get tInvoiceEmail => 'Нэхэмжлэх хүлээн авах имэйл';
+
+  @override
+  String get tReceiptSave => 'Хадгалаад төлөх';
+
+  @override
+  String get tReceiptSaveFailed => 'Баримтын мэдээллийг хадгалж чадсангүй';
 
   @override
   String get reviewRuleLine =>

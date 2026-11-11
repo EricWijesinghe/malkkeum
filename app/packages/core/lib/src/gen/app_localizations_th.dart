@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3186,6 +3187,117 @@ class TTh extends T {
 
   @override
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
+
+  @override
+  String get tTaxSection => 'ภาษี';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV ภาษีมูลค่าเพิ่ม ไตรมาส $q';
+  }
+
+  @override
+  String get tVatYear => 'ปี';
+
+  @override
+  String get tExportWithholding => 'CSV หนังสือรับรองการหักภาษี';
+
+  @override
+  String get tExportTaxInvoices => 'CSV สำหรับอัปโหลดใบกำกับภาษี';
+
+  @override
+  String get tTaxLayoutNote =>
+      'ตรวจคอลัมน์กับแม่แบบ 홈택스 ก่อนอัปโหลด ยังไม่ได้ยืนยันรูปแบบ';
+
+  @override
+  String get tCashReceipts => 'ใบเสร็จเงินสด';
+
+  @override
+  String get tCashIssued => 'ออกแล้ว';
+
+  @override
+  String get tCashFailed => 'ล้มเหลว';
+
+  @override
+  String get tCashPending => 'รอดำเนินการ';
+
+  @override
+  String get tCashCancelled => 'ยกเลิกแล้ว';
+
+  @override
+  String get tReissue => 'ออกใหม่';
+
+  @override
+  String get tTaxInvoices => 'ใบกำกับภาษี';
+
+  @override
+  String get tApprovalNumber => 'เลขที่อนุมัติ';
+
+  @override
+  String get tIssuedOn => 'วันที่ออก';
+
+  @override
+  String get tMarkIssued => 'ทำเครื่องหมายว่าออกแล้ว';
+
+  @override
+  String get tQueueEmpty => 'ไม่มีคำขอที่รอดำเนินการ';
+
+  @override
+  String get tWithholdingLabel => 'หัก ณ ที่จ่าย';
+
+  @override
+  String get tGrossAmount => 'ยอดรวม';
+
+  @override
+  String get tIncomeTax => 'ภาษีเงินได้';
+
+  @override
+  String get tLocalTax => 'ภาษีเงินได้ท้องถิ่น';
+
+  @override
+  String get tNetAmount => 'ยอดสุทธิ';
+
+  @override
+  String get tNoWithholding => 'ไม่หัก ณ ที่จ่าย (ธุรกิจจดทะเบียน)';
+
+  @override
+  String get tEstWithholding => 'ประมาณการหัก ณ ที่จ่าย (รอจ่าย)';
+
+  @override
+  String get tReceiptOptions => 'ตัวเลือกใบเสร็จ';
+
+  @override
+  String get tWantCashReceipt => 'ขอใบเสร็จเงินสด';
+
+  @override
+  String get tCashForIncome => 'สำหรับลดหย่อนภาษี (เบอร์โทร)';
+
+  @override
+  String get tCashForBusiness => 'สำหรับค่าใช้จ่ายธุรกิจ (เลขธุรกิจ)';
+
+  @override
+  String get tWantTaxInvoice => 'ขอใบกำกับภาษี (ธุรกิจ)';
+
+  @override
+  String get tPhoneForReceipt => 'เบอร์โทรศัพท์';
+
+  @override
+  String get tBusinessNumber => 'เลขทะเบียนธุรกิจ';
+
+  @override
+  String get tCompanyName => 'ชื่อบริษัท';
+
+  @override
+  String get tRepresentative => 'ผู้แทน';
+
+  @override
+  String get tInvoiceEmail => 'อีเมลสำหรับใบกำกับภาษี';
+
+  @override
+  String get tReceiptSave => 'บันทึกและชำระเงิน';
+
+  @override
+  String get tReceiptSaveFailed => 'บันทึกข้อมูลใบเสร็จไม่สำเร็จ';
 
   @override
   String get reviewRuleLine =>

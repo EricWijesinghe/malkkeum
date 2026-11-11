@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3190,6 +3191,117 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String get tTaxSection => 'Tax';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'Year';
+
+  @override
+  String get tExportWithholding => 'Withholding statement CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Tax invoice upload CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Check the columns against the 홈택스 template before uploading. Layout not yet verified.';
+
+  @override
+  String get tCashReceipts => 'Cash receipts';
+
+  @override
+  String get tCashIssued => 'Issued';
+
+  @override
+  String get tCashFailed => 'Failed';
+
+  @override
+  String get tCashPending => 'Pending';
+
+  @override
+  String get tCashCancelled => 'Cancelled';
+
+  @override
+  String get tReissue => 'Reissue';
+
+  @override
+  String get tTaxInvoices => 'Tax invoices';
+
+  @override
+  String get tApprovalNumber => 'Approval no.';
+
+  @override
+  String get tIssuedOn => 'Issued on';
+
+  @override
+  String get tMarkIssued => 'Mark as issued';
+
+  @override
+  String get tQueueEmpty => 'No requests waiting';
+
+  @override
+  String get tWithholdingLabel => 'Withholding';
+
+  @override
+  String get tGrossAmount => 'Gross';
+
+  @override
+  String get tIncomeTax => 'Income tax';
+
+  @override
+  String get tLocalTax => 'Local income tax';
+
+  @override
+  String get tNetAmount => 'Net';
+
+  @override
+  String get tNoWithholding => 'No withholding (registered business)';
+
+  @override
+  String get tEstWithholding => 'Estimated withholding (pending)';
+
+  @override
+  String get tReceiptOptions => 'Receipt options';
+
+  @override
+  String get tWantCashReceipt => 'Get a cash receipt';
+
+  @override
+  String get tCashForIncome => 'For tax deduction (phone number)';
+
+  @override
+  String get tCashForBusiness => 'For business expense (business no.)';
+
+  @override
+  String get tWantTaxInvoice => 'Get a tax invoice (business)';
+
+  @override
+  String get tPhoneForReceipt => 'Phone number';
+
+  @override
+  String get tBusinessNumber => 'Business registration no.';
+
+  @override
+  String get tCompanyName => 'Company name';
+
+  @override
+  String get tRepresentative => 'Representative';
+
+  @override
+  String get tInvoiceEmail => 'Email for the invoice';
+
+  @override
+  String get tReceiptSave => 'Save and pay';
+
+  @override
+  String get tReceiptSaveFailed => 'Could not save the receipt details';
 
   @override
   String get reviewRuleLine =>

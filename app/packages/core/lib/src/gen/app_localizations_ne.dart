@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3200,6 +3201,117 @@ class TNe extends T {
 
   @override
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
+
+  @override
+  String get tTaxSection => 'कर';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'वर्ष';
+
+  @override
+  String get tExportWithholding => 'कर कट्टी विवरण CSV';
+
+  @override
+  String get tExportTaxInvoices => 'कर बिल अपलोड CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'अपलोड गर्नु अघि 홈택스 टेम्प्लेटसँग स्तम्भ जाँच गर्नुहोस्। बनोट अझै प्रमाणित भएको छैन।';
+
+  @override
+  String get tCashReceipts => 'नगद रसिद';
+
+  @override
+  String get tCashIssued => 'जारी भयो';
+
+  @override
+  String get tCashFailed => 'असफल';
+
+  @override
+  String get tCashPending => 'पर्खाइमा';
+
+  @override
+  String get tCashCancelled => 'रद्द भयो';
+
+  @override
+  String get tReissue => 'पुनः जारी';
+
+  @override
+  String get tTaxInvoices => 'कर बिल';
+
+  @override
+  String get tApprovalNumber => 'स्वीकृति नम्बर';
+
+  @override
+  String get tIssuedOn => 'जारी मिति';
+
+  @override
+  String get tMarkIssued => 'जारी भएको चिन्ह लगाउनुहोस्';
+
+  @override
+  String get tQueueEmpty => 'पर्खिरहेको अनुरोध छैन';
+
+  @override
+  String get tWithholdingLabel => 'कर कट्टी';
+
+  @override
+  String get tGrossAmount => 'कुल रकम';
+
+  @override
+  String get tIncomeTax => 'आयकर';
+
+  @override
+  String get tLocalTax => 'स्थानीय आयकर';
+
+  @override
+  String get tNetAmount => 'खुद रकम';
+
+  @override
+  String get tNoWithholding => 'कर कट्टी छैन (दर्ता व्यवसाय)';
+
+  @override
+  String get tEstWithholding => 'अनुमानित कर कट्टी (बाँकी)';
+
+  @override
+  String get tReceiptOptions => 'रसिद विकल्पहरू';
+
+  @override
+  String get tWantCashReceipt => 'नगद रसिद चाहियो';
+
+  @override
+  String get tCashForIncome => 'कर छुट का लागि (फोन नम्बर)';
+
+  @override
+  String get tCashForBusiness => 'व्यावसायिक खर्चका लागि (व्यवसाय नम्बर)';
+
+  @override
+  String get tWantTaxInvoice => 'कर बिल चाहियो (व्यवसाय)';
+
+  @override
+  String get tPhoneForReceipt => 'फोन नम्बर';
+
+  @override
+  String get tBusinessNumber => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get tCompanyName => 'कम्पनीको नाम';
+
+  @override
+  String get tRepresentative => 'प्रतिनिधि';
+
+  @override
+  String get tInvoiceEmail => 'बिलका लागि इमेल';
+
+  @override
+  String get tReceiptSave => 'सुरक्षित गरेर भुक्तानी गर्नुहोस्';
+
+  @override
+  String get tReceiptSaveFailed => 'रसिद विवरण सुरक्षित गर्न सकिएन';
 
   @override
   String get reviewRuleLine =>

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3176,6 +3177,117 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String get tTaxSection => 'Thuế';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Thuế GTGT Q$q CSV';
+  }
+
+  @override
+  String get tVatYear => 'Năm';
+
+  @override
+  String get tExportWithholding => 'Bảng khấu trừ CSV';
+
+  @override
+  String get tExportTaxInvoices => 'CSV tải hóa đơn thuế';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Kiểm tra cột với mẫu 홈택스 trước khi tải lên. Bố cục chưa được xác minh.';
+
+  @override
+  String get tCashReceipts => 'Biên lai tiền mặt';
+
+  @override
+  String get tCashIssued => 'Đã phát hành';
+
+  @override
+  String get tCashFailed => 'Phát hành lỗi';
+
+  @override
+  String get tCashPending => 'Đang chờ';
+
+  @override
+  String get tCashCancelled => 'Đã hủy';
+
+  @override
+  String get tReissue => 'Phát hành lại';
+
+  @override
+  String get tTaxInvoices => 'Hóa đơn thuế';
+
+  @override
+  String get tApprovalNumber => 'Số phê duyệt';
+
+  @override
+  String get tIssuedOn => 'Ngày phát hành';
+
+  @override
+  String get tMarkIssued => 'Đánh dấu đã phát hành';
+
+  @override
+  String get tQueueEmpty => 'Không có yêu cầu đang chờ';
+
+  @override
+  String get tWithholdingLabel => 'Khấu trừ thuế';
+
+  @override
+  String get tGrossAmount => 'Tổng gộp';
+
+  @override
+  String get tIncomeTax => 'Thuế thu nhập';
+
+  @override
+  String get tLocalTax => 'Thuế thu nhập địa phương';
+
+  @override
+  String get tNetAmount => 'Thực nhận';
+
+  @override
+  String get tNoWithholding => 'Không khấu trừ (doanh nghiệp đã đăng ký)';
+
+  @override
+  String get tEstWithholding => 'Khấu trừ dự kiến (phần chờ)';
+
+  @override
+  String get tReceiptOptions => 'Tùy chọn biên lai';
+
+  @override
+  String get tWantCashReceipt => 'Nhận biên lai tiền mặt';
+
+  @override
+  String get tCashForIncome => 'Khấu trừ thu nhập (số điện thoại)';
+
+  @override
+  String get tCashForBusiness => 'Chứng từ chi phí (mã doanh nghiệp)';
+
+  @override
+  String get tWantTaxInvoice => 'Nhận hóa đơn thuế (doanh nghiệp)';
+
+  @override
+  String get tPhoneForReceipt => 'Số điện thoại';
+
+  @override
+  String get tBusinessNumber => 'Mã số đăng ký doanh nghiệp';
+
+  @override
+  String get tCompanyName => 'Tên công ty';
+
+  @override
+  String get tRepresentative => 'Người đại diện';
+
+  @override
+  String get tInvoiceEmail => 'Email nhận hóa đơn';
+
+  @override
+  String get tReceiptSave => 'Lưu và thanh toán';
+
+  @override
+  String get tReceiptSaveFailed => 'Không lưu được thông tin biên lai';
 
   @override
   String get reviewRuleLine =>

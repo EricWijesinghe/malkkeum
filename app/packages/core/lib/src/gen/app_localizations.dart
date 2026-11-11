@@ -6036,6 +6036,222 @@ abstract class T {
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
 
+  /// No description provided for @tTaxSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'세무'**
+  String get tTaxSection;
+
+  /// No description provided for @tVatQuarter.
+  ///
+  /// In ko, this message translates to:
+  /// **'{q}분기 부가세 CSV'**
+  String tVatQuarter(String q);
+
+  /// No description provided for @tVatYear.
+  ///
+  /// In ko, this message translates to:
+  /// **'연도'**
+  String get tVatYear;
+
+  /// No description provided for @tExportWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급명세서 CSV'**
+  String get tExportWithholding;
+
+  /// No description provided for @tExportTaxInvoices.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 업로드 CSV'**
+  String get tExportTaxInvoices;
+
+  /// No description provided for @tTaxLayoutNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'홈택스 실제 양식과 대조한 뒤 올려주세요. 열 구성은 아직 확인되지 않았어요.'**
+  String get tTaxLayoutNote;
+
+  /// No description provided for @tCashReceipts.
+  ///
+  /// In ko, this message translates to:
+  /// **'현금영수증'**
+  String get tCashReceipts;
+
+  /// No description provided for @tCashIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'발급 완료'**
+  String get tCashIssued;
+
+  /// No description provided for @tCashFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'발급 실패'**
+  String get tCashFailed;
+
+  /// No description provided for @tCashPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기'**
+  String get tCashPending;
+
+  /// No description provided for @tCashCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소됨'**
+  String get tCashCancelled;
+
+  /// No description provided for @tReissue.
+  ///
+  /// In ko, this message translates to:
+  /// **'재발급'**
+  String get tReissue;
+
+  /// No description provided for @tTaxInvoices.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서'**
+  String get tTaxInvoices;
+
+  /// No description provided for @tApprovalNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인번호'**
+  String get tApprovalNumber;
+
+  /// No description provided for @tIssuedOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'발행일'**
+  String get tIssuedOn;
+
+  /// No description provided for @tMarkIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'발행 완료 표시'**
+  String get tMarkIssued;
+
+  /// No description provided for @tQueueEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 요청이 없어요'**
+  String get tQueueEmpty;
+
+  /// No description provided for @tWithholdingLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수'**
+  String get tWithholdingLabel;
+
+  /// No description provided for @tGrossAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급총액'**
+  String get tGrossAmount;
+
+  /// No description provided for @tIncomeTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득세'**
+  String get tIncomeTax;
+
+  /// No description provided for @tLocalTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'지방소득세'**
+  String get tLocalTax;
+
+  /// No description provided for @tNetAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'실지급액'**
+  String get tNetAmount;
+
+  /// No description provided for @tNoWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수 없음 (사업자 등록)'**
+  String get tNoWithholding;
+
+  /// No description provided for @tEstWithholding.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 원천징수 (미지급분 기준)'**
+  String get tEstWithholding;
+
+  /// No description provided for @tReceiptOptions.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 선택'**
+  String get tReceiptOptions;
+
+  /// No description provided for @tWantCashReceipt.
+  ///
+  /// In ko, this message translates to:
+  /// **'현금영수증 받기'**
+  String get tWantCashReceipt;
+
+  /// No description provided for @tCashForIncome.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득공제용 (휴대폰 번호)'**
+  String get tCashForIncome;
+
+  /// No description provided for @tCashForBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'지출증빙용 (사업자번호)'**
+  String get tCashForBusiness;
+
+  /// No description provided for @tWantTaxInvoice.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 받기 (사업자)'**
+  String get tWantTaxInvoice;
+
+  /// No description provided for @tPhoneForReceipt.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 번호'**
+  String get tPhoneForReceipt;
+
+  /// No description provided for @tBusinessNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호'**
+  String get tBusinessNumber;
+
+  /// No description provided for @tCompanyName.
+  ///
+  /// In ko, this message translates to:
+  /// **'상호'**
+  String get tCompanyName;
+
+  /// No description provided for @tRepresentative.
+  ///
+  /// In ko, this message translates to:
+  /// **'대표자'**
+  String get tRepresentative;
+
+  /// No description provided for @tInvoiceEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'세금계산서 받을 이메일'**
+  String get tInvoiceEmail;
+
+  /// No description provided for @tReceiptSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하고 결제'**
+  String get tReceiptSave;
+
+  /// No description provided for @tReceiptSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'영수증 정보를 저장하지 못했어요'**
+  String get tReceiptSaveFailed;
+
   /// No description provided for @reviewRuleLine.
   ///
   /// In ko, this message translates to:

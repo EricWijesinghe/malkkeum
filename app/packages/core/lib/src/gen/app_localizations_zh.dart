@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3099,6 +3100,116 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String get tTaxSection => '税务';
+
+  @override
+  String tVatQuarter(String q) {
+    return '第$q季度增值税 CSV';
+  }
+
+  @override
+  String get tVatYear => '年份';
+
+  @override
+  String get tExportWithholding => '代扣代缴明细 CSV';
+
+  @override
+  String get tExportTaxInvoices => '税务发票上传 CSV';
+
+  @override
+  String get tTaxLayoutNote => '上传前请与홈택스实际模板核对，列结构尚未验证。';
+
+  @override
+  String get tCashReceipts => '现金收据';
+
+  @override
+  String get tCashIssued => '已开具';
+
+  @override
+  String get tCashFailed => '开具失败';
+
+  @override
+  String get tCashPending => '待处理';
+
+  @override
+  String get tCashCancelled => '已取消';
+
+  @override
+  String get tReissue => '重新开具';
+
+  @override
+  String get tTaxInvoices => '税务发票';
+
+  @override
+  String get tApprovalNumber => '审批号';
+
+  @override
+  String get tIssuedOn => '开具日期';
+
+  @override
+  String get tMarkIssued => '标记为已开具';
+
+  @override
+  String get tQueueEmpty => '暂无待处理请求';
+
+  @override
+  String get tWithholdingLabel => '代扣税';
+
+  @override
+  String get tGrossAmount => '应付总额';
+
+  @override
+  String get tIncomeTax => '所得税';
+
+  @override
+  String get tLocalTax => '地方所得税';
+
+  @override
+  String get tNetAmount => '实发金额';
+
+  @override
+  String get tNoWithholding => '无代扣税（已注册企业）';
+
+  @override
+  String get tEstWithholding => '预计代扣税（待结算部分）';
+
+  @override
+  String get tReceiptOptions => '收据选项';
+
+  @override
+  String get tWantCashReceipt => '开具现金收据';
+
+  @override
+  String get tCashForIncome => '用于收入扣除（手机号）';
+
+  @override
+  String get tCashForBusiness => '用于费用凭证（营业执照号）';
+
+  @override
+  String get tWantTaxInvoice => '开具税务发票（企业）';
+
+  @override
+  String get tPhoneForReceipt => '手机号';
+
+  @override
+  String get tBusinessNumber => '营业执照号';
+
+  @override
+  String get tCompanyName => '公司名称';
+
+  @override
+  String get tRepresentative => '法人代表';
+
+  @override
+  String get tInvoiceEmail => '接收发票的邮箱';
+
+  @override
+  String get tReceiptSave => '保存并支付';
+
+  @override
+  String get tReceiptSaveFailed => '无法保存收据信息';
 
   @override
   String get reviewRuleLine => '禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3205,6 +3206,117 @@ class TRu extends T {
 
   @override
   String get cInvalidValue => 'Проверьте введённое значение';
+
+  @override
+  String get tTaxSection => 'Налоги';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'CSV НДС, кв. $q';
+  }
+
+  @override
+  String get tVatYear => 'Год';
+
+  @override
+  String get tExportWithholding => 'CSV удержания НДФЛ';
+
+  @override
+  String get tExportTaxInvoices => 'CSV для загрузки счетов-фактур';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Сверьте столбцы с шаблоном 홈택스 перед загрузкой. Структура ещё не проверена.';
+
+  @override
+  String get tCashReceipts => 'Кассовые чеки';
+
+  @override
+  String get tCashIssued => 'Выдан';
+
+  @override
+  String get tCashFailed => 'Ошибка';
+
+  @override
+  String get tCashPending => 'Ожидает';
+
+  @override
+  String get tCashCancelled => 'Отменён';
+
+  @override
+  String get tReissue => 'Выдать повторно';
+
+  @override
+  String get tTaxInvoices => 'Счета-фактуры';
+
+  @override
+  String get tApprovalNumber => 'Номер одобрения';
+
+  @override
+  String get tIssuedOn => 'Дата выдачи';
+
+  @override
+  String get tMarkIssued => 'Отметить как выданный';
+
+  @override
+  String get tQueueEmpty => 'Нет ожидающих запросов';
+
+  @override
+  String get tWithholdingLabel => 'Удержание';
+
+  @override
+  String get tGrossAmount => 'Начислено';
+
+  @override
+  String get tIncomeTax => 'Подоходный налог';
+
+  @override
+  String get tLocalTax => 'Местный подоходный налог';
+
+  @override
+  String get tNetAmount => 'К выплате';
+
+  @override
+  String get tNoWithholding => 'Без удержания (зарегистрированный бизнес)';
+
+  @override
+  String get tEstWithholding => 'Ожидаемое удержание (к выплате)';
+
+  @override
+  String get tReceiptOptions => 'Параметры чека';
+
+  @override
+  String get tWantCashReceipt => 'Получить кассовый чек';
+
+  @override
+  String get tCashForIncome => 'Для вычета (номер телефона)';
+
+  @override
+  String get tCashForBusiness => 'Для расходов бизнеса (номер бизнеса)';
+
+  @override
+  String get tWantTaxInvoice => 'Получить счёт-фактуру (бизнес)';
+
+  @override
+  String get tPhoneForReceipt => 'Номер телефона';
+
+  @override
+  String get tBusinessNumber => 'Регистрационный номер бизнеса';
+
+  @override
+  String get tCompanyName => 'Название компании';
+
+  @override
+  String get tRepresentative => 'Представитель';
+
+  @override
+  String get tInvoiceEmail => 'Email для счёта-фактуры';
+
+  @override
+  String get tReceiptSave => 'Сохранить и оплатить';
+
+  @override
+  String get tReceiptSaveFailed => 'Не удалось сохранить данные чека';
 
   @override
   String get reviewRuleLine =>

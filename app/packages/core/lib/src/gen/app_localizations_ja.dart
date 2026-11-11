@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3111,6 +3112,116 @@ class TJa extends T {
 
   @override
   String get cInvalidValue => '入力内容を確認してください';
+
+  @override
+  String get tTaxSection => '税務';
+
+  @override
+  String tVatQuarter(String q) {
+    return '第$q四半期 消費税 CSV';
+  }
+
+  @override
+  String get tVatYear => '年';
+
+  @override
+  String get tExportWithholding => '源泉徴収データ CSV';
+
+  @override
+  String get tExportTaxInvoices => '税額票アップロード CSV';
+
+  @override
+  String get tTaxLayoutNote => '홈タックスの実際の書式と照合してからアップロードしてください。列構成は未確認です。';
+
+  @override
+  String get tCashReceipts => '現金領収書';
+
+  @override
+  String get tCashIssued => '発行済み';
+
+  @override
+  String get tCashFailed => '発行失敗';
+
+  @override
+  String get tCashPending => '保留中';
+
+  @override
+  String get tCashCancelled => '取消済み';
+
+  @override
+  String get tReissue => '再発行';
+
+  @override
+  String get tTaxInvoices => '税額票';
+
+  @override
+  String get tApprovalNumber => '承認番号';
+
+  @override
+  String get tIssuedOn => '発行日';
+
+  @override
+  String get tMarkIssued => '発行済みにする';
+
+  @override
+  String get tQueueEmpty => '待機中のリクエストはありません';
+
+  @override
+  String get tWithholdingLabel => '源泉徴収';
+
+  @override
+  String get tGrossAmount => '支払総額';
+
+  @override
+  String get tIncomeTax => '所得税';
+
+  @override
+  String get tLocalTax => '住民税';
+
+  @override
+  String get tNetAmount => '手取り';
+
+  @override
+  String get tNoWithholding => '源泉徴収なし（事業者登録）';
+
+  @override
+  String get tEstWithholding => '見込み源泉徴収（未払い分）';
+
+  @override
+  String get tReceiptOptions => '領収書の選択';
+
+  @override
+  String get tWantCashReceipt => '現金領収書を受け取る';
+
+  @override
+  String get tCashForIncome => '所得控除用（携帯番号）';
+
+  @override
+  String get tCashForBusiness => '経費証憑用（事業者番号）';
+
+  @override
+  String get tWantTaxInvoice => '税額票を受け取る（事業者）';
+
+  @override
+  String get tPhoneForReceipt => '携帯番号';
+
+  @override
+  String get tBusinessNumber => '事業者登録番号';
+
+  @override
+  String get tCompanyName => '会社名';
+
+  @override
+  String get tRepresentative => '代表者';
+
+  @override
+  String get tInvoiceEmail => '請求書の受取メール';
+
+  @override
+  String get tReceiptSave => '保存して決済';
+
+  @override
+  String get tReceiptSaveFailed => '領収書の情報を保存できませんでした';
 
   @override
   String get reviewRuleLine => '暴言・個人情報・虚偽や宣伝の内容は禁止です。通報されたレビューは非表示になります。';
