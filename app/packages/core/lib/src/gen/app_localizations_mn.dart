@@ -1932,6 +1932,14 @@ class TMn extends T {
   String get err_invalid_capacity => 'Зөв багтаамж оруулна уу.';
 
   @override
+  String get err_seller_declined =>
+      'Toss худалдагчийн бүртгэлийг зөвшөөрөөгүй. Бизнесийн мэдээллээ шалгана уу.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Энэ хамтрагч баталгаажсан төлбөрийн дансгүй байна. Эхлээд дансаа баталгаажуулна уу.';
+
+  @override
   String get fFinance => 'Санхүү';
 
   @override
@@ -2933,6 +2941,45 @@ class TMn extends T {
 
   @override
   String get poRevealNote => 'Дансны мэдээллийг үзсэн нь бүртгэгдэнэ';
+
+  @override
+  String get poSellerAction => 'Худалдагч бүртгэх';
+
+  @override
+  String get poSellerTitle => 'Toss худалдагчаар бүртгүүлэх';
+
+  @override
+  String get poSellerHint =>
+      'Хамтрагчийн баталгаажсан данс ашиглана. Зөвхөн бизнесийн мэдээлэл оруулна уу.';
+
+  @override
+  String get poSellerIndividual => 'Хувь хүн';
+
+  @override
+  String get poSellerCompany => 'Байгууллага';
+
+  @override
+  String get poSellerName => 'Нэр';
+
+  @override
+  String get poSellerRepresentative => 'Төлөөлөгчийн нэр';
+
+  @override
+  String get poSellerRegNo => 'Бизнесийн бүртгэлийн дугаар (10 оронтой)';
+
+  @override
+  String get poSellerEmail => 'Тооцооны имэйл';
+
+  @override
+  String get poSellerPhone => 'Утас';
+
+  @override
+  String get poSellerSubmit => 'Бүртгэх';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Худалдагчийн төлөв: $status';
+  }
 
   @override
   String get pvManage => 'Зөвшөөрлийн тохиргоо';

@@ -1922,6 +1922,14 @@ class TNe extends T {
   String get err_invalid_capacity => 'मान्य क्षमता प्रविष्ट गर्नुहोस्।';
 
   @override
+  String get err_seller_declined =>
+      'Toss ले विक्रेता दर्ता स्वीकृत गरेन। व्यवसायको विवरण जाँच गर्नुहोस्।';
+
+  @override
+  String get err_payout_account_unverified =>
+      'यो साझेदारसँग प्रमाणित भुक्तानी खाता छैन। पहिले खाता प्रमाणित गर्नुहोस्।';
+
+  @override
   String get fFinance => 'वित्त';
 
   @override
@@ -2920,6 +2928,45 @@ class TNe extends T {
 
   @override
   String get poRevealNote => 'खाता विवरण हेर्ने कार्य लग गरिन्छ';
+
+  @override
+  String get poSellerAction => 'विक्रेता दर्ता गर्नुहोस्';
+
+  @override
+  String get poSellerTitle => 'Toss विक्रेताको रूपमा दर्ता गर्नुहोस्';
+
+  @override
+  String get poSellerHint =>
+      'साझेदारको प्रमाणित भुक्तानी खाता प्रयोग हुन्छ। व्यवसायको विवरण मात्र भर्नुहोस्।';
+
+  @override
+  String get poSellerIndividual => 'व्यक्तिगत';
+
+  @override
+  String get poSellerCompany => 'व्यवसाय';
+
+  @override
+  String get poSellerName => 'नाम';
+
+  @override
+  String get poSellerRepresentative => 'प्रतिनिधिको नाम';
+
+  @override
+  String get poSellerRegNo => 'व्यवसाय दर्ता नम्बर (१० अंक)';
+
+  @override
+  String get poSellerEmail => 'भुक्तानी इमेल';
+
+  @override
+  String get poSellerPhone => 'फोन';
+
+  @override
+  String get poSellerSubmit => 'दर्ता गर्नुहोस्';
+
+  @override
+  String poSellerDone(String status) {
+    return 'विक्रेता स्थिति: $status';
+  }
 
   @override
   String get pvManage => 'सहमति व्यवस्थापन';

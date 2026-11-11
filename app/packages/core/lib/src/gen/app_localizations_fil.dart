@@ -1940,6 +1940,14 @@ class TFil extends T {
   String get err_invalid_capacity => 'Maglagay ng valid na kapasidad.';
 
   @override
+  String get err_seller_declined =>
+      'Hindi inaprubahan ng Toss ang pagpaparehistro ng seller. Suriin ang impormasyon ng negosyo.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Walang na-verify na payout account ang partner na ito. I-verify muna ang account.';
+
+  @override
   String get fFinance => 'Pananalapi';
 
   @override
@@ -2942,6 +2950,45 @@ class TFil extends T {
 
   @override
   String get poRevealNote => 'Naitatala ang pagtingin sa detalye ng account';
+
+  @override
+  String get poSellerAction => 'Irehistro bilang Toss seller';
+
+  @override
+  String get poSellerTitle => 'Irehistro bilang Toss seller';
+
+  @override
+  String get poSellerHint =>
+      'Gagamitin ang na-verify na payout account ng partner. Ilagay lang ang impormasyon ng negosyo.';
+
+  @override
+  String get poSellerIndividual => 'Indibidwal';
+
+  @override
+  String get poSellerCompany => 'Negosyo';
+
+  @override
+  String get poSellerName => 'Pangalan';
+
+  @override
+  String get poSellerRepresentative => 'Pangalan ng kinatawan';
+
+  @override
+  String get poSellerRegNo => 'Numero ng pagpaparehistro ng negosyo (10 digit)';
+
+  @override
+  String get poSellerEmail => 'Email para sa settlement';
+
+  @override
+  String get poSellerPhone => 'Telepono';
+
+  @override
+  String get poSellerSubmit => 'Irehistro';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Katayuan ng seller: $status';
+  }
 
   @override
   String get pvManage => 'Mga pahintulot';

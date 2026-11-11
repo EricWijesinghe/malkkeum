@@ -1911,6 +1911,14 @@ class TVi extends T {
   String get err_invalid_capacity => 'Hãy nhập sức chứa hợp lệ.';
 
   @override
+  String get err_seller_declined =>
+      'Toss chưa duyệt đăng ký người bán. Hãy kiểm tra thông tin doanh nghiệp.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Đối tác này chưa có tài khoản nhận tiền đã xác minh. Hãy xác minh tài khoản trước.';
+
+  @override
   String get fFinance => 'Tài chính';
 
   @override
@@ -2898,6 +2906,45 @@ class TVi extends T {
 
   @override
   String get poRevealNote => 'Việc xem tài khoản được ghi lại';
+
+  @override
+  String get poSellerAction => 'Đăng ký người bán';
+
+  @override
+  String get poSellerTitle => 'Đăng ký làm người bán Toss';
+
+  @override
+  String get poSellerHint =>
+      'Dùng tài khoản nhận tiền đã xác minh của đối tác. Chỉ nhập thông tin kinh doanh.';
+
+  @override
+  String get poSellerIndividual => 'Cá nhân';
+
+  @override
+  String get poSellerCompany => 'Doanh nghiệp';
+
+  @override
+  String get poSellerName => 'Họ tên';
+
+  @override
+  String get poSellerRepresentative => 'Tên người đại diện';
+
+  @override
+  String get poSellerRegNo => 'Mã số doanh nghiệp (10 chữ số)';
+
+  @override
+  String get poSellerEmail => 'Email đối soát';
+
+  @override
+  String get poSellerPhone => 'Số điện thoại';
+
+  @override
+  String get poSellerSubmit => 'Đăng ký';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Trạng thái người bán: $status';
+  }
 
   @override
   String get pvManage => 'Quản lý đồng ý';

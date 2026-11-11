@@ -1935,6 +1935,14 @@ class TUz extends T {
   String get err_invalid_capacity => 'To‘g‘ri sig‘imni kiriting.';
 
   @override
+  String get err_seller_declined =>
+      'Toss sotuvchini ro‘yxatdan o‘tkazishni tasdiqlamadi. Biznes ma’lumotlarini tekshiring.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Bu hamkorda hali tasdiqlangan to‘lov hisobi yo‘q. Avval hisobni tasdiqlang.';
+
+  @override
   String get fFinance => 'Moliya';
 
   @override
@@ -2938,6 +2946,45 @@ class TUz extends T {
 
   @override
   String get poRevealNote => 'Hisob tafsilotlarini ko‘rish qayd etiladi';
+
+  @override
+  String get poSellerAction => 'Sotuvchi ro‘yxatdan o‘tkazish';
+
+  @override
+  String get poSellerTitle => 'Toss sotuvchi sifatida ro‘yxatdan o‘tish';
+
+  @override
+  String get poSellerHint =>
+      'Hamkorning tasdiqlangan to‘lov hisobi ishlatiladi. Faqat biznes ma’lumotlarini kiriting.';
+
+  @override
+  String get poSellerIndividual => 'Jismoniy shaxs';
+
+  @override
+  String get poSellerCompany => 'Tadbirkor';
+
+  @override
+  String get poSellerName => 'Ism';
+
+  @override
+  String get poSellerRepresentative => 'Vakil ismi';
+
+  @override
+  String get poSellerRegNo => 'Biznes ro‘yxat raqami (10 raqam)';
+
+  @override
+  String get poSellerEmail => 'Hisob-kitob uchun email';
+
+  @override
+  String get poSellerPhone => 'Telefon';
+
+  @override
+  String get poSellerSubmit => 'Ro‘yxatdan o‘tkazish';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Sotuvchi holati: $status';
+  }
 
   @override
   String get pvManage => 'Rozilik sozlamalari';

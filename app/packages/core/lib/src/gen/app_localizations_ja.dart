@@ -1864,6 +1864,13 @@ class TJa extends T {
   String get err_invalid_capacity => '定員は正しい数字で入力してください。';
 
   @override
+  String get err_seller_declined => 'Tossが販売者登録を承認しませんでした。事業者情報を確認してください。';
+
+  @override
+  String get err_payout_account_unverified =>
+      'この受取人には確認済みの口座がありません。先に口座を確認してください。';
+
+  @override
   String get fFinance => '財務';
 
   @override
@@ -2842,6 +2849,44 @@ class TJa extends T {
 
   @override
   String get poRevealNote => '口座情報の閲覧は記録されます';
+
+  @override
+  String get poSellerAction => '販売者登録';
+
+  @override
+  String get poSellerTitle => 'Toss販売者として登録';
+
+  @override
+  String get poSellerHint => '確認済みの振込口座で登録します。事業者情報のみ入力してください。';
+
+  @override
+  String get poSellerIndividual => '個人';
+
+  @override
+  String get poSellerCompany => '事業者';
+
+  @override
+  String get poSellerName => '名前';
+
+  @override
+  String get poSellerRepresentative => '代表者名';
+
+  @override
+  String get poSellerRegNo => '事業者登録番号（10桁）';
+
+  @override
+  String get poSellerEmail => '精算用メール';
+
+  @override
+  String get poSellerPhone => '電話番号';
+
+  @override
+  String get poSellerSubmit => '登録する';
+
+  @override
+  String poSellerDone(String status) {
+    return '販売者の状態：$status';
+  }
 
   @override
   String get pvManage => '同意の管理';

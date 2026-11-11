@@ -105,6 +105,8 @@
     "invalid_map",
     "invalid_message",
     "invalid_name",
+    "seller_declined",
+    "payout_account_unverified",
     "invalid_notes",
     "invalid_prefs",
     "invalid_profile",

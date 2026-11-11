@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'payout_seller_dialog.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -206,12 +207,20 @@ class _SettlementsState extends State<SettlementsScreen> {
               if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
               if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
               if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+              if (admin && !manual && (state == 'requested' || state == 'failed'))
+                TextButton(onPressed: () => _seller(context, p['pro_id'] as String), child: Text(t.poSellerAction)),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// Toss needs the partner registered as a seller before it can send money. Re-registering is safe after an account change.
+  Future<void> _seller(BuildContext context, String proId) async {
+    final status = await showTossSellerDialog(context, proId);
+    if (status != null && context.mounted) showToast(context, context.t.poSellerDone(status));
   }
 
   /// Bank details for a manual transfer. Each reveal is audit-logged on the server.

@@ -1914,6 +1914,14 @@ class TEn extends T {
   String get err_invalid_capacity => 'Enter a valid capacity.';
 
   @override
+  String get err_seller_declined =>
+      'Toss did not approve the seller registration. Check the business details.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'This partner has no verified payout account yet. Verify the account first.';
+
+  @override
   String get fFinance => 'Finance';
 
   @override
@@ -2907,6 +2915,45 @@ class TEn extends T {
 
   @override
   String get poRevealNote => 'Viewing account details is logged';
+
+  @override
+  String get poSellerAction => 'Register seller';
+
+  @override
+  String get poSellerTitle => 'Register as Toss seller';
+
+  @override
+  String get poSellerHint =>
+      'Uses the partner\'s verified payout account. Enter business details only.';
+
+  @override
+  String get poSellerIndividual => 'Individual';
+
+  @override
+  String get poSellerCompany => 'Business';
+
+  @override
+  String get poSellerName => 'Name';
+
+  @override
+  String get poSellerRepresentative => 'Representative name';
+
+  @override
+  String get poSellerRegNo => 'Business registration no. (10 digits)';
+
+  @override
+  String get poSellerEmail => 'Settlement email';
+
+  @override
+  String get poSellerPhone => 'Phone';
+
+  @override
+  String get poSellerSubmit => 'Register';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Seller status: $status';
+  }
 
   @override
   String get pvManage => 'Consent settings';

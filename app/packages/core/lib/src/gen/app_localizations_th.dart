@@ -1911,6 +1911,14 @@ class TTh extends T {
   String get err_invalid_capacity => 'กรุณากรอกความจุที่ถูกต้อง';
 
   @override
+  String get err_seller_declined =>
+      'Toss ไม่อนุมัติการลงทะเบียนผู้ขาย กรุณาตรวจสอบข้อมูลธุรกิจ';
+
+  @override
+  String get err_payout_account_unverified =>
+      'พาร์ทเนอร์นี้ยังไม่มีบัญชีรับเงินที่ยืนยันแล้ว กรุณายืนยันบัญชีก่อน';
+
+  @override
   String get fFinance => 'การเงิน';
 
   @override
@@ -2908,6 +2916,45 @@ class TTh extends T {
 
   @override
   String get poRevealNote => 'การดูรายละเอียดบัญชีจะถูกบันทึกไว้';
+
+  @override
+  String get poSellerAction => 'ลงทะเบียนผู้ขาย';
+
+  @override
+  String get poSellerTitle => 'ลงทะเบียนเป็นผู้ขาย Toss';
+
+  @override
+  String get poSellerHint =>
+      'ใช้บัญชีรับเงินที่ยืนยันแล้วของพาร์ทเนอร์ กรอกเฉพาะข้อมูลธุรกิจ';
+
+  @override
+  String get poSellerIndividual => 'บุคคลธรรมดา';
+
+  @override
+  String get poSellerCompany => 'ธุรกิจ';
+
+  @override
+  String get poSellerName => 'ชื่อ';
+
+  @override
+  String get poSellerRepresentative => 'ชื่อผู้แทน';
+
+  @override
+  String get poSellerRegNo => 'เลขทะเบียนธุรกิจ (10 หลัก)';
+
+  @override
+  String get poSellerEmail => 'อีเมลสำหรับการชำระ';
+
+  @override
+  String get poSellerPhone => 'โทรศัพท์';
+
+  @override
+  String get poSellerSubmit => 'ลงทะเบียน';
+
+  @override
+  String poSellerDone(String status) {
+    return 'สถานะผู้ขาย: $status';
+  }
 
   @override
   String get pvManage => 'จัดการความยินยอม';

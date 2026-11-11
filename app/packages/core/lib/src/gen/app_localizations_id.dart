@@ -1926,6 +1926,14 @@ class TId extends T {
   String get err_invalid_capacity => 'Masukkan kapasitas yang valid.';
 
   @override
+  String get err_seller_declined =>
+      'Toss tidak menyetujui pendaftaran penjual. Periksa data usaha.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Partner ini belum punya rekening pencairan yang diverifikasi. Verifikasi rekening dulu.';
+
+  @override
   String get fFinance => 'Keuangan';
 
   @override
@@ -2926,6 +2934,45 @@ class TId extends T {
 
   @override
   String get poRevealNote => 'Melihat detail rekening dicatat';
+
+  @override
+  String get poSellerAction => 'Daftar penjual';
+
+  @override
+  String get poSellerTitle => 'Daftar sebagai penjual Toss';
+
+  @override
+  String get poSellerHint =>
+      'Memakai rekening pencairan partner yang sudah diverifikasi. Isi data usaha saja.';
+
+  @override
+  String get poSellerIndividual => 'Perorangan';
+
+  @override
+  String get poSellerCompany => 'Usaha';
+
+  @override
+  String get poSellerName => 'Nama';
+
+  @override
+  String get poSellerRepresentative => 'Nama perwakilan';
+
+  @override
+  String get poSellerRegNo => 'No. registrasi usaha (10 digit)';
+
+  @override
+  String get poSellerEmail => 'Email penyelesaian';
+
+  @override
+  String get poSellerPhone => 'Telepon';
+
+  @override
+  String get poSellerSubmit => 'Daftarkan';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Status penjual: $status';
+  }
 
   @override
   String get pvManage => 'Pengaturan persetujuan';

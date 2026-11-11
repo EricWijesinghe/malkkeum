@@ -1921,6 +1921,14 @@ class TKm extends T {
   String get err_invalid_capacity => 'បញ្ចូលចំណុះត្រឹមត្រូវ។';
 
   @override
+  String get err_seller_declined =>
+      'Toss មិនបានអនុម័តការចុះឈ្មោះអ្នកលក់ទេ។ សូមពិនិត្យព័ត៌មានអាជីវកម្ម។';
+
+  @override
+  String get err_payout_account_unverified =>
+      'ដៃគូនេះមិនទាន់មានគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់ទេ។ សូមផ្ទៀងផ្ទាត់គណនីជាមុនសិន។';
+
+  @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
 
   @override
@@ -2920,6 +2928,45 @@ class TKm extends T {
 
   @override
   String get poRevealNote => 'ការមើលព័ត៌មានគណនីត្រូវបានកត់ត្រា';
+
+  @override
+  String get poSellerAction => 'ចុះឈ្មោះអ្នកលក់';
+
+  @override
+  String get poSellerTitle => 'ចុះឈ្មោះជាអ្នកលក់ Toss';
+
+  @override
+  String get poSellerHint =>
+      'ប្រើគណនីទទួលប្រាក់ដែលបានផ្ទៀងផ្ទាត់របស់ដៃគូ។ បញ្ចូលតែព័ត៌មានអាជីវកម្ម។';
+
+  @override
+  String get poSellerIndividual => 'បុគ្គល';
+
+  @override
+  String get poSellerCompany => 'អាជីវកម្ម';
+
+  @override
+  String get poSellerName => 'ឈ្មោះ';
+
+  @override
+  String get poSellerRepresentative => 'ឈ្មោះតំណាង';
+
+  @override
+  String get poSellerRegNo => 'លេខចុះបញ្ជីអាជីវកម្ម (ខ្ទង់ 10)';
+
+  @override
+  String get poSellerEmail => 'អ៊ីមែលសម្រាប់ការបោះប្រាក់';
+
+  @override
+  String get poSellerPhone => 'លេខទូរស័ព្ទ';
+
+  @override
+  String get poSellerSubmit => 'ចុះឈ្មោះ';
+
+  @override
+  String poSellerDone(String status) {
+    return 'ស្ថានភាពអ្នកលក់៖ $status';
+  }
 
   @override
   String get pvManage => 'ការគ្រប់គ្រងការយល់ព្រម';
