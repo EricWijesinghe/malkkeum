@@ -4,7 +4,7 @@
 use super::Providers;
 use crate::error::{ApiError, ApiResult};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
 use serde_json::Value;
 use std::{
     sync::Mutex,
@@ -13,8 +13,11 @@ use std::{
 
 const APPLE_ISS: &str = "https://appleid.apple.com";
 const APPLE_KEYS_URL: &str = "https://appleid.apple.com/auth/keys";
-const APPLE_KEYS_TTL: Duration = Duration::from_secs(6 * 60 * 60);
+const GOOGLE_JWKS_URL: &str = "https://www.googleapis.com/oauth2/v3/certs";
 const GOOGLE_ISSUERS: [&str; 2] = ["accounts.google.com", "https://accounts.google.com"];
+const KEYS_TTL: Duration = Duration::from_secs(6 * 60 * 60);
+/// An unknown `kid` may refetch the key set, but no more often than this (bogus kids must not hammer the provider).
+const UNKNOWN_KID_REFETCH: Duration = Duration::from_secs(5 * 60);
 const DEV_ID_MAX: usize = 128;
 
 pub struct SocialUser {
@@ -22,7 +25,7 @@ pub struct SocialUser {
     pub email: Option<String>,
 }
 
-pub async fn verify(p: &Providers, provider: &str, token: &str) -> ApiResult<SocialUser> {
+pub async fn verify(p: &Providers, provider: &str, token: &str, nonce: Option<&str>) -> ApiResult<SocialUser> {
     if p.cfg().dev_mode
         && let Some(id) = token.strip_prefix("dev:")
     {
@@ -37,8 +40,8 @@ pub async fn verify(p: &Providers, provider: &str, token: &str) -> ApiResult<Soc
     match provider {
         "kakao" => kakao(p, token).await,
         "naver" => naver(p, token).await,
-        "google" => google(p, token).await,
-        "apple" => apple(p, token).await,
+        "google" => google(p, token, nonce).await,
+        "apple" => apple(p, token, nonce).await,
         _ => Err(ApiError::BadRequest("invalid_provider")),
     }
 }
@@ -46,6 +49,16 @@ pub async fn verify(p: &Providers, provider: &str, token: &str) -> ApiResult<Soc
 /// Shared by the id-token providers: issuer, audience (our client id), and expiry all must hold.
 pub fn id_claims_ok(issuer_ok: bool, audience: &str, client_ids: &[String], exp: i64, now: i64) -> bool {
     issuer_ok && exp > now && client_ids.iter().any(|c| c == audience)
+}
+
+/// Replay check. A token that carries a nonce must be presented with the raw nonce the app generated. Providers
+/// store `sha256(raw)` in the token (the raw value when the app sent it unhashed). A token without a nonce passes.
+pub fn nonce_ok(token_nonce: Option<&str>, raw: Option<&str>) -> bool {
+    match (token_nonce, raw) {
+        (Some(t), Some(r)) => t == r || t == crate::auth::sha256_hex(r.as_bytes()),
+        (Some(_), None) => false,
+        (None, _) => true,
+    }
 }
 
 fn json_text(v: &Value) -> String {
@@ -162,61 +175,6 @@ fn naver_profile(v: &Value) -> ApiResult<SocialUser> {
     })
 }
 
-#[derive(Deserialize)]
-struct TokenInfo {
-    iss: String,
-    aud: String,
-    sub: String,
-    #[serde(deserialize_with = "flex_i64")]
-    exp: i64,
-    email: Option<String>,
-}
-
-/// Google's tokeninfo returns some numeric claims as strings.
-fn flex_i64<'de, D: Deserializer<'de>>(d: D) -> Result<i64, D::Error> {
-    #[derive(Deserialize)]
-    #[serde(untagged)]
-    enum Num {
-        Int(i64),
-        Text(String),
-    }
-    match Num::deserialize(d)? {
-        Num::Int(n) => Ok(n),
-        Num::Text(s) => s.parse().map_err(serde::de::Error::custom),
-    }
-}
-
-async fn google(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    let integ = p.integ();
-    let ids = &integ.google_client_ids;
-    if ids.is_empty() {
-        return Err(ApiError::Unavailable("provider_not_configured"));
-    }
-    // Google checks the signature for us; we check who it was issued to and when it expires.
-    let resp = p
-        .http()
-        .get("https://oauth2.googleapis.com/tokeninfo")
-        .query(&[("id_token", token)])
-        .send()
-        .await
-        .map_err(unreachable_provider)?;
-    if resp.status().is_server_error() {
-        return Err(ApiError::Unavailable("provider_unreachable"));
-    }
-    if !resp.status().is_success() {
-        return Err(ApiError::Unauthorized);
-    }
-    let info: TokenInfo = resp.json().await.map_err(unreachable_provider)?;
-    let issuer_ok = GOOGLE_ISSUERS.contains(&info.iss.as_str());
-    if !id_claims_ok(issuer_ok, &info.aud, ids, info.exp, chrono::Utc::now().timestamp()) {
-        return Err(ApiError::Unauthorized);
-    }
-    Ok(SocialUser {
-        provider_user_id: info.sub,
-        email: info.email,
-    })
-}
-
 #[derive(Deserialize, Clone)]
 struct Jwk {
     kid: String,
@@ -229,72 +187,94 @@ struct Jwks {
     keys: Vec<Jwk>,
 }
 
+/// Claims shared by Apple and Google id tokens. `nonce` is present only when the app requested one.
 #[derive(Deserialize)]
-struct AppleClaims {
+struct IdClaims {
     iss: String,
     aud: String,
     sub: String,
     exp: i64,
     email: Option<String>,
+    nonce: Option<String>,
 }
 
-/// Apple's signing keys, cached for a few hours (process-wide).
-static APPLE_KEYS: Mutex<Option<(Instant, Vec<Jwk>)>> = Mutex::new(None);
-
-fn cached_apple_keys() -> Option<Vec<Jwk>> {
-    let guard = APPLE_KEYS.lock().ok()?;
-    let (at, keys) = guard.as_ref()?;
-    (at.elapsed() < APPLE_KEYS_TTL).then(|| keys.clone())
+/// One provider's signing keys, cached process-wide.
+pub struct KeyCache {
+    url: &'static str,
+    slot: Mutex<Option<(Instant, Vec<Jwk>)>>,
 }
 
-async fn apple_keys(p: &Providers, force: bool) -> ApiResult<Vec<Jwk>> {
-    if !force && let Some(keys) = cached_apple_keys() {
-        return Ok(keys);
+static APPLE_KEYS: KeyCache = KeyCache::new(APPLE_KEYS_URL);
+static GOOGLE_KEYS: KeyCache = KeyCache::new(GOOGLE_JWKS_URL);
+
+/// Whether a cached key set may answer. A known kid is served for the full TTL; an unknown kid is served from the
+/// cache (and refused) until the set is old enough to refetch, so a rotated key is picked up within minutes.
+pub fn use_cache(age: Duration, kid_known: bool) -> bool {
+    if kid_known { age < KEYS_TTL } else { age < UNKNOWN_KID_REFETCH }
+}
+
+impl KeyCache {
+    const fn new(url: &'static str) -> Self {
+        Self { url, slot: Mutex::new(None) }
     }
-    let jwks: Jwks = p
-        .http()
-        .get(APPLE_KEYS_URL)
-        .send()
-        .await
-        .map_err(unreachable_provider)?
-        .json()
-        .await
-        .map_err(unreachable_provider)?;
-    if let Ok(mut guard) = APPLE_KEYS.lock() {
-        *guard = Some((Instant::now(), jwks.keys.clone()));
+
+    fn stored(&self) -> Option<(Instant, Vec<Jwk>)> {
+        self.slot.lock().ok()?.clone()
     }
-    Ok(jwks.keys)
+
+    async fn fetch(&self, p: &Providers) -> ApiResult<Vec<Jwk>> {
+        let jwks: Jwks = p.http().get(self.url).send().await.map_err(unreachable_provider)?.json().await.map_err(unreachable_provider)?;
+        if let Ok(mut guard) = self.slot.lock() {
+            *guard = Some((Instant::now(), jwks.keys.clone()));
+        }
+        Ok(jwks.keys)
+    }
 }
 
-async fn apple(p: &Providers, token: &str) -> ApiResult<SocialUser> {
-    let integ = p.integ();
-    let ids = &integ.apple_client_ids;
+/// The key for `kid`: from cache when `use_cache` allows, otherwise refetched from the provider.
+async fn signing_key(p: &Providers, cache: &KeyCache, kid: &str) -> ApiResult<Jwk> {
+    if let Some((at, keys)) = cache.stored() {
+        let known = keys.iter().find(|k| k.kid == kid);
+        if use_cache(at.elapsed(), known.is_some()) {
+            return known.cloned().ok_or(ApiError::Unauthorized);
+        }
+    }
+    cache.fetch(p).await?.into_iter().find(|k| k.kid == kid).ok_or(ApiError::Unauthorized)
+}
+
+/// id-token check shared by Apple and Google: RS256 signature against the provider's keys, then issuer, audience
+/// (one of our client ids), expiry, and nonce.
+async fn verify_id_token(p: &Providers, cache: &KeyCache, token: &str, issuers: &[&str], ids: &[String], nonce: Option<&str>) -> ApiResult<SocialUser> {
     if ids.is_empty() {
         return Err(ApiError::Unavailable("provider_not_configured"));
     }
-    let header = decode_header(token).map_err(|_| ApiError::Unauthorized)?;
-    let kid = header.kid.ok_or(ApiError::Unauthorized)?;
-    let mut keys = apple_keys(p, false).await?;
-    if !keys.iter().any(|k| k.kid == kid) {
-        // Apple rotated its keys since we cached them.
-        keys = apple_keys(p, true).await?;
-    }
-    let jwk = keys.iter().find(|k| k.kid == kid).ok_or(ApiError::Unauthorized)?;
+    let kid = decode_header(token).map_err(|_| ApiError::Unauthorized)?.kid.ok_or(ApiError::Unauthorized)?;
+    let jwk = signing_key(p, cache, &kid).await?;
     let key = DecodingKey::from_rsa_components(&jwk.n, &jwk.e).map_err(|_| ApiError::Unauthorized)?;
-    // Signature and algorithm (RS256 only) are checked by jsonwebtoken; claims are checked below.
+    // Signature and algorithm (RS256 only) are checked by jsonwebtoken; the claims below are checked here.
     let mut v = Validation::new(Algorithm::RS256);
     v.validate_exp = false;
     v.validate_aud = false;
     v.required_spec_claims.clear();
-    let c = decode::<AppleClaims>(token, &key, &v).map_err(|_| ApiError::Unauthorized)?.claims;
-    let issuer_ok = c.iss == APPLE_ISS;
-    if !id_claims_ok(issuer_ok, &c.aud, ids, c.exp, chrono::Utc::now().timestamp()) {
+    let c = decode::<IdClaims>(token, &key, &v).map_err(|_| ApiError::Unauthorized)?.claims;
+    let issuer_ok = issuers.contains(&c.iss.as_str());
+    if !id_claims_ok(issuer_ok, &c.aud, ids, c.exp, chrono::Utc::now().timestamp()) || !nonce_ok(c.nonce.as_deref(), nonce) {
         return Err(ApiError::Unauthorized);
     }
     Ok(SocialUser {
         provider_user_id: c.sub,
         email: c.email,
     })
+}
+
+async fn google(p: &Providers, token: &str, nonce: Option<&str>) -> ApiResult<SocialUser> {
+    let integ = p.integ();
+    verify_id_token(p, &GOOGLE_KEYS, token, &GOOGLE_ISSUERS, &integ.google_client_ids, nonce).await
+}
+
+async fn apple(p: &Providers, token: &str, nonce: Option<&str>) -> ApiResult<SocialUser> {
+    let integ = p.integ();
+    verify_id_token(p, &APPLE_KEYS, token, &[APPLE_ISS], &integ.apple_client_ids, nonce).await
 }
 
 #[cfg(test)]
@@ -321,10 +301,30 @@ mod tests {
     }
 
     #[test]
-    fn google_numeric_claims_accept_strings() {
-        let json = r#"{"iss":"accounts.google.com","aud":"x","sub":"1","exp":"1800000060"}"#;
-        let info: TokenInfo = serde_json::from_str(json).expect("tokeninfo shape");
-        assert_eq!(info.exp, NOW + 60);
+    fn nonce_must_match_when_the_token_carries_one() {
+        let raw = "rawnonce123";
+        let hashed = crate::auth::sha256_hex(raw.as_bytes());
+        assert!(nonce_ok(Some(&hashed), Some(raw)), "sha256 of the raw nonce");
+        assert!(nonce_ok(Some(raw), Some(raw)), "unhashed nonce sent to the provider");
+        assert!(!nonce_ok(Some(&hashed), Some("other")), "a different nonce is a replay");
+        assert!(!nonce_ok(Some(&hashed), None), "token has a nonce but the app sent none");
+        assert!(nonce_ok(None, None), "no nonce anywhere");
+        assert!(nonce_ok(None, Some(raw)), "client nonce the token does not echo is not checkable");
+    }
+
+    #[test]
+    fn known_kid_is_served_from_cache_for_the_ttl_unknown_kid_only_after_the_short_wait() {
+        assert!(use_cache(Duration::from_secs(60), true));
+        assert!(!use_cache(KEYS_TTL, true), "stale known key set refetches");
+        assert!(use_cache(Duration::from_secs(60), false), "unknown kid inside the wait does not refetch");
+        assert!(!use_cache(UNKNOWN_KID_REFETCH, false), "unknown kid after the wait refetches (rotation)");
+    }
+
+    #[test]
+    fn provider_ids_accept_numbers_and_strings() {
+        assert_eq!(json_text(&serde_json::json!(42)), "42");
+        assert_eq!(json_text(&serde_json::json!("abc")), "abc");
+        assert_eq!(json_text(&serde_json::json!(null)), "");
     }
 
     #[test]
@@ -354,12 +354,5 @@ mod tests {
         assert_eq!(user.provider_user_id, "12345");
         assert_eq!(user.email.as_deref(), Some("a@example.com"));
         assert!(naver_profile(&serde_json::json!({"response": {}})).is_err());
-    }
-
-    #[test]
-    fn provider_ids_accept_numbers_and_strings() {
-        assert_eq!(json_text(&serde_json::json!(42)), "42");
-        assert_eq!(json_text(&serde_json::json!("abc")), "abc");
-        assert_eq!(json_text(&serde_json::json!(null)), "");
     }
 }
