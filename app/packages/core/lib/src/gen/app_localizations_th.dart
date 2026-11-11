@@ -492,6 +492,29 @@ class TTh extends T {
   String get cFormula => 'สูตรคำนวณใบเสนอราคา';
 
   @override
+  String get cTabCancelPolicy => 'นโยบายการยกเลิก';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'นี่คือค่าเริ่มต้น กรุณาตรวจสอบและบันทึกเพื่อยืนยัน';
+
+  @override
+  String get cPolicyDaysBefore => 'ก่อนวันเข้าบริการกี่วัน (ตั้งแต่)';
+
+  @override
+  String get cPolicyPercent => 'ค่าธรรมเนียม % (ว่าง = ยกเลิกในแอปไม่ได้)';
+
+  @override
+  String get cPolicyMinFee => 'ค่าธรรมเนียมขั้นต่ำ (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'เลื่อนนัดได้ (ก่อนวันเข้าบริการกี่วัน)';
+
+  @override
+  String get cPolicyHint =>
+      'มีผลทันทีบนหน้าจอยกเลิกของแอปลูกค้า ข้อกำหนดจะอัปเดตในบิลด์กฎหมายครั้งถัดไป';
+
+  @override
   String get f_base_studio => 'ฐาน: สตูดิโอ';
 
   @override
@@ -736,7 +759,7 @@ class TTh extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'ภายใน 2 วันก่อนวันเข้าบริการ กรุณายกเลิกผ่านทีมงานของเรา';
+      'ไม่สามารถยกเลิกการจองนี้ในแอปได้แล้ว กรุณาติดต่อทีมงานของเรา';
 
   @override
   String get err_address_required => 'กรุณาเพิ่มที่อยู่สำหรับเข้าบริการ';
@@ -1326,6 +1349,16 @@ class TTh extends T {
   String get cancelKeep => 'ไม่ยกเลิก';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'หากยกเลิกตอนนี้ จะมีค่าธรรมเนียม $fee และคืนเงิน $refund';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'ยอมรับค่าธรรมเนียม $fee และยกเลิก';
+  }
+
+  @override
   String get cancelled => 'ยกเลิกการจองแล้ว';
 
   @override
@@ -1736,6 +1769,49 @@ class TTh extends T {
 
   @override
   String get summaryDate => 'วันเข้าบริการ';
+
+  @override
+  String get cpTitle => 'นโยบายการยกเลิก';
+
+  @override
+  String cpWhen(String days) {
+    return 'ก่อนวันเข้าบริการ $days วันขึ้นไป';
+  }
+
+  @override
+  String get cpWhenSameDay => 'ในวันเข้าบริการ';
+
+  @override
+  String get cpFree => 'คืนเงินเต็มจำนวน';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ค่าธรรมเนียม $percent% ($fee) คืนเงิน $refund';
+  }
+
+  @override
+  String get cpClosed => 'ยกเลิกในแอปไม่ได้ (ทีมงานตรวจสอบ)';
+
+  @override
+  String get hhTitle => 'ข้อมูลครัวเรือน';
+
+  @override
+  String get hhAddPet => 'เพิ่มสัตว์เลี้ยง';
+
+  @override
+  String get hhPetCount => 'จำนวน';
+
+  @override
+  String get hhFloorLabel => 'ชั้น (ใส่ค่าลบสำหรับชั้นใต้ดิน)';
+
+  @override
+  String get hhElevator => 'มีลิฟต์';
+
+  @override
+  String get hhNotes => 'บันทึก';
+
+  @override
+  String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
 
   @override
   String get themeTitle => 'ธีม';
@@ -2643,6 +2719,47 @@ class TTh extends T {
 
   @override
   String get pCustomerRequests => 'ความต้องการของลูกค้า';
+
+  @override
+  String get pHousehold => 'ข้อมูลครัวเรือน';
+
+  @override
+  String get pPets => 'สัตว์เลี้ยง';
+
+  @override
+  String get pPetDog => 'สุนัข';
+
+  @override
+  String get pPetCat => 'แมว';
+
+  @override
+  String get pPetBird => 'นก';
+
+  @override
+  String get pPetFish => 'ปลา';
+
+  @override
+  String get pPetOther => 'สัตว์อื่น';
+
+  @override
+  String get pAllergies => 'อาการแพ้และความไว';
+
+  @override
+  String get pPreferredProducts => 'ผลิตภัณฑ์ที่ต้องการ';
+
+  @override
+  String get pParking => 'ที่จอดรถ';
+
+  @override
+  String pFloor(String floor) {
+    return 'ชั้น $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'มีลิฟต์';
+
+  @override
+  String get pElevatorNo => 'ไม่มีลิฟต์';
 
   @override
   String get pTeamMemo => 'บันทึกของทีม (ลูกค้าจะไม่เห็น)';

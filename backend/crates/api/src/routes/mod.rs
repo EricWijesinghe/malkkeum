@@ -3,7 +3,7 @@ mod admin;
 mod admin_content;
 mod auth;
 mod booking_core;
-mod bookings;
+pub(crate) mod bookings;
 pub mod cases;
 mod catalog;
 pub(crate) mod chat;
@@ -11,10 +11,9 @@ mod cash_receipts;
 mod checkout_policy;
 mod tax_invoices;
 pub(crate) mod config;
-pub(crate) mod growth;
 pub(crate) mod checkouts;
 mod finance;
-pub(crate) mod payouts;
+pub(crate) mod growth;
 pub(crate) mod me;
 mod member;
 mod ops;
@@ -22,6 +21,7 @@ mod partner;
 mod partner_jobs;
 pub mod site;
 pub(crate) mod payments;
+pub(crate) mod payouts;
 pub mod setup;
 pub mod uploads;
 mod staff_mfa;
@@ -69,6 +69,7 @@ pub fn router(state: AppState) -> Router {
         .merge(catalog::routes())
         .merge(bookings::routes())
         .merge(cases::customer_routes())
+        .merge(bookings::public_routes())
         .merge(chat::routes())
         .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())

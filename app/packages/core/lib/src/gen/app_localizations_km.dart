@@ -493,6 +493,29 @@ class TKm extends T {
   String get cFormula => 'រូបមន្តគណនាតម្លៃ';
 
   @override
+  String get cTabCancelPolicy => 'គោលនយោបាយបោះបង់';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'នេះជាការកំណត់លំនាំដើម។ សូមពិនិត្យ និងរក្សាទុកដើម្បីបញ្ជាក់។';
+
+  @override
+  String get cPolicyDaysBefore => 'ថ្ងៃមុនការមក (ចាប់ផ្តើម)';
+
+  @override
+  String get cPolicyPercent => 'ថ្លៃ % (ទុកទទេ = បោះបង់ក្នុងកម្មវិធីមិនបាន)';
+
+  @override
+  String get cPolicyMinFee => 'ថ្លៃអប្បបរមា (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'អាចផ្លាស់ប្តូរកាលវិភាគ (ចាប់ពីថ្ងៃមុន)';
+
+  @override
+  String get cPolicyHint =>
+      'អនុវត្តភ្លាមៗនៅអេក្រង់បោះបង់របស់កម្មវិធីអតិថិជន។ លក្ខខណ្ឌនឹងកែប្រែនៅការកសាងបន្ទាប់។';
+
+  @override
   String get f_base_studio => 'មូលដ្ឋាន៖ ស្ទូឌីយ៉ូ';
 
   @override
@@ -740,7 +763,7 @@ class TKm extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក អាចបោះបង់តាមរយៈក្រុមការងាររបស់យើងប៉ុណ្ណោះ';
+      'ការកក់នេះមិនអាចបោះបង់នៅក្នុងកម្មវិធីទៀតទេ។ សូមទាក់ទងក្រុមការងារយើង';
 
   @override
   String get err_address_required => 'សូមបញ្ចូលអាសយដ្ឋានសម្រាប់ការមក';
@@ -1332,6 +1355,16 @@ class TKm extends T {
   String get cancelKeep => 'រក្សាទុក';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'ប្រសិនបើបោះបង់ឥឡូវនេះ គិតថ្លៃ $fee ហើយនឹងបង្វិលប្រាក់ $refund វិញ។';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'ទទួលយកថ្លៃ $fee ហើយបោះបង់';
+  }
+
+  @override
   String get cancelled => 'បានបោះបង់ការកក់';
 
   @override
@@ -1743,6 +1776,50 @@ class TKm extends T {
 
   @override
   String get summaryDate => 'ការមក';
+
+  @override
+  String get cpTitle => 'គោលនយោបាយបោះបង់';
+
+  @override
+  String cpWhen(String days) {
+    return 'ច្រើនជាង ឬស្មើ $days ថ្ងៃមុនការមក';
+  }
+
+  @override
+  String get cpWhenSameDay => 'នៅថ្ងៃមក';
+
+  @override
+  String get cpFree => 'បង្វិលប្រាក់ពេញ';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ថ្លៃ $percent% ($fee) បង្វិលប្រាក់ $refund';
+  }
+
+  @override
+  String get cpClosed => 'បោះបង់ក្នុងកម្មវិធីមិនបាន (ក្រុមការងារពិនិត្យ)';
+
+  @override
+  String get hhTitle => 'ព័ត៌មានគ្រួសារ';
+
+  @override
+  String get hhAddPet => 'បន្ថែមសត្វចិញ្ចឹម';
+
+  @override
+  String get hhPetCount => 'ចំនួន';
+
+  @override
+  String get hhFloorLabel => 'ជាន់ (អវិជ្ជមានសម្រាប់ដីក្រោម)';
+
+  @override
+  String get hhElevator => 'មានជណ្តើរយន្ត';
+
+  @override
+  String get hhNotes => 'កំណត់ចំណាំ';
+
+  @override
+  String get hhHint =>
+      'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
 
   @override
   String get themeTitle => 'ធីម';
@@ -2654,6 +2731,47 @@ class TKm extends T {
 
   @override
   String get pCustomerRequests => 'សំណើរបស់អតិថិជន';
+
+  @override
+  String get pHousehold => 'ព័ត៌មានគ្រួសារ';
+
+  @override
+  String get pPets => 'សត្វចិញ្ចឹម';
+
+  @override
+  String get pPetDog => 'ឆ្កែ';
+
+  @override
+  String get pPetCat => 'ឆ្មា';
+
+  @override
+  String get pPetBird => 'សត្វស្លាប';
+
+  @override
+  String get pPetFish => 'ត្រី';
+
+  @override
+  String get pPetOther => 'សត្វផ្សេងទៀត';
+
+  @override
+  String get pAllergies => 'អាឡែហ្ស៊ី និងការប៉ះពាល់';
+
+  @override
+  String get pPreferredProducts => 'ផលិតផលដែលចូលចិត្ត';
+
+  @override
+  String get pParking => 'កន្លែងចត';
+
+  @override
+  String pFloor(String floor) {
+    return 'ជាន់ទី $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'មានជណ្តើរយន្ត';
+
+  @override
+  String get pElevatorNo => 'គ្មានជណ្តើរយន្ត';
 
   @override
   String get pTeamMemo => 'កំណត់ចំណាំក្រុម (អតិថិជនមិនអាចមើលឃើញ)';

@@ -498,6 +498,30 @@ class TNe extends T {
   String get cFormula => 'मूल्य गणना सूत्र';
 
   @override
+  String get cTabCancelPolicy => 'रद्द नीति';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'यो पूर्वनिर्धारित सेटिङ हो। जाँचेर सुरक्षित गरी पुष्टि गर्नुहोस्।';
+
+  @override
+  String get cPolicyDaysBefore => 'भ्रमणभन्दा कति दिन अगाडिदेखि';
+
+  @override
+  String get cPolicyPercent => 'शुल्क % (खाली = एपमा रद्द गर्न मिल्दैन)';
+
+  @override
+  String get cPolicyMinFee => 'न्यूनतम शुल्क (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'तालिका परिवर्तन गर्न मिल्ने (भ्रमणभन्दा कति दिन अगाडि)';
+
+  @override
+  String get cPolicyHint =>
+      'ग्राहक एपको रद्द स्क्रिनमा तुरुन्तै लागू हुन्छ। सर्तहरू अर्को कानुनी बिल्डमा अद्यावधिक हुनेछन्।';
+
+  @override
   String get f_base_studio => 'आधार: स्टुडियो';
 
   @override
@@ -744,7 +768,7 @@ class TNe extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'भ्रमणको २ दिन अगादेखि हाम्रो परामर्श टोलीमार्फत मात्र रद्द गर्न सकिन्छ';
+      'यो बुकिङ अब एपबाट रद्द गर्न सकिँदैन। कृपया हाम्रो टोलीसँग सम्पर्क गर्नुहोस्';
 
   @override
   String get err_address_required => 'भ्रमण ठेगाना थप्नुहोस्';
@@ -1332,6 +1356,16 @@ class TNe extends T {
   String get cancelKeep => 'राख्नुहोस्';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'अहिले रद्द गर्दा $fee शुल्क लाग्छ र $refund फिर्ता हुनेछ।';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee शुल्क स्वीकार गरी रद्द गर्नुहोस्';
+  }
+
+  @override
   String get cancelled => 'बुकिङ रद्द भयो';
 
   @override
@@ -1742,6 +1776,50 @@ class TNe extends T {
 
   @override
   String get summaryDate => 'भ्रमण मिति';
+
+  @override
+  String get cpTitle => 'रद्द नीति';
+
+  @override
+  String cpWhen(String days) {
+    return 'भ्रमणभन्दा $days दिन वा सो भन्दा अगाडि';
+  }
+
+  @override
+  String get cpWhenSameDay => 'भ्रमणको दिन';
+
+  @override
+  String get cpFree => 'पूरा फिर्ता';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% शुल्क ($fee), फिर्ता $refund';
+  }
+
+  @override
+  String get cpClosed => 'एपमा रद्द गर्न मिल्दैन (टोलीले हेर्छ)';
+
+  @override
+  String get hhTitle => 'घरपरिवारको जानकारी';
+
+  @override
+  String get hhAddPet => 'घरपालुवा जनावर थप्नुहोस्';
+
+  @override
+  String get hhPetCount => 'संख्या';
+
+  @override
+  String get hhFloorLabel => 'तला (तहखानाका लागि ऋणात्मक)';
+
+  @override
+  String get hhElevator => 'लिफ्ट छ';
+
+  @override
+  String get hhNotes => 'टिप्पणी';
+
+  @override
+  String get hhHint =>
+      'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
 
   @override
   String get themeTitle => 'थिम';
@@ -2654,6 +2732,47 @@ class TNe extends T {
 
   @override
   String get pCustomerRequests => 'ग्राहकका अनुरोध';
+
+  @override
+  String get pHousehold => 'घरपरिवारको जानकारी';
+
+  @override
+  String get pPets => 'घरपालुवा जनावर';
+
+  @override
+  String get pPetDog => 'कुकुर';
+
+  @override
+  String get pPetCat => 'बिरालो';
+
+  @override
+  String get pPetBird => 'चरा';
+
+  @override
+  String get pPetFish => 'माछा';
+
+  @override
+  String get pPetOther => 'अन्य जनावर';
+
+  @override
+  String get pAllergies => 'एलर्जी र संवेदनशीलता';
+
+  @override
+  String get pPreferredProducts => 'मनपर्ने उत्पादन';
+
+  @override
+  String get pParking => 'पार्किङ';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor तला';
+  }
+
+  @override
+  String get pElevatorYes => 'लिफ्ट छ';
+
+  @override
+  String get pElevatorNo => 'लिफ्ट छैन';
 
   @override
   String get pTeamMemo => 'टोली नोट (ग्राहकले देख्दैनन्)';

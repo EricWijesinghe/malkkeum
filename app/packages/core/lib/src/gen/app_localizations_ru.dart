@@ -496,6 +496,31 @@ class TRu extends T {
   String get cFormula => 'Формула расчёта';
 
   @override
+  String get cTabCancelPolicy => 'Политика отмены';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Это значение по умолчанию. Проверьте и сохраните, чтобы подтвердить.';
+
+  @override
+  String get cPolicyDaysBefore => 'Дней до визита (от)';
+
+  @override
+  String get cPolicyPercent =>
+      'Комиссия % (пусто = отмена в приложении недоступна)';
+
+  @override
+  String get cPolicyMinFee => 'Минимальная комиссия (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Перенос разрешён (за сколько дней до визита)';
+
+  @override
+  String get cPolicyHint =>
+      'Сразу применяется на экране отмены в приложении клиента. Условия обновятся в следующей сборке.';
+
+  @override
   String get f_base_studio => 'База: студия';
 
   @override
@@ -742,7 +767,7 @@ class TRu extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Отменить бронь за 2 дня до визита можно только через нашу команду';
+      'Эту бронь уже нельзя отменить в приложении. Свяжитесь с нашей командой';
 
   @override
   String get err_address_required => 'Добавьте адрес визита';
@@ -1332,6 +1357,16 @@ class TRu extends T {
   String get cancelKeep => 'Оставить';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Если отменить сейчас, будет удержано $fee, а $refund вернётся вам.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Принять комиссию $fee и отменить';
+  }
+
+  @override
   String get cancelled => 'Бронь отменена';
 
   @override
@@ -1744,6 +1779,49 @@ class TRu extends T {
 
   @override
   String get summaryDate => 'Визит';
+
+  @override
+  String get cpTitle => 'Политика отмены';
+
+  @override
+  String cpWhen(String days) {
+    return 'за $days и более дней до визита';
+  }
+
+  @override
+  String get cpWhenSameDay => 'В день визита';
+
+  @override
+  String get cpFree => 'Полный возврат';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Комиссия $percent% ($fee), возврат $refund';
+  }
+
+  @override
+  String get cpClosed => 'Отмена в приложении недоступна (проверка командой)';
+
+  @override
+  String get hhTitle => 'Данные о доме';
+
+  @override
+  String get hhAddPet => 'Добавить питомца';
+
+  @override
+  String get hhPetCount => 'Кол-во';
+
+  @override
+  String get hhFloorLabel => 'Этаж (для подвала — минус)';
+
+  @override
+  String get hhElevator => 'Есть лифт';
+
+  @override
+  String get hhNotes => 'Заметки';
+
+  @override
+  String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
 
   @override
   String get themeTitle => 'Тема';
@@ -2659,6 +2737,47 @@ class TRu extends T {
 
   @override
   String get pCustomerRequests => 'Пожелания клиента';
+
+  @override
+  String get pHousehold => 'Данные о доме';
+
+  @override
+  String get pPets => 'Домашние животные';
+
+  @override
+  String get pPetDog => 'Собака';
+
+  @override
+  String get pPetCat => 'Кошка';
+
+  @override
+  String get pPetBird => 'Птица';
+
+  @override
+  String get pPetFish => 'Рыба';
+
+  @override
+  String get pPetOther => 'Другое животное';
+
+  @override
+  String get pAllergies => 'Аллергия и чувствительность';
+
+  @override
+  String get pPreferredProducts => 'Предпочитаемые средства';
+
+  @override
+  String get pParking => 'Парковка';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor этаж';
+  }
+
+  @override
+  String get pElevatorYes => 'Есть лифт';
+
+  @override
+  String get pElevatorNo => 'Без лифта';
 
   @override
   String get pTeamMemo => 'Заметка для команды (клиент её не видит)';

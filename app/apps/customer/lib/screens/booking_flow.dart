@@ -6,6 +6,7 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
+import 'cancel_policy_card.dart';
 import 'chat.dart';
 import 'pay_flow.dart';
 import 'pay_method_picker.dart';
@@ -458,6 +459,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Align(alignment: Alignment.centerRight, child: Text(t.vatIncluded, style: context.text.labelSmall)),
           ]),
         ),
+        const SizedBox(height: Space.sm),
+        CancelPolicyCard(total: total),
         if (d.service.needsPreparation) ...[
           const SizedBox(height: Space.sm),
           AppCard(

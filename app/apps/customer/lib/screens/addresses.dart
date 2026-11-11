@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'household_editor.dart';
 
 class AddressesScreen extends StatelessWidget {
   const AddressesScreen({super.key});
@@ -68,6 +69,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   // Localized server message for the last failed search (shown inline; typed entry stays below).
   String? _searchError;
   List<AddressHit> _hits = const [];
+  // Household profile; the editor reports every change. Starts as the saved one so an untouched save keeps it.
+  late Json _household = widget.existing?.household ?? const {};
 
   @override
   void initState() {
@@ -131,6 +134,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
         'detail': _detail.text.trim(),
         'district_code': _district,
         'size_pyeong': int.parse(_size.text),
+        'household': _household,
       }, id: widget.existing?.id);
       if (!mounted) return;
       showToast(context, context.t.addressSaved);
@@ -238,6 +242,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
           decoration: deco(t.addressSize, null, t.addressSizeHelp),
           onChanged: (_) => setState(() {}),
         ),
+        const SizedBox(height: Space.lg),
+        HouseholdEditor(initial: widget.existing?.household ?? const {}, onChanged: (h) => _household = h),
       ]),
       bottomNavigationBar: BottomActionBar(child: PrimaryButton(label: t.save, busy: _busy, onPressed: _valid ? _save : null)),
     );

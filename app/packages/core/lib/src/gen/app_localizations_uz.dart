@@ -500,6 +500,31 @@ class TUz extends T {
   String get cFormula => 'Narx hisoblash formulasi';
 
   @override
+  String get cTabCancelPolicy => 'Bekor qilish siyosati';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Bu standart sozlama. Ko‘rib chiqing va tasdiqlash uchun saqlang.';
+
+  @override
+  String get cPolicyDaysBefore => 'Tashrifdan necha kun oldin (dan)';
+
+  @override
+  String get cPolicyPercent =>
+      'To‘lov % (bo‘sh = ilovada bekor qilib bo‘lmaydi)';
+
+  @override
+  String get cPolicyMinFee => 'Minimal to‘lov (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Qayta rejalashtirish mumkin (tashrifdan necha kun oldin)';
+
+  @override
+  String get cPolicyHint =>
+      'Mijoz ilovasidagi bekor qilish ekranida darhol qo‘llanadi. Shartlar keyingi huquqiy buildda yangilanadi.';
+
+  @override
   String get f_base_studio => 'Studiya asosiy narxi';
 
   @override
@@ -748,7 +773,7 @@ class TUz extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Tashrifga 2 kun qolganda bekor qilish faqat jamoamiz orqali mumkin';
+      'Bu bronni ilovada bekor qilib bo‘lmaydi. Iltimos, jamoamizga murojaat qiling';
 
   @override
   String get err_address_required => 'Tashrif manzilini kiriting';
@@ -1340,6 +1365,16 @@ class TUz extends T {
   String get cancelKeep => 'Qoldirish';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Hozir bekor qilsangiz $fee to‘lov olinadi va $refund qaytariladi.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee to‘lovga rozi bo‘lib bekor qilish';
+  }
+
+  @override
   String get cancelled => 'Bron bekor qilindi';
 
   @override
@@ -1752,6 +1787,50 @@ class TUz extends T {
 
   @override
   String get summaryDate => 'Tashrif';
+
+  @override
+  String get cpTitle => 'Bekor qilish siyosati';
+
+  @override
+  String cpWhen(String days) {
+    return 'Tashrifdan $days kun yoki undan oldin';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Tashrif kuni';
+
+  @override
+  String get cpFree => 'To‘liq qaytarish';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% to‘lov ($fee), qaytarish $refund';
+  }
+
+  @override
+  String get cpClosed => 'Ilovada bekor qilib bo‘lmaydi (jamoa ko‘rib chiqadi)';
+
+  @override
+  String get hhTitle => 'Uy ma’lumotlari';
+
+  @override
+  String get hhAddPet => 'Uy hayvonini qo‘shish';
+
+  @override
+  String get hhPetCount => 'Soni';
+
+  @override
+  String get hhFloorLabel => 'Qavat (yerto‘la uchun manfiy)';
+
+  @override
+  String get hhElevator => 'Lift bor';
+
+  @override
+  String get hhNotes => 'Eslatma';
+
+  @override
+  String get hhHint =>
+      'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
 
   @override
   String get themeTitle => 'Mavzu';
@@ -2672,6 +2751,47 @@ class TUz extends T {
 
   @override
   String get pCustomerRequests => 'Mijoz so\'rovlari';
+
+  @override
+  String get pHousehold => 'Uy ma’lumotlari';
+
+  @override
+  String get pPets => 'Uy hayvonlari';
+
+  @override
+  String get pPetDog => 'It';
+
+  @override
+  String get pPetCat => 'Mushuk';
+
+  @override
+  String get pPetBird => 'Qush';
+
+  @override
+  String get pPetFish => 'Baliq';
+
+  @override
+  String get pPetOther => 'Boshqa hayvon';
+
+  @override
+  String get pAllergies => 'Allergiya va sezgirlik';
+
+  @override
+  String get pPreferredProducts => 'Afzal mahsulotlar';
+
+  @override
+  String get pParking => 'Parkovka';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor-qavat';
+  }
+
+  @override
+  String get pElevatorYes => 'Lift bor';
+
+  @override
+  String get pElevatorNo => 'Lift yo‘q';
 
   @override
   String get pTeamMemo => 'Jamoa eslatmasi (mijozga ko\'rinmaydi)';

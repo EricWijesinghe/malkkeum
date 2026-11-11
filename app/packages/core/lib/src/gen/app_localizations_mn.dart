@@ -498,6 +498,30 @@ class TMn extends T {
   String get cFormula => 'Үнийн санал тооцох томьёо';
 
   @override
+  String get cTabCancelPolicy => 'Цуцлалтын бодлого';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Энэ бол анхдагч тохиргоо. Шалгаад хадгалж баталгаажуулна уу.';
+
+  @override
+  String get cPolicyDaysBefore => 'Айлчлалаас хэдэн өдрийн өмнөөс (эхлэх)';
+
+  @override
+  String get cPolicyPercent => 'Шимтгэл % (хоосон = аппаар цуцлах боломжгүй)';
+
+  @override
+  String get cPolicyMinFee => 'Доод шимтгэл (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Цаг товлолт өөрчлөх (айлчлалаас хэдэн өдрийн өмнө)';
+
+  @override
+  String get cPolicyHint =>
+      'Үйлчлүүлэгчийн аппын цуцлах дэлгэцэд шууд хэрэгжинэ. Нөхцөл дараагийн хуулийн build-д шинэчлэгдэнэ.';
+
+  @override
   String get f_base_studio => 'Үндсэн: студио';
 
   @override
@@ -745,7 +769,7 @@ class TMn extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
+      'Энэ захиалгыг аппликейшнээр цуцлах боломжгүй. Манай багтай холбогдоно уу';
 
   @override
   String get err_address_required => 'Очих хаягаа бүртгэнэ үү';
@@ -1334,6 +1358,16 @@ class TMn extends T {
   String get cancelKeep => 'Хэвээр үлдээх';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Одоо цуцлавал $fee шимтгэл төлөгдөж, $refund буцаан олгогдоно.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee шимтгэлийг зөвшөөрч цуцлах';
+  }
+
+  @override
   String get cancelled => 'Захиалга цуцлагдлаа';
 
   @override
@@ -1746,6 +1780,50 @@ class TMn extends T {
 
   @override
   String get summaryDate => 'Очих өдөр';
+
+  @override
+  String get cpTitle => 'Цуцлалтын бодлого';
+
+  @override
+  String cpWhen(String days) {
+    return 'Айлчлалаас $days ба түүнээс дээш өдрийн өмнө';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Айлчлах өдөр';
+
+  @override
+  String get cpFree => 'Бүрэн буцаан олголт';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% шимтгэл ($fee), буцаан олголт $refund';
+  }
+
+  @override
+  String get cpClosed => 'Аппаар цуцлах боломжгүй (баг шалгана)';
+
+  @override
+  String get hhTitle => 'Өрхийн мэдээлэл';
+
+  @override
+  String get hhAddPet => 'Амьтан нэмэх';
+
+  @override
+  String get hhPetCount => 'Тоо';
+
+  @override
+  String get hhFloorLabel => 'Давхар (хашаанд сөрөг)';
+
+  @override
+  String get hhElevator => 'Лифттэй';
+
+  @override
+  String get hhNotes => 'Тэмдэглэл';
+
+  @override
+  String get hhHint =>
+      'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
   String get themeTitle => 'Загвар';
@@ -2668,6 +2746,47 @@ class TMn extends T {
 
   @override
   String get pCustomerRequests => 'Үйлчлүүлэгчийн хүсэлт';
+
+  @override
+  String get pHousehold => 'Өрхийн мэдээлэл';
+
+  @override
+  String get pPets => 'Гэр оронд амьтан';
+
+  @override
+  String get pPetDog => 'Нохой';
+
+  @override
+  String get pPetCat => 'Муур';
+
+  @override
+  String get pPetBird => 'Шувуу';
+
+  @override
+  String get pPetFish => 'Загас';
+
+  @override
+  String get pPetOther => 'Бусад амьтан';
+
+  @override
+  String get pAllergies => 'Харшил ба мэдрэмж';
+
+  @override
+  String get pPreferredProducts => 'Дуртай бүтээгдэхүүн';
+
+  @override
+  String get pParking => 'Зогсоол';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor давхар';
+  }
+
+  @override
+  String get pElevatorYes => 'Лифттэй';
+
+  @override
+  String get pElevatorNo => 'Лифтгүй';
 
   @override
   String get pTeamMemo => 'Багийн тэмдэглэл (үйлчлүүлэгчид харагдахгүй)';

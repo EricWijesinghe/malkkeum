@@ -50,7 +50,7 @@ class Service {
 }
 
 class Address {
-  const Address({required this.id, required this.kind, required this.label, required this.roadAddress, required this.detail, required this.districtCode, required this.sizePyeong});
+  const Address({required this.id, required this.kind, required this.label, required this.roadAddress, required this.detail, required this.districtCode, required this.sizePyeong, this.household = const {}});
   final String id;
   final String kind;
   final String label;
@@ -58,6 +58,8 @@ class Address {
   final String detail;
   final String districtCode;
   final int sizePyeong;
+  /// Household profile saved with this address (pets, floor, parking ...). Empty when never filled in.
+  final Json household;
 
   factory Address.fromJson(Json j) => Address(
         id: j['id'] as String,
@@ -67,6 +69,7 @@ class Address {
         detail: j['detail'] as String? ?? '',
         districtCode: j['district_code'] as String,
         sizePyeong: _int(j['size_pyeong'])!,
+        household: (j['household'] as Json?) ?? const {},
       );
 
   Json toInput() => {'kind': kind, 'label': label, 'road_address': roadAddress, 'detail': detail, 'district_code': districtCode, 'size_pyeong': sizePyeong};

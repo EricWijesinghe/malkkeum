@@ -499,6 +499,29 @@ class TSi extends T {
   String get cFormula => 'මිල ගණන් සූත්‍රය';
 
   @override
+  String get cTabCancelPolicy => 'අවලංගු කිරීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'මෙය පෙරනිශ්චිත අගයයි. පරීක්ෂා කර සුරකින්න.';
+
+  @override
+  String get cPolicyDaysBefore => 'පැමිණීමට දින කීයකට පෙර (සිට)';
+
+  @override
+  String get cPolicyPercent => 'ගාස්තුව % (හිස් = යෙදුමෙන් අවලංගු කළ නොහැක)';
+
+  @override
+  String get cPolicyMinFee => 'අවම ගාස්තුව (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'දින වෙනස් කළ හැක (පැමිණීමට දින කීයකට පෙර)';
+
+  @override
+  String get cPolicyHint =>
+      'ගනුදෙනුකරු යෙදුමේ අවලංගු තිරයට වහාම අදාළ වේ. නියමයන් ඊළඟ නෛතික build එකෙන් යාවත්කාලීන වේ.';
+
+  @override
   String get f_base_studio => 'මූලික: ස්ටුඩියෝ';
 
   @override
@@ -746,7 +769,7 @@ class TSi extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'පැමිණීමට දින 2කට පෙර සිට අපේ කණ්ඩායම හරහා පමණක් අවලංගු කළ හැක';
+      'මෙම වෙන්කිරීම දැන් යෙදුම හරහා අවලංගු කළ නොහැක. කරුණාකර අපේ කණ්ඩායම අමතන්න';
 
   @override
   String get err_address_required => 'පැමිණීමේ ලිපිනය එකතු කරන්න';
@@ -1336,6 +1359,16 @@ class TSi extends T {
   String get cancelKeep => 'තබා ගන්න';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'දැන් අවලංගු කළහොත් $fee ගාස්තුවක් අය කරන අතර $refund ආපසු ලැබේ.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee ගාස්තුව පිළිගෙන අවලංගු කරන්න';
+  }
+
+  @override
   String get cancelled => 'වෙන්කිරීම අවලංගු විය';
 
   @override
@@ -1748,6 +1781,49 @@ class TSi extends T {
 
   @override
   String get summaryDate => 'පැමිණීම';
+
+  @override
+  String get cpTitle => 'අවලංගු කිරීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String cpWhen(String days) {
+    return 'පැමිණීමට දින $days හෝ ඊට වැඩි කාලයකට පෙර';
+  }
+
+  @override
+  String get cpWhenSameDay => 'පැමිණෙන දිනයේ';
+
+  @override
+  String get cpFree => 'සම්පූර්ණ ආපසු ගෙවීම';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% ගාස්තුව ($fee), ආපසු $refund';
+  }
+
+  @override
+  String get cpClosed => 'යෙදුමෙන් අවලංගු කළ නොහැක (කණ්ඩායම සමාලෝචනය)';
+
+  @override
+  String get hhTitle => 'නිවසේ තොරතුරු';
+
+  @override
+  String get hhAddPet => 'සුරතල් සත්වයෙකු එක් කරන්න';
+
+  @override
+  String get hhPetCount => 'ගණන';
+
+  @override
+  String get hhFloorLabel => 'මහල (බේස්මන්ට් සඳහා සෘණ)';
+
+  @override
+  String get hhElevator => 'ලිෆ්ට් ඇත';
+
+  @override
+  String get hhNotes => 'සටහන්';
+
+  @override
+  String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
 
   @override
   String get themeTitle => 'තේමාව';
@@ -2658,6 +2734,47 @@ class TSi extends T {
 
   @override
   String get pCustomerRequests => 'පාරිභෝගික ඉල්ලීම්';
+
+  @override
+  String get pHousehold => 'නිවසේ තොරතුරු';
+
+  @override
+  String get pPets => 'සුරතල් සත්ව';
+
+  @override
+  String get pPetDog => 'බල්ලා';
+
+  @override
+  String get pPetCat => 'බළලා';
+
+  @override
+  String get pPetBird => 'කුරුල්ලා';
+
+  @override
+  String get pPetFish => 'මාළු';
+
+  @override
+  String get pPetOther => 'වෙනත් සත්ව';
+
+  @override
+  String get pAllergies => 'අසාත්මිකතා සහ සංවේදීතා';
+
+  @override
+  String get pPreferredProducts => 'කැමති නිෂ්පාදන';
+
+  @override
+  String get pParking => 'වාහන නැවැත්වීම';
+
+  @override
+  String pFloor(String floor) {
+    return 'මහල $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'ලිෆ්ට් ඇත';
+
+  @override
+  String get pElevatorNo => 'ලිෆ්ට් නැත';
 
   @override
   String get pTeamMemo => 'කණ්ඩායම් සටහන (පාරිභෝගිකයාට නොපෙනේ)';

@@ -3,8 +3,8 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, deposit_due, insert_paid, lock_slot, next_number, prepare, price_for,
-        record_payment, take_balance, take_deposit,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
+        price_for, record_payment, take_balance, take_deposit,
     },
     catalog::load_formula,
     chat, growth, payouts,
@@ -28,20 +28,25 @@ use axum::{
 };
 use chrono::{DateTime, NaiveDate, Utc};
 use domain::{
-    Won,
-    booking::{BookingStatus, customer_cancel},
+    DomainError, Won,
+    booking::{BookingStatus, cancel_quote},
+    cancel_policy::{CancelPolicy, Outcome},
     schedule::{check_capacity, check_date, check_slot},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::PgConnection;
+use sqlx::{PgConnection, PgPool};
 use uuid::Uuid;
+
+const CANCEL_POLICY_KEY: &str = "cancel_policy";
 
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/bookings", crate::idempotency::replayable(get(list).post(create)))
         .route("/bookings/{id}", get(detail))
         .route("/bookings/{id}/cancel", crate::idempotency::replayable(post(cancel)))
+        .route("/bookings/{id}/cancel-preview", get(cancel_preview))
+        .route("/bookings/{id}/household", put(update_household))
         .route("/bookings/{id}/deposit", crate::idempotency::replayable(post(pay_deposit)))
         .route("/bookings/{id}/balance", crate::idempotency::replayable(post(pay_balance)))
         .route("/bookings/{id}/notes", put(update_notes))
@@ -52,7 +57,7 @@ pub fn routes() -> Router<AppState> {
 pub const BOOKING_COLS: &str =
     "b.id, b.number, b.user_id, b.service_code, b.unit_index, b.address, b.district_code, b.visit_date, b.start_hour, b.minutes, b.status,
     b.answers, b.estimate, b.final_price, b.deposit, b.list_price, b.discount, b.paid_amount, b.balance_paid, b.coupon_id, b.team_name, b.pro_id,
-    b.visit_notes, b.reschedule, b.cancelled_at, b.completed_at, b.created_at, b.checked_in_at, b.checked_out_at,
+    b.visit_notes, b.household, b.reschedule, b.cancelled_at, b.completed_at, b.created_at, b.checked_in_at, b.checked_out_at,
     (b.access_code_enc IS NOT NULL) AS entry_code_set,
     (SELECT t.id FROM chat_threads t WHERE t.booking_id = b.id AND t.audience = 'customer') AS thread_id,
     (SELECT jsonb_build_object('before', c.before_photos, 'after', c.after_photos) FROM completion_reports c WHERE c.booking_id = b.id) AS photos,
@@ -83,6 +88,7 @@ pub struct BookingRow {
     pub team_name: Option<String>,
     pub pro_id: Option<Uuid>,
     pub visit_notes: Value,
+    pub household: Value,
     pub reschedule: Option<Value>,
     pub cancelled_at: Option<DateTime<Utc>>,
     pub completed_at: Option<DateTime<Utc>>,
@@ -178,8 +184,8 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
     let est = formula.estimate(&answers)?;
     sqlx::query(
-        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11)",
+        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12)",
     )
     .bind(id)
     .bind(&number)
@@ -192,6 +198,7 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     .bind(sqlx::types::Json(&answers))
     .bind(est.total.0)
     .bind(&prep.notes)
+    .bind(&prep.household)
     .execute(&mut *tx)
     .await?;
     let thread = chat::booking_thread(&mut tx, "customer", user, id, &prep.service.code).await?;
@@ -375,11 +382,115 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
     Ok(())
 }
 
-async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<BookingRow>> {
+/// The owner's cancel policy and whether it is still the built-in default (not yet saved by the owner).
+pub async fn load_cancel_policy(db: &PgPool) -> ApiResult<(CancelPolicy, bool)> {
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(CANCEL_POLICY_KEY)
+        .fetch_optional(db)
+        .await?;
+    match v {
+        None => Ok((CancelPolicy::default(), true)),
+        Some(v) => Ok((
+            serde_json::from_value(v).map_err(|_| ApiError::Internal("bad setting cancel_policy".into()))?,
+            false,
+        )),
+    }
+}
+
+/// Whole KST calendar days from today to the visit; the policy's unit.
+fn days_before(b: &BookingRow) -> i64 {
+    (b.visit_date - today_kst()).num_days()
+}
+
+pub fn public_routes() -> Router<AppState> {
+    Router::new().route("/policy/cancellation", get(public_cancel_policy))
+}
+
+async fn public_cancel_policy(State(s): State<AppState>) -> ApiResult<Json<Value>> {
+    let (policy, is_default) = load_cancel_policy(&s.db).await?;
+    Ok(Json(json!({ "policy": policy, "is_default": is_default })))
+}
+
+#[derive(Serialize)]
+struct CancelPreview {
+    can_cancel: bool,
+    days_before: i64,
+    /// None when the outcome is free or closed.
+    percent: Option<u8>,
+    paid: i64,
+    fee: i64,
+    refund: i64,
+    reschedule_allowed: bool,
+}
+
+/// What cancelling or rescheduling would cost right now. The apps show this before the customer confirms.
+async fn cancel_preview(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<CancelPreview>> {
     let b = owned(&s, a.id, id).await?;
-    customer_cancel(b.status()?, today_kst(), b.visit_date)?;
-    apply_cancel(&s, &b, None, "customer").await?;
-    audit(&s.db, "customer", Some(a.id), "booking.cancel", &id.to_string(), json!({})).await?;
+    let status = b.status()?;
+    let (policy, _) = load_cancel_policy(&s.db).await?;
+    let days = days_before(&b);
+    let open = !status.is_terminal();
+    let quote = cancel_quote(&policy, status, days, b.paid_amount);
+    Ok(Json(CancelPreview {
+        can_cancel: open && quote.is_some(),
+        days_before: days,
+        percent: match quote.map(|q| q.outcome) {
+            Some(Outcome::Fee { percent }) => Some(percent),
+            _ => None,
+        },
+        paid: b.paid_amount,
+        fee: quote.map_or(0, |q| q.fee),
+        refund: quote.map_or(0, |q| q.refund),
+        reschedule_allowed: open && (status == BookingStatus::Consultation || policy.reschedule_allowed(days)),
+    }))
+}
+
+#[derive(Deserialize, Default)]
+struct CancelBody {
+    /// The fee the customer saw in the preview. Required whenever the fee is above 0.
+    accepted_fee: Option<i64>,
+}
+
+async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, body: Option<Json<CancelBody>>) -> ApiResult<Json<BookingRow>> {
+    let b = owned(&s, a.id, id).await?;
+    let status = b.status()?;
+    let (policy, _) = load_cancel_policy(&s.db).await?;
+    let quote = cancel_quote(&policy, status, days_before(&b), b.paid_amount).ok_or(DomainError::CancellationWindowClosed)?;
+    status.transition(BookingStatus::Cancelled)?;
+    let accepted = body.and_then(|Json(c)| c.accepted_fee);
+    if quote.fee > 0 && accepted != Some(quote.fee) {
+        return Err(ApiError::Conflict("fee_changed"));
+    }
+    // A fee keeps the coupon used and refunds only what remains; no fee is a full refund.
+    let cap = (quote.fee > 0).then_some(quote.refund);
+    apply_cancel(&s, &b, cap, "customer").await?;
+    audit(
+        &s.db,
+        "customer",
+        Some(a.id),
+        "booking.cancel",
+        &id.to_string(),
+        json!({ "fee": quote.fee, "refund": quote.refund }),
+    )
+    .await?;
+    Ok(Json(load_booking(&s.db, id).await?))
+}
+
+/// Household is editable until the pro has finished the job, like visit notes.
+async fn update_household(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(h): Json<Value>) -> ApiResult<Json<BookingRow>> {
+    let b = owned(&s, a.id, id).await?;
+    let household = checked_household(&h)?;
+    let r = sqlx::query("UPDATE bookings SET household = $2, updated_at = now() WHERE id = $1 AND status BETWEEN 0 AND 2")
+        .bind(id)
+        .bind(household)
+        .execute(&s.db)
+        .await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::Conflict("booking_closed"));
+    }
+    if let Some(pro) = b.pro_id {
+        s.hub.send(Recipient::Pro(pro), "job.updated", json!({ "booking_id": id }));
+    }
     Ok(Json(load_booking(&s.db, id).await?))
 }
 
@@ -465,7 +576,9 @@ struct Reschedule {
 async fn reschedule(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(r): Json<Reschedule>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
     let status = b.status()?;
-    if status.is_terminal() || !domain::booking::is_free_cancellation(status, today_kst(), b.visit_date) {
+    let (policy, _) = load_cancel_policy(&s.db).await?;
+    let self_serve = status == BookingStatus::Consultation || policy.reschedule_allowed(days_before(&b));
+    if status.is_terminal() || !self_serve {
         return Err(ApiError::Conflict("reschedule_closed"));
     }
     check_date(today_kst(), r.visit_date)?;
@@ -529,7 +642,10 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if b.status()? != BookingStatus::Completed {
         return Err(ApiError::Conflict("not_completed"));
     }
-    let blocked: bool = sqlx::query_scalar("SELECT review_blocked FROM users WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let blocked: bool = sqlx::query_scalar("SELECT review_blocked FROM users WHERE id = $1")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     if blocked {
         return Err(ApiError::Conflict("review_blocked"));
     }
@@ -537,15 +653,16 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
         return Err(ApiError::BadRequest("invalid_review"));
     }
     let photos = growth::check_photos(&s.db, &s.config.public_base_url, a.id, &r.photos).await?;
-    let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
-        .bind(id)
-        .bind(a.id)
-        .bind(b.pro_id)
-        .bind(r.rating)
-        .bind(r.body.trim())
-        .bind(sqlx::types::Json(&photos))
-        .execute(&s.db)
-        .await?;
+    let inserted =
+        sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
+            .bind(id)
+            .bind(a.id)
+            .bind(b.pro_id)
+            .bind(r.rating)
+            .bind(r.body.trim())
+            .bind(sqlx::types::Json(&photos))
+            .execute(&s.db)
+            .await?;
     if inserted.rows_affected() == 0 {
         return Err(ApiError::Conflict("already_reviewed"));
     }

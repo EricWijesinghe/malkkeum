@@ -73,6 +73,9 @@ struct Draft {
     district_code: String,
     snapshot: Value,
     notes: Value,
+    /// Stored so the checkout books exactly the household the customer saw.
+    #[serde(default)]
+    household: Value,
 }
 
 struct Intent {
@@ -211,6 +214,7 @@ async fn booking_intent(s: &AppState, user: Uuid, body: &BookingBody) -> ApiResu
         district_code: prep.district_code,
         snapshot: prep.snapshot,
         notes: prep.notes,
+        household: prep.household,
     };
     Ok(Intent {
         kind: "booking",
@@ -359,6 +363,7 @@ async fn plan(s: &AppState, ck: &CheckoutRow) -> ApiResult<Plan> {
                 district_code: draft.district_code,
                 snapshot: draft.snapshot,
                 notes: draft.notes,
+                household: draft.household,
             };
             Ok(Plan::Booking { prep, body: draft.body })
         }

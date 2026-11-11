@@ -79,7 +79,11 @@ fn state_of(rows: &[Latest]) -> ConsentState {
         })
         .collect();
     let reconsent_required = items.iter().any(|i| i.required && !i.granted);
-    ConsentState { version: CONSENT_VERSION, items, reconsent_required }
+    ConsentState {
+        version: CONSENT_VERSION,
+        items,
+        reconsent_required,
+    }
 }
 
 pub async fn consent_state(db: &PgPool, user: Uuid) -> ApiResult<ConsentState> {
@@ -115,7 +119,12 @@ pub async fn update_consents(db: &PgPool, user: Uuid, update: ConsentUpdate) -> 
     let mut rows = latest(db, user).await?;
     for c in &update.consents {
         rows.retain(|r| r.kind != c.kind);
-        rows.push(Latest { kind: c.kind.clone(), version: c.version.clone(), granted: c.granted, created_at: Utc::now() });
+        rows.push(Latest {
+            kind: c.kind.clone(),
+            version: c.version.clone(),
+            granted: c.granted,
+            created_at: Utc::now(),
+        });
     }
     if CONSENTS.iter().any(|(k, required)| *required && !effective(&rows, k)) {
         return Err(ApiError::BadRequest("required_consent"));
@@ -138,7 +147,11 @@ pub async fn get_consents(State(s): State<AppState>, crate::auth::Customer(a): c
     Ok(Json(consent_state(&s.db, a.id).await?))
 }
 
-pub async fn put_consents(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer, Json(u): Json<ConsentUpdate>) -> ApiResult<Json<ConsentState>> {
+pub async fn put_consents(
+    State(s): State<AppState>,
+    crate::auth::Customer(a): crate::auth::Customer,
+    Json(u): Json<ConsentUpdate>,
+) -> ApiResult<Json<ConsentState>> {
     Ok(Json(update_consents(&s.db, a.id, u).await?))
 }
 
@@ -149,7 +162,7 @@ pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::
           'exported_at', now(),
           'profile', (SELECT jsonb_build_object('phone', phone, 'name', name, 'email', email, 'locale', locale, 'created_at', created_at, 'identity_verified_at', identity_verified_at) FROM users WHERE id = $1),
           'consents', (SELECT COALESCE(jsonb_agg(jsonb_build_object('kind', kind, 'version', version, 'granted', granted, 'at', created_at) ORDER BY created_at), '[]'::jsonb) FROM user_consents WHERE user_id = $1),
-          'addresses', (SELECT COALESCE(jsonb_agg(jsonb_build_object('kind', kind, 'label', label, 'road_address', road_address, 'detail', detail, 'district_code', district_code, 'size_pyeong', size_pyeong, 'created_at', created_at) ORDER BY created_at), '[]'::jsonb) FROM addresses WHERE user_id = $1 AND deleted_at IS NULL),
+          'addresses', (SELECT COALESCE(jsonb_agg(jsonb_build_object('kind', kind, 'label', label, 'road_address', road_address, 'detail', detail, 'district_code', district_code, 'size_pyeong', size_pyeong, 'household', household, 'created_at', created_at) ORDER BY created_at), '[]'::jsonb) FROM addresses WHERE user_id = $1 AND deleted_at IS NULL),
           'payment_methods', (SELECT COALESCE(jsonb_agg(jsonb_build_object('provider', provider, 'display_name', display_name, 'created_at', created_at) ORDER BY created_at), '[]'::jsonb) FROM payment_methods WHERE user_id = $1 AND deleted_at IS NULL),
           'coupons', (SELECT COALESCE(jsonb_agg(jsonb_build_object('name', name, 'amount', amount, 'service_code', service_code, 'issued_at', issued_at, 'expires_at', expires_at, 'used', used_booking_id IS NOT NULL) ORDER BY issued_at), '[]'::jsonb) FROM coupons WHERE user_id = $1),
           'bookings', (SELECT COALESCE(jsonb_agg(jsonb_build_object('number', number, 'service_code', service_code, 'visit_date', visit_date, 'start_hour', start_hour, 'status', status, 'address', address, 'answers', answers, 'final_price', final_price, 'paid_amount', paid_amount, 'created_at', created_at) ORDER BY created_at), '[]'::jsonb) FROM bookings WHERE user_id = $1),
@@ -177,7 +190,9 @@ async fn delete_billing_keys(s: &AppState, user: Uuid) -> ApiResult<()> {
         return Ok(());
     }
     for key in &keys {
-        portone::delete_billing_key(&s.providers, key).await.map_err(|_| ApiError::Unavailable("billing_key_delete_failed"))?;
+        portone::delete_billing_key(&s.providers, key)
+            .await
+            .map_err(|_| ApiError::Unavailable("billing_key_delete_failed"))?;
     }
     Ok(())
 }
@@ -193,12 +208,27 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .execute(&mut *tx)
         .await?;
     sqlx::query("DELETE FROM addresses WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM notifications WHERE owner_role = 'customer' AND owner_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM notifications WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     // Threads keep their user_id: chat_threads_check requires it for customer threads, and the anonymised user row holds no contact data.
-    sqlx::query("UPDATE chat_messages SET sender_id = NULL WHERE sender = 'customer' AND sender_id = $1").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE chat_messages SET sender_id = NULL WHERE sender = 'customer' AND sender_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     tx.commit().await?;
     Ok(())
 }

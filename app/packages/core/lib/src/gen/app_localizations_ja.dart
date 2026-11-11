@@ -483,6 +483,27 @@ class TJa extends T {
   String get cFormula => '見積算定式';
 
   @override
+  String get cTabCancelPolicy => 'キャンセル規定';
+
+  @override
+  String get cPolicyDefaultBanner => '初期設定のままです。内容を確認して保存してください。';
+
+  @override
+  String get cPolicyDaysBefore => '訪問の何日前から（日）';
+
+  @override
+  String get cPolicyPercent => '手数料％（空欄はアプリで取消不可）';
+
+  @override
+  String get cPolicyMinFee => '最低手数料（ウォン）';
+
+  @override
+  String get cPolicyReschedule => '日程変更可能（訪問の何日前から）';
+
+  @override
+  String get cPolicyHint => '顧客アプリのキャンセル画面にすぐ反映されます。規約は次回ビルドで更新されます。';
+
+  @override
   String get f_base_studio => '基本：ワンルーム';
 
   @override
@@ -723,7 +744,8 @@ class TJa extends T {
   String get err_payment_method_required => '支払い方法を選んでください';
 
   @override
-  String get err_cancellation_window_closed => '訪問2日前からは相談チーム経由でキャンセルできます';
+  String get err_cancellation_window_closed =>
+      'この時点からはアプリでキャンセルできません。サポートにお問い合わせください';
 
   @override
   String get err_address_required => '訪問先住所を登録してください';
@@ -1296,6 +1318,16 @@ class TJa extends T {
   String get cancelKeep => 'キャンセルしない';
 
   @override
+  String cancelFeeNow(String fee, String refund) {
+    return '今キャンセルすると手数料$feeがかかり、$refundが返金されます。';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '手数料$feeに同意してキャンセル';
+  }
+
+  @override
   String get cancelled => 'キャンセルしました';
 
   @override
@@ -1703,6 +1735,49 @@ class TJa extends T {
 
   @override
   String get summaryDate => '訪問日程';
+
+  @override
+  String get cpTitle => 'キャンセル・変更の規定';
+
+  @override
+  String cpWhen(String days) {
+    return '訪問の$days日以上前';
+  }
+
+  @override
+  String get cpWhenSameDay => '訪問当日';
+
+  @override
+  String get cpFree => '全額返金';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '手数料$percent%（$fee）、返金$refund';
+  }
+
+  @override
+  String get cpClosed => 'アプリでは取消不可（相談チーム確認）';
+
+  @override
+  String get hhTitle => '世帯情報';
+
+  @override
+  String get hhAddPet => 'ペットを追加';
+
+  @override
+  String get hhPetCount => '頭数';
+
+  @override
+  String get hhFloorLabel => '階数（地下はマイナス）';
+
+  @override
+  String get hhElevator => 'エレベーターあり';
+
+  @override
+  String get hhNotes => 'メモ';
+
+  @override
+  String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
 
   @override
   String get themeTitle => 'テーマ';
@@ -2578,6 +2653,47 @@ class TJa extends T {
 
   @override
   String get pCustomerRequests => 'お客様のご要望';
+
+  @override
+  String get pHousehold => '世帯情報';
+
+  @override
+  String get pPets => 'ペット';
+
+  @override
+  String get pPetDog => '犬';
+
+  @override
+  String get pPetCat => '猫';
+
+  @override
+  String get pPetBird => '鳥';
+
+  @override
+  String get pPetFish => '魚';
+
+  @override
+  String get pPetOther => 'その他';
+
+  @override
+  String get pAllergies => 'アレルギー・敏感な点';
+
+  @override
+  String get pPreferredProducts => '希望の製品';
+
+  @override
+  String get pParking => '駐車';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor階';
+  }
+
+  @override
+  String get pElevatorYes => 'エレベーターあり';
+
+  @override
+  String get pElevatorNo => 'エレベーターなし';
 
   @override
   String get pTeamMemo => 'チームメモ（顧客には非表示）';

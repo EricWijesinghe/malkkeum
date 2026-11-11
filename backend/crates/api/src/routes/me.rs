@@ -1,6 +1,7 @@
 //! Customer account: profile, addresses, coupons, payment methods, devices, notifications.
 
 use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
+use super::booking_core::checked_household;
 use crate::{
     auth::{Auth, Customer, normalize_phone, sha256_hex},
     contract::{PageQuery, cursor_part, decode_cursor, encode_cursor, page_limit, paged, ts_key},
@@ -229,6 +230,7 @@ pub struct Address {
     pub detail: String,
     pub district_code: String,
     pub size_pyeong: i16,
+    pub household: Value,
 }
 
 #[derive(Deserialize)]
@@ -239,6 +241,9 @@ struct AddressInput {
     detail: String,
     district_code: String,
     size_pyeong: i16,
+    /// Omitted on update keeps the saved household.
+    #[serde(default)]
+    household: Option<Value>,
 }
 
 impl AddressInput {
@@ -256,7 +261,7 @@ impl AddressInput {
     }
 }
 
-const ADDRESS_COLS: &str = "id, kind, label, road_address, detail, district_code, size_pyeong";
+const ADDRESS_COLS: &str = "id, kind, label, road_address, detail, district_code, size_pyeong, household";
 
 async fn list_addresses(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<Address>>> {
     let rows = sqlx::query_as(&format!(
@@ -270,8 +275,9 @@ async fn list_addresses(State(s): State<AppState>, Customer(a): Customer) -> Api
 
 async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i): Json<AddressInput>) -> ApiResult<Json<Address>> {
     i.validate()?;
+    let household = checked_household(&i.household.clone().unwrap_or_else(|| json!({})))?;
     let row = sqlx::query_as(&format!(
-        "INSERT INTO addresses (user_id, kind, label, road_address, detail, district_code, size_pyeong) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING {ADDRESS_COLS}"
+        "INSERT INTO addresses (user_id, kind, label, road_address, detail, district_code, size_pyeong, household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING {ADDRESS_COLS}"
     ))
     .bind(a.id)
     .bind(&i.kind)
@@ -280,6 +286,7 @@ async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i
     .bind(i.detail.trim())
     .bind(&i.district_code)
     .bind(i.size_pyeong)
+    .bind(household)
     .fetch_one(&s.db)
     .await?;
     Ok(Json(row))
@@ -287,9 +294,10 @@ async fn create_address(State(s): State<AppState>, Customer(a): Customer, Json(i
 
 async fn update_address(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(i): Json<AddressInput>) -> ApiResult<Json<Address>> {
     i.validate()?;
+    let household = i.household.as_ref().map(checked_household).transpose()?;
     // Bookings keep an address snapshot, so editing never rewrites history.
     let row = sqlx::query_as(&format!(
-        "UPDATE addresses SET kind=$3, label=$4, road_address=$5, detail=$6, district_code=$7, size_pyeong=$8 WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING {ADDRESS_COLS}"
+        "UPDATE addresses SET kind=$3, label=$4, road_address=$5, detail=$6, district_code=$7, size_pyeong=$8, household=COALESCE($9, household) WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING {ADDRESS_COLS}"
     ))
     .bind(id)
     .bind(a.id)
@@ -299,6 +307,7 @@ async fn update_address(State(s): State<AppState>, Customer(a): Customer, Path(i
     .bind(i.detail.trim())
     .bind(&i.district_code)
     .bind(i.size_pyeong)
+    .bind(household)
     .fetch_optional(&s.db)
     .await?
     .ok_or(ApiError::NotFound)?;
@@ -401,7 +410,10 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
         .issue_billing_key(&r.auth_key, &a.id.to_string(), &issue.to_string())
         .await
         .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1").bind(issue).execute(&mut *tx).await?;
+    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1")
+        .bind(issue)
+        .execute(&mut *tx)
+        .await?;
     let row = sqlx::query_as(
         "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at",
     )

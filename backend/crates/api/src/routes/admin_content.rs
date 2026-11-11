@@ -28,6 +28,7 @@ pub fn routes() -> Router<AppState> {
         .route("/services/{code}", put(update_service))
         .route("/slot-capacity", get(get_capacity).put(put_capacity))
         .route("/quote-formula", get(get_formula).put(put_formula))
+        .route("/cancel-policy", put(put_cancel_policy))
         .route("/coupons", post(issue_coupons))
         .route("/content", get(list_content).post(create_content))
         .route("/content/{id}", put(update_content).delete(delete_content))
@@ -116,6 +117,17 @@ async fn put_capacity(State(s): State<AppState>, Admin(a): Admin, Json(rows): Js
 
 async fn get_formula(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<QuoteFormula>> {
     Ok(Json(super::catalog::load_formula(&s.db).await?))
+}
+
+/// Owner-only. Validated (shape and monotonic penalties) before it replaces the built-in default.
+async fn put_cancel_policy(State(s): State<AppState>, Admin(a): Admin, Json(p): Json<domain::cancel_policy::CancelPolicy>) -> ApiResult<Json<Value>> {
+    p.validate().map_err(ApiError::BadRequest)?;
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('cancel_policy', $1) ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = now()")
+        .bind(sqlx::types::Json(&p))
+        .execute(&s.db)
+        .await?;
+    audit(&s.db, "staff", Some(a.id), "cancel_policy.update", "cancel_policy", json!(p)).await?;
+    Ok(Json(json!({ "ok": true })))
 }
 
 async fn put_formula(State(s): State<AppState>, Admin(a): Admin, Json(f): Json<QuoteFormula>) -> ApiResult<Json<Value>> {
@@ -208,7 +220,9 @@ struct ContentInput {
 impl ContentInput {
     /// Our uploads are stored as plain `/files/<name>` paths, never as expiring signed links.
     fn stored_image(&self, base: &str) -> Option<String> {
-        self.image_url.as_deref().map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
+        self.image_url
+            .as_deref()
+            .map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
     }
 
     async fn validate(&self, s: &AppState) -> ApiResult<()> {
@@ -217,7 +231,10 @@ impl ContentInput {
             .link
             .as_deref()
             .is_none_or(|l| l.starts_with("https://") || l.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '/'));
-        let safe_image = self.image_url.as_deref().is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
+        let safe_image = self
+            .image_url
+            .as_deref()
+            .is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
         let ok = matches!(self.kind.as_str(), "notice" | "tip" | "faq" | "banner" | "legal")
             && self.title.is_object()
             && self.body.is_object()

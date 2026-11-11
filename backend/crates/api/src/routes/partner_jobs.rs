@@ -1,10 +1,10 @@
 //! Partner jobs: feed, preview, atomic accept, quotes, schedule, assignment, memo, completion, reschedule replies.
 
+use super::uploads;
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
     chat, growth,
 };
-use super::uploads;
 use crate::{
     auth::{Pro, mask_name},
     error::{ApiError, ApiResult},
@@ -150,6 +150,7 @@ async fn job(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> Ap
     if committed {
         view["address"] = b.address.clone();
         view["visit_notes"] = b.visit_notes.clone();
+        view["household"] = b.household.clone();
         let raw: String = sqlx::query_scalar("SELECT name FROM users WHERE id = $1")
             .bind(b.user_id)
             .fetch_one(&s.db)
