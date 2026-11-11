@@ -55,5 +55,5 @@ ALTER TABLE coupons
     ADD CONSTRAINT coupons_used_booking_fkey FOREIGN KEY (used_booking_id) REFERENCES bookings(id) ON DELETE SET NULL NOT VALID;
 ALTER TABLE coupons VALIDATE CONSTRAINT coupons_used_booking_fkey;
 
--- pg_trgm backs the admin search indexes (migration 0020+); contrib ships with the official postgres image.
+-- pg_trgm backs the admin search indexes (migration 0041+); contrib ships with the official postgres image.
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
