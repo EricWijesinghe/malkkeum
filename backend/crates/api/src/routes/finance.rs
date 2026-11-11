@@ -461,7 +461,7 @@ fn text(v: impl Into<String>) -> Cell {
     Cell::Text(v.into())
 }
 
-fn csv_response(name: &str, body: String) -> ApiResult<Response> {
+pub(super) fn csv_response(name: &str, body: String) -> ApiResult<Response> {
     let mut h = HeaderMap::new();
     h.insert(header::CONTENT_TYPE, HeaderValue::from_static("text/csv; charset=utf-8"));
     h.insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));

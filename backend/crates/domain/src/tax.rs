@@ -82,6 +82,58 @@ pub fn vat_document(input: &VatInput) -> Vec<Vec<Cell>> {
     doc
 }
 
+/// Splits a VAT-inclusive amount into (공급가액, 세액). VAT is 1/11 of the total, floored; supply is the rest.
+/// ACCOUNTANT: confirm the rounding rule for 세금계산서 against the invoice rules.
+pub fn split_vat_inclusive(total: i64) -> (i64, i64) {
+    let vat = total / 11;
+    (total - vat, vat)
+}
+
+/// One 세금계산서 line, one per settled checkout that the customer asked to be invoiced.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InvoiceRow {
+    pub day: NaiveDate,
+    pub business_number: String,
+    pub company_name: String,
+    pub representative: String,
+    pub business_type: String,
+    pub business_item: String,
+    pub address: String,
+    pub email: String,
+    pub item_name: String,
+    pub total: i64,
+}
+
+/// Column layout of the owner's 홈택스 upload sheet. UNVERIFIED: the 홈택스 일괄작성 양식 was not available to
+/// check when this was written. Map these columns to the downloaded template with the accountant before uploading.
+pub const TAX_INVOICE_HEADERS: [&str; 12] = [
+    "작성일자", "사업자등록번호", "상호", "대표자", "업태", "종목", "주소", "이메일", "품목", "공급가액", "세액", "합계",
+];
+
+/// Rows for the owner's 홈택스 upload, in request order. Supplier columns are filled on 홈택스 from the owner's login.
+pub fn tax_invoice_document(rows: &[InvoiceRow]) -> Vec<Vec<Cell>> {
+    let text = |s: &str| Cell::Text(s.to_string());
+    let mut doc = vec![TAX_INVOICE_HEADERS.iter().map(|h| text(h)).collect::<Vec<_>>()];
+    for r in rows {
+        let (supply, vat) = split_vat_inclusive(r.total);
+        doc.push(vec![
+            text(&r.day.to_string()),
+            text(&r.business_number),
+            text(&r.company_name),
+            text(&r.representative),
+            text(&r.business_type),
+            text(&r.business_item),
+            text(&r.address),
+            text(&r.email),
+            text(&r.item_name),
+            Cell::Number(supply),
+            Cell::Number(vat),
+            Cell::Number(r.total),
+        ]);
+    }
+    doc
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -110,6 +162,32 @@ mod tests {
         assert_eq!(quarter_range(2026, 4).unwrap().1, NaiveDate::from_ymd_opt(2026, 12, 31).unwrap());
         assert!(quarter_range(2026, 0).is_err());
         assert!(quarter_range(2026, 5).is_err());
+    }
+
+    #[test]
+    fn vat_split_is_one_eleventh_floored() {
+        assert_eq!(split_vat_inclusive(110_000), (100_000, 10_000));
+        assert_eq!(split_vat_inclusive(100_000), (90_910, 9_090));
+        assert_eq!(split_vat_inclusive(0), (0, 0));
+    }
+
+    #[test]
+    fn tax_invoice_document_matches_golden() {
+        let rows = vec![InvoiceRow {
+            day: NaiveDate::from_ymd_opt(2026, 8, 14).unwrap(),
+            business_number: "2208162517".into(),
+            company_name: "말끔주식회사".into(),
+            representative: "홍길동".into(),
+            business_type: "서비스".into(),
+            business_item: "청소".into(),
+            address: "서울특별시 강남구 테헤란로 1".into(),
+            email: "tax@example.test".into(),
+            item_name: "청소 서비스".into(),
+            total: 110_000,
+        }];
+        let out = finance::csv_document(&tax_invoice_document(&rows));
+        let golden = include_str!("../tests/golden/tax_invoice_2026q3.csv");
+        assert_eq!(out.trim_start_matches(finance::CSV_BOM).replace("\r\n", "\n"), golden.replace("\r\n", "\n"));
     }
 
     #[test]

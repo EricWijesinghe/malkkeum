@@ -426,6 +426,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
         .await?;
     tx.commit().await?;
     super::cash_receipts::on_settled(s, ck.id, payment_id).await;
+    super::tax_invoices::on_settled(s, ck.id, payment_id).await;
     match number {
         Some(n) => after_booking_created(s, booking_id, &n).await,
         None if db_kind == "deposit" => {

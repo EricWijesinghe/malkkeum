@@ -8,6 +8,7 @@ mod catalog;
 pub(crate) mod chat;
 mod cash_receipts;
 mod checkout_policy;
+mod tax_invoices;
 pub(crate) mod growth;
 pub(crate) mod checkouts;
 mod finance;
@@ -63,6 +64,7 @@ pub fn router(state: AppState) -> Router {
         .merge(uploads::routes())
         .merge(checkouts::routes())
         .merge(cash_receipts::routes())
+        .merge(tax_invoices::routes())
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
@@ -80,6 +82,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
                 .merge(cash_receipts::admin_routes())
+                .merge(tax_invoices::admin_routes())
                 .merge(ops::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))
