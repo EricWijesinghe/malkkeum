@@ -402,6 +402,7 @@ async fn put_business(State(s): State<AppState>, Admin(a): Admin, Json(input): J
         .bind(&value)
         .execute(&s.db)
         .await?;
+    super::config::invalidate();
     audit(&s.db, a.role.as_str(), Some(a.id), "setup.business", BUSINESS_KEY, json!({})).await?;
     Ok(Json(value))
 }
@@ -447,6 +448,11 @@ async fn card(s: &AppState, sec: Section, last_test: Option<Value>) -> ApiResult
     Ok(json!({ "code": sec.code(), "source": source, "configured": source != "none", "fields": fields, "last_test": last_test }))
 }
 
+/// Set by install.sh from `MALKKEUM_HEARTBEAT_URL`; the wizard shows a checklist item until it is.
+fn heartbeat_configured() -> bool {
+    std::env::var("HEARTBEAT_URL").is_ok_and(|v| !v.trim().is_empty())
+}
+
 /// Everything the wizard and the status page need in one call.
 async fn overview(State(s): State<AppState>, Admin(_): Admin) -> ApiResult<Json<Value>> {
     let tests: Vec<(String, Option<Value>)> = sqlx::query_as("SELECT section, last_test FROM integration_settings").fetch_all(&s.db).await?;
@@ -469,6 +475,8 @@ async fn overview(State(s): State<AppState>, Admin(_): Admin) -> ApiResult<Json<
         "integrations": cards,
         "counts": { "staff": counts.0, "verified_pros": counts.1, "active_services": counts.2, "bookings": counts.3 },
         "dev_mode": s.config.dev_mode,
+        // Only a flag: the ping URL is a secret-like address and stays on the host.
+        "heartbeat_configured": heartbeat_configured(),
         "public_base_url": s.config.public_base_url,
         "webhook_url": format!("{}/v1/webhooks/portone", s.config.public_base_url.trim_end_matches('/')),
     })))

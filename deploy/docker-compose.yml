@@ -21,6 +21,7 @@ services:
       DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
+      HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}

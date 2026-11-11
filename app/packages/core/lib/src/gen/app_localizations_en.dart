@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2225,6 +2226,13 @@ class TEn extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded of $invited';
   }
+
+  @override
+  String get uMaintenanceTitle => 'We are under maintenance';
+
+  @override
+  String get uMaintenanceBody =>
+      'We are improving the service. Please come back shortly.';
 
   @override
   String get cOps => 'System status';
