@@ -638,6 +638,9 @@ class TZh extends T {
   String get cNewMessage => '新消息';
 
   @override
+  String get cConfirmAsk => '确定要继续吗？';
+
+  @override
   String get ok => '确定';
 
   @override

@@ -638,6 +638,9 @@ class TKo extends T {
   String get cNewMessage => '새 메시지';
 
   @override
+  String get cConfirmAsk => '정말 진행할까요?';
+
+  @override
   String get ok => '확인';
 
   @override

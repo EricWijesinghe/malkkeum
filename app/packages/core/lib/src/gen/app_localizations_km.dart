@@ -648,6 +648,9 @@ class TKm extends T {
   String get cNewMessage => 'សារថ្មី';
 
   @override
+  String get cConfirmAsk => 'តើអ្នកច្បាស់ទេ?';
+
+  @override
   String get ok => 'យល់ព្រម';
 
   @override

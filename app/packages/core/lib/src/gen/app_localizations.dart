@@ -1351,6 +1351,12 @@ abstract class T {
   /// **'새 메시지'**
   String get cNewMessage;
 
+  /// No description provided for @cConfirmAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'정말 진행할까요?'**
+  String get cConfirmAsk;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:

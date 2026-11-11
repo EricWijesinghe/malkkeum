@@ -647,6 +647,9 @@ class TTh extends T {
   String get cNewMessage => 'ข้อความใหม่';
 
   @override
+  String get cConfirmAsk => 'แน่ใจหรือไม่?';
+
+  @override
   String get ok => 'ตกลง';
 
   @override

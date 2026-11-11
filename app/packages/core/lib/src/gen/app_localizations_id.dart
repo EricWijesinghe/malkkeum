@@ -650,6 +650,9 @@ class TId extends T {
   String get cNewMessage => 'Pesan baru';
 
   @override
+  String get cConfirmAsk => 'Yakin ingin melanjutkan?';
+
+  @override
   String get ok => 'Oke';
 
   @override

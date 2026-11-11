@@ -649,6 +649,9 @@ class TEn extends T {
   String get cNewMessage => 'New message';
 
   @override
+  String get cConfirmAsk => 'Are you sure?';
+
+  @override
   String get ok => 'OK';
 
   @override

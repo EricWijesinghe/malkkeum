@@ -653,6 +653,9 @@ class TMn extends T {
   String get cNewMessage => 'Шинэ зурвас';
 
   @override
+  String get cConfirmAsk => 'Итгэлтэй байна уу?';
+
+  @override
   String get ok => 'ОК';
 
   @override

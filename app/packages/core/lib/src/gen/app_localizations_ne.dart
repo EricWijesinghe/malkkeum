@@ -653,6 +653,9 @@ class TNe extends T {
   String get cNewMessage => 'नयाँ सन्देश';
 
   @override
+  String get cConfirmAsk => 'के तपाईं निश्चित हुनुहुन्छ?';
+
+  @override
   String get ok => 'ठिक छ';
 
   @override

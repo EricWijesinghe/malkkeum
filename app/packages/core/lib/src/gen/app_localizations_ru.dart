@@ -651,6 +651,9 @@ class TRu extends T {
   String get cNewMessage => 'Новое сообщение';
 
   @override
+  String get cConfirmAsk => 'Вы уверены?';
+
+  @override
   String get ok => 'ОК';
 
   @override

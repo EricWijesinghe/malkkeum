@@ -652,6 +652,9 @@ class TFil extends T {
   String get cNewMessage => 'Bagong mensahe';
 
   @override
+  String get cConfirmAsk => 'Sigurado ka ba?';
+
+  @override
   String get ok => 'Sige';
 
   @override

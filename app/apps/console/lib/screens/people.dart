@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'confirm_action.dart';
 import 'payout_seller_dialog.dart';
 
 Future<void> _act(
@@ -85,14 +86,17 @@ class PartnersScreen extends StatelessWidget {
                                   ),
                                 if (p['status'] == 'verified')
                                   OutlinedButton(
-                                    onPressed: () => _act(
-                                      context,
-                                      () => context.api.post(
-                                        '/admin/pros/${p['id']}/status',
-                                        {'status': 'suspended'},
-                                      ),
-                                      reload,
-                                    ),
+                                    onPressed: () async {
+                                      if (!await confirmAction(context, t.cSuspend) || !context.mounted) return;
+                                      await _act(
+                                        context,
+                                        () => context.api.post(
+                                          '/admin/pros/${p['id']}/status',
+                                          {'status': 'suspended'},
+                                        ),
+                                        reload,
+                                      );
+                                    },
                                     child: Text(t.cSuspend),
                                   ),
                               ],
@@ -583,13 +587,17 @@ class _StaffState extends State<StaffScreen> {
                   s['role'] == 'admin' ? t.cRoleAdmin : t.cRoleConsultant,
                 ),
                 trailing: TextButton(
-                  onPressed: () => _act(
-                    context,
-                    () => context.api.post('/admin/staff/${s['id']}/active', {
-                      'active': s['active'] != true,
-                    }),
-                    reload,
-                  ),
+                  onPressed: () async {
+                    // Only deactivation needs a confirm; reactivating is harmless.
+                    final deactivating = s['active'] == true;
+                    if (deactivating && !await confirmAction(context, t.cDeactivate)) return;
+                    if (!context.mounted) return;
+                    await _act(
+                      context,
+                      () => context.api.post('/admin/staff/${s['id']}/active', {'active': !deactivating}),
+                      reload,
+                    );
+                  },
                   child: Text(
                     s['active'] == true ? t.cDeactivate : t.cActivate,
                   ),

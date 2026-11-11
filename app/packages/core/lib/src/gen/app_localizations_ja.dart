@@ -638,6 +638,9 @@ class TJa extends T {
   String get cNewMessage => '新着メッセージ';
 
   @override
+  String get cConfirmAsk => 'よろしいですか？';
+
+  @override
   String get ok => '確認';
 
   @override

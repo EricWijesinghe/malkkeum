@@ -655,6 +655,9 @@ class TUz extends T {
   String get cNewMessage => 'Yangi xabar';
 
   @override
+  String get cConfirmAsk => 'Ishonchingiz komilmi?';
+
+  @override
   String get ok => 'Tayyor';
 
   @override

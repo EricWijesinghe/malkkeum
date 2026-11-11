@@ -654,6 +654,9 @@ class TSi extends T {
   String get cNewMessage => 'නව පණිවිඩයක්';
 
   @override
+  String get cConfirmAsk => 'ඔබට විශ්වාසද?';
+
+  @override
   String get ok => 'හරි';
 
   @override

@@ -650,6 +650,9 @@ class TVi extends T {
   String get cNewMessage => 'Tin nhắn mới';
 
   @override
+  String get cConfirmAsk => 'Bạn có chắc chắn không?';
+
+  @override
   String get ok => 'Xác nhận';
 
   @override

@@ -721,4 +721,5 @@ T = {
     "mMyJobs": "Pekerjaan saya",
     "mNoJobs": "Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.",
     "mTeam": "Anggota {team}",
+    "cConfirmAsk": "Yakin ingin melanjutkan?",
 }
