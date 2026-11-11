@@ -1855,7 +1855,7 @@ class TKo extends T {
   String get err_unsupported_bank => '이 은행은 지급을 지원하지 않아요.';
 
   @override
-  String get err_toss_unverified => '토스 지급대행은 아직 테스트 키(test_)만 쓸 수 있어요.';
+  String get err_toss_unverified => '토스 지급대행은 아직 연결할 수 없어요. 직접 이체를 써 주세요.';
 
   @override
   String get err_invalid_cap => '한도는 정해진 범위 안의 숫자로 입력해 주세요.';

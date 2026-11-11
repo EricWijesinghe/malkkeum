@@ -3670,7 +3670,7 @@ abstract class T {
   /// No description provided for @err_toss_unverified.
   ///
   /// In ko, this message translates to:
-  /// **'토스 지급대행은 아직 테스트 키(test_)만 쓸 수 있어요.'**
+  /// **'토스 지급대행은 아직 연결할 수 없어요. 직접 이체를 써 주세요.'**
   String get err_toss_unverified;
 
   /// No description provided for @err_invalid_cap.

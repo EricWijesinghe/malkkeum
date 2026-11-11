@@ -331,9 +331,9 @@ fn payout_settings(v: &Map<String, Value>) -> Result<PayoutSettings, Invalid> {
     if mode == PayoutMode::Toss && secret_key.is_none() {
         return Err(Invalid("missing_field"));
     }
-    // shortcut: the Toss payout API shape is unverified (docs unreachable), so only sandbox keys are
-    // accepted; drop this check after a sandbox run confirms providers/payout.rs.
-    if mode == PayoutMode::Toss && !secret_key.as_deref().is_some_and(|k| k.starts_with("test_")) {
+    // shortcut: Toss payouts also need per-pro seller registration (POST /v2/sellers) and JWE-encrypted
+    // bodies, which providers/payout.rs does not do yet, so toss mode is refused; build both, then lift this.
+    if mode == PayoutMode::Toss {
         return Err(Invalid("toss_unverified"));
     }
     Ok(PayoutSettings { mode, secret_key })
@@ -664,7 +664,7 @@ mod tests {
     }
 
     #[test]
-    fn payout_defaults_to_manual_and_toss_needs_a_secret() {
+    fn payout_defaults_to_manual_and_toss_is_refused() {
         let base = Integrations::default();
         assert!(base.payout.is_none(), "no section means manual");
         let manual = apply(&base, Section::Payout, &obj(json!({"mode": "manual"}))).unwrap();
@@ -674,10 +674,11 @@ mod tests {
             apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "live_sk_x"}))).unwrap_err(),
             Invalid("toss_unverified")
         );
-        let toss = apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "test_sk_x"}))).unwrap();
-        assert!(toss.has(Section::Payout));
-        let p = toss.payout.expect("payout settings");
-        assert_eq!((p.mode, p.secret_key.as_deref()), (PayoutMode::Toss, Some("test_sk_x")));
+        assert_eq!(
+            apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "test_sk_x"}))).unwrap_err(),
+            Invalid("toss_unverified"),
+            "toss stays off until seller registration and JWE exist"
+        );
         assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(), Invalid("invalid_mode"));
     }
 

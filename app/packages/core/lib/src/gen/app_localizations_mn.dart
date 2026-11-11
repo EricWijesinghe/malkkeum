@@ -1923,7 +1923,7 @@ class TMn extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss төлбөр одоогоор зөвхөн туршилтын түлхүүр (test_) хүлээн авна.';
+      'Toss төлбөр одоогоор боломжгүй. Гараар шилжүүлэг ашиглана уу.';
 
   @override
   String get err_invalid_cap => 'Зөвшөөрөгдсөн хязгаарт багтах тоо оруулна уу.';

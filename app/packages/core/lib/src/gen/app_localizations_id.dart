@@ -1917,7 +1917,7 @@ class TId extends T {
 
   @override
   String get err_toss_unverified =>
-      'Pembayaran Toss untuk sementara hanya menerima kunci uji (test_).';
+      'Pembayaran Toss belum tersedia. Gunakan transfer manual.';
 
   @override
   String get err_invalid_cap => 'Masukkan angka dalam rentang yang diizinkan.';

@@ -1913,7 +1913,7 @@ class TNe extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss भुक्तानीले अहिलेलाई परीक्षण कुञ्जी (test_) मात्र लिन्छ।';
+      'Toss भुक्तानी अहिले उपलब्ध छैन। म्यानुअल ट्रान्सफर प्रयोग गर्नुहोस्।';
 
   @override
   String get err_invalid_cap => 'अनुमति दिइएको दायराभित्रको संख्या लेख्नुहोस्।';

@@ -1902,7 +1902,7 @@ class TVi extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss chi hộ hiện chỉ nhận khóa thử nghiệm (test_).';
+      'Chưa thể kết nối Toss chi hộ. Vui lòng dùng chuyển khoản thủ công.';
 
   @override
   String get err_invalid_cap => 'Vui lòng nhập số trong phạm vi cho phép.';

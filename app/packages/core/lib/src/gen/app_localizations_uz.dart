@@ -1926,7 +1926,7 @@ class TUz extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss to‘lovlari hozircha faqat test kalitlarini (test_) qabul qiladi.';
+      'Toss to‘lovlari hozircha mavjud emas. Qo‘lda o‘tkazmadan foydalaning.';
 
   @override
   String get err_invalid_cap => 'Ruxsat etilgan oraliqdagi sonni kiriting.';

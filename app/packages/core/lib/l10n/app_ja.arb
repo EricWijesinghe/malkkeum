@@ -591,7 +591,7 @@
  "err_payout_state": "支払いの状態が変わりました。更新して再度確認してください。",
  "err_payout_provider": "この支払い方法は現在利用できません。",
  "err_unsupported_bank": "この銀行への支払いはサポートされていません。",
- "err_toss_unverified": "Toss支払い代行は現在テストキー(test_)のみ使えます。",
+ "err_toss_unverified": "Toss支払い代行はまだ接続できません。手動振込をご利用ください。",
  "err_invalid_cap": "上限は許可された範囲の数字で入力してください。",
  "err_invalid_capacity": "定員は正しい数字で入力してください。",
  "fFinance": "財務",

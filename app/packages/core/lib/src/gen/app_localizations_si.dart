@@ -1916,7 +1916,7 @@ class TSi extends T {
 
   @override
   String get err_toss_unverified =>
-      'Toss ගෙවීම් දැනට පරීක්ෂණ යතුරු (test_) පමණක් පිළිගනී.';
+      'Toss ගෙවීම් තවම ලබා ගත නොහැක. අතින් මුදල් යැවීම භාවිත කරන්න.';
 
   @override
   String get err_invalid_cap => 'අවසර ලත් පරාසය තුළ අංකයක් ඇතුළත් කරන්න.';

@@ -1915,7 +1915,7 @@ class TRu extends T {
 
   @override
   String get err_toss_unverified =>
-      'Выплаты Toss пока принимают только тестовые ключи (test_).';
+      'Выплаты Toss пока недоступны. Используйте ручной перевод.';
 
   @override
   String get err_invalid_cap => 'Введите число в допустимом диапазоне.';

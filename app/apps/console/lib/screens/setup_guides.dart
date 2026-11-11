@@ -298,8 +298,8 @@ final guides = <String, Guide>{
         'The default is manual transfer: the settlements screen shows the account and amount, you send it from your bank app and press Transferred.',
       ),
       Tr(
-        '토스 지급대행 계약이 있으면 mode 에 toss 를, 아래 칸에 시크릿 키를 넣어요. 지금은 테스트 키(test_)만 받아요.',
-        'With a Toss payouts contract, set mode to toss and paste the secret key below. For now only test keys (test_) are accepted.',
+        '토스 지급대행 자동 송금은 준비 중이에요. 지금은 mode 를 manual 로 두세요.',
+        'Automatic Toss payouts are still being built. Keep mode set to manual for now.',
       ),
     ],
     fields: const {

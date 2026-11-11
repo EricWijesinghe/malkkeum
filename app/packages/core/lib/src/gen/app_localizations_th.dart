@@ -1902,7 +1902,7 @@ class TTh extends T {
 
   @override
   String get err_toss_unverified =>
-      'ตอนนี้ Toss รับเฉพาะคีย์ทดสอบ (test_) เท่านั้น';
+      'ยังใช้ Toss จ่ายเงินไม่ได้ กรุณาโอนเงินเอง';
 
   @override
   String get err_invalid_cap => 'กรุณาใส่ตัวเลขในช่วงที่อนุญาต';

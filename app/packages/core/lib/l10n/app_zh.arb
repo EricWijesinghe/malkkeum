@@ -591,7 +591,7 @@
  "err_payout_state": "支付状态已变更，请刷新后重新确认。",
  "err_payout_provider": "该支付方式当前不可用。",
  "err_unsupported_bank": "不支持向该银行付款。",
- "err_toss_unverified": "Toss 代付目前仅接受测试密钥 (test_)。",
+ "err_toss_unverified": "暂不支持 Toss 代付，请使用手动转账。",
  "err_invalid_cap": "请输入允许范围内的数字。",
  "err_invalid_capacity": "请输入有效的容量。",
  "fFinance": "财务",
