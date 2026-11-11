@@ -146,6 +146,7 @@ async fn job(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> Ap
     if committed {
         view["address"] = b.address.clone();
         view["visit_notes"] = b.visit_notes.clone();
+        view["household"] = b.household.clone();
         let raw: String = sqlx::query_scalar("SELECT name FROM users WHERE id = $1")
             .bind(b.user_id)
             .fetch_one(&s.db)

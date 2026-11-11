@@ -3,7 +3,7 @@ mod admin;
 mod admin_content;
 mod auth;
 mod booking_core;
-mod bookings;
+pub(crate) mod bookings;
 mod catalog;
 pub(crate) mod chat;
 mod checkout_policy;
@@ -58,6 +58,7 @@ pub fn router(state: AppState) -> Router {
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(bookings::routes())
+        .merge(bookings::public_routes())
         .merge(chat::routes())
         .merge(uploads::routes())
         .merge(checkouts::routes())

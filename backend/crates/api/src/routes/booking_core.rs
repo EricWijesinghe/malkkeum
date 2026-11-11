@@ -38,6 +38,9 @@ pub struct BookingBody {
     pub answers: Option<QuoteAnswers>,
     #[serde(default)]
     pub visit_notes: Value,
+    /// Per-booking household override; absent means "copy the address profile".
+    #[serde(default)]
+    pub household: Option<Value>,
 }
 
 /// Request facts that do not depend on payment: catalogue entry, address snapshot, notes.
@@ -46,6 +49,7 @@ pub struct Prepared {
     pub district_code: String,
     pub snapshot: Value,
     pub notes: Value,
+    pub household: Value,
 }
 
 #[derive(sqlx::FromRow)]
@@ -56,13 +60,21 @@ struct AddressSnap {
     detail: String,
     district_code: String,
     size_pyeong: i16,
+    household: Value,
+}
+
+/// Validates the household payload and returns its stored (trimmed) form.
+pub fn checked_household(v: &Value) -> ApiResult<Value> {
+    let h: domain::household::Household = serde_json::from_value(v.clone()).map_err(|_| ApiError::BadRequest("invalid_household"))?;
+    let h = h.validated().map_err(ApiError::BadRequest)?;
+    serde_json::to_value(h).map_err(|e| ApiError::Internal(e.to_string()))
 }
 
 /// Validates the request against the catalogue, the customer's address and the calendar.
 pub async fn prepare(db: &PgPool, user: Uuid, b: &BookingBody) -> ApiResult<Prepared> {
     let service = load_service(db, &b.service_code).await?;
     let addr: AddressSnap = sqlx::query_as(
-        "SELECT kind, label, road_address, detail, district_code, size_pyeong FROM addresses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
+        "SELECT kind, label, road_address, detail, district_code, size_pyeong, household FROM addresses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
     )
     .bind(b.address_id)
     .bind(user)
@@ -78,11 +90,16 @@ pub async fn prepare(db: &PgPool, user: Uuid, b: &BookingBody) -> ApiResult<Prep
     } else {
         sanitize_notes(&b.visit_notes).ok_or(ApiError::BadRequest("invalid_notes"))?
     };
+    let household = match &b.household {
+        Some(h) => checked_household(h)?,
+        None => addr.household,
+    };
     Ok(Prepared {
         service,
         district_code: addr.district_code,
         snapshot,
         notes,
+        household,
     })
 }
 
@@ -150,8 +167,8 @@ pub async fn next_number(conn: &mut PgConnection) -> ApiResult<String> {
 pub async fn insert_paid(conn: &mut PgConnection, id: Uuid, user: Uuid, prep: &Prepared, b: &BookingBody, price: &PriceBreakdown) -> ApiResult<String> {
     let number = next_number(&mut *conn).await?;
     sqlx::query(
-        "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15)",
+        "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes, household)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15,$16)",
     )
     .bind(id)
     .bind(&number)
@@ -168,6 +185,7 @@ pub async fn insert_paid(conn: &mut PgConnection, id: Uuid, user: Uuid, prep: &P
     .bind(price.total.0)
     .bind(b.coupon_id)
     .bind(&prep.notes)
+    .bind(&prep.household)
     .execute(&mut *conn)
     .await?;
     if let Some(cid) = b.coupon_id {

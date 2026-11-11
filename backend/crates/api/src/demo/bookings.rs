@@ -141,15 +141,17 @@ async fn one(
     let assignee = pro_row.as_ref().map(|p| *c.pick(&p.assignees));
     let accepted = pro.map(|_| created + Duration::hours(2));
     let updated = completed.or(cancelled).or(accepted).unwrap_or(created);
-    let notes = json!({ "parking": c.pick(&PARKING), "access": c.pick(&ACCESS), "pets": c.chance(0.15) });
+    let notes = json!({ "parking": c.pick(&PARKING), "access": c.pick(&ACCESS) });
+    let pets = if c.chance(0.15) { json!([{ "kind": "dog", "count": 1 }]) } else { json!([]) };
+    let household = json!({ "pets": pets, "parking": c.pick(&PARKING), "elevator": c.chance(0.5) });
     let memo = if pro.is_some() && c.chance(0.3) { "현관 비번 확인 후 방문" } else { "" };
     let answers_json = answers.as_ref().map(|a| serde_json::to_value(a).expect("quote answers serialise"));
     let address = super::people::address_snapshot(&addr);
     sqlx::query(
         "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes,
             status, answers, estimate, final_price, deposit, list_price, discount, paid_amount, balance_paid, coupon_id, team_name,
-            pro_id, assignee_id, accepted_at, visit_notes, team_memo, cancelled_at, completed_at, created_at, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)",
+            pro_id, assignee_id, accepted_at, visit_notes, team_memo, cancelled_at, completed_at, created_at, updated_at, household)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)",
     )
     .bind(id)
     .bind(&number)
@@ -181,6 +183,7 @@ async fn one(
     .bind(completed)
     .bind(created)
     .bind(updated)
+    .bind(&household)
     .execute(&mut *c.tx)
     .await?;
     c.reg("bookings", id).await?;

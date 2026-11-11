@@ -3,13 +3,12 @@
 //! live here; `routes::chat::send` only calls [`schedule`] after a customer or partner message.
 
 use crate::{
-    error::ApiResult,
+    error::{ApiError, ApiResult},
     ratelimit::within_quota,
-    routes::chat,
+    routes::{bookings::load_cancel_policy, chat},
     state::AppState,
 };
 use chrono::{DateTime, Datelike, FixedOffset, NaiveTime, Utc};
-use domain::booking::FREE_CANCEL_DAYS;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::PgPool;
@@ -161,7 +160,7 @@ pub fn system_blocks(shop: &Value, locale: &str, booking: &Value) -> Vec<Value> 
 }
 
 /// Shop data for the cached block: hours, active catalogue with pricing, cancellation rule.
-pub async fn shop_data(db: &PgPool, hours: &Value) -> Result<Value, sqlx::Error> {
+pub async fn shop_data(db: &PgPool, hours: &Value) -> ApiResult<Value> {
     let services: Value = sqlx::query_scalar(
         "SELECT COALESCE(jsonb_agg(jsonb_build_object('code', code, 'pricing', pricing, 'max_pyeong', max_pyeong) ORDER BY sort_order), '[]'::jsonb)
          FROM services WHERE active",
@@ -171,7 +170,8 @@ pub async fn shop_data(db: &PgPool, hours: &Value) -> Result<Value, sqlx::Error>
     Ok(json!({
         "business_hours": hours,
         "services": services,
-        "cancellation_policy": format!("Free cancellation until {FREE_CANCEL_DAYS} days before the visit; later cancellations are reviewed by staff."),
+        // Tiers are days before the visit; a null percent means staff review (no self-serve cancel).
+        "cancellation_policy": serde_json::to_value(load_cancel_policy(db).await?.0).map_err(|e| ApiError::Internal(e.to_string()))?,
     }))
 }
 

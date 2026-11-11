@@ -1,9 +1,6 @@
 use crate::DomainError;
-use chrono::NaiveDate;
+use crate::cancel_policy::{CancelPolicy, Outcome, Quote};
 use serde::{Deserialize, Serialize};
-
-/// Free cancellation until this many days before the visit (spec rule 6).
-pub const FREE_CANCEL_DAYS: i64 = 2;
 
 /// Customer-facing booking status. Numbers match the spec (0-3) and the DB.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -58,28 +55,19 @@ impl BookingStatus {
     }
 }
 
-/// Whether the customer may cancel without a fee right now.
-pub fn is_free_cancellation(status: BookingStatus, today: NaiveDate, visit: NaiveDate) -> bool {
-    status == BookingStatus::Consultation || (visit - today).num_days() >= FREE_CANCEL_DAYS
-}
-
-/// Customer self-service cancel. Late cancels go through the consultation team
-/// until the fee policy (decision #7) is set.
-pub fn customer_cancel(status: BookingStatus, today: NaiveDate, visit: NaiveDate) -> Result<BookingStatus, DomainError> {
-    if !is_free_cancellation(status, today, visit) {
-        return Err(DomainError::CancellationWindowClosed);
+/// What a customer cancel costs. Consultation (no money taken yet) is always free; otherwise the policy decides.
+/// None means the customer cannot cancel in-app (staff handle it).
+pub fn cancel_quote(policy: &CancelPolicy, status: BookingStatus, days_before: i64, paid: i64) -> Option<Quote> {
+    if status == BookingStatus::Consultation {
+        return Some(Quote { outcome: Outcome::Free, paid: 0, fee: 0, refund: 0 });
     }
-    status.transition(BookingStatus::Cancelled)
+    policy.quote(days_before, paid)
 }
 
 #[cfg(test)]
 mod tests {
     use super::BookingStatus::*;
     use super::*;
-
-    fn d(day: u32) -> NaiveDate {
-        NaiveDate::from_ymd_opt(2026, 11, day).unwrap()
-    }
 
     #[test]
     fn roundtrip_numbers() {
@@ -101,9 +89,11 @@ mod tests {
     }
 
     #[test]
-    fn free_cancel_window() {
-        assert!(customer_cancel(Confirmed, d(10), d(12)).is_ok());
-        assert_eq!(customer_cancel(Confirmed, d(11), d(12)), Err(DomainError::CancellationWindowClosed));
-        assert!(customer_cancel(Consultation, d(11), d(12)).is_ok());
+    fn consultation_is_free_and_closed_policy_blocks_self_serve() {
+        let p = CancelPolicy::default();
+        let q = cancel_quote(&p, Consultation, 0, 0).unwrap();
+        assert_eq!((q.fee, q.refund), (0, 0));
+        assert_eq!(cancel_quote(&p, Confirmed, 1, 45_000), None);
+        assert_eq!(cancel_quote(&p, Confirmed, 2, 45_000).unwrap().refund, 45_000);
     }
 }
