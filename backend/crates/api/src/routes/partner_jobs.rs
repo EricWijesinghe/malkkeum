@@ -1,10 +1,10 @@
 //! Partner jobs: feed, preview, atomic accept, quotes, schedule, assignment, memo, completion, reschedule replies.
 
+use super::uploads;
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
     chat, growth,
 };
-use super::uploads;
 use crate::{
     auth::{Pro, mask_name},
     error::{ApiError, ApiResult},

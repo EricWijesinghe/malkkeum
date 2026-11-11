@@ -80,7 +80,11 @@ async fn far_booking_cancels_free_with_full_refund_and_no_fee_ack(pool: PgPool) 
     let (id, b) = book_kst_days(&app, &c, 10).await;
 
     let (_, preview) = call(&app, "GET", &format!("/v1/bookings/{id}/cancel-preview"), Some(c.token.as_str()), None).await;
-    assert_eq!((preview["fee"].as_i64(), preview["refund"].as_i64()), (Some(0), Some(b["paid_amount"].as_i64().unwrap_or(0))), "{preview}");
+    assert_eq!(
+        (preview["fee"].as_i64(), preview["refund"].as_i64()),
+        (Some(0), Some(b["paid_amount"].as_i64().unwrap_or(0))),
+        "{preview}"
+    );
 
     let (st, body) = call(&app, "POST", &format!("/v1/bookings/{id}/cancel"), Some(c.token.as_str()), Some(json!({}))).await;
     assert_eq!(st, StatusCode::OK, "{body}");
@@ -108,7 +112,14 @@ async fn fee_must_be_accepted_and_refund_is_paid_minus_fee(pool: PgPool) {
     assert_eq!(body["error"]["code"], "fee_changed", "{body}");
     assert_eq!(refunded_total(&pool, id).await.1, 0);
 
-    let (st, body) = call(&app, "POST", &format!("/v1/bookings/{id}/cancel"), Some(c.token.as_str()), Some(json!({ "accepted_fee": fee }))).await;
+    let (st, body) = call(
+        &app,
+        "POST",
+        &format!("/v1/bookings/{id}/cancel"),
+        Some(c.token.as_str()),
+        Some(json!({ "accepted_fee": fee })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{body}");
     let (paid, refunded) = refunded_total(&pool, id).await;
     assert_eq!(refunded, paid - fee, "refund is what remains after the fee");
@@ -130,10 +141,24 @@ async fn household_is_copied_from_address_and_editable_per_booking(pool: PgPool)
     let (id, b) = book_kst_days(&app, &c, 10).await;
     assert_eq!(b["household"]["allergies"], "향수", "{b}");
 
-    let (st, bad) = call(&app, "PUT", &format!("/v1/bookings/{id}/household"), Some(c.token.as_str()), Some(json!({ "pets": [{ "kind": "lizard", "count": 1 }] }))).await;
+    let (st, bad) = call(
+        &app,
+        "PUT",
+        &format!("/v1/bookings/{id}/household"),
+        Some(c.token.as_str()),
+        Some(json!({ "pets": [{ "kind": "lizard", "count": 1 }] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "{bad}");
 
-    let (st, edited) = call(&app, "PUT", &format!("/v1/bookings/{id}/household"), Some(c.token.as_str()), Some(json!({ "parking": "지하 주차장", "pets": [] }))).await;
+    let (st, edited) = call(
+        &app,
+        "PUT",
+        &format!("/v1/bookings/{id}/household"),
+        Some(c.token.as_str()),
+        Some(json!({ "parking": "지하 주차장", "pets": [] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{edited}");
     assert_eq!(edited["household"]["parking"], "지하 주차장");
     assert_eq!(edited["household"]["pets"], json!([]));

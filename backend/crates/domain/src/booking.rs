@@ -59,7 +59,12 @@ impl BookingStatus {
 /// None means the customer cannot cancel in-app (staff handle it).
 pub fn cancel_quote(policy: &CancelPolicy, status: BookingStatus, days_before: i64, paid: i64) -> Option<Quote> {
     if status == BookingStatus::Consultation {
-        return Some(Quote { outcome: Outcome::Free, paid: 0, fee: 0, refund: 0 });
+        return Some(Quote {
+            outcome: Outcome::Free,
+            paid: 0,
+            fee: 0,
+            refund: 0,
+        });
     }
     policy.quote(days_before, paid)
 }

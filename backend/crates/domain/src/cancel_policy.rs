@@ -14,7 +14,9 @@ const CLOSED_RANK: u16 = 101;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum Outcome {
     Free,
-    Fee { percent: u8 },
+    Fee {
+        percent: u8,
+    },
     /// Customer cannot cancel in-app; the consultation team handles it.
     Closed,
 }
@@ -88,7 +90,12 @@ impl CancelPolicy {
             Outcome::Free => 0,
             Outcome::Fee { percent } => (paid * i64::from(percent) / 100).max(self.min_fee).min(paid),
         };
-        Some(Quote { outcome, paid, fee, refund: paid - fee })
+        Some(Quote {
+            outcome,
+            paid,
+            fee,
+            refund: paid - fee,
+        })
     }
 
     pub fn reschedule_allowed(&self, days_before: i64) -> bool {
@@ -177,8 +184,14 @@ mod tests {
     fn invalid_policies_are_rejected() {
         assert!(policy(&[], 0).validate().is_err());
         assert!(policy(&[(1, Some(0)), (2, Some(0))], 0).validate().is_err(), "days must descend");
-        assert!(policy(&[(2, Some(50)), (1, Some(20))], 0).validate().is_err(), "penalty must not drop closer to visit");
-        assert!(policy(&[(2, Some(0)), (1, None), (0, Some(50))], 0).validate().is_err(), "closed is most severe");
+        assert!(
+            policy(&[(2, Some(50)), (1, Some(20))], 0).validate().is_err(),
+            "penalty must not drop closer to visit"
+        );
+        assert!(
+            policy(&[(2, Some(0)), (1, None), (0, Some(50))], 0).validate().is_err(),
+            "closed is most severe"
+        );
         assert!(policy(&[(2, Some(101))], 0).validate().is_err());
         assert!(policy(&[(2, Some(0))], -1).validate().is_err());
     }

@@ -77,15 +77,33 @@ mod tests {
 
     #[test]
     fn rejects_bad_pets_floor_and_length() {
-        let bad_kind = Household { pets: vec![Pet { kind: "lizard".into(), count: 1 }], ..Default::default() };
+        let bad_kind = Household {
+            pets: vec![Pet {
+                kind: "lizard".into(),
+                count: 1,
+            }],
+            ..Default::default()
+        };
         assert_eq!(bad_kind.validated(), Err("invalid_household"));
-        let zero = Household { pets: vec![Pet { kind: "cat".into(), count: 0 }], ..Default::default() };
+        let zero = Household {
+            pets: vec![Pet { kind: "cat".into(), count: 0 }],
+            ..Default::default()
+        };
         assert_eq!(zero.validated(), Err("invalid_household"));
-        let many = Household { pets: vec![Pet { kind: "cat".into(), count: 1 }; MAX_PETS + 1], ..Default::default() };
+        let many = Household {
+            pets: vec![Pet { kind: "cat".into(), count: 1 }; MAX_PETS + 1],
+            ..Default::default()
+        };
         assert_eq!(many.validated(), Err("invalid_household"));
-        let floor = Household { floor: Some(999), ..Default::default() };
+        let floor = Household {
+            floor: Some(999),
+            ..Default::default()
+        };
         assert_eq!(floor.validated(), Err("invalid_household"));
-        let long = Household { notes: "가".repeat(MAX_TEXT_CHARS + 1), ..Default::default() };
+        let long = Household {
+            notes: "가".repeat(MAX_TEXT_CHARS + 1),
+            ..Default::default()
+        };
         assert_eq!(long.validated(), Err("invalid_household"));
     }
 }

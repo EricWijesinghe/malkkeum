@@ -81,7 +81,11 @@ pub struct Caps {
 
 impl Default for Caps {
     fn default() -> Self {
-        Self { thread_hourly: DEFAULT_THREAD_HOURLY_CAP, member_daily: DEFAULT_MEMBER_DAILY_CAP, daily: DEFAULT_DAILY_CAP }
+        Self {
+            thread_hourly: DEFAULT_THREAD_HOURLY_CAP,
+            member_daily: DEFAULT_MEMBER_DAILY_CAP,
+            daily: DEFAULT_DAILY_CAP,
+        }
     }
 }
 
@@ -121,7 +125,9 @@ pub fn should_answer(mode: Mode, f: Facts) -> bool {
 pub fn open_at(hours: &Value, now: DateTime<Utc>) -> bool {
     let kst = now.with_timezone(&FixedOffset::east_opt(KST_OFFSET_SECS).expect("KST offset is valid"));
     let weekday = i64::from(kst.weekday().num_days_from_monday());
-    let on_day = hours["weekdays"].as_array().is_some_and(|days| days.iter().any(|d| d.as_i64() == Some(weekday)));
+    let on_day = hours["weekdays"]
+        .as_array()
+        .is_some_and(|days| days.iter().any(|d| d.as_i64() == Some(weekday)));
     let clock = |key: &str| hours[key].as_str().and_then(|s| NaiveTime::parse_from_str(s, "%H:%M").ok());
     match (clock("open"), clock("close")) {
         (Some(open), Some(close)) => on_day && (open..close).contains(&kst.time()),
@@ -191,7 +197,11 @@ fn turn_of(row: &HistoryRow) -> Option<(&'static str, String)> {
     if row.kind == "system" {
         return Some(("user", format!("<event>{}</event>", row.body["code"].as_str().unwrap_or("unknown"))));
     }
-    let text = if row.kind == "photo" { "[photo]".to_string() } else { row.body["text"].as_str()?.to_string() };
+    let text = if row.kind == "photo" {
+        "[photo]".to_string()
+    } else {
+        row.body["text"].as_str()?.to_string()
+    };
     Some(match row.sender.as_str() {
         "staff" if row.body["ai"].as_bool() == Some(true) => ("assistant", text),
         "staff" => ("user", format!("<staff>{}</staff>", neutralize(&text))),
@@ -547,7 +557,13 @@ mod tests {
     use chrono::TimeZone;
 
     fn facts() -> Facts {
-        Facts { closed: false, paused: false, staff_recent: false, staff_online: false, open_hours: true }
+        Facts {
+            closed: false,
+            paused: false,
+            staff_recent: false,
+            staff_online: false,
+            open_hours: true,
+        }
     }
 
     #[test]
@@ -593,7 +609,11 @@ mod tests {
     }
 
     fn row(sender: &str, kind: &str, body: Value) -> HistoryRow {
-        HistoryRow { sender: sender.into(), kind: kind.into(), body }
+        HistoryRow {
+            sender: sender.into(),
+            kind: kind.into(),
+            body,
+        }
     }
 
     #[test]
@@ -608,9 +628,15 @@ mod tests {
         ];
         let turns = to_turns(&rows);
         // Staff-human, customer and system lines are all user-role, so they merge into one turn.
-        assert_eq!(turns[0], json!({"role": "user", "content": "<staff>old staff</staff>\n<customer>hi</customer>\n<customer>price?</customer>"}));
+        assert_eq!(
+            turns[0],
+            json!({"role": "user", "content": "<staff>old staff</staff>\n<customer>hi</customer>\n<customer>price?</customer>"})
+        );
         assert_eq!(turns[1], json!({"role": "assistant", "content": "hello"}));
-        assert_eq!(turns[2], json!({"role": "user", "content": "<customer>refund</customer>\n<event>booking.status</event>"}));
+        assert_eq!(
+            turns[2],
+            json!({"role": "user", "content": "<customer>refund</customer>\n<event>booking.status</event>"})
+        );
         assert_eq!(turns.len(), 3);
     }
 
@@ -636,8 +662,17 @@ mod tests {
 
     #[test]
     fn request_has_fallback_effort_and_no_sampling_knobs() {
-        let cfg = AiConfig { api_key: "k".into(), model: DEFAULT_MODEL.into(), mode: Mode::Offline, caps: Caps::default() };
-        let body = request_body(&cfg, system_blocks(&json!({}), "ko", &Value::Null), vec![json!({"role": "user", "content": "x"})]);
+        let cfg = AiConfig {
+            api_key: "k".into(),
+            model: DEFAULT_MODEL.into(),
+            mode: Mode::Offline,
+            caps: Caps::default(),
+        };
+        let body = request_body(
+            &cfg,
+            system_blocks(&json!({}), "ko", &Value::Null),
+            vec![json!({"role": "user", "content": "x"})],
+        );
         assert_eq!(body["fallbacks"], "default");
         assert_eq!(body["output_config"]["effort"], "low");
         assert_eq!(body["max_tokens"], 1024);
@@ -685,12 +720,23 @@ mod tests {
 
     #[test]
     fn default_caps_are_the_shipped_numbers() {
-        assert_eq!(Caps::default(), Caps { thread_hourly: 12, member_daily: 40, daily: 1000 });
+        assert_eq!(
+            Caps::default(),
+            Caps {
+                thread_hourly: 12,
+                member_daily: 40,
+                daily: 1000
+            }
+        );
     }
 
     #[test]
     fn each_cap_stops_replies_once_reached() {
-        let caps = Caps { thread_hourly: 2, member_daily: 5, daily: 7 };
+        let caps = Caps {
+            thread_hourly: 2,
+            member_daily: 5,
+            daily: 7,
+        };
         assert!(under_caps(1, 4, 6, caps), "one under every cap");
         assert!(!under_caps(2, 0, 0, caps), "thread hourly cap reached");
         assert!(!under_caps(0, 5, 0, caps), "member daily cap reached");

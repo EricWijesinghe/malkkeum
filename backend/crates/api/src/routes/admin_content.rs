@@ -218,7 +218,9 @@ struct ContentInput {
 impl ContentInput {
     /// Our uploads are stored as plain `/files/<name>` paths, never as expiring signed links.
     fn stored_image(&self, base: &str) -> Option<String> {
-        self.image_url.as_deref().map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
+        self.image_url
+            .as_deref()
+            .map(|u| crate::util::own_upload(base, u).unwrap_or_else(|| u.to_string()))
     }
 
     async fn validate(&self, s: &AppState) -> ApiResult<()> {
@@ -227,7 +229,10 @@ impl ContentInput {
             .link
             .as_deref()
             .is_none_or(|l| l.starts_with("https://") || l.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '/'));
-        let safe_image = self.image_url.as_deref().is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
+        let safe_image = self
+            .image_url
+            .as_deref()
+            .is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
         let ok = matches!(self.kind.as_str(), "notice" | "tip" | "faq" | "banner" | "legal")
             && self.title.is_object()
             && self.body.is_object()

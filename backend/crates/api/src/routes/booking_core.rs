@@ -15,8 +15,8 @@ use domain::{
     booking::BookingStatus,
     catalog::Service,
     coupon::Coupon,
-    partner::payout_date,
     growth::{apply_welcome, welcome_applies},
+    partner::payout_date,
     pricing::{PriceBreakdown, price_booking},
     quote::QuoteAnswers,
     schedule::{check_capacity, check_date, check_slot},
@@ -140,7 +140,10 @@ pub async fn price_for(conn: &mut PgConnection, user: Uuid, prep: &Prepared, b: 
         .bind(format!("welcome-user:{user}"))
         .execute(&mut *conn)
         .await?;
-    let prior: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1").bind(user).fetch_one(&mut *conn).await?;
+    let prior: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1")
+        .bind(user)
+        .fetch_one(&mut *conn)
+        .await?;
     if !welcome_applies(&offer, prior, false) {
         return Ok(price);
     }

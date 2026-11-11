@@ -79,7 +79,11 @@ fn state_of(rows: &[Latest]) -> ConsentState {
         })
         .collect();
     let reconsent_required = items.iter().any(|i| i.required && !i.granted);
-    ConsentState { version: CONSENT_VERSION, items, reconsent_required }
+    ConsentState {
+        version: CONSENT_VERSION,
+        items,
+        reconsent_required,
+    }
 }
 
 pub async fn consent_state(db: &PgPool, user: Uuid) -> ApiResult<ConsentState> {
@@ -115,7 +119,12 @@ pub async fn update_consents(db: &PgPool, user: Uuid, update: ConsentUpdate) -> 
     let mut rows = latest(db, user).await?;
     for c in &update.consents {
         rows.retain(|r| r.kind != c.kind);
-        rows.push(Latest { kind: c.kind.clone(), version: c.version.clone(), granted: c.granted, created_at: Utc::now() });
+        rows.push(Latest {
+            kind: c.kind.clone(),
+            version: c.version.clone(),
+            granted: c.granted,
+            created_at: Utc::now(),
+        });
     }
     if CONSENTS.iter().any(|(k, required)| *required && !effective(&rows, k)) {
         return Err(ApiError::BadRequest("required_consent"));
@@ -138,7 +147,11 @@ pub async fn get_consents(State(s): State<AppState>, crate::auth::Customer(a): c
     Ok(Json(consent_state(&s.db, a.id).await?))
 }
 
-pub async fn put_consents(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer, Json(u): Json<ConsentUpdate>) -> ApiResult<Json<ConsentState>> {
+pub async fn put_consents(
+    State(s): State<AppState>,
+    crate::auth::Customer(a): crate::auth::Customer,
+    Json(u): Json<ConsentUpdate>,
+) -> ApiResult<Json<ConsentState>> {
     Ok(Json(update_consents(&s.db, a.id, u).await?))
 }
 
@@ -177,7 +190,9 @@ async fn delete_billing_keys(s: &AppState, user: Uuid) -> ApiResult<()> {
         return Ok(());
     }
     for key in &keys {
-        portone::delete_billing_key(&s.providers, key).await.map_err(|_| ApiError::Unavailable("billing_key_delete_failed"))?;
+        portone::delete_billing_key(&s.providers, key)
+            .await
+            .map_err(|_| ApiError::Unavailable("billing_key_delete_failed"))?;
     }
     Ok(())
 }
@@ -193,12 +208,27 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .execute(&mut *tx)
         .await?;
     sqlx::query("DELETE FROM addresses WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM notifications WHERE owner_role = 'customer' AND owner_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE payment_methods SET deleted_at = now(), billing_key = '' WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM notifications WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     // Threads keep their user_id: chat_threads_check requires it for customer threads, and the anonymised user row holds no contact data.
-    sqlx::query("UPDATE chat_messages SET sender_id = NULL WHERE sender = 'customer' AND sender_id = $1").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE chat_messages SET sender_id = NULL WHERE sender = 'customer' AND sender_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     tx.commit().await?;
     Ok(())
 }

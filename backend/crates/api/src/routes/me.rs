@@ -351,7 +351,10 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
         .issue_billing_key(&r.auth_key, &a.id.to_string(), &issue.to_string())
         .await
         .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1").bind(issue).execute(&mut *tx).await?;
+    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1")
+        .bind(issue)
+        .execute(&mut *tx)
+        .await?;
     let row = sqlx::query_as(
         "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at",
     )

@@ -3,8 +3,8 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number,
-        prepare, price_for, record_payment, take_balance, take_deposit,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
+        price_for, record_payment, take_balance, take_deposit,
     },
     catalog::load_formula,
     chat, growth, payouts,
@@ -357,10 +357,16 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
 
 /// The owner's cancel policy and whether it is still the built-in default (not yet saved by the owner).
 pub async fn load_cancel_policy(db: &PgPool) -> ApiResult<(CancelPolicy, bool)> {
-    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(CANCEL_POLICY_KEY).fetch_optional(db).await?;
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(CANCEL_POLICY_KEY)
+        .fetch_optional(db)
+        .await?;
     match v {
         None => Ok((CancelPolicy::default(), true)),
-        Some(v) => Ok((serde_json::from_value(v).map_err(|_| ApiError::Internal("bad setting cancel_policy".into()))?, false)),
+        Some(v) => Ok((
+            serde_json::from_value(v).map_err(|_| ApiError::Internal("bad setting cancel_policy".into()))?,
+            false,
+        )),
     }
 }
 
@@ -431,7 +437,15 @@ async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     // A fee keeps the coupon used and refunds only what remains; no fee is a full refund.
     let cap = (quote.fee > 0).then_some(quote.refund);
     apply_cancel(&s, &b, cap, "customer").await?;
-    audit(&s.db, "customer", Some(a.id), "booking.cancel", &id.to_string(), json!({ "fee": quote.fee, "refund": quote.refund })).await?;
+    audit(
+        &s.db,
+        "customer",
+        Some(a.id),
+        "booking.cancel",
+        &id.to_string(),
+        json!({ "fee": quote.fee, "refund": quote.refund }),
+    )
+    .await?;
     Ok(Json(load_booking(&s.db, id).await?))
 }
 
@@ -597,7 +611,10 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if b.status()? != BookingStatus::Completed {
         return Err(ApiError::Conflict("not_completed"));
     }
-    let blocked: bool = sqlx::query_scalar("SELECT review_blocked FROM users WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let blocked: bool = sqlx::query_scalar("SELECT review_blocked FROM users WHERE id = $1")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     if blocked {
         return Err(ApiError::Conflict("review_blocked"));
     }
@@ -605,15 +622,16 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
         return Err(ApiError::BadRequest("invalid_review"));
     }
     let photos = growth::check_photos(&s.db, &s.config.public_base_url, a.id, &r.photos).await?;
-    let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
-        .bind(id)
-        .bind(a.id)
-        .bind(b.pro_id)
-        .bind(r.rating)
-        .bind(r.body.trim())
-        .bind(sqlx::types::Json(&photos))
-        .execute(&s.db)
-        .await?;
+    let inserted =
+        sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
+            .bind(id)
+            .bind(a.id)
+            .bind(b.pro_id)
+            .bind(r.rating)
+            .bind(r.body.trim())
+            .bind(sqlx::types::Json(&photos))
+            .execute(&s.db)
+            .await?;
     if inserted.rows_affected() == 0 {
         return Err(ApiError::Conflict("already_reviewed"));
     }
