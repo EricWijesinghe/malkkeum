@@ -166,27 +166,27 @@ impl Providers {
         Ok(())
     }
 
-    /// Customer message for an event kind. Sent as AlimTalk when a template is configured for `kind`
-    /// (Solapi carries the text as SMS fallback); if that call fails, a plain SMS goes out instead.
-    /// Kinds without a template send nothing here (in-app and push still cover them).
-    pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
+    /// Transactional message for an alert kind (see `sms::alert_key`), in Korean.
+    /// AlimTalk when a template and channel id are configured. SMS with the same text when there is no
+    /// template, or when the AlimTalk call fails. Dev mode only logs.
+    pub async fn send_customer_message(&self, phone: &str, kind: &str, brand: &str, title: &str, body: &str) -> Result<(), ProviderError> {
         let integ = self.integ();
         let Some(cfg) = integ.solapi.as_ref() else {
             return Ok(());
         };
-        let Some(template) = cfg.templates.get(kind) else {
-            return Ok(());
-        };
         let text = format!("{title}\n{body}");
+        let template = cfg.templates.get(kind).zip(cfg.pf_id.as_deref());
         if self.dev() {
-            tracing::info!(target: "fake_alimtalk", phone, kind, text, "alimtalk sent");
+            tracing::info!(target: "fake_alimtalk", phone, kind, text, has_template = template.is_some(), "customer message sent");
             return Ok(());
         }
-        let variables = json!({ "#{title}": title, "#{body}": body });
-        let sent = match cfg.pf_id.as_deref() {
-            Some(pf_id) => sms::send_alimtalk(&self.http, cfg, pf_id, template, phone, &text, variables).await,
-            None => Err(ProviderError::NotConfigured("alimtalk")),
+        let Some((template_id, pf_id)) = template else {
+            let sent = sms::send_sms(&self.http, cfg, phone, &text).await;
+            self.observe("solapi", outcome(&sent)).await;
+            return sent;
         };
+        let variables = json!({ "#{brand}": brand, "#{title}": title, "#{body}": body });
+        let sent = sms::send_alimtalk(&self.http, cfg, pf_id, template_id, phone, &text, variables).await;
         let final_result = match sent {
             Ok(()) => Ok(()),
             Err(e) => {

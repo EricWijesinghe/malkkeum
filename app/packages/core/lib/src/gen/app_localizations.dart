@@ -4429,6 +4429,216 @@ abstract class T {
   /// **'더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.'**
   String get uMaintenanceBody;
 
+  /// No description provided for @cmTab.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인'**
+  String get cmTab;
+
+  /// No description provided for @cmNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 캠페인'**
+  String get cmNew;
+
+  /// No description provided for @cmAudience.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 고객'**
+  String get cmAudience;
+
+  /// No description provided for @cmSegAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 고객'**
+  String get cmSegAll;
+
+  /// No description provided for @cmSegNever.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 이력 없음'**
+  String get cmSegNever;
+
+  /// No description provided for @cmSegLapsed.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 예약 {days}일 이상 전'**
+  String cmSegLapsed(String days);
+
+  /// No description provided for @cmDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'일 수'**
+  String get cmDays;
+
+  /// No description provided for @cmConsentCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 {total}명 중 마케팅 동의 {consented}명'**
+  String cmConsentCount(String total, String consented);
+
+  /// No description provided for @cmChannel.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 채널'**
+  String get cmChannel;
+
+  /// No description provided for @cmPush.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 푸시'**
+  String get cmPush;
+
+  /// No description provided for @cmSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자(SMS)'**
+  String get cmSms;
+
+  /// No description provided for @cmTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get cmTitle;
+
+  /// No description provided for @cmBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'내용'**
+  String get cmBody;
+
+  /// No description provided for @cmOptout.
+  ///
+  /// In ko, this message translates to:
+  /// **'수신거부 번호 (080)'**
+  String get cmOptout;
+
+  /// No description provided for @cmPreview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리보기'**
+  String get cmPreview;
+
+  /// No description provided for @cmSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 시각'**
+  String get cmSchedule;
+
+  /// No description provided for @cmSendNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 발송'**
+  String get cmSendNow;
+
+  /// No description provided for @cmTestSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 번호로 테스트 발송'**
+  String get cmTestSend;
+
+  /// No description provided for @cmCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인 저장'**
+  String get cmCreate;
+
+  /// No description provided for @cmNeedOptout.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 발송에는 080 수신거부 번호가 필요해요'**
+  String get cmNeedOptout;
+
+  /// No description provided for @cmLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 기록'**
+  String get cmLog;
+
+  /// No description provided for @cmStatSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 {count}'**
+  String cmStatSent(String count);
+
+  /// No description provided for @cmStatSkipped.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 없음 {count}'**
+  String cmStatSkipped(String count);
+
+  /// No description provided for @cmStatFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패 {count}'**
+  String cmStatFailed(String count);
+
+  /// No description provided for @cmSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인을 만들었어요'**
+  String get cmSaved;
+
+  /// No description provided for @anFunnel.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 후 퍼널 (최근 {days}일)'**
+  String anFunnel(String days);
+
+  /// No description provided for @anInstalls.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 실행 (동의)'**
+  String get anInstalls;
+
+  /// No description provided for @anSignedUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입'**
+  String get anSignedUp;
+
+  /// No description provided for @anQuoted.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 요청'**
+  String get anQuoted;
+
+  /// No description provided for @anBooked.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get anBooked;
+
+  /// No description provided for @anPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제'**
+  String get anPaid;
+
+  /// No description provided for @anRepeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'재구매 (2회 이상)'**
+  String get anRepeat;
+
+  /// No description provided for @anCohorts.
+  ///
+  /// In ko, this message translates to:
+  /// **'주간 코호트 (가입 주 기준 예약률)'**
+  String get anCohorts;
+
+  /// No description provided for @anCohortSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 {count}'**
+  String anCohortSize(String count);
+
+  /// No description provided for @anWeekAfter.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}주 후 예약'**
+  String anWeekAfter(String n);
+
   /// No description provided for @cOps.
   ///
   /// In ko, this message translates to:

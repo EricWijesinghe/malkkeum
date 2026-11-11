@@ -2263,6 +2263,127 @@ class TZh extends T {
   String get uMaintenanceBody => '我们正在维护以提升服务，请稍后再试。';
 
   @override
+  String get cmTab => '营销活动';
+
+  @override
+  String get cmNew => '新建活动';
+
+  @override
+  String get cmAudience => '目标客户';
+
+  @override
+  String get cmSegAll => '全部客户';
+
+  @override
+  String get cmSegNever => '从未预约';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '最近一次预约在$days天前';
+  }
+
+  @override
+  String get cmDays => '天数';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total 人中有 $consented 人同意营销';
+  }
+
+  @override
+  String get cmChannel => '发送渠道';
+
+  @override
+  String get cmPush => '应用推送';
+
+  @override
+  String get cmSms => '短信 (SMS)';
+
+  @override
+  String get cmTitle => '标题';
+
+  @override
+  String get cmBody => '内容';
+
+  @override
+  String get cmOptout => '退订号码 (080)';
+
+  @override
+  String get cmPreview => '预览';
+
+  @override
+  String get cmSchedule => '发送时间';
+
+  @override
+  String get cmSendNow => '立即发送';
+
+  @override
+  String get cmTestSend => '发送测试到我的号码';
+
+  @override
+  String get cmCreate => '保存活动';
+
+  @override
+  String get cmNeedOptout => '短信需要 080 退订号码';
+
+  @override
+  String get cmLog => '发送记录';
+
+  @override
+  String cmStatSent(String count) {
+    return '已发送 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '未同意 $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '失败 $count';
+  }
+
+  @override
+  String get cmSaved => '活动已保存';
+
+  @override
+  String anFunnel(String days) {
+    return '注册漏斗（近 $days 天）';
+  }
+
+  @override
+  String get anInstalls => '打开应用（已同意）';
+
+  @override
+  String get anSignedUp => '注册';
+
+  @override
+  String get anQuoted => '申请报价';
+
+  @override
+  String get anBooked => '已预约';
+
+  @override
+  String get anPaid => '已付款';
+
+  @override
+  String get anRepeat => '复购（2 次以上）';
+
+  @override
+  String get anCohorts => '每周队列（按注册周的预约率）';
+
+  @override
+  String anCohortSize(String count) {
+    return '注册 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '第 $n 周预约';
+  }
+
+  @override
   String get cOps => '系统状态';
 
   @override

@@ -2335,6 +2335,127 @@ class TKm extends T {
       'យើងកំពុងថែទាំដើម្បីធ្វើឱ្យសេវាកម្មកាន់តែប្រសើរ។ សូមត្រឡប់មកវិញក្នុងពេលឆាប់ៗ។';
 
   @override
+  String get cmTab => 'យុទ្ធនាការ';
+
+  @override
+  String get cmNew => 'យុទ្ធនាការថ្មី';
+
+  @override
+  String get cmAudience => 'អតិថិជនគោលដៅ';
+
+  @override
+  String get cmSegAll => 'អតិថិជនទាំងអស់';
+
+  @override
+  String get cmSegNever => 'មិនដែលកក់';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'កក់ចុងក្រោយ $days+ ថ្ងៃមុន';
+  }
+
+  @override
+  String get cmDays => 'ចំនួនថ្ងៃ';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented ក្នុង $total បានយល់ព្រមទទួលការផ្សព្វផ្សាយ';
+  }
+
+  @override
+  String get cmChannel => 'បណ្តាញ';
+
+  @override
+  String get cmPush => 'ជូនដំណឹងក្នុងកម្មវិធី';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'ចំណងជើង';
+
+  @override
+  String get cmBody => 'សារ';
+
+  @override
+  String get cmOptout => 'លេខបដិសេធ (080)';
+
+  @override
+  String get cmPreview => 'មើលជាមុន';
+
+  @override
+  String get cmSchedule => 'ពេលផ្ញើ';
+
+  @override
+  String get cmSendNow => 'ផ្ញើឥឡូវនេះ';
+
+  @override
+  String get cmTestSend => 'ផ្ញើសាកល្បងទៅលេខខ្ញុំ';
+
+  @override
+  String get cmCreate => 'រក្សាទុកយុទ្ធនាការ';
+
+  @override
+  String get cmNeedOptout => 'SMS ត្រូវការលេខបដិសេធ 080';
+
+  @override
+  String get cmLog => 'កំណត់ហេតុផ្ញើ';
+
+  @override
+  String cmStatSent(String count) {
+    return 'បានផ្ញើ $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'គ្មានការយល់ព្រម $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'បរាជ័យ $count';
+  }
+
+  @override
+  String get cmSaved => 'បានរក្សាទុកយុទ្ធនាការ';
+
+  @override
+  String anFunnel(String days) {
+    return 'ផ្លូវការចុះឈ្មោះ ($days ថ្ងៃចុងក្រោយ)';
+  }
+
+  @override
+  String get anInstalls => 'បើកកម្មវិធី (បានយល់ព្រម)';
+
+  @override
+  String get anSignedUp => 'បានចុះឈ្មោះ';
+
+  @override
+  String get anQuoted => 'ស្នើសុំតម្លៃ';
+
+  @override
+  String get anBooked => 'បានកក់';
+
+  @override
+  String get anPaid => 'បានបង់';
+
+  @override
+  String get anRepeat => 'ការទិញម្តងទៀត (2+ ដង)';
+
+  @override
+  String get anCohorts => 'ក្រុមប្រចាំសប្តាហ៍ (អត្រាកក់តាមសប្តាហ៍ចុះឈ្មោះ)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'ចុះឈ្មោះ $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'កក់ក្នុងសប្តាហ៍ $n';
+  }
+
+  @override
   String get cOps => 'ស្ថានភាពប្រព័ន្ធ';
 
   @override

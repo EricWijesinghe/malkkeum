@@ -488,7 +488,7 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
         Recipient::User(b.user_id),
         "booking.completed",
         "청소가 끝났어요",
-        "전후 사진을 확인해 보세요",
+        "전후 사진을 확인하고 후기를 남겨 주세요",
         json!({ "booking_id": id, "status": 3 }),
     )
     .await?;

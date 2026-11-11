@@ -2348,6 +2348,128 @@ class TMn extends T {
       'Бид үйлчилгээгээ сайжруулахаар засвар хийж байна. Удахгүй дахин оролдоно уу.';
 
   @override
+  String get cmTab => 'Кампанит ажил';
+
+  @override
+  String get cmNew => 'Шинэ кампанит ажил';
+
+  @override
+  String get cmAudience => 'Хүлээн авагчид';
+
+  @override
+  String get cmSegAll => 'Бүх харилцагч';
+
+  @override
+  String get cmSegNever => 'Захиалга хийгээгүй';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Сүүлд захиалснаас $days+ хоног өнгөрсөн';
+  }
+
+  @override
+  String get cmDays => 'Хоногийн тоо';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total-с $consented нь маркетингийн зөвшөөрөлтэй';
+  }
+
+  @override
+  String get cmChannel => 'Суваг';
+
+  @override
+  String get cmPush => 'Апп мэдэгдэл';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Гарчиг';
+
+  @override
+  String get cmBody => 'Агуулга';
+
+  @override
+  String get cmOptout => 'Татгалзах дугаар (080)';
+
+  @override
+  String get cmPreview => 'Урьдчилан харах';
+
+  @override
+  String get cmSchedule => 'Илгээх цаг';
+
+  @override
+  String get cmSendNow => 'Одоо илгээх';
+
+  @override
+  String get cmTestSend => 'Өөрийн дугаарт туршилт илгээх';
+
+  @override
+  String get cmCreate => 'Кампанит ажил хадгалах';
+
+  @override
+  String get cmNeedOptout => 'SMS-д 080 татгалзах дугаар шаардлагатай';
+
+  @override
+  String get cmLog => 'Илгээлтийн бүртгэл';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Илгээсэн $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Зөвшөөрөлгүй $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Амжилтгүй $count';
+  }
+
+  @override
+  String get cmSaved => 'Кампанит ажил хадгалагдлаа';
+
+  @override
+  String anFunnel(String days) {
+    return 'Бүртгэлийн воронк (сүүлийн $days хоног)';
+  }
+
+  @override
+  String get anInstalls => 'Апп нээсэн (зөвшөөрсөн)';
+
+  @override
+  String get anSignedUp => 'Бүртгүүлсэн';
+
+  @override
+  String get anQuoted => 'Үнийн санал авсан';
+
+  @override
+  String get anBooked => 'Захиалсан';
+
+  @override
+  String get anPaid => 'Төлсөн';
+
+  @override
+  String get anRepeat => 'Давтан (2+)';
+
+  @override
+  String get anCohorts =>
+      'Долоо хоногийн бүлэг (бүртгүүлсэн долоо хоногоор захиалгын хувь)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Бүртгэл $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n дахь долоо хоногт захиалсан';
+  }
+
+  @override
   String get cOps => 'Системийн төлөв';
 
   @override

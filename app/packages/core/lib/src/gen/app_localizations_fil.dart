@@ -2357,6 +2357,128 @@ class TFil extends T {
       'Pinapaganda namin ang serbisyo. Pakibalik-balikan mamaya.';
 
   @override
+  String get cmTab => 'Kampanya';
+
+  @override
+  String get cmNew => 'Bagong kampanya';
+
+  @override
+  String get cmAudience => 'Target na customer';
+
+  @override
+  String get cmSegAll => 'Lahat ng customer';
+
+  @override
+  String get cmSegNever => 'Walang booking kailanman';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Huling booking $days+ araw na ang nakalipas';
+  }
+
+  @override
+  String get cmDays => 'Bilang ng araw';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented sa $total ang pumayag sa marketing';
+  }
+
+  @override
+  String get cmChannel => 'Channel';
+
+  @override
+  String get cmPush => 'App push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Pamagat';
+
+  @override
+  String get cmBody => 'Mensahe';
+
+  @override
+  String get cmOptout => 'Opt-out number (080)';
+
+  @override
+  String get cmPreview => 'Preview';
+
+  @override
+  String get cmSchedule => 'Oras ng pagpapadala';
+
+  @override
+  String get cmSendNow => 'Ipadala ngayon';
+
+  @override
+  String get cmTestSend => 'Subukang ipadala sa aking numero';
+
+  @override
+  String get cmCreate => 'I-save ang kampanya';
+
+  @override
+  String get cmNeedOptout => 'Kailangan ng SMS ng 080 opt-out number';
+
+  @override
+  String get cmLog => 'Talaan ng pagpapadala';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Naipadala $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Walang consent $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Bigo $count';
+  }
+
+  @override
+  String get cmSaved => 'Na-save ang kampanya';
+
+  @override
+  String anFunnel(String days) {
+    return 'Signup funnel (huling $days araw)';
+  }
+
+  @override
+  String get anInstalls => 'Nagbukas ng app (pumayag)';
+
+  @override
+  String get anSignedUp => 'Nag-signup';
+
+  @override
+  String get anQuoted => 'Humingi ng quote';
+
+  @override
+  String get anBooked => 'Nakapag-book';
+
+  @override
+  String get anPaid => 'Nagbayad';
+
+  @override
+  String get anRepeat => 'Paulit-ulit (2+)';
+
+  @override
+  String get anCohorts =>
+      'Lingguhang cohort (booking rate ayon sa linggo ng signup)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Signup $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Nag-book sa linggo $n';
+  }
+
+  @override
   String get cOps => 'Katayuan ng sistema';
 
   @override

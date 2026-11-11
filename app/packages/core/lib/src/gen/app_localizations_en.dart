@@ -2327,6 +2327,127 @@ class TEn extends T {
       'We are improving the service. Please come back shortly.';
 
   @override
+  String get cmTab => 'Campaigns';
+
+  @override
+  String get cmNew => 'New campaign';
+
+  @override
+  String get cmAudience => 'Audience';
+
+  @override
+  String get cmSegAll => 'All customers';
+
+  @override
+  String get cmSegNever => 'Never booked';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Last booking $days+ days ago';
+  }
+
+  @override
+  String get cmDays => 'Days';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented of $total have marketing consent';
+  }
+
+  @override
+  String get cmChannel => 'Channel';
+
+  @override
+  String get cmPush => 'App push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Title';
+
+  @override
+  String get cmBody => 'Message';
+
+  @override
+  String get cmOptout => 'Opt-out number (080)';
+
+  @override
+  String get cmPreview => 'Preview';
+
+  @override
+  String get cmSchedule => 'Send at';
+
+  @override
+  String get cmSendNow => 'Send now';
+
+  @override
+  String get cmTestSend => 'Send a test to my phone';
+
+  @override
+  String get cmCreate => 'Save campaign';
+
+  @override
+  String get cmNeedOptout => 'SMS needs an 080 opt-out number';
+
+  @override
+  String get cmLog => 'Send log';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Sent $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'No consent $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Failed $count';
+  }
+
+  @override
+  String get cmSaved => 'Campaign saved';
+
+  @override
+  String anFunnel(String days) {
+    return 'Signup funnel (last $days days)';
+  }
+
+  @override
+  String get anInstalls => 'App opened (consented)';
+
+  @override
+  String get anSignedUp => 'Signed up';
+
+  @override
+  String get anQuoted => 'Requested a quote';
+
+  @override
+  String get anBooked => 'Booked';
+
+  @override
+  String get anPaid => 'Paid';
+
+  @override
+  String get anRepeat => 'Repeat (2+ visits)';
+
+  @override
+  String get anCohorts => 'Weekly cohorts (booking rate by signup week)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Signups $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Booked in week $n';
+  }
+
+  @override
   String get cOps => 'System status';
 
   @override

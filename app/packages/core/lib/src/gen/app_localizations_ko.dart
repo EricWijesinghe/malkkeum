@@ -2269,6 +2269,127 @@ class TKo extends T {
   String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
 
   @override
+  String get cmTab => '캠페인';
+
+  @override
+  String get cmNew => '새 캠페인';
+
+  @override
+  String get cmAudience => '대상 고객';
+
+  @override
+  String get cmSegAll => '전체 고객';
+
+  @override
+  String get cmSegNever => '예약 이력 없음';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '마지막 예약 $days일 이상 전';
+  }
+
+  @override
+  String get cmDays => '일 수';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '전체 $total명 중 마케팅 동의 $consented명';
+  }
+
+  @override
+  String get cmChannel => '발송 채널';
+
+  @override
+  String get cmPush => '앱 푸시';
+
+  @override
+  String get cmSms => '문자(SMS)';
+
+  @override
+  String get cmTitle => '제목';
+
+  @override
+  String get cmBody => '내용';
+
+  @override
+  String get cmOptout => '수신거부 번호 (080)';
+
+  @override
+  String get cmPreview => '미리보기';
+
+  @override
+  String get cmSchedule => '발송 시각';
+
+  @override
+  String get cmSendNow => '바로 발송';
+
+  @override
+  String get cmTestSend => '내 번호로 테스트 발송';
+
+  @override
+  String get cmCreate => '캠페인 저장';
+
+  @override
+  String get cmNeedOptout => '문자 발송에는 080 수신거부 번호가 필요해요';
+
+  @override
+  String get cmLog => '발송 기록';
+
+  @override
+  String cmStatSent(String count) {
+    return '발송 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '동의 없음 $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '실패 $count';
+  }
+
+  @override
+  String get cmSaved => '캠페인을 만들었어요';
+
+  @override
+  String anFunnel(String days) {
+    return '가입 후 퍼널 (최근 $days일)';
+  }
+
+  @override
+  String get anInstalls => '앱 실행 (동의)';
+
+  @override
+  String get anSignedUp => '가입';
+
+  @override
+  String get anQuoted => '견적 요청';
+
+  @override
+  String get anBooked => '예약';
+
+  @override
+  String get anPaid => '결제';
+
+  @override
+  String get anRepeat => '재구매 (2회 이상)';
+
+  @override
+  String get anCohorts => '주간 코호트 (가입 주 기준 예약률)';
+
+  @override
+  String anCohortSize(String count) {
+    return '가입 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n주 후 예약';
+  }
+
+  @override
   String get cOps => '시스템 상태';
 
   @override

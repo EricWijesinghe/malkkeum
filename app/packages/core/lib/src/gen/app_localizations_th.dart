@@ -2323,6 +2323,127 @@ class TTh extends T {
       'เรากำลังปรับปรุงระบบเพื่อให้บริการดียิ่งขึ้น กรุณากลับมาใหม่ในภายหลัง';
 
   @override
+  String get cmTab => 'แคมเปญ';
+
+  @override
+  String get cmNew => 'แคมเปญใหม่';
+
+  @override
+  String get cmAudience => 'กลุ่มลูกค้า';
+
+  @override
+  String get cmSegAll => 'ลูกค้าทั้งหมด';
+
+  @override
+  String get cmSegNever => 'ไม่เคยจอง';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'จองครั้งล่าสุดเกิน $days วัน';
+  }
+
+  @override
+  String get cmDays => 'จำนวนวัน';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return 'มีความยินยอมรับการตลาด $consented จาก $total คน';
+  }
+
+  @override
+  String get cmChannel => 'ช่องทาง';
+
+  @override
+  String get cmPush => 'แจ้งเตือนในแอป';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'หัวข้อ';
+
+  @override
+  String get cmBody => 'ข้อความ';
+
+  @override
+  String get cmOptout => 'หมายเลขยกเลิกรับ (080)';
+
+  @override
+  String get cmPreview => 'ตัวอย่าง';
+
+  @override
+  String get cmSchedule => 'เวลาส่ง';
+
+  @override
+  String get cmSendNow => 'ส่งทันที';
+
+  @override
+  String get cmTestSend => 'ส่งทดสอบไปยังเบอร์ของฉัน';
+
+  @override
+  String get cmCreate => 'บันทึกแคมเปญ';
+
+  @override
+  String get cmNeedOptout => 'SMS ต้องมีหมายเลขยกเลิกรับ 080';
+
+  @override
+  String get cmLog => 'บันทึกการส่ง';
+
+  @override
+  String cmStatSent(String count) {
+    return 'ส่งแล้ว $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'ไม่ยินยอม $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'ล้มเหลว $count';
+  }
+
+  @override
+  String get cmSaved => 'บันทึกแคมเปญแล้ว';
+
+  @override
+  String anFunnel(String days) {
+    return 'ฟันเนลหลังสมัคร (ย้อนหลัง $days วัน)';
+  }
+
+  @override
+  String get anInstalls => 'เปิดแอป (ยินยอม)';
+
+  @override
+  String get anSignedUp => 'สมัครแล้ว';
+
+  @override
+  String get anQuoted => 'ขอใบเสนอราคา';
+
+  @override
+  String get anBooked => 'จองแล้ว';
+
+  @override
+  String get anPaid => 'ชำระแล้ว';
+
+  @override
+  String get anRepeat => 'ซื้อซ้ำ (2 ครั้งขึ้นไป)';
+
+  @override
+  String get anCohorts => 'กลุ่มรายสัปดาห์ (อัตราการจองตามสัปดาห์ที่สมัคร)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'สมัคร $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'จองในสัปดาห์ที่ $n';
+  }
+
+  @override
   String get cOps => 'สถานะระบบ';
 
   @override

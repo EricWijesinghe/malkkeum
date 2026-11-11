@@ -2341,6 +2341,127 @@ class TId extends T {
       'Kami sedang meningkatkan layanan. Silakan coba lagi nanti.';
 
   @override
+  String get cmTab => 'Kampanye';
+
+  @override
+  String get cmNew => 'Kampanye baru';
+
+  @override
+  String get cmAudience => 'Audiens';
+
+  @override
+  String get cmSegAll => 'Semua pelanggan';
+
+  @override
+  String get cmSegNever => 'Belum pernah pesan';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Pesanan terakhir $days+ hari lalu';
+  }
+
+  @override
+  String get cmDays => 'Jumlah hari';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented dari $total menyetujui pemasaran';
+  }
+
+  @override
+  String get cmChannel => 'Saluran';
+
+  @override
+  String get cmPush => 'Push aplikasi';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Judul';
+
+  @override
+  String get cmBody => 'Pesan';
+
+  @override
+  String get cmOptout => 'Nomor berhenti (080)';
+
+  @override
+  String get cmPreview => 'Pratinjau';
+
+  @override
+  String get cmSchedule => 'Waktu kirim';
+
+  @override
+  String get cmSendNow => 'Kirim sekarang';
+
+  @override
+  String get cmTestSend => 'Kirim tes ke nomor saya';
+
+  @override
+  String get cmCreate => 'Simpan kampanye';
+
+  @override
+  String get cmNeedOptout => 'SMS memerlukan nomor berhenti 080';
+
+  @override
+  String get cmLog => 'Log pengiriman';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Terkirim $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Tanpa persetujuan $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Gagal $count';
+  }
+
+  @override
+  String get cmSaved => 'Kampanye disimpan';
+
+  @override
+  String anFunnel(String days) {
+    return 'Corong pendaftaran ($days hari terakhir)';
+  }
+
+  @override
+  String get anInstalls => 'Membuka aplikasi (setuju)';
+
+  @override
+  String get anSignedUp => 'Mendaftar';
+
+  @override
+  String get anQuoted => 'Minta penawaran';
+
+  @override
+  String get anBooked => 'Memesan';
+
+  @override
+  String get anPaid => 'Membayar';
+
+  @override
+  String get anRepeat => 'Berulang (2+)';
+
+  @override
+  String get anCohorts => 'Kohort mingguan (tingkat pesanan per minggu daftar)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Pendaftar $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Pesan di minggu $n';
+  }
+
+  @override
   String get cOps => 'Status sistem';
 
   @override
