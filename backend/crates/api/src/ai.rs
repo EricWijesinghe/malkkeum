@@ -5,8 +5,9 @@
 use crate::{
     error::ApiResult,
     ratelimit::within_quota,
-    routes::chat,
+    routes::{cases, chat},
     state::AppState,
+    util::best_effort,
 };
 use chrono::{DateTime, Datelike, FixedOffset, NaiveTime, Utc};
 use domain::booking::FREE_CANCEL_DAYS;
@@ -363,11 +364,13 @@ struct ThreadFacts {
     ai_paused: bool,
     locale: String,
     booking: Option<Value>,
+    booking_id: Option<Uuid>,
+    user_id: Option<Uuid>,
 }
 
 async fn load_thread(db: &PgPool, thread: Uuid) -> Result<Option<ThreadFacts>, sqlx::Error> {
     sqlx::query_as(
-        "SELECT t.closed, t.ai_paused,
+        "SELECT t.closed, t.ai_paused, t.booking_id, t.user_id,
             COALESCE((SELECT u.locale FROM users u WHERE u.id = t.user_id), (SELECT p.locale FROM pros p WHERE p.id = t.pro_id), 'ko') AS locale,
             (SELECT CASE WHEN t.audience = 'customer'
                 THEN jsonb_build_object('number', b.number, 'service', b.service_code, 'visit_date', b.visit_date, 'start_hour', b.start_hour,
@@ -513,6 +516,9 @@ pub async fn answer(s: &AppState, thread: Uuid) -> ApiResult<()> {
     let body = request_body(&cfg, system_blocks(&shop, &t.locale, &t.booking.unwrap_or(Value::Null)), turns);
     let attempt = call_model(s, &cfg, &body).await;
     let outcome = if attempt.text.is_some() { "answered" } else { "handoff" };
+    if outcome == "handoff" {
+        best_effort("ai handoff case", cases::open_from_ai(&s.db, t.booking_id, t.user_id, thread)).await;
+    }
     let text = attempt.text.unwrap_or_else(|| handoff_text(&t.locale).to_string());
     record_usage(&s.db, thread, &cfg.model, outcome, attempt.usage).await?;
     let mut conn = s.db.acquire().await?;

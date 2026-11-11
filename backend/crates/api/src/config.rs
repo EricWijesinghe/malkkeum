@@ -51,6 +51,8 @@ pub struct Config {
     pub ai_chat_retention_days: u32,
     /// Retention purge: uploads not attached to any record after this many days are deleted.
     pub upload_orphan_days: u32,
+    /// Minutes after the arrival window starts before an unchecked-in partner counts as a no-show.
+    pub noshow_grace_minutes: u32,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -240,6 +242,7 @@ impl Config {
             apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
+            noshow_grace_minutes: number("NOSHOW_GRACE_MINUTES", 30, 1)?,
         })
     }
 }

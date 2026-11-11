@@ -11,9 +11,11 @@ use super::{
 };
 use crate::{
     auth::Customer,
+    crypto,
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
     realtime::{Recipient, notify},
+    safety,
     state::AppState,
     util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -48,7 +50,8 @@ pub fn routes() -> Router<AppState> {
 pub const BOOKING_COLS: &str =
     "b.id, b.number, b.user_id, b.service_code, b.unit_index, b.address, b.district_code, b.visit_date, b.start_hour, b.minutes, b.status,
     b.answers, b.estimate, b.final_price, b.deposit, b.list_price, b.discount, b.paid_amount, b.balance_paid, b.coupon_id, b.team_name, b.pro_id,
-    b.visit_notes, b.reschedule, b.cancelled_at, b.completed_at, b.created_at,
+    b.visit_notes, b.reschedule, b.cancelled_at, b.completed_at, b.created_at, b.checked_in_at, b.checked_out_at,
+    (b.access_code_enc IS NOT NULL) AS entry_code_set,
     (SELECT t.id FROM chat_threads t WHERE t.booking_id = b.id AND t.audience = 'customer') AS thread_id,
     (SELECT jsonb_build_object('before', c.before_photos, 'after', c.after_photos) FROM completion_reports c WHERE c.booking_id = b.id) AS photos,
     EXISTS (SELECT 1 FROM reviews r WHERE r.booking_id = b.id) AS reviewed";
@@ -82,6 +85,10 @@ pub struct BookingRow {
     pub cancelled_at: Option<DateTime<Utc>>,
     pub completed_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
+    pub checked_in_at: Option<DateTime<Utc>>,
+    pub checked_out_at: Option<DateTime<Utc>>,
+    /// Whether a door code is on file. The code itself is only revealed to the assigned partner.
+    pub entry_code_set: bool,
     pub thread_id: Option<Uuid>,
     pub photos: Option<Value>,
     pub reviewed: bool,
@@ -224,7 +231,7 @@ async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepa
     lock_slot(&mut tx, req.body.visit_date, req.body.start_hour).await?;
     let price = price_for(&mut tx, user, prep, &req.body, true).await?;
     let id = Uuid::now_v7();
-    let number = insert_paid(&mut tx, id, user, prep, &req.body, &price).await?;
+    let number = insert_paid(&mut tx, &s.config.data_key, id, user, prep, &req.body, &price).await?;
     let tx_id = if price.total.0 > 0 {
         Some(charge(s, &mut tx, user, method, id, price.total, "full").await?)
     } else {
@@ -251,8 +258,11 @@ async fn list(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Jso
     Ok(Json(rows))
 }
 
-async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<BookingRow>> {
-    Ok(Json(owned(&s, a.id, id).await?))
+async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let b = owned(&s, a.id, id).await?;
+    let mut view = serde_json::to_value(&b).unwrap_or(Value::Null);
+    view["emergency"] = safety::emergency_contacts(&s.db).await?;
+    Ok(Json(view))
 }
 
 /// Refunds every paid payment on a booking (full or a capped amount) and records it.
@@ -410,9 +420,13 @@ async fn update_notes(State(s): State<AppState>, Customer(a): Customer, Path(id)
     {
         return Err(ApiError::BadRequest("note_too_long"));
     }
-    let r = sqlx::query("UPDATE bookings SET visit_notes = $2, updated_at = now() WHERE id = $1 AND status BETWEEN 0 AND 2")
+    // The door code is stored encrypted and never in visit_notes; a blank entry clears it.
+    let mut notes = json!({ "entry": n.entry, "parking": n.parking, "other": n.other });
+    let access_code = safety::take_entry(&mut notes).map(|code| crypto::encrypt(&s.config.data_key, &code));
+    let r = sqlx::query("UPDATE bookings SET visit_notes = $2, access_code_enc = $3, updated_at = now() WHERE id = $1 AND status BETWEEN 0 AND 2")
         .bind(id)
-        .bind(json!({ "entry": n.entry, "parking": n.parking, "other": n.other }))
+        .bind(notes)
+        .bind(access_code)
         .execute(&s.db)
         .await?;
     if r.rows_affected() == 0 {

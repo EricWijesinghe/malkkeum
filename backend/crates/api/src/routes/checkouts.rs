@@ -405,7 +405,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
     }
     let (booking_id, db_kind, number) = match plan {
         Plan::Booking { prep, body } => {
-            let (id, number) = book(&mut tx, ck.user_id, &prep, &body, ck.amount).await?;
+            let (id, number) = book(&mut tx, &s.config.data_key, ck.user_id, &prep, &body, ck.amount).await?;
             (id, "full", Some(number))
         }
         Plan::Deposit { booking, amount } => {
@@ -437,7 +437,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
 }
 
 /// Re-runs the slot, date and coupon rules inside the transaction and inserts the booking.
-async fn book(tx: &mut Transaction<'_, Postgres>, user: Uuid, prep: &Prepared, body: &BookingBody, amount: i64) -> ApiResult<(Uuid, String)> {
+async fn book(tx: &mut Transaction<'_, Postgres>, key: &[u8; 32], user: Uuid, prep: &Prepared, body: &BookingBody, amount: i64) -> ApiResult<(Uuid, String)> {
     check_date(today_kst(), body.visit_date)?;
     check_slot(prep.service.is_quote(), body.start_hour)?;
     lock_slot(tx, body.visit_date, body.start_hour).await?;
@@ -446,7 +446,7 @@ async fn book(tx: &mut Transaction<'_, Postgres>, user: Uuid, prep: &Prepared, b
         return Err(ApiError::Conflict("price_changed"));
     }
     let id = Uuid::now_v7();
-    let number = insert_paid(tx, id, user, prep, body, &price).await?;
+    let number = insert_paid(tx, key, id, user, prep, body, &price).await?;
     Ok((id, number))
 }
 

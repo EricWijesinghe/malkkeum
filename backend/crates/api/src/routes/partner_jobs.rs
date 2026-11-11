@@ -45,7 +45,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Same rule as `domain::partner::is_visible`, expressed in SQL for the feed.
-const VISIBLE: &str = "p.status = 'verified'
+pub const VISIBLE: &str = "p.status = 'verified'
     AND b.service_code = ANY(pp.services) AND b.district_code = ANY(pp.districts)
     AND (EXTRACT(ISODOW FROM b.visit_date)::int - 1)::smallint = ANY(pp.weekdays)
     AND (CASE WHEN b.start_hour < 12 THEN 'morning' ELSE 'afternoon' END) = ANY(pp.day_parts)
@@ -142,6 +142,10 @@ async fn job(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> Ap
         "estimate": b.estimate, "size_pyeong": b.address.get("size_pyeong"), "kind": b.address.get("kind"),
         "reschedule": b.reschedule, "cancelled": b.status == -1, "is_quote": b.answers.is_some(), "balance_paid": b.balance_paid,
     });
+    view["emergency"] = crate::safety::emergency_contacts(&s.db).await?;
+    view["entry_code_set"] = json!(b.entry_code_set);
+    view["checked_in_at"] = json!(b.checked_in_at);
+    view["checked_out_at"] = json!(b.checked_out_at);
     let (mut name, mut assignee, mut memo) = (None, None, None);
     if committed {
         view["address"] = b.address.clone();
