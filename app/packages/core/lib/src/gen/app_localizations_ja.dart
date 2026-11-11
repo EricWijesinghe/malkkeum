@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2181,6 +2182,12 @@ class TJa extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded/$invited人';
   }
+
+  @override
+  String get uMaintenanceTitle => 'メンテナンス中です';
+
+  @override
+  String get uMaintenanceBody => 'サービス改善のためメンテナンスを行っています。しばらくしてから再度お試しください。';
 
   @override
   String get cOps => 'システム状態';

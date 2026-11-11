@@ -693,6 +693,8 @@
  "growthReferralConversion": "Conversion ng referral",
  "growthTab": "Paglago",
  "growthReferralValue": "{rewarded} sa {invited}",
+ "uMaintenanceTitle": "Under maintenance",
+ "uMaintenanceBody": "Pinapaganda namin ang serbisyo. Pakibalik-balikan mamaya.",
  "cOps": "Katayuan ng sistema",
  "oLevelGreen": "Maayos",
  "oLevelYellow": "Tingnan",

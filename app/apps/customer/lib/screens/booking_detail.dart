@@ -111,7 +111,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       if (b.status >= 0) ...[const SizedBox(height: Space.sm), _Timeline(booking: b)],
       if (b.status == -1) _info(Icons.event_busy_rounded, t.cancelled, null, StatusHues.cancelled),
       if (b.beforePhotos.isNotEmpty || b.afterPhotos.isNotEmpty) ...[const SizedBox(height: Space.sm), _Photos(before: b.beforePhotos, after: b.afterPhotos)],
-      if (b.status == 3 && !b.reviewed) ...[const SizedBox(height: Space.sm), _ReviewPrompt(bookingId: b.id, onSaved: () => _act(() async {}, t.reviewSaved))],
+      if (b.status == 3 && !b.reviewed) ...[const SizedBox(height: Space.sm), _ReviewPrompt(bookingId: b.id, onSaved: () {
+                _act(() async {}, t.reviewSaved);
+                StoreReview.device().maybeAsk();
+              })],
       if ((service?.needsPreparation ?? false) && b.isActive) ...[const SizedBox(height: Space.sm), _prepCard()],
       const SizedBox(height: Space.sm),
       AppCard(

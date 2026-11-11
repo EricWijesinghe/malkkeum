@@ -73,7 +73,7 @@ class _SocialProofCardState extends State<SocialProofCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    ReviewReportButton(bookingId: r['booking_id'] as String),
+                    ReviewReportButton(api: context.api, bookingId: r['booking_id'] as String),
                   ],
                 ),
               ),

@@ -693,6 +693,8 @@
  "growthReferralConversion": "Урилгын хувиргалт",
  "growthTab": "Өсөлт",
  "growthReferralValue": "{invited}-с {rewarded}",
+ "uMaintenanceTitle": "Засвар хийгдэж байна",
+ "uMaintenanceBody": "Бид үйлчилгээгээ сайжруулахаар засвар хийж байна. Удахгүй дахин оролдоно уу.",
  "cOps": "Системийн төлөв",
  "oLevelGreen": "Хэвийн",
  "oLevelYellow": "Шалгах",

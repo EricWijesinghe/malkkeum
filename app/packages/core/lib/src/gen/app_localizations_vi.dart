@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2230,6 +2231,13 @@ class TVi extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded/$invited người';
   }
+
+  @override
+  String get uMaintenanceTitle => 'Đang bảo trì';
+
+  @override
+  String get uMaintenanceBody =>
+      'Chúng tôi đang bảo trì để nâng cao dịch vụ. Vui lòng quay lại sau.';
 
   @override
   String get cOps => 'Trạng thái hệ thống';

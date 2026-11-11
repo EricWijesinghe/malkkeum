@@ -693,6 +693,8 @@
  "growthReferralConversion": "Taklif konversiyasi",
  "growthTab": "O‘sish",
  "growthReferralValue": "{invited} tadan {rewarded}",
+ "uMaintenanceTitle": "Texnik xizmat ko'rsatilmoqda",
+ "uMaintenanceBody": "Xizmatni yaxshilash uchun texnik ishlar olib borilmoqda. Iltimos, keyinroq qayta urinib ko'ring.",
  "cOps": "Tizim holati",
  "oLevelGreen": "Yaxshi",
  "oLevelYellow": "Tekshiring",

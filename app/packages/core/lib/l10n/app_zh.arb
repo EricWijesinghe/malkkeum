@@ -693,6 +693,8 @@
  "growthReferralConversion": "推荐转化",
  "growthTab": "增长",
  "growthReferralValue": "{rewarded}/{invited} 人",
+ "uMaintenanceTitle": "系统维护中",
+ "uMaintenanceBody": "我们正在维护以提升服务，请稍后再试。",
  "cOps": "系统状态",
  "oLevelGreen": "正常",
  "oLevelYellow": "需关注",

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2248,6 +2249,13 @@ class TSi extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$invited න් $rewarded';
   }
+
+  @override
+  String get uMaintenanceTitle => 'නඩත්තු කටයුතු සිදුවෙමින් පවතී';
+
+  @override
+  String get uMaintenanceBody =>
+      'සේවාව වැඩිදියුණු කිරීම සඳහා නඩත්තු කරමින් සිටිමු. ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
 
   @override
   String get cOps => 'පද්ධති තත්ත්වය';

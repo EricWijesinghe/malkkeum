@@ -693,6 +693,8 @@
  "growthReferralConversion": "អត្រាណែនាំ",
  "growthTab": "ការលូតលាស់",
  "growthReferralValue": "{rewarded} ក្នុង {invited}",
+ "uMaintenanceTitle": "កំពុងថែទាំ",
+ "uMaintenanceBody": "យើងកំពុងថែទាំដើម្បីធ្វើឱ្យសេវាកម្មកាន់តែប្រសើរ។ សូមត្រឡប់មកវិញក្នុងពេលឆាប់ៗ។",
  "cOps": "ស្ថានភាពប្រព័ន្ធ",
  "oLevelGreen": "ធម្មតា",
  "oLevelYellow": "ត្រូវពិនិត្យ",

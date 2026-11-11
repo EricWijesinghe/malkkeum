@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2180,6 +2181,12 @@ class TKo extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded/$invited명';
   }
+
+  @override
+  String get uMaintenanceTitle => '점검 중이에요';
+
+  @override
+  String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
 
   @override
   String get cOps => '시스템 상태';

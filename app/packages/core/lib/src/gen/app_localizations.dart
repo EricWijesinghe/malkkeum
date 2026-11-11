@@ -4279,6 +4279,18 @@ abstract class T {
   /// **'{rewarded}/{invited}명'**
   String growthReferralValue(String rewarded, String invited);
 
+  /// No description provided for @uMaintenanceTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 중이에요'**
+  String get uMaintenanceTitle;
+
+  /// No description provided for @uMaintenanceBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.'**
+  String get uMaintenanceBody;
+
   /// No description provided for @cOps.
   ///
   /// In ko, this message translates to:

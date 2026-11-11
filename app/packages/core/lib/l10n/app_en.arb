@@ -693,6 +693,8 @@
  "growthReferralConversion": "Referral conversion",
  "growthTab": "Growth",
  "growthReferralValue": "{rewarded} of {invited}",
+ "uMaintenanceTitle": "We are under maintenance",
+ "uMaintenanceBody": "We are improving the service. Please come back shortly.",
  "cOps": "System status",
  "oLevelGreen": "OK",
  "oLevelYellow": "Check",

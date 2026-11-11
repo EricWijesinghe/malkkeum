@@ -693,6 +693,8 @@
  "growthReferralConversion": "紹介の成約率",
  "growthTab": "成長",
  "growthReferralValue": "{rewarded}/{invited}人",
+ "uMaintenanceTitle": "メンテナンス中です",
+ "uMaintenanceBody": "サービス改善のためメンテナンスを行っています。しばらくしてから再度お試しください。",
  "cOps": "システム状態",
  "oLevelGreen": "正常",
  "oLevelYellow": "要確認",

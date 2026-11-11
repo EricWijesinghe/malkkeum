@@ -15,6 +15,11 @@ case "$top" in
 esac
 mkdir -p "$LOCKS"
 
+# Light steps never wait for the slot: code generation, package fetch, formatting.
+case "$*" in
+  "flutter gen-l10n"*|"flutter pub get"*|"dart pub get"*|"dart format"*|"cargo fmt"*|python*) exec "$@" ;;
+esac
+
 free_commit_kb() {
   powershell.exe -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory" 2>/dev/null | tr -dc '0-9'
 }
