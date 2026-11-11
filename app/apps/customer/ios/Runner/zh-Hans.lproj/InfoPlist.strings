@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "用于拍摄清洁前后的照片并直接上传。";
+"NSPhotoLibraryUsageDescription" = "需要访问相册，以便上传清洁前后的照片和咨询照片。";

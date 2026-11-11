@@ -18,6 +18,7 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::Utc;
+use uuid::Uuid;
 use rand::{Rng, rngs::OsRng};
 use reqwest::StatusCode;
 use serde::Deserialize;
@@ -36,6 +37,8 @@ const REVIEW_KEY: &str = "review_account";
 /// App Review needs days, not hours; the account switches itself off after this.
 const REVIEW_MAX_DAYS: i64 = 30;
 const REVIEW_CODE_LEN: usize = 6;
+/// Gangnam-gu, where the sample address sits.
+const REVIEW_DISTRICT: &str = "11680";
 
 pub fn public_routes() -> Router<AppState> {
     Router::new()
@@ -48,8 +51,7 @@ pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/setup", get(overview))
         .route("/setup/business", put(put_business))
-        .route("/setup/review", put(put_review).delete(clear_review))
-        .route("/setup/{section}", put(put_section).delete(clear_section))
+        .route("/setup/review", put(put_review).delete(clear_review))        .route("/setup/{section}", put(put_section).delete(clear_section))
         .route("/setup/{section}/test", post(test_section))
 }
 
@@ -147,21 +149,77 @@ async fn create_admin(State(s): State<AppState>, Json(req): Json<NewAdmin>) -> A
     Ok(Json(json!({ "ok": true })))
 }
 
-/// Store-review demo login: one phone number whose sign-in code is fixed by the owner, so app
-/// reviewers abroad can log in without a Korean SMS. Returns the stored code hash while active.
-/// The code still goes through `otp_codes`, so the normal attempt and hourly limits apply.
-pub async fn review_code_hash(db: &PgPool, phone: &str) -> Result<Option<String>, sqlx::Error> {
+/// The review account while it is switched on (set and not yet expired).
+async fn active_review(db: &PgPool) -> Result<Option<Value>, sqlx::Error> {
     let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
         .bind(REVIEW_KEY)
         .fetch_optional(db)
         .await?;
-    let Some(v) = v else { return Ok(None) };
-    let active = v["phone"].as_str() == Some(phone)
-        && v["expires_at"]
+    Ok(v.filter(|v| {
+        v["expires_at"]
             .as_str()
             .and_then(|t| chrono::DateTime::parse_from_rfc3339(t).ok())
-            .is_some_and(|t| t > Utc::now());
-    Ok(active.then(|| v["code_hash"].as_str().map(String::from)).flatten())
+            .is_some_and(|t| t > Utc::now())
+    }))
+}
+
+/// Store-review demo login: one phone number whose sign-in code is fixed by the owner, so app
+/// reviewers abroad can log in without a Korean SMS. Returns the stored code hash while active.
+/// The code still goes through `otp_codes`, so the normal attempt and hourly limits apply.
+pub async fn review_code_hash(db: &PgPool, phone: &str) -> Result<Option<String>, sqlx::Error> {
+    let Some(v) = active_review(db).await? else { return Ok(None) };
+    let same = v["phone"].as_str() == Some(phone);
+    Ok(same.then(|| v["code_hash"].as_str().map(String::from)).flatten())
+}
+
+/// Sample bookings for the review account, so reviewers see a history without paying. Two rows
+/// (one upcoming, one completed), written only while the account has none. Returns rows written.
+async fn seed_review_samples(db: &PgPool, phone: &str) -> ApiResult<usize> {
+    let mut tx = db.begin().await?;
+    let user: Uuid = sqlx::query_scalar(
+        "INSERT INTO users (phone, name) VALUES ($1, '리뷰 계정') ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id",
+    )
+    .bind(phone)
+    .fetch_one(&mut *tx)
+    .await?;
+    let has: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM bookings WHERE user_id = $1)").bind(user).fetch_one(&mut *tx).await?;
+    let service: Option<String> = sqlx::query_scalar("SELECT code FROM services WHERE active ORDER BY sort_order LIMIT 1")
+        .fetch_optional(&mut *tx)
+        .await?;
+    // No catalogue yet (or samples already there): nothing to add, the login still works.
+    let Some(service) = service.filter(|_| !has) else {
+        tx.rollback().await?;
+        return Ok(0);
+    };
+    let pro: Option<(Uuid, String)> = sqlx::query_as("SELECT id, team_name FROM pros WHERE status = 'verified' ORDER BY created_at LIMIT 1")
+        .fetch_optional(&mut *tx)
+        .await?;
+    let (pro_id, team) = pro.map_or((None, None), |(id, team)| (Some(id), Some(team)));
+    let today = (Utc::now() + chrono::Duration::hours(9)).date_naive();
+    let address = json!({ "kind": "home", "label": "샘플 집", "road_address": "서울특별시 강남구 테헤란로 1", "detail": "101동 101호", "size_pyeong": 20 });
+    // (days from today, status): upcoming confirmed visit, then a completed one.
+    for (offset, status) in [(3_i64, 1_i16), (-7, 3)] {
+        let number = super::booking_core::next_number(&mut tx).await?;
+        sqlx::query(
+            "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, pro_id, team_name, final_price, paid_amount, balance_paid, visit_notes)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,10,$8,$9,$10,$11,$11,TRUE,'{}'::jsonb)",
+        )
+        .bind(Uuid::now_v7())
+        .bind(&number)
+        .bind(user)
+        .bind(&service)
+        .bind(&address)
+        .bind(REVIEW_DISTRICT)
+        .bind(today + chrono::Duration::days(offset))
+        .bind(status)
+        .bind(pro_id)
+        .bind(&team)
+        .bind(120_000_i64)
+        .execute(&mut *tx)
+        .await?;
+    }
+    tx.commit().await?;
+    Ok(2)
 }
 
 #[derive(Deserialize)]
@@ -179,6 +237,7 @@ async fn put_review(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<Re
     }
     let days = r.days.unwrap_or(14).clamp(1, REVIEW_MAX_DAYS);
     let expires_at = Utc::now() + chrono::Duration::days(days);
+    let samples = seed_review_samples(&s.db, &phone).await?;
     let value = json!({
         "phone": phone,
         "code_hash": crate::auth::otp_hash(&s.config.jwt_secret, &phone, code),
@@ -189,8 +248,8 @@ async fn put_review(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<Re
         .bind(&value)
         .execute(&s.db)
         .await?;
-    audit(&s.db, a.role.as_str(), Some(a.id), "setup.review_account", &phone, json!({ "days": days })).await?;
-    Ok(Json(json!({ "phone": phone, "expires_at": expires_at })))
+    audit(&s.db, a.role.as_str(), Some(a.id), "setup.review_account", &phone, json!({ "days": days, "samples": samples })).await?;
+    Ok(Json(json!({ "phone": phone, "expires_at": expires_at, "samples": samples })))
 }
 
 async fn clear_review(State(s): State<AppState>, Admin(a): Admin) -> ApiResult<Json<Value>> {

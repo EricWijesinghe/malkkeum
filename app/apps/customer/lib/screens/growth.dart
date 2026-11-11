@@ -63,11 +63,18 @@ class _SocialProofCardState extends State<SocialProofCard> {
             for (final r in reviews)
               Padding(
                 padding: const EdgeInsets.only(top: Space.xs),
-                child: Text(
-                  '★${r['rating']}  ${r['body']}  — ${r['name']}',
-                  style: context.text.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '★${r['rating']}  ${r['body']}  — ${r['name']}',
+                        style: context.text.bodySmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    ReviewReportButton(bookingId: r['booking_id'] as String),
+                  ],
                 ),
               ),
           ],
@@ -244,6 +251,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
       children: [
         Text(t.reviewTitle, style: context.text.titleMedium, textAlign: TextAlign.center),
         Text(t.reviewSheetTitle, style: context.text.bodySmall, textAlign: TextAlign.center),
+        Text(t.reviewRuleLine, style: context.text.bodySmall, textAlign: TextAlign.center),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           for (var i = 1; i <= 5; i++)
             IconButton(

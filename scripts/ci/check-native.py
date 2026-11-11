@@ -8,6 +8,7 @@ import plistlib
 import re
 import sys
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -187,6 +188,10 @@ def check_pbxproj(app, ios):
         check(s.get("CODE_SIGN_ENTITLEMENTS") == "Runner/Runner.entitlements",
               f"{app} pbxproj: {c['name']} lacks CODE_SIGN_ENTITLEMENTS")
         check(s.get("INFOPLIST_FILE") == "Runner/Info.plist", f"{app} pbxproj: {c['name']} INFOPLIST_FILE")
+    # Project-level settings are inherited by the target: every value that is set must be iPhone-only.
+    families = {o["buildSettings"]["TARGETED_DEVICE_FAMILY"] for o in objs.values()
+                if o.get("isa") == "XCBuildConfiguration" and "TARGETED_DEVICE_FAMILY" in o.get("buildSettings", {})}
+    check(families == {"1"}, f"{app} pbxproj: TARGETED_DEVICE_FAMILY must be iPhone-only (1), found {sorted(families)}")
     bundled = {objs[objs[f]["fileRef"]].get("path")
                for p in target["buildPhases"] if objs[p].get("isa") == "PBXResourcesBuildPhase"
                for f in objs[p]["files"]}
@@ -204,6 +209,9 @@ def check_ios(app):
     check_xcconfig(app, ios)
     check_entitlements_and_privacy(app, ios)
     check_pbxproj(app, ios)
+    check_ios_localizations(app, ios)
+    check_icons(app, ios)
+    check_privacy_types(app, plist(ios / "Runner" / "PrivacyInfo.xcprivacy"))
 
 
 # --- Android ---------------------------------------------------------------------------------
@@ -242,6 +250,98 @@ def check_android(app):
 
 
 # --- Secrets stay out of git, CI wiring ------------------------------------------------------
+
+# --- Store submission rules: localized permission text, icons, collected data, Play extras ---
+
+IOS_LANGS = ["en", "ko", "ja", "zh-Hans", "vi", "fil", "id", "km", "mn", "ne", "ru", "si", "th", "uz"]
+USAGE_KEYS = ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]
+BANNED_PERMS = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",
+                "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.FOREGROUND_SERVICE", "android.permission.ACCESS_FINE_LOCATION",
+                "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_BACKGROUND_LOCATION"]
+ELF_LOAD = 1
+PAGE_16KB = 0x4000
+
+
+def check_ios_localizations(app, ios):
+    proj = (ios / "Runner.xcodeproj" / "project.pbxproj").read_text(encoding="utf-8")
+    regions = re.search(r"knownRegions = \((.*?)\);", proj, re.S).group(1)
+    for lang in IOS_LANGS:
+        path = ios / "Runner" / f"{lang}.lproj" / "InfoPlist.strings"
+        text = path.read_text(encoding="utf-8") if path.exists() else ""
+        check(all(f'"{k}" = "' in text for k in USAGE_KEYS), f"{app} {lang}.lproj/InfoPlist.strings: camera/photo text missing")
+        check(re.search(rf"\b{re.escape(lang)},", regions) is not None, f"{app} pbxproj knownRegions lacks {lang}")
+    check(proj.count("InfoPlist.strings in Resources */") >= 1 and "InfoPlist.strings */," in proj,
+          f"{app} pbxproj: InfoPlist.strings variant group not wired into the Runner group and Resources phase")
+
+
+def check_icons(app, ios):
+    for png in (ios / "Runner" / "Assets.xcassets" / "AppIcon.appiconset").glob("*.png"):
+        head = png.read_bytes()[:26]
+        check(head[:8] == b"\x89PNG\r\n\x1a\n" and head[25:26] not in (b"\x04", b"\x06"),
+              f"{app} {png.name}: app icon must be a PNG without alpha channel")
+
+
+def check_privacy_types(app, priv):
+    types = priv.get("NSPrivacyCollectedDataTypes", [])
+    check(len(types) > 0, f"{app} PrivacyInfo: NSPrivacyCollectedDataTypes empty but the app collects personal data")
+    check(all(t.get("NSPrivacyCollectedDataTypeTracking") is False for t in types), f"{app} PrivacyInfo: collected type marked as tracking")
+    names = {t.get("NSPrivacyCollectedDataType") for t in types}
+    check({"NSPrivacyCollectedDataTypePhoneNumber", "NSPrivacyCollectedDataTypeName"} <= names,
+          f"{app} PrivacyInfo: phone and name must be declared")
+
+
+def check_android_extras(app, android):
+    root = ET.parse(android / "app" / "src" / "main" / "AndroidManifest.xml").getroot()
+    perms = {e.get(ANDROID_NS + "name") for e in root.iter("uses-permission")}
+    for banned in BANNED_PERMS:
+        check(banned not in perms, f"{app} AndroidManifest: {banned} not allowed (use the photo picker, no location/foreground service)")
+
+
+def elf_16kb_failures(aab):
+    """Names of arm64/x86_64 .so files in an AAB whose LOAD segments are not 16 KB aligned."""
+    import struct
+    import zipfile
+    bad, count = [], 0
+    with zipfile.ZipFile(aab) as z:
+        for name in z.namelist():
+            if not (name.startswith("base/lib/") and name.endswith(".so")):
+                continue
+            data = z.read(name)
+            if data[:4] != b"\x7fELF" or data[4] != 2:  # 32-bit ABIs are not subject to the rule
+                continue
+            count += 1
+            phoff = struct.unpack_from("<Q", data, 0x20)[0]
+            phentsize, phnum = struct.unpack_from("<HH", data, 0x36)
+            for i in range(phnum):
+                base = phoff + i * phentsize
+                if struct.unpack_from("<I", data, base)[0] == ELF_LOAD:
+                    if struct.unpack_from("<Q", data, base + 48)[0] < PAGE_16KB:
+                        bad.append(name)
+                        break
+    return count, bad
+
+
+def check_aab(aab):
+    count, bad = elf_16kb_failures(aab)
+    check(count > 0, f"{aab}: no 64-bit native libraries found (wrong bundle?)")
+    for name in bad:
+        check(False, f"{aab}: {name} is not 16 KB page aligned (Play requires it for targetSdk 35+)")
+
+
+def check_store_docs():
+    cm = (REPO / "codemagic.yaml").read_text(encoding="utf-8")
+    builds = [ln for ln in cm.splitlines() if "flutter build " in ln]
+    check(len(builds) == 4 and all("FCI_TAG" in ln for ln in builds),
+          "codemagic.yaml: all four flutter build lines must take the version name from the tag (FCI_TAG)")
+    for lang in ["ko", "en", "ja", "zh", "vi"]:
+        check((REPO / "docs" / "store" / "release-notes" / f"{lang}.md").exists(), f"release notes template missing: {lang}")
+    rn = (REPO / "docs" / "store" / "review-notes.md").read_text(encoding="utf-8")
+    check("<REVIEW_PHONE>" in rn and "<REVIEW_CODE>" in rn, "review-notes.md: keep the phone and code as placeholders")
+    check(re.search(r"010[-\s]?\d{4}[-\s]?\d{4}", rn) is None, "review-notes.md: real phone number committed")
+    for doc in ["docs/store/data-safety.md", "website/privacy.html"]:
+        check("Anthropic" in (REPO / doc).read_text(encoding="utf-8"), f"{doc}: must disclose the Anthropic AI processor")
+
 
 def check_gitignore(app):
     text = "\n".join((p).read_text(encoding="utf-8") for p in [
@@ -289,6 +389,7 @@ def main():
         try:
             check_ios(app)
             check_android(app)
+            check_android_extras(app, APPS / app / "android")
             check_gitignore(app)
         except (OSError, ValueError, KeyError, ET.ParseError, plistlib.InvalidFileException) as e:
             failures_before.append(f"{app}: {type(e).__name__}: {e}")
@@ -298,8 +399,16 @@ def main():
         failures_before.append(f"web: {type(e).__name__}: {e}")
     try:
         check_ci()
+        check_store_docs()
     except (OSError, ValueError) as e:
         failures_before.append(f"ci: {type(e).__name__}: {e}")
+    # Built bundles are checked when given: python -I check-native.py --aab app-release.aab ...
+    for i, arg in enumerate(sys.argv):
+        if arg == "--aab" and i + 1 < len(sys.argv):
+            try:
+                check_aab(sys.argv[i + 1])
+            except (OSError, zipfile.BadZipFile) as e:
+                failures_before.append(f"{sys.argv[i + 1]}: {type(e).__name__}: {e}")
     for line in failures_before + FAILED:
         print("FAIL", line)
     print(f"native checks: {PASSED[0]} passed, {len(FAILED) + len(failures_before)} failed")

@@ -17,6 +17,11 @@ definitions:
   prepare: &prepare
     name: Strings and packages
     script: |
+      # Version name comes from the git tag (v1.2.3); build number is Codemagic's $BUILD_NUMBER
+      # (always rising, which Play and App Store both require). No tag: pubspec version is used.
+      if [ -n "$FCI_TAG" ] && ! echo "$FCI_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+        echo "Tag '$FCI_TAG' must look like v1.2.3"; exit 1
+      fi
       cd app
       python3 -I ../scripts/ci/check-native.py
       python3 -I tool/gen_arb.py
@@ -40,7 +45,7 @@ workflows:
         working_directory: app/apps/customer
         script: |
           ../../../scripts/ci/native-keys.sh customer
-          flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json
+          flutter build appbundle --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json
     artifacts: [app/apps/customer/build/**/outputs/**/*.aab]
     publishing:
       google_play:
@@ -63,7 +68,7 @@ workflows:
         working_directory: app/apps/customer
         script: |
           ../../../scripts/ci/native-keys.sh customer
-          flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
     artifacts: [app/apps/customer/build/ios/ipa/*.ipa]
     publishing:
       app_store_connect: { auth: integration, submit_to_testflight: true }
@@ -80,7 +85,7 @@ workflows:
         working_directory: app/apps/partner
         script: |
           ../../../scripts/ci/native-keys.sh partner
-          flutter build appbundle --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json
+          flutter build appbundle --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json
     artifacts: [app/apps/partner/build/**/outputs/**/*.aab]
     publishing:
       google_play:
@@ -103,7 +108,7 @@ workflows:
         working_directory: app/apps/partner
         script: |
           ../../../scripts/ci/native-keys.sh partner
-          flutter build ipa --release --build-number=$BUILD_NUMBER --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
     artifacts: [app/apps/partner/build/ios/ipa/*.ipa]
     publishing:
       app_store_connect: { auth: integration, submit_to_testflight: true }
