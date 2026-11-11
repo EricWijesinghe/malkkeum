@@ -89,6 +89,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(staff_password::admin_routes())
                 .merge(admin_content::routes())
                 .merge(growth::admin_routes())
+                .merge(crate::acquisition::admin_routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())

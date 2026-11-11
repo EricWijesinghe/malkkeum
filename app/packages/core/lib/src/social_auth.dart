@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'attribution.dart';
 import 'desktop.dart';
 import 'session.dart';
 import 'social_native_stub.dart' if (dart.library.io) 'social_native_io.dart';
@@ -221,6 +222,7 @@ Future<SocialAuthResult?> signInWithSocial({
             'provider': provider.provider,
             'token': token,
             'audience': audience,
+            'attribution': Attribution.get(),
           })
           as Map<String, dynamic>;
   await session.save(body);

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'attribution.dart';
 
 /// Who is signed in. Tokens live in the OS keystore (Keychain / Keystore / DPAPI).
 /// Web: flutter_secure_storage has no keystore, so the refresh token sits in localStorage, encrypted
@@ -75,7 +76,7 @@ class Session extends ChangeNotifier {
 
   /// Returns true for a brand-new account (show the profile step).
   Future<bool> verifyOtp(String phone, String code, {required String audience}) async {
-    final r = await api.post('/auth/verify', {'phone': phone, 'code': code, 'audience': audience}) as Map<String, dynamic>;
+    final r = await api.post('/auth/verify', {'phone': phone, 'code': code, 'audience': audience, 'attribution': Attribution.get()}) as Map<String, dynamic>;
     await save(r);
     return r['is_new'] as bool? ?? false;
   }

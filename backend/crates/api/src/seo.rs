@@ -21,6 +21,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 const BUSINESS_KEY: &str = "business";
+const DEFAULT_COLOR: &str = "#2F6FED";
 const CACHE_CONTROL: &str = "public, max-age=600";
 const DESCRIPTION_CHARS: usize = 150;
 const FAQ_LIMIT: usize = 10;
@@ -61,6 +62,7 @@ const COMPANY_LABELS: [(&str, &str); 5] = [
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/c/{service}/{district}", get(service_page))
+        .route("/c/{service}/{district}/og.svg", get(og_image))
         .route("/sitemap.xml", get(sitemap))
         .route("/robots.txt", get(robots))
         .route("/notices.xml", get(notices_feed))
@@ -149,6 +151,8 @@ pub struct Brand {
     pub phone: Option<String>,
     pub address: Option<String>,
     pub logo: Option<String>,
+    /// Brand colour for generated images; the console validates it as #RRGGBB.
+    pub color: String,
     pub company: Vec<(&'static str, String)>,
 }
 
@@ -161,6 +165,7 @@ impl Brand {
             phone: text(v, "support_phone"),
             address: text(&v["company"], "address"),
             logo: text(v, "logo_url").map(|l| if l.starts_with('/') { format!("{base}{l}") } else { l }),
+            color: text(v, "primary_color").filter(|c| crate::routes::setup::is_hex_color(c)).unwrap_or_else(|| DEFAULT_COLOR.into()),
             company,
         })
     }
@@ -205,6 +210,10 @@ impl ServicePage {
             &format!("{} {} 가격 {}. 검증된 전문가 배정, 앱에서 바로 예약하세요.", self.district, self.keyword, price_text(self.price)),
             DESCRIPTION_CHARS,
         )
+    }
+
+    fn og_url(&self) -> String {
+        format!("{}{}/og.svg", self.base, self.path())
     }
 
     fn cta(&self) -> String {
@@ -264,11 +273,10 @@ pub fn render_service_page(p: &ServicePage) -> String {
         "<!doctype html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n\
 <title>{title}</title>\n<meta name=\"description\" content=\"{desc}\">\n<link rel=\"canonical\" href=\"{canon}\">\n\
 <meta property=\"og:type\" content=\"website\">\n<meta property=\"og:site_name\" content=\"{brand}\">\n<meta property=\"og:title\" content=\"{title}\">\n\
-<meta property=\"og:description\" content=\"{desc}\">\n<meta property=\"og:url\" content=\"{canon}\">\n<meta name=\"twitter:card\" content=\"summary\">\n"
+<meta property=\"og:description\" content=\"{desc}\">\n<meta property=\"og:url\" content=\"{canon}\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n"
     );
-    if let Some(logo) = &p.brand.logo {
-        h.push_str(&format!("<meta property=\"og:image\" content=\"{}\">\n", escape_html(logo)));
-    }
+    let og = escape_html(&p.og_url());
+    h.push_str(&format!("<meta property=\"og:image\" content=\"{og}\">\n<meta name=\"twitter:image\" content=\"{og}\">\n"));
     for (name, token) in &p.verify {
         h.push_str(&format!("<meta name=\"{name}\" content=\"{}\">\n", escape_html(token)));
     }
@@ -350,6 +358,33 @@ pub fn rss_xml(base: &str, brand: &str, items: &[Notice]) -> String {
     }
     s.push_str("</channel>\n</rss>\n");
     s
+}
+
+/// 1200x630 share card: brand colour, district and service, price. SVG, because a PNG encoder would be a new
+/// dependency; crawlers that refuse SVG (some KakaoTalk previews) fall back to the page title and description.
+pub fn og_svg(brand: &str, color: &str, title: &str, price: &str) -> String {
+    format!(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1200\" height=\"630\" viewBox=\"0 0 1200 630\">\n\
+<rect width=\"1200\" height=\"630\" fill=\"{}\"/>\n\
+<text x=\"80\" y=\"120\" font-family=\"sans-serif\" font-size=\"36\" fill=\"#ffffff\" opacity=\"0.85\">{}</text>\n\
+<text x=\"80\" y=\"330\" font-family=\"sans-serif\" font-size=\"84\" font-weight=\"700\" fill=\"#ffffff\">{}</text>\n\
+<text x=\"80\" y=\"440\" font-family=\"sans-serif\" font-size=\"48\" fill=\"#ffffff\">{}</text>\n</svg>\n",
+        escape_html(color),
+        escape_html(brand),
+        escape_html(title),
+        escape_html(price)
+    )
+}
+
+async fn og_image(State(s): State<AppState>, Path((service, district)): Path<(String, String)>) -> ApiResult<Response> {
+    let (keyword, _) = keyword(&service).ok_or(ApiError::NotFound)?;
+    let (district_name, _) = seoul_district(&district).ok_or(ApiError::NotFound)?;
+    let business = business_value(&s.db).await?;
+    let brand = Brand::from_value(&base_url(&s), &business).ok_or(ApiError::NotFound)?;
+    let svc = crate::routes::catalog::load_service(&s.db, &service).await?;
+    let title = format!("{district_name} {keyword}");
+    let svg = og_svg(&brand.name, &brand.color, &title, &price_text(price_range(&svc.pricing)));
+    Ok(([(header::CONTENT_TYPE, "image/svg+xml"), (header::CACHE_CONTROL, CACHE_CONTROL)], svg).into_response())
 }
 
 fn html(body: String) -> Response {
@@ -530,6 +565,7 @@ mod tests {
             phone: Some("02-1234-5678".into()),
             address: Some("서울 강남구 테헤란로 1".into()),
             logo: Some("https://example.com/logo.png".into()),
+            color: DEFAULT_COLOR.into(),
             company: vec![("상호", "테스트 주식회사".into())],
         }
     }
@@ -647,6 +683,21 @@ mod tests {
         assert!(!is_verification_token(""));
         assert!(!is_verification_token("a\"b"));
         assert!(!is_verification_token("a b"));
+    }
+
+    #[test]
+    fn og_card_escapes_and_uses_brand_colour() {
+        let svg = og_svg("말끔 <b>", "#2F6FED", "강남구 입주청소", "45,000원");
+        assert!(svg.contains("width=\"1200\" height=\"630\""));
+        assert!(svg.contains("fill=\"#2F6FED\""));
+        assert!(svg.contains("말끔 &lt;b&gt;"));
+        assert!(!svg.contains("<b>"));
+    }
+
+    #[test]
+    fn brand_colour_falls_back_when_invalid() {
+        let b = Brand::from_value("https://x", &json!({"name": "말끔", "primary_color": "red"})).unwrap();
+        assert_eq!(b.color, DEFAULT_COLOR);
     }
 
     #[test]
