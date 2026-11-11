@@ -341,7 +341,7 @@ class _Bubble extends StatelessWidget {
       );
     }
     final Widget content = switch (m.kind) {
-      'photo' => ClipRRect(borderRadius: BorderRadius.circular(14), child: Image.network(m.body['url'] as String, width: 200, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox(width: 200, height: 120))),
+      'photo' => ClipRRect(borderRadius: BorderRadius.circular(14), child: Image.network(m.body['url'] as String, width: 200, cacheWidth: 400, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox(width: 200, height: 120))),
       'card' => _RequestCard(body: m.body),
       'quote' => _QuoteCard(body: m.body, paid: depositPaid, onPay: () => onPay(m.body['booking_id'] as String)),
       _ => Container(

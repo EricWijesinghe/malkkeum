@@ -407,6 +407,7 @@
  "stepCompleted": "Hoàn tất",
  "teamVisiting": "{team} sẽ đến",
  "photosSoon": "Ảnh trước & sau sẽ hiện ở đây",
+ "photoThumb": "Ảnh {n}",
  "before": "Trước",
  "after": "Sau",
  "prepCheck": "Danh sách chuẩn bị",

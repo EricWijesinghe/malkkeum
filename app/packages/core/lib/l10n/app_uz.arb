@@ -407,6 +407,7 @@
  "stepCompleted": "Tozalash tugadi",
  "teamVisiting": "{team} tashrif buyuradi",
  "photosSoon": "Tugagach, oldin-keyin suratlar shu yerda chiqadi",
+ "photoThumb": "Foto {n}",
  "before": "Oldin",
  "after": "Keyin",
  "prepCheck": "Tayyorgarlik ro'yxati",

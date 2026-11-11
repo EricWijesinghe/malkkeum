@@ -407,6 +407,7 @@
  "stepCompleted": "सफाइ सम्पन्न",
  "teamVisiting": "{team} भ्रमण गर्दै हुनुहुन्छ",
  "photosSoon": "सफाइपछि अघि र पछिका फोटो यहाँ देखिनेछन्",
+ "photoThumb": "फोटो {n}",
  "before": "सफाइअघि",
  "after": "सफाइपछि",
  "prepCheck": "तयारी सूची",

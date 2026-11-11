@@ -378,6 +378,7 @@ T = {
     "stepCompleted": "Уборка выполнена",
     "teamVisiting": "{team} скоро приедет",
     "photosSoon": "После уборки здесь появятся фото до и после",
+    "photoThumb": "Фото {n}",
     "before": "До",
     "after": "После",
     "prepCheck": "Чек-лист подготовки",

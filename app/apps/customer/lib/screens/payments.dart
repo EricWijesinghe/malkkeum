@@ -63,7 +63,14 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     final t = context.t;
     return Scaffold(
       appBar: AppBar(title: Text(t.morePayments)),
-      body: ListView(padding: const EdgeInsets.all(Space.gutter), children: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _reload();
+          await app.loadMethods().catchError((Object e) {
+            if (mounted) showToast(context, t.error(e));
+          });
+        },
+        child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(Space.gutter), children: [
         Text(t.apPayManageHint, style: context.text.bodySmall?.copyWith(color: context.colors.inkSoft)),
         const SizedBox(height: Space.md),
         if (app.methods.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: Space.lg), child: Center(child: Text(t.methodsEmpty, style: context.text.bodySmall))),
@@ -114,7 +121,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             ]);
           },
         ),
-      ]),
+      ])),
     );
   }
 }
