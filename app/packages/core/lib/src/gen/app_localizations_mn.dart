@@ -3327,6 +3327,15 @@ class TMn extends T {
   String get tReceiptSaveFailed => 'Баримтын мэдээллийг хадгалж чадсангүй';
 
   @override
+  String get tTaxType => 'Татварын төрөл';
+
+  @override
+  String get tTaxFreelancer => 'Фрилансер (суутгалтай)';
+
+  @override
+  String get tTaxBusiness => 'Бүртгэлтэй бизнес (суутгалгүй)';
+
+  @override
   String get reviewRuleLine =>
       'Доромжлол, хувийн мэдээлэл, худал эсвэл сурталчилгаатай агуулга хориотой. Мэдээлэгдсэн сэтгэгдлийг нуух болно.';
 

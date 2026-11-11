@@ -3290,6 +3290,15 @@ class TVi extends T {
   String get tReceiptSaveFailed => 'Không lưu được thông tin biên lai';
 
   @override
+  String get tTaxType => 'Loại thuế';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (khấu trừ)';
+
+  @override
+  String get tTaxBusiness => 'Doanh nghiệp đã đăng ký (không khấu trừ)';
+
+  @override
   String get reviewRuleLine =>
       'Cấm lời lẽ xúc phạm, thông tin cá nhân, nội dung giả mạo hoặc quảng cáo. Đánh giá bị báo cáo sẽ bị ẩn.';
 

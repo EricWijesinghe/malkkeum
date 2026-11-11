@@ -3319,6 +3319,15 @@ class TRu extends T {
   String get tReceiptSaveFailed => 'Не удалось сохранить данные чека';
 
   @override
+  String get tTaxType => 'Тип налога';
+
+  @override
+  String get tTaxFreelancer => 'Фрилансер (с удержанием)';
+
+  @override
+  String get tTaxBusiness => 'Зарегистрированный бизнес (без удержания)';
+
+  @override
   String get reviewRuleLine =>
       'Запрещены оскорбления, личные данные, ложный или рекламный контент. Отмеченные отзывы скрываются.';
 

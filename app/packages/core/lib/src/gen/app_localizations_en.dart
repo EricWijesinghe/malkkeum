@@ -3304,6 +3304,15 @@ class TEn extends T {
   String get tReceiptSaveFailed => 'Could not save the receipt details';
 
   @override
+  String get tTaxType => 'Tax type';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (withheld)';
+
+  @override
+  String get tTaxBusiness => 'Registered business (no withholding)';
+
+  @override
   String get reviewRuleLine =>
       'No insults, personal information, fake or promotional content. Reported reviews are hidden.';
 

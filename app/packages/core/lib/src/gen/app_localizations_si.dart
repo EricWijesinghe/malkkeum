@@ -3317,6 +3317,15 @@ class TSi extends T {
   String get tReceiptSaveFailed => 'රිසිට්පත් විස්තර සුරැකීමට නොහැකි විය';
 
   @override
+  String get tTaxType => 'බදු වර්ගය';
+
+  @override
+  String get tTaxFreelancer => 'ස්වාධීන (අය කිරීමෙන්)';
+
+  @override
+  String get tTaxBusiness => 'ලියාපදිංචි ව්‍යාපාරය (අය කිරීමක් නැත)';
+
+  @override
   String get reviewRuleLine =>
       'අපහාසාත්මක වචන, පෞද්ගලික තොරතුරු, ව්‍යාජ හෝ ප්‍රචාරක අන්තර්ගතය තහනම්ය. වාර්තා කළ සමාලෝචන සඟවනු ඇත.';
 

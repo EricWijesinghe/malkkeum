@@ -3343,6 +3343,15 @@ class TFil extends T {
   String get tReceiptSaveFailed => 'Hindi na-save ang detalye ng resibo';
 
   @override
+  String get tTaxType => 'Uri ng buwis';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (may withholding)';
+
+  @override
+  String get tTaxBusiness => 'Rehistradong negosyo (walang withholding)';
+
+  @override
   String get reviewRuleLine =>
       'Bawal ang panlalait, personal na impormasyon, peke o promotional na nilalaman. Itatago ang mga na-report na review.';
 

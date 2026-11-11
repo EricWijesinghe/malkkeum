@@ -6252,6 +6252,24 @@ abstract class T {
   /// **'영수증 정보를 저장하지 못했어요'**
   String get tReceiptSaveFailed;
 
+  /// No description provided for @tTaxType.
+  ///
+  /// In ko, this message translates to:
+  /// **'세무 유형'**
+  String get tTaxType;
+
+  /// No description provided for @tTaxFreelancer.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리랜서 (원천징수)'**
+  String get tTaxFreelancer;
+
+  /// No description provided for @tTaxBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자 등록 (원천징수 없음)'**
+  String get tTaxBusiness;
+
   /// No description provided for @reviewRuleLine.
   ///
   /// In ko, this message translates to:

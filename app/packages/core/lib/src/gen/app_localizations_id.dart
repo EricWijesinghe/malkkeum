@@ -3323,6 +3323,15 @@ class TId extends T {
   String get tReceiptSaveFailed => 'Detail kuitansi tidak tersimpan';
 
   @override
+  String get tTaxType => 'Jenis pajak';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (dipotong pajak)';
+
+  @override
+  String get tTaxBusiness => 'Usaha terdaftar (tanpa pemotongan)';
+
+  @override
   String get reviewRuleLine =>
       'Dilarang ujaran kebencian, informasi pribadi, konten palsu atau promosi. Ulasan yang dilaporkan akan disembunyikan.';
 

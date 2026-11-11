@@ -3300,6 +3300,15 @@ class TTh extends T {
   String get tReceiptSaveFailed => 'บันทึกข้อมูลใบเสร็จไม่สำเร็จ';
 
   @override
+  String get tTaxType => 'ประเภทภาษี';
+
+  @override
+  String get tTaxFreelancer => 'ฟรีแลนซ์ (หักภาษี)';
+
+  @override
+  String get tTaxBusiness => 'ธุรกิจจดทะเบียน (ไม่หักภาษี)';
+
+  @override
   String get reviewRuleLine =>
       'ห้ามใช้ถ้อยคำหยาบคาย ข้อมูลส่วนบุคคล เนื้อหาปลอมหรือโฆษณา รีวิวที่ถูกรายงานจะถูกซ่อน';
 

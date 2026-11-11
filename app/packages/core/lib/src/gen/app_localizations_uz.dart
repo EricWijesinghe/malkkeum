@@ -3335,6 +3335,15 @@ class TUz extends T {
   String get tReceiptSaveFailed => 'Kvitansiya ma’lumotlari saqlanmadi';
 
   @override
+  String get tTaxType => 'Soliq turi';
+
+  @override
+  String get tTaxFreelancer => 'Frilanser (ushlab qolinadi)';
+
+  @override
+  String get tTaxBusiness => 'Ro‘yxatdan o‘tgan biznes (ushlanmaydi)';
+
+  @override
   String get reviewRuleLine =>
       'Haqorat, shaxsiy ma\'lumot, soxta yoki reklama mazmuni taqiqlanadi. Shikoyat qilingan sharhlar yashiriladi.';
 

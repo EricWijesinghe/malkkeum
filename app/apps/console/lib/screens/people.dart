@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'finance_tax.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -206,6 +207,7 @@ class _SettlementsState extends State<SettlementsScreen> {
               if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
               if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
               if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+              if (admin) TextButton(onPressed: () => setPartnerTaxType(context, p, reload), child: Text(t.tTaxType)),
               ],
             ),
           ],

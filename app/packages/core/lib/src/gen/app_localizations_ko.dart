@@ -3227,6 +3227,15 @@ class TKo extends T {
   String get tReceiptSaveFailed => '영수증 정보를 저장하지 못했어요';
 
   @override
+  String get tTaxType => '세무 유형';
+
+  @override
+  String get tTaxFreelancer => '프리랜서 (원천징수)';
+
+  @override
+  String get tTaxBusiness => '사업자 등록 (원천징수 없음)';
+
+  @override
   String get reviewRuleLine => '욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.';
 
   @override

@@ -257,4 +257,27 @@ class _CashReceiptList extends StatelessWidget {
   }
 }
 
+/// Owner sets a partner's withholding class from a payout row. It applies to payouts created after the change.
+Future<void> setPartnerTaxType(BuildContext context, Json payout, Future<void> Function() reload) async {
+  final t = context.t;
+  final messenger = ScaffoldMessenger.of(context);
+  final picked = await showDialog<String>(
+    context: context,
+    builder: (ctx) => SimpleDialog(
+      title: Text(t.tTaxType),
+      children: [
+        SimpleDialogOption(onPressed: () => Navigator.of(ctx).pop('freelancer'), child: Text(t.tTaxFreelancer)),
+        SimpleDialogOption(onPressed: () => Navigator.of(ctx).pop('business'), child: Text(t.tTaxBusiness)),
+      ],
+    ),
+  );
+  if (picked == null || picked == payout['tax_type'] || !context.mounted) return;
+  try {
+    await context.api.post('/admin/settlements/partners/${payout['pro_id']}/tax-type', {'tax_type': picked});
+    await reload();
+  } on ApiException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(t.error(e))));
+  }
+}
+
 String _ymd(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';

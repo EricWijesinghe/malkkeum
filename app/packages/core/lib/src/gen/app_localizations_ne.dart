@@ -3314,6 +3314,15 @@ class TNe extends T {
   String get tReceiptSaveFailed => 'रसिद विवरण सुरक्षित गर्न सकिएन';
 
   @override
+  String get tTaxType => 'कर प्रकार';
+
+  @override
+  String get tTaxFreelancer => 'फ्रीलान्सर (कर कट्टी)';
+
+  @override
+  String get tTaxBusiness => 'दर्ता व्यवसाय (कर कट्टी छैन)';
+
+  @override
   String get reviewRuleLine =>
       'अपमानजनक भाषा, व्यक्तिगत जानकारी, झुटो वा विज्ञापनयुक्त सामग्री निषेधित छ। रिपोर्ट गरिएका समीक्षा लुकाइनेछन्।';
 

@@ -3224,6 +3224,15 @@ class TJa extends T {
   String get tReceiptSaveFailed => '領収書の情報を保存できませんでした';
 
   @override
+  String get tTaxType => '税務区分';
+
+  @override
+  String get tTaxFreelancer => 'フリーランス（源泉徴収）';
+
+  @override
+  String get tTaxBusiness => '事業者登録（源泉徴収なし）';
+
+  @override
   String get reviewRuleLine => '暴言・個人情報・虚偽や宣伝の内容は禁止です。通報されたレビューは非表示になります。';
 
   @override

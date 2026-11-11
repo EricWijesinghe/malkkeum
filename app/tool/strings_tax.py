@@ -68,3 +68,23 @@ X = {
     "tTaxSection": "Soliq", "tVatQuarter": "Q{q} QQS CSV", "tVatYear": "Yil", "tExportWithholding": "Ushlab qolish hisoboti CSV", "tExportTaxInvoices": "Soliq hisob-fakturasini yuklash CSV", "tTaxLayoutNote": "Yuklashdan oldin ustunlarni 홈택스 shabloni bilan tekshiring. Tuzilma hali tasdiqlanmagan.", "tCashReceipts": "Naqd kvitansiyalar", "tCashIssued": "Berilgan", "tCashFailed": "Xatolik", "tCashPending": "Kutilmoqda", "tCashCancelled": "Bekor qilingan", "tReissue": "Qayta berish", "tTaxInvoices": "Soliq hisob-fakturalari", "tApprovalNumber": "Tasdiqlash raqami", "tIssuedOn": "Berilgan sana", "tMarkIssued": "Berilgan deb belgilash", "tQueueEmpty": "Kutilayotgan so‘rovlar yo‘q", "tWithholdingLabel": "Ushlab qolish", "tGrossAmount": "Yalpi summa", "tIncomeTax": "Daromad solig‘i", "tLocalTax": "Mahalliy daromad solig‘i", "tNetAmount": "Sof summa", "tNoWithholding": "Ushlab qolinmaydi (ro‘yxatdan o‘tgan biznes)", "tEstWithholding": "Taxminiy ushlab qolish (to‘lanmagan)", "tReceiptOptions": "Kvitansiya sozlamalari", "tWantCashReceipt": "Naqd kvitansiya olish", "tCashForIncome": "Soliq chegirmasi uchun (telefon raqami)", "tCashForBusiness": "Biznes xarajatlari uchun (biznes raqami)", "tWantTaxInvoice": "Soliq hisob-fakturasi olish (biznes)", "tPhoneForReceipt": "Telefon raqami", "tBusinessNumber": "Biznes ro‘yxat raqami", "tCompanyName": "Kompaniya nomi", "tRepresentative": "Vakil", "tInvoiceEmail": "Hisob-faktura uchun email", "tReceiptSave": "Saqlab to‘lash", "tReceiptSaveFailed": "Kvitansiya ma’lumotlari saqlanmadi",
   },
 }
+
+# Partner tax-type control (owner console payout card).
+S.update({
+  "tTaxType": ["세무 유형", "Tax type", "税務区分", "税务类型", "Loại thuế"],
+  "tTaxFreelancer": ["프리랜서 (원천징수)", "Freelancer (withheld)", "フリーランス（源泉徴収）", "自由职业者（代扣）", "Freelancer (khấu trừ)"],
+  "tTaxBusiness": ["사업자 등록 (원천징수 없음)", "Registered business (no withholding)", "事業者登録（源泉徴収なし）", "已注册企业（无代扣）", "Doanh nghiệp đã đăng ký (không khấu trừ)"],
+})
+_TAX_TYPE_X = {
+  "fil": {"tTaxType": "Uri ng buwis", "tTaxFreelancer": "Freelancer (may withholding)", "tTaxBusiness": "Rehistradong negosyo (walang withholding)"},
+  "id": {"tTaxType": "Jenis pajak", "tTaxFreelancer": "Freelancer (dipotong pajak)", "tTaxBusiness": "Usaha terdaftar (tanpa pemotongan)"},
+  "km": {"tTaxType": "ប្រភេទពន្ធ", "tTaxFreelancer": "អ្នកធ្វើការឯករាជ្យ (កាត់ពន្ធ)", "tTaxBusiness": "អាជីវកម្មចុះបញ្ជី (គ្មានកាត់ពន្ធ)"},
+  "mn": {"tTaxType": "Татварын төрөл", "tTaxFreelancer": "Фрилансер (суутгалтай)", "tTaxBusiness": "Бүртгэлтэй бизнес (суутгалгүй)"},
+  "ne": {"tTaxType": "कर प्रकार", "tTaxFreelancer": "फ्रीलान्सर (कर कट्टी)", "tTaxBusiness": "दर्ता व्यवसाय (कर कट्टी छैन)"},
+  "ru": {"tTaxType": "Тип налога", "tTaxFreelancer": "Фрилансер (с удержанием)", "tTaxBusiness": "Зарегистрированный бизнес (без удержания)"},
+  "si": {"tTaxType": "බදු වර්ගය", "tTaxFreelancer": "ස්වාධීන (අය කිරීමෙන්)", "tTaxBusiness": "ලියාපදිංචි ව්‍යාපාරය (අය කිරීමක් නැත)"},
+  "th": {"tTaxType": "ประเภทภาษี", "tTaxFreelancer": "ฟรีแลนซ์ (หักภาษี)", "tTaxBusiness": "ธุรกิจจดทะเบียน (ไม่หักภาษี)"},
+  "uz": {"tTaxType": "Soliq turi", "tTaxFreelancer": "Frilanser (ushlab qolinadi)", "tTaxBusiness": "Ro‘yxatdan o‘tgan biznes (ushlanmaydi)"},
+}
+for _code, _texts in _TAX_TYPE_X.items():
+    X[_code].update(_texts)

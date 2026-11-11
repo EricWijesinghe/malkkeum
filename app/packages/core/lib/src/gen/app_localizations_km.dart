@@ -3314,6 +3314,15 @@ class TKm extends T {
   String get tReceiptSaveFailed => 'មិនអាចរក្សាទុកព័ត៌មានវិក្កយបត្របានទេ';
 
   @override
+  String get tTaxType => 'ប្រភេទពន្ធ';
+
+  @override
+  String get tTaxFreelancer => 'អ្នកធ្វើការឯករាជ្យ (កាត់ពន្ធ)';
+
+  @override
+  String get tTaxBusiness => 'អាជីវកម្មចុះបញ្ជី (គ្មានកាត់ពន្ធ)';
+
+  @override
   String get reviewRuleLine =>
       'មិនអនុញ្ញាតឱ្យប្រើពាក្យជេរ ព័ត៌មានផ្ទាល់ខ្លួន ខ្លឹមសារក្លែងក្លាយ ឬការផ្សព្វផ្សាយទេ។ វាយតម្លៃដែលត្រូវបានរាយការណ៍នឹងត្រូវបានលាក់។';
 

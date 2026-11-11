@@ -3212,6 +3212,15 @@ class TZh extends T {
   String get tReceiptSaveFailed => '无法保存收据信息';
 
   @override
+  String get tTaxType => '税务类型';
+
+  @override
+  String get tTaxFreelancer => '自由职业者（代扣）';
+
+  @override
+  String get tTaxBusiness => '已注册企业（无代扣）';
+
+  @override
   String get reviewRuleLine => '禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。';
 
   @override
