@@ -175,12 +175,13 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "address: {addr}");
-    let card: Uuid =
-        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id")
-            .bind(user)
-            .fetch_one(db)
-            .await
-            .expect("payment method");
+    let card: Uuid = sqlx::query_scalar(
+        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id",
+    )
+    .bind(user)
+    .fetch_one(db)
+    .await
+    .expect("payment method");
     Customer {
         token,
         user,

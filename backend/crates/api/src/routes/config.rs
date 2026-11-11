@@ -145,8 +145,18 @@ fn flag_value(doc: &Value, feature: &str) -> bool {
     doc["flags"][feature].as_bool().unwrap_or(true)
 }
 
-/// Paths open even in maintenance: the config itself, the admin console, webhooks, the setup wizard, brand.
-const OPEN_PREFIXES: [&str; 5] = ["/v1/config", "/v1/admin", "/v1/webhooks", "/v1/setup", "/v1/brand"];
+/// Paths open even in maintenance: the config itself, the admin console (staff login, token refresh and
+/// logout included, so the owner can sign in and switch maintenance off), webhooks, setup, brand.
+const OPEN_PREFIXES: [&str; 8] = [
+    "/v1/config",
+    "/v1/admin",
+    "/v1/webhooks",
+    "/v1/setup",
+    "/v1/brand",
+    "/v1/auth/staff/",
+    "/v1/auth/refresh",
+    "/v1/auth/logout",
+];
 
 /// Which feature a request belongs to. Order matters: payment paths under booking are checked first.
 pub fn feature_for(path: &str) -> Option<&'static str> {
@@ -297,6 +307,9 @@ mod tests {
         assert_eq!(block_code(&d, "/v1/admin/config"), None);
         assert_eq!(block_code(&d, "/v1/webhooks/toss"), None);
         assert_eq!(block_code(&d, "/v1/setup"), None);
+        assert_eq!(block_code(&d, "/v1/auth/staff/login"), None);
+        assert_eq!(block_code(&d, "/v1/auth/refresh"), None);
+        assert_eq!(block_code(&d, "/v1/auth/otp"), Some("maintenance"));
         assert_eq!(block_code(&d, "/health"), None);
     }
 
