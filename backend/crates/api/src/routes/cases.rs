@@ -271,11 +271,31 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
     let mut outcome = case.outcome.clone().unwrap_or_else(|| json!({}));
     if let Some(amount) = u.refund_amount {
         let booking = case.booking_id.ok_or(ApiError::BadRequest("case_has_no_booking"))?;
-        if amount <= 0 || outcome.get("refund").is_some() {
+        if amount <= 0 {
             return Err(ApiError::BadRequest("invalid_refund"));
         }
-        let refunded = refund_all(&s, booking, Some(amount)).await?;
-        outcome["refund"] = json!({ "requested": amount, "refunded": refunded });
+        // Claim first: the row is written as pending before any money moves, and only a case with no
+        // refund field can be claimed. A retry or a second click sees pending/done and stops here.
+        let key = Uuid::now_v7();
+        let claimed = sqlx::query("UPDATE cases SET outcome = jsonb_set(COALESCE(outcome, '{}'), '{refund}', $2), updated_at = now() WHERE id = $1 AND outcome->'refund' IS NULL")
+            .bind(id)
+            .bind(json!({ "status": "pending", "key": key, "requested": amount }))
+            .execute(&s.db)
+            .await?
+            .rows_affected();
+        if claimed == 0 {
+            return Err(ApiError::Conflict("refund_already_claimed"));
+        }
+        // Gateway cancels have no idempotency id here, so on an error the claim stays pending and a
+        // person reconciles it with the gateway. Never retried automatically.
+        let refunded = match refund_all(&s, booking, Some(amount)).await {
+            Ok(total) => total,
+            Err(e) => {
+                audit(&s.db, "staff", Some(st.id), "case.refund_failed", &id.to_string(), json!({ "key": key, "requested": amount })).await?;
+                return Err(e);
+            }
+        };
+        outcome["refund"] = json!({ "status": "done", "key": key, "requested": amount, "refunded": refunded });
         audit(&s.db, "staff", Some(st.id), "case.refund", &id.to_string(), json!({ "requested": amount, "refunded": refunded })).await?;
     }
     if let Some(hold) = u.hold_settlement {

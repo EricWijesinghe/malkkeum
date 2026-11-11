@@ -206,7 +206,7 @@ async fn refunds_and_settlement_holds_are_admin_only_and_run_once(pool: PgPool) 
     assert_eq!(st, StatusCode::OK, "{b}");
     assert_eq!(b["case"]["outcome"]["refund"]["refunded"], 1000);
     let (st, _) = call(&app, "PUT", &format!("/v1/admin/cases/{case}"), Some(admin.as_str()), Some(json!({ "refund_amount": 1000 }))).await;
-    assert_eq!(st, StatusCode::BAD_REQUEST, "a case refunds once");
+    assert_eq!(st, StatusCode::CONFLICT, "a case refunds once");
 
     let (st, b) = call(&app, "PUT", &format!("/v1/admin/cases/{case}"), Some(admin.as_str()), Some(json!({ "hold_settlement": true }))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
