@@ -70,8 +70,6 @@
  "apPgPay": "Bayar {amount}",
  "apPgIssue": "Dapatkan nomor rekening",
  "apPgCancel": "Batalkan pembayaran",
- "apPgBrowserNote": "Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.",
- "apPgBrowserDone": "Saya sudah membayar",
  "apErrSlotFullRefunded": "Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis",
  "apErrCheckoutExpired": "Waktu pembayaran habis. Silakan coba lagi.",
  "apIdentityTitle": "Verifikasi identitas (PASS)",
@@ -1024,5 +1022,7 @@
  "uMinVersion": "Versi minimum",
  "uLatestVersion": "Versi terbaru",
  "webBookNow": "Pesan lewat web",
- "webBookSub": "Tanpa perlu memasang aplikasi"
+ "webBookSub": "Tanpa perlu memasang aplikasi",
+ "apPgBrowserNote": "Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.",
+ "apPgBrowserDone": "Saya sudah membayar"
 }

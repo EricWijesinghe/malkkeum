@@ -233,13 +233,6 @@ class TKm extends T {
   String get apPgCancel => 'បោះបង់ការបង់ប្រាក់';
 
   @override
-  String get apPgBrowserNote =>
-      'បញ្ចប់ការបង់ប្រាក់នៅក្នុងកម្មវិធីរុករក បន្ទាប់មកត្រឡប់មកទីនេះ ហើយចុចប៊ូតុងខាងក្រោម។';
-
-  @override
-  String get apPgBrowserDone => 'ខ្ញុំបានបង់ប្រាក់រួចហើយ';
-
-  @override
   String get apErrSlotFullRefunded =>
       'ម៉ោងនោះទើបតែពេញ ដូច្នេះការបង់ប្រាក់ត្រូវបានបោះបង់ និងសងប្រាក់វិញដោយស្វ័យប្រវត្តិ';
 
@@ -3209,6 +3202,82 @@ class TKm extends T {
   String get cInvalidValue => 'សូមពិនិត្យតម្លៃដែលបានបញ្ចូល';
 
   @override
+  String get reviewRuleLine =>
+      'មិនអនុញ្ញាតឱ្យប្រើពាក្យជេរ ព័ត៌មានផ្ទាល់ខ្លួន ខ្លឹមសារក្លែងក្លាយ ឬការផ្សព្វផ្សាយទេ។ វាយតម្លៃដែលត្រូវបានរាយការណ៍នឹងត្រូវបានលាក់។';
+
+  @override
+  String get reportAction => 'រាយការណ៍';
+
+  @override
+  String get reportSheetTitle => 'រាយការណ៍ពីវាយតម្លៃនេះ?';
+
+  @override
+  String get reportReasonSpam => 'ឯកសារ ឬ ការផ្សព្វផ្សាយ';
+
+  @override
+  String get reportReasonOffensive => 'ពាក្យជេរ ឬការស្អប់';
+
+  @override
+  String get reportReasonPersonal => 'មានព័ត៌មានផ្ទាល់ខ្លួន';
+
+  @override
+  String get reportReasonOther => 'ផ្សេងៗ';
+
+  @override
+  String get reportNoteHint => 'ព័ត៌មានលម្អិត (ស្រេចចិត្ត មិនលើស ៣០០ តួអក្សរ)';
+
+  @override
+  String get reportSubmit => 'ផ្ញើរបាយការណ៍';
+
+  @override
+  String get reportThanks => 'អរគុណ។ ក្រុមការងារនឹងពិនិត្យ។';
+
+  @override
+  String get reportAlready => 'អ្នកបានរាយការណ៍វាយតម្លៃនេះរួចហើយ';
+
+  @override
+  String get reportFailed => 'មិនអាចផ្ញើរបាយការណ៍បានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get reviewBlocked =>
+      'គណនីនេះមិនអាចវាយតម្លៃបានទេ។ សូមទាក់ទងផ្នែកជំនួយ។';
+
+  @override
+  String get modTitle => 'វាយតម្លៃដែលត្រូវបានរាយការណ៍';
+
+  @override
+  String get modEmpty => 'គ្មានរបាយការណ៍រង់ចាំទេ';
+
+  @override
+  String modReports(String count) {
+    return 'របាយការណ៍ $count';
+  }
+
+  @override
+  String get modKeep => 'រក្សាទុក';
+
+  @override
+  String get modHide => 'លាក់';
+
+  @override
+  String get modDelete => 'លុប';
+
+  @override
+  String get modBlockAuthor => 'កម្រិតអ្នកនិពន្ធ';
+
+  @override
+  String get modUnblockAuthor => 'លុបការកម្រិត';
+
+  @override
+  String get modDone => 'រួចរាល់';
+
+  @override
+  String get modFailed => 'មិនអាចដំណើរការបានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get modHidden => 'វាយតម្លៃដែលលាក់';
+
+  @override
   String uUpdateBanner(String version) {
     return 'មានកំណែថ្មី $version';
   }
@@ -3256,4 +3325,11 @@ class TKm extends T {
 
   @override
   String get webBookSub => 'មិនចាំបាច់ដំឡើងកម្មវិធី';
+
+  @override
+  String get apPgBrowserNote =>
+      'បញ្ចប់ការបង់ប្រាក់នៅក្នុងកម្មវិធីរុករក បន្ទាប់មកត្រឡប់មកទីនេះ ហើយចុចប៊ូតុងខាងក្រោម។';
+
+  @override
+  String get apPgBrowserDone => 'ខ្ញុំបានបង់ប្រាក់រួចហើយ';
 }

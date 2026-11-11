@@ -234,13 +234,6 @@ class TEn extends T {
   String get apPgCancel => 'Cancel payment';
 
   @override
-  String get apPgBrowserNote =>
-      'Complete the payment in your browser, then come back here and tap the button below.';
-
-  @override
-  String get apPgBrowserDone => 'I finished paying';
-
-  @override
   String get apErrSlotFullRefunded =>
       'That slot just filled up, so your payment was cancelled automatically';
 
@@ -3199,6 +3192,82 @@ class TEn extends T {
   String get cInvalidValue => 'Please check the highlighted value';
 
   @override
+  String get reviewRuleLine =>
+      'No insults, personal information, fake or promotional content. Reported reviews are hidden.';
+
+  @override
+  String get reportAction => 'Report';
+
+  @override
+  String get reportSheetTitle => 'Report this review?';
+
+  @override
+  String get reportReasonSpam => 'Spam or ads';
+
+  @override
+  String get reportReasonOffensive => 'Insults or hate';
+
+  @override
+  String get reportReasonPersonal => 'Personal information';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportNoteHint => 'Details (optional, up to 300 characters)';
+
+  @override
+  String get reportSubmit => 'Submit report';
+
+  @override
+  String get reportThanks => 'Thanks. Our team will review it.';
+
+  @override
+  String get reportAlready => 'You already reported this review';
+
+  @override
+  String get reportFailed => 'Couldn\'t send the report. Try again.';
+
+  @override
+  String get reviewBlocked =>
+      'Reviews are disabled for this account. Contact support.';
+
+  @override
+  String get modTitle => 'Review reports';
+
+  @override
+  String get modEmpty => 'No reports waiting';
+
+  @override
+  String modReports(String count) {
+    return '$count reports';
+  }
+
+  @override
+  String get modKeep => 'Keep';
+
+  @override
+  String get modHide => 'Hide';
+
+  @override
+  String get modDelete => 'Delete';
+
+  @override
+  String get modBlockAuthor => 'Restrict author';
+
+  @override
+  String get modUnblockAuthor => 'Lift restriction';
+
+  @override
+  String get modDone => 'Done';
+
+  @override
+  String get modFailed => 'Couldn\'t apply that. Try again.';
+
+  @override
+  String get modHidden => 'Hidden review';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Version $version is available';
   }
@@ -3246,4 +3315,11 @@ class TEn extends T {
 
   @override
   String get webBookSub => 'Book without installing the app';
+
+  @override
+  String get apPgBrowserNote =>
+      'Complete the payment in your browser, then come back here and tap the button below.';
+
+  @override
+  String get apPgBrowserDone => 'I finished paying';
 }

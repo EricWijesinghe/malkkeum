@@ -238,13 +238,6 @@ class TNe extends T {
   String get apPgCancel => 'भुक्तानी रद्द गर्नुहोस्';
 
   @override
-  String get apPgBrowserNote =>
-      'ब्राउजरमा भुक्तानी पूरा गर्नुहोस्, त्यसपछि यहाँ फर्केर तलको बटन थिच्नुहोस्।';
-
-  @override
-  String get apPgBrowserDone => 'मैले भुक्तानी गरिसकें';
-
-  @override
   String get apErrSlotFullRefunded =>
       'त्यो समय भर्ने भएकोले भुक्तानी स्वतः रद्द गरियो';
 
@@ -3209,6 +3202,83 @@ class TNe extends T {
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
 
   @override
+  String get reviewRuleLine =>
+      'अपमानजनक भाषा, व्यक्तिगत जानकारी, झुटो वा विज्ञापनयुक्त सामग्री निषेधित छ। रिपोर्ट गरिएका समीक्षा लुकाइनेछन्।';
+
+  @override
+  String get reportAction => 'रिपोर्ट';
+
+  @override
+  String get reportSheetTitle => 'यो समीक्षा रिपोर्ट गर्ने?';
+
+  @override
+  String get reportReasonSpam => 'स्प्याम वा विज्ञापन';
+
+  @override
+  String get reportReasonOffensive => 'अपमान वा घृणा';
+
+  @override
+  String get reportReasonPersonal => 'व्यक्तिगत जानकारी समावेश';
+
+  @override
+  String get reportReasonOther => 'अन्य';
+
+  @override
+  String get reportNoteHint => 'विवरण (ऐच्छिक, ३०० अक्षरसम्म)';
+
+  @override
+  String get reportSubmit => 'रिपोर्ट पठाउनुहोस्';
+
+  @override
+  String get reportThanks => 'धन्यवाद। हाम्रो टोलीले समीक्षा गर्नेछ।';
+
+  @override
+  String get reportAlready =>
+      'तपाईंले यो समीक्षा पहिले नै रिपोर्ट गरिसक्नुभएको छ';
+
+  @override
+  String get reportFailed => 'रिपोर्ट पठाउन सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get reviewBlocked =>
+      'यो खाताबाट समीक्षा गर्न मिल्दैन। सहायतामा सम्पर्क गर्नुहोस्।';
+
+  @override
+  String get modTitle => 'रिपोर्ट गरिएका समीक्षाहरू';
+
+  @override
+  String get modEmpty => 'कुनै रिपोर्ट बाँकी छैन';
+
+  @override
+  String modReports(String count) {
+    return '$count रिपोर्ट';
+  }
+
+  @override
+  String get modKeep => 'राख्नुहोस्';
+
+  @override
+  String get modHide => 'लुकाउनुहोस्';
+
+  @override
+  String get modDelete => 'मेटाउनुहोस्';
+
+  @override
+  String get modBlockAuthor => 'लेखकलाई सीमित गर्नुहोस्';
+
+  @override
+  String get modUnblockAuthor => 'सीमा हटाउनुहोस्';
+
+  @override
+  String get modDone => 'सम्पन्न';
+
+  @override
+  String get modFailed => 'प्रशोधन गर्न सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get modHidden => 'लुकाइएको समीक्षा';
+
+  @override
   String uUpdateBanner(String version) {
     return 'नयाँ संस्करण $version उपलब्ध छ';
   }
@@ -3256,4 +3326,11 @@ class TNe extends T {
 
   @override
   String get webBookSub => 'एप इन्स्टल नगरी बुक गर्नुहोस्';
+
+  @override
+  String get apPgBrowserNote =>
+      'ब्राउजरमा भुक्तानी पूरा गर्नुहोस्, त्यसपछि यहाँ फर्केर तलको बटन थिच्नुहोस्।';
+
+  @override
+  String get apPgBrowserDone => 'मैले भुक्तानी गरिसकें';
 }

@@ -227,12 +227,6 @@ class TZh extends T {
   String get apPgCancel => '取消支付';
 
   @override
-  String get apPgBrowserNote => '请在浏览器中完成付款，然后返回此页面并点击下方按钮。';
-
-  @override
-  String get apPgBrowserDone => '我已完成付款';
-
-  @override
   String get apErrSlotFullRefunded => '该时段刚被订满，付款已自动取消';
 
   @override
@@ -3107,6 +3101,80 @@ class TZh extends T {
   String get cInvalidValue => '请检查输入内容';
 
   @override
+  String get reviewRuleLine => '禁止辱骂、个人信息、虚假或广告内容。被举报的评价将被隐藏。';
+
+  @override
+  String get reportAction => '举报';
+
+  @override
+  String get reportSheetTitle => '要举报这条评价吗？';
+
+  @override
+  String get reportReasonSpam => '垃圾或广告';
+
+  @override
+  String get reportReasonOffensive => '辱骂或仇恨言论';
+
+  @override
+  String get reportReasonPersonal => '包含个人信息';
+
+  @override
+  String get reportReasonOther => '其他';
+
+  @override
+  String get reportNoteHint => '详细说明（可选，300字以内）';
+
+  @override
+  String get reportSubmit => '提交举报';
+
+  @override
+  String get reportThanks => '感谢举报，运营团队会进行审核。';
+
+  @override
+  String get reportAlready => '您已举报过此评价';
+
+  @override
+  String get reportFailed => '举报失败，请重试。';
+
+  @override
+  String get reviewBlocked => '此账户已被限制发表评价，请联系客服。';
+
+  @override
+  String get modTitle => '评价举报管理';
+
+  @override
+  String get modEmpty => '没有待处理的举报';
+
+  @override
+  String modReports(String count) {
+    return '$count 条举报';
+  }
+
+  @override
+  String get modKeep => '保留';
+
+  @override
+  String get modHide => '隐藏';
+
+  @override
+  String get modDelete => '删除';
+
+  @override
+  String get modBlockAuthor => '限制作者发表';
+
+  @override
+  String get modUnblockAuthor => '解除限制';
+
+  @override
+  String get modDone => '已处理';
+
+  @override
+  String get modFailed => '处理失败，请重试。';
+
+  @override
+  String get modHidden => '已隐藏的评价';
+
+  @override
   String uUpdateBanner(String version) {
     return '新版本 $version 已发布';
   }
@@ -3151,4 +3219,10 @@ class TZh extends T {
 
   @override
   String get webBookSub => '无需安装应用，直接预约';
+
+  @override
+  String get apPgBrowserNote => '请在浏览器中完成付款，然后返回此页面并点击下方按钮。';
+
+  @override
+  String get apPgBrowserDone => '我已完成付款';
 }

@@ -235,13 +235,6 @@ class TVi extends T {
   String get apPgCancel => 'Hủy thanh toán';
 
   @override
-  String get apPgBrowserNote =>
-      'Hoàn tất thanh toán trên trình duyệt, sau đó quay lại đây và nhấn nút bên dưới.';
-
-  @override
-  String get apPgBrowserDone => 'Tôi đã thanh toán xong';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Khung giờ vừa kín nên thanh toán đã được hủy tự động';
 
@@ -3185,6 +3178,82 @@ class TVi extends T {
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
 
   @override
+  String get reviewRuleLine =>
+      'Cấm lời lẽ xúc phạm, thông tin cá nhân, nội dung giả mạo hoặc quảng cáo. Đánh giá bị báo cáo sẽ bị ẩn.';
+
+  @override
+  String get reportAction => 'Báo cáo';
+
+  @override
+  String get reportSheetTitle => 'Báo cáo đánh giá này?';
+
+  @override
+  String get reportReasonSpam => 'Spam hoặc quảng cáo';
+
+  @override
+  String get reportReasonOffensive => 'Xúc phạm hoặc thù ghét';
+
+  @override
+  String get reportReasonPersonal => 'Có thông tin cá nhân';
+
+  @override
+  String get reportReasonOther => 'Khác';
+
+  @override
+  String get reportNoteHint => 'Chi tiết (không bắt buộc, tối đa 300 ký tự)';
+
+  @override
+  String get reportSubmit => 'Gửi báo cáo';
+
+  @override
+  String get reportThanks => 'Cảm ơn bạn. Đội ngũ vận hành sẽ xem xét.';
+
+  @override
+  String get reportAlready => 'Bạn đã báo cáo đánh giá này';
+
+  @override
+  String get reportFailed => 'Không gửi được báo cáo, hãy thử lại.';
+
+  @override
+  String get reviewBlocked =>
+      'Tài khoản này không thể đánh giá. Liên hệ hỗ trợ.';
+
+  @override
+  String get modTitle => 'Quản lý báo cáo đánh giá';
+
+  @override
+  String get modEmpty => 'Không có báo cáo nào đang chờ';
+
+  @override
+  String modReports(String count) {
+    return '$count báo cáo';
+  }
+
+  @override
+  String get modKeep => 'Giữ lại';
+
+  @override
+  String get modHide => 'Ẩn';
+
+  @override
+  String get modDelete => 'Xóa';
+
+  @override
+  String get modBlockAuthor => 'Hạn chế người viết';
+
+  @override
+  String get modUnblockAuthor => 'Bỏ hạn chế';
+
+  @override
+  String get modDone => 'Đã xử lý';
+
+  @override
+  String get modFailed => 'Không thực hiện được, hãy thử lại.';
+
+  @override
+  String get modHidden => 'Đánh giá đã ẩn';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Đã có phiên bản $version';
   }
@@ -3232,4 +3301,11 @@ class TVi extends T {
 
   @override
   String get webBookSub => 'Đặt lịch không cần cài ứng dụng';
+
+  @override
+  String get apPgBrowserNote =>
+      'Hoàn tất thanh toán trên trình duyệt, sau đó quay lại đây và nhấn nút bên dưới.';
+
+  @override
+  String get apPgBrowserDone => 'Tôi đã thanh toán xong';
 }

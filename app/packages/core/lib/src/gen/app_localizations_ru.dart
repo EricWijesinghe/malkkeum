@@ -236,13 +236,6 @@ class TRu extends T {
   String get apPgCancel => 'Отменить оплату';
 
   @override
-  String get apPgBrowserNote =>
-      'Завершите оплату в браузере, затем вернитесь сюда и нажмите кнопку ниже.';
-
-  @override
-  String get apPgBrowserDone => 'Я оплатил';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Это время только что заполнилось, поэтому оплата отменена автоматически';
 
@@ -3214,6 +3207,82 @@ class TRu extends T {
   String get cInvalidValue => 'Проверьте введённое значение';
 
   @override
+  String get reviewRuleLine =>
+      'Запрещены оскорбления, личные данные, ложный или рекламный контент. Отмеченные отзывы скрываются.';
+
+  @override
+  String get reportAction => 'Пожаловаться';
+
+  @override
+  String get reportSheetTitle => 'Пожаловаться на этот отзыв?';
+
+  @override
+  String get reportReasonSpam => 'Спам или реклама';
+
+  @override
+  String get reportReasonOffensive => 'Оскорбления или ненависть';
+
+  @override
+  String get reportReasonPersonal => 'Личные данные';
+
+  @override
+  String get reportReasonOther => 'Другое';
+
+  @override
+  String get reportNoteHint => 'Подробности (необязательно, до 300 символов)';
+
+  @override
+  String get reportSubmit => 'Отправить жалобу';
+
+  @override
+  String get reportThanks => 'Спасибо. Наша команда проверит жалобу.';
+
+  @override
+  String get reportAlready => 'Вы уже пожаловались на этот отзыв';
+
+  @override
+  String get reportFailed => 'Не удалось отправить жалобу. Попробуйте ещё раз.';
+
+  @override
+  String get reviewBlocked =>
+      'Отзывы для этого аккаунта отключены. Свяжитесь с поддержкой.';
+
+  @override
+  String get modTitle => 'Жалобы на отзывы';
+
+  @override
+  String get modEmpty => 'Нет жалоб, ожидающих решения';
+
+  @override
+  String modReports(String count) {
+    return 'Жалоб: $count';
+  }
+
+  @override
+  String get modKeep => 'Оставить';
+
+  @override
+  String get modHide => 'Скрыть';
+
+  @override
+  String get modDelete => 'Удалить';
+
+  @override
+  String get modBlockAuthor => 'Ограничить автора';
+
+  @override
+  String get modUnblockAuthor => 'Снять ограничение';
+
+  @override
+  String get modDone => 'Готово';
+
+  @override
+  String get modFailed => 'Не удалось выполнить. Попробуйте ещё раз.';
+
+  @override
+  String get modHidden => 'Скрытый отзыв';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Доступна версия $version';
   }
@@ -3261,4 +3330,11 @@ class TRu extends T {
 
   @override
   String get webBookSub => 'Без установки приложения';
+
+  @override
+  String get apPgBrowserNote =>
+      'Завершите оплату в браузере, затем вернитесь сюда и нажмите кнопку ниже.';
+
+  @override
+  String get apPgBrowserDone => 'Я оплатил';
 }

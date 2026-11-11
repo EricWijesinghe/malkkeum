@@ -101,8 +101,6 @@
  },
  "apPgIssue": "계좌 발급받기",
  "apPgCancel": "결제 취소",
- "apPgBrowserNote": "브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.",
- "apPgBrowserDone": "결제를 마쳤어요",
  "apErrSlotFullRefunded": "방금 그 시간이 마감돼서 결제가 자동 취소됐어요",
  "apErrCheckoutExpired": "결제 시간이 지났어요. 다시 시도해 주세요.",
  "apIdentityTitle": "본인인증 (PASS)",
@@ -1554,5 +1552,7 @@
  "uMinVersion": "최소 버전",
  "uLatestVersion": "최신 버전",
  "webBookNow": "웹에서 바로 예약",
- "webBookSub": "앱 설치 없이 바로 예약해요"
+ "webBookSub": "앱 설치 없이 바로 예약해요",
+ "apPgBrowserNote": "브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.",
+ "apPgBrowserDone": "결제를 마쳤어요"
 }

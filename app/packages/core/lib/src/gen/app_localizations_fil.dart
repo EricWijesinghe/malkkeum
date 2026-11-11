@@ -237,13 +237,6 @@ class TFil extends T {
   String get apPgCancel => 'Kanselahin ang bayad';
 
   @override
-  String get apPgBrowserNote =>
-      'Tapusin ang bayad sa browser, pagkatapos bumalik dito at pindutin ang button sa ibaba.';
-
-  @override
-  String get apPgBrowserDone => 'Tapos na akong magbayad';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Napuno na ang oras na iyon, kaya awtomatikong kinansela ang bayad mo';
 
@@ -3238,6 +3231,83 @@ class TFil extends T {
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
 
   @override
+  String get reviewRuleLine =>
+      'Bawal ang panlalait, personal na impormasyon, peke o promotional na nilalaman. Itatago ang mga na-report na review.';
+
+  @override
+  String get reportAction => 'I-report';
+
+  @override
+  String get reportSheetTitle => 'I-report ang review na ito?';
+
+  @override
+  String get reportReasonSpam => 'Spam o ad';
+
+  @override
+  String get reportReasonOffensive => 'Pang-iinsulto o poot';
+
+  @override
+  String get reportReasonPersonal => 'May personal na impormasyon';
+
+  @override
+  String get reportReasonOther => 'Iba pa';
+
+  @override
+  String get reportNoteHint => 'Mga detalye (opsyonal, hanggang 300 karakter)';
+
+  @override
+  String get reportSubmit => 'Ipadala ang report';
+
+  @override
+  String get reportThanks =>
+      'Salamat sa pag-report. Titingnan ito ng aming team.';
+
+  @override
+  String get reportAlready => 'Na-report mo na ang review na ito';
+
+  @override
+  String get reportFailed => 'Hindi naipadala ang report. Subukan ulit.';
+
+  @override
+  String get reviewBlocked =>
+      'Limitado ang pag-review sa account na ito. Makipag-ugnayan sa suporta.';
+
+  @override
+  String get modTitle => 'Mga na-report na review';
+
+  @override
+  String get modEmpty => 'Walang naghihintay na report';
+
+  @override
+  String modReports(String count) {
+    return '$count report';
+  }
+
+  @override
+  String get modKeep => 'Panatilihin';
+
+  @override
+  String get modHide => 'Itago';
+
+  @override
+  String get modDelete => 'Burahin';
+
+  @override
+  String get modBlockAuthor => 'Limitahan ang author';
+
+  @override
+  String get modUnblockAuthor => 'Alisin ang limitasyon';
+
+  @override
+  String get modDone => 'Tapos na';
+
+  @override
+  String get modFailed => 'Hindi naayos. Subukan ulit.';
+
+  @override
+  String get modHidden => 'Nakatagong review';
+
+  @override
   String uUpdateBanner(String version) {
     return 'May bagong bersyon $version';
   }
@@ -3285,4 +3355,11 @@ class TFil extends T {
 
   @override
   String get webBookSub => 'Walang kailangang i-install na app';
+
+  @override
+  String get apPgBrowserNote =>
+      'Tapusin ang bayad sa browser, pagkatapos bumalik dito at pindutin ang button sa ibaba.';
+
+  @override
+  String get apPgBrowserDone => 'Tapos na akong magbayad';
 }

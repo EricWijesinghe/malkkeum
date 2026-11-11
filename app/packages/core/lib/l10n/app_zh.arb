@@ -70,8 +70,6 @@
  "apPgPay": "支付 {amount}",
  "apPgIssue": "获取账号",
  "apPgCancel": "取消支付",
- "apPgBrowserNote": "请在浏览器中完成付款，然后返回此页面并点击下方按钮。",
- "apPgBrowserDone": "我已完成付款",
  "apErrSlotFullRefunded": "该时段刚被订满，付款已自动取消",
  "apErrCheckoutExpired": "支付已超时，请重试。",
  "apIdentityTitle": "实名认证 (PASS)",
@@ -1024,5 +1022,7 @@
  "uMinVersion": "最低版本",
  "uLatestVersion": "最新版本",
  "webBookNow": "网页直接预约",
- "webBookSub": "无需安装应用，直接预约"
+ "webBookSub": "无需安装应用，直接预约",
+ "apPgBrowserNote": "请在浏览器中完成付款，然后返回此页面并点击下方按钮。",
+ "apPgBrowserDone": "我已完成付款"
 }

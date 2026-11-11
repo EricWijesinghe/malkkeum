@@ -238,13 +238,6 @@ class TMn extends T {
   String get apPgCancel => 'Төлбөрийг цуцлах';
 
   @override
-  String get apPgBrowserNote =>
-      'Төлбөрөө браузер дээр дуусгаад, энд буцаж ирээд доорх товчийг дарна уу.';
-
-  @override
-  String get apPgBrowserDone => 'Би төлбөрөө төлсөн';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Энэ цаг дөнгөж дүүрсэн тул төлбөрийг автоматаар цуцаллаа';
 
@@ -3222,6 +3215,82 @@ class TMn extends T {
   String get cInvalidValue => 'Оруулсан утгаа шалгана уу';
 
   @override
+  String get reviewRuleLine =>
+      'Доромжлол, хувийн мэдээлэл, худал эсвэл сурталчилгаатай агуулга хориотой. Мэдээлэгдсэн сэтгэгдлийг нуух болно.';
+
+  @override
+  String get reportAction => 'Мэдээлэх';
+
+  @override
+  String get reportSheetTitle => 'Энэ сэтгэгдлийг мэдээлэх үү?';
+
+  @override
+  String get reportReasonSpam => 'Спам эсвэл сурталчилгаа';
+
+  @override
+  String get reportReasonOffensive => 'Доромжлол эсвэл үзэн ядалт';
+
+  @override
+  String get reportReasonPersonal => 'Хувийн мэдээлэл агуулсан';
+
+  @override
+  String get reportReasonOther => 'Бусад';
+
+  @override
+  String get reportNoteHint => 'Дэлгэрэнгүй (сонголттой, 300 тэмдэгт хүртэл)';
+
+  @override
+  String get reportSubmit => 'Мэдээлэл илгээх';
+
+  @override
+  String get reportThanks => 'Баярлалаа. Манай баг шалгана.';
+
+  @override
+  String get reportAlready => 'Та энэ сэтгэгдлийг аль хэдийн мэдээлсэн';
+
+  @override
+  String get reportFailed => 'Мэдээлэл илгээж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get reviewBlocked =>
+      'Энэ бүртгэлээр сэтгэгдэл бичих боломжгүй. Дэмжлэгт хандана уу.';
+
+  @override
+  String get modTitle => 'Мэдээлэгдсэн сэтгэгдлүүд';
+
+  @override
+  String get modEmpty => 'Хүлээгдэж буй мэдээлэл алга';
+
+  @override
+  String modReports(String count) {
+    return '$count мэдээлэл';
+  }
+
+  @override
+  String get modKeep => 'Үлдээх';
+
+  @override
+  String get modHide => 'Нуух';
+
+  @override
+  String get modDelete => 'Устгах';
+
+  @override
+  String get modBlockAuthor => 'Зохиогчийг хязгаарлах';
+
+  @override
+  String get modUnblockAuthor => 'Хязгаарлалтыг цуцлах';
+
+  @override
+  String get modDone => 'Боллоо';
+
+  @override
+  String get modFailed => 'Боловсруулж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get modHidden => 'Нуугдсан сэтгэгдэл';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Шинэ хувилбар $version гарлаа';
   }
@@ -3269,4 +3338,11 @@ class TMn extends T {
 
   @override
   String get webBookSub => 'Аппликейшн суулгах шаардлагагүй';
+
+  @override
+  String get apPgBrowserNote =>
+      'Төлбөрөө браузер дээр дуусгаад, энд буцаж ирээд доорх товчийг дарна уу.';
+
+  @override
+  String get apPgBrowserDone => 'Би төлбөрөө төлсөн';
 }

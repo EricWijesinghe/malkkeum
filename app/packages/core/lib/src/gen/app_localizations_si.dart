@@ -239,13 +239,6 @@ class TSi extends T {
   String get apPgCancel => 'ගෙවීම අවලංගු කරන්න';
 
   @override
-  String get apPgBrowserNote =>
-      'බ්‍රව්සරයෙන් ගෙවීම සම්පූර්ණ කර, මෙතැනට ආපසු ඇවිත් පහත බොත්තම ඔබන්න.';
-
-  @override
-  String get apPgBrowserDone => 'ගෙවීම අවසන් කළෙමි';
-
-  @override
   String get apErrSlotFullRefunded =>
       'එම වේලාව දැන් පිරී ගියේය, එබැවින් ගෙවීම ස්වයංක්‍රීයව අවලංගු කරන ලදී';
 
@@ -3212,6 +3205,82 @@ class TSi extends T {
   String get cInvalidValue => 'කරුණාකර අගය පරීක්ෂා කරන්න';
 
   @override
+  String get reviewRuleLine =>
+      'අපහාසාත්මක වචන, පෞද්ගලික තොරතුරු, ව්‍යාජ හෝ ප්‍රචාරක අන්තර්ගතය තහනම්ය. වාර්තා කළ සමාලෝචන සඟවනු ඇත.';
+
+  @override
+  String get reportAction => 'වාර්තා කරන්න';
+
+  @override
+  String get reportSheetTitle => 'මෙම සමාලෝචනය වාර්තා කරන්නද?';
+
+  @override
+  String get reportReasonSpam => 'අවශ්‍ය නැති තැපැල් හෝ දැන්වීම';
+
+  @override
+  String get reportReasonOffensive => 'අපහාස හෝ වෛරය';
+
+  @override
+  String get reportReasonPersonal => 'පෞද්ගලික තොරතුරු අඩංගුයි';
+
+  @override
+  String get reportReasonOther => 'වෙනත්';
+
+  @override
+  String get reportNoteHint => 'විස්තර (විකල්ප, අක්ෂර 300 දක්වා)';
+
+  @override
+  String get reportSubmit => 'වාර්තාව යවන්න';
+
+  @override
+  String get reportThanks => 'ස්තූතියි. අපගේ කණ්ඩායම එය සමාලෝචනය කරයි.';
+
+  @override
+  String get reportAlready => 'ඔබ මෙම සමාලෝචනය දැනටමත් වාර්තා කර ඇත';
+
+  @override
+  String get reportFailed => 'වාර්තාව යැවීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get reviewBlocked =>
+      'මෙම ගිණුමෙන් සමාලෝචන කළ නොහැක. සහාය සමග සම්බන්ධ වන්න.';
+
+  @override
+  String get modTitle => 'වාර්තා කළ සමාලෝචන';
+
+  @override
+  String get modEmpty => 'බලාපොරොත්තු වන වාර්තා නොමැත';
+
+  @override
+  String modReports(String count) {
+    return 'වාර්තා $count';
+  }
+
+  @override
+  String get modKeep => 'තබන්න';
+
+  @override
+  String get modHide => 'සඟවන්න';
+
+  @override
+  String get modDelete => 'මකන්න';
+
+  @override
+  String get modBlockAuthor => 'කර්තෘ සීමා කරන්න';
+
+  @override
+  String get modUnblockAuthor => 'සීමාව ඉවත් කරන්න';
+
+  @override
+  String get modDone => 'නිමයි';
+
+  @override
+  String get modFailed => 'සිදු කළ නොහැක. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get modHidden => 'සඟවන ලද සමාලෝචනය';
+
+  @override
   String uUpdateBanner(String version) {
     return 'නව අනුවාදය $version ලැබී ඇත';
   }
@@ -3259,4 +3328,11 @@ class TSi extends T {
 
   @override
   String get webBookSub => 'යෙදුම ස්ථාපනය නොකර';
+
+  @override
+  String get apPgBrowserNote =>
+      'බ්‍රව්සරයෙන් ගෙවීම සම්පූර්ණ කර, මෙතැනට ආපසු ඇවිත් පහත බොත්තම ඔබන්න.';
+
+  @override
+  String get apPgBrowserDone => 'ගෙවීම අවසන් කළෙමි';
 }

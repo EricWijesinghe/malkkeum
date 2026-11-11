@@ -235,13 +235,6 @@ class TId extends T {
   String get apPgCancel => 'Batalkan pembayaran';
 
   @override
-  String get apPgBrowserNote =>
-      'Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.';
-
-  @override
-  String get apPgBrowserDone => 'Saya sudah membayar';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis';
 
@@ -3218,6 +3211,82 @@ class TId extends T {
   String get cInvalidValue => 'Periksa nilai yang diisi';
 
   @override
+  String get reviewRuleLine =>
+      'Dilarang ujaran kebencian, informasi pribadi, konten palsu atau promosi. Ulasan yang dilaporkan akan disembunyikan.';
+
+  @override
+  String get reportAction => 'Laporkan';
+
+  @override
+  String get reportSheetTitle => 'Laporkan ulasan ini?';
+
+  @override
+  String get reportReasonSpam => 'Spam atau iklan';
+
+  @override
+  String get reportReasonOffensive => 'Hinaan atau kebencian';
+
+  @override
+  String get reportReasonPersonal => 'Berisi informasi pribadi';
+
+  @override
+  String get reportReasonOther => 'Lainnya';
+
+  @override
+  String get reportNoteHint => 'Detail (opsional, maks. 300 karakter)';
+
+  @override
+  String get reportSubmit => 'Kirim laporan';
+
+  @override
+  String get reportThanks => 'Terima kasih. Tim kami akan meninjaunya.';
+
+  @override
+  String get reportAlready => 'Anda sudah melaporkan ulasan ini';
+
+  @override
+  String get reportFailed => 'Laporan gagal dikirim. Coba lagi.';
+
+  @override
+  String get reviewBlocked =>
+      'Akun ini tidak dapat memberi ulasan. Hubungi dukungan.';
+
+  @override
+  String get modTitle => 'Ulasan yang dilaporkan';
+
+  @override
+  String get modEmpty => 'Tidak ada laporan yang menunggu';
+
+  @override
+  String modReports(String count) {
+    return '$count laporan';
+  }
+
+  @override
+  String get modKeep => 'Pertahankan';
+
+  @override
+  String get modHide => 'Sembunyikan';
+
+  @override
+  String get modDelete => 'Hapus';
+
+  @override
+  String get modBlockAuthor => 'Batasi penulis';
+
+  @override
+  String get modUnblockAuthor => 'Cabut pembatasan';
+
+  @override
+  String get modDone => 'Selesai';
+
+  @override
+  String get modFailed => 'Tidak dapat diproses. Coba lagi.';
+
+  @override
+  String get modHidden => 'Ulasan tersembunyi';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Versi baru $version tersedia';
   }
@@ -3265,4 +3334,11 @@ class TId extends T {
 
   @override
   String get webBookSub => 'Tanpa perlu memasang aplikasi';
+
+  @override
+  String get apPgBrowserNote =>
+      'Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.';
+
+  @override
+  String get apPgBrowserDone => 'Saya sudah membayar';
 }

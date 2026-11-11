@@ -233,13 +233,6 @@ class TTh extends T {
   String get apPgCancel => 'ยกเลิกการชำระเงิน';
 
   @override
-  String get apPgBrowserNote =>
-      'ชำระเงินในเบราว์เซอร์ให้เสร็จ แล้วกลับมาที่นี่และกดปุ่มด้านล่าง';
-
-  @override
-  String get apPgBrowserDone => 'ชำระเงินแล้ว';
-
-  @override
   String get apErrSlotFullRefunded =>
       'เวลานี้เพิ่งเต็ม จึงยกเลิกการชำระเงินให้อัตโนมัติ';
 
@@ -3195,6 +3188,81 @@ class TTh extends T {
   String get cInvalidValue => 'โปรดตรวจสอบค่าที่กรอก';
 
   @override
+  String get reviewRuleLine =>
+      'ห้ามใช้ถ้อยคำหยาบคาย ข้อมูลส่วนบุคคล เนื้อหาปลอมหรือโฆษณา รีวิวที่ถูกรายงานจะถูกซ่อน';
+
+  @override
+  String get reportAction => 'รายงาน';
+
+  @override
+  String get reportSheetTitle => 'รายงานรีวิวนี้ใช่ไหม';
+
+  @override
+  String get reportReasonSpam => 'สแปมหรือโฆษณา';
+
+  @override
+  String get reportReasonOffensive => 'ดูหมิ่นหรือเกลียดชัง';
+
+  @override
+  String get reportReasonPersonal => 'มีข้อมูลส่วนบุคคล';
+
+  @override
+  String get reportReasonOther => 'อื่นๆ';
+
+  @override
+  String get reportNoteHint => 'รายละเอียด (ไม่บังคับ ไม่เกิน 300 ตัวอักษร)';
+
+  @override
+  String get reportSubmit => 'ส่งรายงาน';
+
+  @override
+  String get reportThanks => 'ขอบคุณ ทีมงานจะตรวจสอบ';
+
+  @override
+  String get reportAlready => 'คุณรายงานรีวิวนี้ไปแล้ว';
+
+  @override
+  String get reportFailed => 'ส่งรายงานไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get reviewBlocked => 'บัญชีนี้ถูกจำกัดการรีวิว โปรดติดต่อฝ่ายสนับสนุน';
+
+  @override
+  String get modTitle => 'รีวิวที่ถูกรายงาน';
+
+  @override
+  String get modEmpty => 'ไม่มีรายงานที่รอดำเนินการ';
+
+  @override
+  String modReports(String count) {
+    return '$count รายงาน';
+  }
+
+  @override
+  String get modKeep => 'คงไว้';
+
+  @override
+  String get modHide => 'ซ่อน';
+
+  @override
+  String get modDelete => 'ลบ';
+
+  @override
+  String get modBlockAuthor => 'จำกัดผู้เขียน';
+
+  @override
+  String get modUnblockAuthor => 'ยกเลิกการจำกัด';
+
+  @override
+  String get modDone => 'เสร็จแล้ว';
+
+  @override
+  String get modFailed => 'ดำเนินการไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get modHidden => 'รีวิวที่ซ่อนอยู่';
+
+  @override
   String uUpdateBanner(String version) {
     return 'มีเวอร์ชันใหม่ $version';
   }
@@ -3242,4 +3310,11 @@ class TTh extends T {
 
   @override
   String get webBookSub => 'ไม่ต้องติดตั้งแอป';
+
+  @override
+  String get apPgBrowserNote =>
+      'ชำระเงินในเบราว์เซอร์ให้เสร็จ แล้วกลับมาที่นี่และกดปุ่มด้านล่าง';
+
+  @override
+  String get apPgBrowserDone => 'ชำระเงินแล้ว';
 }

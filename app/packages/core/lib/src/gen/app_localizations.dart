@@ -541,18 +541,6 @@ abstract class T {
   /// **'결제 취소'**
   String get apPgCancel;
 
-  /// No description provided for @apPgBrowserNote.
-  ///
-  /// In ko, this message translates to:
-  /// **'브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.'**
-  String get apPgBrowserNote;
-
-  /// No description provided for @apPgBrowserDone.
-  ///
-  /// In ko, this message translates to:
-  /// **'결제를 마쳤어요'**
-  String get apPgBrowserDone;
-
   /// No description provided for @apErrSlotFullRefunded.
   ///
   /// In ko, this message translates to:
@@ -6048,6 +6036,150 @@ abstract class T {
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
 
+  /// No description provided for @reviewRuleLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.'**
+  String get reviewRuleLine;
+
+  /// No description provided for @reportAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고'**
+  String get reportAction;
+
+  /// No description provided for @reportSheetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 후기를 신고할까요?'**
+  String get reportSheetTitle;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고·스팸'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonOffensive.
+  ///
+  /// In ko, this message translates to:
+  /// **'욕설·혐오 표현'**
+  String get reportReasonOffensive;
+
+  /// No description provided for @reportReasonPersonal.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 포함'**
+  String get reportReasonPersonal;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportNoteHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'자세한 내용 (선택, 300자 이내)'**
+  String get reportNoteHint;
+
+  /// No description provided for @reportSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고하기'**
+  String get reportSubmit;
+
+  /// No description provided for @reportThanks.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고해 주셔서 감사해요. 운영팀이 확인할게요.'**
+  String get reportThanks;
+
+  /// No description provided for @reportAlready.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 신고한 후기예요'**
+  String get reportAlready;
+
+  /// No description provided for @reportFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고하지 못했어요. 다시 시도해 주세요.'**
+  String get reportFailed;
+
+  /// No description provided for @reviewBlocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 작성이 제한된 계정이에요. 고객센터에 문의해 주세요.'**
+  String get reviewBlocked;
+
+  /// No description provided for @modTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 신고 관리'**
+  String get modTitle;
+
+  /// No description provided for @modEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중인 신고가 없어요'**
+  String get modEmpty;
+
+  /// No description provided for @modReports.
+  ///
+  /// In ko, this message translates to:
+  /// **'신고 {count}건'**
+  String modReports(String count);
+
+  /// No description provided for @modKeep.
+  ///
+  /// In ko, this message translates to:
+  /// **'유지'**
+  String get modKeep;
+
+  /// No description provided for @modHide.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨기기'**
+  String get modHide;
+
+  /// No description provided for @modDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제'**
+  String get modDelete;
+
+  /// No description provided for @modBlockAuthor.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성자 후기 제한'**
+  String get modBlockAuthor;
+
+  /// No description provided for @modUnblockAuthor.
+  ///
+  /// In ko, this message translates to:
+  /// **'제한 해제'**
+  String get modUnblockAuthor;
+
+  /// No description provided for @modDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리했어요'**
+  String get modDone;
+
+  /// No description provided for @modFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 다시 시도해 주세요.'**
+  String get modFailed;
+
+  /// No description provided for @modHidden.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨겨진 후기'**
+  String get modHidden;
+
   /// No description provided for @uUpdateBanner.
   ///
   /// In ko, this message translates to:
@@ -6131,6 +6263,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'앱 설치 없이 바로 예약해요'**
   String get webBookSub;
+
+  /// No description provided for @apPgBrowserNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.'**
+  String get apPgBrowserNote;
+
+  /// No description provided for @apPgBrowserDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제를 마쳤어요'**
+  String get apPgBrowserDone;
 }
 
 class _TDelegate extends LocalizationsDelegate<T> {

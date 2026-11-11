@@ -227,12 +227,6 @@ class TJa extends T {
   String get apPgCancel => '支払いをキャンセル';
 
   @override
-  String get apPgBrowserNote => 'ブラウザで決済を完了したら、この画面に戻って下のボタンを押してください。';
-
-  @override
-  String get apPgBrowserDone => '決済を完了しました';
-
-  @override
   String get apErrSlotFullRefunded => 'その時間が埋まったため、お支払いは自動キャンセルされました';
 
   @override
@@ -3119,6 +3113,80 @@ class TJa extends T {
   String get cInvalidValue => '入力内容を確認してください';
 
   @override
+  String get reviewRuleLine => '暴言・個人情報・虚偽や宣伝の内容は禁止です。通報されたレビューは非表示になります。';
+
+  @override
+  String get reportAction => '通報';
+
+  @override
+  String get reportSheetTitle => 'このレビューを通報しますか？';
+
+  @override
+  String get reportReasonSpam => 'スパム・広告';
+
+  @override
+  String get reportReasonOffensive => '暴言・ヘイト';
+
+  @override
+  String get reportReasonPersonal => '個人情報を含む';
+
+  @override
+  String get reportReasonOther => 'その他';
+
+  @override
+  String get reportNoteHint => '詳細（任意、300文字以内）';
+
+  @override
+  String get reportSubmit => '通報する';
+
+  @override
+  String get reportThanks => '通報ありがとうございます。運営チームが確認します。';
+
+  @override
+  String get reportAlready => 'すでに通報済みです';
+
+  @override
+  String get reportFailed => '通報できませんでした。もう一度お試しください。';
+
+  @override
+  String get reviewBlocked => 'このアカウントではレビューが制限されています。サポートにお問い合わせください。';
+
+  @override
+  String get modTitle => 'レビュー通報の管理';
+
+  @override
+  String get modEmpty => '保留中の通報はありません';
+
+  @override
+  String modReports(String count) {
+    return '通報 $count件';
+  }
+
+  @override
+  String get modKeep => '維持';
+
+  @override
+  String get modHide => '非表示';
+
+  @override
+  String get modDelete => '削除';
+
+  @override
+  String get modBlockAuthor => '投稿者を制限';
+
+  @override
+  String get modUnblockAuthor => '制限を解除';
+
+  @override
+  String get modDone => '処理しました';
+
+  @override
+  String get modFailed => '処理できませんでした。';
+
+  @override
+  String get modHidden => '非表示のレビュー';
+
+  @override
   String uUpdateBanner(String version) {
     return 'バージョン $version が公開されました';
   }
@@ -3165,4 +3233,10 @@ class TJa extends T {
 
   @override
   String get webBookSub => 'アプリ不要ですぐ予約';
+
+  @override
+  String get apPgBrowserNote => 'ブラウザで決済を完了したら、この画面に戻って下のボタンを押してください。';
+
+  @override
+  String get apPgBrowserDone => '決済を完了しました';
 }

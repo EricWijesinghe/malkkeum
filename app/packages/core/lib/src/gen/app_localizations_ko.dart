@@ -227,12 +227,6 @@ class TKo extends T {
   String get apPgCancel => '결제 취소';
 
   @override
-  String get apPgBrowserNote => '브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.';
-
-  @override
-  String get apPgBrowserDone => '결제를 마쳤어요';
-
-  @override
   String get apErrSlotFullRefunded => '방금 그 시간이 마감돼서 결제가 자동 취소됐어요';
 
   @override
@@ -3122,6 +3116,80 @@ class TKo extends T {
   String get cInvalidValue => '입력값을 확인해 주세요';
 
   @override
+  String get reviewRuleLine => '욕설, 개인정보, 허위·광고 내용은 금지되며 신고된 후기는 숨겨집니다.';
+
+  @override
+  String get reportAction => '신고';
+
+  @override
+  String get reportSheetTitle => '이 후기를 신고할까요?';
+
+  @override
+  String get reportReasonSpam => '광고·스팸';
+
+  @override
+  String get reportReasonOffensive => '욕설·혐오 표현';
+
+  @override
+  String get reportReasonPersonal => '개인정보 포함';
+
+  @override
+  String get reportReasonOther => '기타';
+
+  @override
+  String get reportNoteHint => '자세한 내용 (선택, 300자 이내)';
+
+  @override
+  String get reportSubmit => '신고하기';
+
+  @override
+  String get reportThanks => '신고해 주셔서 감사해요. 운영팀이 확인할게요.';
+
+  @override
+  String get reportAlready => '이미 신고한 후기예요';
+
+  @override
+  String get reportFailed => '신고하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get reviewBlocked => '후기 작성이 제한된 계정이에요. 고객센터에 문의해 주세요.';
+
+  @override
+  String get modTitle => '후기 신고 관리';
+
+  @override
+  String get modEmpty => '대기 중인 신고가 없어요';
+
+  @override
+  String modReports(String count) {
+    return '신고 $count건';
+  }
+
+  @override
+  String get modKeep => '유지';
+
+  @override
+  String get modHide => '숨기기';
+
+  @override
+  String get modDelete => '삭제';
+
+  @override
+  String get modBlockAuthor => '작성자 후기 제한';
+
+  @override
+  String get modUnblockAuthor => '제한 해제';
+
+  @override
+  String get modDone => '처리했어요';
+
+  @override
+  String get modFailed => '처리하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get modHidden => '숨겨진 후기';
+
+  @override
   String uUpdateBanner(String version) {
     return '새 버전 $version이 나왔어요';
   }
@@ -3168,4 +3236,10 @@ class TKo extends T {
 
   @override
   String get webBookSub => '앱 설치 없이 바로 예약해요';
+
+  @override
+  String get apPgBrowserNote => '브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.';
+
+  @override
+  String get apPgBrowserDone => '결제를 마쳤어요';
 }

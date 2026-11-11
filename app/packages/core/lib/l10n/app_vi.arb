@@ -70,8 +70,6 @@
  "apPgPay": "Thanh toán {amount}",
  "apPgIssue": "Lấy số tài khoản",
  "apPgCancel": "Hủy thanh toán",
- "apPgBrowserNote": "Hoàn tất thanh toán trên trình duyệt, sau đó quay lại đây và nhấn nút bên dưới.",
- "apPgBrowserDone": "Tôi đã thanh toán xong",
  "apErrSlotFullRefunded": "Khung giờ vừa kín nên thanh toán đã được hủy tự động",
  "apErrCheckoutExpired": "Phiên thanh toán đã hết hạn. Vui lòng thử lại.",
  "apIdentityTitle": "Xác minh danh tính (PASS)",
@@ -1024,5 +1022,7 @@
  "uMinVersion": "Phiên bản tối thiểu",
  "uLatestVersion": "Phiên bản mới nhất",
  "webBookNow": "Đặt lịch ngay trên web",
- "webBookSub": "Đặt lịch không cần cài ứng dụng"
+ "webBookSub": "Đặt lịch không cần cài ứng dụng",
+ "apPgBrowserNote": "Hoàn tất thanh toán trên trình duyệt, sau đó quay lại đây và nhấn nút bên dưới.",
+ "apPgBrowserDone": "Tôi đã thanh toán xong"
 }

@@ -239,13 +239,6 @@ class TUz extends T {
   String get apPgCancel => 'To\'lovni bekor qilish';
 
   @override
-  String get apPgBrowserNote =>
-      'To\'lovni brauzerda yakunlang, so\'ng bu yerga qaytib, pastdagi tugmani bosing.';
-
-  @override
-  String get apPgBrowserDone => 'To\'lovni amalga oshirdim';
-
-  @override
   String get apErrSlotFullRefunded =>
       'Bu vaqt endi band bo\'ldi, shuning uchun to\'lov avtomatik bekor qilindi';
 
@@ -3230,6 +3223,82 @@ class TUz extends T {
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
 
   @override
+  String get reviewRuleLine =>
+      'Haqorat, shaxsiy ma\'lumot, soxta yoki reklama mazmuni taqiqlanadi. Shikoyat qilingan sharhlar yashiriladi.';
+
+  @override
+  String get reportAction => 'Shikoyat';
+
+  @override
+  String get reportSheetTitle => 'Ushbu sharhni shikoyat qilasizmi?';
+
+  @override
+  String get reportReasonSpam => 'Spam yoki reklama';
+
+  @override
+  String get reportReasonOffensive => 'Haqorat yoki nafrat';
+
+  @override
+  String get reportReasonPersonal => 'Shaxsiy ma\'lumot bor';
+
+  @override
+  String get reportReasonOther => 'Boshqa';
+
+  @override
+  String get reportNoteHint => 'Batafsil (ixtiyoriy, 300 belgigacha)';
+
+  @override
+  String get reportSubmit => 'Yuborish';
+
+  @override
+  String get reportThanks => 'Rahmat. Jamoamiz ko\'rib chiqadi.';
+
+  @override
+  String get reportAlready => 'Siz bu sharhni allaqachon shikoyat qilgansiz';
+
+  @override
+  String get reportFailed => 'Shikoyat yuborilmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get reviewBlocked =>
+      'Bu hisobdan sharh yozish cheklangan. Qo\'llab-quvvatlashga murojaat qiling.';
+
+  @override
+  String get modTitle => 'Shikoyat qilingan sharhlar';
+
+  @override
+  String get modEmpty => 'Kutilayotgan shikoyat yo\'q';
+
+  @override
+  String modReports(String count) {
+    return '$count shikoyat';
+  }
+
+  @override
+  String get modKeep => 'Qoldirish';
+
+  @override
+  String get modHide => 'Yashirish';
+
+  @override
+  String get modDelete => 'O\'chirish';
+
+  @override
+  String get modBlockAuthor => 'Muallifni cheklash';
+
+  @override
+  String get modUnblockAuthor => 'Cheklovni olib tashlash';
+
+  @override
+  String get modDone => 'Bajarildi';
+
+  @override
+  String get modFailed => 'Bajarilmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get modHidden => 'Yashirilgan sharh';
+
+  @override
   String uUpdateBanner(String version) {
     return 'Yangi versiya $version chiqdi';
   }
@@ -3277,4 +3346,11 @@ class TUz extends T {
 
   @override
   String get webBookSub => 'Ilovani o\'rnatmasdan';
+
+  @override
+  String get apPgBrowserNote =>
+      'To\'lovni brauzerda yakunlang, so\'ng bu yerga qaytib, pastdagi tugmani bosing.';
+
+  @override
+  String get apPgBrowserDone => 'To\'lovni amalga oshirdim';
 }

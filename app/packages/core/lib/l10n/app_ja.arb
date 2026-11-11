@@ -70,8 +70,6 @@
  "apPgPay": "{amount} を支払う",
  "apPgIssue": "口座番号を発行",
  "apPgCancel": "支払いをキャンセル",
- "apPgBrowserNote": "ブラウザで決済を完了したら、この画面に戻って下のボタンを押してください。",
- "apPgBrowserDone": "決済を完了しました",
  "apErrSlotFullRefunded": "その時間が埋まったため、お支払いは自動キャンセルされました",
  "apErrCheckoutExpired": "決済の有効時間が過ぎました。もう一度お試しください。",
  "apIdentityTitle": "本人確認 (PASS)",
@@ -1024,5 +1022,7 @@
  "uMinVersion": "最小バージョン",
  "uLatestVersion": "最新バージョン",
  "webBookNow": "ウェブで今すぐ予約",
- "webBookSub": "アプリ不要ですぐ予約"
+ "webBookSub": "アプリ不要ですぐ予約",
+ "apPgBrowserNote": "ブラウザで決済を完了したら、この画面に戻って下のボタンを押してください。",
+ "apPgBrowserDone": "決済を完了しました"
 }
