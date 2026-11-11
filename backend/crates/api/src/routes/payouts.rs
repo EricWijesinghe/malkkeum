@@ -61,6 +61,7 @@ const LIST_SQL: &str = "SELECT COALESCE(jsonb_agg(x), '[]') FROM (
   ORDER BY p.created_at DESC LIMIT 200) x";
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunPayouts {
     date: NaiveDate,
 }

@@ -31,7 +31,7 @@ pub fn routes() -> Router<AppState> {
         .route("/bookings", get(list_bookings))
         .route("/bookings/{id}", get(booking_detail))
         .route("/bookings/{id}/status", post(change_status))
-        .route("/bookings/{id}/cancel", post(cancel))
+        .route("/bookings/{id}/cancel", crate::idempotency::replayable(post(cancel)))
         .route("/bookings/{id}/quotes", get(quotes_for))
         .route("/bookings/{id}/send-quote", post(send_quote))
         .route("/threads", get(inbox))
@@ -222,6 +222,7 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct CancelRequest {
     /// None = full refund; otherwise refund at most this amount (late-cancel fee).
     refund_amount: Option<i64>,

@@ -20,7 +20,6 @@ use serde_json::{Value, json};
 use sqlx::{PgConnection, PgPool};
 use uuid::Uuid;
 
-const PAGE: i64 = 50;
 const MAX_TEXT: usize = 2000;
 const MAX_TOPIC: usize = 60;
 
@@ -223,17 +222,20 @@ pub async fn authorize_thread(db: &PgPool, a: &Auth, thread: Uuid) -> ApiResult<
 
 #[derive(Deserialize)]
 pub struct Page {
+    /// Cursor: the `created_at` of the oldest message already shown.
     before: Option<DateTime<Utc>>,
+    limit: Option<i64>,
 }
 
 pub async fn messages(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Query(p): Query<Page>) -> ApiResult<Json<Vec<MessageRow>>> {
+    let limit = crate::contract::page_limit(p.limit)?;
     authorize_thread(&s.db, &a, id).await?;
     let mut rows: Vec<MessageRow> = sqlx::query_as(
         "SELECT id, thread_id, sender, kind, body, created_at FROM chat_messages WHERE thread_id = $1 AND ($2::timestamptz IS NULL OR created_at < $2) ORDER BY created_at DESC LIMIT $3",
     )
     .bind(id)
     .bind(p.before)
-    .bind(PAGE)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
     rows.reverse();
@@ -285,6 +287,7 @@ pub fn admin_routes() -> Router<AppState> {
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct AiPause {
     paused: bool,
 }

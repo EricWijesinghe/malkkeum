@@ -11,6 +11,7 @@ use super::{
 };
 use crate::{
     auth::Customer,
+    contract::{PageQuery, cursor_part, decode_cursor, encode_cursor, page_limit, paged},
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
     realtime::{Recipient, notify},
@@ -19,7 +20,8 @@ use crate::{
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    response::Response,
     routing::{get, post, put},
 };
 use chrono::{DateTime, NaiveDate, Utc};
@@ -35,14 +37,14 @@ use uuid::Uuid;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/bookings", get(list).post(create))
+        .route("/bookings", crate::idempotency::replayable(get(list).post(create)))
         .route("/bookings/{id}", get(detail))
-        .route("/bookings/{id}/cancel", post(cancel))
-        .route("/bookings/{id}/deposit", post(pay_deposit))
-        .route("/bookings/{id}/balance", post(pay_balance))
+        .route("/bookings/{id}/cancel", crate::idempotency::replayable(post(cancel)))
+        .route("/bookings/{id}/deposit", crate::idempotency::replayable(post(pay_deposit)))
+        .route("/bookings/{id}/balance", crate::idempotency::replayable(post(pay_balance)))
         .route("/bookings/{id}/notes", put(update_notes))
         .route("/bookings/{id}/reschedule", post(reschedule))
-        .route("/bookings/{id}/review", post(review))
+        .route("/bookings/{id}/review", crate::idempotency::replayable(post(review)))
 }
 
 pub const BOOKING_COLS: &str =
@@ -241,14 +243,26 @@ async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepa
     Ok(id)
 }
 
-async fn list(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<BookingRow>>> {
-    let rows = sqlx::query_as(&format!(
-        "SELECT {BOOKING_COLS} FROM bookings b WHERE b.user_id = $1 ORDER BY b.visit_date DESC, b.start_hour"
+/// Newest visit date first; keyset cursor over (visit_date, start_hour, id).
+async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (date, hour, id) = match decode_cursor(q.cursor.as_deref(), 3)? {
+        Some(p) => (Some(cursor_part::<NaiveDate>(&p[0])?), Some(cursor_part::<i16>(&p[1])?), Some(cursor_part::<Uuid>(&p[2])?)),
+        None => (None, None, None),
+    };
+    let rows: Vec<BookingRow> = sqlx::query_as(&format!(
+        "SELECT {BOOKING_COLS} FROM bookings b WHERE b.user_id = $1
+           AND ($2::date IS NULL OR b.visit_date < $2 OR (b.visit_date = $2 AND (b.start_hour > $3 OR (b.start_hour = $3 AND b.id > $4))))
+         ORDER BY b.visit_date DESC, b.start_hour, b.id LIMIT $5"
     ))
     .bind(a.id)
+    .bind(date)
+    .bind(hour)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])))
 }
 
 async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<BookingRow>> {

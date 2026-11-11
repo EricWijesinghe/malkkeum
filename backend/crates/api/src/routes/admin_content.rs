@@ -3,6 +3,7 @@
 use super::{audit, uploads};
 use crate::{
     auth::{Admin, Staff, hash_password, normalize_phone},
+    contract,
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
     state::AppState,
@@ -38,7 +39,7 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements/run-payouts", post(super::payouts::run_payouts))
         .route("/settlements/toss-sellers/{pro_id}", post(super::payouts::register_seller))
         .route("/settlements/payouts/{id}/account", get(super::payouts::reveal_account))
-        .route("/settlements/payouts/{id}/{action}", post(super::payouts::act))
+        .route("/settlements/payouts/{id}/{action}", crate::idempotency::replayable(post(super::payouts::act)))
         .route("/settlements/{id}/hold", post(hold_settlement))
         .route("/staff", get(list_staff).post(create_staff))
         .route("/staff/{id}/active", post(set_staff_active))
@@ -306,6 +307,7 @@ async fn list_pros(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Valu
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct ProStatus {
     status: String,
     fee_bps: Option<i32>,
@@ -352,6 +354,7 @@ async fn list_settlements(State(s): State<AppState>, _st: Staff, Query(f): Query
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct Hold {
     hold: bool,
 }
@@ -379,6 +382,7 @@ async fn list_staff(State(s): State<AppState>, _a: Admin) -> ApiResult<Json<Valu
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct NewStaff {
     email: String,
     name: String,
@@ -387,7 +391,10 @@ struct NewStaff {
 }
 
 async fn create_staff(State(s): State<AppState>, Admin(a): Admin, Json(n): Json<NewStaff>) -> ApiResult<Json<Value>> {
-    if !n.email.contains('@') || n.name.trim().is_empty() || !matches!(n.role.as_str(), "admin" | "consultant") || n.password.len() < MIN_STAFF_PASSWORD {
+    let too_long = n.email.len() > contract::MAX_EMAIL_BYTES
+        || n.name.chars().count() > contract::MAX_TEXT_CHARS
+        || n.password.len() > contract::MAX_PASSWORD_BYTES;
+    if too_long || !n.email.contains('@') || n.name.trim().is_empty() || !matches!(n.role.as_str(), "admin" | "consultant") || n.password.len() < MIN_STAFF_PASSWORD {
         return Err(ApiError::BadRequest("invalid_staff"));
     }
     let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, role, password_hash) VALUES ($1,$2,$3,$4) RETURNING id")
@@ -409,6 +416,7 @@ async fn create_staff(State(s): State<AppState>, Admin(a): Admin, Json(n): Json<
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct Active {
     active: bool,
 }

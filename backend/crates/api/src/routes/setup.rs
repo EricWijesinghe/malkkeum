@@ -223,6 +223,7 @@ async fn seed_review_samples(db: &PgPool, phone: &str) -> ApiResult<usize> {
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct ReviewAccount {
     phone: String,
     code: String,

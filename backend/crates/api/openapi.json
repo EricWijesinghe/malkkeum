@@ -1,0 +1,294 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Malkkeum API",
+    "version": "1.0.0",
+    "summary": "Customer, partner (pro), member and staff API. Versioning and deprecation: docs/api/README.md.",
+    "description": "All business routes live under /v1 (health and app-links at the root). Errors use the envelope {\"error\":{\"code\":\"<stable_code>\",\"message\":\"<optional>\"}}. Lists are cursor-paginated where marked: pass the X-Next-Cursor response header back as `cursor`. Business dates are Korean dates (KST); timestamps are RFC 3339 in UTC."
+  },
+  "servers": [{ "url": "/" }],
+  "security": [{ "bearer": [] }],
+  "tags": [
+    { "name": "public" }, { "name": "auth" }, { "name": "customer" }, { "name": "pro" },
+    { "name": "member" }, { "name": "admin" }, { "name": "webhook" }, { "name": "realtime" }
+  ],
+  "paths": {
+    "/health": { "get": { "operationId": "healthCheck", "tags": ["public"], "summary": "Liveness and release version", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/.well-known/assetlinks.json": { "get": { "operationId": "androidAssetLinks", "tags": ["public"], "summary": "Android app links", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/.well-known/apple-app-site-association": { "get": { "operationId": "appleAppSiteAssociation", "tags": ["public"], "summary": "iOS universal links", "security": [], "responses": { "200": { "description": "OK" } } } },
+
+    "/v1/openapi.json": { "get": { "operationId": "openapiSpec", "tags": ["admin"], "summary": "This specification (staff admins only)", "responses": { "200": { "description": "OpenAPI 3.1 document" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/ws": { "get": { "operationId": "realtimeSocket", "tags": ["realtime"], "summary": "WebSocket: booking, chat and notification events. Browsers pass the token as ?token=", "parameters": [{ "name": "token", "in": "query", "required": false, "schema": { "type": "string" }, "description": "Access token for clients that cannot set headers" }], "responses": { "101": { "description": "Switching protocols" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/services": { "get": { "operationId": "listServices", "tags": ["public"], "summary": "Active services and their pricing", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/slots": { "get": { "operationId": "listSlots", "tags": ["public"], "summary": "Open time slots for a date and district", "security": [], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/quote/estimate": { "post": { "operationId": "estimateQuote", "tags": ["public"], "summary": "Price estimate for a service and size", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/content": { "get": { "operationId": "listContent", "tags": ["public"], "summary": "Published content blocks", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/public/proof": { "get": { "operationId": "publicProof", "tags": ["public"], "summary": "Public review and volume proof", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/payments/methods": { "get": { "operationId": "listEnabledPaymentMethods", "tags": ["public"], "summary": "Payment methods enabled for checkout", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/setup": { "get": { "operationId": "setupState", "tags": ["public"], "summary": "Whether first-run setup is complete", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/setup/admin": { "post": { "operationId": "createFirstAdmin", "tags": ["public"], "summary": "Create the first admin with the setup code", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/brand": { "get": { "operationId": "brand", "tags": ["public"], "summary": "Brand name, colours and app-update policy", "security": [], "responses": { "200": { "description": "OK" } } } },
+    "/v1/address/search": { "get": { "operationId": "searchAddress", "tags": ["customer"], "summary": "Road-address search (per-user rate limit)", "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string", "maxLength": 100 } }, { "name": "page", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1 } }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/features": { "get": { "operationId": "featureFlags", "tags": ["public"], "summary": "Feature flags for the apps", "security": [], "responses": { "200": { "description": "OK" } } } },
+
+    "/v1/webhooks/portone": { "post": { "operationId": "portoneWebhook", "tags": ["webhook"], "summary": "PortOne payment notifications (signature verified)", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/webhooks/toss": { "post": { "operationId": "tossWebhook", "tags": ["webhook"], "summary": "Toss Payments notifications (signature verified)", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/auth/otp": { "post": { "operationId": "requestOtp", "tags": ["auth"], "summary": "Send a one-time code by SMS", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/auth/verify": { "post": { "operationId": "verifyOtp", "tags": ["auth"], "summary": "Exchange a one-time code for tokens", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/auth/refresh": { "post": { "operationId": "refreshSession", "tags": ["auth"], "summary": "Rotate the refresh token", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/auth/logout": { "post": { "operationId": "logout", "tags": ["auth"], "summary": "Revoke the session", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/auth/staff/login": { "post": { "operationId": "staffLogin", "tags": ["auth"], "summary": "Staff e-mail and password sign-in", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/auth/social": { "post": { "operationId": "socialLogin", "tags": ["auth"], "summary": "Sign in with Kakao, Google or Apple identity token", "security": [], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/uploads": { "post": { "operationId": "uploadPhoto", "tags": ["customer"], "summary": "Upload one photo (multipart, field `file`, jpg/png/webp/heic)", "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "required": ["file"], "properties": { "file": { "type": "string", "format": "binary" } } } } } }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/files/{name}": { "get": { "operationId": "serveUpload", "tags": ["public"], "summary": "Serve an uploaded photo (signed, hourly-bucketed URL)", "security": [], "parameters": [{ "$ref": "#/components/parameters/FileName" }], "responses": { "200": { "description": "Image" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/me": {
+      "get": { "operationId": "getMe", "tags": ["customer"], "summary": "Current customer profile", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "patch": { "operationId": "updateMe", "tags": ["customer"], "summary": "Update name and preferences", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "deleteMe", "tags": ["customer"], "summary": "Delete the account (soft delete, personal data purged)", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/phone": { "post": { "operationId": "bindPhone", "tags": ["customer"], "summary": "Bind a verified phone number", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/me/identity": { "post": { "operationId": "verifyIdentity", "tags": ["customer"], "summary": "Identity verification", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/me/addresses": {
+      "get": { "operationId": "listAddresses", "tags": ["customer"], "summary": "Saved addresses", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "createAddress", "tags": ["customer"], "summary": "Save an address", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/addresses/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "put": { "operationId": "updateAddress", "tags": ["customer"], "summary": "Update a saved address", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "deleteAddress", "tags": ["customer"], "summary": "Delete a saved address", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/coupons": { "get": { "operationId": "listCoupons", "tags": ["customer"], "summary": "Coupons held by the customer", "responses": { "200": { "description": "OK" } } } },
+    "/v1/me/payment-methods": {
+      "get": { "operationId": "listPaymentMethods", "tags": ["customer"], "summary": "Registered payment methods", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "registerPaymentMethod", "tags": ["customer"], "summary": "Register a billing key", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/payment-methods/setup": { "get": { "operationId": "paymentMethodSetup", "tags": ["customer"], "summary": "Provider parameters to start card registration", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/me/payment-methods/{id}": { "delete": { "operationId": "deletePaymentMethod", "tags": ["customer"], "summary": "Remove a registered payment method", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/me/push-token": {
+      "post": { "operationId": "registerPushToken", "tags": ["customer"], "summary": "Register a push token for this device", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "unregisterPushToken", "tags": ["customer"], "summary": "Remove a push token", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/notifications": { "get": { "operationId": "listNotifications", "tags": ["customer"], "summary": "Notifications, newest first (cursor-paginated)", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Cursor" }], "responses": { "200": { "description": "OK", "headers": { "X-Next-Cursor": { "$ref": "#/components/headers/NextCursor" } } }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/me/notifications/read": { "post": { "operationId": "markNotificationsRead", "tags": ["customer"], "summary": "Mark all notifications read", "responses": { "200": { "description": "OK" } } } },
+    "/v1/me/consents": {
+      "get": { "operationId": "getConsents", "tags": ["customer"], "summary": "Current consent choices", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "putConsents", "tags": ["customer"], "summary": "Update consent choices", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/me/export": { "get": { "operationId": "exportMyData", "tags": ["customer"], "summary": "Download the customer's personal data (JSON)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/me/referral": { "get": { "operationId": "myReferral", "tags": ["customer"], "summary": "Referral code and reward state", "responses": { "200": { "description": "OK" } } } },
+    "/v1/me/referral/claim": { "post": { "operationId": "claimReferral", "tags": ["customer"], "summary": "Enter a friend's referral code (once, before first booking)", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/reviews/{booking_id}/report": { "post": { "operationId": "reportReview", "tags": ["customer"], "summary": "Report a review (once per user)", "parameters": [{ "$ref": "#/components/parameters/BookingId" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/bookings": {
+      "get": { "operationId": "listBookings", "tags": ["customer"], "summary": "The customer's bookings, latest visit first (cursor-paginated)", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Cursor" }], "responses": { "200": { "description": "OK", "headers": { "X-Next-Cursor": { "$ref": "#/components/headers/NextCursor" } } }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "createBooking", "tags": ["customer"], "summary": "Create a booking (idempotent)", "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/bookings/{id}": { "get": { "operationId": "getBooking", "tags": ["customer"], "summary": "One booking (404 when not the caller's)", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/cancel": { "post": { "operationId": "cancelBooking", "tags": ["customer"], "summary": "Cancel and refund per policy (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/deposit": { "post": { "operationId": "payDeposit", "tags": ["customer"], "summary": "Pay the deposit (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/balance": { "post": { "operationId": "payBalance", "tags": ["customer"], "summary": "Pay the balance (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/notes": { "put": { "operationId": "updateBookingNotes", "tags": ["customer"], "summary": "Entry, parking and other notes (bounded fields)", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/reschedule": { "post": { "operationId": "rescheduleBooking", "tags": ["customer"], "summary": "Move a booking to another slot", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/bookings/{id}/review": { "post": { "operationId": "createReview", "tags": ["customer"], "summary": "Review a completed booking (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/chat/threads": {
+      "get": { "operationId": "listMyThreads", "tags": ["customer"], "summary": "Chat threads visible to the caller", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "openThread", "tags": ["customer"], "summary": "Open a thread on a topic (rate-limited per day)", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/chat/threads/{id}/messages": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "operationId": "listMessages", "tags": ["customer"], "summary": "Messages, oldest first; pass `before` (created_at of the oldest shown) for older pages", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Before" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "sendMessage", "tags": ["customer"], "summary": "Send a message", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/chat/threads/{id}/read": { "post": { "operationId": "markThreadRead", "tags": ["customer"], "summary": "Mark a thread read", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/checkouts": {
+      "get": { "operationId": "listCheckouts", "tags": ["customer"], "summary": "The customer's checkouts, newest first (cursor-paginated, optional status filter)", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Cursor" }, { "$ref": "#/components/parameters/CheckoutStatus" }], "responses": { "200": { "description": "OK", "headers": { "X-Next-Cursor": { "$ref": "#/components/headers/NextCursor" } } }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "createCheckout", "tags": ["customer"], "summary": "Start a payment checkout (idempotent)", "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/checkouts/{id}/confirm": { "post": { "operationId": "confirmCheckout", "tags": ["customer"], "summary": "Confirm payment after the provider redirect (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/partner/me": {
+      "get": { "operationId": "partnerGetMe", "tags": ["pro"], "summary": "Partner profile", "responses": { "200": { "description": "OK" } } },
+      "patch": { "operationId": "partnerUpdateMe", "tags": ["pro"], "summary": "Update partner profile", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "partnerDeleteMe", "tags": ["pro"], "summary": "Delete partner account", "responses": { "200": { "description": "OK" } } }
+    },
+    "/v1/partner/me/phone": { "post": { "operationId": "partnerBindPhone", "tags": ["pro"], "summary": "Bind a verified phone number", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/prefs": {
+      "get": { "operationId": "partnerGetPrefs", "tags": ["pro"], "summary": "Work preferences", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "partnerPutPrefs", "tags": ["pro"], "summary": "Update work preferences", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/partner/team": {
+      "get": { "operationId": "partnerTeam", "tags": ["pro"], "summary": "Team members", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "partnerInviteMember", "tags": ["pro"], "summary": "Invite a team member", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/partner/team/{id}": { "delete": { "operationId": "partnerRemoveMember", "tags": ["pro"], "summary": "Remove a team member", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/payout-account": {
+      "get": { "operationId": "partnerGetPayoutAccount", "tags": ["pro"], "summary": "Payout account (masked)", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "partnerPutPayoutAccount", "tags": ["pro"], "summary": "Set the payout account", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/partner/settlements": { "get": { "operationId": "partnerSettlements", "tags": ["pro"], "summary": "Settlement statements", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/reviews": { "get": { "operationId": "partnerReviews", "tags": ["pro"], "summary": "Reviews of the partner's work", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/threads": { "get": { "operationId": "partnerThreads", "tags": ["pro"], "summary": "Chat threads for the partner", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/export": { "get": { "operationId": "partnerExport", "tags": ["pro"], "summary": "Partner data export (CSV)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/earnings": { "get": { "operationId": "partnerEarnings", "tags": ["pro"], "summary": "Earnings summary", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/jobs": { "get": { "operationId": "partnerJobFeed", "tags": ["pro"], "summary": "Open jobs matching the partner's districts (capped at 100)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/jobs/{id}": { "get": { "operationId": "partnerJob", "tags": ["pro"], "summary": "One job", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/jobs/{id}/accept": { "post": { "operationId": "partnerAcceptJob", "tags": ["pro"], "summary": "Accept a job", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/jobs/{id}/quote": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "post": { "operationId": "partnerSubmitQuote", "tags": ["pro"], "summary": "Submit a quote", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "put": { "operationId": "partnerEditQuote", "tags": ["pro"], "summary": "Edit a submitted quote", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "partnerWithdrawQuote", "tags": ["pro"], "summary": "Withdraw a quote", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/partner/jobs/{id}/assign": { "post": { "operationId": "partnerAssignJob", "tags": ["pro"], "summary": "Assign a team member to a job", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/jobs/{id}/memo": { "put": { "operationId": "partnerJobMemo", "tags": ["pro"], "summary": "Set the job memo (bounded text)", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/jobs/{id}/complete": { "post": { "operationId": "partnerCompleteJob", "tags": ["pro"], "summary": "Mark a job complete", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/jobs/{id}/reschedule": { "post": { "operationId": "partnerReplyReschedule", "tags": ["pro"], "summary": "Accept or decline a reschedule request", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/partner/quotes": { "get": { "operationId": "partnerQuotes", "tags": ["pro"], "summary": "The partner's submitted quotes", "responses": { "200": { "description": "OK" } } } },
+    "/v1/partner/schedule": { "get": { "operationId": "partnerSchedule", "tags": ["pro"], "summary": "Upcoming assigned visits", "responses": { "200": { "description": "OK" } } } },
+
+    "/v1/member/me": { "get": { "operationId": "memberMe", "tags": ["member"], "summary": "Member (cleaner) profile", "responses": { "200": { "description": "OK" } } } },
+    "/v1/member/jobs": { "get": { "operationId": "memberJobs", "tags": ["member"], "summary": "Jobs assigned to the member", "responses": { "200": { "description": "OK" } } } },
+    "/v1/member/jobs/{id}": { "get": { "operationId": "memberJob", "tags": ["member"], "summary": "One assigned job", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/member/jobs/{id}/complete": { "post": { "operationId": "memberCompleteJob", "tags": ["member"], "summary": "Mark an assigned job complete", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+
+    "/v1/admin/dashboard": { "get": { "operationId": "adminDashboard", "tags": ["admin"], "summary": "Operations dashboard counters", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/bookings": { "get": { "operationId": "adminListBookings", "tags": ["admin"], "summary": "Bookings for the console (capped at 200)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/bookings/{id}": { "get": { "operationId": "adminBooking", "tags": ["admin"], "summary": "Booking detail", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/bookings/{id}/status": { "post": { "operationId": "adminChangeBookingStatus", "tags": ["admin"], "summary": "Move a booking to another status", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/bookings/{id}/cancel": { "post": { "operationId": "adminCancelBooking", "tags": ["admin"], "summary": "Cancel with optional partial refund (idempotent)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/bookings/{id}/quotes": { "get": { "operationId": "adminBookingQuotes", "tags": ["admin"], "summary": "Pro quotes for a booking", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/bookings/{id}/send-quote": { "post": { "operationId": "adminSendQuote", "tags": ["admin"], "summary": "Send the final price to the customer", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/threads": { "get": { "operationId": "adminInbox", "tags": ["admin"], "summary": "Staff inbox (capped at 200)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/threads/{id}/messages": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "operationId": "adminListMessages", "tags": ["admin"], "summary": "Thread messages (same paging as customer)", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Before" }], "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "adminSendMessage", "tags": ["admin"], "summary": "Send a staff message", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/threads/{id}/read": { "post": { "operationId": "adminMarkThreadRead", "tags": ["admin"], "summary": "Mark a thread read for staff", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/threads/{id}/ai": { "put": { "operationId": "adminSetAiPaused", "tags": ["admin"], "summary": "Pause or resume the AI assistant on a thread", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/ai/usage": { "get": { "operationId": "adminAiUsage", "tags": ["admin"], "summary": "AI assistant usage", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/services": { "get": { "operationId": "adminListServices", "tags": ["admin"], "summary": "All services including inactive", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/services/{code}": { "put": { "operationId": "adminUpdateService", "tags": ["admin"], "summary": "Update a service's pricing and content", "parameters": [{ "$ref": "#/components/parameters/Code" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/slot-capacity": {
+      "get": { "operationId": "adminGetSlotCapacity", "tags": ["admin"], "summary": "Capacity per start hour", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "adminPutSlotCapacity", "tags": ["admin"], "summary": "Set capacity per start hour", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/quote-formula": {
+      "get": { "operationId": "adminGetQuoteFormula", "tags": ["admin"], "summary": "Quote formula", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "adminPutQuoteFormula", "tags": ["admin"], "summary": "Replace the quote formula", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/coupons": { "post": { "operationId": "adminIssueCoupons", "tags": ["admin"], "summary": "Issue coupons to customers", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/content": {
+      "get": { "operationId": "adminListContent", "tags": ["admin"], "summary": "All content blocks", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "adminCreateContent", "tags": ["admin"], "summary": "Create a content block", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/content/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "put": { "operationId": "adminUpdateContent", "tags": ["admin"], "summary": "Update a content block", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "adminDeleteContent", "tags": ["admin"], "summary": "Delete a content block", "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/customers": { "get": { "operationId": "adminCustomers", "tags": ["admin"], "summary": "Customers, search by phone or name (capped at 200)", "parameters": [{ "name": "q", "in": "query", "required": false, "schema": { "type": "string", "maxLength": 100 } }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/pros": { "get": { "operationId": "adminListPros", "tags": ["admin"], "summary": "Partners (capped at 200)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/pros/{id}/status": { "post": { "operationId": "adminSetProStatus", "tags": ["admin"], "summary": "Verify, suspend or set a partner fee", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements": { "get": { "operationId": "adminSettlements", "tags": ["admin"], "summary": "Settlement lines (capped at 200)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/settlements/payouts": { "get": { "operationId": "adminPayouts", "tags": ["admin"], "summary": "Payouts (filter by state; capped at 200)", "parameters": [{ "name": "state", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements/run-payouts": { "post": { "operationId": "adminRunPayouts", "tags": ["admin"], "summary": "Build payouts for a date", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements/toss-sellers/{pro_id}": { "post": { "operationId": "adminRegisterTossSeller", "tags": ["admin"], "summary": "Register a partner as a Toss seller", "parameters": [{ "name": "pro_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements/payouts/{id}/account": { "get": { "operationId": "adminRevealPayoutAccount", "tags": ["admin"], "summary": "Reveal a payout account (audited)", "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements/payouts/{id}/{action}": { "post": { "operationId": "adminPayoutAction", "tags": ["admin"], "summary": "Payout step: send, confirm, fail, retry or sync (idempotent; send moves money)", "parameters": [{ "$ref": "#/components/parameters/Id" }, { "name": "action", "in": "path", "required": true, "schema": { "type": "string", "enum": ["send", "confirm", "fail", "retry", "sync"] } }, { "$ref": "#/components/parameters/IdempotencyKey" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/settlements/{id}/hold": { "post": { "operationId": "adminHoldSettlement", "tags": ["admin"], "summary": "Hold or release a settlement", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/staff": {
+      "get": { "operationId": "adminListStaff", "tags": ["admin"], "summary": "Staff accounts", "responses": { "200": { "description": "OK" } } },
+      "post": { "operationId": "adminCreateStaff", "tags": ["admin"], "summary": "Create a staff account", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/staff/{id}/active": { "post": { "operationId": "adminSetStaffActive", "tags": ["admin"], "summary": "Activate or deactivate a staff account", "parameters": [{ "$ref": "#/components/parameters/Id" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/finance/summary": { "get": { "operationId": "adminFinanceSummary", "tags": ["admin"], "summary": "Revenue, fees and refunds summary", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/series": { "get": { "operationId": "adminFinanceSeries", "tags": ["admin"], "summary": "Daily series", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/partners": { "get": { "operationId": "adminFinancePartners", "tags": ["admin"], "summary": "Per-partner totals", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/services": { "get": { "operationId": "adminFinanceServices", "tags": ["admin"], "summary": "Per-service totals", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/export/ledger": { "get": { "operationId": "adminExportLedger", "tags": ["admin"], "summary": "Ledger export (CSV)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/export/settlements": { "get": { "operationId": "adminExportSettlements", "tags": ["admin"], "summary": "Settlements export (CSV)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/finance/export/monthly": { "get": { "operationId": "adminExportMonthly", "tags": ["admin"], "summary": "Monthly export (CSV)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/growth": { "get": { "operationId": "adminGrowth", "tags": ["admin"], "summary": "Welcome and referral offer settings", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/growth/welcome": { "put": { "operationId": "adminPutWelcomeOffer", "tags": ["admin"], "summary": "Set the welcome offer", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/growth/referral": { "put": { "operationId": "adminPutReferralOffer", "tags": ["admin"], "summary": "Set the referral offer", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/reviews": { "get": { "operationId": "adminReviews", "tags": ["admin"], "summary": "Reviews, newest first (capped at 200)", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/reviews/reports": { "get": { "operationId": "adminReviewReports", "tags": ["admin"], "summary": "Reviews awaiting a report decision", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/reviews/{booking_id}": { "put": { "operationId": "adminModerateReview", "tags": ["admin"], "summary": "Hide or show a review", "parameters": [{ "$ref": "#/components/parameters/BookingId" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/reviews/{booking_id}/decision": { "put": { "operationId": "adminDecideReview", "tags": ["admin"], "summary": "Keep, hide or delete a reported review", "parameters": [{ "$ref": "#/components/parameters/BookingId" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/reviews/{booking_id}/author": { "put": { "operationId": "adminSetReviewAuthorBlock", "tags": ["admin"], "summary": "Block or unblock a review author", "parameters": [{ "$ref": "#/components/parameters/BookingId" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/payment-methods": {
+      "get": { "operationId": "adminListPaymentMethods", "tags": ["admin"], "summary": "Payment methods and their state", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "adminPutPaymentMethods", "tags": ["admin"], "summary": "Enable payment methods", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/admin/checkouts": { "get": { "operationId": "adminListCheckouts", "tags": ["admin"], "summary": "Checkouts, newest first (cursor-paginated, optional status filter)", "parameters": [{ "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Cursor" }, { "$ref": "#/components/parameters/CheckoutStatus" }], "responses": { "200": { "description": "OK", "headers": { "X-Next-Cursor": { "$ref": "#/components/headers/NextCursor" } } }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/setup": { "get": { "operationId": "adminSetupOverview", "tags": ["admin"], "summary": "Setup checklist and state", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/setup/business": { "put": { "operationId": "adminPutBusiness", "tags": ["admin"], "summary": "Business details", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/setup/review": {
+      "put": { "operationId": "adminPutReviewAccount", "tags": ["admin"], "summary": "Store the app-review test account", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "adminClearReviewAccount", "tags": ["admin"], "summary": "Remove the app-review test account", "responses": { "200": { "description": "OK" } } }
+    },
+    "/v1/admin/setup/{section}": {
+      "parameters": [{ "$ref": "#/components/parameters/Section" }],
+      "put": { "operationId": "adminPutSetupSection", "tags": ["admin"], "summary": "Store a setup section", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "delete": { "operationId": "adminClearSetupSection", "tags": ["admin"], "summary": "Clear a setup section", "responses": { "200": { "description": "OK" } } }
+    },
+    "/v1/admin/setup/{section}/test": { "post": { "operationId": "adminTestSetupSection", "tags": ["admin"], "summary": "Test a provider connection for a section", "parameters": [{ "$ref": "#/components/parameters/Section" }], "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/admin/ops/status": { "get": { "operationId": "adminOpsStatus", "tags": ["admin"], "summary": "Service health, counters and version", "responses": { "200": { "description": "OK" } } } },
+    "/v1/admin/ops/alerts": {
+      "get": { "operationId": "adminGetOpsAlerts", "tags": ["admin"], "summary": "Alert thresholds and recipients", "responses": { "200": { "description": "OK" } } },
+      "put": { "operationId": "adminPutOpsAlerts", "tags": ["admin"], "summary": "Update alert thresholds and recipients", "requestBody": { "$ref": "#/components/requestBodies/Object" }, "responses": { "200": { "description": "OK" }, "default": { "$ref": "#/components/responses/Error" } } }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT", "description": "Access token from /v1/auth/verify or /v1/auth/staff/login." }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code"],
+            "properties": {
+              "code": { "type": "string", "description": "Stable machine code; clients branch on this, never on message text." },
+              "message": { "type": "string", "description": "Optional human text. Never contains internals." }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+      "BookingId": { "name": "booking_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+      "Code": { "name": "code", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
+      "Section": { "name": "section", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
+      "FileName": { "name": "name", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^[0-9a-f]{32}\\.(jpg|png|webp|heic)$" } },
+      "Limit": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 }, "description": "Page size, 1 to 100 (default 50). Out of range is 400 invalid_limit." },
+      "Cursor": { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" }, "description": "Opaque; the X-Next-Cursor value of the previous page. Malformed is 400 invalid_cursor." },
+      "Before": { "name": "before", "in": "query", "required": false, "schema": { "type": "string", "format": "date-time" }, "description": "created_at (RFC 3339) of the oldest message already shown." },
+      "CheckoutStatus": { "name": "status", "in": "query", "required": false, "schema": { "type": "string", "enum": ["pending", "awaiting_deposit", "paid", "refunded", "expired", "failed", "cancelled"] }, "description": "Unknown values are 400 invalid_status." },
+      "IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": false, "schema": { "type": "string", "minLength": 1, "maxLength": 128 }, "description": "Retrying with the same key and body replays the first response for 24 hours (header Idempotent-Replayed: true). The same key with a different body is 400 idempotency_key_reused. A request still running is 409 idempotency_in_progress." }
+    },
+    "headers": {
+      "NextCursor": { "description": "Pass as `cursor` to fetch the next page. Absent on the last page.", "schema": { "type": "string" } }
+    },
+    "requestBodies": {
+      "Object": { "required": false, "content": { "application/json": { "schema": { "type": "object", "description": "Shape documented per route in the handler's request type; unknown fields are rejected on staff routes." } } } }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error envelope. Codes are stable; see docs/api/README.md for the list of common codes.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  }
+}
