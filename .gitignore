@@ -16,3 +16,4 @@ targets/
 # Generated store images (292 MB): regenerate with scripts/store/generate.sh, upload from here.
 docs/store/screenshots/*/
 docs/store/graphics/
+__pycache__/
