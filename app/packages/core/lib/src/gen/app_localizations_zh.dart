@@ -829,8 +829,7 @@ class TZh extends T {
   String get svcDesc_move_in => '入住前，专业团队携带设备清洁新家。';
 
   @override
-  String get svcNotes_bathroom =>
-      '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
+  String get svcNotes_bathroom => '下水道或马桶堵塞时服务可能受限\n不提供需特殊药剂、天花板和排风扇清洁\n陈年霉斑和顽固污渍可能无法完全去除';
 
   @override
   String get svcNotes_mattress => '单人到特大床同价\n完全干燥需4~6小时\n弹簧损坏、塌陷等结构问题无法改善';
@@ -2096,8 +2095,7 @@ class TZh extends T {
   String get oActDisk => '磁盘剩余不足10%。请删除旧备份文件或扩大磁盘。';
 
   @override
-  String get oActBackup =>
-      '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
+  String get oActBackup => '自动备份已过期。请在服务器运行 malkkeum backup，并查看 backups/backup.log。';
 
   @override
   String get oActErrors => '服务器错误较多。请在 malkkeum logs 中查看 error 行，反复出现请反馈给开发方。';
@@ -2575,6 +2573,76 @@ class TZh extends T {
 
   @override
   String get pSpace => '空间信息';
+
+  @override
+  String get poTabSettlements => '结算';
+
+  @override
+  String get poTabPayouts => '支付记录';
+
+  @override
+  String get poState_requested => '已请求';
+
+  @override
+  String get poState_sent => '已发送';
+
+  @override
+  String get poState_paid => '已支付';
+
+  @override
+  String get poState_failed => '失败';
+
+  @override
+  String get poProviderManual => '手动转账';
+
+  @override
+  String get poProviderToss => 'Toss 代付';
+
+  @override
+  String get poShowAccount => '查看账户';
+
+  @override
+  String get poAccountTitle => '转账信息';
+
+  @override
+  String poAccountBody(String holder, String bank, String account, String amount) {
+    return '请向 $holder · $bank · $account 转账 $amount 韩元，然后点击确认。';
+  }
+
+  @override
+  String get poConfirmPaid => '标记为已转账';
+
+  @override
+  String get poMarkFailed => '标记为失败';
+
+  @override
+  String get poReasonTitle => '失败原因';
+
+  @override
+  String get poReasonHint => '例如：账户错误、转账取消';
+
+  @override
+  String get poSend => '通过 Toss 发送';
+
+  @override
+  String get poSync => '查询状态';
+
+  @override
+  String get poRetry => '重试';
+
+  @override
+  String get poNoPayouts => '暂无支付记录';
+
+  @override
+  String poRequestedToast(String n) {
+    return '已创建 $n 笔支付请求';
+  }
+
+  @override
+  String get poReasonRequired => '请输入原因';
+
+  @override
+  String get poRevealNote => '查看账户信息会被记录';
 
   @override
   String get cSetup => '设置';

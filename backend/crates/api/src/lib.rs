@@ -12,6 +12,7 @@ pub mod i18n;
 pub mod integrations;
 pub mod ops;
 pub mod ops_alerts;
+pub mod payout;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;

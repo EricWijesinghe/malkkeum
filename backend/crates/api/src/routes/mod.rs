@@ -9,6 +9,7 @@ mod checkout_policy;
 pub(crate) mod growth;
 pub(crate) mod checkouts;
 mod finance;
+pub(crate) mod payouts;
 pub(crate) mod me;
 mod member;
 mod ops;
