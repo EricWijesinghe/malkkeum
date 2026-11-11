@@ -723,4 +723,10 @@ T = {
     "mNoJobs": "Wala pang naka-assign. Lalabas dito ang mga trabahong ibibigay ng team lead.",
     "mTeam": "Miyembro ng {team}",
     "cConfirmAsk": "Sigurado ka ba?",
+    "pNavigate": "Mga direksyon",
+    "pNavHint": "Bubuksan ang address ng bisita sa map app. Kung walang app, bubuksan ang web map.",
+    "pOfflineSaved": "Walang signal. Naka-save at ipapadala kapag may koneksyon na.",
+    "pPhotoRetry": "Subukan ulit",
+    "pPhotoWaiting": "Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.",
+    "pUploadedCount": "{done} sa {total} ang na-upload",
 }

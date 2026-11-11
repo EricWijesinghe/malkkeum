@@ -1,5 +1,5 @@
 # Partner (pro) app strings. Columns: ko, en, ja, zh, vi. X holds the other languages.
-X = {
+X1 = {
   "fil": {
     "pNavigate": "Mga direksyon", "pNavHint": "Bubuksan ang address ng bisita sa map app. Kung walang app, bubuksan ang web map.", "pOfflineSaved": "Walang signal. Naka-save at ipapadala kapag may koneksyon na.", "pPhotoRetry": "Subukan ulit", "pPhotoWaiting": "Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.", "pUploadedCount": "{done} sa {total} ang na-upload",
   },
@@ -313,3 +313,6 @@ X = {
         "pElevatorNo": "Lift yo‘q",
     },
 }
+
+# Merge the two extra-language blocks above (both feed AREA_EXTRAS).
+X = {c: {**X1.get(c, {}), **X.get(c, {})} for c in {**X1, **X}}
