@@ -2026,6 +2026,85 @@ class TMn extends T {
       'Энэ хамтрагч баталгаажсан төлбөрийн дансгүй байна. Эхлээд дансаа баталгаажуулна уу.';
 
   @override
+  String get guestSheetTitle => 'Үргэлжлүүлэхийн тулд нэвтэрнэ үү';
+
+  @override
+  String get guestSheetBody =>
+      'Таны оруулсан мэдээлэл хадгалагдана. Яг сүүлд зогссон газраасаа үргэлжилнэ.';
+
+  @override
+  String get greetMorning => 'Өглөөний мэнд';
+
+  @override
+  String get greetAfternoon => 'Өдрийн мэнд';
+
+  @override
+  String get greetEvening => 'Оройн мэнд';
+
+  @override
+  String get feedHeading => 'Танд зориулсан';
+
+  @override
+  String get feedTitleDue => 'Дараагийн цэвэрлэгээний цаг боллоо';
+
+  @override
+  String get feedTitleRebook => '5 одтой мэргэжилтнээ дахин захиалаарай';
+
+  @override
+  String get feedTitleDraft => 'Эхэлсэн үнийн саналаа үргэлжлүүлэх';
+
+  @override
+  String get feedTitleSeasonal => 'Энэ улиралд тохирох цэвэрлэгээ';
+
+  @override
+  String get feedTitleSize => 'Хадгалсан байрны хэмжээгээр үнэ';
+
+  @override
+  String get feedTitleSubscription => 'Захиалгаар илүү хэмнэ';
+
+  @override
+  String get feedTitleDistrict => 'Хөршүүд ч захиалж байна';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'Сүүлийн цэвэрлэгээнээс хойш $days хоног өнгөрлөө';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Та энэ мэргэжилтнийг $days хоногийн өмнө 5 одоор үнэлсэн';
+  }
+
+  @override
+  String get feedWhyDraft =>
+      'Та энэ төхөөрөмжид үнийн саналаа дуусгаагүй байна';
+
+  @override
+  String get feedWhySummer =>
+      'Зуны өмнө агаар сэрүүлэгчээ цэвэрлүүлэх сайн цаг';
+
+  @override
+  String get feedWhyMoving => 'Нүүлт, орох улирал эрчимтэй байна';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Баярын өмнөх том цэвэрлэгээ хүртэл $days хоног';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Хадгалсан $pyeong пёнг байрнаас шууд үнэ';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Тогтмол захиалдаг бол захиалга илүү хямд';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Энэ долоо хоногт $district-д $count байр захиалсан';
+  }
+
+  @override
   String get fFinance => 'Санхүү';
 
   @override

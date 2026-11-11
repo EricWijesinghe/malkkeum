@@ -2003,6 +2003,83 @@ class TTh extends T {
       'พาร์ทเนอร์นี้ยังไม่มีบัญชีรับเงินที่ยืนยันแล้ว กรุณายืนยันบัญชีก่อน';
 
   @override
+  String get guestSheetTitle => 'เข้าสู่ระบบเพื่อดำเนินการต่อ';
+
+  @override
+  String get guestSheetBody =>
+      'ข้อมูลที่คุณกรอกไว้จะถูกเก็บไว้ และดำเนินการต่อจากจุดเดิมทันที';
+
+  @override
+  String get greetMorning => 'สวัสดีตอนเช้า';
+
+  @override
+  String get greetAfternoon => 'สวัสดีตอนบ่าย';
+
+  @override
+  String get greetEvening => 'สวัสดีตอนเย็น';
+
+  @override
+  String get feedHeading => 'แนะนำสำหรับคุณ';
+
+  @override
+  String get feedTitleDue => 'ถึงเวลานัดทำความสะอาดครั้งต่อไปแล้ว';
+
+  @override
+  String get feedTitleRebook => 'จองพาร์ทเนอร์ 5 ดาวอีกครั้ง';
+
+  @override
+  String get feedTitleDraft => 'กลับไปดูใบเสนอราคาที่ค้างไว้';
+
+  @override
+  String get feedTitleSeasonal => 'การทำความสะอาดที่เหมาะกับฤดูนี้';
+
+  @override
+  String get feedTitleSize => 'ใบเสนอราคาจากขนาดบ้านที่บันทึกไว้';
+
+  @override
+  String get feedTitleSubscription => 'ประหยัดกว่าด้วยการสมัครสมาชิก';
+
+  @override
+  String get feedTitleDistrict => 'เพื่อนบ้านก็กำลังจองกันอยู่';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'ผ่านมา $days วันนับจากการทำความสะอาดครั้งล่าสุด';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'คุณให้พาร์ทเนอร์นี้ 5 ดาวเมื่อ $days วันก่อน';
+  }
+
+  @override
+  String get feedWhyDraft => 'คุณมีใบเสนอราคาที่ยังไม่เสร็จในเครื่องนี้';
+
+  @override
+  String get feedWhySummer => 'เวลาที่ดีในการล้างแอร์ก่อนหน้าร้อน';
+
+  @override
+  String get feedWhyMoving => 'ช่วงย้ายเข้าและย้ายบ้านกำลังคึกคัก';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'อีก $days วันถึงการทำความสะอาดใหญ่ก่อนวันหยุด';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'ใบเสนอราคาทันทีสำหรับบ้าน $pyeong พยองที่บันทึกไว้';
+  }
+
+  @override
+  String get feedWhyRepeat => 'ถ้าจองบ่อย การสมัครสมาชิกจะถูกกว่า';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'สัปดาห์นี้มี $count บ้านใน $district จองแล้ว';
+  }
+
+  @override
   String get fFinance => 'การเงิน';
 
   @override

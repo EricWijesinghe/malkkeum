@@ -36,9 +36,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   void _reload() {
-    setState(() {
-      _billing = _loadBilling();
-    });
+    _billing = _loadBilling();
+    setState(() {});
   }
 
   Future<void> _add(PayChannel ch) async {

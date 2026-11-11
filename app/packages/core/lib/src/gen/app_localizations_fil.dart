@@ -2036,6 +2036,85 @@ class TFil extends T {
       'Walang na-verify na payout account ang partner na ito. I-verify muna ang account.';
 
   @override
+  String get guestSheetTitle => 'Mag-sign in para magpatuloy';
+
+  @override
+  String get guestSheetBody =>
+      'Nakatago ang mga nilagay mo. Didiretso ka agad kung saan ka tumigil.';
+
+  @override
+  String get greetMorning => 'Magandang umaga';
+
+  @override
+  String get greetAfternoon => 'Magandang hapon';
+
+  @override
+  String get greetEvening => 'Magandang gabi';
+
+  @override
+  String get feedHeading => 'Para sa iyo';
+
+  @override
+  String get feedTitleDue => 'Oras na para sa susunod na paglilinis';
+
+  @override
+  String get feedTitleRebook => 'I-book muli ang iyong 5-star na partner';
+
+  @override
+  String get feedTitleDraft => 'Tapusin ang quote na sinimulan mo';
+
+  @override
+  String get feedTitleSeasonal => 'Paglilinis na bagay sa panahong ito';
+
+  @override
+  String get feedTitleSize => 'Quote batay sa naka-save mong laki ng bahay';
+
+  @override
+  String get feedTitleSubscription => 'Mas tipid sa subscription';
+
+  @override
+  String get feedTitleDistrict => 'Nagpapa-book din ang mga kapitbahay';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '$days araw na mula nang huli kang magpalinis';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Binigyan mo ng 5 bituin ang partner na ito $days araw na ang nakalipas';
+  }
+
+  @override
+  String get feedWhyDraft => 'May quote kang hindi natapos sa device na ito';
+
+  @override
+  String get feedWhySummer =>
+      'Magandang panahon para linisin ang aircon bago ang tag-init';
+
+  @override
+  String get feedWhyMoving => 'Abala ang panahon ng paglipat at pag-move in';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '$days araw bago ang malalim na paglilinis para sa holiday';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Agad na quote para sa naka-save mong $pyeong pyeong na bahay';
+  }
+
+  @override
+  String get feedWhyRepeat =>
+      'Mas mura ang subscription kung madalas ka mag-book';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '$count bahay sa $district ang nag-book ngayong linggo';
+  }
+
+  @override
   String get fFinance => 'Pananalapi';
 
   @override

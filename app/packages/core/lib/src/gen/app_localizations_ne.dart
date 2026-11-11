@@ -2016,6 +2016,84 @@ class TNe extends T {
       'यो साझेदारसँग प्रमाणित भुक्तानी खाता छैन। पहिले खाता प्रमाणित गर्नुहोस्।';
 
   @override
+  String get guestSheetTitle => 'जारी राख्न साइन इन गर्नुहोस्';
+
+  @override
+  String get guestSheetBody =>
+      'तपाईंले भरेको सबै जानकारी सुरक्षित रहन्छ। जहाँ छाड्नुभयो त्यहीँबाट जारी रहन्छ।';
+
+  @override
+  String get greetMorning => 'सुप्रभात';
+
+  @override
+  String get greetAfternoon => 'शुभ दिउँसो';
+
+  @override
+  String get greetEvening => 'शुभ साँझ';
+
+  @override
+  String get feedHeading => 'तपाईंका लागि छनोट';
+
+  @override
+  String get feedTitleDue => 'अर्को सफाइको समय भयो';
+
+  @override
+  String get feedTitleRebook => '५ तारे पार्टनरलाई फेरि बुक गर्नुहोस्';
+
+  @override
+  String get feedTitleDraft => 'सुरु गरेको कोटेशन पूरा गर्नुहोस्';
+
+  @override
+  String get feedTitleSeasonal => 'यस मौसमका लागि उपयुक्त सफाइ';
+
+  @override
+  String get feedTitleSize => 'सुरक्षित घरको आकारअनुसार कोटेशन';
+
+  @override
+  String get feedTitleSubscription => 'सदस्यतामार्फत बढी बचत गर्नुहोस्';
+
+  @override
+  String get feedTitleDistrict => 'छिमेकीहरूले पनि बुक गरिरहेका छन्';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'अन्तिम सफाइपछि $days दिन भयो';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'तपाईंले $days दिन अघि यो पार्टनरलाई ५ तारा दिनुभएको थियो';
+  }
+
+  @override
+  String get feedWhyDraft => 'यो यन्त्रमा तपाईंको कोटेशन अधूरो छ';
+
+  @override
+  String get feedWhySummer =>
+      'गर्मी सुरु हुनुअघि एयरकन्डिसन सफा गर्ने राम्रो समय हो';
+
+  @override
+  String get feedWhyMoving => 'घर सर्ने र सार्ने समय व्यस्त छ';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'चाडपर्वको ठूलो सफाइसम्म $days दिन बाँकी छ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'सुरक्षित $pyeong पियोङ घरका लागि तुरुन्त कोटेशन';
+  }
+
+  @override
+  String get feedWhyRepeat => 'बारम्बार बुक गर्नुहुन्छ भने सदस्यता सस्तो पर्छ';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'यो हप्ता $district मा $count घरले बुक गरे';
+  }
+
+  @override
   String get fFinance => 'वित्त';
 
   @override

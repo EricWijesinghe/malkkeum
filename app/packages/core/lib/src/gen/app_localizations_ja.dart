@@ -1954,6 +1954,82 @@ class TJa extends T {
       'この受取人には確認済みの口座がありません。先に口座を確認してください。';
 
   @override
+  String get guestSheetTitle => '続けるにはログインしてください';
+
+  @override
+  String get guestSheetBody => '入力内容はそのまま残ります。認証後すぐに続きから進めます。';
+
+  @override
+  String get greetMorning => 'おはようございます';
+
+  @override
+  String get greetAfternoon => 'こんにちは';
+
+  @override
+  String get greetEvening => 'こんばんは';
+
+  @override
+  String get feedHeading => 'あなたへのおすすめ';
+
+  @override
+  String get feedTitleDue => '次の清掃の時期です';
+
+  @override
+  String get feedTitleRebook => '高評価のパートナーをもう一度';
+
+  @override
+  String get feedTitleDraft => '途中の見積もりを続けましょう';
+
+  @override
+  String get feedTitleSeasonal => '今の季節におすすめの清掃';
+
+  @override
+  String get feedTitleSize => '保存した広さで見積もり';
+
+  @override
+  String get feedTitleSubscription => '定期購読でお得に';
+
+  @override
+  String get feedTitleDistrict => '近所でもご予約が続いています';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '前回の清掃から$days日が経過しました';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days日前に5つ星をつけたパートナーです';
+  }
+
+  @override
+  String get feedWhyDraft => 'この端末で見積もりが途中のままです';
+
+  @override
+  String get feedWhySummer => '夏前にエアコン清掃がおすすめの時期です';
+
+  @override
+  String get feedWhyMoving => '入居・引っ越しが集中する時期です';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '連休前の大掃除まであと$days日';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '保存済みの$pyeong坪で、すぐに見積もれます';
+  }
+
+  @override
+  String get feedWhyRepeat => 'よくご予約いただくなら定期購読がお得です';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '今週$districtで$count件のお宅がご予約';
+  }
+
+  @override
   String get fFinance => '財務';
 
   @override

@@ -2006,6 +2006,83 @@ class TEn extends T {
       'This partner has no verified payout account yet. Verify the account first.';
 
   @override
+  String get guestSheetTitle => 'Sign in to continue';
+
+  @override
+  String get guestSheetBody =>
+      'Everything you entered is kept. You continue right where you left off.';
+
+  @override
+  String get greetMorning => 'Good morning';
+
+  @override
+  String get greetAfternoon => 'Good afternoon';
+
+  @override
+  String get greetEvening => 'Good evening';
+
+  @override
+  String get feedHeading => 'Picked for you';
+
+  @override
+  String get feedTitleDue => 'Your next clean is due';
+
+  @override
+  String get feedTitleRebook => 'Book your 5-star partner again';
+
+  @override
+  String get feedTitleDraft => 'Finish the quote you started';
+
+  @override
+  String get feedTitleSeasonal => 'A clean that suits this season';
+
+  @override
+  String get feedTitleSize => 'Quote from your saved home size';
+
+  @override
+  String get feedTitleSubscription => 'Save more with a subscription';
+
+  @override
+  String get feedTitleDistrict => 'Neighbours are booking too';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '$days days since your last clean';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'You rated this partner 5 stars $days days ago';
+  }
+
+  @override
+  String get feedWhyDraft => 'You left a quote unfinished on this device';
+
+  @override
+  String get feedWhySummer => 'A good time to clean the aircon before summer';
+
+  @override
+  String get feedWhyMoving => 'Move-in and moving season is busy';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '$days days until the holiday deep clean';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Instant quote for your saved $pyeong pyeong home';
+  }
+
+  @override
+  String get feedWhyRepeat => 'If you book often, a subscription costs less';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '$count homes in $district booked this week';
+  }
+
+  @override
   String get fFinance => 'Finance';
 
   @override

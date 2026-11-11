@@ -2020,6 +2020,85 @@ class TId extends T {
       'Partner ini belum punya rekening pencairan yang diverifikasi. Verifikasi rekening dulu.';
 
   @override
+  String get guestSheetTitle => 'Masuk untuk melanjutkan';
+
+  @override
+  String get guestSheetBody =>
+      'Semua yang Anda isi tetap tersimpan. Anda lanjut tepat di tempat tadi.';
+
+  @override
+  String get greetMorning => 'Selamat pagi';
+
+  @override
+  String get greetAfternoon => 'Selamat siang';
+
+  @override
+  String get greetEvening => 'Selamat malam';
+
+  @override
+  String get feedHeading => 'Pilihan untukmu';
+
+  @override
+  String get feedTitleDue => 'Waktunya jadwal bersih berikutnya';
+
+  @override
+  String get feedTitleRebook => 'Pesan lagi mitra bintang 5';
+
+  @override
+  String get feedTitleDraft => 'Lanjutkan penawaran yang belum selesai';
+
+  @override
+  String get feedTitleSeasonal => 'Pembersihan yang pas untuk musim ini';
+
+  @override
+  String get feedTitleSize => 'Penawaran dari ukuran rumah tersimpan';
+
+  @override
+  String get feedTitleSubscription => 'Hemat lebih banyak dengan langganan';
+
+  @override
+  String get feedTitleDistrict => 'Tetangga juga sedang memesan';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '$days hari sejak pembersihan terakhir';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Anda memberi bintang 5 untuk mitra ini $days hari lalu';
+  }
+
+  @override
+  String get feedWhyDraft =>
+      'Ada penawaran yang belum selesai di perangkat ini';
+
+  @override
+  String get feedWhySummer =>
+      'Waktu yang tepat membersihkan AC sebelum musim panas';
+
+  @override
+  String get feedWhyMoving => 'Musim pindahan dan masuk rumah sedang ramai';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '$days hari lagi menuju bersih-bersih besar lebaran';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Penawaran instan untuk rumah $pyeong pyeong tersimpan';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Jika sering memesan, langganan lebih murah';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '$count rumah di $district memesan minggu ini';
+  }
+
+  @override
   String get fFinance => 'Keuangan';
 
   @override

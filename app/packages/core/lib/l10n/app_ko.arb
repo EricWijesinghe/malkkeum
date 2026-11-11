@@ -917,6 +917,66 @@
  "err_invalid_capacity": "정원은 숫자로 입력해 주세요.",
  "err_seller_declined": "토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.",
  "err_payout_account_unverified": "확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.",
+ "guestSheetTitle": "계속하려면 전화번호로 로그인하세요",
+ "guestSheetBody": "입력하신 내용은 그대로 남아 있어요. 인증 후 바로 이어서 진행됩니다.",
+ "greetMorning": "좋은 아침이에요",
+ "greetAfternoon": "좋은 오후예요",
+ "greetEvening": "좋은 저녁이에요",
+ "feedHeading": "회원님을 위한 추천",
+ "feedTitleDue": "다음 청소 시기가 됐어요",
+ "feedTitleRebook": "지난번 파트너를 다시 예약하세요",
+ "feedTitleDraft": "작성 중이던 견적을 이어서 보세요",
+ "feedTitleSeasonal": "지금 계절에 꼭 필요한 청소예요",
+ "feedTitleSize": "저장된 집 크기로 바로 견적 보기",
+ "feedTitleSubscription": "정기 구독으로 더 저렴하게",
+ "feedTitleDistrict": "우리 동네에서도 예약이 이어지고 있어요",
+ "feedWhyCadence": "마지막 청소 후 {days}일이 지났어요",
+ "@feedWhyCadence": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "feedWhyRated": "{days}일 전 5점을 드린 파트너예요",
+ "@feedWhyRated": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "feedWhyDraft": "이 기기에서 견적을 끝내지 않았어요",
+ "feedWhySummer": "여름 전에 에어컨을 청소하기 좋은 때예요",
+ "feedWhyMoving": "입주·이사가 몰리는 시기예요",
+ "feedWhyHoliday": "명절 대청소까지 {days}일 남았어요",
+ "@feedWhyHoliday": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "feedWhySize": "저장된 {pyeong}평 기준으로 바로 견적을 볼 수 있어요",
+ "@feedWhySize": {
+  "placeholders": {
+   "pyeong": {
+    "type": "String"
+   }
+  }
+ },
+ "feedWhyRepeat": "자주 예약하신다면 구독이 더 저렴해요",
+ "feedWhyDistrict": "이번 주 {district}에서 {count}집이 예약했어요",
+ "@feedWhyDistrict": {
+  "placeholders": {
+   "district": {
+    "type": "String"
+   },
+   "count": {
+    "type": "String"
+   }
+  }
+ },
  "fFinance": "재무",
  "fPeriodDay": "일",
  "fPeriodWeek": "주",
