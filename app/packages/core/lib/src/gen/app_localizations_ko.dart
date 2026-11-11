@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3039,6 +3040,50 @@ class TKo extends T {
   String poSellerDone(String status) {
     return '판매자 상태: $status';
   }
+
+  @override
+  String get oFlags => '기능 스위치';
+
+  @override
+  String get oFlagBooking => '예약';
+
+  @override
+  String get oFlagChat => '채팅';
+
+  @override
+  String get oFlagAi => 'AI 상담';
+
+  @override
+  String get oFlagPayments => '결제';
+
+  @override
+  String get oMaintenance => '점검 모드';
+
+  @override
+  String get oMaintenanceHint => '켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.';
+
+  @override
+  String get oMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get oClientErrors => '앱 오류 보고';
+
+  @override
+  String get oClientErrorsHint =>
+      '웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.';
+
+  @override
+  String get oClientErrorsEmpty => '최근 오류가 없어요';
+
+  @override
+  String get oHeartbeat => '업타임 하트비트';
+
+  @override
+  String get oHeartbeatOn => '연결됨. 서버가 살아 있으면 외부에서 알려줘요.';
+
+  @override
+  String get oHeartbeatOff =>
+      '설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.';
 
   @override
   String get pvManage => '동의 관리';

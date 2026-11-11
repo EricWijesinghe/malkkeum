@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3123,6 +3124,52 @@ class TKm extends T {
   String poSellerDone(String status) {
     return 'ស្ថានភាពអ្នកលក់៖ $status';
   }
+
+  @override
+  String get oFlags => 'ប៊ូតុងបើកមុខងារ';
+
+  @override
+  String get oFlagBooking => 'ការកក់';
+
+  @override
+  String get oFlagChat => 'ជជែក';
+
+  @override
+  String get oFlagAi => 'ជំនួយការ AI';
+
+  @override
+  String get oFlagPayments => 'ការទូទាត់';
+
+  @override
+  String get oMaintenance => 'របៀបថែទាំ';
+
+  @override
+  String get oMaintenanceHint =>
+      'នៅពេលបើក អ្នកប្រើនិងដៃគូនឹងឃើញអេក្រង់ថែទាំ។ កុងសូលនៅតែប្រើបាន។';
+
+  @override
+  String get oMaintenanceMessage => 'សារថែទាំ';
+
+  @override
+  String get oClientErrors => 'របាយការណ៍កំហុសកម្មវិធី';
+
+  @override
+  String get oClientErrorsHint =>
+      'កំហុសថ្មីៗពីវែប Windows និងកុងសូល។ ព័ត៌មានផ្ទាល់ខ្លួនត្រូវបានលាក់ដោយស្វ័យប្រវត្តិ។';
+
+  @override
+  String get oClientErrorsEmpty => 'គ្មានកំហុសថ្មីៗ';
+
+  @override
+  String get oHeartbeat => 'ជីពចរតាមដាន';
+
+  @override
+  String get oHeartbeatOn =>
+      'បានភ្ជាប់។ សេវាខាងក្រៅនឹងត្រូវបានជូនដំណឹងនៅពេលម៉ាស៊ីនមេដំណើរការ។';
+
+  @override
+  String get oHeartbeatOff =>
+      'មិនទាន់កំណត់៖ បន្ថែម MALKKEUM_HEARTBEAT_URL ទៅ install.sh។';
 
   @override
   String get pvManage => 'ការគ្រប់គ្រងការយល់ព្រម';

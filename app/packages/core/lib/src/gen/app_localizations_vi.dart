@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3098,6 +3099,52 @@ class TVi extends T {
   String poSellerDone(String status) {
     return 'Trạng thái người bán: $status';
   }
+
+  @override
+  String get oFlags => 'Công tắc tính năng';
+
+  @override
+  String get oFlagBooking => 'Đặt lịch';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'Trợ lý AI';
+
+  @override
+  String get oFlagPayments => 'Thanh toán';
+
+  @override
+  String get oMaintenance => 'Chế độ bảo trì';
+
+  @override
+  String get oMaintenanceHint =>
+      'Khi bật, ứng dụng khách hàng và đối tác hiển thị màn hình bảo trì. Bảng điều hành vẫn dùng được.';
+
+  @override
+  String get oMaintenanceMessage => 'Nội dung thông báo bảo trì';
+
+  @override
+  String get oClientErrors => 'Báo lỗi ứng dụng';
+
+  @override
+  String get oClientErrorsHint =>
+      'Lỗi gần đây từ web, Windows và bảng điều hành. Thông tin cá nhân được tự động ẩn.';
+
+  @override
+  String get oClientErrorsEmpty => 'Không có lỗi gần đây';
+
+  @override
+  String get oHeartbeat => 'Nhịp tim theo dõi';
+
+  @override
+  String get oHeartbeatOn =>
+      'Đã kết nối. Dịch vụ bên ngoài được báo khi máy chủ hoạt động.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Chưa đặt: thêm MALKKEUM_HEARTBEAT_URL vào install.sh.';
 
   @override
   String get pvManage => 'Quản lý đồng ý';

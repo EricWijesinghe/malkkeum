@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3137,6 +3138,52 @@ class TMn extends T {
   String poSellerDone(String status) {
     return 'Худалдагчийн төлөв: $status';
   }
+
+  @override
+  String get oFlags => 'Функцийн асаалт унтраалт';
+
+  @override
+  String get oFlagBooking => 'Захиалга';
+
+  @override
+  String get oFlagChat => 'Чат';
+
+  @override
+  String get oFlagAi => 'AI туслах';
+
+  @override
+  String get oFlagPayments => 'Төлбөр';
+
+  @override
+  String get oMaintenance => 'Засварын горим';
+
+  @override
+  String get oMaintenanceHint =>
+      'Асаахад харилцагч, түнш аппууд засварын дэлгэц харуулна. Консол ажиллана.';
+
+  @override
+  String get oMaintenanceMessage => 'Засварын мэдэгдэл';
+
+  @override
+  String get oClientErrors => 'Аппын алдааны тайлан';
+
+  @override
+  String get oClientErrorsHint =>
+      'Веб, Windows, консолоос ирсэн сүүлийн алдаанууд. Хувийн мэдээлэл автоматаар нуугдана.';
+
+  @override
+  String get oClientErrorsEmpty => 'Сүүлийн алдаа байхгүй';
+
+  @override
+  String get oHeartbeat => 'Ажиллагааны heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Холбогдсон. Сервер ажиллаж байх үед гадаад үйлчилгээнд мэдэгдэнэ.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Тохируулаагүй: install.sh-д MALKKEUM_HEARTBEAT_URL нэмнэ үү.';
 
   @override
   String get pvManage => 'Зөвшөөрлийн тохиргоо';

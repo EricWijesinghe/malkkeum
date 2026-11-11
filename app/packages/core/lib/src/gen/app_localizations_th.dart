@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3110,6 +3111,52 @@ class TTh extends T {
   String poSellerDone(String status) {
     return 'สถานะผู้ขาย: $status';
   }
+
+  @override
+  String get oFlags => 'สวิตช์ฟีเจอร์';
+
+  @override
+  String get oFlagBooking => 'การจอง';
+
+  @override
+  String get oFlagChat => 'แชต';
+
+  @override
+  String get oFlagAi => 'ผู้ช่วย AI';
+
+  @override
+  String get oFlagPayments => 'การชำระเงิน';
+
+  @override
+  String get oMaintenance => 'โหมดปิดปรับปรุง';
+
+  @override
+  String get oMaintenanceHint =>
+      'เมื่อเปิด แอปลูกค้าและพาร์ทเนอร์จะแสดงหน้าปรับปรุงระบบ คอนโซลยังใช้งานได้';
+
+  @override
+  String get oMaintenanceMessage => 'ข้อความแจ้งปรับปรุงระบบ';
+
+  @override
+  String get oClientErrors => 'รายงานข้อผิดพลาดของแอป';
+
+  @override
+  String get oClientErrorsHint =>
+      'ข้อผิดพลาดล่าสุดจากเว็บ Windows และคอนโซล ข้อมูลส่วนตัวถูกซ่อนอัตโนมัติ';
+
+  @override
+  String get oClientErrorsEmpty => 'ไม่มีข้อผิดพลาดล่าสุด';
+
+  @override
+  String get oHeartbeat => 'Heartbeat ตรวจสถานะ';
+
+  @override
+  String get oHeartbeatOn =>
+      'เชื่อมแล้ว ระบบภายนอกจะได้รับสัญญาณขณะเซิร์ฟเวอร์ทำงาน';
+
+  @override
+  String get oHeartbeatOff =>
+      'ยังไม่ตั้งค่า: เพิ่ม MALKKEUM_HEARTBEAT_URL ใน install.sh';
 
   @override
   String get pvManage => 'จัดการความยินยอม';

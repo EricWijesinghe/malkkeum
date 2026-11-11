@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3148,6 +3149,52 @@ class TFil extends T {
   String poSellerDone(String status) {
     return 'Katayuan ng seller: $status';
   }
+
+  @override
+  String get oFlags => 'Mga switch ng feature';
+
+  @override
+  String get oFlagBooking => 'Mga booking';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI assistant';
+
+  @override
+  String get oFlagPayments => 'Mga bayad';
+
+  @override
+  String get oMaintenance => 'Maintenance mode';
+
+  @override
+  String get oMaintenanceHint =>
+      'Kapag naka-on, magpapakita ng maintenance screen ang customer at partner app. Gumagana pa rin ang console.';
+
+  @override
+  String get oMaintenanceMessage => 'Mensahe sa maintenance';
+
+  @override
+  String get oClientErrors => 'Mga ulat ng error sa app';
+
+  @override
+  String get oClientErrorsHint =>
+      'Mga kamakailang error mula sa web, Windows at console. Awtomatikong tinatakpan ang personal na impormasyon.';
+
+  @override
+  String get oClientErrorsEmpty => 'Walang kamakailang error';
+
+  @override
+  String get oHeartbeat => 'Uptime heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Nakakonekta. Naaabisuhan ang panlabas na serbisyo habang gumagana ang server.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Hindi pa nakatakda: idagdag ang MALKKEUM_HEARTBEAT_URL sa install.sh.';
 
   @override
   String get pvManage => 'Mga pahintulot';

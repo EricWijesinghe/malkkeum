@@ -5874,6 +5874,90 @@ abstract class T {
   /// **'판매자 상태: {status}'**
   String poSellerDone(String status);
 
+  /// No description provided for @oFlags.
+  ///
+  /// In ko, this message translates to:
+  /// **'기능 스위치'**
+  String get oFlags;
+
+  /// No description provided for @oFlagBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get oFlagBooking;
+
+  /// No description provided for @oFlagChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅'**
+  String get oFlagChat;
+
+  /// No description provided for @oFlagAi.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담'**
+  String get oFlagAi;
+
+  /// No description provided for @oFlagPayments.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제'**
+  String get oFlagPayments;
+
+  /// No description provided for @oMaintenance.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 모드'**
+  String get oMaintenance;
+
+  /// No description provided for @oMaintenanceHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.'**
+  String get oMaintenanceHint;
+
+  /// No description provided for @oMaintenanceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 안내 문구'**
+  String get oMaintenanceMessage;
+
+  /// No description provided for @oClientErrors.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 오류 보고'**
+  String get oClientErrors;
+
+  /// No description provided for @oClientErrorsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.'**
+  String get oClientErrorsHint;
+
+  /// No description provided for @oClientErrorsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 오류가 없어요'**
+  String get oClientErrorsEmpty;
+
+  /// No description provided for @oHeartbeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'업타임 하트비트'**
+  String get oHeartbeat;
+
+  /// No description provided for @oHeartbeatOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결됨. 서버가 살아 있으면 외부에서 알려줘요.'**
+  String get oHeartbeatOn;
+
+  /// No description provided for @oHeartbeatOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.'**
+  String get oHeartbeatOff;
+
   /// No description provided for @pvManage.
   ///
   /// In ko, this message translates to:

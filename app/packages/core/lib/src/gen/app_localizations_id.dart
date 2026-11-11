@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3130,6 +3131,52 @@ class TId extends T {
   String poSellerDone(String status) {
     return 'Status penjual: $status';
   }
+
+  @override
+  String get oFlags => 'Sakelar fitur';
+
+  @override
+  String get oFlagBooking => 'Pemesanan';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'Asisten AI';
+
+  @override
+  String get oFlagPayments => 'Pembayaran';
+
+  @override
+  String get oMaintenance => 'Mode pemeliharaan';
+
+  @override
+  String get oMaintenanceHint =>
+      'Saat aktif, aplikasi pelanggan dan mitra menampilkan layar pemeliharaan. Konsol tetap bisa dipakai.';
+
+  @override
+  String get oMaintenanceMessage => 'Pesan pemeliharaan';
+
+  @override
+  String get oClientErrors => 'Laporan error aplikasi';
+
+  @override
+  String get oClientErrorsHint =>
+      'Error terbaru dari web, Windows, dan konsol. Data pribadi disamarkan otomatis.';
+
+  @override
+  String get oClientErrorsEmpty => 'Tidak ada error terbaru';
+
+  @override
+  String get oHeartbeat => 'Heartbeat uptime';
+
+  @override
+  String get oHeartbeatOn =>
+      'Terhubung. Layanan luar diberi tahu saat server aktif.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Belum diatur: tambahkan MALKKEUM_HEARTBEAT_URL ke install.sh.';
 
   @override
   String get pvManage => 'Pengaturan persetujuan';
