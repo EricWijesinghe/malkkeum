@@ -30,7 +30,7 @@ mod webhooks;
 
 use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
 use axum::{
-    Json, Router,
+    Router,
     extract::DefaultBodyLimit,
     http::{HeaderName, HeaderValue, Method, header},
     routing::get,
