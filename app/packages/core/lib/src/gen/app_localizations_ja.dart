@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2921,6 +2922,42 @@ class TJa extends T {
   String pUploadedCount(String total, String done) {
     return '$total枚中$done枚アップロード済み';
   }
+
+  @override
+  String get apPgPickMethod => '支払い方法を選んでください';
+
+  @override
+  String get apPgConfirmTitle => 'お支払い内容の確認';
+
+  @override
+  String get apPgConfirmBtn => '支払いを確定';
+
+  @override
+  String get apPgProcessing => '決済を処理しています…';
+
+  @override
+  String get apPgDoneTitle => 'お支払いが完了しました';
+
+  @override
+  String get apPgReceiptTitle => '領収書';
+
+  @override
+  String get apPgReceiptApproval => '承認番号';
+
+  @override
+  String get apPgReceiptMethod => '決済手段';
+
+  @override
+  String get apPgReceiptAmount => '金額';
+
+  @override
+  String get apPgReceiptDone => '閉じる';
+
+  @override
+  String get apPgVaIssued => '仮想口座を発行しました（テスト口座）';
+
+  @override
+  String get apPgTestBadge => 'テスト';
 
   @override
   String get cIntPayout => 'パートナーへの支払い';

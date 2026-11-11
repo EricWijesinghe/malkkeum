@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3020,6 +3021,42 @@ class TMn extends T {
   String pUploadedCount(String total, String done) {
     return '$total-с $done илгээсэн';
   }
+
+  @override
+  String get apPgPickMethod => 'Төлбөрийн хэрэгслээ сонгоно уу';
+
+  @override
+  String get apPgConfirmTitle => 'Төлбөрийн мэдээлэл шалгах';
+
+  @override
+  String get apPgConfirmBtn => 'Төлбөрөө баталгаажуулах';
+
+  @override
+  String get apPgProcessing => 'Төлбөрийг боловсруулж байна…';
+
+  @override
+  String get apPgDoneTitle => 'Төлбөр амжилттай';
+
+  @override
+  String get apPgReceiptTitle => 'Цахим баримт';
+
+  @override
+  String get apPgReceiptApproval => 'Зөвшөөрлийн дугаар';
+
+  @override
+  String get apPgReceiptMethod => 'Хэрэгсэл';
+
+  @override
+  String get apPgReceiptAmount => 'Дүн';
+
+  @override
+  String get apPgReceiptDone => 'Дуусгах';
+
+  @override
+  String get apPgVaIssued => 'Виртуал данс нээгдлээ (туршилтын данс)';
+
+  @override
+  String get apPgTestBadge => 'ТУРШИЛТ';
 
   @override
   String get cIntPayout => 'Түншийн төлбөр';

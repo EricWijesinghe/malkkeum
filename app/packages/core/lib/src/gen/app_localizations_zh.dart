@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2910,6 +2911,42 @@ class TZh extends T {
   String pUploadedCount(String total, String done) {
     return '已上传 $done/$total 张';
   }
+
+  @override
+  String get apPgPickMethod => '请选择支付方式';
+
+  @override
+  String get apPgConfirmTitle => '确认支付内容';
+
+  @override
+  String get apPgConfirmBtn => '确认付款';
+
+  @override
+  String get apPgProcessing => '正在处理付款…';
+
+  @override
+  String get apPgDoneTitle => '付款完成';
+
+  @override
+  String get apPgReceiptTitle => '电子收据';
+
+  @override
+  String get apPgReceiptApproval => '批准编号';
+
+  @override
+  String get apPgReceiptMethod => '支付方式';
+
+  @override
+  String get apPgReceiptAmount => '金额';
+
+  @override
+  String get apPgReceiptDone => '完成';
+
+  @override
+  String get apPgVaIssued => '已发放虚拟账户（测试账户）';
+
+  @override
+  String get apPgTestBadge => '测试';
 
   @override
   String get cIntPayout => '合作伙伴付款';

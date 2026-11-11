@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3011,6 +3012,42 @@ class TRu extends T {
   String pUploadedCount(String total, String done) {
     return 'Загружено $done из $total';
   }
+
+  @override
+  String get apPgPickMethod => 'Выберите способ оплаты';
+
+  @override
+  String get apPgConfirmTitle => 'Проверьте оплату';
+
+  @override
+  String get apPgConfirmBtn => 'Подтвердить оплату';
+
+  @override
+  String get apPgProcessing => 'Обрабатываем платёж…';
+
+  @override
+  String get apPgDoneTitle => 'Оплата прошла';
+
+  @override
+  String get apPgReceiptTitle => 'Электронный чек';
+
+  @override
+  String get apPgReceiptApproval => 'Номер подтверждения';
+
+  @override
+  String get apPgReceiptMethod => 'Способ';
+
+  @override
+  String get apPgReceiptAmount => 'Сумма';
+
+  @override
+  String get apPgReceiptDone => 'Готово';
+
+  @override
+  String get apPgVaIssued => 'Виртуальный счёт выдан (тестовый)';
+
+  @override
+  String get apPgTestBadge => 'ТЕСТ';
 
   @override
   String get cIntPayout => 'Выплаты партнёрам';

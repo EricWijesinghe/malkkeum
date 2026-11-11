@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3013,6 +3014,42 @@ class TId extends T {
   String pUploadedCount(String total, String done) {
     return '$done dari $total terunggah';
   }
+
+  @override
+  String get apPgPickMethod => 'Pilih metode pembayaran';
+
+  @override
+  String get apPgConfirmTitle => 'Tinjau pembayaran Anda';
+
+  @override
+  String get apPgConfirmBtn => 'Konfirmasi pembayaran';
+
+  @override
+  String get apPgProcessing => 'Memproses pembayaran…';
+
+  @override
+  String get apPgDoneTitle => 'Pembayaran berhasil';
+
+  @override
+  String get apPgReceiptTitle => 'Struk elektronik';
+
+  @override
+  String get apPgReceiptApproval => 'No. persetujuan';
+
+  @override
+  String get apPgReceiptMethod => 'Metode';
+
+  @override
+  String get apPgReceiptAmount => 'Jumlah';
+
+  @override
+  String get apPgReceiptDone => 'Selesai';
+
+  @override
+  String get apPgVaIssued => 'Rekening virtual diterbitkan (rekening uji)';
+
+  @override
+  String get apPgTestBadge => 'UJI';
 
   @override
   String get cIntPayout => 'Pembayaran mitra';

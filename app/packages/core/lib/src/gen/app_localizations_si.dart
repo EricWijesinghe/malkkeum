@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3008,6 +3009,42 @@ class TSi extends T {
   String pUploadedCount(String total, String done) {
     return '$total න් $done උඩුගත කර ඇත';
   }
+
+  @override
+  String get apPgPickMethod => 'ගෙවීම් ක්‍රමය තෝරන්න';
+
+  @override
+  String get apPgConfirmTitle => 'ගෙවීම පරීක්ෂා කරන්න';
+
+  @override
+  String get apPgConfirmBtn => 'ගෙවීම තහවුරු කරන්න';
+
+  @override
+  String get apPgProcessing => 'ගෙවීම සකසමින්…';
+
+  @override
+  String get apPgDoneTitle => 'ගෙවීම සම්පූර්ණයි';
+
+  @override
+  String get apPgReceiptTitle => 'ඉලෙක්ට්‍රොනික රිසිට්පත';
+
+  @override
+  String get apPgReceiptApproval => 'අනුමත අංකය';
+
+  @override
+  String get apPgReceiptMethod => 'ක්‍රමය';
+
+  @override
+  String get apPgReceiptAmount => 'මුදල';
+
+  @override
+  String get apPgReceiptDone => 'නිමයි';
+
+  @override
+  String get apPgVaIssued => 'අත්‍ය ගිණුම නිකුත් විය (පරීක්ෂණ ගිණුම)';
+
+  @override
+  String get apPgTestBadge => 'පරීක්ෂණ';
 
   @override
   String get cIntPayout => 'හවුල්කරු ගෙවීම්';

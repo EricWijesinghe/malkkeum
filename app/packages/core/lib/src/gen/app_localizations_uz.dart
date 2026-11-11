@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3026,6 +3027,42 @@ class TUz extends T {
   String pUploadedCount(String total, String done) {
     return '$total tadan $done yuklandi';
   }
+
+  @override
+  String get apPgPickMethod => 'To\'lov usulini tanlang';
+
+  @override
+  String get apPgConfirmTitle => 'To\'lovni tekshiring';
+
+  @override
+  String get apPgConfirmBtn => 'To\'lovni tasdiqlash';
+
+  @override
+  String get apPgProcessing => 'To\'lov qayta ishlanmoqda…';
+
+  @override
+  String get apPgDoneTitle => 'To\'lov yakunlandi';
+
+  @override
+  String get apPgReceiptTitle => 'Elektron kvitansiya';
+
+  @override
+  String get apPgReceiptApproval => 'Tasdiq raqami';
+
+  @override
+  String get apPgReceiptMethod => 'Usul';
+
+  @override
+  String get apPgReceiptAmount => 'Summa';
+
+  @override
+  String get apPgReceiptDone => 'Tayyor';
+
+  @override
+  String get apPgVaIssued => 'Virtual hisob ochildi (test hisob)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
 
   @override
   String get cIntPayout => 'Hamkor to‘lovlari';

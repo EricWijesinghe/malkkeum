@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2992,6 +2993,42 @@ class TEn extends T {
   String pUploadedCount(String total, String done) {
     return '$done of $total uploaded';
   }
+
+  @override
+  String get apPgPickMethod => 'Choose a payment method';
+
+  @override
+  String get apPgConfirmTitle => 'Review your payment';
+
+  @override
+  String get apPgConfirmBtn => 'Confirm payment';
+
+  @override
+  String get apPgProcessing => 'Processing payment…';
+
+  @override
+  String get apPgDoneTitle => 'Payment complete';
+
+  @override
+  String get apPgReceiptTitle => 'Receipt';
+
+  @override
+  String get apPgReceiptApproval => 'Approval no.';
+
+  @override
+  String get apPgReceiptMethod => 'Method';
+
+  @override
+  String get apPgReceiptAmount => 'Amount';
+
+  @override
+  String get apPgReceiptDone => 'Done';
+
+  @override
+  String get apPgVaIssued => 'Virtual account issued (test account)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
 
   @override
   String get cIntPayout => 'Partner payouts';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3005,6 +3006,42 @@ class TNe extends T {
   String pUploadedCount(String total, String done) {
     return '$total मध्ये $done अपलोड';
   }
+
+  @override
+  String get apPgPickMethod => 'भुक्तानी विधि छान्नुहोस्';
+
+  @override
+  String get apPgConfirmTitle => 'भुक्तानी जाँच गर्नुहोस्';
+
+  @override
+  String get apPgConfirmBtn => 'भुक्तानी पुष्टि गर्नुहोस्';
+
+  @override
+  String get apPgProcessing => 'भुक्तानी प्रशोधन हुँदैछ…';
+
+  @override
+  String get apPgDoneTitle => 'भुक्तानी सम्पन्न भयो';
+
+  @override
+  String get apPgReceiptTitle => 'इलेक्ट्रोनिक रसिद';
+
+  @override
+  String get apPgReceiptApproval => 'स्वीकृति नम्बर';
+
+  @override
+  String get apPgReceiptMethod => 'विधि';
+
+  @override
+  String get apPgReceiptAmount => 'रकम';
+
+  @override
+  String get apPgReceiptDone => 'सम्पन्न';
+
+  @override
+  String get apPgVaIssued => 'भर्चुअल खाता जारी भयो (परीक्षण खाता)';
+
+  @override
+  String get apPgTestBadge => 'परीक्षण';
 
   @override
   String get cIntPayout => 'साझेदार भुक्तानी';

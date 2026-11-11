@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2981,6 +2982,42 @@ class TVi extends T {
   String pUploadedCount(String total, String done) {
     return 'Đã tải $done/$total ảnh';
   }
+
+  @override
+  String get apPgPickMethod => 'Chọn phương thức thanh toán';
+
+  @override
+  String get apPgConfirmTitle => 'Xem lại thanh toán';
+
+  @override
+  String get apPgConfirmBtn => 'Xác nhận thanh toán';
+
+  @override
+  String get apPgProcessing => 'Đang xử lý thanh toán…';
+
+  @override
+  String get apPgDoneTitle => 'Thanh toán thành công';
+
+  @override
+  String get apPgReceiptTitle => 'Biên lai điện tử';
+
+  @override
+  String get apPgReceiptApproval => 'Số phê duyệt';
+
+  @override
+  String get apPgReceiptMethod => 'Phương thức';
+
+  @override
+  String get apPgReceiptAmount => 'Số tiền';
+
+  @override
+  String get apPgReceiptDone => 'Xong';
+
+  @override
+  String get apPgVaIssued => 'Đã cấp tài khoản ảo (tài khoản thử)';
+
+  @override
+  String get apPgTestBadge => 'THỬ NGHIỆM';
 
   @override
   String get cIntPayout => 'Chi trả đối tác';

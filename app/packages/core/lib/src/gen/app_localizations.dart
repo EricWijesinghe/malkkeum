@@ -5659,6 +5659,78 @@ abstract class T {
   /// **'{total}장 중 {done}장 업로드됨'**
   String pUploadedCount(String total, String done);
 
+  /// No description provided for @apPgPickMethod.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 수단을 골라 주세요'**
+  String get apPgPickMethod;
+
+  /// No description provided for @apPgConfirmTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 내용 확인'**
+  String get apPgConfirmTitle;
+
+  /// No description provided for @apPgConfirmBtn.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 확인'**
+  String get apPgConfirmBtn;
+
+  /// No description provided for @apPgProcessing.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제를 처리하고 있어요'**
+  String get apPgProcessing;
+
+  /// No description provided for @apPgDoneTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제가 완료됐어요'**
+  String get apPgDoneTitle;
+
+  /// No description provided for @apPgReceiptTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'전자 영수증'**
+  String get apPgReceiptTitle;
+
+  /// No description provided for @apPgReceiptApproval.
+  ///
+  /// In ko, this message translates to:
+  /// **'승인번호'**
+  String get apPgReceiptApproval;
+
+  /// No description provided for @apPgReceiptMethod.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 수단'**
+  String get apPgReceiptMethod;
+
+  /// No description provided for @apPgReceiptAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 금액'**
+  String get apPgReceiptAmount;
+
+  /// No description provided for @apPgReceiptDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get apPgReceiptDone;
+
+  /// No description provided for @apPgVaIssued.
+  ///
+  /// In ko, this message translates to:
+  /// **'가상계좌가 발급됐어요 (테스트 계좌)'**
+  String get apPgVaIssued;
+
+  /// No description provided for @apPgTestBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'테스트 결제'**
+  String get apPgTestBadge;
+
   /// No description provided for @cIntPayout.
   ///
   /// In ko, this message translates to:

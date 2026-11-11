@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2923,6 +2924,42 @@ class TKo extends T {
   String pUploadedCount(String total, String done) {
     return '$total장 중 $done장 업로드됨';
   }
+
+  @override
+  String get apPgPickMethod => '결제 수단을 골라 주세요';
+
+  @override
+  String get apPgConfirmTitle => '결제 내용 확인';
+
+  @override
+  String get apPgConfirmBtn => '결제 확인';
+
+  @override
+  String get apPgProcessing => '결제를 처리하고 있어요';
+
+  @override
+  String get apPgDoneTitle => '결제가 완료됐어요';
+
+  @override
+  String get apPgReceiptTitle => '전자 영수증';
+
+  @override
+  String get apPgReceiptApproval => '승인번호';
+
+  @override
+  String get apPgReceiptMethod => '결제 수단';
+
+  @override
+  String get apPgReceiptAmount => '결제 금액';
+
+  @override
+  String get apPgReceiptDone => '확인';
+
+  @override
+  String get apPgVaIssued => '가상계좌가 발급됐어요 (테스트 계좌)';
+
+  @override
+  String get apPgTestBadge => '테스트 결제';
 
   @override
   String get cIntPayout => '파트너 지급';

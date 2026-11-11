@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3031,6 +3032,42 @@ class TFil extends T {
   String pUploadedCount(String total, String done) {
     return '$done sa $total ang na-upload';
   }
+
+  @override
+  String get apPgPickMethod => 'Pumili ng paraan ng pagbabayad';
+
+  @override
+  String get apPgConfirmTitle => 'Suriin ang bayad';
+
+  @override
+  String get apPgConfirmBtn => 'Kumpirmahin ang bayad';
+
+  @override
+  String get apPgProcessing => 'Pinoproseso ang bayad…';
+
+  @override
+  String get apPgDoneTitle => 'Tapos na ang bayad';
+
+  @override
+  String get apPgReceiptTitle => 'Resibo';
+
+  @override
+  String get apPgReceiptApproval => 'Numero ng pag-apruba';
+
+  @override
+  String get apPgReceiptMethod => 'Paraan';
+
+  @override
+  String get apPgReceiptAmount => 'Halaga';
+
+  @override
+  String get apPgReceiptDone => 'Tapos';
+
+  @override
+  String get apPgVaIssued => 'Nagawa ang virtual account (test account)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
 
   @override
   String get cIntPayout => 'Bayad sa mga partner';

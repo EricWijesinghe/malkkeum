@@ -1439,6 +1439,18 @@
    }
   }
  },
+ "apPgPickMethod": "결제 수단을 골라 주세요",
+ "apPgConfirmTitle": "결제 내용 확인",
+ "apPgConfirmBtn": "결제 확인",
+ "apPgProcessing": "결제를 처리하고 있어요",
+ "apPgDoneTitle": "결제가 완료됐어요",
+ "apPgReceiptTitle": "전자 영수증",
+ "apPgReceiptApproval": "승인번호",
+ "apPgReceiptMethod": "결제 수단",
+ "apPgReceiptAmount": "결제 금액",
+ "apPgReceiptDone": "확인",
+ "apPgVaIssued": "가상계좌가 발급됐어요 (테스트 계좌)",
+ "apPgTestBadge": "테스트 결제",
  "cIntPayout": "파트너 지급",
  "poTabSettlements": "정산",
  "poTabPayouts": "지급 내역",

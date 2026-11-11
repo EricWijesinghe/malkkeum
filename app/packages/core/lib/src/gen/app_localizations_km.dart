@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3006,6 +3007,42 @@ class TKm extends T {
   String pUploadedCount(String total, String done) {
     return 'បានផ្ទុកឡើង $done/$total';
   }
+
+  @override
+  String get apPgPickMethod => 'សូមជ្រើសរើសវិធីបង់ប្រាក់';
+
+  @override
+  String get apPgConfirmTitle => 'ពិនិត្យការបង់ប្រាក់';
+
+  @override
+  String get apPgConfirmBtn => 'បញ្ជាក់ការបង់ប្រាក់';
+
+  @override
+  String get apPgProcessing => 'កំពុងដំណើរការការបង់ប្រាក់…';
+
+  @override
+  String get apPgDoneTitle => 'ការបង់ប្រាក់បានសម្រេច';
+
+  @override
+  String get apPgReceiptTitle => 'បង្កាន់ដៃអេឡិកត្រូនិក';
+
+  @override
+  String get apPgReceiptApproval => 'លេខអនុម័ត';
+
+  @override
+  String get apPgReceiptMethod => 'វិធីសាស្ត្រ';
+
+  @override
+  String get apPgReceiptAmount => 'ចំនួនទឹកប្រាក់';
+
+  @override
+  String get apPgReceiptDone => 'រួចរាល់';
+
+  @override
+  String get apPgVaIssued => 'បានចេញគណនីនិម្មិត (គណនីសាកល្បង)';
+
+  @override
+  String get apPgTestBadge => 'សាកល្បង';
 
   @override
   String get cIntPayout => 'ការទូទាត់ដៃគូ';

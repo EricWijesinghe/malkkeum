@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2993,6 +2994,42 @@ class TTh extends T {
   String pUploadedCount(String total, String done) {
     return 'อัปโหลดแล้ว $done/$total';
   }
+
+  @override
+  String get apPgPickMethod => 'เลือกวิธีการชำระเงิน';
+
+  @override
+  String get apPgConfirmTitle => 'ตรวจสอบการชำระเงิน';
+
+  @override
+  String get apPgConfirmBtn => 'ยืนยันการชำระเงิน';
+
+  @override
+  String get apPgProcessing => 'กำลังดำเนินการชำระเงิน…';
+
+  @override
+  String get apPgDoneTitle => 'ชำระเงินสำเร็จ';
+
+  @override
+  String get apPgReceiptTitle => 'ใบเสร็จรับเงินอิเล็กทรอนิกส์';
+
+  @override
+  String get apPgReceiptApproval => 'หมายเลขอนุมัติ';
+
+  @override
+  String get apPgReceiptMethod => 'วิธีการ';
+
+  @override
+  String get apPgReceiptAmount => 'จำนวนเงิน';
+
+  @override
+  String get apPgReceiptDone => 'เสร็จสิ้น';
+
+  @override
+  String get apPgVaIssued => 'ออกบัญชีเสมือนแล้ว (บัญชีทดสอบ)';
+
+  @override
+  String get apPgTestBadge => 'ทดสอบ';
 
   @override
   String get cIntPayout => 'การจ่ายเงินพาร์ทเนอร์';
