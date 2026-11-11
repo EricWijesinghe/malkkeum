@@ -160,7 +160,8 @@ function Step-Api {
 function Step-Console {
   Prep-Flutter
   Push-Location (Join-Path $root 'app\apps\console')
-  try { Slot @('flutter', 'build', 'web', '--release', "--dart-define=API_BASE=http://$($script:ApiHost):8080") } finally { Pop-Location }
+  # No API_BASE: served on localhost, the console calls 127.0.0.1:8080 by itself (an empty host once baked http://:8080).
+  try { Slot @('flutter', 'build', 'web', '--release') } finally { Pop-Location }
   Reset-Dir "$Demo\console"
   Copy-Item -Path (Join-Path $root 'app\apps\console\build\web\*') -Destination "$Demo\console" -Recurse -Force
   Set-Content -LiteralPath "$Demo\api-address.txt" -Value $script:ApiHost
