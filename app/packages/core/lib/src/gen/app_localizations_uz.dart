@@ -2995,6 +2995,122 @@ class TUz extends T {
       'Ma\'lumotlaringizni yuklab bo\'lmadi. Keyinroq qayta urinib ko\'ring.';
 
   @override
+  String get safetyEmergency => 'Favqulodda aloqa';
+
+  @override
+  String get emergencyPolice => '112 Politsiya';
+
+  @override
+  String get emergencyFire => '119 Yong\'in va qutqaruv';
+
+  @override
+  String get emergencyShop => 'Mijozlar xizmati';
+
+  @override
+  String get caseReportAction => 'Muammo haqida xabar berish';
+
+  @override
+  String get caseReportTitle => 'Nima bo\'ldi?';
+
+  @override
+  String get caseKindDamage => 'Shikastlanish';
+
+  @override
+  String get caseKindLoss => 'Yo\'qolish';
+
+  @override
+  String get caseKindComplaint => 'Shikoyat';
+
+  @override
+  String get caseKindNoShow => 'Tozalovchi kelmadi';
+
+  @override
+  String get caseKindSafety => 'Xavfsizlik masalasi';
+
+  @override
+  String get caseKindPayment => 'To\'lov nizosi';
+
+  @override
+  String get caseSummaryHint => 'Nima bo\'lganini yozing (300 belgigacha)';
+
+  @override
+  String get caseSubmit => 'Yuborish';
+
+  @override
+  String get caseSubmitted =>
+      'Qabul qilindi. Jamoa 24 soat ichida javob beradi.';
+
+  @override
+  String get caseFailed => 'Yuborib bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get checkInAction => 'Kelganini qayd etish';
+
+  @override
+  String get checkOutAction => 'Ketganini qayd etish';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Kelgan vaqt $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Ketgan vaqt $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Kirish kodini ko\'rsatish';
+
+  @override
+  String get entryCodeTitle => 'Kirish kodi';
+
+  @override
+  String get entryCodeNotToday => 'Faqat tashrif kunida ko\'rinadi';
+
+  @override
+  String get entryCodeEmpty => 'Kirish kodi kiritilmagan';
+
+  @override
+  String get actionFailed => 'Bajarib bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get consoleCasesTitle => 'Holatlar navbati';
+
+  @override
+  String get consoleCasesEmpty => 'Ochiq holatlar yo\'q';
+
+  @override
+  String get caseOverdue => 'Muddati o\'tgan';
+
+  @override
+  String get caseStatusOpen => 'Ochiq';
+
+  @override
+  String get caseStatusInvestigating => 'Tekshirilmoqda';
+
+  @override
+  String get caseStatusResolved => 'Hal qilindi';
+
+  @override
+  String get caseStatusRejected => 'Rad etildi';
+
+  @override
+  String get caseReassign => 'Hamkorni qayta tayinlash';
+
+  @override
+  String get caseRefund => 'Qaytarish';
+
+  @override
+  String get caseHold => 'To\'lovni to\'xtatish';
+
+  @override
+  String get caseNoteHint => 'Ichki eslatma';
+
+  @override
+  String get caseSave => 'Saqlash';
+
+  @override
   String get cSetup => 'Sozlash';
 
   @override

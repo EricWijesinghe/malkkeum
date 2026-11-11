@@ -18,12 +18,14 @@ pub mod integrations;
 pub mod lifecycle;
 pub mod metrics;
 pub mod openapi;
+pub mod noshow;
 pub mod ops;
 pub mod ops_alerts;
 pub mod payout;
 pub mod payout_sync;
 pub mod privacy;
 pub mod retention;
+pub mod safety;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
@@ -67,6 +69,10 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     sqlx::migrate!("../../migrations").run(&db).await?;
     seed::run(&db, &config).await?;
+    let moved = safety::encrypt_legacy_codes(&db, &config.data_key).await?;
+    if moved > 0 {
+        tracing::warn!(moved, "entry codes moved into encrypted storage");
+    }
     routes::setup::ensure_setup_code(&db, config.setup_code.as_deref()).await?;
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     if config.dev_mode {
@@ -81,6 +87,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         ops_alerts::spawn(state.clone()),
         payout_sync::spawn(state.clone()),
         retention::spawn(state.clone()),
+        noshow::spawn(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;

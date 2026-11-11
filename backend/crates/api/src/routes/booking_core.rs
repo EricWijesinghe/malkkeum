@@ -4,8 +4,10 @@
 
 use super::{bookings::BookingRow, catalog::load_service, chat, growth};
 use crate::{
+    crypto,
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
+    safety::take_entry,
     state::AppState,
     util::{KST_TODAY, best_effort, lock_and_count_slot, sanitize_notes, today_kst},
 };
@@ -147,11 +149,14 @@ pub async fn next_number(conn: &mut PgConnection) -> ApiResult<String> {
 
 /// Inserts a confirmed booking whose full price is paid, and marks its coupon used.
 /// Returns the booking number.
-pub async fn insert_paid(conn: &mut PgConnection, id: Uuid, user: Uuid, prep: &Prepared, b: &BookingBody, price: &PriceBreakdown) -> ApiResult<String> {
+/// The entry code is encrypted with `key` and never stored in `visit_notes`.
+pub async fn insert_paid(conn: &mut PgConnection, key: &[u8; 32], id: Uuid, user: Uuid, prep: &Prepared, b: &BookingBody, price: &PriceBreakdown) -> ApiResult<String> {
     let number = next_number(&mut *conn).await?;
+    let mut notes = prep.notes.clone();
+    let access_code = take_entry(&mut notes).map(|code| crypto::encrypt(key, &code));
     sqlx::query(
-        "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15)",
+        "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes, access_code_enc)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15,$16)",
     )
     .bind(id)
     .bind(&number)
@@ -167,7 +172,8 @@ pub async fn insert_paid(conn: &mut PgConnection, id: Uuid, user: Uuid, prep: &P
     .bind(price.discount.0)
     .bind(price.total.0)
     .bind(b.coupon_id)
-    .bind(&prep.notes)
+    .bind(&notes)
+    .bind(access_code)
     .execute(&mut *conn)
     .await?;
     if let Some(cid) = b.coupon_id {

@@ -63,6 +63,7 @@ pub fn test_config() -> Config {
         ai_chat_retention_days: 180,
         upload_orphan_days: 30,
         metrics_token: None,
+        noshow_grace_minutes: 30,
     }
 }
 

@@ -2964,6 +2964,121 @@ class TTh extends T {
       'ไม่สามารถโหลดข้อมูลของคุณได้ กรุณาลองใหม่อีกครั้งภายหลัง';
 
   @override
+  String get safetyEmergency => 'ติดต่อฉุกเฉิน';
+
+  @override
+  String get emergencyPolice => '112 ตำรวจ';
+
+  @override
+  String get emergencyFire => '119 ดับเพลิงและกู้ภัย';
+
+  @override
+  String get emergencyShop => 'ฝ่ายบริการลูกค้า';
+
+  @override
+  String get caseReportAction => 'แจ้งปัญหา';
+
+  @override
+  String get caseReportTitle => 'เกิดอะไรขึ้น?';
+
+  @override
+  String get caseKindDamage => 'ความเสียหาย';
+
+  @override
+  String get caseKindLoss => 'สูญหาย';
+
+  @override
+  String get caseKindComplaint => 'ร้องเรียน';
+
+  @override
+  String get caseKindNoShow => 'ทีมทำความสะอาดไม่มา';
+
+  @override
+  String get caseKindSafety => 'ปัญหาความปลอดภัย';
+
+  @override
+  String get caseKindPayment => 'ข้อพิพาทการชำระเงิน';
+
+  @override
+  String get caseSummaryHint => 'อธิบายสิ่งที่เกิดขึ้น (ไม่เกิน 300 ตัวอักษร)';
+
+  @override
+  String get caseSubmit => 'ส่ง';
+
+  @override
+  String get caseSubmitted => 'รับเรื่องแล้ว ทีมงานจะตอบกลับภายใน 24 ชั่วโมง';
+
+  @override
+  String get caseFailed => 'ส่งไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get checkInAction => 'เช็คอิน';
+
+  @override
+  String get checkOutAction => 'เช็คเอาต์';
+
+  @override
+  String checkedInAt(String time) {
+    return 'มาถึง $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ออกเมื่อ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'แสดงรหัสเข้าอาคาร';
+
+  @override
+  String get entryCodeTitle => 'รหัสเข้าอาคาร';
+
+  @override
+  String get entryCodeNotToday => 'ดูได้เฉพาะวันที่เข้าบริการ';
+
+  @override
+  String get entryCodeEmpty => 'ยังไม่มีรหัสเข้าอาคาร';
+
+  @override
+  String get actionFailed => 'ดำเนินการไม่สำเร็จ ลองอีกครั้ง';
+
+  @override
+  String get consoleCasesTitle => 'คิวเคส';
+
+  @override
+  String get consoleCasesEmpty => 'ไม่มีเคสที่เปิดอยู่';
+
+  @override
+  String get caseOverdue => 'เกินกำหนด';
+
+  @override
+  String get caseStatusOpen => 'เปิดแล้ว';
+
+  @override
+  String get caseStatusInvestigating => 'กำลังตรวจสอบ';
+
+  @override
+  String get caseStatusResolved => 'แก้ไขแล้ว';
+
+  @override
+  String get caseStatusRejected => 'ปฏิเสธ';
+
+  @override
+  String get caseReassign => 'มอบหมายพาร์ทเนอร์ใหม่';
+
+  @override
+  String get caseRefund => 'คืนเงิน';
+
+  @override
+  String get caseHold => 'พักการโอนเงิน';
+
+  @override
+  String get caseNoteHint => 'บันทึกภายใน';
+
+  @override
+  String get caseSave => 'บันทึก';
+
+  @override
   String get cSetup => 'ตั้งค่า';
 
   @override

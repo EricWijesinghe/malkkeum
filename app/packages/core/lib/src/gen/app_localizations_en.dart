@@ -2963,6 +2963,121 @@ class TEn extends T {
       'Could not load your data. Please try again later.';
 
   @override
+  String get safetyEmergency => 'Emergency contacts';
+
+  @override
+  String get emergencyPolice => '112 Police';
+
+  @override
+  String get emergencyFire => '119 Fire & rescue';
+
+  @override
+  String get emergencyShop => 'Support';
+
+  @override
+  String get caseReportAction => 'Report a problem';
+
+  @override
+  String get caseReportTitle => 'What happened?';
+
+  @override
+  String get caseKindDamage => 'Damage';
+
+  @override
+  String get caseKindLoss => 'Loss';
+
+  @override
+  String get caseKindComplaint => 'Complaint';
+
+  @override
+  String get caseKindNoShow => 'Cleaner did not arrive';
+
+  @override
+  String get caseKindSafety => 'Safety concern';
+
+  @override
+  String get caseKindPayment => 'Payment dispute';
+
+  @override
+  String get caseSummaryHint => 'Describe what happened (up to 300 characters)';
+
+  @override
+  String get caseSubmit => 'Submit';
+
+  @override
+  String get caseSubmitted => 'Received. Our team will reply within 24 hours.';
+
+  @override
+  String get caseFailed => 'Couldn\'t send it. Try again.';
+
+  @override
+  String get checkInAction => 'Check in';
+
+  @override
+  String get checkOutAction => 'Check out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Arrived $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Left $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Show entry code';
+
+  @override
+  String get entryCodeTitle => 'Entry code';
+
+  @override
+  String get entryCodeNotToday => 'Available on the visit day only';
+
+  @override
+  String get entryCodeEmpty => 'No entry code on file';
+
+  @override
+  String get actionFailed => 'Couldn\'t complete that. Try again.';
+
+  @override
+  String get consoleCasesTitle => 'Case queue';
+
+  @override
+  String get consoleCasesEmpty => 'No open cases';
+
+  @override
+  String get caseOverdue => 'Overdue';
+
+  @override
+  String get caseStatusOpen => 'Open';
+
+  @override
+  String get caseStatusInvestigating => 'Investigating';
+
+  @override
+  String get caseStatusResolved => 'Resolved';
+
+  @override
+  String get caseStatusRejected => 'Rejected';
+
+  @override
+  String get caseReassign => 'Reassign partner';
+
+  @override
+  String get caseRefund => 'Refund';
+
+  @override
+  String get caseHold => 'Hold settlement';
+
+  @override
+  String get caseNoteHint => 'Internal note';
+
+  @override
+  String get caseSave => 'Save';
+
+  @override
   String get cSetup => 'Setup';
 
   @override

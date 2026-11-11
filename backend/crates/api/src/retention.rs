@@ -8,7 +8,7 @@ use tokio::task::JoinHandle;
 
 const EVERY: Duration = Duration::from_secs(60 * 60);
 /// Tables that can hold a reference to an upload URL. A file named in any of them is not orphaned.
-const UPLOAD_REFERENCE_TABLES: [&str; 4] = ["bookings", "chat_messages", "pros", "users"];
+const UPLOAD_REFERENCE_TABLES: [&str; 5] = ["bookings", "chat_messages", "pros", "users", "cases"];
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct Report {
@@ -16,6 +16,7 @@ pub struct Report {
     pub refresh_tokens: u64,
     pub ai_messages: u64,
     pub uploads: u64,
+    pub entry_codes: u64,
 }
 
 pub fn spawn(state: AppState) -> JoinHandle<()> {
@@ -48,8 +49,9 @@ pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::err
     .execute(db)
     .await?
     .rows_affected();
+    let entry_codes = crate::safety::purge_codes(db).await?;
     let uploads = purge_orphan_uploads(db, &cfg.upload_dir, cfg.upload_orphan_days).await?;
-    Ok(Report { otp_codes, refresh_tokens, ai_messages, uploads })
+    Ok(Report { otp_codes, refresh_tokens, ai_messages, uploads, entry_codes })
 }
 
 /// Deletes uploads older than `days` that no record refers to. The file goes first, then its row, so a

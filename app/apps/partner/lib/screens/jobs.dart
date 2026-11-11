@@ -9,6 +9,7 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'chat.dart';
 import 'complete.dart';
+import 'site_actions.dart';
 
 String slotLabel(BuildContext context, int hour, bool isQuote) => isQuote
     ? (hour < 12 ? context.t.morning : context.t.afternoon)
@@ -388,6 +389,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     return ListView(
       padding: const EdgeInsets.all(Space.gutter),
       children: [
+        if (committed) ...[SiteActionsCard(raw: b, act: _act), const SizedBox(height: Space.sm)],
         Tilt3D(
           child: AppCard(
             glow: hue.tone,

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'cases.dart';
 import 'review_reports.dart';
 
 class GrowthSettings extends StatefulWidget {
@@ -178,6 +179,14 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                 fetch: () async => (await context.api.get('/admin/reviews/reports') as List).cast<Json>(),
                 decide: (id, action) async => context.api.put('/admin/reviews/$id/decision', {'action': action}),
                 setAuthorBlocked: (id, blocked) async => context.api.put('/admin/reviews/$id/author', {'blocked': blocked}),
+              ),
+              const Divider(height: Space.xxl),
+              CaseQueue(
+                fetch: () async => (await context.api.get('/admin/cases') as List).cast<Json>(),
+                detail: (id) async => await context.api.get('/admin/cases/$id') as Json,
+                update: (id, body) async => await context.api.put('/admin/cases/$id', body) as Json,
+                reassign: (id, body) async => await context.api.post('/admin/cases/$id/reassign', body) as Json,
+                isAdmin: context.console.isAdmin,
               ),
               const Divider(height: Space.xxl),
               Text(t.reviewsModerationTitle, style: context.text.titleMedium),

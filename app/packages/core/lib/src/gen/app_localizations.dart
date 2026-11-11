@@ -5616,6 +5616,228 @@ abstract class T {
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
 
+  /// No description provided for @safetyEmergency.
+  ///
+  /// In ko, this message translates to:
+  /// **'긴급 연락처'**
+  String get safetyEmergency;
+
+  /// No description provided for @emergencyPolice.
+  ///
+  /// In ko, this message translates to:
+  /// **'112 경찰·응급'**
+  String get emergencyPolice;
+
+  /// No description provided for @emergencyFire.
+  ///
+  /// In ko, this message translates to:
+  /// **'119 소방·구급'**
+  String get emergencyFire;
+
+  /// No description provided for @emergencyShop.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객센터'**
+  String get emergencyShop;
+
+  /// No description provided for @caseReportAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'문제 신고하기'**
+  String get caseReportAction;
+
+  /// No description provided for @caseReportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 문제가 있었나요?'**
+  String get caseReportTitle;
+
+  /// No description provided for @caseKindDamage.
+  ///
+  /// In ko, this message translates to:
+  /// **'파손'**
+  String get caseKindDamage;
+
+  /// No description provided for @caseKindLoss.
+  ///
+  /// In ko, this message translates to:
+  /// **'분실'**
+  String get caseKindLoss;
+
+  /// No description provided for @caseKindComplaint.
+  ///
+  /// In ko, this message translates to:
+  /// **'불만·서비스 문제'**
+  String get caseKindComplaint;
+
+  /// No description provided for @caseKindNoShow.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소팀이 오지 않았어요'**
+  String get caseKindNoShow;
+
+  /// No description provided for @caseKindSafety.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 문제'**
+  String get caseKindSafety;
+
+  /// No description provided for @caseKindPayment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 이의'**
+  String get caseKindPayment;
+
+  /// No description provided for @caseSummaryHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'자세히 적어 주세요 (300자 이내)'**
+  String get caseSummaryHint;
+
+  /// No description provided for @caseSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수하기'**
+  String get caseSubmit;
+
+  /// No description provided for @caseSubmitted.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수했어요. 담당자가 24시간 안에 확인할게요.'**
+  String get caseSubmitted;
+
+  /// No description provided for @caseFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수하지 못했어요. 다시 시도해 주세요.'**
+  String get caseFailed;
+
+  /// No description provided for @checkInAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 체크인'**
+  String get checkInAction;
+
+  /// No description provided for @checkOutAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 완료 체크아웃'**
+  String get checkOutAction;
+
+  /// No description provided for @checkedInAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 {time}'**
+  String checkedInAt(String time);
+
+  /// No description provided for @checkedOutAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료 {time}'**
+  String checkedOutAt(String time);
+
+  /// No description provided for @entryCodeAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'출입 비밀번호 보기'**
+  String get entryCodeAction;
+
+  /// No description provided for @entryCodeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'출입 비밀번호'**
+  String get entryCodeTitle;
+
+  /// No description provided for @entryCodeNotToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 당일에만 볼 수 있어요'**
+  String get entryCodeNotToday;
+
+  /// No description provided for @entryCodeEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 비밀번호가 없어요'**
+  String get entryCodeEmpty;
+
+  /// No description provided for @actionFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 다시 시도해 주세요.'**
+  String get actionFailed;
+
+  /// No description provided for @consoleCasesTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 접수함'**
+  String get consoleCasesTitle;
+
+  /// No description provided for @consoleCasesEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'열린 사건이 없어요'**
+  String get consoleCasesEmpty;
+
+  /// No description provided for @caseOverdue.
+  ///
+  /// In ko, this message translates to:
+  /// **'기한 초과'**
+  String get caseOverdue;
+
+  /// No description provided for @caseStatusOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'접수'**
+  String get caseStatusOpen;
+
+  /// No description provided for @caseStatusInvestigating.
+  ///
+  /// In ko, this message translates to:
+  /// **'조사 중'**
+  String get caseStatusInvestigating;
+
+  /// No description provided for @caseStatusResolved.
+  ///
+  /// In ko, this message translates to:
+  /// **'해결'**
+  String get caseStatusResolved;
+
+  /// No description provided for @caseStatusRejected.
+  ///
+  /// In ko, this message translates to:
+  /// **'기각'**
+  String get caseStatusRejected;
+
+  /// No description provided for @caseReassign.
+  ///
+  /// In ko, this message translates to:
+  /// **'기사 재배정'**
+  String get caseReassign;
+
+  /// No description provided for @caseRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불'**
+  String get caseRefund;
+
+  /// No description provided for @caseHold.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 보류'**
+  String get caseHold;
+
+  /// No description provided for @caseNoteHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'내부 메모'**
+  String get caseNoteHint;
+
+  /// No description provided for @caseSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get caseSave;
+
   /// No description provided for @cSetup.
   ///
   /// In ko, this message translates to:

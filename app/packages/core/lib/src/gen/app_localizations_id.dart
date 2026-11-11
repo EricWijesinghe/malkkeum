@@ -2982,6 +2982,122 @@ class TId extends T {
       'Tidak dapat memuat data Anda. Silakan coba lagi nanti.';
 
   @override
+  String get safetyEmergency => 'Kontak darurat';
+
+  @override
+  String get emergencyPolice => '112 Polisi';
+
+  @override
+  String get emergencyFire => '119 Pemadam & penyelamatan';
+
+  @override
+  String get emergencyShop => 'Layanan pelanggan';
+
+  @override
+  String get caseReportAction => 'Laporkan masalah';
+
+  @override
+  String get caseReportTitle => 'Apa yang terjadi?';
+
+  @override
+  String get caseKindDamage => 'Kerusakan';
+
+  @override
+  String get caseKindLoss => 'Kehilangan';
+
+  @override
+  String get caseKindComplaint => 'Keluhan';
+
+  @override
+  String get caseKindNoShow => 'Pembersih tidak datang';
+
+  @override
+  String get caseKindSafety => 'Masalah keselamatan';
+
+  @override
+  String get caseKindPayment => 'Sengketa pembayaran';
+
+  @override
+  String get caseSummaryHint =>
+      'Jelaskan apa yang terjadi (maks. 300 karakter)';
+
+  @override
+  String get caseSubmit => 'Kirim';
+
+  @override
+  String get caseSubmitted => 'Diterima. Tim kami akan membalas dalam 24 jam.';
+
+  @override
+  String get caseFailed => 'Gagal dikirim. Coba lagi.';
+
+  @override
+  String get checkInAction => 'Check-in';
+
+  @override
+  String get checkOutAction => 'Check-out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Tiba $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Pergi $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Tampilkan kode masuk';
+
+  @override
+  String get entryCodeTitle => 'Kode masuk';
+
+  @override
+  String get entryCodeNotToday => 'Hanya bisa dilihat pada hari kunjungan';
+
+  @override
+  String get entryCodeEmpty => 'Belum ada kode masuk';
+
+  @override
+  String get actionFailed => 'Tidak dapat diselesaikan. Coba lagi.';
+
+  @override
+  String get consoleCasesTitle => 'Antrean kasus';
+
+  @override
+  String get consoleCasesEmpty => 'Tidak ada kasus terbuka';
+
+  @override
+  String get caseOverdue => 'Terlambat';
+
+  @override
+  String get caseStatusOpen => 'Baru';
+
+  @override
+  String get caseStatusInvestigating => 'Diselidiki';
+
+  @override
+  String get caseStatusResolved => 'Selesai';
+
+  @override
+  String get caseStatusRejected => 'Ditolak';
+
+  @override
+  String get caseReassign => 'Tugaskan ulang mitra';
+
+  @override
+  String get caseRefund => 'Pengembalian dana';
+
+  @override
+  String get caseHold => 'Tahan penyelesaian';
+
+  @override
+  String get caseNoteHint => 'Catatan internal';
+
+  @override
+  String get caseSave => 'Simpan';
+
+  @override
   String get cSetup => 'Pengaturan';
 
   @override

@@ -1393,6 +1393,57 @@
  "pvCopy": "복사",
  "pvCopied": "복사했어요",
  "pvExportFailed": "데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+ "safetyEmergency": "긴급 연락처",
+ "emergencyPolice": "112 경찰·응급",
+ "emergencyFire": "119 소방·구급",
+ "emergencyShop": "고객센터",
+ "caseReportAction": "문제 신고하기",
+ "caseReportTitle": "어떤 문제가 있었나요?",
+ "caseKindDamage": "파손",
+ "caseKindLoss": "분실",
+ "caseKindComplaint": "불만·서비스 문제",
+ "caseKindNoShow": "청소팀이 오지 않았어요",
+ "caseKindSafety": "안전 문제",
+ "caseKindPayment": "결제 이의",
+ "caseSummaryHint": "자세히 적어 주세요 (300자 이내)",
+ "caseSubmit": "접수하기",
+ "caseSubmitted": "접수했어요. 담당자가 24시간 안에 확인할게요.",
+ "caseFailed": "접수하지 못했어요. 다시 시도해 주세요.",
+ "checkInAction": "도착 체크인",
+ "checkOutAction": "작업 완료 체크아웃",
+ "checkedInAt": "도착 {time}",
+ "@checkedInAt": {
+  "placeholders": {
+   "time": {
+    "type": "String"
+   }
+  }
+ },
+ "checkedOutAt": "종료 {time}",
+ "@checkedOutAt": {
+  "placeholders": {
+   "time": {
+    "type": "String"
+   }
+  }
+ },
+ "entryCodeAction": "출입 비밀번호 보기",
+ "entryCodeTitle": "출입 비밀번호",
+ "entryCodeNotToday": "방문 당일에만 볼 수 있어요",
+ "entryCodeEmpty": "등록된 비밀번호가 없어요",
+ "actionFailed": "처리하지 못했어요. 다시 시도해 주세요.",
+ "consoleCasesTitle": "사건 접수함",
+ "consoleCasesEmpty": "열린 사건이 없어요",
+ "caseOverdue": "기한 초과",
+ "caseStatusOpen": "접수",
+ "caseStatusInvestigating": "조사 중",
+ "caseStatusResolved": "해결",
+ "caseStatusRejected": "기각",
+ "caseReassign": "기사 재배정",
+ "caseRefund": "환불",
+ "caseHold": "정산 보류",
+ "caseNoteHint": "내부 메모",
+ "caseSave": "저장",
  "cSetup": "설정",
  "cSetupTitle": "서비스 시작 준비",
  "cSetupProgress": "{done}/{total} 완료",

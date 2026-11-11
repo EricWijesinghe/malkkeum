@@ -133,6 +133,10 @@ class Booking {
   List<String> get afterPhotos => (((j['photos'] as Json?)?['after'] as List?) ?? const []).cast<String>();
   bool get reviewed => j['reviewed'] as bool? ?? false;
   DateTime get createdAt => _date(j['created_at'])!;
+  DateTime? get checkedInAt => _date(j['checked_in_at']);
+  DateTime? get checkedOutAt => _date(j['checked_out_at']);
+  bool get entryCodeSet => j['entry_code_set'] as bool? ?? false;
+  List<dynamic> get emergency => (j['emergency'] as List?) ?? const [];
   DateTime? get completedAt => _date(j['completed_at']);
   DateTime get visitStart => DateTime(visitDate.year, visitDate.month, visitDate.day, startHour);
   bool get isActive => status >= 0 && status < 3;

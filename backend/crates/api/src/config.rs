@@ -55,6 +55,8 @@ pub struct Config {
     pub upload_orphan_days: u32,
     /// Bearer token for `GET /metrics`. None: only loopback clients may scrape.
     pub metrics_token: Option<String>,
+    /// Minutes after the arrival window starts before an unchecked-in partner counts as a no-show.
+    pub noshow_grace_minutes: u32,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -263,6 +265,7 @@ impl Config {
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
             metrics_token: metrics_token()?,
+            noshow_grace_minutes: number("NOSHOW_GRACE_MINUTES", 30, 1)?,
         })
     }
 }

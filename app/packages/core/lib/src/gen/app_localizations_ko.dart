@@ -2896,6 +2896,121 @@ class TKo extends T {
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
 
   @override
+  String get safetyEmergency => '긴급 연락처';
+
+  @override
+  String get emergencyPolice => '112 경찰·응급';
+
+  @override
+  String get emergencyFire => '119 소방·구급';
+
+  @override
+  String get emergencyShop => '고객센터';
+
+  @override
+  String get caseReportAction => '문제 신고하기';
+
+  @override
+  String get caseReportTitle => '어떤 문제가 있었나요?';
+
+  @override
+  String get caseKindDamage => '파손';
+
+  @override
+  String get caseKindLoss => '분실';
+
+  @override
+  String get caseKindComplaint => '불만·서비스 문제';
+
+  @override
+  String get caseKindNoShow => '청소팀이 오지 않았어요';
+
+  @override
+  String get caseKindSafety => '안전 문제';
+
+  @override
+  String get caseKindPayment => '결제 이의';
+
+  @override
+  String get caseSummaryHint => '자세히 적어 주세요 (300자 이내)';
+
+  @override
+  String get caseSubmit => '접수하기';
+
+  @override
+  String get caseSubmitted => '접수했어요. 담당자가 24시간 안에 확인할게요.';
+
+  @override
+  String get caseFailed => '접수하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get checkInAction => '도착 체크인';
+
+  @override
+  String get checkOutAction => '작업 완료 체크아웃';
+
+  @override
+  String checkedInAt(String time) {
+    return '도착 $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '종료 $time';
+  }
+
+  @override
+  String get entryCodeAction => '출입 비밀번호 보기';
+
+  @override
+  String get entryCodeTitle => '출입 비밀번호';
+
+  @override
+  String get entryCodeNotToday => '방문 당일에만 볼 수 있어요';
+
+  @override
+  String get entryCodeEmpty => '등록된 비밀번호가 없어요';
+
+  @override
+  String get actionFailed => '처리하지 못했어요. 다시 시도해 주세요.';
+
+  @override
+  String get consoleCasesTitle => '사건 접수함';
+
+  @override
+  String get consoleCasesEmpty => '열린 사건이 없어요';
+
+  @override
+  String get caseOverdue => '기한 초과';
+
+  @override
+  String get caseStatusOpen => '접수';
+
+  @override
+  String get caseStatusInvestigating => '조사 중';
+
+  @override
+  String get caseStatusResolved => '해결';
+
+  @override
+  String get caseStatusRejected => '기각';
+
+  @override
+  String get caseReassign => '기사 재배정';
+
+  @override
+  String get caseRefund => '환불';
+
+  @override
+  String get caseHold => '정산 보류';
+
+  @override
+  String get caseNoteHint => '내부 메모';
+
+  @override
+  String get caseSave => '저장';
+
+  @override
   String get cSetup => '설정';
 
   @override

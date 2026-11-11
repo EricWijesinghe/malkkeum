@@ -4,6 +4,7 @@ mod admin_content;
 mod auth;
 mod booking_core;
 mod bookings;
+pub mod cases;
 mod catalog;
 pub(crate) mod chat;
 mod checkout_policy;
@@ -17,6 +18,7 @@ mod member;
 mod ops;
 mod partner;
 mod partner_jobs;
+pub mod site;
 pub(crate) mod payments;
 pub mod setup;
 pub mod uploads;
@@ -64,6 +66,7 @@ pub fn router(state: AppState) -> Router {
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(bookings::routes())
+        .merge(cases::customer_routes())
         .merge(chat::routes())
         .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
@@ -88,9 +91,11 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
-                .merge(ops::admin_routes()),
+                .merge(ops::admin_routes())
+                .merge(cases::admin_routes())
+                .merge(site::admin_routes()),
         )
-        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))
+        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()).merge(cases::partner_routes()).merge(site::partner_routes()))
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler))
         .route("/openapi.json", get(crate::openapi::spec))

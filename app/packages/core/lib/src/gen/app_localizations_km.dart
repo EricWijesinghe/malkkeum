@@ -2977,6 +2977,123 @@ class TKm extends T {
       'មិនអាចផ្ទុកទិន្នន័យរបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។';
 
   @override
+  String get safetyEmergency => 'ទំនាក់ទំនងបន្ទាន់';
+
+  @override
+  String get emergencyPolice => '112 ប៉ូលិស';
+
+  @override
+  String get emergencyFire => '119 អគ្គិភ័យ និងសង្គ្រោះ';
+
+  @override
+  String get emergencyShop => 'សេវាអតិថិជន';
+
+  @override
+  String get caseReportAction => 'រាយការណ៍បញ្ហា';
+
+  @override
+  String get caseReportTitle => 'តើមានអ្វីកើតឡើង?';
+
+  @override
+  String get caseKindDamage => 'ខូចខាត';
+
+  @override
+  String get caseKindLoss => 'បាត់បង់';
+
+  @override
+  String get caseKindComplaint => 'បណ្តឹងរដ្ឋ';
+
+  @override
+  String get caseKindNoShow => 'អ្នកសម្អាតមិនមកដល់';
+
+  @override
+  String get caseKindSafety => 'បញ្ហាសុវត្ថិភាព';
+
+  @override
+  String get caseKindPayment => 'ជម្លោះការបង់ប្រាក់';
+
+  @override
+  String get caseSummaryHint =>
+      'ពិពណ៌នាអំពីអ្វីដែលបានកើតឡើង (រហូតដល់ 300 តួអក្សរ)';
+
+  @override
+  String get caseSubmit => 'ដាក់ស្នើ';
+
+  @override
+  String get caseSubmitted =>
+      'បានទទួល។ ក្រុមការងារនឹងឆ្លើយតបក្នុងរយៈពេល 24 ម៉ោង។';
+
+  @override
+  String get caseFailed => 'មិនអាចផ្ញើបានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get checkInAction => 'ចុះឈ្មោះចូល';
+
+  @override
+  String get checkOutAction => 'ចុះឈ្មោះចេញ';
+
+  @override
+  String checkedInAt(String time) {
+    return 'មកដល់ $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ចាកចេញ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'បង្ហាញលេខកូដចូល';
+
+  @override
+  String get entryCodeTitle => 'លេខកូដចូល';
+
+  @override
+  String get entryCodeNotToday => 'អាចមើលបានតែនៅថ្ងៃទៅដល់ប៉ុណ្ណោះ';
+
+  @override
+  String get entryCodeEmpty => 'មិនមានលេខកូដចូលទេ';
+
+  @override
+  String get actionFailed => 'មិនអាចបញ្ចប់បានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get consoleCasesTitle => 'បញ្ជីករណី';
+
+  @override
+  String get consoleCasesEmpty => 'មិនមានករណីបើកទេ';
+
+  @override
+  String get caseOverdue => 'ហួសកំណត់';
+
+  @override
+  String get caseStatusOpen => 'បើក';
+
+  @override
+  String get caseStatusInvestigating => 'កំពុងស៊ើបអង្កេត';
+
+  @override
+  String get caseStatusResolved => 'បានដោះស្រាយ';
+
+  @override
+  String get caseStatusRejected => 'បានបដិសេធ';
+
+  @override
+  String get caseReassign => 'ផ្ទេរដៃគូឡើងវិញ';
+
+  @override
+  String get caseRefund => 'សងប្រាក់វិញ';
+
+  @override
+  String get caseHold => 'ផ្អាកការទូទាត់';
+
+  @override
+  String get caseNoteHint => 'កំណត់ចំណាំផ្ទៃក្នុង';
+
+  @override
+  String get caseSave => 'រក្សាទុក';
+
+  @override
   String get cSetup => 'ការកំណត់';
 
   @override

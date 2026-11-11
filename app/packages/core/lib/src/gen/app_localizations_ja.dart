@@ -2894,6 +2894,121 @@ class TJa extends T {
   String get pvExportFailed => 'データを読み込めませんでした。しばらくしてから再度お試しください。';
 
   @override
+  String get safetyEmergency => '緊急連絡先';
+
+  @override
+  String get emergencyPolice => '112 警察';
+
+  @override
+  String get emergencyFire => '119 消防・救急';
+
+  @override
+  String get emergencyShop => 'カスタマーサポート';
+
+  @override
+  String get caseReportAction => '問題を報告';
+
+  @override
+  String get caseReportTitle => 'どんな問題がありましたか？';
+
+  @override
+  String get caseKindDamage => '破損';
+
+  @override
+  String get caseKindLoss => '紛失';
+
+  @override
+  String get caseKindComplaint => '苦情';
+
+  @override
+  String get caseKindNoShow => '清掃スタッフが来ませんでした';
+
+  @override
+  String get caseKindSafety => '安全上の問題';
+
+  @override
+  String get caseKindPayment => '決済への異議';
+
+  @override
+  String get caseSummaryHint => '詳しく入力してください（300文字以内）';
+
+  @override
+  String get caseSubmit => '送信する';
+
+  @override
+  String get caseSubmitted => '受け付けました。24時間以内に担当者が確認します。';
+
+  @override
+  String get caseFailed => '送信できませんでした。もう一度お試しください。';
+
+  @override
+  String get checkInAction => '到着チェックイン';
+
+  @override
+  String get checkOutAction => '作業終了チェックアウト';
+
+  @override
+  String checkedInAt(String time) {
+    return '到着 $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '終了 $time';
+  }
+
+  @override
+  String get entryCodeAction => '入館パスワードを表示';
+
+  @override
+  String get entryCodeTitle => '入館パスワード';
+
+  @override
+  String get entryCodeNotToday => '訪問当日のみ表示できます';
+
+  @override
+  String get entryCodeEmpty => '登録された暗証番号はありません';
+
+  @override
+  String get actionFailed => '処理できませんでした。もう一度お試しください。';
+
+  @override
+  String get consoleCasesTitle => '案件キュー';
+
+  @override
+  String get consoleCasesEmpty => '未対応の案件はありません';
+
+  @override
+  String get caseOverdue => '期限切れ';
+
+  @override
+  String get caseStatusOpen => '受付';
+
+  @override
+  String get caseStatusInvestigating => '調査中';
+
+  @override
+  String get caseStatusResolved => '解決';
+
+  @override
+  String get caseStatusRejected => '却下';
+
+  @override
+  String get caseReassign => 'スタッフを再割り当て';
+
+  @override
+  String get caseRefund => '返金';
+
+  @override
+  String get caseHold => '精算を保留';
+
+  @override
+  String get caseNoteHint => '社内メモ';
+
+  @override
+  String get caseSave => '保存';
+
+  @override
   String get cSetup => '設定';
 
   @override

@@ -132,6 +132,27 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             ),
         ]),
       ),
+      if (b.checkedInAt != null) ...[
+        const SizedBox(height: Space.sm),
+        Text(t.checkedInAt(TimeOfDay.fromDateTime(b.checkedInAt!.toLocal()).format(context)), style: context.text.bodySmall),
+      ],
+      const SizedBox(height: Space.sm),
+      EmergencyContactsCard(contacts: b.emergency),
+      if (b.status == 2 || b.status == 3) ...[
+        const SizedBox(height: Space.sm),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.report_problem_outlined),
+          label: Text(t.caseReportAction),
+          onPressed: () async {
+            final sent = await showCaseReport(
+              context,
+              kinds: const ['damage', 'loss', 'complaint', 'no_show', 'safety', 'payment_dispute'],
+              submit: (kind, summary) => context.api.post('/bookings/${b.id}/cases', {'kind': kind, 'summary': summary}),
+            );
+            if (sent && context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.caseSubmitted)));
+          },
+        ),
+      ],
       const SizedBox(height: Space.lg),
       FilledButton.tonalIcon(
         icon: const Icon(Icons.chat_bubble_outline_rounded),

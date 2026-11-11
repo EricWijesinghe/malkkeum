@@ -2979,6 +2979,121 @@ class TSi extends T {
       'ඔබේ දත්ත පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න.';
 
   @override
+  String get safetyEmergency => 'හදිසි සම්බන්ධතා';
+
+  @override
+  String get emergencyPolice => '112 පොලිසිය';
+
+  @override
+  String get emergencyFire => '119 ගින්නෙන් ආරක්ෂාව';
+
+  @override
+  String get emergencyShop => 'පාරිභෝගික සේවාව';
+
+  @override
+  String get caseReportAction => 'ගැටළුවක් වාර්තා කරන්න';
+
+  @override
+  String get caseReportTitle => 'කුමක් සිදුවුණාද?';
+
+  @override
+  String get caseKindDamage => 'හානි';
+
+  @override
+  String get caseKindLoss => 'නැතිවීම';
+
+  @override
+  String get caseKindComplaint => 'පැමිණිල්ල';
+
+  @override
+  String get caseKindNoShow => 'පිරිසිදුකරු පැමිණියේ නැත';
+
+  @override
+  String get caseKindSafety => 'ආරක්ෂක ගැටළුව';
+
+  @override
+  String get caseKindPayment => 'ගෙවීම් ආරවුල';
+
+  @override
+  String get caseSummaryHint => 'සිදුවූ දේ විස්තර කරන්න (අක්ෂර 300 දක්වා)';
+
+  @override
+  String get caseSubmit => 'ඉදිරිපත් කරන්න';
+
+  @override
+  String get caseSubmitted => 'ලැබුණා. කණ්ඩායම පැය 24ක් ඇතුළත පිළිතුරු දෙයි.';
+
+  @override
+  String get caseFailed => 'යැවිය නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get checkInAction => 'පැමිණීම සටහන් කරන්න';
+
+  @override
+  String get checkOutAction => 'ඉවත්වීම සටහන් කරන්න';
+
+  @override
+  String checkedInAt(String time) {
+    return 'පැමිණියේ $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'ඉවත්වූයේ $time';
+  }
+
+  @override
+  String get entryCodeAction => 'ඇතුළත් කේතය පෙන්වන්න';
+
+  @override
+  String get entryCodeTitle => 'ඇතුළත් කේතය';
+
+  @override
+  String get entryCodeNotToday => 'සේවා දිනයේ පමණක් බැලිය හැක';
+
+  @override
+  String get entryCodeEmpty => 'ඇතුළත් කේතයක් නැත';
+
+  @override
+  String get actionFailed => 'සම්පූර්ණ කළ නොහැකි විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get consoleCasesTitle => 'නඩු පෝලිමය';
+
+  @override
+  String get consoleCasesEmpty => 'විවෘත නඩු නැත';
+
+  @override
+  String get caseOverdue => 'කල් ඉක්මවා ඇත';
+
+  @override
+  String get caseStatusOpen => 'විවෘත';
+
+  @override
+  String get caseStatusInvestigating => 'විමර්ශනය වෙමින්';
+
+  @override
+  String get caseStatusResolved => 'විසඳා ඇත';
+
+  @override
+  String get caseStatusRejected => 'ප්‍රතික්ෂේප කළා';
+
+  @override
+  String get caseReassign => 'හවුල්කරු නැවත පවරන්න';
+
+  @override
+  String get caseRefund => 'ආපසු ගෙවීම';
+
+  @override
+  String get caseHold => 'ගෙවීම රඳවන්න';
+
+  @override
+  String get caseNoteHint => 'අභ්‍යන්තර සටහන';
+
+  @override
+  String get caseSave => 'සුරකින්න';
+
+  @override
   String get cSetup => 'සැකසුම';
 
   @override
