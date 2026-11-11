@@ -171,7 +171,7 @@ class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
     setState(() => _busy = true);
     final app = context.appRead;
     try {
-      final b = Booking.fromJson(await app.api.post('/bookings', d.toJson()) as Json);
+      final b = Booking.fromJson(await app.api.post('/bookings', d.toJson(), ApiClient.newIdempotencyKey()) as Json);
       app.bookingsChanged();
       app.loadUnread().ignore();
       if (!mounted) return;
