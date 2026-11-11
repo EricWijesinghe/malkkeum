@@ -1,16 +1,19 @@
 use crate::{
-    auth::{self, Role},
+    auth::{self, Auth, Role},
     error::{ApiError, ApiResult},
     providers::social::{self, SocialUser},
     state::AppState,
 };
 use axum::{Json, Router, extract::State, routing::post};
+use serde_json::{Value, json};
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
-const OTP_TTL_MIN: i64 = 5;
+const OTP_TTL_SECS: i64 = 180;
+/// Minimum gap between code requests for one number (resend cooldown).
+const OTP_RESEND_COOLDOWN_SECS: i64 = 60;
 const OTP_MAX_ATTEMPTS: i32 = 5;
 const OTP_MAX_PER_HOUR: i64 = 5;
 const OTP_GLOBAL_PER_HOUR: i64 = 3_000;
@@ -24,6 +27,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/verify", post(verify_otp))
         .route("/auth/refresh", post(refresh))
         .route("/auth/logout", post(logout))
+        .route("/auth/logout-all", post(logout_all))
         .route("/auth/staff/login", post(staff_login))
         .route("/auth/social", post(social_login))
 }
@@ -61,7 +65,12 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
     let global: i64 = sqlx::query_scalar("SELECT count(*) FROM otp_codes WHERE created_at > now() - interval '1 hour'")
         .fetch_one(&s.db)
         .await?;
-    if recent >= OTP_MAX_PER_HOUR || global >= OTP_GLOBAL_PER_HOUR {
+    let cooling: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM otp_codes WHERE phone = $1 AND created_at > now() - ($2::float8 * interval '1 second'))")
+        .bind(&phone)
+        .bind(OTP_RESEND_COOLDOWN_SECS)
+        .fetch_one(&s.db)
+        .await?;
+    if recent >= OTP_MAX_PER_HOUR || global >= OTP_GLOBAL_PER_HOUR || cooling {
         return Err(ApiError::RateLimited);
     }
     // Store-review demo number: the owner's fixed code, no SMS (reviewers are abroad).
@@ -71,7 +80,7 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
     sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ($1, $2, $3)")
         .bind(&phone)
         .bind(code_hash)
-        .bind(Utc::now() + Duration::minutes(OTP_TTL_MIN))
+        .bind(Utc::now() + Duration::seconds(OTP_TTL_SECS))
         .execute(&s.db)
         .await?;
     if review.is_none() {
@@ -81,7 +90,7 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
             .map_err(|e| ApiError::Internal(e.to_string()))?;
     }
     Ok(Json(OtpSent {
-        expires_in: OTP_TTL_MIN * 60,
+        expires_in: OTP_TTL_SECS,
         dev_code: (s.config.dev_mode && review.is_none()).then_some(code),
     }))
 }
@@ -102,13 +111,15 @@ pub struct Tokens {
     is_new: bool,
 }
 
-async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool) -> ApiResult<Tokens> {
+/// Issues a token pair. A rotation passes its existing `family`; a fresh sign-in starts a new one.
+pub(super) async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool, family: Option<Uuid>) -> ApiResult<Tokens> {
     let (refresh_token, hash) = auth::new_refresh_token();
-    sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at) VALUES ($1, $2, $3, $4)")
+    sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, family_id) VALUES ($1, $2, $3, $4, $5)")
         .bind(hash)
         .bind(id)
         .bind(role.as_str())
         .bind(Utc::now() + Duration::days(auth::REFRESH_TTL_DAYS))
+        .bind(family.unwrap_or_else(Uuid::now_v7))
         .execute(&s.db)
         .await?;
     Ok(Tokens {
@@ -156,7 +167,7 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
             .execute(&s.db)
             .await?;
     }
-    Ok(Json(issue_tokens(&s, id, role, is_new).await?))
+    Ok(Json(issue_tokens(&s, id, role, is_new, None).await?))
 }
 
 /// Owner login wins: a phone that already owns a pro account is never treated as a member login.
@@ -189,7 +200,7 @@ async fn member_login(s: &AppState, member: Uuid) -> ApiResult<Tokens> {
     if r.rows_affected() == 0 {
         return Err(ApiError::Unauthorized);
     }
-    issue_tokens(s, member, Role::Member, false).await
+    issue_tokens(s, member, Role::Member, false, None).await
 }
 
 /// A phone number proven by a login code, used for sign-in and for binding a phone to an account.
@@ -237,17 +248,39 @@ struct RefreshRequest {
 
 async fn refresh(State(s): State<AppState>, Json(req): Json<RefreshRequest>) -> ApiResult<Json<Tokens>> {
     let hash = auth::sha256_hex(req.refresh_token.as_bytes());
-    // Rotation: the old token is revoked atomically as it is used.
-    let row: Option<(Uuid, String)> = sqlx::query_as(
-        "UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1 AND revoked_at IS NULL AND expires_at > now() RETURNING subject, role",
+    // Rotation: the presented token is revoked as it is used, atomically.
+    let row: Option<(Uuid, String, Uuid)> = sqlx::query_as(
+        "UPDATE refresh_tokens SET revoked_at = now(), rotated_at = now()
+         WHERE token_hash = $1 AND revoked_at IS NULL AND expires_at > now() RETURNING subject, role, family_id",
     )
-    .bind(hash)
+    .bind(&hash)
     .fetch_optional(&s.db)
     .await?;
-    let (id, role) = row.ok_or(ApiError::Unauthorized)?;
+    let Some((id, role, family)) = row else {
+        reject_reuse(&s, &hash).await?;
+        return Err(ApiError::Unauthorized);
+    };
     let role = Role::parse(&role).ok_or(ApiError::Unauthorized)?;
     ensure_active(&s, id, role).await?;
-    Ok(Json(issue_tokens(&s, id, role, false).await?))
+    Ok(Json(issue_tokens(&s, id, role, false, Some(family)).await?))
+}
+
+/// A rotated token presented again means a copy was used: the whole family is revoked, which signs out
+/// the thief and the legitimate holder alike.
+async fn reject_reuse(s: &AppState, hash: &str) -> ApiResult<()> {
+    let reused: Option<(Uuid, Uuid, String)> =
+        sqlx::query_as("SELECT subject, family_id, role FROM refresh_tokens WHERE token_hash = $1 AND rotated_at IS NOT NULL")
+            .bind(hash)
+            .fetch_optional(&s.db)
+            .await?;
+    if let Some((subject, family, role)) = reused {
+        sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE family_id = $1 AND revoked_at IS NULL")
+            .bind(family)
+            .execute(&s.db)
+            .await?;
+        super::audit(&s.db, &role, Some(subject), "auth.refresh_reuse", &family.to_string(), json!({})).await?;
+    }
+    Ok(())
 }
 
 /// Deleted customers and deactivated staff can't keep a session alive.
@@ -265,9 +298,19 @@ async fn ensure_active(s: &AppState, id: Uuid, role: Role) -> ApiResult<()> {
     if ok { Ok(()) } else { Err(ApiError::Unauthorized) }
 }
 
+/// Signs out this device: its whole rotation family is revoked.
 async fn logout(State(s): State<AppState>, Json(req): Json<RefreshRequest>) -> ApiResult<Json<serde_json::Value>> {
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1")
+    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE family_id = (SELECT family_id FROM refresh_tokens WHERE token_hash = $1) AND revoked_at IS NULL")
         .bind(auth::sha256_hex(req.refresh_token.as_bytes()))
+        .execute(&s.db)
+        .await?;
+    Ok(Json(serde_json::json!({ "ok": true })))
+}
+
+/// Signs out every device of the caller. Access tokens already issued last at most ACCESS_TTL_MIN.
+async fn logout_all(State(s): State<AppState>, a: Auth) -> ApiResult<Json<serde_json::Value>> {
+    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL")
+        .bind(a.id)
         .execute(&s.db)
         .await?;
     Ok(Json(serde_json::json!({ "ok": true })))
@@ -279,7 +322,9 @@ struct StaffLogin {
     password: String,
 }
 
-async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Tokens>> {
+/// Password step. Consultants get tokens; a second factor is required before tokens for enrolled staff and
+/// for admins, who must enrol first. Those steps run on a short-lived challenge token (routes/staff_mfa).
+async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Value>> {
     if req.password.len() > MAX_PASSWORD_BYTES {
         return Err(ApiError::Unauthorized);
     }
@@ -305,14 +350,22 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
         .bind(STAFF_MAX_FAILURES)
         .execute(&s.db)
         .await?;
+        super::audit(&s.db, "staff", Some(r.0), "staff.login_failed", "staff", json!({})).await?;
     }
     let (id, _, role, _) = row.filter(|_| ok).ok_or(ApiError::Unauthorized)?;
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1")
         .bind(id)
         .execute(&s.db)
         .await?;
-    let role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
-    Ok(Json(issue_tokens(&s, id, role, false).await?))
+    let enrolled: bool = sqlx::query_scalar("SELECT totp_enabled_at IS NOT NULL FROM staff WHERE id = $1").bind(id).fetch_one(&s.db).await?;
+    if enrolled {
+        return Ok(Json(json!({ "mfa_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
+    }
+    if role == "admin" {
+        return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
+    }
+    let tokens = issue_tokens(&s, id, Role::StaffConsultant, false, None).await?;
+    Ok(Json(serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))?))
 }
 
 /// Maps a unique violation to a 409 with a specific code; any other database error stays internal.
@@ -358,7 +411,7 @@ async fn social_login(State(s): State<AppState>, Json(req): Json<SocialLogin>) -
     let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role).await?;
     ensure_active(&s, id, role).await?;
     let needs_phone = phone_missing(&s, id, role).await?;
-    let tokens = issue_tokens(&s, id, role, is_new).await?;
+    let tokens = issue_tokens(&s, id, role, is_new, None).await?;
     Ok(Json(SocialTokens { tokens, needs_phone }))
 }
 

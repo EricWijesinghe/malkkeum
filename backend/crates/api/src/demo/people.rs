@@ -420,12 +420,13 @@ async fn sign_in_records(c: &mut Ctx<'_>, customers: &[Customer], pros: &[Pro]) 
     for (n, (subject, role)) in subjects.iter().copied().enumerate() {
         let hash = c.hex(32);
         let revoked: Option<DateTime<Utc>> = (n % 3 == 0).then(|| c.now - Duration::days(5));
-        sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, revoked_at) VALUES ($1,$2,$3,$4,$5)")
+        sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, revoked_at, family_id) VALUES ($1,$2,$3,$4,$5,$6)")
             .bind(&hash)
             .bind(subject)
             .bind(role)
             .bind(c.now + Duration::days(30))
             .bind(revoked)
+            .bind(Uuid::now_v7())
             .execute(&mut *c.tx)
             .await?;
         c.reg("refresh_tokens", &hash).await?;

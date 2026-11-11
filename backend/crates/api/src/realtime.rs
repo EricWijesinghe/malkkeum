@@ -314,7 +314,7 @@ pub struct WsQuery {
 const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MIN as u64 * 60);
 
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
-    let auth = verify_access(&state.config.jwt_secret, &q.token)?;
+    let auth = verify_access(&state.config.jwt_keys(), &q.token)?;
     let rx = state.hub.subscribe();
     let presence = auth.role.is_staff().then(|| state.hub.staff_join());
     let draining = state.hub.drain_signal();

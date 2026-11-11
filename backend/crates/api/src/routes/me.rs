@@ -29,6 +29,8 @@ pub fn routes() -> Router<AppState> {
         .route("/me", get(profile).patch(update_profile).delete(delete_account))
         .route("/me/phone", post(bind_phone))
         .route("/me/identity", post(verify_identity))
+        .route("/me/identity/setup", get(identity_setup))
+        .route("/me/identity/session", post(identity_session))
         .route("/me/addresses", get(list_addresses).post(create_address))
         .route("/me/addresses/{id}", put(update_address).delete(delete_address))
         .route("/me/coupons", get(list_coupons))
@@ -81,23 +83,78 @@ struct IdentityInput {
     identity_verification_id: String,
 }
 
-/// PASS / 본인인증: PortOne confirms the verification; only a hash of the CI is kept.
+/// Whether PASS can run here: dev mode always, otherwise a store id and an `identity` channel key.
+fn identity_enabled(s: &AppState) -> bool {
+    s.config.dev_mode || (s.config.portone.store_id.is_some() && s.config.portone.channel_keys.contains_key("identity"))
+}
+
+#[derive(Serialize)]
+struct IdentitySetup {
+    enabled: bool,
+}
+
+async fn identity_setup(State(s): State<AppState>, Customer(_): Customer) -> Json<IdentitySetup> {
+    Json(IdentitySetup { enabled: identity_enabled(&s) })
+}
+
+#[derive(Serialize)]
+struct IdentitySession {
+    store_id: String,
+    channel_key: String,
+    identity_verification_id: String,
+}
+
+/// Issues a single-use verification id bound to this customer, before the PASS page opens.
+async fn identity_session(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<IdentitySession>> {
+    if !identity_enabled(&s) {
+        return Err(ApiError::Unavailable("provider_not_configured"));
+    }
+    // Dev ids keep the `dev:` prefix the dev provider accepts; live ids are opaque.
+    let id = if s.config.dev_mode { format!("dev:{}", Uuid::now_v7().simple()) } else { format!("idv-{}", Uuid::now_v7().simple()) };
+    sqlx::query("INSERT INTO identity_sessions (id, user_id) VALUES ($1, $2)").bind(&id).bind(a.id).execute(&s.db).await?;
+    Ok(Json(IdentitySession {
+        store_id: s.config.portone.store_id.clone().unwrap_or_default(),
+        channel_key: s.config.portone.channel_keys.get("identity").cloned().unwrap_or_default(),
+        identity_verification_id: id,
+    }))
+}
+
+/// PASS / 본인인증: only an id issued to this customer and still unused is checked with PortOne.
+/// The id is burnt on success; only a hash of the CI is kept.
 async fn verify_identity(State(s): State<AppState>, Customer(a): Customer, Json(i): Json<IdentityInput>) -> ApiResult<Json<Profile>> {
-    let info = s.providers.identity(&i.identity_verification_id).await.map_err(|e| match e {
+    let id = i.identity_verification_id;
+    let issued: Option<String> = sqlx::query_scalar("SELECT id FROM identity_sessions WHERE id = $1 AND user_id = $2 AND used_at IS NULL")
+        .bind(&id)
+        .bind(a.id)
+        .fetch_optional(&s.db)
+        .await?;
+    if issued.is_none() {
+        return Err(ApiError::BadRequest("identity_not_found"));
+    }
+    let info = s.providers.identity(&id).await.map_err(|e| match e {
         ProviderError::NotFound => ApiError::BadRequest("identity_not_found"),
         other => other.into(),
     })?;
-    let ci = match (info.status.as_str(), info.ci) {
-        ("VERIFIED", Some(ci)) => ci,
+    let ci = match (info.status.as_str(), info.id == id, info.ci) {
+        ("VERIFIED", true, Some(ci)) => ci,
         _ => return Err(ApiError::BadRequest("identity_not_verified")),
     };
+    let mut tx = s.db.begin().await?;
+    let burnt = sqlx::query("UPDATE identity_sessions SET used_at = now() WHERE id = $1 AND used_at IS NULL")
+        .bind(&id)
+        .execute(&mut *tx)
+        .await?;
+    if burnt.rows_affected() == 0 {
+        return Err(ApiError::BadRequest("identity_not_found"));
+    }
     sqlx::query("UPDATE users SET identity_verified_at = now(), ci_hash = $2, name = CASE WHEN name = '' THEN COALESCE($3, '') ELSE name END WHERE id = $1 AND deleted_at IS NULL")
         .bind(a.id)
         .bind(sha256_hex(ci.as_bytes()))
         .bind(info.name)
-        .execute(&s.db)
+        .execute(&mut *tx)
         .await
         .map_err(|e| conflict_on_unique(e, "identity_taken"))?;
+    tx.commit().await?;
     profile(State(s), Customer(a)).await
 }
 

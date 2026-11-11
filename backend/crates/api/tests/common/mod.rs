@@ -34,6 +34,7 @@ pub fn test_config() -> Config {
         database_url: String::new(),
         bind: "127.0.0.1:0".parse().expect("bind addr"),
         jwt_secret: SECRET.to_vec(),
+        jwt_previous_secret: None,
         data_key: [7u8; 32],
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
         public_base_url: BASE_URL.into(),

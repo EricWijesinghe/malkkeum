@@ -97,6 +97,7 @@ pub async fn identity(p: &Providers, id: &str) -> Result<IdentityInfo, ProviderE
     let v = get_json(p, &format!("/identity-verifications/{id}")).await?;
     let customer = &v["verifiedCustomer"];
     Ok(IdentityInfo {
+        id: text(&v["id"]),
         status: text(&v["status"]),
         ci: customer["ci"].as_str().map(str::to_string),
         name: customer["name"].as_str().map(str::to_string),
@@ -219,6 +220,7 @@ pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
 pub fn dev_identity(id: &str) -> Option<IdentityInfo> {
     let rest = id.strip_prefix("dev:").filter(|r| !r.is_empty())?;
     Some(IdentityInfo {
+        id: id.to_string(),
         status: "VERIFIED".into(),
         ci: Some(format!("dev-ci:{rest}")),
         name: None,

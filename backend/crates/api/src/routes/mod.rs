@@ -20,6 +20,8 @@ mod partner_jobs;
 pub(crate) mod payments;
 pub mod setup;
 pub mod uploads;
+mod staff_mfa;
+mod staff_password;
 mod webhooks;
 
 use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
@@ -57,6 +59,8 @@ pub fn router(state: AppState) -> Router {
 
     let api = Router::new()
         .merge(auth::routes().layer(DefaultBodyLimit::max(contract::AUTH_BODY_LIMIT)))
+        .merge(staff_mfa::routes())
+        .merge(staff_password::public_routes())
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(bookings::routes())
@@ -74,6 +78,7 @@ pub fn router(state: AppState) -> Router {
         .nest(
             "/admin",
             admin::routes()
+                .merge(staff_password::admin_routes())
                 .merge(admin_content::routes())
                 .merge(growth::admin_routes())
                 .merge(payments::admin_routes())
