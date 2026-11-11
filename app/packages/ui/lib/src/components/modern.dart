@@ -265,3 +265,25 @@ class CountUp extends StatelessWidget {
     );
   }
 }
+
+/// Gentle repeating scale on [child] while [active] (e.g. the current step).
+/// Reduced motion keeps the child still.
+class Pulse extends StatelessWidget {
+  const Pulse({super.key, required this.child, this.active = true});
+
+  final Widget child;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!active || reducedMotion(context)) return child;
+    return child
+        .animate(onPlay: (c) => c.repeat(reverse: true))
+        .scaleXY(
+          begin: 1,
+          end: 1.12,
+          duration: const Duration(milliseconds: 900),
+          curve: Curves.easeInOut,
+        );
+  }
+}
