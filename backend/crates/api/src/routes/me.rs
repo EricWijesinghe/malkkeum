@@ -3,13 +3,15 @@
 use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Auth, Customer, normalize_phone, sha256_hex},
+    contract::{PageQuery, cursor_part, decode_cursor, encode_cursor, page_limit, paged, ts_key},
     error::{ApiError, ApiResult},
     providers::{ProviderError, portone},
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    response::Response,
     routing::{delete, get, post, put},
 };
 use chrono::{DateTime, Utc};
@@ -20,7 +22,7 @@ use uuid::Uuid;
 pub const SUPPORTED_LOCALES: [&str; 14] = ["ko", "en", "zh", "vi", "ja", "ru", "ne", "si", "th", "id", "mn", "uz", "fil", "km"];
 const MAX_NAME_LEN: usize = 40;
 const MAX_ADDRESS_LEN: usize = 200;
-const NOTIFICATION_PAGE: i64 = 50;
+
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -414,16 +416,26 @@ struct NotificationRow {
     created_at: DateTime<Utc>,
 }
 
-async fn list_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Vec<NotificationRow>>> {
-    let rows = sqlx::query_as(
-        "SELECT id, kind, data, read_at, created_at FROM notifications WHERE owner_role = $1 AND owner_id = $2 ORDER BY created_at DESC LIMIT $3",
+/// Newest first; keyset cursor over (created_at, id).
+async fn list_notifications(State(s): State<AppState>, a: Auth, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = match decode_cursor(q.cursor.as_deref(), 2)? {
+        Some(p) => (Some(cursor_part::<DateTime<Utc>>(&p[0])?), Some(cursor_part::<Uuid>(&p[1])?)),
+        None => (None, None),
+    };
+    let rows: Vec<NotificationRow> = sqlx::query_as(
+        "SELECT id, kind, data, read_at, created_at FROM notifications
+         WHERE owner_role = $1 AND owner_id = $2 AND ($3::timestamptz IS NULL OR (created_at, id) < ($3, $4))
+         ORDER BY created_at DESC, id DESC LIMIT $5",
     )
     .bind(a.role.as_str())
     .bind(a.id)
-    .bind(NOTIFICATION_PAGE)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
 async fn read_notifications(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Value>> {

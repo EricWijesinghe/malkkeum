@@ -229,7 +229,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
     setState(() => _busy = true);
     final t = context.t;
     try {
-      await context.api.post('/bookings/${widget.bookingId}/review', {'rating': _rating, 'body': _text.text.trim(), 'photos': _photos});
+      await context.api.post('/bookings/${widget.bookingId}/review', {'rating': _rating, 'body': _text.text.trim(), 'photos': _photos}, ApiClient.newIdempotencyKey());
       if (!mounted) return;
       // Close first, then confirm on the screen underneath (the sheet's own context is gone after pop).
       final messenger = ScaffoldMessenger.maybeOf(context);

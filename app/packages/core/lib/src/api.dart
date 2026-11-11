@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:math' show Random;
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +49,15 @@ class ApiClient {
   }
 
   Future<dynamic> get(String path, {Map<String, String?>? query}) => _send('GET', path, query: query);
-  Future<dynamic> post(String path, [Object? body]) => _send('POST', path, body: body);
+  /// [idempotencyKey]: send the same key on every retry of one user action (server replays the first answer for 24h).
+  Future<dynamic> post(String path, [Object? body, String? idempotencyKey]) =>
+      _send('POST', path, body: body, idempotencyKey: idempotencyKey);
+
+  /// A fresh key for one user action: 128 bits from a secure RNG, hex.
+  static String newIdempotencyKey() {
+    final r = Random.secure();
+    return List.generate(16, (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+  }
   Future<dynamic> put(String path, [Object? body]) => _send('PUT', path, body: body);
   Future<dynamic> patch(String path, [Object? body]) => _send('PATCH', path, body: body);
   Future<dynamic> delete(String path, [Object? body]) => _send('DELETE', path, body: body);
@@ -59,8 +68,9 @@ class ApiClient {
     return bytes as List<int>;
   }
 
-  Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query}) => _exec(path, () {
+  Future<dynamic> _send(String method, String path, {Object? body, Map<String, String?>? query, String? idempotencyKey}) => _exec(path, () {
         final req = http.Request(method, _uri(path, query))..headers['Content-Type'] = 'application/json';
+        if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
         if (body != null) req.body = jsonEncode(body);
         return req;
       });

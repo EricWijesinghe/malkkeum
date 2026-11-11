@@ -346,7 +346,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (choice case ChannelChoice(:final channel)) {
         result = await payWithChannel(context, channel, {'kind': 'booking', 'booking': _bookingBody()});
       } else {
-        result = CheckoutPaid(Booking.fromJson(await app.api.post('/bookings', d.toJson()) as Json));
+        result = CheckoutPaid(Booking.fromJson(await app.api.post('/bookings', d.toJson(), ApiClient.newIdempotencyKey()) as Json));
       }
       if (!mounted) return;
       switch (result) {

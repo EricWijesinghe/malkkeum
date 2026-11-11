@@ -22,10 +22,11 @@ pub mod setup;
 pub mod uploads;
 mod webhooks;
 
-use crate::{lifecycle, metrics, realtime, state::AppState, telemetry};
+use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
 use axum::{
-    Router,
-    http::{HeaderValue, Method, header},
+    Json, Router,
+    extract::DefaultBodyLimit,
+    http::{HeaderName, HeaderValue, Method, header},
     routing::get,
 };
 use std::time::Duration;
@@ -50,16 +51,17 @@ pub fn router(state: AppState) -> Router {
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::list(origins))
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
-        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE, HeaderName::from_static("idempotency-key")])
+        .expose_headers([contract::NEXT_CURSOR]);
     let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, std::time::Instant::now()));
 
     let api = Router::new()
-        .merge(auth::routes())
+        .merge(auth::routes().layer(DefaultBodyLimit::max(contract::AUTH_BODY_LIMIT)))
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(bookings::routes())
         .merge(chat::routes())
-        .merge(uploads::routes())
+        .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
@@ -85,7 +87,9 @@ pub fn router(state: AppState) -> Router {
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))
         .nest("/member", member::routes())
-        .route("/ws", get(realtime::ws_handler));
+        .route("/ws", get(realtime::ws_handler))
+        .route("/openapi.json", get(crate::openapi::spec))
+        .layer(DefaultBodyLimit::max(contract::JSON_BODY_LIMIT));
 
     Router::new()
         // Liveness never touches the DB; readiness does. Neither is proxied publicly (see deploy/Caddyfile).
@@ -107,6 +111,8 @@ pub fn router(state: AppState) -> Router {
         }))
         .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
         .layer(axum::middleware::from_fn(metrics::track))
+        .layer(axum::middleware::from_fn(contract::error_envelope))
+        .fallback_layer(axum::middleware::from_fn(contract::error_envelope))
         // Outermost: every request (and every error body) gets its id before anything else runs.
         .layer(axum::middleware::from_fn(telemetry::request_id))
         .with_state(state)

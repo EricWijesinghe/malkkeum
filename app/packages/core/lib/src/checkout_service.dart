@@ -44,7 +44,7 @@ class CheckoutService {
   Future<CheckoutResult> run(BuildContext context, Json request) async {
     final CheckoutIntent intent;
     try {
-      intent = CheckoutIntent.fromJson(await api.post('/checkouts', request) as Json);
+      intent = CheckoutIntent.fromJson(await api.post('/checkouts', request, ApiClient.newIdempotencyKey()) as Json);
     } on ApiException catch (e) {
       return CheckoutFailed(e.code);
     }
@@ -63,7 +63,7 @@ class CheckoutService {
   /// Confirms a checkout the PG authorized. Also used when the web app resumes after the hosted page.
   Future<CheckoutResult> confirm(String checkoutId, String paymentId) async {
     try {
-      final r = await api.post('/checkouts/$checkoutId/confirm', {'payment_id': paymentId}) as Json;
+      final r = await api.post('/checkouts/$checkoutId/confirm', {'payment_id': paymentId}, ApiClient.newIdempotencyKey()) as Json;
       if (r['status'] == 'awaiting_deposit') {
         return CheckoutAwaitingDeposit(VirtualAccount.fromJson(r['virtual_account'] as Json));
       }

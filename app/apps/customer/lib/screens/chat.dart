@@ -223,7 +223,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     try {
       switch (choice) {
         case SavedChoice(:final methodId):
-          await context.api.post('/bookings/$bookingId/deposit', {'payment_method_id': methodId});
+          await context.api.post('/bookings/$bookingId/deposit', {'payment_method_id': methodId}, ApiClient.newIdempotencyKey());
         case ChannelChoice(:final channel):
           final result = await payWithChannel(context, channel, {'kind': 'deposit', 'booking_id': bookingId});
           if (!mounted) return;

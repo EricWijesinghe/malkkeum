@@ -424,7 +424,7 @@ class _BookingPanelState extends State<BookingPanel> with LiveReload {
       await _act(
         () => api.post('/admin/bookings/${b.id}/cancel', {
           'refund_amount': amount.text.isEmpty ? null : int.parse(amount.text),
-        }),
+        }, ApiClient.newIdempotencyKey()),
       );
     }
     disposeAfterClose([amount]);

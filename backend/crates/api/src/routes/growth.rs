@@ -314,6 +314,7 @@ async fn list_reviews(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<V
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct Moderation {
     hidden: bool,
 }
@@ -405,6 +406,7 @@ async fn list_reports(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<V
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct Decision {
     /// keep: show again and clear its reports. hide: stay hidden. delete: remove the review.
     action: String,
@@ -430,6 +432,7 @@ async fn decide_review(State(s): State<AppState>, Admin(a): Admin, Path(booking)
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct AuthorBlock {
     blocked: bool,
 }

@@ -164,7 +164,7 @@ class _SettlementsState extends State<SettlementsScreen> {
     final manual = p['provider'] == 'manual';
     final team = (p['team_name'] as String? ?? '').isEmpty ? '' : ' · ${p['team_name']}';
     final failure = p['failure_reason'] == null ? '' : '\n${p['failure_reason']}';
-    Future<void> post(String path) => _act(context, () => context.api.post('/admin/settlements/payouts/$id/$path', {}), reload);
+    Future<void> post(String path) => _act(context, () => context.api.post('/admin/settlements/payouts/$id/$path', {}, ApiClient.newIdempotencyKey()), reload);
     return Card(
       elevation: 0,
       child: Padding(
@@ -261,7 +261,7 @@ class _SettlementsState extends State<SettlementsScreen> {
       showToast(context, t.poReasonRequired);
       return;
     }
-    await _act(context, () => context.api.post('/admin/settlements/payouts/$id/fail', {'reason': reason}), reload);
+    await _act(context, () => context.api.post('/admin/settlements/payouts/$id/fail', {'reason': reason}, ApiClient.newIdempotencyKey()), reload);
   }
 
   @override

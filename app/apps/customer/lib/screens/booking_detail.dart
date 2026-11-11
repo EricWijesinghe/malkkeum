@@ -265,7 +265,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ]),
       ),
     );
-    if (ok == true) await _act(() => context.api.post('/bookings/${b.id}/cancel'), t.cancelled);
+    if (ok == true) await _act(() => context.api.post('/bookings/${b.id}/cancel', null, ApiClient.newIdempotencyKey()), t.cancelled);
   }
 }
 

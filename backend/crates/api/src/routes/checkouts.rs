@@ -23,8 +23,10 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
+    response::Response,
     routing::{get, post},
 };
+use crate::contract::{decode_cursor, cursor_part, encode_cursor, page_limit, paged, ts_key};
 use chrono::{DateTime, Duration, Utc};
 use domain::{
     catalog::Service,
@@ -36,13 +38,12 @@ use sqlx::{PgPool, Postgres, Transaction};
 use uuid::Uuid;
 
 const CHECKOUT_TTL_MIN: i64 = 30;
-const LIST_LIMIT: i64 = 50;
 const CHECKOUT_COLS: &str = "id, user_id, kind, booking_id, draft, amount, status, provider_payment_id, result_booking_id, expires_at";
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/checkouts", get(list).post(create))
-        .route("/checkouts/{id}/confirm", post(confirm))
+        .route("/checkouts", crate::idempotency::replayable(get(list).post(create)))
+        .route("/checkouts/{id}/confirm", crate::idempotency::replayable(post(confirm)))
 }
 
 pub fn admin_routes() -> Router<AppState> {
@@ -550,6 +551,8 @@ async fn reconcile_one(s: &AppState, ck: &CheckoutRow) {
 #[derive(Deserialize)]
 struct ListQuery {
     status: Option<String>,
+    limit: Option<i64>,
+    cursor: Option<String>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
@@ -566,25 +569,47 @@ struct CheckoutView {
     created_at: DateTime<Utc>,
 }
 
-async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<ListQuery>) -> ApiResult<Json<Vec<CheckoutView>>> {
+/// Newest first; keyset cursor over (created_at, id). `status` must be a known checkout status.
+async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<ListQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let status = checked_status(q.status.as_deref())?;
+    let (ts, id) = keyset(q.cursor.as_deref())?;
     sqlx::query("UPDATE checkouts SET status = 'expired' WHERE user_id = $1 AND status = 'pending' AND expires_at < now()")
         .bind(a.id)
         .execute(&s.db)
         .await?;
-    let rows = sqlx::query_as(
+    let rows: Vec<CheckoutView> = sqlx::query_as(
         "SELECT id, kind, booking_id, method, amount, status, virtual_account, result_booking_id, expires_at, created_at
-         FROM checkouts WHERE user_id = $1 AND ($2::text IS NULL OR status = $2) ORDER BY created_at DESC LIMIT $3",
+         FROM checkouts WHERE user_id = $1 AND ($2::text IS NULL OR status = $2)
+           AND ($3::timestamptz IS NULL OR (created_at, id) < ($3, $4)) ORDER BY created_at DESC, id DESC LIMIT $5",
     )
     .bind(a.id)
-    .bind(q.status)
-    .bind(LIST_LIMIT)
+    .bind(status)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
-const ADMIN_STATUSES: [&str; 5] = ["pending", "awaiting_deposit", "paid", "refunded", "expired"];
-const ADMIN_LIST_LIMIT: i64 = 200;
+/// Every status a checkout can hold; list filters outside this set are a client error.
+const STATUSES: [&str; 7] = ["pending", "awaiting_deposit", "paid", "refunded", "expired", "failed", "cancelled"];
+
+fn checked_status(status: Option<&str>) -> ApiResult<Option<String>> {
+    match status {
+        Some(s) if !STATUSES.contains(&s) => Err(ApiError::BadRequest("invalid_status")),
+        other => Ok(other.map(str::to_owned)),
+    }
+}
+
+fn keyset(cursor: Option<&str>) -> ApiResult<(Option<DateTime<Utc>>, Option<Uuid>)> {
+    Ok(match decode_cursor(cursor, 2)? {
+        Some(p) => (Some(cursor_part(&p[0])?), Some(cursor_part(&p[1])?)),
+        None => (None, None),
+    })
+}
+
 
 #[derive(Serialize, sqlx::FromRow)]
 struct AdminCheckoutView {
@@ -600,21 +625,22 @@ struct AdminCheckoutView {
 }
 
 /// Console view of checkouts, newest first. Staff only.
-async fn admin_list(State(s): State<AppState>, _staff: Staff, Query(q): Query<ListQuery>) -> ApiResult<Json<Vec<AdminCheckoutView>>> {
-    if let Some(status) = &q.status
-        && !ADMIN_STATUSES.contains(&status.as_str())
-    {
-        return Err(ApiError::BadRequest("invalid_status"));
-    }
-    let rows = sqlx::query_as(
+async fn admin_list(State(s): State<AppState>, _staff: Staff, Query(q): Query<ListQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let status = checked_status(q.status.as_deref())?;
+    let (ts, id) = keyset(q.cursor.as_deref())?;
+    let rows: Vec<AdminCheckoutView> = sqlx::query_as(
         "SELECT id, kind, method, amount, status, created_at, booking_id, result_booking_id, user_id
-         FROM checkouts WHERE ($1::text IS NULL OR status = $1) ORDER BY created_at DESC LIMIT $2",
+         FROM checkouts WHERE ($1::text IS NULL OR status = $1)
+           AND ($2::timestamptz IS NULL OR (created_at, id) < ($2, $3)) ORDER BY created_at DESC, id DESC LIMIT $4",
     )
-    .bind(q.status)
-    .bind(ADMIN_LIST_LIMIT)
+    .bind(status)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
 #[cfg(test)]
