@@ -2251,6 +2251,13 @@ class TUz extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Texnik xizmat ko\'rsatilmoqda';
+
+  @override
+  String get uMaintenanceBody =>
+      'Xizmatni yaxshilash uchun texnik ishlar olib borilmoqda. Iltimos, keyinroq qayta urinib ko\'ring.';
+
+  @override
   String get cOps => 'Tizim holati';
 
   @override

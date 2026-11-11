@@ -690,6 +690,8 @@
  "growthReferralConversion": "Konversi referral",
  "growthTab": "Pertumbuhan",
  "growthReferralValue": "{rewarded} dari {invited}",
+ "uMaintenanceTitle": "Sedang pemeliharaan",
+ "uMaintenanceBody": "Kami sedang meningkatkan layanan. Silakan coba lagi nanti.",
  "cOps": "Status sistem",
  "oLevelGreen": "Normal",
  "oLevelYellow": "Perlu dicek",

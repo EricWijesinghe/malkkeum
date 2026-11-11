@@ -2240,6 +2240,13 @@ class TId extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Sedang pemeliharaan';
+
+  @override
+  String get uMaintenanceBody =>
+      'Kami sedang meningkatkan layanan. Silakan coba lagi nanti.';
+
+  @override
   String get cOps => 'Status sistem';
 
   @override

@@ -2235,6 +2235,13 @@ class TKm extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'កំពុងថែទាំ';
+
+  @override
+  String get uMaintenanceBody =>
+      'យើងកំពុងថែទាំដើម្បីធ្វើឱ្យសេវាកម្មកាន់តែប្រសើរ។ សូមត្រឡប់មកវិញក្នុងពេលឆាប់ៗ។';
+
+  @override
   String get cOps => 'ស្ថានភាពប្រព័ន្ធ';
 
   @override

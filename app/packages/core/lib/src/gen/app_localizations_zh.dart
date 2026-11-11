@@ -2169,6 +2169,12 @@ class TZh extends T {
   }
 
   @override
+  String get uMaintenanceTitle => '系统维护中';
+
+  @override
+  String get uMaintenanceBody => '我们正在维护以提升服务，请稍后再试。';
+
+  @override
   String get cOps => '系统状态';
 
   @override

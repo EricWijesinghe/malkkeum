@@ -2236,6 +2236,13 @@ class TNe extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'मर्मत हुँदैछ';
+
+  @override
+  String get uMaintenanceBody =>
+      'हामी सेवा सुधार्न मर्मत गरिरहेका छौं। केही समयपछि फेरि आउनुहोस्।';
+
+  @override
   String get cOps => 'प्रणाली स्थिति';
 
   @override

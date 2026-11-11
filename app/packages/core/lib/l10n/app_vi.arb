@@ -690,6 +690,8 @@
  "growthReferralConversion": "Tỷ lệ chuyển đổi giới thiệu",
  "growthTab": "Tăng trưởng",
  "growthReferralValue": "{rewarded}/{invited} người",
+ "uMaintenanceTitle": "Đang bảo trì",
+ "uMaintenanceBody": "Chúng tôi đang bảo trì để nâng cao dịch vụ. Vui lòng quay lại sau.",
  "cOps": "Trạng thái hệ thống",
  "oLevelGreen": "Ổn định",
  "oLevelYellow": "Cần xem",

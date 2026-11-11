@@ -2224,6 +2224,13 @@ class TTh extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'กำลังปิดปรับปรุงระบบ';
+
+  @override
+  String get uMaintenanceBody =>
+      'เรากำลังปรับปรุงระบบเพื่อให้บริการดียิ่งขึ้น กรุณากลับมาใหม่ในภายหลัง';
+
+  @override
   String get cOps => 'สถานะระบบ';
 
   @override

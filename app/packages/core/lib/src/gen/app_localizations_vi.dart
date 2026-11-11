@@ -2222,6 +2222,13 @@ class TVi extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Đang bảo trì';
+
+  @override
+  String get uMaintenanceBody =>
+      'Chúng tôi đang bảo trì để nâng cao dịch vụ. Vui lòng quay lại sau.';
+
+  @override
   String get cOps => 'Trạng thái hệ thống';
 
   @override

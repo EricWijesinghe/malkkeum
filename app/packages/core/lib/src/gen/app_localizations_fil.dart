@@ -2254,6 +2254,13 @@ class TFil extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Under maintenance';
+
+  @override
+  String get uMaintenanceBody =>
+      'Pinapaganda namin ang serbisyo. Pakibalik-balikan mamaya.';
+
+  @override
   String get cOps => 'Katayuan ng sistema';
 
   @override

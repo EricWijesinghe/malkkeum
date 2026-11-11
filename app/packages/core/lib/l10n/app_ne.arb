@@ -690,6 +690,8 @@
  "growthReferralConversion": "रेफरल रूपान्तरण",
  "growthTab": "वृद्धि",
  "growthReferralValue": "{invited} मध्ये {rewarded}",
+ "uMaintenanceTitle": "मर्मत हुँदैछ",
+ "uMaintenanceBody": "हामी सेवा सुधार्न मर्मत गरिरहेका छौं। केही समयपछि फेरि आउनुहोस्।",
  "cOps": "प्रणाली स्थिति",
  "oLevelGreen": "सामान्य",
  "oLevelYellow": "जाँच गर्नुहोस्",

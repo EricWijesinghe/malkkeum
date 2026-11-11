@@ -690,6 +690,8 @@
  "growthReferralConversion": "Конверсия рефералов",
  "growthTab": "Рост",
  "growthReferralValue": "{rewarded} из {invited}",
+ "uMaintenanceTitle": "Ведутся технические работы",
+ "uMaintenanceBody": "Мы улучшаем сервис. Пожалуйста, зайдите немного позже.",
  "cOps": "Состояние системы",
  "oLevelGreen": "В норме",
  "oLevelYellow": "Проверить",

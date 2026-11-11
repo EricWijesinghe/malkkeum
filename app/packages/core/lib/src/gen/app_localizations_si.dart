@@ -2240,6 +2240,13 @@ class TSi extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'නඩත්තු කටයුතු සිදුවෙමින් පවතී';
+
+  @override
+  String get uMaintenanceBody =>
+      'සේවාව වැඩිදියුණු කිරීම සඳහා නඩත්තු කරමින් සිටිමු. ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
+
+  @override
   String get cOps => 'පද්ධති තත්ත්වය';
 
   @override

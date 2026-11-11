@@ -17,4 +17,6 @@ export 'src/realtime.dart';
 export 'src/receipt_options.dart';
 export 'src/review_report.dart';
 export 'src/session.dart';
+export 'src/remote_config.dart';
+export 'src/store_review.dart';
 export 'src/theme_mode.dart';

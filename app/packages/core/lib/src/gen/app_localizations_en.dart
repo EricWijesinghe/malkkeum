@@ -2228,6 +2228,13 @@ class TEn extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'We are under maintenance';
+
+  @override
+  String get uMaintenanceBody =>
+      'We are improving the service. Please come back shortly.';
+
+  @override
   String get cOps => 'System status';
 
   @override

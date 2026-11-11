@@ -6,6 +6,7 @@ pub mod app_links;
 pub mod ai;
 pub mod auth;
 pub mod backup;
+pub mod client_errors;
 pub mod config;
 pub mod crypto;
 pub mod demo;

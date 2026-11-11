@@ -2174,6 +2174,12 @@ class TJa extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'メンテナンス中です';
+
+  @override
+  String get uMaintenanceBody => 'サービス改善のためメンテナンスを行っています。しばらくしてから再度お試しください。';
+
+  @override
   String get cOps => 'システム状態';
 
   @override

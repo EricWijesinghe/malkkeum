@@ -139,11 +139,11 @@ Legal: publish a privacy policy and terms (PIPA). Add them in the console under 
 
 ### Sign-in and push SDKs (wired; keys via Codemagic, see §3)
 
-The apps ship with integration points, not SDK packages. They need native app keys, so nothing below is added until the owner has the accounts.
+The SDKs are wired in code; each one switches on when its key is supplied at build time (Codemagic env, §3) or in the setup wizard. Without a key the feature hides itself.
 
 How it works today:
-- `packages/core/lib/src/social_auth.dart`: `UnconfiguredSocialSignIn.obtainToken` has one TODO per provider. The build only shows providers listed in `--dart-define=SOCIAL_PROVIDERS=kakao,naver,google,apple`. Dev API hosts (localhost, 127.0.0.1, 10.0.2.2, *.local) always get `DevSocialSignIn` instead.
-- `packages/core/lib/src/payment_launcher.dart`: `PortOneLauncher` returns `provider_not_configured` until wired. Dev hosts use the simulated window.
+- Social sign-in: `packages/core/lib/src/social_native_io.dart` (Kakao, Naver via https App Link, Google, Apple). A provider is offered only when its build keys are set (`SOCIAL_PROVIDERS` narrows the list). Dev API hosts get `DevSocialSignIn`.
+- Payments: `packages/core/lib/src/portone_webview.dart` (`PortOneWebViewLauncher` on iOS/Android, `PortOneRedirectLauncher` on web) and `portone_browser.dart` (Windows) open the hosted PortOne V2 page (`website/pay/`). They answer `provider_not_configured` only while the PortOne store id / channel keys are missing in the setup wizard. Dev hosts use the simulated window.
 - `packages/core/lib/src/identity.dart`: `PortOneIdentityVerifier` for PASS 본인인증.
 
 To wire each provider:
@@ -192,3 +192,12 @@ Not covered by unit tests, so check in the sandbox:
 - A sandbox payout reaches `COMPLETED` through the poll path (`payout_sync.rs`).
 
 Not in the docs (do not assume): the webhook signature scheme (none documented, so no signature check) and the seller response `status` field name.
+
+## 8. Uptime monitoring (outside the server)
+
+The server cannot report its own outage, so watch it from outside.
+
+- **Heartbeat (required):** create a check at healthchecks.io (or any compatible service) with period 5 min, grace 15 min. Put its ping URL in `.env` as `HEARTBEAT_URL=` (or run install with `MALKKEUM_HEARTBEAT_URL=`), then `sudo malkkeum-heartbeat` once to test. Cron runs `/usr/local/bin/malkkeum-heartbeat` every 5 minutes. It pings only when `https://DOMAIN/health` returns `"ok":true`, so a dead API stops the pings and the service alerts you by email/SMS.
+- **Missing config:** without `HEARTBEAT_URL`, `malkkeum status` prints a warning and the heartbeat log says so. Nothing is alerted until the URL is set.
+- **HTTP checks (optional, free tiers):** UptimeRobot or BetterStack, HTTPS `GET https://DOMAIN/health`, expect keyword `"ok":true`, interval 5 min. Use this to catch a crashed proxy as well.
+- Logs: `DIR/backups/heartbeat.log`. Server metrics and request ids are covered by the ops screens, not here.

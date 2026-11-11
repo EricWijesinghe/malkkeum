@@ -2174,6 +2174,12 @@ class TKo extends T {
   }
 
   @override
+  String get uMaintenanceTitle => '점검 중이에요';
+
+  @override
+  String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
+
+  @override
   String get cOps => '시스템 상태';
 
   @override

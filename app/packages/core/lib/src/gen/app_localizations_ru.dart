@@ -2239,6 +2239,13 @@ class TRu extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Ведутся технические работы';
+
+  @override
+  String get uMaintenanceBody =>
+      'Мы улучшаем сервис. Пожалуйста, зайдите немного позже.';
+
+  @override
   String get cOps => 'Состояние системы';
 
   @override

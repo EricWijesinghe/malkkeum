@@ -2247,6 +2247,13 @@ class TMn extends T {
   }
 
   @override
+  String get uMaintenanceTitle => 'Засвар хийгдэж байна';
+
+  @override
+  String get uMaintenanceBody =>
+      'Бид үйлчилгээгээ сайжруулахаар засвар хийж байна. Удахгүй дахин оролдоно уу.';
+
+  @override
   String get cOps => 'Системийн төлөв';
 
   @override
