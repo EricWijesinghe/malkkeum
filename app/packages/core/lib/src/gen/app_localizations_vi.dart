@@ -1901,7 +1901,11 @@ class TVi extends T {
   String get err_unsupported_bank => 'Ngân hàng này chưa được hỗ trợ chi trả.';
 
   @override
-  String get err_toss_unverified => 'Vui lòng xác minh tài khoản Toss trước.';
+  String get err_toss_unverified =>
+      'Toss chi hộ hiện chỉ nhận khóa thử nghiệm (test_).';
+
+  @override
+  String get err_invalid_cap => 'Vui lòng nhập số trong phạm vi cho phép.';
 
   @override
   String get err_invalid_capacity => 'Hãy nhập sức chứa hợp lệ.';

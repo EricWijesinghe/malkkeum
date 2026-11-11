@@ -1915,7 +1915,11 @@ class TSi extends T {
   String get err_unsupported_bank => 'මෙම බැංකුවට ගෙවීම් සඳහා සහාය නොදක්වයි.';
 
   @override
-  String get err_toss_unverified => 'පළමුව Toss ගිණුම තහවුරු කරන්න.';
+  String get err_toss_unverified =>
+      'Toss ගෙවීම් දැනට පරීක්ෂණ යතුරු (test_) පමණක් පිළිගනී.';
+
+  @override
+  String get err_invalid_cap => 'අවසර ලත් පරාසය තුළ අංකයක් ඇතුළත් කරන්න.';
 
   @override
   String get err_invalid_capacity => 'වලංගු ධාරිතාවක් ඇතුළත් කරන්න.';

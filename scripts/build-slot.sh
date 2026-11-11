@@ -24,7 +24,13 @@ while [ -z "$slot" ]; do
   for i in $(seq 1 $SLOTS); do
     d="$LOCKS/slot$i"
     # A slot whose owner died is freed (owner pid stored inside).
-    if [ -d "$d" ] && ! kill -0 "$(cat "$d/pid" 2>/dev/null || echo 0)" 2>/dev/null; then rm -rf "$d"; fi
+    # No pid file after a minute means the owner was killed between mkdir and writing it
+    # (kill -0 0 would wrongly succeed, so never probe pid 0).
+    if [ -d "$d" ]; then
+      owner=$(cat "$d/pid" 2>/dev/null)
+      if [ -n "$owner" ]; then kill -0 "$owner" 2>/dev/null || rm -rf "$d"
+      elif [ -n "$(find "$d" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then rm -rf "$d"; fi
+    fi
     if mkdir "$d" 2>/dev/null; then
       echo $$ > "$d/pid"
       f=$(free_commit_kb); f=${f:-0}

@@ -1901,7 +1901,11 @@ class TTh extends T {
   String get err_unsupported_bank => 'ธนาคารนี้ยังไม่รองรับการจ่ายเงิน';
 
   @override
-  String get err_toss_unverified => 'กรุณายืนยันบัญชี Toss ก่อน';
+  String get err_toss_unverified =>
+      'ตอนนี้ Toss รับเฉพาะคีย์ทดสอบ (test_) เท่านั้น';
+
+  @override
+  String get err_invalid_cap => 'กรุณาใส่ตัวเลขในช่วงที่อนุญาต';
 
   @override
   String get err_invalid_capacity => 'กรุณากรอกความจุที่ถูกต้อง';

@@ -3670,8 +3670,14 @@ abstract class T {
   /// No description provided for @err_toss_unverified.
   ///
   /// In ko, this message translates to:
-  /// **'토스 계정 인증을 먼저 완료해 주세요.'**
+  /// **'토스 지급대행은 아직 테스트 키(test_)만 쓸 수 있어요.'**
   String get err_toss_unverified;
+
+  /// No description provided for @err_invalid_cap.
+  ///
+  /// In ko, this message translates to:
+  /// **'한도는 정해진 범위 안의 숫자로 입력해 주세요.'**
+  String get err_invalid_cap;
 
   /// No description provided for @err_invalid_capacity.
   ///

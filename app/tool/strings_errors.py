@@ -52,7 +52,8 @@ S = {
   "err_payout_state": ["정산 상태가 바뀌었어요. 새로고침 후 다시 확인해 주세요.", "The payout status changed. Refresh and check again.", "支払いの状態が変わりました。更新して再度確認してください。", "支付状态已变更，请刷新后重新确认。", "Trạng thái chi trả đã thay đổi. Hãy làm mới và kiểm tra lại."],
   "err_payout_provider": ["이 지급 방식은 지금 쓸 수 없어요.", "This payout method isn't available right now.", "この支払い方法は現在利用できません。", "该支付方式当前不可用。", "Phương thức chi trả này hiện không dùng được."],
   "err_unsupported_bank": ["이 은행은 지급을 지원하지 않아요.", "This bank isn't supported for payouts.", "この銀行への支払いはサポートされていません。", "不支持向该银行付款。", "Ngân hàng này chưa được hỗ trợ chi trả."],
-  "err_toss_unverified": ["토스 계정 인증을 먼저 완료해 주세요.", "Verify your Toss account first.", "先にTossアカウントの認証を完了してください。", "请先完成 Toss 账户验证。", "Vui lòng xác minh tài khoản Toss trước."],
+  "err_toss_unverified": ["토스 지급대행은 아직 테스트 키(test_)만 쓸 수 있어요.", "Toss payouts accept only test keys (test_) for now.", "Toss支払い代行は現在テストキー(test_)のみ使えます。", "Toss 代付目前仅接受测试密钥 (test_)。", "Toss chi hộ hiện chỉ nhận khóa thử nghiệm (test_)."],
+  "err_invalid_cap": ["한도는 정해진 범위 안의 숫자로 입력해 주세요.", "Enter a number within the allowed range.", "上限は許可された範囲の数字で入力してください。", "请输入允许范围内的数字。", "Vui lòng nhập số trong phạm vi cho phép."],
   "err_invalid_capacity": ["정원은 숫자로 입력해 주세요.", "Enter a valid capacity.", "定員は正しい数字で入力してください。", "请输入有效的容量。", "Hãy nhập sức chứa hợp lệ."],
 }
 
@@ -103,7 +104,8 @@ X = {
     "err_payout_state": "Nagbago ang status ng bayad. I-refresh at tingnan ulit.",
     "err_payout_provider": "Hindi available ang paraan ng bayad na ito ngayon.",
     "err_unsupported_bank": "Hindi suportado ang bangkong ito para sa bayad.",
-    "err_toss_unverified": "I-verify muna ang Toss account.",
+    "err_toss_unverified": "Test key (test_) lang muna ang tinatanggap ng Toss payouts.",
+    "err_invalid_cap": "Maglagay ng numero sa pinapayagang saklaw.",
     "err_invalid_capacity": "Maglagay ng valid na kapasidad.",
   },
   "id": {
@@ -152,7 +154,8 @@ X = {
     "err_payout_state": "Status pencairan berubah. Muat ulang dan cek lagi.",
     "err_payout_provider": "Metode pencairan ini sedang tidak tersedia.",
     "err_unsupported_bank": "Bank ini belum didukung untuk pencairan.",
-    "err_toss_unverified": "Verifikasi akun Toss dulu.",
+    "err_toss_unverified": "Pembayaran Toss untuk sementara hanya menerima kunci uji (test_).",
+    "err_invalid_cap": "Masukkan angka dalam rentang yang diizinkan.",
     "err_invalid_capacity": "Masukkan kapasitas yang valid.",
   },
   "km": {
@@ -201,7 +204,8 @@ X = {
     "err_payout_state": "ស្ថានភាពការបង់ប្រាក់បានប្តូរ។ សូមផ្ទុកឡើងវិញ ហើយពិនិត្យម្តងទៀត។",
     "err_payout_provider": "វិធីបង់ប្រាក់នេះមិនអាចប្រើបានឥឡូវនេះទេ។",
     "err_unsupported_bank": "ធនាគារនេះមិនគាំទ្រការបង់ប្រាក់ទេ។",
-    "err_toss_unverified": "សូមផ្ទៀងផ្ទាត់គណនី Toss ជាមុនសិន។",
+    "err_toss_unverified": "ការទូទាត់ Toss ទទួលតែកូនសោសាកល្បង (test_) ប៉ុណ្ណោះសម្រាប់ពេលនេះ។",
+    "err_invalid_cap": "សូមបញ្ចូលលេខក្នុងចន្លោះដែលអនុញ្ញាត។",
     "err_invalid_capacity": "បញ្ចូលចំណុះត្រឹមត្រូវ។",
   },
   "mn": {
@@ -250,7 +254,8 @@ X = {
     "err_payout_state": "Төлбөрийн төлөв өөрчлөгдсөн байна. Шинэчилж дахин шалгана уу.",
     "err_payout_provider": "Энэ төлбөрийн арга одоогоор боломжгүй байна.",
     "err_unsupported_bank": "Энэ банкад төлбөр шилжүүлэх боломжгүй.",
-    "err_toss_unverified": "Эхлээд Toss дансаа баталгаажуулна уу.",
+    "err_toss_unverified": "Toss төлбөр одоогоор зөвхөн туршилтын түлхүүр (test_) хүлээн авна.",
+    "err_invalid_cap": "Зөвшөөрөгдсөн хязгаарт багтах тоо оруулна уу.",
     "err_invalid_capacity": "Зөв багтаамж оруулна уу.",
   },
   "ne": {
@@ -299,7 +304,8 @@ X = {
     "err_payout_state": "भुक्तानी स्थिति परिवर्तन भयो। रिफ्रेस गरेर फेरि जाँच गर्नुहोस्।",
     "err_payout_provider": "यो भुक्तानी विधि अहिले उपलब्ध छैन।",
     "err_unsupported_bank": "यो बैंकमा भुक्तानी गर्न समर्थित छैन।",
-    "err_toss_unverified": "पहिले Toss खाता प्रमाणित गर्नुहोस्।",
+    "err_toss_unverified": "Toss भुक्तानीले अहिलेलाई परीक्षण कुञ्जी (test_) मात्र लिन्छ।",
+    "err_invalid_cap": "अनुमति दिइएको दायराभित्रको संख्या लेख्नुहोस्।",
     "err_invalid_capacity": "मान्य क्षमता प्रविष्ट गर्नुहोस्।",
   },
   "ru": {
@@ -348,7 +354,8 @@ X = {
     "err_payout_state": "Статус выплаты изменился. Обновите и проверьте снова.",
     "err_payout_provider": "Этот способ выплаты сейчас недоступен.",
     "err_unsupported_bank": "Этот банк не поддерживается для выплат.",
-    "err_toss_unverified": "Сначала подтвердите аккаунт Toss.",
+    "err_toss_unverified": "Выплаты Toss пока принимают только тестовые ключи (test_).",
+    "err_invalid_cap": "Введите число в допустимом диапазоне.",
     "err_invalid_capacity": "Введите корректную вместимость.",
   },
   "si": {
@@ -397,7 +404,8 @@ X = {
     "err_payout_state": "ගෙවීම් තත්ත්වය වෙනස් වී ඇත. නැවුම් කර නැවත පරීක්ෂා කරන්න.",
     "err_payout_provider": "මෙම ගෙවීම් ක්‍රමය දැනට ලබා ගත නොහැක.",
     "err_unsupported_bank": "මෙම බැංකුවට ගෙවීම් සඳහා සහාය නොදක්වයි.",
-    "err_toss_unverified": "පළමුව Toss ගිණුම තහවුරු කරන්න.",
+    "err_toss_unverified": "Toss ගෙවීම් දැනට පරීක්ෂණ යතුරු (test_) පමණක් පිළිගනී.",
+    "err_invalid_cap": "අවසර ලත් පරාසය තුළ අංකයක් ඇතුළත් කරන්න.",
     "err_invalid_capacity": "වලංගු ධාරිතාවක් ඇතුළත් කරන්න.",
   },
   "th": {
@@ -446,7 +454,8 @@ X = {
     "err_payout_state": "สถานะการจ่ายเงินเปลี่ยนแล้ว กรุณารีเฟรชแล้วตรวจสอบอีกครั้ง",
     "err_payout_provider": "วิธีจ่ายเงินนี้ใช้ไม่ได้ในขณะนี้",
     "err_unsupported_bank": "ธนาคารนี้ยังไม่รองรับการจ่ายเงิน",
-    "err_toss_unverified": "กรุณายืนยันบัญชี Toss ก่อน",
+    "err_toss_unverified": "ตอนนี้ Toss รับเฉพาะคีย์ทดสอบ (test_) เท่านั้น",
+    "err_invalid_cap": "กรุณาใส่ตัวเลขในช่วงที่อนุญาต",
     "err_invalid_capacity": "กรุณากรอกความจุที่ถูกต้อง",
   },
   "uz": {
@@ -495,7 +504,8 @@ X = {
     "err_payout_state": "To‘lov holati o‘zgardi. Yangilab, qayta tekshiring.",
     "err_payout_provider": "Bu to‘lov usuli hozircha mavjud emas.",
     "err_unsupported_bank": "Bu bank to‘lovlar uchun qo‘llab-quvvatlanmaydi.",
-    "err_toss_unverified": "Avval Toss hisobini tasdiqlang.",
+    "err_toss_unverified": "Toss to‘lovlari hozircha faqat test kalitlarini (test_) qabul qiladi.",
+    "err_invalid_cap": "Ruxsat etilgan oraliqdagi sonni kiriting.",
     "err_invalid_capacity": "To‘g‘ri sig‘imni kiriting.",
   },
 }

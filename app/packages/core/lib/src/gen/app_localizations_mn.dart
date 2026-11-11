@@ -1922,7 +1922,11 @@ class TMn extends T {
   String get err_unsupported_bank => 'Энэ банкад төлбөр шилжүүлэх боломжгүй.';
 
   @override
-  String get err_toss_unverified => 'Эхлээд Toss дансаа баталгаажуулна уу.';
+  String get err_toss_unverified =>
+      'Toss төлбөр одоогоор зөвхөн туршилтын түлхүүр (test_) хүлээн авна.';
+
+  @override
+  String get err_invalid_cap => 'Зөвшөөрөгдсөн хязгаарт багтах тоо оруулна уу.';
 
   @override
   String get err_invalid_capacity => 'Зөв багтаамж оруулна уу.';

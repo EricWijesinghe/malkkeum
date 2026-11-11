@@ -1916,7 +1916,11 @@ class TId extends T {
   String get err_unsupported_bank => 'Bank ini belum didukung untuk pencairan.';
 
   @override
-  String get err_toss_unverified => 'Verifikasi akun Toss dulu.';
+  String get err_toss_unverified =>
+      'Pembayaran Toss untuk sementara hanya menerima kunci uji (test_).';
+
+  @override
+  String get err_invalid_cap => 'Masukkan angka dalam rentang yang diizinkan.';
 
   @override
   String get err_invalid_capacity => 'Masukkan kapasitas yang valid.';

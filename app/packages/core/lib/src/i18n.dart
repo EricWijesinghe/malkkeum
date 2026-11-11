@@ -94,6 +94,7 @@ extension Labels on T {
         'payout_provider' => err_payout_provider,
         'unsupported_bank' => err_unsupported_bank,
         'toss_unverified' => err_toss_unverified,
+        'invalid_cap' => err_invalid_cap,
         'invalid_capacity' => err_invalid_capacity,
         _ => null,
       };

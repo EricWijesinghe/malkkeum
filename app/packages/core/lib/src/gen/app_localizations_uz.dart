@@ -1925,7 +1925,11 @@ class TUz extends T {
       'Bu bank to‘lovlar uchun qo‘llab-quvvatlanmaydi.';
 
   @override
-  String get err_toss_unverified => 'Avval Toss hisobini tasdiqlang.';
+  String get err_toss_unverified =>
+      'Toss to‘lovlari hozircha faqat test kalitlarini (test_) qabul qiladi.';
+
+  @override
+  String get err_invalid_cap => 'Ruxsat etilgan oraliqdagi sonni kiriting.';
 
   @override
   String get err_invalid_capacity => 'To‘g‘ri sig‘imni kiriting.';

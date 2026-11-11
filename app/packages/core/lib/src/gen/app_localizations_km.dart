@@ -1911,7 +1911,11 @@ class TKm extends T {
   String get err_unsupported_bank => 'ធនាគារនេះមិនគាំទ្រការបង់ប្រាក់ទេ។';
 
   @override
-  String get err_toss_unverified => 'សូមផ្ទៀងផ្ទាត់គណនី Toss ជាមុនសិន។';
+  String get err_toss_unverified =>
+      'ការទូទាត់ Toss ទទួលតែកូនសោសាកល្បង (test_) ប៉ុណ្ណោះសម្រាប់ពេលនេះ។';
+
+  @override
+  String get err_invalid_cap => 'សូមបញ្ចូលលេខក្នុងចន្លោះដែលអនុញ្ញាត។';
 
   @override
   String get err_invalid_capacity => 'បញ្ចូលចំណុះត្រឹមត្រូវ។';

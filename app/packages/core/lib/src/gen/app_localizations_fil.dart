@@ -1930,7 +1930,11 @@ class TFil extends T {
       'Hindi suportado ang bangkong ito para sa bayad.';
 
   @override
-  String get err_toss_unverified => 'I-verify muna ang Toss account.';
+  String get err_toss_unverified =>
+      'Test key (test_) lang muna ang tinatanggap ng Toss payouts.';
+
+  @override
+  String get err_invalid_cap => 'Maglagay ng numero sa pinapayagang saklaw.';
 
   @override
   String get err_invalid_capacity => 'Maglagay ng valid na kapasidad.';

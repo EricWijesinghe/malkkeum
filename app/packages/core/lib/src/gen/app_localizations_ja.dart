@@ -1855,7 +1855,10 @@ class TJa extends T {
   String get err_unsupported_bank => 'この銀行への支払いはサポートされていません。';
 
   @override
-  String get err_toss_unverified => '先にTossアカウントの認証を完了してください。';
+  String get err_toss_unverified => 'Toss支払い代行は現在テストキー(test_)のみ使えます。';
+
+  @override
+  String get err_invalid_cap => '上限は許可された範囲の数字で入力してください。';
 
   @override
   String get err_invalid_capacity => '定員は正しい数字で入力してください。';

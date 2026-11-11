@@ -1904,7 +1904,11 @@ class TEn extends T {
   String get err_unsupported_bank => 'This bank isn\'t supported for payouts.';
 
   @override
-  String get err_toss_unverified => 'Verify your Toss account first.';
+  String get err_toss_unverified =>
+      'Toss payouts accept only test keys (test_) for now.';
+
+  @override
+  String get err_invalid_cap => 'Enter a number within the allowed range.';
 
   @override
   String get err_invalid_capacity => 'Enter a valid capacity.';

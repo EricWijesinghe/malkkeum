@@ -1914,7 +1914,11 @@ class TRu extends T {
   String get err_unsupported_bank => 'Этот банк не поддерживается для выплат.';
 
   @override
-  String get err_toss_unverified => 'Сначала подтвердите аккаунт Toss.';
+  String get err_toss_unverified =>
+      'Выплаты Toss пока принимают только тестовые ключи (test_).';
+
+  @override
+  String get err_invalid_cap => 'Введите число в допустимом диапазоне.';
 
   @override
   String get err_invalid_capacity => 'Введите корректную вместимость.';

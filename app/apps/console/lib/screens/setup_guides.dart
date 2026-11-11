@@ -385,5 +385,6 @@ String setupMessage(T t, String code) => switch (code) {
   'invalid_model' => t.err_invalid_model,
   'missing_field' => t.err_missing_field,
   'toss_unverified' => t.err_toss_unverified,
+  'invalid_cap' => t.err_invalid_cap,
   _ => t.cInvalidValue,
 };

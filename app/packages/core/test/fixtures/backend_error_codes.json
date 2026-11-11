@@ -70,6 +70,7 @@
     "team_full",
     "too_many_open_requests",
     "toss_unverified",
+    "invalid_cap",
     "unsupported_bank",
     "unsupported_image",
     "upload_quota"

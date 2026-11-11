@@ -1912,7 +1912,11 @@ class TNe extends T {
   String get err_unsupported_bank => 'यो बैंकमा भुक्तानी गर्न समर्थित छैन।';
 
   @override
-  String get err_toss_unverified => 'पहिले Toss खाता प्रमाणित गर्नुहोस्।';
+  String get err_toss_unverified =>
+      'Toss भुक्तानीले अहिलेलाई परीक्षण कुञ्जी (test_) मात्र लिन्छ।';
+
+  @override
+  String get err_invalid_cap => 'अनुमति दिइएको दायराभित्रको संख्या लेख्नुहोस्।';
 
   @override
   String get err_invalid_capacity => 'मान्य क्षमता प्रविष्ट गर्नुहोस्।';
