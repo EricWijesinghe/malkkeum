@@ -282,6 +282,9 @@ pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) ->
             .bind(status)
             .execute(&s.db)
             .await?;
+        if status == "refunded" {
+            super::cash_receipts::on_full_refund(s, pid, &tx).await;
+        }
         left -= amt;
         total += amt;
     }

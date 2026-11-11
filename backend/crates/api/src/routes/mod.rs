@@ -6,6 +6,7 @@ mod booking_core;
 mod bookings;
 mod catalog;
 pub(crate) mod chat;
+mod cash_receipts;
 mod checkout_policy;
 pub(crate) mod growth;
 pub(crate) mod checkouts;
@@ -61,6 +62,7 @@ pub fn router(state: AppState) -> Router {
         .merge(chat::routes())
         .merge(uploads::routes())
         .merge(checkouts::routes())
+        .merge(cash_receipts::routes())
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
@@ -77,6 +79,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(setup::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
+                .merge(cash_receipts::admin_routes())
                 .merge(ops::admin_routes()),
         )
         .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()))

@@ -2,6 +2,7 @@
 //! Everything here is pure and deterministic: callers pass "today" and data in.
 
 pub mod booking;
+pub mod cash_receipt;
 pub mod catalog;
 pub mod coupon;
 pub mod error;

@@ -425,6 +425,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    super::cash_receipts::on_settled(s, ck.id, payment_id).await;
     match number {
         Some(n) => after_booking_created(s, booking_id, &n).await,
         None if db_kind == "deposit" => {
@@ -450,7 +451,7 @@ async fn book(tx: &mut Transaction<'_, Postgres>, user: Uuid, prep: &Prepared, b
     Ok((id, number))
 }
 
-async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
+pub(super) async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
     sqlx::query_as(&format!("SELECT {CHECKOUT_COLS} FROM checkouts WHERE id = $1 AND user_id = $2"))
         .bind(id)
         .bind(user)

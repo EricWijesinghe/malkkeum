@@ -124,6 +124,7 @@ mod tests {
         };
         let out = finance::csv_document(&vat_document(&input));
         let golden = include_str!("../tests/golden/vat_2026q3.csv");
-        assert_eq!(out.trim_start_matches(finance::CSV_BOM), golden);
+        // Git may check the fixture out with LF; compare line endings loosely.
+        assert_eq!(out.trim_start_matches(finance::CSV_BOM).replace("\r\n", "\n"), golden.replace("\r\n", "\n"));
     }
 }
