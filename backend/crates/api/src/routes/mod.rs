@@ -7,6 +7,7 @@ mod bookings;
 mod catalog;
 pub(crate) mod chat;
 mod checkout_policy;
+pub(crate) mod config;
 pub(crate) mod growth;
 pub(crate) mod checkouts;
 mod finance;
@@ -67,6 +68,8 @@ pub fn router(state: AppState) -> Router {
         .merge(webhooks::routes())
         .merge(setup::public_routes())
         .merge(address::public_routes())
+        .merge(config::routes())
+        .merge(crate::client_errors::routes())
         .nest(
             "/admin",
             admin::routes()
@@ -75,6 +78,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
+                .merge(config::admin_routes())
+                .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
                 .merge(ops::admin_routes()),
