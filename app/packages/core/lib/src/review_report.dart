@@ -21,8 +21,7 @@ String reviewReportLabel(T t, String reason) => switch (reason) {
 
 /// Store rule (Google Play UGC, App Store 1.2): every public review can be reported in the app.
 /// Returns true when the report was accepted.
-Future<bool> showReviewReport(BuildContext context, {required String bookingId}) async {
-  final api = context.api;
+Future<bool> showReviewReport(BuildContext context, {required ApiClient api, required String bookingId}) async {
   final sent = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
@@ -37,15 +36,16 @@ Future<bool> showReviewReport(BuildContext context, {required String bookingId})
 
 /// Report action for one review card. Shows a thank-you snackbar after a successful report.
 class ReviewReportButton extends StatelessWidget {
-  const ReviewReportButton({super.key, required this.bookingId});
+  const ReviewReportButton({super.key, required this.api, required this.bookingId});
 
+  final ApiClient api;
   final String bookingId;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () async {
-        final sent = await showReviewReport(context, bookingId: bookingId);
+        final sent = await showReviewReport(context, api: api, bookingId: bookingId);
         if (sent && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.t.reportThanks)));
         }
