@@ -347,6 +347,10 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
             .execute(&mut *tx)
             .await?;
     }
+    if refund_cap.is_none() {
+        // Full refund: the points this booking spent come back as a fresh lot.
+        crate::points::reverse_spend(&mut tx, b.id).await?;
+    }
     sqlx::query("UPDATE quotes SET state = 'closed', updated_at = now() WHERE booking_id = $1 AND state = 'waiting'")
         .bind(b.id)
         .execute(&mut *tx)

@@ -17,8 +17,15 @@ use uuid::Uuid;
 /// Bump when any of them changes: every stored consent with another version stops counting.
 pub const CONSENT_VERSION: &str = "2026-11-17";
 
-/// Kind and whether the service cannot run without it. Marketing is optional and withdrawable.
-pub const CONSENTS: [(&str, bool); 4] = [("terms", true), ("privacy", true), ("overseas_transfer", true), ("marketing", false)];
+/// Kind and whether the service cannot run without it. Marketing and location are optional and
+/// withdrawable; without location consent the address is typed or searched by hand.
+pub const CONSENTS: [(&str, bool); 5] = [
+    ("terms", true),
+    ("privacy", true),
+    ("overseas_transfer", true),
+    ("marketing", false),
+    ("location", false),
+];
 
 /// Messages that are advertising under 정보통신망법: sent only while `marketing` is granted.
 /// Transactional kinds (booking, payment, chat) never match.

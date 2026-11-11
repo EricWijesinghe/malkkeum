@@ -479,6 +479,7 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
         .execute(&mut *tx)
         .await?;
     growth::reward_on_paid_completion(&mut tx, id).await?;
+    crate::points::on_completed(&mut tx, id).await?;
     tx.commit().await?;
     if let Some(t) = b.thread_id {
         best_effort("chat", chat::post_system(&s, t, "job_completed", json!({}))).await;

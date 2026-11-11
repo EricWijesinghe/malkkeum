@@ -58,7 +58,7 @@ pub fn admin_routes() -> Router<AppState> {
         .route("/reviews/{booking_id}/author", put(set_author_block))
 }
 
-async fn load_setting<'e, T: DeserializeOwned + Default>(ex: impl PgExecutor<'e>, key: &str) -> ApiResult<T> {
+pub(crate) async fn load_setting<'e, T: DeserializeOwned + Default>(ex: impl PgExecutor<'e>, key: &str) -> ApiResult<T> {
     let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(key).fetch_optional(ex).await?;
     match v {
         None => Ok(T::default()),
@@ -66,7 +66,7 @@ async fn load_setting<'e, T: DeserializeOwned + Default>(ex: impl PgExecutor<'e>
     }
 }
 
-async fn save_setting<T: Serialize>(db: &PgPool, key: &str, value: &T) -> ApiResult<()> {
+pub(crate) async fn save_setting<T: Serialize>(db: &PgPool, key: &str, value: &T) -> ApiResult<()> {
     sqlx::query("INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")
         .bind(key)
         .bind(sqlx::types::Json(value))
@@ -181,7 +181,15 @@ pub(crate) async fn reward_on_paid_completion(conn: &mut PgConnection, booking: 
     }
     let now = Utc::now();
     let expires: DateTime<Utc> = now + Duration::days(COUPON_LIFETIME_DAYS);
-    for (who, name) in [(friend, "referral_friend"), (referrer, "referral_reward")] {
+    let points = crate::points::load_policy(&mut *conn).await?;
+    if points.enabled {
+        // Points programme on: both sides get points instead of coupons.
+        for who in [friend, referrer] {
+            crate::points::grant(&mut *conn, who, "referral", points.referral_points, format!("referral:{friend}:{who}")).await?;
+        }
+    }
+    let coupons = [(friend, "referral_friend"), (referrer, "referral_reward")];
+    for (who, name) in coupons.into_iter().filter(|_| !points.enabled) {
         sqlx::query("INSERT INTO coupons (user_id, name, amount, campaign, issued_at, expires_at) VALUES ($1,$2,$3,'referral',$4,$5)")
             .bind(who)
             .bind(name)

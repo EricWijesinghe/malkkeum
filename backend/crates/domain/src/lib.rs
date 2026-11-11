@@ -12,6 +12,7 @@ pub mod growth;
 pub mod household;
 pub mod money;
 pub mod partner;
+pub mod points;
 pub mod pricing;
 pub mod quote;
 pub mod schedule;
