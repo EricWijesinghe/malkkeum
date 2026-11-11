@@ -1,3 +1,6 @@
+import java.util.Base64
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -6,7 +9,7 @@ plugins {
 
 // Release signing: CI secrets (Codemagic CM_KEYSTORE_*) or android/key.properties.
 // Without either, release builds fall back to debug keys so `flutter run --release` still works.
-val keyProps = java.util.Properties().apply {
+val keyProps = Properties().apply {
     val f = rootProject.file("key.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
@@ -17,7 +20,7 @@ val dartDefines: Map<String, String> =
     (project.findProperty("dart-defines") as String?)
         ?.split(",")
         ?.associate { entry ->
-            val (key, value) = String(java.util.Base64.getDecoder().decode(entry)).split("=", limit = 2)
+            val (key, value) = String(Base64.getDecoder().decode(entry)).split("=", limit = 2)
             key to value
         }
         .orEmpty()
