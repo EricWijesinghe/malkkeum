@@ -5,6 +5,10 @@ use crate::providers::ProviderError;
 use serde::Serialize;
 use serde_json::Value;
 
+// Source: business.juso.go.kr/jst/jstRoadNmAddrApiSearch (request: GET addrLinkApi.do; confmKey, currentPage,
+// countPerPage, keyword, resultType=json). Official 404 on apiExprn.do; params confirmed via K-PaaS guide only.
+// shortcut: keyword symbol/SQL-word filter is our policy, not a documented Juso rule; the provider's
+// security appliance blocks SQL-like input anyway. Revisit if Juso publishes an exact list.
 pub const JUSO_API: &str = "https://business.juso.go.kr/addrlink/addrLinkApi.do";
 pub const PAGE_SIZE: u32 = 10;
 pub const MAX_PAGE: u32 = 100;
@@ -48,13 +52,17 @@ fn text(v: &Value) -> String {
 }
 
 /// Reads the provider's JSON. Any `errorCode` other than "0" is an upstream failure.
+/// Source: business.juso.go.kr 검색 API. The docs disagree on the wrapper: the official shape is
+/// `results.common` / `results.juso`; the K-PaaS guide (https://github.com/K-PaaS/application-platform-guide/blob/master/user_guide/development_platform/road_address.md)
+/// shows `common` / `juso` at the top level. Accept both until the official page is confirmed.
 pub fn parse(v: &Value) -> Result<Vec<Hit>, ProviderError> {
-    match v["results"]["common"]["errorCode"].as_str() {
+    let root = if v["results"].is_object() { &v["results"] } else { v };
+    match root["common"]["errorCode"].as_str() {
         Some("0") => {}
         Some(code) => return Err(ProviderError::Upstream(format!("juso error {code}"))),
         None => return Err(ProviderError::Upstream("juso response shape".into())),
     }
-    let items = v["results"]["juso"].as_array().map_or(&[][..], Vec::as_slice);
+    let items = root["juso"].as_array().map_or(&[][..], Vec::as_slice);
     Ok(items
         .iter()
         .map(|j| Hit {
@@ -121,6 +129,8 @@ mod tests {
         assert_eq!(hits, vec![Hit { road_address: "서울 강남구 테헤란로 1".into(), jibun_address: "서울 강남구 역삼동 1".into(), zip_code: "06234".into(), building_name: "빌딩".into() }]);
         let none = json!({"results": {"common": {"errorCode": "0"}}});
         assert!(parse(&none).expect("empty").is_empty());
+        let flat = json!({"common": {"errorCode": "0"}, "juso": [{"roadAddr": " flat ", "jibunAddr": "", "zipNo": "", "bdNm": ""}]});
+        assert_eq!(parse(&flat).expect("flat shape")[0].road_address, "flat");
         let bad_key = json!({"results": {"common": {"errorCode": "E0001"}}});
         assert!(matches!(parse(&bad_key), Err(ProviderError::Upstream(_))));
         assert!(matches!(parse(&json!({})), Err(ProviderError::Upstream(_))));

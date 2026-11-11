@@ -17,7 +17,7 @@ hmac = "0.12"
 hex = "0.4"
 jsonwebtoken = { version = "10.3", default-features = false, features = ["rust_crypto", "use_pem"] }
 rand = "0.8"
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream", "form"] }
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "0.10"

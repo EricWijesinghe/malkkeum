@@ -80,6 +80,7 @@ struct Row {
     holder: String,
     account_enc: String,
     idempotency_key: String,
+    provider_transfer_id: Option<String>,
 }
 
 impl Row {
@@ -166,7 +167,7 @@ enum Owner {
 
 async fn lock(tx: &mut Transaction<'_, Postgres>, id: Uuid) -> ApiResult<Row> {
     Ok(sqlx::query_as(
-        "SELECT payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key
+        "SELECT payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key, provider_transfer_id
          FROM payouts WHERE id = $1 FOR UPDATE",
     )
     .bind(id)
@@ -298,7 +299,11 @@ async fn sync(s: &AppState, id: Uuid) -> ApiResult<State> {
     if row.state() != State::Sent {
         return Err(ApiError::Conflict("payout_state"));
     }
-    let status = s.providers.transfer_status(&id.to_string()).await?;
+    // Toss looks payouts up by its own id (returned on create), not by our refPayoutId.
+    let Some(provider_id) = row.provider_transfer_id.as_deref() else {
+        return Err(ApiError::Conflict("payout_state"));
+    };
+    let status = s.providers.transfer_status(provider_id).await?;
     let to = match status {
         adapter::TransferStatus::Pending => return Ok(State::Sent),
         adapter::TransferStatus::Paid => State::Paid,
