@@ -8,6 +8,7 @@ use common::call;
 use serde_json::{Value, json};
 use sqlx::PgPool;
 
+/// Owner sign-in: password, then the admin's first-time TOTP enrolment (admins must have a second factor).
 async fn owner_token(app: &axum::Router) -> String {
     let (st, b) = call(
         app,
@@ -18,7 +19,15 @@ async fn owner_token(app: &axum::Router) -> String {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
-    b["access_token"].as_str().expect("token").to_string()
+    assert_eq!(b["mfa_enrol_required"], json!(true), "{b}");
+    let mfa = b["mfa_token"].as_str().expect("mfa token").to_string();
+    let (st, e) = call(app, "POST", "/v1/auth/staff/mfa/enrol", None, Some(json!({ "mfa_token": mfa }))).await;
+    assert_eq!(st, StatusCode::OK, "{e}");
+    let secret = api::totp::decode_secret(e["secret"].as_str().expect("secret")).expect("base32");
+    let code = format!("{:06}", api::totp::code_at(&secret, (chrono::Utc::now().timestamp() / api::totp::STEP_SECS) as u64));
+    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/enrol/confirm", None, Some(json!({ "mfa_token": mfa, "code": code }))).await;
+    assert_eq!(st, StatusCode::OK, "{c}");
+    c["access_token"].as_str().expect("token").to_string()
 }
 
 async fn create_owner(app: &axum::Router, code: &str) -> (StatusCode, Value) {

@@ -73,7 +73,7 @@ async fn logout_all_revokes_every_device(db: PgPool) {
     let a = sign_in(&app, "010-7200-0004").await;
     let b = sign_in(&app, "010-7200-0004").await;
     let access = a["access_token"].as_str().unwrap().to_string();
-    let (st, _) = call(&app, "POST", "/v1/auth/logout-all", Some(&access), None).await;
+    let (st, _) = call(&app, "POST", "/v1/auth/logout-all", Some(access.as_str()), None).await;
     assert_eq!(st, StatusCode::OK);
     assert_eq!(refresh(&app, a["refresh_token"].as_str().unwrap()).await.0, StatusCode::UNAUTHORIZED);
     assert_eq!(refresh(&app, b["refresh_token"].as_str().unwrap()).await.0, StatusCode::UNAUTHORIZED);

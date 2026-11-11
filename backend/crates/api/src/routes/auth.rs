@@ -112,7 +112,7 @@ pub struct Tokens {
 }
 
 /// Issues a token pair. A rotation passes its existing `family`; a fresh sign-in starts a new one.
-async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool, family: Option<Uuid>) -> ApiResult<Tokens> {
+pub(super) async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: bool, family: Option<Uuid>) -> ApiResult<Tokens> {
     let (refresh_token, hash) = auth::new_refresh_token();
     sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, family_id) VALUES ($1, $2, $3, $4, $5)")
         .bind(hash)
@@ -322,7 +322,9 @@ struct StaffLogin {
     password: String,
 }
 
-async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Tokens>> {
+/// Password step. Consultants get tokens; a second factor is required before tokens for enrolled staff and
+/// for admins, who must enrol first. Those steps run on a short-lived challenge token (routes/staff_mfa).
+async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Value>> {
     if req.password.len() > MAX_PASSWORD_BYTES {
         return Err(ApiError::Unauthorized);
     }
@@ -355,8 +357,15 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
         .bind(id)
         .execute(&s.db)
         .await?;
-    let role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
-    Ok(Json(issue_tokens(&s, id, role, false, None).await?))
+    let enrolled: bool = sqlx::query_scalar("SELECT totp_enabled_at IS NOT NULL FROM staff WHERE id = $1").bind(id).fetch_one(&s.db).await?;
+    if enrolled {
+        return Ok(Json(json!({ "mfa_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
+    }
+    if role == "admin" {
+        return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
+    }
+    let tokens = issue_tokens(&s, id, Role::StaffConsultant, false, None).await?;
+    Ok(Json(serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))?))
 }
 
 /// Maps a unique violation to a 409 with a specific code; any other database error stays internal.

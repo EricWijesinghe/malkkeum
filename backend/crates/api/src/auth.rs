@@ -76,6 +76,49 @@ pub struct Auth {
     pub role: Role,
 }
 
+/// Audience of the short-lived token that stands for a password-verified staff login awaiting a second factor.
+/// Access verification requires `JWT_AUD`, so this token cannot be used as an access token.
+pub const MFA_AUD: &str = "malkkeum-mfa";
+pub const MFA_TTL_MIN: i64 = 5;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct MfaClaims {
+    sub: Uuid,
+    exp: i64,
+    iat: i64,
+    iss: String,
+    aud: String,
+}
+
+pub fn issue_mfa(secret: &[u8], staff: Uuid) -> Result<String, ApiError> {
+    let now = Utc::now();
+    let claims = MfaClaims {
+        sub: staff,
+        iat: now.timestamp(),
+        exp: (now + Duration::minutes(MFA_TTL_MIN)).timestamp(),
+        iss: JWT_ISS.into(),
+        aud: MFA_AUD.into(),
+    };
+    let header = Header {
+        kid: Some(key_id(secret)),
+        ..Header::default()
+    };
+    encode(&header, &claims, &EncodingKey::from_secret(secret)).map_err(|e| ApiError::Internal(e.to_string()))
+}
+
+/// Staff id from a second-factor challenge token, checked against the same key set as access tokens.
+pub fn verify_mfa(keys: &[&[u8]], token: &str) -> Result<Uuid, ApiError> {
+    let kid = decode_header(token).ok().and_then(|h| h.kid).ok_or(ApiError::Unauthorized)?;
+    let key = keys.iter().find(|k| key_id(k) == kid).ok_or(ApiError::Unauthorized)?;
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.leeway = CLOCK_SKEW_SECS;
+    validation.set_issuer(&[JWT_ISS]);
+    validation.set_audience(&[MFA_AUD]);
+    validation.set_required_spec_claims(&["exp", "iss", "aud", "sub"]);
+    let data = decode::<MfaClaims>(token, &DecodingKey::from_secret(key), &validation).map_err(|_| ApiError::Unauthorized)?;
+    Ok(data.claims.sub)
+}
+
 /// Public fingerprint of a signing key, carried in the token header so verifiers pick the right key during rotation.
 pub fn key_id(secret: &[u8]) -> String {
     sha256_hex(secret)[..16].to_string()

@@ -25,6 +25,7 @@ pub mod reconciler;
 pub mod routes;
 pub mod seed;
 pub mod state;
+pub mod totp;
 pub mod util;
 
 use crate::{config::Config, providers::Providers, realtime::Hub, state::AppState};
