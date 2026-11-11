@@ -48,10 +48,12 @@ class CustomerApp extends StatelessWidget {
       theme: theme,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        builder: (context, child) => UpdateGate(
-          api: session.api,
-          app: 'customer',
-          child: child ?? const SizedBox.shrink(),
+        builder: (context, child) => DesktopColumn(
+          child: UpdateGate(
+            api: session.api,
+            app: 'customer',
+            child: child ?? const SizedBox.shrink(),
+          ),
         ),
         onGenerateTitle: (c) => BrandConfig.placeholder.name,
         theme: buildTheme(BrandConfig.placeholder, Brightness.light),
@@ -67,7 +69,9 @@ class CustomerApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: session.signedIn ? const Shell() : LanguageWelcome(locale: locale, child: const IntroScreen()),
+        home: session.signedIn
+            ? const Shell()
+            : LanguageWelcome(locale: locale, child: const IntroScreen()),
       ),
     ),
   );

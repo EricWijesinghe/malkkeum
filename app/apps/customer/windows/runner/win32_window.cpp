@@ -179,6 +179,17 @@ Win32Window::MessageHandler(HWND hwnd,
                             WPARAM const wparam,
                             LPARAM const lparam) noexcept {
   switch (message) {
+    case WM_GETMINMAXINFO: {
+      // Smallest usable layout, in logical pixels, scaled to this window's DPI.
+      constexpr double kMinWidth = 1024;
+      constexpr double kMinHeight = 640;
+      constexpr double kBaseDpi = 96;
+      auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
+      const double scale = GetDpiForWindow(hwnd) / kBaseDpi;
+      info->ptMinTrackSize.x = static_cast<LONG>(kMinWidth * scale);
+      info->ptMinTrackSize.y = static_cast<LONG>(kMinHeight * scale);
+      return 0;
+    }
     case WM_DESTROY:
       window_handle_ = nullptr;
       Destroy();

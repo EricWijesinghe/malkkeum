@@ -233,6 +233,13 @@ class TTh extends T {
   String get apPgCancel => 'ยกเลิกการชำระเงิน';
 
   @override
+  String get apPgBrowserNote =>
+      'ชำระเงินในเบราว์เซอร์ให้เสร็จ แล้วกลับมาที่นี่และกดปุ่มด้านล่าง';
+
+  @override
+  String get apPgBrowserDone => 'ชำระเงินแล้ว';
+
+  @override
   String get apErrSlotFullRefunded =>
       'เวลานี้เพิ่งเต็ม จึงยกเลิกการชำระเงินให้อัตโนมัติ';
 

@@ -239,6 +239,13 @@ class TUz extends T {
   String get apPgCancel => 'To\'lovni bekor qilish';
 
   @override
+  String get apPgBrowserNote =>
+      'To\'lovni brauzerda yakunlang, so\'ng bu yerga qaytib, pastdagi tugmani bosing.';
+
+  @override
+  String get apPgBrowserDone => 'To\'lovni amalga oshirdim';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Bu vaqt endi band bo\'ldi, shuning uchun to\'lov avtomatik bekor qilindi';
 

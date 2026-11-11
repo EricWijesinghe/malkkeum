@@ -238,6 +238,13 @@ class TMn extends T {
   String get apPgCancel => 'Төлбөрийг цуцлах';
 
   @override
+  String get apPgBrowserNote =>
+      'Төлбөрөө браузер дээр дуусгаад, энд буцаж ирээд доорх товчийг дарна уу.';
+
+  @override
+  String get apPgBrowserDone => 'Би төлбөрөө төлсөн';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Энэ цаг дөнгөж дүүрсэн тул төлбөрийг автоматаар цуцаллаа';
 

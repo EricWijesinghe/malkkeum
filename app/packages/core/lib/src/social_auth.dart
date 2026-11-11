@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'desktop.dart';
 import 'session.dart';
 import 'social_native_stub.dart' if (dart.library.io) 'social_native_io.dart';
 
@@ -29,9 +30,12 @@ abstract class SocialSignIn {
 /// Dev stand-in: a stable random id per provider, so the same tester keeps the same account.
 /// Only offered when the API base is local (see [socialSignInsFor]).
 class DevSocialSignIn extends SocialSignIn {
-  DevSocialSignIn(this.provider, {required FlutterSecureStorage storage, Random? random})
-      : _storage = storage,
-        _random = random ?? Random.secure();
+  DevSocialSignIn(
+    this.provider, {
+    required FlutterSecureStorage storage,
+    Random? random,
+  }) : _storage = storage,
+       _random = random ?? Random.secure();
 
   @override
   final String provider;
@@ -48,7 +52,10 @@ class DevSocialSignIn extends SocialSignIn {
     } catch (_) {
       // Keystore unavailable: a fresh id still lets the flow run.
     }
-    final id = List.generate(16, (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+    final id = List.generate(
+      16,
+      (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
     try {
       await _storage.write(key: _key, value: id);
     } catch (_) {
@@ -68,15 +75,20 @@ class UnconfiguredSocialSignIn extends SocialSignIn {
   final String provider;
 
   @override
-  Future<String?> obtainToken(BuildContext context) async => throw const ApiException(501, 'provider_not_configured');
+  Future<String?> obtainToken(BuildContext context) async =>
+      throw const ApiException(501, 'provider_not_configured');
 }
 
 /// Native keys, read at build time (--dart-define). Empty = not configured; that hides the provider.
 abstract final class SocialKeys {
   static const kakaoNativeKey = String.fromEnvironment('KAKAO_NATIVE_KEY');
   static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
-  static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
-  static const googleIosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
+  static const googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+  );
+  static const googleIosClientId = String.fromEnvironment(
+    'GOOGLE_IOS_CLIENT_ID',
+  );
   static const requested = String.fromEnvironment('SOCIAL_PROVIDERS');
 
   static const values = {
@@ -89,23 +101,32 @@ abstract final class SocialKeys {
 
 /// Which providers this build can offer. [requested] (SOCIAL_PROVIDERS, comma list) narrows the list;
 /// empty means all. A provider is offered only when every key it needs is set. Apple needs no key.
-Set<String> providersForKeys({required String requested, required Map<String, String> keys, required bool ios}) {
+Set<String> providersForKeys({
+  required String requested,
+  required Map<String, String> keys,
+  required bool ios,
+}) {
   bool has(String k) => (keys[k] ?? '').isNotEmpty;
   final wanted = requested.trim().isEmpty
       ? SocialProviders.all.toSet()
-      : requested.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
+      : requested
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toSet();
   final available = {
     if (has('KAKAO_NATIVE_KEY')) SocialProviders.kakao,
     if (has('NAVER_CLIENT_ID')) SocialProviders.naver,
-    if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID'))) SocialProviders.google,
+    if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID')))
+      SocialProviders.google,
     SocialProviders.apple,
   };
   return wanted.intersection(available);
 }
 
-/// The providers this build offers. Web has no native SDK here, so it offers none.
+/// The providers this build offers. Web and Windows have no native SDK here, so they offer none.
 Set<String> configuredSocialProviders() {
-  if (kIsWeb) return {};
+  if (kIsWeb || isWindowsApp()) return {};
   return providersForKeys(
     requested: SocialKeys.requested,
     keys: SocialKeys.values,
@@ -116,14 +137,18 @@ Set<String> configuredSocialProviders() {
 /// True for loopback / emulator / LAN-style dev hosts. Production hosts never get dev sign-in.
 bool isDevApiBase(String baseUrl) {
   final host = Uri.tryParse(baseUrl)?.host ?? '';
-  return host == 'localhost' || host == '127.0.0.1' || host == '10.0.2.2' || host.endsWith('.local');
+  return host == 'localhost' ||
+      host == '127.0.0.1' ||
+      host == '10.0.2.2' ||
+      host.endsWith('.local');
 }
 
 /// Apple is offered where Sign in with Apple exists (iOS, macOS); never on the web.
 bool appleAvailable() {
   // Web has no Sign in with Apple SDK wired: only the dev stubs appear there.
   if (kIsWeb) return false;
-  return defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS;
+  return defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
 }
 
 /// Providers to show on a sign-in screen, in display order.
@@ -137,7 +162,9 @@ List<SocialSignIn> socialSignInsFor({
   final apple = appleOk ?? appleAvailable();
   final dev = isDevApiBase(apiBase);
   // Web has no social SDK wired yet, so production web shows no social buttons.
-  final live = kIsWeb ? const <String>{} : (configured ?? configuredSocialProviders());
+  final live = kIsWeb
+      ? const <String>{}
+      : (configured ?? configuredSocialProviders());
   final out = <SocialSignIn>[];
   for (final p in SocialProviders.all) {
     if (p == SocialProviders.apple && !apple) continue;
@@ -152,18 +179,23 @@ List<SocialSignIn> socialSignInsFor({
 
 /// Result of POST /v1/auth/social. Tokens are already saved to the session.
 class SocialAuthResult {
-  const SocialAuthResult({required this.isNew, required this.needsPhone, required this.role, required this.subject});
+  const SocialAuthResult({
+    required this.isNew,
+    required this.needsPhone,
+    required this.role,
+    required this.subject,
+  });
   final bool isNew;
   final bool needsPhone;
   final String? role;
   final String? subject;
 
   factory SocialAuthResult.fromJson(Map<String, dynamic> j) => SocialAuthResult(
-        isNew: j['is_new'] as bool? ?? false,
-        needsPhone: j['needs_phone'] as bool? ?? false,
-        role: j['role'] as String?,
-        subject: j['subject'] as String?,
-      );
+    isNew: j['is_new'] as bool? ?? false,
+    needsPhone: j['needs_phone'] as bool? ?? false,
+    role: j['role'] as String?,
+    subject: j['subject'] as String?,
+  );
 }
 
 /// Full social sign-in: SDK token, server exchange, session save. Null when the user cancelled.
@@ -176,17 +208,30 @@ Future<SocialAuthResult?> signInWithSocial({
 }) async {
   final token = await provider.obtainToken(context);
   if (token == null) return null;
-  final body = await api.post('/auth/social', {'provider': provider.provider, 'token': token, 'audience': audience}) as Map<String, dynamic>;
+  final body =
+      await api.post('/auth/social', {
+            'provider': provider.provider,
+            'token': token,
+            'audience': audience,
+          })
+          as Map<String, dynamic>;
   await session.save(body);
   return SocialAuthResult.fromJson(body);
 }
 
 /// Attaches a verified phone to a social account. Customer and partner have separate routes.
-String phoneAttachPath(String audience) => audience == 'partner' ? '/partner/me/phone' : '/me/phone';
+String phoneAttachPath(String audience) =>
+    audience == 'partner' ? '/partner/me/phone' : '/me/phone';
 
-Future<void> attachPhone(ApiClient api, {required String audience, required String phone, required String code}) async {
+Future<void> attachPhone(
+  ApiClient api, {
+  required String audience,
+  required String phone,
+  required String code,
+}) async {
   await api.post(phoneAttachPath(audience), {'phone': phone, 'code': code});
 }
 
 /// App-level default: the platform keystore for dev ids, the build-time provider list.
-List<SocialSignIn> defaultSocialSignIns(String apiBase) => socialSignInsFor(apiBase: apiBase, storage: const FlutterSecureStorage());
+List<SocialSignIn> defaultSocialSignIns(String apiBase) =>
+    socialSignInsFor(apiBase: apiBase, storage: const FlutterSecureStorage());

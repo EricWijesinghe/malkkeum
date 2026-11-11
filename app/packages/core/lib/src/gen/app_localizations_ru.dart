@@ -236,6 +236,13 @@ class TRu extends T {
   String get apPgCancel => 'Отменить оплату';
 
   @override
+  String get apPgBrowserNote =>
+      'Завершите оплату в браузере, затем вернитесь сюда и нажмите кнопку ниже.';
+
+  @override
+  String get apPgBrowserDone => 'Я оплатил';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Это время только что заполнилось, поэтому оплата отменена автоматически';
 

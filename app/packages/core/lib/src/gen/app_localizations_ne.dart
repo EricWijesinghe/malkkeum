@@ -238,6 +238,13 @@ class TNe extends T {
   String get apPgCancel => 'भुक्तानी रद्द गर्नुहोस्';
 
   @override
+  String get apPgBrowserNote =>
+      'ब्राउजरमा भुक्तानी पूरा गर्नुहोस्, त्यसपछि यहाँ फर्केर तलको बटन थिच्नुहोस्।';
+
+  @override
+  String get apPgBrowserDone => 'मैले भुक्तानी गरिसकें';
+
+  @override
   String get apErrSlotFullRefunded =>
       'त्यो समय भर्ने भएकोले भुक्तानी स्वतः रद्द गरियो';
 

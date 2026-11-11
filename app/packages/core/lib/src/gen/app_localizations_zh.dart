@@ -227,6 +227,12 @@ class TZh extends T {
   String get apPgCancel => '取消支付';
 
   @override
+  String get apPgBrowserNote => '请在浏览器中完成付款，然后返回此页面并点击下方按钮。';
+
+  @override
+  String get apPgBrowserDone => '我已完成付款';
+
+  @override
   String get apErrSlotFullRefunded => '该时段刚被订满，付款已自动取消';
 
   @override

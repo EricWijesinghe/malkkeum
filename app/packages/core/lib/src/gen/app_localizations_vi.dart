@@ -235,6 +235,13 @@ class TVi extends T {
   String get apPgCancel => 'Hủy thanh toán';
 
   @override
+  String get apPgBrowserNote =>
+      'Hoàn tất thanh toán trên trình duyệt, sau đó quay lại đây và nhấn nút bên dưới.';
+
+  @override
+  String get apPgBrowserDone => 'Tôi đã thanh toán xong';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Khung giờ vừa kín nên thanh toán đã được hủy tự động';
 

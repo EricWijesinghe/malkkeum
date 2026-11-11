@@ -235,6 +235,13 @@ class TId extends T {
   String get apPgCancel => 'Batalkan pembayaran';
 
   @override
+  String get apPgBrowserNote =>
+      'Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.';
+
+  @override
+  String get apPgBrowserDone => 'Saya sudah membayar';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis';
 

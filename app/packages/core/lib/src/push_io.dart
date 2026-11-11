@@ -37,6 +37,8 @@ class PushService {
 
   /// Call once before runApp.
   static Future<void> init() async {
+    // Windows has no FCM here: push stays off and the in-app inbox still works.
+    if (Platform.isWindows) return;
     await _initLocal();
     _firebaseReady = await _initFirebase();
     if (!_firebaseReady) return;
@@ -45,33 +47,50 @@ class PushService {
     FirebaseMessaging.onMessageOpenedApp.listen((m) => _emitFrom(m.data));
     final launch = await FirebaseMessaging.instance.getInitialMessage();
     if (launch != null) _emitFrom(launch.data);
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   /// After sign-in: asks for notification permission, then registers this device's token and keeps it fresh.
   /// Also makes sign-out remove the token (Session.beforeLogout).
   static Future<void> start(ApiClient api) async {
     if (!_firebaseReady) return;
-    final registrar = PushRegistrar(api: api, platform: Platform.isIOS ? 'ios' : 'android');
+    final registrar = PushRegistrar(
+      api: api,
+      platform: Platform.isIOS ? 'ios' : 'android',
+    );
     api.session.beforeLogout = registrar.unregister;
     // Push setup must never break the app: a refused permission or a missing APNs token only means no push.
     try {
       await FirebaseMessaging.instance.requestPermission();
       if (Platform.isAndroid) {
-        await _local.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+        await _local
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestNotificationsPermission();
       }
       // shortcut: getToken/onTokenRefresh are deprecated in firebase_messaging 17 but still work; move to register()/onRegistered once tested on devices.
       // ignore: deprecated_member_use
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) await registrar.register(token);
       // ignore: deprecated_member_use
-      FirebaseMessaging.instance.onTokenRefresh.listen((t) => _registerQuietly(registrar, t));
+      FirebaseMessaging.instance.onTokenRefresh.listen(
+        (t) => _registerQuietly(registrar, t),
+      );
     } catch (e) {
       debugPrint('push not registered: $e');
     }
   }
 
-  static Future<void> _registerQuietly(PushRegistrar registrar, String token) async {
+  static Future<void> _registerQuietly(
+    PushRegistrar registrar,
+    String token,
+  ) async {
     try {
       await registrar.register(token);
     } catch (e) {
@@ -84,13 +103,25 @@ class PushService {
       settings: const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         // Permission is asked through FirebaseMessaging.requestPermission, after sign-in.
-        iOS: DarwinInitializationSettings(requestAlertPermission: false, requestBadgePermission: false, requestSoundPermission: false),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        ),
       ),
       onDidReceiveNotificationResponse: (r) => _emitFromPayload(r.payload),
     );
     await _local
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(const AndroidNotificationChannel(_channelId, _channelName, importance: Importance.high));
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.createNotificationChannel(
+          const AndroidNotificationChannel(
+            _channelId,
+            _channelName,
+            importance: Importance.high,
+          ),
+        );
   }
 
   /// iOS: the plist is copied into the bundle by the Xcode "Firebase config" phase only when CI wrote it.
@@ -122,7 +153,12 @@ class PushService {
       title: n.title,
       body: n.body,
       notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(_channelId, _channelName, importance: Importance.high, priority: Priority.high),
+        android: AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
       ),
       payload: jsonEncode(message.data),
     );

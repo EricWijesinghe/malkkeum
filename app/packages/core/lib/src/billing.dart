@@ -2,15 +2,23 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import 'api.dart';
+import 'desktop.dart';
 import 'portone_webview.dart';
 
 /// Server's answer for saving a card: PortOne store and per-method channel keys. Disabled until PortOne is configured.
 class BillingSetup {
-  const BillingSetup({required this.enabled, this.storeId = '', this.channels = const {}, this.issueId = '', this.customerId = ''});
+  const BillingSetup({
+    required this.enabled,
+    this.storeId = '',
+    this.channels = const {},
+    this.issueId = '',
+    this.customerId = '',
+  });
   final bool enabled;
   final String storeId;
   final Map<String, String> channels;
   final String issueId;
+
   /// PortOne `customer.customerId`: the server checks the issued key belongs to this customer.
   final String customerId;
 
@@ -21,21 +29,27 @@ class BillingSetup {
     return BillingSetup(
       enabled: true,
       storeId: j['store_id'] as String? ?? '',
-      channels: {for (final e in (j['channels'] as Map? ?? {}).entries) e.key as String: e.value as String},
+      channels: {
+        for (final e in (j['channels'] as Map? ?? {}).entries)
+          e.key as String: e.value as String,
+      },
       issueId: j['issue_id'] as String? ?? '',
       customerId: j['customer_id'] as String? ?? '',
     );
   }
 
   /// Whether [provider] can be saved for one-tap payment right now.
-  /// Card registration runs in a WebView, which the web build lacks, so saved cards are app-only.
-  bool supports(String provider) => !kIsWeb && enabled && channels.containsKey(provider);
+  /// Card registration runs in a WebView, which the web and Windows builds lack, so saved cards are phone-only.
+  bool supports(String provider) =>
+      !kIsWeb && !isWindowsApp() && enabled && channels.containsKey(provider);
 }
 
 /// A failed read means the option stays hidden.
 Future<BillingSetup> fetchBillingSetup(ApiClient api) async {
   try {
-    return BillingSetup.fromJson(await api.get('/me/payment-methods/setup') as Map<String, dynamic>);
+    return BillingSetup.fromJson(
+      await api.get('/me/payment-methods/setup') as Map<String, dynamic>,
+    );
   } on Object {
     return BillingSetup.off;
   }
@@ -62,7 +76,12 @@ Future<String?> issueBillingKey({
   return Navigator.of(context).push<String?>(
     MaterialPageRoute(
       fullscreenDialog: true,
-      builder: (_) => HostedPage<String?>(uri: uri, donePath: billingDonePath, title: pageTitle, onDone: billingKeyFromRedirect),
+      builder: (_) => HostedPage<String?>(
+        uri: uri,
+        donePath: billingDonePath,
+        title: pageTitle,
+        onDone: billingKeyFromRedirect,
+      ),
     ),
   );
 }

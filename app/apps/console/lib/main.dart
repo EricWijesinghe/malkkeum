@@ -47,6 +47,8 @@ class ConsoleApp extends StatelessWidget {
       theme: theme,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        builder: (context, child) =>
+            DesktopColumn(child: child ?? const SizedBox.shrink()),
         onGenerateTitle: (c) =>
             '${BrandConfig.placeholder.name} ${T.of(c).cTitle}',
         theme: buildTheme(BrandConfig.placeholder, Brightness.light),

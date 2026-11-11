@@ -70,6 +70,8 @@
  "apPgPay": "{amount} to'lash",
  "apPgIssue": "Hisob raqamini olish",
  "apPgCancel": "To'lovni bekor qilish",
+ "apPgBrowserNote": "To'lovni brauzerda yakunlang, so'ng bu yerga qaytib, pastdagi tugmani bosing.",
+ "apPgBrowserDone": "To'lovni amalga oshirdim",
  "apErrSlotFullRefunded": "Bu vaqt endi band bo'ldi, shuning uchun to'lov avtomatik bekor qilindi",
  "apErrCheckoutExpired": "To'lov vaqti tugadi. Iltimos, qayta urinib ko'ring.",
  "apIdentityTitle": "Shaxsni tasdiqlash (PASS)",

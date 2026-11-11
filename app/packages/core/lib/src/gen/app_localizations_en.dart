@@ -234,6 +234,13 @@ class TEn extends T {
   String get apPgCancel => 'Cancel payment';
 
   @override
+  String get apPgBrowserNote =>
+      'Complete the payment in your browser, then come back here and tap the button below.';
+
+  @override
+  String get apPgBrowserDone => 'I finished paying';
+
+  @override
   String get apErrSlotFullRefunded =>
       'That slot just filled up, so your payment was cancelled automatically';
 
