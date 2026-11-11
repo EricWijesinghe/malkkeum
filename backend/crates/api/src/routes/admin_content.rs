@@ -36,6 +36,7 @@ pub fn routes() -> Router<AppState> {
         .route("/settlements", get(list_settlements))
         .route("/settlements/payouts", get(super::payouts::list_payouts))
         .route("/settlements/run-payouts", post(super::payouts::run_payouts))
+        .route("/settlements/toss-sellers/{pro_id}", post(super::payouts::register_seller))
         .route("/settlements/payouts/{id}/account", get(super::payouts::reveal_account))
         .route("/settlements/payouts/{id}/{action}", post(super::payouts::act))
         .route("/settlements/{id}/hold", post(hold_settlement))

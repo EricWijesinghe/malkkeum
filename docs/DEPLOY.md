@@ -164,3 +164,21 @@ cd app/apps/customer && flutter run -d windows   # or chrome / an Android device
 - Signing key is derived from `DATA_KEY`. Rotating `DATA_KEY` ends open photo links within an hour; photos and their rows are unaffected.
 - Photos stored before this change keep working as long as `PUBLIC_BASE_URL` stays the same.
 - Backups still take the upload directory as a tar (`uploads-*.tar.gz`); no object storage is used.
+
+## 7. Toss payouts (지급대행): sandbox verification
+
+Toss mode stays off until all of these hold. Anything else keeps payouts on `manual`.
+
+1. Env `TOSS_PAYOUTS_ENABLED=1` on the API host (read at startup and on every setup save).
+2. Console **Setup → Payouts**: save `secret_key` (sandbox `test_sk_...`) and `security_key` (보안 키, 64 hex) with mode `manual`.
+3. Press **Test connection**. The API calls `GET /v2/balances` with the secret key. It records `sandbox_connected` only for a `test_sk_` key that returns 200, with a fingerprint of that key. Changing the key requires testing again.
+4. Save mode `toss`. Accepted only when steps 1 and 3 hold; otherwise `toss_unverified`.
+5. Register each pro as a seller: `POST /v1/admin/settlements/toss-sellers/{pro_id}` with `business_type` (`individual` or `company`), `name`, or `representative` + `registration_no` (10 digits), `email`, `phone`. The bank account is the pro's verified payout account. Re-run after a bank-account change; a payout for a stale account is refused (`seller_account_changed`).
+6. Webhook: point Toss at `{PUBLIC_BASE_URL}/v1/webhooks/toss` for `payout.changed` and `seller.changed`. The body is ignored; each call triggers a poll of open payouts.
+
+Not covered by unit tests, so check in the sandbox:
+- The JWE body is accepted: the first `POST /v2/sellers` returns a decodable response. On `INVALID_ENCRYPTION`, check the `security_key`, the `TossPayments-api-security-mode: ENCRYPTION` header and the `text/plain` content type.
+- The payout `amount` object `{currency, value}` and the `Idempotency-Key` header name are accepted (the docs do not spell these out).
+- A sandbox payout reaches `COMPLETED` through the poll path (`payout_sync.rs`).
+
+Not in the docs (do not assume): the webhook signature scheme (none documented, so no signature check) and the seller response `status` field name.
