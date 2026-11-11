@@ -123,10 +123,10 @@ pub async fn owned(s: &AppState, user: Uuid, id: Uuid) -> ApiResult<BookingRow> 
 }
 
 #[derive(Deserialize)]
-struct CreateBooking {
+pub(crate) struct CreateBooking {
     #[serde(flatten)]
-    body: BookingBody,
-    payment_method_id: Option<Uuid>,
+    pub(crate) body: BookingBody,
+    pub(crate) payment_method_id: Option<Uuid>,
 }
 
 /// Charges a saved method and records the payment. Used inside a transaction.
@@ -151,13 +151,18 @@ pub async fn charge(s: &AppState, conn: &mut PgConnection, user: Uuid, method: U
 }
 
 async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Json<CreateBooking>) -> ApiResult<Json<BookingRow>> {
-    let prep = prepare(&s.db, a.id, &req.body).await?;
-    let id = if prep.service.is_quote() {
-        create_quote(&s, a.id, &req.body, &prep).await?
-    } else {
-        create_paid(&s, a.id, &req, &prep).await?
-    };
+    let id = create_core(&s, a.id, &req).await?;
     Ok(Json(load_booking(&s.db, id).await?))
+}
+
+/// Shared by the direct create and a waitlist offer accept. Returns the new booking id.
+pub(crate) async fn create_core(s: &AppState, user: Uuid, req: &CreateBooking) -> ApiResult<Uuid> {
+    let prep = prepare(&s.db, user, &req.body).await?;
+    if prep.service.is_quote() {
+        create_quote(s, user, &req.body, &prep).await
+    } else {
+        create_paid(s, user, req, &prep).await
+    }
 }
 
 /// Quote services: a consultation request with the estimate. No payment yet.
@@ -476,6 +481,7 @@ async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
         json!({ "fee": quote.fee, "refund": quote.refund }),
     )
     .await?;
+    crate::util::best_effort("waitlist offer on cancel", super::waitlist::offer_for_slot(&s, b.visit_date, b.start_hour as u8)).await;
     Ok(Json(load_booking(&s.db, id).await?))
 }
 

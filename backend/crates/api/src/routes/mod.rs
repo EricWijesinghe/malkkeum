@@ -19,6 +19,8 @@ mod member;
 mod ops;
 mod partner;
 pub(crate) mod partner_jobs;
+pub(crate) mod tips;
+pub(crate) mod waitlist;
 pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
@@ -70,6 +72,8 @@ pub fn router(state: AppState) -> Router {
         .merge(bookings::routes())
         .merge(cases::customer_routes())
         .merge(bookings::public_routes())
+        .merge(waitlist::routes())
+        .merge(tips::routes())
         .merge(chat::routes())
         .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
