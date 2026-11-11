@@ -208,6 +208,10 @@ def check_android(app):
     datas = [d.attrib for a in kakao for f in a.iter("intent-filter") for d in f.iter("data")]
     check(any(d.get(ANDROID_NS + "scheme") == "kakao${kakaoNativeKey}" and d.get(ANDROID_NS + "host") == "oauth"
               for d in datas), f"{app} AndroidManifest: Kakao AuthCodeHandlerActivity scheme kakao${{kakaoNativeKey}}")
+    naver = [d.attrib for a in root.iter("activity") if a.get(ANDROID_NS + "name") == "com.linusu.flutter_web_auth_2.CallbackActivity"
+             for f in a.iter("intent-filter") for d in f.iter("data")]
+    check(any(d.get(ANDROID_NS + "scheme") == "malkkeumnaver" for d in naver),
+          f"{app} AndroidManifest: flutter_web_auth_2 CallbackActivity for malkkeumnaver (Naver login)")
     check('manifestPlaceholders["kakaoNativeKey"]' in gradle, f"{app} build.gradle.kts: kakaoNativeKey placeholder")
     check('file("google-services.json").exists()' in gradle and 'apply(plugin = "com.google.gms.google-services")' in gradle,
           f"{app} build.gradle.kts: google-services plugin must be conditional")
