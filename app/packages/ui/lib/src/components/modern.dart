@@ -266,8 +266,8 @@ class CountUp extends StatelessWidget {
   }
 }
 
-/// Gentle repeating scale on [child] while [active] (e.g. the current step).
-/// Reduced motion keeps the child still.
+/// One soft up-and-down scale on [child] when it becomes [active] (e.g. the current step).
+/// It settles after one beat, so pumpAndSettle never waits on it. Reduced motion keeps the child still.
 class Pulse extends StatelessWidget {
   const Pulse({super.key, required this.child, this.active = true});
 
@@ -278,11 +278,18 @@ class Pulse extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!active || reducedMotion(context)) return child;
     return child
-        .animate(onPlay: (c) => c.repeat(reverse: true))
+        .animate()
         .scaleXY(
           begin: 1,
           end: 1.12,
-          duration: const Duration(milliseconds: 900),
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeInOut,
+        )
+        .then()
+        .scaleXY(
+          begin: 1.12,
+          end: 1,
+          duration: const Duration(milliseconds: 450),
           curve: Curves.easeInOut,
         );
   }
