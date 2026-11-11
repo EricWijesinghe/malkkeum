@@ -92,6 +92,7 @@ pub fn router(state: AppState) -> Router {
         .route("/health", get(|| async { Json(json!({ "ok": true, "version": APP_VERSION })) }))
         .merge(crate::app_links::routes())
         .nest("/v1", api)
+        .layer(axum::middleware::from_fn_with_state(state.clone(), config::enforce))
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))
         .layer(TimeoutLayer::with_status_code(axum::http::StatusCode::REQUEST_TIMEOUT, REQUEST_TIMEOUT))
         .layer(cors)
