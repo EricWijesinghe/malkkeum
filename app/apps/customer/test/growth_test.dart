@@ -11,7 +11,7 @@ Json _proof({Object? homes = 12, Object? rating = 4.7, Object? count = 12, List<
   'homes_this_month': homes,
   'rating': rating,
   'review_count': count,
-  'reviews': reviews ?? [{'rating': 5, 'body': '꼼꼼해요', 'name': '김*수'}],
+  'reviews': reviews ?? [{'booking_id': 'bk-1', 'rating': 5, 'body': '꼼꼼해요', 'name': '김*수'}],
 };
 
 void main() {

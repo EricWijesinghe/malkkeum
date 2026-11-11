@@ -252,6 +252,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             label: Text(t.caseReportAction),
             onPressed: () async {
               final api = context.api;
+              final messenger = ScaffoldMessenger.of(context);
               final sent = await showCaseReport(
                 context,
                 kinds: const [
@@ -267,10 +268,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   'summary': summary,
                 }),
               );
-              if (sent && context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(t.caseSubmitted)));
+              if (sent) {
+                messenger.showSnackBar(SnackBar(content: Text(t.caseSubmitted)));
               }
             },
           ),

@@ -60,7 +60,11 @@ class _PayMethodPickerState extends State<PayMethodPicker> {
         .toList();
   }
 
-  void _reload() => setState(() => _channels = _loadChannels());
+  void _reload() {
+    setState(() {
+      _channels = _loadChannels();
+    });
+  }
 
   /// A billing channel already saved picks that method; otherwise it is registered first.
   Future<void> _billing(PayChannel ch) async {

@@ -11,13 +11,16 @@ void main() {
   late TestEnv env;
   late CompletionOutbox box;
   var online = true;
+  ApiReply? refusal;
 
   setUp(() async {
     online = true;
+    refusal = null;
     final fake = FakeApi();
     fake.onPost('/uploads', (_) => {'url': 'https://cdn.test/${fake.callsTo('POST', '/uploads').length}.jpg'});
     fake.onPost(_complete, (_) {
       if (!online) throw const SocketException('no signal');
+      if (refusal != null) return refusal;
       return {'ok': true, 'net': 1000, 'payout_date': null};
     });
     env = await TestEnv.create(fake: fake, role: 'partner');
@@ -90,7 +93,7 @@ void main() {
     final c = await completion(id: 'bk-1');
     c.ready = true;
     await box.save(c);
-    env.fake.on('POST', _complete, (_) => const ApiReply(409, {'error': {'code': 'job_not_active'}}));
+    refusal = const ApiReply(409, {'error': {'code': 'job_not_active'}});
 
     await box.drain(env.api);
 

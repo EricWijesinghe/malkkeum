@@ -27,7 +27,8 @@ void main() {
     final fake = FakeApi();
     stockCustomerApi(fake);
     final env = await TestEnv.create(fake: fake);
-    await pumpCustomerScreen(tester, env, const AddressesScreen());
+    final app = await pumpCustomerScreen(tester, env, const AddressesScreen());
+    await tester.runAsync(app.loadAddresses);
     await settle(tester);
     final before = fake.callsTo('GET', '/me/addresses').length;
 
@@ -43,6 +44,7 @@ void main() {
     setViewport(tester, phoneSize);
     final fake = FakeApi();
     stockCustomerApi(fake, methods: [paymentMethodJson()]);
+    fake.reply('GET', '/payments/methods', const <Map<String, dynamic>>[]);
     final env = await TestEnv.create(fake: fake);
     await pumpCustomerScreen(tester, env, const PaymentMethodsScreen());
     await settle(tester);

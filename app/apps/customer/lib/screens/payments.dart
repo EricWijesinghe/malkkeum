@@ -35,7 +35,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         .toList();
   }
 
-  void _reload() => setState(() => _billing = _loadBilling());
+  void _reload() {
+    setState(() {
+      _billing = _loadBilling();
+    });
+  }
 
   Future<void> _add(PayChannel ch) async {
     final t = context.t;
@@ -71,7 +75,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           try {
             await app.loadMethods();
           } catch (e) {
-            if (mounted) showToast(context, t.error(e));
+            if (context.mounted) showToast(context, t.error(e));
           }
         },
         child: ListView(

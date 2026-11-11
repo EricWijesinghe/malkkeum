@@ -43,7 +43,7 @@ void main() {
     expect(await identityAvailable(off), isFalse);
 
     final on = await _api((r) {
-      expect(r.url.path, '/me/identity/setup');
+      expect(r.url.path, '/v1/me/identity/setup');
       return _json({'enabled': true});
     });
     // Web and Windows builds have no WebView, so the server flag alone is not enough there.
