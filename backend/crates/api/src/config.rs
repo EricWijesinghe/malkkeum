@@ -190,9 +190,7 @@ impl Config {
         let public_base_url = env::var("PUBLIC_BASE_URL").unwrap_or_else(|_| "http://127.0.0.1:8080".into());
         let dev_mode = env::var("DEV_MODE").map(|v| v == "1" || v == "true").unwrap_or(false);
         // Dev mode returns login codes in API responses: never allow it on a public address.
-        let local = ["//127.0.0.1", "//localhost", "//10.0.2.2", "//192.168."]
-            .iter()
-            .any(|h| public_base_url.contains(h));
+        let local = is_private_url(&public_base_url);
         if dev_mode && !local {
             return Err(ConfigError::Invalid(
                 "DEV_MODE",
@@ -228,5 +226,29 @@ impl Config {
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
         })
+    }
+}
+
+/// True for loopback and RFC 1918 hosts (home/office networks), where dev mode may run for demos.
+fn is_private_url(url: &str) -> bool {
+    let host = url.split("//").nth(1).unwrap_or("").split(['/', ':']).next().unwrap_or("");
+    if host == "localhost" {
+        return true;
+    }
+    host.parse::<std::net::Ipv4Addr>().is_ok_and(|ip| ip.is_loopback() || ip.is_private())
+}
+
+#[cfg(test)]
+mod private_url_tests {
+    use super::is_private_url;
+
+    #[test]
+    fn only_loopback_and_private_networks_count_as_local() {
+        for ok in ["http://127.0.0.1:8080", "http://localhost:8080", "http://10.0.2.2:8080", "http://192.168.0.5:8080", "http://172.25.243.168:8080"] {
+            assert!(is_private_url(ok), "{ok}");
+        }
+        for bad in ["https://malkkeum.kr", "http://172.32.0.1", "http://8.8.8.8", "https://192.168.evil.com", "http://localhost.evil.com"] {
+            assert!(!is_private_url(bad), "{bad}");
+        }
     }
 }
