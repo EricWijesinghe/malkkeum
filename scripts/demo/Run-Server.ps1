@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 $Host.UI.RawUI.WindowTitle = 'Malkkeum Server (keep this open during the demo)'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pg = 'F:\tools\pgsql\bin'
-$db = 'malkkeum_demo'
+$db = 'malkkeum_demo_v12'  # the backup kit (older server) keeps 'malkkeum_demo'
 $env:PGPASSWORD = 'localdev'
 
 & "$pg\pg_isready.exe" -h localhost -p 5433 *> $null
