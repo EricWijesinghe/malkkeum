@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2875,6 +2876,121 @@ class TZh extends T {
 
   @override
   String get pvExportFailed => '无法加载您的数据，请稍后再试。';
+
+  @override
+  String get safetyEmergency => '紧急联系方式';
+
+  @override
+  String get emergencyPolice => '112 警察';
+
+  @override
+  String get emergencyFire => '119 消防·急救';
+
+  @override
+  String get emergencyShop => '客服中心';
+
+  @override
+  String get caseReportAction => '报告问题';
+
+  @override
+  String get caseReportTitle => '发生了什么问题？';
+
+  @override
+  String get caseKindDamage => '损坏';
+
+  @override
+  String get caseKindLoss => '遗失';
+
+  @override
+  String get caseKindComplaint => '投诉';
+
+  @override
+  String get caseKindNoShow => '清洁人员未到场';
+
+  @override
+  String get caseKindSafety => '安全问题';
+
+  @override
+  String get caseKindPayment => '支付异议';
+
+  @override
+  String get caseSummaryHint => '请详细描述（300字以内）';
+
+  @override
+  String get caseSubmit => '提交';
+
+  @override
+  String get caseSubmitted => '已接收，工作人员将在24小时内确认。';
+
+  @override
+  String get caseFailed => '提交失败，请重试。';
+
+  @override
+  String get checkInAction => '到达签到';
+
+  @override
+  String get checkOutAction => '离场签退';
+
+  @override
+  String checkedInAt(String time) {
+    return '$time 到达';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '$time 离场';
+  }
+
+  @override
+  String get entryCodeAction => '查看门禁密码';
+
+  @override
+  String get entryCodeTitle => '门禁密码';
+
+  @override
+  String get entryCodeNotToday => '仅在上门当天可查看';
+
+  @override
+  String get entryCodeEmpty => '没有登记的门禁密码';
+
+  @override
+  String get actionFailed => '处理失败，请重试。';
+
+  @override
+  String get consoleCasesTitle => '案件队列';
+
+  @override
+  String get consoleCasesEmpty => '没有待处理案件';
+
+  @override
+  String get caseOverdue => '已超期';
+
+  @override
+  String get caseStatusOpen => '待处理';
+
+  @override
+  String get caseStatusInvestigating => '调查中';
+
+  @override
+  String get caseStatusResolved => '已解决';
+
+  @override
+  String get caseStatusRejected => '已驳回';
+
+  @override
+  String get caseReassign => '重新分配清洁人员';
+
+  @override
+  String get caseRefund => '退款';
+
+  @override
+  String get caseHold => '暂停结算';
+
+  @override
+  String get caseNoteHint => '内部备注';
+
+  @override
+  String get caseSave => '保存';
 
   @override
   String get cSetup => '设置';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2966,6 +2967,121 @@ class TNe extends T {
   @override
   String get pvExportFailed =>
       'तपाईंको डेटा लोड गर्न सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get safetyEmergency => 'आपतकालीन सम्पर्क';
+
+  @override
+  String get emergencyPolice => '112 प्रहरी';
+
+  @override
+  String get emergencyFire => '119 दमकल र उद्धार';
+
+  @override
+  String get emergencyShop => 'ग्राहक सेवा';
+
+  @override
+  String get caseReportAction => 'समस्या रिपोर्ट गर्नुहोस्';
+
+  @override
+  String get caseReportTitle => 'के भयो?';
+
+  @override
+  String get caseKindDamage => 'क्षति';
+
+  @override
+  String get caseKindLoss => 'हराएको';
+
+  @override
+  String get caseKindComplaint => 'गुनासो';
+
+  @override
+  String get caseKindNoShow => 'सफाइकर्मी आएनन्';
+
+  @override
+  String get caseKindSafety => 'सुरक्षा चिन्ता';
+
+  @override
+  String get caseKindPayment => 'भुक्तानी विवाद';
+
+  @override
+  String get caseSummaryHint => 'के भयो वर्णन गर्नुहोस् (300 अक्षरसम्म)';
+
+  @override
+  String get caseSubmit => 'पेश गर्नुहोस्';
+
+  @override
+  String get caseSubmitted => 'प्राप्त भयो। टोलीले २४ घण्टाभित्र जवाफ दिनेछ।';
+
+  @override
+  String get caseFailed => 'पठाउन सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get checkInAction => 'चेक इन';
+
+  @override
+  String get checkOutAction => 'चेक आउट';
+
+  @override
+  String checkedInAt(String time) {
+    return 'आइपुग्यो $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'निस्कियो $time';
+  }
+
+  @override
+  String get entryCodeAction => 'प्रवेश कोड देखाउनुहोस्';
+
+  @override
+  String get entryCodeTitle => 'प्रवेश कोड';
+
+  @override
+  String get entryCodeNotToday => 'भ्रमणको दिनमा मात्र देखिन्छ';
+
+  @override
+  String get entryCodeEmpty => 'प्रवेश कोड दर्ता छैन';
+
+  @override
+  String get actionFailed => 'सम्पन्न गर्न सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get consoleCasesTitle => 'केस सूची';
+
+  @override
+  String get consoleCasesEmpty => 'कुनै खुला केस छैन';
+
+  @override
+  String get caseOverdue => 'म्याद नाघेको';
+
+  @override
+  String get caseStatusOpen => 'खुला';
+
+  @override
+  String get caseStatusInvestigating => 'अनुसन्धानमा';
+
+  @override
+  String get caseStatusResolved => 'समाधान भयो';
+
+  @override
+  String get caseStatusRejected => 'अस्वीकृत';
+
+  @override
+  String get caseReassign => 'साझेदार पुनः तोक्नुहोस्';
+
+  @override
+  String get caseRefund => 'रिफन्ड';
+
+  @override
+  String get caseHold => 'भुक्तानी रोक्नुहोस्';
+
+  @override
+  String get caseNoteHint => 'आन्तरिक टिप्पणी';
+
+  @override
+  String get caseSave => 'सेभ गर्नुहोस्';
 
   @override
   String get cSetup => 'सेटअप';

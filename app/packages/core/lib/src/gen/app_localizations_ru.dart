@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2970,6 +2971,121 @@ class TRu extends T {
   @override
   String get pvExportFailed =>
       'Не удалось загрузить ваши данные. Попробуйте позже.';
+
+  @override
+  String get safetyEmergency => 'Экстренные контакты';
+
+  @override
+  String get emergencyPolice => '112 Полиция';
+
+  @override
+  String get emergencyFire => '119 Пожарные и спасатели';
+
+  @override
+  String get emergencyShop => 'Поддержка';
+
+  @override
+  String get caseReportAction => 'Сообщить о проблеме';
+
+  @override
+  String get caseReportTitle => 'Что произошло?';
+
+  @override
+  String get caseKindDamage => 'Повреждение';
+
+  @override
+  String get caseKindLoss => 'Пропажа';
+
+  @override
+  String get caseKindComplaint => 'Жалоба';
+
+  @override
+  String get caseKindNoShow => 'Исполнитель не пришёл';
+
+  @override
+  String get caseKindSafety => 'Вопрос безопасности';
+
+  @override
+  String get caseKindPayment => 'Спор по оплате';
+
+  @override
+  String get caseSummaryHint => 'Опишите, что произошло (до 300 символов)';
+
+  @override
+  String get caseSubmit => 'Отправить';
+
+  @override
+  String get caseSubmitted => 'Принято. Мы ответим в течение 24 часов.';
+
+  @override
+  String get caseFailed => 'Не удалось отправить. Попробуйте ещё раз.';
+
+  @override
+  String get checkInAction => 'Отметить прибытие';
+
+  @override
+  String get checkOutAction => 'Отметить уход';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Прибыл в $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Ушёл в $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Показать код домофона';
+
+  @override
+  String get entryCodeTitle => 'Код домофона';
+
+  @override
+  String get entryCodeNotToday => 'Доступно только в день визита';
+
+  @override
+  String get entryCodeEmpty => 'Код не указан';
+
+  @override
+  String get actionFailed => 'Не удалось выполнить. Попробуйте ещё раз.';
+
+  @override
+  String get consoleCasesTitle => 'Очередь обращений';
+
+  @override
+  String get consoleCasesEmpty => 'Открытых обращений нет';
+
+  @override
+  String get caseOverdue => 'Просрочено';
+
+  @override
+  String get caseStatusOpen => 'Открыто';
+
+  @override
+  String get caseStatusInvestigating => 'На рассмотрении';
+
+  @override
+  String get caseStatusResolved => 'Решено';
+
+  @override
+  String get caseStatusRejected => 'Отклонено';
+
+  @override
+  String get caseReassign => 'Переназначить исполнителя';
+
+  @override
+  String get caseRefund => 'Возврат';
+
+  @override
+  String get caseHold => 'Приостановить выплату';
+
+  @override
+  String get caseNoteHint => 'Внутренняя заметка';
+
+  @override
+  String get caseSave => 'Сохранить';
 
   @override
   String get cSetup => 'Настройка';

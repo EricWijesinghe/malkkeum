@@ -14,6 +14,7 @@ export 'src/language_welcome.dart';
 export 'src/models.dart';
 export 'src/push.dart';
 export 'src/realtime.dart';
+export 'src/case_report.dart';
 export 'src/review_report.dart';
 export 'src/session.dart';
 export 'src/theme_mode.dart';

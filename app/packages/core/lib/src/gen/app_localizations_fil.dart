@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2990,6 +2991,122 @@ class TFil extends T {
   @override
   String get pvExportFailed =>
       'Hindi ma-load ang iyong datos. Subukan muli mamaya.';
+
+  @override
+  String get safetyEmergency => 'Mga emergency contact';
+
+  @override
+  String get emergencyPolice => '112 Pulis';
+
+  @override
+  String get emergencyFire => '119 Bumbero at rescue';
+
+  @override
+  String get emergencyShop => 'Customer support';
+
+  @override
+  String get caseReportAction => 'I-report ang problema';
+
+  @override
+  String get caseReportTitle => 'Ano ang nangyari?';
+
+  @override
+  String get caseKindDamage => 'Pinsala';
+
+  @override
+  String get caseKindLoss => 'Nawala';
+
+  @override
+  String get caseKindComplaint => 'Reklamo';
+
+  @override
+  String get caseKindNoShow => 'Hindi dumating ang cleaner';
+
+  @override
+  String get caseKindSafety => 'Alalahanin sa kaligtasan';
+
+  @override
+  String get caseKindPayment => 'Dispute sa bayad';
+
+  @override
+  String get caseSummaryHint => 'Ilarawan ang nangyari (hanggang 300 karakter)';
+
+  @override
+  String get caseSubmit => 'Isumite';
+
+  @override
+  String get caseSubmitted =>
+      'Natanggap na. Sasagot ang team sa loob ng 24 na oras.';
+
+  @override
+  String get caseFailed => 'Hindi naipadala. Subukan ulit.';
+
+  @override
+  String get checkInAction => 'Mag-check in';
+
+  @override
+  String get checkOutAction => 'Mag-check out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Dumating $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Umalis $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Ipakita ang entry code';
+
+  @override
+  String get entryCodeTitle => 'Entry code';
+
+  @override
+  String get entryCodeNotToday => 'Sa araw lang ng pagbisita makikita';
+
+  @override
+  String get entryCodeEmpty => 'Walang nakalagay na entry code';
+
+  @override
+  String get actionFailed => 'Hindi natapos. Subukan ulit.';
+
+  @override
+  String get consoleCasesTitle => 'Pila ng mga kaso';
+
+  @override
+  String get consoleCasesEmpty => 'Walang bukas na kaso';
+
+  @override
+  String get caseOverdue => 'Lampas sa takda';
+
+  @override
+  String get caseStatusOpen => 'Bukas';
+
+  @override
+  String get caseStatusInvestigating => 'Iniimbestigahan';
+
+  @override
+  String get caseStatusResolved => 'Nalutas';
+
+  @override
+  String get caseStatusRejected => 'Tinanggihan';
+
+  @override
+  String get caseReassign => 'Ilipat ang partner';
+
+  @override
+  String get caseRefund => 'Refund';
+
+  @override
+  String get caseHold => 'I-hold ang settlement';
+
+  @override
+  String get caseNoteHint => 'Internal na tala';
+
+  @override
+  String get caseSave => 'I-save';
 
   @override
   String get cSetup => 'Pag-setup';

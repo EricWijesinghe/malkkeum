@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2979,6 +2980,122 @@ class TMn extends T {
   @override
   String get pvExportFailed =>
       'Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.';
+
+  @override
+  String get safetyEmergency => 'Яаралтай холбоо барих';
+
+  @override
+  String get emergencyPolice => '112 Цагдаа';
+
+  @override
+  String get emergencyFire => '119 Гал түймэр ба аврах';
+
+  @override
+  String get emergencyShop => 'Харилцагчийн үйлчилгээ';
+
+  @override
+  String get caseReportAction => 'Асуудал мэдээлэх';
+
+  @override
+  String get caseReportTitle => 'Юу болсон бэ?';
+
+  @override
+  String get caseKindDamage => 'Гэмтэл';
+
+  @override
+  String get caseKindLoss => 'Алдсан';
+
+  @override
+  String get caseKindComplaint => 'Гомдол';
+
+  @override
+  String get caseKindNoShow => 'Цэвэрлэгч ирээгүй';
+
+  @override
+  String get caseKindSafety => 'Аюулгүй байдлын асуудал';
+
+  @override
+  String get caseKindPayment => 'Төлбөрийн маргаан';
+
+  @override
+  String get caseSummaryHint =>
+      'Юу болсныг тайлбарлана уу (300 тэмдэгт хүртэл)';
+
+  @override
+  String get caseSubmit => 'Илгээх';
+
+  @override
+  String get caseSubmitted => 'Хүлээн авлаа. Баг 24 цагийн дотор хариулна.';
+
+  @override
+  String get caseFailed => 'Илгээж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get checkInAction => 'Бүртгүүлэх';
+
+  @override
+  String get checkOutAction => 'Гарах бүртгэл';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Ирсэн $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Гарсан $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Орцны код харах';
+
+  @override
+  String get entryCodeTitle => 'Орцны код';
+
+  @override
+  String get entryCodeNotToday => 'Зөвхөн үйлчилгээний өдөр харагдана';
+
+  @override
+  String get entryCodeEmpty => 'Орцны код бүртгэгдээгүй';
+
+  @override
+  String get actionFailed => 'Хийж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get consoleCasesTitle => 'Хэргийн дараалал';
+
+  @override
+  String get consoleCasesEmpty => 'Нээлттэй хэрэг алга';
+
+  @override
+  String get caseOverdue => 'Хугацаа хэтэрсэн';
+
+  @override
+  String get caseStatusOpen => 'Нээлттэй';
+
+  @override
+  String get caseStatusInvestigating => 'Шалгаж байна';
+
+  @override
+  String get caseStatusResolved => 'Шийдсэн';
+
+  @override
+  String get caseStatusRejected => 'Татгалзсан';
+
+  @override
+  String get caseReassign => 'Ажилтан дахин оноох';
+
+  @override
+  String get caseRefund => 'Буцаан олгох';
+
+  @override
+  String get caseHold => 'Тооцоог түр зогсоох';
+
+  @override
+  String get caseNoteHint => 'Дотоод тэмдэглэл';
+
+  @override
+  String get caseSave => 'Хадгалах';
 
   @override
   String get cSetup => 'Тохиргоо';

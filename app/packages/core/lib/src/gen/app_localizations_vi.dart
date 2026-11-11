@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2944,6 +2945,122 @@ class TVi extends T {
   @override
   String get pvExportFailed =>
       'Không thể tải dữ liệu của bạn. Vui lòng thử lại sau.';
+
+  @override
+  String get safetyEmergency => 'Liên hệ khẩn cấp';
+
+  @override
+  String get emergencyPolice => '112 Cảnh sát';
+
+  @override
+  String get emergencyFire => '119 Cứu hỏa & cứu thương';
+
+  @override
+  String get emergencyShop => 'Hỗ trợ khách hàng';
+
+  @override
+  String get caseReportAction => 'Báo cáo sự cố';
+
+  @override
+  String get caseReportTitle => 'Có chuyện gì đã xảy ra?';
+
+  @override
+  String get caseKindDamage => 'Hư hỏng';
+
+  @override
+  String get caseKindLoss => 'Thất lạc';
+
+  @override
+  String get caseKindComplaint => 'Khiếu nại';
+
+  @override
+  String get caseKindNoShow => 'Nhân viên không đến';
+
+  @override
+  String get caseKindSafety => 'Vấn đề an toàn';
+
+  @override
+  String get caseKindPayment => 'Tranh chấp thanh toán';
+
+  @override
+  String get caseSummaryHint => 'Mô tả chi tiết (tối đa 300 ký tự)';
+
+  @override
+  String get caseSubmit => 'Gửi';
+
+  @override
+  String get caseSubmitted =>
+      'Đã tiếp nhận. Nhân viên sẽ phản hồi trong 24 giờ.';
+
+  @override
+  String get caseFailed => 'Không gửi được, hãy thử lại.';
+
+  @override
+  String get checkInAction => 'Check-in';
+
+  @override
+  String get checkOutAction => 'Check-out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Đến lúc $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Rời đi lúc $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Xem mã cửa ra vào';
+
+  @override
+  String get entryCodeTitle => 'Mã cửa ra vào';
+
+  @override
+  String get entryCodeNotToday => 'Chỉ xem được vào ngày đến';
+
+  @override
+  String get entryCodeEmpty => 'Chưa có mã cửa';
+
+  @override
+  String get actionFailed => 'Không thực hiện được, hãy thử lại.';
+
+  @override
+  String get consoleCasesTitle => 'Hàng đợi vụ việc';
+
+  @override
+  String get consoleCasesEmpty => 'Không có vụ việc đang mở';
+
+  @override
+  String get caseOverdue => 'Quá hạn';
+
+  @override
+  String get caseStatusOpen => 'Mở';
+
+  @override
+  String get caseStatusInvestigating => 'Đang xem xét';
+
+  @override
+  String get caseStatusResolved => 'Đã giải quyết';
+
+  @override
+  String get caseStatusRejected => 'Từ chối';
+
+  @override
+  String get caseReassign => 'Phân công lại';
+
+  @override
+  String get caseRefund => 'Hoàn tiền';
+
+  @override
+  String get caseHold => 'Tạm giữ thanh toán';
+
+  @override
+  String get caseNoteHint => 'Ghi chú nội bộ';
+
+  @override
+  String get caseSave => 'Lưu';
 
   @override
   String get cSetup => 'Thiết lập';
