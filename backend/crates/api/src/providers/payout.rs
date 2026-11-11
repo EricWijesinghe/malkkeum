@@ -195,6 +195,6 @@ mod tests {
         let mut t = transfer();
         t.memo = "말끔청소정산서비스".into();
         let sent = body("payout-1", &t);
-        assert_eq!(sent["transactionDescription"], "말끔청소정");
+        assert_eq!(sent["transactionDescription"], "말끔청소정산서");
     }
 }

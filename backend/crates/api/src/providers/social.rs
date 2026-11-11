@@ -102,10 +102,12 @@ async fn naver(p: &Providers, token: &str) -> ApiResult<SocialUser> {
     };
     // Form POST keeps client_secret out of the URL (proxy and access logs). Naver's guide lists GET and POST;
     // POST is the form used by working examples. Residual: confirm in a real login (see DEPLOY.md).
+    let form = form_body(&[("grant_type", "authorization_code"), ("client_id", client_id), ("client_secret", secret), ("code", code), ("state", state)]);
     let resp = p
         .http()
         .post(NAVER_TOKEN_URL)
-        .form(&[("grant_type", "authorization_code"), ("client_id", client_id), ("client_secret", secret), ("code", code), ("state", state)])
+        .header(reqwest::header::CONTENT_TYPE, "application/x-www-form-urlencoded")
+        .body(form)
         .send()
         .await
         .map_err(unreachable_provider)?;
@@ -126,6 +128,13 @@ async fn naver(p: &Providers, token: &str) -> ApiResult<SocialUser> {
 const NAVER_TOKEN_URL: &str = "https://nid.naver.com/oauth2.0/token";
 const NAVER_PROFILE_URL: &str = "https://openapi.naver.com/v1/nid/me";
 const NAVER_PARAM_MAX: usize = 512;
+
+/// `application/x-www-form-urlencoded` body; reqwest here has no `form` feature, so encode through `Url`.
+fn form_body(pairs: &[(&str, &str)]) -> String {
+    let mut u = reqwest::Url::parse("http://form.invalid/").expect("static url");
+    u.query_pairs_mut().extend_pairs(pairs.iter().copied());
+    u.query().unwrap_or_default().to_string()
+}
 
 /// The app sends `code:state`. Both are opaque strings; neither may be empty or contain a colon.
 fn split_naver_code(token: &str) -> Option<(&str, &str)> {
