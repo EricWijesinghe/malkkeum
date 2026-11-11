@@ -101,20 +101,23 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
           const SizedBox(height: Space.xl),
           Text(t.addressTitle, style: context.text.headlineSmall),
           const SizedBox(height: Space.lg),
-          for (final a in app.addresses)
+          for (final (i, a) in app.addresses.indexed)
             Padding(
               padding: const EdgeInsets.only(bottom: Space.xs),
-              child: OptionCard(
-                leading: Icon(
-                  a.kind == 'office'
-                      ? Icons.business_rounded
-                      : Icons.home_rounded,
-                  color: context.colors.inkMuted,
+              child: EnterMotion(
+                delay: Duration(milliseconds: 60 * i),
+                child: OptionCard(
+                  leading: Icon(
+                    a.kind == 'office'
+                        ? Icons.business_rounded
+                        : Icons.home_rounded,
+                    color: context.colors.inkMuted,
+                  ),
+                  title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
+                  subtitle: '${a.roadAddress} ${a.detail}',
+                  selected: d.address?.id == a.id,
+                  onTap: () => setState(() => d.address = a),
                 ),
-                title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
-                subtitle: '${a.roadAddress} ${a.detail}',
-                selected: d.address?.id == a.id,
-                onTap: () => setState(() => d.address = a),
               ),
             ),
           OutlinedButton.icon(
@@ -350,22 +353,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           for (final h in _slots.skip(i).take(2)) ...[
                             if (h != _slots[i]) const SizedBox(width: Space.xs),
                             Expanded(
-                              child: OptionCard(
-                                title: d.service.isQuote
-                                    ? (h < 12 ? t.morning : t.afternoon)
-                                    : hourLabel(h, lang),
-                                subtitle: !(_available[h] ?? true)
-                                    ? t.scheduleFull
-                                    : _seatsLeft[h] != null
-                                    ? t.seatsLeft('${_seatsLeft[h]}')
-                                    : t.scheduleWindow(
-                                        hourLabel(h, lang),
-                                        hourLabel(h + 1, lang),
-                                      ),
-                                selected: d.hour == h,
-                                enabled: _available[h] ?? true,
-                                accent: hue.tone,
-                                onTap: () => setState(() => d.hour = h),
+                              child: EnterMotion(
+                                delay: Duration(milliseconds: 50 * (i ~/ 2)),
+                                child: OptionCard(
+                                  title: d.service.isQuote
+                                      ? (h < 12 ? t.morning : t.afternoon)
+                                      : hourLabel(h, lang),
+                                  subtitle: !(_available[h] ?? true)
+                                      ? t.scheduleFull
+                                      : _seatsLeft[h] != null
+                                      ? t.seatsLeft('${_seatsLeft[h]}')
+                                      : t.scheduleWindow(
+                                          hourLabel(h, lang),
+                                          hourLabel(h + 1, lang),
+                                        ),
+                                  selected: d.hour == h,
+                                  enabled: _available[h] ?? true,
+                                  accent: hue.tone,
+                                  onTap: () => setState(() => d.hour = h),
+                                ),
                               ),
                             ),
                           ],
@@ -757,9 +763,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ],
       ),
       bottomNavigationBar: BottomActionBar(
-        summary: Text(
-          t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
-          style: context.text.labelSmall,
+        summary: Row(
+          children: [
+            Expanded(
+              child: Text(
+                t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
+                style: context.text.labelSmall,
+              ),
+            ),
+            PriceTag(amount: total, locale: context.lang),
+          ],
         ),
         child: PrimaryButton(
           label: _choice == null
