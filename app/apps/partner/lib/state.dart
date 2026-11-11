@@ -1,14 +1,19 @@
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
+import 'outbox.dart';
+
 /// Partner-wide data: profile (status, payouts), preferences, unread operations chats.
 class PartnerState extends ChangeNotifier {
-  PartnerState(this.api, this.realtime) {
+  PartnerState(this.api, this.realtime, {required this.outbox}) {
     realtime.events.listen(_onEvent);
   }
 
   final ApiClient api;
   final Realtime realtime;
+
+  /// Completions and photos queued while there was no signal.
+  final CompletionOutbox outbox;
 
   Json profile = const {};
   Json prefs = const {};
@@ -67,6 +72,12 @@ class PartnerState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sends queued photos and completions. Runs at start and after a realtime resync (a reconnect).
+  Future<void> syncOutbox() async {
+    await outbox.drain(api);
+    jobsChanged();
+  }
+
   void _onEvent(Json e) {
     switch (e['type']) {
       case 'chat.message' || 'quote.selected':
@@ -75,6 +86,7 @@ class PartnerState extends ChangeNotifier {
         loadProfile().ignore();
       case 'resync':
         loadAll().ignore();
+        syncOutbox().ignore();
     }
     if (e['type'] != 'chat.message') jobsChanged();
   }

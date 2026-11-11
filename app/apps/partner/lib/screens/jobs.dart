@@ -10,6 +10,7 @@ import '../state.dart';
 import 'chat.dart';
 import 'complete.dart';
 import 'site_actions.dart';
+import 'navigate.dart';
 
 String slotLabel(BuildContext context, int hour, bool isQuote) => isQuote
     ? (hour < 12 ? context.t.morning : context.t.afternoon)
@@ -386,6 +387,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final answers = b['answers'] as Json?;
     final notes = (b['visit_notes'] as Json?) ?? const {};
     final reschedule = b['reschedule'] as Json?;
+    final addr = committed
+        ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'.trim()
+        : null;
     return ListView(
       padding: const EdgeInsets.all(Space.gutter),
       children: [
@@ -452,10 +456,15 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 leading: const Icon(Icons.place_outlined),
                 title: Text(committed ? t.visitAddress : t.addressDistrict),
                 subtitle: Text(
-                  committed
-                      ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'
-                      : districtName(context, b['district_code'] as String),
+                  addr ?? districtName(context, b['district_code'] as String),
                 ),
+                trailing: addr == null
+                    ? null
+                    : IconButton(
+                        tooltip: t.pNavigate,
+                        icon: const Icon(Icons.directions_rounded),
+                        onPressed: () => showNavigateSheet(context, addr),
+                      ),
               ),
               if (answers != null)
                 ListTile(

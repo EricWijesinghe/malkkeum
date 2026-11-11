@@ -79,7 +79,7 @@ class FakeApi {
   Future<http.Response> _handle(http.Request req) async {
     final raw = req.url.path;
     final path = raw.startsWith('/v1') ? raw.substring(3) : raw;
-    final body = req.body.isEmpty ? null : jsonDecode(req.body);
+    final body = _jsonOrNull(req.body);
     final call = ApiCall(
       method: req.method,
       path: path,
@@ -97,6 +97,16 @@ class FakeApi {
     return _respond(404, {
       'error': {'code': 'not_found', 'path': path},
     });
+  }
+
+  /// Multipart uploads are not JSON: they reach the route with a null body.
+  static Object? _jsonOrNull(String raw) {
+    if (raw.isEmpty) return null;
+    try {
+      return jsonDecode(raw);
+    } on FormatException {
+      return null;
+    }
   }
 
   static http.Response _respond(int status, Object? body) => http.Response(

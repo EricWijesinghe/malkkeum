@@ -123,7 +123,7 @@ void main() {
       for (final device in devices) {
         for (final shot in _shots) {
           final env = envs[shot.dark ? ThemeMode.dark : ThemeMode.light]!;
-          final app = PartnerState(env.api, FakeRealtime(env.api));
+          final app = PartnerState(env.api, FakeRealtime(env.api), outbox: testOutbox());
           await captureShot(
             tester,
             PartnerTestHost(env: env, app: app, home: shot.screen()),

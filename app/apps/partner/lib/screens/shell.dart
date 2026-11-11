@@ -26,6 +26,7 @@ class _GateState extends State<Gate> {
     final pro = context.proRead;
     await pro.loadAll();
     pro.realtime.connect();
+    pro.syncOutbox().ignore();
   }
 
   @override
