@@ -89,6 +89,8 @@ struct CheckoutIntent {
     method: String,
     store_id: Option<String>,
     channel_key: Option<String>,
+    /// 현금영수증 request is offered only when the server has it switched on.
+    cash_receipts: bool,
 }
 
 #[derive(sqlx::FromRow)]
@@ -185,6 +187,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
         method: method.to_string(),
         store_id: portone.store_id.clone(),
         channel_key: portone.channel_keys.get(method).cloned(),
+        cash_receipts: portone.cash_receipts,
     }))
 }
 

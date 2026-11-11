@@ -2,7 +2,11 @@
 //! settles the request is queued for the owner. The owner exports the queue for the 홈택스 upload (layout UNVERIFIED,
 //! see domain::tax::TAX_INVOICE_HEADERS), issues on 홈택스, then marks each request issued with its approval number.
 
-use super::{audit, checkouts::load_owned, finance::csv_response};
+use super::{
+    audit,
+    checkouts::load_owned,
+    finance::{PeriodQuery, csv_response, resolve},
+};
 use crate::{
     auth::{Admin, Customer},
     error::{ApiError, ApiResult},
@@ -135,21 +139,16 @@ pub async fn on_settled(s: &AppState, checkout: Uuid, provider_tx_id: &str) {
     }
 }
 
-#[derive(Deserialize)]
-struct RangeQuery {
-    from: NaiveDate,
-    to: NaiveDate,
-}
-
-/// Owner queue: requests created in the KST date range that are not yet cancelled.
-async fn list(State(s): State<AppState>, Admin(_): Admin, Query(q): Query<RangeQuery>) -> ApiResult<Json<Vec<InvoiceView>>> {
+/// Owner queue: requests created in the period that are not yet cancelled.
+async fn list(State(s): State<AppState>, Admin(_): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Json<Vec<InvoiceView>>> {
+    let (from, to) = resolve(&q)?;
     let rows: Vec<InvoiceView> = sqlx::query_as(&format!(
         "SELECT {VIEW_COLUMNS} FROM tax_invoice_requests
          WHERE state IN ('requested', 'issued') AND (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
          ORDER BY created_at DESC LIMIT 500"
     ))
-    .bind(q.from)
-    .bind(q.to)
+    .bind(from)
+    .bind(to)
     .fetch_all(&s.db)
     .await?;
     Ok(Json(rows))
@@ -170,7 +169,8 @@ struct ExportRow {
 }
 
 /// CSV for the 홈택스 upload: queued requests (state 'requested') in the range. Marks them exported.
-async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<RangeQuery>) -> ApiResult<Response> {
+async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
+    let (from, to) = resolve(&q)?;
     let rows: Vec<ExportRow> = sqlx::query_as(
         "SELECT t.id, (t.created_at AT TIME ZONE 'Asia/Seoul')::date AS day, t.business_number, t.company_name, t.representative,
            t.business_type, t.business_item, t.address, t.email, p.amount
@@ -178,8 +178,8 @@ async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<Rang
          WHERE t.state = 'requested' AND (t.created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
          ORDER BY t.created_at, t.id",
     )
-    .bind(q.from)
-    .bind(q.to)
+    .bind(from)
+    .bind(to)
     .fetch_all(&s.db)
     .await?;
     let invoice_rows: Vec<InvoiceRow> = rows
@@ -199,8 +199,8 @@ async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<Rang
         .collect();
     let ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     sqlx::query("UPDATE tax_invoice_requests SET exported_at = now(), updated_at = now() WHERE id = ANY($1)").bind(&ids).execute(&s.db).await?;
-    audit(&s.db, "staff", Some(a.id), "finance.export", "tax_invoices", json!({ "from": q.from, "to": q.to, "rows": ids.len() })).await?;
-    let name = format!("malkkeum-tax-invoices-{}_{}", q.from, q.to);
+    audit(&s.db, "staff", Some(a.id), "finance.export", "tax_invoices", json!({ "from": from, "to": to, "rows": ids.len() })).await?;
+    let name = format!("malkkeum-tax-invoices-{from}_{to}");
     csv_response(&name, finance::csv_document(&tax::tax_invoice_document(&invoice_rows)))
 }
 

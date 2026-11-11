@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 
 import '../download.dart';
 import '../state.dart';
+import 'finance_tax.dart';
 
 /// Owner finance: period KPIs, trend charts, payment mix, partner and service tables, accountant CSVs.
 /// Every figure is integer won from the API. Charts only convert to double for drawing.
@@ -100,12 +101,14 @@ class _FinanceScreenState extends State<FinanceScreen> {
     return _load();
   }
 
-  Future<void> _export(String kind) async {
+  Future<void> _export(String kind) => _exportAt('/admin/finance/export/$kind', _periodQuery, 'malkkeum-$kind.csv');
+
+  Future<void> _exportAt(String path, Map<String, String?> query, String fileName) async {
     final messenger = ScaffoldMessenger.of(context);
     final t = context.t;
     try {
-      final bytes = await context.api.getBytes('/admin/finance/export/$kind', query: _periodQuery);
-      final saved = await saveCsv(bytes, 'malkkeum-$kind.csv');
+      final bytes = await context.api.getBytes(path, query: query);
+      final saved = await saveCsv(bytes, fileName);
       messenger.showSnackBar(SnackBar(content: Text(saved ? t.fDownload : t.fDownloadWebOnly)));
     } on ApiException {
       messenger.showSnackBar(SnackBar(content: Text(t.fDownloadFailed)));
@@ -145,6 +148,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
             _ServiceCard(services: _services),
             const SizedBox(height: Space.xl),
             _ExportCard(onExport: _export),
+            const SizedBox(height: Space.xl),
+            TaxSection(periodQuery: _periodQuery, onExport: _exportAt),
           ],
         ],
       ),

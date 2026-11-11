@@ -3,7 +3,11 @@
 //! Off unless `PORTONE_CASH_RECEIPTS=1`. Failures never fail the payment: they are recorded for the console.
 //! Provider shapes: providers/portone_cash_receipt.rs (SANDBOX-VERIFY before enabling).
 
-use super::{audit, checkouts::load_owned};
+use super::{
+    audit,
+    checkouts::load_owned,
+    finance::{PeriodQuery, resolve},
+};
 use crate::{
     auth::{Admin, Customer},
     config::PortOne,
@@ -210,20 +214,15 @@ pub async fn on_full_refund(s: &AppState, payment: Uuid, provider_tx_id: &str) {
     }
 }
 
-#[derive(Deserialize)]
-struct RangeQuery {
-    from: NaiveDate,
-    to: NaiveDate,
-}
-
-/// Owner list of receipts created in the KST date range (identity shown as last four digits only).
-async fn list(State(s): State<AppState>, Admin(_): Admin, Query(q): Query<RangeQuery>) -> ApiResult<Json<Vec<ReceiptView>>> {
+/// Owner list of receipts created in the period (identity shown as last four digits only).
+async fn list(State(s): State<AppState>, Admin(_): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Json<Vec<ReceiptView>>> {
+    let (from, to) = resolve(&q)?;
     let rows: Vec<ReceiptView> = sqlx::query_as(&format!(
         "SELECT {VIEW_COLUMNS} FROM cash_receipts WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
          ORDER BY created_at DESC LIMIT 500"
     ))
-    .bind(q.from)
-    .bind(q.to)
+    .bind(from)
+    .bind(to)
     .fetch_all(&s.db)
     .await?;
     Ok(Json(rows))

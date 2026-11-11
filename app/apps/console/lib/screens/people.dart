@@ -175,7 +175,7 @@ class _SettlementsState extends State<SettlementsScreen> {
             Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}', style: context.text.titleSmall),
             const SizedBox(height: Space.xxs),
             Text(
-              '${context.won((p['amount'] as num).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
+              '${t.tGrossAmount} ${context.won((p['amount'] as num).toInt())} · ${t.tWithholdingLabel} ${context.won(((p['income_tax'] as num?) ?? 0).toInt() + ((p['local_tax'] as num?) ?? 0).toInt())} · ${t.tNetAmount} ${context.won(((p['net'] as num?) ?? (p['amount'] as num)).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
               style: context.text.bodySmall,
             ),
             const SizedBox(height: Space.xs),

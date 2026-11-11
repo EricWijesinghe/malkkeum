@@ -98,16 +98,16 @@ pub fn partner_routes() -> Router<AppState> {
 }
 
 #[derive(Deserialize)]
-struct PeriodQuery {
+pub(super) struct PeriodQuery {
     /// day | week | month | custom (default month)
-    period: Option<String>,
+    pub(super) period: Option<String>,
     /// Any date inside the wanted day, week or month (default today, KST).
-    anchor: Option<NaiveDate>,
-    from: Option<NaiveDate>,
-    to: Option<NaiveDate>,
+    pub(super) anchor: Option<NaiveDate>,
+    pub(super) from: Option<NaiveDate>,
+    pub(super) to: Option<NaiveDate>,
 }
 
-fn resolve(q: &PeriodQuery) -> ApiResult<(NaiveDate, NaiveDate)> {
+pub(super) fn resolve(q: &PeriodQuery) -> ApiResult<(NaiveDate, NaiveDate)> {
     Ok(finance::period(q.period.as_deref().unwrap_or("month"), q.anchor.unwrap_or_else(today_kst), q.from, q.to)?)
 }
 
