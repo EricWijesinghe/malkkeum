@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3407,6 +3408,127 @@ class TZh extends T {
 
   @override
   String get cInvalidValue => '请检查输入内容';
+
+  @override
+  String get subTitle => '定期清洁';
+
+  @override
+  String get subNew => '申请定期清洁';
+
+  @override
+  String get subCadence => '频率';
+
+  @override
+  String get subWeekly => '每周';
+
+  @override
+  String get subBiweekly => '每两周';
+
+  @override
+  String get subEvery4Weeks => '每四周';
+
+  @override
+  String get subWeekday => '星期';
+
+  @override
+  String get subHour => '到达时间';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '定期清洁每次享$percent%折扣';
+  }
+
+  @override
+  String get subChargeNote => '每次上门前一天从已保存的银行卡扣款';
+
+  @override
+  String get subCreate => '申请';
+
+  @override
+  String get subCreated => '已申请定期清洁';
+
+  @override
+  String get subNeedAddress => '请先添加上门地址';
+
+  @override
+  String get subListEmpty => '还没有定期清洁';
+
+  @override
+  String get subStatusActive => '使用中';
+
+  @override
+  String get subStatusPaused => '已暂停';
+
+  @override
+  String get subStatusCancelled => '已取消';
+
+  @override
+  String subNextVisit(String date) {
+    return '下次上门 $date';
+  }
+
+  @override
+  String get subPause => '暂停';
+
+  @override
+  String get subResume => '恢复';
+
+  @override
+  String get subCancelSub => '取消定期清洁';
+
+  @override
+  String get subCancelConfirm => '之后的定期上门都会取消。已预约的上门需单独取消，可能收取费用。';
+
+  @override
+  String get subSkip => '跳过本次上门';
+
+  @override
+  String get subMove => '更改日期';
+
+  @override
+  String get subVisitLocked => '上门前一天起无法更改';
+
+  @override
+  String get subPausedPayment => '多次扣款失败已暂停，请更换银行卡后恢复。';
+
+  @override
+  String get subStatePlanned => '计划中';
+
+  @override
+  String get subStateBooked => '已预约';
+
+  @override
+  String get subStateSkipped => '已跳过';
+
+  @override
+  String get subStateMissed => '未完成';
+
+  @override
+  String get pSubsTitle => '定期客户';
+
+  @override
+  String get pSubsEmpty => '暂无定期客户';
+
+  @override
+  String get cSubsTitle => '定期清洁订阅';
+
+  @override
+  String get cSubsEdit => '代客户修改';
+
+  @override
+  String get cMrr => '月度经常性收入（MRR）';
+
+  @override
+  String get cChurn => '流失率';
+
+  @override
+  String get cActiveSubs => '活跃订阅';
+
+  @override
+  String get cRecognized => '期间确认收入';
+
+  @override
+  String get cSubsLoadFailed => '无法加载订阅';
 
   @override
   String get tTaxSection => '税务';

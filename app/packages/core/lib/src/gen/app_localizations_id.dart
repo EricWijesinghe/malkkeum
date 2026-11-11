@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3529,6 +3530,131 @@ class TId extends T {
 
   @override
   String get cInvalidValue => 'Periksa nilai yang diisi';
+
+  @override
+  String get subTitle => 'Pembersihan rutin';
+
+  @override
+  String get subNew => 'Mulai berlangganan';
+
+  @override
+  String get subCadence => 'Seberapa sering';
+
+  @override
+  String get subWeekly => 'Setiap minggu';
+
+  @override
+  String get subBiweekly => 'Setiap 2 minggu';
+
+  @override
+  String get subEvery4Weeks => 'Setiap 4 minggu';
+
+  @override
+  String get subWeekday => 'Hari';
+
+  @override
+  String get subHour => 'Jam kedatangan';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Diskon $percent% untuk setiap kunjungan';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Setiap kunjungan ditagih sehari sebelumnya ke kartu tersimpan';
+
+  @override
+  String get subCreate => 'Berlangganan';
+
+  @override
+  String get subCreated => 'Langganan dimulai';
+
+  @override
+  String get subNeedAddress => 'Tambahkan alamat kunjungan dulu';
+
+  @override
+  String get subListEmpty => 'Belum ada langganan';
+
+  @override
+  String get subStatusActive => 'Aktif';
+
+  @override
+  String get subStatusPaused => 'Dijeda';
+
+  @override
+  String get subStatusCancelled => 'Dibatalkan';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Kunjungan berikutnya $date';
+  }
+
+  @override
+  String get subPause => 'Jeda';
+
+  @override
+  String get subResume => 'Lanjutkan';
+
+  @override
+  String get subCancelSub => 'Batalkan langganan';
+
+  @override
+  String get subCancelConfirm =>
+      'Kunjungan mendatang akan dibatalkan. Kunjungan yang sudah dipesan harus dibatalkan terpisah.';
+
+  @override
+  String get subSkip => 'Lewati kunjungan ini';
+
+  @override
+  String get subMove => 'Ubah tanggal';
+
+  @override
+  String get subVisitLocked =>
+      'Tidak bisa diubah mulai sehari sebelum kunjungan';
+
+  @override
+  String get subPausedPayment =>
+      'Dijeda karena pembayaran gagal berulang kali. Ganti kartu lalu lanjutkan.';
+
+  @override
+  String get subStatePlanned => 'Terjadwal';
+
+  @override
+  String get subStateBooked => 'Dipesan';
+
+  @override
+  String get subStateSkipped => 'Dilewati';
+
+  @override
+  String get subStateMissed => 'Terlewat';
+
+  @override
+  String get pSubsTitle => 'Pelanggan rutin';
+
+  @override
+  String get pSubsEmpty => 'Belum ada pelanggan rutin';
+
+  @override
+  String get cSubsTitle => 'Langganan';
+
+  @override
+  String get cSubsEdit => 'Ubah untuk pelanggan';
+
+  @override
+  String get cMrr => 'Pendapatan berulang bulanan (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Langganan aktif';
+
+  @override
+  String get cRecognized => 'Pendapatan diakui periode ini';
+
+  @override
+  String get cSubsLoadFailed => 'Langganan tidak dapat dimuat';
 
   @override
   String get tTaxSection => 'Pajak';

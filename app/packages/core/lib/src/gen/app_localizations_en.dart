@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3507,6 +3508,130 @@ class TEn extends T {
 
   @override
   String get cInvalidValue => 'Please check the highlighted value';
+
+  @override
+  String get subTitle => 'Regular cleaning';
+
+  @override
+  String get subNew => 'Start a subscription';
+
+  @override
+  String get subCadence => 'How often';
+
+  @override
+  String get subWeekly => 'Every week';
+
+  @override
+  String get subBiweekly => 'Every 2 weeks';
+
+  @override
+  String get subEvery4Weeks => 'Every 4 weeks';
+
+  @override
+  String get subWeekday => 'Day of week';
+
+  @override
+  String get subHour => 'Arrival time';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Subscriptions get $percent% off each visit';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Each visit is charged the day before, to your saved card';
+
+  @override
+  String get subCreate => 'Subscribe';
+
+  @override
+  String get subCreated => 'Subscription started';
+
+  @override
+  String get subNeedAddress => 'Add a visit address first';
+
+  @override
+  String get subListEmpty => 'No subscriptions yet';
+
+  @override
+  String get subStatusActive => 'Active';
+
+  @override
+  String get subStatusPaused => 'Paused';
+
+  @override
+  String get subStatusCancelled => 'Cancelled';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Next visit $date';
+  }
+
+  @override
+  String get subPause => 'Pause';
+
+  @override
+  String get subResume => 'Resume';
+
+  @override
+  String get subCancelSub => 'Cancel subscription';
+
+  @override
+  String get subCancelConfirm =>
+      'Future visits will be cancelled. Booked visits need separate cancellation, and fees may apply.';
+
+  @override
+  String get subSkip => 'Skip this visit';
+
+  @override
+  String get subMove => 'Move this visit';
+
+  @override
+  String get subVisitLocked => 'Visits can\'t change from the day before';
+
+  @override
+  String get subPausedPayment =>
+      'Paused after repeated payment failures. Change your card, then resume.';
+
+  @override
+  String get subStatePlanned => 'Planned';
+
+  @override
+  String get subStateBooked => 'Booked';
+
+  @override
+  String get subStateSkipped => 'Skipped';
+
+  @override
+  String get subStateMissed => 'Missed';
+
+  @override
+  String get pSubsTitle => 'Recurring customers';
+
+  @override
+  String get pSubsEmpty => 'No recurring customers yet';
+
+  @override
+  String get cSubsTitle => 'Subscriptions';
+
+  @override
+  String get cSubsEdit => 'Edit for customer';
+
+  @override
+  String get cMrr => 'Monthly recurring revenue (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Active subscriptions';
+
+  @override
+  String get cRecognized => 'Recognized in period';
+
+  @override
+  String get cSubsLoadFailed => 'Could not load subscriptions';
 
   @override
   String get tTaxSection => 'Tax';

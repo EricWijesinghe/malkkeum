@@ -253,6 +253,8 @@ struct Summary {
     #[serde(flatten)]
     metrics: Metrics,
     payment_methods: Vec<MethodRow>,
+    /// MRR, churn and prorated recurring revenue for the period (see `subscriptions::recurring_metrics`).
+    recurring: serde_json::Value,
     vat_basis: &'static str,
 }
 
@@ -264,6 +266,7 @@ async fn summary(State(s): State<AppState>, _st: Staff, Query(q): Query<PeriodQu
         to,
         metrics: total_of(&rows).into(),
         payment_methods: payment_methods(&s.db, from, to).await?,
+        recurring: super::subscriptions::recurring_metrics(&s.db, from, to).await?,
         vat_basis: "platform_fee_10pct_estimate",
     }))
 }

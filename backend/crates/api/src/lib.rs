@@ -88,6 +88,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         payout_sync::spawn(state.clone()),
         retention::spawn(state.clone()),
         noshow::spawn(state.clone()),
+        routes::subscription_engine::spawn(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;

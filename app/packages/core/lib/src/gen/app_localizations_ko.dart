@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3423,6 +3424,127 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String get subTitle => '정기 청소';
+
+  @override
+  String get subNew => '정기 청소 신청';
+
+  @override
+  String get subCadence => '주기';
+
+  @override
+  String get subWeekly => '매주';
+
+  @override
+  String get subBiweekly => '2주마다';
+
+  @override
+  String get subEvery4Weeks => '4주마다';
+
+  @override
+  String get subWeekday => '요일';
+
+  @override
+  String get subHour => '시작 시간';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '정기 청소는 방문마다 $percent% 할인돼요';
+  }
+
+  @override
+  String get subChargeNote => '방문 하루 전에 등록된 카드로 결제해요';
+
+  @override
+  String get subCreate => '신청하기';
+
+  @override
+  String get subCreated => '정기 청소를 신청했어요';
+
+  @override
+  String get subNeedAddress => '방문할 주소를 먼저 등록해 주세요';
+
+  @override
+  String get subListEmpty => '아직 정기 청소가 없어요';
+
+  @override
+  String get subStatusActive => '이용 중';
+
+  @override
+  String get subStatusPaused => '일시 정지';
+
+  @override
+  String get subStatusCancelled => '해지됨';
+
+  @override
+  String subNextVisit(String date) {
+    return '다음 방문 $date';
+  }
+
+  @override
+  String get subPause => '일시 정지';
+
+  @override
+  String get subResume => '다시 시작';
+
+  @override
+  String get subCancelSub => '정기 청소 해지';
+
+  @override
+  String get subCancelConfirm => '앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.';
+
+  @override
+  String get subSkip => '이번 방문 건너뛰기';
+
+  @override
+  String get subMove => '날짜 변경';
+
+  @override
+  String get subVisitLocked => '방문 하루 전부터는 변경할 수 없어요';
+
+  @override
+  String get subPausedPayment => '결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.';
+
+  @override
+  String get subStatePlanned => '예정';
+
+  @override
+  String get subStateBooked => '예약됨';
+
+  @override
+  String get subStateSkipped => '건너뜀';
+
+  @override
+  String get subStateMissed => '놓침';
+
+  @override
+  String get pSubsTitle => '정기 고객';
+
+  @override
+  String get pSubsEmpty => '정기 고객이 아직 없어요';
+
+  @override
+  String get cSubsTitle => '정기 청소 구독';
+
+  @override
+  String get cSubsEdit => '고객 대신 수정';
+
+  @override
+  String get cMrr => '월 반복 매출 (MRR)';
+
+  @override
+  String get cChurn => '해지율';
+
+  @override
+  String get cActiveSubs => '이용 중 구독';
+
+  @override
+  String get cRecognized => '기간 인식 매출';
+
+  @override
+  String get cSubsLoadFailed => '구독 목록을 불러오지 못했어요';
 
   @override
   String get tTaxSection => '세무';

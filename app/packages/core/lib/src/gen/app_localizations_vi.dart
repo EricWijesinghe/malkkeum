@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3492,6 +3493,130 @@ class TVi extends T {
 
   @override
   String get cInvalidValue => 'Vui lòng kiểm tra giá trị';
+
+  @override
+  String get subTitle => 'Dọn định kỳ';
+
+  @override
+  String get subNew => 'Đăng ký dọn định kỳ';
+
+  @override
+  String get subCadence => 'Tần suất';
+
+  @override
+  String get subWeekly => 'Hằng tuần';
+
+  @override
+  String get subBiweekly => '2 tuần một lần';
+
+  @override
+  String get subEvery4Weeks => '4 tuần một lần';
+
+  @override
+  String get subWeekday => 'Thứ';
+
+  @override
+  String get subHour => 'Giờ đến';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Dọn định kỳ được giảm $percent% mỗi lần';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Mỗi lần dọn được trừ vào thẻ đã lưu, trước một ngày';
+
+  @override
+  String get subCreate => 'Đăng ký';
+
+  @override
+  String get subCreated => 'Đã đăng ký dọn định kỳ';
+
+  @override
+  String get subNeedAddress => 'Hãy thêm địa chỉ dọn trước';
+
+  @override
+  String get subListEmpty => 'Chưa có gói dọn định kỳ nào';
+
+  @override
+  String get subStatusActive => 'Đang dùng';
+
+  @override
+  String get subStatusPaused => 'Tạm dừng';
+
+  @override
+  String get subStatusCancelled => 'Đã hủy';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Lần dọn tiếp $date';
+  }
+
+  @override
+  String get subPause => 'Tạm dừng';
+
+  @override
+  String get subResume => 'Tiếp tục';
+
+  @override
+  String get subCancelSub => 'Hủy gói định kỳ';
+
+  @override
+  String get subCancelConfirm =>
+      'Các lần dọn sau sẽ bị hủy. Lịch đã đặt cần hủy riêng và có thể phát sinh phí.';
+
+  @override
+  String get subSkip => 'Bỏ qua lần này';
+
+  @override
+  String get subMove => 'Đổi ngày';
+
+  @override
+  String get subVisitLocked => 'Không đổi được từ ngày trước khi dọn';
+
+  @override
+  String get subPausedPayment =>
+      'Tạm dừng vì thanh toán thất bại nhiều lần. Đổi thẻ rồi tiếp tục.';
+
+  @override
+  String get subStatePlanned => 'Dự kiến';
+
+  @override
+  String get subStateBooked => 'Đã đặt';
+
+  @override
+  String get subStateSkipped => 'Đã bỏ qua';
+
+  @override
+  String get subStateMissed => 'Bỏ lỡ';
+
+  @override
+  String get pSubsTitle => 'Khách định kỳ';
+
+  @override
+  String get pSubsEmpty => 'Chưa có khách định kỳ';
+
+  @override
+  String get cSubsTitle => 'Gói định kỳ';
+
+  @override
+  String get cSubsEdit => 'Sửa thay khách';
+
+  @override
+  String get cMrr => 'Doanh thu định kỳ/tháng (MRR)';
+
+  @override
+  String get cChurn => 'Tỷ lệ rời bỏ';
+
+  @override
+  String get cActiveSubs => 'Gói đang hoạt động';
+
+  @override
+  String get cRecognized => 'Doanh thu ghi nhận trong kỳ';
+
+  @override
+  String get cSubsLoadFailed => 'Không tải được danh sách gói';
 
   @override
   String get tTaxSection => 'Thuế';

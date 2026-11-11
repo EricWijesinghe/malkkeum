@@ -452,28 +452,35 @@ struct CancelBody {
 }
 
 async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, body: Option<Json<CancelBody>>) -> ApiResult<Json<BookingRow>> {
-    let b = owned(&s, a.id, id).await?;
+    let accepted = body.and_then(|Json(c)| c.accepted_fee);
+    cancel_owned(&s, a.id, id, accepted).await?;
+    Ok(Json(load_booking(&s.db, id).await?))
+}
+
+/// The customer's cancel with the cancel-fee policy. `accepted_fee` must match the fee shown in the preview.
+/// Shared by the booking route and subscription visit skips.
+pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Option<i64>) -> ApiResult<()> {
+    let b = owned(s, user, id).await?;
     let status = b.status()?;
     let (policy, _) = load_cancel_policy(&s.db).await?;
     let quote = cancel_quote(&policy, status, days_before(&b), b.paid_amount).ok_or(DomainError::CancellationWindowClosed)?;
     status.transition(BookingStatus::Cancelled)?;
-    let accepted = body.and_then(|Json(c)| c.accepted_fee);
-    if quote.fee > 0 && accepted != Some(quote.fee) {
+    if quote.fee > 0 && accepted_fee != Some(quote.fee) {
         return Err(ApiError::Conflict("fee_changed"));
     }
     // A fee keeps the coupon used and refunds only what remains; no fee is a full refund.
     let cap = (quote.fee > 0).then_some(quote.refund);
-    apply_cancel(&s, &b, cap, "customer").await?;
+    apply_cancel(s, &b, cap, "customer").await?;
     audit(
         &s.db,
         "customer",
-        Some(a.id),
+        Some(user),
         "booking.cancel",
         &id.to_string(),
         json!({ "fee": quote.fee, "refund": quote.refund }),
     )
     .await?;
-    Ok(Json(load_booking(&s.db, id).await?))
+    Ok(())
 }
 
 /// Household is editable until the pro has finished the job, like visit notes.

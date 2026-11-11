@@ -19,6 +19,8 @@ mod member;
 mod ops;
 mod partner;
 pub(crate) mod partner_jobs;
+pub mod subscription_engine;
+pub(crate) mod subscriptions;
 pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
@@ -78,6 +80,8 @@ pub fn router(state: AppState) -> Router {
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
+        .merge(subscriptions::routes())
+        .merge(subscriptions::public_routes())
         .merge(webhooks::routes())
         .merge(setup::public_routes())
         .merge(address::public_routes())
@@ -100,9 +104,18 @@ pub fn router(state: AppState) -> Router {
                 .merge(tax_invoices::admin_routes())
                 .merge(ops::admin_routes())
                 .merge(cases::admin_routes())
-                .merge(site::admin_routes()),
+                .merge(site::admin_routes())
+                .merge(subscriptions::admin_routes()),
         )
-        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()).merge(cases::partner_routes()).merge(site::partner_routes()))
+        .nest(
+            "/partner",
+            partner::routes()
+                .merge(partner_jobs::routes())
+                .merge(finance::partner_routes())
+                .merge(cases::partner_routes())
+                .merge(site::partner_routes())
+                .merge(subscriptions::partner_routes()),
+        )
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler))
         .route("/openapi.json", get(crate::openapi::spec))

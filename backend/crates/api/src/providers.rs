@@ -24,6 +24,7 @@ use std::{
     sync::{Arc, RwLock},
     time::Duration,
 };
+use uuid::Uuid;
 
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -218,6 +219,20 @@ impl Providers {
             return Err(ProviderError::Declined("card_declined".into()));
         }
         tracing::info!(target: "fake_pg", amount, idempotency_key, "charged");
+        Ok(random_id("tx"))
+    }
+
+    /// Charges a saved PortOne billing key once for a subscription visit. Dev mode fakes it; `FAKE_DECLINE_KEY` declines.
+    pub async fn charge_billing(&self, billing_key: &str, amount: i64, payment_id: &str, order: &str, customer: Uuid) -> Result<String, ProviderError> {
+        if !self.dev() {
+            let charged = portone::charge_billing(self, billing_key, payment_id, amount, order, customer).await;
+            self.observe("portone", outcome(&charged)).await;
+            return charged;
+        }
+        if billing_key == FAKE_DECLINE_KEY {
+            return Err(ProviderError::Declined("card_declined".into()));
+        }
+        tracing::info!(target: "fake_pg", amount, payment_id, "billed");
         Ok(random_id("tx"))
     }
 

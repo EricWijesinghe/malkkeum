@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3542,6 +3543,131 @@ class TUz extends T {
 
   @override
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
+
+  @override
+  String get subTitle => 'Muntazam tozalash';
+
+  @override
+  String get subNew => 'Obuna boshlash';
+
+  @override
+  String get subCadence => 'Necha marta';
+
+  @override
+  String get subWeekly => 'Har hafta';
+
+  @override
+  String get subBiweekly => 'Har 2 haftada';
+
+  @override
+  String get subEvery4Weeks => 'Har 4 haftada';
+
+  @override
+  String get subWeekday => 'Hafta kuni';
+
+  @override
+  String get subHour => 'Kelish vaqti';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Har bir tashrif uchun $percent% chegirma';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Har tashrifdan bir kun oldin saqlangan kartadan to\'lanadi';
+
+  @override
+  String get subCreate => 'Obuna bo\'lish';
+
+  @override
+  String get subCreated => 'Obuna boshlandi';
+
+  @override
+  String get subNeedAddress => 'Avval tashrif manzilini qo\'shing';
+
+  @override
+  String get subListEmpty => 'Hozircha obuna yo\'q';
+
+  @override
+  String get subStatusActive => 'Faol';
+
+  @override
+  String get subStatusPaused => 'To\'xtatilgan';
+
+  @override
+  String get subStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Keyingi tashrif $date';
+  }
+
+  @override
+  String get subPause => 'To\'xtatish';
+
+  @override
+  String get subResume => 'Davom ettirish';
+
+  @override
+  String get subCancelSub => 'Obunani bekor qilish';
+
+  @override
+  String get subCancelConfirm =>
+      'Kelgusi tashriflar bekor qilinadi. Band qilingan tashriflarni alohida bekor qiling.';
+
+  @override
+  String get subSkip => 'Bu tashrifni o\'tkazib yuborish';
+
+  @override
+  String get subMove => 'Sanani o\'zgartirish';
+
+  @override
+  String get subVisitLocked =>
+      'Tashrifdan bir kun oldin o\'zgartirib bo\'lmaydi';
+
+  @override
+  String get subPausedPayment =>
+      'Takroriy to\'lov xatolari tufayli to\'xtatildi. Kartani almashtirib, davom ettiring.';
+
+  @override
+  String get subStatePlanned => 'Rejalashtirilgan';
+
+  @override
+  String get subStateBooked => 'Band qilingan';
+
+  @override
+  String get subStateSkipped => 'O\'tkazib yuborilgan';
+
+  @override
+  String get subStateMissed => 'O\'tkazib yuborilgan (o\'tmagan)';
+
+  @override
+  String get pSubsTitle => 'Doimiy mijozlar';
+
+  @override
+  String get pSubsEmpty => 'Hozircha doimiy mijozlar yo\'q';
+
+  @override
+  String get cSubsTitle => 'Obunalar';
+
+  @override
+  String get cSubsEdit => 'Mijoz o\'rniga tahrirlash';
+
+  @override
+  String get cMrr => 'Oylik takroriy daromad (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Faol obunalar';
+
+  @override
+  String get cRecognized => 'Davrda e\'tirof etilgan daromad';
+
+  @override
+  String get cSubsLoadFailed => 'Obunalarni yuklab bo\'lmadi';
 
   @override
   String get tTaxSection => 'Soliq';
