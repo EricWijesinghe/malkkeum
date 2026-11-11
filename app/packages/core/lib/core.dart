@@ -16,4 +16,5 @@ export 'src/push.dart';
 export 'src/realtime.dart';
 export 'src/review_report.dart';
 export 'src/session.dart';
+export 'src/store_review.dart';
 export 'src/theme_mode.dart';
