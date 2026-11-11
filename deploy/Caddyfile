@@ -2,7 +2,7 @@
 #   https://DOMAIN/          website
 #   https://DOMAIN/app/      customer web app (PWA; every /app/* deep link serves index.html)
 #   https://DOMAIN/admin/    operations console (setup wizard on first visit)
-#   https://DOMAIN/v1, /files, /health   API
+#   https://DOMAIN/v1, /health   API (uploads: /v1/files, signed URLs only)
 {
 	email {$ACME_EMAIL}
 }
@@ -24,7 +24,7 @@
 		-Server
 	}
 
-	@api path /v1/* /files/* /health
+	@api path /v1/* /health
 	handle @api {
 		reverse_proxy api:8080
 	}

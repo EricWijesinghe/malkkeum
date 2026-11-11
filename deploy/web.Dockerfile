@@ -21,4 +21,4 @@ COPY --from=console /src/app/apps/customer/build/web/ /srv/app/
 #   https://DOMAIN/          website
 #   https://DOMAIN/app/      customer web app (no install)
 #   https://DOMAIN/admin/    operations console (setup wizard on first visit)
-#   https://DOMAIN/v1, /files, /health   API
+#   https://DOMAIN/v1, /health   API (uploads: /v1/files, signed URLs only)
