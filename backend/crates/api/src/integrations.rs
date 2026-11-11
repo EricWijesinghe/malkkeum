@@ -35,6 +35,9 @@ pub struct Integrations {
     pub juso_confm_key: Option<String>,
     /// Partner payout provider. None means `manual` (owner transfers and confirms).
     pub payout: Option<PayoutSettings>,
+    /// True when Toss payouts may be enabled: env `TOSS_PAYOUTS_ENABLED=1` and the saved sandbox key passed
+    /// the console test (see `toss_ready`). Set by the loader, never by the console.
+    pub payout_toss_ready: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -46,8 +49,36 @@ pub enum PayoutMode {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PayoutSettings {
     pub mode: PayoutMode,
-    /// Toss payouts secret key. Required when mode is `toss`.
+    /// Toss payouts secret key (Basic auth). Required when mode is `toss`.
     pub secret_key: Option<String>,
+    /// Toss security key (보안 키, 64 hex chars): the AES key for JWE request and response bodies.
+    pub security_key: Option<String>,
+}
+
+/// Env switch that must be on before Toss payouts can be enabled from the console.
+pub const TOSS_ENV: &str = "TOSS_PAYOUTS_ENABLED";
+/// Only Toss sandbox keys can pass the connection test that unlocks Toss payouts.
+const SANDBOX_KEY_PREFIX: &str = "test_sk_";
+
+/// Short, non-reversible id of a secret, stored with the test result so a changed key must be re-tested.
+pub fn key_fingerprint(secret: &str) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(secret.as_bytes()).iter().take(8).map(|b| format!("{b:02x}")).collect()
+}
+
+/// Toss payouts open only when the env switch is on AND the last sandbox test recorded success for this key.
+pub fn toss_ready(env_enabled: bool, last_test: Option<&Value>, secret: &str) -> bool {
+    env_enabled
+        && last_test.is_some_and(|t| t["ok"] == json!(true) && t["code"] == json!("sandbox_connected") && t["key_fp"] == json!(key_fingerprint(secret)))
+}
+
+pub fn toss_env_enabled() -> bool {
+    std::env::var(TOSS_ENV).is_ok_and(|v| v == "1")
+}
+
+/// Whether a payout secret is a sandbox key (the only kind the connection test accepts).
+pub fn is_sandbox_key(secret: &str) -> bool {
+    secret.starts_with(SANDBOX_KEY_PREFIX)
 }
 
 /// S3-compatible offsite backup target (AWS S3, Cloudflare R2, Naver Cloud Object Storage, Backblaze B2).
@@ -75,6 +106,7 @@ impl Integrations {
             ai: None,
             backup: None,
             payout: None,
+            payout_toss_ready: false,
             juso_confm_key: None,
         }
     }
@@ -210,7 +242,7 @@ const BACKUP_FIELDS: [Field; 6] = [
     f("secret_key", Kind::Secret, true),
     f("retention_days", Kind::Text, false),
 ];
-const PAYOUT_FIELDS: [Field; 2] = [f("mode", Kind::Text, true), f("secret_key", Kind::Secret, false)];
+const PAYOUT_FIELDS: [Field; 3] = [f("mode", Kind::Text, true), f("secret_key", Kind::Secret, false), f("security_key", Kind::Secret, false)];
 const JUSO_FIELDS: [Field; 1] = [f("confm_key", Kind::Secret, true)];
 const BACKUP_RETENTION_DEFAULT: u32 = 30;
 const BACKUP_RETENTION_MAX: u32 = 3650;
@@ -321,22 +353,24 @@ fn s3_config(v: &Map<String, Value>) -> Result<S3Config, Invalid> {
     })
 }
 
-fn payout_settings(v: &Map<String, Value>) -> Result<PayoutSettings, Invalid> {
+fn payout_settings(v: &Map<String, Value>, toss_ready: bool) -> Result<PayoutSettings, Invalid> {
     let mode = match text(v, "mode").as_deref() {
         Some("manual") => PayoutMode::Manual,
         Some("toss") => PayoutMode::Toss,
         _ => return Err(Invalid("invalid_mode")),
     };
     let secret_key = text(v, "secret_key");
-    if mode == PayoutMode::Toss && secret_key.is_none() {
-        return Err(Invalid("missing_field"));
-    }
-    // shortcut: Toss payouts also need per-pro seller registration (POST /v2/sellers) and JWE-encrypted
-    // bodies, which providers/payout.rs does not do yet, so toss mode is refused; build both, then lift this.
+    let security_key = text(v, "security_key");
     if mode == PayoutMode::Toss {
-        return Err(Invalid("toss_unverified"));
+        let (Some(_), Some(security)) = (&secret_key, &security_key) else {
+            return Err(Invalid("missing_field"));
+        };
+        crate::providers::toss_jwe::key_bytes(security).map_err(|_| Invalid("invalid_security_key"))?;
+        if !toss_ready {
+            return Err(Invalid("toss_unverified"));
+        }
     }
-    Ok(PayoutSettings { mode, secret_key })
+    Ok(PayoutSettings { mode, secret_key, security_key })
 }
 
 fn service_account(v: &Map<String, Value>) -> Result<ServiceAccount, Invalid> {
@@ -383,7 +417,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         }
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Backup => out.backup = Some(s3_config(v)?),
-        Section::Payout => out.payout = Some(payout_settings(v)?),
+        Section::Payout => out.payout = Some(payout_settings(v, base.payout_toss_ready)?),
         Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
         Section::Naver => {
             out.naver_client_id = Some(required(v, "client_id")?);
@@ -497,14 +531,18 @@ pub async fn delete_section(db: &PgPool, section: Section) -> Result<(), sqlx::E
 /// Env keys overlaid with every saved console section. A section that no longer validates
 /// (e.g. after DATA_KEY rotation) is skipped with a warning so the server still starts.
 pub async fn load(db: &PgPool, config: &Config) -> Result<Integrations, sqlx::Error> {
-    let rows: Vec<(String, String)> = sqlx::query_as("SELECT section, secret FROM integration_settings").fetch_all(db).await?;
+    let rows: Vec<(String, String, Option<Value>)> = sqlx::query_as("SELECT section, secret, last_test FROM integration_settings").fetch_all(db).await?;
     let mut out = Integrations::from_config(config);
-    for (code, enc) in rows {
+    for (code, enc, last_test) in rows {
         let Some(section) = Section::parse(&code) else { continue };
         let Some(values) = decode(&config.data_key, &enc) else {
             tracing::warn!(section = code, "setup section cannot be decrypted; ignored");
             continue;
         };
+        if section == Section::Payout {
+            let secret = values.get("secret_key").and_then(Value::as_str).unwrap_or_default();
+            out.payout_toss_ready = toss_ready(toss_env_enabled(), last_test.as_ref(), secret);
+        }
         match apply(&out, section, &values) {
             Ok(next) => out = next,
             Err(Invalid(reason)) => tracing::warn!(section = code, reason, "setup section invalid; ignored"),
@@ -670,16 +708,24 @@ mod tests {
         let manual = apply(&base, Section::Payout, &obj(json!({"mode": "manual"}))).unwrap();
         assert_eq!(manual.payout.map(|p| p.mode), Some(PayoutMode::Manual));
         assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "toss"}))).unwrap_err(), Invalid("missing_field"));
-        assert_eq!(
-            apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "live_sk_x"}))).unwrap_err(),
-            Invalid("toss_unverified")
-        );
-        assert_eq!(
-            apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "test_sk_x"}))).unwrap_err(),
-            Invalid("toss_unverified"),
-            "toss stays off until seller registration and JWE exist"
-        );
+        let keys = json!({"mode": "toss", "secret_key": "test_sk_x", "security_key": "0123456789abcdef".repeat(4)});
+        assert_eq!(apply(&base, Section::Payout, &obj(keys.clone())).unwrap_err(), Invalid("toss_unverified"), "gate closed without env and test");
+        let ready = Integrations { payout_toss_ready: true, ..Integrations::default() };
+        assert_eq!(apply(&ready, Section::Payout, &obj(keys)).unwrap().payout.map(|p| p.mode), Some(PayoutMode::Toss));
+        let bad_key = json!({"mode": "toss", "secret_key": "test_sk_x", "security_key": "xyz"});
+        assert_eq!(apply(&ready, Section::Payout, &obj(bad_key)).unwrap_err(), Invalid("invalid_security_key"));
         assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(), Invalid("invalid_mode"));
+    }
+
+    #[test]
+    fn toss_gate_needs_env_and_a_passing_test_for_this_key() {
+        let ok = json!({"ok": true, "code": "sandbox_connected", "key_fp": key_fingerprint("test_sk_a")});
+        assert!(toss_ready(true, Some(&ok), "test_sk_a"));
+        assert!(!toss_ready(false, Some(&ok), "test_sk_a"), "env switch off");
+        assert!(!toss_ready(true, Some(&ok), "test_sk_b"), "key changed since the test");
+        assert!(!toss_ready(true, None, "test_sk_a"), "never tested");
+        let failed = json!({"ok": false, "code": "unreachable", "key_fp": key_fingerprint("test_sk_a")});
+        assert!(!toss_ready(true, Some(&failed), "test_sk_a"));
     }
 
     #[test]
