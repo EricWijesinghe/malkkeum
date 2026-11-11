@@ -85,6 +85,28 @@ sudo malkkeum demo clear     # 샘플 데이터 지우기
 
 서버를 통째로 버리려면 VM 을 지우면 끝이에요. 이 설치가 만든 것은 `/opt/malkkeum` 폴더, `malkkeum` 명령, `/etc/cron.d/malkkeum` 이에요.
 
+## 실제 시험 기록 (발췌)
+
+깨끗한 Ubuntu 24.04 VM(systemd, Docker 미설치)에서 위 순서대로 설치하고 확인한 기록이에요. 전체 로그는 개발 PC 의 `F:/EC/targets/demo-install/` 에 있어요.
+
+```
+✔ 이미지를 불러왔어요: /media/usb/malkkeum-demo.tar
+✔ 설치가 끝났어요!   (채널: stable)
+GET /admin/ -> 200                          ← 설정 마법사 화면
+{"dev_mode":false,"needs_admin":true}       ← 사장님 계정을 기다리는 상태
+{"ok":true}                                 ← 설치 코드로 사장님 계정 생성
+ok: 3707 rows in 26 tables                  ← malkkeum demo load
+{"ok":true,"version":"demo"}                ← /health
+HTTP 200                                    ← 예약 목록 (GET /v1/admin/bookings)
+✘ 업데이트에 실패해서 이전 버전으로 되돌렸어요.   ← 고장난 버전(bad)은 자동으로 되돌려요
+✔ 최신 버전(demo2)으로 업데이트했어요
+✔ 이전 버전으로 되돌렸어요                    ← malkkeum rollback
+184                                          ← 업데이트·되돌리기 후에도 예약 데이터 그대로
+✔ 체험용 데이터를 지웠어요                    ← malkkeum demo clear (예약 0건, 사장님 계정 1명 남음)
+```
+
+> 개발 PC 의 메모리가 부족하면 웹 이미지의 Flutter 빌드(`deploy/web.Dockerfile` 첫 단계)가 멈출 수 있어요. 그때는 Flutter 를 PC 에서 먼저 빌드하고 결과물을 이미지에 복사해도 같은 이미지가 돼요.
+
 ## 자주 막히는 곳
 | 증상 | 해결 |
 |---|---|

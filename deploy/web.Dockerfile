@@ -1,6 +1,9 @@
 # Web image: Caddy serving the website (/), the customer web app (/app/), the console (/admin/) and proxying the API.
 # Build context: repository root.
 FROM ghcr.io/cirruslabs/flutter:stable AS console
+# The :stable image can lag the Flutter/Dart SDK that app/pubspec.lock needs (Dart >= 3.13), so pin the SDK here.
+ARG FLUTTER_VERSION=3.47.9
+RUN cd /sdks/flutter && git fetch -q --depth 1 origin "refs/tags/${FLUTTER_VERSION}:refs/tags/${FLUTTER_VERSION}" && git checkout -q "${FLUTTER_VERSION}" && flutter --version
 WORKDIR /src/app
 COPY app/ .
 # Web builds self-host CanvasKit/skwasm (--no-web-resources-cdn) so the CSP needs no Google CDN.

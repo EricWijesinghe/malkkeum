@@ -70,9 +70,10 @@ load_images() { # load_images 파일 이미지... : tar 를 docker load 하고, 
 wait_healthy() { # 도메인을 이 서버로 직접 불러서 응답을 기다려요 (DNS 설정과 무관)
   local waited=0
   until curl -fsSk --max-time 5 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" >/dev/null 2>&1; do
-    sleep 5; waited=$((waited + 5))
     [ "$waited" -ge "$HEALTH_WAIT_SECS" ] && return 1
+    sleep 5; waited=$((waited + 5))
   done
+  return 0 # until 의 종료 상태는 마지막 실행 명령을 따라가서, 명시적으로 성공을 돌려줘요
 }
 
 [ "$(id -u)" -eq 0 ] || die "관리자 권한이 필요해요. 명령 앞에 sudo 를 붙여 다시 실행해 주세요."
@@ -236,9 +237,10 @@ health_ok() {
 wait_healthy() {
   local waited=0
   until health_ok; do
-    sleep 5; waited=$((waited + 5))
     [ "$waited" -ge "$UPDATE_WAIT_SECS" ] && return 1
+    sleep 5; waited=$((waited + 5))
   done
+  return 0 # until 의 종료 상태는 마지막 실행 명령을 따라가서, 명시적으로 성공을 돌려줘요
 }
 # 지금 쓰는 이미지를 저장소@다이제스트 형태로 기록해 둬야, 태그가 바뀌어도 되돌릴 수 있어요.
 digest_ref() {
