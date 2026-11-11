@@ -28,6 +28,8 @@ $env:ALLOWED_ORIGINS = 'http://localhost:8081'
 $env:SEED_ADMIN_EMAIL = 'owner@demo.local'
 $env:SEED_ADMIN_PASSWORD = 'malkkeum-demo-2026'
 $env:RATE_LIMIT_AUTH_PER_MIN = '1000'
+# Demo only: the owner signs in to the console without setting up an authenticator app.
+$env:STAFF_MFA_REQUIRED = '0'
 
 if (-not (Test-Path "$here\.demo-loaded")) {
   & "$here\api.exe" demo load
