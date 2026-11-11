@@ -12,6 +12,7 @@ pub mod partner;
 pub mod pricing;
 pub mod quote;
 pub mod schedule;
+pub mod tax;
 
 pub use error::DomainError;
 pub use money::Won;

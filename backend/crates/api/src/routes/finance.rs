@@ -20,6 +20,7 @@ use chrono::{Datelike, NaiveDate};
 use domain::{
     Won,
     finance::{self, Cell, Grain},
+    tax::{self, VatInput, VatMethod},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -88,6 +89,7 @@ pub fn routes() -> Router<AppState> {
         .route("/finance/export/ledger", get(export_ledger))
         .route("/finance/export/settlements", get(export_settlements))
         .route("/finance/export/monthly", get(export_monthly))
+        .route("/finance/export/vat", get(export_vat))
 }
 
 pub fn partner_routes() -> Router<AppState> {
@@ -638,4 +640,39 @@ async fn export_monthly(State(s): State<AppState>, Admin(a): Admin, Query(q): Qu
     doc.push(total_row);
     audit(&s.db, "staff", Some(a.id), "finance.export", "monthly", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("monthly", from, to), finance::csv_document(&doc))
+}
+
+#[derive(Deserialize)]
+struct VatQuery {
+    year: i32,
+    /// Korean calendar quarter 1..=4.
+    quarter: u32,
+}
+
+/// Quarterly VAT summary (owner only). Sales are paid checkouts by method; fee and refunds follow the
+/// settlement and payment dates already used by the other exports. ACCOUNTANT: confirm these bases.
+async fn export_vat(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<VatQuery>) -> ApiResult<Response> {
+    let (from, to) = tax::quarter_range(q.year, q.quarter)?;
+    let methods = payment_methods(&s.db, from, to).await?;
+    let platform_fee: i64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM(fee), 0)::bigint FROM settlements WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_one(&s.db)
+    .await?;
+    let refunds: i64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_one(&s.db)
+    .await?;
+    let input = VatInput {
+        methods: methods.into_iter().map(|m| VatMethod { method: m.method, count: m.count, amount: m.amount }).collect(),
+        platform_fee: Won(platform_fee),
+        refunds: Won(refunds),
+    };
+    audit(&s.db, "staff", Some(a.id), "finance.export", "vat", json!({ "from": from, "to": to })).await?;
+    csv_response(&export_name("vat", from, to), finance::csv_document(&tax::vat_document(&input)))
 }
