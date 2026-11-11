@@ -149,7 +149,7 @@ async fn retention_purge_removes_expired_rows_and_unreferenced_uploads(pool: PgP
         .await
         .expect("old otp");
     sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ('010-8100-0005', 'h', now())").execute(&pool).await.expect("new otp");
-    sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at) VALUES ('rt-expired', $1, 'customer', now() - interval '1 day')")
+    sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, family_id, expires_at) VALUES ('rt-expired', $1, 'customer', gen_random_uuid(), now() - interval '1 day')")
         .bind(user)
         .execute(&pool)
         .await

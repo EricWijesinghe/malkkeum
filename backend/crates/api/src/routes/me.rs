@@ -50,6 +50,7 @@ struct Profile {
     id: Uuid,
     phone: Option<String>,
     phone_verified: bool,
+    identity_verified: bool,
     name: String,
     email: Option<String>,
     locale: String,
@@ -58,7 +59,7 @@ struct Profile {
 
 async fn profile(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Profile>> {
     let p = sqlx::query_as(
-        "SELECT id, phone, phone IS NOT NULL AS phone_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
+        "SELECT id, phone, phone IS NOT NULL AS phone_verified, identity_verified_at IS NOT NULL AS identity_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(a.id)
     .fetch_one(&s.db)

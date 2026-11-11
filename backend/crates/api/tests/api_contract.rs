@@ -70,10 +70,10 @@ fn route_literals(src: &str) -> Vec<(String, BTreeSet<String>)> {
     out
 }
 
-/// `get(` as a call, not as part of a longer identifier or a method chain on another value.
+/// `get(` as a call, not as part of a longer identifier. A chained `get(a).post(b)` counts both methods.
 fn contains_call(expr: &str, method: &str) -> bool {
     let pat = format!("{method}(");
-    expr.match_indices(&pat).any(|(i, _)| expr[..i].chars().last().is_none_or(|c| !(c.is_alphanumeric() || c == '_' || c == '.')))
+    expr.match_indices(&pat).any(|(i, _)| expr[..i].chars().last().is_none_or(|c| !(c.is_alphanumeric() || c == '_')))
 }
 
 fn route_sources() -> Vec<(String, String)> {

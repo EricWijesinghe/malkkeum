@@ -33,9 +33,10 @@ async fn same_key_replays_first_answer_and_other_body_is_rejected(pool: PgPool) 
     let app = app(pool);
     let (token, _) = login(&app, "010-5000-0901", "customer").await;
     let uri = format!("/v1/checkouts/{}/confirm", Uuid::now_v7());
-    let (s1, _, b1) = send(&app, "POST", &uri, Some(&token), Some("k-replay-1"), json!({})).await;
+    let body = json!({ "payment_id": "pay_missing" });
+    let (s1, _, b1) = send(&app, "POST", &uri, Some(&token), Some("k-replay-1"), body.clone()).await;
     assert_eq!(s1, StatusCode::NOT_FOUND);
-    let (s2, h2, b2) = send(&app, "POST", &uri, Some(&token), Some("k-replay-1"), json!({})).await;
+    let (s2, h2, b2) = send(&app, "POST", &uri, Some(&token), Some("k-replay-1"), body).await;
     assert_eq!(s2, s1, "replayed status");
     assert_eq!(b2, b1, "replayed body");
     assert_eq!(h2.get("idempotent-replayed").and_then(|v| v.to_str().ok()), Some("true"));

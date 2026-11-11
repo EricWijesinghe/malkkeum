@@ -238,11 +238,11 @@ async fn missed_check_in_opens_one_no_show_case_and_reassigns_to_a_matching_part
     assert_eq!((list[0]["kind"].as_str(), list[0]["source"].as_str()), (Some("no_show"), Some("no_show")), "{list}");
     let case = list[0]["id"].as_str().expect("case").to_string();
 
-    let (st, _) = call(&app, "POST", &format!("/v1/admin/cases/{case}/reassign"), Some(consultant.as_str()), Some(json!({}))).await;
-    assert_eq!(st, StatusCode::OK, "staff can reassign");
+    // The apology coupon is admin-only and refused before anything moves.
     let (st, _) = call(&app, "POST", &format!("/v1/admin/cases/{case}/reassign"), Some(consultant.as_str()), Some(json!({ "coupon_amount": 5000 }))).await;
     assert_eq!(st, StatusCode::FORBIDDEN, "apology coupon is admin-only");
 
+    // The first real move goes to the matching backup (the late pro is excluded as the current one).
     let admin = token(Role::StaffAdmin);
     let (st, b) = call(&app, "POST", &format!("/v1/admin/cases/{case}/reassign"), Some(admin.as_str()), Some(json!({ "coupon_amount": 5000 }))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
@@ -250,6 +250,12 @@ async fn missed_check_in_opens_one_no_show_case_and_reassigns_to_a_matching_part
     assert_eq!(b["case"]["status"], "investigating");
     let pro_now: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1").bind(id).fetch_one(&pool).await.expect("pro");
     assert_eq!(pro_now, backup_id);
+
+    // Staff may reassign without a coupon; the current pro (backup) is excluded, so the job moves on.
+    let (st, _) = call(&app, "POST", &format!("/v1/admin/cases/{case}/reassign"), Some(consultant.as_str()), Some(json!({}))).await;
+    assert_eq!(st, StatusCode::OK, "staff can reassign");
+    let pro_after: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1").bind(id).fetch_one(&pool).await.expect("pro");
+    assert_ne!(pro_after, backup_id, "reassign never returns the job to its current pro");
     let coupons: i64 = sqlx::query_scalar("SELECT count(*) FROM coupons WHERE campaign = 'no_show_apology' AND amount = 5000").fetch_one(&pool).await.expect("coupons");
     assert_eq!(coupons, 1);
 }
