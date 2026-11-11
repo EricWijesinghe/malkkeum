@@ -1771,6 +1771,49 @@ class TTh extends T {
   String get summaryDate => 'วันเข้าบริการ';
 
   @override
+  String get cpTitle => 'นโยบายการยกเลิก';
+
+  @override
+  String cpWhen(String days) {
+    return 'ก่อนวันเข้าบริการ $days วันขึ้นไป';
+  }
+
+  @override
+  String get cpWhenSameDay => 'ในวันเข้าบริการ';
+
+  @override
+  String get cpFree => 'คืนเงินเต็มจำนวน';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ค่าธรรมเนียม $percent% ($fee) คืนเงิน $refund';
+  }
+
+  @override
+  String get cpClosed => 'ยกเลิกในแอปไม่ได้ (ทีมงานตรวจสอบ)';
+
+  @override
+  String get hhTitle => 'ข้อมูลครัวเรือน';
+
+  @override
+  String get hhAddPet => 'เพิ่มสัตว์เลี้ยง';
+
+  @override
+  String get hhPetCount => 'จำนวน';
+
+  @override
+  String get hhFloorLabel => 'ชั้น (ใส่ค่าลบสำหรับชั้นใต้ดิน)';
+
+  @override
+  String get hhElevator => 'มีลิฟต์';
+
+  @override
+  String get hhNotes => 'บันทึก';
+
+  @override
+  String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
+
+  @override
   String get themeTitle => 'ธีม';
 
   @override

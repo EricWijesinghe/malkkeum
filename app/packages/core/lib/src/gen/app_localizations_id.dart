@@ -1782,6 +1782,49 @@ class TId extends T {
   String get summaryDate => 'Kunjungan';
 
   @override
+  String get cpTitle => 'Kebijakan pembatalan';
+
+  @override
+  String cpWhen(String days) {
+    return '$days hari atau lebih sebelum kunjungan';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Pada hari kunjungan';
+
+  @override
+  String get cpFree => 'Pengembalian penuh';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Biaya $percent% ($fee), pengembalian $refund';
+  }
+
+  @override
+  String get cpClosed => 'Tidak bisa dibatalkan di aplikasi (ditinjau tim)';
+
+  @override
+  String get hhTitle => 'Info rumah tangga';
+
+  @override
+  String get hhAddPet => 'Tambah hewan peliharaan';
+
+  @override
+  String get hhPetCount => 'Jumlah';
+
+  @override
+  String get hhFloorLabel => 'Lantai (negatif untuk basement)';
+
+  @override
+  String get hhElevator => 'Ada lift';
+
+  @override
+  String get hhNotes => 'Catatan';
+
+  @override
+  String get hhHint => 'Disimpan di alamat ini dan bisa diubah per pemesanan.';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

@@ -1768,6 +1768,49 @@ class TEn extends T {
   String get summaryDate => 'Visit';
 
   @override
+  String get cpTitle => 'Cancellation policy';
+
+  @override
+  String cpWhen(String days) {
+    return '$days or more days before the visit';
+  }
+
+  @override
+  String get cpWhenSameDay => 'On the day of the visit';
+
+  @override
+  String get cpFree => 'Full refund';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% fee ($fee), refund $refund';
+  }
+
+  @override
+  String get cpClosed => 'Not cancellable in the app (team review)';
+
+  @override
+  String get hhTitle => 'Household';
+
+  @override
+  String get hhAddPet => 'Add pet';
+
+  @override
+  String get hhPetCount => 'Count';
+
+  @override
+  String get hhFloorLabel => 'Floor (negative for basement)';
+
+  @override
+  String get hhElevator => 'Elevator available';
+
+  @override
+  String get hhNotes => 'Notes';
+
+  @override
+  String get hhHint => 'Saved to this address and editable per booking.';
+
+  @override
   String get themeTitle => 'Theme';
 
   @override

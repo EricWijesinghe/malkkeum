@@ -1782,6 +1782,50 @@ class TMn extends T {
   String get summaryDate => 'Очих өдөр';
 
   @override
+  String get cpTitle => 'Цуцлалтын бодлого';
+
+  @override
+  String cpWhen(String days) {
+    return 'Айлчлалаас $days ба түүнээс дээш өдрийн өмнө';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Айлчлах өдөр';
+
+  @override
+  String get cpFree => 'Бүрэн буцаан олголт';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% шимтгэл ($fee), буцаан олголт $refund';
+  }
+
+  @override
+  String get cpClosed => 'Аппаар цуцлах боломжгүй (баг шалгана)';
+
+  @override
+  String get hhTitle => 'Өрхийн мэдээлэл';
+
+  @override
+  String get hhAddPet => 'Амьтан нэмэх';
+
+  @override
+  String get hhPetCount => 'Тоо';
+
+  @override
+  String get hhFloorLabel => 'Давхар (хашаанд сөрөг)';
+
+  @override
+  String get hhElevator => 'Лифттэй';
+
+  @override
+  String get hhNotes => 'Тэмдэглэл';
+
+  @override
+  String get hhHint =>
+      'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override

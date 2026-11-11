@@ -1737,6 +1737,49 @@ class TJa extends T {
   String get summaryDate => '訪問日程';
 
   @override
+  String get cpTitle => 'キャンセル・変更の規定';
+
+  @override
+  String cpWhen(String days) {
+    return '訪問の$days日以上前';
+  }
+
+  @override
+  String get cpWhenSameDay => '訪問当日';
+
+  @override
+  String get cpFree => '全額返金';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '手数料$percent%（$fee）、返金$refund';
+  }
+
+  @override
+  String get cpClosed => 'アプリでは取消不可（相談チーム確認）';
+
+  @override
+  String get hhTitle => '世帯情報';
+
+  @override
+  String get hhAddPet => 'ペットを追加';
+
+  @override
+  String get hhPetCount => '頭数';
+
+  @override
+  String get hhFloorLabel => '階数（地下はマイナス）';
+
+  @override
+  String get hhElevator => 'エレベーターあり';
+
+  @override
+  String get hhNotes => 'メモ';
+
+  @override
+  String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override

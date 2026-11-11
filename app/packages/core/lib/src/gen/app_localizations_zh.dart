@@ -1733,6 +1733,49 @@ class TZh extends T {
   String get summaryDate => '上门时间';
 
   @override
+  String get cpTitle => '取消与变更政策';
+
+  @override
+  String cpWhen(String days) {
+    return '访问前$days天或更早';
+  }
+
+  @override
+  String get cpWhenSameDay => '上门当天';
+
+  @override
+  String get cpFree => '全额退款';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '手续费$percent%（$fee），退款$refund';
+  }
+
+  @override
+  String get cpClosed => '应用内不可取消（客服审核）';
+
+  @override
+  String get hhTitle => '住户信息';
+
+  @override
+  String get hhAddPet => '添加宠物';
+
+  @override
+  String get hhPetCount => '数量';
+
+  @override
+  String get hhFloorLabel => '楼层（地下为负）';
+
+  @override
+  String get hhElevator => '有电梯';
+
+  @override
+  String get hhNotes => '备注';
+
+  @override
+  String get hhHint => '保存到该地址，每次预约可单独修改。';
+
+  @override
   String get themeTitle => '主题';
 
   @override

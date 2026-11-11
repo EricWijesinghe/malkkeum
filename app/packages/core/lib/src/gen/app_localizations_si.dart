@@ -1783,6 +1783,49 @@ class TSi extends T {
   String get summaryDate => 'පැමිණීම';
 
   @override
+  String get cpTitle => 'අවලංගු කිරීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String cpWhen(String days) {
+    return 'පැමිණීමට දින $days හෝ ඊට වැඩි කාලයකට පෙර';
+  }
+
+  @override
+  String get cpWhenSameDay => 'පැමිණෙන දිනයේ';
+
+  @override
+  String get cpFree => 'සම්පූර්ණ ආපසු ගෙවීම';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% ගාස්තුව ($fee), ආපසු $refund';
+  }
+
+  @override
+  String get cpClosed => 'යෙදුමෙන් අවලංගු කළ නොහැක (කණ්ඩායම සමාලෝචනය)';
+
+  @override
+  String get hhTitle => 'නිවසේ තොරතුරු';
+
+  @override
+  String get hhAddPet => 'සුරතල් සත්වයෙකු එක් කරන්න';
+
+  @override
+  String get hhPetCount => 'ගණන';
+
+  @override
+  String get hhFloorLabel => 'මහල (බේස්මන්ට් සඳහා සෘණ)';
+
+  @override
+  String get hhElevator => 'ලිෆ්ට් ඇත';
+
+  @override
+  String get hhNotes => 'සටහන්';
+
+  @override
+  String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override

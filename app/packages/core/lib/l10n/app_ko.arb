@@ -820,6 +820,39 @@
  "summaryType": "청소 종류",
  "summaryHome": "집 정보",
  "summaryDate": "방문 일정",
+ "cpTitle": "취소·변경 정책",
+ "cpWhen": "방문 {days}일 이상 전",
+ "@cpWhen": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "cpWhenSameDay": "방문 당일",
+ "cpFree": "전액 환불",
+ "cpFee": "수수료 {percent}% ({fee}), 환불 {refund}",
+ "@cpFee": {
+  "placeholders": {
+   "percent": {
+    "type": "String"
+   },
+   "fee": {
+    "type": "String"
+   },
+   "refund": {
+    "type": "String"
+   }
+  }
+ },
+ "cpClosed": "앱에서 취소 불가 (상담팀 확인)",
+ "hhTitle": "가구 정보",
+ "hhAddPet": "반려동물 추가",
+ "hhPetCount": "마리 수",
+ "hhFloorLabel": "층 (지하는 음수)",
+ "hhElevator": "엘리베이터 있음",
+ "hhNotes": "메모",
+ "hhHint": "주소에 저장되고, 예약마다 바꿀 수 있어요.",
  "themeTitle": "테마",
  "themeDark": "다크",
  "themeLight": "라이트",

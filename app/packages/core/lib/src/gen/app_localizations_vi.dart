@@ -1765,6 +1765,49 @@ class TVi extends T {
   String get summaryDate => 'Lịch';
 
   @override
+  String get cpTitle => 'Chính sách hủy và đổi lịch';
+
+  @override
+  String cpWhen(String days) {
+    return 'Từ $days ngày trở lên trước lịch';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Ngay ngày hẹn';
+
+  @override
+  String get cpFree => 'Hoàn tiền đầy đủ';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Phí $percent% ($fee), hoàn $refund';
+  }
+
+  @override
+  String get cpClosed => 'Không hủy được trong app (đội tư vấn xem xét)';
+
+  @override
+  String get hhTitle => 'Thông tin hộ gia đình';
+
+  @override
+  String get hhAddPet => 'Thêm thú cưng';
+
+  @override
+  String get hhPetCount => 'Số con';
+
+  @override
+  String get hhFloorLabel => 'Tầng (âm nếu là hầm)';
+
+  @override
+  String get hhElevator => 'Có thang máy';
+
+  @override
+  String get hhNotes => 'Ghi chú';
+
+  @override
+  String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override

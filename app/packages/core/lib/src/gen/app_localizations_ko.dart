@@ -1737,6 +1737,49 @@ class TKo extends T {
   String get summaryDate => '방문 일정';
 
   @override
+  String get cpTitle => '취소·변경 정책';
+
+  @override
+  String cpWhen(String days) {
+    return '방문 $days일 이상 전';
+  }
+
+  @override
+  String get cpWhenSameDay => '방문 당일';
+
+  @override
+  String get cpFree => '전액 환불';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '수수료 $percent% ($fee), 환불 $refund';
+  }
+
+  @override
+  String get cpClosed => '앱에서 취소 불가 (상담팀 확인)';
+
+  @override
+  String get hhTitle => '가구 정보';
+
+  @override
+  String get hhAddPet => '반려동물 추가';
+
+  @override
+  String get hhPetCount => '마리 수';
+
+  @override
+  String get hhFloorLabel => '층 (지하는 음수)';
+
+  @override
+  String get hhElevator => '엘리베이터 있음';
+
+  @override
+  String get hhNotes => '메모';
+
+  @override
+  String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
+
+  @override
   String get themeTitle => '테마';
 
   @override

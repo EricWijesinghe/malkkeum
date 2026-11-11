@@ -3421,6 +3421,84 @@ abstract class T {
   /// **'방문 일정'**
   String get summaryDate;
 
+  /// No description provided for @cpTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소·변경 정책'**
+  String get cpTitle;
+
+  /// No description provided for @cpWhen.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 {days}일 이상 전'**
+  String cpWhen(String days);
+
+  /// No description provided for @cpWhenSameDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 당일'**
+  String get cpWhenSameDay;
+
+  /// No description provided for @cpFree.
+  ///
+  /// In ko, this message translates to:
+  /// **'전액 환불'**
+  String get cpFree;
+
+  /// No description provided for @cpFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 {percent}% ({fee}), 환불 {refund}'**
+  String cpFee(String percent, String fee, String refund);
+
+  /// No description provided for @cpClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱에서 취소 불가 (상담팀 확인)'**
+  String get cpClosed;
+
+  /// No description provided for @hhTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'가구 정보'**
+  String get hhTitle;
+
+  /// No description provided for @hhAddPet.
+  ///
+  /// In ko, this message translates to:
+  /// **'반려동물 추가'**
+  String get hhAddPet;
+
+  /// No description provided for @hhPetCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'마리 수'**
+  String get hhPetCount;
+
+  /// No description provided for @hhFloorLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'층 (지하는 음수)'**
+  String get hhFloorLabel;
+
+  /// No description provided for @hhElevator.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 있음'**
+  String get hhElevator;
+
+  /// No description provided for @hhNotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모'**
+  String get hhNotes;
+
+  /// No description provided for @hhHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소에 저장되고, 예약마다 바꿀 수 있어요.'**
+  String get hhHint;
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:

@@ -1778,6 +1778,50 @@ class TKm extends T {
   String get summaryDate => 'ការមក';
 
   @override
+  String get cpTitle => 'គោលនយោបាយបោះបង់';
+
+  @override
+  String cpWhen(String days) {
+    return 'ច្រើនជាង ឬស្មើ $days ថ្ងៃមុនការមក';
+  }
+
+  @override
+  String get cpWhenSameDay => 'នៅថ្ងៃមក';
+
+  @override
+  String get cpFree => 'បង្វិលប្រាក់ពេញ';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'ថ្លៃ $percent% ($fee) បង្វិលប្រាក់ $refund';
+  }
+
+  @override
+  String get cpClosed => 'បោះបង់ក្នុងកម្មវិធីមិនបាន (ក្រុមការងារពិនិត្យ)';
+
+  @override
+  String get hhTitle => 'ព័ត៌មានគ្រួសារ';
+
+  @override
+  String get hhAddPet => 'បន្ថែមសត្វចិញ្ចឹម';
+
+  @override
+  String get hhPetCount => 'ចំនួន';
+
+  @override
+  String get hhFloorLabel => 'ជាន់ (អវិជ្ជមានសម្រាប់ដីក្រោម)';
+
+  @override
+  String get hhElevator => 'មានជណ្តើរយន្ត';
+
+  @override
+  String get hhNotes => 'កំណត់ចំណាំ';
+
+  @override
+  String get hhHint =>
+      'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
+
+  @override
   String get themeTitle => 'ធីម';
 
   @override

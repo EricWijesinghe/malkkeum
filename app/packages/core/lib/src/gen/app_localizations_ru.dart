@@ -1781,6 +1781,49 @@ class TRu extends T {
   String get summaryDate => 'Визит';
 
   @override
+  String get cpTitle => 'Политика отмены';
+
+  @override
+  String cpWhen(String days) {
+    return 'за $days и более дней до визита';
+  }
+
+  @override
+  String get cpWhenSameDay => 'В день визита';
+
+  @override
+  String get cpFree => 'Полный возврат';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Комиссия $percent% ($fee), возврат $refund';
+  }
+
+  @override
+  String get cpClosed => 'Отмена в приложении недоступна (проверка командой)';
+
+  @override
+  String get hhTitle => 'Данные о доме';
+
+  @override
+  String get hhAddPet => 'Добавить питомца';
+
+  @override
+  String get hhPetCount => 'Кол-во';
+
+  @override
+  String get hhFloorLabel => 'Этаж (для подвала — минус)';
+
+  @override
+  String get hhElevator => 'Есть лифт';
+
+  @override
+  String get hhNotes => 'Заметки';
+
+  @override
+  String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
+
+  @override
   String get themeTitle => 'Тема';
 
   @override

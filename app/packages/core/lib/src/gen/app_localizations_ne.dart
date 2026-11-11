@@ -1778,6 +1778,50 @@ class TNe extends T {
   String get summaryDate => 'भ्रमण मिति';
 
   @override
+  String get cpTitle => 'रद्द नीति';
+
+  @override
+  String cpWhen(String days) {
+    return 'भ्रमणभन्दा $days दिन वा सो भन्दा अगाडि';
+  }
+
+  @override
+  String get cpWhenSameDay => 'भ्रमणको दिन';
+
+  @override
+  String get cpFree => 'पूरा फिर्ता';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% शुल्क ($fee), फिर्ता $refund';
+  }
+
+  @override
+  String get cpClosed => 'एपमा रद्द गर्न मिल्दैन (टोलीले हेर्छ)';
+
+  @override
+  String get hhTitle => 'घरपरिवारको जानकारी';
+
+  @override
+  String get hhAddPet => 'घरपालुवा जनावर थप्नुहोस्';
+
+  @override
+  String get hhPetCount => 'संख्या';
+
+  @override
+  String get hhFloorLabel => 'तला (तहखानाका लागि ऋणात्मक)';
+
+  @override
+  String get hhElevator => 'लिफ्ट छ';
+
+  @override
+  String get hhNotes => 'टिप्पणी';
+
+  @override
+  String get hhHint =>
+      'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
+
+  @override
   String get themeTitle => 'थिम';
 
   @override

@@ -1789,6 +1789,50 @@ class TUz extends T {
   String get summaryDate => 'Tashrif';
 
   @override
+  String get cpTitle => 'Bekor qilish siyosati';
+
+  @override
+  String cpWhen(String days) {
+    return 'Tashrifdan $days kun yoki undan oldin';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Tashrif kuni';
+
+  @override
+  String get cpFree => 'To‘liq qaytarish';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% to‘lov ($fee), qaytarish $refund';
+  }
+
+  @override
+  String get cpClosed => 'Ilovada bekor qilib bo‘lmaydi (jamoa ko‘rib chiqadi)';
+
+  @override
+  String get hhTitle => 'Uy ma’lumotlari';
+
+  @override
+  String get hhAddPet => 'Uy hayvonini qo‘shish';
+
+  @override
+  String get hhPetCount => 'Soni';
+
+  @override
+  String get hhFloorLabel => 'Qavat (yerto‘la uchun manfiy)';
+
+  @override
+  String get hhElevator => 'Lift bor';
+
+  @override
+  String get hhNotes => 'Eslatma';
+
+  @override
+  String get hhHint =>
+      'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override

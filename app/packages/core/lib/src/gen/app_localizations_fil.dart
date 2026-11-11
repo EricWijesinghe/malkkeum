@@ -1789,6 +1789,51 @@ class TFil extends T {
   String get summaryDate => 'Bisita';
 
   @override
+  String get cpTitle => 'Patakaran sa pagkansela';
+
+  @override
+  String cpWhen(String days) {
+    return '$days araw o higit pa bago ang bisita';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Sa mismong araw ng bisita';
+
+  @override
+  String get cpFree => 'Buong refund';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Bayad $percent% ($fee), refund $refund';
+  }
+
+  @override
+  String get cpClosed =>
+      'Hindi maaaring kanselahin sa app (sisiyasatin ng team)';
+
+  @override
+  String get hhTitle => 'Impormasyon ng sambahayan';
+
+  @override
+  String get hhAddPet => 'Magdagdag ng alagang hayop';
+
+  @override
+  String get hhPetCount => 'Bilang';
+
+  @override
+  String get hhFloorLabel => 'Palapag (negatibo para sa basement)';
+
+  @override
+  String get hhElevator => 'May elevator';
+
+  @override
+  String get hhNotes => 'Mga tala';
+
+  @override
+  String get hhHint =>
+      'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override
