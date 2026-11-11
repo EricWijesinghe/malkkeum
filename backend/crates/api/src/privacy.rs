@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 /// Version of the policy texts the customer agrees to (privacy, terms, overseas transfer notice, marketing).
 /// Bump when any of them changes: every stored consent with another version stops counting.
-pub const CONSENT_VERSION: &str = "2026-11-17";
+pub const CONSENT_VERSION: &str = "2026-11-19";
 
 /// Kind and whether the service cannot run without it. Marketing and location are optional and
 /// withdrawable; without location consent the address is typed or searched by hand.

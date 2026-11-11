@@ -152,10 +152,11 @@ async fn claim_referral(State(s): State<AppState>, Customer(a): Customer, Json(c
     Ok(Json(json!({ "ok": true })))
 }
 
-/// Admin completion has no job transaction of its own, so the reward gets one.
+/// Admin completion has no job transaction of its own, so the rewards (referral, points) get one.
 pub(crate) async fn reward_in_own_tx(db: &PgPool, booking: Uuid) -> ApiResult<()> {
     let mut tx = db.begin().await?;
     reward_on_paid_completion(&mut tx, booking).await?;
+    crate::points::on_completed(&mut tx, booking).await?;
     tx.commit().await?;
     Ok(())
 }

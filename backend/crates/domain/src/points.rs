@@ -52,7 +52,7 @@ impl PointsPolicy {
             ((0..=MAX_USE_BPS).contains(&self.max_use_bps), "points_max_use_bps"),
         ];
         match checks.iter().find(|(ok, _)| !ok) {
-            Some((_, field)) => Err(DomainError::OutOfRange(field)),
+            Some(&(_, field)) => Err(DomainError::OutOfRange(field)),
             None => Ok(()),
         }
     }

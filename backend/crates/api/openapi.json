@@ -3983,6 +3983,73 @@
           }
         }
       }
+    },
+    "/v1/me/points": {
+      "get": {
+        "operationId": "myPoints",
+        "tags": [
+          "customer"
+        ],
+        "summary": "Points balance, expiring points and recent ledger entries",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/growth/points": {
+      "put": {
+        "operationId": "putPointsPolicy",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Replace the points policy (audited)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/growth/points/adjust": {
+      "post": {
+        "operationId": "adjustPoints",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Grant or deduct points for one customer (audited, reason required)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/growth/points/{user_id}": {
+      "get": {
+        "operationId": "userPoints",
+        "tags": [
+          "admin"
+        ],
+        "summary": "One customer's points snapshot",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

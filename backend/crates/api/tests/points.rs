@@ -67,8 +67,24 @@ async fn refund_returns_spent_points_once(pool: PgPool) {
     points::spend(&mut conn, c.user, id, Won(52_000), 8_000).await.expect("spend");
     assert_eq!(balance(&app, &c).await, 0);
 
-    assert_eq!(points::reverse_spend(&mut conn, id).await.expect("refund"), 8_000);
-    assert_eq!(points::reverse_spend(&mut conn, id).await.expect("retry"), 8_000, "same refund key, no second lot");
+    assert_eq!(points::reverse_spend(&mut conn, id, 52_000, 52_000).await.expect("refund"), 8_000);
+    assert_eq!(points::reverse_spend(&mut conn, id, 52_000, 52_000).await.expect("retry"), 0, "already returned, no second lot");
+    assert_eq!(balance(&app, &c).await, 8_000);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn partial_refund_returns_points_in_proportion(pool: PgPool) {
+    seed_catalog(&pool).await;
+    enable_points(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-6100-0009").await;
+    let (id, _) = book(&app, &c, 11, None).await;
+    grant(&pool, c.user, 8_000, "seed:9").await;
+    let mut conn = pool.acquire().await.expect("conn");
+    points::spend(&mut conn, c.user, id, Won(52_000), 8_000).await.expect("spend");
+    assert_eq!(points::reverse_spend(&mut conn, id, 13_000, 52_000).await.expect("quarter"), 2_000);
+    assert_eq!(points::reverse_spend(&mut conn, id, 13_000, 52_000).await.expect("same share"), 0);
+    assert_eq!(points::reverse_spend(&mut conn, id, 52_000, 52_000).await.expect("rest"), 6_000);
     assert_eq!(balance(&app, &c).await, 8_000);
 }
 

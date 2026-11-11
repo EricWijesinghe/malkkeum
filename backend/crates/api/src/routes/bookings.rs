@@ -347,10 +347,12 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
             .execute(&mut *tx)
             .await?;
     }
-    if refund_cap.is_none() {
-        // Full refund: the points this booking spent come back as a fresh lot.
-        crate::points::reverse_spend(&mut tx, b.id).await?;
-    }
+    // Points spent come back in proportion to the cash refunded so far (all of it on a full cancel).
+    let (paid, refunded): (i64, i64) = sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1")
+        .bind(b.id)
+        .fetch_one(&mut *tx)
+        .await?;
+    crate::points::reverse_spend(&mut tx, b.id, refunded, paid).await?;
     sqlx::query("UPDATE quotes SET state = 'closed', updated_at = now() WHERE booking_id = $1 AND state = 'waiting'")
         .bind(b.id)
         .execute(&mut *tx)

@@ -47,7 +47,11 @@ class _WalletScreenState extends State<WalletScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(t.walletTitle)),
       body: RefreshIndicator(
-        onRefresh: () async => setState(() => _points = _load()),
+        onRefresh: () async {
+          final f = _load();
+          setState(() => _points = f);
+          await f;
+        },
         child: FutureBuilder<Json>(
           future: _points,
           builder: (context, snap) {
@@ -149,7 +153,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(t.payHistoryTitle)),
       body: RefreshIndicator(
-        onRefresh: () async => setState(() => _rows = _load()),
+        onRefresh: () async {
+          final f = _load();
+          setState(() => _rows = f);
+          await f;
+        },
         child: FutureBuilder<List<Json>>(
           future: _rows,
           builder: (context, snap) {

@@ -176,27 +176,41 @@ pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Wo
     Ok(split)
 }
 
-/// A cancelled or refunded booking gives back the points it spent, as a fresh lot with a new
-/// expiry. Returns the points restored (0 when nothing was spent).
-pub async fn reverse_spend(conn: &mut PgConnection, booking: Uuid) -> ApiResult<i64> {
+/// A cancelled or refunded booking gives back the points it spent, in proportion to the cash
+/// refunded so far (`refunded` of `paid`), as fresh lots with a new expiry. Cumulative: a repeat
+/// call with the same refunded share writes nothing. Returns the points restored by this call.
+pub async fn reverse_spend(conn: &mut PgConnection, booking: Uuid, refunded: i64, paid: i64) -> ApiResult<i64> {
     let spent: Option<(Uuid, i64)> = sqlx::query_as(
         "SELECT user_id, (-SUM(amount))::bigint FROM points_ledger WHERE booking_id = $1 AND kind = 'spend' GROUP BY user_id",
     )
     .bind(booking)
     .fetch_optional(&mut *conn)
     .await?;
-    let Some((user, points)) = spent else {
+    let Some((user, spent)) = spent else {
         return Ok(0);
     };
+    let target = if paid <= 0 || refunded >= paid {
+        spent
+    } else {
+        i64::try_from(i128::from(spent) * i128::from(refunded.max(0)) / i128::from(paid)).unwrap_or(spent)
+    };
     lock_user(&mut *conn, user).await?;
+    let returned: i64 = sqlx::query_scalar("SELECT COALESCE(SUM(amount), 0)::bigint FROM points_ledger WHERE booking_id = $1 AND kind = 'refund'")
+        .bind(booking)
+        .fetch_one(&mut *conn)
+        .await?;
+    let owed = target - returned;
+    if owed <= 0 {
+        return Ok(0);
+    }
     let policy = load_policy(&mut *conn).await?;
     let e = Entry {
         expires_at: Some(policy.expires_at(Utc::now())),
         booking: Some(booking),
-        ..Entry::new(user, "refund", points, format!("refund:{booking}"))
+        ..Entry::new(user, "refund", owed, format!("refund:{booking}:{target}"))
     };
     append(conn, e).await?;
-    Ok(points)
+    Ok(owed)
 }
 
 /// Writes one `expire` row per lapsed lot remainder. Scheduled; re-running writes nothing new.
@@ -318,7 +332,13 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
             append(&mut *tx, e).await?;
         }
     }
+    // Audit row goes in the same transaction: no adjustment without its record.
+    sqlx::query("INSERT INTO audit_log (actor_role, actor_id, action, target, data) VALUES ('staff', $1, 'points.adjust', $2, $3)")
+        .bind(a.id)
+        .bind(input.user_id.to_string())
+        .bind(json!({ "amount": input.amount, "reason": reason }))
+        .execute(&mut *tx)
+        .await?;
     tx.commit().await?;
-    audit(&s.db, "staff", Some(a.id), "points.adjust", &input.user_id.to_string(), json!({ "amount": input.amount, "reason": reason })).await?;
     Ok(Json(json!({ "ok": true })))
 }
