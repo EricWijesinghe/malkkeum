@@ -51,64 +51,67 @@ class OptionCard extends StatelessWidget {
                 ),
               ]
             : const [],
-        child: AnimatedContainer(
-          duration: Motion.standard,
-          curve: Motion.ease,
-          decoration: BoxDecoration(
-            color: selected
-                ? Color.alphaBlend(
-                    a.withValues(alpha: c.isDark ? 0.18 : 0.08),
-                    c.surface,
-                  )
-                : c.surface,
-            borderRadius: radius,
-            border: Border.all(
-              color: selected ? a : c.line,
-              width: selected ? 2 : 1.2,
+        child: _GradientRing(
+          selected: selected,
+          accent: a,
+          radius: radius,
+          child: AnimatedContainer(
+            duration: Motion.standard,
+            curve: Motion.ease,
+            decoration: BoxDecoration(
+              color: selected
+                  ? Color.alphaBlend(
+                      a.withValues(alpha: c.isDark ? 0.18 : 0.08),
+                      c.surface,
+                    )
+                  : c.surface,
+              borderRadius: radius,
+              // Selected state is the gradient ring below, not a solid border.
+              border: selected ? null : Border.all(color: c.line, width: 1.2),
             ),
-          ),
-          child: Opacity(
-            opacity: enabled ? 1 : 0.45,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Space.md,
-                vertical: Space.md,
-              ),
-              child: Row(
-                children: [
-                  if (leading != null) ...[
-                    leading!,
-                    const SizedBox(width: Space.sm),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: context.text.titleSmall),
-                        if (subtitle != null)
-                          Text(subtitle!, style: context.text.bodySmall),
-                      ],
-                    ),
-                  ),
-                  if (trailing != null)
-                    Text(
-                      trailing!,
-                      style: context.text.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+            child: Opacity(
+              opacity: enabled ? 1 : 0.45,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Space.md,
+                  vertical: Space.md,
+                ),
+                child: Row(
+                  children: [
+                    if (leading != null) ...[
+                      leading!,
+                      const SizedBox(width: Space.sm),
+                    ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: context.text.titleSmall),
+                          if (subtitle != null)
+                            Text(subtitle!, style: context.text.bodySmall),
+                        ],
                       ),
                     ),
-                  const SizedBox(width: Space.sm),
-                  AnimatedSwitcher(
-                    duration: Motion.micro,
-                    child: Icon(
-                      selected
-                          ? Icons.check_circle_rounded
-                          : Icons.radio_button_unchecked_rounded,
-                      key: ValueKey(selected),
-                      color: selected ? a : c.inkMuted,
+                    if (trailing != null)
+                      Text(
+                        trailing!,
+                        style: context.text.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    const SizedBox(width: Space.sm),
+                    AnimatedSwitcher(
+                      duration: Motion.micro,
+                      child: Icon(
+                        selected
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        key: ValueKey(selected),
+                        color: selected ? a : c.inkMuted,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -116,6 +119,36 @@ class OptionCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Selected option gets a 2dp accent-to-faint gradient ring; unselected is plain.
+class _GradientRing extends StatelessWidget {
+  const _GradientRing({
+    required this.selected,
+    required this.accent,
+    required this.radius,
+    required this.child,
+  });
+
+  final bool selected;
+  final Color accent;
+  final BorderRadius radius;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      borderRadius: radius,
+      gradient: selected
+          ? LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [accent, accent.withValues(alpha: 0.35)],
+            )
+          : null,
+    ),
+    child: Padding(padding: EdgeInsets.all(selected ? 2 : 0), child: child),
+  );
 }
 
 /// Minus / value / plus with a range; announces value to screen readers.

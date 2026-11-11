@@ -23,6 +23,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.sun,
     required this.sunTint,
     required this.danger,
+    required this.brandStart,
+    required this.brandEnd,
     required this.isDark,
   });
 
@@ -44,6 +46,10 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color sun;
   final Color sunTint;
   final Color danger;
+
+  /// Brand gradient stops for primary CTAs (top-left to bottom-right).
+  final Color brandStart;
+  final Color brandEnd;
   final bool isDark;
 
   Color tintOf(ServiceHue h) => isDark ? h.darkTint : h.tint;
@@ -71,6 +77,8 @@ class AppColors extends ThemeExtension<AppColors> {
       sun: l(sun, other.sun),
       sunTint: l(sunTint, other.sunTint),
       danger: l(danger, other.danger),
+      brandStart: l(brandStart, other.brandStart),
+      brandEnd: l(brandEnd, other.brandEnd),
       isDark: t < 0.5 ? isDark : other.isDark,
     );
   }
@@ -148,6 +156,8 @@ AppColors appColorsFor(BrandConfig brand, bool dark) => AppColors(
   sunTint: dark ? const Color(0xFF3A2D10) : const Color(0xFFFFF4D6),
   // Lighter red on dark surfaces so error text keeps WCAG AA contrast (4.5:1).
   danger: dark ? const Color(0xFFFF8A80) : Semantic.danger,
+  brandStart: brand.primary,
+  brandEnd: brand.primaryDeep,
   isDark: dark,
 );
 

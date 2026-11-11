@@ -124,13 +124,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   for (var i = 0; i < s.units.length; i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: Space.xs),
-                      child: OptionCard(
-                        title: t.unit(s.units[i].labelKey),
-                        subtitle: t.about(t.duration(s.units[i].minutes)),
-                        trailing: context.won(s.units[i].price),
-                        selected: d.unitIndex == i,
-                        accent: hue.tone,
-                        onTap: () => setState(() => d.unitIndex = i),
+                      child: EnterMotion(
+                        delay: Duration(milliseconds: 60 * i),
+                        child: OptionCard(
+                          title: t.unit(s.units[i].labelKey),
+                          subtitle: t.about(t.duration(s.units[i].minutes)),
+                          trailing: context.won(s.units[i].price),
+                          selected: d.unitIndex == i,
+                          accent: hue.tone,
+                          onTap: () => setState(() => d.unitIndex = i),
+                        ),
                       ),
                     ),
                 ],
