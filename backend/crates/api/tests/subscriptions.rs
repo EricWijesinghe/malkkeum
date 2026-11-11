@@ -86,7 +86,8 @@ async fn create_plans_visits_on_the_requested_weekday(pool: PgPool) {
     let c = customer(&app, &pool, "010-7000-0001").await;
     let (st, body) = subscribe(&app, &c, 2, 1, 9, None).await;
     assert_eq!(st, StatusCode::OK, "{body}");
-    let planned: Vec<&Value> = visits(&body).iter().filter(|v| v["state"] == "planned").collect();
+    let all = visits(&body);
+    let planned: Vec<&Value> = all.iter().filter(|v| v["state"] == "planned").collect();
     // Weekly over the 28-day horizon: at least three Wednesdays.
     assert!(planned.len() >= 3, "{body}");
     for v in planned {

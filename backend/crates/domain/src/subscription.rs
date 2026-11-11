@@ -75,7 +75,8 @@ pub fn visit_dates(anchor: NaiveDate, cadence: Cadence, from: NaiveDate, until: 
     let step = cadence.weeks() * 7;
     let mut date = anchor;
     if from > anchor {
-        let periods = (from - anchor).num_days().div_ceil(step);
+        // `from > anchor`, so the day count is positive and the unsigned ceiling division is exact.
+        let periods = ((from - anchor).num_days() as u64).div_ceil(step as u64) as i64;
         date = anchor + Duration::days(periods * step);
     }
     let mut out = Vec::new();
