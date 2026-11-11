@@ -3,6 +3,8 @@
 #   https://DOMAIN/app/      customer web app (PWA; every /app/* deep link serves index.html)
 #   https://DOMAIN/admin/    operations console (setup wizard on first visit)
 #   https://DOMAIN/v1, /health   API (uploads: /v1/files, signed URLs only)
+#   https://DOMAIN/.well-known/assetlinks.json, apple-app-site-association   App Links, served by the API from env
+#   https://DOMAIN/auth/naver/callback   Naver login: the app takes this URL (App Link); the page is only the browser fallback
 {
 	email {$ACME_EMAIL}
 }
@@ -32,7 +34,7 @@
 		-Server
 	}
 
-	@api path /v1/* /health
+	@api path /v1/* /health /.well-known/assetlinks.json /.well-known/apple-app-site-association
 	handle @api {
 		reverse_proxy api:8080
 	}

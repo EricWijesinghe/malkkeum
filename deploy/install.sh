@@ -172,6 +172,8 @@ services:
       TRUSTED_PROXY: "1"
       DEV_MODE: "0"
       RUST_LOG: info,sqlx=warn
+      ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
+      APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
     volumes: [uploads:/data/uploads]
     healthcheck: { test: ["CMD", "api", "--health"], interval: 15s, retries: 10, start_period: 20s }
   web:

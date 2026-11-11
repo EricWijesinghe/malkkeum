@@ -75,6 +75,8 @@ class UnconfiguredSocialSignIn extends SocialSignIn {
 abstract final class SocialKeys {
   static const kakaoNativeKey = String.fromEnvironment('KAKAO_NATIVE_KEY');
   static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
+  /// Host of the https App Link / Universal Link that Naver redirects to (the server's DOMAIN).
+  static const appLinkHost = String.fromEnvironment('APP_LINK_DOMAIN');
   static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
   static const googleIosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
   static const requested = String.fromEnvironment('SOCIAL_PROVIDERS');
@@ -82,9 +84,20 @@ abstract final class SocialKeys {
   static const values = {
     'KAKAO_NATIVE_KEY': kakaoNativeKey,
     'NAVER_CLIENT_ID': naverClientId,
+    'APP_LINK_DOMAIN': appLinkHost,
     'GOOGLE_SERVER_CLIENT_ID': googleServerClientId,
     'GOOGLE_IOS_CLIENT_ID': googleIosClientId,
   };
+}
+
+/// True when this OS can finish an https callback in ASWebAuthenticationSession (iOS 17.4+). Unknown version: https.
+bool naverUsesAppLink({required bool ios, required String osVersion}) {
+  if (!ios) return true;
+  final m = RegExp(r'(\d+)\.(\d+)').firstMatch(osVersion);
+  if (m == null) return true;
+  final major = int.parse(m.group(1)!);
+  final minor = int.parse(m.group(2)!);
+  return major > 17 || (major == 17 && minor >= 4);
 }
 
 /// Which providers this build can offer. [requested] (SOCIAL_PROVIDERS, comma list) narrows the list;
@@ -96,7 +109,7 @@ Set<String> providersForKeys({required String requested, required Map<String, St
       : requested.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toSet();
   final available = {
     if (has('KAKAO_NATIVE_KEY')) SocialProviders.kakao,
-    if (has('NAVER_CLIENT_ID')) SocialProviders.naver,
+    if (has('NAVER_CLIENT_ID') && has('APP_LINK_DOMAIN')) SocialProviders.naver,
     if (has('GOOGLE_SERVER_CLIENT_ID') && (!ios || has('GOOGLE_IOS_CLIENT_ID'))) SocialProviders.google,
     SocialProviders.apple,
   };

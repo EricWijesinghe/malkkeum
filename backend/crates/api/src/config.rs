@@ -41,6 +41,10 @@ pub struct Config {
     pub reconcile_interval_secs: u64,
     /// Anthropic API root for the AI support agent (tests point it at a fake server).
     pub anthropic_base_url: String,
+    /// SHA-256 of the Android app signing certificate(s) (Play App Signing key). Empty: no assetlinks.json.
+    pub android_cert_sha256: Vec<String>,
+    /// Apple Team ID. None: no apple-app-site-association.
+    pub apple_team_id: Option<String>,
 }
 
 /// Solapi REST API v4 credentials and AlimTalk routing.
@@ -227,6 +231,54 @@ impl Config {
             max_threads_per_day: number("MAX_CHAT_THREADS_PER_DAY", 10, 1)?,
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
+            android_cert_sha256: cert_fingerprints("ANDROID_CERT_SHA256", list("ANDROID_CERT_SHA256"))?,
+            apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
         })
+    }
+}
+
+const SHA256_BYTES: usize = 32;
+const TEAM_ID_LEN: usize = 10;
+
+/// Upper-cased `AA:BB:..` form, 32 hex pairs, as Android's assetlinks.json expects.
+fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
+    values
+        .into_iter()
+        .map(|v| {
+            let v = v.to_ascii_uppercase();
+            let parts: Vec<&str> = v.split(':').collect();
+            let ok = parts.len() == SHA256_BYTES && parts.iter().all(|p| p.len() == 2 && p.bytes().all(|b| b.is_ascii_hexdigit()));
+            if ok { Ok(v) } else { Err(ConfigError::Invalid(key, format!("not a SHA-256 fingerprint: {v}"))) }
+        })
+        .collect()
+}
+
+fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
+    match raw {
+        Some(t) if t.len() == TEAM_ID_LEN && t.bytes().all(|b| b.is_ascii_alphanumeric()) => Ok(Some(t)),
+        Some(t) => Err(ConfigError::Invalid("APPLE_TEAM_ID", format!("not a 10-character Team ID: {t}"))),
+        None => Ok(None),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fingerprints_are_normalised_and_checked() {
+        let good = (0..32).map(|_| "ab").collect::<Vec<_>>().join(":");
+        assert_eq!(cert_fingerprints("K", vec![good.clone()]).expect("ok"), vec![good.to_uppercase()]);
+        assert!(cert_fingerprints("K", vec!["AB:CD".into()]).is_err(), "too short");
+        assert!(cert_fingerprints("K", vec![good.replacen("ab", "zz", 1)]).is_err(), "not hex");
+        assert!(cert_fingerprints("K", Vec::new()).expect("empty ok").is_empty());
+    }
+
+    #[test]
+    fn team_id_is_ten_alphanumerics() {
+        assert_eq!(team_id(Some("ABCDE12345".into())).expect("ok"), Some("ABCDE12345".into()));
+        assert_eq!(team_id(None).expect("unset"), None);
+        assert!(team_id(Some("short".into())).is_err());
+        assert!(team_id(Some("ABCDE-1234".into())).is_err());
     }
 }

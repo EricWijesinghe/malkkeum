@@ -56,6 +56,8 @@ pub fn test_config() -> Config {
         max_threads_per_day: 100,
         reconcile_interval_secs: 60,
         anthropic_base_url: "http://127.0.0.1:9".into(),
+        android_cert_sha256: Vec::new(),
+        apple_team_id: None,
     }
 }
 

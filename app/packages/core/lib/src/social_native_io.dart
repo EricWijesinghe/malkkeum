@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -11,8 +12,12 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'api.dart';
 import 'social_auth.dart';
 
-/// Must match the URL scheme in ios/Runner/Info.plist and the Android CallbackActivity; register it as the Naver callback.
-const _naverUrlScheme = 'malkkeumnaver';
+/// Naver returns the code to an https App Link / Universal Link, so no other app can receive it.
+/// Register `https://<APP_LINK_DOMAIN>/auth/naver/callback` as the Naver callback URL.
+const _naverPath = '/auth/naver/callback';
+
+/// shortcut: iOS below 17.4 cannot finish an https callback, so it keeps the custom scheme (interceptable by another app). Drop when min iOS is 17.4.
+const _naverLegacyScheme = 'malkkeumnaver';
 
 /// Native SDK for each provider. Returns what the backend verifies (backend/crates/api/src/providers/social.rs):
 /// Kakao: access token. Naver: `code:state` (server redeems it). Google: ID token. Apple: identity token.
@@ -59,15 +64,21 @@ class NaverSocialSignIn extends SocialSignIn {
   @override
   Future<String?> obtainToken(BuildContext context) async {
     final state = _naverState();
+    final appLink = naverUsesAppLink(ios: Platform.isIOS, osVersion: Platform.operatingSystemVersion);
+    final redirect = appLink ? Uri.https(SocialKeys.appLinkHost, _naverPath).toString() : '$_naverLegacyScheme://naverlogin';
     final url = Uri.https('nid.naver.com', '/oauth2.0/authorize', {
       'response_type': 'code',
       'client_id': SocialKeys.naverClientId,
-      'redirect_uri': '$_naverUrlScheme://naverlogin',
+      'redirect_uri': redirect,
       'state': state,
     });
     final String callback;
     try {
-      callback = await FlutterWebAuth2.authenticate(url: url.toString(), callbackUrlScheme: _naverUrlScheme);
+      callback = await FlutterWebAuth2.authenticate(
+        url: url.toString(),
+        callbackUrlScheme: appLink ? 'https' : _naverLegacyScheme,
+        options: FlutterWebAuth2Options(httpsHost: SocialKeys.appLinkHost, httpsPath: _naverPath),
+      );
     } on PlatformException catch (e) {
       if (e.code == 'CANCELED') return null;
       rethrow;

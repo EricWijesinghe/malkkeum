@@ -3,5 +3,6 @@
 KAKAO_URL_SCHEME = kakao-unset
 GOOGLE_IOS_CLIENT_ID = google-unset
 GOOGLE_REVERSED_CLIENT_ID = google-unset
+APP_LINK_HOST = app-link-unset
 #include? "Keys.xcconfig"
 #include "Generated.xcconfig"

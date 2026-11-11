@@ -7,6 +7,7 @@
 #        GCLOUD_SERVICE_ACCOUNT_CREDENTIALS  Google Play service-account JSON (secure)
 #        KAKAO_NATIVE_KEY, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, NAVER_CLIENT_NAME,
 #        GOOGLE_SERVER_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, SOCIAL_PROVIDERS (optional override)
+#        APP_LINK_DOMAIN                  bare server host, e.g. malkkeum.co.kr (Naver App Link; no host = no Naver button)
 #        GOOGLE_SERVICES_JSON_B64 / GOOGLE_SERVICE_INFO_PLIST_B64          (customer Firebase, base64)
 #        PARTNER_GOOGLE_SERVICES_JSON_B64 / PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64 (partner Firebase)
 #   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android".
