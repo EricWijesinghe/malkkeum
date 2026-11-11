@@ -12,6 +12,9 @@ app/**/build/
 app/packages/core/build/
 deploy/.env
 targets/
+# Windows MSIX: Partner Center values and the local test-signing certificate (never commit).
+scripts/store/msix.local.psd1
+scripts/store/.local/
 
 # Generated store images (292 MB): regenerate with scripts/store/generate.sh, upload from here.
 docs/store/screenshots/*/

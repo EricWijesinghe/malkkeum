@@ -233,6 +233,13 @@ class TKm extends T {
   String get apPgCancel => 'បោះបង់ការបង់ប្រាក់';
 
   @override
+  String get apPgBrowserNote =>
+      'បញ្ចប់ការបង់ប្រាក់នៅក្នុងកម្មវិធីរុករក បន្ទាប់មកត្រឡប់មកទីនេះ ហើយចុចប៊ូតុងខាងក្រោម។';
+
+  @override
+  String get apPgBrowserDone => 'ខ្ញុំបានបង់ប្រាក់រួចហើយ';
+
+  @override
   String get apErrSlotFullRefunded =>
       'ម៉ោងនោះទើបតែពេញ ដូច្នេះការបង់ប្រាក់ត្រូវបានបោះបង់ និងសងប្រាក់វិញដោយស្វ័យប្រវត្តិ';
 

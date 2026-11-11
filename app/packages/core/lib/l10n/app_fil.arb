@@ -70,6 +70,8 @@
  "apPgPay": "Bayaran ang {amount}",
  "apPgIssue": "Kunin ang account number",
  "apPgCancel": "Kanselahin ang bayad",
+ "apPgBrowserNote": "Tapusin ang bayad sa browser, pagkatapos bumalik dito at pindutin ang button sa ibaba.",
+ "apPgBrowserDone": "Tapos na akong magbayad",
  "apErrSlotFullRefunded": "Napuno na ang oras na iyon, kaya awtomatikong kinansela ang bayad mo",
  "apErrCheckoutExpired": "Nag-expire na ang payment window. Pakisubukang muli.",
  "apIdentityTitle": "Pagpapatunay ng pagkakakilanlan (PASS)",

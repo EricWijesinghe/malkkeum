@@ -237,6 +237,13 @@ class TFil extends T {
   String get apPgCancel => 'Kanselahin ang bayad';
 
   @override
+  String get apPgBrowserNote =>
+      'Tapusin ang bayad sa browser, pagkatapos bumalik dito at pindutin ang button sa ibaba.';
+
+  @override
+  String get apPgBrowserDone => 'Tapos na akong magbayad';
+
+  @override
   String get apErrSlotFullRefunded =>
       'Napuno na ang oras na iyon, kaya awtomatikong kinansela ang bayad mo';
 

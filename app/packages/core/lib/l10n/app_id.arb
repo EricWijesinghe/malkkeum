@@ -70,6 +70,8 @@
  "apPgPay": "Bayar {amount}",
  "apPgIssue": "Dapatkan nomor rekening",
  "apPgCancel": "Batalkan pembayaran",
+ "apPgBrowserNote": "Selesaikan pembayaran di browser, lalu kembali ke sini dan tekan tombol di bawah.",
+ "apPgBrowserDone": "Saya sudah membayar",
  "apErrSlotFullRefunded": "Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis",
  "apErrCheckoutExpired": "Waktu pembayaran habis. Silakan coba lagi.",
  "apIdentityTitle": "Verifikasi identitas (PASS)",

@@ -70,6 +70,8 @@
  "apPgPay": "Pay {amount}",
  "apPgIssue": "Get account number",
  "apPgCancel": "Cancel payment",
+ "apPgBrowserNote": "Complete the payment in your browser, then come back here and tap the button below.",
+ "apPgBrowserDone": "I finished paying",
  "apErrSlotFullRefunded": "That slot just filled up, so your payment was cancelled automatically",
  "apErrCheckoutExpired": "The payment window expired. Please try again.",
  "apIdentityTitle": "Identity check (PASS)",

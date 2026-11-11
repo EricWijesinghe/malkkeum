@@ -5,7 +5,9 @@ import 'package:ui/ui.dart';
 import 'checkout.dart';
 import 'i18n.dart';
 import 'pay_brands.dart';
+import 'desktop.dart';
 import 'pay_i18n.dart';
+import 'portone_browser.dart';
 import 'portone_webview.dart';
 import 'social_auth.dart';
 
@@ -59,10 +61,16 @@ class DevPaymentLauncher extends PaymentLauncher {
 }
 
 /// Dev base: simulated window. Web: the hosted PortOne page in this tab (no WebView on web).
-/// Mobile: the hosted page in a WebView. [isWeb] defaults to kIsWeb; tests pass it explicitly.
-PaymentLauncher paymentLauncherFor(String apiBase, {bool? isWeb}) {
+/// Windows: the hosted page in the default browser (no WebView plugin there).
+/// Mobile: the hosted page in a WebView. [isWeb] and [isWindows] default to the platform; tests pass them.
+PaymentLauncher paymentLauncherFor(
+  String apiBase, {
+  bool? isWeb,
+  bool? isWindows,
+}) {
   if (isDevApiBase(apiBase)) return const DevPaymentLauncher();
   if (isWeb ?? kIsWeb) return PortOneRedirectLauncher(apiBase);
+  if (isWindows ?? isWindowsApp()) return PortOneBrowserLauncher(apiBase);
   return PortOneWebViewLauncher(apiBase);
 }
 

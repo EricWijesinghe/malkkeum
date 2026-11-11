@@ -227,6 +227,12 @@ class TKo extends T {
   String get apPgCancel => '결제 취소';
 
   @override
+  String get apPgBrowserNote => '브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.';
+
+  @override
+  String get apPgBrowserDone => '결제를 마쳤어요';
+
+  @override
   String get apErrSlotFullRefunded => '방금 그 시간이 마감돼서 결제가 자동 취소됐어요';
 
   @override

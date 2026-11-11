@@ -541,6 +541,18 @@ abstract class T {
   /// **'결제 취소'**
   String get apPgCancel;
 
+  /// No description provided for @apPgBrowserNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.'**
+  String get apPgBrowserNote;
+
+  /// No description provided for @apPgBrowserDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제를 마쳤어요'**
+  String get apPgBrowserDone;
+
   /// No description provided for @apErrSlotFullRefunded.
   ///
   /// In ko, this message translates to:

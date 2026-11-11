@@ -239,6 +239,13 @@ class TSi extends T {
   String get apPgCancel => 'ගෙවීම අවලංගු කරන්න';
 
   @override
+  String get apPgBrowserNote =>
+      'බ්‍රව්සරයෙන් ගෙවීම සම්පූර්ණ කර, මෙතැනට ආපසු ඇවිත් පහත බොත්තම ඔබන්න.';
+
+  @override
+  String get apPgBrowserDone => 'ගෙවීම අවසන් කළෙමි';
+
+  @override
   String get apErrSlotFullRefunded =>
       'එම වේලාව දැන් පිරී ගියේය, එබැවින් ගෙවීම ස්වයංක්‍රීයව අවලංගු කරන ලදී';
 

@@ -227,6 +227,12 @@ class TJa extends T {
   String get apPgCancel => '支払いをキャンセル';
 
   @override
+  String get apPgBrowserNote => 'ブラウザで決済を完了したら、この画面に戻って下のボタンを押してください。';
+
+  @override
+  String get apPgBrowserDone => '決済を完了しました';
+
+  @override
   String get apErrSlotFullRefunded => 'その時間が埋まったため、お支払いは自動キャンセルされました';
 
   @override

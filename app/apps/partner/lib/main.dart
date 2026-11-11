@@ -59,10 +59,12 @@ class PartnerApp extends StatelessWidget {
       theme: theme,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        builder: (context, child) => UpdateGate(
-          api: session.api,
-          app: 'partner',
-          child: child ?? const SizedBox.shrink(),
+        builder: (context, child) => DesktopColumn(
+          child: UpdateGate(
+            api: session.api,
+            app: 'partner',
+            child: child ?? const SizedBox.shrink(),
+          ),
         ),
         onGenerateTitle: (_) => partnerBrand.name,
         theme: buildTheme(partnerBrand, Brightness.light),
