@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1311,6 +1310,11 @@ class TVi extends T {
 
   @override
   String get photosSoon => 'Ảnh trước & sau sẽ hiện ở đây';
+
+  @override
+  String photoThumb(String n) {
+    return 'Ảnh $n';
+  }
 
   @override
   String get before => 'Trước';
@@ -2956,6 +2960,27 @@ class TVi extends T {
 
   @override
   String get pSpace => 'Không gian';
+
+  @override
+  String get pNavigate => 'Chỉ đường';
+
+  @override
+  String get pNavHint =>
+      'Mở địa chỉ trong ứng dụng bản đồ. Nếu chưa cài, sẽ mở bản đồ web.';
+
+  @override
+  String get pOfflineSaved => 'Không có sóng. Đã lưu, sẽ gửi khi có mạng.';
+
+  @override
+  String get pPhotoRetry => 'Tải lại';
+
+  @override
+  String get pPhotoWaiting => 'Ảnh chưa tải lên sẽ tự gửi khi có mạng.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'Đã tải $done/$total ảnh';
+  }
 
   @override
   String get cIntPayout => 'Chi trả đối tác';

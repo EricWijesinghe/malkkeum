@@ -2563,6 +2563,12 @@ abstract class T {
   /// **'끝나면 전후 사진이 여기에 올라와요'**
   String get photosSoon;
 
+  /// No description provided for @photoThumb.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 {n}'**
+  String photoThumb(String n);
+
   /// No description provided for @before.
   ///
   /// In ko, this message translates to:
@@ -5616,6 +5622,42 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'공간 정보'**
   String get pSpace;
+
+  /// No description provided for @pNavigate.
+  ///
+  /// In ko, this message translates to:
+  /// **'길찾기'**
+  String get pNavigate;
+
+  /// No description provided for @pNavHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.'**
+  String get pNavHint;
+
+  /// No description provided for @pOfflineSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.'**
+  String get pOfflineSaved;
+
+  /// No description provided for @pPhotoRetry.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 올리기'**
+  String get pPhotoRetry;
+
+  /// No description provided for @pPhotoWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.'**
+  String get pPhotoWaiting;
+
+  /// No description provided for @pUploadedCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{total}장 중 {done}장 업로드됨'**
+  String pUploadedCount(String total, String done);
 
   /// No description provided for @cIntPayout.
   ///

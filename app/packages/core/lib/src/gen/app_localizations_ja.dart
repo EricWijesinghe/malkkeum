@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1286,6 +1285,11 @@ class TJa extends T {
 
   @override
   String get photosSoon => '完了後にビフォーアフター写真が表示されます';
+
+  @override
+  String photoThumb(String n) {
+    return '写真 $n';
+  }
 
   @override
   String get before => 'ビフォー';
@@ -2897,6 +2901,26 @@ class TJa extends T {
 
   @override
   String get pSpace => '空間情報';
+
+  @override
+  String get pNavigate => '道案内';
+
+  @override
+  String get pNavHint => '訪問先の住所を地図アプリで開きます。アプリがなければWeb地図を開きます。';
+
+  @override
+  String get pOfflineSaved => '電波がありません。保存して、つながったら自動で送信します。';
+
+  @override
+  String get pPhotoRetry => '再アップロード';
+
+  @override
+  String get pPhotoWaiting => 'アップロードできなかった写真は、つながったら自動で送信されます。';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total枚中$done枚アップロード済み';
+  }
 
   @override
   String get cIntPayout => 'パートナーへの支払い';

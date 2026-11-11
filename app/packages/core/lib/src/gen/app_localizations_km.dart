@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1322,6 +1321,11 @@ class TKm extends T {
 
   @override
   String get photosSoon => 'រូបថតមុន-ក្រោយ នឹងបង្ហាញនៅទីនេះ នៅពេលបញ្ចប់';
+
+  @override
+  String photoThumb(String n) {
+    return 'រូបថតទី $n';
+  }
 
   @override
   String get before => 'មុនសម្អាត';
@@ -2979,6 +2983,29 @@ class TKm extends T {
 
   @override
   String get pSpace => 'ព័ត៌មានលំហ';
+
+  @override
+  String get pNavigate => 'ផ្លូវទៅ';
+
+  @override
+  String get pNavHint =>
+      'បើកអាសយដ្ឋានក្នុងកម្មវិធីផែនទី។ បើគ្មានកម្មវិធី នឹងបើកផែនទីតាមវែប។';
+
+  @override
+  String get pOfflineSaved =>
+      'គ្មានសញ្ញា។ បានរក្សាទុក ហើយនឹងផ្ញើនៅពេលមានអ៊ីនធឺណិត។';
+
+  @override
+  String get pPhotoRetry => 'ផ្ទុកឡើងម្តងទៀត';
+
+  @override
+  String get pPhotoWaiting =>
+      'រូបថតដែលមិនបានផ្ទុកឡើង នឹងផ្ញើដោយស្វ័យប្រវត្តិនៅពេលមានអ៊ីនធឺណិត។';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'បានផ្ទុកឡើង $done/$total';
+  }
 
   @override
   String get cIntPayout => 'ការទូទាត់ដៃគូ';

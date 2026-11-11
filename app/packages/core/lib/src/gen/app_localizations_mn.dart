@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1325,6 +1324,11 @@ class TMn extends T {
 
   @override
   String get photosSoon => 'Цэвэрлэгээний өмнөх, дараах зургууд энд гарна';
+
+  @override
+  String photoThumb(String n) {
+    return 'Зураг $n';
+  }
 
   @override
   String get before => 'Өмнө';
@@ -2993,6 +2997,29 @@ class TMn extends T {
 
   @override
   String get pSpace => 'Талбайн мэдээлэл';
+
+  @override
+  String get pNavigate => 'Чиглэл';
+
+  @override
+  String get pNavHint =>
+      'Очих хаягийг газрын зургийн аппликейшнд нээнэ. Аппгүй бол вэб газрын зураг нээгдэнэ.';
+
+  @override
+  String get pOfflineSaved =>
+      'Дохио алга. Хадгалсан, интернэт холбогдоход автоматаар илгээнэ.';
+
+  @override
+  String get pPhotoRetry => 'Дахин илгээх';
+
+  @override
+  String get pPhotoWaiting =>
+      'Илгээгдээгүй зургууд интернэт холбогдоход автоматаар илгээгдэнэ.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total-с $done илгээсэн';
+  }
 
   @override
   String get cIntPayout => 'Түншийн төлбөр';

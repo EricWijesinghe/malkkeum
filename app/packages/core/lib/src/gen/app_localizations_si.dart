@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1326,6 +1325,11 @@ class TSi extends T {
 
   @override
   String get photosSoon => 'අවසන් වූ පසු කලින් සහ පසු ඡායාරූප මෙහි දිස් වේ';
+
+  @override
+  String photoThumb(String n) {
+    return 'ඡායාරූපය $n';
+  }
 
   @override
   String get before => 'පිරිසිදු කිරීමට පෙර';
@@ -2981,6 +2985,29 @@ class TSi extends T {
 
   @override
   String get pSpace => 'ඉඩ තොරතුරු';
+
+  @override
+  String get pNavigate => 'දිශානතිය';
+
+  @override
+  String get pNavHint =>
+      'සිතියම් යෙදුමේ ගමන් ලිපිනය විවෘත කරයි. යෙදුම නැත්නම් වෙබ් සිතියම විවෘත වේ.';
+
+  @override
+  String get pOfflineSaved =>
+      'සංඥාව නැත. සුරකින ලද අතර සම්බන්ධ වූ විට යවනු ඇත.';
+
+  @override
+  String get pPhotoRetry => 'නැවත උඩුගත කරන්න';
+
+  @override
+  String get pPhotoWaiting =>
+      'උඩුගත නොවූ ඡායාරූප සම්බන්ධ වූ විට ස්වයංක්‍රීයව යවනු ඇත.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total න් $done උඩුගත කර ඇත';
+  }
 
   @override
   String get cIntPayout => 'හවුල්කරු ගෙවීම්';

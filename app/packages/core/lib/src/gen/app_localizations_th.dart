@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1316,6 +1315,11 @@ class TTh extends T {
 
   @override
   String get photosSoon => 'ภาพก่อนและหลังการทำความสะอาดจะแสดงที่นี่เมื่อเสร็จ';
+
+  @override
+  String photoThumb(String n) {
+    return 'รูปที่ $n';
+  }
 
   @override
   String get before => 'ก่อนทำความสะอาด';
@@ -2966,6 +2970,29 @@ class TTh extends T {
 
   @override
   String get pSpace => 'ข้อมูลพื้นที่';
+
+  @override
+  String get pNavigate => 'เส้นทาง';
+
+  @override
+  String get pNavHint =>
+      'เปิดที่อยู่ในแอปแผนที่ ถ้าไม่มีแอป จะเปิดแผนที่บนเว็บ';
+
+  @override
+  String get pOfflineSaved =>
+      'ไม่มีสัญญาณ บันทึกไว้แล้วและจะส่งเมื่อกลับมาออนไลน์';
+
+  @override
+  String get pPhotoRetry => 'อัปโหลดอีกครั้ง';
+
+  @override
+  String get pPhotoWaiting =>
+      'รูปที่อัปโหลดไม่สำเร็จจะส่งอัตโนมัติเมื่อออนไลน์';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'อัปโหลดแล้ว $done/$total';
+  }
 
   @override
   String get cIntPayout => 'การจ่ายเงินพาร์ทเนอร์';

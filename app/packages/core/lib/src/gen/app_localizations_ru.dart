@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1324,6 +1323,11 @@ class TRu extends T {
 
   @override
   String get photosSoon => 'После уборки здесь появятся фото до и после';
+
+  @override
+  String photoThumb(String n) {
+    return 'Фото $n';
+  }
 
   @override
   String get before => 'До';
@@ -2984,6 +2988,29 @@ class TRu extends T {
 
   @override
   String get pSpace => 'Информация о пространстве';
+
+  @override
+  String get pNavigate => 'Маршрут';
+
+  @override
+  String get pNavHint =>
+      'Откроет адрес выезда в приложении карт. Если его нет, откроется веб-карта.';
+
+  @override
+  String get pOfflineSaved =>
+      'Нет сети. Сохранено и отправится, когда появится связь.';
+
+  @override
+  String get pPhotoRetry => 'Повторить загрузку';
+
+  @override
+  String get pPhotoWaiting =>
+      'Фото, которые не загрузились, отправятся автоматически при появлении связи.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return 'Загружено $done из $total';
+  }
 
   @override
   String get cIntPayout => 'Выплаты партнёрам';

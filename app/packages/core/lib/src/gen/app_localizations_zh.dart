@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1282,6 +1281,11 @@ class TZh extends T {
 
   @override
   String get photosSoon => '完成后将在此展示前后对比照';
+
+  @override
+  String photoThumb(String n) {
+    return '照片 $n';
+  }
 
   @override
   String get before => '清洁前';
@@ -2886,6 +2890,26 @@ class TZh extends T {
 
   @override
   String get pSpace => '空间信息';
+
+  @override
+  String get pNavigate => '导航';
+
+  @override
+  String get pNavHint => '在地图应用中打开上门地址，未安装应用则打开网页地图。';
+
+  @override
+  String get pOfflineSaved => '没有信号。已保存，恢复网络后自动发送。';
+
+  @override
+  String get pPhotoRetry => '重新上传';
+
+  @override
+  String get pPhotoWaiting => '未上传的照片将在恢复网络后自动上传。';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '已上传 $done/$total 张';
+  }
 
   @override
   String get cIntPayout => '合作伙伴付款';

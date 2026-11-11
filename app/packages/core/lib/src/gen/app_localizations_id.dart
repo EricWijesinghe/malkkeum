@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1323,6 +1322,11 @@ class TId extends T {
 
   @override
   String get photosSoon => 'Foto sebelum & sesudah akan muncul di sini';
+
+  @override
+  String photoThumb(String n) {
+    return 'Foto $n';
+  }
 
   @override
   String get before => 'Sebelum';
@@ -2986,6 +2990,29 @@ class TId extends T {
 
   @override
   String get pSpace => 'Info ruang';
+
+  @override
+  String get pNavigate => 'Petunjuk arah';
+
+  @override
+  String get pNavHint =>
+      'Membuka alamat kunjungan di aplikasi peta. Tanpa aplikasi, peta web yang dibuka.';
+
+  @override
+  String get pOfflineSaved =>
+      'Tidak ada sinyal. Disimpan dan akan dikirim saat online.';
+
+  @override
+  String get pPhotoRetry => 'Coba unggah lagi';
+
+  @override
+  String get pPhotoWaiting =>
+      'Foto yang belum terunggah akan dikirim otomatis saat online.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$done dari $total terunggah';
+  }
 
   @override
   String get cIntPayout => 'Pembayaran mitra';

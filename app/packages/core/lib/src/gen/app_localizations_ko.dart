@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1286,6 +1285,11 @@ class TKo extends T {
 
   @override
   String get photosSoon => '끝나면 전후 사진이 여기에 올라와요';
+
+  @override
+  String photoThumb(String n) {
+    return '사진 $n';
+  }
 
   @override
   String get before => '청소 전';
@@ -2899,6 +2903,26 @@ class TKo extends T {
 
   @override
   String get pSpace => '공간 정보';
+
+  @override
+  String get pNavigate => '길찾기';
+
+  @override
+  String get pNavHint => '방문 주소를 지도 앱에서 열어요. 앱이 없으면 웹 지도가 열려요.';
+
+  @override
+  String get pOfflineSaved => '신호가 없어요. 저장해 두고 연결되면 자동으로 보낼게요.';
+
+  @override
+  String get pPhotoRetry => '다시 올리기';
+
+  @override
+  String get pPhotoWaiting => '올리지 못한 사진은 신호가 돌아오면 자동으로 올라가요.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total장 중 $done장 업로드됨';
+  }
 
   @override
   String get cIntPayout => '파트너 지급';

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1332,6 +1331,11 @@ class TUz extends T {
 
   @override
   String get photosSoon => 'Tugagach, oldin-keyin suratlar shu yerda chiqadi';
+
+  @override
+  String photoThumb(String n) {
+    return 'Foto $n';
+  }
 
   @override
   String get before => 'Oldin';
@@ -2999,6 +3003,29 @@ class TUz extends T {
 
   @override
   String get pSpace => 'Joy ma\'lumoti';
+
+  @override
+  String get pNavigate => 'Yo\'nalish';
+
+  @override
+  String get pNavHint =>
+      'Manzilni xarita ilovasida ochadi. Ilova bo\'lmasa, veb-xarita ochiladi.';
+
+  @override
+  String get pOfflineSaved =>
+      'Signal yo\'q. Saqlandi, ulanish qaytgach yuboriladi.';
+
+  @override
+  String get pPhotoRetry => 'Qayta yuklash';
+
+  @override
+  String get pPhotoWaiting =>
+      'Yuklanmagan suratlar ulanish qaytgach avtomatik yuboriladi.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total tadan $done yuklandi';
+  }
 
   @override
   String get cIntPayout => 'Hamkor to‘lovlari';

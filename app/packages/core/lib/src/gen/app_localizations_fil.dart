@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1330,6 +1329,11 @@ class TFil extends T {
 
   @override
   String get photosSoon => 'Lalabas dito ang before at after photos pagtapos';
+
+  @override
+  String photoThumb(String n) {
+    return 'Larawan $n';
+  }
 
   @override
   String get before => 'Bago';
@@ -3004,6 +3008,29 @@ class TFil extends T {
 
   @override
   String get pSpace => 'Impormasyon ng espasyo';
+
+  @override
+  String get pNavigate => 'Mga direksyon';
+
+  @override
+  String get pNavHint =>
+      'Bubuksan ang address ng bisita sa map app. Kung walang app, bubuksan ang web map.';
+
+  @override
+  String get pOfflineSaved =>
+      'Walang signal. Naka-save at ipapadala kapag may koneksyon na.';
+
+  @override
+  String get pPhotoRetry => 'Subukan ulit';
+
+  @override
+  String get pPhotoWaiting =>
+      'Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$done sa $total ang na-upload';
+  }
 
   @override
   String get cIntPayout => 'Bayad sa mga partner';

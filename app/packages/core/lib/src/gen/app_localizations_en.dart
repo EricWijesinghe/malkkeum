@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1314,6 +1313,11 @@ class TEn extends T {
 
   @override
   String get photosSoon => 'Before & after photos will appear here';
+
+  @override
+  String photoThumb(String n) {
+    return 'Photo $n';
+  }
 
   @override
   String get before => 'Before';
@@ -2965,6 +2969,29 @@ class TEn extends T {
 
   @override
   String get pSpace => 'Space';
+
+  @override
+  String get pNavigate => 'Directions';
+
+  @override
+  String get pNavHint =>
+      'Opens the visit address in a map app. Without the app, the web map opens.';
+
+  @override
+  String get pOfflineSaved =>
+      'No signal. Saved, and it will send once you\'re back online.';
+
+  @override
+  String get pPhotoRetry => 'Retry upload';
+
+  @override
+  String get pPhotoWaiting =>
+      'Photos that didn\'t upload will send automatically once you\'re online.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$done of $total uploaded';
+  }
 
   @override
   String get cIntPayout => 'Partner payouts';

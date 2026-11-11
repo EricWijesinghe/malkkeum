@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1323,6 +1322,11 @@ class TNe extends T {
 
   @override
   String get photosSoon => 'सफाइपछि अघि र पछिका फोटो यहाँ देखिनेछन्';
+
+  @override
+  String photoThumb(String n) {
+    return 'फोटो $n';
+  }
 
   @override
   String get before => 'सफाइअघि';
@@ -2980,6 +2984,27 @@ class TNe extends T {
 
   @override
   String get pSpace => 'ठाउँको जानकारी';
+
+  @override
+  String get pNavigate => 'दिशानिर्देश';
+
+  @override
+  String get pNavHint =>
+      'नक्सा एपमा भ्रमण ठेगाना खुल्छ। एप नभए वेब नक्सा खुल्छ।';
+
+  @override
+  String get pOfflineSaved => 'सिग्नल छैन। सुरक्षित गरियो, जडान भएपछि पठाइनेछ।';
+
+  @override
+  String get pPhotoRetry => 'फेरि अपलोड';
+
+  @override
+  String get pPhotoWaiting => 'अपलोड नभएका फोटोहरू जडान भएपछि स्वतः पठाइनेछन्।';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total मध्ये $done अपलोड';
+  }
 
   @override
   String get cIntPayout => 'साझेदार भुक्तानी';
