@@ -301,6 +301,11 @@ fn payout_settings(v: &Map<String, Value>) -> Result<PayoutSettings, Invalid> {
     if mode == PayoutMode::Toss && secret_key.is_none() {
         return Err(Invalid("missing_field"));
     }
+    // shortcut: the Toss payout API shape is unverified (docs unreachable), so only sandbox keys are
+    // accepted; drop this check after a sandbox run confirms providers/payout.rs.
+    if mode == PayoutMode::Toss && !secret_key.as_deref().is_some_and(|k| k.starts_with("test_")) {
+        return Err(Invalid("toss_unverified"));
+    }
     Ok(PayoutSettings { mode, secret_key })
 }
 
@@ -593,6 +598,10 @@ mod tests {
         let manual = apply(&base, Section::Payout, &obj(json!({"mode": "manual"}))).unwrap();
         assert_eq!(manual.payout.map(|p| p.mode), Some(PayoutMode::Manual));
         assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "toss"}))).unwrap_err(), Invalid("missing_field"));
+        assert_eq!(
+            apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "live_sk_x"}))).unwrap_err(),
+            Invalid("toss_unverified")
+        );
         let toss = apply(&base, Section::Payout, &obj(json!({"mode": "toss", "secret_key": "test_sk_x"}))).unwrap();
         assert!(toss.has(Section::Payout));
         let p = toss.payout.expect("payout settings");
