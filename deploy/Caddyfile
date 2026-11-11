@@ -45,14 +45,16 @@
 	}
 
 	# Entry points and the service worker must revalidate; the rest is cached for a day.
+	# Named matchers must be declared at site level (not inside handle_path); their paths are
+	# the ones seen after handle_path strips /app.
+	@app_entry path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
+	@app_other not path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
 	redir /app /app/
 	handle_path /app/* {
 		root * /srv/app
 		try_files {path} /index.html
-		@entry path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
-		@other not @entry
-		header @entry Cache-Control "no-cache"
-		header @other Cache-Control "public, max-age=86400"
+		header @app_entry Cache-Control "no-cache"
+		header @app_other Cache-Control "public, max-age=86400"
 		file_server
 	}
 

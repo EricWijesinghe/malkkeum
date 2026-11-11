@@ -428,7 +428,11 @@ async fn put_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Pat
     let current = integrations::load_section(&s.db, &s.config.data_key, sec).await?;
     let merged = integrations::merge(sec, &current, incoming);
     // Validate against env-only keys so this section stands on its own.
-    integrations::apply(&integrations::Integrations::from_config(&s.config), sec, &merged).map_err(|Invalid(code)| ApiError::BadRequest(code))?;
+    let mut base = integrations::Integrations::from_config(&s.config);
+    if sec == Section::Payout {
+        base.payout_toss_ready = payout_toss_ready(&s, &merged).await?;
+    }
+    integrations::apply(&base, sec, &merged).map_err(|Invalid(code)| ApiError::BadRequest(code))?;
     integrations::save_section(&s.db, &s.config.data_key, sec, &merged, a.id).await?;
     reload(&s).await?;
     audit(
@@ -514,10 +518,44 @@ async fn probe(s: &AppState, sec: Section) -> (bool, &'static str) {
     }
 }
 
+/// Whether the Toss gate is open for these payout values: env switch on and the saved test passed for this key.
+async fn payout_toss_ready(s: &AppState, values: &serde_json::Map<String, Value>) -> ApiResult<bool> {
+    let last: Option<Value> = sqlx::query_scalar("SELECT last_test FROM integration_settings WHERE section = $1")
+        .bind(Section::Payout.code())
+        .fetch_optional(&s.db)
+        .await?
+        .flatten();
+    let secret = values.get("secret_key").and_then(Value::as_str).unwrap_or_default();
+    Ok(integrations::toss_ready(integrations::toss_env_enabled(), last.as_ref(), secret))
+}
+
+/// Sandbox check for Toss payouts: `GET /v2/balances` (read-only) with the saved secret key. Only a `test_sk_`
+/// key can pass. The record keeps a key fingerprint, so changing the key means testing again.
+async fn payout_test(s: &AppState) -> ApiResult<Value> {
+    let saved = integrations::load_section(&s.db, &s.config.data_key, Section::Payout).await?;
+    let secret = saved.get("secret_key").and_then(Value::as_str).unwrap_or_default();
+    let (ok, code) = if secret.is_empty() {
+        (false, "not_configured")
+    } else if !integrations::is_sandbox_key(secret) {
+        (false, "not_sandbox_key")
+    } else {
+        match s.providers.payout_balance_check(secret).await {
+            Ok(st) => check_result(st, &[StatusCode::OK]),
+            Err(_) => (false, "unreachable"),
+        }
+    };
+    let code = if ok { "sandbox_connected" } else { code };
+    Ok(json!({ "ok": ok, "code": code, "key_fp": integrations::key_fingerprint(secret), "at": Utc::now() }))
+}
+
 async fn test_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>) -> ApiResult<Json<Value>> {
     let sec = section(&code)?;
-    let (ok, result) = probe(&s, sec).await;
-    let record = json!({ "ok": ok, "code": result, "at": Utc::now() });
+    let record = if sec == Section::Payout {
+        payout_test(&s).await?
+    } else {
+        let (ok, result) = probe(&s, sec).await;
+        json!({ "ok": ok, "code": result, "at": Utc::now() })
+    };
     sqlx::query("UPDATE integration_settings SET last_test = $2 WHERE section = $1")
         .bind(sec.code())
         .bind(&record)

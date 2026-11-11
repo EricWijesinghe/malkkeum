@@ -16,7 +16,14 @@ use serde_json::{Value, json};
 const PAYMENT_EVENTS: [&str; 3] = ["Transaction.Paid", "Transaction.VirtualAccountIssued", "Transaction.Cancelled"];
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route("/webhooks/portone", post(portone))
+    Router::new().route("/webhooks/portone", post(portone)).route("/webhooks/toss", post(toss))
+}
+
+/// Toss `payout.changed` / `seller.changed`. No signature scheme is documented, so the body is ignored: the
+/// sync re-reads every open payout from Toss, the same trust path as the background pass. Repeats coalesce.
+async fn toss(State(s): State<AppState>) -> axum::http::StatusCode {
+    crate::payout_sync::kick(s);
+    axum::http::StatusCode::OK
 }
 
 fn header<'a>(h: &'a HeaderMap, name: &str) -> &'a str {
