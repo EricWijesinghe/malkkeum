@@ -1,6 +1,8 @@
 //! Login and OTP lockout with exponential backoff, counted on two keys per attempt:
 //! - the (IP, account) pair locks one client after a few failures, so the account stays usable for others;
-//! - the account alone has a wider free budget and locks it against a distributed guesser.
+//! - the account alone has a wider free budget and locks it against a distributed guesser. Login refuses
+//!   while it is locked; a staff account lock only delays (see `delay`). OTP has no account key: the
+//!   per-code attempt cap and the send rate limit already bound guessing.
 //! A successful step clears both. State is per process; the database lockout on staff stays the backstop.
 
 use crate::{error::ApiError, state::AppState};
@@ -18,6 +20,9 @@ pub const PAIR_FREE_FAILURES: u32 = 5;
 pub const ACCOUNT_FREE_FAILURES: u32 = 15;
 const BASE_LOCK: Duration = Duration::from_secs(30);
 const MAX_LOCK: Duration = Duration::from_secs(60 * 60);
+/// A delayed (non-refusing) lock holds a request at most this long, so one account cannot tie up connections for an hour.
+/// shortcut: delay is capped at 5s and not queued per account, upgrade to a per-account queue if slow-guess attacks show up.
+pub const MAX_DELAY: Duration = Duration::from_secs(5);
 /// Above this many tracked keys, expired locks are dropped on the next failure.
 const SWEEP_AT: usize = 10_000;
 
@@ -26,6 +31,8 @@ const SWEEP_AT: usize = 10_000;
 pub struct Key {
     pub name: String,
     pub free: u32,
+    /// A locked refusing key answers 429; a non-refusing one only delays the request.
+    pub refuse: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -49,12 +56,13 @@ pub fn backoff(fails: u32, free: u32) -> Duration {
 }
 
 /// Keys for one attempt. `kind` separates login from OTP and staff from members.
-pub fn keys(kind: &str, ip: IpAddr, account: &str) -> [Key; 2] {
+pub fn keys(kind: &str, ip: IpAddr, account: &str) -> Vec<Key> {
     let account = account.trim().to_lowercase();
-    [
-        Key { name: format!("{kind}-ip:{ip}|{account}"), free: PAIR_FREE_FAILURES },
-        Key { name: format!("{kind}:{account}"), free: ACCOUNT_FREE_FAILURES },
-    ]
+    let pair = Key { name: format!("{kind}-ip:{ip}|{account}"), free: PAIR_FREE_FAILURES, refuse: true };
+    if kind == "otp" {
+        return vec![pair];
+    }
+    vec![pair, Key { name: format!("{kind}:{account}"), free: ACCOUNT_FREE_FAILURES, refuse: kind != "staff" }]
 }
 
 /// Client address for lockout keys: forwarded headers count only behind a trusted proxy (as in ratelimit).
@@ -74,21 +82,34 @@ impl Lockout {
         self.entries.lock().unwrap_or_else(|p| p.into_inner())
     }
 
-    /// Longest remaining lock across the keys, if any is still active.
-    pub fn locked_for(&self, keys: &[Key], now: Instant) -> Option<Duration> {
+    /// Longest remaining lock across the keys that match `pick`, if any is still active.
+    fn longest(&self, keys: &[Key], now: Instant, pick: impl Fn(&Key) -> bool) -> Option<Duration> {
         let map = self.map();
         keys.iter()
+            .filter(|k| pick(k))
             .filter_map(|k| map.get(&k.name))
             .map(|e| e.locked_until.saturating_duration_since(now))
             .filter(|d| !d.is_zero())
             .max()
     }
 
-    /// Refuses with 429 while any key is locked.
+    /// Longest remaining lock across all keys, if any is still active.
+    pub fn locked_for(&self, keys: &[Key], now: Instant) -> Option<Duration> {
+        self.longest(keys, now, |_| true)
+    }
+
+    /// Refuses with 429 while a refusing key is locked.
     pub fn check(&self, keys: &[Key], now: Instant) -> Result<(), ApiError> {
-        match self.locked_for(keys, now) {
+        match self.longest(keys, now, |k| k.refuse) {
             Some(_) => Err(ApiError::RateLimited),
             None => Ok(()),
+        }
+    }
+
+    /// Holds the request while a non-refusing key (a staff account lock) is still active, up to `MAX_DELAY`.
+    pub async fn delay(&self, keys: &[Key], now: Instant) {
+        if let Some(d) = self.longest(keys, now, |k| !k.refuse) {
+            tokio::time::sleep(d.min(MAX_DELAY)).await;
         }
     }
 
@@ -175,8 +196,15 @@ mod tests {
             lo.failure(&keys("staff", ip, "a@x.test"), t0);
         }
         let fresh = IpAddr::V4(Ipv4Addr::new(10, 9, 9, 9));
-        assert!(lo.check(&keys("staff", fresh, "a@x.test"), t0).is_err(), "account locked for a new client");
+        let ks = keys("staff", fresh, "a@x.test");
+        assert!(lo.check(&ks, t0).is_ok(), "a staff account lock delays, it does not refuse");
+        assert!(lo.locked_for(&ks, t0).is_some(), "but the account is still locked for a new client");
         assert!(lo.check(&keys("staff", fresh, "b@x.test"), t0).is_ok(), "other accounts unaffected");
+    }
+
+    #[test]
+    fn otp_has_no_account_key() {
+        assert_eq!(keys("otp", IP, "010-1234-5678").len(), 1);
     }
 
     #[test]
@@ -192,10 +220,12 @@ mod tests {
 
     #[test]
     fn keys_normalise_the_account_and_carry_the_kind() {
-        let [pair, account] = keys("staff", IP, "  Mixed@X.test ");
+        let ks = keys("staff", IP, "  Mixed@X.test ");
+        let (pair, account) = (&ks[0], &ks[1]);
         assert_eq!(pair.name, "staff-ip:10.0.0.1|mixed@x.test");
         assert_eq!(account.name, "staff:mixed@x.test");
         assert_eq!((pair.free, account.free), (PAIR_FREE_FAILURES, ACCOUNT_FREE_FAILURES));
+        assert!(pair.refuse && !account.refuse, "staff account key delays instead of refusing");
     }
 
     #[test]

@@ -144,6 +144,7 @@ async fn verify(
         return Err(ApiError::Unauthorized);
     }
     let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &email);
+    s.lockout.delay(&keys, Instant::now()).await;
     s.lockout.check(&keys, Instant::now())?;
     let accepted = match (req.code, req.recovery_code) {
         (Some(code), _) => {

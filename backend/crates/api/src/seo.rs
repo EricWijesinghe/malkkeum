@@ -546,10 +546,10 @@ async fn verification_file(State(s): State<AppState>, Path(file): Path<String>) 
     }
     let business = business_value(&s.db).await?;
     if let Some(token) = text(&business, "google_site_verification").filter(|t| file == format!("google{t}.html")) {
-        return Ok(([(header::CONTENT_TYPE, "text/html; charset=utf-8")], format!("google-site-verification: google{token}.html\n")).into_response());
+        return Ok(([(header::CONTENT_TYPE, "text/html; charset=utf-8")], format!("google-site-verification: google{}.html\n", escape_html(&token))).into_response());
     }
     if let Some(token) = text(&business, "naver_site_verification").filter(|t| file == format!("naver{t}.html")) {
-        return Ok(html(format!("<meta name=\"naver-site-verification\" content=\"{token}\"/>\n")));
+        return Ok(html(format!("<meta name=\"naver-site-verification\" content=\"{}\"/>\n", escape_html(&token))));
     }
     Err(ApiError::NotFound)
 }

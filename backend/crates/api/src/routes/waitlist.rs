@@ -123,8 +123,8 @@ struct AcceptBody {
 /// Turns a live offer into a booking. The entry is marked accepted first so its own hold stops
 /// counting against the slot; a failed create puts the offer back if it is still open.
 async fn accept(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, body: Option<Json<AcceptBody>>) -> ApiResult<Json<Value>> {
-    let (body_json, expires, status): (Value, Option<DateTime<Utc>>, String) =
-        sqlx::query_as("SELECT body, offer_expires_at, status FROM waitlist_entries WHERE id = $1 AND user_id = $2")
+    let (body_json, expires, status, date, hour): (Value, Option<DateTime<Utc>>, String, NaiveDate, i16) =
+        sqlx::query_as("SELECT body, offer_expires_at, status, visit_date, start_hour FROM waitlist_entries WHERE id = $1 AND user_id = $2")
             .bind(id)
             .bind(a.id)
             .fetch_optional(&s.db)
@@ -150,10 +150,16 @@ async fn accept(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     match bookings::create_core(&s, a.id, &req).await {
         Ok(booking) => Ok(Json(json!({ "booking_id": booking }))),
         Err(e) => {
-            sqlx::query("UPDATE waitlist_entries SET status = 'offered' WHERE id = $1 AND status = 'accepted' AND offer_expires_at > now()")
+            // The seat is free again: reopen this offer while it is live, else close it and pass the seat on.
+            let reopened = sqlx::query("UPDATE waitlist_entries SET status = 'offered' WHERE id = $1 AND status = 'accepted' AND offer_expires_at > now()")
                 .bind(id)
                 .execute(&s.db)
-                .await?;
+                .await?
+                .rows_affected();
+            if reopened == 0 {
+                sqlx::query("UPDATE waitlist_entries SET status = 'cancelled' WHERE id = $1 AND status = 'accepted'").bind(id).execute(&s.db).await?;
+                best_effort("waitlist re-offer", offer_for_slot(&s, date, hour as u8)).await;
+            }
             Err(e)
         }
     }

@@ -152,6 +152,7 @@ async fn verify_otp(
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
     // Guessing across fresh codes for one number is stopped here, not only by the per-code attempt cap.
     let keys = lockout::keys("otp", lockout::ip_of(&s, peer, &headers), &phone);
+    s.lockout.delay(&keys, Instant::now()).await;
     s.lockout.check(&keys, Instant::now())?;
     match consume_otp(&s, &phone, &req.code).await {
         Ok(()) => s.lockout.success(&keys),
@@ -412,6 +413,7 @@ async fn staff_login(
         return Err(ApiError::Unauthorized);
     }
     let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &req.email);
+    s.lockout.delay(&keys, Instant::now()).await;
     s.lockout.check(&keys, Instant::now())?;
     let row: Option<(Uuid, String, String, bool)> =
         sqlx::query_as("SELECT id, password_hash, role, COALESCE(locked_until > now(), FALSE) FROM staff WHERE lower(email) = lower($1) AND active")
