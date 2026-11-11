@@ -99,6 +99,14 @@ pub async fn record_failure(db: &PgPool, integration: &str, code: &str) -> Resul
         .map(|_| ())
 }
 
+/// One auth-abuse event (`code` says which: lockout, refresh reuse, MFA failure). Feeds the `auth_suspicious` alert.
+/// Best effort: a failed log write must not change the auth answer the caller is about to give.
+pub async fn auth_abuse(db: &PgPool, code: &str) {
+    if let Err(e) = record_failure(db, "auth_abuse", code).await {
+        tracing::warn!(error = %e, code, "ops auth_abuse record failed");
+    }
+}
+
 /// Records one outcome and waits for it. Awaited (not spawned) so the row exists before the caller
 /// answers: status and alert rules never race a request or a shutdown. A write failure only logs.
 pub async fn record(db: &PgPool, integration: &'static str, outcome: Result<(), &'static str>) {

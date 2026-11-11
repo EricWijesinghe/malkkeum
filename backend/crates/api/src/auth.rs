@@ -20,8 +20,14 @@ const CLOCK_SKEW_SECS: u64 = 30;
 /// NIST SP 800-63B: length is the composition rule; no forced character classes.
 pub const MIN_PASSWORD_CHARS: usize = 12;
 pub const MAX_PASSWORD_BYTES: usize = 256;
-/// Known-breached passwords, lowercase, one per line. Starter list: replace with a full top-N dump.
+/// Known-breached passwords (SecLists 10k most common), lowercase, one per line. Bundled at compile time.
 const BREACHED_PASSWORDS: &str = include_str!("data/breached_passwords.txt");
+static BREACHED_SET: std::sync::OnceLock<std::collections::HashSet<&'static str>> = std::sync::OnceLock::new();
+
+/// Parsed once on first use; each policy check is then a set lookup.
+fn breached_set() -> &'static std::collections::HashSet<&'static str> {
+    BREACHED_SET.get_or_init(|| BREACHED_PASSWORDS.lines().filter(|l| !l.is_empty()).collect())
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -190,7 +196,7 @@ pub fn check_password_policy(password: &str) -> Result<(), &'static str> {
         return Err("weak_password");
     }
     let lowered = password.to_lowercase();
-    if BREACHED_PASSWORDS.lines().any(|p| p == lowered) {
+    if breached_set().contains(lowered.as_str()) {
         return Err("breached_password");
     }
     Ok(())
@@ -350,7 +356,10 @@ mod tests {
     #[test]
     fn password_policy_length_and_breach_list() {
         assert_eq!(check_password_policy("short-pass1"), Err("weak_password"));
-        assert_eq!(check_password_policy("Password1234"), Err("breached_password"));
+        assert_eq!(check_password_policy("Password"), Err("weak_password"), "below length floor");
+        assert_eq!(check_password_policy("MasterBaiting"), Err("breached_password"), "case-insensitive match");
+        assert_eq!(check_password_policy("contortionists"), Ok(()), "not in the list");
+        assert!(breached_set().len() >= 10_000, "full top-10k list is bundled");
         assert_eq!(check_password_policy("correct horse battery"), Ok(()));
         assert_eq!(check_password_policy("aaaaaaaaaaaaaaaa"), Ok(()), "no composition rules");
         assert_eq!(check_password_policy(&"가".repeat(100)), Err("weak_password"), "byte cap");

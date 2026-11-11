@@ -16,6 +16,7 @@ pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
 pub mod lifecycle;
+pub mod lockout;
 pub mod metrics;
 pub mod openapi;
 pub mod noshow;
@@ -55,6 +56,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
         ai_debounce: Default::default(),
         address_search: Default::default(),
         review_reports: Default::default(),
+        lockout: Default::default(),
     })
 }
 
