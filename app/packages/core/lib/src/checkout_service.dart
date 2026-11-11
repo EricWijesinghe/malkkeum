@@ -41,7 +41,9 @@ class CheckoutService {
   final PaymentLauncher launcher;
 
   /// [request] is the POST /v1/checkouts body: {kind, booking | booking_id, method}.
-  Future<CheckoutResult> run(BuildContext context, Json request) async {
+  /// [beforePay] runs once the checkout exists and before the PG window: it may save receipt requests.
+  /// It returns an error code to stop the payment, or null to continue.
+  Future<CheckoutResult> run(BuildContext context, Json request, {Future<String?> Function(CheckoutIntent intent)? beforePay}) async {
     final CheckoutIntent intent;
     try {
       intent = CheckoutIntent.fromJson(await api.post('/checkouts', request) as Json);
@@ -49,6 +51,11 @@ class CheckoutService {
       return CheckoutFailed(e.code);
     }
     if (!context.mounted) return const CheckoutCancelled();
+    if (beforePay != null) {
+      final blocked = await beforePay(intent);
+      if (blocked != null) return CheckoutFailed(blocked);
+      if (!context.mounted) return const CheckoutCancelled();
+    }
     final outcome = await launcher.pay(context: context, intent: intent);
     switch (outcome) {
       case null:

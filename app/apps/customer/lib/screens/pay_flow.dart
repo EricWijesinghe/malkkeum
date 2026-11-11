@@ -24,7 +24,7 @@ Future<PayChoice?> choosePayMethod(BuildContext context, {String? selectedId}) =
 Future<CheckoutResult> payWithChannel(BuildContext context, PayChannel channel, Json request) {
   final app = context.appRead;
   final service = CheckoutService(api: app.api, launcher: paymentLauncherFor(app.api.baseUrl));
-  return service.run(context, {...request, 'method': channel.code});
+  return service.run(context, {...request, 'method': channel.code}, beforePay: receiptStep(context, app.api));
 }
 
 /// Shows the virtual-account details screen and returns when the customer leaves it.
