@@ -674,18 +674,24 @@ class _PayoutAccountState extends State<PayoutAccountScreen> {
                   const Icon(Icons.account_balance_rounded),
                   const SizedBox(width: Space.md),
                   Expanded(
-                    child: Text(
-                      '${c['bank']} •••• ${c['account_last4']}\n${c['holder']}',
-                      style: context.text.titleSmall,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${c['bank']} •••• ${c['account_last4']}\n${c['holder']}',
+                          style: context.text.titleSmall,
+                        ),
+                        const SizedBox(height: Space.xs),
+                        Tag(
+                          label: c['verified_at'] == null
+                              ? t.pUnverified
+                              : t.pVerified,
+                          hue: c['verified_at'] == null
+                              ? StatusHues.consultation
+                              : StatusHues.assigned,
+                        ),
+                      ],
                     ),
-                  ),
-                  Tag(
-                    label: c['verified_at'] == null
-                        ? t.pUnverified
-                        : t.pVerified,
-                    hue: c['verified_at'] == null
-                        ? StatusHues.consultation
-                        : StatusHues.assigned,
                   ),
                 ],
               ),

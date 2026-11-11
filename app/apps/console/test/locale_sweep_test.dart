@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
 
 import 'support/console_host.dart';
+import 'support/payout_fixtures.dart';
 
 /// Every console language at the two sizes the console ships on: a small Android phone with
 /// large system text (the worst case for long translations), and a Windows desktop window.
@@ -49,6 +50,8 @@ List<Json> _setupCards() => [
   _card('google', [_field('client_ids', 'list', required: true)]),
   _card('apple', [_field('client_ids', 'list', required: true)]),
   _card('ai', [_field('api_key', 'secret', required: true), _field('model', 'text'), _field('mode', 'text'), _field('thread_hourly_cap', 'text'), _field('member_daily_cap', 'text'), _field('daily_cap', 'text')]),
+  _card('juso', [_field('confm_key', 'secret', required: true)]),
+  _card('payout', [_field('mode', 'text'), _field('secret_key', 'secret')]),
   _card('backup', [_field('endpoint', 'text', required: true), _field('region', 'text', required: true), _field('bucket', 'text', required: true), _field('access_key', 'secret', required: true), _field('secret_key', 'secret', required: true), _field('retention_days', 'text')]),
 ];
 
@@ -90,6 +93,7 @@ FakeApi _stockedApi() {
     ..reply('GET', '/admin/ai/usage', {'calls': 12, 'answered': 10, 'input_tokens': 5000, 'output_tokens': 900, 'cache_read_tokens': 0, 'cache_write_tokens': 0})
     ..reply('GET', '/admin/pros', const <Json>[])
     ..reply('GET', '/admin/settlements', const <Json>[])
+    ..reply('GET', '/admin/settlements/payouts', payoutRows)
     ..reply('GET', '/admin/customers', const <Json>[])
     ..reply('GET', '/admin/staff', const <Json>[])
     ..reply('GET', '/admin/growth', {'welcome': {}, 'referral': {}})
@@ -143,6 +147,7 @@ final _screens = <(String, Widget)>[
   ('marketing', const MarketingScreen()),
   ('partners', const PartnersScreen()),
   ('settlements', const SettlementsScreen()),
+  ('payouts tab (four states with rows)', const SettlementsScreen(initialPayouts: true)),
   ('finance', const FinanceScreen()),
   ('customers', const CustomersScreen()),
   ('staff', const StaffScreen()),

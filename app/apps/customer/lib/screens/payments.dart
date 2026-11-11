@@ -74,8 +74,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               child: Row(children: [
                 PayBrandBadge(code: m.provider, height: 36),
                 const SizedBox(width: Space.md),
-                Expanded(child: Text(m.displayName, style: context.text.titleSmall)),
-                Tag(label: t.methodRegistered, hue: StatusHues.assigned),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(m.displayName, style: context.text.titleSmall),
+                    const SizedBox(height: Space.xxs),
+                    Tag(label: t.methodRegistered, hue: StatusHues.assigned),
+                  ]),
+                ),
                 IconButton(
                   tooltip: t.delete,
                   icon: const Icon(Icons.delete_outline_rounded),
@@ -89,7 +94,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         FutureBuilder<List<PayChannel>>(
           future: _billing,
           builder: (context, snap) {
-            if (snap.hasError) return ErrorRetry(message: t.errorGeneric, retryLabel: t.retry, onRetry: _reload);
+            if (snap.hasError) return ErrorRetry(message: t.error(snap.error!), retryLabel: t.retry, onRetry: _reload);
             final channels = snap.data;
             if (channels == null) return const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: CircularProgressIndicator()));
             if (channels.isEmpty) return const SizedBox.shrink();

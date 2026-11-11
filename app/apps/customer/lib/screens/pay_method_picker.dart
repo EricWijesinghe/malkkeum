@@ -113,7 +113,7 @@ class _PayMethodPickerState extends State<PayMethodPicker> {
           future: _channels,
           builder: (context, snap) {
             if (snap.hasError) {
-              return ErrorRetry(message: context.t.errorGeneric, retryLabel: context.t.retry, onRetry: _reload);
+              return ErrorRetry(message: context.t.error(snap.error!), retryLabel: context.t.retry, onRetry: _reload);
             }
             final channels = snap.data;
             if (channels == null) return const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: CircularProgressIndicator()));
@@ -174,7 +174,11 @@ class PayChannelTile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xs),
                 child: Row(children: [
-                  PayBrandBadge(code: code, height: 32),
+                  // Capped so a wide wordmark scales down instead of pushing the label off a half-width tile.
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 72),
+                    child: FittedBox(fit: BoxFit.scaleDown, child: PayBrandBadge(code: code, height: 32)),
+                  ),
                   const SizedBox(width: Space.xs),
                   Expanded(child: Text(label, style: context.text.labelLarge, maxLines: 2, overflow: TextOverflow.ellipsis)),
                   if (busy) const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),

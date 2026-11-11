@@ -105,7 +105,8 @@ class PartnersScreen extends StatelessWidget {
 }
 
 class SettlementsScreen extends StatefulWidget {
-  const SettlementsScreen({super.key});
+  const SettlementsScreen({super.key, this.initialPayouts = false});
+  final bool initialPayouts;
   @override
   State<SettlementsScreen> createState() => _SettlementsState();
 }
@@ -113,7 +114,7 @@ class SettlementsScreen extends StatefulWidget {
 class _SettlementsState extends State<SettlementsScreen> {
   final _view = GlobalKey<AsyncViewState<List<Json>>>();
   String? _state;
-  bool _payouts = false;
+  late bool _payouts = widget.initialPayouts;
   final _payoutsView = GlobalKey<AsyncViewState<List<Json>>>();
 
   Future<void> _run() async {
@@ -148,7 +149,7 @@ class _SettlementsState extends State<SettlementsScreen> {
       key: _payoutsView,
       load: () async => (await context.api.get('/admin/settlements/payouts') as List).cast<Json>(),
       builder: (context, rows, reload) => rows.isEmpty
-          ? Center(child: Text(t.poNoPayouts))
+          ? EmptyState(icon: Icons.payments_rounded, title: t.poNoPayouts, hue: StatusHues.consultation)
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: Space.lg),
               children: [for (final p in rows) _payoutCard(context, p, admin, reload)],
@@ -166,36 +167,47 @@ class _SettlementsState extends State<SettlementsScreen> {
     Future<void> post(String path) => _act(context, () => context.api.post('/admin/settlements/payouts/$id/$path', {}), reload);
     return Card(
       elevation: 0,
-      child: ListTile(
-        title: Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}'),
-        subtitle: Text(
-          '${context.won((p['amount'] as num).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
-        ),
-        trailing: Wrap(
-          spacing: 6,
-          crossAxisAlignment: WrapCrossAlignment.center,
+      child: Padding(
+        padding: const EdgeInsets.all(Space.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Tag(
-              label: switch (state) {
-                'requested' => t.poState_requested,
-                'sent' => t.poState_sent,
-                'paid' => t.poState_paid,
-                _ => t.poState_failed,
-              },
-              hue: switch (state) {
-                'paid' => StatusHues.assigned,
-                'sent' => StatusHues.confirmed,
-                'failed' => StatusHues.cancelled,
-                _ => StatusHues.consultation,
-              },
+            Text('${p['pro_name']}$team · ${p['bank']} ${p['account_last4']}', style: context.text.titleSmall),
+            const SizedBox(height: Space.xxs),
+            Text(
+              '${context.won((p['amount'] as num).toInt())} · ${p['payout_date']} · ${manual ? t.poProviderManual : t.poProviderToss}$failure',
+              style: context.text.bodySmall,
             ),
-            if (admin && state == 'requested' && manual)
-              TextButton(onPressed: () => _showAccount(context, id), child: Text(t.poShowAccount)),
-            if (admin && state == 'requested' && manual) TextButton(onPressed: () => post('confirm'), child: Text(t.poConfirmPaid)),
-            if (admin && state == 'requested' && !manual) TextButton(onPressed: () => post('send'), child: Text(t.poSend)),
-            if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
-            if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
-            if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+            const SizedBox(height: Space.xs),
+            // Actions wrap under the text: a trailing row overflowed narrow phones at large text.
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+              Tag(
+                label: switch (state) {
+                  'requested' => t.poState_requested,
+                  'sent' => t.poState_sent,
+                  'paid' => t.poState_paid,
+                  _ => t.poState_failed,
+                },
+                hue: switch (state) {
+                  'paid' => StatusHues.assigned,
+                  'sent' => StatusHues.confirmed,
+                  'failed' => StatusHues.cancelled,
+                  _ => StatusHues.consultation,
+                },
+              ),
+              if (admin && state == 'requested' && manual)
+                TextButton(onPressed: () => _showAccount(context, id), child: Text(t.poShowAccount)),
+              if (admin && state == 'requested' && manual) TextButton(onPressed: () => post('confirm'), child: Text(t.poConfirmPaid)),
+              if (admin && state == 'requested' && !manual) TextButton(onPressed: () => post('send'), child: Text(t.poSend)),
+              if (admin && state == 'sent') TextButton(onPressed: () => post('sync'), child: Text(t.poSync)),
+              if (admin && state == 'failed') TextButton(onPressed: () => post('retry'), child: Text(t.poRetry)),
+              if (admin && state == 'requested') TextButton(onPressed: () => _fail(context, id, reload), child: Text(t.poMarkFailed)),
+              ],
+            ),
           ],
         ),
       ),

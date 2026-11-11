@@ -146,7 +146,8 @@ AppColors appColorsFor(BrandConfig brand, bool dark) => AppColors(
   freshTint: dark ? const Color(0xFF0F2F27) : const Color(0xFFDDF6EE),
   sun: brand.sun,
   sunTint: dark ? const Color(0xFF3A2D10) : const Color(0xFFFFF4D6),
-  danger: Semantic.danger,
+  // Lighter red on dark surfaces so error text keeps WCAG AA contrast (4.5:1).
+  danger: dark ? const Color(0xFFFF8A80) : Semantic.danger,
   isDark: dark,
 );
 
