@@ -2,6 +2,7 @@
 # Run from the repo root:  python -I scripts/build_legal.py website
 # Business details (상호, 대표, 사업자번호 ...) are filled in the browser from /v1/brand,
 # i.e. from what the owner typed in the console setup wizard. No editing needed here.
+import json
 import os
 import pathlib
 import sys
@@ -112,6 +113,26 @@ PRIVACY = f"""
     <p>이 방침이 바뀌면 시행 7일 전부터 앱과 웹사이트에 공지합니다. 국외 이전 항목이나 필수 동의 내용이 바뀌면 다시 동의를 받습니다.</p>
 """
 
+# Cancellation tiers come from the Rust default, so the terms match what the server enforces by default.
+# Owner edits in the console are NOT reflected here: regenerate after changing the default, or render
+# the table dynamically from GET /v1/policy/cancellation on the website.
+CANCEL_POLICY = json.loads((pathlib.Path(__file__).parent.parent / "backend/crates/domain/src/cancel_policy_default.json").read_text(encoding="utf-8"))
+
+
+def cancel_rows(policy):
+    rows = []
+    for t in policy["tiers"]:
+        days, pct = t["min_days"], t["percent"]
+        when = "당일" if days == 0 else f"방문일 {days}일 전부터" if days > 0 else "방문 후"
+        if pct is None:
+            rows.append(f"<li>{when}: 앱에서 취소 불가, 상담팀 확인 후 처리</li>")
+        elif pct == 0:
+            rows.append(f"<li>{when}: 전액 환불</li>")
+        else:
+            rows.append(f"<li>{when}: 결제 금액의 {pct}% 취소 수수료 (최소 {policy['min_fee']:,}원)</li>")
+    return "".join(rows)
+
+
 TERMS = f"""
     <h1>서비스 이용약관</h1>
     <p class="note">시행일: {EFFECTIVE}</p>
@@ -119,7 +140,7 @@ TERMS = f"""
     <h2>제2조 (서비스 내용)</h2><p>회사는 고객과 청소 전문가(이하 "파트너")를 연결하고 예약, 결제, 상담, 정산 기능을 제공합니다. 방문 청소는 회사의 기준으로 심사된 파트너가 수행합니다.</p>
     <h2>제3조 (회원가입)</h2><p>휴대전화 인증 또는 소셜 로그인으로 가입하며 정확한 정보를 제공해야 합니다. 만 14세 미만은 가입할 수 없습니다.</p>
     <h2>제4조 (예약과 결제)</h2><p>예약은 결제가 완료된 때 확정됩니다. 견적형 서비스(이사·입주 청소 등)는 견적 확인 후 예약금 결제로 확정되고, 잔금은 작업 완료 후 결제합니다.</p>
-    <h2>제5조 (취소와 환불)</h2><ul><li>방문일 2일 전까지 취소: 전액 환불</li><li>그 이후 취소: 앱에 안내된 취소 수수료 기준에 따름</li><li>회사 또는 파트너 사정으로 서비스가 제공되지 못한 경우: 전액 환불</li></ul>
+    <h2>제5조 (취소와 환불)</h2><ul>{cancel_rows(CANCEL_POLICY)}<li>회사 또는 파트너 사정으로 서비스가 제공되지 못한 경우: 전액 환불</li></ul>
     <h2>제6조 (이용자의 의무)</h2><p>방문 주소와 작업 환경 정보를 정확히 제공하고 파트너가 안전하게 작업할 수 있도록 협조해야 합니다.</p>
     <h2>제7조 (손해배상)</h2><p>파트너의 고의 또는 과실로 손해가 생기면 회사는 관련 법령과 회사의 보상 기준에 따라 처리를 돕습니다. 작업 전후 사진은 확인 자료로 쓰일 수 있습니다.</p>
     <h2>제8조 (서비스 변경·중단)</h2><p>설비 점검 등 부득이한 경우 서비스를 일시 중단할 수 있으며 미리 공지합니다.</p>

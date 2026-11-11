@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -494,6 +495,31 @@ class TId extends T {
   String get cFormula => 'Rumus penawaran';
 
   @override
+  String get cTabCancelPolicy => 'Kebijakan pembatalan';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Ini pengaturan bawaan. Periksa dan simpan untuk mengonfirmasi.';
+
+  @override
+  String get cPolicyDaysBefore => 'Hari sebelum kunjungan (mulai)';
+
+  @override
+  String get cPolicyPercent =>
+      'Biaya % (kosong = tidak bisa dibatalkan di aplikasi)';
+
+  @override
+  String get cPolicyMinFee => 'Biaya minimum (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Boleh ubah jadwal (dari berapa hari sebelum kunjungan)';
+
+  @override
+  String get cPolicyHint =>
+      'Langsung berlaku di layar pembatalan aplikasi pelanggan. Ketentuan diperbarui di build legal berikutnya.';
+
+  @override
   String get f_base_studio => 'Dasar: studio';
 
   @override
@@ -738,7 +764,7 @@ class TId extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Dalam 2 hari sebelum kunjungan, batalkan lewat tim kami';
+      'Pemesanan ini tidak bisa dibatalkan lagi lewat aplikasi. Silakan hubungi tim kami';
 
   @override
   String get err_address_required => 'Tambahkan alamat kunjungan';
@@ -1328,6 +1354,16 @@ class TId extends T {
 
   @override
   String get cancelKeep => 'Tetap pesan';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Jika dibatalkan sekarang, biaya $fee berlaku dan $refund akan dikembalikan.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Setujui biaya $fee dan batalkan';
+  }
 
   @override
   String get cancelled => 'Pemesanan dibatalkan';
@@ -2651,6 +2687,47 @@ class TId extends T {
 
   @override
   String get pCustomerRequests => 'Permintaan pelanggan';
+
+  @override
+  String get pHousehold => 'Info rumah tangga';
+
+  @override
+  String get pPets => 'Hewan peliharaan';
+
+  @override
+  String get pPetDog => 'Anjing';
+
+  @override
+  String get pPetCat => 'Kucing';
+
+  @override
+  String get pPetBird => 'Burung';
+
+  @override
+  String get pPetFish => 'Ikan';
+
+  @override
+  String get pPetOther => 'Hewan lain';
+
+  @override
+  String get pAllergies => 'Alergi & sensitivitas';
+
+  @override
+  String get pPreferredProducts => 'Produk pilihan';
+
+  @override
+  String get pParking => 'Parkir';
+
+  @override
+  String pFloor(String floor) {
+    return 'Lantai $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'Ada lift';
+
+  @override
+  String get pElevatorNo => 'Tidak ada lift';
 
   @override
   String get pTeamMemo => 'Catatan tim (tidak terlihat pelanggan)';

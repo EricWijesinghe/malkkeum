@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -482,6 +483,27 @@ class TKo extends T {
   String get cFormula => '견적 산정식';
 
   @override
+  String get cTabCancelPolicy => '취소 정책';
+
+  @override
+  String get cPolicyDefaultBanner => '기본값이에요. 아래 내용을 확인하고 저장해 주세요.';
+
+  @override
+  String get cPolicyDaysBefore => '방문 며칠 전부터 (일)';
+
+  @override
+  String get cPolicyPercent => '수수료 % (비우면 앱 취소 불가)';
+
+  @override
+  String get cPolicyMinFee => '최소 수수료 (원)';
+
+  @override
+  String get cPolicyReschedule => '일정 변경 가능 (방문 며칠 전부터)';
+
+  @override
+  String get cPolicyHint => '고객 앱 취소 화면에 바로 반영돼요. 이용약관은 빌드 후 갱신돼요.';
+
+  @override
   String get f_base_studio => '원룸 기본';
 
   @override
@@ -722,7 +744,8 @@ class TKo extends T {
   String get err_payment_method_required => '결제수단을 선택해 주세요';
 
   @override
-  String get err_cancellation_window_closed => '방문 2일 전부터는 상담팀을 통해 취소할 수 있어요';
+  String get err_cancellation_window_closed =>
+      '이 시점부터는 앱에서 취소할 수 없어요. 상담팀에 문의해 주세요';
 
   @override
   String get err_address_required => '방문할 주소를 등록해 주세요';
@@ -1293,6 +1316,16 @@ class TKo extends T {
 
   @override
   String get cancelKeep => '유지하기';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return '지금 취소하면 취소 수수료 $fee이 적용되고 $refund이 환불돼요.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '수수료 $fee 확인하고 취소';
+  }
 
   @override
   String get cancelled => '예약이 취소됐어요';
@@ -2574,6 +2607,47 @@ class TKo extends T {
 
   @override
   String get pCustomerRequests => '고객 요청사항';
+
+  @override
+  String get pHousehold => '가구 정보';
+
+  @override
+  String get pPets => '반려동물';
+
+  @override
+  String get pPetDog => '강아지';
+
+  @override
+  String get pPetCat => '고양이';
+
+  @override
+  String get pPetBird => '새';
+
+  @override
+  String get pPetFish => '물고기';
+
+  @override
+  String get pPetOther => '기타 동물';
+
+  @override
+  String get pAllergies => '알레르기·민감 사항';
+
+  @override
+  String get pPreferredProducts => '선호 제품';
+
+  @override
+  String get pParking => '주차';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor층';
+  }
+
+  @override
+  String get pElevatorYes => '엘리베이터 있음';
+
+  @override
+  String get pElevatorNo => '엘리베이터 없음';
 
   @override
   String get pTeamMemo => '팀 메모 (고객에게 보이지 않아요)';

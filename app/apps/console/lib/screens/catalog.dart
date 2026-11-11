@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'cancel_policy.dart';
 
 /// Prices, durations, availability, slot capacity and the quote formula — no code change needed.
 class CatalogScreen extends StatelessWidget {
@@ -13,7 +14,7 @@ class CatalogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
         children: [
           TabBar(
@@ -23,10 +24,11 @@ class CatalogScreen extends StatelessWidget {
               Tab(text: t.cPricing),
               Tab(text: t.cSlotCapacity),
               Tab(text: t.cFormula),
+              Tab(text: t.cTabCancelPolicy),
             ],
           ),
           const Expanded(
-            child: TabBarView(children: [_Services(), _Capacity(), _Formula()]),
+            child: TabBarView(children: [_Services(), _Capacity(), _Formula(), CancelPolicyTab()]),
           ),
         ],
       ),

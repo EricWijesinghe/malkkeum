@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -482,6 +483,27 @@ class TZh extends T {
   String get cFormula => '报价公式';
 
   @override
+  String get cTabCancelPolicy => '取消政策';
+
+  @override
+  String get cPolicyDefaultBanner => '这是内置默认值，请确认后保存。';
+
+  @override
+  String get cPolicyDaysBefore => '访问前几天起（天）';
+
+  @override
+  String get cPolicyPercent => '手续费％（留空则不可在应用内取消）';
+
+  @override
+  String get cPolicyMinFee => '最低手续费（韩元）';
+
+  @override
+  String get cPolicyReschedule => '可改期（访问前几天起）';
+
+  @override
+  String get cPolicyHint => '立即作用于客户应用的取消页面，条款在下次构建后更新。';
+
+  @override
   String get f_base_studio => '基础：单间';
 
   @override
@@ -722,7 +744,7 @@ class TZh extends T {
   String get err_payment_method_required => '请选择付款方式';
 
   @override
-  String get err_cancellation_window_closed => '上门前2天内需通过客服取消';
+  String get err_cancellation_window_closed => '此时已无法在应用内取消，请联系客服';
 
   @override
   String get err_address_required => '请添加上门地址';
@@ -1290,6 +1312,16 @@ class TZh extends T {
 
   @override
   String get cancelKeep => '保留预约';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return '现在取消将收取$fee手续费，退款$refund。';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '同意$fee手续费并取消';
+  }
 
   @override
   String get cancelled => '预约已取消';
@@ -2562,6 +2594,47 @@ class TZh extends T {
 
   @override
   String get pCustomerRequests => '客户要求';
+
+  @override
+  String get pHousehold => '住户信息';
+
+  @override
+  String get pPets => '宠物';
+
+  @override
+  String get pPetDog => '狗';
+
+  @override
+  String get pPetCat => '猫';
+
+  @override
+  String get pPetBird => '鸟';
+
+  @override
+  String get pPetFish => '鱼';
+
+  @override
+  String get pPetOther => '其他宠物';
+
+  @override
+  String get pAllergies => '过敏与注意';
+
+  @override
+  String get pPreferredProducts => '偏好产品';
+
+  @override
+  String get pParking => '停车';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor层';
+  }
+
+  @override
+  String get pElevatorYes => '有电梯';
+
+  @override
+  String get pElevatorNo => '无电梯';
 
   @override
   String get pTeamMemo => '团队备注（客户不可见）';

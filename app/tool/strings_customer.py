@@ -30,7 +30,7 @@ S = {
   "err_coupon_wrong_service": ["이 서비스에는 쓸 수 없는 쿠폰이에요", "This coupon isn't valid for this service", "このサービスには使えません", "该优惠券不适用于此服务", "Phiếu không áp dụng cho dịch vụ này"],
   "err_payment_failed": ["결제가 승인되지 않았어요. 다른 결제수단을 써 주세요.", "Payment was declined. Try another method.", "決済が承認されませんでした", "付款被拒绝，请换一种方式", "Thanh toán bị từ chối, hãy dùng cách khác"],
   "err_payment_method_required": ["결제수단을 선택해 주세요", "Choose a payment method", "支払い方法を選んでください", "请选择付款方式", "Chọn phương thức thanh toán"],
-  "err_cancellation_window_closed": ["방문 2일 전부터는 상담팀을 통해 취소할 수 있어요", "Within 2 days of the visit, cancel through our team", "訪問2日前からは相談チーム経由でキャンセルできます", "上门前2天内需通过客服取消", "Trong vòng 2 ngày trước lịch, hãy hủy qua đội tư vấn"],
+  "err_cancellation_window_closed": ["이 시점부터는 앱에서 취소할 수 없어요. 상담팀에 문의해 주세요", "This booking can no longer be cancelled in the app. Please contact our team", "この時点からはアプリでキャンセルできません。サポートにお問い合わせください", "此时已无法在应用内取消，请联系客服", "Không thể hủy trong ứng dụng lúc này. Vui lòng liên hệ đội hỗ trợ"],
   "err_address_required": ["방문할 주소를 등록해 주세요", "Add the visit address", "訪問先住所を登録してください", "请添加上门地址", "Thêm địa chỉ"],
   "err_already_taken": ["다른 파트너가 먼저 수락했어요", "Another pro accepted it first", "他のパートナーが先に受けました", "其他服务者已抢先接单", "Đối tác khác đã nhận trước"],
   "err_invalid_address": ["주소 정보를 모두 입력해 주세요", "Fill in every address field", "住所をすべて入力してください", "请填写完整地址", "Điền đủ thông tin địa chỉ"],
@@ -214,6 +214,8 @@ S = {
   "cancelTitle": ["예약을 취소할까요?", "Cancel this booking?", "予約をキャンセルしますか？", "确定取消预约吗？", "Hủy lịch hẹn này?"],
   "cancelFree": ["지금 취소하면 결제 금액 전액이 환불되고 쿠폰도 돌려드려요.", "You'll get a full refund and your coupon back.", "全額返金され、クーポンも戻ります。", "将全额退款并退回优惠券。", "Bạn được hoàn tiền đầy đủ và nhận lại phiếu."],
   "cancelKeep": ["유지하기", "Keep it", "キャンセルしない", "保留预约", "Giữ lịch"],
+  "cancelFeeNow": ["지금 취소하면 취소 수수료 {fee}이 적용되고 {refund}이 환불돼요.", "Cancelling now charges a {fee} fee and refunds {refund}.", "今キャンセルすると手数料{fee}がかかり、{refund}が返金されます。", "现在取消将收取{fee}手续费，退款{refund}。", "Hủy ngay sẽ mất phí {fee} và hoàn lại {refund}."],
+  "cancelFeeAccept": ["수수료 {fee} 확인하고 취소", "Accept {fee} fee and cancel", "手数料{fee}に同意してキャンセル", "同意{fee}手续费并取消", "Chấp nhận phí {fee} và hủy"],
   "cancelled": ["예약이 취소됐어요", "Booking cancelled", "キャンセルしました", "预约已取消", "Đã hủy lịch"],
   "reschedule": ["일정 변경", "Reschedule", "日程変更", "改期", "Đổi lịch"],
   "rescheduled": ["일정을 변경했어요", "Rescheduled", "日程を変更しました", "已改期", "Đã đổi lịch"],
@@ -348,4 +350,53 @@ S = {
   "summaryType": ["청소 종류", "Type", "種類", "类型", "Loại"],
   "summaryHome": ["집 정보", "Home", "お部屋", "房屋", "Nhà"],
   "summaryDate": ["방문 일정", "Visit", "訪問日程", "上门时间", "Lịch"],
+}
+
+# Extra-language texts (fil, id, km, mn, ne, ru, si, th, uz) for this area's keys.
+X = {
+    "fil": {
+        "err_cancellation_window_closed": "Hindi na puwedeng magkansela sa app para sa booking na ito. Makipag-ugnayan po sa aming team",
+        "cancelFeeNow": "Kung kakanselahin mo ngayon, may bayad na {fee} at ibabalik ang {refund}.",
+        "cancelFeeAccept": "Tanggapin ang bayad na {fee} at kanselahin",
+    },
+    "id": {
+        "err_cancellation_window_closed": "Pemesanan ini tidak bisa dibatalkan lagi lewat aplikasi. Silakan hubungi tim kami",
+        "cancelFeeNow": "Jika dibatalkan sekarang, biaya {fee} berlaku dan {refund} akan dikembalikan.",
+        "cancelFeeAccept": "Setujui biaya {fee} dan batalkan",
+    },
+    "km": {
+        "err_cancellation_window_closed": "ការកក់នេះមិនអាចបោះបង់នៅក្នុងកម្មវិធីទៀតទេ។ សូមទាក់ទងក្រុមការងារយើង",
+        "cancelFeeNow": "ប្រសិនបើបោះបង់ឥឡូវនេះ គិតថ្លៃ {fee} ហើយនឹងបង្វិលប្រាក់ {refund} វិញ។",
+        "cancelFeeAccept": "ទទួលយកថ្លៃ {fee} ហើយបោះបង់",
+    },
+    "mn": {
+        "err_cancellation_window_closed": "Энэ захиалгыг аппликейшнээр цуцлах боломжгүй. Манай багтай холбогдоно уу",
+        "cancelFeeNow": "Одоо цуцлавал {fee} шимтгэл төлөгдөж, {refund} буцаан олгогдоно.",
+        "cancelFeeAccept": "{fee} шимтгэлийг зөвшөөрч цуцлах",
+    },
+    "ne": {
+        "err_cancellation_window_closed": "यो बुकिङ अब एपबाट रद्द गर्न सकिँदैन। कृपया हाम्रो टोलीसँग सम्पर्क गर्नुहोस्",
+        "cancelFeeNow": "अहिले रद्द गर्दा {fee} शुल्क लाग्छ र {refund} फिर्ता हुनेछ।",
+        "cancelFeeAccept": "{fee} शुल्क स्वीकार गरी रद्द गर्नुहोस्",
+    },
+    "ru": {
+        "err_cancellation_window_closed": "Эту бронь уже нельзя отменить в приложении. Свяжитесь с нашей командой",
+        "cancelFeeNow": "Если отменить сейчас, будет удержано {fee}, а {refund} вернётся вам.",
+        "cancelFeeAccept": "Принять комиссию {fee} и отменить",
+    },
+    "si": {
+        "err_cancellation_window_closed": "මෙම වෙන්කිරීම දැන් යෙදුම හරහා අවලංගු කළ නොහැක. කරුණාකර අපේ කණ්ඩායම අමතන්න",
+        "cancelFeeNow": "දැන් අවලංගු කළහොත් {fee} ගාස්තුවක් අය කරන අතර {refund} ආපසු ලැබේ.",
+        "cancelFeeAccept": "{fee} ගාස්තුව පිළිගෙන අවලංගු කරන්න",
+    },
+    "th": {
+        "err_cancellation_window_closed": "ไม่สามารถยกเลิกการจองนี้ในแอปได้แล้ว กรุณาติดต่อทีมงานของเรา",
+        "cancelFeeNow": "หากยกเลิกตอนนี้ จะมีค่าธรรมเนียม {fee} และคืนเงิน {refund}",
+        "cancelFeeAccept": "ยอมรับค่าธรรมเนียม {fee} และยกเลิก",
+    },
+    "uz": {
+        "err_cancellation_window_closed": "Bu bronni ilovada bekor qilib bo‘lmaydi. Iltimos, jamoamizga murojaat qiling",
+        "cancelFeeNow": "Hozir bekor qilsangiz {fee} to‘lov olinadi va {refund} qaytariladi.",
+        "cancelFeeAccept": "{fee} to‘lovga rozi bo‘lib bekor qilish",
+    },
 }

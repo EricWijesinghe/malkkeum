@@ -11,7 +11,7 @@ pub const MAX_TIERS: usize = 10;
 /// Rank of "closed" (no self-serve cancel): the most severe outcome, above any percent.
 const CLOSED_RANK: u16 = 101;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum Outcome {
     Free,
     Fee { percent: u8 },

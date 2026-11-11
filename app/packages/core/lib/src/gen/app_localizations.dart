@@ -1051,6 +1051,48 @@ abstract class T {
   /// **'견적 산정식'**
   String get cFormula;
 
+  /// No description provided for @cTabCancelPolicy.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소 정책'**
+  String get cTabCancelPolicy;
+
+  /// No description provided for @cPolicyDefaultBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값이에요. 아래 내용을 확인하고 저장해 주세요.'**
+  String get cPolicyDefaultBanner;
+
+  /// No description provided for @cPolicyDaysBefore.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 며칠 전부터 (일)'**
+  String get cPolicyDaysBefore;
+
+  /// No description provided for @cPolicyPercent.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 % (비우면 앱 취소 불가)'**
+  String get cPolicyPercent;
+
+  /// No description provided for @cPolicyMinFee.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 수수료 (원)'**
+  String get cPolicyMinFee;
+
+  /// No description provided for @cPolicyReschedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경 가능 (방문 며칠 전부터)'**
+  String get cPolicyReschedule;
+
+  /// No description provided for @cPolicyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 앱 취소 화면에 바로 반영돼요. 이용약관은 빌드 후 갱신돼요.'**
+  String get cPolicyHint;
+
   /// No description provided for @f_base_studio.
   ///
   /// In ko, this message translates to:
@@ -1522,7 +1564,7 @@ abstract class T {
   /// No description provided for @err_cancellation_window_closed.
   ///
   /// In ko, this message translates to:
-  /// **'방문 2일 전부터는 상담팀을 통해 취소할 수 있어요'**
+  /// **'이 시점부터는 앱에서 취소할 수 없어요. 상담팀에 문의해 주세요'**
   String get err_cancellation_window_closed;
 
   /// No description provided for @err_address_required.
@@ -2580,6 +2622,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'유지하기'**
   String get cancelKeep;
+
+  /// No description provided for @cancelFeeNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 취소하면 취소 수수료 {fee}이 적용되고 {refund}이 환불돼요.'**
+  String cancelFeeNow(String fee, String refund);
+
+  /// No description provided for @cancelFeeAccept.
+  ///
+  /// In ko, this message translates to:
+  /// **'수수료 {fee} 확인하고 취소'**
+  String cancelFeeAccept(String fee);
 
   /// No description provided for @cancelled.
   ///
@@ -4998,6 +5052,84 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'고객 요청사항'**
   String get pCustomerRequests;
+
+  /// No description provided for @pHousehold.
+  ///
+  /// In ko, this message translates to:
+  /// **'가구 정보'**
+  String get pHousehold;
+
+  /// No description provided for @pPets.
+  ///
+  /// In ko, this message translates to:
+  /// **'반려동물'**
+  String get pPets;
+
+  /// No description provided for @pPetDog.
+  ///
+  /// In ko, this message translates to:
+  /// **'강아지'**
+  String get pPetDog;
+
+  /// No description provided for @pPetCat.
+  ///
+  /// In ko, this message translates to:
+  /// **'고양이'**
+  String get pPetCat;
+
+  /// No description provided for @pPetBird.
+  ///
+  /// In ko, this message translates to:
+  /// **'새'**
+  String get pPetBird;
+
+  /// No description provided for @pPetFish.
+  ///
+  /// In ko, this message translates to:
+  /// **'물고기'**
+  String get pPetFish;
+
+  /// No description provided for @pPetOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 동물'**
+  String get pPetOther;
+
+  /// No description provided for @pAllergies.
+  ///
+  /// In ko, this message translates to:
+  /// **'알레르기·민감 사항'**
+  String get pAllergies;
+
+  /// No description provided for @pPreferredProducts.
+  ///
+  /// In ko, this message translates to:
+  /// **'선호 제품'**
+  String get pPreferredProducts;
+
+  /// No description provided for @pParking.
+  ///
+  /// In ko, this message translates to:
+  /// **'주차'**
+  String get pParking;
+
+  /// No description provided for @pFloor.
+  ///
+  /// In ko, this message translates to:
+  /// **'{floor}층'**
+  String pFloor(String floor);
+
+  /// No description provided for @pElevatorYes.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 있음'**
+  String get pElevatorYes;
+
+  /// No description provided for @pElevatorNo.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 없음'**
+  String get pElevatorNo;
 
   /// No description provided for @pTeamMemo.
   ///

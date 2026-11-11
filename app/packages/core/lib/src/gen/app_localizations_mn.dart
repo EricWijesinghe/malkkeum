@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -497,6 +498,30 @@ class TMn extends T {
   String get cFormula => 'Үнийн санал тооцох томьёо';
 
   @override
+  String get cTabCancelPolicy => 'Цуцлалтын бодлого';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Энэ бол анхдагч тохиргоо. Шалгаад хадгалж баталгаажуулна уу.';
+
+  @override
+  String get cPolicyDaysBefore => 'Айлчлалаас хэдэн өдрийн өмнөөс (эхлэх)';
+
+  @override
+  String get cPolicyPercent => 'Шимтгэл % (хоосон = аппаар цуцлах боломжгүй)';
+
+  @override
+  String get cPolicyMinFee => 'Доод шимтгэл (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Цаг товлолт өөрчлөх (айлчлалаас хэдэн өдрийн өмнө)';
+
+  @override
+  String get cPolicyHint =>
+      'Үйлчлүүлэгчийн аппын цуцлах дэлгэцэд шууд хэрэгжинэ. Нөхцөл дараагийн хуулийн build-д шинэчлэгдэнэ.';
+
+  @override
   String get f_base_studio => 'Үндсэн: студио';
 
   @override
@@ -744,7 +769,7 @@ class TMn extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Очих өдрөөс 2 хоногийн өмнөөс манай багаар дамжуулан цуцална уу';
+      'Энэ захиалгыг аппликейшнээр цуцлах боломжгүй. Манай багтай холбогдоно уу';
 
   @override
   String get err_address_required => 'Очих хаягаа бүртгэнэ үү';
@@ -1331,6 +1356,16 @@ class TMn extends T {
 
   @override
   String get cancelKeep => 'Хэвээр үлдээх';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Одоо цуцлавал $fee шимтгэл төлөгдөж, $refund буцаан олгогдоно.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee шимтгэлийг зөвшөөрч цуцлах';
+  }
 
   @override
   String get cancelled => 'Захиалга цуцлагдлаа';
@@ -2660,6 +2695,47 @@ class TMn extends T {
 
   @override
   String get pCustomerRequests => 'Үйлчлүүлэгчийн хүсэлт';
+
+  @override
+  String get pHousehold => 'Өрхийн мэдээлэл';
+
+  @override
+  String get pPets => 'Гэр оронд амьтан';
+
+  @override
+  String get pPetDog => 'Нохой';
+
+  @override
+  String get pPetCat => 'Муур';
+
+  @override
+  String get pPetBird => 'Шувуу';
+
+  @override
+  String get pPetFish => 'Загас';
+
+  @override
+  String get pPetOther => 'Бусад амьтан';
+
+  @override
+  String get pAllergies => 'Харшил ба мэдрэмж';
+
+  @override
+  String get pPreferredProducts => 'Дуртай бүтээгдэхүүн';
+
+  @override
+  String get pParking => 'Зогсоол';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor давхар';
+  }
+
+  @override
+  String get pElevatorYes => 'Лифттэй';
+
+  @override
+  String get pElevatorNo => 'Лифтгүй';
 
   @override
   String get pTeamMemo => 'Багийн тэмдэглэл (үйлчлүүлэгчид харагдахгүй)';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -496,6 +497,31 @@ class TFil extends T {
   String get cFormula => 'Formula ng quote';
 
   @override
+  String get cTabCancelPolicy => 'Patakaran sa pagkansela';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Ito ang default. Pakisuri at i-save para makumpirma.';
+
+  @override
+  String get cPolicyDaysBefore => 'Ilang araw bago ang bisita (mula)';
+
+  @override
+  String get cPolicyPercent =>
+      'Bayad % (blangko = hindi maaaring kanselahin sa app)';
+
+  @override
+  String get cPolicyMinFee => 'Pinakamababang bayad (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Puwedeng i-reschedule (ilang araw bago ang bisita)';
+
+  @override
+  String get cPolicyHint =>
+      'Agad itong makikita sa cancel screen ng app ng customer. Ma-a-update ang mga tuntunin sa susunod na legal build.';
+
+  @override
   String get f_base_studio => 'Batayan: studio';
 
   @override
@@ -744,7 +770,7 @@ class TFil extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Dalawang araw bago ang bisita, sa team natin na lang puwedeng magkansela';
+      'Hindi na puwedeng magkansela sa app para sa booking na ito. Makipag-ugnayan po sa aming team';
 
   @override
   String get err_address_required => 'Maglagay ng address para sa bisita';
@@ -1335,6 +1361,16 @@ class TFil extends T {
 
   @override
   String get cancelKeep => 'Ituloy';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Kung kakanselahin mo ngayon, may bayad na $fee at ibabalik ang $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Tanggapin ang bayad na $fee at kanselahin';
+  }
 
   @override
   String get cancelled => 'Kinansela na ang booking';
@@ -2667,6 +2703,47 @@ class TFil extends T {
 
   @override
   String get pCustomerRequests => 'Mga request ng customer';
+
+  @override
+  String get pHousehold => 'Impormasyon ng sambahayan';
+
+  @override
+  String get pPets => 'Alagang hayop';
+
+  @override
+  String get pPetDog => 'Aso';
+
+  @override
+  String get pPetCat => 'Pusa';
+
+  @override
+  String get pPetBird => 'Ibon';
+
+  @override
+  String get pPetFish => 'Isda';
+
+  @override
+  String get pPetOther => 'Iba pang hayop';
+
+  @override
+  String get pAllergies => 'Allergy at sensitibidad';
+
+  @override
+  String get pPreferredProducts => 'Gustong produkto';
+
+  @override
+  String get pParking => 'Paradahan';
+
+  @override
+  String pFloor(String floor) {
+    return 'Palapag $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'May elevator';
+
+  @override
+  String get pElevatorNo => 'Walang elevator';
 
   @override
   String get pTeamMemo => 'Team memo (hindi ito makikita ng customer)';

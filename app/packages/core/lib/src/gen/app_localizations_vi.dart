@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -494,6 +495,29 @@ class TVi extends T {
   String get cFormula => 'Công thức báo giá';
 
   @override
+  String get cTabCancelPolicy => 'Chính sách hủy';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Đây là giá trị mặc định. Hãy xem lại và lưu để xác nhận.';
+
+  @override
+  String get cPolicyDaysBefore => 'Trước lịch bao nhiêu ngày';
+
+  @override
+  String get cPolicyPercent => 'Phí % (để trống = không hủy trong app)';
+
+  @override
+  String get cPolicyMinFee => 'Phí tối thiểu (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'Cho đổi lịch (trước lịch bao nhiêu ngày)';
+
+  @override
+  String get cPolicyHint =>
+      'Áp dụng ngay trên màn hình hủy của app khách. Điều khoản cập nhật ở bản build sau.';
+
+  @override
   String get f_base_studio => 'Cơ bản: studio';
 
   @override
@@ -736,7 +760,7 @@ class TVi extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Trong vòng 2 ngày trước lịch, hãy hủy qua đội tư vấn';
+      'Không thể hủy trong ứng dụng lúc này. Vui lòng liên hệ đội hỗ trợ';
 
   @override
   String get err_address_required => 'Thêm địa chỉ';
@@ -1317,6 +1341,16 @@ class TVi extends T {
 
   @override
   String get cancelKeep => 'Giữ lịch';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Hủy ngay sẽ mất phí $fee và hoàn lại $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Chấp nhận phí $fee và hủy';
+  }
 
   @override
   String get cancelled => 'Đã hủy lịch';
@@ -2627,6 +2661,47 @@ class TVi extends T {
 
   @override
   String get pCustomerRequests => 'Yêu cầu của khách';
+
+  @override
+  String get pHousehold => 'Thông tin hộ gia đình';
+
+  @override
+  String get pPets => 'Thú cưng';
+
+  @override
+  String get pPetDog => 'Chó';
+
+  @override
+  String get pPetCat => 'Mèo';
+
+  @override
+  String get pPetBird => 'Chim';
+
+  @override
+  String get pPetFish => 'Cá';
+
+  @override
+  String get pPetOther => 'Thú khác';
+
+  @override
+  String get pAllergies => 'Dị ứng & nhạy cảm';
+
+  @override
+  String get pPreferredProducts => 'Sản phẩm ưa thích';
+
+  @override
+  String get pParking => 'Đỗ xe';
+
+  @override
+  String pFloor(String floor) {
+    return 'Tầng $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'Có thang máy';
+
+  @override
+  String get pElevatorNo => 'Không có thang máy';
 
   @override
   String get pTeamMemo => 'Ghi chú đội (khách không thấy)';

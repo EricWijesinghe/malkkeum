@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -493,6 +494,29 @@ class TEn extends T {
   String get cFormula => 'Quote formula';
 
   @override
+  String get cTabCancelPolicy => 'Cancellation policy';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'This is the built-in default. Review it and save to confirm.';
+
+  @override
+  String get cPolicyDaysBefore => 'Days before visit (from)';
+
+  @override
+  String get cPolicyPercent => 'Fee % (blank = not cancellable in app)';
+
+  @override
+  String get cPolicyMinFee => 'Minimum fee (KRW)';
+
+  @override
+  String get cPolicyReschedule => 'Reschedule allowed (days before visit)';
+
+  @override
+  String get cPolicyHint =>
+      'Applies to the customer app cancel screen right away. Terms update on the next legal build.';
+
+  @override
   String get f_base_studio => 'Base: studio';
 
   @override
@@ -737,7 +761,7 @@ class TEn extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Within 2 days of the visit, cancel through our team';
+      'This booking can no longer be cancelled in the app. Please contact our team';
 
   @override
   String get err_address_required => 'Add the visit address';
@@ -1320,6 +1344,16 @@ class TEn extends T {
 
   @override
   String get cancelKeep => 'Keep it';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Cancelling now charges a $fee fee and refunds $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Accept $fee fee and cancel';
+  }
 
   @override
   String get cancelled => 'Booking cancelled';
@@ -2636,6 +2670,47 @@ class TEn extends T {
 
   @override
   String get pCustomerRequests => 'Customer requests';
+
+  @override
+  String get pHousehold => 'Household';
+
+  @override
+  String get pPets => 'Pets';
+
+  @override
+  String get pPetDog => 'Dog';
+
+  @override
+  String get pPetCat => 'Cat';
+
+  @override
+  String get pPetBird => 'Bird';
+
+  @override
+  String get pPetFish => 'Fish';
+
+  @override
+  String get pPetOther => 'Other pet';
+
+  @override
+  String get pAllergies => 'Allergies & sensitivities';
+
+  @override
+  String get pPreferredProducts => 'Preferred products';
+
+  @override
+  String get pParking => 'Parking';
+
+  @override
+  String pFloor(String floor) {
+    return 'Floor $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'Elevator';
+
+  @override
+  String get pElevatorNo => 'No elevator';
 
   @override
   String get pTeamMemo => 'Team memo (customer can\'t see)';
