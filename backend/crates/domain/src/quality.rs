@@ -252,7 +252,7 @@ mod tests {
     #[test]
     fn validate_rejects_impossible_counts() {
         assert!(perfect().validate().is_ok());
-        assert!(QualityInputs { rating_sum: 4, rating_count: 2, ..perfect() }.validate().is_err());
+        assert!(QualityInputs { rating_sum: 1, rating_count: 2, ..perfect() }.validate().is_err());
         assert!(QualityInputs { rating_sum: 11, rating_count: 2, ..perfect() }.validate().is_err());
         assert!(QualityInputs { jobs_completed: 41, ..perfect() }.validate().is_err());
         assert!(QualityInputs { checkins_on_time: 41, ..perfect() }.validate().is_err());
