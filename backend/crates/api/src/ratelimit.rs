@@ -8,6 +8,7 @@ use axum::{
     middleware::Next,
     response::{IntoResponse, Response},
 };
+use uuid::Uuid;
 use std::{
     collections::{HashMap, VecDeque},
     net::{IpAddr, Ipv4Addr, SocketAddr},
@@ -117,6 +118,20 @@ impl Limiter {
     #[cfg(test)]
     fn tracked_keys(&self) -> usize {
         self.logs.len()
+    }
+}
+
+/// Per-user sliding window for one costly endpoint. Same hit log as the per-IP buckets; idle users are dropped on each check.
+#[derive(Debug, Default)]
+pub struct UserLimiter {
+    logs: Mutex<HashMap<Uuid, Log>>,
+}
+
+impl UserLimiter {
+    pub fn admit(&self, user: Uuid, limit: usize, now: Instant) -> bool {
+        let mut logs = self.logs.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+        logs.retain(|_, log| !log.is_idle(now));
+        logs.entry(user).or_default().admit(now, limit)
     }
 }
 

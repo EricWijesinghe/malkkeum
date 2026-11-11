@@ -12,10 +12,13 @@ use crate::{
     providers::{ProviderError, payout as adapter},
     realtime::{Recipient, notify},
     state::AppState,
+    util::today_kst,
 };
 use axum::{
     Json,
     extract::{Path, State as AxState},
+    http::header,
+    response::{IntoResponse, Response},
 };
 use chrono::NaiveDate;
 use serde::Deserialize;
@@ -26,7 +29,8 @@ use uuid::Uuid;
 const REASON_MAX: usize = 200;
 
 /// Settlements due by `date` that no payout covers yet, grouped per verified pro. Runs under an
-/// advisory lock, so two clicks can't create two payouts for the same settlements.
+/// advisory lock, so two clicks can't create two payouts for the same settlements. A pro who already
+/// has a requested or sent payout for the date is skipped (the partial unique index), not an error.
 const CREATE_SQL: &str = "
 WITH due AS (
   SELECT st.id AS settlement_id, st.pro_id, st.net FROM settlements st
@@ -38,6 +42,7 @@ ins AS (
   INSERT INTO payouts (pro_id, payout_date, amount, items, provider, state, bank, holder, account_enc, account_last4)
   SELECT s.pro_id, $1, s.amount, s.items, $2, 'requested', pa.bank, pa.holder, pa.account_enc, pa.account_last4
   FROM sums s JOIN payout_accounts pa ON pa.pro_id = s.pro_id
+  ON CONFLICT (pro_id, payout_date) WHERE state IN ('requested', 'sent') DO NOTHING
   RETURNING id, pro_id
 ),
 linked AS (
@@ -80,11 +85,17 @@ struct Row {
     holder: String,
     account_enc: String,
     idempotency_key: String,
+    failure_reason: Option<String>,
 }
 
 impl Row {
     fn state(&self) -> State {
         State::parse(&self.state).unwrap_or(State::Failed)
+    }
+
+    /// A Toss transfer that may already exist at the provider: sent, or requested after an ambiguous send error.
+    fn awaiting_provider(&self) -> bool {
+        self.state() == State::Sent || (self.state() == State::Requested && self.failure_reason.is_some())
     }
 }
 
@@ -103,8 +114,11 @@ pub async fn list_payouts(AxState(s): AxState<AppState>, _a: Admin, axum::extrac
     Ok(Json(rows(&s.db, f.state.as_deref(), None).await?))
 }
 
-/// Creates one requested payout per pro for everything due by the date.
+/// Creates one requested payout per pro for everything due by the date. Future dates are refused.
 pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r): Json<RunPayouts>) -> ApiResult<Json<Value>> {
+    if r.date > today_kst() {
+        return Err(ApiError::BadRequest("future_date"));
+    }
     let mut tx = s.db.begin().await?;
     sqlx::query("SELECT pg_advisory_xact_lock(hashtext('payout_run'))").execute(&mut *tx).await?;
     let ids: Vec<Uuid> = sqlx::query_scalar(CREATE_SQL)
@@ -117,13 +131,14 @@ pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r)
     Ok(Json(rows(&s.db, None, Some(&ids)).await?))
 }
 
-/// Bank details for a manual transfer. Owner only; every reveal is audit-logged.
-pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+/// Bank details for a manual transfer. Owner only; every reveal is audit-logged and never cached.
+pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path(id): Path<Uuid>) -> ApiResult<Response> {
     let (bank, holder, enc, amount): (String, String, String, i64) =
         sqlx::query_as("SELECT bank, holder, account_enc, amount FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await?;
     let account = crypto::decrypt(&s.config.data_key, &enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     audit(&s.db, "staff", Some(a.id), "payout.reveal", &id.to_string(), json!({})).await?;
-    Ok(Json(json!({ "bank": bank, "holder": holder, "account": account, "amount": amount })))
+    let body = Json(json!({ "bank": bank, "holder": holder, "account": account, "amount": amount }));
+    Ok(([(header::CACHE_CONTROL, "no-store")], body).into_response())
 }
 
 /// POST /settlements/payouts/{id}/{action}: send | confirm | fail | retry | sync.
@@ -166,12 +181,25 @@ enum Owner {
 
 async fn lock(tx: &mut Transaction<'_, Postgres>, id: Uuid) -> ApiResult<Row> {
     Ok(sqlx::query_as(
-        "SELECT payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key
+        "SELECT payout_date, amount, provider, state, bank, holder, account_enc, idempotency_key, failure_reason
          FROM payouts WHERE id = $1 FOR UPDATE",
     )
     .bind(id)
     .fetch_one(&mut **tx)
     .await?)
+}
+
+/// Money may only move for the amount the settlements still add up to. A booking cancelled or
+/// changed after the batch was made must not be paid through it.
+async fn check_amount(tx: &mut Transaction<'_, Postgres>, id: Uuid, amount: i64) -> ApiResult<()> {
+    let sum: i64 = sqlx::query_scalar("SELECT COALESCE(sum(net), 0)::bigint FROM settlements WHERE payout_id = $1 AND state = 'pending'")
+        .bind(id)
+        .fetch_one(&mut **tx)
+        .await?;
+    if sum != amount {
+        return Err(ApiError::Conflict("payout_amount_changed"));
+    }
+    Ok(())
 }
 
 /// Writes a transition. The `state` guard in each statement is a second check behind the row lock.
@@ -223,6 +251,9 @@ async fn step(s: &AppState, id: Uuid, step: Owner) -> ApiResult<State> {
         Owner::Retry => (Action::Retry, State::Requested, None),
     };
     crate::payout::next(row.state(), action).ok_or(ApiError::Conflict("payout_state"))?;
+    if to == State::Paid {
+        check_amount(&mut tx, id, row.amount).await?;
+    }
     write(&mut tx, id, to, failure).await?;
     tx.commit().await?;
     Ok(to)
@@ -237,6 +268,7 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
         return Err(ApiError::Conflict("payout_provider"));
     }
     crate::payout::next(row.state(), Action::Accept).ok_or(ApiError::Conflict("payout_state"))?;
+    check_amount(&mut tx, id, row.amount).await?;
     let bank_code = adapter::bank_code(&row.bank).ok_or(ApiError::Conflict("unsupported_bank"))?;
     let account = crypto::decrypt(&s.config.data_key, &row.account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     let transfer = adapter::Transfer {
@@ -288,36 +320,96 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
     }
 }
 
-/// Asks the provider about a sent transfer and records paid or failed. Pending leaves it sent.
-async fn sync(s: &AppState, id: Uuid) -> ApiResult<State> {
+/// Asks the provider about a Toss transfer that may already exist and records paid or failed.
+/// Pending leaves the row as it was. Never sends money. Shared by the owner's button and the background pass.
+pub(crate) async fn sync(s: &AppState, id: Uuid) -> ApiResult<State> {
     let mut tx = s.db.begin().await?;
     let row = lock(&mut tx, id).await?;
     if row.provider != "toss" {
         return Err(ApiError::Conflict("payout_provider"));
     }
-    if row.state() != State::Sent {
+    if !row.awaiting_provider() {
         return Err(ApiError::Conflict("payout_state"));
     }
-    let status = s.providers.transfer_status(&id.to_string()).await?;
-    let to = match status {
-        adapter::TransferStatus::Pending => return Ok(State::Sent),
-        adapter::TransferStatus::Paid => State::Paid,
-        adapter::TransferStatus::Failed(reason) => {
-            write(&mut tx, id, State::Failed, Some(&truncate(&reason))).await?;
+    match s.providers.transfer_status(&id.to_string()).await? {
+        adapter::TransferStatus::Pending => Ok(row.state()),
+        adapter::TransferStatus::Paid => {
+            write(&mut tx, id, State::Paid, None).await?;
             tx.commit().await?;
-            return Ok(State::Failed);
+            Ok(State::Paid)
         }
-    };
-    write(&mut tx, id, to, None).await?;
-    tx.commit().await?;
-    Ok(to)
+        adapter::TransferStatus::Failed(reason) => {
+            // The provider confirms no money moved: rotate the key so the retry is a new transfer.
+            let r = sqlx::query(
+                "UPDATE payouts SET state = 'failed', failure_reason = $2, idempotency_key = gen_random_uuid()::text, updated_at = now()
+                 WHERE id = $1 AND state IN ('requested', 'sent')",
+            )
+            .bind(id)
+            .bind(truncate(&reason))
+            .execute(&mut *tx)
+            .await?;
+            if r.rows_affected() != 1 {
+                return Err(ApiError::Conflict("payout_state"));
+            }
+            tx.commit().await?;
+            Ok(State::Failed)
+        }
+    }
+}
+
+/// True when a booking's pending settlements sit in a Toss batch that may already be at the provider.
+/// Cancelling such a booking would pay for a cancelled job, so the cancel is refused up front.
+pub(crate) async fn in_transfer(db: &PgPool, booking: Uuid) -> Result<bool, sqlx::Error> {
+    sqlx::query_scalar(
+        "SELECT EXISTS (SELECT 1 FROM settlements st JOIN payouts p ON p.id = st.payout_id
+           WHERE st.booking_id = $1 AND st.state = 'pending' AND NOT (p.state = 'requested' AND p.attempts = 0 AND p.failure_reason IS NULL))",
+    )
+    .bind(booking)
+    .fetch_one(db)
+    .await
+}
+
+/// Takes a cancelled booking's pending settlements out of their batch. A batch nobody has sent is
+/// shrunk to what remains (deleted when nothing does), so its amount still matches its settlements.
+/// Refuses if such a batch was meanwhile sent. Call inside the cancel transaction.
+pub(crate) async fn detach_booking(tx: &mut Transaction<'_, Postgres>, booking: Uuid) -> ApiResult<()> {
+    let batches: Vec<(Uuid, String, i32, Option<String>)> = sqlx::query_as(
+        "SELECT p.id, p.state, p.attempts, p.failure_reason FROM payouts p
+         WHERE p.id IN (SELECT payout_id FROM settlements WHERE booking_id = $1 AND state = 'pending' AND payout_id IS NOT NULL)
+         ORDER BY p.id FOR UPDATE",
+    )
+    .bind(booking)
+    .fetch_all(&mut **tx)
+    .await?;
+    if batches.iter().any(|(_, state, attempts, failure)| state != "requested" || *attempts > 0 || failure.is_some()) {
+        return Err(ApiError::Conflict("settlement_in_transfer"));
+    }
+    sqlx::query("UPDATE settlements SET payout_id = NULL WHERE booking_id = $1 AND state = 'pending' AND payout_id IS NOT NULL")
+        .bind(booking)
+        .execute(&mut **tx)
+        .await?;
+    let ids: Vec<Uuid> = batches.into_iter().map(|b| b.0).collect();
+    sqlx::query("DELETE FROM payouts WHERE id = ANY($1) AND NOT EXISTS (SELECT 1 FROM settlements WHERE payout_id = payouts.id)")
+        .bind(&ids)
+        .execute(&mut **tx)
+        .await?;
+    sqlx::query(
+        "UPDATE payouts p SET amount = t.amount, items = t.items, updated_at = now()
+         FROM (SELECT payout_id, sum(net)::bigint AS amount, count(*)::int AS items FROM settlements
+               WHERE payout_id = ANY($1) AND state = 'pending' GROUP BY payout_id) t
+         WHERE p.id = t.payout_id",
+    )
+    .bind(&ids)
+    .execute(&mut **tx)
+    .await?;
+    Ok(())
 }
 
 fn truncate(s: &str) -> String {
     s.chars().take(REASON_MAX).collect()
 }
 
-async fn notify_paid(s: &AppState, id: Uuid) {
+pub(crate) async fn notify_paid(s: &AppState, id: Uuid) {
     let Ok((pro_id, amount)) = sqlx::query_as::<_, (Uuid, i64)>("SELECT pro_id, amount FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await else {
         return;
     };

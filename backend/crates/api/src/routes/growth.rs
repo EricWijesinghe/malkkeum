@@ -1,7 +1,7 @@
 //! Growth: welcome and referral offers, referral codes and rewards, review moderation, and the
 //! public social-proof numbers. Rewards are coupons; every price is still computed in booking_core.
 
-use super::audit;
+use super::{audit, uploads};
 use crate::{
     auth::{Admin, Customer, Staff},
     error::{ApiError, ApiResult},
@@ -317,11 +317,15 @@ async fn moderate_review(State(s): State<AppState>, Admin(a): Admin, Path(bookin
 }
 
 /// Review photos: only our own uploads, bounded in count (no foreign URLs stored). Returns the stored paths.
-pub(crate) fn check_photos(base: &str, photos: &[String]) -> ApiResult<Vec<String>> {
-    match own_uploads(base, photos) {
-        Some(paths) if paths.len() <= MAX_PHOTOS => Ok(paths),
-        _ => Err(ApiError::BadRequest("invalid_photos")),
+pub(crate) async fn check_photos(db: &PgPool, base: &str, owner: Uuid, photos: &[String]) -> ApiResult<Vec<String>> {
+    let paths = match own_uploads(base, photos) {
+        Some(paths) if paths.len() <= MAX_PHOTOS => paths,
+        _ => return Err(ApiError::BadRequest("invalid_photos")),
+    };
+    if !uploads::owned(db, Some(owner), &paths).await? {
+        return Err(ApiError::BadRequest("invalid_photos"));
     }
+    Ok(paths)
 }
 
 /// One decimal place for the public rating.

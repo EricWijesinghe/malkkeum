@@ -7,7 +7,7 @@ use super::{
         record_payment, take_balance, take_deposit,
     },
     catalog::load_formula,
-    chat, growth,
+    chat, growth, payouts,
 };
 use crate::{
     auth::Customer,
@@ -292,6 +292,10 @@ pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) ->
 /// Money first: refunds are recorded per payment, so if the gateway fails the booking
 /// stays active and the same call can be retried without refunding twice.
 pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>, actor: &str) -> ApiResult<()> {
+    // Refused before any money moves: a settlement already at the provider cannot be pulled back.
+    if payouts::in_transfer(&s.db, b.id).await? {
+        return Err(ApiError::Conflict("settlement_in_transfer"));
+    }
     let refunded = refund_all(s, b.id, refund_cap).await?;
     let mut tx = s.db.begin().await?;
     let updated = sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1 AND status = $2")
@@ -314,6 +318,7 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
         .execute(&mut *tx)
         .await?;
     // A cancelled job must never reach the payout batch; staff decide on any compensation.
+    payouts::detach_booking(&mut tx, b.id).await?;
     sqlx::query("UPDATE settlements SET state = 'held' WHERE booking_id = $1 AND state IN ('pending','waiting_balance')")
         .bind(b.id)
         .execute(&mut *tx)
@@ -496,7 +501,7 @@ async fn review(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     if !(1..=5).contains(&r.rating) || r.body.chars().count() > 1000 {
         return Err(ApiError::BadRequest("invalid_review"));
     }
-    let photos = growth::check_photos(&s.config.public_base_url, &r.photos)?;
+    let photos = growth::check_photos(&s.db, &s.config.public_base_url, a.id, &r.photos).await?;
     let inserted = sqlx::query("INSERT INTO reviews (booking_id, user_id, pro_id, rating, body, photos) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (booking_id) DO NOTHING")
         .bind(id)
         .bind(a.id)

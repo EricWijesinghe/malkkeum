@@ -161,6 +161,7 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
             body: "설정에서 카카오·네이버·구글·애플 로그인 키(클라이언트 ID)를 확인하세요.",
         });
     }
+    out.extend(payout_findings(db).await?);
     let backup = ops::backup_status(db).await?;
     let age = ops::backup_age_hours(backup.as_ref(), Utc::now());
     if ops::backup_level(age) == Level::Red {
@@ -176,6 +177,27 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
             rule: "disk_low",
             title: "서버 디스크 여유 공간이 10% 아래예요",
             body: "오래된 백업 파일을 정리하거나 서버 디스크를 늘려 주세요.",
+        });
+    }
+    Ok(out)
+}
+
+/// Payout alerts. Not owner-toggleable: a stuck or failed transfer is money the owner must look at.
+async fn payout_findings(db: &PgPool) -> Result<Vec<Finding>, sqlx::Error> {
+    let (stuck, failed) = crate::payout_sync::alert_counts(db).await?;
+    let mut out = Vec::new();
+    if stuck > 0 {
+        out.push(Finding {
+            rule: "payout_stuck",
+            title: "정산 송금이 24시간 넘게 끝나지 않았어요",
+            body: "정산 > 송금 목록에서 해당 건을 찾아 상태 동기화를 눌러 주세요. 계속 대기 중이면 PG 관리자 화면을 확인하세요.",
+        });
+    }
+    if failed > 0 {
+        out.push(Finding {
+            rule: "payout_failed",
+            title: "정산 송금이 실패했어요",
+            body: "정산 > 송금 목록에서 실패 사유와 기사님 계좌를 확인한 뒤 재시도하세요.",
         });
     }
     Ok(out)
