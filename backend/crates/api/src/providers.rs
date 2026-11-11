@@ -195,10 +195,10 @@ impl Providers {
     }
 
     /// Exchange the gateway's card-auth result for a reusable billing key.
-    /// Dev mode fakes it. Live: the key from PortOne's browser SDK must be `ISSUED` before it is stored.
-    pub async fn issue_billing_key(&self, auth_key: &str) -> Result<String, ProviderError> {
+    /// Dev mode fakes it. Live: the key must be `ISSUED` and bound to `customer` and `issue` before it is stored.
+    pub async fn issue_billing_key(&self, auth_key: &str, customer: &str, issue: &str) -> Result<String, ProviderError> {
         if !self.dev() {
-            let verified = portone::verify_billing_key(self, auth_key).await;
+            let verified = portone::verify_billing_key(self, auth_key, customer, issue).await;
             self.observe("portone", outcome(&verified));
             return verified.map(|()| auth_key.to_string());
         }
@@ -270,13 +270,13 @@ impl Providers {
         payout::parse_sent(&body)
     }
 
-    /// Current state of a Toss transfer, looked up by our reference id.
-    pub async fn transfer_status(&self, ref_id: &str) -> Result<TransferStatus, ProviderError> {
+    /// Current state of a Toss transfer, looked up by Toss's payout id (from `send_transfer`).
+    pub async fn transfer_status(&self, provider_id: &str) -> Result<TransferStatus, ProviderError> {
         if self.dev() {
             return Ok(TransferStatus::Paid);
         }
         let secret = self.payout_secret()?;
-        let req = payout::status_request(&self.http, &secret, ref_id)?;
+        let req = payout::status_request(&self.http, &secret, provider_id)?;
         Ok(payout::parse_status(&self.payout_call(req).await?))
     }
 

@@ -134,19 +134,32 @@ pub fn billing_ready(p: &PortOne) -> bool {
     p.api_secret.is_some() && p.store_id.is_some() && p.channel_keys.contains_key("card")
 }
 
-/// Verifies a billing key the browser SDK issued before we store it. Only an `ISSUED` key passes.
-/// The response's card details are not kept: we store the key, never card data.
-pub async fn verify_billing_key(p: &Providers, key: &str) -> Result<(), ProviderError> {
+/// Verifies a billing key the browser SDK issued before we store it. The key must be `ISSUED` and bound to
+/// this customer and this issue ticket (see [`bound`]). The card details are not kept: we store the key only.
+pub async fn verify_billing_key(p: &Providers, key: &str, customer: &str, issue: &str) -> Result<(), ProviderError> {
     let integ = p.integ();
     let secret = integ.portone.api_secret.as_deref().ok_or(ProviderError::NotConfigured("portone"))?;
     if check_id(key).is_err() {
         return Err(ProviderError::Declined("invalid_billing_key".into()));
     }
     let info = billing_key_at(p.http(), API, secret, key).await?;
-    issued(&info)
+    bound(&info, customer, issue)
+}
+
+/// Binds a key to the customer and ticket it was issued for. Missing fields fail closed.
+/// shortcut: `customer.id` and `issueId` on GET /billing-keys/{key} are not on the reference pages we could
+/// reach (only `status` and `billingKey` are confirmed). Verify both in a PortOne test store before enabling billing.
+pub fn bound(info: &Value, customer: &str, issue: &str) -> Result<(), ProviderError> {
+    issued(info)?;
+    if info["customer"]["id"].as_str() == Some(customer) && info["issueId"].as_str() == Some(issue) {
+        Ok(())
+    } else {
+        Err(ProviderError::Declined("billing_key_not_bound".into()))
+    }
 }
 
 /// `GET {base}/billing-keys/{key}` with the API secret. `base` is `API` in production, a fake in tests.
+/// Source: https://developers.portone.io/api/rest-v2/payment.billingKey (BillingKeyStatus: ISSUED | DELETED).
 pub async fn billing_key_at(http: &reqwest::Client, base: &str, secret: &str, key: &str) -> Result<Value, ProviderError> {
     let resp = http
         .get(format!("{base}/billing-keys/{key}"))
@@ -352,6 +365,18 @@ mod tests {
         assert!(matches!(issued(&gone), Err(ProviderError::Declined(ref m)) if m == "billing_key_not_issued"));
         assert!(matches!(billing_key_at(&http, &base, "test-secret", "bk_none").await, Err(ProviderError::NotFound)));
         assert!(matches!(billing_key_at(&http, &base, "wrong", "bk_ok").await, Err(ProviderError::Upstream(_))));
+    }
+
+    #[test]
+    fn billing_key_must_be_bound_to_customer_and_ticket() {
+        let info = json!({"status": "ISSUED", "billingKey": "bk", "issueId": "t1", "customer": {"id": "u1"}});
+        assert!(bound(&info, "u1", "t1").is_ok());
+        assert!(matches!(bound(&info, "u2", "t1"), Err(ProviderError::Declined(m)) if m == "billing_key_not_bound"));
+        assert!(matches!(bound(&info, "u1", "t2"), Err(ProviderError::Declined(m)) if m == "billing_key_not_bound"));
+        let no_fields = json!({"status": "ISSUED", "billingKey": "bk"});
+        assert!(bound(&no_fields, "u1", "t1").is_err());
+        let deleted = json!({"status": "DELETED", "issueId": "t1", "customer": {"id": "u1"}});
+        assert!(matches!(bound(&deleted, "u1", "t1"), Err(ProviderError::Declined(m)) if m == "billing_key_not_issued"));
     }
 
     #[test]

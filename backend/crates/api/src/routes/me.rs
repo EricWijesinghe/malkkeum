@@ -305,17 +305,24 @@ struct MethodRow {
 }
 
 /// What the app needs to open PortOne's card registration page. Hidden (`enabled: false`) until PortOne is configured.
-async fn billing_setup(State(s): State<AppState>, Customer(_): Customer) -> ApiResult<Json<Value>> {
+async fn billing_setup(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
     let integ = s.providers.integ();
     let p = &integ.portone;
     if !portone::billing_ready(p) {
         return Ok(Json(json!({ "enabled": false })));
     }
+    // The ticket is stored so register_method can require it (single use, 30 minutes).
+    let issue: Uuid = sqlx::query_scalar("INSERT INTO billing_issues (id, user_id, expires_at) VALUES ($1, $2, now() + interval '30 minutes') RETURNING id")
+        .bind(Uuid::now_v7())
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     Ok(Json(json!({
         "enabled": true,
         "store_id": p.store_id,
         "channels": p.channel_keys,
-        "issue_id": Uuid::now_v7(),
+        "issue_id": issue,
+        "customer_id": a.id,
     })))
 }
 
@@ -340,11 +347,21 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
     if !matches!(r.provider.as_str(), "card" | "kakaopay" | "naverpay" | "tosspay" | "payco") || r.display_name.chars().count() > MAX_NAME_LEN {
         return Err(ApiError::BadRequest("invalid_payment_method"));
     }
+    // Newest open ticket of this customer. Locked and consumed in the same transaction as the insert.
+    let mut tx = s.db.begin().await?;
+    let issue: Uuid = sqlx::query_scalar(
+        "SELECT id FROM billing_issues WHERE user_id = $1 AND consumed_at IS NULL AND expires_at > now() ORDER BY created_at DESC LIMIT 1 FOR UPDATE",
+    )
+    .bind(a.id)
+    .fetch_optional(&mut *tx)
+    .await?
+    .ok_or(ApiError::BadRequest("billing_issue_expired"))?;
     let key = s
         .providers
-        .issue_billing_key(&r.auth_key)
+        .issue_billing_key(&r.auth_key, &a.id.to_string(), &issue.to_string())
         .await
         .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
+    sqlx::query("UPDATE billing_issues SET consumed_at = now() WHERE id = $1").bind(issue).execute(&mut *tx).await?;
     let row = sqlx::query_as(
         "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1,$2,$3,$4) RETURNING id, provider, display_name, created_at",
     )
@@ -352,8 +369,9 @@ async fn register_method(State(s): State<AppState>, Customer(a): Customer, Json(
     .bind(&r.provider)
     .bind(key)
     .bind(&r.display_name)
-    .fetch_one(&s.db)
+    .fetch_one(&mut *tx)
     .await?;
+    tx.commit().await?;
     Ok(Json(row))
 }
 

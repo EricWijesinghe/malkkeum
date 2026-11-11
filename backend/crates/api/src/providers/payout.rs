@@ -2,17 +2,25 @@
 //! - `manual` (default): nothing is sent. The owner transfers from the bank app and confirms.
 //! - `toss`: Toss Payments 지급대행 (payouts API). Status is polled; there is no webhook here.
 //!
-//! shortcut: Toss endpoint paths, field names and status values are written from the 지급대행 v2
-//! API shape, NOT checked against docs.tosspayments.com (it returned 404 when this was written).
-//! Verify each constant in `toss` against the live docs and a sandbox payout before enabling.
+//! shortcut: Toss payouts are NOT enabled end to end. Verified against docs.tosspayments.com (see
+//! constants): endpoint paths, status enum, lookup by Toss payout id, bank codes. Still missing:
+//! (1) seller registration (`POST /v2/sellers`) so each payout carries a `destination` seller id,
+//! (2) JWE body encryption (`TossPayments-api-security-mode: ENCRYPTION`, A256GCM, secret key) for
+//! requests and responses, (3) the create-payout body schema, `amount` shape not on any reachable
+//! page, (4) payout.changed webhook signature scheme. Until those land, keep payout mode `manual`
+//! (see docs/DEPLOY.md). Upgrade when a sandbox payout succeeds end to end.
 
 use super::ProviderError;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use reqwest::{Client, Request, StatusCode, header::AUTHORIZATION};
 use serde_json::{Value, json};
 
+// Source: https://docs.tosspayments.com/guides/v2/payouts and https://docs.tosspayments.com/reference/additional
+// (endpoint table: POST /v2/payouts, GET /v2/payouts/{id}; "Payout" object fields: id, refPayoutId, status, error).
 const TOSS_API: &str = "https://api.tosspayments.com";
 const TOSS_PAYOUTS: &str = "/v2/payouts";
+/// Toss caps `transactionDescription` at 7 characters (reference/additional, request parameters).
+const TOSS_DESCRIPTION_MAX: usize = 7;
 
 /// One transfer to a pro's bank account. `amount` is whole won.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -59,14 +67,18 @@ pub fn bank_code(name: &str) -> Option<&'static str> {
     BANKS.iter().find(|(_, aliases)| aliases.iter().any(|a| name.contains(a))).map(|(code, _)| *code)
 }
 
+/// Body fields Toss documents for a payout: refPayoutId, amount, transactionDescription (plus
+/// destination, scheduleType, payoutDate, still missing: see the module shortcut). Bank fields
+/// are kept only so the existing `Transfer` shape stays in use; they belong to seller registration.
 fn body(ref_id: &str, t: &Transfer) -> Value {
+    let description: String = t.memo.chars().take(TOSS_DESCRIPTION_MAX).collect();
     json!({
         "refPayoutId": ref_id,
         "amount": t.amount,
         "bankCode": t.bank_code,
         "accountNumber": t.account,
         "holderName": t.holder,
-        "memo": t.memo,
+        "transactionDescription": description,
     })
 }
 
@@ -80,9 +92,10 @@ pub fn send_request(http: &Client, secret: &str, idempotency_key: &str, ref_id: 
         .map_err(|e| ProviderError::Upstream(e.to_string()))
 }
 
-/// Builds the status lookup for the reference id we gave the transfer.
-pub fn status_request(http: &Client, secret: &str, ref_id: &str) -> Result<Request, ProviderError> {
-    http.get(format!("{TOSS_API}{TOSS_PAYOUTS}/{ref_id}"))
+/// Builds the status lookup. `GET /v2/payouts/{id}` takes Toss's payout id (the `id` returned on create),
+/// not our refPayoutId.
+pub fn status_request(http: &Client, secret: &str, provider_id: &str) -> Result<Request, ProviderError> {
+    http.get(format!("{TOSS_API}{TOSS_PAYOUTS}/{provider_id}"))
         .header(AUTHORIZATION, basic(secret))
         .build()
         .map_err(|e| ProviderError::Upstream(e.to_string()))
@@ -101,15 +114,19 @@ pub fn classify(status: StatusCode, body: &Value) -> ProviderError {
     if definite { ProviderError::Declined(message) } else { ProviderError::Upstream(format!("status {status}")) }
 }
 
-/// Reads the provider id of an accepted transfer.
+/// Reads Toss's payout id (`id` on the Payout object) of an accepted transfer.
 pub fn parse_sent(body: &Value) -> Result<String, ProviderError> {
-    body["payoutId"].as_str().filter(|s| !s.is_empty()).map(String::from).ok_or_else(|| ProviderError::Upstream("missing payoutId".into()))
+    body["id"].as_str().filter(|s| !s.is_empty()).map(String::from).ok_or_else(|| ProviderError::Upstream("missing payout id".into()))
 }
 
+/// Payout `status` enum from the guide: REQUESTED, IN_PROGRESS, COMPLETED, FAILED, CANCELED, DELETED, REJECTED.
+/// REJECTED is delivered as FAILED on webhooks, so both count as failed. `error` holds the reason.
 pub fn parse_status(body: &Value) -> TransferStatus {
+    let reason = || body["error"]["message"].as_str().or_else(|| body["error"].as_str()).unwrap_or("transfer failed").to_string();
     match body["status"].as_str() {
-        Some("DONE") => TransferStatus::Paid,
-        Some("FAILED") => TransferStatus::Failed(body["failReason"].as_str().unwrap_or("transfer failed").to_string()),
+        Some("COMPLETED") => TransferStatus::Paid,
+        Some("FAILED" | "REJECTED") => TransferStatus::Failed(reason()),
+        Some("CANCELED" | "DELETED") => TransferStatus::Failed("canceled".into()),
         _ => TransferStatus::Pending,
     }
 }
@@ -161,10 +178,23 @@ mod tests {
 
     #[test]
     fn parses_sent_and_status_responses() {
-        assert_eq!(parse_sent(&json!({"payoutId": "tp_1"})).unwrap(), "tp_1");
-        assert!(parse_sent(&json!({})).is_err());
-        assert_eq!(parse_status(&json!({"status": "DONE"})), TransferStatus::Paid);
-        assert_eq!(parse_status(&json!({"status": "FAILED", "failReason": "잔액 부족"})), TransferStatus::Failed("잔액 부족".into()));
-        assert_eq!(parse_status(&json!({"status": "PROCESSING"})), TransferStatus::Pending);
+        assert_eq!(parse_sent(&json!({"id": "tp_1"})).unwrap(), "tp_1");
+        assert!(parse_sent(&json!({"payoutId": "tp_1"})).is_err());
+        assert_eq!(parse_status(&json!({"status": "COMPLETED"})), TransferStatus::Paid);
+        assert_eq!(parse_status(&json!({"status": "FAILED", "error": {"message": "잔액 부족"}})), TransferStatus::Failed("잔액 부족".into()));
+        assert_eq!(parse_status(&json!({"status": "REJECTED", "error": "계좌 오류"})), TransferStatus::Failed("계좌 오류".into()));
+        assert_eq!(parse_status(&json!({"status": "CANCELED"})), TransferStatus::Failed("canceled".into()));
+        assert_eq!(parse_status(&json!({"status": "IN_PROGRESS"})), TransferStatus::Pending);
+        assert_eq!(parse_status(&json!({"status": "REQUESTED"})), TransferStatus::Pending);
+    }
+
+    #[test]
+    fn status_lookup_uses_provider_id_and_description_is_seven_chars() {
+        let req = status_request(&Client::new(), "k", "tp-payout-9").unwrap();
+        assert_eq!(req.url().path(), "/v2/payouts/tp-payout-9");
+        let mut t = transfer();
+        t.memo = "말끔청소정산서비스".into();
+        let sent = body("payout-1", &t);
+        assert_eq!(sent["transactionDescription"], "말끔청소정산서");
     }
 }
