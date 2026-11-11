@@ -1,6 +1,7 @@
 //! Backend HTTP API. `main.rs` calls [`serve`]; integration tests build the router from these modules.
 //! New top-level modules are declared here (not in main.rs).
 
+pub mod address;
 pub mod ai;
 pub mod auth;
 pub mod backup;

@@ -31,6 +31,8 @@ pub struct Integrations {
     /// AI support agent. Console-only (no env fallback).
     pub ai: Option<AiConfig>,
     pub backup: Option<S3Config>,
+    /// 도로명주소 검색 승인키 (juso.go.kr `confmKey`). Console-only.
+    pub juso_confm_key: Option<String>,
     /// Partner payout provider. None means `manual` (owner transfers and confirms).
     pub payout: Option<PayoutSettings>,
 }
@@ -73,6 +75,7 @@ impl Integrations {
             ai: None,
             backup: None,
             payout: None,
+            juso_confm_key: None,
         }
     }
 
@@ -89,6 +92,7 @@ impl Integrations {
             Section::Ai => self.ai.is_some(),
             Section::Backup => self.backup.is_some(),
             Section::Payout => self.payout.is_some(),
+            Section::Juso => self.juso_confm_key.is_some(),
         }
     }
 }
@@ -131,10 +135,11 @@ pub enum Section {
     Ai,
     Backup,
     Payout,
+    Juso,
 }
 
 impl Section {
-    pub const ALL: [Section; 10] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup, Self::Payout];
+    pub const ALL: [Section; 11] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup, Self::Payout, Self::Juso];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -148,6 +153,7 @@ impl Section {
             Self::Ai => "ai",
             Self::Backup => "backup",
             Self::Payout => "payout",
+            Self::Juso => "juso",
         }
     }
 
@@ -166,6 +172,7 @@ impl Section {
             Self::Ai => &AI_FIELDS,
             Self::Backup => &BACKUP_FIELDS,
             Self::Payout => &PAYOUT_FIELDS,
+            Self::Juso => &JUSO_FIELDS,
         }
     }
 }
@@ -197,6 +204,7 @@ const BACKUP_FIELDS: [Field; 6] = [
     f("retention_days", Kind::Text, false),
 ];
 const PAYOUT_FIELDS: [Field; 2] = [f("mode", Kind::Text, true), f("secret_key", Kind::Secret, false)];
+const JUSO_FIELDS: [Field; 1] = [f("confm_key", Kind::Secret, true)];
 const BACKUP_RETENTION_DEFAULT: u32 = 30;
 const BACKUP_RETENTION_MAX: u32 = 3650;
 
@@ -362,6 +370,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
             out.naver_client_id = Some(required(v, "client_id")?);
             out.naver_client_secret = Some(required(v, "client_secret")?);
         }
+        Section::Juso => out.juso_confm_key = Some(required(v, "confm_key")?),
         Section::Ai => {
             let mode = Mode::parse(text(v, "mode").as_deref()).ok_or(Invalid("invalid_mode"))?;
             let model = text(v, "model").unwrap_or_else(|| ai::DEFAULT_MODEL.to_string());
@@ -613,6 +622,15 @@ mod tests {
         let p = toss.payout.expect("payout settings");
         assert_eq!((p.mode, p.secret_key.as_deref()), (PayoutMode::Toss, Some("test_sk_x")));
         assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(), Invalid("invalid_mode"));
+    }
+
+    #[test]
+    fn juso_key_is_a_required_console_secret() {
+        let base = Integrations::default();
+        assert_eq!(apply(&base, Section::Juso, &obj(json!({}))).unwrap_err(), Invalid("missing_field"));
+        let out = apply(&base, Section::Juso, &obj(json!({"confm_key": "U01TX"}))).unwrap();
+        assert_eq!(out.juso_confm_key.as_deref(), Some("U01TX"));
+        assert!(out.has(Section::Juso));
     }
 
     #[test]

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>카드 등록</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0B1022; color: #F3F5FF;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+    .box { text-align: center; padding: 24px; }
+    .spin { width: 44px; height: 44px; margin: 0 auto 16px; border-radius: 50%; border: 4px solid rgba(255,255,255,.15); border-top-color: #3B5BFD; animation: r 1s linear infinite; }
+    @keyframes r { to { transform: rotate(360deg); } }
+  </style>
+  <!-- PortOne V2 browser SDK (official CDN). -->
+  <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+</head>
+<body>
+  <div class="box"><div class="spin" aria-hidden="true"></div><p id="msg">카드 등록창을 여는 중…</p></div>
+  <script>
+    // Opened by the app in a WebView: /pay/billing.html?store=..&channel=..&issue=..&method=..
+    // The app reads billingKey from the done address (/pay/billing-done.html). Nothing card-related is kept here.
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var method = q.get('method') || 'card';
+      var easy = { kakaopay: 'KAKAOPAY', naverpay: 'NAVERPAY', tosspay: 'TOSSPAY', payco: 'PAYCO' };
+      var done = function (extra) {
+        var p = new URLSearchParams(Object.assign({}, extra || {}));
+        location.replace('/pay/billing-done.html?' + p.toString());
+      };
+      if (!window.PortOne) return done({ code: 'SDK_UNAVAILABLE' });
+      var req = {
+        storeId: q.get('store'),
+        channelKey: q.get('channel'),
+        billingKeyMethod: easy[method] ? 'EASY_PAY' : 'CARD',
+        issueId: q.get('issue'),
+        issueName: '청소 서비스 결제수단',
+        redirectUrl: location.origin + '/pay/billing-done.html',
+      };
+      if (easy[method]) req.easyPay = { easyPayProvider: easy[method] };
+      PortOne.requestIssueBillingKey(req)
+        .then(function (r) { done(r && r.billingKey ? { billingKey: r.billingKey } : { code: (r && r.code) || 'NO_KEY', message: (r && r.message) || '' }); })
+        .catch(function (e) { done({ code: 'SDK_ERROR', message: String(e && e.message || e) }); });
+    })();
+  </script>
+</body>
+</html>

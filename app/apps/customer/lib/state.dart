@@ -93,11 +93,11 @@ class AppState extends ChangeNotifier {
     await loadAddresses();
   }
 
-  Future<PaymentMethod> addMethod(String provider, String displayName) async {
-    // shortcut: auth_key comes from the gateway's card-registration SDK once the PG contract exists.
+  /// [billingKey] comes from PortOne's card registration page; the server verifies it before saving.
+  Future<PaymentMethod> addMethod(String provider, String displayName, String billingKey) async {
     final r = await api.post('/me/payment-methods', {
       'provider': provider,
-      'auth_key': 'dev-${DateTime.now().millisecondsSinceEpoch}',
+      'auth_key': billingKey,
       'display_name': displayName,
     });
     await loadMethods();

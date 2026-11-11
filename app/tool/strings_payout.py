@@ -1,6 +1,7 @@
 # Partner payout screen (owner console). Columns: ko, en, ja, zh, vi.
 # X gives the nine extra languages (fil, id, km, mn, ne, ru, si, th, uz) the English text until they are translated.
 S = {
+  "cIntPayout": ["파트너 지급", "Partner payouts", "パートナーへの支払い", "合作伙伴付款", "Chi trả đối tác"],
   "poTabSettlements": ["정산", "Settlements", "精算", "结算", "Quyết toán"],
   "poTabPayouts": ["지급 내역", "Payouts", "支払い", "支付记录", "Chi trả"],
   "poState_requested": ["요청됨", "Requested", "依頼済み", "已请求", "Đã yêu cầu"],

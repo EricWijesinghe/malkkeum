@@ -9,6 +9,30 @@ class TJa extends T {
   TJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get addressSearch => '住所検索';
+
+  @override
+  String get addressSearchHint => '道路名・建物名・地番で検索';
+
+  @override
+  String get addressSearchButton => '検索';
+
+  @override
+  String get addressSearchMinChars => '2文字以上入力してください';
+
+  @override
+  String get addressNoResults => '結果がありません。別の言葉で検索してください。';
+
+  @override
+  String get addressManualEntry => '手入力';
+
+  @override
+  String get cardRegisterTitle => 'カード登録';
+
+  @override
+  String get cIntJuso => '住所検索（道路名住所）';
+
+  @override
   String get aiLabel => 'AIアシスタント';
 
   @override
@@ -829,16 +853,20 @@ class TJa extends T {
   String get svcDesc_move_in => '入居前、プロチームが機材持参で新居を清掃します。';
 
   @override
-  String get svcNotes_bathroom => '排水口・便器の詰まりがある場合は制限されます\n特殊薬剤・天井・換気扇の清掃は対象外です\n古いカビや頑固な汚れは完全に落ちない場合があります';
+  String get svcNotes_bathroom =>
+      '排水口・便器の詰まりがある場合は制限されます\n特殊薬剤・天井・換気扇の清掃は対象外です\n古いカビや頑固な汚れは完全に落ちない場合があります';
 
   @override
-  String get svcNotes_mattress => 'シングルからキングまで同料金です\n完全乾燥まで4〜6時間かかります\nスプリング損傷などの構造的問題は改善しません';
+  String get svcNotes_mattress =>
+      'シングルからキングまで同料金です\n完全乾燥まで4〜6時間かかります\nスプリング損傷などの構造的問題は改善しません';
 
   @override
-  String get svcNotes_aircon => '製造10年以上の製品は分解洗浄が難しい場合があります\n室外機は含まれません\n洗浄前後に動作を確認します';
+  String get svcNotes_aircon =>
+      '製造10年以上の製品は分解洗浄が難しい場合があります\n室外機は含まれません\n洗浄前後に動作を確認します';
 
   @override
-  String get svcNotes_sofa => '革ソファはクリーニングと保湿コーティングで対応します\n古いシミや色移りは完全に落ちない場合があります\n完全乾燥まで4〜6時間かかります';
+  String get svcNotes_sofa =>
+      '革ソファはクリーニングと保湿コーティングで対応します\n古いシミや色移りは完全に落ちない場合があります\n完全乾燥まで4〜6時間かかります';
 
   @override
   String get unitTitle_bathroom => '浴室の数';
@@ -1950,7 +1978,8 @@ class TJa extends T {
   String get referralSettingsTitle => '友達紹介の特典';
 
   @override
-  String get referralSettingsBody => '友達の初回予約が完了・決済されると付与されます。自己紹介や同じ番号の重複は防止されます。';
+  String get referralSettingsBody =>
+      '友達の初回予約が完了・決済されると付与されます。自己紹介や同じ番号の重複は防止されます。';
 
   @override
   String get referralRewardAmount => '特典金額（ウォン）';
@@ -2089,22 +2118,27 @@ class TJa extends T {
   String get oIntNever => 'まだ利用記録がありません';
 
   @override
-  String get oActDb => 'データベースに接続できません。サーバーで malkkeum logs を確認し、続く場合は再起動してください。';
+  String get oActDb =>
+      'データベースに接続できません。サーバーで malkkeum logs を確認し、続く場合は再起動してください。';
 
   @override
   String get oActDisk => 'ディスクの空きが10%未満です。古いバックアップを削除するか、ディスクを増設してください。';
 
   @override
-  String get oActBackup => '自動バックアップが遅れています。サーバーで malkkeum backup を実行し、backups/backup.log を確認してください。';
+  String get oActBackup =>
+      '自動バックアップが遅れています。サーバーで malkkeum backup を実行し、backups/backup.log を確認してください。';
 
   @override
-  String get oActErrors => 'サーバーエラーが多発しています。malkkeum logs の error 行を確認し、繰り返す場合は開発元へ連絡してください。';
+  String get oActErrors =>
+      'サーバーエラーが多発しています。malkkeum logs の error 行を確認し、繰り返す場合は開発元へ連絡してください。';
 
   @override
-  String get oActPayments => '決済は完了したものの自動処理されていない可能性があります。PortOne 管理画面で確認し、必要なら手動で返金してください。';
+  String get oActPayments =>
+      '決済は完了したものの自動処理されていない可能性があります。PortOne 管理画面で確認し、必要なら手動で返金してください。';
 
   @override
-  String get oActWebhook => '決済通知の署名検証に失敗しています。設定 > 決済（PortOne）で Webhook シークレットを再入力してください。';
+  String get oActWebhook =>
+      '決済通知の署名検証に失敗しています。設定 > 決済（PortOne）で Webhook シークレットを再入力してください。';
 
   @override
   String get oActIntegration => '連携に失敗しています。設定画面でキーを確認し、[接続テスト] を押してください。';
@@ -2575,6 +2609,9 @@ class TJa extends T {
   String get pSpace => '空間情報';
 
   @override
+  String get cIntPayout => 'パートナーへの支払い';
+
+  @override
   String get poTabSettlements => '精算';
 
   @override
@@ -2605,7 +2642,12 @@ class TJa extends T {
   String get poAccountTitle => '振込先情報';
 
   @override
-  String poAccountBody(String holder, String bank, String account, String amount) {
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
     return '$holder・$bank・$account に$amountウォンを振り込んだら確認を押してください。';
   }
 
@@ -2719,7 +2761,8 @@ class TJa extends T {
   String get cReviewTitle => 'ストア審査用デモアカウント';
 
   @override
-  String get cReviewHint => '審査担当は韓国のSMSを受信できません。番号と6桁コードを審査メモに記入してください。期間後に自動で無効になります。';
+  String get cReviewHint =>
+      '審査担当は韓国のSMSを受信できません。番号と6桁コードを審査メモに記入してください。期間後に自動で無効になります。';
 
   @override
   String get cReviewPhone => 'デモ電話番号';
@@ -2736,7 +2779,8 @@ class TJa extends T {
   String get cReviewEnable => '有効化（14日）';
 
   @override
-  String get pDeleteAccountBody => 'チームと個人情報は削除され、元に戻せません。割当中の作業や未精算がある場合は先に完了してください。';
+  String get pDeleteAccountBody =>
+      'チームと個人情報は削除され、元に戻せません。割当中の作業や未精算がある場合は先に完了してください。';
 
   @override
   String get err_has_active_jobs => '割当中の作業があります。完了するかサポートに移管を依頼してください。';
@@ -2883,7 +2927,8 @@ class TJa extends T {
   String get uUpdateRequiredTitle => 'アップデートが必要です';
 
   @override
-  String get uUpdateRequiredBody => 'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
+  String get uUpdateRequiredBody =>
+      'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
 
   @override
   String get uUpdateStore => 'ストアでアップデート';
@@ -2900,7 +2945,8 @@ class TJa extends T {
   String get uAppVersionTitle => 'アプリのバージョン';
 
   @override
-  String get uAppVersionHint => '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
+  String get uAppVersionHint =>
+      '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
 
   @override
   String get uMinVersion => '最小バージョン';

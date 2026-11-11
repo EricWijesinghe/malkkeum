@@ -2,6 +2,7 @@
 //! Standard Webhooks signatures. Dev fakes only answer `dev:` ids.
 
 use super::{IdentityInfo, PaymentInfo, ProviderError, Providers};
+use crate::config::PortOne;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use hmac::{Hmac, Mac};
 use reqwest::{StatusCode, header::AUTHORIZATION};
@@ -128,6 +129,41 @@ fn custom_data_checkout_id(custom: &Value) -> Option<Uuid> {
     Uuid::parse_str(obj["checkoutId"].as_str()?).ok()
 }
 
+/// Billing (saved card) needs the API secret, the store and a card channel key.
+pub fn billing_ready(p: &PortOne) -> bool {
+    p.api_secret.is_some() && p.store_id.is_some() && p.channel_keys.contains_key("card")
+}
+
+/// Verifies a billing key the browser SDK issued before we store it. Only an `ISSUED` key passes.
+/// The response's card details are not kept: we store the key, never card data.
+pub async fn verify_billing_key(p: &Providers, key: &str) -> Result<(), ProviderError> {
+    let integ = p.integ();
+    let secret = integ.portone.api_secret.as_deref().ok_or(ProviderError::NotConfigured("portone"))?;
+    if check_id(key).is_err() {
+        return Err(ProviderError::Declined("invalid_billing_key".into()));
+    }
+    let info = billing_key_at(p.http(), API, secret, key).await?;
+    issued(&info)
+}
+
+/// `GET {base}/billing-keys/{key}` with the API secret. `base` is `API` in production, a fake in tests.
+pub async fn billing_key_at(http: &reqwest::Client, base: &str, secret: &str, key: &str) -> Result<Value, ProviderError> {
+    let resp = http
+        .get(format!("{base}/billing-keys/{key}"))
+        .header(AUTHORIZATION, format!("PortOne {secret}"))
+        .send()
+        .await
+        .map_err(upstream)?;
+    read_json(resp).await
+}
+
+fn issued(info: &Value) -> Result<(), ProviderError> {
+    match info["status"].as_str() {
+        Some("ISSUED") => Ok(()),
+        _ => Err(ProviderError::Declined("billing_key_not_issued".into())),
+    }
+}
+
 /// Dev fakes: `dev:paid` settles at the expected total, `dev:va` issues a virtual account,
 /// and a checkout id pays as a card payment (the dev gateway has no real payer).
 pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
@@ -188,6 +224,7 @@ pub fn verify_webhook(secret: &str, msg_id: &str, timestamp: &str, signatures: &
 #[cfg(test)]
 mod tests {
     use super::*;
+    use axum::{Json, Router, extract::Path, http::{HeaderMap, StatusCode}, routing::get};
 
     const NOW: i64 = 1_800_000_000;
 
@@ -273,6 +310,48 @@ mod tests {
         assert_eq!(custom_data_checkout_id(&json!({ "checkoutId": "not-a-uuid" })), None);
         assert_eq!(custom_data_checkout_id(&Value::String("{broken".into())), None);
         assert_eq!(custom_data_checkout_id(&Value::Null), None);
+    }
+
+    #[test]
+    fn billing_needs_secret_store_and_card_channel() {
+        let mut p = PortOne { api_secret: Some("s".into()), store_id: Some("st".into()), ..Default::default() };
+        assert!(!billing_ready(&p));
+        p.channel_keys.insert("card".into(), "ch".into());
+        assert!(billing_ready(&p));
+        p.api_secret = None;
+        assert!(!billing_ready(&p));
+    }
+
+    /// Fake PortOne: checks the secret header and answers per billing key.
+    async fn fake_billing(Path(key): Path<String>, headers: HeaderMap) -> (StatusCode, Json<Value>) {
+        if headers.get(AUTHORIZATION).and_then(|v| v.to_str().ok()) != Some("PortOne test-secret") {
+            return (StatusCode::UNAUTHORIZED, Json(json!({"type": "UnauthorizedError"})));
+        }
+        match key.as_str() {
+            "bk_ok" => (StatusCode::OK, Json(json!({"status": "ISSUED", "billingKey": "bk_ok"}))),
+            "bk_gone" => (StatusCode::OK, Json(json!({"status": "DELETED", "billingKey": "bk_gone"}))),
+            _ => (StatusCode::NOT_FOUND, Json(json!({"type": "BillingKeyNotFoundError"}))),
+        }
+    }
+
+    async fn billing_fake() -> String {
+        let app = Router::new().route("/billing-keys/{key}", get(fake_billing));
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.expect("bind fake");
+        let addr = listener.local_addr().expect("fake addr");
+        tokio::spawn(async move { axum::serve(listener, app).await.expect("fake serves") });
+        format!("http://{addr}")
+    }
+
+    #[tokio::test]
+    async fn only_issued_billing_keys_pass_verification() {
+        let base = billing_fake().await;
+        let http = reqwest::Client::new();
+        let ok = billing_key_at(&http, &base, "test-secret", "bk_ok").await.expect("issued");
+        assert!(issued(&ok).is_ok());
+        let gone = billing_key_at(&http, &base, "test-secret", "bk_gone").await.expect("deleted body");
+        assert!(matches!(issued(&gone), Err(ProviderError::Declined(ref m)) if m == "billing_key_not_issued"));
+        assert!(matches!(billing_key_at(&http, &base, "test-secret", "bk_none").await, Err(ProviderError::NotFound)));
+        assert!(matches!(billing_key_at(&http, &base, "wrong", "bk_ok").await, Err(ProviderError::Upstream(_))));
     }
 
     #[test]

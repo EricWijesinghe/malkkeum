@@ -1,7 +1,9 @@
 /// Shared app infrastructure: API, session, realtime, models, translations.
 library;
 
+export 'src/address_search.dart';
 export 'src/api.dart';
+export 'src/billing.dart';
 export 'src/app_update.dart';
 export 'src/async_view.dart';
 export 'src/districts.dart';

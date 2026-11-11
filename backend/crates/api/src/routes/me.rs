@@ -4,7 +4,7 @@ use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Auth, Customer, normalize_phone, sha256_hex},
     error::{ApiError, ApiResult},
-    providers::ProviderError,
+    providers::{ProviderError, portone},
     state::AppState,
 };
 use axum::{
@@ -31,6 +31,7 @@ pub fn routes() -> Router<AppState> {
         .route("/me/addresses/{id}", put(update_address).delete(delete_address))
         .route("/me/coupons", get(list_coupons))
         .route("/me/payment-methods", get(list_methods).post(register_method))
+        .route("/me/payment-methods/setup", get(billing_setup))
         .route("/me/payment-methods/{id}", delete(delete_method))
         .route("/me/push-token", post(register_push).delete(unregister_push))
         .route("/me/notifications", get(list_notifications))
@@ -301,6 +302,21 @@ struct MethodRow {
     provider: String,
     display_name: String,
     created_at: DateTime<Utc>,
+}
+
+/// What the app needs to open PortOne's card registration page. Hidden (`enabled: false`) until PortOne is configured.
+async fn billing_setup(State(s): State<AppState>, Customer(_): Customer) -> ApiResult<Json<Value>> {
+    let integ = s.providers.integ();
+    let p = &integ.portone;
+    if !portone::billing_ready(p) {
+        return Ok(Json(json!({ "enabled": false })));
+    }
+    Ok(Json(json!({
+        "enabled": true,
+        "store_id": p.store_id,
+        "channels": p.channel_keys,
+        "issue_id": Uuid::now_v7(),
+    })))
 }
 
 async fn list_methods(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<MethodRow>>> {

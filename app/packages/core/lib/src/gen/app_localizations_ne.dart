@@ -9,13 +9,39 @@ class TNe extends T {
   TNe([String locale = 'ne']) : super(locale);
 
   @override
+  String get addressSearch => 'ठेगाना खोज्नुहोस्';
+
+  @override
+  String get addressSearchHint => 'सडकको नाम, भवन वा लट नम्बरले खोज्नुहोस्';
+
+  @override
+  String get addressSearchButton => 'खोज्नुहोस्';
+
+  @override
+  String get addressSearchMinChars => 'कम्तीमा २ अक्षर लेख्नुहोस्';
+
+  @override
+  String get addressNoResults =>
+      'कुनै नतिजा भेटिएन। अर्को शब्द प्रयास गर्नुहोस्।';
+
+  @override
+  String get addressManualEntry => 'आफै लेख्नुहोस्';
+
+  @override
+  String get cardRegisterTitle => 'कार्ड दर्ता गर्नुहोस्';
+
+  @override
+  String get cIntJuso => 'ठेगाना खोज (juso.go.kr)';
+
+  @override
   String get aiLabel => 'AI सहायक';
 
   @override
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'ग्राहकको च्याटमा स्वतः जवाफ दिन्छ। प्रत्येक सन्देशमा API शुल्क लाग्छ।';
+  String get aiCardHint =>
+      'ग्राहकको च्याटमा स्वतः जवाफ दिन्छ। प्रत्येक सन्देशमा API शुल्क लाग्छ।';
 
   @override
   String get aiModeOffline => 'कर्मचारी नभएको बेला मात्र जवाफ दिन्छ';
@@ -59,10 +85,12 @@ class TNe extends T {
   String get apLoginApple => 'Apple बाट जारी राख्नुहोस्';
 
   @override
-  String get apDevSocialNote => 'यो विकास मोड हो। वास्तविक सामाजिक खाताको सट्टा परीक्षण खातामा साइन इन हुन्छ।';
+  String get apDevSocialNote =>
+      'यो विकास मोड हो। वास्तविक सामाजिक खाताको सट्टा परीक्षण खातामा साइन इन हुन्छ।';
 
   @override
-  String get apSocialFailed => 'छिटो साइन इन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।';
+  String get apSocialFailed =>
+      'छिटो साइन इन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get apProviderNotConfigured => 'यो साइन इन विधि अझै तयार हुँदैछ';
@@ -71,10 +99,12 @@ class TNe extends T {
   String get apPhoneTaken => 'यो नम्बर अर्को खातासँग पहिले नै दर्ता छ';
 
   @override
-  String get apPhoneAttachTitle => 'कृपया आफ्नो मोबाइल नम्बर प्रमाणित गर्नुहोस्';
+  String get apPhoneAttachTitle =>
+      'कृपया आफ्नो मोबाइल नम्बर प्रमाणित गर्नुहोस्';
 
   @override
-  String get apPhoneAttachBody => 'यो नम्बर बुकिङ र पार्टनर सम्पर्कका लागि प्रयोग हुन्छ। एक पटक मात्र प्रमाणित गर्नु पर्छ।';
+  String get apPhoneAttachBody =>
+      'यो नम्बर बुकिङ र पार्टनर सम्पर्कका लागि प्रयोग हुन्छ। एक पटक मात्र प्रमाणित गर्नु पर्छ।';
 
   @override
   String get apPayAllTitle => 'भुक्तानी विधि छान्नुहोस्';
@@ -86,7 +116,8 @@ class TNe extends T {
   String get apPayMoreTitle => 'सबै भुक्तानी विधिहरू';
 
   @override
-  String get apPayBillingHint => 'एक पटक दर्ता गर्नुहोस्, त्यसपछि एक ट्यापमा भुक्तानी गर्नुहोस्';
+  String get apPayBillingHint =>
+      'एक पटक दर्ता गर्नुहोस्, त्यसपछि एक ट्यापमा भुक्तानी गर्नुहोस्';
 
   @override
   String get apPayCheckoutHint => 'भुक्तानी विन्डोमा पूरा गर्नुहोस्';
@@ -95,7 +126,8 @@ class TNe extends T {
   String get apPayRegistering => 'दर्ता गर्दै…';
 
   @override
-  String get apPayManageHint => 'सुरक्षित विधिहरूबाट एक ट्यापमा भुक्तानी गर्नुहोस्। छिटो भुक्तानी विधि यहाँ थप्न सकिन्छ।';
+  String get apPayManageHint =>
+      'सुरक्षित विधिहरूबाट एक ट्यापमा भुक्तानी गर्नुहोस्। छिटो भुक्तानी विधि यहाँ थप्न सकिन्छ।';
 
   @override
   String get apMethodCard => 'क्रेडिट र डेबिट कार्ड';
@@ -137,7 +169,8 @@ class TNe extends T {
   String get apVaWaiting => 'रकम जम्मा हुन बाँकी छ';
 
   @override
-  String get apVaBody => 'म्याद भित्र रकम जम्मा भएपछि बुकिङ पुष्टि हुन्छ। जम्मा स्वचालित रूपमा जाँच गरिन्छ।';
+  String get apVaBody =>
+      'म्याद भित्र रकम जम्मा भएपछि बुकिङ पुष्टि हुन्छ। जम्मा स्वचालित रूपमा जाँच गरिन्छ।';
 
   @override
   String get apVaBank => 'बैंक';
@@ -177,7 +210,8 @@ class TNe extends T {
   String get apPgTitle => 'भुक्तानी विन्डो';
 
   @override
-  String get apPgDevNote => 'यो विकास वातावरणका लागि मात्र भुक्तानी सिमुलेसन हो। वास्तविक भुक्तानी हुँदैन।';
+  String get apPgDevNote =>
+      'यो विकास वातावरणका लागि मात्र भुक्तानी सिमुलेसन हो। वास्तविक भुक्तानी हुँदैन।';
 
   @override
   String apPgPay(String amount) {
@@ -191,16 +225,19 @@ class TNe extends T {
   String get apPgCancel => 'भुक्तानी रद्द गर्नुहोस्';
 
   @override
-  String get apErrSlotFullRefunded => 'त्यो समय भर्ने भएकोले भुक्तानी स्वतः रद्द गरियो';
+  String get apErrSlotFullRefunded =>
+      'त्यो समय भर्ने भएकोले भुक्तानी स्वतः रद्द गरियो';
 
   @override
-  String get apErrCheckoutExpired => 'भुक्तानीको समय सकियो। कृपया फेरि प्रयास गर्नुहोस्।';
+  String get apErrCheckoutExpired =>
+      'भुक्तानीको समय सकियो। कृपया फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get apIdentityTitle => 'पहिचान प्रमाणीकरण (PASS)';
 
   @override
-  String get apIdentityBody => 'तपाईंको फोन सेवा प्रदायकमार्फत पहिचान पुष्टि गरिन्छ। सुरक्षित कारोबार र भुक्तानीका लागि प्रयोग हुन्छ।';
+  String get apIdentityBody =>
+      'तपाईंको फोन सेवा प्रदायकमार्फत पहिचान पुष्टि गरिन्छ। सुरक्षित कारोबार र भुक्तानीका लागि प्रयोग हुन्छ।';
 
   @override
   String get apIdentityAction => 'पहिचान प्रमाणित गर्नुहोस्';
@@ -218,7 +255,8 @@ class TNe extends T {
   String get apIdentityDevTitle => 'परीक्षण पहिचान प्रमाणीकरण';
 
   @override
-  String get apIdentityDevBody => 'विकास वातावरणमा वास्तविक जाँच बिना नै पास हुन्छ।';
+  String get apIdentityDevBody =>
+      'विकास वातावरणमा वास्तविक जाँच बिना नै पास हुन्छ।';
 
   @override
   String get apIdentityDevPass => 'पास गर्नुहोस्';
@@ -644,7 +682,8 @@ class TNe extends T {
   String get today => 'आज';
 
   @override
-  String get errorGeneric => 'केही समस्या भयो। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
+  String get errorGeneric =>
+      'केही समस्या भयो। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get errorNetwork => 'इन्टरनेट जडान जाँच गर्नुहोस्';
@@ -659,10 +698,12 @@ class TNe extends T {
   String get err_otp_expired => 'कोडको म्याद सकियो। नयाँ कोड माग्नुहोस्।';
 
   @override
-  String get err_rate_limited => 'धेरै प्रयास भए। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
+  String get err_rate_limited =>
+      'धेरै प्रयास भए। केही बेरपछि फेरि प्रयास गर्नुहोस्।';
 
   @override
-  String get err_studio_too_large => 'स्टुडियो सफाइ १० प्योङसम्मको घरका लागि मात्र हो';
+  String get err_studio_too_large =>
+      'स्टुडियो सफाइ १० प्योङसम्मको घरका लागि मात्र हो';
 
   @override
   String get err_date_out_of_range => 'भोलिदेखि ६० दिनभित्रको मिति छान्नुहोस्';
@@ -677,16 +718,19 @@ class TNe extends T {
   String get err_coupon_used => 'यो कुपन पहिले नै प्रयोग भइसकेको छ';
 
   @override
-  String get err_coupon_wrong_service => 'यो सेवाका लागि यो कुपन प्रयोग गर्न मिल्दैन';
+  String get err_coupon_wrong_service =>
+      'यो सेवाका लागि यो कुपन प्रयोग गर्न मिल्दैन';
 
   @override
-  String get err_payment_failed => 'भुक्तानी स्वीकृत भएन। अर्को विधि प्रयोग गर्नुहोस्।';
+  String get err_payment_failed =>
+      'भुक्तानी स्वीकृत भएन। अर्को विधि प्रयोग गर्नुहोस्।';
 
   @override
   String get err_payment_method_required => 'भुक्तानी विधि छान्नुहोस्';
 
   @override
-  String get err_cancellation_window_closed => 'भ्रमणको २ दिन अगादेखि हाम्रो परामर्श टोलीमार्फत मात्र रद्द गर्न सकिन्छ';
+  String get err_cancellation_window_closed =>
+      'भ्रमणको २ दिन अगादेखि हाम्रो परामर्श टोलीमार्फत मात्र रद्द गर्न सकिन्छ';
 
   @override
   String get err_address_required => 'भ्रमण ठेगाना थप्नुहोस्';
@@ -713,7 +757,8 @@ class TNe extends T {
   String get introTitle => 'विज्ञ सफाइ\nएक मिनेटमै बुक गर्नुहोस्';
 
   @override
-  String get introBody => 'अग्रिम मूल्य · जाँचिएका सफाइ टोली · प्रत्यक्ष प्रगति';
+  String get introBody =>
+      'अग्रिम मूल्य · जाँचिएका सफाइ टोली · प्रत्यक्ष प्रगति';
 
   @override
   String get introStart => 'फोन नम्बरबाट सुरु गर्नुहोस्';
@@ -742,7 +787,8 @@ class TNe extends T {
   String get loginVerify => 'पुष्टि गर्नुहोस्';
 
   @override
-  String get loginTerms => 'जारी राखेर तपाईं सेवाका सर्त र गोपनीयता नीतिमा सहमत हुनुहुन्छ';
+  String get loginTerms =>
+      'जारी राखेर तपाईं सेवाका सर्त र गोपनीयता नीतिमा सहमत हुनुहुन्छ';
 
   @override
   String get profileTitle => 'हामीले तपाईंलाई के भनेर बोलाऊँ?';
@@ -805,40 +851,52 @@ class TNe extends T {
   String get svcShort_move_in => 'घर पस्ने';
 
   @override
-  String get svcDesc_studio => '१० प्योङसम्मको स्टुडियो (एउटा कोठा, एउटा बाथरुम) २ घण्टामा राम्रोसँग सफा गरिन्छ।';
+  String get svcDesc_studio =>
+      '१० प्योङसम्मको स्टुडियो (एउटा कोठा, एउटा बाथरुम) २ घण्टामा राम्रोसँग सफा गरिन्छ।';
 
   @override
-  String get svcDesc_kitchen => 'सिंक, ग्यास चुल्हो, चिम्नीको बाहिरी भाग र काउन्टरमा केन्द्रित भान्छा सफाइ।';
+  String get svcDesc_kitchen =>
+      'सिंक, ग्यास चुल्हो, चिम्नीको बाहिरी भाग र काउन्टरमा केन्द्रित भान्छा सफाइ।';
 
   @override
-  String get svcDesc_bathroom => 'सेल्फ, नल, वाशबेसिन र शौचालयको भित्र-बाहिर सफा गरी भुइँ सुकाएर सकाइन्छ।';
+  String get svcDesc_bathroom =>
+      'सेल्फ, नल, वाशबेसिन र शौचालयको भित्र-बाहिर सफा गरी भुइँ सुकाएर सकाइन्छ।';
 
   @override
-  String get svcDesc_mattress => 'विशेष उपकरणले धुलो, किर्ना र दाग निकालिन्छ, त्यसपछि स्टिमले जीवाणुरहित गरिन्छ।';
+  String get svcDesc_mattress =>
+      'विशेष उपकरणले धुलो, किर्ना र दाग निकालिन्छ, त्यसपछि स्टिमले जीवाणुरहित गरिन्छ।';
 
   @override
-  String get svcDesc_aircon => 'खोलेर कन्डेन्सर, फ्यान र फिल्टर उच्च दबाबमा धोइ जीवाणुरहित गरिन्छ।';
+  String get svcDesc_aircon =>
+      'खोलेर कन्डेन्सर, फ्यान र फिल्टर उच्च दबाबमा धोइ जीवाणुरहित गरिन्छ।';
 
   @override
-  String get svcDesc_sofa => 'कपडाअनुसारको क्लिनरले फोहोर फुकाइन्छ, त्यसपछि भिजो एक्स्ट्र्याक्सन विधिले सफा गरिन्छ।';
+  String get svcDesc_sofa =>
+      'कपडाअनुसारको क्लिनरले फोहोर फुकाइन्छ, त्यसपछि भिजो एक्स्ट्र्याक्सन विधिले सफा गरिन्छ।';
 
   @override
-  String get svcDesc_move_out => 'घर छाड्नुअघि सामान निकालिएको घर उपकरणसहित विशेष सफाइ टोलीले सफा गर्छ।';
+  String get svcDesc_move_out =>
+      'घर छाड्नुअघि सामान निकालिएको घर उपकरणसहित विशेष सफाइ टोलीले सफा गर्छ।';
 
   @override
-  String get svcDesc_move_in => 'नयाँ घरमा बस्नुअघि उपकरणसहित विशेष सफाइ टोलीले भित्री भाग सफा गर्छ।';
+  String get svcDesc_move_in =>
+      'नयाँ घरमा बस्नुअघि उपकरणसहित विशेष सफाइ टोलीले भित्री भाग सफा गर्छ।';
 
   @override
-  String get svcNotes_bathroom => 'ड्रेन वा शौचालय जाम भएमा सेवा सीमित हुन सक्छ\nविशेष रसायन, छत वा भेन्ट सफाइ प्रदान गरिँदैन\nपुरानो ढुसी र टाँसिएको फोहोर पूर्ण रूपमा नहट्न सक्छ';
+  String get svcNotes_bathroom =>
+      'ड्रेन वा शौचालय जाम भएमा सेवा सीमित हुन सक्छ\nविशेष रसायन, छत वा भेन्ट सफाइ प्रदान गरिँदैन\nपुरानो ढुसी र टाँसिएको फोहोर पूर्ण रूपमा नहट्न सक्छ';
 
   @override
-  String get svcNotes_mattress => 'सिंगलदेखि किङ साइजसम्म एउटै मूल्य\nधोएपछि पूर्ण सुक्न ४–६ घण्टा लाग्छ\nस्प्रिङ बिग्रिएको वा ओह्रालिएको जस्ता संरचनात्मक समस्या सुधार गरिँदैन';
+  String get svcNotes_mattress =>
+      'सिंगलदेखि किङ साइजसम्म एउटै मूल्य\nधोएपछि पूर्ण सुक्न ४–६ घण्टा लाग्छ\nस्प्रिङ बिग्रिएको वा ओह्रालिएको जस्ता संरचनात्मक समस्या सुधार गरिँदैन';
 
   @override
-  String get svcNotes_aircon => '१० वर्षभन्दा पुराना उपकरण खोल्न कठिन हुन सक्छ\nबाहिरी युनिट सफाइ समावेश छैन\nसफाइअघि र पछि सामान्य रूपमा चलेको छ कि छैन भनी जाँच गरिन्छ';
+  String get svcNotes_aircon =>
+      '१० वर्षभन्दा पुराना उपकरण खोल्न कठिन हुन सक्छ\nबाहिरी युनिट सफाइ समावेश छैन\nसफाइअघि र पछि सामान्य रूपमा चलेको छ कि छैन भनी जाँच गरिन्छ';
 
   @override
-  String get svcNotes_sofa => 'छालाको सोफा सफाइ र चिल्लो बनाउने कोटिङसहित गरिन्छ\nपुराना दाग वा रङ सर्ने समस्या पूर्ण रूपमा नहट्न सक्छ\nपूर्ण सुक्न ४–६ घण्टा लाग्छ';
+  String get svcNotes_sofa =>
+      'छालाको सोफा सफाइ र चिल्लो बनाउने कोटिङसहित गरिन्छ\nपुराना दाग वा रङ सर्ने समस्या पूर्ण रूपमा नहट्न सक्छ\nपूर्ण सुक्न ४–६ घण्टा लाग्छ';
 
   @override
   String get unitTitle_bathroom => 'बाथरुमको संख्या';
@@ -944,7 +1002,8 @@ class TNe extends T {
   String get homeServices => 'तपाईंलाई कुन सफाइ चाहिन्छ?';
 
   @override
-  String get homeAddAddress => 'ठेगाना दर्ता गर्नुहोस्, उपलब्ध सेवा र मूल्य तुरुन्तै देखाउँछौँ';
+  String get homeAddAddress =>
+      'ठेगाना दर्ता गर्नुहोस्, उपलब्ध सेवा र मूल्य तुरुन्तै देखाउँछौँ';
 
   @override
   String get homeAddAddressCta => 'ठेगाना दर्ता गर्नुहोस्';
@@ -986,7 +1045,8 @@ class TNe extends T {
   }
 
   @override
-  String get studioBlockedBody => 'हाम्रो परामर्श टोलीले तपाईंको घरका लागि उपयुक्त सेवा सुझाउनेछ।';
+  String get studioBlockedBody =>
+      'हाम्रो परामर्श टोलीले तपाईंको घरका लागि उपयुक्त सेवा सुझाउनेछ।';
 
   @override
   String get consultCta => 'परामर्शमा सोध्नुहोस्';
@@ -1076,7 +1136,8 @@ class TNe extends T {
   String get prepBody => 'यी नभए केही काम सीमित हुन सक्छ';
 
   @override
-  String get prepAsk => 'तयार गर्न नसकिने भए परामर्शमा पहिले नै जानकारी दिनुहोस्';
+  String get prepAsk =>
+      'तयार गर्न नसकिने भए परामर्शमा पहिले नै जानकारी दिनुहोस्';
 
   @override
   String get tool_vacuum => 'भ्याकुम';
@@ -1172,7 +1233,8 @@ class TNe extends T {
   String get doneQuoteTitle => 'परामर्श अनुरोध प्राप्त भयो';
 
   @override
-  String get doneQuoteBody => 'हाम्रो टोलीले जाँचपछि अन्तिम मूल्य अनुमान पठाउनेछ। यो परामर्श ट्याबमा हेर्न सकिन्छ।';
+  String get doneQuoteBody =>
+      'हाम्रो टोलीले जाँचपछि अन्तिम मूल्य अनुमान पठाउनेछ। यो परामर्श ट्याबमा हेर्न सकिन्छ।';
 
   @override
   String get goHome => 'होममा जानुहोस्';
@@ -1249,7 +1311,8 @@ class TNe extends T {
   String get cancelTitle => 'यो बुकिङ रद्द गर्ने हो?';
 
   @override
-  String get cancelFree => 'अहिले रद्द गर्दा भुक्तानी रकम पूरा फिर्ता हुनेछ र कुपन पनि फिर्ता दिइनेछ।';
+  String get cancelFree =>
+      'अहिले रद्द गर्दा भुक्तानी रकम पूरा फिर्ता हुनेछ र कुपन पनि फिर्ता दिइनेछ।';
 
   @override
   String get cancelKeep => 'राख्नुहोस्';
@@ -1423,7 +1486,8 @@ class TNe extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'पार्टनरले परिवर्तित मितिमा आउन सक्दैनन्। हाम्रो टोलीले मिलाउनेछ।';
+  String get sys_reschedule_declined =>
+      'पार्टनरले परिवर्तित मितिमा आउन सक्दैनन्। हाम्रो टोलीले मिलाउनेछ।';
 
   @override
   String get moreTitle => 'थप';
@@ -1485,7 +1549,8 @@ class TNe extends T {
   String get deleteAccount => 'खाता मेटाउनुहोस्';
 
   @override
-  String get deleteAccountBody => 'व्यक्तिगत डेटा मेटिनेछ र यो फिर्ता हुँदैन। पहिले सक्रिय बुकिङ रद्द गर्नुहोस्।';
+  String get deleteAccountBody =>
+      'व्यक्तिगत डेटा मेटिनेछ र यो फिर्ता हुँदैन। पहिले सक्रिय बुकिङ रद्द गर्नुहोस्।';
 
   @override
   String get couponsEmpty => 'अहिलेसम्म कुनै कुपन छैन';
@@ -1643,7 +1708,8 @@ class TNe extends T {
   String get quoteG2 => 'पुष्टिका लागि १०% अग्रिम, बाँकी सफाइपछि';
 
   @override
-  String get quoteG3 => 'पुष्टि गर्नुअघि जुनसुकै बेला निःशुल्क रद्द गर्न सकिन्छ';
+  String get quoteG3 =>
+      'पुष्टि गर्नुअघि जुनसुकै बेला निःशुल्क रद्द गर्न सकिन्छ';
 
   @override
   String get quoteConfirmTitle => 'तपाईंको अनुरोध जाँच गर्नुहोस्';
@@ -1724,7 +1790,8 @@ class TNe extends T {
   String get fVatEstimate => 'VAT अनुमान';
 
   @override
-  String get fVatNote => 'प्लेटफर्म शुल्कको १०% अनुमान हो। लेखापालसँग पुष्टि गर्नुहोस्।';
+  String get fVatNote =>
+      'प्लेटफर्म शुल्कको १०% अनुमान हो। लेखापालसँग पुष्टि गर्नुहोस्।';
 
   @override
   String get fAov => 'औसत अर्डर मूल्य';
@@ -1911,7 +1978,8 @@ class TNe extends T {
   String get err_self_referral => 'आफ्नै कोड प्रयोग गर्न मिल्दैन';
 
   @override
-  String get err_referee_already_booked => 'पहिलो बुकिङ अघि मात्र कोड थप्न सकिन्छ';
+  String get err_referee_already_booked =>
+      'पहिलो बुकिङ अघि मात्र कोड थप्न सकिन्छ';
 
   @override
   String get err_already_referred => 'रेफरल कोड पहिल्यै लागू भइसकेको छ';
@@ -1923,13 +1991,15 @@ class TNe extends T {
   String get err_referral_disabled => 'अहिले रेफरल रोकिएको छ';
 
   @override
-  String get err_invalid_photos => 'Malkkeum मार्फत अपलोड गरिएका फोटो मात्र संलग्न गर्न सकिन्छ';
+  String get err_invalid_photos =>
+      'Malkkeum मार्फत अपलोड गरिएका फोटो मात्र संलग्न गर्न सकिन्छ';
 
   @override
   String get welcomeOfferTitle => 'पहिलो बुकिङ छुट';
 
   @override
-  String get welcomeOfferBody => 'नयाँ ग्राहकको पहिलो बुकिङमा स्वतः लागू हुन्छ। कुपनसँग मिलाइँदैन।';
+  String get welcomeOfferBody =>
+      'नयाँ ग्राहकको पहिलो बुकिङमा स्वतः लागू हुन्छ। कुपनसँग मिलाइँदैन।';
 
   @override
   String get offerKindAmount => 'निश्चित रकम (वोन)';
@@ -1950,7 +2020,8 @@ class TNe extends T {
   String get referralSettingsTitle => 'रेफरल इनाम';
 
   @override
-  String get referralSettingsBody => 'साथीको पहिलो बुकिङ पूरा भई भुक्तानी भएपछि दिइन्छ। आफैलाई रेफर र दोहोरिएको फोन नम्बर रोकिन्छ।';
+  String get referralSettingsBody =>
+      'साथीको पहिलो बुकिङ पूरा भई भुक्तानी भएपछि दिइन्छ। आफैलाई रेफर र दोहोरिएको फोन नम्बर रोकिन्छ।';
 
   @override
   String get referralRewardAmount => 'इनाम रकम (वोन)';
@@ -2089,34 +2160,43 @@ class TNe extends T {
   String get oIntNever => 'अहिलेसम्म प्रयोग भएको छैन';
 
   @override
-  String get oActDb => 'डेटाबेससँग जडान हुन सकेन। सर्भरमा malkkeum logs चलाउनुहोस्; जारी रहेमा पुनः सुरु गर्नुहोस्।';
+  String get oActDb =>
+      'डेटाबेससँग जडान हुन सकेन। सर्भरमा malkkeum logs चलाउनुहोस्; जारी रहेमा पुनः सुरु गर्नुहोस्।';
 
   @override
-  String get oActDisk => 'डिस्कमा १०% भन्दा कम खाली ठाउँ छ। पुराना ब्याकअप मेटाउनुहोस् वा डिस्क थप्नुहोस्।';
+  String get oActDisk =>
+      'डिस्कमा १०% भन्दा कम खाली ठाउँ छ। पुराना ब्याकअप मेटाउनुहोस् वा डिस्क थप्नुहोस्।';
 
   @override
-  String get oActBackup => 'स्वचालित ब्याकअप ढिलो भएको छ। सर्भरमा malkkeum backup चलाउनुहोस् र backups/backup.log हेर्नुहोस्।';
+  String get oActBackup =>
+      'स्वचालित ब्याकअप ढिलो भएको छ। सर्भरमा malkkeum backup चलाउनुहोस् र backups/backup.log हेर्नुहोस्।';
 
   @override
-  String get oActErrors => 'सर्भर त्रुटि धेरै छन्। malkkeum logs मा error लाइनहरू हेर्नुहोस्; दोहोरिए विकासकर्तालाई पठाउनुहोस्।';
+  String get oActErrors =>
+      'सर्भर त्रुटि धेरै छन्। malkkeum logs मा error लाइनहरू हेर्नुहोस्; दोहोरिए विकासकर्तालाई पठाउनुहोस्।';
 
   @override
-  String get oActPayments => 'भुक्तानी भएको हुन सक्छ तर स्वचालित रूपमा प्रशोधन भएको छैन। PortOne मा जाँच गर्नुहोस् र आवश्यक परे म्यानुअल रिफन्ड गर्नुहोस्।';
+  String get oActPayments =>
+      'भुक्तानी भएको हुन सक्छ तर स्वचालित रूपमा प्रशोधन भएको छैन। PortOne मा जाँच गर्नुहोस् र आवश्यक परे म्यानुअल रिफन्ड गर्नुहोस्।';
 
   @override
-  String get oActWebhook => 'भुक्तानी सूचनाको हस्ताक्षर जाँच असफल भयो। सेटअप > भुक्तानी (PortOne) मा webhook secret फेरि राख्नुहोस्।';
+  String get oActWebhook =>
+      'भुक्तानी सूचनाको हस्ताक्षर जाँच असफल भयो। सेटअप > भुक्तानी (PortOne) मा webhook secret फेरि राख्नुहोस्।';
 
   @override
-  String get oActIntegration => 'यो जडान असफल भइरहेको छ। सेटअपमा कुञ्जीहरू जाँच गरी Test connection थिच्नुहोस्।';
+  String get oActIntegration =>
+      'यो जडान असफल भइरहेको छ। सेटअपमा कुञ्जीहरू जाँच गरी Test connection थिच्नुहोस्।';
 
   @override
-  String get oActNotSet => 'अहिलेसम्म सेटअप भएको छैन। सेटअपमा कुञ्जी राख्नुहोस्।';
+  String get oActNotSet =>
+      'अहिलेसम्म सेटअप भएको छैन। सेटअपमा कुञ्जी राख्नुहोस्।';
 
   @override
   String get oAlerts => 'सूचना सेटिङ';
 
   @override
-  String get oAlertsHint => 'समस्या भएमा इनबक्स र मालिकको फोनमा SMS पठाइन्छ। उही समस्या हरेक ६ घण्टामा एक पटक मात्र पठाइन्छ।';
+  String get oAlertsHint =>
+      'समस्या भएमा इनबक्स र मालिकको फोनमा SMS पठाइन्छ। उही समस्या हरेक ६ घण्टामा एक पटक मात्र पठाइन्छ।';
 
   @override
   String get oRuleSms => 'SMS पठाउन असफल';
@@ -2154,13 +2234,15 @@ class TNe extends T {
   }
 
   @override
-  String get oQuietHint => 'यो समयमा सूचना पठाइँदैन; समाप्त भएपछि एक पटक पठाइन्छ।';
+  String get oQuietHint =>
+      'यो समयमा सूचना पठाइँदैन; समाप्त भएपछि एक पटक पठाइन्छ।';
 
   @override
   String get oAlertPhone => 'सूचना पाउने फोन';
 
   @override
-  String get oAlertPhoneHint => 'खाली छोडे व्यवसाय जानकारीमा भएको सहायता नम्बरमा पठाइन्छ।';
+  String get oAlertPhoneHint =>
+      'खाली छोडे व्यवसाय जानकारीमा भएको सहायता नम्बरमा पठाइन्छ।';
 
   @override
   String get oSave => 'सेभ';
@@ -2205,7 +2287,8 @@ class TNe extends T {
   String get pIntroTitle => 'सफाइ विज्ञहरूका लागि\nकाम · तालिका · भुक्तानी';
 
   @override
-  String get pIntroBody => 'तपाईंले चाहनु भएको ठाउँ र समयमा मात्र काम गर्नुहोस्, साप्ताहिक भुक्तानी पाउनुहोस्।';
+  String get pIntroBody =>
+      'तपाईंले चाहनु भएको ठाउँ र समयमा मात्र काम गर्नुहोस्, साप्ताहिक भुक्तानी पाउनुहोस्।';
 
   @override
   String get pOnbTitle => 'पार्टनरको जानकारी दिनुहोस्';
@@ -2229,10 +2312,12 @@ class TNe extends T {
   String get pPendingTitle => 'स्वीकृतिको पर्खाइमा छ';
 
   @override
-  String get pPendingBody => 'स्वीकृत भएपछि हामी सूचना पठाउनेछौँ। तबसम्म भुक्तानी खाता दर्ता गर्नुहोस्।';
+  String get pPendingBody =>
+      'स्वीकृत भएपछि हामी सूचना पठाउनेछौँ। तबसम्म भुक्तानी खाता दर्ता गर्नुहोस्।';
 
   @override
-  String get pSuspended => 'तपाईंको खाता अस्थायी रूपमा रोकिएको छ। कृपया सञ्चालन टोलीलाई सम्पर्क गर्नुहोस्।';
+  String get pSuspended =>
+      'तपाईंको खाता अस्थायी रूपमा रोकिएको छ। कृपया सञ्चालन टोलीलाई सम्पर्क गर्नुहोस्।';
 
   @override
   String get pDirect => 'सिधा बुकिङ';
@@ -2256,7 +2341,8 @@ class TNe extends T {
   String get pNoJobs => 'अहिले मिल्ने कुनै काम छैन';
 
   @override
-  String get pNoJobsBody => 'सेवा, क्षेत्र वा कामका घण्टा फराकिलो पार्दा थप काम देख्न सक्नुहुन्छ';
+  String get pNoJobsBody =>
+      'सेवा, क्षेत्र वा कामका घण्टा फराकिलो पार्दा थप काम देख्न सक्नुहुन्छ';
 
   @override
   String get pPayout => 'अनुमानित भुक्तानी';
@@ -2271,7 +2357,8 @@ class TNe extends T {
   String get pClosed => 'बन्द';
 
   @override
-  String get pPrivacyNote => 'सटीक ठेगाना र ग्राहकको विवरण स्वीकार गरेपछि देखिन्छ';
+  String get pPrivacyNote =>
+      'सटीक ठेगाना र ग्राहकको विवरण स्वीकार गरेपछि देखिन्छ';
 
   @override
   String get pAccept => 'काम स्वीकार गर्नुहोस्';
@@ -2280,7 +2367,8 @@ class TNe extends T {
   String get pAcceptConfirm => 'यो काम स्वीकार गर्ने हो?';
 
   @override
-  String get pAcceptBody => 'स्वीकार गर्दा यो तपाईंको तालिकामा थपिनेछ र ग्राहकलाई टोली तोकिएको सूचना जानेछ। भ्रमणको २ दिनअघिदेखि रद्द गर्न कठिन हुन्छ।';
+  String get pAcceptBody =>
+      'स्वीकार गर्दा यो तपाईंको तालिकामा थपिनेछ र ग्राहकलाई टोली तोकिएको सूचना जानेछ। भ्रमणको २ दिनअघिदेखि रद्द गर्न कठिन हुन्छ।';
 
   @override
   String get pAccepted => 'काम स्वीकार गरियो';
@@ -2347,7 +2435,8 @@ class TNe extends T {
   String get pNoSchedule => 'यस दिन कुनै तालिका छैन';
 
   @override
-  String get pCancelledBanner => 'ग्राहकले यो काम रद्द गर्नुभएको छ। सम्पन्न चिन्ह लगाउन सकिँदैन।';
+  String get pCancelledBanner =>
+      'ग्राहकले यो काम रद्द गर्नुभएको छ। सम्पन्न चिन्ह लगाउन सकिँदैन।';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2427,7 +2516,8 @@ class TNe extends T {
   String get pCompleteCta => 'सम्पन्न चिन्ह लगाउनुहोस्';
 
   @override
-  String get pCompleteNeed => 'हरेक प्रकारको कम्तीमा १ फोटो राख्नुहोस् र सबै वस्तु जाँच गर्नुहोस्';
+  String get pCompleteNeed =>
+      'हरेक प्रकारको कम्तीमा १ फोटो राख्नुहोस् र सबै वस्तु जाँच गर्नुहोस्';
 
   @override
   String get pCompleted => 'उत्कृष्ट काम!';
@@ -2438,7 +2528,8 @@ class TNe extends T {
   }
 
   @override
-  String get pPayoutWaiting => 'ग्राहकले बाँकी रकम तिरेपछि भुक्तानी मिति तय हुन्छ';
+  String get pPayoutWaiting =>
+      'ग्राहकले बाँकी रकम तिरेपछि भुक्तानी मिति तय हुन्छ';
 
   @override
   String get pPendingPayout => 'भुक्तानी पर्खाइमा रकम';
@@ -2489,7 +2580,8 @@ class TNe extends T {
   String get pUnverified => 'जाँच हुँदैछ';
 
   @override
-  String get pAccountSaved => 'खाता सुरक्षित भयो। परिवर्तन गर्दा फेरि जाँच हुन्छ।';
+  String get pAccountSaved =>
+      'खाता सुरक्षित भयो। परिवर्तन गर्दा फेरि जाँच हुन्छ।';
 
   @override
   String get pWorkSchedule => 'कामको तालिका';
@@ -2575,6 +2667,9 @@ class TNe extends T {
   String get pSpace => 'ठाउँको जानकारी';
 
   @override
+  String get cIntPayout => 'Partner payouts';
+
+  @override
   String get poTabSettlements => 'Settlements';
 
   @override
@@ -2605,7 +2700,12 @@ class TNe extends T {
   String get poAccountTitle => 'Transfer details';
 
   @override
-  String poAccountBody(String holder, String bank, String account, String amount) {
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
     return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
   }
 
@@ -2701,7 +2801,8 @@ class TNe extends T {
   String get cSetupPrivacyOfficer => 'गोपनीयता अधिकारी';
 
   @override
-  String get cSetupStoreLinks => 'एप स्टोर लिङ्क (भरेपछि वेबसाइटका बटन सक्रिय हुन्छन्)';
+  String get cSetupStoreLinks =>
+      'एप स्टोर लिङ्क (भरेपछि वेबसाइटका बटन सक्रिय हुन्छन्)';
 
   @override
   String get cSetupCustomerApp => 'ग्राहक एप';
@@ -2713,13 +2814,15 @@ class TNe extends T {
   String get cSetupPayMethods => 'भुक्तानी विधि';
 
   @override
-  String get cSetupPayMethodsHint => 'ग्राहकले देख्ने भुक्तानी विधि खोल्नुहोस् वा बन्द गर्नुहोस्। तुरुन्तै लागू हुन्छ।';
+  String get cSetupPayMethodsHint =>
+      'ग्राहकले देख्ने भुक्तानी विधि खोल्नुहोस् वा बन्द गर्नुहोस्। तुरुन्तै लागू हुन्छ।';
 
   @override
   String get cReviewTitle => 'स्टोर समीक्षाका लागि डेमो खाता';
 
   @override
-  String get cReviewHint => 'समीक्षकले कोरियाली SMS पाउँदैनन्। यो नम्बर र ६ अङ्कको कोड समीक्षा नोटमा लेख्नुहोस्। आफैं बन्द हुन्छ।';
+  String get cReviewHint =>
+      'समीक्षकले कोरियाली SMS पाउँदैनन्। यो नम्बर र ६ अङ्कको कोड समीक्षा नोटमा लेख्नुहोस्। आफैं बन्द हुन्छ।';
 
   @override
   String get cReviewPhone => 'डेमो फोन नम्बर';
@@ -2736,13 +2839,16 @@ class TNe extends T {
   String get cReviewEnable => 'सक्रिय (१४ दिन)';
 
   @override
-  String get pDeleteAccountBody => 'तपाईंको टोली र व्यक्तिगत विवरण स्थायी रूपमा मेटिन्छ। पहिले तोकिएका काम र बाँकी भुक्तानी पूरा गर्नुहोस्।';
+  String get pDeleteAccountBody =>
+      'तपाईंको टोली र व्यक्तिगत विवरण स्थायी रूपमा मेटिन्छ। पहिले तोकिएका काम र बाँकी भुक्तानी पूरा गर्नुहोस्।';
 
   @override
-  String get err_has_active_jobs => 'तपाईंसँग तोकिएका काम बाँकी छन्। पूरा गर्नुहोस् वा सहायतालाई हस्तान्तरण गर्न भन्नुहोस्।';
+  String get err_has_active_jobs =>
+      'तपाईंसँग तोकिएका काम बाँकी छन्। पूरा गर्नुहोस् वा सहायतालाई हस्तान्तरण गर्न भन्नुहोस्।';
 
   @override
-  String get err_pending_payouts => 'भुक्तानी बाँकी छ। भुक्तानीपछि खाता मेटाउन सकिन्छ।';
+  String get err_pending_payouts =>
+      'भुक्तानी बाँकी छ। भुक्तानीपछि खाता मेटाउन सकिन्छ।';
 
   @override
   String get err_phone_required => 'काम लिनु अघि फोन नम्बर प्रमाणित गर्नुहोस्।';
@@ -2765,7 +2871,8 @@ class TNe extends T {
   String get mMyJobs => 'मेरा काम';
 
   @override
-  String get mNoJobs => 'अहिले कुनै काम तोकिएको छैन। टोली प्रमुखले तोकेपछि यहाँ देखिन्छ।';
+  String get mNoJobs =>
+      'अहिले कुनै काम तोकिएको छैन। टोली प्रमुखले तोकेपछि यहाँ देखिन्छ।';
 
   @override
   String mTeam(String team) {
@@ -2797,10 +2904,12 @@ class TNe extends T {
   String get cSetupCheckInApp => 'सेभ भयो · एपबाट लगइन गरेर पुष्टि गर्नुहोस्';
 
   @override
-  String get cSetupInvalidKey => 'कुञ्जी अस्वीकार भयो। कपी गरेको मान जाँच्नुहोस्';
+  String get cSetupInvalidKey =>
+      'कुञ्जी अस्वीकार भयो। कपी गरेको मान जाँच्नुहोस्';
 
   @override
-  String get cSetupUnreachable => 'सेवामा पुग्न सकिएन। केही बेरपछि प्रयास गर्नुहोस्';
+  String get cSetupUnreachable =>
+      'सेवामा पुग्न सकिएन। केही बेरपछि प्रयास गर्नुहोस्';
 
   @override
   String get cSetupKeepValue => 'सेभ गरिएको (बदल्न मात्र लेख्नुहोस्)';
@@ -2848,7 +2957,8 @@ class TNe extends T {
   String get cFirstRunTitle => 'स्वागत छ! मालिकको खाता बनाउनुहोस्';
 
   @override
-  String get cFirstRunBody => 'स्थापना गर्दा देखिएको १२ अक्षरको कोड लेख्नुहोस्। यो खाताले सबै सेटिङ व्यवस्थापन गर्छ।';
+  String get cFirstRunBody =>
+      'स्थापना गर्दा देखिएको १२ अक्षरको कोड लेख्नुहोस्। यो खाताले सबै सेटिङ व्यवस्थापन गर्छ।';
 
   @override
   String get cFirstRunCode => 'सेटअप कोड';
@@ -2883,13 +2993,15 @@ class TNe extends T {
   String get uUpdateRequiredTitle => 'अपडेट आवश्यक छ';
 
   @override
-  String get uUpdateRequiredBody => 'यो संस्करण अब समर्थित छैन। कृपया स्टोरबाट अपडेट गर्नुहोस्।';
+  String get uUpdateRequiredBody =>
+      'यो संस्करण अब समर्थित छैन। कृपया स्टोरबाट अपडेट गर्नुहोस्।';
 
   @override
   String get uUpdateStore => 'स्टोरमा अपडेट गर्नुहोस्';
 
   @override
-  String get uUpdateStoreMissing => 'अपडेट लिंक अझै तयार छैन। पछि फेरि प्रयास गर्नुहोस्।';
+  String get uUpdateStoreMissing =>
+      'अपडेट लिंक अझै तयार छैन। पछि फेरि प्रयास गर्नुहोस्।';
 
   @override
   String uCurrentVersion(String version) {
@@ -2900,7 +3012,8 @@ class TNe extends T {
   String get uAppVersionTitle => 'एप संस्करणहरू';
 
   @override
-  String get uAppVersionHint => 'न्यूनतम संस्करणभन्दा तल्लो एप अपडेट स्क्रिनमा रोकिनेछ। उदाहरण: 1.2.0';
+  String get uAppVersionHint =>
+      'न्यूनतम संस्करणभन्दा तल्लो एप अपडेट स्क्रिनमा रोकिनेछ। उदाहरण: 1.2.0';
 
   @override
   String get uMinVersion => 'न्यूनतम संस्करण';

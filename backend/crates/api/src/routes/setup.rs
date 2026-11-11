@@ -6,6 +6,7 @@ use crate::{
     auth::{Admin, hash_password},
     backup,
     error::{ApiError, ApiResult},
+    address,
     integrations::{self, Invalid, Kind, Section},
     providers::{fcm, portone, sms},
     state::AppState,
@@ -492,6 +493,13 @@ async fn probe(s: &AppState, sec: Section) -> (bool, &'static str) {
             Some(cfg) => match backup::check(http, cfg).await {
                 Ok(()) => (true, "connected"),
                 Err(e) => (false, e.code()),
+            },
+        },
+        Section::Juso => match integ.juso_confm_key.as_deref() {
+            None => (false, "not_configured"),
+            Some(key) => match address::check(http, key).await {
+                Ok(()) => (true, "connected"),
+                Err(_) => (false, "provider_error"),
             },
         },
         // Login keys can only be proven by a real sign-in from the app.

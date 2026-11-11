@@ -9,13 +9,39 @@ class TId extends T {
   TId([String locale = 'id']) : super(locale);
 
   @override
+  String get addressSearch => 'Cari alamat';
+
+  @override
+  String get addressSearchHint =>
+      'Cari dengan nama jalan, gedung, atau nomor lot';
+
+  @override
+  String get addressSearchButton => 'Cari';
+
+  @override
+  String get addressSearchMinChars => 'Masukkan minimal 2 karakter';
+
+  @override
+  String get addressNoResults => 'Tidak ada hasil. Coba kata lain.';
+
+  @override
+  String get addressManualEntry => 'Isi manual';
+
+  @override
+  String get cardRegisterTitle => 'Daftar kartu';
+
+  @override
+  String get cIntJuso => 'Pencarian alamat (juso.go.kr)';
+
+  @override
   String get aiLabel => 'Asisten AI';
 
   @override
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'Menjawab chat pelanggan secara otomatis. Setiap pesan dikenai biaya API.';
+  String get aiCardHint =>
+      'Menjawab chat pelanggan secara otomatis. Setiap pesan dikenai biaya API.';
 
   @override
   String get aiModeOffline => 'Jawab hanya saat staf tidak ada';
@@ -59,7 +85,8 @@ class TId extends T {
   String get apLoginApple => 'Lanjut dengan Apple';
 
   @override
-  String get apDevSocialNote => 'Mode pengembangan: masuk dengan akun uji, bukan akun sosial asli.';
+  String get apDevSocialNote =>
+      'Mode pengembangan: masuk dengan akun uji, bukan akun sosial asli.';
 
   @override
   String get apSocialFailed => 'Masuk cepat gagal. Silakan coba lagi.';
@@ -74,7 +101,8 @@ class TId extends T {
   String get apPhoneAttachTitle => 'Verifikasi nomor ponsel Anda';
 
   @override
-  String get apPhoneAttachBody => 'Nomor ini dipakai untuk pemesanan dan komunikasi dengan mitra. Cukup diverifikasi sekali.';
+  String get apPhoneAttachBody =>
+      'Nomor ini dipakai untuk pemesanan dan komunikasi dengan mitra. Cukup diverifikasi sekali.';
 
   @override
   String get apPayAllTitle => 'Pilih metode pembayaran';
@@ -86,7 +114,8 @@ class TId extends T {
   String get apPayMoreTitle => 'Semua metode pembayaran';
 
   @override
-  String get apPayBillingHint => 'Simpan sekali, bayar dengan satu ketukan berikutnya';
+  String get apPayBillingHint =>
+      'Simpan sekali, bayar dengan satu ketukan berikutnya';
 
   @override
   String get apPayCheckoutHint => 'Selesaikan di jendela pembayaran';
@@ -95,7 +124,8 @@ class TId extends T {
   String get apPayRegistering => 'Mendaftarkan…';
 
   @override
-  String get apPayManageHint => 'Bayar dengan satu ketukan memakai metode tersimpan. Tambahkan dompet digital di sini.';
+  String get apPayManageHint =>
+      'Bayar dengan satu ketukan memakai metode tersimpan. Tambahkan dompet digital di sini.';
 
   @override
   String get apMethodCard => 'Kartu kredit & debit';
@@ -137,7 +167,8 @@ class TId extends T {
   String get apVaWaiting => 'Menunggu setoran';
 
   @override
-  String get apVaBody => 'Pemesanan dikonfirmasi setelah setoran diterima. Kami memeriksanya secara otomatis.';
+  String get apVaBody =>
+      'Pemesanan dikonfirmasi setelah setoran diterima. Kami memeriksanya secara otomatis.';
 
   @override
   String get apVaBank => 'Bank';
@@ -177,7 +208,8 @@ class TId extends T {
   String get apPgTitle => 'Jendela pembayaran';
 
   @override
-  String get apPgDevNote => 'Simulasi pembayaran khusus pengembangan. Tidak ada tagihan sungguhan.';
+  String get apPgDevNote =>
+      'Simulasi pembayaran khusus pengembangan. Tidak ada tagihan sungguhan.';
 
   @override
   String apPgPay(String amount) {
@@ -191,16 +223,19 @@ class TId extends T {
   String get apPgCancel => 'Batalkan pembayaran';
 
   @override
-  String get apErrSlotFullRefunded => 'Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis';
+  String get apErrSlotFullRefunded =>
+      'Jadwal itu baru saja penuh, jadi pembayaran Anda dibatalkan otomatis';
 
   @override
-  String get apErrCheckoutExpired => 'Waktu pembayaran habis. Silakan coba lagi.';
+  String get apErrCheckoutExpired =>
+      'Waktu pembayaran habis. Silakan coba lagi.';
 
   @override
   String get apIdentityTitle => 'Verifikasi identitas (PASS)';
 
   @override
-  String get apIdentityBody => 'Memastikan identitas Anda lewat operator seluler. Dipakai untuk transaksi dan pencairan yang aman.';
+  String get apIdentityBody =>
+      'Memastikan identitas Anda lewat operator seluler. Dipakai untuk transaksi dan pencairan yang aman.';
 
   @override
   String get apIdentityAction => 'Verifikasi identitas';
@@ -218,7 +253,8 @@ class TId extends T {
   String get apIdentityDevTitle => 'Verifikasi identitas uji';
 
   @override
-  String get apIdentityDevBody => 'Di mode pengembangan, verifikasi otomatis lolos tanpa pemeriksaan sungguhan.';
+  String get apIdentityDevBody =>
+      'Di mode pengembangan, verifikasi otomatis lolos tanpa pemeriksaan sungguhan.';
 
   @override
   String get apIdentityDevPass => 'Lolos';
@@ -662,10 +698,12 @@ class TId extends T {
   String get err_rate_limited => 'Terlalu banyak percobaan. Coba lagi nanti.';
 
   @override
-  String get err_studio_too_large => 'Pembersihan studio hanya untuk rumah hingga 10 pyeong';
+  String get err_studio_too_large =>
+      'Pembersihan studio hanya untuk rumah hingga 10 pyeong';
 
   @override
-  String get err_date_out_of_range => 'Pilih tanggal mulai besok hingga 60 hari ke depan';
+  String get err_date_out_of_range =>
+      'Pilih tanggal mulai besok hingga 60 hari ke depan';
 
   @override
   String get err_slot_full => 'Jadwal itu baru saja penuh. Pilih waktu lain.';
@@ -677,7 +715,8 @@ class TId extends T {
   String get err_coupon_used => 'Kupon ini sudah pernah digunakan';
 
   @override
-  String get err_coupon_wrong_service => 'Kupon ini tidak berlaku untuk layanan ini';
+  String get err_coupon_wrong_service =>
+      'Kupon ini tidak berlaku untuk layanan ini';
 
   @override
   String get err_payment_failed => 'Pembayaran ditolak. Coba metode lain.';
@@ -686,7 +725,8 @@ class TId extends T {
   String get err_payment_method_required => 'Pilih metode pembayaran';
 
   @override
-  String get err_cancellation_window_closed => 'Dalam 2 hari sebelum kunjungan, batalkan lewat tim kami';
+  String get err_cancellation_window_closed =>
+      'Dalam 2 hari sebelum kunjungan, batalkan lewat tim kami';
 
   @override
   String get err_address_required => 'Tambahkan alamat kunjungan';
@@ -713,7 +753,8 @@ class TId extends T {
   String get introTitle => 'Pembersihan profesional,\ndipesan dalam semenit';
 
   @override
-  String get introBody => 'Harga transparan · Tim terverifikasi · Progres langsung';
+  String get introBody =>
+      'Harga transparan · Tim terverifikasi · Progres langsung';
 
   @override
   String get introStart => 'Lanjut dengan nomor ponsel';
@@ -742,7 +783,8 @@ class TId extends T {
   String get loginVerify => 'Verifikasi';
 
   @override
-  String get loginTerms => 'Dengan melanjutkan, Anda menyetujui Syarat Layanan dan Kebijakan Privasi';
+  String get loginTerms =>
+      'Dengan melanjutkan, Anda menyetujui Syarat Layanan dan Kebijakan Privasi';
 
   @override
   String get profileTitle => 'Siapa nama Anda?';
@@ -805,40 +847,52 @@ class TId extends T {
   String get svcShort_move_in => 'Pindah masuk';
 
   @override
-  String get svcDesc_studio => 'Pembersihan 2 jam menyeluruh untuk studio hingga 10 pyeong: satu kamar dan satu kamar mandi.';
+  String get svcDesc_studio =>
+      'Pembersihan 2 jam menyeluruh untuk studio hingga 10 pyeong: satu kamar dan satu kamar mandi.';
 
   @override
-  String get svcDesc_kitchen => 'Pembersihan dapur terfokus: bak cuci, kompor, bagian luar tudung, dan meja.';
+  String get svcDesc_kitchen =>
+      'Pembersihan dapur terfokus: bak cuci, kompor, bagian luar tudung, dan meja.';
 
   @override
-  String get svcDesc_bathroom => 'Rak, keran, wastafel, dan toilet dibersihkan bagian dalam dan luar, lalu lantai dikeringkan.';
+  String get svcDesc_bathroom =>
+      'Rak, keran, wastafel, dan toilet dibersihkan bagian dalam dan luar, lalu lantai dikeringkan.';
 
   @override
-  String get svcDesc_mattress => 'Peralatan profesional menyedot debu, tungau, dan noda, lalu disterilkan dengan uap.';
+  String get svcDesc_mattress =>
+      'Peralatan profesional menyedot debu, tungau, dan noda, lalu disterilkan dengan uap.';
 
   @override
-  String get svcDesc_aircon => 'Dibongkar, lalu koil, kipas, dan filter dicuci tekanan tinggi dan disterilkan.';
+  String get svcDesc_aircon =>
+      'Dibongkar, lalu koil, kipas, dan filter dicuci tekanan tinggi dan disterilkan.';
 
   @override
-  String get svcDesc_sofa => 'Pembersih sesuai bahan menguraikan kotoran, lalu diangkat dengan metode ekstraksi basah.';
+  String get svcDesc_sofa =>
+      'Pembersih sesuai bahan menguraikan kotoran, lalu diangkat dengan metode ekstraksi basah.';
 
   @override
-  String get svcDesc_move_out => 'Sebelum pindah keluar, tim profesional datang membawa peralatan dan membersihkan rumah kosong.';
+  String get svcDesc_move_out =>
+      'Sebelum pindah keluar, tim profesional datang membawa peralatan dan membersihkan rumah kosong.';
 
   @override
-  String get svcDesc_move_in => 'Sebelum pindah masuk, tim profesional datang membawa peralatan dan membersihkan rumah baru.';
+  String get svcDesc_move_in =>
+      'Sebelum pindah masuk, tim profesional datang membawa peralatan dan membersihkan rumah baru.';
 
   @override
-  String get svcNotes_bathroom => 'Saluran atau toilet yang tersumbat dapat membatasi layanan\nPembersihan yang memerlukan bahan kimia khusus, langit-langit, atau ventilasi tidak termasuk\nJamur lama dan kotoran membandel mungkin tidak hilang sepenuhnya';
+  String get svcNotes_bathroom =>
+      'Saluran atau toilet yang tersumbat dapat membatasi layanan\nPembersihan yang memerlukan bahan kimia khusus, langit-langit, atau ventilasi tidak termasuk\nJamur lama dan kotoran membandel mungkin tidak hilang sepenuhnya';
 
   @override
-  String get svcNotes_mattress => 'Harga sama dari ukuran single hingga king\nKering sempurna dalam 4–6 jam\nKerusakan per pegas atau kasur melesak tidak dapat diperbaiki';
+  String get svcNotes_mattress =>
+      'Harga sama dari ukuran single hingga king\nKering sempurna dalam 4–6 jam\nKerusakan per pegas atau kasur melesak tidak dapat diperbaiki';
 
   @override
-  String get svcNotes_aircon => 'Unit berusia lebih dari 10 tahun mungkin tidak aman untuk dibongkar\nUnit outdoor tidak termasuk\nKami memeriksa fungsi sebelum dan sesudah pembersihan';
+  String get svcNotes_aircon =>
+      'Unit berusia lebih dari 10 tahun mungkin tidak aman untuk dibongkar\nUnit outdoor tidak termasuk\nKami memeriksa fungsi sebelum dan sesudah pembersihan';
 
   @override
-  String get svcNotes_sofa => 'Sofa kulit dibersihkan lalu dilapisi pelembap\nNoda lama atau luntur warna mungkin tidak hilang sepenuhnya\nKering sempurna dalam 4–6 jam';
+  String get svcNotes_sofa =>
+      'Sofa kulit dibersihkan lalu dilapisi pelembap\nNoda lama atau luntur warna mungkin tidak hilang sepenuhnya\nKering sempurna dalam 4–6 jam';
 
   @override
   String get unitTitle_bathroom => 'Jumlah kamar mandi';
@@ -944,7 +998,8 @@ class TId extends T {
   String get homeServices => 'Layanan apa yang Anda butuhkan?';
 
   @override
-  String get homeAddAddress => 'Tambahkan alamat untuk melihat layanan dan harga yang tersedia';
+  String get homeAddAddress =>
+      'Tambahkan alamat untuk melihat layanan dan harga yang tersedia';
 
   @override
   String get homeAddAddressCta => 'Tambah alamat';
@@ -955,7 +1010,8 @@ class TId extends T {
   }
 
   @override
-  String get homeRebookBody => 'Pakai pilihan yang sama seperti terakhir, cukup dua ketukan';
+  String get homeRebookBody =>
+      'Pakai pilihan yang sama seperti terakhir, cukup dua ketukan';
 
   @override
   String get homeNotices => 'Info terbaru';
@@ -986,7 +1042,8 @@ class TId extends T {
   }
 
   @override
-  String get studioBlockedBody => 'Tim konsultan kami akan merekomendasikan layanan yang sesuai untuk rumah Anda.';
+  String get studioBlockedBody =>
+      'Tim konsultan kami akan merekomendasikan layanan yang sesuai untuk rumah Anda.';
 
   @override
   String get consultCta => 'Tanya tim kami';
@@ -1064,7 +1121,8 @@ class TId extends T {
   String get afternoon => 'Siang';
 
   @override
-  String get scheduleQuoteNote => 'Waktu kedatangan pasti akan kami konfirmasi lewat chat';
+  String get scheduleQuoteNote =>
+      'Waktu kedatangan pasti akan kami konfirmasi lewat chat';
 
   @override
   String get goToPayment => 'Lanjut ke pembayaran';
@@ -1073,7 +1131,8 @@ class TId extends T {
   String get prepTitle => 'Mohon siapkan ini sebelum kunjungan';
 
   @override
-  String get prepBody => 'Sebagian pekerjaan mungkin terbatas tanpa perlengkapan ini';
+  String get prepBody =>
+      'Sebagian pekerjaan mungkin terbatas tanpa perlengkapan ini';
 
   @override
   String get prepAsk => 'Tidak bisa menyiapkannya? Beri tahu tim kami';
@@ -1166,13 +1225,15 @@ class TId extends T {
   String get doneTitle => 'Pemesanan berhasil!';
 
   @override
-  String get doneBody => 'Kami akan memberi tahu Anda segera setelah tim ditugaskan';
+  String get doneBody =>
+      'Kami akan memberi tahu Anda segera setelah tim ditugaskan';
 
   @override
   String get doneQuoteTitle => 'Permintaan konsultasi diterima';
 
   @override
-  String get doneQuoteBody => 'Tim konsultan kami akan memeriksa dan mengirim penawaran final. Anda bisa melihatnya di tab Chat.';
+  String get doneQuoteBody =>
+      'Tim konsultan kami akan memeriksa dan mengirim penawaran final. Anda bisa melihatnya di tab Chat.';
 
   @override
   String get goHome => 'Ke beranda';
@@ -1193,7 +1254,8 @@ class TId extends T {
   String get bookingsEmpty => 'Belum ada pemesanan';
 
   @override
-  String get bookingsEmptyBody => 'Kupon selamat datang menunggu untuk pemesanan pertama Anda';
+  String get bookingsEmptyBody =>
+      'Kupon selamat datang menunggu untuk pemesanan pertama Anda';
 
   @override
   String get bookNow => 'Pesan pembersihan';
@@ -1249,7 +1311,8 @@ class TId extends T {
   String get cancelTitle => 'Batalkan pemesanan ini?';
 
   @override
-  String get cancelFree => 'Jika dibatalkan sekarang, Anda mendapat pengembalian dana penuh dan kupon Anda dikembalikan.';
+  String get cancelFree =>
+      'Jika dibatalkan sekarang, Anda mendapat pengembalian dana penuh dan kupon Anda dikembalikan.';
 
   @override
   String get cancelKeep => 'Tetap pesan';
@@ -1313,7 +1376,8 @@ class TId extends T {
   String get reviewTitle => 'Bagaimana hasilnya?';
 
   @override
-  String get reviewHint => 'Ceritakan apa yang sudah baik atau perlu diperbaiki';
+  String get reviewHint =>
+      'Ceritakan apa yang sudah baik atau perlu diperbaiki';
 
   @override
   String ratingStars(String n) {
@@ -1415,7 +1479,8 @@ class TId extends T {
   }
 
   @override
-  String get sys_job_completed => 'Pembersihan selesai! Lihat foto sebelum dan sesudahnya.';
+  String get sys_job_completed =>
+      'Pembersihan selesai! Lihat foto sebelum dan sesudahnya.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1423,7 +1488,8 @@ class TId extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'Mitra tidak bisa datang pada jadwal baru. Tim kami akan mengatur ulang.';
+  String get sys_reschedule_declined =>
+      'Mitra tidak bisa datang pada jadwal baru. Tim kami akan mengatur ulang.';
 
   @override
   String get moreTitle => 'Lainnya';
@@ -1485,7 +1551,8 @@ class TId extends T {
   String get deleteAccount => 'Hapus akun';
 
   @override
-  String get deleteAccountBody => 'Data pribadi Anda akan dihapus dan tidak dapat dipulihkan. Batalkan dulu pemesanan yang masih berjalan.';
+  String get deleteAccountBody =>
+      'Data pribadi Anda akan dihapus dan tidak dapat dipulihkan. Batalkan dulu pemesanan yang masih berjalan.';
 
   @override
   String get couponsEmpty => 'Belum ada kupon';
@@ -1556,7 +1623,8 @@ class TId extends T {
   String get type_after_interior => 'Setelah renovasi';
 
   @override
-  String get type_lived_in_deep_clean => 'Pembersihan menyeluruh saat masih dihuni';
+  String get type_lived_in_deep_clean =>
+      'Pembersihan menyeluruh saat masih dihuni';
 
   @override
   String get luggageTitle => 'Seberapa penuh barang di rumah?';
@@ -1634,13 +1702,15 @@ class TId extends T {
   String get quoteEstimateTitle => 'Ini estimasi Anda';
 
   @override
-  String get quoteEstimateBody => 'Harga final ditentukan lewat chat setelah kami melihat foto dan kondisi rumah';
+  String get quoteEstimateBody =>
+      'Harga final ditentukan lewat chat setelah kami melihat foto dan kondisi rumah';
 
   @override
   String get quoteG1 => 'Harga final disepakati lewat chat';
 
   @override
-  String get quoteG2 => 'Deposit 10% untuk konfirmasi, sisanya setelah pembersihan';
+  String get quoteG2 =>
+      'Deposit 10% untuk konfirmasi, sisanya setelah pembersihan';
 
   @override
   String get quoteG3 => 'Gratis batal sebelum Anda konfirmasi';
@@ -1724,7 +1794,8 @@ class TId extends T {
   String get fVatEstimate => 'Estimasi PPN';
 
   @override
-  String get fVatNote => 'Estimasi 10% dari biaya platform. Konfirmasi dengan akuntan Anda.';
+  String get fVatNote =>
+      'Estimasi 10% dari biaya platform. Konfirmasi dengan akuntan Anda.';
 
   @override
   String get fAov => 'Rata-rata nilai pesanan';
@@ -1911,7 +1982,8 @@ class TId extends T {
   String get err_self_referral => 'Anda tidak bisa memakai kode sendiri';
 
   @override
-  String get err_referee_already_booked => 'Kode hanya bisa dimasukkan sebelum pesanan pertama';
+  String get err_referee_already_booked =>
+      'Kode hanya bisa dimasukkan sebelum pesanan pertama';
 
   @override
   String get err_already_referred => 'Kode referral sudah diterapkan';
@@ -1923,13 +1995,15 @@ class TId extends T {
   String get err_referral_disabled => 'Referral sedang dijeda';
 
   @override
-  String get err_invalid_photos => 'Hanya foto yang diunggah lewat Malkkeum yang bisa dilampirkan';
+  String get err_invalid_photos =>
+      'Hanya foto yang diunggah lewat Malkkeum yang bisa dilampirkan';
 
   @override
   String get welcomeOfferTitle => 'Diskon pesanan pertama';
 
   @override
-  String get welcomeOfferBody => 'Otomatis berlaku untuk pesanan pertama pelanggan baru. Tidak digabung dengan kupon.';
+  String get welcomeOfferBody =>
+      'Otomatis berlaku untuk pesanan pertama pelanggan baru. Tidak digabung dengan kupon.';
 
   @override
   String get offerKindAmount => 'Nominal (won)';
@@ -1950,7 +2024,8 @@ class TId extends T {
   String get referralSettingsTitle => 'Hadiah referral';
 
   @override
-  String get referralSettingsBody => 'Diberikan setelah pesanan pertama teman selesai dan dibayar. Referral diri sendiri dan nomor ganda diblokir.';
+  String get referralSettingsBody =>
+      'Diberikan setelah pesanan pertama teman selesai dan dibayar. Referral diri sendiri dan nomor ganda diblokir.';
 
   @override
   String get referralRewardAmount => 'Nominal hadiah (won)';
@@ -2089,25 +2164,32 @@ class TId extends T {
   String get oIntNever => 'Belum ada penggunaan';
 
   @override
-  String get oActDb => 'Tidak dapat terhubung ke database. Jalankan malkkeum logs di server; restart jika terus terjadi.';
+  String get oActDb =>
+      'Tidak dapat terhubung ke database. Jalankan malkkeum logs di server; restart jika terus terjadi.';
 
   @override
-  String get oActDisk => 'Sisa disk di bawah 10%. Hapus cadangan lama atau tambah kapasitas disk.';
+  String get oActDisk =>
+      'Sisa disk di bawah 10%. Hapus cadangan lama atau tambah kapasitas disk.';
 
   @override
-  String get oActBackup => 'Cadangan otomatis terlambat. Jalankan malkkeum backup di server dan cek backups/backup.log.';
+  String get oActBackup =>
+      'Cadangan otomatis terlambat. Jalankan malkkeum backup di server dan cek backups/backup.log.';
 
   @override
-  String get oActErrors => 'Banyak error server. Cek baris error di malkkeum logs dan kirim ke pengembang jika berulang.';
+  String get oActErrors =>
+      'Banyak error server. Cek baris error di malkkeum logs dan kirim ke pengembang jika berulang.';
 
   @override
-  String get oActPayments => 'Pembayaran mungkin sudah masuk tetapi belum diproses otomatis. Cek di PortOne dan refund manual jika perlu.';
+  String get oActPayments =>
+      'Pembayaran mungkin sudah masuk tetapi belum diproses otomatis. Cek di PortOne dan refund manual jika perlu.';
 
   @override
-  String get oActWebhook => 'Pemeriksaan tanda tangan notifikasi pembayaran gagal. Masukkan ulang webhook secret di Setup > Payments (PortOne).';
+  String get oActWebhook =>
+      'Pemeriksaan tanda tangan notifikasi pembayaran gagal. Masukkan ulang webhook secret di Setup > Payments (PortOne).';
 
   @override
-  String get oActIntegration => 'Koneksi ini gagal. Cek kunci di Setup lalu tekan Test connection.';
+  String get oActIntegration =>
+      'Koneksi ini gagal. Cek kunci di Setup lalu tekan Test connection.';
 
   @override
   String get oActNotSet => 'Belum diatur. Masukkan kunci di Setup.';
@@ -2116,7 +2198,8 @@ class TId extends T {
   String get oAlerts => 'Pengaturan peringatan';
 
   @override
-  String get oAlertsHint => 'Masalah dikirim ke kotak masuk dan SMS ke ponsel pemilik. Masalah yang sama hanya dikirim sekali tiap 6 jam.';
+  String get oAlertsHint =>
+      'Masalah dikirim ke kotak masuk dan SMS ke ponsel pemilik. Masalah yang sama hanya dikirim sekali tiap 6 jam.';
 
   @override
   String get oRuleSms => 'Pengiriman SMS gagal';
@@ -2154,13 +2237,15 @@ class TId extends T {
   }
 
   @override
-  String get oQuietHint => 'Tidak ada peringatan pada jam ini; satu pesan dikirim setelah selesai.';
+  String get oQuietHint =>
+      'Tidak ada peringatan pada jam ini; satu pesan dikirim setelah selesai.';
 
   @override
   String get oAlertPhone => 'Telepon untuk peringatan';
 
   @override
-  String get oAlertPhoneHint => 'Kosongkan untuk memakai nomor layanan pelanggan di info bisnis.';
+  String get oAlertPhoneHint =>
+      'Kosongkan untuk memakai nomor layanan pelanggan di info bisnis.';
 
   @override
   String get oSave => 'Simpan';
@@ -2178,7 +2263,8 @@ class TId extends T {
   String get oBackupOffsite => 'Cadangan eksternal (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'Mati. Aktifkan di Setup > Cadangan eksternal.';
+  String get oBackupOffsiteOff =>
+      'Mati. Aktifkan di Setup > Cadangan eksternal.';
 
   @override
   String get oLastBackup => 'Cadangan terakhir';
@@ -2202,10 +2288,12 @@ class TId extends T {
   String get pTabSchedule => 'Jadwal';
 
   @override
-  String get pIntroTitle => 'Pekerjaan, jadwal, dan pencairan\nuntuk mitra kebersihan';
+  String get pIntroTitle =>
+      'Pekerjaan, jadwal, dan pencairan\nuntuk mitra kebersihan';
 
   @override
-  String get pIntroBody => 'Bekerja hanya di area dan waktu yang Anda pilih. Dibayar setiap minggu.';
+  String get pIntroBody =>
+      'Bekerja hanya di area dan waktu yang Anda pilih. Dibayar setiap minggu.';
 
   @override
   String get pOnbTitle => 'Ceritakan tentang Anda';
@@ -2229,10 +2317,12 @@ class TId extends T {
   String get pPendingTitle => 'Akun Anda sedang ditinjau';
 
   @override
-  String get pPendingBody => 'Kami akan memberi tahu setelah disetujui. Sementara itu, tambahkan rekening pencairan Anda.';
+  String get pPendingBody =>
+      'Kami akan memberi tahu setelah disetujui. Sementara itu, tambahkan rekening pencairan Anda.';
 
   @override
-  String get pSuspended => 'Akun Anda sedang ditangguhkan. Silakan hubungi tim operasional.';
+  String get pSuspended =>
+      'Akun Anda sedang ditangguhkan. Silakan hubungi tim operasional.';
 
   @override
   String get pDirect => 'Langsung';
@@ -2256,7 +2346,8 @@ class TId extends T {
   String get pNoJobs => 'Belum ada pekerjaan yang cocok';
 
   @override
-  String get pNoJobsBody => 'Perluas layanan, area, atau jam kerja untuk melihat lebih banyak pekerjaan';
+  String get pNoJobsBody =>
+      'Perluas layanan, area, atau jam kerja untuk melihat lebih banyak pekerjaan';
 
   @override
   String get pPayout => 'Estimasi pencairan';
@@ -2271,7 +2362,8 @@ class TId extends T {
   String get pClosed => 'Tutup';
 
   @override
-  String get pPrivacyNote => 'Alamat lengkap dan data pelanggan muncul setelah Anda menerima pekerjaan';
+  String get pPrivacyNote =>
+      'Alamat lengkap dan data pelanggan muncul setelah Anda menerima pekerjaan';
 
   @override
   String get pAccept => 'Terima pekerjaan';
@@ -2280,7 +2372,8 @@ class TId extends T {
   String get pAcceptConfirm => 'Terima pekerjaan ini?';
 
   @override
-  String get pAcceptBody => 'Pekerjaan akan masuk ke jadwal Anda dan pelanggan diberi tahu bahwa tim sudah ditugaskan. Pembatalan dalam 2 hari sebelum kunjungan dibatasi.';
+  String get pAcceptBody =>
+      'Pekerjaan akan masuk ke jadwal Anda dan pelanggan diberi tahu bahwa tim sudah ditugaskan. Pembatalan dalam 2 hari sebelum kunjungan dibatasi.';
 
   @override
   String get pAccepted => 'Pekerjaan diterima';
@@ -2347,7 +2440,8 @@ class TId extends T {
   String get pNoSchedule => 'Tidak ada jadwal';
 
   @override
-  String get pCancelledBanner => 'Pelanggan membatalkan pekerjaan ini. Tidak bisa ditandai selesai.';
+  String get pCancelledBanner =>
+      'Pelanggan membatalkan pekerjaan ini. Tidak bisa ditandai selesai.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2391,7 +2485,8 @@ class TId extends T {
   String get pPayoutBreakdown => 'Rincian pencairan';
 
   @override
-  String get pAfterBalance => 'Dicairkan setelah pelanggan membayar sisa pembayaran';
+  String get pAfterBalance =>
+      'Dicairkan setelah pelanggan membayar sisa pembayaran';
 
   @override
   String get pChatOps => 'Chat dengan operasional';
@@ -2427,7 +2522,8 @@ class TId extends T {
   String get pCompleteCta => 'Tandai selesai';
 
   @override
-  String get pCompleteNeed => 'Unggah minimal 1 foto untuk masing-masing jenis dan centang semua item';
+  String get pCompleteNeed =>
+      'Unggah minimal 1 foto untuk masing-masing jenis dan centang semua item';
 
   @override
   String get pCompleted => 'Kerja bagus!';
@@ -2438,7 +2534,8 @@ class TId extends T {
   }
 
   @override
-  String get pPayoutWaiting => 'Tanggal pencairan ditentukan setelah pelanggan membayar';
+  String get pPayoutWaiting =>
+      'Tanggal pencairan ditentukan setelah pelanggan membayar';
 
   @override
   String get pPendingPayout => 'Pencairan tertunda';
@@ -2489,7 +2586,8 @@ class TId extends T {
   String get pUnverified => 'Sedang diverifikasi';
 
   @override
-  String get pAccountSaved => 'Rekening tersimpan. Perubahan akan diverifikasi ulang.';
+  String get pAccountSaved =>
+      'Rekening tersimpan. Perubahan akan diverifikasi ulang.';
 
   @override
   String get pWorkSchedule => 'Jadwal kerja';
@@ -2575,6 +2673,9 @@ class TId extends T {
   String get pSpace => 'Info ruang';
 
   @override
+  String get cIntPayout => 'Partner payouts';
+
+  @override
   String get poTabSettlements => 'Settlements';
 
   @override
@@ -2605,7 +2706,12 @@ class TId extends T {
   String get poAccountTitle => 'Transfer details';
 
   @override
-  String poAccountBody(String holder, String bank, String account, String amount) {
+  String poAccountBody(
+    String holder,
+    String bank,
+    String account,
+    String amount,
+  ) {
     return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
   }
 
@@ -2680,7 +2786,8 @@ class TId extends T {
   String get cSetupLogo => 'Unggah logo';
 
   @override
-  String get cSetupCompany => 'Data perusahaan (tampil di bawah aplikasi dan situs)';
+  String get cSetupCompany =>
+      'Data perusahaan (tampil di bawah aplikasi dan situs)';
 
   @override
   String get cSetupLegalName => 'Nama resmi';
@@ -2701,7 +2808,8 @@ class TId extends T {
   String get cSetupPrivacyOfficer => 'Petugas privasi';
 
   @override
-  String get cSetupStoreLinks => 'Tautan toko (tombol situs aktif setelah diisi)';
+  String get cSetupStoreLinks =>
+      'Tautan toko (tombol situs aktif setelah diisi)';
 
   @override
   String get cSetupCustomerApp => 'Aplikasi pelanggan';
@@ -2713,13 +2821,15 @@ class TId extends T {
   String get cSetupPayMethods => 'Metode pembayaran';
 
   @override
-  String get cSetupPayMethodsHint => 'Aktifkan atau matikan metode yang dilihat pelanggan. Berlaku langsung.';
+  String get cSetupPayMethodsHint =>
+      'Aktifkan atau matikan metode yang dilihat pelanggan. Berlaku langsung.';
 
   @override
   String get cReviewTitle => 'Akun demo untuk peninjauan toko';
 
   @override
-  String get cReviewHint => 'Peninjau tidak bisa menerima SMS Korea. Tulis nomor dan kode 6 digit di catatan peninjauan. Mati otomatis.';
+  String get cReviewHint =>
+      'Peninjau tidak bisa menerima SMS Korea. Tulis nomor dan kode 6 digit di catatan peninjauan. Mati otomatis.';
 
   @override
   String get cReviewPhone => 'Nomor telepon demo';
@@ -2736,16 +2846,20 @@ class TId extends T {
   String get cReviewEnable => 'Aktifkan (14 hari)';
 
   @override
-  String get pDeleteAccountBody => 'Tim dan data pribadi akan dihapus permanen. Selesaikan pekerjaan dan pembayaran tertunda terlebih dulu.';
+  String get pDeleteAccountBody =>
+      'Tim dan data pribadi akan dihapus permanen. Selesaikan pekerjaan dan pembayaran tertunda terlebih dulu.';
 
   @override
-  String get err_has_active_jobs => 'Masih ada pekerjaan yang ditugaskan. Selesaikan atau minta dukungan memindahkannya.';
+  String get err_has_active_jobs =>
+      'Masih ada pekerjaan yang ditugaskan. Selesaikan atau minta dukungan memindahkannya.';
 
   @override
-  String get err_pending_payouts => 'Masih ada pembayaran tertunda. Akun bisa dihapus setelah dibayar.';
+  String get err_pending_payouts =>
+      'Masih ada pembayaran tertunda. Akun bisa dihapus setelah dibayar.';
 
   @override
-  String get err_phone_required => 'Verifikasi nomor telepon sebelum menerima pekerjaan.';
+  String get err_phone_required =>
+      'Verifikasi nomor telepon sebelum menerima pekerjaan.';
 
   @override
   String get nAlerts => 'Notifikasi';
@@ -2765,7 +2879,8 @@ class TId extends T {
   String get mMyJobs => 'Pekerjaan saya';
 
   @override
-  String get mNoJobs => 'Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.';
+  String get mNoJobs =>
+      'Belum ada pekerjaan. Pekerjaan dari ketua tim akan muncul di sini.';
 
   @override
   String mTeam(String team) {
@@ -2794,13 +2909,15 @@ class TId extends T {
   String get cSetupFromEnv => 'Memakai pengaturan server';
 
   @override
-  String get cSetupCheckInApp => 'Tersimpan · konfirmasi dengan masuk dari aplikasi';
+  String get cSetupCheckInApp =>
+      'Tersimpan · konfirmasi dengan masuk dari aplikasi';
 
   @override
   String get cSetupInvalidKey => 'Kunci ditolak. Periksa nilai yang disalin';
 
   @override
-  String get cSetupUnreachable => 'Layanan tidak dapat dijangkau. Coba lagi nanti';
+  String get cSetupUnreachable =>
+      'Layanan tidak dapat dijangkau. Coba lagi nanti';
 
   @override
   String get cSetupKeepValue => 'Tersimpan (isi hanya untuk mengganti)';
@@ -2818,7 +2935,8 @@ class TId extends T {
   String get cCopied => 'Disalin';
 
   @override
-  String get cSetupDevMode => 'Mode uji: tidak ada pembayaran atau pesan sungguhan';
+  String get cSetupDevMode =>
+      'Mode uji: tidak ada pembayaran atau pesan sungguhan';
 
   @override
   String get cSetupOptional => 'Opsional';
@@ -2848,7 +2966,8 @@ class TId extends T {
   String get cFirstRunTitle => 'Selamat datang! Buat akun pemilik';
 
   @override
-  String get cFirstRunBody => 'Masukkan kode 12 karakter yang tampil saat instalasi. Akun ini mengelola semua pengaturan.';
+  String get cFirstRunBody =>
+      'Masukkan kode 12 karakter yang tampil saat instalasi. Akun ini mengelola semua pengaturan.';
 
   @override
   String get cFirstRunCode => 'Kode instalasi';
@@ -2883,13 +3002,15 @@ class TId extends T {
   String get uUpdateRequiredTitle => 'Pembaruan diperlukan';
 
   @override
-  String get uUpdateRequiredBody => 'Versi ini sudah tidak didukung. Silakan perbarui dari toko aplikasi.';
+  String get uUpdateRequiredBody =>
+      'Versi ini sudah tidak didukung. Silakan perbarui dari toko aplikasi.';
 
   @override
   String get uUpdateStore => 'Perbarui di toko';
 
   @override
-  String get uUpdateStoreMissing => 'Tautan pembaruan belum siap. Coba lagi nanti.';
+  String get uUpdateStoreMissing =>
+      'Tautan pembaruan belum siap. Coba lagi nanti.';
 
   @override
   String uCurrentVersion(String version) {
@@ -2900,7 +3021,8 @@ class TId extends T {
   String get uAppVersionTitle => 'Versi aplikasi';
 
   @override
-  String get uAppVersionHint => 'Aplikasi di bawah versi minimum akan berhenti di layar pembaruan. Versi di bawah yang terbaru akan melihat banner. Contoh: 1.2.0';
+  String get uAppVersionHint =>
+      'Aplikasi di bawah versi minimum akan berhenti di layar pembaruan. Versi di bawah yang terbaru akan melihat banner. Contoh: 1.2.0';
 
   @override
   String get uMinVersion => 'Versi minimum';

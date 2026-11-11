@@ -58,7 +58,53 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   late final _size = TextEditingController(text: widget.existing?.sizePyeong.toString() ?? '');
   late String _kind = widget.existing?.kind ?? 'home';
   late String? _district = widget.existing?.districtCode;
+  final _query = TextEditingController();
   bool _busy = false;
+  // Road search: null while the server's feature check is pending (typed entry shows meanwhile).
+  bool? _searchOn;
+  bool _manual = false;
+  bool _searching = false;
+  bool _searched = false;
+  List<AddressHit> _hits = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    addressSearchEnabled(context.api).then((on) {
+      if (mounted) setState(() => _searchOn = on);
+    });
+  }
+
+  Future<void> _search() async {
+    final q = _query.text.trim();
+    if (q.length < 2) {
+      showToast(context, context.t.addressSearchMinChars);
+      return;
+    }
+    setState(() => _searching = true);
+    try {
+      final hits = await searchAddresses(context.api, q);
+      if (mounted) {
+        setState(() {
+          _hits = hits;
+          _searched = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    } finally {
+      if (mounted) setState(() => _searching = false);
+    }
+  }
+
+  /// Fills the road field from a result; the customer then adds the unit (detail) themselves.
+  void _pick(AddressHit h) {
+    setState(() {
+      _road.text = h.road;
+      _hits = const [];
+      _searched = false;
+    });
+  }
 
   bool get _valid {
     final size = int.tryParse(_size.text);
@@ -97,7 +143,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   @override
   void dispose() {
-    for (final c in [_label, _road, _detail, _size]) {
+    for (final c in [_label, _road, _detail, _size, _query]) {
       c.dispose();
     }
     super.dispose();
@@ -130,7 +176,40 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
           onChanged: (v) => setState(() => _district = v),
         ),
         const SizedBox(height: Space.md),
-        // shortcut: typed road address; swap for the Kakao postcode / juso.go.kr search widget once API keys exist.
+        if (_searchOn == true && !_manual) ...[
+          Row(children: [
+            Expanded(
+              child: TextField(
+                controller: _query,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (_) => _search(),
+                decoration: deco(t.addressSearch, t.addressSearchHint),
+              ),
+            ),
+            const SizedBox(width: Space.xs),
+            IconButton.filledTonal(
+              tooltip: t.addressSearchButton,
+              icon: const Icon(Icons.search_rounded),
+              onPressed: _searching ? null : _search,
+            ),
+          ]),
+          for (final h in _hits)
+            Padding(
+              padding: const EdgeInsets.only(top: Space.xs),
+              child: AppCard(
+                onTap: () => _pick(h),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(h.road, style: context.text.titleSmall),
+                  Text([h.building, h.jibun, h.zip].where((x) => x.isNotEmpty).join(' · '), style: context.text.bodySmall),
+                ]),
+              ),
+            ),
+          if (_searched && _hits.isEmpty) Text(t.addressNoResults, style: context.text.bodySmall),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(onPressed: () => setState(() => _manual = true), child: Text(t.addressManualEntry)),
+          ),
+        ],
         TextField(controller: _road, maxLength: 200, decoration: deco(t.addressRoad).copyWith(counterText: ''), onChanged: (_) => setState(() {})),
         const SizedBox(height: Space.md),
         TextField(controller: _detail, maxLength: 200, decoration: deco(t.addressDetail).copyWith(counterText: '')),

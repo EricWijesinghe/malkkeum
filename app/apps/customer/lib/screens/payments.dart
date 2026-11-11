@@ -16,6 +16,7 @@ class PaymentMethodsScreen extends StatefulWidget {
 
 class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   late Future<List<PayChannel>> _billing;
+  BillingSetup _setup = BillingSetup.off;
   String? _adding;
 
   @override
@@ -24,16 +25,30 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     _billing = _loadBilling();
   }
 
-  Future<List<PayChannel>> _loadBilling() async => (await fetchPayChannels(context.api)).where((c) => c.isBilling).toList();
+  /// Saved-card section is hidden unless PortOne is configured (see [BillingSetup]).
+  Future<List<PayChannel>> _loadBilling() async {
+    final api = context.api;
+    final channels = await fetchPayChannels(api);
+    _setup = await fetchBillingSetup(api);
+    return channels.where((c) => c.isBilling && _setup.supports(c.code)).toList();
+  }
 
   void _reload() => setState(() => _billing = _loadBilling());
 
   Future<void> _add(PayChannel ch) async {
     final t = context.t;
     setState(() => _adding = ch.code);
+    final app = context.appRead;
     try {
-      // The gateway's registration UI runs here once the PG contract is signed (decision #3).
-      await context.appRead.addMethod(ch.code, t.payMethod(ch.code));
+      final key = await issueBillingKey(
+        context: context,
+        apiBase: context.api.baseUrl,
+        setup: _setup,
+        provider: ch.code,
+        pageTitle: t.cardRegisterTitle,
+      );
+      if (key == null) return;
+      await app.addMethod(ch.code, t.payMethod(ch.code), key);
       if (mounted) showToast(context, t.methodAdded);
     } catch (e) {
       if (mounted) showToast(context, t.payError(e));
@@ -71,23 +86,26 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               ]),
             ),
           ),
-        const SizedBox(height: Space.lg),
-        Text(t.apPayManageTitle, style: context.text.titleSmall),
-        const SizedBox(height: Space.xs),
         FutureBuilder<List<PayChannel>>(
           future: _billing,
           builder: (context, snap) {
             if (snap.hasError) return ErrorRetry(message: t.errorGeneric, retryLabel: t.retry, onRetry: _reload);
             final channels = snap.data;
             if (channels == null) return const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: CircularProgressIndicator()));
-            return Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
-              for (final ch in channels)
-                PayChannelTile(
-                  code: ch.code,
-                  label: t.payMethod(ch.code),
-                  busy: _adding == ch.code,
-                  onTap: _adding == null ? () => _add(ch) : null,
-                ),
+            if (channels.isEmpty) return const SizedBox.shrink();
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const SizedBox(height: Space.lg),
+              Text(t.apPayManageTitle, style: context.text.titleSmall),
+              const SizedBox(height: Space.xs),
+              Wrap(spacing: Space.xs, runSpacing: Space.xs, children: [
+                for (final ch in channels)
+                  PayChannelTile(
+                    code: ch.code,
+                    label: t.payMethod(ch.code),
+                    busy: _adding == ch.code,
+                    onTap: _adding == null ? () => _add(ch) : null,
+                  ),
+              ]),
             ]);
           },
         ),

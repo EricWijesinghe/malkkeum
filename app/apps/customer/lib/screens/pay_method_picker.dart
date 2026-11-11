@@ -36,19 +36,29 @@ class PayMethodPicker extends StatefulWidget {
 
 class _PayMethodPickerState extends State<PayMethodPicker> {
   late Future<List<PayChannel>> _channels;
+  BillingSetup _setup = BillingSetup.off;
   String? _registering;
 
   @override
   void initState() {
     super.initState();
-    _channels = fetchPayChannels(context.api);
+    _channels = _loadChannels();
   }
 
-  void _reload() => setState(() => _channels = fetchPayChannels(context.api));
+  /// Saved-card channels show only when PortOne is configured for them (see [BillingSetup]).
+  Future<List<PayChannel>> _loadChannels() async {
+    final api = context.api;
+    final channels = await fetchPayChannels(api);
+    _setup = await fetchBillingSetup(api);
+    return channels.where((c) => !c.isBilling || _setup.supports(c.code)).toList();
+  }
+
+  void _reload() => setState(() => _channels = _loadChannels());
 
   /// A billing channel already saved picks that method; otherwise it is registered first.
   Future<void> _billing(PayChannel ch) async {
     final app = context.appRead;
+    final label = context.t.payMethod(ch.code);
     final existing = app.methods.where((m) => m.provider == ch.code).firstOrNull;
     if (existing != null) {
       widget.onChoose(SavedChoice(existing.id));
@@ -56,7 +66,15 @@ class _PayMethodPickerState extends State<PayMethodPicker> {
     }
     setState(() => _registering = ch.code);
     try {
-      final m = await app.addMethod(ch.code, context.t.payMethod(ch.code));
+      final key = await issueBillingKey(
+        context: context,
+        apiBase: context.api.baseUrl,
+        setup: _setup,
+        provider: ch.code,
+        pageTitle: context.t.cardRegisterTitle,
+      );
+      if (key == null) return;
+      final m = await app.addMethod(ch.code, label, key);
       if (mounted) widget.onChoose(SavedChoice(m.id));
     } catch (e) {
       if (mounted) showToast(context, context.t.payError(e));
