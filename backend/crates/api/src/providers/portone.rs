@@ -190,7 +190,7 @@ pub async fn delete_billing_key(p: &Providers, key: &str) -> Result<(), Provider
 }
 
 /// `POST /payments/{paymentId}/billing-key`: charges a saved billing key once. `payment_id` must be unique per charge.
-/// Returns the PortOne transaction id. A 4xx or a non-PAID answer is `Declined`; a 5xx or transport error is `Upstream`.
+/// Returns the PortOne transaction id. A 4xx is `Declined`; a 5xx, transport error or unconfirmed (non-PAID) answer is `Upstream`.
 /// Source: https://developers.portone.io/api/rest-v2/payment.billingKey (verify both answer shapes in a PortOne test store).
 /// shortcut: success is read as `payment.status == "PAID"` plus `payment.transactionId`, decline as any 4xx body. Confirm before live billing.
 pub async fn charge_billing(p: &Providers, key: &str, payment_id: &str, amount: i64, order: &str, customer: Uuid) -> Result<String, ProviderError> {
@@ -222,7 +222,8 @@ pub async fn charge_billing(p: &Providers, key: &str, payment_id: &str, amount: 
     }
     match (v["payment"]["status"].as_str(), v["payment"]["transactionId"].as_str()) {
         (Some("PAID"), Some(tx)) => Ok(tx.to_string()),
-        _ => Err(ProviderError::Declined("charge_not_paid".into())),
+        // Not confirmed as paid: the caller looks the payment up instead of charging again.
+        _ => Err(ProviderError::Upstream("charge_unconfirmed".into())),
     }
 }
 

@@ -483,6 +483,7 @@ pub(crate) async fn sync(s: &AppState, id: Uuid) -> ApiResult<State> {
     match s.providers.transfer_status(&provider_id).await? {
         adapter::TransferStatus::Pending => Ok(row.state()),
         adapter::TransferStatus::Paid => {
+            check_amount(&mut tx, id, row.amount).await?;
             write(&mut tx, id, State::Paid, None).await?;
             tx.commit().await?;
             Ok(State::Paid)

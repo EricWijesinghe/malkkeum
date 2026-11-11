@@ -38,11 +38,12 @@ async fn tip(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uu
     let pro = b.pro_id.ok_or(ApiError::Conflict("tip_unavailable"))?;
     let mut tx = s.db.begin().await?;
     // Locking the settlement serializes concurrent tips and refuses once the partner has been paid out.
-    let state: Option<String> = sqlx::query_scalar("SELECT state FROM settlements WHERE booking_id = $1 FOR UPDATE")
+    let settlement: Option<(String, Option<Uuid>)> = sqlx::query_as("SELECT state, payout_id FROM settlements WHERE booking_id = $1 FOR UPDATE")
         .bind(id)
         .fetch_optional(&mut *tx)
         .await?;
-    if matches!(state.as_deref(), None | Some("paid")) {
+    // A settlement already in a payout batch may be at the provider: a tip added now would not be in the money moved.
+    if settlement.as_ref().is_none_or(|(state, payout)| state == "paid" || payout.is_some()) {
         return Err(ApiError::Conflict("tip_unavailable"));
     }
     let existing: Option<i64> = sqlx::query_scalar("SELECT amount FROM booking_tips WHERE booking_id = $1")

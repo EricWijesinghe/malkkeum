@@ -297,7 +297,7 @@ async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
 /// Refunds every paid payment on a booking (full or a capped amount) and records it.
 pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) -> ApiResult<i64> {
     let pays: Vec<(Uuid, i64, i64, Option<String>, String)> = sqlx::query_as(
-        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') ORDER BY created_at DESC",
+        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') AND kind <> 'tip' ORDER BY created_at DESC",
     )
     .bind(booking)
     .fetch_all(&s.db)

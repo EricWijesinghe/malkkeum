@@ -70,6 +70,8 @@ pub enum Failure {
 enum Attempt {
     Booked(Uuid),
     Failed(Failure),
+    /// The charge outcome is unknown; the stored payment id is checked again on the next pass.
+    Pending,
     /// The subscription was paused or cancelled, or the visit moved, since the pass started.
     Skipped,
 }
@@ -178,7 +180,7 @@ async fn charge_due(s: &AppState) -> ApiResult<(usize, usize)> {
                     tracing::warn!(error = %e, visit = %d.visit_id, "recording a failed charge failed");
                 }
             }
-            Ok(Attempt::Skipped) => {}
+            Ok(Attempt::Skipped | Attempt::Pending) => {}
             Err(e) => tracing::warn!(error = %e, visit = %d.visit_id, "subscription charge errored; retried next pass"),
         }
     }
@@ -194,6 +196,42 @@ fn blocked(e: ApiError) -> ApiResult<Attempt> {
             tracing::warn!(error = %other, "subscription visit blocked");
             Ok(Attempt::Failed(Failure::Blocked))
         }
+    }
+}
+
+/// Everything one charge needs, read once per attempt.
+struct Charge<'a> {
+    d: &'a Due,
+    sub: &'a SubRow,
+    prep: &'a Prepared,
+    body: &'a BookingBody,
+    price: &'a PriceBreakdown,
+    key: &'a str,
+}
+
+/// The PortOne payment id for one try. Stable per visit and attempt count, so a retry reuses it and PortOne cannot charge twice.
+fn charge_ref(visit: Uuid, attempts: i32) -> String {
+    format!("subvisit-{visit}-{attempts}")
+}
+
+/// The id to charge with: the one an earlier pass already sent, else this attempt's fresh one.
+fn payment_ref_for(stored: Option<String>, visit: Uuid, attempts: i32) -> String {
+    stored.unwrap_or_else(|| charge_ref(visit, attempts))
+}
+
+/// How a charge call ended. Only a confirmed decline counts as a failed attempt; anything else is checked again next pass.
+#[derive(Debug, PartialEq, Eq)]
+enum Settled {
+    Paid(String),
+    Declined(String),
+    Unknown,
+}
+
+fn settle(r: Result<String, ProviderError>) -> Settled {
+    match r {
+        Ok(tx) => Settled::Paid(tx),
+        Err(ProviderError::Declined(code)) => Settled::Declined(code),
+        Err(_) => Settled::Unknown,
     }
 }
 
@@ -230,70 +268,103 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let Some(key) = key else {
         return Ok(Attempt::Failed(Failure::Blocked));
     };
-    book_and_charge(s, d, &sub, &prep, &body, &price, &key).await
+    let c = Charge { d, sub: &sub, prep: &prep, body: &body, price: &price, key: &key };
+    if price.total.0 == 0 {
+        return finalize(s, &c, None).await;
+    }
+    let (attempts, stored): (i32, Option<String>) = sqlx::query_as("SELECT charge_attempts, payment_ref FROM subscription_visits WHERE id = $1")
+        .bind(d.visit_id)
+        .fetch_one(&s.db)
+        .await?;
+    let sent = stored.is_some();
+    let pid = payment_ref_for(stored, d.visit_id, attempts);
+    if sent {
+        return reconcile(s, &c, &pid).await;
+    }
+    if !persist_ref(s, d.visit_id, &pid).await? {
+        return Ok(Attempt::Skipped);
+    }
+    charge_once(s, &c, &pid).await
 }
 
-/// One transaction: lock the subscription, take the slot, insert the paid booking, then charge.
-/// A decline or a refusal returns before commit, so nothing is stored. A charge that cannot be saved is refunded.
-#[allow(clippy::too_many_arguments)]
-async fn book_and_charge(
-    s: &AppState,
-    d: &Due,
-    sub: &SubRow,
-    prep: &Prepared,
-    body: &BookingBody,
-    price: &PriceBreakdown,
-    key: &str,
-) -> ApiResult<Attempt> {
+/// Saves the payment id in its own commit before PortOne is called, so a timeout or crash leaves it to reconcile.
+async fn persist_ref(s: &AppState, visit: Uuid, pid: &str) -> ApiResult<bool> {
+    let n = sqlx::query("UPDATE subscription_visits SET payment_ref = $2, updated_at = now() WHERE id = $1 AND state = 'planned' AND payment_ref IS NULL")
+        .bind(visit)
+        .bind(pid)
+        .execute(&s.db)
+        .await?
+        .rows_affected();
+    Ok(n == 1)
+}
+
+/// An earlier pass already sent `pid`: ask PortOne what happened instead of charging again.
+async fn reconcile(s: &AppState, c: &Charge<'_>, pid: &str) -> ApiResult<Attempt> {
+    let total = c.price.total.0;
+    match s.providers.payment(pid, total).await {
+        Ok(info) if info.status == "PAID" && info.total == total => finalize(s, c, Some((pid, pid))).await,
+        Ok(info) if matches!(info.status.as_str(), "FAILED" | "CANCELLED") => {
+            Ok(Attempt::Failed(Failure::Declined(format!("payment_{}", info.status.to_lowercase()))))
+        }
+        Ok(info) => {
+            tracing::warn!(status = %info.status, payment = pid, "subscription payment not settled; checked again next pass");
+            Ok(Attempt::Pending)
+        }
+        // PortOne has no record of this id, so nothing was charged and sending it again is safe.
+        Err(ProviderError::NotFound) => charge_once(s, c, pid).await,
+        Err(e) => {
+            tracing::warn!(error = %e, payment = pid, "subscription payment lookup failed; checked again next pass");
+            Ok(Attempt::Pending)
+        }
+    }
+}
+
+async fn charge_once(s: &AppState, c: &Charge<'_>, pid: &str) -> ApiResult<Attempt> {
+    let r = s.providers.charge_billing(c.key, c.price.total.0, pid, "정기 청소", c.d.user_id).await;
+    match settle(r) {
+        Settled::Paid(tx) => finalize(s, c, Some((pid, &tx))).await,
+        Settled::Declined(code) => Ok(Attempt::Failed(Failure::Declined(code))),
+        Settled::Unknown => {
+            tracing::warn!(payment = pid, "subscription charge unconfirmed; checked again next pass");
+            Ok(Attempt::Pending)
+        }
+    }
+}
+
+/// Books the visit once the money is settled. The charge already happened, so any outcome other than a booking refunds it.
+async fn finalize(s: &AppState, c: &Charge<'_>, paid: Option<(&str, &str)>) -> ApiResult<Attempt> {
+    let outcome = book_visit(s, c, paid).await;
+    if !matches!(outcome, Ok(Attempt::Booked(_))) && let Some((_, tx)) = paid {
+        refund_or_alert(s, "portone", tx, c.price.total.0).await;
+    }
+    outcome
+}
+
+/// One transaction: lock the subscription, take the slot, insert the paid booking and its payment, then commit.
+/// No row lock is held across the PortOne call; the lock is taken only after money has moved.
+async fn book_visit(s: &AppState, c: &Charge<'_>, paid: Option<(&str, &str)>) -> ApiResult<Attempt> {
     let id = Uuid::now_v7();
     let mut tx = s.db.begin().await?;
     let live: Option<(String, String)> = sqlx::query_as(
         "SELECT s.status, v.state FROM subscription_visits v JOIN subscriptions s ON s.id = v.subscription_id
          WHERE v.id = $1 FOR UPDATE OF s, v",
     )
-    .bind(d.visit_id)
+    .bind(c.d.visit_id)
     .fetch_optional(&mut *tx)
     .await?;
     if !matches!(&live, Some((status, state)) if status == "active" && state == "planned") {
         return Ok(Attempt::Skipped);
     }
-    if let Err(e) = lock_slot(&mut tx, d.visit_date, d.start_hour as u8).await {
+    if let Err(e) = lock_slot(&mut tx, c.d.visit_date, c.d.start_hour as u8).await {
         return blocked(e);
     }
-    let number = insert_paid(&mut tx, &s.config.data_key, id, d.user_id, prep, body, price).await?;
-    // PortOne payment ids allow only [A-Za-z0-9_-], so no colon here.
-    let idem = format!("subscription-{id}");
-    let tx_id = if price.total.0 > 0 {
-        match s.providers.charge_billing(key, price.total.0, &idem, "정기 청소", d.user_id).await {
-            Ok(t) => Some(t),
-            Err(ProviderError::Declined(code)) => return Ok(Attempt::Failed(Failure::Declined(code))),
-            Err(e) => {
-                tracing::warn!(error = %e, "subscription charge unavailable");
-                return Ok(Attempt::Failed(Failure::Blocked));
-            }
-        }
-    } else {
-        None
-    };
-    if let Some(t) = &tx_id
-        && let Err(e) = record_payment(&mut tx, id, price.total.0, "full", "portone", t, &idem).await
-    {
-        refund_or_alert(s, "portone", t, price.total.0).await;
-        return Err(e);
+    let number = insert_paid(&mut tx, &s.config.data_key, id, c.d.user_id, c.prep, c.body, c.price).await?;
+    if let Some((pid, tx_id)) = paid {
+        record_payment(&mut tx, id, c.price.total.0, "full", "portone", tx_id, pid).await?;
     }
-    let saved = commit_booking(tx, id, d, sub).await;
-    match saved {
-        Ok(()) => {
-            after_booking_created(s, id, &number).await;
-            Ok(Attempt::Booked(id))
-        }
-        Err(e) => {
-            if let Some(t) = &tx_id {
-                refund_or_alert(s, "portone", t, price.total.0).await;
-            }
-            Err(e)
-        }
-    }
+    commit_booking(tx, id, c.d, c.sub).await?;
+    after_booking_created(s, id, &number).await;
+    Ok(Attempt::Booked(id))
 }
 
 /// Links the booking to the subscription, pins the preferred partner when free, and marks the visit booked.
@@ -316,7 +387,7 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
         .execute(&mut *tx)
         .await?;
     }
-    sqlx::query("UPDATE subscription_visits SET state = 'booked', booking_id = $2, charge_attempts = charge_attempts + 1, retry_at = NULL, updated_at = now() WHERE id = $1")
+    sqlx::query("UPDATE subscription_visits SET state = 'booked', booking_id = $2, charge_attempts = charge_attempts + 1, retry_at = NULL, payment_ref = NULL, updated_at = now() WHERE id = $1")
         .bind(d.visit_id)
         .bind(id)
         .execute(&mut *tx)
@@ -355,7 +426,7 @@ async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<(
         Retry::Pause => None,
     };
     sqlx::query(
-        "UPDATE subscription_visits SET charge_attempts = charge_attempts + 1,
+        "UPDATE subscription_visits SET charge_attempts = charge_attempts + 1, payment_ref = NULL,
            retry_at = CASE WHEN $2::int IS NULL THEN NULL ELSE now() + make_interval(hours => $2::int) END, updated_at = now()
          WHERE id = $1",
     )
@@ -414,4 +485,26 @@ async fn expire(s: &AppState) -> ApiResult<usize> {
         .await;
     }
     Ok(missed.len())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn retry_reuses_the_stored_payment_id() {
+        let visit = Uuid::nil();
+        let first = payment_ref_for(None, visit, 0);
+        // Upstream failed after the id was saved: the next pass must send the same id.
+        assert_eq!(payment_ref_for(Some(first.clone()), visit, 0), first);
+        // A confirmed decline bumps the attempt count, which gives the next try a new id.
+        assert_ne!(payment_ref_for(None, visit, 1), first);
+    }
+
+    #[test]
+    fn upstream_is_unknown_and_only_a_decline_fails_the_attempt() {
+        assert_eq!(settle(Err(ProviderError::Upstream("timeout".into()))), Settled::Unknown);
+        assert_eq!(settle(Err(ProviderError::Declined("card_declined".into()))), Settled::Declined("card_declined".into()));
+        assert_eq!(settle(Ok("tx_1".into())), Settled::Paid("tx_1".into()));
+    }
 }
