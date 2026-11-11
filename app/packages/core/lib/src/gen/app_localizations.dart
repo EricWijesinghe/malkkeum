@@ -74,8 +74,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the T.supportedLocales
 /// property.
 abstract class T {
-  T(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  T(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -95,13 +94,12 @@ abstract class T {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -118,7 +116,7 @@ abstract class T {
     Locale('th'),
     Locale('uz'),
     Locale('vi'),
-    Locale('zh'),
+    Locale('zh')
   ];
 
   /// No description provided for @aiLabel.
@@ -5017,6 +5015,138 @@ abstract class T {
   /// **'공간 정보'**
   String get pSpace;
 
+  /// No description provided for @poTabSettlements.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get poTabSettlements;
+
+  /// No description provided for @poTabPayouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 내역'**
+  String get poTabPayouts;
+
+  /// No description provided for @poState_requested.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청됨'**
+  String get poState_requested;
+
+  /// No description provided for @poState_sent.
+  ///
+  /// In ko, this message translates to:
+  /// **'전송됨'**
+  String get poState_sent;
+
+  /// No description provided for @poState_paid.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 완료'**
+  String get poState_paid;
+
+  /// No description provided for @poState_failed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get poState_failed;
+
+  /// No description provided for @poProviderManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 이체'**
+  String get poProviderManual;
+
+  /// No description provided for @poProviderToss.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 지급대행'**
+  String get poProviderToss;
+
+  /// No description provided for @poShowAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 보기'**
+  String get poShowAccount;
+
+  /// No description provided for @poAccountTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이체 정보'**
+  String get poAccountTitle;
+
+  /// No description provided for @poAccountBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{holder} · {bank} · {account}\n{amount}원을 위 계좌로 보낸 뒤 확인을 눌러 주세요.'**
+  String poAccountBody(String holder, String bank, String account, String amount);
+
+  /// No description provided for @poConfirmPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'이체 완료로 표시'**
+  String get poConfirmPaid;
+
+  /// No description provided for @poMarkFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패로 표시'**
+  String get poMarkFailed;
+
+  /// No description provided for @poReasonTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패 사유'**
+  String get poReasonTitle;
+
+  /// No description provided for @poReasonHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 계좌 오류, 이체 취소'**
+  String get poReasonHint;
+
+  /// No description provided for @poSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스로 지급 요청'**
+  String get poSend;
+
+  /// No description provided for @poSync.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태 확인'**
+  String get poSync;
+
+  /// No description provided for @poRetry.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시도'**
+  String get poRetry;
+
+  /// No description provided for @poNoPayouts.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 내역이 없어요'**
+  String get poNoPayouts;
+
+  /// No description provided for @poRequestedToast.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 요청 {n}건을 만들었어요'**
+  String poRequestedToast(String n);
+
+  /// No description provided for @poReasonRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'사유를 입력해 주세요'**
+  String get poReasonRequired;
+
+  /// No description provided for @poRevealNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌 정보는 조회 기록에 남아요'**
+  String get poRevealNote;
+
   /// No description provided for @cSetup.
   ///
   /// In ko, this message translates to:
@@ -5543,64 +5673,37 @@ class _TDelegate extends LocalizationsDelegate<T> {
   }
 
   @override
-  bool isSupported(Locale locale) => <String>[
-    'en',
-    'fil',
-    'id',
-    'ja',
-    'km',
-    'ko',
-    'mn',
-    'ne',
-    'ru',
-    'si',
-    'th',
-    'uz',
-    'vi',
-    'zh',
-  ].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'fil', 'id', 'ja', 'km', 'ko', 'mn', 'ne', 'ru', 'si', 'th', 'uz', 'vi', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_TDelegate old) => false;
 }
 
 T lookupT(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return TEn();
-    case 'fil':
-      return TFil();
-    case 'id':
-      return TId();
-    case 'ja':
-      return TJa();
-    case 'km':
-      return TKm();
-    case 'ko':
-      return TKo();
-    case 'mn':
-      return TMn();
-    case 'ne':
-      return TNe();
-    case 'ru':
-      return TRu();
-    case 'si':
-      return TSi();
-    case 'th':
-      return TTh();
-    case 'uz':
-      return TUz();
-    case 'vi':
-      return TVi();
-    case 'zh':
-      return TZh();
+    case 'en': return TEn();
+    case 'fil': return TFil();
+    case 'id': return TId();
+    case 'ja': return TJa();
+    case 'km': return TKm();
+    case 'ko': return TKo();
+    case 'mn': return TMn();
+    case 'ne': return TNe();
+    case 'ru': return TRu();
+    case 'si': return TSi();
+    case 'th': return TTh();
+    case 'uz': return TUz();
+    case 'vi': return TVi();
+    case 'zh': return TZh();
   }
 
   throw FlutterError(
     'T.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

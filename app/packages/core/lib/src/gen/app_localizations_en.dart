@@ -15,8 +15,7 @@ class TEn extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint =>
-      'Answers customer chats automatically. Each message costs API fees.';
+  String get aiCardHint => 'Answers customer chats automatically. Each message costs API fees.';
 
   @override
   String get aiModeOffline => 'Answer only when staff are away';
@@ -60,15 +59,13 @@ class TEn extends T {
   String get apLoginApple => 'Continue with Apple';
 
   @override
-  String get apDevSocialNote =>
-      'Dev mode: signs in to a test account, not a real social account.';
+  String get apDevSocialNote => 'Dev mode: signs in to a test account, not a real social account.';
 
   @override
   String get apSocialFailed => 'Quick sign-in failed. Please try again.';
 
   @override
-  String get apProviderNotConfigured =>
-      'This sign-in method isn\'t available yet';
+  String get apProviderNotConfigured => 'This sign-in method isn\'t available yet';
 
   @override
   String get apPhoneTaken => 'This number is already linked to another account';
@@ -77,8 +74,7 @@ class TEn extends T {
   String get apPhoneAttachTitle => 'Verify your mobile number';
 
   @override
-  String get apPhoneAttachBody =>
-      'We use this number for bookings and pro contact. One-time check.';
+  String get apPhoneAttachBody => 'We use this number for bookings and pro contact. One-time check.';
 
   @override
   String get apPayAllTitle => 'Choose a payment method';
@@ -99,8 +95,7 @@ class TEn extends T {
   String get apPayRegistering => 'Registering…';
 
   @override
-  String get apPayManageHint =>
-      'Pay in one tap with saved methods. Add quick-pay methods here.';
+  String get apPayManageHint => 'Pay in one tap with saved methods. Add quick-pay methods here.';
 
   @override
   String get apMethodCard => 'Credit & debit card';
@@ -142,8 +137,7 @@ class TEn extends T {
   String get apVaWaiting => 'Waiting for your deposit';
 
   @override
-  String get apVaBody =>
-      'Your booking is confirmed once the deposit arrives. We check it automatically.';
+  String get apVaBody => 'Your booking is confirmed once the deposit arrives. We check it automatically.';
 
   @override
   String get apVaBank => 'Bank';
@@ -183,8 +177,7 @@ class TEn extends T {
   String get apPgTitle => 'Payment window';
 
   @override
-  String get apPgDevNote =>
-      'Development-only payment simulation. No real charge happens.';
+  String get apPgDevNote => 'Development-only payment simulation. No real charge happens.';
 
   @override
   String apPgPay(String amount) {
@@ -198,19 +191,16 @@ class TEn extends T {
   String get apPgCancel => 'Cancel payment';
 
   @override
-  String get apErrSlotFullRefunded =>
-      'That slot just filled up, so your payment was cancelled automatically';
+  String get apErrSlotFullRefunded => 'That slot just filled up, so your payment was cancelled automatically';
 
   @override
-  String get apErrCheckoutExpired =>
-      'The payment window expired. Please try again.';
+  String get apErrCheckoutExpired => 'The payment window expired. Please try again.';
 
   @override
   String get apIdentityTitle => 'Identity check (PASS)';
 
   @override
-  String get apIdentityBody =>
-      'Confirms you with your phone carrier. Used for safe trading and payouts.';
+  String get apIdentityBody => 'Confirms you with your phone carrier. Used for safe trading and payouts.';
 
   @override
   String get apIdentityAction => 'Verify identity';
@@ -228,8 +218,7 @@ class TEn extends T {
   String get apIdentityDevTitle => 'Test identity check';
 
   @override
-  String get apIdentityDevBody =>
-      'In development, this passes without a real check.';
+  String get apIdentityDevBody => 'In development, this passes without a real check.';
 
   @override
   String get apIdentityDevPass => 'Pass';
@@ -673,12 +662,10 @@ class TEn extends T {
   String get err_rate_limited => 'Too many attempts. Try again later.';
 
   @override
-  String get err_studio_too_large =>
-      'Studio cleaning is for homes up to 10 pyeong';
+  String get err_studio_too_large => 'Studio cleaning is for homes up to 10 pyeong';
 
   @override
-  String get err_date_out_of_range =>
-      'Pick a date from tomorrow up to 60 days ahead';
+  String get err_date_out_of_range => 'Pick a date from tomorrow up to 60 days ahead';
 
   @override
   String get err_slot_full => 'That time just filled up. Pick another.';
@@ -690,8 +677,7 @@ class TEn extends T {
   String get err_coupon_used => 'This coupon was already used';
 
   @override
-  String get err_coupon_wrong_service =>
-      'This coupon isn\'t valid for this service';
+  String get err_coupon_wrong_service => 'This coupon isn\'t valid for this service';
 
   @override
   String get err_payment_failed => 'Payment was declined. Try another method.';
@@ -700,8 +686,7 @@ class TEn extends T {
   String get err_payment_method_required => 'Choose a payment method';
 
   @override
-  String get err_cancellation_window_closed =>
-      'Within 2 days of the visit, cancel through our team';
+  String get err_cancellation_window_closed => 'Within 2 days of the visit, cancel through our team';
 
   @override
   String get err_address_required => 'Add the visit address';
@@ -757,8 +742,7 @@ class TEn extends T {
   String get loginVerify => 'Verify';
 
   @override
-  String get loginTerms =>
-      'By continuing you agree to the Terms and Privacy Policy';
+  String get loginTerms => 'By continuing you agree to the Terms and Privacy Policy';
 
   @override
   String get profileTitle => 'What should we call you?';
@@ -821,52 +805,40 @@ class TEn extends T {
   String get svcShort_move_in => 'Move-in';
 
   @override
-  String get svcDesc_studio =>
-      'A 2-hour clean of a studio up to 10 pyeong: one room and one bathroom.';
+  String get svcDesc_studio => 'A 2-hour clean of a studio up to 10 pyeong: one room and one bathroom.';
 
   @override
-  String get svcDesc_kitchen =>
-      'Focused kitchen clean: sink, stove, hood exterior and counters.';
+  String get svcDesc_kitchen => 'Focused kitchen clean: sink, stove, hood exterior and counters.';
 
   @override
-  String get svcDesc_bathroom =>
-      'Shelves, taps, basin and toilet inside and out, finished with a dry floor.';
+  String get svcDesc_bathroom => 'Shelves, taps, basin and toilet inside and out, finished with a dry floor.';
 
   @override
-  String get svcDesc_mattress =>
-      'Pro equipment extracts dust, mites and stains, then steam-sanitises.';
+  String get svcDesc_mattress => 'Pro equipment extracts dust, mites and stains, then steam-sanitises.';
 
   @override
-  String get svcDesc_aircon =>
-      'Disassembled, then coil, fan and filter pressure-washed and sanitised.';
+  String get svcDesc_aircon => 'Disassembled, then coil, fan and filter pressure-washed and sanitised.';
 
   @override
-  String get svcDesc_sofa =>
-      'Fabric-matched cleaner breaks down dirt, then wet extraction lifts it out.';
+  String get svcDesc_sofa => 'Fabric-matched cleaner breaks down dirt, then wet extraction lifts it out.';
 
   @override
-  String get svcDesc_move_out =>
-      'Before you move out, a pro team brings equipment and cleans the empty home.';
+  String get svcDesc_move_out => 'Before you move out, a pro team brings equipment and cleans the empty home.';
 
   @override
-  String get svcDesc_move_in =>
-      'Before you move in, a pro team brings equipment and cleans the new home.';
+  String get svcDesc_move_in => 'Before you move in, a pro team brings equipment and cleans the new home.';
 
   @override
-  String get svcNotes_bathroom =>
-      'Blocked drains or toilets may limit the service\nNo special-chemical, ceiling or vent cleaning\nOld mould and set-in grime may not fully come off';
+  String get svcNotes_bathroom => 'Blocked drains or toilets may limit the service\nNo special-chemical, ceiling or vent cleaning\nOld mould and set-in grime may not fully come off';
 
   @override
-  String get svcNotes_mattress =>
-      'Same price from single to king\nFully dry in 4–6 hours\nSpring damage or sagging can\'t be fixed';
+  String get svcNotes_mattress => 'Same price from single to king\nFully dry in 4–6 hours\nSpring damage or sagging can\'t be fixed';
 
   @override
-  String get svcNotes_aircon =>
-      'Units over 10 years old may not be safe to disassemble\nOutdoor unit not included\nWe check it works before and after';
+  String get svcNotes_aircon => 'Units over 10 years old may not be safe to disassemble\nOutdoor unit not included\nWe check it works before and after';
 
   @override
-  String get svcNotes_sofa =>
-      'Leather sofas get cleaning plus conditioning\nOld stains or dye transfer may not fully lift\nFully dry in 4–6 hours';
+  String get svcNotes_sofa => 'Leather sofas get cleaning plus conditioning\nOld stains or dye transfer may not fully lift\nFully dry in 4–6 hours';
 
   @override
   String get unitTitle_bathroom => 'Number of bathrooms';
@@ -1014,8 +986,7 @@ class TEn extends T {
   }
 
   @override
-  String get studioBlockedBody =>
-      'Our team will suggest the right service for your home.';
+  String get studioBlockedBody => 'Our team will suggest the right service for your home.';
 
   @override
   String get consultCta => 'Ask our team';
@@ -1201,8 +1172,7 @@ class TEn extends T {
   String get doneQuoteTitle => 'Request received';
 
   @override
-  String get doneQuoteBody =>
-      'Our team will send a final quote. Find it in the Chat tab.';
+  String get doneQuoteBody => 'Our team will send a final quote. Find it in the Chat tab.';
 
   @override
   String get goHome => 'Home';
@@ -1223,8 +1193,7 @@ class TEn extends T {
   String get bookingsEmpty => 'No bookings yet';
 
   @override
-  String get bookingsEmptyBody =>
-      'Welcome coupons are waiting for your first booking';
+  String get bookingsEmptyBody => 'Welcome coupons are waiting for your first booking';
 
   @override
   String get bookNow => 'Book a clean';
@@ -1454,8 +1423,7 @@ class TEn extends T {
   }
 
   @override
-  String get sys_reschedule_declined =>
-      'The pro can\'t make the new time. Our team will sort it out.';
+  String get sys_reschedule_declined => 'The pro can\'t make the new time. Our team will sort it out.';
 
   @override
   String get moreTitle => 'More';
@@ -1517,8 +1485,7 @@ class TEn extends T {
   String get deleteAccount => 'Delete account';
 
   @override
-  String get deleteAccountBody =>
-      'Your personal data will be erased. This can\'t be undone. Cancel active bookings first.';
+  String get deleteAccountBody => 'Your personal data will be erased. This can\'t be undone. Cancel active bookings first.';
 
   @override
   String get couponsEmpty => 'No coupons yet';
@@ -1667,8 +1634,7 @@ class TEn extends T {
   String get quoteEstimateTitle => 'Here\'s your estimate';
 
   @override
-  String get quoteEstimateBody =>
-      'The final price is set in chat after we see photos';
+  String get quoteEstimateBody => 'The final price is set in chat after we see photos';
 
   @override
   String get quoteG1 => 'Final price agreed with you in chat';
@@ -1758,8 +1724,7 @@ class TEn extends T {
   String get fVatEstimate => 'VAT estimate';
 
   @override
-  String get fVatNote =>
-      'Estimate: 10% of the platform fee. Confirm with your accountant.';
+  String get fVatNote => 'Estimate: 10% of the platform fee. Confirm with your accountant.';
 
   @override
   String get fAov => 'Avg order value';
@@ -1946,8 +1911,7 @@ class TEn extends T {
   String get err_self_referral => 'You can\'t use your own code';
 
   @override
-  String get err_referee_already_booked =>
-      'Codes can only be added before your first booking';
+  String get err_referee_already_booked => 'Codes can only be added before your first booking';
 
   @override
   String get err_already_referred => 'A referral code is already applied';
@@ -1959,15 +1923,13 @@ class TEn extends T {
   String get err_referral_disabled => 'Referrals are paused right now';
 
   @override
-  String get err_invalid_photos =>
-      'Only photos uploaded through Malkkeum can be attached';
+  String get err_invalid_photos => 'Only photos uploaded through Malkkeum can be attached';
 
   @override
   String get welcomeOfferTitle => 'First-booking offer';
 
   @override
-  String get welcomeOfferBody =>
-      'Applied automatically to a new customer\'s first booking. Not combined with coupons.';
+  String get welcomeOfferBody => 'Applied automatically to a new customer\'s first booking. Not combined with coupons.';
 
   @override
   String get offerKindAmount => 'Fixed (won)';
@@ -1988,8 +1950,7 @@ class TEn extends T {
   String get referralSettingsTitle => 'Referral reward';
 
   @override
-  String get referralSettingsBody =>
-      'Paid once a friend\'s first booking is completed and paid. Self-referrals and duplicate phones are blocked.';
+  String get referralSettingsBody => 'Paid once a friend\'s first booking is completed and paid. Self-referrals and duplicate phones are blocked.';
 
   @override
   String get referralRewardAmount => 'Reward amount (won)';
@@ -2128,32 +2089,25 @@ class TEn extends T {
   String get oIntNever => 'No traffic yet';
 
   @override
-  String get oActDb =>
-      'The database is unreachable. Run malkkeum logs on the server; restart it if this continues.';
+  String get oActDb => 'The database is unreachable. Run malkkeum logs on the server; restart it if this continues.';
 
   @override
-  String get oActDisk =>
-      'Less than 10% disk space is free. Delete old backup files or add disk space.';
+  String get oActDisk => 'Less than 10% disk space is free. Delete old backup files or add disk space.';
 
   @override
-  String get oActBackup =>
-      'The automatic backup is overdue. Run malkkeum backup on the server and check backups/backup.log.';
+  String get oActBackup => 'The automatic backup is overdue. Run malkkeum backup on the server and check backups/backup.log.';
 
   @override
-  String get oActErrors =>
-      'Many server errors. Check the error lines in malkkeum logs and send them to your developer if they repeat.';
+  String get oActErrors => 'Many server errors. Check the error lines in malkkeum logs and send them to your developer if they repeat.';
 
   @override
-  String get oActPayments =>
-      'A payment may have gone through without being processed. Check it in the PortOne console and refund it yourself if needed.';
+  String get oActPayments => 'A payment may have gone through without being processed. Check it in the PortOne console and refund it yourself if needed.';
 
   @override
-  String get oActWebhook =>
-      'Payment webhook signature checks are failing. Re-enter the webhook secret under Setup > Payments (PortOne).';
+  String get oActWebhook => 'Payment webhook signature checks are failing. Re-enter the webhook secret under Setup > Payments (PortOne).';
 
   @override
-  String get oActIntegration =>
-      'This connection is failing. Check the keys in Setup and press Test connection.';
+  String get oActIntegration => 'This connection is failing. Check the keys in Setup and press Test connection.';
 
   @override
   String get oActNotSet => 'Not set up yet. Enter the keys in Setup.';
@@ -2162,8 +2116,7 @@ class TEn extends T {
   String get oAlerts => 'Alert settings';
 
   @override
-  String get oAlertsHint =>
-      'Problems show in the inbox and are texted to the owner\'s phone. The same problem is sent once every 6 hours.';
+  String get oAlertsHint => 'Problems show in the inbox and are texted to the owner\'s phone. The same problem is sent once every 6 hours.';
 
   @override
   String get oRuleSms => 'SMS sending fails';
@@ -2201,15 +2154,13 @@ class TEn extends T {
   }
 
   @override
-  String get oQuietHint =>
-      'No alerts during these hours; you get one message after they end.';
+  String get oQuietHint => 'No alerts during these hours; you get one message after they end.';
 
   @override
   String get oAlertPhone => 'Phone for alerts';
 
   @override
-  String get oAlertPhoneHint =>
-      'Leave empty to use the support number from business info.';
+  String get oAlertPhoneHint => 'Leave empty to use the support number from business info.';
 
   @override
   String get oSave => 'Save';
@@ -2227,8 +2178,7 @@ class TEn extends T {
   String get oBackupOffsite => 'Offsite backup (S3)';
 
   @override
-  String get oBackupOffsiteOff =>
-      'Off. Turn it on under Setup > Offsite backup.';
+  String get oBackupOffsiteOff => 'Off. Turn it on under Setup > Offsite backup.';
 
   @override
   String get oLastBackup => 'Last backup';
@@ -2255,8 +2205,7 @@ class TEn extends T {
   String get pIntroTitle => 'Jobs, schedule and payouts\nfor cleaning pros';
 
   @override
-  String get pIntroBody =>
-      'Work only where and when you want. Get paid weekly.';
+  String get pIntroBody => 'Work only where and when you want. Get paid weekly.';
 
   @override
   String get pOnbTitle => 'Tell us about you';
@@ -2280,8 +2229,7 @@ class TEn extends T {
   String get pPendingTitle => 'Your account is under review';
 
   @override
-  String get pPendingBody =>
-      'We\'ll notify you once approved. Meanwhile, add your payout account.';
+  String get pPendingBody => 'We\'ll notify you once approved. Meanwhile, add your payout account.';
 
   @override
   String get pSuspended => 'Your account is paused. Please contact operations.';
@@ -2323,8 +2271,7 @@ class TEn extends T {
   String get pClosed => 'Closed';
 
   @override
-  String get pPrivacyNote =>
-      'Exact address and customer details appear after you accept';
+  String get pPrivacyNote => 'Exact address and customer details appear after you accept';
 
   @override
   String get pAccept => 'Accept job';
@@ -2333,8 +2280,7 @@ class TEn extends T {
   String get pAcceptConfirm => 'Accept this job?';
 
   @override
-  String get pAcceptBody =>
-      'It goes on your schedule and the customer is notified. Cancelling within 2 days of the visit is restricted.';
+  String get pAcceptBody => 'It goes on your schedule and the customer is notified. Cancelling within 2 days of the visit is restricted.';
 
   @override
   String get pAccepted => 'Job accepted';
@@ -2401,8 +2347,7 @@ class TEn extends T {
   String get pNoSchedule => 'Nothing scheduled';
 
   @override
-  String get pCancelledBanner =>
-      'This job was cancelled and can\'t be completed.';
+  String get pCancelledBanner => 'This job was cancelled and can\'t be completed.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2630,6 +2575,76 @@ class TEn extends T {
   String get pSpace => 'Space';
 
   @override
+  String get poTabSettlements => 'Settlements';
+
+  @override
+  String get poTabPayouts => 'Payouts';
+
+  @override
+  String get poState_requested => 'Requested';
+
+  @override
+  String get poState_sent => 'Sent';
+
+  @override
+  String get poState_paid => 'Paid';
+
+  @override
+  String get poState_failed => 'Failed';
+
+  @override
+  String get poProviderManual => 'Manual transfer';
+
+  @override
+  String get poProviderToss => 'Toss payouts';
+
+  @override
+  String get poShowAccount => 'Show account';
+
+  @override
+  String get poAccountTitle => 'Transfer details';
+
+  @override
+  String poAccountBody(String holder, String bank, String account, String amount) {
+    return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
+  }
+
+  @override
+  String get poConfirmPaid => 'Mark as transferred';
+
+  @override
+  String get poMarkFailed => 'Mark as failed';
+
+  @override
+  String get poReasonTitle => 'Failure reason';
+
+  @override
+  String get poReasonHint => 'e.g. wrong account, transfer cancelled';
+
+  @override
+  String get poSend => 'Send via Toss';
+
+  @override
+  String get poSync => 'Check status';
+
+  @override
+  String get poRetry => 'Retry';
+
+  @override
+  String get poNoPayouts => 'No payouts yet';
+
+  @override
+  String poRequestedToast(String n) {
+    return 'Created $n payout requests';
+  }
+
+  @override
+  String get poReasonRequired => 'Enter a reason';
+
+  @override
+  String get poRevealNote => 'Viewing account details is logged';
+
+  @override
   String get cSetup => 'Setup';
 
   @override
@@ -2665,8 +2680,7 @@ class TEn extends T {
   String get cSetupLogo => 'Upload logo';
 
   @override
-  String get cSetupCompany =>
-      'Company details (shown in app and website footer)';
+  String get cSetupCompany => 'Company details (shown in app and website footer)';
 
   @override
   String get cSetupLegalName => 'Legal name';
@@ -2687,8 +2701,7 @@ class TEn extends T {
   String get cSetupPrivacyOfficer => 'Privacy officer';
 
   @override
-  String get cSetupStoreLinks =>
-      'Store links (the website buttons turn on once filled)';
+  String get cSetupStoreLinks => 'Store links (the website buttons turn on once filled)';
 
   @override
   String get cSetupCustomerApp => 'Customer app';
@@ -2700,15 +2713,13 @@ class TEn extends T {
   String get cSetupPayMethods => 'Payment methods';
 
   @override
-  String get cSetupPayMethodsHint =>
-      'Turn the methods customers see on or off. Applies instantly.';
+  String get cSetupPayMethodsHint => 'Turn the methods customers see on or off. Applies instantly.';
 
   @override
   String get cReviewTitle => 'Store review demo account';
 
   @override
-  String get cReviewHint =>
-      'Reviewers can\'t receive Korean SMS. Put this number and 6-digit code in the review notes. It switches off automatically.';
+  String get cReviewHint => 'Reviewers can\'t receive Korean SMS. Put this number and 6-digit code in the review notes. It switches off automatically.';
 
   @override
   String get cReviewPhone => 'Demo phone number';
@@ -2725,20 +2736,16 @@ class TEn extends T {
   String get cReviewEnable => 'Turn on (14 days)';
 
   @override
-  String get pDeleteAccountBody =>
-      'Your team and personal data will be erased. This can\'t be undone. Finish assigned jobs and pending payouts first.';
+  String get pDeleteAccountBody => 'Your team and personal data will be erased. This can\'t be undone. Finish assigned jobs and pending payouts first.';
 
   @override
-  String get err_has_active_jobs =>
-      'You still have assigned jobs. Finish them or ask support to reassign.';
+  String get err_has_active_jobs => 'You still have assigned jobs. Finish them or ask support to reassign.';
 
   @override
-  String get err_pending_payouts =>
-      'A payout is still pending. You can delete the account after it is paid.';
+  String get err_pending_payouts => 'A payout is still pending. You can delete the account after it is paid.';
 
   @override
-  String get err_phone_required =>
-      'Verify your phone number before taking jobs.';
+  String get err_phone_required => 'Verify your phone number before taking jobs.';
 
   @override
   String get nAlerts => 'Alerts';
@@ -2758,8 +2765,7 @@ class TEn extends T {
   String get mMyJobs => 'My jobs';
 
   @override
-  String get mNoJobs =>
-      'No jobs assigned yet. Jobs your team lead assigns show up here.';
+  String get mNoJobs => 'No jobs assigned yet. Jobs your team lead assigns show up here.';
 
   @override
   String mTeam(String team) {
@@ -2791,12 +2797,10 @@ class TEn extends T {
   String get cSetupCheckInApp => 'Saved · confirm by signing in from the app';
 
   @override
-  String get cSetupInvalidKey =>
-      'The key was rejected. Check the value you copied';
+  String get cSetupInvalidKey => 'The key was rejected. Check the value you copied';
 
   @override
-  String get cSetupUnreachable =>
-      'Could not reach the service. Try again shortly';
+  String get cSetupUnreachable => 'Could not reach the service. Try again shortly';
 
   @override
   String get cSetupKeepValue => 'Saved (type only to replace)';
@@ -2814,8 +2818,7 @@ class TEn extends T {
   String get cCopied => 'Copied';
 
   @override
-  String get cSetupDevMode =>
-      'Test mode: no real payments or messages are sent';
+  String get cSetupDevMode => 'Test mode: no real payments or messages are sent';
 
   @override
   String get cSetupOptional => 'Optional';
@@ -2845,8 +2848,7 @@ class TEn extends T {
   String get cFirstRunTitle => 'Welcome! Create the owner account';
 
   @override
-  String get cFirstRunBody =>
-      'Enter the 12-character setup code shown during installation. This account manages every setting.';
+  String get cFirstRunBody => 'Enter the 12-character setup code shown during installation. This account manages every setting.';
 
   @override
   String get cFirstRunCode => 'Setup code';
@@ -2881,15 +2883,13 @@ class TEn extends T {
   String get uUpdateRequiredTitle => 'An update is required';
 
   @override
-  String get uUpdateRequiredBody =>
-      'This version is no longer supported. Please update from the store.';
+  String get uUpdateRequiredBody => 'This version is no longer supported. Please update from the store.';
 
   @override
   String get uUpdateStore => 'Update in the store';
 
   @override
-  String get uUpdateStoreMissing =>
-      'The update link is not ready yet. Please try again later.';
+  String get uUpdateStoreMissing => 'The update link is not ready yet. Please try again later.';
 
   @override
   String uCurrentVersion(String version) {
@@ -2900,8 +2900,7 @@ class TEn extends T {
   String get uAppVersionTitle => 'App versions';
 
   @override
-  String get uAppVersionHint =>
-      'Apps below the minimum stop on an update screen. Apps below the latest version see a banner. Format: 1.2.0';
+  String get uAppVersionHint => 'Apps below the minimum stop on an update screen. Apps below the latest version see a banner. Format: 1.2.0';
 
   @override
   String get uMinVersion => 'Minimum version';

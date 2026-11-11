@@ -12,9 +12,9 @@ use axum::{
     extract::{Path, Query, State},
     routing::{get, post, put},
 };
-use chrono::{DateTime, Duration, NaiveDate, Utc};
+use chrono::{DateTime, Duration, Utc};
 use domain::{catalog::Pricing, coupon::COUPON_LIFETIME_DAYS, quote::QuoteFormula};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
 
@@ -34,7 +34,10 @@ pub fn routes() -> Router<AppState> {
         .route("/pros", get(list_pros))
         .route("/pros/{id}/status", post(set_pro_status))
         .route("/settlements", get(list_settlements))
-        .route("/settlements/run-payouts", post(run_payouts))
+        .route("/settlements/payouts", get(super::payouts::list_payouts))
+        .route("/settlements/run-payouts", post(super::payouts::run_payouts))
+        .route("/settlements/payouts/{id}/account", get(super::payouts::reveal_account))
+        .route("/settlements/payouts/{id}/{action}", post(super::payouts::act))
         .route("/settlements/{id}/hold", post(hold_settlement))
         .route("/staff", get(list_staff).post(create_staff))
         .route("/staff/{id}/active", post(set_staff_active))
@@ -338,70 +341,13 @@ async fn list_settlements(State(s): State<AppState>, _st: Staff, Query(f): Query
 }
 
 #[derive(Deserialize)]
-struct RunPayouts {
-    date: NaiveDate,
-}
-
-#[derive(Serialize, sqlx::FromRow)]
-struct PayoutLine {
-    pro_id: Uuid,
-    total: i64,
-    items: i64,
-    bank: String,
-    holder: String,
-    #[sqlx(rename = "account_enc")]
-    account: String,
-}
-
-/// Weekly batch: everything pending and due marks paid; returns the transfer file lines.
-/// shortcut: marks paid immediately; wire a bank-transfer API (decision #5) before launch.
-async fn run_payouts(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<RunPayouts>) -> ApiResult<Json<Vec<PayoutLine>>> {
-    let mut tx = s.db.begin().await?;
-    let lines: Vec<PayoutLine> = sqlx::query_as(
-        "WITH due AS (UPDATE settlements SET state = 'paid', paid_at = now() WHERE state = 'pending' AND payout_date <= $1
-             AND pro_id IN (SELECT pro_id FROM payout_accounts WHERE verified_at IS NOT NULL) RETURNING pro_id, net)
-         SELECT d.pro_id, sum(d.net)::bigint AS total, count(*) AS items, pa.bank, pa.holder, pa.account_enc
-         FROM due d JOIN payout_accounts pa ON pa.pro_id = d.pro_id GROUP BY d.pro_id, pa.bank, pa.holder, pa.account_enc",
-    )
-    .bind(r.date)
-    .fetch_all(&mut *tx)
-    .await?;
-    // The transfer file needs the real account numbers. If any can't be decrypted the whole
-    // batch rolls back, so nothing is marked paid that wasn't actually payable.
-    let mut out = Vec::with_capacity(lines.len());
-    for mut l in lines {
-        l.account =
-            crate::crypto::decrypt(&s.config.data_key, &l.account).ok_or(ApiError::Internal(format!("cannot decrypt payout account of pro {}", l.pro_id)))?;
-        out.push(l);
-    }
-    tx.commit().await?;
-    let lines = out;
-    for l in &lines {
-        crate::util::best_effort(
-            "notify",
-            notify(
-                &s,
-                Recipient::Pro(l.pro_id),
-                "settlement.paid",
-                "정산 완료",
-                &format!("{}원", l.total),
-                json!({ "total": l.total }),
-            ),
-        )
-        .await;
-    }
-    audit(&s.db, "staff", Some(a.id), "payout.run", &r.date.to_string(), json!({ "pros": lines.len() })).await?;
-    Ok(Json(lines))
-}
-
-#[derive(Deserialize)]
 struct Hold {
     hold: bool,
 }
 
 async fn hold_settlement(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<Uuid>, Json(h): Json<Hold>) -> ApiResult<Json<Value>> {
     let (from, to) = if h.hold { ("pending", "held") } else { ("held", "pending") };
-    let r = sqlx::query("UPDATE settlements SET state = $3 WHERE id = $1 AND state = $2")
+    let r = sqlx::query("UPDATE settlements SET state = $3 WHERE id = $1 AND state = $2 AND payout_id IS NULL")
         .bind(id)
         .bind(from)
         .bind(to)
