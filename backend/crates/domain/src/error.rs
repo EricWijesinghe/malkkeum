@@ -23,6 +23,12 @@ pub enum DomainError {
     InvalidTransition,
     #[error("booking can no longer be cancelled for free")]
     CancellationWindowClosed,
+    #[error("tip is not allowed for this booking")]
+    TipNotAllowed,
+    #[error("the slot offer has expired")]
+    OfferExpired,
+    #[error("training modules are not complete")]
+    TrainingIncomplete,
     #[error("value out of range: {0}")]
     OutOfRange(&'static str),
 }
@@ -41,6 +47,9 @@ impl DomainError {
             Self::CouponWrongService => "coupon_wrong_service",
             Self::InvalidTransition => "invalid_transition",
             Self::CancellationWindowClosed => "cancellation_window_closed",
+            Self::TipNotAllowed => "tip_not_allowed",
+            Self::OfferExpired => "offer_expired",
+            Self::TrainingIncomplete => "training_incomplete",
             Self::OutOfRange(_) => "out_of_range",
         }
     }

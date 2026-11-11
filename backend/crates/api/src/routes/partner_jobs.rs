@@ -205,6 +205,7 @@ async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
 
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
+    crate::quality::check_offer_gate(&s.db, a.id).await?;
     if !visible_to(&s, id, a.id).await? {
         return Err(ApiError::NotFound);
     }
