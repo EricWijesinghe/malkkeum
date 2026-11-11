@@ -5,7 +5,7 @@ mod auth;
 mod booking_core;
 pub(crate) mod bookings;
 pub mod cases;
-mod catalog;
+pub(crate) mod catalog;
 pub(crate) mod chat;
 mod cash_receipts;
 mod checkout_policy;
@@ -114,6 +114,7 @@ pub fn router(state: AppState) -> Router {
         .route("/ready", get(lifecycle::ready))
         .route("/metrics", get(metrics::handler))
         .merge(crate::app_links::routes())
+        .merge(crate::seo::routes())
         .nest("/v1", api)
         .layer(axum::middleware::from_fn_with_state(state.clone(), config::enforce))
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))

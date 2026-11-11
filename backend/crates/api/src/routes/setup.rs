@@ -279,7 +279,10 @@ async fn brand(State(s): State<AppState>) -> ApiResult<Json<Value>> {
 
 const BUSINESS_TEXT: [&str; 4] = ["name", "support_phone", "support_email", "support_hours"];
 /// Store pages the website's download buttons point to.
-const STORE_LINKS: [&str; 4] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url"];
+/// https links: store pages, the Kakao channel and Naver Talk Talk (website chat buttons).
+const STORE_LINKS: [&str; 6] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url", "kakao_channel_url", "naver_talk_url"];
+/// Search Console / Search Advisor verification tokens, served as meta tags and verification files.
+const VERIFY_KEYS: [&str; 2] = ["google_site_verification", "naver_site_verification"];
 const COMPANY_TEXT: [&str; 7] = [
     "legal_name",
     "ceo",
@@ -368,6 +371,14 @@ pub fn clean_business(base: &str, input: &Value) -> Result<Value, ApiError> {
                 return Err(ApiError::BadRequest("invalid_link"));
             }
             out.insert(k.into(), json!(u));
+        }
+    }
+    for k in VERIFY_KEYS {
+        if let Some(t) = clean_text(input, k)? {
+            if !crate::seo::is_verification_token(&t) {
+                return Err(ApiError::BadRequest("invalid_token"));
+            }
+            out.insert(k.into(), json!(t));
         }
     }
     let empty = json!({});

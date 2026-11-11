@@ -258,6 +258,10 @@ function applyBrand(b) {
   for (const key of ['app_store_url', 'play_store_url', 'partner_play_store_url', 'partner_app_store_url']) {
     if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.removeAttribute('aria-disabled'); a.querySelector('[data-t="store_soon"]')?.remove(); });
   }
+  // Chat buttons (Kakao channel, Naver Talk Talk) appear only once the owner has configured them.
+  for (const key of ['kakao_channel_url', 'naver_talk_url']) {
+    if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.hidden = false; });
+  }
   const c = b.company || {};
   const box = document.getElementById('company');
   if (box) {
@@ -304,8 +308,40 @@ function langPicker() {
   sel.addEventListener('change', () => { lang = sel.value; store.set('site.lang', lang); applyCopy(); });
 }
 
+// The 3D hero (three.js) loads only where it is cheap enough and motion is welcome; everywhere else the CSS illustration stays.
+function loadHeroIfCapable() {
+  if (!document.getElementById('hero-3d') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if ((navigator.hardwareConcurrency || 4) < 4 || (navigator.deviceMemory || 4) < 4 || navigator.connection?.saveData) return;
+  import('./hero3d.js').catch(() => { /* CSS illustration remains */ });
+}
+
+// First-touch campaign params, kept for this tab only (sessionStorage: no cookie, nothing shared).
+// Appended to /app/ links so the booking app can read them on signup.
+const ATTR_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref'];
+function captureAttribution() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('mk.attr') || 'null');
+    if (saved) return saved;
+    const q = new URLSearchParams(location.search);
+    const found = Object.fromEntries(ATTR_KEYS.filter((k) => q.get(k)).map((k) => [k, q.get(k).slice(0, 80)]));
+    if (!Object.keys(found).length) return null;
+    sessionStorage.setItem('mk.attr', JSON.stringify(found));
+    return found;
+  } catch { return null; }
+}
+function decorateAppLinks(attr) {
+  if (!attr) return;
+  document.querySelectorAll('a[href^="/app/"]').forEach((a) => {
+    const u = new URL(a.getAttribute('href'), location.href);
+    for (const [k, v] of Object.entries(attr)) if (!u.searchParams.has(k)) u.searchParams.set(k, v);
+    a.setAttribute('href', u.pathname + u.search + u.hash);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   setTheme(store.get('site.theme') || 'dark');
+  loadHeroIfCapable();
+  decorateAppLinks(captureAttribution());
   document.getElementById('theme')?.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'));
   langPicker();
   beforeAfter();

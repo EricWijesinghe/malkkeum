@@ -32,6 +32,7 @@ pub mod realtime;
 pub mod reconciler;
 pub mod routes;
 pub mod seed;
+pub mod seo;
 pub mod state;
 pub mod telemetry;
 pub mod totp;
