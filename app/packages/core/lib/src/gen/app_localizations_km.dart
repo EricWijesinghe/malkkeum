@@ -39,7 +39,8 @@ class TKm extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'ឆ្លើយការជជែករបស់អតិថិជនដោយស្វ័យប្រវត្តិ។ សារនីមួយៗមានថ្លៃ API។';
+  String get aiCardHint =>
+      'ឆ្លើយការជជែករបស់អតិថិជនដោយស្វ័យប្រវត្តិ។ សារនីមួយៗមានថ្លៃ API។';
 
   @override
   String get aiModeOffline => 'ឆ្លើយតែពេលគ្មានបុគ្គលិក';
@@ -95,7 +96,8 @@ class TKm extends T {
   String get apLoginApple => 'បន្តជាមួយ Apple';
 
   @override
-  String get apDevSocialNote => 'នេះជាមុខងារសាកល្បង។ ការចូលប្រើប្រាស់គណនីសាកល្បង មិនមែនគណនីបណ្តាញសង្គមពិតទេ។';
+  String get apDevSocialNote =>
+      'នេះជាមុខងារសាកល្បង។ ការចូលប្រើប្រាស់គណនីសាកល្បង មិនមែនគណនីបណ្តាញសង្គមពិតទេ។';
 
   @override
   String get apSocialFailed => 'ការចូលរហ័សបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។';
@@ -110,7 +112,8 @@ class TKm extends T {
   String get apPhoneAttachTitle => 'សូមផ្ទៀងផ្ទាត់លេខទូរស័ព្ទរបស់អ្នក';
 
   @override
-  String get apPhoneAttachBody => 'លេខនេះប្រើសម្រាប់ការកក់ និងទំនាក់ទំនងជាមួយអ្នកបម្រើ។ ផ្ទៀងផ្ទាត់តែម្តងប៉ុណ្ណោះ។';
+  String get apPhoneAttachBody =>
+      'លេខនេះប្រើសម្រាប់ការកក់ និងទំនាក់ទំនងជាមួយអ្នកបម្រើ។ ផ្ទៀងផ្ទាត់តែម្តងប៉ុណ្ណោះ។';
 
   @override
   String get apPayAllTitle => 'ជ្រើសរើសវិធីបង់ប្រាក់';
@@ -131,7 +134,8 @@ class TKm extends T {
   String get apPayRegistering => 'កំពុងចុះឈ្មោះ…';
 
   @override
-  String get apPayManageHint => 'បង់ប្រាក់ដោយចុចតែមួយ ជាមួយវិធីដែលបានរក្សាទុក។ អាចបន្ថែមវិធីបង់ប្រាក់រហ័សនៅទីនេះ។';
+  String get apPayManageHint =>
+      'បង់ប្រាក់ដោយចុចតែមួយ ជាមួយវិធីដែលបានរក្សាទុក។ អាចបន្ថែមវិធីបង់ប្រាក់រហ័សនៅទីនេះ។';
 
   @override
   String get apMethodCard => 'កាតឥណទាន និងកាត debit';
@@ -173,7 +177,8 @@ class TKm extends T {
   String get apVaWaiting => 'កំពុងរង់ចាំប្រាក់កក់';
 
   @override
-  String get apVaBody => 'ការកក់នឹងត្រូវបានបញ្ជាក់ នៅពេលប្រាក់កក់ចូលមកមុនកំណត់។ ប្រព័ន្ធនឹងពិនិត្យដោយស្វ័យប្រវត្តិ។';
+  String get apVaBody =>
+      'ការកក់នឹងត្រូវបានបញ្ជាក់ នៅពេលប្រាក់កក់ចូលមកមុនកំណត់។ ប្រព័ន្ធនឹងពិនិត្យដោយស្វ័យប្រវត្តិ។';
 
   @override
   String get apVaBank => 'ធនាគារ';
@@ -213,7 +218,8 @@ class TKm extends T {
   String get apPgTitle => 'ផ្ទាំងបង់ប្រាក់';
 
   @override
-  String get apPgDevNote => 'នេះជាការក្លែងធ្វើការបង់ប្រាក់សម្រាប់បរិស្ថានអភិវឌ្ឍន៍ប៉ុណ្ណោះ។ គ្មានការចំណាយប្រាក់ពិតទេ។';
+  String get apPgDevNote =>
+      'នេះជាការក្លែងធ្វើការបង់ប្រាក់សម្រាប់បរិស្ថានអភិវឌ្ឍន៍ប៉ុណ្ណោះ។ គ្មានការចំណាយប្រាក់ពិតទេ។';
 
   @override
   String apPgPay(String amount) {
@@ -227,16 +233,19 @@ class TKm extends T {
   String get apPgCancel => 'បោះបង់ការបង់ប្រាក់';
 
   @override
-  String get apErrSlotFullRefunded => 'ម៉ោងនោះទើបតែពេញ ដូច្នេះការបង់ប្រាក់ត្រូវបានបោះបង់ និងសងប្រាក់វិញដោយស្វ័យប្រវត្តិ';
+  String get apErrSlotFullRefunded =>
+      'ម៉ោងនោះទើបតែពេញ ដូច្នេះការបង់ប្រាក់ត្រូវបានបោះបង់ និងសងប្រាក់វិញដោយស្វ័យប្រវត្តិ';
 
   @override
-  String get apErrCheckoutExpired => 'ផ្ទាំងបង់ប្រាក់បានផុតកំណត់។ សូមព្យាយាមម្តងទៀត។';
+  String get apErrCheckoutExpired =>
+      'ផ្ទាំងបង់ប្រាក់បានផុតកំណត់។ សូមព្យាយាមម្តងទៀត។';
 
   @override
   String get apIdentityTitle => 'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ (PASS)';
 
   @override
-  String get apIdentityBody => 'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណតាមឈ្មោះលេខទូរស័ព្ទ។ ប្រើសម្រាប់ប្រតិបត្តិការ និងការទូទាត់ប្រកបដោយសុវត្ថិភាព។';
+  String get apIdentityBody =>
+      'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណតាមឈ្មោះលេខទូរស័ព្ទ។ ប្រើសម្រាប់ប្រតិបត្តិការ និងការទូទាត់ប្រកបដោយសុវត្ថិភាព។';
 
   @override
   String get apIdentityAction => 'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ';
@@ -254,7 +263,8 @@ class TKm extends T {
   String get apIdentityDevTitle => 'ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណសាកល្បង';
 
   @override
-  String get apIdentityDevBody => 'នៅបរិស្ថានអភិវឌ្ឍន៍ វានឹងឆ្លងកាត់ដោយមិនមានការផ្ទៀងផ្ទាត់ពិតទេ។';
+  String get apIdentityDevBody =>
+      'នៅបរិស្ថានអភិវឌ្ឍន៍ វានឹងឆ្លងកាត់ដោយមិនមានការផ្ទៀងផ្ទាត់ពិតទេ។';
 
   @override
   String get apIdentityDevPass => 'ឆ្លងកាត់';
@@ -680,7 +690,8 @@ class TKm extends T {
   String get today => 'ថ្ងៃនេះ';
 
   @override
-  String get errorGeneric => 'មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀតក្នុងពេលបន្តិចទៀត។';
+  String get errorGeneric =>
+      'មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្តងទៀតក្នុងពេលបន្តិចទៀត។';
 
   @override
   String get errorNetwork => 'សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក';
@@ -695,13 +706,16 @@ class TKm extends T {
   String get err_otp_expired => 'លេខកូដផ្ទៀងផ្ទាត់បានផុតកំណត់។ សូមស្នើសុំថ្មី។';
 
   @override
-  String get err_rate_limited => 'ការព្យាយាមច្រើនពេក។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។';
+  String get err_rate_limited =>
+      'ការព្យាយាមច្រើនពេក។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។';
 
   @override
-  String get err_studio_too_large => 'សេវាសម្អាតស្ទូឌីយ៉ូ ទទួលបានតែផ្ទះដល់ ១០ ពយ៉ុងប៉ុណ្ណោះ';
+  String get err_studio_too_large =>
+      'សេវាសម្អាតស្ទូឌីយ៉ូ ទទួលបានតែផ្ទះដល់ ១០ ពយ៉ុងប៉ុណ្ណោះ';
 
   @override
-  String get err_date_out_of_range => 'សូមជ្រើសរើសកាលបរិច្ឆេទចាប់ពីថ្ងៃស្អែក ដល់ក្នុង ៦០ ថ្ងៃ';
+  String get err_date_out_of_range =>
+      'សូមជ្រើសរើសកាលបរិច្ឆេទចាប់ពីថ្ងៃស្អែក ដល់ក្នុង ៦០ ថ្ងៃ';
 
   @override
   String get err_slot_full => 'ម៉ោងនោះពេញហើយ។ សូមជ្រើសរើសម៉ោងផ្សេង។';
@@ -713,16 +727,19 @@ class TKm extends T {
   String get err_coupon_used => 'កូប៉ុងនេះត្រូវបានប្រើរួចហើយ';
 
   @override
-  String get err_coupon_wrong_service => 'កូប៉ុងនេះមិនអាចប្រើសម្រាប់សេវានេះបានទេ';
+  String get err_coupon_wrong_service =>
+      'កូប៉ុងនេះមិនអាចប្រើសម្រាប់សេវានេះបានទេ';
 
   @override
-  String get err_payment_failed => 'ការបង់ប្រាក់មិនត្រូវបានអនុម័ត។ សូមប្រើវិធីបង់ប្រាក់ផ្សេង។';
+  String get err_payment_failed =>
+      'ការបង់ប្រាក់មិនត្រូវបានអនុម័ត។ សូមប្រើវិធីបង់ប្រាក់ផ្សេង។';
 
   @override
   String get err_payment_method_required => 'សូមជ្រើសរើសវិធីបង់ប្រាក់';
 
   @override
-  String get err_cancellation_window_closed => 'ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក អាចបោះបង់តាមរយៈក្រុមការងាររបស់យើងប៉ុណ្ណោះ';
+  String get err_cancellation_window_closed =>
+      'ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក អាចបោះបង់តាមរយៈក្រុមការងាររបស់យើងប៉ុណ្ណោះ';
 
   @override
   String get err_address_required => 'សូមបញ្ចូលអាសយដ្ឋានសម្រាប់ការមក';
@@ -749,7 +766,8 @@ class TKm extends T {
   String get introTitle => 'កក់ការសម្អាតដោយអ្នកជំនាញ\nឱ្យងាយស្រួលបំផុត';
 
   @override
-  String get introBody => 'តម្លៃច្បាស់លាស់ · ក្រុមដែលបានផ្ទៀងផ្ទាត់ · វឌ្ឍនភាពផ្ទាល់';
+  String get introBody =>
+      'តម្លៃច្បាស់លាស់ · ក្រុមដែលបានផ្ទៀងផ្ទាត់ · វឌ្ឍនភាពផ្ទាល់';
 
   @override
   String get introStart => 'ចាប់ផ្តើមដោយលេខទូរស័ព្ទ';
@@ -778,7 +796,8 @@ class TKm extends T {
   String get loginVerify => 'ផ្ទៀងផ្ទាត់';
 
   @override
-  String get loginTerms => 'ដោយបន្ត អ្នកយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ និងគោលការណ៍ឯកជនភាព';
+  String get loginTerms =>
+      'ដោយបន្ត អ្នកយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ និងគោលការណ៍ឯកជនភាព';
 
   @override
   String get profileTitle => 'សូមប្រាប់ឈ្មោះរបស់អ្នក';
@@ -790,7 +809,8 @@ class TKm extends T {
   String get profileDone => 'ចាប់ផ្តើម';
 
   @override
-  String get welcomeToast => 'មានកូប៉ុងស្វាគមន៍ ២ សន្លឹកនៅក្នុងកាបូបរបស់អ្នកហើយ';
+  String get welcomeToast =>
+      'មានកូប៉ុងស្វាគមន៍ ២ សន្លឹកនៅក្នុងកាបូបរបស់អ្នកហើយ';
 
   @override
   String get svc_studio => 'សម្អាតស្ទូឌីយ៉ូ';
@@ -841,40 +861,52 @@ class TKm extends T {
   String get svcShort_move_in => 'ចូលរស់នៅ';
 
   @override
-  String get svcDesc_studio => 'សម្អាតស្ទូឌីយ៉ូដល់ ១០ ពយ៉ុង ដែលមាន ១ បន្ទប់ និង ១ បន្ទប់ទឹក យ៉ាងល្អិតល្អន់ ក្នុងរយៈពេល ២ ម៉ោង។';
+  String get svcDesc_studio =>
+      'សម្អាតស្ទូឌីយ៉ូដល់ ១០ ពយ៉ុង ដែលមាន ១ បន្ទប់ និង ១ បន្ទប់ទឹក យ៉ាងល្អិតល្អន់ ក្នុងរយៈពេល ២ ម៉ោង។';
 
   @override
-  String get svcDesc_kitchen => 'សម្អាតផ្ទះបាយជាពិសេស៖ អាងលាង ចង្ក្រាន ផ្ទៃក្រៅម៉ាស៊ីនបូមផ្សែង និងតុផ្ទៃ។';
+  String get svcDesc_kitchen =>
+      'សម្អាតផ្ទះបាយជាពិសេស៖ អាងលាង ចង្ក្រាន ផ្ទៃក្រៅម៉ាស៊ីនបូមផ្សែង និងតុផ្ទៃ។';
 
   @override
-  String get svcDesc_bathroom => 'សម្អាតធ្នើរ ម៉ាស៊ីនបើកទឹក អាងលាង និងបង្គន់ ទាំងខាងក្នុងនិងខាងក្រៅ រួចធ្វើឱ្យឥដ្ឋស្ងួត។';
+  String get svcDesc_bathroom =>
+      'សម្អាតធ្នើរ ម៉ាស៊ីនបើកទឹក អាងលាង និងបង្គន់ ទាំងខាងក្នុងនិងខាងក្រៅ រួចធ្វើឱ្យឥដ្ឋស្ងួត។';
 
   @override
-  String get svcDesc_mattress => 'ម៉ាស៊ីនឯកទេសស្រូបធូលី សត្វមីក្រូ និងស្នាម រួចសម្លាប់មេរោគដោយចំហាយទឹក។';
+  String get svcDesc_mattress =>
+      'ម៉ាស៊ីនឯកទេសស្រូបធូលី សត្វមីក្រូ និងស្នាម រួចសម្លាប់មេរោគដោយចំហាយទឹក។';
 
   @override
-  String get svcDesc_aircon => 'ដោះដំឡើង រួចលាងសម្ពាធខ្ពស់ លើកង់កំដៅ ផ្នែកត្រជាក់ និងតម្រង ហើយសម្លាប់មេរោគ។';
+  String get svcDesc_aircon =>
+      'ដោះដំឡើង រួចលាងសម្ពាធខ្ពស់ លើកង់កំដៅ ផ្នែកត្រជាក់ និងតម្រង ហើយសម្លាប់មេរោគ។';
 
   @override
-  String get svcDesc_sofa => 'ប្រើជាតិសាប៊ូសមស្របនឹងក្រណាត់ បំបែកភាពកខ្វក់ រួចលាងដោយវិធីស្រូបទឹក។';
+  String get svcDesc_sofa =>
+      'ប្រើជាតិសាប៊ូសមស្របនឹងក្រណាត់ បំបែកភាពកខ្វក់ រួចលាងដោយវិធីស្រូបទឹក។';
 
   @override
-  String get svcDesc_move_out => 'មុនចាកចេញ ក្រុមអ្នកជំនាញនឹងមកជាមួយឧបករណ៍ សម្អាតផ្ទះទទេ។';
+  String get svcDesc_move_out =>
+      'មុនចាកចេញ ក្រុមអ្នកជំនាញនឹងមកជាមួយឧបករណ៍ សម្អាតផ្ទះទទេ។';
 
   @override
-  String get svcDesc_move_in => 'មុនចូលរស់នៅផ្ទះថ្មី ក្រុមអ្នកជំនាញនឹងមកជាមួយឧបករណ៍ សម្អាតផ្ទៃខាងក្នុង។';
+  String get svcDesc_move_in =>
+      'មុនចូលរស់នៅផ្ទះថ្មី ក្រុមអ្នកជំនាញនឹងមកជាមួយឧបករណ៍ សម្អាតផ្ទៃខាងក្នុង។';
 
   @override
-  String get svcNotes_bathroom => 'ប្រសិនបើលូ ឬបង្គន់ស្ទះ សេវាអាចត្រូវកំណត់\nមិនមានការសម្អាតដោយប្រើគីមីពិសេស ពិដាន ឬប្រព័ន្ធខ្យល់\nផ្សិត និងកខ្វក់ចាស់ អាចនឹងមិនដកចេញទាំងស្រុង';
+  String get svcNotes_bathroom =>
+      'ប្រសិនបើលូ ឬបង្គន់ស្ទះ សេវាអាចត្រូវកំណត់\nមិនមានការសម្អាតដោយប្រើគីមីពិសេស ពិដាន ឬប្រព័ន្ធខ្យល់\nផ្សិត និងកខ្វក់ចាស់ អាចនឹងមិនដកចេញទាំងស្រុង';
 
   @override
-  String get svcNotes_mattress => 'តម្លៃដូចគ្នាចាប់ពីទំហំតូចដល់ទំហំ king\nស្ងួតពេញលេញក្នុងរយៈពេល ៤–៦ ម៉ោង\nការខូចខាតស្ព្រីង ឬការរលុង មិនអាចជួសជុលបានទេ';
+  String get svcNotes_mattress =>
+      'តម្លៃដូចគ្នាចាប់ពីទំហំតូចដល់ទំហំ king\nស្ងួតពេញលេញក្នុងរយៈពេល ៤–៦ ម៉ោង\nការខូចខាតស្ព្រីង ឬការរលុង មិនអាចជួសជុលបានទេ';
 
   @override
-  String get svcNotes_aircon => 'ម៉ាស៊ីនដែលមានអាយុលើស ១០ ឆ្នាំ អាចពិបាកដោះដំឡើង\nមិនរួមបញ្ចូលការសម្អាតឯកតាខាងក្រៅ\nយើងពិនិត្យថាម៉ាស៊ីនដំណើរការធម្មតាមុន និងក្រោយការសម្អាត';
+  String get svcNotes_aircon =>
+      'ម៉ាស៊ីនដែលមានអាយុលើស ១០ ឆ្នាំ អាចពិបាកដោះដំឡើង\nមិនរួមបញ្ចូលការសម្អាតឯកតាខាងក្រៅ\nយើងពិនិត្យថាម៉ាស៊ីនដំណើរការធម្មតាមុន និងក្រោយការសម្អាត';
 
   @override
-  String get svcNotes_sofa => 'សូហ្វាស្បែកត្រូវសម្អាត និងកូតសំណើម\nស្នាមចាស់ ឬការប្រែពណ៌ អាចនឹងមិនដកចេញទាំងស្រុង\nស្ងួតពេញលេញក្នុងរយៈពេល ៤–៦ ម៉ោង';
+  String get svcNotes_sofa =>
+      'សូហ្វាស្បែកត្រូវសម្អាត និងកូតសំណើម\nស្នាមចាស់ ឬការប្រែពណ៌ អាចនឹងមិនដកចេញទាំងស្រុង\nស្ងួតពេញលេញក្នុងរយៈពេល ៤–៦ ម៉ោង';
 
   @override
   String get unitTitle_bathroom => 'ចំនួនបន្ទប់ទឹក';
@@ -980,7 +1012,8 @@ class TKm extends T {
   String get homeServices => 'តើអ្នកត្រូវការសម្អាតអ្វីខ្លះ?';
 
   @override
-  String get homeAddAddress => 'បញ្ចូលអាសយដ្ឋានដើម្បីមើលសេវា និងតម្លៃដែលអាចប្រើបានភ្លាម';
+  String get homeAddAddress =>
+      'បញ្ចូលអាសយដ្ឋានដើម្បីមើលសេវា និងតម្លៃដែលអាចប្រើបានភ្លាម';
 
   @override
   String get homeAddAddressCta => 'បញ្ចូលអាសយដ្ឋាន';
@@ -997,13 +1030,15 @@ class TKm extends T {
   String get homeNotices => 'ព័ត៌មានថ្មី';
 
   @override
-  String get trustVat => 'រួមបញ្ចូលពន្ធ VAT\nតម្លៃដែលបានបង្ហាញគឺជាតម្លៃចុងក្រោយ';
+  String get trustVat =>
+      'រួមបញ្ចូលពន្ធ VAT\nតម្លៃដែលបានបង្ហាញគឺជាតម្លៃចុងក្រោយ';
 
   @override
   String get trustCancel => 'បោះបង់ដោយឥតគិតថ្លៃ\nរហូតដល់ ២ ថ្ងៃមុនថ្ងៃមក';
 
   @override
-  String get trustCard => 'ព័ត៌មានកាតរបស់អ្នក\nត្រូវបានរក្សាទុកតែនៅក្រុមហ៊ុនបង់ប្រាក់ប៉ុណ្ណោះ';
+  String get trustCard =>
+      'ព័ត៌មានកាតរបស់អ្នក\nត្រូវបានរក្សាទុកតែនៅក្រុមហ៊ុនបង់ប្រាក់ប៉ុណ្ណោះ';
 
   @override
   String stepOf(String current, String total) {
@@ -1022,7 +1057,8 @@ class TKm extends T {
   }
 
   @override
-  String get studioBlockedBody => 'ក្រុមពិគ្រោះយោបល់របស់យើងនឹងណែនាំសេវាដែលសមនឹងផ្ទះរបស់អ្នក។';
+  String get studioBlockedBody =>
+      'ក្រុមពិគ្រោះយោបល់របស់យើងនឹងណែនាំសេវាដែលសមនឹងផ្ទះរបស់អ្នក។';
 
   @override
   String get consultCta => 'សួរក្រុមពិគ្រោះយោបល់';
@@ -1100,7 +1136,8 @@ class TKm extends T {
   String get afternoon => 'រសៀល';
 
   @override
-  String get scheduleQuoteNote => 'ម៉ោងមកដល់ច្បាស់លាស់ នឹងត្រូវបានជម្រាបជូនតាមរយៈសន្ទនា';
+  String get scheduleQuoteNote =>
+      'ម៉ោងមកដល់ច្បាស់លាស់ នឹងត្រូវបានជម្រាបជូនតាមរយៈសន្ទនា';
 
   @override
   String get goToPayment => 'ទៅបង់ប្រាក់';
@@ -1208,7 +1245,8 @@ class TKm extends T {
   String get doneQuoteTitle => 'បានទទួលសំណើរួចរាល់';
 
   @override
-  String get doneQuoteBody => 'ក្រុមពិគ្រោះយោបល់របស់យើងនឹងពិនិត្យ រួចផ្ញើតម្លៃចុងក្រោយ។ អ្នកអាចមើលនៅផ្ទាំងសន្ទនា។';
+  String get doneQuoteBody =>
+      'ក្រុមពិគ្រោះយោបល់របស់យើងនឹងពិនិត្យ រួចផ្ញើតម្លៃចុងក្រោយ។ អ្នកអាចមើលនៅផ្ទាំងសន្ទនា។';
 
   @override
   String get goHome => 'ទៅទំព័រដើម';
@@ -1229,7 +1267,8 @@ class TKm extends T {
   String get bookingsEmpty => 'មិនទាន់មានការកក់ទេ';
 
   @override
-  String get bookingsEmptyBody => 'កូប៉ុងស្វាគមន៍កំពុងរង់ចាំការកក់ដំបូងរបស់អ្នក';
+  String get bookingsEmptyBody =>
+      'កូប៉ុងស្វាគមន៍កំពុងរង់ចាំការកក់ដំបូងរបស់អ្នក';
 
   @override
   String get bookNow => 'កក់ការសម្អាត';
@@ -1285,7 +1324,8 @@ class TKm extends T {
   String get cancelTitle => 'តើអ្នកចង់បោះបង់ការកក់នេះមែនទេ?';
 
   @override
-  String get cancelFree => 'បើបោះបង់ឥឡូវនេះ អ្នកនឹងទទួលបានប្រាក់សងវិញពេញចំនួន ហើយកូប៉ុងក៏នឹងត្រលប់មកវិញ។';
+  String get cancelFree =>
+      'បើបោះបង់ឥឡូវនេះ អ្នកនឹងទទួលបានប្រាក់សងវិញពេញចំនួន ហើយកូប៉ុងក៏នឹងត្រលប់មកវិញ។';
 
   @override
   String get cancelKeep => 'រក្សាទុក';
@@ -1459,7 +1499,8 @@ class TKm extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'អ្នកបម្រើមិនអាចមកក្នុងម៉ោងថ្មីបានទេ។ ក្រុមរបស់យើងនឹងសម្របសម្រួលឡើងវិញ។';
+  String get sys_reschedule_declined =>
+      'អ្នកបម្រើមិនអាចមកក្នុងម៉ោងថ្មីបានទេ។ ក្រុមរបស់យើងនឹងសម្របសម្រួលឡើងវិញ។';
 
   @override
   String get moreTitle => 'ផ្សេងទៀត';
@@ -1521,7 +1562,8 @@ class TKm extends T {
   String get deleteAccount => 'លុបគណនី';
 
   @override
-  String get deleteAccountBody => 'ទិន្នន័យផ្ទាល់ខ្លួនរបស់អ្នកនឹងត្រូវលុប ហើយមិនអាចយកមកវិញបានទេ។ សូមបោះបង់ការកក់ដែលកំពុងដំណើរការជាមុនសិន។';
+  String get deleteAccountBody =>
+      'ទិន្នន័យផ្ទាល់ខ្លួនរបស់អ្នកនឹងត្រូវលុប ហើយមិនអាចយកមកវិញបានទេ។ សូមបោះបង់ការកក់ដែលកំពុងដំណើរការជាមុនសិន។';
 
   @override
   String get couponsEmpty => 'មិនមានកូប៉ុងទេ';
@@ -1670,13 +1712,15 @@ class TKm extends T {
   String get quoteEstimateTitle => 'នេះជាតម្លៃប៉ាន់ស្មានរបស់អ្នក';
 
   @override
-  String get quoteEstimateBody => 'តម្លៃចុងក្រោយនឹងត្រូវកំណត់នៅក្នុងការពិគ្រោះយោបល់ បន្ទាប់ពីយើងពិនិត្យរូបថត និងស្ថានភាព';
+  String get quoteEstimateBody =>
+      'តម្លៃចុងក្រោយនឹងត្រូវកំណត់នៅក្នុងការពិគ្រោះយោបល់ បន្ទាប់ពីយើងពិនិត្យរូបថត និងស្ថានភាព';
 
   @override
   String get quoteG1 => 'តម្លៃចុងក្រោយនឹងត្រូវបញ្ជាក់ជាមួយអ្នកតាមសន្ទនា';
 
   @override
-  String get quoteG2 => 'ប្រាក់កក់ ១០% ដើម្បីបញ្ជាក់ ហើយប្រាក់ដែលនៅសល់បង់បន្ទាប់ពីការសម្អាត';
+  String get quoteG2 =>
+      'ប្រាក់កក់ ១០% ដើម្បីបញ្ជាក់ ហើយប្រាក់ដែលនៅសល់បង់បន្ទាប់ពីការសម្អាត';
 
   @override
   String get quoteG3 => 'អាចបោះបង់ដោយឥតគិតថ្លៃមុនពេលបញ្ជាក់';
@@ -1713,6 +1757,164 @@ class TKm extends T {
 
   @override
   String get themeTip => 'ប្តូរធីម';
+
+  @override
+  String get err_price_changed =>
+      'តម្លៃបានប្តូរ។ សូមពិនិត្យសម្រង់ថ្មី ហើយព្យាយាមម្តងទៀត។';
+
+  @override
+  String get err_checkout_closed =>
+      'ការទូទាត់នេះបានបិទហើយ។ សូមចាប់ផ្តើមឡើងវិញ។';
+
+  @override
+  String get err_checkout_refunded =>
+      'ការទូទាត់នេះត្រូវបានលុបចោល និងសងប្រាក់វិញរួចហើយ។';
+
+  @override
+  String get err_already_paid => 'បានទូទាត់រួចហើយ។';
+
+  @override
+  String get err_quote_not_payable =>
+      'សម្រង់នេះមិនទាន់អាចទូទាត់បានទេ។ សូមទាក់ទងក្រុមរបស់យើង។';
+
+  @override
+  String get err_payment_method_disabled =>
+      'វិធីទូទាត់នេះមិនអាចប្រើបានឥឡូវនេះទេ។';
+
+  @override
+  String get err_invalid_payment_method =>
+      'វិធីទូទាត់ដែលបានជ្រើសមិនអាចប្រើបានទេ។ សូមជ្រើសវិធីផ្សេង។';
+
+  @override
+  String get err_balance_not_due => 'សមតុល្យមិនទាន់ដល់កាលកំណត់ទូទាត់ទេ។';
+
+  @override
+  String get err_invalid_slot => 'ម៉ោងនេះមិនមានសម្រាប់សេវានេះទេ។';
+
+  @override
+  String get err_booking_changed =>
+      'ការកក់បានប្តូរ។ សូមផ្ទុកឡើងវិញ ហើយពិនិត្យព័ត៌មាន។';
+
+  @override
+  String get err_booking_closed => 'ការកក់នេះមិនអាចផ្លាស់ប្តូរបានទៀតទេ។';
+
+  @override
+  String get err_reschedule_closed =>
+      'មិនអាចប្តូរកាលវិភាគទៅថ្ងៃផ្សេងឥឡូវនេះទេ។ សូមទាក់ទងក្រុមរបស់យើង។';
+
+  @override
+  String get err_too_many_open_requests =>
+      'មានសំណើដែលមិនទាន់បញ្ចប់ច្រើនពេក។ សូមបញ្ចប់មួយជាមុនសិន។';
+
+  @override
+  String get err_already_reviewed => 'អ្នកបានវាយតម្លៃការចុះសេវានេះរួចហើយ។';
+
+  @override
+  String get err_identity_not_verified =>
+      'សូមបញ្ចប់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណជាមុនសិន។';
+
+  @override
+  String get err_email_taken => 'អ៊ីមែលនេះត្រូវបានប្រើរួចហើយ។';
+
+  @override
+  String get err_invalid_email => 'សូមពិនិត្យអាសយដ្ឋានអ៊ីមែល។';
+
+  @override
+  String get err_file_too_large => 'ឯកសារធំពេក។ សូមផ្ទុកឡើងឯកសារតូចជាង។';
+
+  @override
+  String get err_unsupported_image =>
+      'ទម្រង់រូបភាពនេះមិនគាំទ្រទេ។ សូមផ្ទុកឡើង JPG ឬ PNG។';
+
+  @override
+  String get err_upload_quota =>
+      'ដល់កម្រិតផ្ទុកឡើងសម្រាប់ថ្ងៃនេះហើយ។ សូមព្យាយាមថ្ងៃស្អែក។';
+
+  @override
+  String get err_provider_unreachable =>
+      'មិនអាចភ្ជាប់ទៅសេវាបានទេ។ សូមព្យាយាមម្តងទៀតក្នុងពេលឆាប់ៗ។';
+
+  @override
+  String get err_invalid_token => 'ការចូលគណនីមិនបានសម្រេច។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get err_invalid_transition =>
+      'មិនអាចប្តូរស្ថានភាពតាមរបៀបនេះឥឡូវនេះទេ។';
+
+  @override
+  String get err_job_not_started => 'សូមចាប់ផ្តើមការងារជាមុនសិន។';
+
+  @override
+  String get err_job_not_active => 'ការងារនេះមិនសកម្មទេ។';
+
+  @override
+  String get err_quote_locked => 'សម្រង់ត្រូវបានចាក់សោ មិនអាចកែបានទេ។';
+
+  @override
+  String get err_request_closed => 'សំណើនេះត្រូវបានបិទហើយ។';
+
+  @override
+  String get err_team_full => 'ក្រុមពេញហើយ។';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret ត្រូវចាប់ផ្តើមដោយ whsec_។';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint ត្រូវចាប់ផ្តើមដោយ https://។';
+
+  @override
+  String get err_invalid_bucket => 'ឈ្មោះ bucket មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_region => 'Region មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_retention => 'រយៈពេលរក្សាទុកនៅក្រៅជួរដែលអនុញ្ញាត។';
+
+  @override
+  String get err_invalid_service_account =>
+      'ឯកសារ service account មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_invalid_mode => 'សូមជ្រើស AI mode ដែលត្រឹមត្រូវ។';
+
+  @override
+  String get err_invalid_model => 'ឈ្មោះ AI model មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_missing_field => 'សូមបំពេញចន្លោះដែលត្រូវការទាំងអស់។';
+
+  @override
+  String get err_invalid_amount => 'សូមបញ្ចូលចំនួនទឹកប្រាក់ដែលត្រឹមត្រូវ។';
+
+  @override
+  String get err_cannot_deactivate_self => 'អ្នកមិនអាចបិទគណនីរបស់ខ្លួនឯងបានទេ។';
+
+  @override
+  String get err_invalid_coupon => 'គូប៉ុងនេះមិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get err_settlement_state => 'មិនអាចប្តូរការបោះស្រាយឥឡូវនេះទេ។';
+
+  @override
+  String get err_deposit_required => 'ត្រូវបង់ប្រាក់កក់ជាមុនសិន។';
+
+  @override
+  String get err_payout_state =>
+      'ស្ថានភាពការបង់ប្រាក់បានប្តូរ។ សូមផ្ទុកឡើងវិញ ហើយពិនិត្យម្តងទៀត។';
+
+  @override
+  String get err_payout_provider => 'វិធីបង់ប្រាក់នេះមិនអាចប្រើបានឥឡូវនេះទេ។';
+
+  @override
+  String get err_unsupported_bank => 'ធនាគារនេះមិនគាំទ្រការបង់ប្រាក់ទេ។';
+
+  @override
+  String get err_toss_unverified => 'សូមផ្ទៀងផ្ទាត់គណនី Toss ជាមុនសិន។';
+
+  @override
+  String get err_invalid_capacity => 'បញ្ចូលចំណុះត្រឹមត្រូវ។';
 
   @override
   String get fFinance => 'ហិរញ្ញវត្ថុ';
@@ -1760,7 +1962,8 @@ class TKm extends T {
   String get fVatEstimate => 'ពន្ធ VAT (ប៉ាន់ស្មាន)';
 
   @override
-  String get fVatNote => 'ប៉ាន់ស្មាន ១០% នៃថ្លៃសេវាវេទិកា។ សូមបញ្ជាក់ជាមួយគណនេយ្យករ។';
+  String get fVatNote =>
+      'ប៉ាន់ស្មាន ១០% នៃថ្លៃសេវាវេទិកា។ សូមបញ្ជាក់ជាមួយគណនេយ្យករ។';
 
   @override
   String get fAov => 'តម្លៃបញ្ជាទិញមធ្យម';
@@ -1947,7 +2150,8 @@ class TKm extends T {
   String get err_self_referral => 'មិនអាចប្រើកូដរបស់ខ្លួនឯងបានទេ';
 
   @override
-  String get err_referee_already_booked => 'បញ្ចូលកូដបានតែមុនការកក់ដំបូងប៉ុណ្ណោះ';
+  String get err_referee_already_booked =>
+      'បញ្ចូលកូដបានតែមុនការកក់ដំបូងប៉ុណ្ណោះ';
 
   @override
   String get err_already_referred => 'បានអនុវត្តកូដណែនាំរួចហើយ';
@@ -1959,13 +2163,15 @@ class TKm extends T {
   String get err_referral_disabled => 'ការណែនាំត្រូវបានផ្អាកបណ្តោះអាសន្ន';
 
   @override
-  String get err_invalid_photos => 'អាចភ្ជាប់តែរូបភាពដែលផ្ទុកឡើងតាម Malkkeum ប៉ុណ្ណោះ';
+  String get err_invalid_photos =>
+      'អាចភ្ជាប់តែរូបភាពដែលផ្ទុកឡើងតាម Malkkeum ប៉ុណ្ណោះ';
 
   @override
   String get welcomeOfferTitle => 'បញ្ចុះតម្លៃការកក់ដំបូង';
 
   @override
-  String get welcomeOfferBody => 'អនុវត្តដោយស្វ័យប្រវត្តិសម្រាប់ការកក់ដំបូងរបស់អតិថិជនថ្មី។ មិនរួមបញ្ចូលជាមួយគូប៉ុង។';
+  String get welcomeOfferBody =>
+      'អនុវត្តដោយស្វ័យប្រវត្តិសម្រាប់ការកក់ដំបូងរបស់អតិថិជនថ្មី។ មិនរួមបញ្ចូលជាមួយគូប៉ុង។';
 
   @override
   String get offerKindAmount => 'ចំនួនថេរ (វ៉ុន)';
@@ -1986,7 +2192,8 @@ class TKm extends T {
   String get referralSettingsTitle => 'រង្វាន់ណែនាំមិត្តភក្តិ';
 
   @override
-  String get referralSettingsBody => 'ផ្តល់ពេលមិត្តបញ្ចប់ការកក់ដំបូង និងបង់ប្រាក់រួច។ ទប់ស្កាត់ការណែនាំខ្លួនឯង និងលេខទូរស័ព្ទដដែល។';
+  String get referralSettingsBody =>
+      'ផ្តល់ពេលមិត្តបញ្ចប់ការកក់ដំបូង និងបង់ប្រាក់រួច។ ទប់ស្កាត់ការណែនាំខ្លួនឯង និងលេខទូរស័ព្ទដដែល។';
 
   @override
   String get referralRewardAmount => 'ចំនួនរង្វាន់ (វ៉ុន)';
@@ -2125,25 +2332,32 @@ class TKm extends T {
   String get oIntNever => 'មិនទាន់មានការប្រើប្រាស់';
 
   @override
-  String get oActDb => 'មិនអាចភ្ជាប់មូលដ្ឋានទិន្នន័យបាន។ ដំណើរការ malkkeum logs នៅម៉ាស៊ីនមេ; ចាប់ផ្តើមឡើងវិញប្រសិនបើនៅតែកើត។';
+  String get oActDb =>
+      'មិនអាចភ្ជាប់មូលដ្ឋានទិន្នន័យបាន។ ដំណើរការ malkkeum logs នៅម៉ាស៊ីនមេ; ចាប់ផ្តើមឡើងវិញប្រសិនបើនៅតែកើត។';
 
   @override
-  String get oActDisk => 'ទំហំថាសទំនេរក្រោម 10%។ លុបការបម្រុងទុកចាស់ ឬបន្ថែមថាស។';
+  String get oActDisk =>
+      'ទំហំថាសទំនេរក្រោម 10%។ លុបការបម្រុងទុកចាស់ ឬបន្ថែមថាស។';
 
   @override
-  String get oActBackup => 'ការបម្រុងទុកស្វ័យប្រវត្តិយឺត។ ដំណើរការ malkkeum backup នៅម៉ាស៊ីនមេ ហើយពិនិត្យ backups/backup.log។';
+  String get oActBackup =>
+      'ការបម្រុងទុកស្វ័យប្រវត្តិយឺត។ ដំណើរការ malkkeum backup នៅម៉ាស៊ីនមេ ហើយពិនិត្យ backups/backup.log។';
 
   @override
-  String get oActErrors => 'មានកំហុសម៉ាស៊ីនមេច្រើន។ ពិនិត្យបន្ទាត់ error ក្នុង malkkeum logs ហើយផ្ញើទៅអ្នកអភិវឌ្ឍប្រសិនបើកើតឡើងម្តងទៀត។';
+  String get oActErrors =>
+      'មានកំហុសម៉ាស៊ីនមេច្រើន។ ពិនិត្យបន្ទាត់ error ក្នុង malkkeum logs ហើយផ្ញើទៅអ្នកអភិវឌ្ឍប្រសិនបើកើតឡើងម្តងទៀត។';
 
   @override
-  String get oActPayments => 'ការទូទាត់អាចបានជោគជ័យ តែមិនបានដំណើរការដោយស្វ័យប្រវត្តិ។ ពិនិត្យក្នុង PortOne ហើយសងប្រាក់ដោយដៃប្រសិនបើចាំបាច់។';
+  String get oActPayments =>
+      'ការទូទាត់អាចបានជោគជ័យ តែមិនបានដំណើរការដោយស្វ័យប្រវត្តិ។ ពិនិត្យក្នុង PortOne ហើយសងប្រាក់ដោយដៃប្រសិនបើចាំបាច់។';
 
   @override
-  String get oActWebhook => 'ការផ្ទៀងផ្ទាត់ហត្ថលេខាការជូនដំណឹងទូទាត់បរាជ័យ។ បញ្ចូល webhook secret ឡើងវិញក្នុង ការកំណត់ > ការទូទាត់ (PortOne)។';
+  String get oActWebhook =>
+      'ការផ្ទៀងផ្ទាត់ហត្ថលេខាការជូនដំណឹងទូទាត់បរាជ័យ។ បញ្ចូល webhook secret ឡើងវិញក្នុង ការកំណត់ > ការទូទាត់ (PortOne)។';
 
   @override
-  String get oActIntegration => 'ការតភ្ជាប់នេះបរាជ័យ។ ពិនិត្យកូនសោក្នុងការកំណត់ ហើយចុច Test connection។';
+  String get oActIntegration =>
+      'ការតភ្ជាប់នេះបរាជ័យ។ ពិនិត្យកូនសោក្នុងការកំណត់ ហើយចុច Test connection។';
 
   @override
   String get oActNotSet => 'មិនទាន់កំណត់។ បញ្ចូលកូនសោក្នុងការកំណត់។';
@@ -2152,7 +2366,8 @@ class TKm extends T {
   String get oAlerts => 'ការកំណត់ការជូនដំណឹង';
 
   @override
-  String get oAlertsHint => 'បញ្ហានឹងបង្ហាញក្នុងប្រអប់សារ និងផ្ញើ SMS ទៅទូរស័ព្ទម្ចាស់។ បញ្ហាដដែលផ្ញើតែម្តងក្នុងរៀងរាល់ 6 ម៉ោង។';
+  String get oAlertsHint =>
+      'បញ្ហានឹងបង្ហាញក្នុងប្រអប់សារ និងផ្ញើ SMS ទៅទូរស័ព្ទម្ចាស់។ បញ្ហាដដែលផ្ញើតែម្តងក្នុងរៀងរាល់ 6 ម៉ោង។';
 
   @override
   String get oRuleSms => 'ការផ្ញើ SMS បរាជ័យ';
@@ -2190,13 +2405,15 @@ class TKm extends T {
   }
 
   @override
-  String get oQuietHint => 'មិនមានការជូនដំណឹងក្នុងម៉ោងនេះ; សារមួយនឹងផ្ញើបន្ទាប់ពីចប់។';
+  String get oQuietHint =>
+      'មិនមានការជូនដំណឹងក្នុងម៉ោងនេះ; សារមួយនឹងផ្ញើបន្ទាប់ពីចប់។';
 
   @override
   String get oAlertPhone => 'ទូរស័ព្ទទទួលការជូនដំណឹង';
 
   @override
-  String get oAlertPhoneHint => 'ទុកទំនេរដើម្បីប្រើលេខសេវាអតិថិជននៅក្នុងព័ត៌មានអាជីវកម្ម។';
+  String get oAlertPhoneHint =>
+      'ទុកទំនេរដើម្បីប្រើលេខសេវាអតិថិជននៅក្នុងព័ត៌មានអាជីវកម្ម។';
 
   @override
   String get oSave => 'រក្សាទុក';
@@ -2214,7 +2431,8 @@ class TKm extends T {
   String get oBackupOffsite => 'ការបម្រុងទុកខាងក្រៅ (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'បិទនៅឡើយ។ បើកក្នុង ការកំណត់ > ការបម្រុងទុកខាងក្រៅ។';
+  String get oBackupOffsiteOff =>
+      'បិទនៅឡើយ។ បើកក្នុង ការកំណត់ > ការបម្រុងទុកខាងក្រៅ។';
 
   @override
   String get oLastBackup => 'ការបម្រុងទុកចុងក្រោយ';
@@ -2238,10 +2456,12 @@ class TKm extends T {
   String get pTabSchedule => 'កាលវិភាគ';
 
   @override
-  String get pIntroTitle => 'ការងារ កាលវិភាគ និងការបង់ប្រាក់\nសម្រាប់អ្នកជំនាញសម្អាត';
+  String get pIntroTitle =>
+      'ការងារ កាលវិភាគ និងការបង់ប្រាក់\nសម្រាប់អ្នកជំនាញសម្អាត';
 
   @override
-  String get pIntroBody => 'ធ្វើការតែកន្លែង និងម៉ោងដែលអ្នកចង់បាន ទទួលប្រាក់រាល់សប្តាហ៍';
+  String get pIntroBody =>
+      'ធ្វើការតែកន្លែង និងម៉ោងដែលអ្នកចង់បាន ទទួលប្រាក់រាល់សប្តាហ៍';
 
   @override
   String get pOnbTitle => 'សូមប្រាប់អំពីអ្នក';
@@ -2265,10 +2485,12 @@ class TKm extends T {
   String get pPendingTitle => 'កំពុងរង់ចាំការអនុម័តគណនី';
 
   @override
-  String get pPendingBody => 'យើងនឹងជម្រាបអ្នកនៅពេលក្រុមប្រតិបត្តិការអនុម័ត។ ក្នុងពេលរង់ចាំ សូមចុះឈ្មោះគណនីបង់ប្រាក់របស់អ្នក។';
+  String get pPendingBody =>
+      'យើងនឹងជម្រាបអ្នកនៅពេលក្រុមប្រតិបត្តិការអនុម័ត។ ក្នុងពេលរង់ចាំ សូមចុះឈ្មោះគណនីបង់ប្រាក់របស់អ្នក។';
 
   @override
-  String get pSuspended => 'គណនីរបស់អ្នកត្រូវបានផ្អាកជាបណ្តោះអាសន្ន។ សូមទាក់ទងក្រុមប្រតិបត្តិការ។';
+  String get pSuspended =>
+      'គណនីរបស់អ្នកត្រូវបានផ្អាកជាបណ្តោះអាសន្ន។ សូមទាក់ទងក្រុមប្រតិបត្តិការ។';
 
   @override
   String get pDirect => 'កក់ផ្ទាល់';
@@ -2292,7 +2514,8 @@ class TKm extends T {
   String get pNoJobs => 'មិនមានការងារដែលសមនឹងឥឡូវនេះទេ';
 
   @override
-  String get pNoJobsBody => 'ពង្រីកសេវា តំបន់ ឬម៉ោងធ្វើការ ដើម្បីមើលការងារបន្ថែម';
+  String get pNoJobsBody =>
+      'ពង្រីកសេវា តំបន់ ឬម៉ោងធ្វើការ ដើម្បីមើលការងារបន្ថែម';
 
   @override
   String get pPayout => 'ប្រាក់ដែលនឹងទទួល';
@@ -2307,7 +2530,8 @@ class TKm extends T {
   String get pClosed => 'បានបិទ';
 
   @override
-  String get pPrivacyNote => 'អាសយដ្ឋានពិត និងព័ត៌មានអតិថិជននឹងបង្ហាញបន្ទាប់ពីអ្នកទទួលយក';
+  String get pPrivacyNote =>
+      'អាសយដ្ឋានពិត និងព័ត៌មានអតិថិជននឹងបង្ហាញបន្ទាប់ពីអ្នកទទួលយក';
 
   @override
   String get pAccept => 'ទទួលយកការងារ';
@@ -2316,7 +2540,8 @@ class TKm extends T {
   String get pAcceptConfirm => 'តើអ្នកចង់ទទួលយកការងារនេះមែនទេ?';
 
   @override
-  String get pAcceptBody => 'បន្ទាប់ពីទទួលយក ការងារនេះនឹងបន្ថែមទៅកាលវិភាគរបស់អ្នក ហើយអតិថិជននឹងទទួលការជូនដំណឹងថាបានកំណត់ក្រុម។ ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក មិនអាចបោះបង់បានទេ។';
+  String get pAcceptBody =>
+      'បន្ទាប់ពីទទួលយក ការងារនេះនឹងបន្ថែមទៅកាលវិភាគរបស់អ្នក ហើយអតិថិជននឹងទទួលការជូនដំណឹងថាបានកំណត់ក្រុម។ ចាប់ពី ២ ថ្ងៃមុនថ្ងៃមក មិនអាចបោះបង់បានទេ។';
 
   @override
   String get pAccepted => 'បានទទួលយកការងារ';
@@ -2383,7 +2608,8 @@ class TKm extends T {
   String get pNoSchedule => 'ថ្ងៃនេះមិនមានកាលវិភាគទេ';
 
   @override
-  String get pCancelledBanner => 'អតិថិជនបានបោះបង់ការងារនេះ។ មិនអាចសម្គាល់ថាបានបញ្ចប់បានទេ។';
+  String get pCancelledBanner =>
+      'អតិថិជនបានបោះបង់ការងារនេះ។ មិនអាចសម្គាល់ថាបានបញ្ចប់បានទេ។';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2463,7 +2689,8 @@ class TKm extends T {
   String get pCompleteCta => 'សម្គាល់ថាបានបញ្ចប់';
 
   @override
-  String get pCompleteNeed => 'សូមបញ្ចូលរូបថតយ៉ាងតិច ១ សន្លឹកសម្រាប់ផ្នែកនីមួយៗ ហើយធីកគ្រប់ចំណុចទាំងអស់';
+  String get pCompleteNeed =>
+      'សូមបញ្ចូលរូបថតយ៉ាងតិច ១ សន្លឹកសម្រាប់ផ្នែកនីមួយៗ ហើយធីកគ្រប់ចំណុចទាំងអស់';
 
   @override
   String get pCompleted => 'អរគុណសម្រាប់ការងារល្អ!';
@@ -2474,7 +2701,8 @@ class TKm extends T {
   }
 
   @override
-  String get pPayoutWaiting => 'កាលបរិច្ឆេទបង់ប្រាក់នឹងត្រូវកំណត់បន្ទាប់ពីអតិថិជនបង់ប្រាក់នៅសល់';
+  String get pPayoutWaiting =>
+      'កាលបរិច្ឆេទបង់ប្រាក់នឹងត្រូវកំណត់បន្ទាប់ពីអតិថិជនបង់ប្រាក់នៅសល់';
 
   @override
   String get pPendingPayout => 'ចំនួនប្រាក់ដែលនឹងបង់';
@@ -2525,7 +2753,8 @@ class TKm extends T {
   String get pUnverified => 'កំពុងផ្ទៀងផ្ទាត់';
 
   @override
-  String get pAccountSaved => 'បានរក្សាទុកគណនី។ បើមានការផ្លាស់ប្តូរ នឹងត្រូវផ្ទៀងផ្ទាត់ឡើងវិញ។';
+  String get pAccountSaved =>
+      'បានរក្សាទុកគណនី។ បើមានការផ្លាស់ប្តូរ នឹងត្រូវផ្ទៀងផ្ទាត់ឡើងវិញ។';
 
   @override
   String get pWorkSchedule => 'កាលវិភាគធ្វើការ';
@@ -2611,37 +2840,37 @@ class TKm extends T {
   String get pSpace => 'ព័ត៌មានលំហ';
 
   @override
-  String get cIntPayout => 'Partner payouts';
+  String get cIntPayout => 'ការទូទាត់ដៃគូ';
 
   @override
-  String get poTabSettlements => 'Settlements';
+  String get poTabSettlements => 'ការបោះស្រាយ';
 
   @override
-  String get poTabPayouts => 'Payouts';
+  String get poTabPayouts => 'ការបង់ប្រាក់';
 
   @override
-  String get poState_requested => 'Requested';
+  String get poState_requested => 'បានស្នើសុំ';
 
   @override
-  String get poState_sent => 'Sent';
+  String get poState_sent => 'បានផ្ញើ';
 
   @override
-  String get poState_paid => 'Paid';
+  String get poState_paid => 'បានបង់';
 
   @override
-  String get poState_failed => 'Failed';
+  String get poState_failed => 'បរាជ័យ';
 
   @override
-  String get poProviderManual => 'Manual transfer';
+  String get poProviderManual => 'ផ្ទេរដោយដៃ';
 
   @override
-  String get poProviderToss => 'Toss payouts';
+  String get poProviderToss => 'ការបង់តាម Toss';
 
   @override
-  String get poShowAccount => 'Show account';
+  String get poShowAccount => 'បង្ហាញគណនី';
 
   @override
-  String get poAccountTitle => 'Transfer details';
+  String get poAccountTitle => 'ព័ត៌មានផ្ទេរ';
 
   @override
   String poAccountBody(
@@ -2650,43 +2879,43 @@ class TKm extends T {
     String account,
     String amount,
   ) {
-    return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
+    return 'ផ្ញើ $amount វ៉ុន ទៅ $holder · $bank · $account បន្ទាប់មកចុចបញ្ជាក់។';
   }
 
   @override
-  String get poConfirmPaid => 'Mark as transferred';
+  String get poConfirmPaid => 'សម្គាល់ថាបានផ្ទេរ';
 
   @override
-  String get poMarkFailed => 'Mark as failed';
+  String get poMarkFailed => 'សម្គាល់ថាបរាជ័យ';
 
   @override
-  String get poReasonTitle => 'Failure reason';
+  String get poReasonTitle => 'មូលហេតុបរាជ័យ';
 
   @override
-  String get poReasonHint => 'e.g. wrong account, transfer cancelled';
+  String get poReasonHint => 'ឧ. គណនីខុស ការផ្ទេរត្រូវបានលុបចោល';
 
   @override
-  String get poSend => 'Send via Toss';
+  String get poSend => 'ផ្ញើតាម Toss';
 
   @override
-  String get poSync => 'Check status';
+  String get poSync => 'ពិនិត្យស្ថានភាព';
 
   @override
-  String get poRetry => 'Retry';
+  String get poRetry => 'ព្យាយាមម្តងទៀត';
 
   @override
-  String get poNoPayouts => 'No payouts yet';
+  String get poNoPayouts => 'មិនទាន់មានការបង់ប្រាក់ទេ';
 
   @override
   String poRequestedToast(String n) {
-    return 'Created $n payout requests';
+    return 'បានបង្កើតសំណើបង់ប្រាក់ $n';
   }
 
   @override
-  String get poReasonRequired => 'Enter a reason';
+  String get poReasonRequired => 'បញ្ចូលមូលហេតុ';
 
   @override
-  String get poRevealNote => 'Viewing account details is logged';
+  String get poRevealNote => 'ការមើលព័ត៌មានគណនីត្រូវបានកត់ត្រា';
 
   @override
   String get cSetup => 'ការកំណត់';
@@ -2724,7 +2953,8 @@ class TKm extends T {
   String get cSetupLogo => 'ផ្ទុកឡូហ្គោ';
 
   @override
-  String get cSetupCompany => 'ព័ត៌មានក្រុមហ៊ុន (បង្ហាញខាងក្រោមកម្មវិធី និងគេហទំព័រ)';
+  String get cSetupCompany =>
+      'ព័ត៌មានក្រុមហ៊ុន (បង្ហាញខាងក្រោមកម្មវិធី និងគេហទំព័រ)';
 
   @override
   String get cSetupLegalName => 'ឈ្មោះផ្លូវច្បាប់';
@@ -2757,13 +2987,15 @@ class TKm extends T {
   String get cSetupPayMethods => 'វិធីបង់ប្រាក់';
 
   @override
-  String get cSetupPayMethodsHint => 'បើក ឬបិទវិធីបង់ប្រាក់ដែលអតិថិជនឃើញ។ មានប្រសិទ្ធភាពភ្លាមៗ។';
+  String get cSetupPayMethodsHint =>
+      'បើក ឬបិទវិធីបង់ប្រាក់ដែលអតិថិជនឃើញ។ មានប្រសិទ្ធភាពភ្លាមៗ។';
 
   @override
   String get cReviewTitle => 'គណនីសាកល្បងសម្រាប់ការពិនិត្យហាង';
 
   @override
-  String get cReviewHint => 'អ្នកពិនិត្យមិនអាចទទួល SMS កូរ៉េបានទេ។ សូមសរសេរលេខ និងលេខកូដ ៦ ខ្ទង់ក្នុងកំណត់ចំណាំ។ បិទដោយស្វ័យប្រវត្តិ។';
+  String get cReviewHint =>
+      'អ្នកពិនិត្យមិនអាចទទួល SMS កូរ៉េបានទេ។ សូមសរសេរលេខ និងលេខកូដ ៦ ខ្ទង់ក្នុងកំណត់ចំណាំ។ បិទដោយស្វ័យប្រវត្តិ។';
 
   @override
   String get cReviewPhone => 'លេខទូរស័ព្ទសាកល្បង';
@@ -2780,13 +3012,16 @@ class TKm extends T {
   String get cReviewEnable => 'បើក (១៤ ថ្ងៃ)';
 
   @override
-  String get pDeleteAccountBody => 'ក្រុម និងទិន្នន័យផ្ទាល់ខ្លួននឹងត្រូវលុបជាអចិន្ត្រៃយ៍។ សូមបញ្ចប់ការងារ និងការទូទាត់ដែលនៅសល់ជាមុន។';
+  String get pDeleteAccountBody =>
+      'ក្រុម និងទិន្នន័យផ្ទាល់ខ្លួននឹងត្រូវលុបជាអចិន្ត្រៃយ៍។ សូមបញ្ចប់ការងារ និងការទូទាត់ដែលនៅសល់ជាមុន។';
 
   @override
-  String get err_has_active_jobs => 'អ្នកនៅមានការងារដែលបានចាត់តាំង។ សូមបញ្ចប់ ឬស្នើជំនួយផ្ទេរ។';
+  String get err_has_active_jobs =>
+      'អ្នកនៅមានការងារដែលបានចាត់តាំង។ សូមបញ្ចប់ ឬស្នើជំនួយផ្ទេរ។';
 
   @override
-  String get err_pending_payouts => 'នៅមានការទូទាត់មិនទាន់បង់។ អាចលុបបានបន្ទាប់ពីបង់រួច។';
+  String get err_pending_payouts =>
+      'នៅមានការទូទាត់មិនទាន់បង់។ អាចលុបបានបន្ទាប់ពីបង់រួច។';
 
   @override
   String get err_phone_required => 'សូមផ្ទៀងផ្ទាត់លេខទូរស័ព្ទមុនទទួលការងារ។';
@@ -2809,7 +3044,8 @@ class TKm extends T {
   String get mMyJobs => 'ការងាររបស់ខ្ញុំ';
 
   @override
-  String get mNoJobs => 'មិនទាន់មានការងារចាត់តាំងទេ។ ការងារពីប្រធានក្រុមនឹងបង្ហាញនៅទីនេះ។';
+  String get mNoJobs =>
+      'មិនទាន់មានការងារចាត់តាំងទេ។ ការងារពីប្រធានក្រុមនឹងបង្ហាញនៅទីនេះ។';
 
   @override
   String mTeam(String team) {
@@ -2841,7 +3077,8 @@ class TKm extends T {
   String get cSetupCheckInApp => 'បានរក្សាទុក · បញ្ជាក់ដោយចូលពីកម្មវិធី';
 
   @override
-  String get cSetupInvalidKey => 'កូនសោត្រូវបានបដិសេធ។ សូមពិនិត្យតម្លៃដែលបានចម្លង';
+  String get cSetupInvalidKey =>
+      'កូនសោត្រូវបានបដិសេធ។ សូមពិនិត្យតម្លៃដែលបានចម្លង';
 
   @override
   String get cSetupUnreachable => 'មិនអាចភ្ជាប់សេវាបានទេ។ សូមព្យាយាមម្តងទៀត';
@@ -2892,7 +3129,8 @@ class TKm extends T {
   String get cFirstRunTitle => 'សូមស្វាគមន៍! បង្កើតគណនីម្ចាស់';
 
   @override
-  String get cFirstRunBody => 'បញ្ចូលលេខកូដ ១២ តួដែលបង្ហាញពេលដំឡើង។ គណនីនេះគ្រប់គ្រងការកំណត់ទាំងអស់។';
+  String get cFirstRunBody =>
+      'បញ្ចូលលេខកូដ ១២ តួដែលបង្ហាញពេលដំឡើង។ គណនីនេះគ្រប់គ្រងការកំណត់ទាំងអស់។';
 
   @override
   String get cFirstRunCode => 'លេខកូដដំឡើង';
@@ -2927,13 +3165,15 @@ class TKm extends T {
   String get uUpdateRequiredTitle => 'ត្រូវការធ្វើបច្ចុប្បន្នភាព';
 
   @override
-  String get uUpdateRequiredBody => 'កំណែនេះលែងគាំទ្រហើយ។ សូមធ្វើបច្ចុប្បន្នភាពពីហាង។';
+  String get uUpdateRequiredBody =>
+      'កំណែនេះលែងគាំទ្រហើយ។ សូមធ្វើបច្ចុប្បន្នភាពពីហាង។';
 
   @override
   String get uUpdateStore => 'ធ្វើបច្ចុប្បន្នភាពនៅក្នុងហាង';
 
   @override
-  String get uUpdateStoreMissing => 'តំណធ្វើបច្ចុប្បន្នភាពមិនទាន់រួចរាល់។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។';
+  String get uUpdateStoreMissing =>
+      'តំណធ្វើបច្ចុប្បន្នភាពមិនទាន់រួចរាល់។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។';
 
   @override
   String uCurrentVersion(String version) {
@@ -2944,7 +3184,8 @@ class TKm extends T {
   String get uAppVersionTitle => 'កំណែកម្មវិធី';
 
   @override
-  String get uAppVersionHint => 'កម្មវិធីដែលទាបជាងកំណែអប្បបរមានឹងឈប់នៅអេក្រង់ធ្វើបច្ចុប្បន្នភាព។ ឧទាហរណ៍: 1.2.0';
+  String get uAppVersionHint =>
+      'កម្មវិធីដែលទាបជាងកំណែអប្បបរមានឹងឈប់នៅអេក្រង់ធ្វើបច្ចុប្បន្នភាព។ ឧទាហរណ៍: 1.2.0';
 
   @override
   String get uMinVersion => 'កំណែអប្បបរមា';

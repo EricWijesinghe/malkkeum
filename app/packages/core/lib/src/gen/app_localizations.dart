@@ -74,7 +74,8 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the T.supportedLocales
 /// property.
 abstract class T {
-  T(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  T(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -94,12 +95,13 @@ abstract class T {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -116,7 +118,7 @@ abstract class T {
     Locale('th'),
     Locale('uz'),
     Locale('vi'),
-    Locale('zh')
+    Locale('zh'),
   ];
 
   /// No description provided for @addressSearch.
@@ -3395,6 +3397,288 @@ abstract class T {
   /// **'테마 바꾸기'**
   String get themeTip;
 
+  /// No description provided for @err_price_changed.
+  ///
+  /// In ko, this message translates to:
+  /// **'가격이 바뀌었어요. 새 견적을 확인하고 다시 시도해 주세요.'**
+  String get err_price_changed;
+
+  /// No description provided for @err_checkout_closed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 결제는 이미 종료됐어요. 다시 시작해 주세요.'**
+  String get err_checkout_closed;
+
+  /// No description provided for @err_checkout_refunded.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 결제는 취소되어 환불됐어요.'**
+  String get err_checkout_refunded;
+
+  /// No description provided for @err_already_paid.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 결제가 끝났어요.'**
+  String get err_already_paid;
+
+  /// No description provided for @err_quote_not_payable.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 결제할 수 없는 견적이에요. 상담팀에 확인해 주세요.'**
+  String get err_quote_not_payable;
+
+  /// No description provided for @err_payment_method_disabled.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 이 결제수단을 쓸 수 없어요.'**
+  String get err_payment_method_disabled;
+
+  /// No description provided for @err_invalid_payment_method.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택한 결제수단을 쓸 수 없어요. 다른 방법을 골라 주세요.'**
+  String get err_invalid_payment_method;
+
+  /// No description provided for @err_balance_not_due.
+  ///
+  /// In ko, this message translates to:
+  /// **'잔금은 아직 결제할 시기가 아니에요.'**
+  String get err_balance_not_due;
+
+  /// No description provided for @err_invalid_slot.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 서비스에서는 고를 수 없는 시간이에요.'**
+  String get err_invalid_slot;
+
+  /// No description provided for @err_booking_changed.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 내용이 바뀌었어요. 새로고침 후 다시 확인해 주세요.'**
+  String get err_booking_changed;
+
+  /// No description provided for @err_booking_closed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 예약은 더 이상 바꿀 수 없어요.'**
+  String get err_booking_closed;
+
+  /// No description provided for @err_reschedule_closed.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 날짜는 지금 변경할 수 없어요. 상담팀에 문의해 주세요.'**
+  String get err_reschedule_closed;
+
+  /// No description provided for @err_too_many_open_requests.
+  ///
+  /// In ko, this message translates to:
+  /// **'진행 중인 요청이 너무 많아요. 하나를 마무리한 뒤 다시 시도해 주세요.'**
+  String get err_too_many_open_requests;
+
+  /// No description provided for @err_already_reviewed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 후기를 남긴 방문이에요.'**
+  String get err_already_reviewed;
+
+  /// No description provided for @err_identity_not_verified.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인인증을 먼저 완료해 주세요.'**
+  String get err_identity_not_verified;
+
+  /// No description provided for @err_email_taken.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 사용 중인 이메일이에요.'**
+  String get err_email_taken;
+
+  /// No description provided for @err_invalid_email.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일 주소를 확인해 주세요.'**
+  String get err_invalid_email;
+
+  /// No description provided for @err_file_too_large.
+  ///
+  /// In ko, this message translates to:
+  /// **'파일이 너무 커요. 더 작은 파일을 올려 주세요.'**
+  String get err_file_too_large;
+
+  /// No description provided for @err_unsupported_image.
+  ///
+  /// In ko, this message translates to:
+  /// **'지원하지 않는 사진 형식이에요. JPG나 PNG로 올려 주세요.'**
+  String get err_unsupported_image;
+
+  /// No description provided for @err_upload_quota.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘은 업로드 한도에 도달했어요. 내일 다시 시도해 주세요.'**
+  String get err_upload_quota;
+
+  /// No description provided for @err_provider_unreachable.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.'**
+  String get err_provider_unreachable;
+
+  /// No description provided for @err_invalid_token.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 정보가 올바르지 않아요. 다시 시도해 주세요.'**
+  String get err_invalid_token;
+
+  /// No description provided for @err_invalid_transition.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 이 상태로 바꿀 수 없어요.'**
+  String get err_invalid_transition;
+
+  /// No description provided for @err_job_not_started.
+  ///
+  /// In ko, this message translates to:
+  /// **'먼저 작업을 시작해 주세요.'**
+  String get err_job_not_started;
+
+  /// No description provided for @err_job_not_active.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 진행할 수 없는 작업이에요.'**
+  String get err_job_not_active;
+
+  /// No description provided for @err_quote_locked.
+  ///
+  /// In ko, this message translates to:
+  /// **'확정된 견적이라 수정할 수 없어요.'**
+  String get err_quote_locked;
+
+  /// No description provided for @err_request_closed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 마감된 요청이에요.'**
+  String get err_request_closed;
+
+  /// No description provided for @err_team_full.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 인원이 가득 찼어요.'**
+  String get err_team_full;
+
+  /// No description provided for @err_invalid_webhook_secret.
+  ///
+  /// In ko, this message translates to:
+  /// **'웹훅 시크릿은 whsec_로 시작해야 해요.'**
+  String get err_invalid_webhook_secret;
+
+  /// No description provided for @err_invalid_endpoint.
+  ///
+  /// In ko, this message translates to:
+  /// **'엔드포인트는 https://로 시작해야 해요.'**
+  String get err_invalid_endpoint;
+
+  /// No description provided for @err_invalid_bucket.
+  ///
+  /// In ko, this message translates to:
+  /// **'버킷 이름이 올바르지 않아요.'**
+  String get err_invalid_bucket;
+
+  /// No description provided for @err_invalid_region.
+  ///
+  /// In ko, this message translates to:
+  /// **'리전 값이 올바르지 않아요.'**
+  String get err_invalid_region;
+
+  /// No description provided for @err_invalid_retention.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관 기간 값이 범위를 벗어났어요.'**
+  String get err_invalid_retention;
+
+  /// No description provided for @err_invalid_service_account.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 계정 파일이 올바르지 않아요.'**
+  String get err_invalid_service_account;
+
+  /// No description provided for @err_invalid_mode.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 응답 모드를 다시 골라 주세요.'**
+  String get err_invalid_mode;
+
+  /// No description provided for @err_invalid_model.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 모델 이름이 올바르지 않아요.'**
+  String get err_invalid_model;
+
+  /// No description provided for @err_missing_field.
+  ///
+  /// In ko, this message translates to:
+  /// **'필수 항목을 모두 입력해 주세요.'**
+  String get err_missing_field;
+
+  /// No description provided for @err_invalid_amount.
+  ///
+  /// In ko, this message translates to:
+  /// **'금액을 올바르게 입력해 주세요.'**
+  String get err_invalid_amount;
+
+  /// No description provided for @err_cannot_deactivate_self.
+  ///
+  /// In ko, this message translates to:
+  /// **'본인 계정은 비활성화할 수 없어요.'**
+  String get err_cannot_deactivate_self;
+
+  /// No description provided for @err_invalid_coupon.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 정보가 올바르지 않아요.'**
+  String get err_invalid_coupon;
+
+  /// No description provided for @err_settlement_state.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 정산 상태를 바꿀 수 없어요.'**
+  String get err_settlement_state;
+
+  /// No description provided for @err_deposit_required.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금을 먼저 받아야 해요.'**
+  String get err_deposit_required;
+
+  /// No description provided for @err_payout_state.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 상태가 바뀌었어요. 새로고침 후 다시 확인해 주세요.'**
+  String get err_payout_state;
+
+  /// No description provided for @err_payout_provider.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 지급 방식은 지금 쓸 수 없어요.'**
+  String get err_payout_provider;
+
+  /// No description provided for @err_unsupported_bank.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 은행은 지급을 지원하지 않아요.'**
+  String get err_unsupported_bank;
+
+  /// No description provided for @err_toss_unverified.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 계정 인증을 먼저 완료해 주세요.'**
+  String get err_toss_unverified;
+
+  /// No description provided for @err_invalid_capacity.
+  ///
+  /// In ko, this message translates to:
+  /// **'정원은 숫자로 입력해 주세요.'**
+  String get err_invalid_capacity;
+
   /// No description provided for @fFinance.
   ///
   /// In ko, this message translates to:
@@ -5756,37 +6040,64 @@ class _TDelegate extends LocalizationsDelegate<T> {
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'fil', 'id', 'ja', 'km', 'ko', 'mn', 'ne', 'ru', 'si', 'th', 'uz', 'vi', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'en',
+    'fil',
+    'id',
+    'ja',
+    'km',
+    'ko',
+    'mn',
+    'ne',
+    'ru',
+    'si',
+    'th',
+    'uz',
+    'vi',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_TDelegate old) => false;
 }
 
 T lookupT(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return TEn();
-    case 'fil': return TFil();
-    case 'id': return TId();
-    case 'ja': return TJa();
-    case 'km': return TKm();
-    case 'ko': return TKo();
-    case 'mn': return TMn();
-    case 'ne': return TNe();
-    case 'ru': return TRu();
-    case 'si': return TSi();
-    case 'th': return TTh();
-    case 'uz': return TUz();
-    case 'vi': return TVi();
-    case 'zh': return TZh();
+    case 'en':
+      return TEn();
+    case 'fil':
+      return TFil();
+    case 'id':
+      return TId();
+    case 'ja':
+      return TJa();
+    case 'km':
+      return TKm();
+    case 'ko':
+      return TKo();
+    case 'mn':
+      return TMn();
+    case 'ne':
+      return TNe();
+    case 'ru':
+      return TRu();
+    case 'si':
+      return TSi();
+    case 'th':
+      return TTh();
+    case 'uz':
+      return TUz();
+    case 'vi':
+      return TVi();
+    case 'zh':
+      return TZh();
   }
 
   throw FlutterError(
     'T.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

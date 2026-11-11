@@ -638,7 +638,7 @@ class TJa extends T {
   String get cNewMessage => '新着メッセージ';
 
   @override
-  String get ok => 'OK';
+  String get ok => '確認';
 
   @override
   String get cancel => 'キャンセル';
@@ -865,16 +865,20 @@ class TJa extends T {
   String get svcDesc_move_in => '入居前、プロチームが機材持参で新居を清掃します。';
 
   @override
-  String get svcNotes_bathroom => '排水口・便器の詰まりがある場合は制限されます\n特殊薬剤・天井・換気扇の清掃は対象外です\n古いカビや頑固な汚れは完全に落ちない場合があります';
+  String get svcNotes_bathroom =>
+      '排水口・便器の詰まりがある場合は制限されます\n特殊薬剤・天井・換気扇の清掃は対象外です\n古いカビや頑固な汚れは完全に落ちない場合があります';
 
   @override
-  String get svcNotes_mattress => 'シングルからキングまで同料金です\n完全乾燥まで4〜6時間かかります\nスプリング損傷などの構造的問題は改善しません';
+  String get svcNotes_mattress =>
+      'シングルからキングまで同料金です\n完全乾燥まで4〜6時間かかります\nスプリング損傷などの構造的問題は改善しません';
 
   @override
-  String get svcNotes_aircon => '製造10年以上の製品は分解洗浄が難しい場合があります\n室外機は含まれません\n洗浄前後に動作を確認します';
+  String get svcNotes_aircon =>
+      '製造10年以上の製品は分解洗浄が難しい場合があります\n室外機は含まれません\n洗浄前後に動作を確認します';
 
   @override
-  String get svcNotes_sofa => '革ソファはクリーニングと保湿コーティングで対応します\n古いシミや色移りは完全に落ちない場合があります\n完全乾燥まで4〜6時間かかります';
+  String get svcNotes_sofa =>
+      '革ソファはクリーニングと保湿コーティングで対応します\n古いシミや色移りは完全に落ちない場合があります\n完全乾燥まで4〜6時間かかります';
 
   @override
   String get unitTitle_bathroom => '浴室の数';
@@ -1715,6 +1719,148 @@ class TJa extends T {
   String get themeTip => 'テーマを変更';
 
   @override
+  String get err_price_changed => '料金が変わりました。新しい見積もりを確認して再度お試しください。';
+
+  @override
+  String get err_checkout_closed => 'この決済はすでに終了しています。もう一度お試しください。';
+
+  @override
+  String get err_checkout_refunded => 'この決済は取り消され、返金済みです。';
+
+  @override
+  String get err_already_paid => 'すでに支払い済みです。';
+
+  @override
+  String get err_quote_not_payable => 'この見積もりはまだ支払えません。サポートにご確認ください。';
+
+  @override
+  String get err_payment_method_disabled => '現在この支払い方法はご利用いただけません。';
+
+  @override
+  String get err_invalid_payment_method => 'その支払い方法はご利用いただけません。別の方法を選んでください。';
+
+  @override
+  String get err_balance_not_due => '残金はまだお支払いの時期ではありません。';
+
+  @override
+  String get err_invalid_slot => 'このサービスではその時間をお選びいただけません。';
+
+  @override
+  String get err_booking_changed => '予約内容が変更されました。更新して確認してください。';
+
+  @override
+  String get err_booking_closed => 'この予約はこれ以上変更できません。';
+
+  @override
+  String get err_reschedule_closed => '現在、訪問日は変更できません。サポートにお問い合わせください。';
+
+  @override
+  String get err_too_many_open_requests => '進行中のリクエストが多すぎます。一つ完了してから再度お試しください。';
+
+  @override
+  String get err_already_reviewed => 'この訪問にはすでにレビューを投稿済みです。';
+
+  @override
+  String get err_identity_not_verified => '先に本人確認を完了してください。';
+
+  @override
+  String get err_email_taken => 'このメールアドレスは既に使用されています。';
+
+  @override
+  String get err_invalid_email => 'メールアドレスをご確認ください。';
+
+  @override
+  String get err_file_too_large => 'ファイルが大きすぎます。小さいファイルをアップロードしてください。';
+
+  @override
+  String get err_unsupported_image =>
+      'この画像形式はサポートされていません。JPGかPNGをアップロードしてください。';
+
+  @override
+  String get err_upload_quota => '本日のアップロード上限に達しました。明日もう一度お試しください。';
+
+  @override
+  String get err_provider_unreachable => 'サービスに接続できません。しばらくしてから再度お試しください。';
+
+  @override
+  String get err_invalid_token => 'ログイン情報が正しくありません。もう一度お試しください。';
+
+  @override
+  String get err_invalid_transition => '現在このステータスには変更できません。';
+
+  @override
+  String get err_job_not_started => '先に作業を開始してください。';
+
+  @override
+  String get err_job_not_active => 'この作業は現在進行中ではありません。';
+
+  @override
+  String get err_quote_locked => '確定済みの見積もりのため編集できません。';
+
+  @override
+  String get err_request_closed => 'このリクエストは締め切られています。';
+
+  @override
+  String get err_team_full => 'チームの人数が上限に達しています。';
+
+  @override
+  String get err_invalid_webhook_secret => 'Webhookシークレットは whsec_ で始まる必要があります。';
+
+  @override
+  String get err_invalid_endpoint => 'エンドポイントは https:// で始めてください。';
+
+  @override
+  String get err_invalid_bucket => 'バケット名が正しくありません。';
+
+  @override
+  String get err_invalid_region => 'リージョンが正しくありません。';
+
+  @override
+  String get err_invalid_retention => '保存期間の値が範囲外です。';
+
+  @override
+  String get err_invalid_service_account => 'サービスアカウントのファイルが正しくありません。';
+
+  @override
+  String get err_invalid_mode => 'AIの応答モードを選び直してください。';
+
+  @override
+  String get err_invalid_model => 'AIモデル名が正しくありません。';
+
+  @override
+  String get err_missing_field => '必須項目をすべて入力してください。';
+
+  @override
+  String get err_invalid_amount => '金額を正しく入力してください。';
+
+  @override
+  String get err_cannot_deactivate_self => '自分のアカウントは無効化できません。';
+
+  @override
+  String get err_invalid_coupon => 'クーポンが正しくありません。';
+
+  @override
+  String get err_settlement_state => '現在、精算の状態は変更できません。';
+
+  @override
+  String get err_deposit_required => '先に予約金のお支払いが必要です。';
+
+  @override
+  String get err_payout_state => '支払いの状態が変わりました。更新して再度確認してください。';
+
+  @override
+  String get err_payout_provider => 'この支払い方法は現在利用できません。';
+
+  @override
+  String get err_unsupported_bank => 'この銀行への支払いはサポートされていません。';
+
+  @override
+  String get err_toss_unverified => '先にTossアカウントの認証を完了してください。';
+
+  @override
+  String get err_invalid_capacity => '定員は正しい数字で入力してください。';
+
+  @override
   String get fFinance => '財務';
 
   @override
@@ -1986,7 +2132,8 @@ class TJa extends T {
   String get referralSettingsTitle => '友達紹介の特典';
 
   @override
-  String get referralSettingsBody => '友達の初回予約が完了・決済されると付与されます。自己紹介や同じ番号の重複は防止されます。';
+  String get referralSettingsBody =>
+      '友達の初回予約が完了・決済されると付与されます。自己紹介や同じ番号の重複は防止されます。';
 
   @override
   String get referralRewardAmount => '特典金額（ウォン）';
@@ -2125,22 +2272,27 @@ class TJa extends T {
   String get oIntNever => 'まだ利用記録がありません';
 
   @override
-  String get oActDb => 'データベースに接続できません。サーバーで malkkeum logs を確認し、続く場合は再起動してください。';
+  String get oActDb =>
+      'データベースに接続できません。サーバーで malkkeum logs を確認し、続く場合は再起動してください。';
 
   @override
   String get oActDisk => 'ディスクの空きが10%未満です。古いバックアップを削除するか、ディスクを増設してください。';
 
   @override
-  String get oActBackup => '自動バックアップが遅れています。サーバーで malkkeum backup を実行し、backups/backup.log を確認してください。';
+  String get oActBackup =>
+      '自動バックアップが遅れています。サーバーで malkkeum backup を実行し、backups/backup.log を確認してください。';
 
   @override
-  String get oActErrors => 'サーバーエラーが多発しています。malkkeum logs の error 行を確認し、繰り返す場合は開発元へ連絡してください。';
+  String get oActErrors =>
+      'サーバーエラーが多発しています。malkkeum logs の error 行を確認し、繰り返す場合は開発元へ連絡してください。';
 
   @override
-  String get oActPayments => '決済は完了したものの自動処理されていない可能性があります。PortOne 管理画面で確認し、必要なら手動で返金してください。';
+  String get oActPayments =>
+      '決済は完了したものの自動処理されていない可能性があります。PortOne 管理画面で確認し、必要なら手動で返金してください。';
 
   @override
-  String get oActWebhook => '決済通知の署名検証に失敗しています。設定 > 決済（PortOne）で Webhook シークレットを再入力してください。';
+  String get oActWebhook =>
+      '決済通知の署名検証に失敗しています。設定 > 決済（PortOne）で Webhook シークレットを再入力してください。';
 
   @override
   String get oActIntegration => '連携に失敗しています。設定画面でキーを確認し、[接続テスト] を押してください。';
@@ -2763,7 +2915,8 @@ class TJa extends T {
   String get cReviewTitle => 'ストア審査用デモアカウント';
 
   @override
-  String get cReviewHint => '審査担当は韓国のSMSを受信できません。番号と6桁コードを審査メモに記入してください。期間後に自動で無効になります。';
+  String get cReviewHint =>
+      '審査担当は韓国のSMSを受信できません。番号と6桁コードを審査メモに記入してください。期間後に自動で無効になります。';
 
   @override
   String get cReviewPhone => 'デモ電話番号';
@@ -2780,7 +2933,8 @@ class TJa extends T {
   String get cReviewEnable => '有効化（14日）';
 
   @override
-  String get pDeleteAccountBody => 'チームと個人情報は削除され、元に戻せません。割当中の作業や未精算がある場合は先に完了してください。';
+  String get pDeleteAccountBody =>
+      'チームと個人情報は削除され、元に戻せません。割当中の作業や未精算がある場合は先に完了してください。';
 
   @override
   String get err_has_active_jobs => '割当中の作業があります。完了するかサポートに移管を依頼してください。';
@@ -2927,7 +3081,8 @@ class TJa extends T {
   String get uUpdateRequiredTitle => 'アップデートが必要です';
 
   @override
-  String get uUpdateRequiredBody => 'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
+  String get uUpdateRequiredBody =>
+      'このバージョンはサポートが終了しました。ストアから最新版にアップデートしてください。';
 
   @override
   String get uUpdateStore => 'ストアでアップデート';
@@ -2944,7 +3099,8 @@ class TJa extends T {
   String get uAppVersionTitle => 'アプリのバージョン';
 
   @override
-  String get uAppVersionHint => '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
+  String get uAppVersionHint =>
+      '最小バージョン未満のアプリは更新画面で止まります。最新版より古いと案内バナーが出ます。形式: 1.2.0';
 
   @override
   String get uMinVersion => '最小バージョン';

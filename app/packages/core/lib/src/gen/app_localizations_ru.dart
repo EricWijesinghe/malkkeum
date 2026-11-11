@@ -39,7 +39,8 @@ class TRu extends T {
   String get aiBadge => 'ИИ';
 
   @override
-  String get aiCardHint => 'Автоматически отвечает в чатах клиентов. Каждое сообщение оплачивается по тарифу API.';
+  String get aiCardHint =>
+      'Автоматически отвечает в чатах клиентов. Каждое сообщение оплачивается по тарифу API.';
 
   @override
   String get aiModeOffline => 'Отвечает, только когда сотрудников нет';
@@ -74,7 +75,8 @@ class TRu extends T {
   String get aiCapDailyLabel => 'Лимит ответов в день на все чаты';
 
   @override
-  String get aiCapHint => 'Только цифры. Оставьте пустым для значения по умолчанию.';
+  String get aiCapHint =>
+      'Только цифры. Оставьте пустым для значения по умолчанию.';
 
   @override
   String get apSocialOr => 'или';
@@ -95,10 +97,12 @@ class TRu extends T {
   String get apLoginApple => 'Продолжить с Apple';
 
   @override
-  String get apDevSocialNote => 'Режим разработки: вход в тестовый аккаунт, а не в настоящий аккаунт соцсети.';
+  String get apDevSocialNote =>
+      'Режим разработки: вход в тестовый аккаунт, а не в настоящий аккаунт соцсети.';
 
   @override
-  String get apSocialFailed => 'Не удалось выполнить быстрый вход. Попробуйте ещё раз.';
+  String get apSocialFailed =>
+      'Не удалось выполнить быстрый вход. Попробуйте ещё раз.';
 
   @override
   String get apProviderNotConfigured => 'Этот способ входа пока недоступен';
@@ -110,7 +114,8 @@ class TRu extends T {
   String get apPhoneAttachTitle => 'Подтвердите номер телефона';
 
   @override
-  String get apPhoneAttachBody => 'Номер нужен для бронирований и связи с мастером. Подтверждение нужно только один раз.';
+  String get apPhoneAttachBody =>
+      'Номер нужен для бронирований и связи с мастером. Подтверждение нужно только один раз.';
 
   @override
   String get apPayAllTitle => 'Выберите способ оплаты';
@@ -122,7 +127,8 @@ class TRu extends T {
   String get apPayMoreTitle => 'Все способы оплаты';
 
   @override
-  String get apPayBillingHint => 'Сохраните один раз, и дальше оплата будет в одно касание';
+  String get apPayBillingHint =>
+      'Сохраните один раз, и дальше оплата будет в одно касание';
 
   @override
   String get apPayCheckoutHint => 'Завершите оплату в окне платежа';
@@ -131,7 +137,8 @@ class TRu extends T {
   String get apPayRegistering => 'Регистрируем…';
 
   @override
-  String get apPayManageHint => 'Оплачивайте в одно касание сохранённым способом. Экспресс-платежи можно добавить здесь.';
+  String get apPayManageHint =>
+      'Оплачивайте в одно касание сохранённым способом. Экспресс-платежи можно добавить здесь.';
 
   @override
   String get apMethodCard => 'Кредитная и дебетовая карта';
@@ -173,7 +180,8 @@ class TRu extends T {
   String get apVaWaiting => 'Ожидаем перевод';
 
   @override
-  String get apVaBody => 'Бронь подтвердится после поступления перевода в срок. Поступление проверяется автоматически.';
+  String get apVaBody =>
+      'Бронь подтвердится после поступления перевода в срок. Поступление проверяется автоматически.';
 
   @override
   String get apVaBank => 'Банк';
@@ -213,7 +221,8 @@ class TRu extends T {
   String get apPgTitle => 'Окно оплаты';
 
   @override
-  String get apPgDevNote => 'Симуляция оплаты только для среды разработки. Реального списания не происходит.';
+  String get apPgDevNote =>
+      'Симуляция оплаты только для среды разработки. Реального списания не происходит.';
 
   @override
   String apPgPay(String amount) {
@@ -227,16 +236,19 @@ class TRu extends T {
   String get apPgCancel => 'Отменить оплату';
 
   @override
-  String get apErrSlotFullRefunded => 'Это время только что заполнилось, поэтому оплата отменена автоматически';
+  String get apErrSlotFullRefunded =>
+      'Это время только что заполнилось, поэтому оплата отменена автоматически';
 
   @override
-  String get apErrCheckoutExpired => 'Время на оплату истекло. Попробуйте ещё раз.';
+  String get apErrCheckoutExpired =>
+      'Время на оплату истекло. Попробуйте ещё раз.';
 
   @override
   String get apIdentityTitle => 'Подтверждение личности (PASS)';
 
   @override
-  String get apIdentityBody => 'Подтверждаем вас по телефонному оператору. Это нужно для безопасных сделок и выплат.';
+  String get apIdentityBody =>
+      'Подтверждаем вас по телефонному оператору. Это нужно для безопасных сделок и выплат.';
 
   @override
   String get apIdentityAction => 'Подтвердить личность';
@@ -254,7 +266,8 @@ class TRu extends T {
   String get apIdentityDevTitle => 'Тестовое подтверждение личности';
 
   @override
-  String get apIdentityDevBody => 'В режиме разработки проверка проходит без реального подтверждения.';
+  String get apIdentityDevBody =>
+      'В режиме разработки проверка проходит без реального подтверждения.';
 
   @override
   String get apIdentityDevPass => 'Пропустить';
@@ -680,7 +693,8 @@ class TRu extends T {
   String get today => 'Сегодня';
 
   @override
-  String get errorGeneric => 'Что-то пошло не так. Попробуйте ещё раз немного позже.';
+  String get errorGeneric =>
+      'Что-то пошло не так. Попробуйте ещё раз немного позже.';
 
   @override
   String get errorNetwork => 'Проверьте подключение к интернету';
@@ -698,10 +712,12 @@ class TRu extends T {
   String get err_rate_limited => 'Слишком много попыток. Попробуйте позже.';
 
   @override
-  String get err_studio_too_large => 'Уборка студии доступна только для квартир до 10 пхён';
+  String get err_studio_too_large =>
+      'Уборка студии доступна только для квартир до 10 пхён';
 
   @override
-  String get err_date_out_of_range => 'Выберите дату от завтрашнего дня и не позднее чем через 60 дней';
+  String get err_date_out_of_range =>
+      'Выберите дату от завтрашнего дня и не позднее чем через 60 дней';
 
   @override
   String get err_slot_full => 'Это время уже занято. Выберите другое.';
@@ -713,16 +729,19 @@ class TRu extends T {
   String get err_coupon_used => 'Этот купон уже использован';
 
   @override
-  String get err_coupon_wrong_service => 'Этот купон нельзя использовать для данной услуги';
+  String get err_coupon_wrong_service =>
+      'Этот купон нельзя использовать для данной услуги';
 
   @override
-  String get err_payment_failed => 'Оплата не прошла. Попробуйте другой способ.';
+  String get err_payment_failed =>
+      'Оплата не прошла. Попробуйте другой способ.';
 
   @override
   String get err_payment_method_required => 'Выберите способ оплаты';
 
   @override
-  String get err_cancellation_window_closed => 'Отменить бронь за 2 дня до визита можно только через нашу команду';
+  String get err_cancellation_window_closed =>
+      'Отменить бронь за 2 дня до визита можно только через нашу команду';
 
   @override
   String get err_address_required => 'Добавьте адрес визита';
@@ -749,7 +768,8 @@ class TRu extends T {
   String get introTitle => 'Уборка от профессионалов\nзабронируйте за минуту';
 
   @override
-  String get introBody => 'Цены без сюрпризов · Проверенные бригады · Ход работ в реальном времени';
+  String get introBody =>
+      'Цены без сюрпризов · Проверенные бригады · Ход работ в реальном времени';
 
   @override
   String get introStart => 'Продолжить с номером телефона';
@@ -778,7 +798,8 @@ class TRu extends T {
   String get loginVerify => 'Подтвердить';
 
   @override
-  String get loginTerms => 'Продолжая, вы соглашаетесь с Условиями использования и Политикой конфиденциальности';
+  String get loginTerms =>
+      'Продолжая, вы соглашаетесь с Условиями использования и Политикой конфиденциальности';
 
   @override
   String get profileTitle => 'Как к вам обращаться?';
@@ -790,7 +811,8 @@ class TRu extends T {
   String get profileDone => 'Начать';
 
   @override
-  String get welcomeToast => 'Мы добавили в ваш кошелёк 2 купона на приветствие';
+  String get welcomeToast =>
+      'Мы добавили в ваш кошелёк 2 купона на приветствие';
 
   @override
   String get svc_studio => 'Уборка студии';
@@ -841,40 +863,52 @@ class TRu extends T {
   String get svcShort_move_in => 'Заезд';
 
   @override
-  String get svcDesc_studio => 'Двухчасовая тщательная уборка студии до 10 пхён: одна комната и один санузел.';
+  String get svcDesc_studio =>
+      'Двухчасовая тщательная уборка студии до 10 пхён: одна комната и один санузел.';
 
   @override
-  String get svcDesc_kitchen => 'Фокусная уборка кухни: мойка, плита, внешняя часть вытяжки и столешницы.';
+  String get svcDesc_kitchen =>
+      'Фокусная уборка кухни: мойка, плита, внешняя часть вытяжки и столешницы.';
 
   @override
-  String get svcDesc_bathroom => 'Полки, краны, раковина и унитаз снаружи и внутри, пол в конце протираем досуха.';
+  String get svcDesc_bathroom =>
+      'Полки, краны, раковина и унитаз снаружи и внутри, пол в конце протираем досуха.';
 
   @override
-  String get svcDesc_mattress => 'Профессиональное оборудование удаляет пыль, клещей и пятна, затем паровая санобработка.';
+  String get svcDesc_mattress =>
+      'Профессиональное оборудование удаляет пыль, клещей и пятна, затем паровая санобработка.';
 
   @override
-  String get svcDesc_aircon => 'Разбираем и промываем под давлением теплообменник, вентилятор и фильтр, затем санобработка.';
+  String get svcDesc_aircon =>
+      'Разбираем и промываем под давлением теплообменник, вентилятор и фильтр, затем санобработка.';
 
   @override
-  String get svcDesc_sofa => 'Средство под ткань расщепляет загрязнения, затем влажная экстракция.';
+  String get svcDesc_sofa =>
+      'Средство под ткань расщепляет загрязнения, затем влажная экстракция.';
 
   @override
-  String get svcDesc_move_out => 'Перед выездом профессиональная бригада с оборудованием уберёт пустую квартиру.';
+  String get svcDesc_move_out =>
+      'Перед выездом профессиональная бригада с оборудованием уберёт пустую квартиру.';
 
   @override
-  String get svcDesc_move_in => 'Перед заселением профессиональная бригада с оборудованием уберёт новое жильё.';
+  String get svcDesc_move_in =>
+      'Перед заселением профессиональная бригада с оборудованием уберёт новое жильё.';
 
   @override
-  String get svcNotes_bathroom => 'Из-за засора в сливе или унитазе услуга может быть ограничена\nСпециальная химчистка, уборка потолка и вытяжки не производится\nСтарая плесень и въевшаяся грязь могут остаться не удалёнными полностью';
+  String get svcNotes_bathroom =>
+      'Из-за засора в сливе или унитазе услуга может быть ограничена\nСпециальная химчистка, уборка потолка и вытяжки не производится\nСтарая плесень и въевшаяся грязь могут остаться не удалёнными полностью';
 
   @override
-  String get svcNotes_mattress => 'Одинаковая цена от односпального до king-size\nПолное высыхание занимает 4–6 часов\nПовреждённые пружины и провисание устранить нельзя';
+  String get svcNotes_mattress =>
+      'Одинаковая цена от односпального до king-size\nПолное высыхание занимает 4–6 часов\nПовреждённые пружины и провисание устранить нельзя';
 
   @override
-  String get svcNotes_aircon => 'Для устройств старше 10 лет разборка может быть небезопасной\nНаружный блок не входит в услугу\nПроверяем работу до и после чистки';
+  String get svcNotes_aircon =>
+      'Для устройств старше 10 лет разборка может быть небезопасной\nНаружный блок не входит в услугу\nПроверяем работу до и после чистки';
 
   @override
-  String get svcNotes_sofa => 'Кожаные диваны чистятся с последующим увлажняющим покрытием\nСтарые пятна и перекрас могут не отойти полностью\nПолное высыхание занимает 4–6 часов';
+  String get svcNotes_sofa =>
+      'Кожаные диваны чистятся с последующим увлажняющим покрытием\nСтарые пятна и перекрас могут не отойти полностью\nПолное высыхание занимает 4–6 часов';
 
   @override
   String get unitTitle_bathroom => 'Количество ванных';
@@ -980,7 +1014,8 @@ class TRu extends T {
   String get homeServices => 'Какая уборка нужна?';
 
   @override
-  String get homeAddAddress => 'Добавьте адрес, и мы сразу покажем доступные услуги и цены';
+  String get homeAddAddress =>
+      'Добавьте адрес, и мы сразу покажем доступные услуги и цены';
 
   @override
   String get homeAddAddressCta => 'Добавить адрес';
@@ -991,7 +1026,8 @@ class TRu extends T {
   }
 
   @override
-  String get homeRebookBody => 'Те же условия, что в прошлый раз, — всего два нажатия';
+  String get homeRebookBody =>
+      'Те же условия, что в прошлый раз, — всего два нажатия';
 
   @override
   String get homeNotices => 'Новости';
@@ -1022,7 +1058,8 @@ class TRu extends T {
   }
 
   @override
-  String get studioBlockedBody => 'Консультант подберёт подходящую услугу для вашего жилья.';
+  String get studioBlockedBody =>
+      'Консультант подберёт подходящую услугу для вашего жилья.';
 
   @override
   String get consultCta => 'Написать консультанту';
@@ -1091,7 +1128,8 @@ class TRu extends T {
   }
 
   @override
-  String get scheduleRange => 'Можно забронировать с завтрашнего дня и не позднее чем на 60 дней вперёд';
+  String get scheduleRange =>
+      'Можно забронировать с завтрашнего дня и не позднее чем на 60 дней вперёд';
 
   @override
   String get morning => 'Утро';
@@ -1208,7 +1246,8 @@ class TRu extends T {
   String get doneQuoteTitle => 'Заявка на консультацию принята';
 
   @override
-  String get doneQuoteBody => 'Консультант проверит заявку и пришлёт итоговый расчёт. Найти его можно во вкладке «Чат».';
+  String get doneQuoteBody =>
+      'Консультант проверит заявку и пришлёт итоговый расчёт. Найти его можно во вкладке «Чат».';
 
   @override
   String get goHome => 'На главную';
@@ -1285,7 +1324,8 @@ class TRu extends T {
   String get cancelTitle => 'Отменить бронь?';
 
   @override
-  String get cancelFree => 'При отмене сейчас вся сумма вернётся, а купон будет возвращён.';
+  String get cancelFree =>
+      'При отмене сейчас вся сумма вернётся, а купон будет возвращён.';
 
   @override
   String get cancelKeep => 'Оставить';
@@ -1451,7 +1491,8 @@ class TRu extends T {
   }
 
   @override
-  String get sys_job_completed => 'Уборка завершена. Посмотрите фото до и после.';
+  String get sys_job_completed =>
+      'Уборка завершена. Посмотрите фото до и после.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1459,7 +1500,8 @@ class TRu extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'Мастер не может прийти в новое время. Наша команда подберёт другое.';
+  String get sys_reschedule_declined =>
+      'Мастер не может прийти в новое время. Наша команда подберёт другое.';
 
   @override
   String get moreTitle => 'Ещё';
@@ -1521,7 +1563,8 @@ class TRu extends T {
   String get deleteAccount => 'Удалить аккаунт';
 
   @override
-  String get deleteAccountBody => 'Персональные данные будут удалены без возможности восстановления. Сначала отмените активные брони.';
+  String get deleteAccountBody =>
+      'Персональные данные будут удалены без возможности восстановления. Сначала отмените активные брони.';
 
   @override
   String get couponsEmpty => 'Купонов пока нет';
@@ -1670,13 +1713,15 @@ class TRu extends T {
   String get quoteEstimateTitle => 'Ориентировочный расчёт';
 
   @override
-  String get quoteEstimateBody => 'Итоговая сумма определяется в чате после просмотра фото';
+  String get quoteEstimateBody =>
+      'Итоговая сумма определяется в чате после просмотра фото';
 
   @override
   String get quoteG1 => 'Итоговая сумма согласуется с вами в чате';
 
   @override
-  String get quoteG2 => 'Предоплата 10% для подтверждения, остаток — после уборки';
+  String get quoteG2 =>
+      'Предоплата 10% для подтверждения, остаток — после уборки';
 
   @override
   String get quoteG3 => 'До подтверждения можно бесплатно отменить';
@@ -1713,6 +1758,166 @@ class TRu extends T {
 
   @override
   String get themeTip => 'Сменить тему';
+
+  @override
+  String get err_price_changed =>
+      'Цена изменилась. Проверьте новое предложение и попробуйте снова.';
+
+  @override
+  String get err_checkout_closed => 'Этот платёж уже закрыт. Начните заново.';
+
+  @override
+  String get err_checkout_refunded => 'Этот платёж отменён, деньги возвращены.';
+
+  @override
+  String get err_already_paid => 'Этот платёж уже оплачен.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Это предложение пока нельзя оплатить. Свяжитесь с нашей командой.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Этот способ оплаты сейчас недоступен.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Этот способ оплаты нельзя использовать. Выберите другой.';
+
+  @override
+  String get err_balance_not_due => 'Остаток пока не нужно оплачивать.';
+
+  @override
+  String get err_invalid_slot => 'Это время недоступно для выбранной услуги.';
+
+  @override
+  String get err_booking_changed =>
+      'Бронирование изменилось. Обновите страницу и проверьте детали.';
+
+  @override
+  String get err_booking_closed => 'Это бронирование больше нельзя изменить.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Сейчас перенести визит нельзя. Свяжитесь с нашей командой.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Слишком много открытых запросов. Сначала завершите один из них.';
+
+  @override
+  String get err_already_reviewed => 'Вы уже оставили отзыв об этом визите.';
+
+  @override
+  String get err_identity_not_verified => 'Сначала пройдите проверку личности.';
+
+  @override
+  String get err_email_taken => 'Этот email уже используется.';
+
+  @override
+  String get err_invalid_email => 'Проверьте адрес email.';
+
+  @override
+  String get err_file_too_large =>
+      'Файл слишком большой. Загрузите файл меньшего размера.';
+
+  @override
+  String get err_unsupported_image =>
+      'Этот формат фото не поддерживается. Загрузите JPG или PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Достигнут лимит загрузок на сегодня. Попробуйте завтра.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Не удалось связаться с сервисом. Попробуйте чуть позже.';
+
+  @override
+  String get err_invalid_token => 'Не удалось войти. Попробуйте снова.';
+
+  @override
+  String get err_invalid_transition =>
+      'Сейчас нельзя изменить статус таким образом.';
+
+  @override
+  String get err_job_not_started => 'Сначала начните работу.';
+
+  @override
+  String get err_job_not_active => 'Эта работа не активна.';
+
+  @override
+  String get err_quote_locked =>
+      'Предложение заблокировано и не может быть изменено.';
+
+  @override
+  String get err_request_closed => 'Этот запрос закрыт.';
+
+  @override
+  String get err_team_full => 'Команда заполнена.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret должен начинаться с whsec_.';
+
+  @override
+  String get err_invalid_endpoint =>
+      'Адрес endpoint должен начинаться с https://.';
+
+  @override
+  String get err_invalid_bucket => 'Некорректное имя bucket.';
+
+  @override
+  String get err_invalid_region => 'Некорректный регион.';
+
+  @override
+  String get err_invalid_retention =>
+      'Срок хранения вне допустимого диапазона.';
+
+  @override
+  String get err_invalid_service_account =>
+      'Некорректный файл service account.';
+
+  @override
+  String get err_invalid_mode => 'Выберите корректный режим AI.';
+
+  @override
+  String get err_invalid_model => 'Некорректное название модели AI.';
+
+  @override
+  String get err_missing_field => 'Заполните все обязательные поля.';
+
+  @override
+  String get err_invalid_amount => 'Введите корректную сумму.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Нельзя деактивировать собственный аккаунт.';
+
+  @override
+  String get err_invalid_coupon => 'Этот купон недействителен.';
+
+  @override
+  String get err_settlement_state => 'Сейчас нельзя изменить расчёт.';
+
+  @override
+  String get err_deposit_required => 'Сначала нужно внести депозит.';
+
+  @override
+  String get err_payout_state =>
+      'Статус выплаты изменился. Обновите и проверьте снова.';
+
+  @override
+  String get err_payout_provider => 'Этот способ выплаты сейчас недоступен.';
+
+  @override
+  String get err_unsupported_bank => 'Этот банк не поддерживается для выплат.';
+
+  @override
+  String get err_toss_unverified => 'Сначала подтвердите аккаунт Toss.';
+
+  @override
+  String get err_invalid_capacity => 'Введите корректную вместимость.';
 
   @override
   String get fFinance => 'Финансы';
@@ -1760,7 +1965,8 @@ class TRu extends T {
   String get fVatEstimate => 'НДС (оценка)';
 
   @override
-  String get fVatNote => 'Оценка: 10% от комиссии платформы. Уточните у бухгалтера.';
+  String get fVatNote =>
+      'Оценка: 10% от комиссии платформы. Уточните у бухгалтера.';
 
   @override
   String get fAov => 'Средний чек';
@@ -1910,7 +2116,8 @@ class TRu extends T {
   String get reviewSaved => 'Спасибо за отзыв';
 
   @override
-  String get reviewPhotoFailed => 'Не удалось загрузить фото. Попробуйте ещё раз.';
+  String get reviewPhotoFailed =>
+      'Не удалось загрузить фото. Попробуйте ещё раз.';
 
   @override
   String get referralTitle => 'Пригласите друга и получите купон';
@@ -1947,7 +2154,8 @@ class TRu extends T {
   String get err_self_referral => 'Нельзя использовать свой код';
 
   @override
-  String get err_referee_already_booked => 'Код можно ввести только до первой записи';
+  String get err_referee_already_booked =>
+      'Код можно ввести только до первой записи';
 
   @override
   String get err_already_referred => 'Реферальный код уже применён';
@@ -1959,13 +2167,15 @@ class TRu extends T {
   String get err_referral_disabled => 'Рефералы временно приостановлены';
 
   @override
-  String get err_invalid_photos => 'Можно прикрепить только фото, загруженные через Malkkeum';
+  String get err_invalid_photos =>
+      'Можно прикрепить только фото, загруженные через Malkkeum';
 
   @override
   String get welcomeOfferTitle => 'Скидка на первую запись';
 
   @override
-  String get welcomeOfferBody => 'Применяется автоматически к первой записи нового клиента. Не суммируется с купонами.';
+  String get welcomeOfferBody =>
+      'Применяется автоматически к первой записи нового клиента. Не суммируется с купонами.';
 
   @override
   String get offerKindAmount => 'Фиксированная (вон)';
@@ -1986,7 +2196,8 @@ class TRu extends T {
   String get referralSettingsTitle => 'Награда за рекомендацию';
 
   @override
-  String get referralSettingsBody => 'Выплачивается, когда первая запись друга завершена и оплачена. Самореферал и повтор номера блокируются.';
+  String get referralSettingsBody =>
+      'Выплачивается, когда первая запись друга завершена и оплачена. Самореферал и повтор номера блокируются.';
 
   @override
   String get referralRewardAmount => 'Сумма награды (вон)';
@@ -2125,25 +2336,32 @@ class TRu extends T {
   String get oIntNever => 'Пока не использовалось';
 
   @override
-  String get oActDb => 'Нет подключения к базе данных. Выполните malkkeum logs на сервере; если проблема сохраняется, перезапустите сервер.';
+  String get oActDb =>
+      'Нет подключения к базе данных. Выполните malkkeum logs на сервере; если проблема сохраняется, перезапустите сервер.';
 
   @override
-  String get oActDisk => 'Свободно меньше 10% диска. Удалите старые копии или увеличьте диск.';
+  String get oActDisk =>
+      'Свободно меньше 10% диска. Удалите старые копии или увеличьте диск.';
 
   @override
-  String get oActBackup => 'Автоматическая копия просрочена. Выполните malkkeum backup на сервере и проверьте backups/backup.log.';
+  String get oActBackup =>
+      'Автоматическая копия просрочена. Выполните malkkeum backup на сервере и проверьте backups/backup.log.';
 
   @override
-  String get oActErrors => 'Много ошибок сервера. Посмотрите строки error в malkkeum logs и передайте разработчику, если они повторяются.';
+  String get oActErrors =>
+      'Много ошибок сервера. Посмотрите строки error в malkkeum logs и передайте разработчику, если они повторяются.';
 
   @override
-  String get oActPayments => 'Оплата могла пройти, но не обработалась автоматически. Проверьте её в PortOne и при необходимости верните деньги вручную.';
+  String get oActPayments =>
+      'Оплата могла пройти, но не обработалась автоматически. Проверьте её в PortOne и при необходимости верните деньги вручную.';
 
   @override
-  String get oActWebhook => 'Не проходит проверка подписи уведомлений об оплате. Введите webhook secret заново в Настройки > Оплата (PortOne).';
+  String get oActWebhook =>
+      'Не проходит проверка подписи уведомлений об оплате. Введите webhook secret заново в Настройки > Оплата (PortOne).';
 
   @override
-  String get oActIntegration => 'Подключение не работает. Проверьте ключи в настройках и нажмите Test connection.';
+  String get oActIntegration =>
+      'Подключение не работает. Проверьте ключи в настройках и нажмите Test connection.';
 
   @override
   String get oActNotSet => 'Не настроено. Введите ключи в настройках.';
@@ -2152,7 +2370,8 @@ class TRu extends T {
   String get oAlerts => 'Настройки оповещений';
 
   @override
-  String get oAlertsHint => 'О проблемах сообщим во входящих и SMS на телефон владельца. Одна и та же проблема отправляется не чаще раза в 6 часов.';
+  String get oAlertsHint =>
+      'О проблемах сообщим во входящих и SMS на телефон владельца. Одна и та же проблема отправляется не чаще раза в 6 часов.';
 
   @override
   String get oRuleSms => 'Не отправляются SMS';
@@ -2190,13 +2409,15 @@ class TRu extends T {
   }
 
   @override
-  String get oQuietHint => 'В это время оповещения не отправляются; после окончания придёт одно сообщение.';
+  String get oQuietHint =>
+      'В это время оповещения не отправляются; после окончания придёт одно сообщение.';
 
   @override
   String get oAlertPhone => 'Телефон для оповещений';
 
   @override
-  String get oAlertPhoneHint => 'Оставьте пустым, чтобы использовать номер поддержки из данных о компании.';
+  String get oAlertPhoneHint =>
+      'Оставьте пустым, чтобы использовать номер поддержки из данных о компании.';
 
   @override
   String get oSave => 'Сохранить';
@@ -2214,7 +2435,8 @@ class TRu extends T {
   String get oBackupOffsite => 'Внешняя копия (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'Выключено. Включите в Настройки > Внешняя копия.';
+  String get oBackupOffsiteOff =>
+      'Выключено. Включите в Настройки > Внешняя копия.';
 
   @override
   String get oLastBackup => 'Последняя копия';
@@ -2238,10 +2460,12 @@ class TRu extends T {
   String get pTabSchedule => 'График';
 
   @override
-  String get pIntroTitle => 'Заказы, график и выплаты\nдля профессионалов уборки';
+  String get pIntroTitle =>
+      'Заказы, график и выплаты\nдля профессионалов уборки';
 
   @override
-  String get pIntroBody => 'Работайте только там и тогда, когда хотите. Выплаты каждую неделю.';
+  String get pIntroBody =>
+      'Работайте только там и тогда, когда хотите. Выплаты каждую неделю.';
 
   @override
   String get pOnbTitle => 'Расскажите о себе';
@@ -2265,10 +2489,12 @@ class TRu extends T {
   String get pPendingTitle => 'Ожидаем одобрения';
 
   @override
-  String get pPendingBody => 'Мы отправим уведомление после проверки. А пока добавьте банковский счёт для выплат.';
+  String get pPendingBody =>
+      'Мы отправим уведомление после проверки. А пока добавьте банковский счёт для выплат.';
 
   @override
-  String get pSuspended => 'Аккаунт временно приостановлен. Свяжитесь с отделом операций.';
+  String get pSuspended =>
+      'Аккаунт временно приостановлен. Свяжитесь с отделом операций.';
 
   @override
   String get pDirect => 'Прямая бронь';
@@ -2292,7 +2518,8 @@ class TRu extends T {
   String get pNoJobs => 'Сейчас нет подходящих заказов';
 
   @override
-  String get pNoJobsBody => 'Расширьте услуги, районы или часы работы, чтобы увидеть больше заказов';
+  String get pNoJobsBody =>
+      'Расширьте услуги, районы или часы работы, чтобы увидеть больше заказов';
 
   @override
   String get pPayout => 'Ожидаемая выплата';
@@ -2307,7 +2534,8 @@ class TRu extends T {
   String get pClosed => 'Закрыт';
 
   @override
-  String get pPrivacyNote => 'Точный адрес и данные клиента появятся после принятия заказа';
+  String get pPrivacyNote =>
+      'Точный адрес и данные клиента появятся после принятия заказа';
 
   @override
   String get pAccept => 'Принять заказ';
@@ -2316,7 +2544,8 @@ class TRu extends T {
   String get pAcceptConfirm => 'Принять этот заказ?';
 
   @override
-  String get pAcceptBody => 'Заказ появится в вашем графике, клиент получит уведомление о назначении бригады. За 2 дня до визита отменить будет нельзя.';
+  String get pAcceptBody =>
+      'Заказ появится в вашем графике, клиент получит уведомление о назначении бригады. За 2 дня до визита отменить будет нельзя.';
 
   @override
   String get pAccepted => 'Заказ принят';
@@ -2383,7 +2612,8 @@ class TRu extends T {
   String get pNoSchedule => 'На этот день ничего не запланировано';
 
   @override
-  String get pCancelledBanner => 'Клиент отменил этот заказ. Отметить его выполненным нельзя.';
+  String get pCancelledBanner =>
+      'Клиент отменил этот заказ. Отметить его выполненным нельзя.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2403,7 +2633,8 @@ class TRu extends T {
   String get pCall => 'Позвонить (защищённый номер)';
 
   @override
-  String get pCallSoon => 'Защищённые звонки будут доступны после запуска сервиса';
+  String get pCallSoon =>
+      'Защищённые звонки будут доступны после запуска сервиса';
 
   @override
   String get pQuietHours => 'Не звоните после 20:00';
@@ -2463,7 +2694,8 @@ class TRu extends T {
   String get pCompleteCta => 'Отметить выполненным';
 
   @override
-  String get pCompleteNeed => 'Добавьте хотя бы по одному фото и отметьте все пункты';
+  String get pCompleteNeed =>
+      'Добавьте хотя бы по одному фото и отметьте все пункты';
 
   @override
   String get pCompleted => 'Отличная работа!';
@@ -2525,7 +2757,8 @@ class TRu extends T {
   String get pUnverified => 'Проверяется';
 
   @override
-  String get pAccountSaved => 'Счёт сохранён. При изменении он проверяется заново.';
+  String get pAccountSaved =>
+      'Счёт сохранён. При изменении он проверяется заново.';
 
   @override
   String get pWorkSchedule => 'Рабочий график';
@@ -2611,37 +2844,37 @@ class TRu extends T {
   String get pSpace => 'Информация о пространстве';
 
   @override
-  String get cIntPayout => 'Partner payouts';
+  String get cIntPayout => 'Выплаты партнёрам';
 
   @override
-  String get poTabSettlements => 'Settlements';
+  String get poTabSettlements => 'Расчёты';
 
   @override
-  String get poTabPayouts => 'Payouts';
+  String get poTabPayouts => 'Выплаты';
 
   @override
-  String get poState_requested => 'Requested';
+  String get poState_requested => 'Запрошено';
 
   @override
-  String get poState_sent => 'Sent';
+  String get poState_sent => 'Отправлено';
 
   @override
-  String get poState_paid => 'Paid';
+  String get poState_paid => 'Оплачено';
 
   @override
-  String get poState_failed => 'Failed';
+  String get poState_failed => 'Ошибка';
 
   @override
-  String get poProviderManual => 'Manual transfer';
+  String get poProviderManual => 'Ручной перевод';
 
   @override
-  String get poProviderToss => 'Toss payouts';
+  String get poProviderToss => 'Выплаты через Toss';
 
   @override
-  String get poShowAccount => 'Show account';
+  String get poShowAccount => 'Показать счёт';
 
   @override
-  String get poAccountTitle => 'Transfer details';
+  String get poAccountTitle => 'Реквизиты перевода';
 
   @override
   String poAccountBody(
@@ -2650,43 +2883,43 @@ class TRu extends T {
     String account,
     String amount,
   ) {
-    return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
+    return 'Отправьте $amount вон на $holder · $bank · $account, затем нажмите «Подтвердить».';
   }
 
   @override
-  String get poConfirmPaid => 'Mark as transferred';
+  String get poConfirmPaid => 'Отметить как переведено';
 
   @override
-  String get poMarkFailed => 'Mark as failed';
+  String get poMarkFailed => 'Отметить как неудачное';
 
   @override
-  String get poReasonTitle => 'Failure reason';
+  String get poReasonTitle => 'Причина ошибки';
 
   @override
-  String get poReasonHint => 'e.g. wrong account, transfer cancelled';
+  String get poReasonHint => 'напр.: неверный счёт, перевод отменён';
 
   @override
-  String get poSend => 'Send via Toss';
+  String get poSend => 'Отправить через Toss';
 
   @override
-  String get poSync => 'Check status';
+  String get poSync => 'Проверить статус';
 
   @override
-  String get poRetry => 'Retry';
+  String get poRetry => 'Повторить';
 
   @override
-  String get poNoPayouts => 'No payouts yet';
+  String get poNoPayouts => 'Выплат пока нет';
 
   @override
   String poRequestedToast(String n) {
-    return 'Created $n payout requests';
+    return 'Создано запросов на выплату: $n';
   }
 
   @override
-  String get poReasonRequired => 'Enter a reason';
+  String get poReasonRequired => 'Укажите причину';
 
   @override
-  String get poRevealNote => 'Viewing account details is logged';
+  String get poRevealNote => 'Просмотр реквизитов фиксируется';
 
   @override
   String get cSetup => 'Настройка';
@@ -2745,7 +2978,8 @@ class TRu extends T {
   String get cSetupPrivacyOfficer => 'Ответственный за данные';
 
   @override
-  String get cSetupStoreLinks => 'Ссылки на магазины (кнопки на сайте включатся после заполнения)';
+  String get cSetupStoreLinks =>
+      'Ссылки на магазины (кнопки на сайте включатся после заполнения)';
 
   @override
   String get cSetupCustomerApp => 'Приложение клиента';
@@ -2757,13 +2991,15 @@ class TRu extends T {
   String get cSetupPayMethods => 'Способы оплаты';
 
   @override
-  String get cSetupPayMethodsHint => 'Включайте и выключайте способы оплаты для клиентов. Применяется сразу.';
+  String get cSetupPayMethodsHint =>
+      'Включайте и выключайте способы оплаты для клиентов. Применяется сразу.';
 
   @override
   String get cReviewTitle => 'Демо-аккаунт для проверки в магазине';
 
   @override
-  String get cReviewHint => 'Проверяющие не получают корейские SMS. Укажите номер и 6-значный код в заметках для проверки. Отключится автоматически.';
+  String get cReviewHint =>
+      'Проверяющие не получают корейские SMS. Укажите номер и 6-значный код в заметках для проверки. Отключится автоматически.';
 
   @override
   String get cReviewPhone => 'Демо-номер телефона';
@@ -2780,16 +3016,20 @@ class TRu extends T {
   String get cReviewEnable => 'Включить (14 дней)';
 
   @override
-  String get pDeleteAccountBody => 'Команда и личные данные будут удалены без возможности восстановления. Сначала завершите назначенные работы и выплаты.';
+  String get pDeleteAccountBody =>
+      'Команда и личные данные будут удалены без возможности восстановления. Сначала завершите назначенные работы и выплаты.';
 
   @override
-  String get err_has_active_jobs => 'У вас есть назначенные работы. Завершите их или попросите поддержку передать.';
+  String get err_has_active_jobs =>
+      'У вас есть назначенные работы. Завершите их или попросите поддержку передать.';
 
   @override
-  String get err_pending_payouts => 'Есть невыплаченная сумма. Удалить аккаунт можно после выплаты.';
+  String get err_pending_payouts =>
+      'Есть невыплаченная сумма. Удалить аккаунт можно после выплаты.';
 
   @override
-  String get err_phone_required => 'Подтвердите номер телефона, прежде чем брать работы.';
+  String get err_phone_required =>
+      'Подтвердите номер телефона, прежде чем брать работы.';
 
   @override
   String get nAlerts => 'Уведомления';
@@ -2809,7 +3049,8 @@ class TRu extends T {
   String get mMyJobs => 'Мои работы';
 
   @override
-  String get mNoJobs => 'Пока нет назначенных работ. Здесь появятся работы от руководителя команды.';
+  String get mNoJobs =>
+      'Пока нет назначенных работ. Здесь появятся работы от руководителя команды.';
 
   @override
   String mTeam(String team) {
@@ -2841,7 +3082,8 @@ class TRu extends T {
   String get cSetupCheckInApp => 'Сохранено · проверьте входом в приложении';
 
   @override
-  String get cSetupInvalidKey => 'Ключ отклонён. Проверьте скопированное значение';
+  String get cSetupInvalidKey =>
+      'Ключ отклонён. Проверьте скопированное значение';
 
   @override
   String get cSetupUnreachable => 'Сервис недоступен. Повторите позже';
@@ -2862,7 +3104,8 @@ class TRu extends T {
   String get cCopied => 'Скопировано';
 
   @override
-  String get cSetupDevMode => 'Тестовый режим: реальные платежи и сообщения не отправляются';
+  String get cSetupDevMode =>
+      'Тестовый режим: реальные платежи и сообщения не отправляются';
 
   @override
   String get cSetupOptional => 'Необязательно';
@@ -2892,7 +3135,8 @@ class TRu extends T {
   String get cFirstRunTitle => 'Добро пожаловать! Создайте аккаунт владельца';
 
   @override
-  String get cFirstRunBody => 'Введите 12-значный код, показанный при установке. Этот аккаунт управляет всеми настройками.';
+  String get cFirstRunBody =>
+      'Введите 12-значный код, показанный при установке. Этот аккаунт управляет всеми настройками.';
 
   @override
   String get cFirstRunCode => 'Код установки';
@@ -2927,13 +3171,15 @@ class TRu extends T {
   String get uUpdateRequiredTitle => 'Требуется обновление';
 
   @override
-  String get uUpdateRequiredBody => 'Эта версия больше не поддерживается. Обновите приложение в магазине.';
+  String get uUpdateRequiredBody =>
+      'Эта версия больше не поддерживается. Обновите приложение в магазине.';
 
   @override
   String get uUpdateStore => 'Обновить в магазине';
 
   @override
-  String get uUpdateStoreMissing => 'Ссылка для обновления ещё не готова. Попробуйте позже.';
+  String get uUpdateStoreMissing =>
+      'Ссылка для обновления ещё не готова. Попробуйте позже.';
 
   @override
   String uCurrentVersion(String version) {
@@ -2944,7 +3190,8 @@ class TRu extends T {
   String get uAppVersionTitle => 'Версии приложений';
 
   @override
-  String get uAppVersionHint => 'Приложения ниже минимальной версии остановятся на экране обновления. Ниже последней версии покажется баннер. Формат: 1.2.0';
+  String get uAppVersionHint =>
+      'Приложения ниже минимальной версии остановятся на экране обновления. Ниже последней версии покажется баннер. Формат: 1.2.0';
 
   @override
   String get uMinVersion => 'Минимальная версия';

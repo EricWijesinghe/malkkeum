@@ -39,7 +39,8 @@ class TVi extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'Tự động trả lời chat của khách. Mỗi tin nhắn đều phát sinh phí API.';
+  String get aiCardHint =>
+      'Tự động trả lời chat của khách. Mỗi tin nhắn đều phát sinh phí API.';
 
   @override
   String get aiModeOffline => 'Chỉ trả lời khi không có nhân viên';
@@ -95,13 +96,15 @@ class TVi extends T {
   String get apLoginApple => 'Tiếp tục với Apple';
 
   @override
-  String get apDevSocialNote => 'Chế độ phát triển: đăng nhập bằng tài khoản thử, không phải tài khoản mạng xã hội thật.';
+  String get apDevSocialNote =>
+      'Chế độ phát triển: đăng nhập bằng tài khoản thử, không phải tài khoản mạng xã hội thật.';
 
   @override
   String get apSocialFailed => 'Đăng nhập nhanh thất bại. Vui lòng thử lại.';
 
   @override
-  String get apProviderNotConfigured => 'Phương thức đăng nhập này chưa sẵn sàng';
+  String get apProviderNotConfigured =>
+      'Phương thức đăng nhập này chưa sẵn sàng';
 
   @override
   String get apPhoneTaken => 'Số này đã được gắn với tài khoản khác';
@@ -110,7 +113,8 @@ class TVi extends T {
   String get apPhoneAttachTitle => 'Xác minh số điện thoại của bạn';
 
   @override
-  String get apPhoneAttachBody => 'Số này dùng cho lịch hẹn và liên hệ với đối tác. Chỉ cần xác minh một lần.';
+  String get apPhoneAttachBody =>
+      'Số này dùng cho lịch hẹn và liên hệ với đối tác. Chỉ cần xác minh một lần.';
 
   @override
   String get apPayAllTitle => 'Chọn phương thức thanh toán';
@@ -122,7 +126,8 @@ class TVi extends T {
   String get apPayMoreTitle => 'Tất cả phương thức';
 
   @override
-  String get apPayBillingHint => 'Lưu một lần, lần sau thanh toán chỉ với một chạm';
+  String get apPayBillingHint =>
+      'Lưu một lần, lần sau thanh toán chỉ với một chạm';
 
   @override
   String get apPayCheckoutHint => 'Hoàn tất trong cửa sổ thanh toán';
@@ -131,7 +136,8 @@ class TVi extends T {
   String get apPayRegistering => 'Đang đăng ký…';
 
   @override
-  String get apPayManageHint => 'Thanh toán một chạm bằng phương thức đã lưu. Thêm phương thức thanh toán nhanh tại đây.';
+  String get apPayManageHint =>
+      'Thanh toán một chạm bằng phương thức đã lưu. Thêm phương thức thanh toán nhanh tại đây.';
 
   @override
   String get apMethodCard => 'Thẻ tín dụng & ghi nợ';
@@ -173,7 +179,8 @@ class TVi extends T {
   String get apVaWaiting => 'Đang chờ chuyển khoản';
 
   @override
-  String get apVaBody => 'Đặt lịch được xác nhận khi nhận đủ tiền trước hạn. Hệ thống tự động kiểm tra.';
+  String get apVaBody =>
+      'Đặt lịch được xác nhận khi nhận đủ tiền trước hạn. Hệ thống tự động kiểm tra.';
 
   @override
   String get apVaBank => 'Ngân hàng';
@@ -213,7 +220,8 @@ class TVi extends T {
   String get apPgTitle => 'Cửa sổ thanh toán';
 
   @override
-  String get apPgDevNote => 'Mô phỏng thanh toán chỉ dùng khi phát triển. Không có giao dịch thật.';
+  String get apPgDevNote =>
+      'Mô phỏng thanh toán chỉ dùng khi phát triển. Không có giao dịch thật.';
 
   @override
   String apPgPay(String amount) {
@@ -227,16 +235,19 @@ class TVi extends T {
   String get apPgCancel => 'Hủy thanh toán';
 
   @override
-  String get apErrSlotFullRefunded => 'Khung giờ vừa kín nên thanh toán đã được hủy tự động';
+  String get apErrSlotFullRefunded =>
+      'Khung giờ vừa kín nên thanh toán đã được hủy tự động';
 
   @override
-  String get apErrCheckoutExpired => 'Phiên thanh toán đã hết hạn. Vui lòng thử lại.';
+  String get apErrCheckoutExpired =>
+      'Phiên thanh toán đã hết hạn. Vui lòng thử lại.';
 
   @override
   String get apIdentityTitle => 'Xác minh danh tính (PASS)';
 
   @override
-  String get apIdentityBody => 'Xác minh bằng tên chính chủ điện thoại. Dùng để đảm bảo giao dịch và thanh toán an toàn.';
+  String get apIdentityBody =>
+      'Xác minh bằng tên chính chủ điện thoại. Dùng để đảm bảo giao dịch và thanh toán an toàn.';
 
   @override
   String get apIdentityAction => 'Xác minh';
@@ -254,7 +265,8 @@ class TVi extends T {
   String get apIdentityDevTitle => 'Xác minh thử nghiệm';
 
   @override
-  String get apIdentityDevBody => 'Khi phát triển, bước này được bỏ qua mà không cần xác minh thật.';
+  String get apIdentityDevBody =>
+      'Khi phát triển, bước này được bỏ qua mà không cần xác minh thật.';
 
   @override
   String get apIdentityDevPass => 'Cho qua';
@@ -266,7 +278,7 @@ class TVi extends T {
   String get cTitle => 'Bảng điều hành';
 
   @override
-  String get cEmail => 'Email';
+  String get cEmail => 'Thư điện tử';
 
   @override
   String get cPassword => 'Mật khẩu';
@@ -538,7 +550,7 @@ class TVi extends T {
   String get cKind_faq => 'FAQ';
 
   @override
-  String get cKind_banner => 'Banner';
+  String get cKind_banner => 'Biểu ngữ';
 
   @override
   String get cKind_legal => 'Pháp lý';
@@ -638,7 +650,7 @@ class TVi extends T {
   String get cNewMessage => 'Tin nhắn mới';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Xác nhận';
 
   @override
   String get cancel => 'Hủy';
@@ -698,7 +710,8 @@ class TVi extends T {
   String get err_rate_limited => 'Quá nhiều lần thử, hãy thử lại sau';
 
   @override
-  String get err_studio_too_large => 'Dọn phòng studio chỉ cho nhà tối đa 10 pyeong';
+  String get err_studio_too_large =>
+      'Dọn phòng studio chỉ cho nhà tối đa 10 pyeong';
 
   @override
   String get err_date_out_of_range => 'Chọn ngày từ mai đến 60 ngày tới';
@@ -722,7 +735,8 @@ class TVi extends T {
   String get err_payment_method_required => 'Chọn phương thức thanh toán';
 
   @override
-  String get err_cancellation_window_closed => 'Trong vòng 2 ngày trước lịch, hãy hủy qua đội tư vấn';
+  String get err_cancellation_window_closed =>
+      'Trong vòng 2 ngày trước lịch, hãy hủy qua đội tư vấn';
 
   @override
   String get err_address_required => 'Thêm địa chỉ';
@@ -778,7 +792,8 @@ class TVi extends T {
   String get loginVerify => 'Xác nhận';
 
   @override
-  String get loginTerms => 'Tiếp tục nghĩa là bạn đồng ý Điều khoản và Chính sách bảo mật';
+  String get loginTerms =>
+      'Tiếp tục nghĩa là bạn đồng ý Điều khoản và Chính sách bảo mật';
 
   @override
   String get profileTitle => 'Chúng tôi nên gọi bạn là gì?';
@@ -841,40 +856,52 @@ class TVi extends T {
   String get svcShort_move_in => 'Vào ở';
 
   @override
-  String get svcDesc_studio => 'Dọn kỹ 2 giờ cho studio tối đa 10 pyeong: 1 phòng, 1 phòng tắm.';
+  String get svcDesc_studio =>
+      'Dọn kỹ 2 giờ cho studio tối đa 10 pyeong: 1 phòng, 1 phòng tắm.';
 
   @override
-  String get svcDesc_kitchen => 'Dọn tập trung bồn rửa, bếp, mặt ngoài máy hút mùi và mặt bàn.';
+  String get svcDesc_kitchen =>
+      'Dọn tập trung bồn rửa, bếp, mặt ngoài máy hút mùi và mặt bàn.';
 
   @override
-  String get svcDesc_bathroom => 'Kệ, vòi, bồn rửa, bồn cầu trong ngoài và lau khô sàn.';
+  String get svcDesc_bathroom =>
+      'Kệ, vòi, bồn rửa, bồn cầu trong ngoài và lau khô sàn.';
 
   @override
-  String get svcDesc_mattress => 'Thiết bị chuyên dụng hút bụi, mạt, vết bẩn rồi khử khuẩn bằng hơi nước.';
+  String get svcDesc_mattress =>
+      'Thiết bị chuyên dụng hút bụi, mạt, vết bẩn rồi khử khuẩn bằng hơi nước.';
 
   @override
-  String get svcDesc_aircon => 'Tháo rời, rửa áp lực dàn lạnh, quạt, lưới lọc và khử khuẩn.';
+  String get svcDesc_aircon =>
+      'Tháo rời, rửa áp lực dàn lạnh, quạt, lưới lọc và khử khuẩn.';
 
   @override
-  String get svcDesc_sofa => 'Dung dịch phù hợp chất liệu, làm sạch bằng phương pháp hút ướt.';
+  String get svcDesc_sofa =>
+      'Dung dịch phù hợp chất liệu, làm sạch bằng phương pháp hút ướt.';
 
   @override
-  String get svcDesc_move_out => 'Trước khi chuyển đi, đội chuyên nghiệp mang thiết bị đến dọn nhà trống.';
+  String get svcDesc_move_out =>
+      'Trước khi chuyển đi, đội chuyên nghiệp mang thiết bị đến dọn nhà trống.';
 
   @override
-  String get svcDesc_move_in => 'Trước khi vào ở, đội chuyên nghiệp mang thiết bị đến dọn nhà mới.';
+  String get svcDesc_move_in =>
+      'Trước khi vào ở, đội chuyên nghiệp mang thiết bị đến dọn nhà mới.';
 
   @override
-  String get svcNotes_bathroom => 'Cống/bồn cầu tắc có thể hạn chế dịch vụ\nKhông làm vệ sinh cần hóa chất đặc biệt, trần, quạt hút\nNấm mốc lâu năm có thể không sạch hoàn toàn';
+  String get svcNotes_bathroom =>
+      'Cống/bồn cầu tắc có thể hạn chế dịch vụ\nKhông làm vệ sinh cần hóa chất đặc biệt, trần, quạt hút\nNấm mốc lâu năm có thể không sạch hoàn toàn';
 
   @override
-  String get svcNotes_mattress => 'Cùng giá từ đơn đến king\nKhô hoàn toàn sau 4–6 giờ\nKhông khắc phục lò xo hỏng, lún';
+  String get svcNotes_mattress =>
+      'Cùng giá từ đơn đến king\nKhô hoàn toàn sau 4–6 giờ\nKhông khắc phục lò xo hỏng, lún';
 
   @override
-  String get svcNotes_aircon => 'Máy trên 10 năm có thể khó tháo rửa\nKhông gồm dàn nóng\nKiểm tra hoạt động trước và sau';
+  String get svcNotes_aircon =>
+      'Máy trên 10 năm có thể khó tháo rửa\nKhông gồm dàn nóng\nKiểm tra hoạt động trước và sau';
 
   @override
-  String get svcNotes_sofa => 'Sofa da được làm sạch và dưỡng\nVết bẩn lâu có thể không hết\nKhô hoàn toàn sau 4–6 giờ';
+  String get svcNotes_sofa =>
+      'Sofa da được làm sạch và dưỡng\nVết bẩn lâu có thể không hết\nKhô hoàn toàn sau 4–6 giờ';
 
   @override
   String get unitTitle_bathroom => 'Số phòng tắm';
@@ -1208,7 +1235,8 @@ class TVi extends T {
   String get doneQuoteTitle => 'Đã nhận yêu cầu';
 
   @override
-  String get doneQuoteBody => 'Đội tư vấn sẽ gửi báo giá cuối cùng trong tab Tư vấn.';
+  String get doneQuoteBody =>
+      'Đội tư vấn sẽ gửi báo giá cuối cùng trong tab Tư vấn.';
 
   @override
   String get goHome => 'Về trang chủ';
@@ -1459,7 +1487,8 @@ class TVi extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'Đối tác không đến được giờ mới. Đội sẽ sắp xếp lại.';
+  String get sys_reschedule_declined =>
+      'Đối tác không đến được giờ mới. Đội sẽ sắp xếp lại.';
 
   @override
   String get moreTitle => 'Thêm';
@@ -1521,7 +1550,8 @@ class TVi extends T {
   String get deleteAccount => 'Xóa tài khoản';
 
   @override
-  String get deleteAccountBody => 'Dữ liệu cá nhân sẽ bị xóa vĩnh viễn. Hãy hủy lịch đang có trước.';
+  String get deleteAccountBody =>
+      'Dữ liệu cá nhân sẽ bị xóa vĩnh viễn. Hãy hủy lịch đang có trước.';
 
   @override
   String get couponsEmpty => 'Chưa có phiếu';
@@ -1559,7 +1589,7 @@ class TVi extends T {
   String get accountPhone => 'Số điện thoại';
 
   @override
-  String get accountEmail => 'Email';
+  String get accountEmail => 'Thư điện tử';
 
   @override
   String get accountLogin => 'Cách đăng nhập';
@@ -1670,7 +1700,8 @@ class TVi extends T {
   String get quoteEstimateTitle => 'Ước tính của bạn';
 
   @override
-  String get quoteEstimateBody => 'Giá cuối được chốt sau khi xem ảnh trong chat';
+  String get quoteEstimateBody =>
+      'Giá cuối được chốt sau khi xem ảnh trong chat';
 
   @override
   String get quoteG1 => 'Giá cuối chốt trong chat';
@@ -1713,6 +1744,167 @@ class TVi extends T {
 
   @override
   String get themeTip => 'Đổi giao diện';
+
+  @override
+  String get err_price_changed =>
+      'Giá đã thay đổi. Hãy xem báo giá mới và thử lại.';
+
+  @override
+  String get err_checkout_closed => 'Thanh toán này đã đóng. Hãy bắt đầu lại.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Thanh toán này đã được hủy và hoàn tiền.';
+
+  @override
+  String get err_already_paid => 'Đã thanh toán rồi.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Báo giá này chưa thể thanh toán. Vui lòng liên hệ đội hỗ trợ.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Hiện không dùng được phương thức thanh toán này.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Không dùng được phương thức đã chọn. Hãy chọn cách khác.';
+
+  @override
+  String get err_balance_not_due => 'Chưa đến hạn thanh toán số dư.';
+
+  @override
+  String get err_invalid_slot => 'Dịch vụ này không có khung giờ đó.';
+
+  @override
+  String get err_booking_changed =>
+      'Thông tin đặt lịch đã thay đổi. Hãy làm mới và kiểm tra lại.';
+
+  @override
+  String get err_booking_closed => 'Lịch đặt này không thể thay đổi nữa.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Hiện không thể dời lịch. Vui lòng liên hệ đội hỗ trợ.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Bạn có quá nhiều yêu cầu đang mở. Hãy hoàn tất một yêu cầu trước.';
+
+  @override
+  String get err_already_reviewed => 'Bạn đã đánh giá lần đặt này rồi.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Vui lòng hoàn tất xác minh danh tính trước.';
+
+  @override
+  String get err_email_taken => 'Email này đã được sử dụng.';
+
+  @override
+  String get err_invalid_email => 'Hãy kiểm tra địa chỉ email.';
+
+  @override
+  String get err_file_too_large => 'Tệp quá lớn. Hãy tải lên tệp nhỏ hơn.';
+
+  @override
+  String get err_unsupported_image =>
+      'Định dạng ảnh không được hỗ trợ. Hãy tải lên JPG hoặc PNG.';
+
+  @override
+  String get err_upload_quota =>
+      'Đã đạt giới hạn tải lên hôm nay. Hãy thử lại ngày mai.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Không kết nối được dịch vụ. Hãy thử lại sau.';
+
+  @override
+  String get err_invalid_token =>
+      'Thông tin đăng nhập không hợp lệ. Hãy thử lại.';
+
+  @override
+  String get err_invalid_transition =>
+      'Hiện không thể chuyển sang trạng thái này.';
+
+  @override
+  String get err_job_not_started => 'Hãy bắt đầu công việc trước.';
+
+  @override
+  String get err_job_not_active => 'Công việc này hiện không hoạt động.';
+
+  @override
+  String get err_quote_locked => 'Báo giá đã khóa nên không thể sửa.';
+
+  @override
+  String get err_request_closed => 'Yêu cầu này đã đóng.';
+
+  @override
+  String get err_team_full => 'Nhóm đã đủ người.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret phải bắt đầu bằng whsec_.';
+
+  @override
+  String get err_invalid_endpoint => 'Endpoint phải bắt đầu bằng https://.';
+
+  @override
+  String get err_invalid_bucket => 'Tên bucket không hợp lệ.';
+
+  @override
+  String get err_invalid_region => 'Vùng không hợp lệ.';
+
+  @override
+  String get err_invalid_retention => 'Thời gian lưu giữ nằm ngoài giới hạn.';
+
+  @override
+  String get err_invalid_service_account =>
+      'Tệp tài khoản dịch vụ không hợp lệ.';
+
+  @override
+  String get err_invalid_mode => 'Hãy chọn lại chế độ AI hợp lệ.';
+
+  @override
+  String get err_invalid_model => 'Tên mô hình AI không hợp lệ.';
+
+  @override
+  String get err_missing_field => 'Hãy điền đầy đủ các mục bắt buộc.';
+
+  @override
+  String get err_invalid_amount => 'Hãy nhập số tiền hợp lệ.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'Bạn không thể vô hiệu hóa tài khoản của chính mình.';
+
+  @override
+  String get err_invalid_coupon => 'Phiếu giảm giá không hợp lệ.';
+
+  @override
+  String get err_settlement_state =>
+      'Hiện không thể thay đổi trạng thái thanh toán.';
+
+  @override
+  String get err_deposit_required => 'Cần thanh toán tiền đặt cọc trước.';
+
+  @override
+  String get err_payout_state =>
+      'Trạng thái chi trả đã thay đổi. Hãy làm mới và kiểm tra lại.';
+
+  @override
+  String get err_payout_provider =>
+      'Phương thức chi trả này hiện không dùng được.';
+
+  @override
+  String get err_unsupported_bank => 'Ngân hàng này chưa được hỗ trợ chi trả.';
+
+  @override
+  String get err_toss_unverified => 'Vui lòng xác minh tài khoản Toss trước.';
+
+  @override
+  String get err_invalid_capacity => 'Hãy nhập sức chứa hợp lệ.';
 
   @override
   String get fFinance => 'Tài chính';
@@ -1965,7 +2157,8 @@ class TVi extends T {
   String get welcomeOfferTitle => 'Ưu đãi lần đặt đầu';
 
   @override
-  String get welcomeOfferBody => 'Tự động áp dụng cho lần đặt đầu của khách mới. Không cộng với phiếu giảm giá.';
+  String get welcomeOfferBody =>
+      'Tự động áp dụng cho lần đặt đầu của khách mới. Không cộng với phiếu giảm giá.';
 
   @override
   String get offerKindAmount => 'Số tiền (won)';
@@ -1986,7 +2179,8 @@ class TVi extends T {
   String get referralSettingsTitle => 'Thưởng giới thiệu bạn bè';
 
   @override
-  String get referralSettingsBody => 'Được thưởng khi bạn bè hoàn tất và thanh toán lần đặt đầu. Chặn tự giới thiệu và trùng số.';
+  String get referralSettingsBody =>
+      'Được thưởng khi bạn bè hoàn tất và thanh toán lần đặt đầu. Chặn tự giới thiệu và trùng số.';
 
   @override
   String get referralRewardAmount => 'Số tiền thưởng (won)';
@@ -2125,25 +2319,32 @@ class TVi extends T {
   String get oIntNever => 'Chưa có lượt sử dụng';
 
   @override
-  String get oActDb => 'Không kết nối được cơ sở dữ liệu. Chạy malkkeum logs trên máy chủ; khởi động lại nếu vẫn lỗi.';
+  String get oActDb =>
+      'Không kết nối được cơ sở dữ liệu. Chạy malkkeum logs trên máy chủ; khởi động lại nếu vẫn lỗi.';
 
   @override
-  String get oActDisk => 'Dung lượng trống dưới 10%. Xóa bản sao lưu cũ hoặc tăng dung lượng đĩa.';
+  String get oActDisk =>
+      'Dung lượng trống dưới 10%. Xóa bản sao lưu cũ hoặc tăng dung lượng đĩa.';
 
   @override
-  String get oActBackup => 'Sao lưu tự động đã quá hạn. Chạy malkkeum backup trên máy chủ và kiểm tra backups/backup.log.';
+  String get oActBackup =>
+      'Sao lưu tự động đã quá hạn. Chạy malkkeum backup trên máy chủ và kiểm tra backups/backup.log.';
 
   @override
-  String get oActErrors => 'Nhiều lỗi máy chủ. Xem các dòng error trong malkkeum logs; nếu lặp lại, hãy báo cho nhà phát triển.';
+  String get oActErrors =>
+      'Nhiều lỗi máy chủ. Xem các dòng error trong malkkeum logs; nếu lặp lại, hãy báo cho nhà phát triển.';
 
   @override
-  String get oActPayments => 'Có thanh toán đã thành công nhưng chưa xử lý tự động. Kiểm tra trên PortOne và hoàn tiền thủ công nếu cần.';
+  String get oActPayments =>
+      'Có thanh toán đã thành công nhưng chưa xử lý tự động. Kiểm tra trên PortOne và hoàn tiền thủ công nếu cần.';
 
   @override
-  String get oActWebhook => 'Xác minh chữ ký thông báo thanh toán lỗi. Nhập lại webhook secret trong Thiết lập > Thanh toán (PortOne).';
+  String get oActWebhook =>
+      'Xác minh chữ ký thông báo thanh toán lỗi. Nhập lại webhook secret trong Thiết lập > Thanh toán (PortOne).';
 
   @override
-  String get oActIntegration => 'Kết nối đang lỗi. Kiểm tra khóa trong Thiết lập và bấm Kiểm tra kết nối.';
+  String get oActIntegration =>
+      'Kết nối đang lỗi. Kiểm tra khóa trong Thiết lập và bấm Kiểm tra kết nối.';
 
   @override
   String get oActNotSet => 'Chưa cài đặt. Nhập khóa trong Thiết lập.';
@@ -2152,7 +2353,8 @@ class TVi extends T {
   String get oAlerts => 'Cài đặt cảnh báo';
 
   @override
-  String get oAlertsHint => 'Khi có sự cố, hộp thư và tin nhắn SMS đến điện thoại chủ cửa hàng. Cùng một sự cố chỉ gửi 6 giờ một lần.';
+  String get oAlertsHint =>
+      'Khi có sự cố, hộp thư và tin nhắn SMS đến điện thoại chủ cửa hàng. Cùng một sự cố chỉ gửi 6 giờ một lần.';
 
   @override
   String get oRuleSms => 'Gửi SMS lỗi';
@@ -2190,13 +2392,15 @@ class TVi extends T {
   }
 
   @override
-  String get oQuietHint => 'Không gửi cảnh báo trong giờ này; sẽ gửi một lần sau khi kết thúc.';
+  String get oQuietHint =>
+      'Không gửi cảnh báo trong giờ này; sẽ gửi một lần sau khi kết thúc.';
 
   @override
   String get oAlertPhone => 'Điện thoại nhận cảnh báo';
 
   @override
-  String get oAlertPhoneHint => 'Để trống sẽ gửi đến số hỗ trợ trong thông tin doanh nghiệp.';
+  String get oAlertPhoneHint =>
+      'Để trống sẽ gửi đến số hỗ trợ trong thông tin doanh nghiệp.';
 
   @override
   String get oSave => 'Lưu';
@@ -2214,7 +2418,8 @@ class TVi extends T {
   String get oBackupOffsite => 'Sao lưu ngoài máy chủ (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'Đang tắt. Bật trong Thiết lập > Sao lưu ngoài máy chủ.';
+  String get oBackupOffsiteOff =>
+      'Đang tắt. Bật trong Thiết lập > Sao lưu ngoài máy chủ.';
 
   @override
   String get oLastBackup => 'Sao lưu gần nhất';
@@ -2265,7 +2470,8 @@ class TVi extends T {
   String get pPendingTitle => 'Đang chờ duyệt';
 
   @override
-  String get pPendingBody => 'Chúng tôi sẽ báo khi được duyệt. Hãy thêm tài khoản nhận tiền.';
+  String get pPendingBody =>
+      'Chúng tôi sẽ báo khi được duyệt. Hãy thêm tài khoản nhận tiền.';
 
   @override
   String get pSuspended => 'Tài khoản bị tạm dừng, hãy liên hệ vận hành.';
@@ -2316,7 +2522,8 @@ class TVi extends T {
   String get pAcceptConfirm => 'Nhận việc này?';
 
   @override
-  String get pAcceptBody => 'Việc sẽ vào lịch và khách được báo. Hủy trong 2 ngày trước bị hạn chế.';
+  String get pAcceptBody =>
+      'Việc sẽ vào lịch và khách được báo. Hủy trong 2 ngày trước bị hạn chế.';
 
   @override
   String get pAccepted => 'Đã nhận việc';
@@ -2757,13 +2964,15 @@ class TVi extends T {
   String get cSetupPayMethods => 'Phương thức thanh toán';
 
   @override
-  String get cSetupPayMethodsHint => 'Bật/tắt phương thức khách thấy. Áp dụng ngay.';
+  String get cSetupPayMethodsHint =>
+      'Bật/tắt phương thức khách thấy. Áp dụng ngay.';
 
   @override
   String get cReviewTitle => 'Tài khoản demo cho duyệt ứng dụng';
 
   @override
-  String get cReviewHint => 'Người duyệt không nhận được SMS Hàn Quốc. Ghi số và mã 6 chữ số vào ghi chú duyệt. Tự tắt khi hết hạn.';
+  String get cReviewHint =>
+      'Người duyệt không nhận được SMS Hàn Quốc. Ghi số và mã 6 chữ số vào ghi chú duyệt. Tự tắt khi hết hạn.';
 
   @override
   String get cReviewPhone => 'Số điện thoại demo';
@@ -2780,16 +2989,20 @@ class TVi extends T {
   String get cReviewEnable => 'Bật (14 ngày)';
 
   @override
-  String get pDeleteAccountBody => 'Nhóm và dữ liệu cá nhân sẽ bị xóa vĩnh viễn. Hãy hoàn tất việc đã nhận và khoản chờ thanh toán trước.';
+  String get pDeleteAccountBody =>
+      'Nhóm và dữ liệu cá nhân sẽ bị xóa vĩnh viễn. Hãy hoàn tất việc đã nhận và khoản chờ thanh toán trước.';
 
   @override
-  String get err_has_active_jobs => 'Bạn còn việc đã nhận. Hãy hoàn thành hoặc nhờ hỗ trợ chuyển giao.';
+  String get err_has_active_jobs =>
+      'Bạn còn việc đã nhận. Hãy hoàn thành hoặc nhờ hỗ trợ chuyển giao.';
 
   @override
-  String get err_pending_payouts => 'Còn khoản chờ thanh toán. Có thể xóa sau khi nhận tiền.';
+  String get err_pending_payouts =>
+      'Còn khoản chờ thanh toán. Có thể xóa sau khi nhận tiền.';
 
   @override
-  String get err_phone_required => 'Hãy xác minh số điện thoại trước khi nhận việc.';
+  String get err_phone_required =>
+      'Hãy xác minh số điện thoại trước khi nhận việc.';
 
   @override
   String get nAlerts => 'Thông báo';
@@ -2809,7 +3022,8 @@ class TVi extends T {
   String get mMyJobs => 'Việc của tôi';
 
   @override
-  String get mNoJobs => 'Chưa có việc được giao. Việc trưởng nhóm giao sẽ hiện ở đây.';
+  String get mNoJobs =>
+      'Chưa có việc được giao. Việc trưởng nhóm giao sẽ hiện ở đây.';
 
   @override
   String mTeam(String team) {
@@ -2841,7 +3055,8 @@ class TVi extends T {
   String get cSetupCheckInApp => 'Đã lưu · đăng nhập từ ứng dụng để xác nhận';
 
   @override
-  String get cSetupInvalidKey => 'Khóa không hợp lệ, hãy kiểm tra giá trị đã sao chép';
+  String get cSetupInvalidKey =>
+      'Khóa không hợp lệ, hãy kiểm tra giá trị đã sao chép';
 
   @override
   String get cSetupUnreachable => 'Không kết nối được, hãy thử lại sau';
@@ -2927,13 +3142,15 @@ class TVi extends T {
   String get uUpdateRequiredTitle => 'Cần cập nhật ứng dụng';
 
   @override
-  String get uUpdateRequiredBody => 'Phiên bản này không còn được hỗ trợ. Vui lòng cập nhật từ cửa hàng.';
+  String get uUpdateRequiredBody =>
+      'Phiên bản này không còn được hỗ trợ. Vui lòng cập nhật từ cửa hàng.';
 
   @override
   String get uUpdateStore => 'Cập nhật trên cửa hàng';
 
   @override
-  String get uUpdateStoreMissing => 'Liên kết cập nhật chưa sẵn sàng. Vui lòng thử lại sau.';
+  String get uUpdateStoreMissing =>
+      'Liên kết cập nhật chưa sẵn sàng. Vui lòng thử lại sau.';
 
   @override
   String uCurrentVersion(String version) {
@@ -2944,7 +3161,8 @@ class TVi extends T {
   String get uAppVersionTitle => 'Quản lý phiên bản ứng dụng';
 
   @override
-  String get uAppVersionHint => 'Ứng dụng thấp hơn bản tối thiểu sẽ dừng ở màn hình cập nhật. Thấp hơn bản mới nhất sẽ thấy banner. Định dạng: 1.2.0';
+  String get uAppVersionHint =>
+      'Ứng dụng thấp hơn bản tối thiểu sẽ dừng ở màn hình cập nhật. Thấp hơn bản mới nhất sẽ thấy banner. Định dạng: 1.2.0';
 
   @override
   String get uMinVersion => 'Phiên bản tối thiểu';

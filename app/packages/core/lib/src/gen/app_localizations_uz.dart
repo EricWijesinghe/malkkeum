@@ -41,7 +41,8 @@ class TUz extends T {
   String get aiBadge => 'AI';
 
   @override
-  String get aiCardHint => 'Mijozlar chatiga avtomatik javob beradi. Har bir xabar uchun API to\'lovi olinadi.';
+  String get aiCardHint =>
+      'Mijozlar chatiga avtomatik javob beradi. Har bir xabar uchun API to\'lovi olinadi.';
 
   @override
   String get aiModeOffline => 'Faqat xodimlar bo\'lmaganda javob beradi';
@@ -73,10 +74,12 @@ class TUz extends T {
   String get aiCapMemberLabel => 'Har mijozga kunlik javoblar chegarasi';
 
   @override
-  String get aiCapDailyLabel => 'Barcha suhbatlar bo\'yicha kunlik javoblar chegarasi';
+  String get aiCapDailyLabel =>
+      'Barcha suhbatlar bo\'yicha kunlik javoblar chegarasi';
 
   @override
-  String get aiCapHint => 'Faqat raqam kiriting. Standart uchun bo\'sh qoldiring.';
+  String get aiCapHint =>
+      'Faqat raqam kiriting. Standart uchun bo\'sh qoldiring.';
 
   @override
   String get apSocialOr => 'yoki';
@@ -97,10 +100,12 @@ class TUz extends T {
   String get apLoginApple => 'Apple orqali davom etish';
 
   @override
-  String get apDevSocialNote => 'Ishlab chiqish rejimi. Haqiqiy ijtimoiy hisob emas, sinov hisobi orqali kirasiz.';
+  String get apDevSocialNote =>
+      'Ishlab chiqish rejimi. Haqiqiy ijtimoiy hisob emas, sinov hisobi orqali kirasiz.';
 
   @override
-  String get apSocialFailed => 'Tezkor kirish amalga oshmadi. Iltimos, qayta urinib ko\'ring.';
+  String get apSocialFailed =>
+      'Tezkor kirish amalga oshmadi. Iltimos, qayta urinib ko\'ring.';
 
   @override
   String get apProviderNotConfigured => 'Bu kirish usuli hali tayyor emas';
@@ -112,7 +117,8 @@ class TUz extends T {
   String get apPhoneAttachTitle => 'Telefon raqamingizni tasdiqlang';
 
   @override
-  String get apPhoneAttachBody => 'Bu raqam bron qilish va usta bilan aloqa uchun ishlatiladi. Faqat bir marta tasdiqlanadi.';
+  String get apPhoneAttachBody =>
+      'Bu raqam bron qilish va usta bilan aloqa uchun ishlatiladi. Faqat bir marta tasdiqlanadi.';
 
   @override
   String get apPayAllTitle => 'To\'lov usulini tanlang';
@@ -124,7 +130,8 @@ class TUz extends T {
   String get apPayMoreTitle => 'Barcha to\'lov usullari';
 
   @override
-  String get apPayBillingHint => 'Bir marta ulang, keyingi safar bir bosishda to\'lang';
+  String get apPayBillingHint =>
+      'Bir marta ulang, keyingi safar bir bosishda to\'lang';
 
   @override
   String get apPayCheckoutHint => 'To\'lov oynasida yakunlang';
@@ -133,7 +140,8 @@ class TUz extends T {
   String get apPayRegistering => 'Ro\'yxatga olinmoqda…';
 
   @override
-  String get apPayManageHint => 'Ulangan usullar bilan bir bosishda to\'lang. Tezkor to\'lov usullarini shu yerda qo\'shishingiz mumkin.';
+  String get apPayManageHint =>
+      'Ulangan usullar bilan bir bosishda to\'lang. Tezkor to\'lov usullarini shu yerda qo\'shishingiz mumkin.';
 
   @override
   String get apMethodCard => 'Kredit va debet karta';
@@ -175,7 +183,8 @@ class TUz extends T {
   String get apVaWaiting => 'Depozit kutilmoqda';
 
   @override
-  String get apVaBody => 'Muddat ichida depozit tushsa, bron tasdiqlanadi. Depozit avtomatik tekshiriladi.';
+  String get apVaBody =>
+      'Muddat ichida depozit tushsa, bron tasdiqlanadi. Depozit avtomatik tekshiriladi.';
 
   @override
   String get apVaBank => 'Bank';
@@ -215,7 +224,8 @@ class TUz extends T {
   String get apPgTitle => 'To\'lov oynasi';
 
   @override
-  String get apPgDevNote => 'Faqat ishlab chiqish muhiti uchun to\'lov simulyatsiyasi. Haqiqiy to\'lov amalga oshmaydi.';
+  String get apPgDevNote =>
+      'Faqat ishlab chiqish muhiti uchun to\'lov simulyatsiyasi. Haqiqiy to\'lov amalga oshmaydi.';
 
   @override
   String apPgPay(String amount) {
@@ -229,16 +239,19 @@ class TUz extends T {
   String get apPgCancel => 'To\'lovni bekor qilish';
 
   @override
-  String get apErrSlotFullRefunded => 'Bu vaqt endi band bo\'ldi, shuning uchun to\'lov avtomatik bekor qilindi';
+  String get apErrSlotFullRefunded =>
+      'Bu vaqt endi band bo\'ldi, shuning uchun to\'lov avtomatik bekor qilindi';
 
   @override
-  String get apErrCheckoutExpired => 'To\'lov vaqti tugadi. Iltimos, qayta urinib ko\'ring.';
+  String get apErrCheckoutExpired =>
+      'To\'lov vaqti tugadi. Iltimos, qayta urinib ko\'ring.';
 
   @override
   String get apIdentityTitle => 'Shaxsni tasdiqlash (PASS)';
 
   @override
-  String get apIdentityBody => 'Telefon operatoringiz orqali shaxsingiz tasdiqlanadi. Xavfsiz savdo va to\'lovlar uchun ishlatiladi.';
+  String get apIdentityBody =>
+      'Telefon operatoringiz orqali shaxsingiz tasdiqlanadi. Xavfsiz savdo va to\'lovlar uchun ishlatiladi.';
 
   @override
   String get apIdentityAction => 'Shaxsni tasdiqlash';
@@ -256,7 +269,8 @@ class TUz extends T {
   String get apIdentityDevTitle => 'Sinov shaxsni tasdiqlash';
 
   @override
-  String get apIdentityDevBody => 'Ishlab chiqish muhitida haqiqiy tekshiruvsiz o\'tadi.';
+  String get apIdentityDevBody =>
+      'Ishlab chiqish muhitida haqiqiy tekshiruvsiz o\'tadi.';
 
   @override
   String get apIdentityDevPass => 'O\'tkazish';
@@ -268,7 +282,7 @@ class TUz extends T {
   String get cTitle => 'Operatsion konsol';
 
   @override
-  String get cEmail => 'Email';
+  String get cEmail => 'Elektron pochta';
 
   @override
   String get cPassword => 'Parol';
@@ -391,7 +405,8 @@ class TUz extends T {
   String get cCancelRefund => 'Bekor qilish · qaytarish';
 
   @override
-  String get cRefundAmount => 'Qaytariladigan summa (bo\'sh qoldirilsa — to\'liq)';
+  String get cRefundAmount =>
+      'Qaytariladigan summa (bo\'sh qoldirilsa — to\'liq)';
 
   @override
   String get cDone => 'Bajarildi';
@@ -540,7 +555,7 @@ class TUz extends T {
   String get cKind_faq => 'FAQ';
 
   @override
-  String get cKind_banner => 'Banner';
+  String get cKind_banner => 'Reklama';
 
   @override
   String get cKind_legal => 'Huquqiy';
@@ -640,7 +655,7 @@ class TUz extends T {
   String get cNewMessage => 'Yangi xabar';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'Tayyor';
 
   @override
   String get cancel => 'Bekor qilish';
@@ -682,7 +697,8 @@ class TUz extends T {
   String get today => 'Bugun';
 
   @override
-  String get errorGeneric => 'Xatolik yuz berdi. Iltimos, biroz keyin qayta urinib ko\'ring.';
+  String get errorGeneric =>
+      'Xatolik yuz berdi. Iltimos, biroz keyin qayta urinib ko\'ring.';
 
   @override
   String get errorNetwork => 'Internet ulanishini tekshiring';
@@ -694,16 +710,20 @@ class TUz extends T {
   String get err_otp_invalid => 'Tasdiqlash kodi noto\'g\'ri';
 
   @override
-  String get err_otp_expired => 'Tasdiqlash kodining muddati tugadi. Yangisini so\'rang.';
+  String get err_otp_expired =>
+      'Tasdiqlash kodining muddati tugadi. Yangisini so\'rang.';
 
   @override
-  String get err_rate_limited => 'Urinishlar juda ko\'p. Iltimos, keyinroq qayta urinib ko\'ring.';
+  String get err_rate_limited =>
+      'Urinishlar juda ko\'p. Iltimos, keyinroq qayta urinib ko\'ring.';
 
   @override
-  String get err_studio_too_large => 'Studiya tozalash faqat 10 pyeonggacha bo\'lgan uylar uchun';
+  String get err_studio_too_large =>
+      'Studiya tozalash faqat 10 pyeonggacha bo\'lgan uylar uchun';
 
   @override
-  String get err_date_out_of_range => 'Ertadan boshlab 60 kun ichidagi sanani tanlang';
+  String get err_date_out_of_range =>
+      'Ertadan boshlab 60 kun ichidagi sanani tanlang';
 
   @override
   String get err_slot_full => 'Bu vaqt band bo\'ldi. Boshqa vaqtni tanlang.';
@@ -715,22 +735,26 @@ class TUz extends T {
   String get err_coupon_used => 'Bu kupon allaqachon ishlatilgan';
 
   @override
-  String get err_coupon_wrong_service => 'Bu kupon ushbu xizmat uchun amal qilmaydi';
+  String get err_coupon_wrong_service =>
+      'Bu kupon ushbu xizmat uchun amal qilmaydi';
 
   @override
-  String get err_payment_failed => 'To\'lov tasdiqlanmadi. Boshqa to\'lov usulini tanlang.';
+  String get err_payment_failed =>
+      'To\'lov tasdiqlanmadi. Boshqa to\'lov usulini tanlang.';
 
   @override
   String get err_payment_method_required => 'To\'lov usulini tanlang';
 
   @override
-  String get err_cancellation_window_closed => 'Tashrifga 2 kun qolganda bekor qilish faqat jamoamiz orqali mumkin';
+  String get err_cancellation_window_closed =>
+      'Tashrifga 2 kun qolganda bekor qilish faqat jamoamiz orqali mumkin';
 
   @override
   String get err_address_required => 'Tashrif manzilini kiriting';
 
   @override
-  String get err_already_taken => 'Boshqa hamkor buyurtmani birinchi bo\'lib qabul qildi';
+  String get err_already_taken =>
+      'Boshqa hamkor buyurtmani birinchi bo\'lib qabul qildi';
 
   @override
   String get err_invalid_address => 'Manzil maydonlarini to\'liq to\'ldiring';
@@ -742,7 +766,7 @@ class TUz extends T {
   String get tabBookings => 'Bronlar';
 
   @override
-  String get tabChat => 'Chat';
+  String get tabChat => 'Suhbat';
 
   @override
   String get tabMore => 'Yana';
@@ -751,7 +775,8 @@ class TUz extends T {
   String get introTitle => 'Mutaxassis tozalashini\neng oson bron qiling';
 
   @override
-  String get introBody => 'Aniq narxlar · Tekshirilgan jamoalar · Jarayon real vaqtda';
+  String get introBody =>
+      'Aniq narxlar · Tekshirilgan jamoalar · Jarayon real vaqtda';
 
   @override
   String get introStart => 'Telefon raqami bilan boshlash';
@@ -780,7 +805,8 @@ class TUz extends T {
   String get loginVerify => 'Tasdiqlash';
 
   @override
-  String get loginTerms => 'Davom etish orqali Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz';
+  String get loginTerms =>
+      'Davom etish orqali Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz';
 
   @override
   String get profileTitle => 'Ismingizni kiriting';
@@ -843,40 +869,52 @@ class TUz extends T {
   String get svcShort_move_in => 'Kirish';
 
   @override
-  String get svcDesc_studio => '10 pyeonggacha, 1 xona va 1 hammomli studiyani 2 soat davomida puxta tozalaymiz.';
+  String get svcDesc_studio =>
+      '10 pyeonggacha, 1 xona va 1 hammomli studiyani 2 soat davomida puxta tozalaymiz.';
 
   @override
-  String get svcDesc_kitchen => 'Asosan lavabo, plita, vytyajka tashqi qismi va ish stollarini tozalaymiz.';
+  String get svcDesc_kitchen =>
+      'Asosan lavabo, plita, vytyajka tashqi qismi va ish stollarini tozalaymiz.';
 
   @override
-  String get svcDesc_bathroom => 'Javonlar, kranlar, lavabo va unitazning ichki va tashqi qismini tozalab, polni quritamiz.';
+  String get svcDesc_bathroom =>
+      'Javonlar, kranlar, lavabo va unitazning ichki va tashqi qismini tozalab, polni quritamiz.';
 
   @override
-  String get svcDesc_mattress => 'Maxsus asbob bilan chang, kana va dog\'larni so\'rib olamiz, bug\' bilan zararsizlantiramiz.';
+  String get svcDesc_mattress =>
+      'Maxsus asbob bilan chang, kana va dog\'larni so\'rib olamiz, bug\' bilan zararsizlantiramiz.';
 
   @override
-  String get svcDesc_aircon => 'Ajratib, issiqlik almashtirgich, ventilyator va filtrni bosim ostida yuvib, zararsizlantiramiz.';
+  String get svcDesc_aircon =>
+      'Ajratib, issiqlik almashtirgich, ventilyator va filtrni bosim ostida yuvib, zararsizlantiramiz.';
 
   @override
-  String get svcDesc_sofa => 'Matoga mos vosita bilan iflosliklarni parchalaymiz va nam ekstraksiya usulida yuvamiz.';
+  String get svcDesc_sofa =>
+      'Matoga mos vosita bilan iflosliklarni parchalaymiz va nam ekstraksiya usulida yuvamiz.';
 
   @override
-  String get svcDesc_move_out => 'Ko\'chib chiqishdan oldin bo\'sh uyni mutaxassis jamoa asbob-uskunalar bilan kelib tozalaydi.';
+  String get svcDesc_move_out =>
+      'Ko\'chib chiqishdan oldin bo\'sh uyni mutaxassis jamoa asbob-uskunalar bilan kelib tozalaydi.';
 
   @override
-  String get svcDesc_move_in => 'Yangi uyga kirishdan oldin mutaxassis jamoa asbob-uskunalar bilan kelib ichki qismni tozalaydi.';
+  String get svcDesc_move_in =>
+      'Yangi uyga kirishdan oldin mutaxassis jamoa asbob-uskunalar bilan kelib ichki qismni tozalaydi.';
 
   @override
-  String get svcNotes_bathroom => 'Drenaj yoki unitaz tiqilib qolgan bo\'lsa, xizmat cheklanishi mumkin\nMaxsus kimyoviy vositalarni talab qiladigan tozalash hamda shift va ventilyatorni tozalash ko\'rsatilmaydi\nEski zamburug\' va qotib qolgan kir butunlay ketmasligi mumkin';
+  String get svcNotes_bathroom =>
+      'Drenaj yoki unitaz tiqilib qolgan bo\'lsa, xizmat cheklanishi mumkin\nMaxsus kimyoviy vositalarni talab qiladigan tozalash hamda shift va ventilyatorni tozalash ko\'rsatilmaydi\nEski zamburug\' va qotib qolgan kir butunlay ketmasligi mumkin';
 
   @override
-  String get svcNotes_mattress => 'Yakkadan king o\'lchamigacha bir xil narx\nTo\'liq quruq bo\'lishi 4–6 soat davom etadi\nPrujina shikastlanishi yoki cho\'kish kabi konstruktiv nuqsonlar tuzatilmaydi';
+  String get svcNotes_mattress =>
+      'Yakkadan king o\'lchamigacha bir xil narx\nTo\'liq quruq bo\'lishi 4–6 soat davom etadi\nPrujina shikastlanishi yoki cho\'kish kabi konstruktiv nuqsonlar tuzatilmaydi';
 
   @override
-  String get svcNotes_aircon => '10 yildan eski modellarni ajratib yuvish qiyin bo\'lishi mumkin\nTashqi blok tozalanmaydi\nYuvishdan oldin va keyin ishlash holatini tekshiramiz';
+  String get svcNotes_aircon =>
+      '10 yildan eski modellarni ajratib yuvish qiyin bo\'lishi mumkin\nTashqi blok tozalanmaydi\nYuvishdan oldin va keyin ishlash holatini tekshiramiz';
 
   @override
-  String get svcNotes_sofa => 'Charm divanlar tozalash va namlovchi qoplash bilan amalga oshiriladi\nEski dog\' va rang o\'tishi to\'liq ketmasligi mumkin\nTo\'liq quruq bo\'lishi 4–6 soat davom etadi';
+  String get svcNotes_sofa =>
+      'Charm divanlar tozalash va namlovchi qoplash bilan amalga oshiriladi\nEski dog\' va rang o\'tishi to\'liq ketmasligi mumkin\nTo\'liq quruq bo\'lishi 4–6 soat davom etadi';
 
   @override
   String get unitTitle_bathroom => 'Hammomlar soni';
@@ -982,7 +1020,8 @@ class TUz extends T {
   String get homeServices => 'Qanday tozalash kerak?';
 
   @override
-  String get homeAddAddress => 'Manzilingizni qo\'shing — mavjud xizmatlar va narxlarni darhol ko\'rsatamiz';
+  String get homeAddAddress =>
+      'Manzilingizni qo\'shing — mavjud xizmatlar va narxlarni darhol ko\'rsatamiz';
 
   @override
   String get homeAddAddressCta => 'Manzil qo\'shish';
@@ -993,7 +1032,8 @@ class TUz extends T {
   }
 
   @override
-  String get homeRebookBody => 'Oldingi safardagi shartlar bilan tezda bron qiling';
+  String get homeRebookBody =>
+      'Oldingi safardagi shartlar bilan tezda bron qiling';
 
   @override
   String get homeNotices => 'Yangiliklar';
@@ -1005,7 +1045,8 @@ class TUz extends T {
   String get trustCancel => 'Tashrifga 2 kun qolgunicha\nbepul bekor qilish';
 
   @override
-  String get trustCard => 'Karta ma\'lumotlari\nfaqat to\'lov kompaniyasida saqlanadi';
+  String get trustCard =>
+      'Karta ma\'lumotlari\nfaqat to\'lov kompaniyasida saqlanadi';
 
   @override
   String stepOf(String current, String total) {
@@ -1024,7 +1065,8 @@ class TUz extends T {
   }
 
   @override
-  String get studioBlockedBody => 'Maslahat jamoamiz uyingizga mos xizmatni tavsiya qiladi.';
+  String get studioBlockedBody =>
+      'Maslahat jamoamiz uyingizga mos xizmatni tavsiya qiladi.';
 
   @override
   String get consultCta => 'Maslahat so\'rash';
@@ -1093,7 +1135,8 @@ class TUz extends T {
   }
 
   @override
-  String get scheduleRange => 'Ertadan boshlab 60 kun ichida bron qilishingiz mumkin';
+  String get scheduleRange =>
+      'Ertadan boshlab 60 kun ichida bron qilishingiz mumkin';
 
   @override
   String get morning => 'Ertalab';
@@ -1111,7 +1154,8 @@ class TUz extends T {
   String get prepTitle => 'Tashrifdan oldin tayyorlang';
 
   @override
-  String get prepBody => 'Bular tayyor bo\'lmasa, ayrim ishlar cheklanishi mumkin';
+  String get prepBody =>
+      'Bular tayyor bo\'lmasa, ayrim ishlar cheklanishi mumkin';
 
   @override
   String get prepAsk => 'Tayyorlab bo\'lmasa, maslahatda oldindan xabar bering';
@@ -1210,7 +1254,8 @@ class TUz extends T {
   String get doneQuoteTitle => 'So\'rov qabul qilindi';
 
   @override
-  String get doneQuoteBody => 'Jamoamiz tekshirib, yakuniy narxni yuboradi. Narxni Chat bo\'limida ko\'rishingiz mumkin.';
+  String get doneQuoteBody =>
+      'Jamoamiz tekshirib, yakuniy narxni yuboradi. Narxni Chat bo\'limida ko\'rishingiz mumkin.';
 
   @override
   String get goHome => 'Bosh sahifaga';
@@ -1287,7 +1332,8 @@ class TUz extends T {
   String get cancelTitle => 'Bu bronni bekor qilasizmi?';
 
   @override
-  String get cancelFree => 'Hozir bekor qilsangiz, to\'lovning to\'liq summasi va kuponingiz qaytariladi.';
+  String get cancelFree =>
+      'Hozir bekor qilsangiz, to\'lovning to\'liq summasi va kuponingiz qaytariladi.';
 
   @override
   String get cancelKeep => 'Qoldirish';
@@ -1368,7 +1414,7 @@ class TUz extends T {
   String get bookAgain => 'Xuddi shunday qayta bron qilish';
 
   @override
-  String get chatTitle => 'Chat';
+  String get chatTitle => 'Suhbat';
 
   @override
   String get chatTeam => 'Qo\'llab-quvvatlash jamoasi';
@@ -1453,7 +1499,8 @@ class TUz extends T {
   }
 
   @override
-  String get sys_job_completed => 'Tozalash tugadi. Oldin-keyin suratlarni ko\'ring.';
+  String get sys_job_completed =>
+      'Tozalash tugadi. Oldin-keyin suratlarni ko\'ring.';
 
   @override
   String sys_rescheduled(String date) {
@@ -1461,7 +1508,8 @@ class TUz extends T {
   }
 
   @override
-  String get sys_reschedule_declined => 'Hamkor yangi vaqtda kela olmaydi. Jamoamiz qayta kelishib oladi.';
+  String get sys_reschedule_declined =>
+      'Hamkor yangi vaqtda kela olmaydi. Jamoamiz qayta kelishib oladi.';
 
   @override
   String get moreTitle => 'Yana';
@@ -1523,7 +1571,8 @@ class TUz extends T {
   String get deleteAccount => 'Hisobni o\'chirish';
 
   @override
-  String get deleteAccountBody => 'Shaxsiy ma\'lumotlaringiz o\'chiriladi va buni qaytarib bo\'lmaydi. Avval faol bronlarni bekor qiling.';
+  String get deleteAccountBody =>
+      'Shaxsiy ma\'lumotlaringiz o\'chiriladi va buni qaytarib bo\'lmaydi. Avval faol bronlarni bekor qiling.';
 
   @override
   String get couponsEmpty => 'Kuponlaringiz yo\'q';
@@ -1561,7 +1610,7 @@ class TUz extends T {
   String get accountPhone => 'Telefon';
 
   @override
-  String get accountEmail => 'Email';
+  String get accountEmail => 'Elektron pochta';
 
   @override
   String get accountLogin => 'Kirish usuli';
@@ -1672,7 +1721,8 @@ class TUz extends T {
   String get quoteEstimateTitle => 'Taxminiy narx';
 
   @override
-  String get quoteEstimateBody => 'Yakuniy summa suratlar va vaziyat ko\'rib chiqilgach, maslahatda belgilanadi';
+  String get quoteEstimateBody =>
+      'Yakuniy summa suratlar va vaziyat ko\'rib chiqilgach, maslahatda belgilanadi';
 
   @override
   String get quoteG1 => 'Yakuniy summa maslahatda kelishiladi';
@@ -1681,7 +1731,8 @@ class TUz extends T {
   String get quoteG2 => 'Tasdiqlash uchun 10% depozit, qolgani ishdan keyin';
 
   @override
-  String get quoteG3 => 'Tasdiqlashdan oldin istalgan vaqtda bepul bekor qilish';
+  String get quoteG3 =>
+      'Tasdiqlashdan oldin istalgan vaqtda bepul bekor qilish';
 
   @override
   String get quoteConfirmTitle => 'So\'rovingizni tekshiring';
@@ -1715,6 +1766,169 @@ class TUz extends T {
 
   @override
   String get themeTip => 'Mavzuni o\'zgartirish';
+
+  @override
+  String get err_price_changed =>
+      'Narx o‘zgardi. Yangi taklifni ko‘rib, qayta urinib ko‘ring.';
+
+  @override
+  String get err_checkout_closed => 'Bu to‘lov yopilgan. Qaytadan boshlang.';
+
+  @override
+  String get err_checkout_refunded =>
+      'Bu to‘lov bekor qilingan va pul qaytarilgan.';
+
+  @override
+  String get err_already_paid => 'Bu to‘lov allaqachon to‘langan.';
+
+  @override
+  String get err_quote_not_payable =>
+      'Bu taklif hozircha to‘lanmaydi. Jamoamiz bilan bog‘laning.';
+
+  @override
+  String get err_payment_method_disabled =>
+      'Bu to‘lov usuli hozircha mavjud emas.';
+
+  @override
+  String get err_invalid_payment_method =>
+      'Tanlangan to‘lov usulidan foydalanib bo‘lmaydi. Boshqasini tanlang.';
+
+  @override
+  String get err_balance_not_due => 'Qoldiq to‘lov hali muddati kelmagan.';
+
+  @override
+  String get err_invalid_slot => 'Bu xizmat uchun tanlangan vaqt mavjud emas.';
+
+  @override
+  String get err_booking_changed =>
+      'Buyurtma o‘zgargan. Yangilab, tafsilotlarni tekshiring.';
+
+  @override
+  String get err_booking_closed => 'Bu buyurtmani endi o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_reschedule_closed =>
+      'Hozir tashrif sanasini o‘zgartirib bo‘lmaydi. Jamoamiz bilan bog‘laning.';
+
+  @override
+  String get err_too_many_open_requests =>
+      'Ochiq so‘rovlar juda ko‘p. Avval bittasini yakunlang.';
+
+  @override
+  String get err_already_reviewed =>
+      'Siz bu tashrif uchun allaqachon sharh qoldirgansiz.';
+
+  @override
+  String get err_identity_not_verified =>
+      'Avval shaxsni tasdiqlashni yakunlang.';
+
+  @override
+  String get err_email_taken => 'Bu elektron pochta allaqachon band.';
+
+  @override
+  String get err_invalid_email => 'Elektron pochta manzilini tekshiring.';
+
+  @override
+  String get err_file_too_large => 'Fayl juda katta. Kichikroq fayl yuklang.';
+
+  @override
+  String get err_unsupported_image =>
+      'Bu rasm formati qo‘llab-quvvatlanmaydi. JPG yoki PNG yuklang.';
+
+  @override
+  String get err_upload_quota =>
+      'Bugungi yuklash limiti tugadi. Ertaga qayta urining.';
+
+  @override
+  String get err_provider_unreachable =>
+      'Xizmatga ulanib bo‘lmadi. Biroz keyin qayta urinib ko‘ring.';
+
+  @override
+  String get err_invalid_token =>
+      'Kirish amalga oshmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get err_invalid_transition =>
+      'Holatni hozir bunday o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_job_not_started => 'Avval ishni boshlang.';
+
+  @override
+  String get err_job_not_active => 'Bu ish faol emas.';
+
+  @override
+  String get err_quote_locked => 'Taklif qulflangan, tahrirlab bo‘lmaydi.';
+
+  @override
+  String get err_request_closed => 'Bu so‘rov yopilgan.';
+
+  @override
+  String get err_team_full => 'Jamoa to‘lgan.';
+
+  @override
+  String get err_invalid_webhook_secret =>
+      'Webhook secret whsec_ bilan boshlanishi kerak.';
+
+  @override
+  String get err_invalid_endpoint =>
+      'Endpoint https:// bilan boshlanishi kerak.';
+
+  @override
+  String get err_invalid_bucket => 'Bucket nomi noto‘g‘ri.';
+
+  @override
+  String get err_invalid_region => 'Hudud noto‘g‘ri.';
+
+  @override
+  String get err_invalid_retention =>
+      'Saqlash muddati ruxsat etilgan chegaradan tashqarida.';
+
+  @override
+  String get err_invalid_service_account => 'Service account fayli noto‘g‘ri.';
+
+  @override
+  String get err_invalid_mode => 'To‘g‘ri AI rejimini tanlang.';
+
+  @override
+  String get err_invalid_model => 'AI model nomi noto‘g‘ri.';
+
+  @override
+  String get err_missing_field => 'Barcha majburiy maydonlarni to‘ldiring.';
+
+  @override
+  String get err_invalid_amount => 'To‘g‘ri summani kiriting.';
+
+  @override
+  String get err_cannot_deactivate_self =>
+      'O‘z hisobingizni o‘chirib bo‘lmaydi.';
+
+  @override
+  String get err_invalid_coupon => 'Bu kupon yaroqsiz.';
+
+  @override
+  String get err_settlement_state =>
+      'Hisob-kitobni hozir o‘zgartirib bo‘lmaydi.';
+
+  @override
+  String get err_deposit_required => 'Avval depozit to‘lanishi kerak.';
+
+  @override
+  String get err_payout_state =>
+      'To‘lov holati o‘zgardi. Yangilab, qayta tekshiring.';
+
+  @override
+  String get err_payout_provider => 'Bu to‘lov usuli hozircha mavjud emas.';
+
+  @override
+  String get err_unsupported_bank =>
+      'Bu bank to‘lovlar uchun qo‘llab-quvvatlanmaydi.';
+
+  @override
+  String get err_toss_unverified => 'Avval Toss hisobini tasdiqlang.';
+
+  @override
+  String get err_invalid_capacity => 'To‘g‘ri sig‘imni kiriting.';
 
   @override
   String get fFinance => 'Moliya';
@@ -1762,7 +1976,8 @@ class TUz extends T {
   String get fVatEstimate => 'QQS (taxminiy)';
 
   @override
-  String get fVatNote => 'Platforma komissiyasining 10% asosida taxminiy. Buxgalter bilan tekshiring.';
+  String get fVatNote =>
+      'Platforma komissiyasining 10% asosida taxminiy. Buxgalter bilan tekshiring.';
 
   @override
   String get fAov => 'O\'rtacha buyurtma';
@@ -1912,7 +2127,8 @@ class TUz extends T {
   String get reviewSaved => 'Sharhingiz uchun rahmat';
 
   @override
-  String get reviewPhotoFailed => 'Suratni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+  String get reviewPhotoFailed =>
+      'Suratni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
 
   @override
   String get referralTitle => 'Do‘stni taklif qiling, kupon oling';
@@ -1946,10 +2162,12 @@ class TUz extends T {
   }
 
   @override
-  String get err_self_referral => 'O‘zingizning kodingizdan foydalanib bo‘lmaydi';
+  String get err_self_referral =>
+      'O‘zingizning kodingizdan foydalanib bo‘lmaydi';
 
   @override
-  String get err_referee_already_booked => 'Kodni faqat birinchi buyurtmadan oldin kiritish mumkin';
+  String get err_referee_already_booked =>
+      'Kodni faqat birinchi buyurtmadan oldin kiritish mumkin';
 
   @override
   String get err_already_referred => 'Taklif kodi allaqachon qo‘llangan';
@@ -1961,13 +2179,15 @@ class TUz extends T {
   String get err_referral_disabled => 'Hozircha taklif dasturi to‘xtatilgan';
 
   @override
-  String get err_invalid_photos => 'Faqat Malkkeum orqali yuklangan suratlarni biriktirish mumkin';
+  String get err_invalid_photos =>
+      'Faqat Malkkeum orqali yuklangan suratlarni biriktirish mumkin';
 
   @override
   String get welcomeOfferTitle => 'Birinchi buyurtma chegirmasi';
 
   @override
-  String get welcomeOfferBody => 'Yangi mijozning birinchi buyurtmasiga avtomatik qo‘llanadi. Kupon bilan birga ishlamaydi.';
+  String get welcomeOfferBody =>
+      'Yangi mijozning birinchi buyurtmasiga avtomatik qo‘llanadi. Kupon bilan birga ishlamaydi.';
 
   @override
   String get offerKindAmount => 'Belgilangan (so‘m)';
@@ -1988,7 +2208,8 @@ class TUz extends T {
   String get referralSettingsTitle => 'Taklif mukofoti';
 
   @override
-  String get referralSettingsBody => 'Do‘stning birinchi buyurtmasi yakunlanib, to‘lov qilingach beriladi. O‘z-o‘zini taklif qilish va bir xil raqam bloklanadi.';
+  String get referralSettingsBody =>
+      'Do‘stning birinchi buyurtmasi yakunlanib, to‘lov qilingach beriladi. O‘z-o‘zini taklif qilish va bir xil raqam bloklanadi.';
 
   @override
   String get referralRewardAmount => 'Mukofot miqdori (so‘m)';
@@ -2127,25 +2348,32 @@ class TUz extends T {
   String get oIntNever => 'Hali foydalanilmagan';
 
   @override
-  String get oActDb => 'Ma’lumotlar bazasiga ulanib bo‘lmadi. Serverda malkkeum logs ni ishga tushiring; davom etsa qayta ishga tushiring.';
+  String get oActDb =>
+      'Ma’lumotlar bazasiga ulanib bo‘lmadi. Serverda malkkeum logs ni ishga tushiring; davom etsa qayta ishga tushiring.';
 
   @override
-  String get oActDisk => 'Diskda bo‘sh joy 10% dan kam. Eski zaxiralarni o‘chiring yoki diskni kengaytiring.';
+  String get oActDisk =>
+      'Diskda bo‘sh joy 10% dan kam. Eski zaxiralarni o‘chiring yoki diskni kengaytiring.';
 
   @override
-  String get oActBackup => 'Avtomatik zaxira kechikdi. Serverda malkkeum backup ni ishga tushiring va backups/backup.log ni tekshiring.';
+  String get oActBackup =>
+      'Avtomatik zaxira kechikdi. Serverda malkkeum backup ni ishga tushiring va backups/backup.log ni tekshiring.';
 
   @override
-  String get oActErrors => 'Server xatolari ko‘p. malkkeum logs dagi error qatorlarini ko‘ring; takrorlansa dasturchiga yuboring.';
+  String get oActErrors =>
+      'Server xatolari ko‘p. malkkeum logs dagi error qatorlarini ko‘ring; takrorlansa dasturchiga yuboring.';
 
   @override
-  String get oActPayments => 'To‘lov o‘tgan bo‘lishi mumkin, lekin avtomatik qayta ishlanmagan. PortOne da tekshiring va kerak bo‘lsa qo‘lda qaytaring.';
+  String get oActPayments =>
+      'To‘lov o‘tgan bo‘lishi mumkin, lekin avtomatik qayta ishlanmagan. PortOne da tekshiring va kerak bo‘lsa qo‘lda qaytaring.';
 
   @override
-  String get oActWebhook => 'To‘lov bildirishnomasi imzosini tekshirish xato. Sozlash > To‘lov (PortOne) da webhook secret ni qayta kiriting.';
+  String get oActWebhook =>
+      'To‘lov bildirishnomasi imzosini tekshirish xato. Sozlash > To‘lov (PortOne) da webhook secret ni qayta kiriting.';
 
   @override
-  String get oActIntegration => 'Bu ulanish ishlamayapti. Sozlashdagi kalitlarni tekshirib, Test connection ni bosing.';
+  String get oActIntegration =>
+      'Bu ulanish ishlamayapti. Sozlashdagi kalitlarni tekshirib, Test connection ni bosing.';
 
   @override
   String get oActNotSet => 'Hali sozlanmagan. Sozlashda kalitlarni kiriting.';
@@ -2154,7 +2382,8 @@ class TUz extends T {
   String get oAlerts => 'Ogohlantirish sozlamalari';
 
   @override
-  String get oAlertsHint => 'Muammolar kiruvchi xabarlar va egasining telefoniga SMS orqali yuboriladi. Bir xil muammo 6 soatda bir marta yuboriladi.';
+  String get oAlertsHint =>
+      'Muammolar kiruvchi xabarlar va egasining telefoniga SMS orqali yuboriladi. Bir xil muammo 6 soatda bir marta yuboriladi.';
 
   @override
   String get oRuleSms => 'SMS yuborish xato';
@@ -2192,13 +2421,15 @@ class TUz extends T {
   }
 
   @override
-  String get oQuietHint => 'Shu soatlarda bildirishnoma yuborilmaydi; tugagach bitta xabar keladi.';
+  String get oQuietHint =>
+      'Shu soatlarda bildirishnoma yuborilmaydi; tugagach bitta xabar keladi.';
 
   @override
   String get oAlertPhone => 'Ogohlantirish telefoni';
 
   @override
-  String get oAlertPhoneHint => 'Bo‘sh qoldirsangiz biznes ma’lumotidagi yordam raqamiga yuboriladi.';
+  String get oAlertPhoneHint =>
+      'Bo‘sh qoldirsangiz biznes ma’lumotidagi yordam raqamiga yuboriladi.';
 
   @override
   String get oSave => 'Saqlash';
@@ -2207,7 +2438,8 @@ class TUz extends T {
   String get oSaved => 'Ogohlantirish sozlamalari saqlandi';
 
   @override
-  String get oSaveFailed => 'Saqlab bo‘lmadi. Kiritilgan qiymatlarni tekshiring.';
+  String get oSaveFailed =>
+      'Saqlab bo‘lmadi. Kiritilgan qiymatlarni tekshiring.';
 
   @override
   String get oLoadFailed => 'Holatni yuklab bo‘lmadi';
@@ -2216,7 +2448,8 @@ class TUz extends T {
   String get oBackupOffsite => 'Tashqi zaxira (S3)';
 
   @override
-  String get oBackupOffsiteOff => 'O‘chirilgan. Sozlash > Tashqi zaxirada yoqing.';
+  String get oBackupOffsiteOff =>
+      'O‘chirilgan. Sozlash > Tashqi zaxirada yoqing.';
 
   @override
   String get oLastBackup => 'Oxirgi zaxira';
@@ -2240,10 +2473,12 @@ class TUz extends T {
   String get pTabSchedule => 'Jadval';
 
   @override
-  String get pIntroTitle => 'Tozalash mutaxassislari uchun\nishlar · jadval · to\'lovlar';
+  String get pIntroTitle =>
+      'Tozalash mutaxassislari uchun\nishlar · jadval · to\'lovlar';
 
   @override
-  String get pIntroBody => 'Xohlagan hudud va vaqtda ishlang, har hafta to\'lov oling';
+  String get pIntroBody =>
+      'Xohlagan hudud va vaqtda ishlang, har hafta to\'lov oling';
 
   @override
   String get pOnbTitle => 'Hamkor ma\'lumotlarini kiriting';
@@ -2267,10 +2502,12 @@ class TUz extends T {
   String get pPendingTitle => 'Tasdiqlanishini kutmoqda';
 
   @override
-  String get pPendingBody => 'Operatsiya jamoasi tekshirib tasdiqlagach, xabar yuboramiz. Shu orada to\'lov hisobingizni ulang.';
+  String get pPendingBody =>
+      'Operatsiya jamoasi tekshirib tasdiqlagach, xabar yuboramiz. Shu orada to\'lov hisobingizni ulang.';
 
   @override
-  String get pSuspended => 'Hisobingiz vaqtincha to\'xtatildi. Iltimos, operatsiya jamoasiga murojaat qiling.';
+  String get pSuspended =>
+      'Hisobingiz vaqtincha to\'xtatildi. Iltimos, operatsiya jamoasiga murojaat qiling.';
 
   @override
   String get pDirect => 'Darhol bron';
@@ -2294,7 +2531,8 @@ class TUz extends T {
   String get pNoJobs => 'Hozircha mos ish yo\'q';
 
   @override
-  String get pNoJobsBody => 'Xizmat, hudud yoki ish vaqtini kengaytirsangiz, ko\'proq ish ko\'rasiz';
+  String get pNoJobsBody =>
+      'Xizmat, hudud yoki ish vaqtini kengaytirsangiz, ko\'proq ish ko\'rasiz';
 
   @override
   String get pPayout => 'Kutilayotgan to\'lov';
@@ -2309,7 +2547,8 @@ class TUz extends T {
   String get pClosed => 'Yopilgan';
 
   @override
-  String get pPrivacyNote => 'Aniq manzil va mijoz ma\'lumotlari qabul qilingandan keyin ko\'rinadi';
+  String get pPrivacyNote =>
+      'Aniq manzil va mijoz ma\'lumotlari qabul qilingandan keyin ko\'rinadi';
 
   @override
   String get pAccept => 'Qabul qilish';
@@ -2318,7 +2557,8 @@ class TUz extends T {
   String get pAcceptConfirm => 'Bu ishni qabul qilasizmi?';
 
   @override
-  String get pAcceptBody => 'Qabul qilsangiz, jadvalingizga qo\'shiladi va mijozga jamoa biriktirilgani haqida xabar boradi. Tashrifga 2 kun qolganda bekor qilish cheklanadi.';
+  String get pAcceptBody =>
+      'Qabul qilsangiz, jadvalingizga qo\'shiladi va mijozga jamoa biriktirilgani haqida xabar boradi. Tashrifga 2 kun qolganda bekor qilish cheklanadi.';
 
   @override
   String get pAccepted => 'Ish qabul qilindi';
@@ -2385,7 +2625,8 @@ class TUz extends T {
   String get pNoSchedule => 'Bu kunda jadvalda hech narsa yo\'q';
 
   @override
-  String get pCancelledBanner => 'Mijoz bu ishni bekor qildi. Uni bajarilgan deb belgilab bo\'lmaydi.';
+  String get pCancelledBanner =>
+      'Mijoz bu ishni bekor qildi. Uni bajarilgan deb belgilab bo\'lmaydi.';
 
   @override
   String pRescheduleBanner(String from, String to) {
@@ -2405,7 +2646,8 @@ class TUz extends T {
   String get pCall => 'Maxfiy raqam orqali qo\'ng\'iroq';
 
   @override
-  String get pCallSoon => 'Maxfiy raqam orqali aloqa xizmat ishga tushganda faollashadi';
+  String get pCallSoon =>
+      'Maxfiy raqam orqali aloqa xizmat ishga tushganda faollashadi';
 
   @override
   String get pQuietHours => 'Soat 20:00 dan keyin qo\'ng\'iroq qilmang';
@@ -2465,7 +2707,8 @@ class TUz extends T {
   String get pCompleteCta => 'Bajarildi deb belgilash';
 
   @override
-  String get pCompleteNeed => 'Har biridan kamida 1 ta surat yuklang va barcha bandlarni belgilang';
+  String get pCompleteNeed =>
+      'Har biridan kamida 1 ta surat yuklang va barcha bandlarni belgilang';
 
   @override
   String get pCompleted => 'Barakalla!';
@@ -2476,7 +2719,8 @@ class TUz extends T {
   }
 
   @override
-  String get pPayoutWaiting => 'Mijoz qoldiqni to\'lagach, to\'lov sanasi belgilanadi';
+  String get pPayoutWaiting =>
+      'Mijoz qoldiqni to\'lagach, to\'lov sanasi belgilanadi';
 
   @override
   String get pPendingPayout => 'Kutilayotgan to\'lov summasi';
@@ -2527,7 +2771,8 @@ class TUz extends T {
   String get pUnverified => 'Tekshirilmoqda';
 
   @override
-  String get pAccountSaved => 'Hisob saqlandi. O\'zgartirilganda qayta tekshiriladi.';
+  String get pAccountSaved =>
+      'Hisob saqlandi. O\'zgartirilganda qayta tekshiriladi.';
 
   @override
   String get pWorkSchedule => 'Ish jadvali';
@@ -2613,37 +2858,37 @@ class TUz extends T {
   String get pSpace => 'Joy ma\'lumoti';
 
   @override
-  String get cIntPayout => 'Partner payouts';
+  String get cIntPayout => 'Hamkor to‘lovlari';
 
   @override
-  String get poTabSettlements => 'Settlements';
+  String get poTabSettlements => 'Hisob-kitoblar';
 
   @override
-  String get poTabPayouts => 'Payouts';
+  String get poTabPayouts => 'To‘lovlar';
 
   @override
-  String get poState_requested => 'Requested';
+  String get poState_requested => 'So‘ralgan';
 
   @override
-  String get poState_sent => 'Sent';
+  String get poState_sent => 'Yuborilgan';
 
   @override
-  String get poState_paid => 'Paid';
+  String get poState_paid => 'To‘langan';
 
   @override
-  String get poState_failed => 'Failed';
+  String get poState_failed => 'Muvaffaqiyatsiz';
 
   @override
-  String get poProviderManual => 'Manual transfer';
+  String get poProviderManual => 'Qo‘lda o‘tkazma';
 
   @override
-  String get poProviderToss => 'Toss payouts';
+  String get poProviderToss => 'Toss orqali to‘lovlar';
 
   @override
-  String get poShowAccount => 'Show account';
+  String get poShowAccount => 'Hisobni ko‘rsatish';
 
   @override
-  String get poAccountTitle => 'Transfer details';
+  String get poAccountTitle => 'O‘tkazma tafsilotlari';
 
   @override
   String poAccountBody(
@@ -2652,43 +2897,43 @@ class TUz extends T {
     String account,
     String amount,
   ) {
-    return 'Send $amount won to $holder · $bank · $account, then tap confirm.';
+    return '$holder · $bank · $account ga $amount von yuboring, so‘ng tasdiqlashni bosing.';
   }
 
   @override
-  String get poConfirmPaid => 'Mark as transferred';
+  String get poConfirmPaid => 'O‘tkazilgan deb belgilash';
 
   @override
-  String get poMarkFailed => 'Mark as failed';
+  String get poMarkFailed => 'Muvaffaqiyatsiz deb belgilash';
 
   @override
-  String get poReasonTitle => 'Failure reason';
+  String get poReasonTitle => 'Muvaffaqiyatsizlik sababi';
 
   @override
-  String get poReasonHint => 'e.g. wrong account, transfer cancelled';
+  String get poReasonHint => 'masalan: noto‘g‘ri hisob, o‘tkazma bekor qilindi';
 
   @override
-  String get poSend => 'Send via Toss';
+  String get poSend => 'Toss orqali yuborish';
 
   @override
-  String get poSync => 'Check status';
+  String get poSync => 'Holatni tekshirish';
 
   @override
-  String get poRetry => 'Retry';
+  String get poRetry => 'Qayta urinish';
 
   @override
-  String get poNoPayouts => 'No payouts yet';
+  String get poNoPayouts => 'Hozircha to‘lovlar yo‘q';
 
   @override
   String poRequestedToast(String n) {
-    return 'Created $n payout requests';
+    return '$n ta to‘lov so‘rovi yaratildi';
   }
 
   @override
-  String get poReasonRequired => 'Enter a reason';
+  String get poReasonRequired => 'Sababni kiriting';
 
   @override
-  String get poRevealNote => 'Viewing account details is logged';
+  String get poRevealNote => 'Hisob tafsilotlarini ko‘rish qayd etiladi';
 
   @override
   String get cSetup => 'Sozlash';
@@ -2747,7 +2992,8 @@ class TUz extends T {
   String get cSetupPrivacyOfficer => 'Maxfiylik mas\'uli';
 
   @override
-  String get cSetupStoreLinks => 'Do\'kon havolalari (to\'ldirilgach sayt tugmalari yoqiladi)';
+  String get cSetupStoreLinks =>
+      'Do\'kon havolalari (to\'ldirilgach sayt tugmalari yoqiladi)';
 
   @override
   String get cSetupCustomerApp => 'Mijoz ilovasi';
@@ -2759,13 +3005,15 @@ class TUz extends T {
   String get cSetupPayMethods => 'To\'lov usullari';
 
   @override
-  String get cSetupPayMethodsHint => 'Mijozlar ko\'radigan usullarni yoqing yoki o\'chiring. Darhol qo\'llanadi.';
+  String get cSetupPayMethodsHint =>
+      'Mijozlar ko\'radigan usullarni yoqing yoki o\'chiring. Darhol qo\'llanadi.';
 
   @override
   String get cReviewTitle => 'Do\'kon tekshiruvi uchun demo hisob';
 
   @override
-  String get cReviewHint => 'Tekshiruvchilar Koreya SMS\'ini olmaydi. Raqam va 6 xonali kodni tekshiruv izohiga yozing. O\'zi o\'chadi.';
+  String get cReviewHint =>
+      'Tekshiruvchilar Koreya SMS\'ini olmaydi. Raqam va 6 xonali kodni tekshiruv izohiga yozing. O\'zi o\'chadi.';
 
   @override
   String get cReviewPhone => 'Demo telefon raqami';
@@ -2782,16 +3030,20 @@ class TUz extends T {
   String get cReviewEnable => 'Yoqish (14 kun)';
 
   @override
-  String get pDeleteAccountBody => 'Jamoangiz va shaxsiy ma\'lumotlar butunlay o\'chiriladi. Avval tayinlangan ishlar va to\'lovlarni yakunlang.';
+  String get pDeleteAccountBody =>
+      'Jamoangiz va shaxsiy ma\'lumotlar butunlay o\'chiriladi. Avval tayinlangan ishlar va to\'lovlarni yakunlang.';
 
   @override
-  String get err_has_active_jobs => 'Sizda tayinlangan ishlar bor. Ularni tugating yoki yordamdan o\'tkazishni so\'rang.';
+  String get err_has_active_jobs =>
+      'Sizda tayinlangan ishlar bor. Ularni tugating yoki yordamdan o\'tkazishni so\'rang.';
 
   @override
-  String get err_pending_payouts => 'To\'lov hali kutilmoqda. To\'langandan keyin o\'chirish mumkin.';
+  String get err_pending_payouts =>
+      'To\'lov hali kutilmoqda. To\'langandan keyin o\'chirish mumkin.';
 
   @override
-  String get err_phone_required => 'Ish olishdan oldin telefon raqamingizni tasdiqlang.';
+  String get err_phone_required =>
+      'Ish olishdan oldin telefon raqamingizni tasdiqlang.';
 
   @override
   String get nAlerts => 'Bildirishnomalar';
@@ -2811,7 +3063,8 @@ class TUz extends T {
   String get mMyJobs => 'Mening ishlarim';
 
   @override
-  String get mNoJobs => 'Hozircha tayinlangan ish yo\'q. Jamoa rahbari bergan ishlar shu yerda ko\'rinadi.';
+  String get mNoJobs =>
+      'Hozircha tayinlangan ish yo\'q. Jamoa rahbari bergan ishlar shu yerda ko\'rinadi.';
 
   @override
   String mTeam(String team) {
@@ -2843,10 +3096,12 @@ class TUz extends T {
   String get cSetupCheckInApp => 'Saqlandi · ilovadan kirib tasdiqlang';
 
   @override
-  String get cSetupInvalidKey => 'Kalit rad etildi. Nusxalangan qiymatni tekshiring';
+  String get cSetupInvalidKey =>
+      'Kalit rad etildi. Nusxalangan qiymatni tekshiring';
 
   @override
-  String get cSetupUnreachable => 'Xizmatga ulanib bo\'lmadi. Keyinroq urinib ko\'ring';
+  String get cSetupUnreachable =>
+      'Xizmatga ulanib bo\'lmadi. Keyinroq urinib ko\'ring';
 
   @override
   String get cSetupKeepValue => 'Saqlangan (faqat almashtirish uchun kiriting)';
@@ -2864,7 +3119,8 @@ class TUz extends T {
   String get cCopied => 'Nusxalandi';
 
   @override
-  String get cSetupDevMode => 'Sinov rejimi: haqiqiy to\'lov yoki xabar yuborilmaydi';
+  String get cSetupDevMode =>
+      'Sinov rejimi: haqiqiy to\'lov yoki xabar yuborilmaydi';
 
   @override
   String get cSetupOptional => 'Ixtiyoriy';
@@ -2894,7 +3150,8 @@ class TUz extends T {
   String get cFirstRunTitle => 'Xush kelibsiz! Egasi hisobini yarating';
 
   @override
-  String get cFirstRunBody => 'O\'rnatishda ko\'rsatilgan 12 belgili kodni kiriting. Bu hisob barcha sozlamalarni boshqaradi.';
+  String get cFirstRunBody =>
+      'O\'rnatishda ko\'rsatilgan 12 belgili kodni kiriting. Bu hisob barcha sozlamalarni boshqaradi.';
 
   @override
   String get cFirstRunCode => 'O\'rnatish kodi';
@@ -2929,13 +3186,15 @@ class TUz extends T {
   String get uUpdateRequiredTitle => 'Yangilash talab qilinadi';
 
   @override
-  String get uUpdateRequiredBody => 'Bu versiya endi qo\'llab-quvvatlanmaydi. Do\'kondan yangilang.';
+  String get uUpdateRequiredBody =>
+      'Bu versiya endi qo\'llab-quvvatlanmaydi. Do\'kondan yangilang.';
 
   @override
   String get uUpdateStore => 'Do\'konda yangilash';
 
   @override
-  String get uUpdateStoreMissing => 'Yangilash havolasi hali tayyor emas. Keyinroq urinib ko\'ring.';
+  String get uUpdateStoreMissing =>
+      'Yangilash havolasi hali tayyor emas. Keyinroq urinib ko\'ring.';
 
   @override
   String uCurrentVersion(String version) {
@@ -2946,7 +3205,8 @@ class TUz extends T {
   String get uAppVersionTitle => 'Ilova versiyalari';
 
   @override
-  String get uAppVersionHint => 'Minimal versiyadan past ilovalar yangilash ekranida to\'xtaydi. Misol: 1.2.0';
+  String get uAppVersionHint =>
+      'Minimal versiyadan past ilovalar yangilash ekranida to\'xtaydi. Misol: 1.2.0';
 
   @override
   String get uMinVersion => 'Minimal versiya';
