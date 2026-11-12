@@ -272,6 +272,15 @@ class TTh extends T {
   String get apPayManageTitle => 'ลงทะเบียนชำระเงินด่วน';
 
   @override
+  String get bizInfoTitle => 'ข้อมูลผู้ประกอบการ';
+
+  @override
+  String get bizInfoVerify => 'ตรวจสอบการจดทะเบียนธุรกิจ';
+
+  @override
+  String get cSetupHostingProvider => 'ผู้ให้บริการโฮสติ้ง';
+
+  @override
   String get cTitle => 'คอนโซลผู้ดูแลระบบ';
 
   @override

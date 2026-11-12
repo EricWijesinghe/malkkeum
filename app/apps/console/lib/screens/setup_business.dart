@@ -47,6 +47,7 @@ class _BusinessCardState extends State<BusinessCard> {
     'registration_no',
     'mail_order_no',
     'address',
+    'hosting_provider',
     'privacy_officer',
   ];
   static const _links = [
@@ -120,6 +121,7 @@ class _BusinessCardState extends State<BusinessCard> {
     'company.registration_no' => t.cSetupRegNo,
     'company.mail_order_no' => t.cSetupMailOrderNo,
     'company.address' => t.cSetupAddress,
+    'company.hosting_provider' => t.cSetupHostingProvider,
     'app_store_url' => 'App Store · ${t.cSetupCustomerApp}',
     'play_store_url' => 'Google Play · ${t.cSetupCustomerApp}',
     'partner_app_store_url' => 'App Store · ${t.cSetupPartnerApp}',

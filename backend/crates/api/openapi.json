@@ -274,7 +274,7 @@
         "tags": [
           "public"
         ],
-        "summary": "Brand name, colours and app-update policy",
+        "summary": "Brand name, colours, app-update policy and seller details (company: legal_name, ceo, registration_no, mail_order_no, address, hosting_provider; support_phone, support_email)",
         "security": [],
         "responses": {
           "200": {

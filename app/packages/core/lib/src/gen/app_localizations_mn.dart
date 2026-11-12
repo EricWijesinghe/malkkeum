@@ -278,6 +278,15 @@ class TMn extends T {
   String get apPayManageTitle => 'Хурдан төлбөр бүртгэх';
 
   @override
+  String get bizInfoTitle => 'Бизнесийн мэдээлэл';
+
+  @override
+  String get bizInfoVerify => 'Бизнесийн бүртгэлийг шалгах';
+
+  @override
+  String get cSetupHostingProvider => 'Хостинг үйлчилгээ үзүүлэгч';
+
+  @override
   String get cTitle => 'Үйл ажиллагааны консол';
 
   @override

@@ -277,6 +277,15 @@ class TFil extends T {
   String get apPayManageTitle => 'Magparehistro ng quick-pay';
 
   @override
+  String get bizInfoTitle => 'Impormasyon ng negosyo';
+
+  @override
+  String get bizInfoVerify => 'I-verify ang rehistro ng negosyo';
+
+  @override
+  String get cSetupHostingProvider => 'Hosting provider';
+
+  @override
   String get cTitle => 'Console ng operasyon';
 
   @override

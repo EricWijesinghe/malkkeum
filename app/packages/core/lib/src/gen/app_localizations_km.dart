@@ -273,6 +273,15 @@ class TKm extends T {
   String get apPayManageTitle => 'ចុះឈ្មោះបង់ប្រាក់រហ័ស';
 
   @override
+  String get bizInfoTitle => 'ព័ត៌មានអាជីវកម្ម';
+
+  @override
+  String get bizInfoVerify => 'ផ្ទៀងផ្ទាត់ការចុះបញ្ជីអាជីវកម្ម';
+
+  @override
+  String get cSetupHostingProvider => 'អ្នកផ្តល់សេវាបង្ហោះ';
+
+  @override
   String get cTitle => 'កុងសូលប្រតិបត្តិការ';
 
   @override

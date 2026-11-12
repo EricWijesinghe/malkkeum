@@ -279,6 +279,15 @@ class TSi extends T {
   String get apPayManageTitle => 'ඉක්මන් ගෙවීම ලියාපදිංචි කරන්න';
 
   @override
+  String get bizInfoTitle => 'ව්‍යාපාර තොරතුරු';
+
+  @override
+  String get bizInfoVerify => 'ව්‍යාපාර ලියාපදිංචිය තහවුරු කරන්න';
+
+  @override
+  String get cSetupHostingProvider => 'හෝස්ටින් සේවා සපයන්නා';
+
+  @override
   String get cTitle => 'මෙහෙයුම් කොන්සෝලය';
 
   @override
