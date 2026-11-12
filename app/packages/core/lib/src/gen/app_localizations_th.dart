@@ -1849,6 +1849,37 @@ class TTh extends T {
   String get bkViewMonth => 'มุมมองรายเดือน';
 
   @override
+  String moreGreeting(String brand) {
+    return 'วันนี้ก็ฝากงานบ้านไว้กับ $brand นะคะ';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'เคล็ดลับจาก $brand';
+  }
+
+  @override
+  String get moreContact => 'ติดต่อเรา';
+
+  @override
+  String get moreVersionInfo => 'ข้อมูลเวอร์ชัน';
+
+  @override
+  String get payAvailableTitle => 'วิธีชำระเงินที่ใช้ได้';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'ธีม';
 
   @override

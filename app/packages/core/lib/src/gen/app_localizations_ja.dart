@@ -1815,6 +1815,37 @@ class TJa extends T {
   String get bkViewMonth => '月表示';
 
   @override
+  String moreGreeting(String brand) {
+    return '今日も家事は$brandにおまかせください';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brandのコツ';
+  }
+
+  @override
+  String get moreContact => 'お問い合わせ';
+
+  @override
+  String get moreVersionInfo => 'バージョン情報';
+
+  @override
+  String get payAvailableTitle => '利用できる支払い方法';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override

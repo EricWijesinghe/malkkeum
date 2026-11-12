@@ -1843,6 +1843,37 @@ class TVi extends T {
   String get bkViewMonth => 'Xem theo tháng';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Hôm nay cũng hãy giao việc nhà cho $brand';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'Mẹo từ $brand';
+  }
+
+  @override
+  String get moreContact => 'Liên hệ';
+
+  @override
+  String get moreVersionInfo => 'Thông tin phiên bản';
+
+  @override
+  String get payAvailableTitle => 'Phương thức thanh toán khả dụng';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override

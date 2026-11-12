@@ -15,11 +15,16 @@ Future<void> _openMoreTab(WidgetTester tester) async {
 }
 
 /// The More list builds rows lazily, so rows below the fold only exist once scrolled to.
-Future<void> _scrollMoreTo(WidgetTester tester, String label) => tester.scrollUntilVisible(
-      find.text(label),
-      200,
-      scrollable: find.descendant(of: find.byType(MoreTab), matching: find.byType(Scrollable)),
-    );
+Future<void> _scrollMoreTo(WidgetTester tester, String label) async {
+  await tester.scrollUntilVisible(
+    find.text(label),
+    200,
+    scrollable: find.descendant(of: find.byType(MoreTab), matching: find.byType(Scrollable)),
+  );
+  // Centre the row and lay it out: the lowest rows sit under the frosted bottom bar, where a tap would miss.
+  await Scrollable.ensureVisible(tester.element(find.text(label)), alignment: 0.5);
+  await tester.pump();
+}
 
 /// Clearly fake seller details, shaped like the public `/brand` business profile.
 const Json _brand = {

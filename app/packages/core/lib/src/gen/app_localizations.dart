@@ -3565,6 +3565,60 @@ abstract class T {
   /// **'월간 보기'**
   String get bkViewMonth;
 
+  /// No description provided for @moreGreeting.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘도 집안일은 {brand}에게 맡기세요'**
+  String moreGreeting(String brand);
+
+  /// No description provided for @moreBrandTips.
+  ///
+  /// In ko, this message translates to:
+  /// **'{brand} 팁'**
+  String moreBrandTips(String brand);
+
+  /// No description provided for @moreContact.
+  ///
+  /// In ko, this message translates to:
+  /// **'문의하기'**
+  String get moreContact;
+
+  /// No description provided for @moreVersionInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'버전 정보'**
+  String get moreVersionInfo;
+
+  /// No description provided for @payAvailableTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용할 수 있는 결제수단'**
+  String get payAvailableTitle;
+
+  /// No description provided for @accountLoginKakao.
+  ///
+  /// In ko, this message translates to:
+  /// **'카카오'**
+  String get accountLoginKakao;
+
+  /// No description provided for @accountLoginNaver.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버'**
+  String get accountLoginNaver;
+
+  /// No description provided for @accountLoginApple.
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple'**
+  String get accountLoginApple;
+
+  /// No description provided for @accountLoginGoogle.
+  ///
+  /// In ko, this message translates to:
+  /// **'Google'**
+  String get accountLoginGoogle;
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:

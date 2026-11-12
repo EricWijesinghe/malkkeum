@@ -1846,6 +1846,37 @@ class TEn extends T {
   String get bkViewMonth => 'Month view';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Leave today\'s chores to $brand';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand tips';
+  }
+
+  @override
+  String get moreContact => 'Contact us';
+
+  @override
+  String get moreVersionInfo => 'Version';
+
+  @override
+  String get payAvailableTitle => 'Available payment methods';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Theme';
 
   @override

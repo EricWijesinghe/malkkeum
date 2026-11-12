@@ -1861,6 +1861,37 @@ class TSi extends T {
   String get bkViewMonth => 'මාසික දසුන';
 
   @override
+  String moreGreeting(String brand) {
+    return 'අදත් ගෙදර වැඩ $brand වෙත භාර දෙන්න';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand ඉඟි';
+  }
+
+  @override
+  String get moreContact => 'අප අමතන්න';
+
+  @override
+  String get moreVersionInfo => 'අනුවාද තොරතුරු';
+
+  @override
+  String get payAvailableTitle => 'ලබා ගත හැකි ගෙවීම් ක්‍රම';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override

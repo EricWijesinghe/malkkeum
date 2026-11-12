@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
@@ -13,7 +14,14 @@ import 'service.dart';
 import 'wallet.dart';
 import 'subscriptions.dart';
 
-const appVersion = '1.0.0';
+/// Installed build version (pubspec `version`), or null where no platform channel answers (widget tests).
+Future<String?> _buildVersion() async {
+  try {
+    return (await PackageInfo.fromPlatform()).version;
+  } on Exception {
+    return null;
+  }
+}
 
 class MoreTab extends StatelessWidget {
   const MoreTab({super.key});
@@ -27,30 +35,18 @@ class MoreTab extends StatelessWidget {
     final t = context.t;
     final app = context.app;
     final deps = Deps.of(context);
+    final brand = BrandConfig.placeholder.name;
     Widget tile(
-      IconData icon,
-      ServiceHue hue,
+      String icon,
       String label,
-      VoidCallback onTap, {
+      VoidCallback? onTap, {
       String? trailing,
     }) => ListTile(
-      leading: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: context.colors.tintOf(hue),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: context.colors.isDark ? hue.tint : hue.tone,
-        ),
-      ),
+      leading: Icon3D(icon, size: 36),
       title: Text(label),
       trailing: trailing == null
           ? const Icon(Icons.chevron_right_rounded)
-          : Text(trailing, style: context.text.labelMedium),
+          : _RowValue(trailing, style: context.text.labelMedium),
       onTap: onTap,
     );
     Widget group(List<Widget> children) => Padding(
@@ -66,90 +62,94 @@ class MoreTab extends StatelessWidget {
         padding: const EdgeInsets.all(Space.gutter),
         children: [
           AppCard(
-            onTap: () => _push(context, const AccountScreen()),
-            child: Row(
+            padding: EdgeInsets.zero,
+            child: Column(
               children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: context.colors.primaryTint,
-                  child: Text(
-                    app.name.isEmpty ? '?' : app.name.characters.first,
-                    style: context.text.titleLarge?.copyWith(
-                      color: context.primary,
+                InkWell(
+                  onTap: () => _push(context, const AccountScreen()),
+                  child: Padding(
+                    padding: const EdgeInsets.all(Space.lg),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 26,
+                          backgroundColor: context.colors.primaryTint,
+                          child: Text(
+                            app.name.isEmpty ? '?' : app.name.characters.first,
+                            style: context.text.titleLarge?.copyWith(
+                              color: context.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: Space.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(app.name, style: context.text.titleMedium),
+                              Text(
+                                t.moreGreeting(brand),
+                                style: context.text.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(app.name, style: context.text.titleMedium),
-                      Text(app.phone, style: context.text.bodySmall),
-                    ],
-                  ),
+                const Divider(height: 1),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _Counter(
+                        icon: 'ui_coupon',
+                        label: t.moreCoupons,
+                        value: '${app.coupons.where((c) => c.usable).length}',
+                        onTap: () => _push(context, const CouponsScreen()),
+                      ),
+                    ),
+                    Expanded(
+                      child: _Counter(
+                        icon: 'ui_points',
+                        label: t.morePoints,
+                        value: app.points == null
+                            ? '-'
+                            : t.walletPoints('${app.points}'),
+                        onTap: () => _push(context, const WalletScreen()),
+                      ),
+                    ),
+                  ],
                 ),
-                const Icon(Icons.chevron_right_rounded),
               ],
             ),
           ),
           const SizedBox(height: Space.sm),
+          // The brief's menu, in its order.
           group([
             tile(
-              Icons.checklist_rounded,
-              ServiceHues.moveOut,
+              'menu_scope',
               t.moreScope,
               () => _push(context, const ScopeScreen()),
             ),
             tile(
-              Icons.credit_card_rounded,
-              ServiceHues.bathroom,
+              'menu_payments',
               t.morePayments,
               () => _push(context, const PaymentMethodsScreen()),
             ),
             tile(
-              Icons.account_balance_wallet_rounded,
-              ServiceHues.studio,
-              t.moreWallet,
-              () => _push(context, const WalletScreen()),
-            ),
-            tile(
-              Icons.receipt_long_rounded,
-              ServiceHues.bathroom,
-              t.payHistoryTitle,
-              () => _push(context, const PaymentHistoryScreen()),
-            ),
-            tile(
-              Icons.event_repeat_rounded,
-              ServiceHues.studio,
-              t.subTitle,
-              () => _push(context, const SubscriptionsScreen()),
-            ),
-            tile(
-              Icons.confirmation_number_rounded,
-              ServiceHues.studio,
-              t.moreCoupons,
-              () => _push(context, const CouponsScreen()),
-              trailing: '${app.coupons.where((c) => c.usable).length}',
-            ),
-            tile(
-              Icons.savings_rounded,
-              ServiceHues.moveIn,
-              t.morePoints,
-              () => _push(context, const PointsScreen()),
-              trailing: '0P',
-            ),
-            tile(
-              Icons.home_work_rounded,
-              ServiceHues.sofa,
+              'menu_addresses',
               t.moreAddresses,
               () => _push(context, const AddressesScreen()),
             ),
-          ]),
-          group([
             tile(
-              Icons.campaign_rounded,
-              ServiceHues.kitchen,
+              'menu_account',
+              t.moreAccount,
+              () => _push(context, const AccountScreen()),
+            ),
+            tile(
+              'menu_notices',
               t.moreNotices,
               () => _push(
                 context,
@@ -157,51 +157,63 @@ class MoreTab extends StatelessWidget {
               ),
             ),
             tile(
-              Icons.lightbulb_rounded,
-              ServiceHues.studio,
-              t.moreTips,
+              'menu_tips',
+              t.moreBrandTips(brand),
               () => _push(
                 context,
-                ContentListScreen(kind: 'tip', title: t.moreTips),
+                ContentListScreen(kind: 'tip', title: t.moreBrandTips(brand)),
               ),
             ),
             tile(
-              Icons.help_rounded,
-              ServiceHues.mattress,
+              'menu_faq',
               t.moreFaq,
               () => _push(context, const FaqScreen()),
             ),
             tile(
-              Icons.support_agent_rounded,
-              ServiceHues.aircon,
-              t.askTeam,
+              'menu_contact',
+              t.moreContact,
               () => openTopicChat(context, 'other'),
             ),
-            tile(
-              Icons.handshake_rounded,
-              ServiceHues.moveOut,
-              t.morePartner,
-              () => openTopicChat(context, 'other'),
+            FutureBuilder<String?>(
+              future: _buildVersion(),
+              builder: (context, snap) => tile(
+                'menu_version',
+                t.moreVersionInfo,
+                null,
+                trailing: snap.data ?? '',
+              ),
             ),
           ]),
           group([
             tile(
-              Icons.translate_rounded,
-              ServiceHues.bathroom,
+              'pay_virtual',
+              t.payHistoryTitle,
+              () => _push(context, const PaymentHistoryScreen()),
+            ),
+            tile(
+              'menu_subscriptions',
+              t.subTitle,
+              () => _push(context, const SubscriptionsScreen()),
+            ),
+            tile(
+              'menu_partner',
+              t.morePartner,
+              () => openTopicChat(context, 'other'),
+            ),
+            tile(
+              'menu_language',
               t.moreLanguage,
               () => _push(context, const LanguageScreen()),
               trailing: _langName(deps.locale.locale?.languageCode, t),
             ),
             tile(
-              Icons.dark_mode_rounded,
-              ServiceHues.mattress,
+              'menu_theme',
               t.themeTitle,
               () => deps.theme.cycle(),
               trailing: t.themeLabel(deps.theme.mode),
             ),
             tile(
-              Icons.privacy_tip_rounded,
-              ServiceHues.moveIn,
+              'menu_privacy',
               t.morePrivacy,
               () => _push(
                 context,
@@ -209,30 +221,22 @@ class MoreTab extends StatelessWidget {
               ),
             ),
             tile(
-              Icons.description_rounded,
-              ServiceHues.moveIn,
+              'menu_terms',
               t.moreTerms,
               () => _push(
                 context,
                 LegalScreen(slug: 'terms', title: t.moreTerms),
               ),
             ),
-            tile(
-              Icons.code_rounded,
-              ServiceHues.moveIn,
-              t.moreLicenses,
-              () => showLicensePage(
+            tile('menu_licenses', t.moreLicenses, () async {
+              final version = await _buildVersion();
+              if (!context.mounted) return;
+              showLicensePage(
                 context: context,
-                applicationName: BrandConfig.placeholder.name,
-                applicationVersion: appVersion,
-              ),
-            ),
-            ListTile(
-              title: Text(
-                t.moreVersion(appVersion),
-                style: context.text.bodySmall,
-              ),
-            ),
+                applicationName: brand,
+                applicationVersion: version,
+              );
+            }),
           ]),
           TextButton(onPressed: deps.session.logout, child: Text(t.logout)),
           TextButton(
@@ -421,34 +425,91 @@ class _CouponTicket extends StatelessWidget {
   }
 }
 
-class PointsScreen extends StatelessWidget {
-  const PointsScreen({super.key});
+/// One header stat (coupons, points): 3D icon, label and value; the whole cell is the tap target.
+class _Counter extends StatelessWidget {
+  const _Counter({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+  final String icon;
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.t.morePoints)),
-    body: ListView(
-      padding: const EdgeInsets.all(Space.gutter),
-      children: [
-        AppCard(
-          color: context.colors.freshTint,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(context.t.pointsBalance, style: context.text.labelMedium),
-              Text('0 P', style: context.text.displaySmall),
-            ],
-          ),
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 56),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.md,
+          vertical: Space.sm,
         ),
-        const SizedBox(height: Space.xxl),
-        EmptyState(
-          icon: Icons.savings_rounded,
-          title: context.t.pointsEmpty,
-          hue: ServiceHues.moveIn,
+        child: Row(
+          children: [
+            Icon3D(icon, size: 32),
+            const SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodySmall,
+                  ),
+                  Text(
+                    value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }
+
+/// Trailing value of a row, capped to a share of the screen so long text or a large font
+/// can never squeeze the title out of the tile.
+class _RowValue extends StatelessWidget {
+  const _RowValue(this.text, {this.style, this.share = 0.3, this.maxLines = 1});
+  final String text;
+  final TextStyle? style;
+  final double share;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: BoxConstraints(
+      maxWidth: MediaQuery.sizeOf(context).width * share,
+    ),
+    child: Text(
+      text,
+      style: style,
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.end,
+    ),
+  );
+}
+
+String _loginLabel(T t, String provider) => switch (provider) {
+  'kakao' => t.accountLoginKakao,
+  'naver' => t.accountLoginNaver,
+  'apple' => t.accountLoginApple,
+  'google' => t.accountLoginGoogle,
+  _ => provider,
+};
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -465,18 +526,31 @@ class AccountScreen extends StatelessWidget {
             padding: EdgeInsets.zero,
             child: Column(
               children: [
-                ListTile(title: Text(t.accountName), trailing: Text(app.name)),
+                ListTile(
+                  title: Text(t.accountName),
+                  trailing: _RowValue(app.name, share: 0.55, maxLines: 2),
+                ),
                 ListTile(
                   title: Text(t.accountPhone),
-                  trailing: Text(app.phone),
+                  trailing: _RowValue(app.phone, share: 0.55, maxLines: 2),
                 ),
                 ListTile(
                   title: Text(t.accountEmail),
-                  trailing: Text(app.email ?? '-'),
+                  trailing: _RowValue(
+                    app.email ?? '-',
+                    share: 0.55,
+                    maxLines: 2,
+                  ),
                 ),
                 ListTile(
                   title: Text(t.accountLogin),
-                  trailing: Text(t.accountLoginPhone),
+                  // Read-only: what this account can sign in with.
+                  subtitle: Text(
+                    [
+                      for (final p in app.logins) _loginLabel(t, p),
+                      if (app.phone.isNotEmpty) t.accountLoginPhone,
+                    ].join(' · '),
+                  ),
                 ),
                 const IdentityEntryTile(),
                 ListTile(

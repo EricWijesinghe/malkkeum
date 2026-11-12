@@ -1868,6 +1868,37 @@ class TUz extends T {
   String get bkViewMonth => 'Oylik ko\'rinish';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Bugun ham uy ishlarini ${brand}ga topshiring';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand maslahatlari';
+  }
+
+  @override
+  String get moreContact => 'Biz bilan bogʻlanish';
+
+  @override
+  String get moreVersionInfo => 'Versiya haqida';
+
+  @override
+  String get payAvailableTitle => 'Mavjud toʻlov usullari';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override

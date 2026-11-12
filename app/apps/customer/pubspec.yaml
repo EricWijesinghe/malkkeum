@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.20.3
   geolocator: ^14.0.1
   geocoding: ^5.0.1
+  package_info_plus: ^10.2.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

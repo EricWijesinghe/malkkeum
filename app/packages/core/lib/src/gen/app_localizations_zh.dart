@@ -1811,6 +1811,37 @@ class TZh extends T {
   String get bkViewMonth => '月视图';
 
   @override
+  String moreGreeting(String brand) {
+    return '今天的家务也交给$brand吧';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand小贴士';
+  }
+
+  @override
+  String get moreContact => '联系我们';
+
+  @override
+  String get moreVersionInfo => '版本信息';
+
+  @override
+  String get payAvailableTitle => '可用的付款方式';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => '主题';
 
   @override
