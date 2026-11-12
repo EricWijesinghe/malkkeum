@@ -2142,6 +2142,7 @@
           "admin"
         ],
         "summary": "Send the final price to the customer",
+        "description": "Request body: {final_price, quote_id?, note?}. Posts a `quote` chat message; its body carries the server-computed deposit and balance plus the booking's service, visit date, slot, estimate and answers for the customer's quote card.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -2152,7 +2153,40 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "The posted chat message (MessageRow).",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "01930000-0000-7000-8000-000000000001",
+                  "thread_id": "01930000-0000-7000-8000-000000000002",
+                  "sender": "staff",
+                  "kind": "quote",
+                  "body": {
+                    "booking_id": "01930000-0000-7000-8000-000000000003",
+                    "final_price": 350000,
+                    "deposit": 35000,
+                    "balance": 315000,
+                    "note": null,
+                    "service_code": "move_out",
+                    "visit_date": "2026-11-19",
+                    "start_hour": 8,
+                    "estimate": 346500,
+                    "answers": {
+                      "cleaning_type": "standard",
+                      "luggage": "empty",
+                      "building": "apartment",
+                      "layout": "two_rooms",
+                      "duplex": false,
+                      "bathrooms": 1,
+                      "balconies": 1,
+                      "elevator": true,
+                      "floor_3_or_higher": true
+                    }
+                  },
+                  "created_at": "2026-11-12T05:00:00Z"
+                }
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"

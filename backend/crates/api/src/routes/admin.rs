@@ -332,8 +332,11 @@ async fn send_quote(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<
         "staff",
         Some(st.id),
         "quote",
+        // Card rows come from the booking row, never from the request: what the customer sees is what is booked.
         json!({
-            "booking_id": id, "final_price": price.0, "deposit": deposit.0, "balance": price.0 - deposit.0, "note": q.note
+            "booking_id": id, "final_price": price.0, "deposit": deposit.0, "balance": price.0 - deposit.0, "note": q.note,
+            "service_code": b.service_code, "visit_date": b.visit_date, "start_hour": b.start_hour,
+            "estimate": b.estimate, "answers": b.answers,
         }),
     )
     .await?;

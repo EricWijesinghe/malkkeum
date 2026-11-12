@@ -115,7 +115,10 @@ async fn customer_thread(c: &mut Ctx<'_>, world: &World, b: &BookingRec, closed:
     if let (true, Some(final_price), Some(deposit)) = (b.is_quote, b.final_price, b.deposit) {
         at += Duration::minutes(30);
         let note = "평수와 짐 상태를 반영한 견적이에요.";
-        let body = json!({ "booking_id": b.id, "final_price": final_price, "deposit": deposit, "balance": final_price - deposit, "note": note });
+        let body = json!({
+            "booking_id": b.id, "final_price": final_price, "deposit": deposit, "balance": final_price - deposit, "note": note,
+            "service_code": b.service, "visit_date": b.visit, "start_hour": b.start_hour, "estimate": b.estimate, "answers": b.answers,
+        });
         msgs.push(Msg { sender: "staff", sender_id: Some(world.consultant), kind: "quote", body, at });
         at += Duration::minutes(30);
         msgs.push(text("customer", Some(user), "견적 확인했어요. 보증금 결제할게요.", at));
