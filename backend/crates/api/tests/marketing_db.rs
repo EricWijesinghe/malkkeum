@@ -135,7 +135,7 @@ async fn rebook_nudge_is_held_during_quiet_hours(pool: PgPool) {
         .execute(&pool)
         .await
         .expect("completed 30 days ago");
-    let key = format!("nudge:rebook:{booking}");
+    let key = format!("nudge:rebook:{booking}:{}:push", c.user);
 
     assert_eq!(marketing::run_nudges_at(&state(&pool), night()).await.expect("nudges"), 0);
     let held: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&pool).await.expect("row");

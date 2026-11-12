@@ -143,12 +143,12 @@ async fn deletion_anonymises_and_removes_devices_but_keeps_records(pool: PgPool)
 #[sqlx::test(migrations = "../../migrations")]
 async fn retention_purge_removes_expired_rows_and_unreferenced_uploads(pool: PgPool) {
     let cfg = test_config();
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone) VALUES ('010-8100-0005') RETURNING id").fetch_one(&pool).await.expect("user");
-    sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at, created_at) VALUES ('010-8100-0005', 'h', now(), now() - interval '2 days')")
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone) VALUES ('01081000005') RETURNING id").fetch_one(&pool).await.expect("user");
+    sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at, created_at) VALUES ('01081000005', 'h', now(), now() - interval '2 days')")
         .execute(&pool)
         .await
         .expect("old otp");
-    sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ('010-8100-0005', 'h', now())").execute(&pool).await.expect("new otp");
+    sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ('01081000005', 'h', now())").execute(&pool).await.expect("new otp");
     sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, family_id, expires_at) VALUES ('rt-expired', $1, 'customer', gen_random_uuid(), now() - interval '1 day')")
         .bind(user)
         .execute(&pool)

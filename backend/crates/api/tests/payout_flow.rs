@@ -29,9 +29,9 @@ fn admin_token() -> String {
 /// Verified pro with a bank account and one pending settlement due by `DATE`. Returns (settlement, pro).
 async fn seed(db: &PgPool) -> (Uuid, Uuid) {
     seed_catalog(db).await;
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('010-7200-0001', 'pay') RETURNING id").fetch_one(db).await.expect("user");
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01072000001', 'pay') RETURNING id").fetch_one(db).await.expect("user");
     let pro: Uuid = sqlx::query_scalar(
-        "INSERT INTO pros (phone, name, team_name, status) VALUES ('010-7200-0101', 'pro', 'team', 'verified') RETURNING id",
+        "INSERT INTO pros (phone, name, team_name, status) VALUES ('01072000101', 'pro', 'team', 'verified') RETURNING id",
     )
     .fetch_one(db)
     .await
@@ -71,7 +71,7 @@ async fn insert_booking(db: &PgPool, user: Uuid, number: &str, visit: &str) -> U
 
 /// A second pending settlement for the same pro and payout date, on its own booking.
 async fn second_settlement(db: &PgPool, pro: Uuid) -> Uuid {
-    let user: Uuid = sqlx::query_scalar("SELECT id FROM users WHERE phone = '010-7200-0001'").fetch_one(db).await.expect("user");
+    let user: Uuid = sqlx::query_scalar("SELECT id FROM users WHERE phone = '01072000001'").fetch_one(db).await.expect("user");
     let booking = insert_booking(db, user, "BKP-2", "2026-03-06").await;
     sqlx::query_scalar(
         "INSERT INTO settlements (pro_id, booking_id, gross, fee, net, payout_date, state)
