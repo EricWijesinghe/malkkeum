@@ -39,6 +39,7 @@ pub fn test_config() -> Config {
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
         public_base_url: BASE_URL.into(),
         dev_mode: true,
+        staff_mfa_required: true,
         allowed_origins: Vec::new(),
         seed_admin: None,
         setup_code: None,

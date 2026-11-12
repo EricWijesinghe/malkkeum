@@ -2,7 +2,7 @@ name: release
 
 # Tag vX.Y.Z or vX.Y.Z-beta.N -> install test -> server images on GHCR -> installer + guides into the
 # PUBLIC delivery repo (repo variable DIST_REPO, e.g. owner/malkkeum-install) -> GitHub Release notes
-# in this private repo. Nothing is published unless the install test passes.
+# in this private repo. Nothing is published unless the full CI suite passes (install e2e is manual: e2e.yml).
 #
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
@@ -18,12 +18,12 @@ permissions:
 
 jobs:
   test:
-    uses: ./.github/workflows/e2e.yml
+    uses: ./.github/workflows/ci.yml
 
   images:
     needs: test
     if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     strategy:
       matrix:
         include:
@@ -57,17 +57,18 @@ jobs:
   delivery:
     needs: images
     if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Self-hosted runner: key and known_hosts live in the job's temp dir, never in the runner user's ~/.ssh.
       - name: Deploy key and GitHub host key (fingerprint checked)
+        env: { DIST_DEPLOY_KEY: "${{ secrets.DIST_DEPLOY_KEY }}" }
         run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          ssh-keyscan -t ed25519 github.com > ~/.ssh/known_hosts 2>/dev/null
-          test "$(ssh-keygen -lf ~/.ssh/known_hosts | awk '{print $2}')" = "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DIST_DEPLOY_KEY }}
+          d="$RUNNER_TEMP/ssh"; mkdir -p "$d" && chmod 700 "$d"
+          ssh-keyscan -t ed25519 github.com > "$d/known_hosts" 2>/dev/null
+          test "$(ssh-keygen -lf "$d/known_hosts" | awk '{print $2}')" = "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
+          (umask 077; printf '%s\n' "$DIST_DEPLOY_KEY" > "$d/key")
+          echo "GIT_SSH_COMMAND=ssh -i $d/key -o IdentitiesOnly=yes -o UserKnownHostsFile=$d/known_hosts -o StrictHostKeyChecking=yes" >> "$GITHUB_ENV"
       - name: Publish installer and guides
         env:
           DIST_REPO: ${{ vars.DIST_REPO }}
@@ -79,3 +80,6 @@ jobs:
           flags=()
           case "$VER" in *-*) flags+=(--prerelease) ;; esac
           gh release create "$VER" --title "$VER" --generate-notes "${flags[@]}"
+      - name: Remove deploy key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/ssh"

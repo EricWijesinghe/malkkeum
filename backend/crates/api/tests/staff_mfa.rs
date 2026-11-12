@@ -139,3 +139,16 @@ async fn wrong_codes_lock_the_account(db: PgPool) {
     let (st, _) = call(&app, "POST", "/v1/auth/staff/login", None, Some(json!({ "email": "admin6@test.local", "password": PASSWORD }))).await;
     assert_eq!(st, StatusCode::TOO_MANY_REQUESTS, "locked after repeated bad second factors");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn demo_kit_can_switch_off_admin_mfa_enrolment(db: PgPool) {
+    insert_staff(&db, "owner@test.local", "admin").await;
+    let mut cfg = common::test_config();
+    cfg.staff_mfa_required = false;
+    let app = api::routes::router(api::build_state(db, cfg).expect("state"));
+    let b = password_step(&app, "owner@test.local").await;
+    assert!(b["access_token"].is_string(), "tokens issued directly: {b}");
+    assert!(b.get("mfa_enrol_required").is_none());
+    let (st, _) = call(&app, "GET", "/v1/admin/staff", b["access_token"].as_str(), None).await;
+    assert_eq!(st, StatusCode::OK, "the token carries the admin role");
+}

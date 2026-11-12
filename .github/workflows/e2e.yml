@@ -3,8 +3,10 @@ name: install-e2e
 # Builds both server images on this runner, then runs the real deploy/install.sh against them and
 # checks the result (deploy/e2e-install.sh). Called by ci.yml on every push/PR and by release.yml
 # before anything is published.
+# Manual only: it installs to /opt/malkkeum as root, so it needs a disposable machine (GitHub-hosted or a
+# throwaway VPS runner), never the self-hosted runner on the dev PC.
 on:
-  workflow_call:
+  workflow_dispatch:
 
 jobs:
   install:

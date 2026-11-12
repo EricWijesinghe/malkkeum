@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -11,12 +12,12 @@ concurrency:
 
 jobs:
   backend:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     services:
       postgres:
         image: postgres:17
         env: { POSTGRES_PASSWORD: localdev, POSTGRES_DB: cleaning }
-        ports: ["5433:5432"]
+        ports: ["55433:5432"]  # not 5433: that is the PC's own Postgres
         options: >-
           --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
     defaults: { run: { working-directory: backend } }
@@ -29,11 +30,11 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo clippy --all-targets -- -D warnings
       - name: Unit and database flow tests
-        env: { DATABASE_URL: "postgres://postgres:localdev@localhost:5433/cleaning" }
+        env: { DATABASE_URL: "postgres://postgres:localdev@localhost:55433/cleaning" }
         run: cargo test
       - name: End-to-end smoke test
         env:
-          DATABASE_URL: postgres://postgres:localdev@localhost:5433/cleaning
+          DATABASE_URL: postgres://postgres:localdev@localhost:55433/cleaning
           JWT_SECRET: ci-only-secret-ci-only-secret-0123456789
           DATA_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
           DEV_MODE: "1"
@@ -41,15 +42,17 @@ jobs:
           SEED_ADMIN_EMAIL: admin@local.test
           SEED_ADMIN_PASSWORD: change-me-now-please
           PSQL: psql
+          PGPORT: "55433"
+          BIND_ADDR: 127.0.0.1:18080  # 8080 is the demo server's port on this PC
           PGPASSWORD: localdev
         run: |
           cargo build -q -p api
           ./target/debug/api &
-          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8080/health && break; sleep 1; done
-          python3 -I ../scripts/smoke.py
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:18080/health && break; sleep 1; done
+          python3 -I ../scripts/smoke.py http://127.0.0.1:18080
 
   apps:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     defaults: { run: { working-directory: app } }
     steps:
       - uses: actions/checkout@v4
@@ -63,12 +66,11 @@ jobs:
         # store_screenshots = generated store images (scripts/store/generate.sh), not part of CI.
         run: for p in packages/core packages/ui apps/customer apps/partner apps/console; do (cd $p && flutter test --exclude-tags store_screenshots) || exit 1; done
 
-  # Builds both images and runs the real installer against them (also: bash -n, update, rollback).
-  install-e2e:
-    uses: ./.github/workflows/e2e.yml
+  # install-e2e is manual only (e2e.yml): it installs a full server as root, which must not run on the
+  # self-hosted runner (this PC). Run it on a throwaway VPS before a store release.
 
   shell:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     steps:
       - uses: actions/checkout@v4
       - name: Installer and scripts pass shellcheck
@@ -76,7 +78,7 @@ jobs:
 
   # Static iOS/Android store-build checks (plists, entitlements, pbxproj, gradle); no Mac needed.
   native:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, malkkeum]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: python3 -I scripts/ci/check-native.py

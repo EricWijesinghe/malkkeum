@@ -20,10 +20,15 @@ Ok "server at $public (separate 'Malkkeum Server' window - keep it open)"
 
 Step 'Owner console'
 if ((Test-Path "$here\console") -and -not (Get-NetTCPConnection -LocalPort 8081 -State Listen -EA SilentlyContinue)) {
-  $cmd = "python -m http.server 8081 --directory `"$here\console`""
+  # Full path: a WMI-created process does not search PATH the way the shell does.
+  $py = (Get-Command python -EA SilentlyContinue).Source
+  if (-not $py) { $py = (Get-Command py -EA SilentlyContinue).Source }
+  if (-not $py) { throw 'Python is needed to serve the owner console (install Python 3).' }
+  $cmd = "`"$py`" -m http.server 8081 --directory `"$here\console`""
   Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = $cmd; CurrentDirectory = $here } | Out-Null
-  Start-Sleep 2
+  $t = 0; while (-not (Get-NetTCPConnection -LocalPort 8081 -State Listen -EA SilentlyContinue) -and $t -lt 20) { Start-Sleep 1; $t++ }
 }
+if (-not (Get-NetTCPConnection -LocalPort 8081 -State Listen -EA SilentlyContinue)) { throw 'The owner console did not start on port 8081.' }
 Start-Process 'http://localhost:8081/'
 Ok 'http://localhost:8081  (owner@demo.local / malkkeum-demo-2026)'
 
