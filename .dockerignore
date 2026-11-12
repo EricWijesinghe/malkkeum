@@ -1,4 +1,4 @@
-# Web image context is the repo root; it only needs app/, website/ and deploy/Caddyfile.
+# Web image context is the repo root; it only needs app/, website/, deploy/Caddyfile and deploy/flutter_bootstrap.js.
 .git
 backend
 NTD
