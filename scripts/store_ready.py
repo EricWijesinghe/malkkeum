@@ -88,7 +88,8 @@ def manifest(app: pathlib.Path, label: str) -> None:
 
 def plist_set(s: str, key: str, value: str, kind: str = "string") -> str:
     entry = f"\t<key>{key}</key>\n\t<{kind}>{value}</{kind}>\n" if kind == "string" else f"\t<key>{key}</key>\n\t<{value}/>\n"
-    pattern = re.compile(rf"\t<key>{key}</key>\n\t<[^>]+>[^<\n]*(</[^>]+>)?\n")  # [^<\n]: a <false/> value must not swallow the next line's </dict>
+    # [^<\n]: the value stays on its line. Without \n, a last-key <false/> also swallowed the closing </dict>.
+    pattern = re.compile(rf"\t<key>{key}</key>\n\t<[^>]+>[^<\n]*(</[^>]+>)?\n")
     if pattern.search(s):
         return pattern.sub(entry, s, count=1)
     return s.replace("</dict>\n</plist>", entry + "</dict>\n</plist>", 1)

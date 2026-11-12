@@ -71,7 +71,7 @@ Malkkeum Partner là ứng dụng dành cho chuyên gia dọn dẹp của Malkke
 · Tự báo giá cho dọn nhà chuyển đến/đi và được khách chọn
 · Chỉ đường đến địa chỉ, lịch làm việc và ghi chú trên một màn hình
 · Tải ảnh trước và sau khi làm để báo hoàn thành
-· Trò chuyện với khách ngay trong ứng dụng
+· Trò chuyện với đội vận hành ngay trong ứng dụng
 · Mời thành viên vào đội và chia việc
 · Việc hoàn thành được thanh toán vào thứ Tư hằng tuần; xem thu nhập trong ứng dụng
 · 14 ngôn ngữ
@@ -88,7 +88,7 @@ Phiên bản đầu tiên. Nhận việc, báo giá, quản lý lịch làm và 
 ```
 This is a home-cleaning marketplace for Korea. Customers book cleaning visits; partner
 cleaners use the separate partner app. Physical services are paid through Korean payment
-gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e) / 3.1.5).
+gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e)).
 Sign in with Apple is offered next to the other social logins.
 Demo login: phone <demo number>, code <6-digit code> (set in the console under Setup → Store review demo account). Account deletion: More → Account → Delete account.
 ```
