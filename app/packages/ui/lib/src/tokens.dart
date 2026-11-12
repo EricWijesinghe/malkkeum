@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 
 /// Brand is data, not code: swap name, colors and logo here (or load from
 /// config) and every app re-skins without touching a screen.
+///
+/// Dahae palette usage rules (contrast ratios in palette/theme contrast tests):
+/// - Body text is [ink]; secondary text is the theme's `inkMuted`. Links and
+///   inline price emphasis use [primary] (dark teal, 4.98:1 on white).
+/// - [fresh] (brand teal #1E9EBA) is 3.16:1 on white: icons, borders, fills and
+///   large text (>= 24px, or >= 19px bold) only, never body text.
+/// - Primary button: fill [primary], white label; pressed [primaryDeep].
+/// - Accent CTA (welcome coupon, pay deposit): fill [sun], label [ink] (11.67:1).
+///   [sun] is never text on a light surface (1.37:1).
 @immutable
 class BrandConfig {
   const BrandConfig({
@@ -10,39 +19,46 @@ class BrandConfig {
     required this.primaryDeep,
     required this.fresh,
     required this.sun,
+    this.ink = const Color(0xFF17232C),
   });
 
   final String name;
 
-  /// Trust blue: primary actions, links, selection.
+  /// Dark teal: primary actions, links, selection. Text-safe on light surfaces.
   final Color primary;
+
+  /// Pressed state and gradient end.
   final Color primaryDeep;
 
-  /// Fresh mint: success, "clean" moments, completion.
+  /// Brand teal: decorative fills, icons, large text, success wash.
   final Color fresh;
 
-  /// Warm sun: rewards, coupons, celebration. Never for text on white.
+  /// Check yellow: coupons, highlights, the checkmark. Never text on light.
   final Color sun;
 
+  /// Ink: body text and dark surfaces.
+  final Color ink;
+
   static const placeholder = BrandConfig(
-    name: '말끔',
-    primary: Color(0xFF3B5BFD),
-    primaryDeep: Color(0xFF2A44D6),
-    fresh: Color(0xFF12B48F),
-    sun: Color(0xFFFFB400),
+    name: '다해',
+    primary: Color(0xFF187A8F),
+    primaryDeep: Color(0xFF12606F),
+    fresh: Color(0xFF1E9EBA),
+    sun: Color(0xFFFFD95A),
+    ink: Color(0xFF17232C),
   );
 }
 
 /// Neutral ink scale. Text always uses ink; color carries meaning, not prose.
 abstract final class Neutral {
-  static const c900 = Color(0xFF111827);
-  static const c700 = Color(0xFF374151);
-  static const c500 = Color(0xFF5B6472); // 5.9:1 on white
-  static const c400 = Color(0xFF8A929F); // decorative / disabled only
-  static const c300 = Color(0xFFD3D7DE);
-  static const c200 = Color(0xFFE7EAEE);
-  static const c100 = Color(0xFFF2F4F7);
-  static const c50 = Color(0xFFF8F9FB);
+  static const c900 = Color(0xFF17232C);
+  static const c700 = Color(0xFF3A4A55);
+  static const c500 = Color(0xFF5A6B76); // 5.53:1 on white
+  static const c400 = Color(0xFF8C9AA3); // decorative / disabled only
+  static const c300 = Color(0xFFCDD6DB);
+  static const c200 = Color(0xFFE3E9EC);
+  static const c100 = Color(0xFFF0F4F6);
+  static const c50 = Color(0xFFF7FAFB);
 }
 
 /// Each service owns a hue so customers recognise it at a glance
@@ -114,18 +130,18 @@ abstract final class ServiceHues {
 /// Booking status colors (0-3, -1). Text tones all pass 4.5:1 on their tint.
 abstract final class StatusHues {
   static const consultation = ServiceHue(
-    Color(0xFFFFF1D1),
-    Color(0xFF8A5600),
-    Color(0xFF3A2D10),
+    Color(0xFFFFF6D6),
+    Color(0xFF8A6400),
+    Color(0xFF3A3214),
   );
   static const confirmed = ServiceHue(
-    Color(0xFFE6ECFF),
-    Color(0xFF2A44D6),
-    Color(0xFF1A2347),
+    Color(0xFFE3F4F8),
+    Color(0xFF136B7E),
+    Color(0xFF123642),
   );
   static const assigned = ServiceHue(
-    Color(0xFFDDF5EE),
-    Color(0xFF07725A),
+    Color(0xFFDDF5EC),
+    Color(0xFF0E7A55),
     Color(0xFF0F2F27),
   );
   static const completed = ServiceHue(
@@ -150,8 +166,8 @@ abstract final class StatusHues {
 
 /// Fixed semantic colors (not brand): errors and weekend markers.
 abstract final class Semantic {
-  static const danger = Color(0xFFD92D20);
-  static const sunday = Color(0xFFD92D20);
+  static const danger = Color(0xFFC8321F);
+  static const sunday = Color(0xFFC8321F);
   static const saturday = Color(0xFF2A44D6);
 }
 
@@ -174,6 +190,9 @@ abstract final class Radii {
   static const tile = 16.0;
   static const sheet = 28.0;
   static const pill = 999.0;
+
+  /// Clay plate behind a 3D icon fallback (same ratio as the old ServiceGlyph).
+  static double icon3dPlate(double size) => size * 0.32;
 }
 
 abstract final class Motion {
@@ -184,18 +203,43 @@ abstract final class Motion {
   static const ease = Cubic(0.2, 0, 0, 1);
   static const emphasized = Cubic(0.05, 0.7, 0.1, 1);
   static const press = Duration(milliseconds: 90);
+
+  /// 3D icon pop when it becomes active (nav tab, selected tile).
+  static const iconPop = Duration(milliseconds: 320);
+
+  /// Spring for the icon pop/bounce: a little overshoot, settles fast.
+  static const iconBounce = SpringDescription(
+    mass: 1,
+    stiffness: 420,
+    damping: 18,
+  );
+
+  /// Max pointer tilt for 3D icons, radians (~8 degrees).
+  static const iconTiltMax = 0.14;
+  static const activeScale = 1.12;
+  static const pressScale = 0.92;
 }
 
 abstract final class Elevation {
   static const card = [
-    BoxShadow(color: Color(0x0D111827), blurRadius: 2, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0D17232C), blurRadius: 2, offset: Offset(0, 1)),
   ];
   static const raised = [
-    BoxShadow(color: Color(0x14111827), blurRadius: 18, offset: Offset(0, 6)),
-    BoxShadow(color: Color(0x0A111827), blurRadius: 4, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x1417232C), blurRadius: 18, offset: Offset(0, 6)),
+    BoxShadow(color: Color(0x0A17232C), blurRadius: 4, offset: Offset(0, 1)),
   ];
   static const sheet = [
-    BoxShadow(color: Color(0x29111827), blurRadius: 40, offset: Offset(0, -8)),
+    BoxShadow(color: Color(0x2917232C), blurRadius: 40, offset: Offset(0, -8)),
+  ];
+
+  /// Soft coloured contact shadow under a 3D icon of [size] dp.
+  static List<BoxShadow> icon3d(Color hue, double size) => [
+    BoxShadow(
+      color: hue.withValues(alpha: 0.28),
+      blurRadius: size * 0.30,
+      offset: Offset(0, size * 0.14),
+      spreadRadius: -size * 0.04,
+    ),
   ];
 }
 

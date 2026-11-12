@@ -139,23 +139,25 @@ TextTheme _type(Color ink, Color soft) {
   );
 }
 
-/// Dark = deep navy ink with lifted surfaces; light = white on mist.
+/// Dark = deep ink with lifted surfaces; light = white on a cool mist.
+/// Every text pair is checked in theme_contrast_test.dart (DAHAE-PLAN §1.1).
 AppColors appColorsFor(BrandConfig brand, bool dark) => AppColors(
-  canvas: dark ? const Color(0xFF070B16) : Neutral.c50,
-  surface: dark ? const Color(0xFF111829) : Colors.white,
-  surfaceHigh: dark ? const Color(0xFF1A2339) : Neutral.c100,
-  line: dark ? const Color(0xFF243050) : Neutral.c200,
-  ink: dark ? const Color(0xFFF2F5FA) : Neutral.c900,
-  inkSoft: dark ? const Color(0xFFC7CEDB) : Neutral.c700,
-  inkMuted: dark ? const Color(0xFF9AA4B8) : Neutral.c500,
-  accent: dark ? const Color(0xFF7C93FF) : brand.primary,
-  primaryTint: dark ? const Color(0xFF1B2450) : const Color(0xFFEBEFFF),
-  fresh: brand.fresh,
-  freshTint: dark ? const Color(0xFF0F2F27) : const Color(0xFFDDF6EE),
+  canvas: dark ? const Color(0xFF0B1217) : Neutral.c50,
+  surface: dark ? const Color(0xFF121D24) : Colors.white,
+  surfaceHigh: dark ? const Color(0xFF1A2830) : Neutral.c100,
+  line: dark ? const Color(0xFF26363F) : Neutral.c200,
+  ink: dark ? const Color(0xFFEEF4F7) : brand.ink,
+  inkSoft: dark ? const Color(0xFFC3CFD6) : Neutral.c700,
+  inkMuted: dark ? const Color(0xFF93A3AD) : Neutral.c500,
+  accent: dark ? const Color(0xFF5CC8DE) : brand.primary,
+  primaryTint: dark ? const Color(0xFF123642) : const Color(0xFFE3F4F8),
+  fresh: dark ? const Color(0xFF5CC8DE) : brand.fresh,
+  freshTint: dark ? const Color(0xFF123642) : const Color(0xFFE3F4F8),
   sun: brand.sun,
-  sunTint: dark ? const Color(0xFF3A2D10) : const Color(0xFFFFF4D6),
+  sunTint: dark ? const Color(0xFF3A3214) : const Color(0xFFFFF6D6),
   // Lighter red on dark surfaces so error text keeps WCAG AA contrast (4.5:1).
   danger: dark ? const Color(0xFFFF8A80) : Semantic.danger,
+  // Gradient behind white button labels: both stops stay >= 4.5:1 with white.
   brandStart: brand.primary,
   brandEnd: brand.primaryDeep,
   isDark: dark,
@@ -166,11 +168,12 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
   final colors = appColorsFor(brand, dark);
   final scheme =
       ColorScheme.fromSeed(
-        seedColor: brand.primary,
+        seedColor: brand.fresh,
         brightness: brightness,
       ).copyWith(
         primary: dark ? colors.accent : brand.primary,
-        onPrimary: Colors.white,
+        // Dark primary is light teal 5CC8DE: its label is the dark canvas (9.68:1).
+        onPrimary: dark ? colors.canvas : Colors.white,
         surface: colors.surface,
         onSurface: colors.ink,
         error: colors.danger,
@@ -179,7 +182,7 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
   final shape = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(Radii.input),
   );
-  // White labels need the deeper brand fill in dark mode (accent 7C93FF fails 4.5:1 with white).
+  // Filled buttons keep white labels on dark teal in both modes (4.98:1); light teal 5CC8DE fails with white.
   final fill = dark ? brand.primary : scheme.primary;
   return ThemeData(
     useMaterial3: true,

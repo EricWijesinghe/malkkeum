@@ -231,6 +231,14 @@ const prepTools = [
 String hourLabel(int hour, String lang) =>
     DateFormat.j(lang).format(DateTime(2000, 1, 1, hour));
 
+/// Arrival window "09:00~10:00" (24h, zero-padded in every language, as on
+/// the booking card). [hours] is the window length; 24 wraps to 00:00.
+String slotRangeLabel(int startHour, String lang, {int hours = 1}) {
+  final f = DateFormat.Hm(lang);
+  String at(int h) => f.format(DateTime(2000, 1, 1, h % 24));
+  return '${at(startHour)}~${at(startHour + hours)}';
+}
+
 /// "11월 13일 (금)" / "Fri, Nov 13".
 String dateLabel(DateTime d, String lang) => DateFormat.MMMEd(lang).format(d);
 String dateTimeLabel(DateTime d, String lang) =>
