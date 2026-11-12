@@ -10,6 +10,7 @@ import 'payments.dart';
 import 'privacy.dart';
 import 'service.dart';
 import 'wallet.dart';
+import 'subscriptions.dart';
 
 const appVersion = '1.0.0';
 
@@ -116,6 +117,12 @@ class MoreTab extends StatelessWidget {
               ServiceHues.bathroom,
               t.payHistoryTitle,
               () => _push(context, const PaymentHistoryScreen()),
+            ),
+            tile(
+              Icons.event_repeat_rounded,
+              ServiceHues.studio,
+              t.subTitle,
+              () => _push(context, const SubscriptionsScreen()),
             ),
             tile(
               Icons.confirmation_number_rounded,

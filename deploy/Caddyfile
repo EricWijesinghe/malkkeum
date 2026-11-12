@@ -43,6 +43,17 @@
 		reverse_proxy api:8080
 	}
 
+	# Public SEO pages and feeds are rendered by the API from live data (crates/api/src/seo.rs).
+	@seo path /c/* /sitemap.xml /robots.txt /notices.xml
+	handle @seo {
+		reverse_proxy api:8080
+	}
+	# Search Console / Search Advisor HTML-file verification (googleTOKEN.html, naverTOKEN.html).
+	@verify path_regexp verify ^/(google|naver)[A-Za-z0-9_-]+\.html$
+	handle @verify {
+		reverse_proxy api:8080
+	}
+
 	redir /admin /admin/
 	handle_path /admin/* {
 		root * /srv/console

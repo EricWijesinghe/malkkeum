@@ -2021,6 +2021,85 @@ class TId extends T {
       'Partner ini belum punya rekening pencairan yang diverifikasi. Verifikasi rekening dulu.';
 
   @override
+  String get guestSheetTitle => 'Masuk untuk melanjutkan';
+
+  @override
+  String get guestSheetBody =>
+      'Semua yang Anda isi tetap tersimpan. Anda lanjut tepat di tempat tadi.';
+
+  @override
+  String get greetMorning => 'Selamat pagi';
+
+  @override
+  String get greetAfternoon => 'Selamat siang';
+
+  @override
+  String get greetEvening => 'Selamat malam';
+
+  @override
+  String get feedHeading => 'Pilihan untukmu';
+
+  @override
+  String get feedTitleDue => 'Waktunya jadwal bersih berikutnya';
+
+  @override
+  String get feedTitleRebook => 'Pesan lagi mitra bintang 5';
+
+  @override
+  String get feedTitleDraft => 'Lanjutkan penawaran yang belum selesai';
+
+  @override
+  String get feedTitleSeasonal => 'Pembersihan yang pas untuk musim ini';
+
+  @override
+  String get feedTitleSize => 'Penawaran dari ukuran rumah tersimpan';
+
+  @override
+  String get feedTitleSubscription => 'Hemat lebih banyak dengan langganan';
+
+  @override
+  String get feedTitleDistrict => 'Tetangga juga sedang memesan';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '$days hari sejak pembersihan terakhir';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Anda memberi bintang 5 untuk mitra ini $days hari lalu';
+  }
+
+  @override
+  String get feedWhyDraft =>
+      'Ada penawaran yang belum selesai di perangkat ini';
+
+  @override
+  String get feedWhySummer =>
+      'Waktu yang tepat membersihkan AC sebelum musim panas';
+
+  @override
+  String get feedWhyMoving => 'Musim pindahan dan masuk rumah sedang ramai';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '$days hari lagi menuju bersih-bersih besar lebaran';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Penawaran instan untuk rumah $pyeong pyeong tersimpan';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Jika sering memesan, langganan lebih murah';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '$count rumah di $district memesan minggu ini';
+  }
+
+  @override
   String get fFinance => 'Keuangan';
 
   @override
@@ -2341,6 +2420,127 @@ class TId extends T {
       'Kami sedang meningkatkan layanan. Silakan coba lagi nanti.';
 
   @override
+  String get cmTab => 'Kampanye';
+
+  @override
+  String get cmNew => 'Kampanye baru';
+
+  @override
+  String get cmAudience => 'Audiens';
+
+  @override
+  String get cmSegAll => 'Semua pelanggan';
+
+  @override
+  String get cmSegNever => 'Belum pernah pesan';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Pesanan terakhir $days+ hari lalu';
+  }
+
+  @override
+  String get cmDays => 'Jumlah hari';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented dari $total menyetujui pemasaran';
+  }
+
+  @override
+  String get cmChannel => 'Saluran';
+
+  @override
+  String get cmPush => 'Push aplikasi';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Judul';
+
+  @override
+  String get cmBody => 'Pesan';
+
+  @override
+  String get cmOptout => 'Nomor berhenti (080)';
+
+  @override
+  String get cmPreview => 'Pratinjau';
+
+  @override
+  String get cmSchedule => 'Waktu kirim';
+
+  @override
+  String get cmSendNow => 'Kirim sekarang';
+
+  @override
+  String get cmTestSend => 'Kirim tes ke nomor saya';
+
+  @override
+  String get cmCreate => 'Simpan kampanye';
+
+  @override
+  String get cmNeedOptout => 'SMS memerlukan nomor berhenti 080';
+
+  @override
+  String get cmLog => 'Log pengiriman';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Terkirim $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Tanpa persetujuan $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Gagal $count';
+  }
+
+  @override
+  String get cmSaved => 'Kampanye disimpan';
+
+  @override
+  String anFunnel(String days) {
+    return 'Corong pendaftaran ($days hari terakhir)';
+  }
+
+  @override
+  String get anInstalls => 'Membuka aplikasi (setuju)';
+
+  @override
+  String get anSignedUp => 'Mendaftar';
+
+  @override
+  String get anQuoted => 'Minta penawaran';
+
+  @override
+  String get anBooked => 'Memesan';
+
+  @override
+  String get anPaid => 'Membayar';
+
+  @override
+  String get anRepeat => 'Berulang (2+)';
+
+  @override
+  String get anCohorts => 'Kohort mingguan (tingkat pesanan per minggu daftar)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Pendaftar $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Pesan di minggu $n';
+  }
+
+  @override
   String get cOps => 'Status sistem';
 
   @override
@@ -2500,6 +2700,9 @@ class TId extends T {
 
   @override
   String get oRuleDisk => 'Disk hampir penuh';
+
+  @override
+  String get oRuleAuth => 'Aktivitas login mencurigakan';
 
   @override
   String get oQuietHours => 'Jam tenang';
@@ -3169,6 +3372,52 @@ class TId extends T {
   }
 
   @override
+  String get oFlags => 'Sakelar fitur';
+
+  @override
+  String get oFlagBooking => 'Pemesanan';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'Asisten AI';
+
+  @override
+  String get oFlagPayments => 'Pembayaran';
+
+  @override
+  String get oMaintenance => 'Mode pemeliharaan';
+
+  @override
+  String get oMaintenanceHint =>
+      'Saat aktif, aplikasi pelanggan dan mitra menampilkan layar pemeliharaan. Konsol tetap bisa dipakai.';
+
+  @override
+  String get oMaintenanceMessage => 'Pesan pemeliharaan';
+
+  @override
+  String get oClientErrors => 'Laporan error aplikasi';
+
+  @override
+  String get oClientErrorsHint =>
+      'Error terbaru dari web, Windows, dan konsol. Data pribadi disamarkan otomatis.';
+
+  @override
+  String get oClientErrorsEmpty => 'Tidak ada error terbaru';
+
+  @override
+  String get oHeartbeat => 'Heartbeat uptime';
+
+  @override
+  String get oHeartbeatOn =>
+      'Terhubung. Layanan luar diberi tahu saat server aktif.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Belum diatur: tambahkan MALKKEUM_HEARTBEAT_URL ke install.sh.';
+
+  @override
   String get pvManage => 'Pengaturan persetujuan';
 
   @override
@@ -3657,6 +3906,131 @@ class TId extends T {
       'Berikan token ini kepada staf. Hanya bisa dipakai sekali, selama 30 menit. Tidak bisa dilihat lagi setelah ditutup.';
 
   @override
+  String get subTitle => 'Pembersihan rutin';
+
+  @override
+  String get subNew => 'Mulai berlangganan';
+
+  @override
+  String get subCadence => 'Seberapa sering';
+
+  @override
+  String get subWeekly => 'Setiap minggu';
+
+  @override
+  String get subBiweekly => 'Setiap 2 minggu';
+
+  @override
+  String get subEvery4Weeks => 'Setiap 4 minggu';
+
+  @override
+  String get subWeekday => 'Hari';
+
+  @override
+  String get subHour => 'Jam kedatangan';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Diskon $percent% untuk setiap kunjungan';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Setiap kunjungan ditagih sehari sebelumnya ke kartu tersimpan';
+
+  @override
+  String get subCreate => 'Berlangganan';
+
+  @override
+  String get subCreated => 'Langganan dimulai';
+
+  @override
+  String get subNeedAddress => 'Tambahkan alamat kunjungan dulu';
+
+  @override
+  String get subListEmpty => 'Belum ada langganan';
+
+  @override
+  String get subStatusActive => 'Aktif';
+
+  @override
+  String get subStatusPaused => 'Dijeda';
+
+  @override
+  String get subStatusCancelled => 'Dibatalkan';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Kunjungan berikutnya $date';
+  }
+
+  @override
+  String get subPause => 'Jeda';
+
+  @override
+  String get subResume => 'Lanjutkan';
+
+  @override
+  String get subCancelSub => 'Batalkan langganan';
+
+  @override
+  String get subCancelConfirm =>
+      'Kunjungan mendatang akan dibatalkan. Kunjungan yang sudah dipesan harus dibatalkan terpisah.';
+
+  @override
+  String get subSkip => 'Lewati kunjungan ini';
+
+  @override
+  String get subMove => 'Ubah tanggal';
+
+  @override
+  String get subVisitLocked =>
+      'Tidak bisa diubah mulai sehari sebelum kunjungan';
+
+  @override
+  String get subPausedPayment =>
+      'Dijeda karena pembayaran gagal berulang kali. Ganti kartu lalu lanjutkan.';
+
+  @override
+  String get subStatePlanned => 'Terjadwal';
+
+  @override
+  String get subStateBooked => 'Dipesan';
+
+  @override
+  String get subStateSkipped => 'Dilewati';
+
+  @override
+  String get subStateMissed => 'Terlewat';
+
+  @override
+  String get pSubsTitle => 'Pelanggan rutin';
+
+  @override
+  String get pSubsEmpty => 'Belum ada pelanggan rutin';
+
+  @override
+  String get cSubsTitle => 'Langganan';
+
+  @override
+  String get cSubsEdit => 'Ubah untuk pelanggan';
+
+  @override
+  String get cMrr => 'Pendapatan berulang bulanan (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Langganan aktif';
+
+  @override
+  String get cRecognized => 'Pendapatan diakui periode ini';
+
+  @override
+  String get cSubsLoadFailed => 'Langganan tidak dapat dimuat';
+
+  @override
   String get tTaxSection => 'Pajak';
 
   @override
@@ -3992,6 +4366,33 @@ class TId extends T {
   @override
   String get receiptNote =>
       'Hanya bukti pembayaran. Untuk faktur pajak, ajukan dari detail pemesanan.';
+
+  @override
+  String get checkoutPointsUse => 'Gunakan poin';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P tersedia · maksimal $max P untuk pembayaran ini';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Poin bisa dipakai saat membayar lewat jendela pembayaran';
+
+  @override
+  String get pointsLedgerTitle => 'Buku besar poin';
+
+  @override
+  String get pointsAdjustAmount => 'Poin (negatif untuk mengurangi)';
+
+  @override
+  String get pointsAdjustReason => 'Alasan penyesuaian';
+
+  @override
+  String get pointsAdjustInvalid => 'Masukkan poin bukan nol dan alasannya';
+
+  @override
+  String get pointsAdjustDone => 'Poin disesuaikan';
 
   @override
   String get webBookNow => 'Pesan lewat web';

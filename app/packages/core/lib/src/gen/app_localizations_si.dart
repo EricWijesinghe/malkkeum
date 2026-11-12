@@ -2018,6 +2018,84 @@ class TSi extends T {
       'මෙම partner ට තවමත් සත්‍යාපිත ගෙවීම් ගිණුමක් නැත. පළමුව ගිණුම සත්‍යාපනය කරන්න.';
 
   @override
+  String get guestSheetTitle => 'දිගටම කරගෙන යාමට පිවිසෙන්න';
+
+  @override
+  String get guestSheetBody =>
+      'ඔබ ඇතුළත් කළ සියල්ල තබා ගනී. නැවතුණු තැනින්ම දිගටම යයි.';
+
+  @override
+  String get greetMorning => 'සුභ උදෑසනක්';
+
+  @override
+  String get greetAfternoon => 'සුභ දහවලක්';
+
+  @override
+  String get greetEvening => 'සුභ සන්ධ්‍යාවක්';
+
+  @override
+  String get feedHeading => 'ඔබ වෙනුවෙන්';
+
+  @override
+  String get feedTitleDue => 'ඊළඟ පිරිසිදු කිරීමේ වේලාව';
+
+  @override
+  String get feedTitleRebook => 'තරු 5ක් දුන් හවුල්කරු නැවත වෙන්කර ගන්න';
+
+  @override
+  String get feedTitleDraft => 'ආරම්භ කළ උපුටා දැක්වීම අවසන් කරන්න';
+
+  @override
+  String get feedTitleSeasonal => 'මේ කාලයට ගැලපෙන පිරිසිදු කිරීම';
+
+  @override
+  String get feedTitleSize => 'සුරැකි නිවසේ ප්‍රමාණයෙන් උපුටා දැක්වීම';
+
+  @override
+  String get feedTitleSubscription => 'දායකත්වයෙන් වැඩියෙන් ඉතිරි කරන්න';
+
+  @override
+  String get feedTitleDistrict => 'අසල්වාසීන් ද වෙන්කරමින් සිටිති';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'අවසන් පිරිසිදු කිරීමෙන් දින $daysක් ගත වී ඇත';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'දින $daysකට පෙර ඔබ මෙම හවුල්කරුට තරු 5ක් දුන්නා';
+  }
+
+  @override
+  String get feedWhyDraft => 'මෙම උපාංගයේ උපුටා දැක්වීමක් අසම්පූර්ණයි';
+
+  @override
+  String get feedWhySummer =>
+      'ගිම්හානයට පෙර වායු සමීකරණය පිරිසිදු කරන හොඳ කාලයයි';
+
+  @override
+  String get feedWhyMoving => 'නිවාස ගැනීම සහ මාරුවීම් කාලය කාර්යබහුලයි';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'නිවාඩු සමය සඳහා ගැඹුරු පිරිසිදු කිරීමට දින $daysයි';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'සුරැකි $pyeong පියොං නිවසට ක්ෂණික උපුටා දැක්වීම';
+  }
+
+  @override
+  String get feedWhyRepeat => 'නිතර වෙන් කරන්නේ නම් දායකත්වය වඩා ලාබයි';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'මේ සතියේ $district හි නිවාස $countක් වෙන් කර ඇත';
+  }
+
+  @override
   String get fFinance => 'මූල්‍ය';
 
   @override
@@ -2339,6 +2417,128 @@ class TSi extends T {
       'සේවාව වැඩිදියුණු කිරීම සඳහා නඩත්තු කරමින් සිටිමු. ටික වේලාවකින් නැවත උත්සාහ කරන්න.';
 
   @override
+  String get cmTab => 'ව්‍යාපාර';
+
+  @override
+  String get cmNew => 'නව ව්‍යාපාරය';
+
+  @override
+  String get cmAudience => 'ඉලක්ක පාරිභෝගිකයින්';
+
+  @override
+  String get cmSegAll => 'සියලු පාරිභෝගිකයින්';
+
+  @override
+  String get cmSegNever => 'කවදාවත් වෙන්කර නැත';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'අවසන් වෙන්කිරීම $days+ දින කට පෙර';
+  }
+
+  @override
+  String get cmDays => 'දින ගණන';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total න් $consented දෙනා අලෙවිකරණ එකඟතාව ඇත';
+  }
+
+  @override
+  String get cmChannel => 'නාලිකාව';
+
+  @override
+  String get cmPush => 'යෙදුම් තල්ලුව';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'මාතෘකාව';
+
+  @override
+  String get cmBody => 'පණිවිඩය';
+
+  @override
+  String get cmOptout => 'ඉවත් වීමේ අංකය (080)';
+
+  @override
+  String get cmPreview => 'පෙරදසුන';
+
+  @override
+  String get cmSchedule => 'යැවීමේ වේලාව';
+
+  @override
+  String get cmSendNow => 'දැන් යවන්න';
+
+  @override
+  String get cmTestSend => 'මගේ දුරකථනයට පරීක්ෂා යවන්න';
+
+  @override
+  String get cmCreate => 'ව්‍යාපාරය සුරකින්න';
+
+  @override
+  String get cmNeedOptout => 'SMS සඳහා 080 ඉවත් වීමේ අංකය අවශ්‍යයි';
+
+  @override
+  String get cmLog => 'යැවීම් වාර්තාව';
+
+  @override
+  String cmStatSent(String count) {
+    return 'යවන ලද $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'එකඟතාව නැත $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'අසාර්ථක $count';
+  }
+
+  @override
+  String get cmSaved => 'ව්‍යාපාරය සුරැකිණි';
+
+  @override
+  String anFunnel(String days) {
+    return 'ලියාපදිංචි පෙරට (අවසන් දින $days)';
+  }
+
+  @override
+  String get anInstalls => 'යෙදුම විවෘත (එකඟ)';
+
+  @override
+  String get anSignedUp => 'ලියාපදිංචි වූවන්';
+
+  @override
+  String get anQuoted => 'මිල උපුටා ඉල්ලූවන්';
+
+  @override
+  String get anBooked => 'වෙන්කළ';
+
+  @override
+  String get anPaid => 'ගෙවූ';
+
+  @override
+  String get anRepeat => 'නැවත (2+)';
+
+  @override
+  String get anCohorts =>
+      'සති කණ්ඩායම් (ලියාපදිංචි සතිය අනුව වෙන්කිරීම් අනුපාතය)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'ලියාපදිංචි $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'සතිය $n තුළ වෙන්කළ';
+  }
+
+  @override
   String get cOps => 'පද්ධති තත්ත්වය';
 
   @override
@@ -2498,6 +2698,9 @@ class TSi extends T {
 
   @override
   String get oRuleDisk => 'තැටිය පිරී ආසන්නයි';
+
+  @override
+  String get oRuleAuth => 'සැකකටයුතු ප්‍රවේශ ක්‍රියාකාරකම්';
 
   @override
   String get oQuietHours => 'නිශ්ශබ්ද වේලා';
@@ -3164,6 +3367,52 @@ class TSi extends T {
   }
 
   @override
+  String get oFlags => 'විශේෂාංග ස්විච්';
+
+  @override
+  String get oFlagBooking => 'වෙන්කිරීම්';
+
+  @override
+  String get oFlagChat => 'කතාබස්';
+
+  @override
+  String get oFlagAi => 'AI සහායක';
+
+  @override
+  String get oFlagPayments => 'ගෙවීම්';
+
+  @override
+  String get oMaintenance => 'නඩත්තු මාදිලිය';
+
+  @override
+  String get oMaintenanceHint =>
+      'ක්‍රියාත්මක විට පාරිභෝගික හා හවුල්කරු යෙදුම් නඩත්තු තිරය පෙන්වයි. කොන්සෝලය වැඩ කරයි.';
+
+  @override
+  String get oMaintenanceMessage => 'නඩත්තු පණිවිඩය';
+
+  @override
+  String get oClientErrors => 'යෙදුම් දෝෂ වාර්තා';
+
+  @override
+  String get oClientErrorsHint =>
+      'වෙබ්, Windows සහ කොන්සෝලයෙන් මෑත දෝෂ. පුද්ගලික දත්ත ස්වයංක්‍රීයව සඟවයි.';
+
+  @override
+  String get oClientErrorsEmpty => 'මෑත දෝෂ නැත';
+
+  @override
+  String get oHeartbeat => 'ක්‍රියාකාරිත්ව හෘදස්පන්දන';
+
+  @override
+  String get oHeartbeatOn =>
+      'සම්බන්ධයි. සේවාදායකය ක්‍රියාත්මක වන විට බාහිර සේවාවට දැන්වේ.';
+
+  @override
+  String get oHeartbeatOff =>
+      'සකසා නැත: install.sh වෙත MALKKEUM_HEARTBEAT_URL එක් කරන්න.';
+
+  @override
   String get pvManage => 'එකඟතා කළමනාකරණය';
 
   @override
@@ -3648,6 +3897,129 @@ class TSi extends T {
       'මෙම ටෝකනය කාර්ය මණ්ඩල සාමාජිකයාට දෙන්න. එය එක් වරක්, මිනිත්තු 30ක් ඇතුළත පමණක් ක්‍රියා කරයි. වසා දැමූ පසු නැවත බැලිය නොහැක.';
 
   @override
+  String get subTitle => 'නිතිපතා පිරිසිදු කිරීම';
+
+  @override
+  String get subNew => 'දායකත්වය ආරම්භ කරන්න';
+
+  @override
+  String get subCadence => 'කෙතරම් නිතර ද';
+
+  @override
+  String get subWeekly => 'සෑම සතියකම';
+
+  @override
+  String get subBiweekly => 'සෑම සති 2කට වරක්';
+
+  @override
+  String get subEvery4Weeks => 'සෑම සති 4කට වරක්';
+
+  @override
+  String get subWeekday => 'සතියේ දිනය';
+
+  @override
+  String get subHour => 'පැමිණෙන වේලාව';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'සෑම පැමිණීමකටම $percent% වට්ටමක්';
+  }
+
+  @override
+  String get subChargeNote => 'පැමිණීමට දින 1කට පෙර සුරකින ලද කාඩ්පතෙන් ගෙවයි';
+
+  @override
+  String get subCreate => 'දායක වන්න';
+
+  @override
+  String get subCreated => 'දායකත්වය ආරම්භ විය';
+
+  @override
+  String get subNeedAddress => 'මුලින් පැමිණෙන ලිපිනය එක් කරන්න';
+
+  @override
+  String get subListEmpty => 'දායකත්ව තවම නැත';
+
+  @override
+  String get subStatusActive => 'සක්‍රිය';
+
+  @override
+  String get subStatusPaused => 'විරාමයි';
+
+  @override
+  String get subStatusCancelled => 'අවලංගු කළා';
+
+  @override
+  String subNextVisit(String date) {
+    return 'ඊළඟ පැමිණීම $date';
+  }
+
+  @override
+  String get subPause => 'විරාම ගන්න';
+
+  @override
+  String get subResume => 'නැවත ආරම්භ කරන්න';
+
+  @override
+  String get subCancelSub => 'දායකත්වය අවලංගු කරන්න';
+
+  @override
+  String get subCancelConfirm =>
+      'ඉදිරි පැමිණීම් අවලංගු වේ. වෙන්කළ පැමිණීම් වෙනමම අවලංගු කළ යුතුයි.';
+
+  @override
+  String get subSkip => 'මෙම පැමිණීම මඟ හරින්න';
+
+  @override
+  String get subMove => 'දිනය වෙනස් කරන්න';
+
+  @override
+  String get subVisitLocked => 'පැමිණීමට පෙර දිනයේ සිට වෙනස් කළ නොහැක';
+
+  @override
+  String get subPausedPayment =>
+      'නැවත නැවත ගෙවීම් අසාර්ථක වීමෙන් විරාමයි. කාඩ්පත වෙනස් කර නැවත ආරම්භ කරන්න.';
+
+  @override
+  String get subStatePlanned => 'සැලසුම් කළ';
+
+  @override
+  String get subStateBooked => 'වෙන් කළ';
+
+  @override
+  String get subStateSkipped => 'මඟ හැරියා';
+
+  @override
+  String get subStateMissed => 'මග ඇරුණා';
+
+  @override
+  String get pSubsTitle => 'නිතිපතා පාරිභෝගිකයින්';
+
+  @override
+  String get pSubsEmpty => 'නිතිපතා පාරිභෝගිකයින් තවම නැත';
+
+  @override
+  String get cSubsTitle => 'දායකත්ව';
+
+  @override
+  String get cSubsEdit => 'පාරිභෝගිකයා වෙනුවෙන් සංස්කරණය';
+
+  @override
+  String get cMrr => 'මාසික නැවත එන ආදායම (MRR)';
+
+  @override
+  String get cChurn => 'අහිමි වීමේ අනුපාතය';
+
+  @override
+  String get cActiveSubs => 'සක්‍රිය දායකත්ව';
+
+  @override
+  String get cRecognized => 'කාලසීමාවේ පිළිගත් ආදායම';
+
+  @override
+  String get cSubsLoadFailed => 'දායකත්ව පූරණය කළ නොහැකි විය';
+
+  @override
   String get tTaxSection => 'බදු';
 
   @override
@@ -3983,6 +4355,33 @@ class TSi extends T {
   @override
   String get receiptNote =>
       'ගෙවීම් සාක්ෂියක් පමණි. බදු ඉන්වොයිසුවක් සඳහා වෙන්කිරීම් විස්තරවලින් ඉල්ලන්න.';
+
+  @override
+  String get checkoutPointsUse => 'ලකුණු භාවිත කරන්න';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P ඇත · මෙම ගෙවීමට උපරිම $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'ගෙවීම් කවුළුවෙන් ගෙවන විට ලකුණු භාවිත කළ හැක';
+
+  @override
+  String get pointsLedgerTitle => 'ලකුණු ලෙජරය';
+
+  @override
+  String get pointsAdjustAmount => 'ලකුණු (අඩු කිරීමට ඍණ අගයක්)';
+
+  @override
+  String get pointsAdjustReason => 'ගැළපීමට හේතුව';
+
+  @override
+  String get pointsAdjustInvalid => '0 නොවන ලකුණු සහ හේතුව ඇතුළත් කරන්න';
+
+  @override
+  String get pointsAdjustDone => 'ලකුණු ගැළපිණි';
 
   @override
   String get webBookNow => 'වෙබ් අඩවියෙන් වහාම වෙන් කරන්න';

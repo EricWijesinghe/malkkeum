@@ -2019,6 +2019,83 @@ class TRu extends T {
       'У этого партнёра ещё нет подтверждённого счёта для выплат. Сначала подтвердите счёт.';
 
   @override
+  String get guestSheetTitle => 'Войдите, чтобы продолжить';
+
+  @override
+  String get guestSheetBody =>
+      'Все, что вы ввели, сохранится. Продолжите с того же места.';
+
+  @override
+  String get greetMorning => 'Доброе утро';
+
+  @override
+  String get greetAfternoon => 'Добрый день';
+
+  @override
+  String get greetEvening => 'Добрый вечер';
+
+  @override
+  String get feedHeading => 'Для вас';
+
+  @override
+  String get feedTitleDue => 'Пора на следующую уборку';
+
+  @override
+  String get feedTitleRebook => 'Снова запишитесь к партнёру на 5 звёзд';
+
+  @override
+  String get feedTitleDraft => 'Продолжить расчёт стоимости';
+
+  @override
+  String get feedTitleSeasonal => 'Уборка под это время года';
+
+  @override
+  String get feedTitleSize => 'Расчёт по сохранённой площади';
+
+  @override
+  String get feedTitleSubscription => 'Экономьте с подпиской';
+
+  @override
+  String get feedTitleDistrict => 'Соседи тоже записываются';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'С последней уборки прошло $days дн.';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Вы поставили этому партнёру 5 звёзд $days дн. назад';
+  }
+
+  @override
+  String get feedWhyDraft => 'На этом устройстве остался незавершённый расчёт';
+
+  @override
+  String get feedWhySummer => 'Лучшее время почистить кондиционер перед летом';
+
+  @override
+  String get feedWhyMoving => 'Сезон переездов и въездов — много заявок';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'До генеральной уборки к празднику $days дн.';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Мгновенная оценка для сохранённых $pyeong пхён';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Если вы заказываете часто, подписка выгоднее';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'На этой неделе в районе $district записались $count домов';
+  }
+
+  @override
   String get fFinance => 'Финансы';
 
   @override
@@ -2340,6 +2417,128 @@ class TRu extends T {
       'Мы улучшаем сервис. Пожалуйста, зайдите немного позже.';
 
   @override
+  String get cmTab => 'Кампании';
+
+  @override
+  String get cmNew => 'Новая кампания';
+
+  @override
+  String get cmAudience => 'Аудитория';
+
+  @override
+  String get cmSegAll => 'Все клиенты';
+
+  @override
+  String get cmSegNever => 'Ни разу не бронировали';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Последний заказ $days+ дн. назад';
+  }
+
+  @override
+  String get cmDays => 'Дней';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return 'Маркетинговое согласие: $consented из $total';
+  }
+
+  @override
+  String get cmChannel => 'Канал';
+
+  @override
+  String get cmPush => 'Push в приложении';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Заголовок';
+
+  @override
+  String get cmBody => 'Текст';
+
+  @override
+  String get cmOptout => 'Номер для отказа (080)';
+
+  @override
+  String get cmPreview => 'Предпросмотр';
+
+  @override
+  String get cmSchedule => 'Время отправки';
+
+  @override
+  String get cmSendNow => 'Отправить сейчас';
+
+  @override
+  String get cmTestSend => 'Тест на мой телефон';
+
+  @override
+  String get cmCreate => 'Сохранить кампанию';
+
+  @override
+  String get cmNeedOptout => 'Для SMS нужен номер для отказа 080';
+
+  @override
+  String get cmLog => 'Журнал отправок';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Отправлено $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Без согласия $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Ошибок $count';
+  }
+
+  @override
+  String get cmSaved => 'Кампания сохранена';
+
+  @override
+  String anFunnel(String days) {
+    return 'Воронка регистраций (последние $days дн.)';
+  }
+
+  @override
+  String get anInstalls => 'Открыли приложение (с согласием)';
+
+  @override
+  String get anSignedUp => 'Зарегистрировались';
+
+  @override
+  String get anQuoted => 'Запросили расчёт';
+
+  @override
+  String get anBooked => 'Забронировали';
+
+  @override
+  String get anPaid => 'Оплатили';
+
+  @override
+  String get anRepeat => 'Повторные (2+)';
+
+  @override
+  String get anCohorts =>
+      'Недельные когорты (доля заказов по неделе регистрации)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Регистраций $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Заказ на неделе $n';
+  }
+
+  @override
   String get cOps => 'Состояние системы';
 
   @override
@@ -2499,6 +2698,9 @@ class TRu extends T {
 
   @override
   String get oRuleDisk => 'Диск почти заполнен';
+
+  @override
+  String get oRuleAuth => 'Подозрительная активность входа';
 
   @override
   String get oQuietHours => 'Тихие часы';
@@ -3167,6 +3369,52 @@ class TRu extends T {
   }
 
   @override
+  String get oFlags => 'Переключатели функций';
+
+  @override
+  String get oFlagBooking => 'Бронирования';
+
+  @override
+  String get oFlagChat => 'Чат';
+
+  @override
+  String get oFlagAi => 'ИИ-помощник';
+
+  @override
+  String get oFlagPayments => 'Платежи';
+
+  @override
+  String get oMaintenance => 'Режим технических работ';
+
+  @override
+  String get oMaintenanceHint =>
+      'Когда включено, приложения клиентов и партнёров показывают экран технических работ. Консоль работает.';
+
+  @override
+  String get oMaintenanceMessage => 'Текст для технических работ';
+
+  @override
+  String get oClientErrors => 'Отчёты об ошибках приложений';
+
+  @override
+  String get oClientErrorsHint =>
+      'Последние ошибки из веба, Windows и консоли. Персональные данные скрываются автоматически.';
+
+  @override
+  String get oClientErrorsEmpty => 'Недавних ошибок нет';
+
+  @override
+  String get oHeartbeat => 'Heartbeat-мониторинг';
+
+  @override
+  String get oHeartbeatOn =>
+      'Подключено. Внешний сервис получает сигнал, пока сервер работает.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Не настроено: добавьте MALKKEUM_HEARTBEAT_URL в install.sh.';
+
+  @override
   String get pvManage => 'Управление согласиями';
 
   @override
@@ -3651,6 +3899,129 @@ class TRu extends T {
       'Передайте этот токен сотруднику. Он работает один раз в течение 30 минут. После закрытия его не покажут снова.';
 
   @override
+  String get subTitle => 'Регулярная уборка';
+
+  @override
+  String get subNew => 'Оформить подписку';
+
+  @override
+  String get subCadence => 'Периодичность';
+
+  @override
+  String get subWeekly => 'Каждую неделю';
+
+  @override
+  String get subBiweekly => 'Раз в 2 недели';
+
+  @override
+  String get subEvery4Weeks => 'Раз в 4 недели';
+
+  @override
+  String get subWeekday => 'День недели';
+
+  @override
+  String get subHour => 'Время прихода';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Скидка $percent% на каждый визит';
+  }
+
+  @override
+  String get subChargeNote => 'Оплата за день до визита с сохранённой карты';
+
+  @override
+  String get subCreate => 'Оформить';
+
+  @override
+  String get subCreated => 'Подписка оформлена';
+
+  @override
+  String get subNeedAddress => 'Сначала добавьте адрес для визита';
+
+  @override
+  String get subListEmpty => 'Подписок пока нет';
+
+  @override
+  String get subStatusActive => 'Активна';
+
+  @override
+  String get subStatusPaused => 'Приостановлена';
+
+  @override
+  String get subStatusCancelled => 'Отменена';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Следующий визит $date';
+  }
+
+  @override
+  String get subPause => 'Приостановить';
+
+  @override
+  String get subResume => 'Возобновить';
+
+  @override
+  String get subCancelSub => 'Отменить подписку';
+
+  @override
+  String get subCancelConfirm =>
+      'Будущие визиты будут отменены. Забронированные визиты нужно отменить отдельно.';
+
+  @override
+  String get subSkip => 'Пропустить визит';
+
+  @override
+  String get subMove => 'Перенести визит';
+
+  @override
+  String get subVisitLocked => 'Изменить нельзя начиная с дня до визита';
+
+  @override
+  String get subPausedPayment =>
+      'Приостановлено из-за повторных ошибок оплаты. Смените карту и возобновите.';
+
+  @override
+  String get subStatePlanned => 'Запланирован';
+
+  @override
+  String get subStateBooked => 'Забронирован';
+
+  @override
+  String get subStateSkipped => 'Пропущен';
+
+  @override
+  String get subStateMissed => 'Не состоялся';
+
+  @override
+  String get pSubsTitle => 'Постоянные клиенты';
+
+  @override
+  String get pSubsEmpty => 'Постоянных клиентов пока нет';
+
+  @override
+  String get cSubsTitle => 'Подписки';
+
+  @override
+  String get cSubsEdit => 'Изменить за клиента';
+
+  @override
+  String get cMrr => 'Ежемесячный повторный доход (MRR)';
+
+  @override
+  String get cChurn => 'Отток';
+
+  @override
+  String get cActiveSubs => 'Активные подписки';
+
+  @override
+  String get cRecognized => 'Признанный доход за период';
+
+  @override
+  String get cSubsLoadFailed => 'Не удалось загрузить подписки';
+
+  @override
   String get tTaxSection => 'Налоги';
 
   @override
@@ -3986,6 +4357,33 @@ class TRu extends T {
   @override
   String get receiptNote =>
       'Подтверждение оплаты. Для налогового счёта запросите его в деталях бронирования.';
+
+  @override
+  String get checkoutPointsUse => 'Использовать баллы';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'Доступно $count P · до $max P на эту оплату';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Баллы можно использовать при оплате в платёжном окне';
+
+  @override
+  String get pointsLedgerTitle => 'Журнал баллов';
+
+  @override
+  String get pointsAdjustAmount => 'Баллы (отрицательное число для списания)';
+
+  @override
+  String get pointsAdjustReason => 'Причина корректировки';
+
+  @override
+  String get pointsAdjustInvalid => 'Введите ненулевое количество и причину';
+
+  @override
+  String get pointsAdjustDone => 'Баллы скорректированы';
 
   @override
   String get webBookNow => 'Забронировать в браузере';

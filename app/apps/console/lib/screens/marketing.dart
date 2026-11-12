@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'campaign_tab.dart';
 import 'confirm_action.dart';
 import 'growth.dart';
 
@@ -25,7 +26,7 @@ class MarketingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return DefaultTabController(
-      length: 3,
+      length: 5,
       child: Column(
         children: [
           TabBar(
@@ -35,11 +36,19 @@ class MarketingScreen extends StatelessWidget {
               Tab(text: t.cIssueCoupon),
               Tab(text: t.cContent),
               Tab(text: t.growthTab),
+              Tab(text: t.cmTab),
+              Tab(text: t.anFunnel('30')),
             ],
           ),
           const Expanded(
             child: TabBarView(
-              children: [_Coupons(), _Content(), GrowthSettings()],
+              children: [
+                _Coupons(),
+                _Content(),
+                GrowthSettings(),
+                CampaignTab(),
+                AnalyticsTab(),
+              ],
             ),
           ),
         ],

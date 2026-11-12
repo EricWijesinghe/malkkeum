@@ -6,10 +6,17 @@ use crate::{
     auth::{self, Role},
     crypto,
     error::{ApiError, ApiResult},
+    lockout,
     state::AppState,
     totp,
 };
-use axum::{Json, Router, extract::State, routing::post};
+use axum::{
+    Json, Router,
+    extract::{ConnectInfo, State},
+    http::HeaderMap,
+    routing::post,
+};
+use std::{net::SocketAddr, time::Instant};
 use chrono::Utc;
 use data_encoding::BASE32_NOPAD;
 use rand::{RngCore, rngs::OsRng};
@@ -121,12 +128,24 @@ async fn enrol_confirm(State(s): State<AppState>, Json(req): Json<MfaInput>) -> 
 }
 
 /// Second factor at sign-in: a TOTP code (each step accepted once) or one unused recovery code.
-async fn verify(State(s): State<AppState>, Json(req): Json<MfaInput>) -> ApiResult<Json<Value>> {
+async fn verify(
+    State(s): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Json(req): Json<MfaInput>,
+) -> ApiResult<Json<Value>> {
     let id = subject(&s, &req.mfa_token)?;
-    let (_, role, enabled, last_step, _, _, secret) = load(&s, id).await?;
+    let (email, role, enabled, last_step, locked, _, secret) = load(&s, id).await?;
+    // A challenge issued before the lock must not finish sign-in while the account is locked.
+    if locked {
+        return Err(ApiError::RateLimited);
+    }
     if !enabled {
         return Err(ApiError::Unauthorized);
     }
+    let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &email);
+    s.lockout.delay(&keys, Instant::now()).await;
+    s.lockout.check(&keys, Instant::now())?;
     let accepted = match (req.code, req.recovery_code) {
         (Some(code), _) => {
             let secret = secret.and_then(|enc| crypto::decrypt(&s.config.data_key, &enc)).and_then(|b32| totp::decode_secret(&b32));
@@ -152,10 +171,14 @@ async fn verify(State(s): State<AppState>, Json(req): Json<MfaInput>) -> ApiResu
         (None, None) => return Err(ApiError::BadRequest("mfa_invalid_code")),
     };
     if !accepted {
+        if s.lockout.failure(&keys, Instant::now()) {
+            crate::ops::auth_abuse(&s.db, "mfa_lockout").await;
+        }
         record_failure(&s, id).await?;
         return Err(ApiError::BadRequest("mfa_invalid_code"));
     }
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
+    s.lockout.success(&keys);
     Ok(Json(session_tokens(&s, id, &role).await?))
 }
 

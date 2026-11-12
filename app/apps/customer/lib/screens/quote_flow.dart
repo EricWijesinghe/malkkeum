@@ -24,6 +24,15 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   bool get _moveIn => widget.service.code == 'move_in';
   ServiceHue get _hue => ServiceHues.of(widget.service.code);
 
+  @override
+  void initState() {
+    super.initState();
+    // After the first frame: the app is only reachable through the context once mounted.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.appRead.analytics.track('quote_view', screen: 'quote');
+    });
+  }
+
   bool get _canNext => switch (_step) {
     0 => a.cleaningType != null,
     1 => a.stepBasicDone,
@@ -272,6 +281,7 @@ class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
   Future<void> _submit() async {
     setState(() => _busy = true);
     final app = context.appRead;
+    app.analytics.track('booking_start', screen: 'quote');
     try {
       final b = Booking.fromJson(
         await app.api.post(
@@ -281,6 +291,7 @@ class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
             )
             as Json,
       );
+      app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();
       app.loadUnread().ignore();
       if (!mounted) return;

@@ -2,6 +2,7 @@
 library;
 
 export 'src/address_search.dart';
+export 'src/analytics.dart';
 export 'src/api.dart';
 export 'src/billing.dart';
 export 'src/app_update.dart';

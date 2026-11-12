@@ -1,10 +1,17 @@
 use crate::{
     auth::{self, Auth, Role},
     error::{ApiError, ApiResult},
+    lockout,
     providers::social::{self, SocialUser},
     state::AppState,
 };
-use axum::{Json, Router, extract::State, routing::post};
+use axum::{
+    Json, Router,
+    extract::{ConnectInfo, Path, State},
+    http::HeaderMap,
+    routing::{delete, get, post},
+};
+use std::{net::SocketAddr, time::Instant};
 use serde_json::{Value, json};
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
@@ -28,6 +35,8 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/refresh", post(refresh))
         .route("/auth/logout", post(logout))
         .route("/auth/logout-all", post(logout_all))
+        .route("/auth/sessions", get(sessions))
+        .route("/auth/sessions/{family}", delete(revoke_session))
         .route("/auth/staff/login", post(staff_login))
         .route("/auth/social", post(social_login))
 }
@@ -100,6 +109,9 @@ struct VerifyRequest {
     phone: String,
     code: String,
     audience: Audience,
+    /// First-touch UTM / referral the app captured; only used when the account is created.
+    #[serde(default)]
+    attribution: Option<Value>,
 }
 
 #[derive(Serialize)]
@@ -131,9 +143,27 @@ pub(super) async fn issue_tokens(s: &AppState, id: Uuid, role: Role, is_new: boo
     })
 }
 
-async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -> ApiResult<Json<Tokens>> {
+async fn verify_otp(
+    State(s): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Json(req): Json<VerifyRequest>,
+) -> ApiResult<Json<Tokens>> {
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
-    consume_otp(&s, &phone, &req.code).await?;
+    // Guessing across fresh codes for one number is stopped here, not only by the per-code attempt cap.
+    let keys = lockout::keys("otp", lockout::ip_of(&s, peer, &headers), &phone);
+    s.lockout.delay(&keys, Instant::now()).await;
+    s.lockout.check(&keys, Instant::now())?;
+    match consume_otp(&s, &phone, &req.code).await {
+        Ok(()) => s.lockout.success(&keys),
+        Err(e @ ApiError::BadRequest(_)) => {
+            if s.lockout.failure(&keys, Instant::now()) {
+                crate::ops::auth_abuse(&s.db, "otp_lockout").await;
+            }
+            return Err(e);
+        }
+        Err(e) => return Err(e),
+    }
 
     // Partner app: a phone that owns a team logs in as owner; otherwise an invited team member logs in as member.
     let member = if req.audience == Audience::Partner && !owner_phone_exists(&s, &phone).await? {
@@ -150,12 +180,21 @@ async fn verify_otp(State(s): State<AppState>, Json(req): Json<VerifyRequest>) -
         Audience::Partner => ("pros", Role::Pro),
     };
     // Upsert keeps sign-up and login a single step; xmax = 0 means the row was inserted.
-    let (id, is_new): (Uuid, bool) = sqlx::query_as(&format!(
-        "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
-    ))
-    .bind(&phone)
-    .fetch_one(&s.db)
-    .await?;
+    let (id, is_new): (Uuid, bool) = match role {
+        Role::Customer => sqlx::query_as(
+            "INSERT INTO users (phone, acquisition) VALUES ($1, $2) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)",
+        )
+        .bind(&phone)
+        .bind(crate::acquisition::clean(req.attribution.as_ref()).map(sqlx::types::Json))
+        .fetch_one(&s.db)
+        .await?,
+        _ => sqlx::query_as(&format!(
+            "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
+        ))
+        .bind(&phone)
+        .fetch_one(&s.db)
+        .await?,
+    };
     if role == Role::Pro && is_new {
         sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING")
             .bind(id)
@@ -279,6 +318,7 @@ async fn reject_reuse(s: &AppState, hash: &str) -> ApiResult<()> {
             .execute(&s.db)
             .await?;
         super::audit(&s.db, &role, Some(subject), "auth.refresh_reuse", &family.to_string(), json!({})).await?;
+        crate::ops::auth_abuse(&s.db, "refresh_reuse").await;
     }
     Ok(())
 }
@@ -316,6 +356,45 @@ async fn logout_all(State(s): State<AppState>, a: Auth) -> ApiResult<Json<serde_
     Ok(Json(serde_json::json!({ "ok": true })))
 }
 
+/// One signed-in device: a refresh family that still holds a live token.
+#[derive(Serialize)]
+struct SessionView {
+    session_id: Uuid,
+    signed_in_at: chrono::DateTime<Utc>,
+    last_refreshed_at: chrono::DateTime<Utc>,
+}
+
+/// Signed-in devices of the caller, most recently refreshed first.
+async fn sessions(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Value>> {
+    let rows: Vec<(Uuid, chrono::DateTime<Utc>, chrono::DateTime<Utc>)> = sqlx::query_as(
+        "SELECT family_id, min(created_at), max(created_at) FROM refresh_tokens
+         WHERE subject = $1 AND revoked_at IS NULL AND rotated_at IS NULL AND expires_at > now()
+         GROUP BY family_id ORDER BY max(created_at) DESC",
+    )
+    .bind(a.id)
+    .fetch_all(&s.db)
+    .await?;
+    let items: Vec<SessionView> = rows
+        .into_iter()
+        .map(|(session_id, signed_in_at, last_refreshed_at)| SessionView { session_id, signed_in_at, last_refreshed_at })
+        .collect();
+    Ok(Json(json!({ "sessions": items })))
+}
+
+/// Signs one device out: its whole family is revoked. Another account's family looks like no family.
+async fn revoke_session(State(s): State<AppState>, a: Auth, Path(family): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let revoked = sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND family_id = $2 AND revoked_at IS NULL")
+        .bind(a.id)
+        .bind(family)
+        .execute(&s.db)
+        .await?
+        .rows_affected();
+    if revoked == 0 {
+        return Err(ApiError::NotFound);
+    }
+    Ok(Json(json!({ "ok": true })))
+}
+
 #[derive(Deserialize)]
 struct StaffLogin {
     email: String,
@@ -324,10 +403,18 @@ struct StaffLogin {
 
 /// Password step. Consultants get tokens; a second factor is required before tokens for enrolled staff and
 /// for admins, who must enrol first. Those steps run on a short-lived challenge token (routes/staff_mfa).
-async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> ApiResult<Json<Value>> {
+async fn staff_login(
+    State(s): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Json(req): Json<StaffLogin>,
+) -> ApiResult<Json<Value>> {
     if req.password.len() > MAX_PASSWORD_BYTES {
         return Err(ApiError::Unauthorized);
     }
+    let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &req.email);
+    s.lockout.delay(&keys, Instant::now()).await;
+    s.lockout.check(&keys, Instant::now())?;
     let row: Option<(Uuid, String, String, bool)> =
         sqlx::query_as("SELECT id, password_hash, role, COALESCE(locked_until > now(), FALSE) FROM staff WHERE lower(email) = lower($1) AND active")
             .bind(req.email.trim())
@@ -339,6 +426,9 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
     // Verify against a dummy hash when the account is missing to keep timing uniform.
     let hash = row.as_ref().map(|r| r.1.clone()).unwrap_or_else(|| STAFF_DUMMY_HASH.to_string());
     let ok = auth::verify_password_blocking(req.password, hash).await?;
+    if !ok && s.lockout.failure(&keys, Instant::now()) {
+        crate::ops::auth_abuse(&s.db, "staff_lockout").await;
+    }
     if let (Some(r), false) = (&row, ok) {
         // Lock the account for a while after repeated failures (online guessing).
         sqlx::query(
@@ -363,6 +453,7 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
         return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
+    s.lockout.success(&keys);
     let tokens = issue_tokens(&s, id, Role::StaffConsultant, false, None).await?;
     Ok(Json(serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))?))
 }
@@ -384,7 +475,12 @@ const IDENTITY_SQL: &str = "SELECT subject_id FROM user_identities WHERE provide
 struct SocialLogin {
     provider: String,
     token: String,
+    /// Raw nonce the app generated for this sign-in; Apple and Google tokens must echo it when one was requested.
+    #[serde(default)]
+    nonce: Option<String>,
     audience: Audience,
+    #[serde(default)]
+    attribution: Option<Value>,
 }
 
 #[derive(Serialize)]
@@ -402,12 +498,14 @@ async fn social_login(State(s): State<AppState>, Json(req): Json<SocialLogin>) -
     if req.token.is_empty() || req.token.len() > MAX_SOCIAL_TOKEN {
         return Err(ApiError::BadRequest("invalid_token"));
     }
-    let social = social::verify(&s.providers, &req.provider, &req.token).await?;
+    let nonce = req.nonce.as_deref().filter(|n| !n.is_empty());
+    let social = social::verify(&s.providers, &req.provider, &req.token, nonce).await?;
     let role = match req.audience {
         Audience::Customer => Role::Customer,
         Audience::Partner => Role::Pro,
     };
-    let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role).await?;
+    let attribution = crate::acquisition::clean(req.attribution.as_ref());
+    let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role, attribution).await?;
     ensure_active(&s, id, role).await?;
     let needs_phone = phone_missing(&s, id, role).await?;
     let tokens = issue_tokens(&s, id, role, is_new, None).await?;
@@ -424,15 +522,19 @@ async fn find_identity(s: &AppState, provider: &str, social: &SocialUser, role: 
 }
 
 /// Finds the account behind a provider identity, or creates it with its identity row in one transaction.
-async fn find_or_create_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role) -> ApiResult<(Uuid, bool)> {
+async fn find_or_create_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role, attribution: Option<Value>) -> ApiResult<(Uuid, bool)> {
     if let Some(id) = find_identity(s, provider, social, role).await? {
         return Ok((id, false));
     }
     let mut tx = s.db.begin().await?;
-    let table = if role == Role::Pro { "pros" } else { "users" };
-    let id: Uuid = sqlx::query_scalar(&format!("INSERT INTO {table} DEFAULT VALUES RETURNING id"))
-        .fetch_one(&mut *tx)
-        .await?;
+    let id: Uuid = if role == Role::Pro {
+        sqlx::query_scalar("INSERT INTO pros DEFAULT VALUES RETURNING id").fetch_one(&mut *tx).await?
+    } else {
+        sqlx::query_scalar("INSERT INTO users (acquisition) VALUES ($1) RETURNING id")
+            .bind(attribution.map(sqlx::types::Json))
+            .fetch_one(&mut *tx)
+            .await?
+    };
     let linked =
         sqlx::query("INSERT INTO user_identities (provider, provider_user_id, role, subject_id, email) VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING")
             .bind(provider)

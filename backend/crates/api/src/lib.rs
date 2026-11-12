@@ -1,7 +1,9 @@
 //! Backend HTTP API. `main.rs` calls [`serve`]; integration tests build the router from these modules.
 //! New top-level modules are declared here (not in main.rs).
 
+pub mod acquisition;
 pub mod address;
+pub mod analytics;
 pub mod app_links;
 pub mod ai;
 pub mod auth;
@@ -16,6 +18,8 @@ pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
 pub mod lifecycle;
+pub mod lockout;
+pub mod marketing;
 pub mod metrics;
 pub mod openapi;
 pub mod noshow;
@@ -25,6 +29,7 @@ pub mod payout;
 pub mod payout_sync;
 pub mod points;
 pub mod privacy;
+pub mod quality;
 pub mod retention;
 pub mod safety;
 pub mod providers;
@@ -33,6 +38,7 @@ pub mod realtime;
 pub mod reconciler;
 pub mod routes;
 pub mod seed;
+pub mod seo;
 pub mod state;
 pub mod telemetry;
 pub mod totp;
@@ -56,6 +62,7 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
         ai_debounce: Default::default(),
         address_search: Default::default(),
         review_reports: Default::default(),
+        lockout: Default::default(),
     })
 }
 
@@ -90,6 +97,10 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         retention::spawn(state.clone()),
         noshow::spawn(state.clone()),
         points::spawn(state.clone()),
+        marketing::spawn(state.clone()),
+        quality::spawn(state.clone()),
+        routes::waitlist::spawn(state.clone()),
+        routes::subscription_engine::spawn(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;

@@ -1954,6 +1954,82 @@ class TKo extends T {
   String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
 
   @override
+  String get guestSheetTitle => '계속하려면 전화번호로 로그인하세요';
+
+  @override
+  String get guestSheetBody => '입력하신 내용은 그대로 남아 있어요. 인증 후 바로 이어서 진행됩니다.';
+
+  @override
+  String get greetMorning => '좋은 아침이에요';
+
+  @override
+  String get greetAfternoon => '좋은 오후예요';
+
+  @override
+  String get greetEvening => '좋은 저녁이에요';
+
+  @override
+  String get feedHeading => '회원님을 위한 추천';
+
+  @override
+  String get feedTitleDue => '다음 청소 시기가 됐어요';
+
+  @override
+  String get feedTitleRebook => '지난번 파트너를 다시 예약하세요';
+
+  @override
+  String get feedTitleDraft => '작성 중이던 견적을 이어서 보세요';
+
+  @override
+  String get feedTitleSeasonal => '지금 계절에 꼭 필요한 청소예요';
+
+  @override
+  String get feedTitleSize => '저장된 집 크기로 바로 견적 보기';
+
+  @override
+  String get feedTitleSubscription => '정기 구독으로 더 저렴하게';
+
+  @override
+  String get feedTitleDistrict => '우리 동네에서도 예약이 이어지고 있어요';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '마지막 청소 후 $days일이 지났어요';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days일 전 5점을 드린 파트너예요';
+  }
+
+  @override
+  String get feedWhyDraft => '이 기기에서 견적을 끝내지 않았어요';
+
+  @override
+  String get feedWhySummer => '여름 전에 에어컨을 청소하기 좋은 때예요';
+
+  @override
+  String get feedWhyMoving => '입주·이사가 몰리는 시기예요';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '명절 대청소까지 $days일 남았어요';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '저장된 $pyeong평 기준으로 바로 견적을 볼 수 있어요';
+  }
+
+  @override
+  String get feedWhyRepeat => '자주 예약하신다면 구독이 더 저렴해요';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '이번 주 $district에서 $count집이 예약했어요';
+  }
+
+  @override
   String get fFinance => '재무';
 
   @override
@@ -2269,6 +2345,127 @@ class TKo extends T {
   String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
 
   @override
+  String get cmTab => '캠페인';
+
+  @override
+  String get cmNew => '새 캠페인';
+
+  @override
+  String get cmAudience => '대상 고객';
+
+  @override
+  String get cmSegAll => '전체 고객';
+
+  @override
+  String get cmSegNever => '예약 이력 없음';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '마지막 예약 $days일 이상 전';
+  }
+
+  @override
+  String get cmDays => '일 수';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '전체 $total명 중 마케팅 동의 $consented명';
+  }
+
+  @override
+  String get cmChannel => '발송 채널';
+
+  @override
+  String get cmPush => '앱 푸시';
+
+  @override
+  String get cmSms => '문자(SMS)';
+
+  @override
+  String get cmTitle => '제목';
+
+  @override
+  String get cmBody => '내용';
+
+  @override
+  String get cmOptout => '수신거부 번호 (080)';
+
+  @override
+  String get cmPreview => '미리보기';
+
+  @override
+  String get cmSchedule => '발송 시각';
+
+  @override
+  String get cmSendNow => '바로 발송';
+
+  @override
+  String get cmTestSend => '내 번호로 테스트 발송';
+
+  @override
+  String get cmCreate => '캠페인 저장';
+
+  @override
+  String get cmNeedOptout => '문자 발송에는 080 수신거부 번호가 필요해요';
+
+  @override
+  String get cmLog => '발송 기록';
+
+  @override
+  String cmStatSent(String count) {
+    return '발송 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '동의 없음 $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '실패 $count';
+  }
+
+  @override
+  String get cmSaved => '캠페인을 만들었어요';
+
+  @override
+  String anFunnel(String days) {
+    return '가입 후 퍼널 (최근 $days일)';
+  }
+
+  @override
+  String get anInstalls => '앱 실행 (동의)';
+
+  @override
+  String get anSignedUp => '가입';
+
+  @override
+  String get anQuoted => '견적 요청';
+
+  @override
+  String get anBooked => '예약';
+
+  @override
+  String get anPaid => '결제';
+
+  @override
+  String get anRepeat => '재구매 (2회 이상)';
+
+  @override
+  String get anCohorts => '주간 코호트 (가입 주 기준 예약률)';
+
+  @override
+  String anCohortSize(String count) {
+    return '가입 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n주 후 예약';
+  }
+
+  @override
   String get cOps => '시스템 상태';
 
   @override
@@ -2427,6 +2624,9 @@ class TKo extends T {
 
   @override
   String get oRuleDisk => '디스크 부족';
+
+  @override
+  String get oRuleAuth => '계정 보안 이상(로그인 잠금 등)';
 
   @override
   String get oQuietHours => '조용한 시간';
@@ -3078,6 +3278,50 @@ class TKo extends T {
   }
 
   @override
+  String get oFlags => '기능 스위치';
+
+  @override
+  String get oFlagBooking => '예약';
+
+  @override
+  String get oFlagChat => '채팅';
+
+  @override
+  String get oFlagAi => 'AI 상담';
+
+  @override
+  String get oFlagPayments => '결제';
+
+  @override
+  String get oMaintenance => '점검 모드';
+
+  @override
+  String get oMaintenanceHint => '켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.';
+
+  @override
+  String get oMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get oClientErrors => '앱 오류 보고';
+
+  @override
+  String get oClientErrorsHint =>
+      '웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.';
+
+  @override
+  String get oClientErrorsEmpty => '최근 오류가 없어요';
+
+  @override
+  String get oHeartbeat => '업타임 하트비트';
+
+  @override
+  String get oHeartbeatOn => '연결됨. 서버가 살아 있으면 외부에서 알려줘요.';
+
+  @override
+  String get oHeartbeatOff =>
+      '설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.';
+
+  @override
   String get pvManage => '동의 관리';
 
   @override
@@ -3545,6 +3789,127 @@ class TKo extends T {
       '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
 
   @override
+  String get subTitle => '정기 청소';
+
+  @override
+  String get subNew => '정기 청소 신청';
+
+  @override
+  String get subCadence => '주기';
+
+  @override
+  String get subWeekly => '매주';
+
+  @override
+  String get subBiweekly => '2주마다';
+
+  @override
+  String get subEvery4Weeks => '4주마다';
+
+  @override
+  String get subWeekday => '요일';
+
+  @override
+  String get subHour => '시작 시간';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '정기 청소는 방문마다 $percent% 할인돼요';
+  }
+
+  @override
+  String get subChargeNote => '방문 하루 전에 등록된 카드로 결제해요';
+
+  @override
+  String get subCreate => '신청하기';
+
+  @override
+  String get subCreated => '정기 청소를 신청했어요';
+
+  @override
+  String get subNeedAddress => '방문할 주소를 먼저 등록해 주세요';
+
+  @override
+  String get subListEmpty => '아직 정기 청소가 없어요';
+
+  @override
+  String get subStatusActive => '이용 중';
+
+  @override
+  String get subStatusPaused => '일시 정지';
+
+  @override
+  String get subStatusCancelled => '해지됨';
+
+  @override
+  String subNextVisit(String date) {
+    return '다음 방문 $date';
+  }
+
+  @override
+  String get subPause => '일시 정지';
+
+  @override
+  String get subResume => '다시 시작';
+
+  @override
+  String get subCancelSub => '정기 청소 해지';
+
+  @override
+  String get subCancelConfirm => '앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.';
+
+  @override
+  String get subSkip => '이번 방문 건너뛰기';
+
+  @override
+  String get subMove => '날짜 변경';
+
+  @override
+  String get subVisitLocked => '방문 하루 전부터는 변경할 수 없어요';
+
+  @override
+  String get subPausedPayment => '결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.';
+
+  @override
+  String get subStatePlanned => '예정';
+
+  @override
+  String get subStateBooked => '예약됨';
+
+  @override
+  String get subStateSkipped => '건너뜀';
+
+  @override
+  String get subStateMissed => '놓침';
+
+  @override
+  String get pSubsTitle => '정기 고객';
+
+  @override
+  String get pSubsEmpty => '정기 고객이 아직 없어요';
+
+  @override
+  String get cSubsTitle => '정기 청소 구독';
+
+  @override
+  String get cSubsEdit => '고객 대신 수정';
+
+  @override
+  String get cMrr => '월 반복 매출 (MRR)';
+
+  @override
+  String get cChurn => '해지율';
+
+  @override
+  String get cActiveSubs => '이용 중 구독';
+
+  @override
+  String get cRecognized => '기간 인식 매출';
+
+  @override
+  String get cSubsLoadFailed => '구독 목록을 불러오지 못했어요';
+
+  @override
   String get tTaxSection => '세무';
 
   @override
@@ -3875,6 +4240,32 @@ class TKo extends T {
 
   @override
   String get receiptNote => '결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.';
+
+  @override
+  String get checkoutPointsUse => '포인트 사용';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '보유 $count P · 이번 결제에 최대 $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow => '포인트는 결제창으로 결제할 때 쓸 수 있어요';
+
+  @override
+  String get pointsLedgerTitle => '포인트 원장';
+
+  @override
+  String get pointsAdjustAmount => '포인트 (차감은 음수로 입력)';
+
+  @override
+  String get pointsAdjustReason => '조정 사유';
+
+  @override
+  String get pointsAdjustInvalid => '0이 아닌 포인트와 사유를 입력해 주세요';
+
+  @override
+  String get pointsAdjustDone => '포인트를 조정했어요';
 
   @override
   String get webBookNow => '웹에서 바로 예약';

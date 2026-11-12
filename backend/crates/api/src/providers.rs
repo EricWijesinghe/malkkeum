@@ -24,6 +24,7 @@ use std::{
     sync::{Arc, RwLock},
     time::Duration,
 };
+use uuid::Uuid;
 
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -166,27 +167,27 @@ impl Providers {
         Ok(())
     }
 
-    /// Customer message for an event kind. Sent as AlimTalk when a template is configured for `kind`
-    /// (Solapi carries the text as SMS fallback); if that call fails, a plain SMS goes out instead.
-    /// Kinds without a template send nothing here (in-app and push still cover them).
-    pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
+    /// Transactional message for an alert kind (see `sms::alert_key`), in Korean.
+    /// AlimTalk when a template and channel id are configured. SMS with the same text when there is no
+    /// template, or when the AlimTalk call fails. Dev mode only logs.
+    pub async fn send_customer_message(&self, phone: &str, kind: &str, brand: &str, title: &str, body: &str) -> Result<(), ProviderError> {
         let integ = self.integ();
         let Some(cfg) = integ.solapi.as_ref() else {
             return Ok(());
         };
-        let Some(template) = cfg.templates.get(kind) else {
-            return Ok(());
-        };
         let text = format!("{title}\n{body}");
+        let template = cfg.templates.get(kind).zip(cfg.pf_id.as_deref());
         if self.dev() {
-            tracing::info!(target: "fake_alimtalk", phone, kind, text, "alimtalk sent");
+            tracing::info!(target: "fake_alimtalk", phone, kind, text, has_template = template.is_some(), "customer message sent");
             return Ok(());
         }
-        let variables = json!({ "#{title}": title, "#{body}": body });
-        let sent = match cfg.pf_id.as_deref() {
-            Some(pf_id) => sms::send_alimtalk(&self.http, cfg, pf_id, template, phone, &text, variables).await,
-            None => Err(ProviderError::NotConfigured("alimtalk")),
+        let Some((template_id, pf_id)) = template else {
+            let sent = sms::send_sms(&self.http, cfg, phone, &text).await;
+            self.observe("solapi", outcome(&sent)).await;
+            return sent;
         };
+        let variables = json!({ "#{brand}": brand, "#{title}": title, "#{body}": body });
+        let sent = sms::send_alimtalk(&self.http, cfg, pf_id, template_id, phone, &text, variables).await;
         let final_result = match sent {
             Ok(()) => Ok(()),
             Err(e) => {
@@ -218,6 +219,20 @@ impl Providers {
             return Err(ProviderError::Declined("card_declined".into()));
         }
         tracing::info!(target: "fake_pg", amount, idempotency_key, "charged");
+        Ok(random_id("tx"))
+    }
+
+    /// Charges a saved PortOne billing key once for a subscription visit. Dev mode fakes it; `FAKE_DECLINE_KEY` declines.
+    pub async fn charge_billing(&self, billing_key: &str, amount: i64, payment_id: &str, order: &str, customer: Uuid) -> Result<String, ProviderError> {
+        if !self.dev() {
+            let charged = portone::charge_billing(self, billing_key, payment_id, amount, order, customer).await;
+            self.observe("portone", outcome(&charged)).await;
+            return charged;
+        }
+        if billing_key == FAKE_DECLINE_KEY {
+            return Err(ProviderError::Declined("card_declined".into()));
+        }
+        tracing::info!(target: "fake_pg", amount, payment_id, "billed");
         Ok(random_id("tx"))
     }
 

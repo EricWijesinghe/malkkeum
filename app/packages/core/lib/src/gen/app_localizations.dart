@@ -3841,6 +3841,138 @@ abstract class T {
   /// **'확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.'**
   String get err_payout_account_unverified;
 
+  /// No description provided for @guestSheetTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속하려면 전화번호로 로그인하세요'**
+  String get guestSheetTitle;
+
+  /// No description provided for @guestSheetBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력하신 내용은 그대로 남아 있어요. 인증 후 바로 이어서 진행됩니다.'**
+  String get guestSheetBody;
+
+  /// No description provided for @greetMorning.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 아침이에요'**
+  String get greetMorning;
+
+  /// No description provided for @greetAfternoon.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 오후예요'**
+  String get greetAfternoon;
+
+  /// No description provided for @greetEvening.
+  ///
+  /// In ko, this message translates to:
+  /// **'좋은 저녁이에요'**
+  String get greetEvening;
+
+  /// No description provided for @feedHeading.
+  ///
+  /// In ko, this message translates to:
+  /// **'회원님을 위한 추천'**
+  String get feedHeading;
+
+  /// No description provided for @feedTitleDue.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 청소 시기가 됐어요'**
+  String get feedTitleDue;
+
+  /// No description provided for @feedTitleRebook.
+  ///
+  /// In ko, this message translates to:
+  /// **'지난번 파트너를 다시 예약하세요'**
+  String get feedTitleRebook;
+
+  /// No description provided for @feedTitleDraft.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성 중이던 견적을 이어서 보세요'**
+  String get feedTitleDraft;
+
+  /// No description provided for @feedTitleSeasonal.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 계절에 꼭 필요한 청소예요'**
+  String get feedTitleSeasonal;
+
+  /// No description provided for @feedTitleSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 집 크기로 바로 견적 보기'**
+  String get feedTitleSize;
+
+  /// No description provided for @feedTitleSubscription.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 구독으로 더 저렴하게'**
+  String get feedTitleSubscription;
+
+  /// No description provided for @feedTitleDistrict.
+  ///
+  /// In ko, this message translates to:
+  /// **'우리 동네에서도 예약이 이어지고 있어요'**
+  String get feedTitleDistrict;
+
+  /// No description provided for @feedWhyCadence.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 청소 후 {days}일이 지났어요'**
+  String feedWhyCadence(String days);
+
+  /// No description provided for @feedWhyRated.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 전 5점을 드린 파트너예요'**
+  String feedWhyRated(String days);
+
+  /// No description provided for @feedWhyDraft.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기에서 견적을 끝내지 않았어요'**
+  String get feedWhyDraft;
+
+  /// No description provided for @feedWhySummer.
+  ///
+  /// In ko, this message translates to:
+  /// **'여름 전에 에어컨을 청소하기 좋은 때예요'**
+  String get feedWhySummer;
+
+  /// No description provided for @feedWhyMoving.
+  ///
+  /// In ko, this message translates to:
+  /// **'입주·이사가 몰리는 시기예요'**
+  String get feedWhyMoving;
+
+  /// No description provided for @feedWhyHoliday.
+  ///
+  /// In ko, this message translates to:
+  /// **'명절 대청소까지 {days}일 남았어요'**
+  String feedWhyHoliday(String days);
+
+  /// No description provided for @feedWhySize.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 {pyeong}평 기준으로 바로 견적을 볼 수 있어요'**
+  String feedWhySize(String pyeong);
+
+  /// No description provided for @feedWhyRepeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'자주 예약하신다면 구독이 더 저렴해요'**
+  String get feedWhyRepeat;
+
+  /// No description provided for @feedWhyDistrict.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 주 {district}에서 {count}집이 예약했어요'**
+  String feedWhyDistrict(String district, String count);
+
   /// No description provided for @fFinance.
   ///
   /// In ko, this message translates to:
@@ -4429,6 +4561,216 @@ abstract class T {
   /// **'더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.'**
   String get uMaintenanceBody;
 
+  /// No description provided for @cmTab.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인'**
+  String get cmTab;
+
+  /// No description provided for @cmNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 캠페인'**
+  String get cmNew;
+
+  /// No description provided for @cmAudience.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 고객'**
+  String get cmAudience;
+
+  /// No description provided for @cmSegAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 고객'**
+  String get cmSegAll;
+
+  /// No description provided for @cmSegNever.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 이력 없음'**
+  String get cmSegNever;
+
+  /// No description provided for @cmSegLapsed.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 예약 {days}일 이상 전'**
+  String cmSegLapsed(String days);
+
+  /// No description provided for @cmDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'일 수'**
+  String get cmDays;
+
+  /// No description provided for @cmConsentCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 {total}명 중 마케팅 동의 {consented}명'**
+  String cmConsentCount(String total, String consented);
+
+  /// No description provided for @cmChannel.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 채널'**
+  String get cmChannel;
+
+  /// No description provided for @cmPush.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 푸시'**
+  String get cmPush;
+
+  /// No description provided for @cmSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자(SMS)'**
+  String get cmSms;
+
+  /// No description provided for @cmTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get cmTitle;
+
+  /// No description provided for @cmBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'내용'**
+  String get cmBody;
+
+  /// No description provided for @cmOptout.
+  ///
+  /// In ko, this message translates to:
+  /// **'수신거부 번호 (080)'**
+  String get cmOptout;
+
+  /// No description provided for @cmPreview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리보기'**
+  String get cmPreview;
+
+  /// No description provided for @cmSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 시각'**
+  String get cmSchedule;
+
+  /// No description provided for @cmSendNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 발송'**
+  String get cmSendNow;
+
+  /// No description provided for @cmTestSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 번호로 테스트 발송'**
+  String get cmTestSend;
+
+  /// No description provided for @cmCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인 저장'**
+  String get cmCreate;
+
+  /// No description provided for @cmNeedOptout.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 발송에는 080 수신거부 번호가 필요해요'**
+  String get cmNeedOptout;
+
+  /// No description provided for @cmLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 기록'**
+  String get cmLog;
+
+  /// No description provided for @cmStatSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 {count}'**
+  String cmStatSent(String count);
+
+  /// No description provided for @cmStatSkipped.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 없음 {count}'**
+  String cmStatSkipped(String count);
+
+  /// No description provided for @cmStatFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패 {count}'**
+  String cmStatFailed(String count);
+
+  /// No description provided for @cmSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'캠페인을 만들었어요'**
+  String get cmSaved;
+
+  /// No description provided for @anFunnel.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 후 퍼널 (최근 {days}일)'**
+  String anFunnel(String days);
+
+  /// No description provided for @anInstalls.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 실행 (동의)'**
+  String get anInstalls;
+
+  /// No description provided for @anSignedUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입'**
+  String get anSignedUp;
+
+  /// No description provided for @anQuoted.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 요청'**
+  String get anQuoted;
+
+  /// No description provided for @anBooked.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get anBooked;
+
+  /// No description provided for @anPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제'**
+  String get anPaid;
+
+  /// No description provided for @anRepeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'재구매 (2회 이상)'**
+  String get anRepeat;
+
+  /// No description provided for @anCohorts.
+  ///
+  /// In ko, this message translates to:
+  /// **'주간 코호트 (가입 주 기준 예약률)'**
+  String get anCohorts;
+
+  /// No description provided for @anCohortSize.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 {count}'**
+  String anCohortSize(String count);
+
+  /// No description provided for @anWeekAfter.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}주 후 예약'**
+  String anWeekAfter(String n);
+
   /// No description provided for @cOps.
   ///
   /// In ko, this message translates to:
@@ -4698,6 +5040,12 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'디스크 부족'**
   String get oRuleDisk;
+
+  /// No description provided for @oRuleAuth.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정 보안 이상(로그인 잠금 등)'**
+  String get oRuleAuth;
 
   /// No description provided for @oQuietHours.
   ///
@@ -5946,6 +6294,90 @@ abstract class T {
   /// **'판매자 상태: {status}'**
   String poSellerDone(String status);
 
+  /// No description provided for @oFlags.
+  ///
+  /// In ko, this message translates to:
+  /// **'기능 스위치'**
+  String get oFlags;
+
+  /// No description provided for @oFlagBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get oFlagBooking;
+
+  /// No description provided for @oFlagChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'채팅'**
+  String get oFlagChat;
+
+  /// No description provided for @oFlagAi.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담'**
+  String get oFlagAi;
+
+  /// No description provided for @oFlagPayments.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제'**
+  String get oFlagPayments;
+
+  /// No description provided for @oMaintenance.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 모드'**
+  String get oMaintenance;
+
+  /// No description provided for @oMaintenanceHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.'**
+  String get oMaintenanceHint;
+
+  /// No description provided for @oMaintenanceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 안내 문구'**
+  String get oMaintenanceMessage;
+
+  /// No description provided for @oClientErrors.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 오류 보고'**
+  String get oClientErrors;
+
+  /// No description provided for @oClientErrorsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.'**
+  String get oClientErrorsHint;
+
+  /// No description provided for @oClientErrorsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 오류가 없어요'**
+  String get oClientErrorsEmpty;
+
+  /// No description provided for @oHeartbeat.
+  ///
+  /// In ko, this message translates to:
+  /// **'업타임 하트비트'**
+  String get oHeartbeat;
+
+  /// No description provided for @oHeartbeatOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결됨. 서버가 살아 있으면 외부에서 알려줘요.'**
+  String get oHeartbeatOn;
+
+  /// No description provided for @oHeartbeatOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.'**
+  String get oHeartbeatOff;
+
   /// No description provided for @pvManage.
   ///
   /// In ko, this message translates to:
@@ -6846,6 +7278,240 @@ abstract class T {
   /// **'이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
   String get cStaffResetBody;
 
+  /// No description provided for @subTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소'**
+  String get subTitle;
+
+  /// No description provided for @subNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 신청'**
+  String get subNew;
+
+  /// No description provided for @subCadence.
+  ///
+  /// In ko, this message translates to:
+  /// **'주기'**
+  String get subCadence;
+
+  /// No description provided for @subWeekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'매주'**
+  String get subWeekly;
+
+  /// No description provided for @subBiweekly.
+  ///
+  /// In ko, this message translates to:
+  /// **'2주마다'**
+  String get subBiweekly;
+
+  /// No description provided for @subEvery4Weeks.
+  ///
+  /// In ko, this message translates to:
+  /// **'4주마다'**
+  String get subEvery4Weeks;
+
+  /// No description provided for @subWeekday.
+  ///
+  /// In ko, this message translates to:
+  /// **'요일'**
+  String get subWeekday;
+
+  /// No description provided for @subHour.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 시간'**
+  String get subHour;
+
+  /// No description provided for @subDiscountNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소는 방문마다 {percent}% 할인돼요'**
+  String subDiscountNote(String percent);
+
+  /// No description provided for @subChargeNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 하루 전에 등록된 카드로 결제해요'**
+  String get subChargeNote;
+
+  /// No description provided for @subCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'신청하기'**
+  String get subCreate;
+
+  /// No description provided for @subCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소를 신청했어요'**
+  String get subCreated;
+
+  /// No description provided for @subNeedAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문할 주소를 먼저 등록해 주세요'**
+  String get subNeedAddress;
+
+  /// No description provided for @subListEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 정기 청소가 없어요'**
+  String get subListEmpty;
+
+  /// No description provided for @subStatusActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용 중'**
+  String get subStatusActive;
+
+  /// No description provided for @subStatusPaused.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시 정지'**
+  String get subStatusPaused;
+
+  /// No description provided for @subStatusCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'해지됨'**
+  String get subStatusCancelled;
+
+  /// No description provided for @subNextVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 방문 {date}'**
+  String subNextVisit(String date);
+
+  /// No description provided for @subPause.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시 정지'**
+  String get subPause;
+
+  /// No description provided for @subResume.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 시작'**
+  String get subResume;
+
+  /// No description provided for @subCancelSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 해지'**
+  String get subCancelSub;
+
+  /// No description provided for @subCancelConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.'**
+  String get subCancelConfirm;
+
+  /// No description provided for @subSkip.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 방문 건너뛰기'**
+  String get subSkip;
+
+  /// No description provided for @subMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜 변경'**
+  String get subMove;
+
+  /// No description provided for @subVisitLocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 하루 전부터는 변경할 수 없어요'**
+  String get subVisitLocked;
+
+  /// No description provided for @subPausedPayment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.'**
+  String get subPausedPayment;
+
+  /// No description provided for @subStatePlanned.
+  ///
+  /// In ko, this message translates to:
+  /// **'예정'**
+  String get subStatePlanned;
+
+  /// No description provided for @subStateBooked.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약됨'**
+  String get subStateBooked;
+
+  /// No description provided for @subStateSkipped.
+  ///
+  /// In ko, this message translates to:
+  /// **'건너뜀'**
+  String get subStateSkipped;
+
+  /// No description provided for @subStateMissed.
+  ///
+  /// In ko, this message translates to:
+  /// **'놓침'**
+  String get subStateMissed;
+
+  /// No description provided for @pSubsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 고객'**
+  String get pSubsTitle;
+
+  /// No description provided for @pSubsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 고객이 아직 없어요'**
+  String get pSubsEmpty;
+
+  /// No description provided for @cSubsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소 구독'**
+  String get cSubsTitle;
+
+  /// No description provided for @cSubsEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 대신 수정'**
+  String get cSubsEdit;
+
+  /// No description provided for @cMrr.
+  ///
+  /// In ko, this message translates to:
+  /// **'월 반복 매출 (MRR)'**
+  String get cMrr;
+
+  /// No description provided for @cChurn.
+  ///
+  /// In ko, this message translates to:
+  /// **'해지율'**
+  String get cChurn;
+
+  /// No description provided for @cActiveSubs.
+  ///
+  /// In ko, this message translates to:
+  /// **'이용 중 구독'**
+  String get cActiveSubs;
+
+  /// No description provided for @cRecognized.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간 인식 매출'**
+  String get cRecognized;
+
+  /// No description provided for @cSubsLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'구독 목록을 불러오지 못했어요'**
+  String get cSubsLoadFailed;
+
   /// No description provided for @tTaxSection.
   ///
   /// In ko, this message translates to:
@@ -7481,6 +8147,54 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.'**
   String get receiptNote;
+
+  /// No description provided for @checkoutPointsUse.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 사용'**
+  String get checkoutPointsUse;
+
+  /// No description provided for @checkoutPointsAvail.
+  ///
+  /// In ko, this message translates to:
+  /// **'보유 {count} P · 이번 결제에 최대 {max} P'**
+  String checkoutPointsAvail(String count, String max);
+
+  /// No description provided for @checkoutPointsNeedsWindow.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트는 결제창으로 결제할 때 쓸 수 있어요'**
+  String get checkoutPointsNeedsWindow;
+
+  /// No description provided for @pointsLedgerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 원장'**
+  String get pointsLedgerTitle;
+
+  /// No description provided for @pointsAdjustAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 (차감은 음수로 입력)'**
+  String get pointsAdjustAmount;
+
+  /// No description provided for @pointsAdjustReason.
+  ///
+  /// In ko, this message translates to:
+  /// **'조정 사유'**
+  String get pointsAdjustReason;
+
+  /// No description provided for @pointsAdjustInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'0이 아닌 포인트와 사유를 입력해 주세요'**
+  String get pointsAdjustInvalid;
+
+  /// No description provided for @pointsAdjustDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트를 조정했어요'**
+  String get pointsAdjustDone;
 
   /// No description provided for @webBookNow.
   ///

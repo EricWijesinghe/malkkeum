@@ -2004,6 +2004,83 @@ class TVi extends T {
       'Đối tác này chưa có tài khoản nhận tiền đã xác minh. Hãy xác minh tài khoản trước.';
 
   @override
+  String get guestSheetTitle => 'Đăng nhập để tiếp tục';
+
+  @override
+  String get guestSheetBody =>
+      'Thông tin bạn đã nhập vẫn được giữ. Sau khi xác thực, bạn tiếp tục ngay.';
+
+  @override
+  String get greetMorning => 'Chào buổi sáng';
+
+  @override
+  String get greetAfternoon => 'Chào buổi chiều';
+
+  @override
+  String get greetEvening => 'Chào buổi tối';
+
+  @override
+  String get feedHeading => 'Dành cho bạn';
+
+  @override
+  String get feedTitleDue => 'Đã đến lúc dọn tiếp theo';
+
+  @override
+  String get feedTitleRebook => 'Đặt lại đối tác 5 sao';
+
+  @override
+  String get feedTitleDraft => 'Tiếp tục báo giá bạn đang làm';
+
+  @override
+  String get feedTitleSeasonal => 'Dọn dẹp hợp mùa này';
+
+  @override
+  String get feedTitleSize => 'Báo giá theo diện tích đã lưu';
+
+  @override
+  String get feedTitleSubscription => 'Đăng ký định kỳ tiết kiệm hơn';
+
+  @override
+  String get feedTitleDistrict => 'Hàng xóm cũng đang đặt lịch';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'Đã $days ngày kể từ lần dọn trước';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Bạn đã chấm 5 sao cho đối tác này $days ngày trước';
+  }
+
+  @override
+  String get feedWhyDraft => 'Bạn còn báo giá dở dang trên thiết bị này';
+
+  @override
+  String get feedWhySummer => 'Thời điểm tốt để vệ sinh máy lạnh trước mùa hè';
+
+  @override
+  String get feedWhyMoving => 'Mùa chuyển nhà, nhận nhà đang đông';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Còn $days ngày đến đợt dọn dẹp lớn trước lễ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Báo giá ngay cho nhà $pyeong pyeong đã lưu';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Nếu đặt thường xuyên, đăng ký định kỳ rẻ hơn';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Tuần này $district có $count nhà đã đặt';
+  }
+
+  @override
   String get fFinance => 'Tài chính';
 
   @override
@@ -2321,6 +2398,127 @@ class TVi extends T {
       'Chúng tôi đang bảo trì để nâng cao dịch vụ. Vui lòng quay lại sau.';
 
   @override
+  String get cmTab => 'Chiến dịch';
+
+  @override
+  String get cmNew => 'Chiến dịch mới';
+
+  @override
+  String get cmAudience => 'Khách hàng nhận';
+
+  @override
+  String get cmSegAll => 'Tất cả khách';
+
+  @override
+  String get cmSegNever => 'Chưa từng đặt';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Đặt lần cuối từ $days+ ngày trước';
+  }
+
+  @override
+  String get cmDays => 'Số ngày';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented/$total khách đồng ý nhận tiếp thị';
+  }
+
+  @override
+  String get cmChannel => 'Kênh gửi';
+
+  @override
+  String get cmPush => 'Thông báo ứng dụng';
+
+  @override
+  String get cmSms => 'Tin nhắn (SMS)';
+
+  @override
+  String get cmTitle => 'Tiêu đề';
+
+  @override
+  String get cmBody => 'Nội dung';
+
+  @override
+  String get cmOptout => 'Số từ chối (080)';
+
+  @override
+  String get cmPreview => 'Xem trước';
+
+  @override
+  String get cmSchedule => 'Thời gian gửi';
+
+  @override
+  String get cmSendNow => 'Gửi ngay';
+
+  @override
+  String get cmTestSend => 'Gửi thử đến số của tôi';
+
+  @override
+  String get cmCreate => 'Lưu chiến dịch';
+
+  @override
+  String get cmNeedOptout => 'SMS cần số từ chối 080';
+
+  @override
+  String get cmLog => 'Nhật ký gửi';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Đã gửi $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Không đồng ý $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Lỗi $count';
+  }
+
+  @override
+  String get cmSaved => 'Đã lưu chiến dịch';
+
+  @override
+  String anFunnel(String days) {
+    return 'Phễu sau đăng ký ($days ngày gần đây)';
+  }
+
+  @override
+  String get anInstalls => 'Mở ứng dụng (đã đồng ý)';
+
+  @override
+  String get anSignedUp => 'Đã đăng ký';
+
+  @override
+  String get anQuoted => 'Yêu cầu báo giá';
+
+  @override
+  String get anBooked => 'Đã đặt';
+
+  @override
+  String get anPaid => 'Đã thanh toán';
+
+  @override
+  String get anRepeat => 'Mua lại (từ 2 lần)';
+
+  @override
+  String get anCohorts => 'Nhóm theo tuần (tỷ lệ đặt theo tuần đăng ký)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Đăng ký $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Đặt trong tuần $n';
+  }
+
+  @override
   String get cOps => 'Trạng thái hệ thống';
 
   @override
@@ -2480,6 +2678,9 @@ class TVi extends T {
 
   @override
   String get oRuleDisk => 'Hết dung lượng đĩa';
+
+  @override
+  String get oRuleAuth => 'Hoạt động đăng nhập đáng ngờ';
 
   @override
   String get oQuietHours => 'Giờ yên tĩnh';
@@ -3137,6 +3338,52 @@ class TVi extends T {
   }
 
   @override
+  String get oFlags => 'Công tắc tính năng';
+
+  @override
+  String get oFlagBooking => 'Đặt lịch';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'Trợ lý AI';
+
+  @override
+  String get oFlagPayments => 'Thanh toán';
+
+  @override
+  String get oMaintenance => 'Chế độ bảo trì';
+
+  @override
+  String get oMaintenanceHint =>
+      'Khi bật, ứng dụng khách hàng và đối tác hiển thị màn hình bảo trì. Bảng điều hành vẫn dùng được.';
+
+  @override
+  String get oMaintenanceMessage => 'Nội dung thông báo bảo trì';
+
+  @override
+  String get oClientErrors => 'Báo lỗi ứng dụng';
+
+  @override
+  String get oClientErrorsHint =>
+      'Lỗi gần đây từ web, Windows và bảng điều hành. Thông tin cá nhân được tự động ẩn.';
+
+  @override
+  String get oClientErrorsEmpty => 'Không có lỗi gần đây';
+
+  @override
+  String get oHeartbeat => 'Nhịp tim theo dõi';
+
+  @override
+  String get oHeartbeatOn =>
+      'Đã kết nối. Dịch vụ bên ngoài được báo khi máy chủ hoạt động.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Chưa đặt: thêm MALKKEUM_HEARTBEAT_URL vào install.sh.';
+
+  @override
   String get pvManage => 'Quản lý đồng ý';
 
   @override
@@ -3619,6 +3866,130 @@ class TVi extends T {
       'Gửi mã này cho nhân viên. Chỉ dùng được một lần, trong 30 phút. Đóng lại là không xem lại được.';
 
   @override
+  String get subTitle => 'Dọn định kỳ';
+
+  @override
+  String get subNew => 'Đăng ký dọn định kỳ';
+
+  @override
+  String get subCadence => 'Tần suất';
+
+  @override
+  String get subWeekly => 'Hằng tuần';
+
+  @override
+  String get subBiweekly => '2 tuần một lần';
+
+  @override
+  String get subEvery4Weeks => '4 tuần một lần';
+
+  @override
+  String get subWeekday => 'Thứ';
+
+  @override
+  String get subHour => 'Giờ đến';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Dọn định kỳ được giảm $percent% mỗi lần';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Mỗi lần dọn được trừ vào thẻ đã lưu, trước một ngày';
+
+  @override
+  String get subCreate => 'Đăng ký';
+
+  @override
+  String get subCreated => 'Đã đăng ký dọn định kỳ';
+
+  @override
+  String get subNeedAddress => 'Hãy thêm địa chỉ dọn trước';
+
+  @override
+  String get subListEmpty => 'Chưa có gói dọn định kỳ nào';
+
+  @override
+  String get subStatusActive => 'Đang dùng';
+
+  @override
+  String get subStatusPaused => 'Tạm dừng';
+
+  @override
+  String get subStatusCancelled => 'Đã hủy';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Lần dọn tiếp $date';
+  }
+
+  @override
+  String get subPause => 'Tạm dừng';
+
+  @override
+  String get subResume => 'Tiếp tục';
+
+  @override
+  String get subCancelSub => 'Hủy gói định kỳ';
+
+  @override
+  String get subCancelConfirm =>
+      'Các lần dọn sau sẽ bị hủy. Lịch đã đặt cần hủy riêng và có thể phát sinh phí.';
+
+  @override
+  String get subSkip => 'Bỏ qua lần này';
+
+  @override
+  String get subMove => 'Đổi ngày';
+
+  @override
+  String get subVisitLocked => 'Không đổi được từ ngày trước khi dọn';
+
+  @override
+  String get subPausedPayment =>
+      'Tạm dừng vì thanh toán thất bại nhiều lần. Đổi thẻ rồi tiếp tục.';
+
+  @override
+  String get subStatePlanned => 'Dự kiến';
+
+  @override
+  String get subStateBooked => 'Đã đặt';
+
+  @override
+  String get subStateSkipped => 'Đã bỏ qua';
+
+  @override
+  String get subStateMissed => 'Bỏ lỡ';
+
+  @override
+  String get pSubsTitle => 'Khách định kỳ';
+
+  @override
+  String get pSubsEmpty => 'Chưa có khách định kỳ';
+
+  @override
+  String get cSubsTitle => 'Gói định kỳ';
+
+  @override
+  String get cSubsEdit => 'Sửa thay khách';
+
+  @override
+  String get cMrr => 'Doanh thu định kỳ/tháng (MRR)';
+
+  @override
+  String get cChurn => 'Tỷ lệ rời bỏ';
+
+  @override
+  String get cActiveSubs => 'Gói đang hoạt động';
+
+  @override
+  String get cRecognized => 'Doanh thu ghi nhận trong kỳ';
+
+  @override
+  String get cSubsLoadFailed => 'Không tải được danh sách gói';
+
+  @override
   String get tTaxSection => 'Thuế';
 
   @override
@@ -3954,6 +4325,33 @@ class TVi extends T {
   @override
   String get receiptNote =>
       'Chỉ là chứng từ thanh toán. Cần hóa đơn thuế, hãy yêu cầu trong chi tiết đặt lịch.';
+
+  @override
+  String get checkoutPointsUse => 'Dùng điểm';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'Có $count điểm · tối đa $max cho lần này';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Điểm dùng được khi thanh toán qua cửa sổ thanh toán';
+
+  @override
+  String get pointsLedgerTitle => 'Sổ điểm';
+
+  @override
+  String get pointsAdjustAmount => 'Điểm (số âm để trừ)';
+
+  @override
+  String get pointsAdjustReason => 'Lý do điều chỉnh';
+
+  @override
+  String get pointsAdjustInvalid => 'Nhập số điểm khác 0 và lý do';
+
+  @override
+  String get pointsAdjustDone => 'Đã điều chỉnh điểm';
 
   @override
   String get webBookNow => 'Đặt lịch ngay trên web';

@@ -1949,6 +1949,82 @@ class TZh extends T {
   String get err_payout_account_unverified => '该合作伙伴还没有已验证的收款账户，请先验证账户。';
 
   @override
+  String get guestSheetTitle => '登录后即可继续';
+
+  @override
+  String get guestSheetBody => '您已填写的内容会保留，验证后直接从原处继续。';
+
+  @override
+  String get greetMorning => '早上好';
+
+  @override
+  String get greetAfternoon => '下午好';
+
+  @override
+  String get greetEvening => '晚上好';
+
+  @override
+  String get feedHeading => '为你推荐';
+
+  @override
+  String get feedTitleDue => '该安排下次清洁了';
+
+  @override
+  String get feedTitleRebook => '再次预约五星服务者';
+
+  @override
+  String get feedTitleDraft => '继续完成未完成的报价';
+
+  @override
+  String get feedTitleSeasonal => '当下季节的合适清洁';
+
+  @override
+  String get feedTitleSize => '按已保存的面积快速报价';
+
+  @override
+  String get feedTitleSubscription => '订阅更省钱';
+
+  @override
+  String get feedTitleDistrict => '您附近也有人在预约';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '距上次清洁已过去 $days 天';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days 天前您给这位服务者打了 5 星';
+  }
+
+  @override
+  String get feedWhyDraft => '您在此设备上有未完成的报价';
+
+  @override
+  String get feedWhySummer => '夏天前清洗空调的好时机';
+
+  @override
+  String get feedWhyMoving => '入住和搬家高峰期';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '距节日大扫除还有 $days 天';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '按已保存的 $pyeong 坪房屋即时报价';
+  }
+
+  @override
+  String get feedWhyRepeat => '经常预约的话，订阅更划算';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '本周 $district 有 $count 户预约';
+  }
+
+  @override
   String get fFinance => '财务';
 
   @override
@@ -2263,6 +2339,127 @@ class TZh extends T {
   String get uMaintenanceBody => '我们正在维护以提升服务，请稍后再试。';
 
   @override
+  String get cmTab => '营销活动';
+
+  @override
+  String get cmNew => '新建活动';
+
+  @override
+  String get cmAudience => '目标客户';
+
+  @override
+  String get cmSegAll => '全部客户';
+
+  @override
+  String get cmSegNever => '从未预约';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '最近一次预约在$days天前';
+  }
+
+  @override
+  String get cmDays => '天数';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total 人中有 $consented 人同意营销';
+  }
+
+  @override
+  String get cmChannel => '发送渠道';
+
+  @override
+  String get cmPush => '应用推送';
+
+  @override
+  String get cmSms => '短信 (SMS)';
+
+  @override
+  String get cmTitle => '标题';
+
+  @override
+  String get cmBody => '内容';
+
+  @override
+  String get cmOptout => '退订号码 (080)';
+
+  @override
+  String get cmPreview => '预览';
+
+  @override
+  String get cmSchedule => '发送时间';
+
+  @override
+  String get cmSendNow => '立即发送';
+
+  @override
+  String get cmTestSend => '发送测试到我的号码';
+
+  @override
+  String get cmCreate => '保存活动';
+
+  @override
+  String get cmNeedOptout => '短信需要 080 退订号码';
+
+  @override
+  String get cmLog => '发送记录';
+
+  @override
+  String cmStatSent(String count) {
+    return '已发送 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '未同意 $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '失败 $count';
+  }
+
+  @override
+  String get cmSaved => '活动已保存';
+
+  @override
+  String anFunnel(String days) {
+    return '注册漏斗（近 $days 天）';
+  }
+
+  @override
+  String get anInstalls => '打开应用（已同意）';
+
+  @override
+  String get anSignedUp => '注册';
+
+  @override
+  String get anQuoted => '申请报价';
+
+  @override
+  String get anBooked => '已预约';
+
+  @override
+  String get anPaid => '已付款';
+
+  @override
+  String get anRepeat => '复购（2 次以上）';
+
+  @override
+  String get anCohorts => '每周队列（按注册周的预约率）';
+
+  @override
+  String anCohortSize(String count) {
+    return '注册 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '第 $n 周预约';
+  }
+
+  @override
   String get cOps => '系统状态';
 
   @override
@@ -2415,6 +2612,9 @@ class TZh extends T {
 
   @override
   String get oRuleDisk => '磁盘不足';
+
+  @override
+  String get oRuleAuth => '可疑登录活动';
 
   @override
   String get oQuietHours => '勿扰时段';
@@ -3065,6 +3265,48 @@ class TZh extends T {
   }
 
   @override
+  String get oFlags => '功能开关';
+
+  @override
+  String get oFlagBooking => '预约';
+
+  @override
+  String get oFlagChat => '聊天';
+
+  @override
+  String get oFlagAi => 'AI 咨询';
+
+  @override
+  String get oFlagPayments => '支付';
+
+  @override
+  String get oMaintenance => '维护模式';
+
+  @override
+  String get oMaintenanceHint => '开启后，客户和服务者应用将显示维护页面。控制台仍可使用。';
+
+  @override
+  String get oMaintenanceMessage => '维护提示文案';
+
+  @override
+  String get oClientErrors => '应用错误报告';
+
+  @override
+  String get oClientErrorsHint => '网页、Windows 和控制台报告的最近错误。个人信息会自动隐藏。';
+
+  @override
+  String get oClientErrorsEmpty => '近期没有错误';
+
+  @override
+  String get oHeartbeat => '运行心跳';
+
+  @override
+  String get oHeartbeatOn => '已连接。服务器运行时会通知外部服务。';
+
+  @override
+  String get oHeartbeatOff => '未设置：请在 install.sh 中添加 MALKKEUM_HEARTBEAT_URL。';
+
+  @override
   String get pvManage => '同意管理';
 
   @override
@@ -3528,6 +3770,127 @@ class TZh extends T {
   String get cStaffResetBody => '请将此令牌交给员工。只能使用一次，有效期30分钟。关闭后将无法再次查看。';
 
   @override
+  String get subTitle => '定期清洁';
+
+  @override
+  String get subNew => '申请定期清洁';
+
+  @override
+  String get subCadence => '频率';
+
+  @override
+  String get subWeekly => '每周';
+
+  @override
+  String get subBiweekly => '每两周';
+
+  @override
+  String get subEvery4Weeks => '每四周';
+
+  @override
+  String get subWeekday => '星期';
+
+  @override
+  String get subHour => '到达时间';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '定期清洁每次享$percent%折扣';
+  }
+
+  @override
+  String get subChargeNote => '每次上门前一天从已保存的银行卡扣款';
+
+  @override
+  String get subCreate => '申请';
+
+  @override
+  String get subCreated => '已申请定期清洁';
+
+  @override
+  String get subNeedAddress => '请先添加上门地址';
+
+  @override
+  String get subListEmpty => '还没有定期清洁';
+
+  @override
+  String get subStatusActive => '使用中';
+
+  @override
+  String get subStatusPaused => '已暂停';
+
+  @override
+  String get subStatusCancelled => '已取消';
+
+  @override
+  String subNextVisit(String date) {
+    return '下次上门 $date';
+  }
+
+  @override
+  String get subPause => '暂停';
+
+  @override
+  String get subResume => '恢复';
+
+  @override
+  String get subCancelSub => '取消定期清洁';
+
+  @override
+  String get subCancelConfirm => '之后的定期上门都会取消。已预约的上门需单独取消，可能收取费用。';
+
+  @override
+  String get subSkip => '跳过本次上门';
+
+  @override
+  String get subMove => '更改日期';
+
+  @override
+  String get subVisitLocked => '上门前一天起无法更改';
+
+  @override
+  String get subPausedPayment => '多次扣款失败已暂停，请更换银行卡后恢复。';
+
+  @override
+  String get subStatePlanned => '计划中';
+
+  @override
+  String get subStateBooked => '已预约';
+
+  @override
+  String get subStateSkipped => '已跳过';
+
+  @override
+  String get subStateMissed => '未完成';
+
+  @override
+  String get pSubsTitle => '定期客户';
+
+  @override
+  String get pSubsEmpty => '暂无定期客户';
+
+  @override
+  String get cSubsTitle => '定期清洁订阅';
+
+  @override
+  String get cSubsEdit => '代客户修改';
+
+  @override
+  String get cMrr => '月度经常性收入（MRR）';
+
+  @override
+  String get cChurn => '流失率';
+
+  @override
+  String get cActiveSubs => '活跃订阅';
+
+  @override
+  String get cRecognized => '期间确认收入';
+
+  @override
+  String get cSubsLoadFailed => '无法加载订阅';
+
+  @override
   String get tTaxSection => '税务';
 
   @override
@@ -3856,6 +4219,32 @@ class TZh extends T {
 
   @override
   String get receiptNote => '仅作支付凭证。如需税务发票，请在预约详情中另行申请。';
+
+  @override
+  String get checkoutPointsUse => '使用积分';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '可用 $count 积分 · 本次最多可用 $max';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow => '积分可在支付窗口付款时使用';
+
+  @override
+  String get pointsLedgerTitle => '积分账本';
+
+  @override
+  String get pointsAdjustAmount => '积分（扣减请输入负数）';
+
+  @override
+  String get pointsAdjustReason => '调整原因';
+
+  @override
+  String get pointsAdjustInvalid => '请输入非零积分和原因';
+
+  @override
+  String get pointsAdjustDone => '积分已调整';
 
   @override
   String get webBookNow => '网页直接预约';

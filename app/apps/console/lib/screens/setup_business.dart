@@ -54,7 +54,11 @@ class _BusinessCardState extends State<BusinessCard> {
     'play_store_url',
     'partner_app_store_url',
     'partner_play_store_url',
+    'kakao_channel_url',
+    'naver_talk_url',
   ];
+  // Search Console / Search Advisor tokens (meta tag content or the HTML-file name token).
+  static const _seo = ['google_site_verification', 'naver_site_verification'];
   // Stored as app_versions.<app>.<field>; below min the app blocks, below latest it shows a banner.
   static const _versions = [
     'customer.min_app_version',
@@ -78,6 +82,8 @@ class _BusinessCardState extends State<BusinessCard> {
       for (final k in _company)
         'company.$k': TextEditingController(text: company[k] as String? ?? ''),
       for (final k in _links)
+        k: TextEditingController(text: widget.initial[k] as String? ?? ''),
+      for (final k in _seo)
         k: TextEditingController(text: widget.initial[k] as String? ?? ''),
       for (final k in _versions)
         k: TextEditingController(text: _savedVersion(k)),
@@ -118,6 +124,10 @@ class _BusinessCardState extends State<BusinessCard> {
     'play_store_url' => 'Google Play · ${t.cSetupCustomerApp}',
     'partner_app_store_url' => 'App Store · ${t.cSetupPartnerApp}',
     'partner_play_store_url' => 'Google Play · ${t.cSetupPartnerApp}',
+    'kakao_channel_url' => '카카오 채널 URL (https://pf.kakao.com/...)',
+    'naver_talk_url' => '네이버 톡톡 URL (https://talk.naver.com/...)',
+    'google_site_verification' => 'Google Search Console 인증 코드',
+    'naver_site_verification' => '네이버 서치어드바이저 인증 코드',
     'customer.min_app_version' => '${t.cSetupCustomerApp} · ${t.uMinVersion}',
     'customer.latest_app_version' =>
       '${t.cSetupCustomerApp} · ${t.uLatestVersion}',
@@ -152,6 +162,7 @@ class _BusinessCardState extends State<BusinessCard> {
       await context.api.put('/admin/setup/business', {
         for (final k in _top) k: _c[k]!.text,
         for (final k in _links) k: _c[k]!.text,
+        for (final k in _seo) k: _c[k]!.text,
         'primary_color': _color.text,
         'logo_url': _logo,
         'company': {for (final k in _company) k: _c['company.$k']!.text},
@@ -268,6 +279,10 @@ class _BusinessCardState extends State<BusinessCard> {
             Text(t.cSetupStoreLinks, style: context.text.labelLarge),
             const SizedBox(height: Space.xs),
             for (final k in _links) field(k),
+            const SizedBox(height: Space.md),
+            Text('검색·문의 (Search & chat)', style: context.text.labelLarge),
+            const SizedBox(height: Space.xs),
+            for (final k in _seo) field(k),
             const SizedBox(height: Space.md),
             Text(t.uAppVersionTitle, style: context.text.labelLarge),
             const SizedBox(height: Space.xs),

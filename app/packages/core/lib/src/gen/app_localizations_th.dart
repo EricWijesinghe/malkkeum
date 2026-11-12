@@ -2004,6 +2004,83 @@ class TTh extends T {
       'พาร์ทเนอร์นี้ยังไม่มีบัญชีรับเงินที่ยืนยันแล้ว กรุณายืนยันบัญชีก่อน';
 
   @override
+  String get guestSheetTitle => 'เข้าสู่ระบบเพื่อดำเนินการต่อ';
+
+  @override
+  String get guestSheetBody =>
+      'ข้อมูลที่คุณกรอกไว้จะถูกเก็บไว้ และดำเนินการต่อจากจุดเดิมทันที';
+
+  @override
+  String get greetMorning => 'สวัสดีตอนเช้า';
+
+  @override
+  String get greetAfternoon => 'สวัสดีตอนบ่าย';
+
+  @override
+  String get greetEvening => 'สวัสดีตอนเย็น';
+
+  @override
+  String get feedHeading => 'แนะนำสำหรับคุณ';
+
+  @override
+  String get feedTitleDue => 'ถึงเวลานัดทำความสะอาดครั้งต่อไปแล้ว';
+
+  @override
+  String get feedTitleRebook => 'จองพาร์ทเนอร์ 5 ดาวอีกครั้ง';
+
+  @override
+  String get feedTitleDraft => 'กลับไปดูใบเสนอราคาที่ค้างไว้';
+
+  @override
+  String get feedTitleSeasonal => 'การทำความสะอาดที่เหมาะกับฤดูนี้';
+
+  @override
+  String get feedTitleSize => 'ใบเสนอราคาจากขนาดบ้านที่บันทึกไว้';
+
+  @override
+  String get feedTitleSubscription => 'ประหยัดกว่าด้วยการสมัครสมาชิก';
+
+  @override
+  String get feedTitleDistrict => 'เพื่อนบ้านก็กำลังจองกันอยู่';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'ผ่านมา $days วันนับจากการทำความสะอาดครั้งล่าสุด';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'คุณให้พาร์ทเนอร์นี้ 5 ดาวเมื่อ $days วันก่อน';
+  }
+
+  @override
+  String get feedWhyDraft => 'คุณมีใบเสนอราคาที่ยังไม่เสร็จในเครื่องนี้';
+
+  @override
+  String get feedWhySummer => 'เวลาที่ดีในการล้างแอร์ก่อนหน้าร้อน';
+
+  @override
+  String get feedWhyMoving => 'ช่วงย้ายเข้าและย้ายบ้านกำลังคึกคัก';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'อีก $days วันถึงการทำความสะอาดใหญ่ก่อนวันหยุด';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'ใบเสนอราคาทันทีสำหรับบ้าน $pyeong พยองที่บันทึกไว้';
+  }
+
+  @override
+  String get feedWhyRepeat => 'ถ้าจองบ่อย การสมัครสมาชิกจะถูกกว่า';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'สัปดาห์นี้มี $count บ้านใน $district จองแล้ว';
+  }
+
+  @override
   String get fFinance => 'การเงิน';
 
   @override
@@ -2323,6 +2400,127 @@ class TTh extends T {
       'เรากำลังปรับปรุงระบบเพื่อให้บริการดียิ่งขึ้น กรุณากลับมาใหม่ในภายหลัง';
 
   @override
+  String get cmTab => 'แคมเปญ';
+
+  @override
+  String get cmNew => 'แคมเปญใหม่';
+
+  @override
+  String get cmAudience => 'กลุ่มลูกค้า';
+
+  @override
+  String get cmSegAll => 'ลูกค้าทั้งหมด';
+
+  @override
+  String get cmSegNever => 'ไม่เคยจอง';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'จองครั้งล่าสุดเกิน $days วัน';
+  }
+
+  @override
+  String get cmDays => 'จำนวนวัน';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return 'มีความยินยอมรับการตลาด $consented จาก $total คน';
+  }
+
+  @override
+  String get cmChannel => 'ช่องทาง';
+
+  @override
+  String get cmPush => 'แจ้งเตือนในแอป';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'หัวข้อ';
+
+  @override
+  String get cmBody => 'ข้อความ';
+
+  @override
+  String get cmOptout => 'หมายเลขยกเลิกรับ (080)';
+
+  @override
+  String get cmPreview => 'ตัวอย่าง';
+
+  @override
+  String get cmSchedule => 'เวลาส่ง';
+
+  @override
+  String get cmSendNow => 'ส่งทันที';
+
+  @override
+  String get cmTestSend => 'ส่งทดสอบไปยังเบอร์ของฉัน';
+
+  @override
+  String get cmCreate => 'บันทึกแคมเปญ';
+
+  @override
+  String get cmNeedOptout => 'SMS ต้องมีหมายเลขยกเลิกรับ 080';
+
+  @override
+  String get cmLog => 'บันทึกการส่ง';
+
+  @override
+  String cmStatSent(String count) {
+    return 'ส่งแล้ว $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'ไม่ยินยอม $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'ล้มเหลว $count';
+  }
+
+  @override
+  String get cmSaved => 'บันทึกแคมเปญแล้ว';
+
+  @override
+  String anFunnel(String days) {
+    return 'ฟันเนลหลังสมัคร (ย้อนหลัง $days วัน)';
+  }
+
+  @override
+  String get anInstalls => 'เปิดแอป (ยินยอม)';
+
+  @override
+  String get anSignedUp => 'สมัครแล้ว';
+
+  @override
+  String get anQuoted => 'ขอใบเสนอราคา';
+
+  @override
+  String get anBooked => 'จองแล้ว';
+
+  @override
+  String get anPaid => 'ชำระแล้ว';
+
+  @override
+  String get anRepeat => 'ซื้อซ้ำ (2 ครั้งขึ้นไป)';
+
+  @override
+  String get anCohorts => 'กลุ่มรายสัปดาห์ (อัตราการจองตามสัปดาห์ที่สมัคร)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'สมัคร $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'จองในสัปดาห์ที่ $n';
+  }
+
+  @override
   String get cOps => 'สถานะระบบ';
 
   @override
@@ -2482,6 +2680,9 @@ class TTh extends T {
 
   @override
   String get oRuleDisk => 'ดิสก์เกือบเต็ม';
+
+  @override
+  String get oRuleAuth => 'กิจกรรมเข้าสู่ระบบที่น่าสงสัย';
 
   @override
   String get oQuietHours => 'ช่วงเวลาเงียบ';
@@ -3149,6 +3350,52 @@ class TTh extends T {
   }
 
   @override
+  String get oFlags => 'สวิตช์ฟีเจอร์';
+
+  @override
+  String get oFlagBooking => 'การจอง';
+
+  @override
+  String get oFlagChat => 'แชต';
+
+  @override
+  String get oFlagAi => 'ผู้ช่วย AI';
+
+  @override
+  String get oFlagPayments => 'การชำระเงิน';
+
+  @override
+  String get oMaintenance => 'โหมดปิดปรับปรุง';
+
+  @override
+  String get oMaintenanceHint =>
+      'เมื่อเปิด แอปลูกค้าและพาร์ทเนอร์จะแสดงหน้าปรับปรุงระบบ คอนโซลยังใช้งานได้';
+
+  @override
+  String get oMaintenanceMessage => 'ข้อความแจ้งปรับปรุงระบบ';
+
+  @override
+  String get oClientErrors => 'รายงานข้อผิดพลาดของแอป';
+
+  @override
+  String get oClientErrorsHint =>
+      'ข้อผิดพลาดล่าสุดจากเว็บ Windows และคอนโซล ข้อมูลส่วนตัวถูกซ่อนอัตโนมัติ';
+
+  @override
+  String get oClientErrorsEmpty => 'ไม่มีข้อผิดพลาดล่าสุด';
+
+  @override
+  String get oHeartbeat => 'Heartbeat ตรวจสถานะ';
+
+  @override
+  String get oHeartbeatOn =>
+      'เชื่อมแล้ว ระบบภายนอกจะได้รับสัญญาณขณะเซิร์ฟเวอร์ทำงาน';
+
+  @override
+  String get oHeartbeatOff =>
+      'ยังไม่ตั้งค่า: เพิ่ม MALKKEUM_HEARTBEAT_URL ใน install.sh';
+
+  @override
   String get pvManage => 'จัดการความยินยอม';
 
   @override
@@ -3630,6 +3877,130 @@ class TTh extends T {
       'ส่งโทเคนนี้ให้พนักงาน ใช้ได้ครั้งเดียวภายใน 30 นาที ปิดหน้านี้แล้วจะดูอีกไม่ได้';
 
   @override
+  String get subTitle => 'ทำความสะอาดประจำ';
+
+  @override
+  String get subNew => 'สมัครบริการ';
+
+  @override
+  String get subCadence => 'ความถี่';
+
+  @override
+  String get subWeekly => 'ทุกสัปดาห์';
+
+  @override
+  String get subBiweekly => 'ทุก 2 สัปดาห์';
+
+  @override
+  String get subEvery4Weeks => 'ทุก 4 สัปดาห์';
+
+  @override
+  String get subWeekday => 'วัน';
+
+  @override
+  String get subHour => 'เวลาที่มาถึง';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'ลด $percent% ทุกครั้งที่เข้าบริการ';
+  }
+
+  @override
+  String get subChargeNote =>
+      'เรียกเก็บเงินจากบัตรที่บันทึกไว้ล่วงหน้า 1 วันก่อนเข้าบริการ';
+
+  @override
+  String get subCreate => 'สมัคร';
+
+  @override
+  String get subCreated => 'เริ่มการสมัครแล้ว';
+
+  @override
+  String get subNeedAddress => 'กรุณาเพิ่มที่อยู่สำหรับเข้าบริการก่อน';
+
+  @override
+  String get subListEmpty => 'ยังไม่มีการสมัคร';
+
+  @override
+  String get subStatusActive => 'ใช้งานอยู่';
+
+  @override
+  String get subStatusPaused => 'หยุดชั่วคราว';
+
+  @override
+  String get subStatusCancelled => 'ยกเลิกแล้ว';
+
+  @override
+  String subNextVisit(String date) {
+    return 'การเข้าบริการครั้งถัดไป $date';
+  }
+
+  @override
+  String get subPause => 'หยุดชั่วคราว';
+
+  @override
+  String get subResume => 'ดำเนินการต่อ';
+
+  @override
+  String get subCancelSub => 'ยกเลิกการสมัคร';
+
+  @override
+  String get subCancelConfirm =>
+      'การเข้าบริการที่จะถึงจะถูกยกเลิก การเข้าบริการที่จองไว้ต้องยกเลิกแยก';
+
+  @override
+  String get subSkip => 'ข้ามครั้งนี้';
+
+  @override
+  String get subMove => 'เลื่อนวัน';
+
+  @override
+  String get subVisitLocked => 'เปลี่ยนไม่ได้ตั้งแต่วันก่อนเข้าบริการ';
+
+  @override
+  String get subPausedPayment =>
+      'หยุดชั่วคราวเพราะชำระเงินไม่สำเร็จหลายครั้ง เปลี่ยนบัตรแล้วดำเนินการต่อ';
+
+  @override
+  String get subStatePlanned => 'กำหนดไว้';
+
+  @override
+  String get subStateBooked => 'จองแล้ว';
+
+  @override
+  String get subStateSkipped => 'ข้ามแล้ว';
+
+  @override
+  String get subStateMissed => 'พลาดไป';
+
+  @override
+  String get pSubsTitle => 'ลูกค้าประจำ';
+
+  @override
+  String get pSubsEmpty => 'ยังไม่มีลูกค้าประจำ';
+
+  @override
+  String get cSubsTitle => 'การสมัครใช้บริการ';
+
+  @override
+  String get cSubsEdit => 'แก้ไขแทนลูกค้า';
+
+  @override
+  String get cMrr => 'รายได้ประจำต่อเดือน (MRR)';
+
+  @override
+  String get cChurn => 'อัตราการยกเลิก';
+
+  @override
+  String get cActiveSubs => 'การสมัครที่ใช้งานอยู่';
+
+  @override
+  String get cRecognized => 'รายได้ที่รับรู้ในช่วงเวลา';
+
+  @override
+  String get cSubsLoadFailed => 'โหลดการสมัครไม่สำเร็จ';
+
+  @override
   String get tTaxSection => 'ภาษี';
 
   @override
@@ -3964,6 +4335,33 @@ class TTh extends T {
   @override
   String get receiptNote =>
       'ใช้เป็นหลักฐานการชำระเงินเท่านั้น หากต้องการใบกำกับภาษี ขอได้จากรายละเอียดการจอง';
+
+  @override
+  String get checkoutPointsUse => 'ใช้คะแนน';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'มี $count P · ใช้ได้สูงสุด $max P ในครั้งนี้';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'ใช้คะแนนได้เมื่อชำระผ่านหน้าต่างชำระเงิน';
+
+  @override
+  String get pointsLedgerTitle => 'บัญชีคะแนน';
+
+  @override
+  String get pointsAdjustAmount => 'คะแนน (ใส่ค่าลบเพื่อหัก)';
+
+  @override
+  String get pointsAdjustReason => 'เหตุผลในการปรับ';
+
+  @override
+  String get pointsAdjustInvalid => 'กรอกคะแนนที่ไม่ใช่ 0 และเหตุผล';
+
+  @override
+  String get pointsAdjustDone => 'ปรับคะแนนแล้ว';
 
   @override
   String get webBookNow => 'จองบนเว็บเลย';

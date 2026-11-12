@@ -2027,6 +2027,85 @@ class TMn extends T {
       'Энэ хамтрагч баталгаажсан төлбөрийн дансгүй байна. Эхлээд дансаа баталгаажуулна уу.';
 
   @override
+  String get guestSheetTitle => 'Үргэлжлүүлэхийн тулд нэвтэрнэ үү';
+
+  @override
+  String get guestSheetBody =>
+      'Таны оруулсан мэдээлэл хадгалагдана. Яг сүүлд зогссон газраасаа үргэлжилнэ.';
+
+  @override
+  String get greetMorning => 'Өглөөний мэнд';
+
+  @override
+  String get greetAfternoon => 'Өдрийн мэнд';
+
+  @override
+  String get greetEvening => 'Оройн мэнд';
+
+  @override
+  String get feedHeading => 'Танд зориулсан';
+
+  @override
+  String get feedTitleDue => 'Дараагийн цэвэрлэгээний цаг боллоо';
+
+  @override
+  String get feedTitleRebook => '5 одтой мэргэжилтнээ дахин захиалаарай';
+
+  @override
+  String get feedTitleDraft => 'Эхэлсэн үнийн саналаа үргэлжлүүлэх';
+
+  @override
+  String get feedTitleSeasonal => 'Энэ улиралд тохирох цэвэрлэгээ';
+
+  @override
+  String get feedTitleSize => 'Хадгалсан байрны хэмжээгээр үнэ';
+
+  @override
+  String get feedTitleSubscription => 'Захиалгаар илүү хэмнэ';
+
+  @override
+  String get feedTitleDistrict => 'Хөршүүд ч захиалж байна';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'Сүүлийн цэвэрлэгээнээс хойш $days хоног өнгөрлөө';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Та энэ мэргэжилтнийг $days хоногийн өмнө 5 одоор үнэлсэн';
+  }
+
+  @override
+  String get feedWhyDraft =>
+      'Та энэ төхөөрөмжид үнийн саналаа дуусгаагүй байна';
+
+  @override
+  String get feedWhySummer =>
+      'Зуны өмнө агаар сэрүүлэгчээ цэвэрлүүлэх сайн цаг';
+
+  @override
+  String get feedWhyMoving => 'Нүүлт, орох улирал эрчимтэй байна';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Баярын өмнөх том цэвэрлэгээ хүртэл $days хоног';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Хадгалсан $pyeong пёнг байрнаас шууд үнэ';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Тогтмол захиалдаг бол захиалга илүү хямд';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Энэ долоо хоногт $district-д $count байр захиалсан';
+  }
+
+  @override
   String get fFinance => 'Санхүү';
 
   @override
@@ -2348,6 +2427,128 @@ class TMn extends T {
       'Бид үйлчилгээгээ сайжруулахаар засвар хийж байна. Удахгүй дахин оролдоно уу.';
 
   @override
+  String get cmTab => 'Кампанит ажил';
+
+  @override
+  String get cmNew => 'Шинэ кампанит ажил';
+
+  @override
+  String get cmAudience => 'Хүлээн авагчид';
+
+  @override
+  String get cmSegAll => 'Бүх харилцагч';
+
+  @override
+  String get cmSegNever => 'Захиалга хийгээгүй';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Сүүлд захиалснаас $days+ хоног өнгөрсөн';
+  }
+
+  @override
+  String get cmDays => 'Хоногийн тоо';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total-с $consented нь маркетингийн зөвшөөрөлтэй';
+  }
+
+  @override
+  String get cmChannel => 'Суваг';
+
+  @override
+  String get cmPush => 'Апп мэдэгдэл';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Гарчиг';
+
+  @override
+  String get cmBody => 'Агуулга';
+
+  @override
+  String get cmOptout => 'Татгалзах дугаар (080)';
+
+  @override
+  String get cmPreview => 'Урьдчилан харах';
+
+  @override
+  String get cmSchedule => 'Илгээх цаг';
+
+  @override
+  String get cmSendNow => 'Одоо илгээх';
+
+  @override
+  String get cmTestSend => 'Өөрийн дугаарт туршилт илгээх';
+
+  @override
+  String get cmCreate => 'Кампанит ажил хадгалах';
+
+  @override
+  String get cmNeedOptout => 'SMS-д 080 татгалзах дугаар шаардлагатай';
+
+  @override
+  String get cmLog => 'Илгээлтийн бүртгэл';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Илгээсэн $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Зөвшөөрөлгүй $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Амжилтгүй $count';
+  }
+
+  @override
+  String get cmSaved => 'Кампанит ажил хадгалагдлаа';
+
+  @override
+  String anFunnel(String days) {
+    return 'Бүртгэлийн воронк (сүүлийн $days хоног)';
+  }
+
+  @override
+  String get anInstalls => 'Апп нээсэн (зөвшөөрсөн)';
+
+  @override
+  String get anSignedUp => 'Бүртгүүлсэн';
+
+  @override
+  String get anQuoted => 'Үнийн санал авсан';
+
+  @override
+  String get anBooked => 'Захиалсан';
+
+  @override
+  String get anPaid => 'Төлсөн';
+
+  @override
+  String get anRepeat => 'Давтан (2+)';
+
+  @override
+  String get anCohorts =>
+      'Долоо хоногийн бүлэг (бүртгүүлсэн долоо хоногоор захиалгын хувь)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Бүртгэл $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n дахь долоо хоногт захиалсан';
+  }
+
+  @override
   String get cOps => 'Системийн төлөв';
 
   @override
@@ -2508,6 +2709,9 @@ class TMn extends T {
 
   @override
   String get oRuleDisk => 'Диск дүүрэх дөхсөн';
+
+  @override
+  String get oRuleAuth => 'Сэжигтэй нэвтрэлт';
 
   @override
   String get oQuietHours => 'Тайван цаг';
@@ -3176,6 +3380,52 @@ class TMn extends T {
   }
 
   @override
+  String get oFlags => 'Функцийн асаалт унтраалт';
+
+  @override
+  String get oFlagBooking => 'Захиалга';
+
+  @override
+  String get oFlagChat => 'Чат';
+
+  @override
+  String get oFlagAi => 'AI туслах';
+
+  @override
+  String get oFlagPayments => 'Төлбөр';
+
+  @override
+  String get oMaintenance => 'Засварын горим';
+
+  @override
+  String get oMaintenanceHint =>
+      'Асаахад харилцагч, түнш аппууд засварын дэлгэц харуулна. Консол ажиллана.';
+
+  @override
+  String get oMaintenanceMessage => 'Засварын мэдэгдэл';
+
+  @override
+  String get oClientErrors => 'Аппын алдааны тайлан';
+
+  @override
+  String get oClientErrorsHint =>
+      'Веб, Windows, консолоос ирсэн сүүлийн алдаанууд. Хувийн мэдээлэл автоматаар нуугдана.';
+
+  @override
+  String get oClientErrorsEmpty => 'Сүүлийн алдаа байхгүй';
+
+  @override
+  String get oHeartbeat => 'Ажиллагааны heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Холбогдсон. Сервер ажиллаж байх үед гадаад үйлчилгээнд мэдэгдэнэ.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Тохируулаагүй: install.sh-д MALKKEUM_HEARTBEAT_URL нэмнэ үү.';
+
+  @override
   String get pvManage => 'Зөвшөөрлийн тохиргоо';
 
   @override
@@ -3661,6 +3911,130 @@ class TMn extends T {
       'Энэ токеныг ажилтанд өгнө үү. Нэг удаа, 30 минутын дотор ашиглагдана. Хаасны дараа дахин харах боломжгүй.';
 
   @override
+  String get subTitle => 'Тогтмол цэвэрлэгээ';
+
+  @override
+  String get subNew => 'Захиалга эхлүүлэх';
+
+  @override
+  String get subCadence => 'Давтамж';
+
+  @override
+  String get subWeekly => 'Долоо хоног бүр';
+
+  @override
+  String get subBiweekly => '2 долоо хоног тутам';
+
+  @override
+  String get subEvery4Weeks => '4 долоо хоног тутам';
+
+  @override
+  String get subWeekday => 'Гариг';
+
+  @override
+  String get subHour => 'Ирэх цаг';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Ирэлт бүр $percent% хөнгөлөлттэй';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Ирэлтээс нэг өдрийн өмнө хадгалсан картаас төлнө';
+
+  @override
+  String get subCreate => 'Захиалах';
+
+  @override
+  String get subCreated => 'Захиалга эхэллээ';
+
+  @override
+  String get subNeedAddress => 'Эхлээд хаяг нэмнэ үү';
+
+  @override
+  String get subListEmpty => 'Захиалга одоогоор алга';
+
+  @override
+  String get subStatusActive => 'Идэвхтэй';
+
+  @override
+  String get subStatusPaused => 'Түр зогсоосон';
+
+  @override
+  String get subStatusCancelled => 'Цуцалсан';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Дараагийн ирэлт $date';
+  }
+
+  @override
+  String get subPause => 'Түр зогсоох';
+
+  @override
+  String get subResume => 'Үргэлжлүүлэх';
+
+  @override
+  String get subCancelSub => 'Захиалгаа цуцлах';
+
+  @override
+  String get subCancelConfirm =>
+      'Цаашдын ирэлтүүд цуцлагдана. Захиалсан ирэлтийг тусад нь цуцална уу.';
+
+  @override
+  String get subSkip => 'Энэ ирэлтийг алгасах';
+
+  @override
+  String get subMove => 'Огноо солих';
+
+  @override
+  String get subVisitLocked => 'Ирэлтийн өмнөх өдрөөс хойш өөрчлөх боломжгүй';
+
+  @override
+  String get subPausedPayment =>
+      'Төлбөр дараалан амжилтгүй болсонд түр зогсоосон. Картаа солиод үргэлжлүүлнэ үү.';
+
+  @override
+  String get subStatePlanned => 'Товлосон';
+
+  @override
+  String get subStateBooked => 'Захиалсан';
+
+  @override
+  String get subStateSkipped => 'Алгассан';
+
+  @override
+  String get subStateMissed => 'Өнгөрсөн';
+
+  @override
+  String get pSubsTitle => 'Тогтмол үйлчлүүлэгчид';
+
+  @override
+  String get pSubsEmpty => 'Тогтмол үйлчлүүлэгч одоогоор алга';
+
+  @override
+  String get cSubsTitle => 'Захиалгууд';
+
+  @override
+  String get cSubsEdit => 'Үйлчлүүлэгчийн оронд засах';
+
+  @override
+  String get cMrr => 'Сарын давтагдах орлого (MRR)';
+
+  @override
+  String get cChurn => 'Цуцалтын хувь';
+
+  @override
+  String get cActiveSubs => 'Идэвхтэй захиалга';
+
+  @override
+  String get cRecognized => 'Тухайн хугацаанд хүлээн зөвшөөрсөн орлого';
+
+  @override
+  String get cSubsLoadFailed => 'Захиалгыг ачаалж чадсангүй';
+
+  @override
   String get tTaxSection => 'Татвар';
 
   @override
@@ -3996,6 +4370,33 @@ class TMn extends T {
   @override
   String get receiptNote =>
       'Зөвхөн төлбөрийн баталгаа. Татварын нэхэмжлэх хэрэгтэй бол захиалгын мэдээллээс хүсэлт гаргана уу.';
+
+  @override
+  String get checkoutPointsUse => 'Оноо ашиглах';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P байна · энэ төлбөрт дээд тал нь $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Оноог төлбөрийн цонхоор төлөхөд ашиглана';
+
+  @override
+  String get pointsLedgerTitle => 'Онооны дэвтэр';
+
+  @override
+  String get pointsAdjustAmount => 'Оноо (хасах бол сөрөг тоо)';
+
+  @override
+  String get pointsAdjustReason => 'Тохируулгын шалтгаан';
+
+  @override
+  String get pointsAdjustInvalid => '0-ээс өөр оноо болон шалтгаан оруулна уу';
+
+  @override
+  String get pointsAdjustDone => 'Оноог тохирууллаа';
 
   @override
   String get webBookNow => 'Вэбээр шууд захиалах';

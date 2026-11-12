@@ -2017,6 +2017,84 @@ class TNe extends T {
       'यो साझेदारसँग प्रमाणित भुक्तानी खाता छैन। पहिले खाता प्रमाणित गर्नुहोस्।';
 
   @override
+  String get guestSheetTitle => 'जारी राख्न साइन इन गर्नुहोस्';
+
+  @override
+  String get guestSheetBody =>
+      'तपाईंले भरेको सबै जानकारी सुरक्षित रहन्छ। जहाँ छाड्नुभयो त्यहीँबाट जारी रहन्छ।';
+
+  @override
+  String get greetMorning => 'सुप्रभात';
+
+  @override
+  String get greetAfternoon => 'शुभ दिउँसो';
+
+  @override
+  String get greetEvening => 'शुभ साँझ';
+
+  @override
+  String get feedHeading => 'तपाईंका लागि छनोट';
+
+  @override
+  String get feedTitleDue => 'अर्को सफाइको समय भयो';
+
+  @override
+  String get feedTitleRebook => '५ तारे पार्टनरलाई फेरि बुक गर्नुहोस्';
+
+  @override
+  String get feedTitleDraft => 'सुरु गरेको कोटेशन पूरा गर्नुहोस्';
+
+  @override
+  String get feedTitleSeasonal => 'यस मौसमका लागि उपयुक्त सफाइ';
+
+  @override
+  String get feedTitleSize => 'सुरक्षित घरको आकारअनुसार कोटेशन';
+
+  @override
+  String get feedTitleSubscription => 'सदस्यतामार्फत बढी बचत गर्नुहोस्';
+
+  @override
+  String get feedTitleDistrict => 'छिमेकीहरूले पनि बुक गरिरहेका छन्';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'अन्तिम सफाइपछि $days दिन भयो';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'तपाईंले $days दिन अघि यो पार्टनरलाई ५ तारा दिनुभएको थियो';
+  }
+
+  @override
+  String get feedWhyDraft => 'यो यन्त्रमा तपाईंको कोटेशन अधूरो छ';
+
+  @override
+  String get feedWhySummer =>
+      'गर्मी सुरु हुनुअघि एयरकन्डिसन सफा गर्ने राम्रो समय हो';
+
+  @override
+  String get feedWhyMoving => 'घर सर्ने र सार्ने समय व्यस्त छ';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'चाडपर्वको ठूलो सफाइसम्म $days दिन बाँकी छ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'सुरक्षित $pyeong पियोङ घरका लागि तुरुन्त कोटेशन';
+  }
+
+  @override
+  String get feedWhyRepeat => 'बारम्बार बुक गर्नुहुन्छ भने सदस्यता सस्तो पर्छ';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'यो हप्ता $district मा $count घरले बुक गरे';
+  }
+
+  @override
   String get fFinance => 'वित्त';
 
   @override
@@ -2337,6 +2415,127 @@ class TNe extends T {
       'हामी सेवा सुधार्न मर्मत गरिरहेका छौं। केही समयपछि फेरि आउनुहोस्।';
 
   @override
+  String get cmTab => 'अभियान';
+
+  @override
+  String get cmNew => 'नयाँ अभियान';
+
+  @override
+  String get cmAudience => 'लक्षित ग्राहक';
+
+  @override
+  String get cmSegAll => 'सबै ग्राहक';
+
+  @override
+  String get cmSegNever => 'कहिल्यै बुक नगरेका';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'अन्तिम बुकिङ $days+ दिन अघि';
+  }
+
+  @override
+  String get cmDays => 'दिनको संख्या';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total मध्ये $consented जनाले मार्केटिङ सहमति दिएका छन्';
+  }
+
+  @override
+  String get cmChannel => 'च्यानल';
+
+  @override
+  String get cmPush => 'एप पुश';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'शीर्षक';
+
+  @override
+  String get cmBody => 'सन्देश';
+
+  @override
+  String get cmOptout => 'अप्ट-आउट नम्बर (080)';
+
+  @override
+  String get cmPreview => 'पूर्वावलोकन';
+
+  @override
+  String get cmSchedule => 'पठाउने समय';
+
+  @override
+  String get cmSendNow => 'अहिले पठाउनुहोस्';
+
+  @override
+  String get cmTestSend => 'मेरो नम्बरमा परीक्षण पठाउनुहोस्';
+
+  @override
+  String get cmCreate => 'अभियान सुरक्षित गर्नुहोस्';
+
+  @override
+  String get cmNeedOptout => 'SMS का लागि 080 अप्ट-आउट नम्बर आवश्यक छ';
+
+  @override
+  String get cmLog => 'पठाउने लग';
+
+  @override
+  String cmStatSent(String count) {
+    return 'पठाइएको $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'सहमति छैन $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'असफल $count';
+  }
+
+  @override
+  String get cmSaved => 'अभियान सुरक्षित भयो';
+
+  @override
+  String anFunnel(String days) {
+    return 'दर्ता फनेल (पछिल्ला $days दिन)';
+  }
+
+  @override
+  String get anInstalls => 'एप खोल्ने (सहमति दिएका)';
+
+  @override
+  String get anSignedUp => 'दर्ता गरेका';
+
+  @override
+  String get anQuoted => 'मूल्याङ्कन माग्ने';
+
+  @override
+  String get anBooked => 'बुक गरेका';
+
+  @override
+  String get anPaid => 'भुक्तानी गरेका';
+
+  @override
+  String get anRepeat => 'दोहोर्याउने (२+)';
+
+  @override
+  String get anCohorts => 'साप्ताहिक समूह (दर्ता हप्ताअनुसार बुकिङ दर)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'दर्ता $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'हप्ता $n मा बुक';
+  }
+
+  @override
   String get cOps => 'प्रणाली स्थिति';
 
   @override
@@ -2497,6 +2696,9 @@ class TNe extends T {
 
   @override
   String get oRuleDisk => 'डिस्क लगभग भरियो';
+
+  @override
+  String get oRuleAuth => 'शंकास्पद लगइन गतिविधि';
 
   @override
   String get oQuietHours => 'शान्त समय';
@@ -3161,6 +3363,52 @@ class TNe extends T {
   }
 
   @override
+  String get oFlags => 'सुविधा स्विच';
+
+  @override
+  String get oFlagBooking => 'बुकिङ';
+
+  @override
+  String get oFlagChat => 'च्याट';
+
+  @override
+  String get oFlagAi => 'AI सहायक';
+
+  @override
+  String get oFlagPayments => 'भुक्तानी';
+
+  @override
+  String get oMaintenance => 'मर्मत मोड';
+
+  @override
+  String get oMaintenanceHint =>
+      'खुला हुँदा ग्राहक र साझेदार एपमा मर्मत स्क्रिन देखिन्छ। कन्सोल चलिरहन्छ।';
+
+  @override
+  String get oMaintenanceMessage => 'मर्मत सूचना';
+
+  @override
+  String get oClientErrors => 'एप त्रुटि रिपोर्ट';
+
+  @override
+  String get oClientErrorsHint =>
+      'वेब, Windows र कन्सोलबाट भर्खरका त्रुटिहरू। व्यक्तिगत जानकारी स्वतः लुकाइन्छ।';
+
+  @override
+  String get oClientErrorsEmpty => 'हालैका त्रुटि छैनन्';
+
+  @override
+  String get oHeartbeat => 'अपटाइम हार्टबिट';
+
+  @override
+  String get oHeartbeatOn =>
+      'जडान भयो। सर्भर चल्दा बाहिरी सेवालाई सूचना जान्छ।';
+
+  @override
+  String get oHeartbeatOff =>
+      'सेट गरिएको छैन: install.sh मा MALKKEUM_HEARTBEAT_URL थप्नुहोस्।';
+
+  @override
   String get pvManage => 'सहमति व्यवस्थापन';
 
   @override
@@ -3645,6 +3893,130 @@ class TNe extends T {
       'यो टोकन कर्मचारीलाई दिनुहोस्। यो एक पटक, ३० मिनेटभित्र मात्र काम गर्छ। बन्द गरेपछि फेरि देखिँदैन।';
 
   @override
+  String get subTitle => 'नियमित सफाइ';
+
+  @override
+  String get subNew => 'सदस्यता सुरु गर्नुहोस्';
+
+  @override
+  String get subCadence => 'कति बेला';
+
+  @override
+  String get subWeekly => 'हरेक हप्ता';
+
+  @override
+  String get subBiweekly => 'हरेक २ हप्ता';
+
+  @override
+  String get subEvery4Weeks => 'हरेक ४ हप्ता';
+
+  @override
+  String get subWeekday => 'वार';
+
+  @override
+  String get subHour => 'आइपुग्ने समय';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'हरेक भ्रमणमा $percent% छुट';
+  }
+
+  @override
+  String get subChargeNote =>
+      'भ्रमणको एक दिन अगाडि सेभ गरिएको कार्डबाट शुल्क लाग्छ';
+
+  @override
+  String get subCreate => 'सदस्यता लिनुहोस्';
+
+  @override
+  String get subCreated => 'सदस्यता सुरु भयो';
+
+  @override
+  String get subNeedAddress => 'पहिले भ्रमण ठेगाना थप्नुहोस्';
+
+  @override
+  String get subListEmpty => 'अहिलेसम्म सदस्यता छैन';
+
+  @override
+  String get subStatusActive => 'सक्रिय';
+
+  @override
+  String get subStatusPaused => 'रोकिएको';
+
+  @override
+  String get subStatusCancelled => 'रद्द गरिएको';
+
+  @override
+  String subNextVisit(String date) {
+    return 'अर्को भ्रमण $date';
+  }
+
+  @override
+  String get subPause => 'रोक्नुहोस्';
+
+  @override
+  String get subResume => 'फेरि सुरु गर्नुहोस्';
+
+  @override
+  String get subCancelSub => 'सदस्यता रद्द गर्नुहोस्';
+
+  @override
+  String get subCancelConfirm =>
+      'आगामी भ्रमणहरू रद्द हुनेछन्। बुक भइसकेका भ्रमण छुट्टै रद्द गर्नुपर्छ।';
+
+  @override
+  String get subSkip => 'यो भ्रमण छोड्नुहोस्';
+
+  @override
+  String get subMove => 'मिति सार्नुहोस्';
+
+  @override
+  String get subVisitLocked => 'भ्रमणको एक दिन अगाडिदेखि परिवर्तन गर्न मिल्दैन';
+
+  @override
+  String get subPausedPayment =>
+      'बारम्बार भुक्तानी असफल भएकाले रोकियो। कार्ड बदलेर फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get subStatePlanned => 'तय गरिएको';
+
+  @override
+  String get subStateBooked => 'बुक गरिएको';
+
+  @override
+  String get subStateSkipped => 'छोडिएको';
+
+  @override
+  String get subStateMissed => 'छुटेको';
+
+  @override
+  String get pSubsTitle => 'नियमित ग्राहक';
+
+  @override
+  String get pSubsEmpty => 'अहिलेसम्म नियमित ग्राहक छैनन्';
+
+  @override
+  String get cSubsTitle => 'सदस्यताहरू';
+
+  @override
+  String get cSubsEdit => 'ग्राहकको तर्फबाट सम्पादन';
+
+  @override
+  String get cMrr => 'मासिक दोहोरिने आम्दानी (MRR)';
+
+  @override
+  String get cChurn => 'च्युर्न';
+
+  @override
+  String get cActiveSubs => 'सक्रिय सदस्यता';
+
+  @override
+  String get cRecognized => 'अवधिमा मान्यता प्राप्त आम्दानी';
+
+  @override
+  String get cSubsLoadFailed => 'सदस्यता लोड गर्न सकिएन';
+
+  @override
   String get tTaxSection => 'कर';
 
   @override
@@ -3981,6 +4353,33 @@ class TNe extends T {
   @override
   String get receiptNote =>
       'यो भुक्तानी प्रमाण मात्र हो। कर इनभ्वाइसका लागि बुकिङ विवरणबाट अनुरोध गर्नुहोस्।';
+
+  @override
+  String get checkoutPointsUse => 'पोइन्ट प्रयोग गर्नुहोस्';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P उपलब्ध · यो भुक्तानीमा बढीमा $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'भुक्तानी विन्डोबाट तिर्दा पोइन्ट प्रयोग गर्न सकिन्छ';
+
+  @override
+  String get pointsLedgerTitle => 'पोइन्ट खाता';
+
+  @override
+  String get pointsAdjustAmount => 'पोइन्ट (घटाउन ऋणात्मक)';
+
+  @override
+  String get pointsAdjustReason => 'समायोजनको कारण';
+
+  @override
+  String get pointsAdjustInvalid => '0 बाहेकको पोइन्ट र कारण लेख्नुहोस्';
+
+  @override
+  String get pointsAdjustDone => 'पोइन्ट समायोजन भयो';
 
   @override
   String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';

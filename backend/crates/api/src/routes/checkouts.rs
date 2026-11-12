@@ -438,6 +438,18 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    best_effort(
+        "payment receipt",
+        notify(
+            s,
+            Recipient::User(ck.user_id),
+            "payment.receipt",
+            "결제가 완료됐어요",
+            "결제 내역은 예약 상세에서 확인할 수 있어요",
+            json!({ "checkout_id": ck.id, "booking_id": booking_id }),
+        ),
+    )
+    .await;
     super::cash_receipts::on_settled(s, ck.id, payment_id).await;
     super::tax_invoices::on_settled(s, ck.id, payment_id).await;
     match number {

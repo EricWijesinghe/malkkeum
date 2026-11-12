@@ -152,3 +152,92 @@ X = {
     "receiptCopied": "Kvitansiya nusxalandi", "receiptNote": "Faqat to'lov tasdig'i. Soliq hisobvarag'i kerak bo'lsa, buyurtma tafsilotlaridan so'rang.",
   },
 }
+
+# Points at checkout (customer) and the console ledger with manual adjustment.
+# Placeholders: {count} balance, {max} most points this payment accepts.
+S.update({
+  "checkoutPointsUse": ["포인트 사용", "Use points", "ポイントを使う", "使用积分", "Dùng điểm"],
+  "checkoutPointsAvail": ["보유 {count} P · 이번 결제에 최대 {max} P", "{count} pts available · up to {max} on this payment", "保有 {count} P · 今回は最大 {max} Pまで", "可用 {count} 积分 · 本次最多可用 {max}", "Có {count} điểm · tối đa {max} cho lần này"],
+  "checkoutPointsNeedsWindow": ["포인트는 결제창으로 결제할 때 쓸 수 있어요", "Points can be used when you pay in the payment window", "ポイントは決済画面でのお支払い時に使えます", "积分可在支付窗口付款时使用", "Điểm dùng được khi thanh toán qua cửa sổ thanh toán"],
+  "pointsLedgerTitle": ["포인트 원장", "Points ledger", "ポイント台帳", "积分账本", "Sổ điểm"],
+  "pointsAdjustAmount": ["포인트 (차감은 음수로 입력)", "Points (negative to deduct)", "ポイント（減算はマイナス）", "积分（扣减请输入负数）", "Điểm (số âm để trừ)"],
+  "pointsAdjustReason": ["조정 사유", "Reason for adjustment", "調整の理由", "调整原因", "Lý do điều chỉnh"],
+  "pointsAdjustInvalid": ["0이 아닌 포인트와 사유를 입력해 주세요", "Enter a non-zero amount and a reason", "0以外のポイントと理由を入力してください", "请输入非零积分和原因", "Nhập số điểm khác 0 và lý do"],
+  "pointsAdjustDone": ["포인트를 조정했어요", "Points adjusted", "ポイントを調整しました", "积分已调整", "Đã điều chỉnh điểm"],
+})
+
+for _code, _texts in {
+  "fil": {
+    "checkoutPointsUse": "Gamitin ang puntos",
+    "checkoutPointsAvail": "{count} P ang magagamit · hanggang {max} P sa bayad na ito",
+    "checkoutPointsNeedsWindow": "Magagamit ang puntos kapag nagbayad sa payment window",
+    "pointsLedgerTitle": "Ledger ng puntos", "pointsAdjustAmount": "Puntos (negatibo para magbawas)",
+    "pointsAdjustReason": "Dahilan ng pagsasaayos", "pointsAdjustInvalid": "Maglagay ng puntos na hindi 0 at dahilan",
+    "pointsAdjustDone": "Naayos ang puntos",
+  },
+  "id": {
+    "checkoutPointsUse": "Gunakan poin",
+    "checkoutPointsAvail": "{count} P tersedia · maksimal {max} P untuk pembayaran ini",
+    "checkoutPointsNeedsWindow": "Poin bisa dipakai saat membayar lewat jendela pembayaran",
+    "pointsLedgerTitle": "Buku besar poin", "pointsAdjustAmount": "Poin (negatif untuk mengurangi)",
+    "pointsAdjustReason": "Alasan penyesuaian", "pointsAdjustInvalid": "Masukkan poin bukan nol dan alasannya",
+    "pointsAdjustDone": "Poin disesuaikan",
+  },
+  "km": {
+    "checkoutPointsUse": "ប្រើពិន្ទុ",
+    "checkoutPointsAvail": "មាន {count} P · ប្រើបានអតិបរមា {max} P សម្រាប់ការទូទាត់នេះ",
+    "checkoutPointsNeedsWindow": "ពិន្ទុអាចប្រើបានពេលទូទាត់តាមផ្ទាំងទូទាត់",
+    "pointsLedgerTitle": "បញ្ជីពិន្ទុ", "pointsAdjustAmount": "ពិន្ទុ (លេខអវិជ្ជមានដើម្បីដក)",
+    "pointsAdjustReason": "មូលហេតុនៃការកែតម្រូវ", "pointsAdjustInvalid": "សូមបញ្ចូលពិន្ទុខុសពី 0 និងមូលហេតុ",
+    "pointsAdjustDone": "បានកែតម្រូវពិន្ទុ",
+  },
+  "mn": {
+    "checkoutPointsUse": "Оноо ашиглах",
+    "checkoutPointsAvail": "{count} P байна · энэ төлбөрт дээд тал нь {max} P",
+    "checkoutPointsNeedsWindow": "Оноог төлбөрийн цонхоор төлөхөд ашиглана",
+    "pointsLedgerTitle": "Онооны дэвтэр", "pointsAdjustAmount": "Оноо (хасах бол сөрөг тоо)",
+    "pointsAdjustReason": "Тохируулгын шалтгаан", "pointsAdjustInvalid": "0-ээс өөр оноо болон шалтгаан оруулна уу",
+    "pointsAdjustDone": "Оноог тохирууллаа",
+  },
+  "ne": {
+    "checkoutPointsUse": "पोइन्ट प्रयोग गर्नुहोस्",
+    "checkoutPointsAvail": "{count} P उपलब्ध · यो भुक्तानीमा बढीमा {max} P",
+    "checkoutPointsNeedsWindow": "भुक्तानी विन्डोबाट तिर्दा पोइन्ट प्रयोग गर्न सकिन्छ",
+    "pointsLedgerTitle": "पोइन्ट खाता", "pointsAdjustAmount": "पोइन्ट (घटाउन ऋणात्मक)",
+    "pointsAdjustReason": "समायोजनको कारण", "pointsAdjustInvalid": "0 बाहेकको पोइन्ट र कारण लेख्नुहोस्",
+    "pointsAdjustDone": "पोइन्ट समायोजन भयो",
+  },
+  "ru": {
+    "checkoutPointsUse": "Использовать баллы",
+    "checkoutPointsAvail": "Доступно {count} P · до {max} P на эту оплату",
+    "checkoutPointsNeedsWindow": "Баллы можно использовать при оплате в платёжном окне",
+    "pointsLedgerTitle": "Журнал баллов", "pointsAdjustAmount": "Баллы (отрицательное число для списания)",
+    "pointsAdjustReason": "Причина корректировки", "pointsAdjustInvalid": "Введите ненулевое количество и причину",
+    "pointsAdjustDone": "Баллы скорректированы",
+  },
+  "si": {
+    "checkoutPointsUse": "ලකුණු භාවිත කරන්න",
+    "checkoutPointsAvail": "{count} P ඇත · මෙම ගෙවීමට උපරිම {max} P",
+    "checkoutPointsNeedsWindow": "ගෙවීම් කවුළුවෙන් ගෙවන විට ලකුණු භාවිත කළ හැක",
+    "pointsLedgerTitle": "ලකුණු ලෙජරය", "pointsAdjustAmount": "ලකුණු (අඩු කිරීමට ඍණ අගයක්)",
+    "pointsAdjustReason": "ගැළපීමට හේතුව", "pointsAdjustInvalid": "0 නොවන ලකුණු සහ හේතුව ඇතුළත් කරන්න",
+    "pointsAdjustDone": "ලකුණු ගැළපිණි",
+  },
+  "th": {
+    "checkoutPointsUse": "ใช้คะแนน",
+    "checkoutPointsAvail": "มี {count} P · ใช้ได้สูงสุด {max} P ในครั้งนี้",
+    "checkoutPointsNeedsWindow": "ใช้คะแนนได้เมื่อชำระผ่านหน้าต่างชำระเงิน",
+    "pointsLedgerTitle": "บัญชีคะแนน", "pointsAdjustAmount": "คะแนน (ใส่ค่าลบเพื่อหัก)",
+    "pointsAdjustReason": "เหตุผลในการปรับ", "pointsAdjustInvalid": "กรอกคะแนนที่ไม่ใช่ 0 และเหตุผล",
+    "pointsAdjustDone": "ปรับคะแนนแล้ว",
+  },
+  "uz": {
+    "checkoutPointsUse": "Ballardan foydalanish",
+    "checkoutPointsAvail": "{count} P mavjud · bu to'lovga ko'pi bilan {max} P",
+    "checkoutPointsNeedsWindow": "Ballarni to'lov oynasi orqali to'laganda ishlatish mumkin",
+    "pointsLedgerTitle": "Ballar daftari", "pointsAdjustAmount": "Ballar (ayirish uchun manfiy son)",
+    "pointsAdjustReason": "Tuzatish sababi", "pointsAdjustInvalid": "0 dan farqli ball va sababni kiriting",
+    "pointsAdjustDone": "Ballar tuzatildi",
+  },
+}.items():
+    X[_code].update(_texts)

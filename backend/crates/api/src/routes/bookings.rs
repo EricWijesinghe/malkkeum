@@ -6,7 +6,7 @@ use super::{
         BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
         price_for, record_payment, take_balance, take_deposit,
     },
-    catalog::load_formula,
+    catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
 };
 use crate::{
@@ -123,10 +123,10 @@ pub async fn owned(s: &AppState, user: Uuid, id: Uuid) -> ApiResult<BookingRow> 
 }
 
 #[derive(Deserialize)]
-struct CreateBooking {
+pub(crate) struct CreateBooking {
     #[serde(flatten)]
-    body: BookingBody,
-    payment_method_id: Option<Uuid>,
+    pub(crate) body: BookingBody,
+    pub(crate) payment_method_id: Option<Uuid>,
 }
 
 /// Charges a saved method and records the payment. Used inside a transaction.
@@ -151,13 +151,18 @@ pub async fn charge(s: &AppState, conn: &mut PgConnection, user: Uuid, method: U
 }
 
 async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Json<CreateBooking>) -> ApiResult<Json<BookingRow>> {
-    let prep = prepare(&s.db, a.id, &req.body).await?;
-    let id = if prep.service.is_quote() {
-        create_quote(&s, a.id, &req.body, &prep).await?
-    } else {
-        create_paid(&s, a.id, &req, &prep).await?
-    };
+    let id = create_core(&s, a.id, &req).await?;
     Ok(Json(load_booking(&s.db, id).await?))
+}
+
+/// Shared by the direct create and a waitlist offer accept. Returns the new booking id.
+pub(crate) async fn create_core(s: &AppState, user: Uuid, req: &CreateBooking) -> ApiResult<Uuid> {
+    let prep = prepare(&s.db, user, &req.body).await?;
+    if prep.service.is_quote() {
+        create_quote(s, user, &req.body, &prep).await
+    } else {
+        create_paid(s, user, req, &prep).await
+    }
 }
 
 /// Quote services: a consultation request with the estimate. No payment yet.
@@ -182,10 +187,12 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     let id = Uuid::now_v7();
     let number = next_number(&mut tx).await?;
     let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
-    let est = formula.estimate(&answers)?;
+    let start = domain::peak::kst_to_utc(b.visit_date, u32::from(b.start_hour)).ok_or(ApiError::BadRequest("invalid_slot"))?;
+    let peak = domain::peak::peak_surcharge(&load_peak_config(&s.db).await?, start);
+    let est = formula.estimate_with_peak(&answers, peak.bps)?;
     sqlx::query(
-        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12)",
+        "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household, peak_surcharge)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12,$13)",
     )
     .bind(id)
     .bind(&number)
@@ -199,6 +206,7 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     .bind(est.total.0)
     .bind(&prep.notes)
     .bind(&prep.household)
+    .bind(est.peak.0)
     .execute(&mut *tx)
     .await?;
     let thread = chat::booking_thread(&mut tx, "customer", user, id, &prep.service.code).await?;
@@ -289,7 +297,7 @@ async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
 /// Refunds every paid payment on a booking (full or a capped amount) and records it.
 pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) -> ApiResult<i64> {
     let pays: Vec<(Uuid, i64, i64, Option<String>, String)> = sqlx::query_as(
-        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') ORDER BY created_at DESC",
+        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') AND kind <> 'tip' ORDER BY created_at DESC",
     )
     .bind(booking)
     .fetch_all(&s.db)
@@ -458,28 +466,36 @@ struct CancelBody {
 }
 
 async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, body: Option<Json<CancelBody>>) -> ApiResult<Json<BookingRow>> {
-    let b = owned(&s, a.id, id).await?;
+    let accepted = body.and_then(|Json(c)| c.accepted_fee);
+    cancel_owned(&s, a.id, id, accepted).await?;
+    Ok(Json(load_booking(&s.db, id).await?))
+}
+
+/// The customer's cancel with the cancel-fee policy. `accepted_fee` must match the fee shown in the preview.
+/// Shared by the booking route and subscription visit skips.
+pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Option<i64>) -> ApiResult<()> {
+    let b = owned(s, user, id).await?;
     let status = b.status()?;
     let (policy, _) = load_cancel_policy(&s.db).await?;
     let quote = cancel_quote(&policy, status, days_before(&b), b.paid_amount).ok_or(DomainError::CancellationWindowClosed)?;
     status.transition(BookingStatus::Cancelled)?;
-    let accepted = body.and_then(|Json(c)| c.accepted_fee);
-    if quote.fee > 0 && accepted != Some(quote.fee) {
+    if quote.fee > 0 && accepted_fee != Some(quote.fee) {
         return Err(ApiError::Conflict("fee_changed"));
     }
     // A fee keeps the coupon used and refunds only what remains; no fee is a full refund.
     let cap = (quote.fee > 0).then_some(quote.refund);
-    apply_cancel(&s, &b, cap, "customer").await?;
+    apply_cancel(s, &b, cap, "customer").await?;
     audit(
         &s.db,
         "customer",
-        Some(a.id),
+        Some(user),
         "booking.cancel",
         &id.to_string(),
         json!({ "fee": quote.fee, "refund": quote.refund }),
     )
     .await?;
-    Ok(Json(load_booking(&s.db, id).await?))
+    crate::util::best_effort("waitlist offer on cancel", super::waitlist::offer_for_slot(s, b.visit_date, b.start_hour as u8)).await;
+    Ok(())
 }
 
 /// Household is editable until the pro has finished the job, like visit notes.
