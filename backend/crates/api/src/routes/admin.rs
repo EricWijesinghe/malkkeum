@@ -2,12 +2,12 @@
 
 use super::{
     audit, growth,
-    bookings::{BOOKING_COLS, BookingRow, apply_cancel, load_booking},
+    bookings::{BOOKING_COLS, BookingRow, MAX_NOTE, apply_cancel, load_booking},
     catalog::load_formula,
     chat::{self, MessageRow, THREAD_COLS, ThreadRow},
 };
 use crate::{
-    auth::Staff,
+    auth::{Role, Staff},
     contract::{cursor_part, decode_cursor, encode_cursor, page_limit, paged},
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
@@ -290,27 +290,68 @@ struct SendQuote {
     /// Pro quote this price comes from; that pro is attached when the deposit is paid.
     quote_id: Option<Uuid>,
     note: Option<String>,
+    /// Admin only: send a price outside [`QUOTE_RATIO_MIN_PCT`, `QUOTE_RATIO_MAX_PCT`] of the estimate.
+    #[serde(default, rename = "override")]
+    override_ratio: bool,
 }
 
+const MIN_QUOTE_PRICE: i64 = 10_000;
 const MAX_QUOTE_PRICE: i64 = 50_000_000;
+/// A final price below 30% or above 300% of the estimate is almost always a typo.
+const QUOTE_RATIO_MIN_PCT: i64 = 30;
+const QUOTE_RATIO_MAX_PCT: i64 = 300;
+
+/// Checks the rounded price and its deposit. `override_ok` lifts only the estimate-ratio guard.
+fn check_quote_price(price: Won, deposit: Won, estimate: Option<i64>, override_ok: bool) -> ApiResult<()> {
+    if !(MIN_QUOTE_PRICE..=MAX_QUOTE_PRICE).contains(&price.0) || deposit.0 <= 0 {
+        return Err(ApiError::BadRequest("invalid_amount"));
+    }
+    let out_of_ratio = estimate
+        .filter(|e| *e > 0)
+        .is_some_and(|e| price.0 * 100 < e * QUOTE_RATIO_MIN_PCT || price.0 * 100 > e * QUOTE_RATIO_MAX_PCT);
+    if out_of_ratio && !override_ok {
+        return Err(ApiError::Conflict("quote_override_required"));
+    }
+    Ok(())
+}
 
 async fn send_quote(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>, Json(q): Json<SendQuote>) -> ApiResult<Json<MessageRow>> {
+    // A deactivated account's access token lives up to ACCESS_TTL_MIN; money actions check the row now.
+    let active: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)")
+        .bind(st.id)
+        .fetch_one(&s.db)
+        .await?;
+    if !active {
+        return Err(ApiError::Unauthorized);
+    }
+    if q.override_ratio && st.role != Role::StaffAdmin {
+        return Err(ApiError::Forbidden);
+    }
+    if q.note.as_ref().is_some_and(|n| n.chars().count() > MAX_NOTE) {
+        return Err(ApiError::BadRequest("note_too_long"));
+    }
     let b = load_booking(&s.db, id).await?;
     if b.status()? != BookingStatus::Consultation || b.answers.is_none() {
         return Err(ApiError::Conflict("not_open_quote"));
     }
+    // Bounded before rounding so the arithmetic below cannot overflow.
     if !(1..=MAX_QUOTE_PRICE).contains(&q.final_price) {
         return Err(ApiError::BadRequest("invalid_amount"));
     }
     let price = Won(q.final_price).round100();
     let deposit = load_formula(&s.db).await?.deposit(price);
+    check_quote_price(price, deposit, b.estimate, q.override_ratio)?;
     let mut tx = s.db.begin().await?;
-    sqlx::query("UPDATE bookings SET final_price = $2, deposit = $3, updated_at = now() WHERE id = $1 AND status = 0")
+    let updated = sqlx::query("UPDATE bookings SET final_price = $2, deposit = $3, updated_at = now() WHERE id = $1 AND status = 0")
         .bind(id)
         .bind(price.0)
         .bind(deposit.0)
         .execute(&mut *tx)
         .await?;
+    // Paid or cancelled since the read above: no quote changes and no card.
+    if updated.rows_affected() == 0 {
+        return Err(ApiError::Conflict("not_open_quote"));
+    }
     sqlx::query("UPDATE quotes SET state = 'waiting', updated_at = now() WHERE booking_id = $1 AND state = 'selected'")
         .bind(id)
         .execute(&mut *tx)
@@ -348,7 +389,7 @@ async fn send_quote(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<
         Some(st.id),
         "quote.send",
         &id.to_string(),
-        json!({ "final_price": price.0, "quote_id": q.quote_id }),
+        json!({ "final_price": price.0, "quote_id": q.quote_id, "override": q.override_ratio }),
     )
     .await?;
     Ok(Json(msg))
@@ -372,4 +413,25 @@ async fn inbox(State(s): State<AppState>, _st: Staff, Query(q): Query<InboxQuery
     .fetch_all(&s.db)
     .await?;
     Ok(Json(rows))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quote_price_bounds_and_ratio_guard() {
+        let ok = |p: i64, e: Option<i64>, o: bool| check_quote_price(Won(p), Won(p / 10), e, o).is_ok();
+        assert!(ok(350_000, Some(346_500), false));
+        assert!(!ok(0, None, false), "zero");
+        assert!(!ok(9_900, None, false), "below the minimum");
+        assert!(!ok(MAX_QUOTE_PRICE + 100, None, false), "over the maximum");
+        assert!(check_quote_price(Won(10_000), Won(0), None, false).is_err(), "zero deposit");
+        assert!(!ok(1_050_000, Some(346_500), false), "over 3x needs override");
+        assert!(ok(1_050_000, Some(346_500), true));
+        assert!(!ok(100_000, Some(346_500), false), "under 0.3x needs override");
+        assert!(ok(103_950, Some(346_500), false), "exactly 0.3x is fine");
+        assert!(ok(1_039_500, Some(346_500), false), "exactly 3x is fine");
+        assert!(ok(20_000, None, false), "no estimate, no ratio guard");
+    }
 }
