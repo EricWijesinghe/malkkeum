@@ -1,0 +1,13 @@
+# Renders are reproducible: `python scripts/render_all.py` (Blender 5.2.4 LTS + Pillow, see manifest.json "generator").
+# Kept in git: scripts/, manifest.json, export/ (what the apps ship) and out/appicon/ (launcher icon sources, scripts/app_icons.py).
+out/_raw/
+out/anim/
+out/gltf/
+*.gltf
+*.glb
+out/icons/
+out/contact-*.png
+__pycache__/
+# Files over 1 MB stay out of git: the contact sheets above and any Blender masters.
+*.blend
+*.blend1

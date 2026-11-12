@@ -1,0 +1,622 @@
+{
+ "ac_ceiling": {
+  "source": "ac_ceiling",
+  "alias": false,
+  "large": false
+ },
+ "ac_stand": {
+  "source": "ac_stand",
+  "alias": false,
+  "large": false
+ },
+ "ac_two_in_one": {
+  "source": "ac_2in1",
+  "alias": true,
+  "large": false
+ },
+ "ac_wall": {
+  "source": "ac_wall",
+  "alias": false,
+  "large": false
+ },
+ "banner_coupon": {
+  "source": "banner_coupon",
+  "alias": false,
+  "large": true
+ },
+ "bld_apartment": {
+  "source": "bld_apartment",
+  "alias": false,
+  "large": false
+ },
+ "bld_commercial": {
+  "source": "bld_commercial",
+  "alias": false,
+  "large": false
+ },
+ "bld_house": {
+  "source": "bld_house",
+  "alias": false,
+  "large": false
+ },
+ "bld_officetel": {
+  "source": "bld_officetel",
+  "alias": false,
+  "large": false
+ },
+ "bld_other": {
+  "source": "bld_other",
+  "alias": false,
+  "large": false
+ },
+ "bld_villa": {
+  "source": "bld_villa",
+  "alias": false,
+  "large": false
+ },
+ "box_empty": {
+  "source": "box_empty",
+  "alias": false,
+  "large": false
+ },
+ "box_full": {
+  "source": "box_full",
+  "alias": false,
+  "large": false
+ },
+ "box_partial": {
+  "source": "box_partial",
+  "alias": false,
+  "large": false
+ },
+ "box_unknown": {
+  "source": "box_unknown",
+  "alias": false,
+  "large": false
+ },
+ "c_bookings": {
+  "source": "nav_bookings_active",
+  "alias": true,
+  "large": false
+ },
+ "c_chat": {
+  "source": "nav_chat_active",
+  "alias": true,
+  "large": false
+ },
+ "c_customers": {
+  "source": "c_customers",
+  "alias": false,
+  "large": false
+ },
+ "c_dashboard": {
+  "source": "c_dashboard",
+  "alias": false,
+  "large": false
+ },
+ "c_marketing": {
+  "source": "announcement",
+  "alias": true,
+  "large": false
+ },
+ "c_monitor": {
+  "source": "c_monitor",
+  "alias": false,
+  "large": false
+ },
+ "c_partners": {
+  "source": "c_partners",
+  "alias": false,
+  "large": false
+ },
+ "c_payments": {
+  "source": "wallet_card",
+  "alias": true,
+  "large": false
+ },
+ "c_payouts": {
+  "source": "p_payout",
+  "alias": true,
+  "large": false
+ },
+ "c_pricing": {
+  "source": "c_pricing",
+  "alias": false,
+  "large": false
+ },
+ "c_quotes": {
+  "source": "chat_quote",
+  "alias": true,
+  "large": false
+ },
+ "c_settings": {
+  "source": "c_settings",
+  "alias": false,
+  "large": false
+ },
+ "c_staff": {
+  "source": "c_staff",
+  "alias": false,
+  "large": false
+ },
+ "c_subscriptions": {
+  "source": "c_subscriptions",
+  "alias": false,
+  "large": false
+ },
+ "chat_hours": {
+  "source": "chat_hours",
+  "alias": false,
+  "large": false
+ },
+ "chat_new": {
+  "source": "chat_new",
+  "alias": false,
+  "large": false
+ },
+ "chat_quote": {
+  "source": "chat_quote",
+  "alias": false,
+  "large": false
+ },
+ "chat_team_avatar": {
+  "source": "chat_team_avatar",
+  "alias": false,
+  "large": false
+ },
+ "cnt_balcony": {
+  "source": "balcony_count",
+  "alias": true,
+  "large": false
+ },
+ "cnt_bathroom": {
+  "source": "bath_count",
+  "alias": true,
+  "large": false
+ },
+ "confirm_check": {
+  "source": "confirm_check_big",
+  "alias": true,
+  "large": true
+ },
+ "duplex_stairs": {
+  "source": "duplex_stairs",
+  "alias": false,
+  "large": false
+ },
+ "elev_no": {
+  "source": "elevator_no",
+  "alias": true,
+  "large": false
+ },
+ "elev_yes": {
+  "source": "elevator_yes",
+  "alias": true,
+  "large": false
+ },
+ "empty_inbox": {
+  "source": "empty_inbox",
+  "alias": false,
+  "large": false
+ },
+ "error_offline": {
+  "source": "error_offline",
+  "alias": false,
+  "large": false
+ },
+ "faq_bubble": {
+  "source": "faq",
+  "alias": true,
+  "large": false
+ },
+ "logo_3d": {
+  "source": "logo_house_check",
+  "alias": true,
+  "large": true
+ },
+ "menu_account": {
+  "source": "menu_account",
+  "alias": false,
+  "large": false
+ },
+ "menu_addresses": {
+  "source": "menu_addresses",
+  "alias": false,
+  "large": false
+ },
+ "menu_contact": {
+  "source": "menu_contact",
+  "alias": false,
+  "large": false
+ },
+ "menu_coupons": {
+  "source": "coupon",
+  "alias": true,
+  "large": false
+ },
+ "menu_faq": {
+  "source": "faq",
+  "alias": true,
+  "large": false
+ },
+ "menu_language": {
+  "source": "menu_language",
+  "alias": false,
+  "large": false
+ },
+ "menu_licenses": {
+  "source": "menu_licenses",
+  "alias": false,
+  "large": false
+ },
+ "menu_notices": {
+  "source": "announcement",
+  "alias": true,
+  "large": false
+ },
+ "menu_partner": {
+  "source": "menu_partner",
+  "alias": false,
+  "large": false
+ },
+ "menu_payments": {
+  "source": "menu_payments",
+  "alias": false,
+  "large": false
+ },
+ "menu_privacy": {
+  "source": "menu_privacy",
+  "alias": false,
+  "large": false
+ },
+ "menu_scope": {
+  "source": "menu_scope",
+  "alias": false,
+  "large": false
+ },
+ "menu_subscriptions": {
+  "source": "menu_subscriptions",
+  "alias": false,
+  "large": false
+ },
+ "menu_terms": {
+  "source": "menu_terms",
+  "alias": false,
+  "large": false
+ },
+ "menu_theme": {
+  "source": "menu_theme",
+  "alias": false,
+  "large": false
+ },
+ "menu_tips": {
+  "source": "tip_bulb",
+  "alias": true,
+  "large": false
+ },
+ "menu_version": {
+  "source": "menu_version",
+  "alias": false,
+  "large": false
+ },
+ "nav_bookings": {
+  "source": "nav_bookings_active",
+  "alias": true,
+  "large": false
+ },
+ "nav_chat": {
+  "source": "nav_chat_active",
+  "alias": true,
+  "large": false
+ },
+ "nav_home": {
+  "source": "nav_home_active",
+  "alias": true,
+  "large": false
+ },
+ "nav_more": {
+  "source": "nav_more_active",
+  "alias": true,
+  "large": false
+ },
+ "news_megaphone": {
+  "source": "announcement",
+  "alias": true,
+  "large": false
+ },
+ "notice_pin": {
+  "source": "notice_pin",
+  "alias": false,
+  "large": false
+ },
+ "p_camera": {
+  "source": "p_camera",
+  "alias": false,
+  "large": false
+ },
+ "p_nav_jobs": {
+  "source": "p_nav_jobs",
+  "alias": false,
+  "large": false
+ },
+ "p_nav_quotes": {
+  "source": "chat_quote",
+  "alias": true,
+  "large": false
+ },
+ "p_nav_schedule": {
+  "source": "calendar",
+  "alias": true,
+  "large": false
+ },
+ "p_payout": {
+  "source": "p_payout",
+  "alias": false,
+  "large": false
+ },
+ "p_verified": {
+  "source": "p_verified",
+  "alias": false,
+  "large": false
+ },
+ "pay_bank": {
+  "source": "pay_bank",
+  "alias": false,
+  "large": false
+ },
+ "pay_card": {
+  "source": "wallet_card",
+  "alias": true,
+  "large": false
+ },
+ "pay_virtual": {
+  "source": "pay_virtual",
+  "alias": false,
+  "large": false
+ },
+ "pay_wallet": {
+  "source": "wallet_generic",
+  "alias": true,
+  "large": false
+ },
+ "promo_ac_addon": {
+  "source": "promo_ac_addon",
+  "alias": false,
+  "large": false
+ },
+ "rec_move_combo": {
+  "source": "rec_move_combo",
+  "alias": false,
+  "large": false
+ },
+ "room_four_plus": {
+  "source": "room_four_plus",
+  "alias": false,
+  "large": false
+ },
+ "room_one_half": {
+  "source": "room_one_half",
+  "alias": false,
+  "large": false
+ },
+ "room_studio": {
+  "source": "room_studio",
+  "alias": false,
+  "large": false
+ },
+ "room_three": {
+  "source": "room_three",
+  "alias": false,
+  "large": false
+ },
+ "room_two": {
+  "source": "room_two",
+  "alias": false,
+  "large": false
+ },
+ "scope_bathroom": {
+  "source": "scope_bathroom",
+  "alias": false,
+  "large": false
+ },
+ "scope_dishes": {
+  "source": "scope_dishes",
+  "alias": false,
+  "large": false
+ },
+ "scope_dusting": {
+  "source": "scope_dusting",
+  "alias": false,
+  "large": false
+ },
+ "scope_trash": {
+  "source": "scope_trash",
+  "alias": false,
+  "large": false
+ },
+ "scope_vacuum": {
+  "source": "scope_vacuum",
+  "alias": false,
+  "large": false
+ },
+ "slot_am": {
+  "source": "slot_am",
+  "alias": false,
+  "large": false
+ },
+ "slot_pm": {
+  "source": "slot_pm",
+  "alias": false,
+  "large": false
+ },
+ "status_cancelled": {
+  "source": "status_cancelled",
+  "alias": false,
+  "large": false
+ },
+ "step_completed": {
+  "source": "step_completed",
+  "alias": false,
+  "large": false
+ },
+ "step_confirmed": {
+  "source": "step_confirmed",
+  "alias": false,
+  "large": false
+ },
+ "step_consult": {
+  "source": "step_consult",
+  "alias": false,
+  "large": false
+ },
+ "step_matched": {
+  "source": "step_matched",
+  "alias": false,
+  "large": false
+ },
+ "svc_aircon": {
+  "source": "cat_ac",
+  "alias": true,
+  "large": false
+ },
+ "svc_bathroom": {
+  "source": "cat_bathroom",
+  "alias": true,
+  "large": false
+ },
+ "svc_kitchen": {
+  "source": "cat_kitchen",
+  "alias": true,
+  "large": false
+ },
+ "svc_mattress": {
+  "source": "cat_mattress",
+  "alias": true,
+  "large": false
+ },
+ "svc_move": {
+  "source": "svc_move",
+  "alias": false,
+  "large": false
+ },
+ "svc_move_in": {
+  "source": "svc_move_in",
+  "alias": false,
+  "large": false
+ },
+ "svc_move_out": {
+  "source": "cat_move",
+  "alias": true,
+  "large": false
+ },
+ "svc_sofa": {
+  "source": "cat_sofa",
+  "alias": true,
+  "large": false
+ },
+ "svc_studio": {
+  "source": "cat_studio",
+  "alias": true,
+  "large": false
+ },
+ "tip_bulb": {
+  "source": "tip_bulb",
+  "alias": false,
+  "large": false
+ },
+ "tool_cloth": {
+  "source": "tool_cloth",
+  "alias": false,
+  "large": false
+ },
+ "tool_gloves": {
+  "source": "tool_rubber_gloves",
+  "alias": true,
+  "large": false
+ },
+ "tool_mop": {
+  "source": "tool_mop",
+  "alias": false,
+  "large": false
+ },
+ "tool_sponge": {
+  "source": "tool_sponge",
+  "alias": false,
+  "large": false
+ },
+ "tool_spray": {
+  "source": "tool_detergent",
+  "alias": true,
+  "large": false
+ },
+ "tool_trash": {
+  "source": "tool_trash_bags",
+  "alias": true,
+  "large": false
+ },
+ "tool_vacuum": {
+  "source": "tool_vacuum",
+  "alias": false,
+  "large": false
+ },
+ "type_after_interior": {
+  "source": "type_after_interior",
+  "alias": false,
+  "large": false
+ },
+ "type_lived_in": {
+  "source": "type_lived_in",
+  "alias": false,
+  "large": false
+ },
+ "type_normal_move_in": {
+  "source": "type_normal_move_in",
+  "alias": false,
+  "large": false
+ },
+ "type_same_day": {
+  "source": "type_same_day",
+  "alias": false,
+  "large": false
+ },
+ "type_some_luggage": {
+  "source": "type_some_luggage",
+  "alias": false,
+  "large": false
+ },
+ "type_standard": {
+  "source": "type_standard",
+  "alias": false,
+  "large": false
+ },
+ "ui_bell": {
+  "source": "ui_bell",
+  "alias": false,
+  "large": false
+ },
+ "ui_calendar": {
+  "source": "calendar",
+  "alias": true,
+  "large": false
+ },
+ "ui_clock": {
+  "source": "ui_clock",
+  "alias": false,
+  "large": false
+ },
+ "ui_coupon": {
+  "source": "coupon",
+  "alias": true,
+  "large": false
+ },
+ "ui_pin": {
+  "source": "ui_pin",
+  "alias": false,
+  "large": false
+ },
+ "ui_points": {
+  "source": "points",
+  "alias": true,
+  "large": false
+ }
+}

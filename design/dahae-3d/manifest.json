@@ -1,0 +1,2711 @@
+{
+ "name": "Dahae 3D icon set",
+ "generator": "Blender 5.2.4 LTS (Eevee) + Pillow",
+ "palette": {
+  "teal": "#1E9EBA",
+  "darkTeal": "#187A8F",
+  "checkYellow": "#FFD95A",
+  "ink": "#17232C"
+ },
+ "sizes": {
+  "base_dp": 96,
+  "1x": 96,
+  "2x": 192,
+  "3x": 288,
+  "hero": [
+   512,
+   1024
+  ],
+  "note": "@1x/@2x/@3x have no ground shadow; 512/1024 hero renders include a soft contact shadow"
+ },
+ "icon_count": 121,
+ "icons": [
+  {
+   "id": "svc_move",
+   "group": "service",
+   "description": "Service: move cleaning (house and box)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "svc_move",
+     "files": {
+      "1x": "out/icons/svc_move/svc_move@1x.png",
+      "2x": "out/icons/svc_move/svc_move@2x.png",
+      "3x": "out/icons/svc_move/svc_move@3x.png",
+      "512": "out/icons/svc_move/svc_move_512.png",
+      "1024": "out/icons/svc_move/svc_move_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_move"
+   ]
+  },
+  {
+   "id": "svc_move_in",
+   "group": "service",
+   "description": "Service: move-in cleaning (door and key)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "svc_move_in",
+     "files": {
+      "1x": "out/icons/svc_move_in/svc_move_in@1x.png",
+      "2x": "out/icons/svc_move_in/svc_move_in@2x.png",
+      "3x": "out/icons/svc_move_in/svc_move_in@3x.png",
+      "512": "out/icons/svc_move_in/svc_move_in_512.png",
+      "1024": "out/icons/svc_move_in/svc_move_in_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_move_in"
+   ]
+  },
+  {
+   "id": "rec_move_combo",
+   "group": "service",
+   "description": "Recommended: move-out + move-in combo (two houses and an arrow)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "rec_move_combo",
+     "files": {
+      "1x": "out/icons/rec_move_combo/rec_move_combo@1x.png",
+      "2x": "out/icons/rec_move_combo/rec_move_combo@2x.png",
+      "3x": "out/icons/rec_move_combo/rec_move_combo@3x.png",
+      "512": "out/icons/rec_move_combo/rec_move_combo_512.png",
+      "1024": "out/icons/rec_move_combo/rec_move_combo_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "rec_move_combo"
+   ]
+  },
+  {
+   "id": "banner_coupon",
+   "group": "service",
+   "description": "Home banner: welcome coupon (yellow ticket and confetti)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "banner_coupon",
+     "files": {
+      "1x": "out/icons/banner_coupon/banner_coupon@1x.png",
+      "2x": "out/icons/banner_coupon/banner_coupon@2x.png",
+      "3x": "out/icons/banner_coupon/banner_coupon@3x.png",
+      "512": "out/icons/banner_coupon/banner_coupon_512.png",
+      "1024": "out/icons/banner_coupon/banner_coupon_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "banner_coupon"
+   ]
+  },
+  {
+   "id": "notice_pin",
+   "group": "content",
+   "description": "Notice (pushpin)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "notice_pin",
+     "files": {
+      "1x": "out/icons/notice_pin/notice_pin@1x.png",
+      "2x": "out/icons/notice_pin/notice_pin@2x.png",
+      "3x": "out/icons/notice_pin/notice_pin@3x.png",
+      "512": "out/icons/notice_pin/notice_pin_512.png",
+      "1024": "out/icons/notice_pin/notice_pin_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "notice_pin"
+   ]
+  },
+  {
+   "id": "step_completed",
+   "group": "step",
+   "description": "Timeline: service completed (sparkling house)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "step_completed",
+     "files": {
+      "1x": "out/icons/step_completed/step_completed@1x.png",
+      "2x": "out/icons/step_completed/step_completed@2x.png",
+      "3x": "out/icons/step_completed/step_completed@3x.png",
+      "512": "out/icons/step_completed/step_completed_512.png",
+      "1024": "out/icons/step_completed/step_completed_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "step_completed"
+   ]
+  },
+  {
+   "id": "status_cancelled",
+   "group": "step",
+   "description": "Status: cancelled (grey disc with a cross)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "status_cancelled",
+     "files": {
+      "1x": "out/icons/status_cancelled/status_cancelled@1x.png",
+      "2x": "out/icons/status_cancelled/status_cancelled@2x.png",
+      "3x": "out/icons/status_cancelled/status_cancelled@3x.png",
+      "512": "out/icons/status_cancelled/status_cancelled_512.png",
+      "1024": "out/icons/status_cancelled/status_cancelled_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "status_cancelled"
+   ]
+  },
+  {
+   "id": "tool_sponge",
+   "group": "tool",
+   "description": "Tool: sponge",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_sponge",
+     "files": {
+      "1x": "out/icons/tool_sponge/tool_sponge@1x.png",
+      "2x": "out/icons/tool_sponge/tool_sponge@2x.png",
+      "3x": "out/icons/tool_sponge/tool_sponge@3x.png",
+      "512": "out/icons/tool_sponge/tool_sponge_512.png",
+      "1024": "out/icons/tool_sponge/tool_sponge_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_sponge"
+   ]
+  },
+  {
+   "id": "box_unknown",
+   "group": "move",
+   "description": "Move condition: not sure (box with a question mark)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "box_unknown",
+     "files": {
+      "1x": "out/icons/box_unknown/box_unknown@1x.png",
+      "2x": "out/icons/box_unknown/box_unknown@2x.png",
+      "3x": "out/icons/box_unknown/box_unknown@3x.png",
+      "512": "out/icons/box_unknown/box_unknown_512.png",
+      "1024": "out/icons/box_unknown/box_unknown_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "box_unknown"
+   ]
+  },
+  {
+   "id": "type_normal_move_in",
+   "group": "move",
+   "description": "Cleaning type: normal move-in (key with house tag)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_normal_move_in",
+     "files": {
+      "1x": "out/icons/type_normal_move_in/type_normal_move_in@1x.png",
+      "2x": "out/icons/type_normal_move_in/type_normal_move_in@2x.png",
+      "3x": "out/icons/type_normal_move_in/type_normal_move_in@3x.png",
+      "512": "out/icons/type_normal_move_in/type_normal_move_in_512.png",
+      "1024": "out/icons/type_normal_move_in/type_normal_move_in_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_normal_move_in"
+   ]
+  },
+  {
+   "id": "type_after_interior",
+   "group": "move",
+   "description": "Cleaning type: after interior work (paint roller)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_after_interior",
+     "files": {
+      "1x": "out/icons/type_after_interior/type_after_interior@1x.png",
+      "2x": "out/icons/type_after_interior/type_after_interior@2x.png",
+      "3x": "out/icons/type_after_interior/type_after_interior@3x.png",
+      "512": "out/icons/type_after_interior/type_after_interior_512.png",
+      "1024": "out/icons/type_after_interior/type_after_interior_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_after_interior"
+   ]
+  },
+  {
+   "id": "type_lived_in",
+   "group": "move",
+   "description": "Cleaning type: lived-in home (sponge and sparkles)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_lived_in",
+     "files": {
+      "1x": "out/icons/type_lived_in/type_lived_in@1x.png",
+      "2x": "out/icons/type_lived_in/type_lived_in@2x.png",
+      "3x": "out/icons/type_lived_in/type_lived_in@3x.png",
+      "512": "out/icons/type_lived_in/type_lived_in_512.png",
+      "1024": "out/icons/type_lived_in/type_lived_in_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_lived_in"
+   ]
+  },
+  {
+   "id": "type_standard",
+   "group": "move",
+   "description": "Cleaning type: standard (sealed box)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_standard",
+     "files": {
+      "1x": "out/icons/type_standard/type_standard@1x.png",
+      "2x": "out/icons/type_standard/type_standard@2x.png",
+      "3x": "out/icons/type_standard/type_standard@3x.png",
+      "512": "out/icons/type_standard/type_standard_512.png",
+      "1024": "out/icons/type_standard/type_standard_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_standard"
+   ]
+  },
+  {
+   "id": "type_same_day",
+   "group": "move",
+   "description": "Cleaning type: same-day move (truck and clock)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_same_day",
+     "files": {
+      "1x": "out/icons/type_same_day/type_same_day@1x.png",
+      "2x": "out/icons/type_same_day/type_same_day@2x.png",
+      "3x": "out/icons/type_same_day/type_same_day@3x.png",
+      "512": "out/icons/type_same_day/type_same_day_512.png",
+      "1024": "out/icons/type_same_day/type_same_day_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_same_day"
+   ]
+  },
+  {
+   "id": "type_some_luggage",
+   "group": "move",
+   "description": "Cleaning type: some belongings left (chair)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "type_some_luggage",
+     "files": {
+      "1x": "out/icons/type_some_luggage/type_some_luggage@1x.png",
+      "2x": "out/icons/type_some_luggage/type_some_luggage@2x.png",
+      "3x": "out/icons/type_some_luggage/type_some_luggage@3x.png",
+      "512": "out/icons/type_some_luggage/type_some_luggage_512.png",
+      "1024": "out/icons/type_some_luggage/type_some_luggage_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "type_some_luggage"
+   ]
+  },
+  {
+   "id": "bld_officetel",
+   "group": "move",
+   "description": "Building type: officetel (glass tower)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_officetel",
+     "files": {
+      "1x": "out/icons/bld_officetel/bld_officetel@1x.png",
+      "2x": "out/icons/bld_officetel/bld_officetel@2x.png",
+      "3x": "out/icons/bld_officetel/bld_officetel@3x.png",
+      "512": "out/icons/bld_officetel/bld_officetel_512.png",
+      "1024": "out/icons/bld_officetel/bld_officetel_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_officetel"
+   ]
+  },
+  {
+   "id": "bld_house",
+   "group": "move",
+   "description": "Building type: detached house",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_house",
+     "files": {
+      "1x": "out/icons/bld_house/bld_house@1x.png",
+      "2x": "out/icons/bld_house/bld_house@2x.png",
+      "3x": "out/icons/bld_house/bld_house@3x.png",
+      "512": "out/icons/bld_house/bld_house_512.png",
+      "1024": "out/icons/bld_house/bld_house_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_house"
+   ]
+  },
+  {
+   "id": "bld_other",
+   "group": "move",
+   "description": "Building type: other (generic block)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_other",
+     "files": {
+      "1x": "out/icons/bld_other/bld_other@1x.png",
+      "2x": "out/icons/bld_other/bld_other@2x.png",
+      "3x": "out/icons/bld_other/bld_other@3x.png",
+      "512": "out/icons/bld_other/bld_other_512.png",
+      "1024": "out/icons/bld_other/bld_other_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_other"
+   ]
+  },
+  {
+   "id": "room_studio",
+   "group": "move",
+   "description": "Room structure: studio",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "room_studio",
+     "files": {
+      "1x": "out/icons/room_studio/room_studio@1x.png",
+      "2x": "out/icons/room_studio/room_studio@2x.png",
+      "3x": "out/icons/room_studio/room_studio@3x.png",
+      "512": "out/icons/room_studio/room_studio_512.png",
+      "1024": "out/icons/room_studio/room_studio_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "room_studio"
+   ]
+  },
+  {
+   "id": "room_one_half",
+   "group": "move",
+   "description": "Room structure: 1.5 rooms",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "room_one_half",
+     "files": {
+      "1x": "out/icons/room_one_half/room_one_half@1x.png",
+      "2x": "out/icons/room_one_half/room_one_half@2x.png",
+      "3x": "out/icons/room_one_half/room_one_half@3x.png",
+      "512": "out/icons/room_one_half/room_one_half_512.png",
+      "1024": "out/icons/room_one_half/room_one_half_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "room_one_half"
+   ]
+  },
+  {
+   "id": "room_two",
+   "group": "move",
+   "description": "Room structure: living room + 2 rooms",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "room_two",
+     "files": {
+      "1x": "out/icons/room_two/room_two@1x.png",
+      "2x": "out/icons/room_two/room_two@2x.png",
+      "3x": "out/icons/room_two/room_two@3x.png",
+      "512": "out/icons/room_two/room_two_512.png",
+      "1024": "out/icons/room_two/room_two_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "room_two"
+   ]
+  },
+  {
+   "id": "room_three",
+   "group": "move",
+   "description": "Room structure: living room + 3 rooms",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "room_three",
+     "files": {
+      "1x": "out/icons/room_three/room_three@1x.png",
+      "2x": "out/icons/room_three/room_three@2x.png",
+      "3x": "out/icons/room_three/room_three@3x.png",
+      "512": "out/icons/room_three/room_three_512.png",
+      "1024": "out/icons/room_three/room_three_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "room_three"
+   ]
+  },
+  {
+   "id": "room_four_plus",
+   "group": "move",
+   "description": "Room structure: living room + 4 or more rooms",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "room_four_plus",
+     "files": {
+      "1x": "out/icons/room_four_plus/room_four_plus@1x.png",
+      "2x": "out/icons/room_four_plus/room_four_plus@2x.png",
+      "3x": "out/icons/room_four_plus/room_four_plus@3x.png",
+      "512": "out/icons/room_four_plus/room_four_plus_512.png",
+      "1024": "out/icons/room_four_plus/room_four_plus_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "room_four_plus"
+   ]
+  },
+  {
+   "id": "duplex_stairs",
+   "group": "move",
+   "description": "Duplex (interior staircase)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "duplex_stairs",
+     "files": {
+      "1x": "out/icons/duplex_stairs/duplex_stairs@1x.png",
+      "2x": "out/icons/duplex_stairs/duplex_stairs@2x.png",
+      "3x": "out/icons/duplex_stairs/duplex_stairs@3x.png",
+      "512": "out/icons/duplex_stairs/duplex_stairs_512.png",
+      "1024": "out/icons/duplex_stairs/duplex_stairs_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "duplex_stairs"
+   ]
+  },
+  {
+   "id": "promo_ac_addon",
+   "group": "move",
+   "description": "Promo: add AC cleaning at a discount (AC and percent tag)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "promo_ac_addon",
+     "files": {
+      "1x": "out/icons/promo_ac_addon/promo_ac_addon@1x.png",
+      "2x": "out/icons/promo_ac_addon/promo_ac_addon@2x.png",
+      "3x": "out/icons/promo_ac_addon/promo_ac_addon@3x.png",
+      "512": "out/icons/promo_ac_addon/promo_ac_addon_512.png",
+      "1024": "out/icons/promo_ac_addon/promo_ac_addon_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "promo_ac_addon"
+   ]
+  },
+  {
+   "id": "ui_clock",
+   "group": "ui",
+   "description": "Clock (time slot)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ui_clock",
+     "files": {
+      "1x": "out/icons/ui_clock/ui_clock@1x.png",
+      "2x": "out/icons/ui_clock/ui_clock@2x.png",
+      "3x": "out/icons/ui_clock/ui_clock@3x.png",
+      "512": "out/icons/ui_clock/ui_clock_512.png",
+      "1024": "out/icons/ui_clock/ui_clock_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ui_clock"
+   ]
+  },
+  {
+   "id": "slot_am",
+   "group": "ui",
+   "description": "Morning arrival slot (rising sun)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "slot_am",
+     "files": {
+      "1x": "out/icons/slot_am/slot_am@1x.png",
+      "2x": "out/icons/slot_am/slot_am@2x.png",
+      "3x": "out/icons/slot_am/slot_am@3x.png",
+      "512": "out/icons/slot_am/slot_am_512.png",
+      "1024": "out/icons/slot_am/slot_am_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "slot_am"
+   ]
+  },
+  {
+   "id": "slot_pm",
+   "group": "ui",
+   "description": "Afternoon arrival slot (sun and cloud)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "slot_pm",
+     "files": {
+      "1x": "out/icons/slot_pm/slot_pm@1x.png",
+      "2x": "out/icons/slot_pm/slot_pm@2x.png",
+      "3x": "out/icons/slot_pm/slot_pm@3x.png",
+      "512": "out/icons/slot_pm/slot_pm_512.png",
+      "1024": "out/icons/slot_pm/slot_pm_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "slot_pm"
+   ]
+  },
+  {
+   "id": "ui_pin",
+   "group": "ui",
+   "description": "Location pin",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ui_pin",
+     "files": {
+      "1x": "out/icons/ui_pin/ui_pin@1x.png",
+      "2x": "out/icons/ui_pin/ui_pin@2x.png",
+      "3x": "out/icons/ui_pin/ui_pin@3x.png",
+      "512": "out/icons/ui_pin/ui_pin_512.png",
+      "1024": "out/icons/ui_pin/ui_pin_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ui_pin"
+   ]
+  },
+  {
+   "id": "ui_bell",
+   "group": "ui",
+   "description": "Notifications (bell)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ui_bell",
+     "files": {
+      "1x": "out/icons/ui_bell/ui_bell@1x.png",
+      "2x": "out/icons/ui_bell/ui_bell@2x.png",
+      "3x": "out/icons/ui_bell/ui_bell@3x.png",
+      "512": "out/icons/ui_bell/ui_bell_512.png",
+      "1024": "out/icons/ui_bell/ui_bell_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ui_bell"
+   ]
+  },
+  {
+   "id": "chat_new",
+   "group": "chat",
+   "description": "New consultation (bubble with plus)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "chat_new",
+     "files": {
+      "1x": "out/icons/chat_new/chat_new@1x.png",
+      "2x": "out/icons/chat_new/chat_new@2x.png",
+      "3x": "out/icons/chat_new/chat_new@3x.png",
+      "512": "out/icons/chat_new/chat_new_512.png",
+      "1024": "out/icons/chat_new/chat_new_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "chat_new"
+   ]
+  },
+  {
+   "id": "chat_team_avatar",
+   "group": "chat",
+   "description": "Dahae consultation team avatar (logo house with headset)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "chat_team_avatar",
+     "files": {
+      "1x": "out/icons/chat_team_avatar/chat_team_avatar@1x.png",
+      "2x": "out/icons/chat_team_avatar/chat_team_avatar@2x.png",
+      "3x": "out/icons/chat_team_avatar/chat_team_avatar@3x.png",
+      "512": "out/icons/chat_team_avatar/chat_team_avatar_512.png",
+      "1024": "out/icons/chat_team_avatar/chat_team_avatar_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "chat_team_avatar"
+   ]
+  },
+  {
+   "id": "chat_quote",
+   "group": "chat",
+   "description": "Quote card (document with coin)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "chat_quote",
+     "files": {
+      "1x": "out/icons/chat_quote/chat_quote@1x.png",
+      "2x": "out/icons/chat_quote/chat_quote@2x.png",
+      "3x": "out/icons/chat_quote/chat_quote@3x.png",
+      "512": "out/icons/chat_quote/chat_quote_512.png",
+      "1024": "out/icons/chat_quote/chat_quote_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_quotes",
+    "chat_quote",
+    "p_nav_quotes"
+   ]
+  },
+  {
+   "id": "chat_hours",
+   "group": "chat",
+   "description": "Operating hours (clock and moon)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "chat_hours",
+     "files": {
+      "1x": "out/icons/chat_hours/chat_hours@1x.png",
+      "2x": "out/icons/chat_hours/chat_hours@2x.png",
+      "3x": "out/icons/chat_hours/chat_hours@3x.png",
+      "512": "out/icons/chat_hours/chat_hours_512.png",
+      "1024": "out/icons/chat_hours/chat_hours_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "chat_hours"
+   ]
+  },
+  {
+   "id": "pay_bank",
+   "group": "pay",
+   "description": "Payment: bank transfer (bank)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "pay_bank",
+     "files": {
+      "1x": "out/icons/pay_bank/pay_bank@1x.png",
+      "2x": "out/icons/pay_bank/pay_bank@2x.png",
+      "3x": "out/icons/pay_bank/pay_bank@3x.png",
+      "512": "out/icons/pay_bank/pay_bank_512.png",
+      "1024": "out/icons/pay_bank/pay_bank_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "pay_bank"
+   ]
+  },
+  {
+   "id": "pay_virtual",
+   "group": "pay",
+   "description": "Payment: virtual account (receipt)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "pay_virtual",
+     "files": {
+      "1x": "out/icons/pay_virtual/pay_virtual@1x.png",
+      "2x": "out/icons/pay_virtual/pay_virtual@2x.png",
+      "3x": "out/icons/pay_virtual/pay_virtual@3x.png",
+      "512": "out/icons/pay_virtual/pay_virtual_512.png",
+      "1024": "out/icons/pay_virtual/pay_virtual_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "pay_virtual"
+   ]
+  },
+  {
+   "id": "menu_scope",
+   "group": "menu",
+   "description": "Menu: service scope (checklist)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_scope",
+     "files": {
+      "1x": "out/icons/menu_scope/menu_scope@1x.png",
+      "2x": "out/icons/menu_scope/menu_scope@2x.png",
+      "3x": "out/icons/menu_scope/menu_scope@3x.png",
+      "512": "out/icons/menu_scope/menu_scope_512.png",
+      "1024": "out/icons/menu_scope/menu_scope_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_scope"
+   ]
+  },
+  {
+   "id": "menu_payments",
+   "group": "menu",
+   "description": "Menu: payment methods (card and wallet)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_payments",
+     "files": {
+      "1x": "out/icons/menu_payments/menu_payments@1x.png",
+      "2x": "out/icons/menu_payments/menu_payments@2x.png",
+      "3x": "out/icons/menu_payments/menu_payments@3x.png",
+      "512": "out/icons/menu_payments/menu_payments_512.png",
+      "1024": "out/icons/menu_payments/menu_payments_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_payments"
+   ]
+  },
+  {
+   "id": "menu_addresses",
+   "group": "menu",
+   "description": "Menu: address management (house and pin)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_addresses",
+     "files": {
+      "1x": "out/icons/menu_addresses/menu_addresses@1x.png",
+      "2x": "out/icons/menu_addresses/menu_addresses@2x.png",
+      "3x": "out/icons/menu_addresses/menu_addresses@3x.png",
+      "512": "out/icons/menu_addresses/menu_addresses_512.png",
+      "1024": "out/icons/menu_addresses/menu_addresses_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_addresses"
+   ]
+  },
+  {
+   "id": "menu_account",
+   "group": "menu",
+   "description": "Menu: account info (ID card)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_account",
+     "files": {
+      "1x": "out/icons/menu_account/menu_account@1x.png",
+      "2x": "out/icons/menu_account/menu_account@2x.png",
+      "3x": "out/icons/menu_account/menu_account@3x.png",
+      "512": "out/icons/menu_account/menu_account_512.png",
+      "1024": "out/icons/menu_account/menu_account_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_account"
+   ]
+  },
+  {
+   "id": "menu_contact",
+   "group": "menu",
+   "description": "Menu: contact us (headset)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_contact",
+     "files": {
+      "1x": "out/icons/menu_contact/menu_contact@1x.png",
+      "2x": "out/icons/menu_contact/menu_contact@2x.png",
+      "3x": "out/icons/menu_contact/menu_contact@3x.png",
+      "512": "out/icons/menu_contact/menu_contact_512.png",
+      "1024": "out/icons/menu_contact/menu_contact_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_contact"
+   ]
+  },
+  {
+   "id": "menu_version",
+   "group": "menu",
+   "description": "Menu: version info (phone with info mark)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_version",
+     "files": {
+      "1x": "out/icons/menu_version/menu_version@1x.png",
+      "2x": "out/icons/menu_version/menu_version@2x.png",
+      "3x": "out/icons/menu_version/menu_version@3x.png",
+      "512": "out/icons/menu_version/menu_version_512.png",
+      "1024": "out/icons/menu_version/menu_version_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_version"
+   ]
+  },
+  {
+   "id": "empty_inbox",
+   "group": "state",
+   "description": "Empty state: nothing here (open tray)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "empty_inbox",
+     "files": {
+      "1x": "out/icons/empty_inbox/empty_inbox@1x.png",
+      "2x": "out/icons/empty_inbox/empty_inbox@2x.png",
+      "3x": "out/icons/empty_inbox/empty_inbox@3x.png",
+      "512": "out/icons/empty_inbox/empty_inbox_512.png",
+      "1024": "out/icons/empty_inbox/empty_inbox_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "empty_inbox"
+   ]
+  },
+  {
+   "id": "error_offline",
+   "group": "state",
+   "description": "Error: offline (cloud with a slash)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "error_offline",
+     "files": {
+      "1x": "out/icons/error_offline/error_offline@1x.png",
+      "2x": "out/icons/error_offline/error_offline@2x.png",
+      "3x": "out/icons/error_offline/error_offline@3x.png",
+      "512": "out/icons/error_offline/error_offline_512.png",
+      "1024": "out/icons/error_offline/error_offline_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "error_offline"
+   ]
+  },
+  {
+   "id": "menu_subscriptions",
+   "group": "menu",
+   "description": "Menu: subscriptions (calendar with repeat arrows)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_subscriptions",
+     "files": {
+      "1x": "out/icons/menu_subscriptions/menu_subscriptions@1x.png",
+      "2x": "out/icons/menu_subscriptions/menu_subscriptions@2x.png",
+      "3x": "out/icons/menu_subscriptions/menu_subscriptions@3x.png",
+      "512": "out/icons/menu_subscriptions/menu_subscriptions_512.png",
+      "1024": "out/icons/menu_subscriptions/menu_subscriptions_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_subscriptions"
+   ]
+  },
+  {
+   "id": "menu_partner",
+   "group": "menu",
+   "description": "Menu: become a partner (badge with broom)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_partner",
+     "files": {
+      "1x": "out/icons/menu_partner/menu_partner@1x.png",
+      "2x": "out/icons/menu_partner/menu_partner@2x.png",
+      "3x": "out/icons/menu_partner/menu_partner@3x.png",
+      "512": "out/icons/menu_partner/menu_partner_512.png",
+      "1024": "out/icons/menu_partner/menu_partner_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_partner"
+   ]
+  },
+  {
+   "id": "menu_language",
+   "group": "menu",
+   "description": "Menu: language (globe with speech bubble)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_language",
+     "files": {
+      "1x": "out/icons/menu_language/menu_language@1x.png",
+      "2x": "out/icons/menu_language/menu_language@2x.png",
+      "3x": "out/icons/menu_language/menu_language@3x.png",
+      "512": "out/icons/menu_language/menu_language_512.png",
+      "1024": "out/icons/menu_language/menu_language_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_language"
+   ]
+  },
+  {
+   "id": "menu_theme",
+   "group": "menu",
+   "description": "Menu: theme (half sun, half moon)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_theme",
+     "files": {
+      "1x": "out/icons/menu_theme/menu_theme@1x.png",
+      "2x": "out/icons/menu_theme/menu_theme@2x.png",
+      "3x": "out/icons/menu_theme/menu_theme@3x.png",
+      "512": "out/icons/menu_theme/menu_theme_512.png",
+      "1024": "out/icons/menu_theme/menu_theme_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_theme"
+   ]
+  },
+  {
+   "id": "menu_privacy",
+   "group": "menu",
+   "description": "Menu: privacy (shield with lock)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_privacy",
+     "files": {
+      "1x": "out/icons/menu_privacy/menu_privacy@1x.png",
+      "2x": "out/icons/menu_privacy/menu_privacy@2x.png",
+      "3x": "out/icons/menu_privacy/menu_privacy@3x.png",
+      "512": "out/icons/menu_privacy/menu_privacy_512.png",
+      "1024": "out/icons/menu_privacy/menu_privacy_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_privacy"
+   ]
+  },
+  {
+   "id": "menu_terms",
+   "group": "menu",
+   "description": "Menu: terms (document with seal)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_terms",
+     "files": {
+      "1x": "out/icons/menu_terms/menu_terms@1x.png",
+      "2x": "out/icons/menu_terms/menu_terms@2x.png",
+      "3x": "out/icons/menu_terms/menu_terms@3x.png",
+      "512": "out/icons/menu_terms/menu_terms_512.png",
+      "1024": "out/icons/menu_terms/menu_terms_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_terms"
+   ]
+  },
+  {
+   "id": "menu_licenses",
+   "group": "menu",
+   "description": "Menu: open-source licenses (stack of documents)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "menu_licenses",
+     "files": {
+      "1x": "out/icons/menu_licenses/menu_licenses@1x.png",
+      "2x": "out/icons/menu_licenses/menu_licenses@2x.png",
+      "3x": "out/icons/menu_licenses/menu_licenses@3x.png",
+      "512": "out/icons/menu_licenses/menu_licenses_512.png",
+      "1024": "out/icons/menu_licenses/menu_licenses_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_licenses"
+   ]
+  },
+  {
+   "id": "box_empty",
+   "group": "move",
+   "description": "Move condition: empty (open empty box)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "box_empty",
+     "files": {
+      "1x": "out/icons/box_empty/box_empty@1x.png",
+      "2x": "out/icons/box_empty/box_empty@2x.png",
+      "3x": "out/icons/box_empty/box_empty@3x.png",
+      "512": "out/icons/box_empty/box_empty_512.png",
+      "1024": "out/icons/box_empty/box_empty_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "box_empty"
+   ]
+  },
+  {
+   "id": "box_partial",
+   "group": "move",
+   "description": "Move condition: partially packed (open box with items)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "box_partial",
+     "files": {
+      "1x": "out/icons/box_partial/box_partial@1x.png",
+      "2x": "out/icons/box_partial/box_partial@2x.png",
+      "3x": "out/icons/box_partial/box_partial@3x.png",
+      "512": "out/icons/box_partial/box_partial_512.png",
+      "1024": "out/icons/box_partial/box_partial_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "box_partial"
+   ]
+  },
+  {
+   "id": "box_full",
+   "group": "move",
+   "description": "Move condition: fully packed (sealed boxes)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "box_full",
+     "files": {
+      "1x": "out/icons/box_full/box_full@1x.png",
+      "2x": "out/icons/box_full/box_full@2x.png",
+      "3x": "out/icons/box_full/box_full@3x.png",
+      "512": "out/icons/box_full/box_full_512.png",
+      "1024": "out/icons/box_full/box_full_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "box_full"
+   ]
+  },
+  {
+   "id": "bld_apartment",
+   "group": "move",
+   "description": "Building type: apartment",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_apartment",
+     "files": {
+      "1x": "out/icons/bld_apartment/bld_apartment@1x.png",
+      "2x": "out/icons/bld_apartment/bld_apartment@2x.png",
+      "3x": "out/icons/bld_apartment/bld_apartment@3x.png",
+      "512": "out/icons/bld_apartment/bld_apartment_512.png",
+      "1024": "out/icons/bld_apartment/bld_apartment_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_apartment"
+   ]
+  },
+  {
+   "id": "bld_villa",
+   "group": "move",
+   "description": "Building type: villa (low-rise multi-family)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_villa",
+     "files": {
+      "1x": "out/icons/bld_villa/bld_villa@1x.png",
+      "2x": "out/icons/bld_villa/bld_villa@2x.png",
+      "3x": "out/icons/bld_villa/bld_villa@3x.png",
+      "512": "out/icons/bld_villa/bld_villa_512.png",
+      "1024": "out/icons/bld_villa/bld_villa_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_villa"
+   ]
+  },
+  {
+   "id": "bld_commercial",
+   "group": "move",
+   "description": "Building type: commercial (shop)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bld_commercial",
+     "files": {
+      "1x": "out/icons/bld_commercial/bld_commercial@1x.png",
+      "2x": "out/icons/bld_commercial/bld_commercial@2x.png",
+      "3x": "out/icons/bld_commercial/bld_commercial@3x.png",
+      "512": "out/icons/bld_commercial/bld_commercial_512.png",
+      "1024": "out/icons/bld_commercial/bld_commercial_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "bld_commercial"
+   ]
+  },
+  {
+   "id": "elevator_yes",
+   "group": "move",
+   "description": "Elevator available",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "elevator_yes",
+     "files": {
+      "1x": "out/icons/elevator_yes/elevator_yes@1x.png",
+      "2x": "out/icons/elevator_yes/elevator_yes@2x.png",
+      "3x": "out/icons/elevator_yes/elevator_yes@3x.png",
+      "512": "out/icons/elevator_yes/elevator_yes_512.png",
+      "1024": "out/icons/elevator_yes/elevator_yes_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "elev_yes"
+   ]
+  },
+  {
+   "id": "elevator_no",
+   "group": "move",
+   "description": "No elevator (teal frame, greyed doors, red strike)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "elevator_no",
+     "files": {
+      "1x": "out/icons/elevator_no/elevator_no@1x.png",
+      "2x": "out/icons/elevator_no/elevator_no@2x.png",
+      "3x": "out/icons/elevator_no/elevator_no@3x.png",
+      "512": "out/icons/elevator_no/elevator_no_512.png",
+      "1024": "out/icons/elevator_no/elevator_no_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "elev_no"
+   ]
+  },
+  {
+   "id": "bath_count",
+   "group": "move",
+   "description": "Counter: bathrooms (shower)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "bath_count",
+     "files": {
+      "1x": "out/icons/bath_count/bath_count@1x.png",
+      "2x": "out/icons/bath_count/bath_count@2x.png",
+      "3x": "out/icons/bath_count/bath_count@3x.png",
+      "512": "out/icons/bath_count/bath_count_512.png",
+      "1024": "out/icons/bath_count/bath_count_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "cnt_bathroom"
+   ]
+  },
+  {
+   "id": "balcony_count",
+   "group": "move",
+   "description": "Counter: balconies",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "balcony_count",
+     "files": {
+      "1x": "out/icons/balcony_count/balcony_count@1x.png",
+      "2x": "out/icons/balcony_count/balcony_count@2x.png",
+      "3x": "out/icons/balcony_count/balcony_count@3x.png",
+      "512": "out/icons/balcony_count/balcony_count_512.png",
+      "1024": "out/icons/balcony_count/balcony_count_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "cnt_balcony"
+   ]
+  },
+  {
+   "id": "step_consult",
+   "group": "step",
+   "description": "Timeline: consultation requested",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "step_consult",
+     "files": {
+      "1x": "out/icons/step_consult/step_consult@1x.png",
+      "2x": "out/icons/step_consult/step_consult@2x.png",
+      "3x": "out/icons/step_consult/step_consult@3x.png",
+      "512": "out/icons/step_consult/step_consult_512.png",
+      "1024": "out/icons/step_consult/step_consult_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "step_consult"
+   ]
+  },
+  {
+   "id": "step_confirmed",
+   "group": "step",
+   "description": "Timeline: booking confirmed (clipboard)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "step_confirmed",
+     "files": {
+      "1x": "out/icons/step_confirmed/step_confirmed@1x.png",
+      "2x": "out/icons/step_confirmed/step_confirmed@2x.png",
+      "3x": "out/icons/step_confirmed/step_confirmed@3x.png",
+      "512": "out/icons/step_confirmed/step_confirmed_512.png",
+      "1024": "out/icons/step_confirmed/step_confirmed_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "step_confirmed"
+   ]
+  },
+  {
+   "id": "step_matched",
+   "group": "step",
+   "description": "Timeline: cleaner matched (two figures with a check badge)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "step_matched",
+     "files": {
+      "1x": "out/icons/step_matched/step_matched@1x.png",
+      "2x": "out/icons/step_matched/step_matched@2x.png",
+      "3x": "out/icons/step_matched/step_matched@3x.png",
+      "512": "out/icons/step_matched/step_matched_512.png",
+      "1024": "out/icons/step_matched/step_matched_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "step_matched"
+   ]
+  },
+  {
+   "id": "step_done",
+   "group": "step",
+   "description": "Timeline: service completed (rosette)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "step_done",
+     "files": {
+      "1x": "out/icons/step_done/step_done@1x.png",
+      "2x": "out/icons/step_done/step_done@2x.png",
+      "3x": "out/icons/step_done/step_done@3x.png",
+      "512": "out/icons/step_done/step_done_512.png",
+      "1024": "out/icons/step_done/step_done_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "logo_house_check",
+   "group": "brand",
+   "description": "Dahae logo: house with a check inside (3D hero)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "logo_house_check",
+     "files": {
+      "1x": "out/icons/logo_house_check/logo_house_check@1x.png",
+      "2x": "out/icons/logo_house_check/logo_house_check@2x.png",
+      "3x": "out/icons/logo_house_check/logo_house_check@3x.png",
+      "512": "out/icons/logo_house_check/logo_house_check_512.png",
+      "1024": "out/icons/logo_house_check/logo_house_check_1024.png"
+     }
+    }
+   ],
+   "animation": {
+    "type": "turntable",
+    "frames": 24,
+    "fps": 24,
+    "size": 512,
+    "loop": true,
+    "files": [
+     "out/anim/logo_house_check/logo_house_check_000.png",
+     "out/anim/logo_house_check/logo_house_check_001.png",
+     "out/anim/logo_house_check/logo_house_check_002.png",
+     "out/anim/logo_house_check/logo_house_check_003.png",
+     "out/anim/logo_house_check/logo_house_check_004.png",
+     "out/anim/logo_house_check/logo_house_check_005.png",
+     "out/anim/logo_house_check/logo_house_check_006.png",
+     "out/anim/logo_house_check/logo_house_check_007.png",
+     "out/anim/logo_house_check/logo_house_check_008.png",
+     "out/anim/logo_house_check/logo_house_check_009.png",
+     "out/anim/logo_house_check/logo_house_check_010.png",
+     "out/anim/logo_house_check/logo_house_check_011.png",
+     "out/anim/logo_house_check/logo_house_check_012.png",
+     "out/anim/logo_house_check/logo_house_check_013.png",
+     "out/anim/logo_house_check/logo_house_check_014.png",
+     "out/anim/logo_house_check/logo_house_check_015.png",
+     "out/anim/logo_house_check/logo_house_check_016.png",
+     "out/anim/logo_house_check/logo_house_check_017.png",
+     "out/anim/logo_house_check/logo_house_check_018.png",
+     "out/anim/logo_house_check/logo_house_check_019.png",
+     "out/anim/logo_house_check/logo_house_check_020.png",
+     "out/anim/logo_house_check/logo_house_check_021.png",
+     "out/anim/logo_house_check/logo_house_check_022.png",
+     "out/anim/logo_house_check/logo_house_check_023.png"
+    ]
+   },
+   "gltf": "out/gltf/logo_house_check.glb",
+   "app_ids": [
+    "logo_3d"
+   ]
+  },
+  {
+   "id": "nav_home",
+   "group": "nav",
+   "description": "Bottom nav: Home",
+   "variants": [
+    {
+     "variant": "idle",
+     "name": "nav_home_idle",
+     "files": {
+      "1x": "out/icons/nav_home/nav_home_idle@1x.png",
+      "2x": "out/icons/nav_home/nav_home_idle@2x.png",
+      "3x": "out/icons/nav_home/nav_home_idle@3x.png",
+      "512": "out/icons/nav_home/nav_home_idle_512.png",
+      "1024": "out/icons/nav_home/nav_home_idle_1024.png"
+     }
+    },
+    {
+     "variant": "active",
+     "name": "nav_home_active",
+     "files": {
+      "1x": "out/icons/nav_home/nav_home_active@1x.png",
+      "2x": "out/icons/nav_home/nav_home_active@2x.png",
+      "3x": "out/icons/nav_home/nav_home_active@3x.png",
+      "512": "out/icons/nav_home/nav_home_active_512.png",
+      "1024": "out/icons/nav_home/nav_home_active_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "nav_home"
+   ]
+  },
+  {
+   "id": "nav_bookings",
+   "group": "nav",
+   "description": "Bottom nav: My bookings (calendar with check)",
+   "variants": [
+    {
+     "variant": "idle",
+     "name": "nav_bookings_idle",
+     "files": {
+      "1x": "out/icons/nav_bookings/nav_bookings_idle@1x.png",
+      "2x": "out/icons/nav_bookings/nav_bookings_idle@2x.png",
+      "3x": "out/icons/nav_bookings/nav_bookings_idle@3x.png",
+      "512": "out/icons/nav_bookings/nav_bookings_idle_512.png",
+      "1024": "out/icons/nav_bookings/nav_bookings_idle_1024.png"
+     }
+    },
+    {
+     "variant": "active",
+     "name": "nav_bookings_active",
+     "files": {
+      "1x": "out/icons/nav_bookings/nav_bookings_active@1x.png",
+      "2x": "out/icons/nav_bookings/nav_bookings_active@2x.png",
+      "3x": "out/icons/nav_bookings/nav_bookings_active@3x.png",
+      "512": "out/icons/nav_bookings/nav_bookings_active_512.png",
+      "1024": "out/icons/nav_bookings/nav_bookings_active_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_bookings",
+    "nav_bookings"
+   ]
+  },
+  {
+   "id": "nav_chat",
+   "group": "nav",
+   "description": "Bottom nav: Consultation chat",
+   "variants": [
+    {
+     "variant": "idle",
+     "name": "nav_chat_idle",
+     "files": {
+      "1x": "out/icons/nav_chat/nav_chat_idle@1x.png",
+      "2x": "out/icons/nav_chat/nav_chat_idle@2x.png",
+      "3x": "out/icons/nav_chat/nav_chat_idle@3x.png",
+      "512": "out/icons/nav_chat/nav_chat_idle_512.png",
+      "1024": "out/icons/nav_chat/nav_chat_idle_1024.png"
+     }
+    },
+    {
+     "variant": "active",
+     "name": "nav_chat_active",
+     "files": {
+      "1x": "out/icons/nav_chat/nav_chat_active@1x.png",
+      "2x": "out/icons/nav_chat/nav_chat_active@2x.png",
+      "3x": "out/icons/nav_chat/nav_chat_active@3x.png",
+      "512": "out/icons/nav_chat/nav_chat_active_512.png",
+      "1024": "out/icons/nav_chat/nav_chat_active_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_chat",
+    "nav_chat"
+   ]
+  },
+  {
+   "id": "nav_more",
+   "group": "nav",
+   "description": "Bottom nav: More (grid)",
+   "variants": [
+    {
+     "variant": "idle",
+     "name": "nav_more_idle",
+     "files": {
+      "1x": "out/icons/nav_more/nav_more_idle@1x.png",
+      "2x": "out/icons/nav_more/nav_more_idle@2x.png",
+      "3x": "out/icons/nav_more/nav_more_idle@3x.png",
+      "512": "out/icons/nav_more/nav_more_idle_512.png",
+      "1024": "out/icons/nav_more/nav_more_idle_1024.png"
+     }
+    },
+    {
+     "variant": "active",
+     "name": "nav_more_active",
+     "files": {
+      "1x": "out/icons/nav_more/nav_more_active@1x.png",
+      "2x": "out/icons/nav_more/nav_more_active@2x.png",
+      "3x": "out/icons/nav_more/nav_more_active@3x.png",
+      "512": "out/icons/nav_more/nav_more_active_512.png",
+      "1024": "out/icons/nav_more/nav_more_active_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "nav_more"
+   ]
+  },
+  {
+   "id": "coupon",
+   "group": "misc",
+   "description": "Coupon ticket",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "coupon",
+     "files": {
+      "1x": "out/icons/coupon/coupon@1x.png",
+      "2x": "out/icons/coupon/coupon@2x.png",
+      "3x": "out/icons/coupon/coupon@3x.png",
+      "512": "out/icons/coupon/coupon_512.png",
+      "1024": "out/icons/coupon/coupon_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_coupons",
+    "ui_coupon"
+   ]
+  },
+  {
+   "id": "points",
+   "group": "misc",
+   "description": "Points (coins)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "points",
+     "files": {
+      "1x": "out/icons/points/points@1x.png",
+      "2x": "out/icons/points/points@2x.png",
+      "3x": "out/icons/points/points@3x.png",
+      "512": "out/icons/points/points_512.png",
+      "1024": "out/icons/points/points_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ui_points"
+   ]
+  },
+  {
+   "id": "calendar",
+   "group": "misc",
+   "description": "Calendar (date picker)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "calendar",
+     "files": {
+      "1x": "out/icons/calendar/calendar@1x.png",
+      "2x": "out/icons/calendar/calendar@2x.png",
+      "3x": "out/icons/calendar/calendar@3x.png",
+      "512": "out/icons/calendar/calendar_512.png",
+      "1024": "out/icons/calendar/calendar_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "p_nav_schedule",
+    "ui_calendar"
+   ]
+  },
+  {
+   "id": "news",
+   "group": "misc",
+   "description": "Dahae news (newspaper)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "news",
+     "files": {
+      "1x": "out/icons/news/news@1x.png",
+      "2x": "out/icons/news/news@2x.png",
+      "3x": "out/icons/news/news@3x.png",
+      "512": "out/icons/news/news_512.png",
+      "1024": "out/icons/news/news_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "tip_bulb",
+   "group": "misc",
+   "description": "Cleaning tip (light bulb)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tip_bulb",
+     "files": {
+      "1x": "out/icons/tip_bulb/tip_bulb@1x.png",
+      "2x": "out/icons/tip_bulb/tip_bulb@2x.png",
+      "3x": "out/icons/tip_bulb/tip_bulb@3x.png",
+      "512": "out/icons/tip_bulb/tip_bulb_512.png",
+      "1024": "out/icons/tip_bulb/tip_bulb_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "menu_tips",
+    "tip_bulb"
+   ]
+  },
+  {
+   "id": "consult_team_avatar",
+   "group": "misc",
+   "description": "Consultation team avatar (abstract mascot with headset)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "consult_team_avatar",
+     "files": {
+      "1x": "out/icons/consult_team_avatar/consult_team_avatar@1x.png",
+      "2x": "out/icons/consult_team_avatar/consult_team_avatar@2x.png",
+      "3x": "out/icons/consult_team_avatar/consult_team_avatar@3x.png",
+      "512": "out/icons/consult_team_avatar/consult_team_avatar_512.png",
+      "1024": "out/icons/consult_team_avatar/consult_team_avatar_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "confirm_check_big",
+   "group": "misc",
+   "description": "Booking confirmed: big animated check badge",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "confirm_check_big",
+     "files": {
+      "1x": "out/icons/confirm_check_big/confirm_check_big@1x.png",
+      "2x": "out/icons/confirm_check_big/confirm_check_big@2x.png",
+      "3x": "out/icons/confirm_check_big/confirm_check_big@3x.png",
+      "512": "out/icons/confirm_check_big/confirm_check_big_512.png",
+      "1024": "out/icons/confirm_check_big/confirm_check_big_1024.png"
+     }
+    }
+   ],
+   "animation": {
+    "type": "pop",
+    "frames": 24,
+    "fps": 24,
+    "size": 512,
+    "loop": false,
+    "files": [
+     "out/anim/confirm_check_big/confirm_check_big_000.png",
+     "out/anim/confirm_check_big/confirm_check_big_001.png",
+     "out/anim/confirm_check_big/confirm_check_big_002.png",
+     "out/anim/confirm_check_big/confirm_check_big_003.png",
+     "out/anim/confirm_check_big/confirm_check_big_004.png",
+     "out/anim/confirm_check_big/confirm_check_big_005.png",
+     "out/anim/confirm_check_big/confirm_check_big_006.png",
+     "out/anim/confirm_check_big/confirm_check_big_007.png",
+     "out/anim/confirm_check_big/confirm_check_big_008.png",
+     "out/anim/confirm_check_big/confirm_check_big_009.png",
+     "out/anim/confirm_check_big/confirm_check_big_010.png",
+     "out/anim/confirm_check_big/confirm_check_big_011.png",
+     "out/anim/confirm_check_big/confirm_check_big_012.png",
+     "out/anim/confirm_check_big/confirm_check_big_013.png",
+     "out/anim/confirm_check_big/confirm_check_big_014.png",
+     "out/anim/confirm_check_big/confirm_check_big_015.png",
+     "out/anim/confirm_check_big/confirm_check_big_016.png",
+     "out/anim/confirm_check_big/confirm_check_big_017.png",
+     "out/anim/confirm_check_big/confirm_check_big_018.png",
+     "out/anim/confirm_check_big/confirm_check_big_019.png",
+     "out/anim/confirm_check_big/confirm_check_big_020.png",
+     "out/anim/confirm_check_big/confirm_check_big_021.png",
+     "out/anim/confirm_check_big/confirm_check_big_022.png",
+     "out/anim/confirm_check_big/confirm_check_big_023.png"
+    ]
+   },
+   "gltf": "out/gltf/confirm_check_big.glb",
+   "app_ids": [
+    "confirm_check"
+   ]
+  },
+  {
+   "id": "wallet_card",
+   "group": "misc",
+   "description": "Payment: card",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "wallet_card",
+     "files": {
+      "1x": "out/icons/wallet_card/wallet_card@1x.png",
+      "2x": "out/icons/wallet_card/wallet_card@2x.png",
+      "3x": "out/icons/wallet_card/wallet_card@3x.png",
+      "512": "out/icons/wallet_card/wallet_card_512.png",
+      "1024": "out/icons/wallet_card/wallet_card_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_payments",
+    "pay_card"
+   ]
+  },
+  {
+   "id": "wallet_generic",
+   "group": "misc",
+   "description": "Payment: generic wallet (other methods)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "wallet_generic",
+     "files": {
+      "1x": "out/icons/wallet_generic/wallet_generic@1x.png",
+      "2x": "out/icons/wallet_generic/wallet_generic@2x.png",
+      "3x": "out/icons/wallet_generic/wallet_generic@3x.png",
+      "512": "out/icons/wallet_generic/wallet_generic_512.png",
+      "1024": "out/icons/wallet_generic/wallet_generic_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "pay_wallet"
+   ]
+  },
+  {
+   "id": "address_home",
+   "group": "misc",
+   "description": "Saved address: my home (pin with house)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "address_home",
+     "files": {
+      "1x": "out/icons/address_home/address_home@1x.png",
+      "2x": "out/icons/address_home/address_home@2x.png",
+      "3x": "out/icons/address_home/address_home@3x.png",
+      "512": "out/icons/address_home/address_home_512.png",
+      "1024": "out/icons/address_home/address_home_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "address_family",
+   "group": "misc",
+   "description": "Saved address: family home (pin with heart)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "address_family",
+     "files": {
+      "1x": "out/icons/address_family/address_family@1x.png",
+      "2x": "out/icons/address_family/address_family@2x.png",
+      "3x": "out/icons/address_family/address_family@3x.png",
+      "512": "out/icons/address_family/address_family_512.png",
+      "1024": "out/icons/address_family/address_family_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "account",
+   "group": "misc",
+   "description": "Account info (person)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "account",
+     "files": {
+      "1x": "out/icons/account/account@1x.png",
+      "2x": "out/icons/account/account@2x.png",
+      "3x": "out/icons/account/account@3x.png",
+      "512": "out/icons/account/account_512.png",
+      "1024": "out/icons/account/account_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "announcement",
+   "group": "misc",
+   "description": "Announcements (megaphone)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "announcement",
+     "files": {
+      "1x": "out/icons/announcement/announcement@1x.png",
+      "2x": "out/icons/announcement/announcement@2x.png",
+      "3x": "out/icons/announcement/announcement@3x.png",
+      "512": "out/icons/announcement/announcement_512.png",
+      "1024": "out/icons/announcement/announcement_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_marketing",
+    "menu_notices",
+    "news_megaphone"
+   ]
+  },
+  {
+   "id": "faq",
+   "group": "misc",
+   "description": "FAQ (bubble with question mark)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "faq",
+     "files": {
+      "1x": "out/icons/faq/faq@1x.png",
+      "2x": "out/icons/faq/faq@2x.png",
+      "3x": "out/icons/faq/faq@3x.png",
+      "512": "out/icons/faq/faq_512.png",
+      "1024": "out/icons/faq/faq_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "faq_bubble",
+    "menu_faq"
+   ]
+  },
+  {
+   "id": "contact",
+   "group": "misc",
+   "description": "Contact us (phone handset)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "contact",
+     "files": {
+      "1x": "out/icons/contact/contact@1x.png",
+      "2x": "out/icons/contact/contact@2x.png",
+      "3x": "out/icons/contact/contact@3x.png",
+      "512": "out/icons/contact/contact_512.png",
+      "1024": "out/icons/contact/contact_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "version",
+   "group": "misc",
+   "description": "Version info (info badge)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "version",
+     "files": {
+      "1x": "out/icons/version/version@1x.png",
+      "2x": "out/icons/version/version@2x.png",
+      "3x": "out/icons/version/version@3x.png",
+      "512": "out/icons/version/version_512.png",
+      "1024": "out/icons/version/version_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "service_scope",
+   "group": "misc",
+   "description": "Service scope (floor plan with marker)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "service_scope",
+     "files": {
+      "1x": "out/icons/service_scope/service_scope@1x.png",
+      "2x": "out/icons/service_scope/service_scope@2x.png",
+      "3x": "out/icons/service_scope/service_scope@3x.png",
+      "512": "out/icons/service_scope/service_scope_512.png",
+      "1024": "out/icons/service_scope/service_scope_1024.png"
+     }
+    }
+   ],
+   "app_ids": []
+  },
+  {
+   "id": "p_nav_jobs",
+   "group": "partner",
+   "description": "Partner nav: jobs (clipboard and broom)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "p_nav_jobs",
+     "files": {
+      "1x": "out/icons/p_nav_jobs/p_nav_jobs@1x.png",
+      "2x": "out/icons/p_nav_jobs/p_nav_jobs@2x.png",
+      "3x": "out/icons/p_nav_jobs/p_nav_jobs@3x.png",
+      "512": "out/icons/p_nav_jobs/p_nav_jobs_512.png",
+      "1024": "out/icons/p_nav_jobs/p_nav_jobs_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "p_nav_jobs"
+   ]
+  },
+  {
+   "id": "p_camera",
+   "group": "partner",
+   "description": "Partner: completion photos (camera)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "p_camera",
+     "files": {
+      "1x": "out/icons/p_camera/p_camera@1x.png",
+      "2x": "out/icons/p_camera/p_camera@2x.png",
+      "3x": "out/icons/p_camera/p_camera@3x.png",
+      "512": "out/icons/p_camera/p_camera_512.png",
+      "1024": "out/icons/p_camera/p_camera_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "p_camera"
+   ]
+  },
+  {
+   "id": "p_verified",
+   "group": "partner",
+   "description": "Partner: verified (shield with check)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "p_verified",
+     "files": {
+      "1x": "out/icons/p_verified/p_verified@1x.png",
+      "2x": "out/icons/p_verified/p_verified@2x.png",
+      "3x": "out/icons/p_verified/p_verified@3x.png",
+      "512": "out/icons/p_verified/p_verified_512.png",
+      "1024": "out/icons/p_verified/p_verified_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "p_verified"
+   ]
+  },
+  {
+   "id": "p_payout",
+   "group": "partner",
+   "description": "Partner: payouts (wallet and coins)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "p_payout",
+     "files": {
+      "1x": "out/icons/p_payout/p_payout@1x.png",
+      "2x": "out/icons/p_payout/p_payout@2x.png",
+      "3x": "out/icons/p_payout/p_payout@3x.png",
+      "512": "out/icons/p_payout/p_payout_512.png",
+      "1024": "out/icons/p_payout/p_payout_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_payouts",
+    "p_payout"
+   ]
+  },
+  {
+   "id": "c_dashboard",
+   "group": "console",
+   "description": "Console: dashboard (bar chart)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_dashboard",
+     "files": {
+      "1x": "out/icons/c_dashboard/c_dashboard@1x.png",
+      "2x": "out/icons/c_dashboard/c_dashboard@2x.png",
+      "3x": "out/icons/c_dashboard/c_dashboard@3x.png",
+      "512": "out/icons/c_dashboard/c_dashboard_512.png",
+      "1024": "out/icons/c_dashboard/c_dashboard_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_dashboard"
+   ]
+  },
+  {
+   "id": "c_pricing",
+   "group": "console",
+   "description": "Console: pricing (price tag)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_pricing",
+     "files": {
+      "1x": "out/icons/c_pricing/c_pricing@1x.png",
+      "2x": "out/icons/c_pricing/c_pricing@2x.png",
+      "3x": "out/icons/c_pricing/c_pricing@3x.png",
+      "512": "out/icons/c_pricing/c_pricing_512.png",
+      "1024": "out/icons/c_pricing/c_pricing_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_pricing"
+   ]
+  },
+  {
+   "id": "c_subscriptions",
+   "group": "console",
+   "description": "Console: subscriptions (two-arrow repeat cycle)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_subscriptions",
+     "files": {
+      "1x": "out/icons/c_subscriptions/c_subscriptions@1x.png",
+      "2x": "out/icons/c_subscriptions/c_subscriptions@2x.png",
+      "3x": "out/icons/c_subscriptions/c_subscriptions@3x.png",
+      "512": "out/icons/c_subscriptions/c_subscriptions_512.png",
+      "1024": "out/icons/c_subscriptions/c_subscriptions_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_subscriptions"
+   ]
+  },
+  {
+   "id": "c_customers",
+   "group": "console",
+   "description": "Console: customers (two people)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_customers",
+     "files": {
+      "1x": "out/icons/c_customers/c_customers@1x.png",
+      "2x": "out/icons/c_customers/c_customers@2x.png",
+      "3x": "out/icons/c_customers/c_customers@3x.png",
+      "512": "out/icons/c_customers/c_customers_512.png",
+      "1024": "out/icons/c_customers/c_customers_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_customers"
+   ]
+  },
+  {
+   "id": "c_partners",
+   "group": "console",
+   "description": "Console: partners (person with star badge)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_partners",
+     "files": {
+      "1x": "out/icons/c_partners/c_partners@1x.png",
+      "2x": "out/icons/c_partners/c_partners@2x.png",
+      "3x": "out/icons/c_partners/c_partners@3x.png",
+      "512": "out/icons/c_partners/c_partners_512.png",
+      "1024": "out/icons/c_partners/c_partners_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_partners"
+   ]
+  },
+  {
+   "id": "c_staff",
+   "group": "console",
+   "description": "Console: staff (person with ID lanyard)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_staff",
+     "files": {
+      "1x": "out/icons/c_staff/c_staff@1x.png",
+      "2x": "out/icons/c_staff/c_staff@2x.png",
+      "3x": "out/icons/c_staff/c_staff@3x.png",
+      "512": "out/icons/c_staff/c_staff_512.png",
+      "1024": "out/icons/c_staff/c_staff_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_staff"
+   ]
+  },
+  {
+   "id": "c_settings",
+   "group": "console",
+   "description": "Console: settings (gear)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_settings",
+     "files": {
+      "1x": "out/icons/c_settings/c_settings@1x.png",
+      "2x": "out/icons/c_settings/c_settings@2x.png",
+      "3x": "out/icons/c_settings/c_settings@3x.png",
+      "512": "out/icons/c_settings/c_settings_512.png",
+      "1024": "out/icons/c_settings/c_settings_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_settings"
+   ]
+  },
+  {
+   "id": "c_monitor",
+   "group": "console",
+   "description": "Console: monitoring (screen with pulse)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "c_monitor",
+     "files": {
+      "1x": "out/icons/c_monitor/c_monitor@1x.png",
+      "2x": "out/icons/c_monitor/c_monitor@2x.png",
+      "3x": "out/icons/c_monitor/c_monitor@3x.png",
+      "512": "out/icons/c_monitor/c_monitor_512.png",
+      "1024": "out/icons/c_monitor/c_monitor_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "c_monitor"
+   ]
+  },
+  {
+   "id": "cat_studio",
+   "group": "category",
+   "description": "Category: studio (one-room) cleaning",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_studio",
+     "files": {
+      "1x": "out/icons/cat_studio/cat_studio@1x.png",
+      "2x": "out/icons/cat_studio/cat_studio@2x.png",
+      "3x": "out/icons/cat_studio/cat_studio@3x.png",
+      "512": "out/icons/cat_studio/cat_studio_512.png",
+      "1024": "out/icons/cat_studio/cat_studio_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_studio"
+   ]
+  },
+  {
+   "id": "cat_move",
+   "group": "category",
+   "description": "Category: move-out cleaning (truck)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_move",
+     "files": {
+      "1x": "out/icons/cat_move/cat_move@1x.png",
+      "2x": "out/icons/cat_move/cat_move@2x.png",
+      "3x": "out/icons/cat_move/cat_move@3x.png",
+      "512": "out/icons/cat_move/cat_move_512.png",
+      "1024": "out/icons/cat_move/cat_move_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_move_out"
+   ]
+  },
+  {
+   "id": "cat_bathroom",
+   "group": "category",
+   "description": "Category: bathroom cleaning (bathtub)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_bathroom",
+     "files": {
+      "1x": "out/icons/cat_bathroom/cat_bathroom@1x.png",
+      "2x": "out/icons/cat_bathroom/cat_bathroom@2x.png",
+      "3x": "out/icons/cat_bathroom/cat_bathroom@3x.png",
+      "512": "out/icons/cat_bathroom/cat_bathroom_512.png",
+      "1024": "out/icons/cat_bathroom/cat_bathroom_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_bathroom"
+   ]
+  },
+  {
+   "id": "cat_kitchen",
+   "group": "category",
+   "description": "Category: kitchen cleaning (cooking pot)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_kitchen",
+     "files": {
+      "1x": "out/icons/cat_kitchen/cat_kitchen@1x.png",
+      "2x": "out/icons/cat_kitchen/cat_kitchen@2x.png",
+      "3x": "out/icons/cat_kitchen/cat_kitchen@3x.png",
+      "512": "out/icons/cat_kitchen/cat_kitchen_512.png",
+      "1024": "out/icons/cat_kitchen/cat_kitchen_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_kitchen"
+   ]
+  },
+  {
+   "id": "cat_mattress",
+   "group": "category",
+   "description": "Category: mattress cleaning",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_mattress",
+     "files": {
+      "1x": "out/icons/cat_mattress/cat_mattress@1x.png",
+      "2x": "out/icons/cat_mattress/cat_mattress@2x.png",
+      "3x": "out/icons/cat_mattress/cat_mattress@3x.png",
+      "512": "out/icons/cat_mattress/cat_mattress_512.png",
+      "1024": "out/icons/cat_mattress/cat_mattress_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_mattress"
+   ]
+  },
+  {
+   "id": "cat_ac",
+   "group": "category",
+   "description": "Category: air-conditioner cleaning",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_ac",
+     "files": {
+      "1x": "out/icons/cat_ac/cat_ac@1x.png",
+      "2x": "out/icons/cat_ac/cat_ac@2x.png",
+      "3x": "out/icons/cat_ac/cat_ac@3x.png",
+      "512": "out/icons/cat_ac/cat_ac_512.png",
+      "1024": "out/icons/cat_ac/cat_ac_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_aircon"
+   ]
+  },
+  {
+   "id": "cat_sofa",
+   "group": "category",
+   "description": "Category: sofa cleaning",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_sofa",
+     "files": {
+      "1x": "out/icons/cat_sofa/cat_sofa@1x.png",
+      "2x": "out/icons/cat_sofa/cat_sofa@2x.png",
+      "3x": "out/icons/cat_sofa/cat_sofa@3x.png",
+      "512": "out/icons/cat_sofa/cat_sofa_512.png",
+      "1024": "out/icons/cat_sofa/cat_sofa_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_sofa"
+   ]
+  },
+  {
+   "id": "scope_dusting",
+   "group": "scope",
+   "description": "Studio scope: dusting (feather duster)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "scope_dusting",
+     "files": {
+      "1x": "out/icons/scope_dusting/scope_dusting@1x.png",
+      "2x": "out/icons/scope_dusting/scope_dusting@2x.png",
+      "3x": "out/icons/scope_dusting/scope_dusting@3x.png",
+      "512": "out/icons/scope_dusting/scope_dusting_512.png",
+      "1024": "out/icons/scope_dusting/scope_dusting_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "scope_dusting"
+   ]
+  },
+  {
+   "id": "scope_vacuum",
+   "group": "scope",
+   "description": "Studio scope: vacuuming (stick vacuum)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "scope_vacuum",
+     "files": {
+      "1x": "out/icons/scope_vacuum/scope_vacuum@1x.png",
+      "2x": "out/icons/scope_vacuum/scope_vacuum@2x.png",
+      "3x": "out/icons/scope_vacuum/scope_vacuum@3x.png",
+      "512": "out/icons/scope_vacuum/scope_vacuum_512.png",
+      "1024": "out/icons/scope_vacuum/scope_vacuum_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "scope_vacuum"
+   ]
+  },
+  {
+   "id": "scope_dishes",
+   "group": "scope",
+   "description": "Studio scope: dishwashing (flat plate stack and sponge)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "scope_dishes",
+     "files": {
+      "1x": "out/icons/scope_dishes/scope_dishes@1x.png",
+      "2x": "out/icons/scope_dishes/scope_dishes@2x.png",
+      "3x": "out/icons/scope_dishes/scope_dishes@3x.png",
+      "512": "out/icons/scope_dishes/scope_dishes_512.png",
+      "1024": "out/icons/scope_dishes/scope_dishes_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "scope_dishes"
+   ]
+  },
+  {
+   "id": "scope_bathroom",
+   "group": "scope",
+   "description": "Studio scope: bathroom cleaning (toilet)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "scope_bathroom",
+     "files": {
+      "1x": "out/icons/scope_bathroom/scope_bathroom@1x.png",
+      "2x": "out/icons/scope_bathroom/scope_bathroom@2x.png",
+      "3x": "out/icons/scope_bathroom/scope_bathroom@3x.png",
+      "512": "out/icons/scope_bathroom/scope_bathroom_512.png",
+      "1024": "out/icons/scope_bathroom/scope_bathroom_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "scope_bathroom"
+   ]
+  },
+  {
+   "id": "scope_trash",
+   "group": "scope",
+   "description": "Studio scope: trash disposal (bin)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "scope_trash",
+     "files": {
+      "1x": "out/icons/scope_trash/scope_trash@1x.png",
+      "2x": "out/icons/scope_trash/scope_trash@2x.png",
+      "3x": "out/icons/scope_trash/scope_trash@3x.png",
+      "512": "out/icons/scope_trash/scope_trash_512.png",
+      "1024": "out/icons/scope_trash/scope_trash_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "scope_trash"
+   ]
+  },
+  {
+   "id": "tool_vacuum",
+   "group": "tool",
+   "description": "Tool: vacuum cleaner (canister)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_vacuum",
+     "files": {
+      "1x": "out/icons/tool_vacuum/tool_vacuum@1x.png",
+      "2x": "out/icons/tool_vacuum/tool_vacuum@2x.png",
+      "3x": "out/icons/tool_vacuum/tool_vacuum@3x.png",
+      "512": "out/icons/tool_vacuum/tool_vacuum_512.png",
+      "1024": "out/icons/tool_vacuum/tool_vacuum_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_vacuum"
+   ]
+  },
+  {
+   "id": "tool_mop",
+   "group": "tool",
+   "description": "Tool: mop",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_mop",
+     "files": {
+      "1x": "out/icons/tool_mop/tool_mop@1x.png",
+      "2x": "out/icons/tool_mop/tool_mop@2x.png",
+      "3x": "out/icons/tool_mop/tool_mop@3x.png",
+      "512": "out/icons/tool_mop/tool_mop_512.png",
+      "1024": "out/icons/tool_mop/tool_mop_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_mop"
+   ]
+  },
+  {
+   "id": "tool_trash_bags",
+   "group": "tool",
+   "description": "Tool: trash bags",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_trash_bags",
+     "files": {
+      "1x": "out/icons/tool_trash_bags/tool_trash_bags@1x.png",
+      "2x": "out/icons/tool_trash_bags/tool_trash_bags@2x.png",
+      "3x": "out/icons/tool_trash_bags/tool_trash_bags@3x.png",
+      "512": "out/icons/tool_trash_bags/tool_trash_bags_512.png",
+      "1024": "out/icons/tool_trash_bags/tool_trash_bags_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_trash"
+   ]
+  },
+  {
+   "id": "tool_rubber_gloves",
+   "group": "tool",
+   "description": "Tool: rubber gloves",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_rubber_gloves",
+     "files": {
+      "1x": "out/icons/tool_rubber_gloves/tool_rubber_gloves@1x.png",
+      "2x": "out/icons/tool_rubber_gloves/tool_rubber_gloves@2x.png",
+      "3x": "out/icons/tool_rubber_gloves/tool_rubber_gloves@3x.png",
+      "512": "out/icons/tool_rubber_gloves/tool_rubber_gloves_512.png",
+      "1024": "out/icons/tool_rubber_gloves/tool_rubber_gloves_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_gloves"
+   ]
+  },
+  {
+   "id": "tool_detergent",
+   "group": "tool",
+   "description": "Tool: detergent (spray bottle)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_detergent",
+     "files": {
+      "1x": "out/icons/tool_detergent/tool_detergent@1x.png",
+      "2x": "out/icons/tool_detergent/tool_detergent@2x.png",
+      "3x": "out/icons/tool_detergent/tool_detergent@3x.png",
+      "512": "out/icons/tool_detergent/tool_detergent_512.png",
+      "1024": "out/icons/tool_detergent/tool_detergent_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_spray"
+   ]
+  },
+  {
+   "id": "tool_cloth",
+   "group": "tool",
+   "description": "Tool: cleaning cloth (folded)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "tool_cloth",
+     "files": {
+      "1x": "out/icons/tool_cloth/tool_cloth@1x.png",
+      "2x": "out/icons/tool_cloth/tool_cloth@2x.png",
+      "3x": "out/icons/tool_cloth/tool_cloth@3x.png",
+      "512": "out/icons/tool_cloth/tool_cloth_512.png",
+      "1024": "out/icons/tool_cloth/tool_cloth_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "tool_cloth"
+   ]
+  },
+  {
+   "id": "ac_wall",
+   "group": "ac",
+   "description": "AC type: wall-mounted",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ac_wall",
+     "files": {
+      "1x": "out/icons/ac_wall/ac_wall@1x.png",
+      "2x": "out/icons/ac_wall/ac_wall@2x.png",
+      "3x": "out/icons/ac_wall/ac_wall@3x.png",
+      "512": "out/icons/ac_wall/ac_wall_512.png",
+      "1024": "out/icons/ac_wall/ac_wall_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ac_wall"
+   ]
+  },
+  {
+   "id": "ac_stand",
+   "group": "ac",
+   "description": "AC type: floor-standing",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ac_stand",
+     "files": {
+      "1x": "out/icons/ac_stand/ac_stand@1x.png",
+      "2x": "out/icons/ac_stand/ac_stand@2x.png",
+      "3x": "out/icons/ac_stand/ac_stand@3x.png",
+      "512": "out/icons/ac_stand/ac_stand_512.png",
+      "1024": "out/icons/ac_stand/ac_stand_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ac_stand"
+   ]
+  },
+  {
+   "id": "ac_2in1",
+   "group": "ac",
+   "description": "AC type: 2-in-1 (stand + wall unit)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ac_2in1",
+     "files": {
+      "1x": "out/icons/ac_2in1/ac_2in1@1x.png",
+      "2x": "out/icons/ac_2in1/ac_2in1@2x.png",
+      "3x": "out/icons/ac_2in1/ac_2in1@3x.png",
+      "512": "out/icons/ac_2in1/ac_2in1_512.png",
+      "1024": "out/icons/ac_2in1/ac_2in1_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ac_two_in_one"
+   ]
+  },
+  {
+   "id": "ac_ceiling",
+   "group": "ac",
+   "description": "AC type: ceiling cassette (seen from below)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "ac_ceiling",
+     "files": {
+      "1x": "out/icons/ac_ceiling/ac_ceiling@1x.png",
+      "2x": "out/icons/ac_ceiling/ac_ceiling@2x.png",
+      "3x": "out/icons/ac_ceiling/ac_ceiling@3x.png",
+      "512": "out/icons/ac_ceiling/ac_ceiling_512.png",
+      "1024": "out/icons/ac_ceiling/ac_ceiling_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "ac_ceiling"
+   ]
+  }
+ ],
+ "app_icon": {
+  "android_adaptive_foreground": "out/appicon/android/ic_launcher_foreground.png",
+  "android_adaptive_background": "out/appicon/android/ic_launcher_background.png",
+  "android_adaptive_background_dark": "out/appicon/android/ic_launcher_background_ink.png",
+  "android_monochrome": "out/appicon/android/ic_launcher_monochrome.png",
+  "android_legacy_512": "out/appicon/android/ic_launcher_512.png",
+  "ios_1024_opaque": "out/appicon/ios/AppIcon-1024.png",
+  "windows_msix_300": "out/appicon/windows/Square300x300Logo.png",
+  "web_512": "out/appicon/web/icon-512.png",
+  "web_192": "out/appicon/web/icon-192.png",
+  "logo_flat_1024": "out/appicon/logo_flat_1024.png",
+  "logo_mono_1024": "out/appicon/logo_mono_1024.png"
+ },
+ "contact_sheets": [
+  "out/contact-light.png",
+  "out/contact-dark.png"
+ ],
+ "app_export": {
+  "dir": "export/icons3d",
+  "ids": 124,
+  "bytes": 1722766,
+  "missing": [],
+  "base_dp": 64,
+  "px": {
+   "1x": 64,
+   "2.0x": 128,
+   "3.0x": 192
+  },
+  "large_dp": 160,
+  "large_px": {
+   "1x": 160,
+   "2.0x": 320,
+   "3.0x": 480
+  },
+  "large_ids": [
+   "confirm_check",
+   "logo_3d",
+   "banner_coupon"
+  ]
+ }
+}
