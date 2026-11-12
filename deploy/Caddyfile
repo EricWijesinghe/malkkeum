@@ -22,9 +22,10 @@
 		# Site-wide CSP. Every API, websocket and PWA call is same-origin ('self' also covers ws/wss).
 		# script-src: 'unsafe-inline' for the website theme snippet, the PortOne page and Flutter's
 		#   bootstrap (no hashes: Flutter rewrites its bootstrap per build). cdn.portone.io = PortOne V2 browser SDK
-		#   (website/pay/index.html). No 'unsafe-eval': the web build is compiled with --wasm (skwasm).
+		#   (website/pay/index.html). No 'unsafe-eval': both web builds are compiled with --wasm (skwasm).
 		# wasm-unsafe-eval: WebAssembly compile for skwasm/CanvasKit (self-hosted, --no-web-resources-cdn).
-		# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts.
+		# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts:
+		#   the Flutter apps load their fallback fonts from /webfonts/ (same origin).
 		# connect-src: *.portone.io = PortOne API (api.portone.io) and SDK calls. Social sign-in (Kakao, Naver,
 		#   Google, Apple) runs in the native apps only; the web build offers no social SDK, so no hosts here.
 		# frame-src / form-action: PG payment windows (card, KakaoPay, NaverPay...) are hosted by many PGs whose
@@ -54,24 +55,32 @@
 		reverse_proxy api:8080
 	}
 
+	# Fallback fonts for both Flutter apps (Roboto + Noto, mirrored at image build; deploy/flutter_bootstrap.js
+	# points the engine here). Paths carry Google's version and hash, so they never change: cache forever.
+	# No try_files: a missing font must be a 404, not index.html.
+	handle_path /webfonts/* {
+		root * /srv/webfonts
+		header Cache-Control "public, max-age=31536000, immutable"
+		header Content-Type font/woff2
+		file_server
+	}
+
+	# Flutter web output has no content hashes in its file names (main.dart.js, main.dart.wasm, canvaskit/,
+	# assets/), so a cached copy can be older than the bootstrap that loads it and break the app after a
+	# deploy. Everything revalidates (ETag -> 304 when unchanged); only /webfonts/ above is immutable.
 	redir /admin /admin/
 	handle_path /admin/* {
 		root * /srv/console
 		try_files {path} /index.html
+		header Cache-Control "no-cache"
 		file_server
 	}
 
-	# Entry points and the service worker must revalidate; the rest is cached for a day.
-	# Named matchers must be declared at site level (not inside handle_path); their paths are
-	# the ones seen after handle_path strips /app.
-	@app_entry path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
-	@app_other not path / /index.html /flutter_bootstrap.js /flutter.js /flutter_service_worker.js /version.json /manifest.json
 	redir /app /app/
 	handle_path /app/* {
 		root * /srv/app
 		try_files {path} /index.html
-		header @app_entry Cache-Control "no-cache"
-		header @app_other Cache-Control "public, max-age=86400"
+		header Cache-Control "no-cache"
 		file_server
 	}
 
