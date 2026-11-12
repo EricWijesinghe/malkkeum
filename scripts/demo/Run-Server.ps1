@@ -10,7 +10,11 @@ $env:PGPASSWORD = 'localdev'
 & "$pg\pg_isready.exe" -h localhost -p 5433 *> $null
 if ($LASTEXITCODE -ne 0) { & "$pg\pg_ctl.exe" -D 'F:\tools\pgdata' -l 'F:\tools\pgdata\server.log' -o '-p 5433' start | Out-Null; Start-Sleep 3 }
 $exists = & "$pg\psql.exe" -h localhost -p 5433 -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$db'"
-if ($exists -ne '1') { & "$pg\createdb.exe" -h localhost -p 5433 -U postgres $db }
+$created = $exists -ne '1'
+if ($created) {
+  & "$pg\createdb.exe" -h localhost -p 5433 -U postgres $db
+  if ($LASTEXITCODE -ne 0) { throw "createdb $db failed" }
+}
 
 $builtFor = (Get-Content "$here\api-address.txt" -EA SilentlyContinue | Select-Object -First 1)
 $envFile = "$here\demo.env"
@@ -31,10 +35,14 @@ $env:RATE_LIMIT_AUTH_PER_MIN = '1000'
 # Demo only: the owner signs in to the console without setting up an authenticator app.
 $env:STAFF_MFA_REQUIRED = '0'
 
-if (-not (Test-Path "$here\.demo-loaded")) {
+# Sample data only into a database created just now: an existing kit database keeps its data.
+if ($created) {
   & "$here\api.exe" demo load
-  if ($LASTEXITCODE -ne 0) { throw 'demo load failed' }
-  New-Item "$here\.demo-loaded" -ItemType File | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    # Drop the half-loaded database so the next start creates and loads it again.
+    & "$pg\dropdb.exe" -h localhost -p 5433 -U postgres $db
+    throw 'demo load failed'
+  }
 }
 Write-Host "Malkkeum server on $($env:PUBLIC_BASE_URL). Keep this window open." -ForegroundColor Green
 & "$here\api.exe"
