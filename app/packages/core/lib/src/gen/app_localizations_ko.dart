@@ -2338,6 +2338,37 @@ class TKo extends T {
   }
 
   @override
+  String get locUseCurrent => '현재 위치로 찾기';
+
+  @override
+  String get locConsentTitle => '위치기반서비스 이용약관 동의';
+
+  @override
+  String get locConsentBody =>
+      '현재 위치로 주소를 찾으려면 위치기반서비스 이용약관에 동의해 주세요. 위치는 \'현재 위치로 찾기\'를 누를 때 한 번만 확인하고, 주소를 제안하는 데만 써요. 위치 좌표는 서버에 저장하지 않아요. 동의는 동의 관리에서 언제든지 철회할 수 있어요.';
+
+  @override
+  String get locConsentAgree => '동의하고 계속';
+
+  @override
+  String get locSuggestionTitle => '이 주소가 맞나요?';
+
+  @override
+  String get locUseAddress => '이 주소 사용';
+
+  @override
+  String get locDenied => '위치 권한이 없어요. 주소를 직접 입력해 주세요.';
+
+  @override
+  String get locServicesOff => '기기의 위치 서비스가 꺼져 있어요. 주소를 직접 입력해 주세요.';
+
+  @override
+  String get locTimeout => '위치를 확인하는 데 시간이 너무 오래 걸려요. 주소를 직접 입력해 주세요.';
+
+  @override
+  String get locNoAddress => '현재 위치의 주소를 찾지 못했어요. 주소를 직접 입력해 주세요.';
+
+  @override
   String get uMaintenanceTitle => '점검 중이에요';
 
   @override

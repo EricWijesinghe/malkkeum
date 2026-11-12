@@ -1,2 +1,3 @@
 "NSCameraUsageDescription" = "清掃の前後の写真をその場で撮影して送信するためにカメラを使用します。";
 "NSPhotoLibraryUsageDescription" = "清掃の前後の写真や相談用の写真をアップロードするために写真ライブラリにアクセスします。";
+"NSLocationWhenInUseUsageDescription" = "現在地から住所を探すことを選んだときにのみ、位置情報を確認して住所を提案します。";

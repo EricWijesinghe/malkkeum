@@ -2392,6 +2392,40 @@ class TTh extends T {
   }
 
   @override
+  String get locUseCurrent => 'ใช้ตำแหน่งปัจจุบันของฉัน';
+
+  @override
+  String get locConsentTitle => 'ข้อกำหนดบริการที่ใช้ตำแหน่งที่ตั้ง';
+
+  @override
+  String get locConsentBody =>
+      'หากต้องการค้นหาที่อยู่จากตำแหน่งปัจจุบัน โปรดยอมรับข้อกำหนดบริการที่ใช้ตำแหน่งที่ตั้ง เราตรวจสอบตำแหน่งของคุณเพียงครั้งเดียวเมื่อคุณแตะ \"ใช้ตำแหน่งปัจจุบันของฉัน\" และใช้เพื่อแนะนำที่อยู่เท่านั้น พิกัดจะไม่ถูกจัดเก็บบนเซิร์ฟเวอร์ของเรา คุณถอนความยินยอมได้ทุกเมื่อในการตั้งค่าความยินยอม';
+
+  @override
+  String get locConsentAgree => 'ยอมรับและดำเนินการต่อ';
+
+  @override
+  String get locSuggestionTitle => 'นี่คือที่อยู่ของคุณใช่ไหม';
+
+  @override
+  String get locUseAddress => 'ใช้ที่อยู่นี้';
+
+  @override
+  String get locDenied => 'ไม่มีสิทธิ์เข้าถึงตำแหน่ง โปรดกรอกที่อยู่ด้วยตนเอง';
+
+  @override
+  String get locServicesOff =>
+      'บริการตำแหน่งของอุปกรณ์ปิดอยู่ โปรดกรอกที่อยู่ด้วยตนเอง';
+
+  @override
+  String get locTimeout =>
+      'การค้นหาตำแหน่งใช้เวลานานเกินไป โปรดกรอกที่อยู่ด้วยตนเอง';
+
+  @override
+  String get locNoAddress =>
+      'ไม่พบที่อยู่สำหรับตำแหน่งของคุณ โปรดกรอกที่อยู่ด้วยตนเอง';
+
+  @override
   String get uMaintenanceTitle => 'กำลังปิดปรับปรุงระบบ';
 
   @override

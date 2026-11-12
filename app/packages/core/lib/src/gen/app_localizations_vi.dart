@@ -2390,6 +2390,40 @@ class TVi extends T {
   }
 
   @override
+  String get locUseCurrent => 'Dùng vị trí hiện tại';
+
+  @override
+  String get locConsentTitle => 'Đồng ý điều khoản dịch vụ vị trí';
+
+  @override
+  String get locConsentBody =>
+      'Để tìm địa chỉ từ vị trí hiện tại, vui lòng đồng ý với điều khoản dịch vụ vị trí. Chúng tôi chỉ kiểm tra vị trí một lần khi bạn nhấn \"Dùng vị trí hiện tại\" và chỉ dùng để gợi ý địa chỉ. Tọa độ không được lưu trên máy chủ. Bạn có thể rút lại sự đồng ý bất cứ lúc nào trong Quản lý đồng ý.';
+
+  @override
+  String get locConsentAgree => 'Đồng ý và tiếp tục';
+
+  @override
+  String get locSuggestionTitle => 'Đây có phải địa chỉ của bạn không?';
+
+  @override
+  String get locUseAddress => 'Dùng địa chỉ này';
+
+  @override
+  String get locDenied => 'Chưa có quyền vị trí. Vui lòng tự nhập địa chỉ.';
+
+  @override
+  String get locServicesOff =>
+      'Dịch vụ vị trí trên thiết bị đang tắt. Vui lòng tự nhập địa chỉ.';
+
+  @override
+  String get locTimeout =>
+      'Xác định vị trí mất quá nhiều thời gian. Vui lòng tự nhập địa chỉ.';
+
+  @override
+  String get locNoAddress =>
+      'Không tìm thấy địa chỉ cho vị trí hiện tại. Vui lòng tự nhập địa chỉ.';
+
+  @override
   String get uMaintenanceTitle => 'Đang bảo trì';
 
   @override

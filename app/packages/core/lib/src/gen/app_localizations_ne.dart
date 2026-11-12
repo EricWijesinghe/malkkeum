@@ -2407,6 +2407,40 @@ class TNe extends T {
   }
 
   @override
+  String get locUseCurrent => 'मेरो हालको स्थान प्रयोग गर्नुहोस्';
+
+  @override
+  String get locConsentTitle => 'स्थानमा आधारित सेवाका सर्तहरू';
+
+  @override
+  String get locConsentBody =>
+      'हालको स्थानबाट ठेगाना खोज्न, कृपया स्थानमा आधारित सेवाका सर्तहरूमा सहमत हुनुहोस्। हामी तपाईंको स्थान \"मेरो हालको स्थान प्रयोग गर्नुहोस्\" थिच्दा एक पटक मात्र जाँच्छौं र ठेगाना सुझाव दिन मात्र प्रयोग गर्छौं। निर्देशांकहरू हाम्रो सर्भरमा भण्डारण गरिँदैन। तपाईं सहमति सेटिङमा जुनसुकै बेला यो सहमति फिर्ता लिन सक्नुहुन्छ।';
+
+  @override
+  String get locConsentAgree => 'सहमत भई जारी राख्नुहोस्';
+
+  @override
+  String get locSuggestionTitle => 'के यो तपाईंको ठेगाना हो?';
+
+  @override
+  String get locUseAddress => 'यो ठेगाना प्रयोग गर्नुहोस्';
+
+  @override
+  String get locDenied => 'स्थान अनुमति छैन। कृपया ठेगाना आफैं लेख्नुहोस्।';
+
+  @override
+  String get locServicesOff =>
+      'यस यन्त्रको स्थान सेवा बन्द छ। कृपया ठेगाना आफैं लेख्नुहोस्।';
+
+  @override
+  String get locTimeout =>
+      'स्थान पत्ता लगाउन धेरै समय लाग्यो। कृपया ठेगाना आफैं लेख्नुहोस्।';
+
+  @override
+  String get locNoAddress =>
+      'तपाईंको स्थानको ठेगाना भेटिएन। कृपया ठेगाना आफैं लेख्नुहोस्।';
+
+  @override
   String get uMaintenanceTitle => 'मर्मत हुँदैछ';
 
   @override

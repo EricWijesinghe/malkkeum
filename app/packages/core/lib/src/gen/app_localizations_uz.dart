@@ -2423,6 +2423,41 @@ class TUz extends T {
   }
 
   @override
+  String get locUseCurrent => 'Joriy joylashuvimdan foydalanish';
+
+  @override
+  String get locConsentTitle => 'Joylashuvga asoslangan xizmat shartlari';
+
+  @override
+  String get locConsentBody =>
+      'Joriy joylashuvingiz bo\'yicha manzilni topish uchun joylashuvga asoslangan xizmat shartlariga rozilik bering. Joylashuvingizni faqat \"Joriy joylashuvimdan foydalanish\" tugmasini bosganingizda bir marta aniqlaymiz va undan faqat manzil taklif qilish uchun foydalanamiz. Koordinatalar serverlarimizda saqlanmaydi. Rozilikni istalgan vaqtda Rozilik sozlamalarida bekor qilishingiz mumkin.';
+
+  @override
+  String get locConsentAgree => 'Roziman va davom etish';
+
+  @override
+  String get locSuggestionTitle => 'Bu sizning manzilingizmi?';
+
+  @override
+  String get locUseAddress => 'Shu manzildan foydalanish';
+
+  @override
+  String get locDenied =>
+      'Joylashuvga ruxsat yo\'q. Manzilni qo\'lda kiriting.';
+
+  @override
+  String get locServicesOff =>
+      'Qurilmada joylashuv xizmatlari o\'chirilgan. Manzilni qo\'lda kiriting.';
+
+  @override
+  String get locTimeout =>
+      'Joylashuvni aniqlash juda uzoq davom etmoqda. Manzilni qo\'lda kiriting.';
+
+  @override
+  String get locNoAddress =>
+      'Joylashuvingiz uchun manzil topilmadi. Manzilni qo\'lda kiriting.';
+
+  @override
   String get uMaintenanceTitle => 'Texnik xizmat ko\'rsatilmoqda';
 
   @override

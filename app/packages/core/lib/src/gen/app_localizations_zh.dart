@@ -2332,6 +2332,37 @@ class TZh extends T {
   }
 
   @override
+  String get locUseCurrent => '使用当前位置';
+
+  @override
+  String get locConsentTitle => '同意位置服务条款';
+
+  @override
+  String get locConsentBody =>
+      '要通过当前位置查找地址，请先同意位置服务条款。我们仅在您点击“使用当前位置”时获取一次位置，并且只用于推荐地址。位置坐标不会保存到服务器。您可随时在“同意管理”中撤回同意。';
+
+  @override
+  String get locConsentAgree => '同意并继续';
+
+  @override
+  String get locSuggestionTitle => '这是您的地址吗？';
+
+  @override
+  String get locUseAddress => '使用此地址';
+
+  @override
+  String get locDenied => '没有位置权限，请手动输入地址。';
+
+  @override
+  String get locServicesOff => '设备的定位服务已关闭，请手动输入地址。';
+
+  @override
+  String get locTimeout => '定位用时过长，请手动输入地址。';
+
+  @override
+  String get locNoAddress => '未能找到当前位置的地址，请手动输入地址。';
+
+  @override
   String get uMaintenanceTitle => '系统维护中';
 
   @override

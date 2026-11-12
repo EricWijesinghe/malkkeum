@@ -1,2 +1,3 @@
 "NSCameraUsageDescription" = "Ginagamit ang camera para kumuha at mag-upload ng mga larawan bago at pagkatapos ng paglilinis.";
 "NSPhotoLibraryUsageDescription" = "Ina-access ang photo library para mag-upload ng mga larawan bago at pagkatapos ng paglilinis at mga larawan para sa konsultasyon.";
+"NSLocationWhenInUseUsageDescription" = "Tinitingnan lang namin ang lokasyon mo kapag pinili mong hanapin ang address mula sa kasalukuyan mong lokasyon.";

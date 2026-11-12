@@ -2428,6 +2428,41 @@ class TFil extends T {
   }
 
   @override
+  String get locUseCurrent => 'Gamitin ang kasalukuyan kong lokasyon';
+
+  @override
+  String get locConsentTitle => 'Mga tuntunin ng serbisyong batay sa lokasyon';
+
+  @override
+  String get locConsentBody =>
+      'Para mahanap ang address mula sa kasalukuyan mong lokasyon, pakisang-ayunan ang mga tuntunin ng serbisyong batay sa lokasyon. Isang beses lang namin tinitingnan ang lokasyon mo, kapag pinindot mo ang \"Gamitin ang kasalukuyan kong lokasyon\", at ginagamit lang ito para magmungkahi ng address. Hindi iniimbak sa aming server ang mga coordinate. Maaari mong bawiin ang pahintulot anumang oras sa Mga pahintulot.';
+
+  @override
+  String get locConsentAgree => 'Sumang-ayon at magpatuloy';
+
+  @override
+  String get locSuggestionTitle => 'Ito ba ang address mo?';
+
+  @override
+  String get locUseAddress => 'Gamitin ang address na ito';
+
+  @override
+  String get locDenied =>
+      'Walang pahintulot sa lokasyon. Pakilagay nang manwal ang address.';
+
+  @override
+  String get locServicesOff =>
+      'Naka-off ang location services ng device. Pakilagay nang manwal ang address.';
+
+  @override
+  String get locTimeout =>
+      'Masyadong matagal ang paghahanap ng lokasyon. Pakilagay nang manwal ang address.';
+
+  @override
+  String get locNoAddress =>
+      'Walang nahanap na address para sa lokasyon mo. Pakilagay nang manwal ang address.';
+
+  @override
   String get uMaintenanceTitle => 'Under maintenance';
 
   @override

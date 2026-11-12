@@ -2409,6 +2409,40 @@ class TSi extends T {
   }
 
   @override
+  String get locUseCurrent => 'මගේ වත්මන් ස්ථානය භාවිත කරන්න';
+
+  @override
+  String get locConsentTitle => 'ස්ථානය මත පදනම් වූ සේවා නියම';
+
+  @override
+  String get locConsentBody =>
+      'ඔබගේ වත්මන් ස්ථානයෙන් ලිපිනය සොයා ගැනීමට, ස්ථානය මත පදනම් වූ සේවා නියමවලට එකඟ වන්න. ඔබ \"මගේ වත්මන් ස්ථානය භාවිත කරන්න\" තට්ටු කළ විට පමණක් අපි ඔබගේ ස්ථානය එක් වරක් පරීක්ෂා කර, ලිපිනයක් යෝජනා කිරීමට පමණක් භාවිත කරමු. ඛණ්ඩාංක අපගේ සේවාදායකවල ගබඩා නොකෙරේ. කැමැත්ත සැකසුම් තුළ ඔබට ඕනෑම වේලාවක මෙම කැමැත්ත ඉවත් කර ගත හැක.';
+
+  @override
+  String get locConsentAgree => 'එකඟ වී ඉදිරියට යන්න';
+
+  @override
+  String get locSuggestionTitle => 'මෙය ඔබගේ ලිපිනයද?';
+
+  @override
+  String get locUseAddress => 'මෙම ලිපිනය භාවිත කරන්න';
+
+  @override
+  String get locDenied => 'ස්ථාන අවසරය නැත. කරුණාකර ලිපිනය ඔබම ඇතුළත් කරන්න.';
+
+  @override
+  String get locServicesOff =>
+      'උපාංගයේ ස්ථාන සේවා අක්‍රියයි. කරුණාකර ලිපිනය ඔබම ඇතුළත් කරන්න.';
+
+  @override
+  String get locTimeout =>
+      'ස්ථානය සෙවීමට වැඩි කාලයක් ගත වේ. කරුණාකර ලිපිනය ඔබම ඇතුළත් කරන්න.';
+
+  @override
+  String get locNoAddress =>
+      'ඔබගේ ස්ථානයට ලිපිනයක් හමු නොවීය. කරුණාකර ලිපිනය ඔබම ඇතුළත් කරන්න.';
+
+  @override
   String get uMaintenanceTitle => 'නඩත්තු කටයුතු සිදුවෙමින් පවතී';
 
   @override

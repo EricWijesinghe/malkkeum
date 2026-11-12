@@ -2412,6 +2412,41 @@ class TId extends T {
   }
 
   @override
+  String get locUseCurrent => 'Gunakan lokasi saya saat ini';
+
+  @override
+  String get locConsentTitle => 'Ketentuan layanan berbasis lokasi';
+
+  @override
+  String get locConsentBody =>
+      'Untuk mencari alamat dari lokasi Anda saat ini, harap setujui ketentuan layanan berbasis lokasi. Kami memeriksa lokasi Anda satu kali saja, saat Anda mengetuk \"Gunakan lokasi saya saat ini\", dan hanya memakainya untuk menyarankan alamat. Koordinat tidak disimpan di server kami. Anda dapat menarik persetujuan kapan saja di Pengaturan persetujuan.';
+
+  @override
+  String get locConsentAgree => 'Setuju dan lanjutkan';
+
+  @override
+  String get locSuggestionTitle => 'Apakah ini alamat Anda?';
+
+  @override
+  String get locUseAddress => 'Gunakan alamat ini';
+
+  @override
+  String get locDenied =>
+      'Izin lokasi tidak aktif. Silakan masukkan alamat secara manual.';
+
+  @override
+  String get locServicesOff =>
+      'Layanan lokasi di perangkat ini mati. Silakan masukkan alamat secara manual.';
+
+  @override
+  String get locTimeout =>
+      'Pencarian lokasi terlalu lama. Silakan masukkan alamat secara manual.';
+
+  @override
+  String get locNoAddress =>
+      'Alamat untuk lokasi Anda tidak ditemukan. Silakan masukkan alamat secara manual.';
+
+  @override
   String get uMaintenanceTitle => 'Sedang pemeliharaan';
 
   @override

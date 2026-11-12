@@ -2419,6 +2419,40 @@ class TMn extends T {
   }
 
   @override
+  String get locUseCurrent => 'Одоогийн байршлаа ашиглах';
+
+  @override
+  String get locConsentTitle => 'Байршилд суурилсан үйлчилгээний нөхцөл';
+
+  @override
+  String get locConsentBody =>
+      'Одоогийн байршлаасаа хаягаа олохын тулд байршилд суурилсан үйлчилгээний нөхцөлийг зөвшөөрнө үү. Бид таны байршлыг зөвхөн \"Одоогийн байршлаа ашиглах\" товчийг дарах үед нэг удаа шалгаж, зөвхөн хаяг санал болгоход ашиглана. Координатыг манай серверт хадгалахгүй. Та зөвшөөрлөө Зөвшөөрлийн тохиргооноос хүссэн үедээ цуцалж болно.';
+
+  @override
+  String get locConsentAgree => 'Зөвшөөрөөд үргэлжлүүлэх';
+
+  @override
+  String get locSuggestionTitle => 'Энэ таны хаяг мөн үү?';
+
+  @override
+  String get locUseAddress => 'Энэ хаягийг ашиглах';
+
+  @override
+  String get locDenied => 'Байршлын зөвшөөрөл алга. Хаягаа гараар оруулна уу.';
+
+  @override
+  String get locServicesOff =>
+      'Төхөөрөмжийн байршлын үйлчилгээ унтраалттай байна. Хаягаа гараар оруулна уу.';
+
+  @override
+  String get locTimeout =>
+      'Байршил тогтооход хэт удаж байна. Хаягаа гараар оруулна уу.';
+
+  @override
+  String get locNoAddress =>
+      'Таны байршлын хаяг олдсонгүй. Хаягаа гараар оруулна уу.';
+
+  @override
   String get uMaintenanceTitle => 'Засвар хийгдэж байна';
 
   @override

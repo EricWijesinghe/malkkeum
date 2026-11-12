@@ -1,2 +1,3 @@
 "NSCameraUsageDescription" = "Kamera digunakan untuk memotret dan mengunggah foto sebelum dan sesudah pembersihan.";
 "NSPhotoLibraryUsageDescription" = "Kami mengakses pustaka foto untuk mengunggah foto sebelum dan sesudah pembersihan serta foto konsultasi.";
+"NSLocationWhenInUseUsageDescription" = "Kami memeriksa lokasi Anda hanya saat Anda memilih mencari alamat dari lokasi saat ini.";

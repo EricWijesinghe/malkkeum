@@ -2404,6 +2404,41 @@ class TKm extends T {
   }
 
   @override
+  String get locUseCurrent => 'ប្រើទីតាំងបច្ចុប្បន្នរបស់ខ្ញុំ';
+
+  @override
+  String get locConsentTitle => 'លក្ខខណ្ឌសេវាកម្មផ្អែកលើទីតាំង';
+
+  @override
+  String get locConsentBody =>
+      'ដើម្បីស្វែងរកអាសយដ្ឋានពីទីតាំងបច្ចុប្បន្នរបស់អ្នក សូមយល់ព្រមលើលក្ខខណ្ឌសេវាកម្មផ្អែកលើទីតាំង។ យើងពិនិត្យទីតាំងរបស់អ្នកតែម្តងគត់ នៅពេលអ្នកចុច \"ប្រើទីតាំងបច្ចុប្បន្នរបស់ខ្ញុំ\" ហើយប្រើវាសម្រាប់ស្នើអាសយដ្ឋានប៉ុណ្ណោះ។ កូអរដោនេមិនត្រូវបានរក្សាទុកលើម៉ាស៊ីនមេរបស់យើងទេ។ អ្នកអាចដកការយល់ព្រមបានគ្រប់ពេលនៅក្នុងការគ្រប់គ្រងការយល់ព្រម។';
+
+  @override
+  String get locConsentAgree => 'យល់ព្រម ហើយបន្ត';
+
+  @override
+  String get locSuggestionTitle => 'តើនេះជាអាសយដ្ឋានរបស់អ្នកមែនទេ?';
+
+  @override
+  String get locUseAddress => 'ប្រើអាសយដ្ឋាននេះ';
+
+  @override
+  String get locDenied =>
+      'គ្មានការអនុញ្ញាតទីតាំងទេ។ សូមបញ្ចូលអាសយដ្ឋានដោយខ្លួនឯង។';
+
+  @override
+  String get locServicesOff =>
+      'សេវាទីតាំងរបស់ឧបករណ៍ត្រូវបានបិទ។ សូមបញ្ចូលអាសយដ្ឋានដោយខ្លួនឯង។';
+
+  @override
+  String get locTimeout =>
+      'ការស្វែងរកទីតាំងចំណាយពេលយូរពេក។ សូមបញ្ចូលអាសយដ្ឋានដោយខ្លួនឯង។';
+
+  @override
+  String get locNoAddress =>
+      'រកមិនឃើញអាសយដ្ឋានសម្រាប់ទីតាំងរបស់អ្នកទេ។ សូមបញ្ចូលអាសយដ្ឋានដោយខ្លួនឯង។';
+
+  @override
   String get uMaintenanceTitle => 'កំពុងថែទាំ';
 
   @override

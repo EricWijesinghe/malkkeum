@@ -1155,6 +1155,16 @@
    }
   }
  },
+ "locUseCurrent": "현재 위치로 찾기",
+ "locConsentTitle": "위치기반서비스 이용약관 동의",
+ "locConsentBody": "현재 위치로 주소를 찾으려면 위치기반서비스 이용약관에 동의해 주세요. 위치는 '현재 위치로 찾기'를 누를 때 한 번만 확인하고, 주소를 제안하는 데만 써요. 위치 좌표는 서버에 저장하지 않아요. 동의는 동의 관리에서 언제든지 철회할 수 있어요.",
+ "locConsentAgree": "동의하고 계속",
+ "locSuggestionTitle": "이 주소가 맞나요?",
+ "locUseAddress": "이 주소 사용",
+ "locDenied": "위치 권한이 없어요. 주소를 직접 입력해 주세요.",
+ "locServicesOff": "기기의 위치 서비스가 꺼져 있어요. 주소를 직접 입력해 주세요.",
+ "locTimeout": "위치를 확인하는 데 시간이 너무 오래 걸려요. 주소를 직접 입력해 주세요.",
+ "locNoAddress": "현재 위치의 주소를 찾지 못했어요. 주소를 직접 입력해 주세요.",
  "uMaintenanceTitle": "점검 중이에요",
  "uMaintenanceBody": "더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.",
  "cmTab": "캠페인",

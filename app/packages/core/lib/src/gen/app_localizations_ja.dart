@@ -2339,6 +2339,37 @@ class TJa extends T {
   }
 
   @override
+  String get locUseCurrent => '現在地から探す';
+
+  @override
+  String get locConsentTitle => '位置情報サービス利用規約への同意';
+
+  @override
+  String get locConsentBody =>
+      '現在地から住所を探すには、位置情報サービス利用規約への同意が必要です。位置情報は「現在地から探す」を押したときに一度だけ確認し、住所の提案にのみ使用します。座標はサーバーに保存しません。同意は「同意の管理」からいつでも撤回できます。';
+
+  @override
+  String get locConsentAgree => '同意して続ける';
+
+  @override
+  String get locSuggestionTitle => 'この住所で合っていますか？';
+
+  @override
+  String get locUseAddress => 'この住所を使う';
+
+  @override
+  String get locDenied => '位置情報の権限がありません。住所を直接入力してください。';
+
+  @override
+  String get locServicesOff => '端末の位置情報サービスがオフです。住所を直接入力してください。';
+
+  @override
+  String get locTimeout => '位置の確認に時間がかかりすぎています。住所を直接入力してください。';
+
+  @override
+  String get locNoAddress => '現在地の住所が見つかりませんでした。住所を直接入力してください。';
+
+  @override
   String get uMaintenanceTitle => 'メンテナンス中です';
 
   @override
