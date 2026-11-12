@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1836,6 +1837,24 @@ class TNe extends T {
   @override
   String get hhHint =>
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
+
+  @override
+  String get bkStepConsult => 'परामर्श अनुरोध';
+
+  @override
+  String get bkStepConfirmed => 'बुकिङ पक्का';
+
+  @override
+  String get bkStepMatched => 'टोली मिलान भयो';
+
+  @override
+  String get bkStepCompleted => 'सेवा सम्पन्न';
+
+  @override
+  String get bkViewWeek => 'साप्ताहिक दृश्य';
+
+  @override
+  String get bkViewMonth => 'मासिक दृश्य';
 
   @override
   String get themeTitle => 'थिम';

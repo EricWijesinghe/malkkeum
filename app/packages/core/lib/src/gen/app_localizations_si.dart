@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1840,6 +1841,24 @@ class TSi extends T {
 
   @override
   String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
+
+  @override
+  String get bkStepConsult => 'උපදේශන ඉල්ලීම';
+
+  @override
+  String get bkStepConfirmed => 'වෙන්කිරීම තහවුරුයි';
+
+  @override
+  String get bkStepMatched => 'කණ්ඩායම ගැළපුණා';
+
+  @override
+  String get bkStepCompleted => 'සේවාව අවසන්';
+
+  @override
+  String get bkViewWeek => 'සතිපතා දසුන';
+
+  @override
+  String get bkViewMonth => 'මාසික දසුන';
 
   @override
   String get themeTitle => 'තේමාව';

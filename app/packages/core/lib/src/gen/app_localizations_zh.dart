@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1790,6 +1791,24 @@ class TZh extends T {
 
   @override
   String get hhHint => '保存到该地址，每次预约可单独修改。';
+
+  @override
+  String get bkStepConsult => '咨询申请';
+
+  @override
+  String get bkStepConfirmed => '预约确认';
+
+  @override
+  String get bkStepMatched => '匹配完成';
+
+  @override
+  String get bkStepCompleted => '服务完成';
+
+  @override
+  String get bkViewWeek => '周视图';
+
+  @override
+  String get bkViewMonth => '月视图';
 
   @override
   String get themeTitle => '主题';

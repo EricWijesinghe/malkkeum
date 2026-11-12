@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_flow.dart';
+import 'bookings.dart';
 import 'growth.dart';
 import 'pay_flow.dart';
 import 'service.dart';
@@ -101,7 +102,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
   Widget _body(Booking b) {
     final t = context.t;
-    final lang = context.lang;
     final service = context.app.service(b.serviceCode);
     final hue = ServiceHues.of(b.serviceCode);
     final unit =
@@ -121,12 +121,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StatusBadge(status: b.status, label: t.status(b.status)),
+                  BookingStatusChip(status: b.status),
                   const SizedBox(height: 4),
-                  Text(
-                    '${dateLabel(b.visitDate, lang)} ${b.isQuote ? (b.startHour < 12 ? t.morning : t.afternoon) : hourLabel(b.startHour, lang)}',
-                    style: context.text.titleLarge,
-                  ),
+                  Text(bookingWhen(context, b), style: context.text.titleLarge),
                   Text(
                     [
                       t.service(b.serviceCode),
@@ -498,9 +495,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   /// Shows the server's fee preview before confirming; the accepted fee is sent back so a changed policy is refused.
   Future<void> _cancel(Booking b) async {
     final t = context.t;
-    final preview =
-        (await context.api.get('/bookings/${b.id}/cancel-preview'))
-            as Map<String, dynamic>;
+    final preview = (await context.api.get(
+      '/bookings/${b.id}/cancel-preview',
+    )) as Map<String, dynamic>;
     if (!mounted) return;
     final canCancel = preview['can_cancel'] == true;
     final fee = (preview['fee'] as num? ?? 0).toInt();
@@ -578,14 +575,10 @@ class _Timeline extends StatelessWidget {
     final t = context.t;
     final b = booking;
     final steps = [
-      if (b.isQuote) (0, t.stepRequested, null),
-      (1, t.stepConfirmed, null),
-      (
-        2,
-        t.stepAssigned,
-        b.teamName == null ? null : t.teamVisiting(b.teamName!),
-      ),
-      (3, t.stepCompleted, b.status < 3 ? t.photosSoon : null),
+      if (b.isQuote) (0, null),
+      (1, null),
+      (2, b.teamName == null ? null : t.teamVisiting(b.teamName!)),
+      (3, b.status < 3 ? t.photosSoon : null),
     ];
     return AppCard(
       child: Column(
@@ -600,6 +593,7 @@ class _Timeline extends StatelessWidget {
                     Column(
                       children: [
                         _Dot(
+                          step: steps[i].$1,
                           done: b.status >= steps[i].$1,
                           current: b.status == steps[i].$1,
                         ),
@@ -622,15 +616,15 @@ class _Timeline extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              steps[i].$2,
+                              bookingStepLabel(t, steps[i].$1),
                               style: context.text.titleSmall?.copyWith(
                                 color: b.status >= steps[i].$1
                                     ? context.colors.ink
                                     : context.colors.inkMuted,
                               ),
                             ),
-                            if (steps[i].$3 != null)
-                              Text(steps[i].$3!, style: context.text.bodySmall),
+                            if (steps[i].$2 != null)
+                              Text(steps[i].$2!, style: context.text.bodySmall),
                           ],
                         ),
                       ),
@@ -646,36 +640,37 @@ class _Timeline extends StatelessWidget {
 }
 
 class _Dot extends StatelessWidget {
-  const _Dot({required this.done, required this.current});
+  const _Dot({required this.step, required this.done, required this.current});
+  final int step;
   final bool done;
   final bool current;
+  static const _size = 40.0;
+
   @override
   Widget build(BuildContext context) => Pulse(
     active: current,
     child: AnimatedContainer(
-      duration: Motion.standard,
-      width: 24,
-      height: 24,
+      duration: motionFor(context, Motion.standard),
+      width: _size,
+      height: _size,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: done ? context.colors.fresh : context.colors.surface,
+        color: done ? context.colors.freshTint : context.colors.surfaceHigh,
         border: Border.all(
-          color: done ? context.colors.fresh : context.colors.line,
+          color: current ? context.colors.fresh : context.colors.line,
           width: 2,
         ),
-        boxShadow: current
-            ? [
-                BoxShadow(
-                  color: context.colors.fresh.withValues(alpha: 0.3),
-                  blurRadius: 0,
-                  spreadRadius: 5,
-                ),
-              ]
-            : null,
       ),
-      child: done
-          ? const Icon(Icons.check_rounded, size: 15, color: Colors.white)
-          : null,
+      // The step name sits next to it, so the art itself is decorative.
+      child: ExcludeSemantics(
+        child: Icon3D(
+          bookingStepIcon(step),
+          active: current,
+          enabled: done,
+          size: 24,
+        ),
+      ),
     ),
   );
 }

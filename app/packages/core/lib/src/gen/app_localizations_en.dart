@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1825,6 +1826,24 @@ class TEn extends T {
 
   @override
   String get hhHint => 'Saved to this address and editable per booking.';
+
+  @override
+  String get bkStepConsult => 'Consultation requested';
+
+  @override
+  String get bkStepConfirmed => 'Booking confirmed';
+
+  @override
+  String get bkStepMatched => 'Matched';
+
+  @override
+  String get bkStepCompleted => 'Service completed';
+
+  @override
+  String get bkViewWeek => 'Week view';
+
+  @override
+  String get bkViewMonth => 'Month view';
 
   @override
   String get themeTitle => 'Theme';

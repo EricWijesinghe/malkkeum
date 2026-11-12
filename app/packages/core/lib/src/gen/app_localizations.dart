@@ -3529,6 +3529,42 @@ abstract class T {
   /// **'주소에 저장되고, 예약마다 바꿀 수 있어요.'**
   String get hhHint;
 
+  /// No description provided for @bkStepConsult.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담요청'**
+  String get bkStepConsult;
+
+  /// No description provided for @bkStepConfirmed.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약확정'**
+  String get bkStepConfirmed;
+
+  /// No description provided for @bkStepMatched.
+  ///
+  /// In ko, this message translates to:
+  /// **'매칭 완료'**
+  String get bkStepMatched;
+
+  /// No description provided for @bkStepCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 완료'**
+  String get bkStepCompleted;
+
+  /// No description provided for @bkViewWeek.
+  ///
+  /// In ko, this message translates to:
+  /// **'주간 보기'**
+  String get bkViewWeek;
+
+  /// No description provided for @bkViewMonth.
+  ///
+  /// In ko, this message translates to:
+  /// **'월간 보기'**
+  String get bkViewMonth;
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:

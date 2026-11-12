@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1848,6 +1849,24 @@ class TFil extends T {
   @override
   String get hhHint =>
       'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
+
+  @override
+  String get bkStepConsult => 'Humiling ng konsultasyon';
+
+  @override
+  String get bkStepConfirmed => 'Kumpirmado ang booking';
+
+  @override
+  String get bkStepMatched => 'Naitugma na';
+
+  @override
+  String get bkStepCompleted => 'Tapos na ang serbisyo';
+
+  @override
+  String get bkViewWeek => 'Lingguhang view';
+
+  @override
+  String get bkViewMonth => 'Buwanang view';
 
   @override
   String get themeTitle => 'Tema';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1838,6 +1839,24 @@ class TRu extends T {
 
   @override
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
+
+  @override
+  String get bkStepConsult => 'Запрос консультации';
+
+  @override
+  String get bkStepConfirmed => 'Бронь подтверждена';
+
+  @override
+  String get bkStepMatched => 'Команда назначена';
+
+  @override
+  String get bkStepCompleted => 'Услуга выполнена';
+
+  @override
+  String get bkViewWeek => 'По неделям';
+
+  @override
+  String get bkViewMonth => 'По месяцам';
 
   @override
   String get themeTitle => 'Тема';

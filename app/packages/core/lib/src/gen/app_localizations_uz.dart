@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1847,6 +1848,24 @@ class TUz extends T {
   @override
   String get hhHint =>
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
+
+  @override
+  String get bkStepConsult => 'Maslahat so\'raldi';
+
+  @override
+  String get bkStepConfirmed => 'Bron tasdiqlandi';
+
+  @override
+  String get bkStepMatched => 'Jamoa biriktirildi';
+
+  @override
+  String get bkStepCompleted => 'Xizmat yakunlandi';
+
+  @override
+  String get bkViewWeek => 'Haftalik ko\'rinish';
+
+  @override
+  String get bkViewMonth => 'Oylik ko\'rinish';
 
   @override
   String get themeTitle => 'Mavzu';

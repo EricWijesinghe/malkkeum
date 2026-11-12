@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1828,6 +1829,24 @@ class TTh extends T {
 
   @override
   String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
+
+  @override
+  String get bkStepConsult => 'ขอคำปรึกษาแล้ว';
+
+  @override
+  String get bkStepConfirmed => 'ยืนยันการจองแล้ว';
+
+  @override
+  String get bkStepMatched => 'จับคู่ทีมแล้ว';
+
+  @override
+  String get bkStepCompleted => 'บริการเสร็จสิ้น';
+
+  @override
+  String get bkViewWeek => 'มุมมองรายสัปดาห์';
+
+  @override
+  String get bkViewMonth => 'มุมมองรายเดือน';
 
   @override
   String get themeTitle => 'ธีม';
