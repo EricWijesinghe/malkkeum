@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4417,6 +4416,18 @@ class TFil extends T {
 
   @override
   String get pointsAdjustDone => 'Naayos ang puntos';
+
+  @override
+  String get err_points_insufficient =>
+      'Kulang ang puntos mo. Bawasan ang gagamiting puntos.';
+
+  @override
+  String get err_points_over_cap =>
+      'Lampas ito sa puntos na puwedeng gamitin sa bayad na ito.';
+
+  @override
+  String get err_points_cover_total =>
+      'Hindi puwedeng puntos lang ang ibayad sa buong halaga. Bawasan nang kaunti.';
 
   @override
   String get webBookNow => 'Mag-book sa web';

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4397,6 +4396,18 @@ class TMn extends T {
 
   @override
   String get pointsAdjustDone => 'Оноог тохирууллаа';
+
+  @override
+  String get err_points_insufficient =>
+      'Оноо хүрэлцэхгүй байна. Ашиглах оноогоо багасгана уу.';
+
+  @override
+  String get err_points_over_cap =>
+      'Энэ төлбөрт ашиглах онооны дээд хэмжээнээс хэтэрлээ.';
+
+  @override
+  String get err_points_cover_total =>
+      'Нийт дүнг зөвхөн оноогоор төлөх боломжгүй. Бага зэрэг багасгана уу.';
 
   @override
   String get webBookNow => 'Вэбээр шууд захиалах';

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4352,6 +4351,18 @@ class TVi extends T {
 
   @override
   String get pointsAdjustDone => 'Đã điều chỉnh điểm';
+
+  @override
+  String get err_points_insufficient =>
+      'Không đủ điểm. Hãy giảm số điểm sử dụng.';
+
+  @override
+  String get err_points_over_cap =>
+      'Vượt quá số điểm được dùng cho lần thanh toán này.';
+
+  @override
+  String get err_points_cover_total =>
+      'Không thể trả toàn bộ bằng điểm. Hãy dùng ít hơn một chút.';
 
   @override
   String get webBookNow => 'Đặt lịch ngay trên web';

@@ -77,7 +77,8 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final app = context.appRead;
+    // Listening: services, addresses and cards may still be loading when the screen opens.
+    final app = context.app;
     final services = app.services.where((s) => !s.isQuote).toList();
     final addresses = app.addresses;
     final methods = app.methods;
@@ -123,6 +124,8 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
           const SizedBox(height: Space.xs),
           SegmentedButton<int>(
             key: const Key('sub-weekday'),
+            // Seven segments: the check mark would push the selected day past a phone's width.
+            showSelectedIcon: false,
             segments: [for (var i = 0; i < 7; i++) ButtonSegment(value: i, label: Text(narrow[(i + 1) % 7]))],
             selected: {_weekday},
             onSelectionChanged: (s) => setState(() => _weekday = s.first),

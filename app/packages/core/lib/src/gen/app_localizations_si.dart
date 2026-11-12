@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4382,6 +4381,18 @@ class TSi extends T {
 
   @override
   String get pointsAdjustDone => 'ලකුණු ගැළපිණි';
+
+  @override
+  String get err_points_insufficient =>
+      'ලකුණු ප්‍රමාණවත් නැත. භාවිත කරන ලකුණු අඩු කරන්න.';
+
+  @override
+  String get err_points_over_cap =>
+      'මෙම ගෙවීමට භාවිත කළ හැකි ලකුණු සීමාව ඉක්මවා ඇත.';
+
+  @override
+  String get err_points_cover_total =>
+      'සම්පූර්ණ මුදල ලකුණු වලින් ගෙවිය නොහැක. ටිකක් අඩු කරන්න.';
 
   @override
   String get webBookNow => 'වෙබ් අඩවියෙන් වහාම වෙන් කරන්න';

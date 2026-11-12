@@ -1,6 +1,7 @@
 // Points wallet, payment history with receipts, and refund status. Every number comes from the
 // server; the receipt's business details come from the public business profile (GET /brand).
 
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

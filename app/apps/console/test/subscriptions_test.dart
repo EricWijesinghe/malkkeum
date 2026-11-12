@@ -1,5 +1,6 @@
 import 'package:console/screens/subscriptions.dart';
 import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
 
@@ -34,7 +35,7 @@ void main() {
     await pumpConsoleScreen(tester, env, const SubscriptionsScreen());
     await pumpUntilFound(tester, find.byKey(const Key('sub-s-1')));
 
-    expect(find.text('${koT.service('studio')} · ${koT.subBiweekly}'), findsOneWidget);
+    expect(find.text('${koT.service('studio')} · ${koT.subBiweekly}'), findsNWidgets(2), reason: 'both rows are studio, every two weeks');
     expect(find.byKey(const Key('sub-toggle-s-2')), findsNothing, reason: 'cancelled subscriptions have no toggle');
 
     await tester.tap(find.byKey(const Key('sub-toggle-s-1')));

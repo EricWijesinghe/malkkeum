@@ -237,7 +237,7 @@ Future<SocialAuthResult?> signInWithSocial({
             'provider': provider.provider,
             'token': token,
             'audience': audience,
-            'attribution': Attribution.get(),
+            'attribution': ?Attribution.get(),
           })
           as Map<String, dynamic>;
   await session.save(body);

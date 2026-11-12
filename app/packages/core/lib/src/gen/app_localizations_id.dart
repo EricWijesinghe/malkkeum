@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4393,6 +4392,17 @@ class TId extends T {
 
   @override
   String get pointsAdjustDone => 'Poin disesuaikan';
+
+  @override
+  String get err_points_insufficient =>
+      'Poin Anda tidak cukup. Kurangi poin yang dipakai.';
+
+  @override
+  String get err_points_over_cap => 'Melebihi batas poin untuk pembayaran ini.';
+
+  @override
+  String get err_points_cover_total =>
+      'Poin tidak bisa membayar seluruh jumlah. Kurangi sedikit.';
 
   @override
   String get webBookNow => 'Pesan lewat web';

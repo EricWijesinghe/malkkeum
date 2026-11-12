@@ -49,7 +49,7 @@ fn kst(t: DateTime<Utc>) -> chrono::NaiveDateTime {
 /// True inside the 21:00-08:00 KST window, when advertising is not allowed.
 pub fn quiet_hours(t: DateTime<Utc>) -> bool {
     let h = kst(t).hour();
-    h >= QUIET_START_HOUR || h < QUIET_END_HOUR
+    !(QUIET_END_HOUR..QUIET_START_HOUR).contains(&h)
 }
 
 /// `t` itself outside quiet hours, otherwise the next 08:00 KST.

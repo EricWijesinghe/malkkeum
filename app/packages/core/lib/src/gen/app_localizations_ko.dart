@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4266,6 +4265,15 @@ class TKo extends T {
 
   @override
   String get pointsAdjustDone => '포인트를 조정했어요';
+
+  @override
+  String get err_points_insufficient => '포인트가 부족해요. 사용할 포인트를 줄여 주세요.';
+
+  @override
+  String get err_points_over_cap => '이번 결제에 쓸 수 있는 포인트 한도를 넘었어요.';
+
+  @override
+  String get err_points_cover_total => '포인트로 전액을 결제할 수는 없어요. 조금 줄여 주세요.';
 
   @override
   String get webBookNow => '웹에서 바로 예약';

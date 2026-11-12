@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4265,6 +4264,15 @@ class TJa extends T {
 
   @override
   String get pointsAdjustDone => 'ポイントを調整しました';
+
+  @override
+  String get err_points_insufficient => 'ポイントが足りません。使うポイントを減らしてください。';
+
+  @override
+  String get err_points_over_cap => '今回のお支払いで使えるポイントの上限を超えています。';
+
+  @override
+  String get err_points_cover_total => 'ポイントだけで全額は支払えません。少し減らしてください。';
 
   @override
   String get webBookNow => 'ウェブで今すぐ予約';

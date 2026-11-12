@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4380,6 +4379,18 @@ class TNe extends T {
 
   @override
   String get pointsAdjustDone => 'पोइन्ट समायोजन भयो';
+
+  @override
+  String get err_points_insufficient =>
+      'पोइन्ट पुगेन। प्रयोग गर्ने पोइन्ट घटाउनुहोस्।';
+
+  @override
+  String get err_points_over_cap =>
+      'यो भुक्तानीमा प्रयोग गर्न मिल्ने पोइन्टको सीमा नाघ्यो।';
+
+  @override
+  String get err_points_cover_total =>
+      'पूरै रकम पोइन्टले तिर्न मिल्दैन। अलि घटाउनुहोस्।';
 
   @override
   String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';

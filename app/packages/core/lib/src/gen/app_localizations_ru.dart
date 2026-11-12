@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4384,6 +4383,18 @@ class TRu extends T {
 
   @override
   String get pointsAdjustDone => 'Баллы скорректированы';
+
+  @override
+  String get err_points_insufficient =>
+      'Недостаточно баллов. Уменьшите количество баллов.';
+
+  @override
+  String get err_points_over_cap =>
+      'Это больше баллов, чем можно использовать для этой оплаты.';
+
+  @override
+  String get err_points_cover_total =>
+      'Нельзя оплатить баллами всю сумму. Используйте чуть меньше.';
 
   @override
   String get webBookNow => 'Забронировать в браузере';

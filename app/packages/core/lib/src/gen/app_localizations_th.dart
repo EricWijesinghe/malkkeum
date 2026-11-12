@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4362,6 +4361,17 @@ class TTh extends T {
 
   @override
   String get pointsAdjustDone => 'ปรับคะแนนแล้ว';
+
+  @override
+  String get err_points_insufficient => 'คะแนนไม่พอ กรุณาลดคะแนนที่ใช้';
+
+  @override
+  String get err_points_over_cap =>
+      'เกินจำนวนคะแนนที่ใช้ได้สำหรับการชำระครั้งนี้';
+
+  @override
+  String get err_points_cover_total =>
+      'ใช้คะแนนชำระเต็มจำนวนไม่ได้ กรุณาลดลงเล็กน้อย';
 
   @override
   String get webBookNow => 'จองบนเว็บเลย';

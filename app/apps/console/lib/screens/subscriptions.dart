@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+
 /// Owner view of regular cleaning subscriptions: filter by status, pause or resume one on the customer's behalf.
 /// The server audits every action. Editing the schedule is done through the API for now.
 class SubscriptionsScreen extends StatefulWidget {
@@ -28,7 +30,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     return rows.cast<Json>();
   }
 
-  void _reload() => setState(() => _rows = _load());
+  // Block body: setState must not be handed the Future that the assignment evaluates to.
+  void _reload() {
+    setState(() {
+      _rows = _load();
+    });
+  }
 
   Future<void> _toggle(Json sub) async {
     final messenger = ScaffoldMessenger.of(context);

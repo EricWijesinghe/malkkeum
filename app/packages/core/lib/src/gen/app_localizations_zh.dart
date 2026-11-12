@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4245,6 +4244,15 @@ class TZh extends T {
 
   @override
   String get pointsAdjustDone => '积分已调整';
+
+  @override
+  String get err_points_insufficient => '积分不足，请减少使用的积分。';
+
+  @override
+  String get err_points_over_cap => '超出本次支付可使用的积分上限。';
+
+  @override
+  String get err_points_cover_total => '积分不能支付全部金额，请少用一些。';
 
   @override
   String get webBookNow => '网页直接预约';

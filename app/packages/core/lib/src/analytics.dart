@@ -56,7 +56,7 @@ class Analytics {
   bool track(String name, {String? screen}) {
     if (!_consented || !analyticsEventNames.contains(name)) return false;
     if (screen != null && !_screenPattern.hasMatch(screen)) return false;
-    _queue.add({'name': name, 'platform': platform, if (screen != null) 'screen': screen});
+    _queue.add({'name': name, 'platform': platform, 'screen': ?screen});
     if (_queue.length >= _batchSize) unawaited(flush());
     return true;
   }

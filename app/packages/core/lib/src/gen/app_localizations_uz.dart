@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4406,6 +4405,18 @@ class TUz extends T {
 
   @override
   String get pointsAdjustDone => 'Ballar tuzatildi';
+
+  @override
+  String get err_points_insufficient =>
+      'Ballar yetarli emas. Ishlatiladigan ballarni kamaytiring.';
+
+  @override
+  String get err_points_over_cap =>
+      'Bu to\'lov uchun ruxsat etilgan ballar chegarasidan oshdi.';
+
+  @override
+  String get err_points_cover_total =>
+      'Butun summani ballar bilan to\'lab bo\'lmaydi. Biroz kamaytiring.';
 
   @override
   String get webBookNow => 'Veb orqali darhol band qiling';

@@ -8196,6 +8196,24 @@ abstract class T {
   /// **'포인트를 조정했어요'**
   String get pointsAdjustDone;
 
+  /// No description provided for @err_points_insufficient.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트가 부족해요. 사용할 포인트를 줄여 주세요.'**
+  String get err_points_insufficient;
+
+  /// No description provided for @err_points_over_cap.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 결제에 쓸 수 있는 포인트 한도를 넘었어요.'**
+  String get err_points_over_cap;
+
+  /// No description provided for @err_points_cover_total.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트로 전액을 결제할 수는 없어요. 조금 줄여 주세요.'**
+  String get err_points_cover_total;
+
   /// No description provided for @webBookNow.
   ///
   /// In ko, this message translates to:

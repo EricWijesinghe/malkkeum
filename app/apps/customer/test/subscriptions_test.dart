@@ -41,7 +41,9 @@ void main() {
     setViewport(tester, phoneSize);
     final fake = _subscribeApi();
     final env = await TestEnv.create(fake: fake);
-    await pumpCustomerScreen(tester, env, const SubscribeScreen());
+    final app = await pumpCustomerScreen(tester, env, const SubscribeScreen());
+    // The Shell has loaded these before the screen can be opened in the app.
+    await app.loadAll();
     await settle(tester);
 
     expect(find.text(koT.subDiscountNote('10')), findsOneWidget);

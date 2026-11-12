@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:test_support/test_support.dart';
 
 Widget testApp(Widget child) => MaterialApp(
   locale: const Locale('ko'),
@@ -48,6 +49,8 @@ void main() {
   });
 
   testWidgets('builder shows consent count and blocks send until the form is valid', (tester) async {
+    // Tall enough for the whole form: the send button sits below the default 600 px surface.
+    setViewport(tester, const Size(800, 1600));
     final submitted = <Json>[];
     await tester.pumpWidget(testApp(
       CampaignBuilder(

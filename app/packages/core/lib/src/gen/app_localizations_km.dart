@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4380,6 +4379,18 @@ class TKm extends T {
 
   @override
   String get pointsAdjustDone => 'បានកែតម្រូវពិន្ទុ';
+
+  @override
+  String get err_points_insufficient =>
+      'ពិន្ទុមិនគ្រប់គ្រាន់ទេ។ សូមបន្ថយពិន្ទុដែលប្រើ។';
+
+  @override
+  String get err_points_over_cap =>
+      'លើសកម្រិតពិន្ទុដែលអាចប្រើសម្រាប់ការទូទាត់នេះ។';
+
+  @override
+  String get err_points_cover_total =>
+      'មិនអាចទូទាត់ចំនួនទាំងអស់ដោយពិន្ទុបានទេ។ សូមបន្ថយបន្តិច។';
 
   @override
   String get webBookNow => 'កក់នៅលើវេប';

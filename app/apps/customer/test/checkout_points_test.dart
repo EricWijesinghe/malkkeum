@@ -1,3 +1,4 @@
+import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:customer/screens/booking_flow.dart';
 import 'package:flutter/material.dart';

@@ -241,3 +241,59 @@ for _code, _texts in {
   },
 }.items():
     X[_code].update(_texts)
+
+# Server refusals when paying with points (T.error / checkoutFailure look these up by code).
+S.update({
+  "err_points_insufficient": ["포인트가 부족해요. 사용할 포인트를 줄여 주세요.", "You don't have enough points. Lower the points to use.", "ポイントが足りません。使うポイントを減らしてください。", "积分不足，请减少使用的积分。", "Không đủ điểm. Hãy giảm số điểm sử dụng."],
+  "err_points_over_cap": ["이번 결제에 쓸 수 있는 포인트 한도를 넘었어요.", "That is more points than this payment allows.", "今回のお支払いで使えるポイントの上限を超えています。", "超出本次支付可使用的积分上限。", "Vượt quá số điểm được dùng cho lần thanh toán này."],
+  "err_points_cover_total": ["포인트로 전액을 결제할 수는 없어요. 조금 줄여 주세요.", "Points can't cover the whole amount. Use a little less.", "ポイントだけで全額は支払えません。少し減らしてください。", "积分不能支付全部金额，请少用一些。", "Không thể trả toàn bộ bằng điểm. Hãy dùng ít hơn một chút."],
+})
+
+for _code, _texts in {
+  "fil": {
+    "err_points_insufficient": "Kulang ang puntos mo. Bawasan ang gagamiting puntos.",
+    "err_points_over_cap": "Lampas ito sa puntos na puwedeng gamitin sa bayad na ito.",
+    "err_points_cover_total": "Hindi puwedeng puntos lang ang ibayad sa buong halaga. Bawasan nang kaunti.",
+  },
+  "id": {
+    "err_points_insufficient": "Poin Anda tidak cukup. Kurangi poin yang dipakai.",
+    "err_points_over_cap": "Melebihi batas poin untuk pembayaran ini.",
+    "err_points_cover_total": "Poin tidak bisa membayar seluruh jumlah. Kurangi sedikit.",
+  },
+  "km": {
+    "err_points_insufficient": "ពិន្ទុមិនគ្រប់គ្រាន់ទេ។ សូមបន្ថយពិន្ទុដែលប្រើ។",
+    "err_points_over_cap": "លើសកម្រិតពិន្ទុដែលអាចប្រើសម្រាប់ការទូទាត់នេះ។",
+    "err_points_cover_total": "មិនអាចទូទាត់ចំនួនទាំងអស់ដោយពិន្ទុបានទេ។ សូមបន្ថយបន្តិច។",
+  },
+  "mn": {
+    "err_points_insufficient": "Оноо хүрэлцэхгүй байна. Ашиглах оноогоо багасгана уу.",
+    "err_points_over_cap": "Энэ төлбөрт ашиглах онооны дээд хэмжээнээс хэтэрлээ.",
+    "err_points_cover_total": "Нийт дүнг зөвхөн оноогоор төлөх боломжгүй. Бага зэрэг багасгана уу.",
+  },
+  "ne": {
+    "err_points_insufficient": "पोइन्ट पुगेन। प्रयोग गर्ने पोइन्ट घटाउनुहोस्।",
+    "err_points_over_cap": "यो भुक्तानीमा प्रयोग गर्न मिल्ने पोइन्टको सीमा नाघ्यो।",
+    "err_points_cover_total": "पूरै रकम पोइन्टले तिर्न मिल्दैन। अलि घटाउनुहोस्।",
+  },
+  "ru": {
+    "err_points_insufficient": "Недостаточно баллов. Уменьшите количество баллов.",
+    "err_points_over_cap": "Это больше баллов, чем можно использовать для этой оплаты.",
+    "err_points_cover_total": "Нельзя оплатить баллами всю сумму. Используйте чуть меньше.",
+  },
+  "si": {
+    "err_points_insufficient": "ලකුණු ප්‍රමාණවත් නැත. භාවිත කරන ලකුණු අඩු කරන්න.",
+    "err_points_over_cap": "මෙම ගෙවීමට භාවිත කළ හැකි ලකුණු සීමාව ඉක්මවා ඇත.",
+    "err_points_cover_total": "සම්පූර්ණ මුදල ලකුණු වලින් ගෙවිය නොහැක. ටිකක් අඩු කරන්න.",
+  },
+  "th": {
+    "err_points_insufficient": "คะแนนไม่พอ กรุณาลดคะแนนที่ใช้",
+    "err_points_over_cap": "เกินจำนวนคะแนนที่ใช้ได้สำหรับการชำระครั้งนี้",
+    "err_points_cover_total": "ใช้คะแนนชำระเต็มจำนวนไม่ได้ กรุณาลดลงเล็กน้อย",
+  },
+  "uz": {
+    "err_points_insufficient": "Ballar yetarli emas. Ishlatiladigan ballarni kamaytiring.",
+    "err_points_over_cap": "Bu to'lov uchun ruxsat etilgan ballar chegarasidan oshdi.",
+    "err_points_cover_total": "Butun summani ballar bilan to'lab bo'lmaydi. Biroz kamaytiring.",
+  },
+}.items():
+    X[_code].update(_texts)

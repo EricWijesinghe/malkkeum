@@ -483,7 +483,7 @@ class _CopyRow extends StatelessWidget {
 
 /// Read-only checklist item: the uptime ping URL is set by install.sh, never typed in the console.
 class HeartbeatCard extends StatelessWidget {
-  const HeartbeatCard({required this.configured});
+  const HeartbeatCard({super.key, required this.configured});
   final bool configured;
 
   @override

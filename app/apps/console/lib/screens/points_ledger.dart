@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+
 /// Same limits as the server (points.rs): it refuses anything else, this only saves a round trip.
 const _maxAdjust = 100000;
 const _maxReasonChars = 200;
@@ -112,20 +114,16 @@ class PointsLedgerPanel extends StatelessWidget {
           padding: const EdgeInsets.all(Space.md),
           children: [
             AppCard(
-              child: Row(
+              // Stacked: the theme's buttons are full width, which a Row cannot lay out.
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(t.walletBalance, style: context.text.bodySmall),
-                        Text(
-                          t.walletPoints('${p['balance'] ?? 0}'),
-                          style: context.text.headlineSmall,
-                        ),
-                      ],
-                    ),
+                  Text(t.walletBalance, style: context.text.bodySmall),
+                  Text(
+                    t.walletPoints('${p['balance'] ?? 0}'),
+                    style: context.text.headlineSmall,
                   ),
+                  const SizedBox(height: Space.sm),
                   FilledButton.tonalIcon(
                     icon: const Icon(Icons.tune_rounded),
                     label: Text(t.walletKindOther),
@@ -155,7 +153,7 @@ class PointsLedgerPanel extends StatelessWidget {
     return ListTile(
       title: Text(_kindLabel(t, e['kind'] as String)),
       subtitle: Text(
-        [dateTimeLabel(at, context.lang), if (reason != null) reason].join(' · '),
+        [dateTimeLabel(at, context.lang), ?reason].join(' · '),
       ),
       trailing: Text(
         t.walletPoints(amount > 0 ? '+$amount' : '$amount'),

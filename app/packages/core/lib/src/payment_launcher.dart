@@ -15,7 +15,7 @@ sealed class PaymentOutcome {
   const PaymentOutcome();
 }
 
-/// Authorized; confirm with this payment id. Dev ids: 'dev:<method>' (e.g. 'dev:kakaopay').
+/// Authorized; confirm with this payment id. Dev ids: `dev:<method>` (e.g. 'dev:kakaopay').
 final class PaymentApproved extends PaymentOutcome {
   const PaymentApproved(this.paymentId);
   final String paymentId;

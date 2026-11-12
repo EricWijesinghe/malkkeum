@@ -244,10 +244,10 @@ pub async fn expire_lapsed(db: &PgPool) -> ApiResult<u64> {
     let mut written = 0;
     for user in users {
         let mut tx = db.begin().await?;
-        lock_user(&mut *tx, user).await?;
-        for (lot, left) in lapsed(&lots(&mut *tx, user).await?, now) {
+        lock_user(&mut tx, user).await?;
+        for (lot, left) in lapsed(&lots(&mut tx, user).await?, now) {
             let e = Entry { lot: Some(lot), ..Entry::new(user, "expire", -left, format!("expire:{lot}")) };
-            if append(&mut *tx, e).await? {
+            if append(&mut tx, e).await? {
                 written += 1;
             }
         }
@@ -269,12 +269,15 @@ pub fn spawn(state: AppState) -> tokio::task::JoinHandle<()> {
     })
 }
 
+/// kind, amount, created, expires, booking, reason, actor.
+type LedgerRow = (String, i64, DateTime<Utc>, Option<DateTime<Utc>>, Option<Uuid>, Option<String>, Option<Uuid>);
+
 /// `staff` adds what only the console may see: the reason and the staff member behind an adjustment.
 async fn snapshot(conn: &mut PgConnection, user: Uuid, staff: bool) -> ApiResult<Value> {
     let policy = load_policy(&mut *conn).await?;
     let owned = lots(&mut *conn, user).await?;
     let now = Utc::now();
-    let entries: Vec<(String, i64, DateTime<Utc>, Option<DateTime<Utc>>, Option<Uuid>, Option<String>, Option<Uuid>)> = sqlx::query_as(
+    let entries: Vec<LedgerRow> = sqlx::query_as(
         "SELECT kind, amount, created_at, expires_at, booking_id, reason, actor_id FROM points_ledger WHERE user_id = $1 ORDER BY created_at DESC, id DESC LIMIT $2",
     )
     .bind(user)
@@ -337,8 +340,8 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
     }
     let batch = Uuid::now_v7();
     let mut tx = s.db.begin().await?;
-    lock_user(&mut *tx, input.user_id).await?;
-    let policy = load_policy(&mut *tx).await?;
+    lock_user(&mut tx, input.user_id).await?;
+    let policy = load_policy(&mut tx).await?;
     if input.amount > 0 {
         let e = Entry {
             lot: None,
@@ -347,10 +350,10 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
             reason: Some(reason.clone()),
             ..Entry::new(input.user_id, "grant", input.amount, format!("adjust:{batch}"))
         };
-        append(&mut *tx, e).await?;
+        append(&mut tx, e).await?;
     } else {
         let now = Utc::now();
-        let owned = lots(&mut *tx, input.user_id).await?;
+        let owned = lots(&mut tx, input.user_id).await?;
         for (lot, take) in allocate(&owned, -input.amount, now).map_err(points_err)? {
             let e = Entry {
                 lot: Some(lot),
@@ -358,7 +361,7 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
                 reason: Some(reason.clone()),
                 ..Entry::new(input.user_id, "deduct", -take, format!("deduct:{batch}:{lot}"))
             };
-            append(&mut *tx, e).await?;
+            append(&mut tx, e).await?;
         }
     }
     // Audit row goes in the same transaction: no adjustment without its record.

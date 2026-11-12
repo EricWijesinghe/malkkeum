@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4368,6 +4367,18 @@ class TEn extends T {
 
   @override
   String get pointsAdjustDone => 'Points adjusted';
+
+  @override
+  String get err_points_insufficient =>
+      'You don\'t have enough points. Lower the points to use.';
+
+  @override
+  String get err_points_over_cap =>
+      'That is more points than this payment allows.';
+
+  @override
+  String get err_points_cover_total =>
+      'Points can\'t cover the whole amount. Use a little less.';
 
   @override
   String get webBookNow => 'Book on the web';
