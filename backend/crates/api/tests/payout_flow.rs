@@ -177,7 +177,7 @@ async fn amount_that_no_longer_matches_its_settlements_is_not_paid(pool: PgPool)
     let app = app(pool.clone());
     let token = admin_token();
     let id = first_payout_id(&app, &token).await;
-    sqlx::query("UPDATE settlements SET net = net - 1000 WHERE id = $1").bind(settlement).execute(&pool).await.expect("change");
+    sqlx::query("UPDATE settlements SET fee = fee + 1000, net = net - 1000 WHERE id = $1").bind(settlement).execute(&pool).await.expect("change");
 
     let (code, body) = call(&app, "POST", &format!("/v1/admin/settlements/payouts/{id}/confirm"), Some(&token), Some(json!({}))).await;
     assert_eq!((code, body["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("payout_amount_changed")), "{body}");

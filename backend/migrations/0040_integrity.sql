@@ -14,10 +14,7 @@ ALTER TABLE payments
     ADD CONSTRAINT payments_refund_bounds CHECK (refunded_amount >= 0 AND refunded_amount <= amount) NOT VALID;
 ALTER TABLE payments VALIDATE CONSTRAINT payments_refund_bounds;
 
--- A settlement is gross minus the platform fee, never negative.
-ALTER TABLE settlements
-    ADD CONSTRAINT settlements_money_consistent CHECK (gross >= 0 AND fee >= 0 AND net = gross - fee) NOT VALID;
-ALTER TABLE settlements VALIDATE CONSTRAINT settlements_money_consistent;
+-- settlements money consistency needs settlements.tip (0076): see 0098.
 
 ALTER TABLE pros
     ADD CONSTRAINT pros_fee_bps_range CHECK (fee_bps BETWEEN 0 AND 10000) NOT VALID;
