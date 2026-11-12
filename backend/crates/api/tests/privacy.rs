@@ -27,6 +27,29 @@ fn all_required_consents() -> serde_json::Value {
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn location_terms_consent_is_recorded_on_its_own_and_withdrawable(pool: PgPool) {
+    let app = app(pool.clone());
+    let c = customer(&app, &pool, "010-8100-0009").await;
+    let location = |granted: bool| json!({ "consents": [{ "kind": "location", "granted": granted, "version": CONSENT_VERSION }] });
+    let granted = |s: &serde_json::Value| s["items"].as_array().and_then(|i| i.iter().find(|i| i["kind"] == "location")).map(|i| i["granted"].clone());
+
+    let (_, s) = call(&app, "GET", "/v1/me/consents", Some(c.token.as_str()), None).await;
+    assert_eq!(granted(&s), Some(json!(false)), "never agreed: {s}");
+
+    // No PIPA consent is on record yet; the location terms still record on their own.
+    let (st, s) = call(&app, "PUT", "/v1/me/consents", Some(c.token.as_str()), Some(location(true))).await;
+    assert_eq!(st, StatusCode::OK, "{s}");
+    assert_eq!(granted(&s), Some(json!(true)));
+    assert_eq!(s["reconsent_required"], true, "location terms do not stand in for the required consents");
+
+    let (st, s) = call(&app, "PUT", "/v1/me/consents", Some(c.token.as_str()), Some(location(false))).await;
+    assert_eq!(st, StatusCode::OK, "{s}");
+    assert_eq!(granted(&s), Some(json!(false)));
+    let rows: i64 = sqlx::query_scalar("SELECT count(*) FROM user_consents WHERE user_id = $1 AND kind = 'location'").bind(c.user).fetch_one(&pool).await.expect("count");
+    assert_eq!(rows, 2, "grant and withdrawal are both kept as evidence");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn required_consents_gate_the_service_and_marketing_is_withdrawable(pool: PgPool) {
     let app = app(pool.clone());
     let c = customer(&app, &pool, "010-8100-0001").await;
@@ -34,7 +57,7 @@ async fn required_consents_gate_the_service_and_marketing_is_withdrawable(pool: 
     let (st, s) = call(&app, "GET", "/v1/me/consents", Some(c.token.as_str()), None).await;
     assert_eq!(st, StatusCode::OK);
     assert_eq!(s["reconsent_required"], true, "new account has no consents yet");
-    assert_eq!(s["items"].as_array().map(Vec::len), Some(4));
+    assert_eq!(s["items"].as_array().map(Vec::len), Some(5));
 
     let (st, body) = call(&app, "PUT", "/v1/me/consents", Some(c.token.as_str()), Some(json!({ "consents": [{ "kind": "marketing", "granted": true, "version": CONSENT_VERSION }] }))).await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "required consents missing: {body}");

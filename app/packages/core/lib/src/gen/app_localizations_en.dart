@@ -2396,6 +2396,41 @@ class TEn extends T {
   }
 
   @override
+  String get locUseCurrent => 'Use my current location';
+
+  @override
+  String get locConsentTitle => 'Location-based service terms';
+
+  @override
+  String get locConsentBody =>
+      'To find your address from your current location, please agree to the location-based service terms. We check your location once, only when you tap \"Use my current location\", and use it only to suggest an address. Your coordinates are not stored on our servers. You can withdraw this consent any time in Consent settings.';
+
+  @override
+  String get locConsentAgree => 'Agree and continue';
+
+  @override
+  String get locSuggestionTitle => 'Is this your address?';
+
+  @override
+  String get locUseAddress => 'Use this address';
+
+  @override
+  String get locDenied =>
+      'Location permission is off. Please enter your address yourself.';
+
+  @override
+  String get locServicesOff =>
+      'Location services are turned off on this device. Please enter your address yourself.';
+
+  @override
+  String get locTimeout =>
+      'Finding your location is taking too long. Please enter your address yourself.';
+
+  @override
+  String get locNoAddress =>
+      'We could not find an address for your location. Please enter your address yourself.';
+
+  @override
   String get uMaintenanceTitle => 'We are under maintenance';
 
   @override

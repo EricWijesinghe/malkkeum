@@ -13,19 +13,15 @@ use serde_json::Value;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-/// Version of the policy texts the customer agrees to (privacy, terms, overseas transfer notice, marketing).
+/// Version of the policy texts the customer agrees to (privacy, terms, overseas transfer notice, marketing, location terms).
 /// Bump when any of them changes: every stored consent with another version stops counting.
 pub const CONSENT_VERSION: &str = "2026-11-19";
 
-/// Kind and whether the service cannot run without it. Marketing and location are optional and
-/// withdrawable; without location consent the address is typed or searched by hand.
-pub const CONSENTS: [(&str, bool); 5] = [
-    ("terms", true),
-    ("privacy", true),
-    ("overseas_transfer", true),
-    ("marketing", false),
-    ("location", false),
-];
+/// Kind and whether the service cannot run without it. Marketing and location are optional and withdrawable.
+pub const CONSENTS: [(&str, bool); 5] = [("terms", true), ("privacy", true), ("overseas_transfer", true), ("marketing", false), (LOCATION, false)];
+
+/// 위치기반서비스 이용약관 (위치정보법): asked in the app before the first "use my current location".
+pub const LOCATION: &str = "location";
 
 /// Messages that are advertising under 정보통신망법: sent only while `marketing` is granted.
 /// Transactional kinds (booking, payment, chat) never match.
@@ -133,7 +129,9 @@ pub async fn update_consents(db: &PgPool, user: Uuid, update: ConsentUpdate) -> 
             created_at: Utc::now(),
         });
     }
-    if CONSENTS.iter().any(|(k, required)| *required && !effective(&rows, k)) {
+    // The location terms are their own agreement under 위치정보법: recording them alone never depends on the PIPA consents.
+    let location_only = update.consents.iter().all(|c| c.kind == LOCATION);
+    if !location_only && CONSENTS.iter().any(|(k, required)| *required && !effective(&rows, k)) {
         return Err(ApiError::BadRequest("required_consent"));
     }
     let mut tx = db.begin().await?;

@@ -9,7 +9,6 @@ S = {
   "pvOverseas": ["개인정보 국외 이전 동의", "Transfer of personal data abroad", "個人情報の国外移転への同意", "同意个人信息跨境传输", "Đồng ý chuyển dữ liệu cá nhân ra nước ngoài"],
   "pvMarketing": ["마케팅 정보 수신 동의", "Marketing messages", "マーケティング情報の受信への同意", "同意接收营销信息", "Nhận thông tin khuyến mãi"],
   "pvMarketingHint": ["쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.", "Get coupon and event news by SMS, KakaoTalk and app push. You can turn this off any time.", "クーポンやイベント情報をSMS、KakaoTalk、アプリのプッシュ通知で受け取ります。いつでも停止できます。", "通过短信、KakaoTalk 和应用推送接收优惠券与活动消息。可随时关闭。", "Nhận tin ưu đãi và sự kiện qua SMS, KakaoTalk và thông báo ứng dụng. Bạn có thể tắt bất cứ lúc nào."],
-  "pvLocation": ["위치 정보 이용 동의", "Location information", "位置情報の利用への同意", "同意使用位置信息", "Đồng ý sử dụng thông tin vị trí"],
   "pvReconsent": ["개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.", "Our privacy policy changed. Please review and agree again.", "プライバシーポリシーが変更されました。内容をご確認のうえ、改めて同意してください。", "隐私政策已更新，请重新查看并同意。", "Chính sách quyền riêng tư đã thay đổi. Vui lòng xem lại và đồng ý lại."],
   "pvSaved": ["동의 내용을 저장했어요", "Consent settings saved", "同意内容を保存しました", "同意设置已保存", "Đã lưu cài đặt đồng ý"],
   "pvExport": ["내 데이터 내려받기", "Download my data", "マイデータをダウンロード", "下载我的数据", "Tải dữ liệu của tôi"],
@@ -21,7 +20,6 @@ S = {
 
 X = {
   "fil": {
-    "pvLocation": "Pagsang-ayon sa paggamit ng lokasyon",
     "pvManage": "Mga pahintulot", "pvOptional": "Opsyonal", "pvTerms": "Pagsang-ayon sa Mga Tuntunin ng Serbisyo",
     "pvPrivacy": "Pagsang-ayon sa pagkolekta at paggamit ng personal na datos", "pvOverseas": "Pagsang-ayon sa pagpapadala ng personal na datos sa ibang bansa",
     "pvMarketing": "Mga mensaheng pang-marketing", "pvMarketingHint": "Makakatanggap ng balita tungkol sa coupon at event sa SMS, KakaoTalk, at app push. Maaari mo itong i-off anumang oras.",
@@ -30,7 +28,6 @@ X = {
     "pvCopy": "Kopyahin", "pvCopied": "Nakopya", "pvExportFailed": "Hindi ma-load ang iyong datos. Subukan muli mamaya.",
   },
   "id": {
-    "pvLocation": "Persetujuan penggunaan informasi lokasi",
     "pvManage": "Pengaturan persetujuan", "pvOptional": "Opsional", "pvTerms": "Persetujuan Syarat Layanan",
     "pvPrivacy": "Persetujuan pengumpulan dan penggunaan data pribadi", "pvOverseas": "Persetujuan transfer data pribadi ke luar negeri",
     "pvMarketing": "Pesan pemasaran", "pvMarketingHint": "Terima info kupon dan acara lewat SMS, KakaoTalk, dan notifikasi aplikasi. Anda bisa mematikannya kapan saja.",
@@ -39,7 +36,6 @@ X = {
     "pvCopy": "Salin", "pvCopied": "Tersalin", "pvExportFailed": "Tidak dapat memuat data Anda. Silakan coba lagi nanti.",
   },
   "km": {
-    "pvLocation": "ការយល់ព្រមលើការប្រើប្រាស់ទីតាំង",
     "pvManage": "ការគ្រប់គ្រងការយល់ព្រម", "pvOptional": "ស្រេចចិត្ត", "pvTerms": "ការយល់ព្រមលើលក្ខខណ្ឌសេវាកម្ម",
     "pvPrivacy": "ការយល់ព្រមលើការប្រមូល និងការប្រើប្រាស់ព័ត៌មានផ្ទាល់ខ្លួន", "pvOverseas": "ការយល់ព្រមលើការផ្ទេរព័ត៌មានផ្ទាល់ខ្លួនទៅបរទេស",
     "pvMarketing": "សារផ្សព្វផ្សាយ", "pvMarketingHint": "ទទួលព័ត៌មានគូប៉ុង និងព្រឹត្តិការណ៍តាម SMS KakaoTalk និងការជូនដំណឹងក្នុងកម្មវិធី។ អ្នកអាចបិទបានគ្រប់ពេល។",
@@ -48,7 +44,6 @@ X = {
     "pvCopy": "ចម្លង", "pvCopied": "បានចម្លង", "pvExportFailed": "មិនអាចផ្ទុកទិន្នន័យរបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតពេលក្រោយ។",
   },
   "mn": {
-    "pvLocation": "Байршлын мэдээлэл ашиглах зөвшөөрөл",
     "pvManage": "Зөвшөөрлийн тохиргоо", "pvOptional": "Сонгомол", "pvTerms": "Үйлчилгээний нөхцөлд зөвшөөрөх",
     "pvPrivacy": "Хувийн мэдээлэл цуглуулах, ашиглахад зөвшөөрөх", "pvOverseas": "Хувийн мэдээллийг гадаад руу шилжүүлэхэд зөвшөөрөх",
     "pvMarketing": "Маркетингийн мэдээлэл", "pvMarketingHint": "Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.",
@@ -57,7 +52,6 @@ X = {
     "pvCopy": "Хуулах", "pvCopied": "Хуулагдлаа", "pvExportFailed": "Таны мэдээллийг ачаалж чадсангүй. Хэсэг хугацааны дараа дахин оролдоно уу.",
   },
   "ne": {
-    "pvLocation": "स्थान जानकारी प्रयोगको सहमति",
     "pvManage": "सहमति व्यवस्थापन", "pvOptional": "ऐच्छिक", "pvTerms": "सेवा सर्तहरूमा सहमति",
     "pvPrivacy": "व्यक्तिगत डेटा सङ्कलन र प्रयोगमा सहमति", "pvOverseas": "व्यक्तिगत डेटा विदेश पठाउने सहमति",
     "pvMarketing": "मार्केटिङ सन्देश", "pvMarketingHint": "कुपन र कार्यक्रमका समाचार SMS, KakaoTalk र एप पुशमार्फत पाउनुहुनेछ। जुनसुकै बेला बन्द गर्न सकिन्छ।",
@@ -66,7 +60,6 @@ X = {
     "pvCopy": "कपी गर्नुहोस्", "pvCopied": "कपी गरियो", "pvExportFailed": "तपाईंको डेटा लोड गर्न सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।",
   },
   "ru": {
-    "pvLocation": "Согласие на использование данных о местоположении",
     "pvManage": "Управление согласиями", "pvOptional": "Необязательно", "pvTerms": "Условия использования",
     "pvPrivacy": "Сбор и использование персональных данных", "pvOverseas": "Передача персональных данных за рубеж",
     "pvMarketing": "Рекламные сообщения", "pvMarketingHint": "Купоны и новости акций по SMS, в KakaoTalk и push-уведомлениях приложения. Отключить можно в любой момент.",
@@ -75,7 +68,6 @@ X = {
     "pvCopy": "Копировать", "pvCopied": "Скопировано", "pvExportFailed": "Не удалось загрузить ваши данные. Попробуйте позже.",
   },
   "si": {
-    "pvLocation": "ස්ථාන තොරතුරු භාවිතයට එකඟතාව",
     "pvManage": "එකඟතා කළමනාකරණය", "pvOptional": "විකල්ප", "pvTerms": "සේවා නියම එකඟතාව",
     "pvPrivacy": "පුද්ගලික දත්ත එකතු කිරීම සහ භාවිතය සඳහා එකඟතාව", "pvOverseas": "පුද්ගලික දත්ත විදේශයට මාරු කිරීම සඳහා එකඟතාව",
     "pvMarketing": "අලෙවිකරණ පණිවිඩ", "pvMarketingHint": "කූපන් සහ සිදුවීම් පිළිබඳ පණිවිඩ SMS, KakaoTalk සහ යෙදුම් push මගින් ලැබේ. ඕනෑම වේලාවක නවත්වා ගත හැකිය.",
@@ -84,7 +76,6 @@ X = {
     "pvCopy": "පිටපත් කරන්න", "pvCopied": "පිටපත් කරන ලදී", "pvExportFailed": "ඔබේ දත්ත පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න.",
   },
   "th": {
-    "pvLocation": "ความยินยอมใช้ข้อมูลตำแหน่ง",
     "pvManage": "จัดการความยินยอม", "pvOptional": "ไม่บังคับ", "pvTerms": "ยอมรับข้อกำหนดการใช้บริการ",
     "pvPrivacy": "ยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล", "pvOverseas": "ยินยอมให้โอนข้อมูลส่วนบุคคลไปต่างประเทศ",
     "pvMarketing": "รับข้อความการตลาด", "pvMarketingHint": "รับข่าวคูปองและกิจกรรมทาง SMS, KakaoTalk และแจ้งเตือนในแอป ปิดได้ทุกเมื่อ",
@@ -93,7 +84,6 @@ X = {
     "pvCopy": "คัดลอก", "pvCopied": "คัดลอกแล้ว", "pvExportFailed": "ไม่สามารถโหลดข้อมูลของคุณได้ กรุณาลองใหม่อีกครั้งภายหลัง",
   },
   "uz": {
-    "pvLocation": "Joylashuv ma'lumotlaridan foydalanishga rozilik",
     "pvManage": "Rozilik sozlamalari", "pvOptional": "Ixtiyoriy", "pvTerms": "Xizmat shartlariga rozilik",
     "pvPrivacy": "Shaxsiy ma'lumotlarni yig'ish va foydalanishga rozilik", "pvOverseas": "Shaxsiy ma'lumotlarni chet elga uzatishga rozilik",
     "pvMarketing": "Marketing xabarlari", "pvMarketingHint": "Kupon va tadbirlar yangiliklarini SMS, KakaoTalk va ilova bildirishnomalari orqali olasiz. Istalgan vaqtda o'chirishingiz mumkin.",

@@ -127,6 +127,8 @@ def check_info_plist(app, ios):
     check(info.get("ITSAppUsesNonExemptEncryption") is False, f"{app} Info.plist: ITSAppUsesNonExemptEncryption must be false")
     for key in ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]:
         check(str(info.get(key, "")).strip() != "", f"{app} Info.plist: {key} empty")
+    has_location = str(info.get(LOCATION_USAGE_KEY, "")).strip() != ""
+    check(has_location == (app in LOCATION_APPS), f"{app} Info.plist: {LOCATION_USAGE_KEY} must be set only for {sorted(LOCATION_APPS)}")
     check(info.get("CFBundleIdentifier") == "$(PRODUCT_BUNDLE_IDENTIFIER)", f"{app} Info.plist: CFBundleIdentifier")
     return info
 
@@ -257,8 +259,11 @@ IOS_LANGS = ["en", "ko", "ja", "zh-Hans", "vi", "fil", "id", "km", "mn", "ne", "
 USAGE_KEYS = ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]
 BANNED_PERMS = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",
                 "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.FOREGROUND_SERVICE", "android.permission.ACCESS_FINE_LOCATION",
-                "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_BACKGROUND_LOCATION"]
+                "android.permission.FOREGROUND_SERVICE", "android.permission.ACCESS_BACKGROUND_LOCATION"]
+# Foreground location: only the customer app ("use my current location" on the address form). Never background.
+LOCATION_APPS = {"customer"}
+LOCATION_PERMS = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"]
+LOCATION_USAGE_KEY = "NSLocationWhenInUseUsageDescription"
 ELF_LOAD = 1
 PAGE_16KB = 0x4000
 
@@ -270,6 +275,8 @@ def check_ios_localizations(app, ios):
         path = ios / "Runner" / f"{lang}.lproj" / "InfoPlist.strings"
         text = path.read_text(encoding="utf-8") if path.exists() else ""
         check(all(f'"{k}" = "' in text for k in USAGE_KEYS), f"{app} {lang}.lproj/InfoPlist.strings: camera/photo text missing")
+        check((f'"{LOCATION_USAGE_KEY}" = "' in text) == (app in LOCATION_APPS),
+              f"{app} {lang}.lproj/InfoPlist.strings: location text must be present only for {sorted(LOCATION_APPS)}")
         check(re.search(rf"\b{re.escape(lang)},", regions) is not None, f"{app} pbxproj knownRegions lacks {lang}")
     check(proj.count("InfoPlist.strings in Resources */") >= 1 and "InfoPlist.strings */," in proj,
           f"{app} pbxproj: InfoPlist.strings variant group not wired into the Runner group and Resources phase")
@@ -295,7 +302,9 @@ def check_android_extras(app, android):
     root = ET.parse(android / "app" / "src" / "main" / "AndroidManifest.xml").getroot()
     perms = {e.get(ANDROID_NS + "name") for e in root.iter("uses-permission")}
     for banned in BANNED_PERMS:
-        check(banned not in perms, f"{app} AndroidManifest: {banned} not allowed (use the photo picker, no location/foreground service)")
+        check(banned not in perms, f"{app} AndroidManifest: {banned} not allowed (use the photo picker, no background location/foreground service)")
+    for perm in LOCATION_PERMS:
+        check((perm in perms) == (app in LOCATION_APPS), f"{app} AndroidManifest: {perm} must be declared only for {sorted(LOCATION_APPS)}")
 
 
 def elf_16kb_failures(aab):

@@ -48,7 +48,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
     'terms' => t.pvTerms,
     'privacy' => t.pvPrivacy,
     'overseas_transfer' => t.pvOverseas,
-    'location' => t.pvLocation,
+    'location' => t.locConsentTitle,
     _ => t.pvMarketing,
   };
 

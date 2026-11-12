@@ -1,2 +1,3 @@
 "NSCameraUsageDescription" = "Tozalashdan oldin va keyin suratlarni darhol olib yuklash uchun kameradan foydalaniladi.";
 "NSPhotoLibraryUsageDescription" = "Tozalashdan oldin va keyingi suratlar hamda maslahat suratlarini yuklash uchun foto kutubxonasiga kiriladi.";
+"NSLocationWhenInUseUsageDescription" = "Joylashuvingizni faqat joriy joylashuv bo'yicha manzil qidirishni tanlaganingizda aniqlaymiz.";

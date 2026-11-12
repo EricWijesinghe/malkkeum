@@ -2409,6 +2409,40 @@ class TRu extends T {
   }
 
   @override
+  String get locUseCurrent => 'Использовать моё местоположение';
+
+  @override
+  String get locConsentTitle => 'Условия сервиса на основе геолокации';
+
+  @override
+  String get locConsentBody =>
+      'Чтобы найти адрес по текущему местоположению, примите условия сервиса на основе геолокации. Мы определяем местоположение один раз, только когда вы нажимаете «Использовать моё местоположение», и используем его только для подсказки адреса. Координаты не сохраняются на наших серверах. Согласие можно отозвать в любой момент в разделе «Настройки согласий».';
+
+  @override
+  String get locConsentAgree => 'Принять и продолжить';
+
+  @override
+  String get locSuggestionTitle => 'Это ваш адрес?';
+
+  @override
+  String get locUseAddress => 'Использовать этот адрес';
+
+  @override
+  String get locDenied => 'Нет доступа к геолокации. Введите адрес вручную.';
+
+  @override
+  String get locServicesOff =>
+      'Службы геолокации на устройстве отключены. Введите адрес вручную.';
+
+  @override
+  String get locTimeout =>
+      'Определение местоположения занимает слишком много времени. Введите адрес вручную.';
+
+  @override
+  String get locNoAddress =>
+      'Не удалось найти адрес для вашего местоположения. Введите адрес вручную.';
+
+  @override
   String get uMaintenanceTitle => 'Ведутся технические работы';
 
   @override

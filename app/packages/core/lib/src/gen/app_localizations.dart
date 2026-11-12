@@ -4549,6 +4549,66 @@ abstract class T {
   /// **'{rewarded}/{invited}명'**
   String growthReferralValue(String rewarded, String invited);
 
+  /// No description provided for @locUseCurrent.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 위치로 찾기'**
+  String get locUseCurrent;
+
+  /// No description provided for @locConsentTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치기반서비스 이용약관 동의'**
+  String get locConsentTitle;
+
+  /// No description provided for @locConsentBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 위치로 주소를 찾으려면 위치기반서비스 이용약관에 동의해 주세요. 위치는 \'현재 위치로 찾기\'를 누를 때 한 번만 확인하고, 주소를 제안하는 데만 써요. 위치 좌표는 서버에 저장하지 않아요. 동의는 동의 관리에서 언제든지 철회할 수 있어요.'**
+  String get locConsentBody;
+
+  /// No description provided for @locConsentAgree.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의하고 계속'**
+  String get locConsentAgree;
+
+  /// No description provided for @locSuggestionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 주소가 맞나요?'**
+  String get locSuggestionTitle;
+
+  /// No description provided for @locUseAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 주소 사용'**
+  String get locUseAddress;
+
+  /// No description provided for @locDenied.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한이 없어요. 주소를 직접 입력해 주세요.'**
+  String get locDenied;
+
+  /// No description provided for @locServicesOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기의 위치 서비스가 꺼져 있어요. 주소를 직접 입력해 주세요.'**
+  String get locServicesOff;
+
+  /// No description provided for @locTimeout.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치를 확인하는 데 시간이 너무 오래 걸려요. 주소를 직접 입력해 주세요.'**
+  String get locTimeout;
+
+  /// No description provided for @locNoAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 위치의 주소를 찾지 못했어요. 주소를 직접 입력해 주세요.'**
+  String get locNoAddress;
+
   /// No description provided for @uMaintenanceTitle.
   ///
   /// In ko, this message translates to:

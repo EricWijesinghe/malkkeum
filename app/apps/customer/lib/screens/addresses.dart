@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../location.dart';
 import '../state.dart';
 import 'household_editor.dart';
 
@@ -85,8 +86,15 @@ class AddressesScreen extends StatelessWidget {
 
 /// Add / edit. District comes from the service-area list; size is required (studio rule).
 class AddressFormScreen extends StatefulWidget {
-  const AddressFormScreen({super.key, this.existing});
+  const AddressFormScreen({
+    super.key,
+    this.existing,
+    this.location = const PluginLocationDevice(),
+  });
   final Address? existing;
+
+  /// Where "use my current location" reads from; tests pass a fake.
+  final LocationDevice location;
   @override
   State<AddressFormScreen> createState() => _AddressFormScreenState();
 }
@@ -114,6 +122,11 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   // Localized server message for the last failed search (shown inline; typed entry stays below).
   String? _searchError;
   List<AddressHit> _hits = const [];
+  // "Use my current location": the suggestion waits here until the customer confirms it; nothing is saved from it.
+  bool _locating = false;
+  String? _suggestion;
+  // Why there is no suggestion (permission, services off, timeout ...); typed entry stays below.
+  String? _locationNote;
   // Household profile; the editor reports every change. Starts as the saved one so an untouched save keeps it.
   late Json _household = widget.existing?.household ?? const {};
 
@@ -161,6 +174,72 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       _road.text = h.road;
       _hits = const [];
       _searched = false;
+    });
+  }
+
+  /// Asks for the location terms consent the first time (stored server-side), then suggests an address.
+  Future<void> _useLocation() async {
+    final t = context.t;
+    final api = context.api;
+    setState(() {
+      _locating = true;
+      _suggestion = null;
+      _locationNote = null;
+    });
+    try {
+      final consents = await api.get('/me/consents') as Json;
+      final agreed = (consents['items'] as List).cast<Json>().any(
+        (i) => i['kind'] == 'location' && i['granted'] == true,
+      );
+      if (!agreed) {
+        if (!mounted || !await _askLocationConsent(t)) return;
+        await api.put('/me/consents', {
+          'consents': [
+            {
+              'kind': 'location',
+              'granted': true,
+              'version': consents['version'],
+            },
+          ],
+        });
+      }
+      final address = await suggestCurrentAddress(widget.location);
+      if (mounted) setState(() => _suggestion = address);
+    } on LocationException catch (e) {
+      if (mounted) setState(() => _locationNote = t.locationFailure(e.reason));
+    } catch (e) {
+      if (mounted) setState(() => _locationNote = t.error(e));
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
+  Future<bool> _askLocationConsent(T t) async {
+    final agreed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.locConsentTitle),
+        content: SingleChildScrollView(child: Text(t.locConsentBody)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(t.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(t.locConsentAgree),
+          ),
+        ],
+      ),
+    );
+    return agreed == true;
+  }
+
+  /// The customer confirmed the suggestion: it fills the road field, which stays editable.
+  void _acceptSuggestion() {
+    setState(() {
+      _road.text = _suggestion!;
+      _suggestion = null;
     });
   }
 
@@ -275,6 +354,53 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
             onChanged: (v) => setState(() => _district = v),
           ),
           const SizedBox(height: Space.md),
+          if (locationSupported) ...[
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: _locating ? null : _useLocation,
+                icon: const Icon(Icons.my_location_rounded),
+                label: Text(t.locUseCurrent),
+              ),
+            ),
+            if (_locating) const LinearProgressIndicator(),
+            if (_locationNote != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.xs),
+                child: Text(
+                  _locationNote!,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.danger,
+                  ),
+                ),
+              ),
+            if (_suggestion != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.xs),
+                child: AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t.locSuggestionTitle, style: context.text.bodySmall),
+                      Text(_suggestion!, style: context.text.titleSmall),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => setState(() => _suggestion = null),
+                            child: Text(t.close),
+                          ),
+                          TextButton(
+                            onPressed: _acceptSuggestion,
+                            child: Text(t.locUseAddress),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
           if (_searchOn == true && !_manual) ...[
             Row(
               children: [
