@@ -46,10 +46,10 @@ impl Coupon {
     }
 }
 
-/// Most coupons one welcome pack may hold.
-pub const MAX_WELCOME_COUPONS: usize = 5;
-/// Largest single welcome coupon the console may set.
-pub const MAX_WELCOME_AMOUNT: i64 = 100_000;
+/// Most coupons one sign-up may receive.
+pub const MAX_WELCOME_COUPONS: usize = 3;
+/// Most won one sign-up may receive across all its welcome coupons (also the largest single coupon).
+pub const MAX_WELCOME_TOTAL: i64 = 50_000;
 const DEFAULT_WELCOME_AMOUNT: i64 = 15_000;
 
 /// One coupon of the welcome pack. `service_code: None` = any service.
@@ -79,12 +79,30 @@ impl WelcomePack {
         if self.0.len() > MAX_WELCOME_COUPONS {
             return Err(DomainError::OutOfRange("welcome_pack"));
         }
-        let ok = |c: &WelcomeCoupon| (1..=MAX_WELCOME_AMOUNT).contains(&c.amount.0) && c.amount.round100() == c.amount;
-        if self.0.iter().all(ok) { Ok(()) } else { Err(DomainError::OutOfRange("welcome_amount")) }
+        let ok = |c: &WelcomeCoupon| (1..=MAX_WELCOME_TOTAL).contains(&c.amount.0) && c.amount.round100() == c.amount;
+        if !self.0.iter().all(ok) {
+            return Err(DomainError::OutOfRange("welcome_amount"));
+        }
+        if self.0.iter().map(|c| c.amount.0).sum::<i64>() > MAX_WELCOME_TOTAL {
+            return Err(DomainError::OutOfRange("welcome_total"));
+        }
+        Ok(())
     }
 
+    /// The coupons one sign-up receives. Capped here too (count and total), so a setting stored
+    /// before the caps, or edited by hand, can never issue more than one pack's worth.
     pub fn issue(&self, now: DateTime<Utc>) -> Vec<Coupon> {
-        self.0.iter().map(|c| Coupon::issue(c.amount, c.service_code.clone(), now)).collect()
+        let mut total = 0i64;
+        self.0
+            .iter()
+            .filter(|c| c.amount.0 > 0)
+            .take(MAX_WELCOME_COUPONS)
+            .take_while(|c| {
+                total += c.amount.0;
+                total <= MAX_WELCOME_TOTAL
+            })
+            .map(|c| Coupon::issue(c.amount, c.service_code.clone(), now))
+            .collect()
     }
 }
 
@@ -128,12 +146,25 @@ mod tests {
     fn welcome_pack_bounds() {
         let pack = |amounts: &[i64]| WelcomePack(amounts.iter().map(|a| WelcomeCoupon { amount: Won(*a), service_code: None }).collect());
         assert!(pack(&[]).validate().is_ok(), "empty = switched off");
-        assert!(pack(&[15_000, 100_000]).validate().is_ok());
-        for bad in [0, -100, 15_050, 100_100] {
+        assert!(pack(&[15_000, 35_000]).validate().is_ok(), "exactly the 50,000 total");
+        assert!(pack(&[10_000; 3]).validate().is_ok(), "exactly three coupons");
+        for bad in [0, -100, 15_050, 50_100, 100_000] {
             assert_eq!(pack(&[bad]).validate(), Err(DomainError::OutOfRange("welcome_amount")), "{bad}");
         }
-        assert_eq!(pack(&[1_000; 6]).validate(), Err(DomainError::OutOfRange("welcome_pack")));
+        assert_eq!(pack(&[1_000; 4]).validate(), Err(DomainError::OutOfRange("welcome_pack")));
+        assert_eq!(pack(&[30_000, 20_100]).validate(), Err(DomainError::OutOfRange("welcome_total")));
         let parsed: WelcomePack = serde_json::from_value(serde_json::json!([{ "amount": 7000 }])).unwrap();
         assert_eq!(parsed.0[0].service_code, None);
+    }
+
+    #[test]
+    fn issue_caps_a_stored_pack_at_three_coupons_and_50000() {
+        let pack = |amounts: &[i64]| WelcomePack(amounts.iter().map(|a| WelcomeCoupon { amount: Won(*a), service_code: None }).collect());
+        let won = |p: WelcomePack| p.issue(now()).iter().map(|c| c.amount.0).collect::<Vec<_>>();
+        // The old limit allowed 5 x 100,000; a pack stored back then issues nothing above the caps.
+        assert_eq!(won(pack(&[100_000; 5])), Vec::<i64>::new());
+        assert_eq!(won(pack(&[10_000; 5])), vec![10_000; 3]);
+        assert_eq!(won(pack(&[20_000, 20_000, 20_000])), vec![20_000, 20_000]);
+        assert_eq!(won(WelcomePack::default()), vec![15_000]);
     }
 }

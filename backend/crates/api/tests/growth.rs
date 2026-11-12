@@ -236,6 +236,22 @@ async fn sign_up(app: &axum::Router, pool: &PgPool, phone: &str) -> Vec<(String,
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn a_stored_pack_over_the_caps_issues_at_most_three_coupons_and_50000(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    // Written straight to the setting (as the old 5 x 100,000 limit allowed), bypassing the PUT validation.
+    let pack = json!([{ "amount": 20000 }, { "amount": 20000 }, { "amount": 5000 }, { "amount": 5000 }, { "amount": 5000 }]);
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('welcome_pack', $1) ON CONFLICT (key) DO UPDATE SET value = $1")
+        .bind(pack)
+        .execute(&pool)
+        .await
+        .expect("pack");
+    let coupons = sign_up(&app, &pool, "010-5600-0009").await;
+    let amounts: Vec<i64> = coupons.iter().map(|c| c.1).collect();
+    assert_eq!(amounts, vec![20_000, 20_000, 5_000], "three coupons, 45,000 in total");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn sign_up_issues_one_15000_welcome_coupon_by_default_and_only_once(pool: PgPool) {
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
@@ -262,6 +278,8 @@ async fn admin_edits_the_welcome_pack_and_new_sign_ups_get_it(pool: PgPool) {
         (json!([{ "amount": 15050 }]), "out_of_range"),
         (json!([{ "amount": 0 }]), "out_of_range"),
         (json!([{ "amount": 200000 }]), "out_of_range"),
+        (json!([{ "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }]), "out_of_range"),
+        (json!([{ "amount": 30000 }, { "amount": 25000 }]), "out_of_range"),
         (json!([{ "amount": 5000, "service_code": "no_such_service" }]), "invalid_service"),
     ] {
         let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(bad.clone())).await;

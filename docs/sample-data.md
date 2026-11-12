@@ -166,7 +166,7 @@ Every table in the Malkkeum database with one example row from the demo data
 | `id` | uuid | 046187ce-c7ca-4b74-b577-e3ba4793d63b |
 | `kind` | text | banner |
 | `slug` | text | — |
-| `title` | jsonb | {"en": "2 welcome coupons for your first booking", "ja": "初… |
+| `title` | jsonb | {"en": "₩15,000 welcome coupon for your first clean", "ja": "初… |
 | `body` | jsonb | {"link": "coupons", "theme": "sun"} |
 | `image_url` | text | — |
 | `link` | text | — |
@@ -178,15 +178,17 @@ Every table in the Malkkeum database with one example row from the demo data
 
 ## `coupons` — Discount coupons · 쿠폰
 
+Every new account gets one welcome coupon: 15,000 KRW for any service, valid 14 days (setting `welcome_pack`). / 가입하면 모든 서비스에 쓰는 15,000원 웰컴쿠폰 1장(14일)을 받아요.
+
 95 rows in the demo.
 
 | column | type | example |
 |---|---|---|
 | `id` | uuid | baa97862-6bf7-9fc0-bef5-98a3bccfc78e |
 | `user_id` | uuid | 1bf6a875-3d6b-47ed-6f07-65b415c3bc07 |
-| `name` | text | 스튜디오 첫 예약 1만원 할인 |
-| `amount` | bigint | 10000 |
-| `service_code` | text | studio |
+| `name` | text | 첫 청소 15,000원 웰컴쿠폰 |
+| `amount` | bigint | 15000 |
+| `service_code` | text | — |
 | `campaign` | text | welcome |
 | `issued_at` | timestamp with time zone | 2026-05-29T23:18:40.845049+09:00 |
 | `expires_at` | timestamp with time zone | 2026-06-12T23:18:40.845049+09:00 |

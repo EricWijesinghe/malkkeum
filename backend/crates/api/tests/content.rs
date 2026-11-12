@@ -58,3 +58,35 @@ async fn news_is_created_edited_and_listed_publicly_by_kind(pool: PgPool) {
     let (_, listed) = call(&app, "GET", "/v1/admin/content?kind=news", admin, None).await;
     assert!(titles(&listed).is_empty());
 }
+
+async fn service_order(pool: &PgPool) -> Vec<String> {
+    sqlx::query_scalar("SELECT code FROM services ORDER BY sort_order, code").fetch_all(pool).await.expect("services")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn seed_orders_tiles_per_the_brief_and_keeps_an_owner_order(pool: PgPool) {
+    common::seed_catalog(&pool).await;
+    assert_eq!(service_order(&pool).await, api::seed::SEED_ORDER);
+
+    sqlx::query("UPDATE services SET sort_order = 99 WHERE code = 'studio'").execute(&pool).await.expect("owner order");
+    common::seed_catalog(&pool).await;
+    assert_eq!(service_order(&pool).await.last().map(String::as_str), Some("studio"), "a re-seed never resets the owner's order");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn seed_fixes_only_the_untouched_old_two_coupon_banner(pool: PgPool) {
+    let old = json!({ "ko": "첫 예약 쿠폰 2장 받기", "en": "2 welcome coupons for your first booking", "ja": "初回予約クーポン2枚", "zh": "首单优惠券2张", "vi": "2 phiếu giảm giá cho lần đặt đầu" });
+    let edited = json!({ "ko": "첫 예약 쿠폰 2장 받기!", "en": "Owner's own banner" });
+    for (title, order) in [(&old, 0), (&edited, 1)] {
+        sqlx::query("INSERT INTO content_items (kind, title, body, sort_order) VALUES ('banner', $1, '{}', $2)")
+            .bind(title)
+            .bind(order)
+            .execute(&pool)
+            .await
+            .expect("banner");
+    }
+    common::seed_catalog(&pool).await;
+    let titles: Vec<Value> = sqlx::query_scalar("SELECT title FROM content_items WHERE kind = 'banner' ORDER BY sort_order").fetch_all(&pool).await.expect("titles");
+    assert_eq!(titles[0]["ko"], "첫 청소 15,000원 웰컴쿠폰");
+    assert_eq!(titles[1], edited, "an owner-edited banner is left alone");
+}
