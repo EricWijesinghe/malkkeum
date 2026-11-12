@@ -3086,6 +3086,9 @@ class TZh extends T {
   String get pvMarketingHint => '通过短信、KakaoTalk 和应用推送接收优惠券与活动消息。可随时关闭。';
 
   @override
+  String get pvLocation => '同意使用位置信息';
+
+  @override
   String get pvReconsent => '隐私政策已更新，请重新查看并同意。';
 
   @override

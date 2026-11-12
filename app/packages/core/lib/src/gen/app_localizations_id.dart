@@ -3191,6 +3191,9 @@ class TId extends T {
       'Terima info kupon dan acara lewat SMS, KakaoTalk, dan notifikasi aplikasi. Anda bisa mematikannya kapan saja.';
 
   @override
+  String get pvLocation => 'Persetujuan penggunaan informasi lokasi';
+
+  @override
   String get pvReconsent =>
       'Kebijakan privasi kami berubah. Silakan tinjau dan setujui lagi.';
 

@@ -3170,6 +3170,9 @@ class TEn extends T {
       'Get coupon and event news by SMS, KakaoTalk and app push. You can turn this off any time.';
 
   @override
+  String get pvLocation => 'Location information';
+
+  @override
   String get pvReconsent =>
       'Our privacy policy changed. Please review and agree again.';
 

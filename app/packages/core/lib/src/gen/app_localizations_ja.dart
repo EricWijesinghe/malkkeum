@@ -3098,6 +3098,9 @@ class TJa extends T {
       'クーポンやイベント情報をSMS、KakaoTalk、アプリのプッシュ通知で受け取ります。いつでも停止できます。';
 
   @override
+  String get pvLocation => '位置情報の利用への同意';
+
+  @override
   String get pvReconsent => 'プライバシーポリシーが変更されました。内容をご確認のうえ、改めて同意してください。';
 
   @override

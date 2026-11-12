@@ -3205,6 +3205,9 @@ class TUz extends T {
       'Kupon va tadbirlar yangiliklarini SMS, KakaoTalk va ilova bildirishnomalari orqali olasiz. Istalgan vaqtda o\'chirishingiz mumkin.';
 
   @override
+  String get pvLocation => 'Joylashuv ma\'lumotlaridan foydalanishga rozilik';
+
+  @override
   String get pvReconsent =>
       'Maxfiylik siyosatimiz o\'zgardi. Iltimos, qayta ko\'rib chiqing va rozilik bering.';
 

@@ -3159,6 +3159,9 @@ class TVi extends T {
       'Nhận tin ưu đãi và sự kiện qua SMS, KakaoTalk và thông báo ứng dụng. Bạn có thể tắt bất cứ lúc nào.';
 
   @override
+  String get pvLocation => 'Đồng ý sử dụng thông tin vị trí';
+
+  @override
   String get pvReconsent =>
       'Chính sách quyền riêng tư đã thay đổi. Vui lòng xem lại và đồng ý lại.';
 

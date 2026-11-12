@@ -3171,6 +3171,9 @@ class TTh extends T {
       'รับข่าวคูปองและกิจกรรมทาง SMS, KakaoTalk และแจ้งเตือนในแอป ปิดได้ทุกเมื่อ';
 
   @override
+  String get pvLocation => 'ความยินยอมใช้ข้อมูลตำแหน่ง';
+
+  @override
   String get pvReconsent =>
       'นโยบายความเป็นส่วนตัวของเราเปลี่ยนแปลงแล้ว กรุณาตรวจสอบและยอมรับอีกครั้ง';
 

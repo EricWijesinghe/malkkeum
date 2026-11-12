@@ -3211,6 +3211,9 @@ class TFil extends T {
       'Makakatanggap ng balita tungkol sa coupon at event sa SMS, KakaoTalk, at app push. Maaari mo itong i-off anumang oras.';
 
   @override
+  String get pvLocation => 'Pagsang-ayon sa paggamit ng lokasyon';
+
+  @override
   String get pvReconsent =>
       'Nagbago ang aming patakaran sa privacy. Pakisuri at sumang-ayon muli.';
 

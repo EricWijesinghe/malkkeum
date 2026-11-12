@@ -3099,6 +3099,9 @@ class TKo extends T {
   String get pvMarketingHint => '쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.';
 
   @override
+  String get pvLocation => '위치 정보 이용 동의';
+
+  @override
   String get pvReconsent => '개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.';
 
   @override

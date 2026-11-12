@@ -3186,6 +3186,9 @@ class TSi extends T {
       'කූපන් සහ සිදුවීම් පිළිබඳ පණිවිඩ SMS, KakaoTalk සහ යෙදුම් push මගින් ලැබේ. ඕනෑම වේලාවක නවත්වා ගත හැකිය.';
 
   @override
+  String get pvLocation => 'ස්ථාන තොරතුරු භාවිතයට එකඟතාව';
+
+  @override
   String get pvReconsent =>
       'අපේ රහස්‍යතා ප්‍රතිපත්තිය වෙනස් වී ඇත. කරුණාකර නැවත බලා එකඟ වන්න.';
 
