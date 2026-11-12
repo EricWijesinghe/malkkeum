@@ -15,6 +15,14 @@ import 'virtual_account.dart';
 const _maxDaysAhead = 60;
 const _standardSlots = [8, 9, 13, 14];
 const _quoteSlots = [8, 13];
+const _freeCancelDays = 2;
+
+/// Last free-cancel day for a visit on [visit], or null when that day is already past
+/// (a booking inside the window), so checkout never promises a deadline that has gone.
+DateTime? freeCancelDeadline(DateTime visit, DateTime now) {
+  final day = DateTime(visit.year, visit.month, visit.day).subtract(const Duration(days: _freeCancelDays));
+  return day.isBefore(DateTime(now.year, now.month, now.day)) ? null : day;
+}
 
 String isoDate(DateTime d) =>
     '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -596,7 +604,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     };
     final discount = _discount(app.coupons);
     final total = d.listPrice - discount;
-    final freeUntil = d.date!.subtract(const Duration(days: 2));
+    final freeUntil = freeCancelDeadline(d.date!, DateTime.now());
     final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
     return Scaffold(
       appBar: AppBar(
@@ -766,10 +774,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         summary: Row(
           children: [
             Expanded(
-              child: Text(
-                t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
-                style: context.text.labelSmall,
-              ),
+              child: freeUntil == null
+                  ? const SizedBox.shrink()
+                  : Text(
+                      t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
+                      style: context.text.labelSmall,
+                    ),
             ),
             PriceTag(amount: total, locale: context.lang),
           ],
