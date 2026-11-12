@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -500,6 +502,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _autoPicked = false;
   PayChoice? _choice;
 
+  /// GET /me/points. Null until loaded, and when the call fails: the points card then stays hidden.
+  Json? _wallet;
+
+  /// Points the customer chose to apply. The server re-checks balance and cap.
+  int _points = 0;
+
+  Future<void> _loadWallet() async {
+    try {
+      final w = await context.appRead.api.get('/me/points') as Json;
+      if (mounted) setState(() => _wallet = w);
+    } on Exception {
+      // Paying without points still works; the card is simply not offered.
+    }
+  }
+
+  int get _balance => (_wallet?['balance'] as num? ?? 0).toInt();
+
+  /// Most points this payment accepts: balance, the programme cap, and at least 1 won left for the PG.
+  int _maxPoints(int total) {
+    final w = _wallet;
+    if (w == null || w['enabled'] != true) return 0;
+    final cap = total * (w['max_use_bps'] as num? ?? 0).toInt() ~/ 10000;
+    return math.max(0, math.min(_balance, math.min(cap, total - 1)));
+  }
+
   int _discount(List<Coupon> coupons) {
     final c = coupons.where((c) => c.id == d.couponId).firstOrNull;
     return c == null ? 0 : (c.amount < d.listPrice ? c.amount : d.listPrice);
@@ -509,7 +536,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Json _bookingBody() => d.toJson()..remove('payment_method_id');
 
   /// Saved method -> POST /bookings (one-tap). Checkout channel -> PG window, then confirm.
-  Future<void> _pay(int total) async {
+  Future<void> _pay(int total, int points) async {
     final choice = _choice;
     if (choice == null) return;
     setState(() => _busy = true);
@@ -520,6 +547,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         result = await payWithChannel(context, channel, {
           'kind': 'booking',
           'booking': _bookingBody(),
+          if (points > 0) 'points': points,
         });
       } else {
         result = CheckoutPaid(
@@ -580,6 +608,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       d.methodId ??= app.methods.firstOrNull?.id;
       _choice = d.methodId == null ? null : SavedChoice(d.methodId!);
       _autoPicked = true;
+      _loadWallet();
     }
     final savedId = switch (_choice) {
       SavedChoice(:final methodId) => methodId,
@@ -591,6 +620,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     };
     final discount = _discount(app.coupons);
     final total = d.listPrice - discount;
+    // Points go through the payment window only; a saved card charges the full total in one tap.
+    final viaWindow = _choice is ChannelChoice;
+    final maxPoints = _maxPoints(total);
+    final points = viaWindow ? math.min(_points, maxPoints) : 0;
+    final due = total - points;
     final freeUntil = d.date!.subtract(const Duration(days: 2));
     final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
     return Scaffold(
@@ -689,6 +723,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ],
             ),
           ),
+          if (maxPoints > 0) ...[
+            const SizedBox(height: Space.sm),
+            AppCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    secondary: Icon(
+                      Icons.account_balance_wallet_rounded,
+                      color: context.colors.sun,
+                    ),
+                    title: Text(t.checkoutPointsUse),
+                    subtitle: Text(
+                      viaWindow
+                          ? t.checkoutPointsAvail('$_balance', '$maxPoints')
+                          : t.checkoutPointsNeedsWindow,
+                    ),
+                    value: points > 0,
+                    onChanged: viaWindow
+                        ? (on) => setState(() => _points = on ? maxPoints : 0)
+                        : null,
+                  ),
+                  if (points > 0)
+                    Slider(
+                      value: points.toDouble(),
+                      max: maxPoints.toDouble(),
+                      label: t.walletPoints('$points'),
+                      semanticFormatterCallback: (v) =>
+                          t.walletPoints('${v.round()}'),
+                      // Steps of 100 P, with the maximum itself always reachable.
+                      onChanged: (v) => setState(
+                        () => _points = v >= maxPoints
+                            ? maxPoints
+                            : (v ~/ 100) * 100,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: Space.sm),
           AppCard(
             child: Column(
@@ -700,6 +774,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   discount == 0 ? context.won(0) : '−${context.won(discount)}',
                   color: discount == 0 ? null : context.colors.fresh,
                 ),
+                if (points > 0) ...[
+                  const SizedBox(height: Space.xs),
+                  _Line(
+                    t.checkoutPointsUse,
+                    '−${t.walletPoints('$points')}',
+                    color: context.colors.fresh,
+                  ),
+                ],
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: Space.sm),
                   child: Divider(),
@@ -709,7 +791,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     Text(t.total, style: context.text.titleMedium),
                     const Spacer(),
                     RollingAmount(
-                      value: total,
+                      value: due,
                       format: context.won,
                       style: context.text.headlineSmall,
                     ),
@@ -765,9 +847,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: PrimaryButton(
           label: _choice == null
               ? t.needMethod
-              : t.payAmount(context.won(total)),
+              : t.payAmount(context.won(due)),
           busy: _busy,
-          onPressed: _choice == null ? null : () => _pay(total),
+          onPressed: _choice == null ? null : () => _pay(due, points),
         ),
       ),
     );

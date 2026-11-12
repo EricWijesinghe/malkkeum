@@ -168,9 +168,28 @@ pub fn split_payment(total: Won, requested: i64, available: i64, max_use_bps: i6
     Ok(Split { points: requested, pg: Won(total.0 - requested) })
 }
 
+/// The cash part of `amount` on a booking that paid `paid` in total, `points` of it with points.
+/// Rounds down; the whole amount when no points were used.
+pub fn cash_share(amount: i64, paid: i64, points: i64) -> i64 {
+    if points <= 0 || paid <= 0 {
+        return amount;
+    }
+    let cash = (paid - points).max(0);
+    i64::try_from(i128::from(amount) * i128::from(cash) / i128::from(paid)).unwrap_or(amount)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cash_share_scales_a_refund_to_the_cash_paid() {
+        assert_eq!(cash_share(46_800, 52_000, 0), 46_800, "no points: untouched");
+        assert_eq!(cash_share(46_800, 52_000, 26_000), 23_400);
+        assert_eq!(cash_share(52_000, 52_000, 10_000), 42_000, "full refund is all the cash");
+        assert_eq!(cash_share(100, 3, 1), 66, "rounds down");
+        assert_eq!(cash_share(100, 0, 5), 100);
+    }
     use chrono::TimeZone;
 
     fn at(day: i64) -> DateTime<Utc> {

@@ -36,7 +36,7 @@ pub fn customer_routes() -> Router<AppState> {
 pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/growth/points", put(put_policy))
-        .route("/growth/points/adjust", post(adjust))
+        .route("/growth/points/adjust", crate::idempotency::replayable(post(adjust)))
         .route("/growth/points/{user_id}", get(user_points))
 }
 
@@ -139,7 +139,8 @@ pub async fn on_completed(conn: &mut PgConnection, booking: Uuid) -> ApiResult<(
         return Ok(());
     }
     // Cashback is on cash paid only; points used to pay are not earned again.
-    let earned = cashback(Won(paid), policy.earn_bps);
+    let spent = net_spent(&mut *conn, booking).await?;
+    let earned = cashback(Won((paid - spent).max(0)), policy.earn_bps);
     let expires_at = Some(policy.expires_at(Utc::now()));
     if earned > 0 {
         let e = Entry { lot: None, expires_at, booking: Some(booking), ..Entry::new(user, "earn", earned, format!("earn:{booking}")) };
@@ -148,14 +149,13 @@ pub async fn on_completed(conn: &mut PgConnection, booking: Uuid) -> ApiResult<(
     grant(conn, user, "welcome", policy.welcome_points, format!("welcome:{user}")).await
 }
 
-/// Pays part of a booking total with points, inside the caller's transaction. Returns the
-/// split: the PG must still charge `split.pg`. Asking for more than the cap or the balance fails.
-pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Won, requested: i64) -> ApiResult<Split> {
+/// The split a request would get right now: programme on, booking not yet paid with points,
+/// within the cap and the balance. Writes nothing. Returns the lots it was computed from.
+async fn quote_lots(conn: &mut PgConnection, user: Uuid, booking: Option<Uuid>, total: Won, requested: i64) -> ApiResult<(Split, Vec<Lot<Uuid>>)> {
     let policy = load_policy(&mut *conn).await?;
     if requested > 0 && !policy.enabled {
         return Err(ApiError::Conflict("points_disabled"));
     }
-    lock_user(&mut *conn, user).await?;
     let already: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM points_ledger WHERE booking_id = $1 AND kind = 'spend')")
         .bind(booking)
         .fetch_one(&mut *conn)
@@ -163,13 +163,33 @@ pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Wo
     if already {
         return Err(ApiError::Conflict("points_already_spent"));
     }
-    let now = Utc::now();
     let owned = lots(&mut *conn, user).await?;
-    let split = split_payment(total, requested, available(&owned, now), policy.max_use_bps).map_err(points_err)?;
+    let split = split_payment(total, requested, available(&owned, Utc::now()), policy.max_use_bps).map_err(points_err)?;
+    Ok((split, owned))
+}
+
+/// Checkout preview: validates a points request without debiting it.
+pub async fn quote(conn: &mut PgConnection, user: Uuid, booking: Option<Uuid>, total: Won, requested: i64) -> ApiResult<Split> {
+    Ok(quote_lots(conn, user, booking, total, requested).await?.0)
+}
+
+/// Points a booking has paid with and not got back. Zero for most bookings.
+pub async fn net_spent(conn: &mut PgConnection, booking: Uuid) -> ApiResult<i64> {
+    Ok(sqlx::query_scalar("SELECT COALESCE(-SUM(amount), 0)::bigint FROM points_ledger WHERE booking_id = $1 AND kind IN ('spend','refund')")
+        .bind(booking)
+        .fetch_one(&mut *conn)
+        .await?)
+}
+
+/// Pays part of a booking total with points, inside the caller's transaction. Returns the
+/// split: the PG must still charge `split.pg`. Asking for more than the cap or the balance fails.
+pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Won, requested: i64) -> ApiResult<Split> {
+    lock_user(&mut *conn, user).await?;
+    let (split, owned) = quote_lots(&mut *conn, user, Some(booking), total, requested).await?;
     if split.points == 0 {
         return Ok(split);
     }
-    for (lot, take) in allocate(&owned, split.points, now).map_err(points_err)? {
+    for (lot, take) in allocate(&owned, split.points, Utc::now()).map_err(points_err)? {
         let e = Entry { lot: Some(lot), booking: Some(booking), ..Entry::new(user, "spend", -take, format!("spend:{booking}:{lot}")) };
         append(conn, e).await?;
     }
@@ -249,12 +269,13 @@ pub fn spawn(state: AppState) -> tokio::task::JoinHandle<()> {
     })
 }
 
-async fn snapshot(conn: &mut PgConnection, user: Uuid) -> ApiResult<Value> {
+/// `staff` adds what only the console may see: the reason and the staff member behind an adjustment.
+async fn snapshot(conn: &mut PgConnection, user: Uuid, staff: bool) -> ApiResult<Value> {
     let policy = load_policy(&mut *conn).await?;
     let owned = lots(&mut *conn, user).await?;
     let now = Utc::now();
-    let entries: Vec<(String, i64, DateTime<Utc>, Option<DateTime<Utc>>, Option<Uuid>)> = sqlx::query_as(
-        "SELECT kind, amount, created_at, expires_at, booking_id FROM points_ledger WHERE user_id = $1 ORDER BY created_at DESC, id DESC LIMIT $2",
+    let entries: Vec<(String, i64, DateTime<Utc>, Option<DateTime<Utc>>, Option<Uuid>, Option<String>, Option<Uuid>)> = sqlx::query_as(
+        "SELECT kind, amount, created_at, expires_at, booking_id, reason, actor_id FROM points_ledger WHERE user_id = $1 ORDER BY created_at DESC, id DESC LIMIT $2",
     )
     .bind(user)
     .bind(LEDGER_PAGE)
@@ -262,25 +283,33 @@ async fn snapshot(conn: &mut PgConnection, user: Uuid) -> ApiResult<Value> {
     .await?;
     let entries: Vec<Value> = entries
         .into_iter()
-        .map(|(kind, amount, at, expires, booking)| json!({ "kind": kind, "amount": amount, "at": at, "expires_at": expires, "booking_id": booking }))
+        .map(|(kind, amount, at, expires, booking, reason, actor)| {
+            let mut e = json!({ "kind": kind, "amount": amount, "at": at, "expires_at": expires, "booking_id": booking });
+            if staff {
+                e["reason"] = json!(reason);
+                e["actor_id"] = json!(actor);
+            }
+            e
+        })
         .collect();
     Ok(json!({
         "enabled": policy.enabled,
         "balance": available(&owned, now),
         "expiring_soon": expiring_within(&owned, now, policy.notify_days),
         "notify_days": policy.notify_days,
+        "max_use_bps": policy.max_use_bps,
         "entries": entries,
     }))
 }
 
 async fn my_points(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
     let mut conn = s.db.acquire().await?;
-    Ok(Json(snapshot(&mut conn, a.id).await?))
+    Ok(Json(snapshot(&mut conn, a.id, false).await?))
 }
 
 async fn user_points(State(s): State<AppState>, Admin(_): Admin, Path(user): Path<Uuid>) -> ApiResult<Json<Value>> {
     let mut conn = s.db.acquire().await?;
-    Ok(Json(snapshot(&mut conn, user).await?))
+    Ok(Json(snapshot(&mut conn, user, true).await?))
 }
 
 async fn put_policy(State(s): State<AppState>, Admin(a): Admin, Json(p): Json<PointsPolicy>) -> ApiResult<Json<Value>> {

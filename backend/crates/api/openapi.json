@@ -1364,7 +1364,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Start a payment checkout (idempotent)",
+        "summary": "Start a payment checkout (idempotent). Optional `points` pays part with points: checked against balance and cap here, debited when the checkout settles; the response `amount` is what the PG charges (`total - points`)",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -4018,7 +4018,12 @@
         "tags": [
           "admin"
         ],
-        "summary": "Grant or deduct points for one customer (audited, reason required)",
+        "summary": "Grant or deduct points for one customer (admin only, audited, reason required, idempotent)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"

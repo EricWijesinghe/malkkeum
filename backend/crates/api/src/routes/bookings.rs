@@ -338,7 +338,7 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
     if payouts::in_transfer(&s.db, b.id).await? {
         return Err(ApiError::Conflict("settlement_in_transfer"));
     }
-    let refunded = refund_all(s, b.id, refund_cap).await?;
+    refund_all(s, b.id, refund_cap).await?;
     let mut tx = s.db.begin().await?;
     let updated = sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1 AND status = $2")
         .bind(b.id)
@@ -356,7 +356,7 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
             .await?;
     }
     // Points spent come back in proportion to the cash refunded so far (all of it on a full cancel).
-    let (paid, refunded): (i64, i64) = sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1")
+    let (paid, refunded): (i64, i64) = sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1 AND kind <> 'tip'")
         .bind(b.id)
         .fetch_one(&mut *tx)
         .await?;
@@ -483,7 +483,10 @@ pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Opti
         return Err(ApiError::Conflict("fee_changed"));
     }
     // A fee keeps the coupon used and refunds only what remains; no fee is a full refund.
-    let cap = (quote.fee > 0).then_some(quote.refund);
+    // Part-paid with points: the fee applies to cash and points alike, so the cash refund is the
+    // cash share of the refund and the points come back in the same proportion (apply_cancel).
+    let spent = crate::points::net_spent(&mut *s.db.acquire().await?, b.id).await?;
+    let cap = (quote.fee > 0).then(|| domain::points::cash_share(quote.refund, b.paid_amount, spent));
     apply_cancel(s, &b, cap, "customer").await?;
     audit(
         &s.db,
