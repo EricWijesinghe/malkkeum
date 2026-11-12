@@ -109,6 +109,26 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('week strip days are full-height tap targets that tile the strip', (tester) async {
+    tester.view.physicalSize = const Size(360, 740);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final env = await _env(_todayBookings());
+    await pumpCustomerScreen(tester, env, const BookingsTab());
+    await pumpUntilFound(tester, find.byType(BookingCard));
+
+    final strip = tester.getRect(find.byKey(const ValueKey('week-strip')));
+    final days = find.descendant(of: find.byKey(const ValueKey('week-strip')), matching: find.byType(InkWell));
+    final rects = [for (final e in days.evaluate()) tester.getRect(find.byWidget(e.widget))]
+      ..removeWhere((r) => r.right <= strip.left || r.left >= strip.right);
+    expect(rects, hasLength(DateTime.daysPerWeek));
+    for (final r in rects) {
+      expect(r.height, greaterThanOrEqualTo(48));
+      expect(r.width, closeTo(strip.width / DateTime.daysPerWeek, 0.5), reason: 'no dead gaps between days');
+    }
+    await unmount(tester);
+  });
+
   for (final mode in [ThemeMode.light, ThemeMode.dark]) {
     testWidgets('status chips use StatusHues (${mode.name})', (tester) async {
       final env = await _env(const [], themeMode: mode);

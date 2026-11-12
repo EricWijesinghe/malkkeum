@@ -284,7 +284,10 @@ class _CompleteScreenState extends State<CompleteScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_a_photo_rounded, color: hue.tone),
+                      // The label below names the action, so the art is decorative.
+                      const ExcludeSemantics(
+                        child: Icon3D('p_camera', size: 40),
+                      ),
                       Text(context.t.pAddPhoto, style: context.text.labelSmall),
                     ],
                   ),

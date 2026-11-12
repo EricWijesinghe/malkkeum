@@ -8,6 +8,7 @@ import '../guest.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
+import 'bookings.dart' show bookingStepLabel;
 import 'feed.dart';
 import 'growth.dart';
 import 'more.dart';
@@ -411,7 +412,7 @@ class _UpcomingCard extends StatelessWidget {
                                     const SizedBox(width: 6),
                                     Flexible(
                                       child: Text(
-                                        t.status(b.status),
+                                        bookingStepLabel(t, b.status),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: context.text.labelMedium

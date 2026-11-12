@@ -393,7 +393,9 @@ class _WeekStripState extends State<_WeekStrip> {
               if (page == _pageOf(widget.selected)) return;
               widget.onDay(_dayAt(page, widget.selected.weekday % 7));
             },
+            // Stretch: each day is a full-height (72dp) column, so the whole strip is tappable per day.
             itemBuilder: (context, page) => Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (var i = 0; i < DateTime.daysPerWeek; i++)
                   Expanded(child: _cell(_dayAt(page, i), loc, today)),
@@ -445,53 +447,56 @@ class _DayCell extends StatelessWidget {
       customBorder: const CircleBorder(),
       onTap: onTap,
       // Large system fonts scale the day cell down instead of overflowing the strip.
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (weekday != null) ...[
-              Text(weekday!, style: context.text.labelSmall),
-              const SizedBox(height: 4),
-            ],
-            Container(
-              width: 34,
-              height: 34,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: selected ? context.primary : null,
-                border: today && !selected
-                    ? Border.all(color: context.primary, width: 1.5)
-                    : null,
-              ),
-              child: Text(
-                '${date.day}',
-                style: context.text.labelLarge?.copyWith(
-                  color: selected ? Colors.white : context.colors.ink,
-                  fontWeight: today || selected
-                      ? FontWeight.w700
-                      : FontWeight.w500,
+      // Center: the ink fills the whole cell, not just the digits.
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (weekday != null) ...[
+                Text(weekday!, style: context.text.labelSmall),
+                const SizedBox(height: 4),
+              ],
+              Container(
+                width: 34,
+                height: 34,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected ? context.primary : null,
+                  border: today && !selected
+                      ? Border.all(color: context.primary, width: 1.5)
+                      : null,
+                ),
+                child: Text(
+                  '${date.day}',
+                  style: context.text.labelLarge?.copyWith(
+                    color: selected ? Colors.white : context.colors.ink,
+                    fontWeight: today || selected
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (final b in items.take(3))
-                  Container(
-                    width: 6,
-                    height: 6,
-                    margin: const EdgeInsets.symmetric(horizontal: 1),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ServiceHues.of(b.serviceCode).tone,
+              const SizedBox(height: 3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (final b in items.take(3))
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: ServiceHues.of(b.serviceCode).tone,
+                      ),
                     ),
-                  ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ),

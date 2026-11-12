@@ -65,6 +65,8 @@ jobs:
       - name: Widget tests
         # store_screenshots = generated store images (scripts/store/generate.sh), not part of CI.
         run: for p in packages/core packages/ui apps/customer apps/partner apps/console; do (cd $p && flutter test --exclude-tags store_screenshots) || exit 1; done
+      - name: Golden tests (skipped locally by dart_test.yaml; compared once baselines are committed)
+        run: for p in packages/ui apps/customer apps/partner apps/console; do (cd $p && if find test -path '*goldens*' -name '*.png' | grep -q .; then flutter test --run-skipped --tags golden; else echo "$p: no golden baselines yet"; fi) || exit 1; done
 
   # install-e2e is manual only (e2e.yml): it installs a full server as root, which must not run on the
   # self-hosted runner (this PC). Run it on a throwaway VPS before a store release.

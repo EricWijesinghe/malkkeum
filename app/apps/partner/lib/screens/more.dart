@@ -85,7 +85,7 @@ class MoreTab extends StatelessWidget {
                   onTap: () => _go(context, const WorkScheduleScreen()),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.account_balance_rounded),
+                  leading: const Icon3D('p_payout', size: 32),
                   title: Text(t.pPayoutAccount),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _go(context, const PayoutAccountScreen()),
@@ -235,6 +235,7 @@ class SettlementsScreen extends StatelessWidget {
         builder: (context, rows, _) => rows.isEmpty
             ? EmptyState(
                 icon: Icons.payments_rounded,
+                art: 'p_payout',
                 title: t.noContent,
                 hue: ServiceHues.moveIn,
               )

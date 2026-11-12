@@ -71,6 +71,7 @@ class _Pending extends StatelessWidget {
             Expanded(
               child: EmptyState(
                 icon: Icons.verified_user_rounded,
+                art: 'p_verified',
                 title: context.t.pPendingTitle,
                 body: context.t.pPendingBody,
                 hue: ServiceHues.moveOut,

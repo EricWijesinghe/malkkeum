@@ -6,6 +6,7 @@ import '../theme.dart';
 import '../tokens.dart';
 import 'depth.dart';
 import 'glyph.dart';
+import 'icon3d.dart';
 import 'interactive.dart';
 
 /// "52,000원" in Korean, "₩52,000" elsewhere.
@@ -327,8 +328,12 @@ class EmptyState extends StatelessWidget {
     this.action,
     this.hue,
     this.codes = const ['studio', 'kitchen', 'bathroom'],
+    this.art,
   });
   final IconData icon;
+
+  /// An Icon3D id shown instead of the glyph cluster (e.g. 'p_verified'); [icon] is then unused.
+  final String? art;
   final String title;
   final String? body;
   final Widget? action;
@@ -347,7 +352,10 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _GlyphCluster(codes: codes, icon: icon, hue: h),
+            if (art case final id?)
+              ExcludeSemantics(child: Icon3D(id, size: 112))
+            else
+              _GlyphCluster(codes: codes, icon: icon, hue: h),
             const SizedBox(height: Space.lg),
             Text(
               title,
