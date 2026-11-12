@@ -45,13 +45,17 @@ void main() {
         await more.loadAll();
         await settle(tester, duration: const Duration(milliseconds: 400));
         await tester.scrollUntilVisible(find.text(t.deleteAccount), 300, scrollable: find.byType(Scrollable).first);
+        await tester.pump(const Duration(milliseconds: 200));
         expect(tester.takeException(), isNull, reason: 'more');
         await unmount(tester);
 
         final pay = await pumpCustomerScreen(tester, env, const PaymentMethodsScreen());
         await pay.loadMethods();
-        await pumpUntilFound(tester, find.text(t.payAvailableTitle));
+        await settle(tester, duration: const Duration(milliseconds: 400));
+        // Lazily built: with long hints at 2.0 the channel list starts below the cache extent.
+        await tester.scrollUntilVisible(find.text(t.payAvailableTitle), 300, scrollable: find.byType(Scrollable).first);
         await tester.scrollUntilVisible(find.text(t.apPayManageTitle), 300, scrollable: find.byType(Scrollable).first);
+        await tester.pump(const Duration(milliseconds: 200));
         expect(tester.takeException(), isNull, reason: 'payment methods');
         await unmount(tester);
 
