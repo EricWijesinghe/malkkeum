@@ -77,6 +77,8 @@ android {
             // Codemagic sets CM_BUILD_ID: a release bundle there must never fall back to the debug key.
             check(releaseStore != null || System.getenv("CM_BUILD_ID") == null) { "CM_KEYSTORE_PATH is unset on Codemagic" }
             signingConfig = if (releaseStore != null) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            // Native debug symbols go into the bundle so Play Console can symbolicate native crashes and ANRs.
+            ndk { debugSymbolLevel = "FULL" }
         }
     }
 }

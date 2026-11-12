@@ -1,6 +1,7 @@
 """Static checks for the native store builds (customer, partner). No Mac or device needed.
 
   python -I scripts/ci/check-native.py     # exit 1 on any failed check
+  python -I scripts/ci/check-native.py --aab <app.aab|app.apk> --manifest <merged AndroidManifest.xml>
 
 Console ships only as web (website image), so it has no native store build to check.
 """
@@ -249,6 +250,27 @@ def check_android(app):
         check(f'"{env}"' in gradle, f"{app} build.gradle.kts: release signing does not read {env}")
     check(not re.search(r'(storePassword|keyPassword|keyAlias)\s*=\s*"', gradle), f"{app} build.gradle.kts: literal signing secret")
     check('getByName("debug")' in gradle, f"{app} build.gradle.kts: debug-signing fallback removed")
+    check_android_platform(app, android, root, gradle)
+
+
+def check_android_platform(app, android, root, gradle):
+    """Play target-API behaviour: predictive back, edge-to-edge, 16 KB pages, no foreground service."""
+    application = root.find("application")
+    check(application is not None and application.get(ANDROID_NS + "enableOnBackInvokedCallback") == "true",
+          f"{app} AndroidManifest: android:enableOnBackInvokedCallback=\"true\" missing (predictive back)")
+    m = re.search(r"compileSdk = (\S+)", gradle)
+    check(m is not None and (m.group(1) == "flutter.compileSdkVersion" or (m.group(1).isdigit() and int(m.group(1)) >= MIN_SDK_LEVEL)),
+          f"{app} build.gradle.kts: compileSdk must be flutter.compileSdkVersion or >= {MIN_SDK_LEVEL}")
+    # 16 KB pages: AGP >= 8.5.1 zip-aligns uncompressed .so files and NDK r28+ links them 16 KB aligned.
+    check("ndkVersion = flutter.ndkVersion" in gradle, f"{app} build.gradle.kts: ndkVersion must follow the Flutter SDK (NDK r28+, 16 KB pages)")
+    check("useLegacyPackaging = true" not in gradle, f"{app} build.gradle.kts: useLegacyPackaging breaks 16 KB page alignment")
+    m = re.search(r'id\("com\.android\.application"\) version "(\d+)\.(\d+)\.(\d+)"', (android / "settings.gradle.kts").read_text(encoding="utf-8"))
+    check(m is not None and tuple(map(int, m.groups())) >= MIN_AGP, f"{app} settings.gradle.kts: AGP must be >= 8.5.1 (16 KB pages)")
+    check('ndk { debugSymbolLevel = "FULL" }' in gradle, f"{app} build.gradle.kts: release must upload native debug symbols")
+    check(not any(s.get(ANDROID_NS + "foregroundServiceType") for s in root.iter("service")),
+          f"{app} AndroidManifest: no foreground service is declared to Play; remove foregroundServiceType")
+    res = "".join(p.read_text(encoding="utf-8") for p in (android / "app" / "src" / "main" / "res").rglob("*.xml"))
+    check("windowOptOutEdgeToEdgeEnforcement" not in res, f"{app} res: edge-to-edge opt-out is ignored at targetSdk 36; remove it")
 
 
 # --- Secrets stay out of git, CI wiring ------------------------------------------------------
@@ -258,8 +280,32 @@ def check_android(app):
 IOS_LANGS = ["en", "ko", "ja", "zh-Hans", "vi", "fil", "id", "km", "mn", "ne", "ru", "si", "th", "uz"]
 USAGE_KEYS = ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]
 BANNED_PERMS = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",
+                "android.permission.READ_MEDIA_VISUAL_USER_SELECTED", "android.permission.CAMERA",
                 "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.FOREGROUND_SERVICE", "android.permission.ACCESS_BACKGROUND_LOCATION"]
+                "android.permission.FOREGROUND_SERVICE", "android.permission.ACCESS_BACKGROUND_LOCATION",
+                "com.google.android.gms.permission.AD_ID"]
+# Everything the merged manifest (app + plugins) may request, besides location for LOCATION_APPS.
+# All are install-time ("normal") permissions: FCM (network state, wake lock, c2dm), notifications (vibrate),
+# flutter_secure_storage (biometric; declared by the plugin, never prompted because no key asks for authentication).
+MERGED_PERMS = {"android.permission.INTERNET", "android.permission.POST_NOTIFICATIONS", "android.permission.ACCESS_NETWORK_STATE",
+                "android.permission.WAKE_LOCK", "android.permission.VIBRATE", "com.google.android.c2dm.permission.RECEIVE",
+                "android.permission.USE_BIOMETRIC", "android.permission.USE_FINGERPRINT"}
+# geolocator_android always declares this service. It can never run in the foreground here: the merged manifest
+# has no FOREGROUND_SERVICE* permission (checked), so Play asks for no foreground service declaration.
+PLUGIN_FGS = {"com.baseflow.geolocator.GeolocatorLocationService"}
+MIN_SDK_LEVEL = 36
+MIN_AGP = (8, 5, 1)
+T = "NSPrivacyCollectedDataType"
+# Must match docs/store/app-privacy.md: type -> (linked to the user, purposes that must be listed).
+PRIVACY_WANT = {
+    "customer": {"PhoneNumber": (True, {"AppFunctionality", "DeveloperAdvertising"}),
+                 "DeviceID": (True, {"AppFunctionality", "Analytics", "DeveloperAdvertising"}),
+                 "ProductInteraction": (False, {"Analytics"}),
+                 "CustomerSupport": (True, {"AppFunctionality"})},
+    "partner": {"EmailAddress": (True, {"AppFunctionality"}),
+                "CustomerSupport": (True, {"AppFunctionality"})},
+}
+GOOGLE_HOSTS = re.compile(r"google|gstatic|firebase|doubleclick", re.I)
 # Foreground location: only the customer app ("use my current location" on the address form). Never background.
 LOCATION_APPS = {"customer"}
 LOCATION_PERMS = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"]
@@ -296,13 +342,32 @@ def check_privacy_types(app, priv):
     names = {t.get("NSPrivacyCollectedDataType") for t in types}
     check({"NSPrivacyCollectedDataTypePhoneNumber", "NSPrivacyCollectedDataTypeName"} <= names,
           f"{app} PrivacyInfo: phone and name must be declared")
+    by = {t.get(T, "")[len(T):]: t for t in types}
+    for name, (linked, purposes) in PRIVACY_WANT[app].items():
+        got = by.get(name, {})
+        have = {p[len(T + "Purpose"):] for p in got.get(T + "Purposes", [])}
+        check(got.get(T + "Linked") is linked and purposes <= have,
+              f"{app} PrivacyInfo: {name} must be declared with linked={linked} and purposes {sorted(purposes)}")
 
 
-def check_android_extras(app, android):
-    root = ET.parse(android / "app" / "src" / "main" / "AndroidManifest.xml").getroot()
+def check_camera_and_analytics():
+    dart = "".join(p.read_text(encoding="utf-8") for app in NATIVE_APPS for p in (APPS / app / "lib").rglob("*.dart"))
+    rn = (REPO / "docs" / "store" / "review-notes.md").read_text(encoding="utf-8")
+    # NSCameraUsageDescription stays even though the apps open the gallery only: image_picker_ios links
+    # AVCaptureDevice, and App Store Connect rejects such a binary without the purpose string (ITMS-90683).
+    check("ImageSource.camera" in dart or "NSCameraUsageDescription" in rn,
+          "review-notes.md: must explain NSCameraUsageDescription while no screen opens the camera")
+    main = (APPS / "customer" / "lib" / "main.dart").read_text(encoding="utf-8")
+    check(re.search(r"\?\s*'ios'\s*:\s*'android'", main) is None, "customer main.dart: analytics must not label every non-iOS platform as android")
+
+
+def check_android_extras(app, android, root=None):
+    if root is None:
+        root = ET.parse(android / "app" / "src" / "main" / "AndroidManifest.xml").getroot()
     perms = {e.get(ANDROID_NS + "name") for e in root.iter("uses-permission")}
     for banned in BANNED_PERMS:
-        check(banned not in perms, f"{app} AndroidManifest: {banned} not allowed (use the photo picker, no background location/foreground service)")
+        check(banned not in perms, f"{app} AndroidManifest: {banned} not allowed (photo picker only; no camera, background location, foreground service or ad id)")
+    check(not any(p.startswith("android.permission.FOREGROUND_SERVICE") for p in perms), f"{app} AndroidManifest: foreground service permission not allowed")
     for perm in LOCATION_PERMS:
         check((perm in perms) == (app in LOCATION_APPS), f"{app} AndroidManifest: {perm} must be declared only for {sorted(LOCATION_APPS)}")
 
@@ -314,7 +379,7 @@ def elf_16kb_failures(aab):
     bad, count = [], 0
     with zipfile.ZipFile(aab) as z:
         for name in z.namelist():
-            if not (name.startswith("base/lib/") and name.endswith(".so")):
+            if not (name.startswith(("base/lib/", "lib/")) and name.endswith(".so")):  # AAB or APK
                 continue
             data = z.read(name)
             if data[:4] != b"\x7fELF" or data[4] != 2:  # 32-bit ABIs are not subject to the rule
@@ -336,6 +401,26 @@ def check_aab(aab):
     check(count > 0, f"{aab}: no 64-bit native libraries found (wrong bundle?)")
     for name in bad:
         check(False, f"{aab}: {name} is not 16 KB page aligned (Play requires it for targetSdk 35+)")
+
+
+def check_merged_manifest(path):
+    """The manifest Gradle merged from the app and every plugin (plain XML under build/app/intermediates/merged_manifests)."""
+    root = ET.parse(path).getroot()
+    app = root.get("package", "").rsplit(".", 1)[-1]
+    check(app in NATIVE_APPS, f"{path}: package {root.get('package')} is not a store app")
+    check_android_extras(app, None, root)
+    perms = {e.get(ANDROID_NS + "name") for e in root.iter("uses-permission")}
+    check("android.permission.POST_NOTIFICATIONS" in perms, f"{path}: POST_NOTIFICATIONS missing")
+    allowed = MERGED_PERMS | (set(LOCATION_PERMS) if app in LOCATION_APPS else set()) | {f"com.malkkeum.{app}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
+    for perm in sorted(perms - allowed):
+        check(False, f"{path}: unexpected permission {perm} (a plugin added it; review, then remove it or extend MERGED_PERMS)")
+    for s in root.iter("service"):
+        check(not s.get(ANDROID_NS + "foregroundServiceType") or s.get(ANDROID_NS + "name") in PLUGIN_FGS,
+              f"{path}: {s.get(ANDROID_NS + 'name')} declares a foreground service type")
+    application = root.find("application")
+    check(application is not None and application.get(ANDROID_NS + "enableOnBackInvokedCallback") == "true", f"{path}: predictive back not enabled")
+    sdk = root.find("uses-sdk")
+    check(sdk is not None and int(sdk.get(ANDROID_NS + "targetSdkVersion", "0")) >= MIN_SDK_LEVEL, f"{path}: targetSdkVersion must be >= {MIN_SDK_LEVEL}")
 
 
 def check_store_docs():
@@ -374,6 +459,17 @@ def check_web():
     api = (REPO / "backend" / "crates" / "api" / "src" / "app_links.rs").read_text(encoding="utf-8")
     check('"/.well-known/assetlinks.json"' in api and '"/.well-known/apple-app-site-association"' in api,
           "backend app_links.rs: both well-known routes must exist")
+    # Web builds self-host CanvasKit/skwasm, so the site CSP can stay free of Google hosts.
+    files = [p for d in ["deploy", "scripts", ".github"] for p in (REPO / d).rglob("*") if p.is_file() and p != Path(__file__).resolve()]
+    builds = [(p, ln) for p in files + [REPO / "codemagic.yaml"] for ln in p.read_text(encoding="utf-8", errors="ignore").splitlines()
+              if re.search(r"flutter(\.bat)? build web", ln)]
+    check(len(builds) >= 2, "no `flutter build web` line found (deploy/web.Dockerfile moved?)")
+    for p, ln in builds:
+        check("--no-web-resources-cdn" in ln, f"{p.relative_to(REPO).as_posix()}: flutter build web without --no-web-resources-cdn")
+    csp = re.findall(r'Content-Security-Policy "([^"]*)"', caddy)
+    check(len(csp) >= 1, "deploy/Caddyfile: Content-Security-Policy header missing")
+    for value in csp:
+        check(GOOGLE_HOSTS.search(value) is None, "deploy/Caddyfile: CSP must not allow Google hosts (web builds are self-contained)")
     compose = (REPO / "deploy" / "docker-compose.yml").read_text(encoding="utf-8")
     check("ANDROID_CERT_SHA256" in compose and "APPLE_TEAM_ID" in compose,
           "deploy/docker-compose.yml: API needs ANDROID_CERT_SHA256 and APPLE_TEAM_ID")
@@ -409,14 +505,21 @@ def main():
     try:
         check_ci()
         check_store_docs()
+        check_camera_and_analytics()
     except (OSError, ValueError) as e:
         failures_before.append(f"ci: {type(e).__name__}: {e}")
-    # Built bundles are checked when given: python -I check-native.py --aab app-release.aab ...
+    # Built outputs are checked when given: --aab app-release.aab (or an .apk) for 16 KB alignment,
+    # --manifest <merged AndroidManifest.xml> for permissions that plugins add.
     for i, arg in enumerate(sys.argv):
         if arg == "--aab" and i + 1 < len(sys.argv):
             try:
                 check_aab(sys.argv[i + 1])
             except (OSError, zipfile.BadZipFile) as e:
+                failures_before.append(f"{sys.argv[i + 1]}: {type(e).__name__}: {e}")
+        if arg == "--manifest" and i + 1 < len(sys.argv):
+            try:
+                check_merged_manifest(sys.argv[i + 1])
+            except (OSError, ValueError, ET.ParseError) as e:
                 failures_before.append(f"{sys.argv[i + 1]}: {type(e).__name__}: {e}")
     for line in failures_before + FAILED:
         print("FAIL", line)

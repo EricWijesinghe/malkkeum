@@ -56,7 +56,8 @@ class Analytics {
   bool track(String name, {String? screen}) {
     if (!_consented || !analyticsEventNames.contains(name)) return false;
     if (screen != null && !_screenPattern.hasMatch(screen)) return false;
-    _queue.add({'name': name, 'platform': platform, 'screen': ?screen});
+    // Desktop builds pass no platform: the API stores NULL instead of a wrong label (it accepts android/ios/web only).
+    _queue.add({'name': name, if (platform.isNotEmpty) 'platform': platform, 'screen': ?screen});
     if (_queue.length >= _batchSize) unawaited(flush());
     return true;
   }
