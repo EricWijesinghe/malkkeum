@@ -1860,6 +1860,43 @@ class TMn extends T {
   String get bkViewMonth => 'Сараар харах';
 
   @override
+  String get dhHomeRecommended => 'Санал болгох үйлчилгээ';
+
+  @override
+  String get dhHomeNews => 'Dahae мэдээ';
+
+  @override
+  String get dhSvcMove => 'Нүүж орох / гарах цэвэрлэгээ';
+
+  @override
+  String get dhSvcMoveShort => 'Нүүлт';
+
+  @override
+  String get dhMovePickTitle => 'Танд аль цэвэрлэгээ хэрэгтэй вэ?';
+
+  @override
+  String get cKind_news => 'Мэдээ';
+
+  @override
+  String get cLink => 'Холбоос (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Бүртгэлийн угтах купон';
+
+  @override
+  String get welcomePackBody =>
+      'Хэрэглэгч бүртгэлээ дуусгахад нэг удаа олгоно. Бүгдийг устгавал олгохгүй.';
+
+  @override
+  String get welcomePackAmount => 'Купоны дүн (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Купон нэмэх';
+
+  @override
+  String get welcomePackRemove => 'Купон устгах';
+
+  @override
   String moreGreeting(String brand) {
     return 'Өнөөдөр ч гэрийн ажлаа $brand-д даатгаарай';
   }

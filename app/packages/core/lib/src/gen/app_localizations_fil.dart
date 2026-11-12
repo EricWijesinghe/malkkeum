@@ -1868,6 +1868,44 @@ class TFil extends T {
   String get bkViewMonth => 'Buwanang view';
 
   @override
+  String get dhHomeRecommended => 'Inirerekomenda';
+
+  @override
+  String get dhHomeNews => 'Balita ng Dahae';
+
+  @override
+  String get dhSvcMove => 'Paglilinis sa paglipat (papasok / paalis)';
+
+  @override
+  String get dhSvcMoveShort => 'Paglipat';
+
+  @override
+  String get dhMovePickTitle =>
+      'Aling paglilinis sa paglipat ang kailangan mo?';
+
+  @override
+  String get cKind_news => 'Balita';
+
+  @override
+  String get cLink => 'Link (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Mga welcome coupon sa pag-sign up';
+
+  @override
+  String get welcomePackBody =>
+      'Ibinibigay nang isang beses kapag natapos ng customer ang pag-sign up. Alisin lahat para i-off.';
+
+  @override
+  String get welcomePackAmount => 'Halaga ng kupon (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Magdagdag ng kupon';
+
+  @override
+  String get welcomePackRemove => 'Alisin ang kupon';
+
+  @override
   String moreGreeting(String brand) {
     return 'Ipaubaya sa $brand ang gawaing-bahay ngayon';
   }

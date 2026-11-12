@@ -1814,6 +1814,42 @@ class TKo extends T {
   String get bkViewMonth => '월간 보기';
 
   @override
+  String get dhHomeRecommended => '추천 서비스';
+
+  @override
+  String get dhHomeNews => '다해 소식';
+
+  @override
+  String get dhSvcMove => '이사·입주 청소';
+
+  @override
+  String get dhSvcMoveShort => '이사·입주';
+
+  @override
+  String get dhMovePickTitle => '어떤 이사 청소가 필요하세요?';
+
+  @override
+  String get cKind_news => '소식';
+
+  @override
+  String get cLink => '링크 (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => '가입 웰컴쿠폰';
+
+  @override
+  String get welcomePackBody => '가입을 마친 고객에게 한 번 발급돼요. 모두 지우면 발급하지 않아요.';
+
+  @override
+  String get welcomePackAmount => '쿠폰 금액 (원)';
+
+  @override
+  String get welcomePackAdd => '쿠폰 추가';
+
+  @override
+  String get welcomePackRemove => '쿠폰 삭제';
+
+  @override
   String moreGreeting(String brand) {
     return '오늘도 집안일은 $brand에게 맡기세요';
   }

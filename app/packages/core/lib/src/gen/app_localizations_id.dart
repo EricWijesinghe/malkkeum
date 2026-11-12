@@ -1859,6 +1859,43 @@ class TId extends T {
   String get bkViewMonth => 'Tampilan bulan';
 
   @override
+  String get dhHomeRecommended => 'Rekomendasi';
+
+  @override
+  String get dhHomeNews => 'Kabar Dahae';
+
+  @override
+  String get dhSvcMove => 'Pembersihan pindahan (masuk / keluar)';
+
+  @override
+  String get dhSvcMoveShort => 'Pindahan';
+
+  @override
+  String get dhMovePickTitle => 'Pembersihan pindahan mana yang Anda butuhkan?';
+
+  @override
+  String get cKind_news => 'Kabar';
+
+  @override
+  String get cLink => 'Tautan (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Kupon selamat datang saat mendaftar';
+
+  @override
+  String get welcomePackBody =>
+      'Diberikan sekali saat pelanggan selesai mendaftar. Hapus semua untuk menonaktifkan.';
+
+  @override
+  String get welcomePackAmount => 'Nilai kupon (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Tambah kupon';
+
+  @override
+  String get welcomePackRemove => 'Hapus kupon';
+
+  @override
   String moreGreeting(String brand) {
     return 'Serahkan pekerjaan rumah hari ini kepada $brand';
   }

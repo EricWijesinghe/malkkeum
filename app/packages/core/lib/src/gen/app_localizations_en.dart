@@ -1845,6 +1845,43 @@ class TEn extends T {
   String get bkViewMonth => 'Month view';
 
   @override
+  String get dhHomeRecommended => 'Recommended';
+
+  @override
+  String get dhHomeNews => 'Dahae News';
+
+  @override
+  String get dhSvcMove => 'Move-in / move-out cleaning';
+
+  @override
+  String get dhSvcMoveShort => 'Moving';
+
+  @override
+  String get dhMovePickTitle => 'Which moving clean do you need?';
+
+  @override
+  String get cKind_news => 'News';
+
+  @override
+  String get cLink => 'Link (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Sign-up welcome coupons';
+
+  @override
+  String get welcomePackBody =>
+      'Issued once when a customer finishes sign-up. Remove all to switch it off.';
+
+  @override
+  String get welcomePackAmount => 'Coupon amount (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Add coupon';
+
+  @override
+  String get welcomePackRemove => 'Remove coupon';
+
+  @override
   String moreGreeting(String brand) {
     return 'Leave today\'s chores to $brand';
   }

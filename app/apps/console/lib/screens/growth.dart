@@ -1,4 +1,4 @@
-// Marketing > growth: welcome offer and referral settings, plus review moderation.
+// Marketing > growth: sign-up welcome coupons, welcome offer and referral settings, plus review moderation.
 // Settings are saved as a whole; the server validates ranges and writes an audit row.
 
 import 'package:core/core.dart';
@@ -24,6 +24,9 @@ class _GrowthSettingsState extends State<GrowthSettings> {
   List<Json> _reviews = const [];
   bool _loading = true;
   final _welcomeValue = TextEditingController();
+
+  /// Sign-up coupons: one amount field per coupon; a service limit set through the API is kept as is.
+  List<({TextEditingController amount, String? service})> _pack = [];
   final _referralAmount = TextEditingController();
   String _kind = 'amount';
   bool _welcomeOn = false;
@@ -42,6 +45,9 @@ class _GrowthSettingsState extends State<GrowthSettings> {
   void dispose() {
     _welcomeValue.dispose();
     _referralAmount.dispose();
+    for (final c in _pack) {
+      c.amount.dispose();
+    }
     super.dispose();
   }
 
@@ -57,7 +63,18 @@ class _GrowthSettingsState extends State<GrowthSettings> {
       final overview = results[0] as Json;
       final welcome = overview['welcome'] as Json;
       final referral = overview['referral'] as Json;
+      final pack = (overview['welcome_pack'] as List? ?? const []).cast<Json>();
+      for (final c in _pack) {
+        c.amount.dispose();
+      }
       setState(() {
+        _pack = [
+          for (final c in pack)
+            (
+              amount: TextEditingController(text: '${c['amount']}'),
+              service: c['service_code'] as String?,
+            ),
+        ];
         _welcome = welcome;
         _referral = referral;
         _welcomeOn = welcome['enabled'] == true;
@@ -87,6 +104,70 @@ class _GrowthSettingsState extends State<GrowthSettings> {
       if (mounted) showToast(context, t.error(e));
     }
   }
+
+  Future<void> _savePack() async {
+    final t = context.t;
+    try {
+      await context.api.put('/admin/growth/welcome-pack', [
+        for (final c in _pack)
+          {'amount': int.parse(c.amount.text), 'service_code': c.service},
+      ]);
+      if (mounted) showToast(context, t.offerSaved);
+    } catch (e) {
+      if (mounted) showToast(context, t.error(e));
+    }
+  }
+
+  List<Widget> _packEditor(T t) => [
+    Text(t.welcomePackTitle, style: context.text.titleMedium),
+    Text(t.welcomePackBody, style: context.text.bodySmall),
+    for (final c in _pack)
+      Padding(
+        padding: const EdgeInsets.only(top: Space.sm),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: c.amount,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: t.welcomePackAmount,
+                  helperText: c.service == null ? null : t.service(c.service!),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: t.welcomePackRemove,
+              icon: const Icon(Icons.delete_outline_rounded),
+              onPressed: () {
+                setState(() => _pack = [..._pack]..remove(c));
+                disposeAfterClose([c.amount]);
+              },
+            ),
+          ],
+        ),
+      ),
+    const SizedBox(height: Space.sm),
+    Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: TextButton.icon(
+        onPressed: () => setState(
+          () => _pack = [
+            ..._pack,
+            (amount: TextEditingController(), service: null),
+          ],
+        ),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(t.welcomePackAdd),
+      ),
+    ),
+    Align(
+      alignment: Alignment.centerRight,
+      child: FilledButton(onPressed: _savePack, child: Text(t.save)),
+    ),
+    const Divider(height: Space.xxl),
+  ];
 
   Future<void> _saveReferral() async {
     final t = context.t;
@@ -127,6 +208,7 @@ class _GrowthSettingsState extends State<GrowthSettings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (_welcome != null) ..._packEditor(t),
               if (_welcome != null) ...[
                 Text(t.welcomeOfferTitle, style: context.text.titleMedium),
                 Text(t.welcomeOfferBody, style: context.text.bodySmall),

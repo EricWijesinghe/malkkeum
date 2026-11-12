@@ -3565,6 +3565,78 @@ abstract class T {
   /// **'월간 보기'**
   String get bkViewMonth;
 
+  /// No description provided for @dhHomeRecommended.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천 서비스'**
+  String get dhHomeRecommended;
+
+  /// No description provided for @dhHomeNews.
+  ///
+  /// In ko, this message translates to:
+  /// **'다해 소식'**
+  String get dhHomeNews;
+
+  /// No description provided for @dhSvcMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사·입주 청소'**
+  String get dhSvcMove;
+
+  /// No description provided for @dhSvcMoveShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사·입주'**
+  String get dhSvcMoveShort;
+
+  /// No description provided for @dhMovePickTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 이사 청소가 필요하세요?'**
+  String get dhMovePickTitle;
+
+  /// No description provided for @cKind_news.
+  ///
+  /// In ko, this message translates to:
+  /// **'소식'**
+  String get cKind_news;
+
+  /// No description provided for @cLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'링크 (coupons, service/move_in, https://…)'**
+  String get cLink;
+
+  /// No description provided for @welcomePackTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 웰컴쿠폰'**
+  String get welcomePackTitle;
+
+  /// No description provided for @welcomePackBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입을 마친 고객에게 한 번 발급돼요. 모두 지우면 발급하지 않아요.'**
+  String get welcomePackBody;
+
+  /// No description provided for @welcomePackAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 금액 (원)'**
+  String get welcomePackAmount;
+
+  /// No description provided for @welcomePackAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 추가'**
+  String get welcomePackAdd;
+
+  /// No description provided for @welcomePackRemove.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 삭제'**
+  String get welcomePackRemove;
+
   /// No description provided for @moreGreeting.
   ///
   /// In ko, this message translates to:

@@ -1856,6 +1856,43 @@ class TNe extends T {
   String get bkViewMonth => 'मासिक दृश्य';
 
   @override
+  String get dhHomeRecommended => 'सिफारिस गरिएका सेवा';
+
+  @override
+  String get dhHomeNews => 'Dahae समाचार';
+
+  @override
+  String get dhSvcMove => 'सर्दा गरिने सरसफाइ (भित्र / बाहिर)';
+
+  @override
+  String get dhSvcMoveShort => 'घर सराइ';
+
+  @override
+  String get dhMovePickTitle => 'तपाईंलाई कुन सरसफाइ चाहिन्छ?';
+
+  @override
+  String get cKind_news => 'समाचार';
+
+  @override
+  String get cLink => 'लिङ्क (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'साइन-अप स्वागत कुपन';
+
+  @override
+  String get welcomePackBody =>
+      'ग्राहकले साइन-अप पूरा गर्दा एक पटक दिइन्छ। बन्द गर्न सबै हटाउनुहोस्।';
+
+  @override
+  String get welcomePackAmount => 'कुपन रकम (KRW)';
+
+  @override
+  String get welcomePackAdd => 'कुपन थप्नुहोस्';
+
+  @override
+  String get welcomePackRemove => 'कुपन हटाउनुहोस्';
+
+  @override
   String moreGreeting(String brand) {
     return 'आज पनि घरको काम $brandलाई छोड्नुहोस्';
   }

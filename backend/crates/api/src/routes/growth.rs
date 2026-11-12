@@ -15,7 +15,7 @@ use axum::{
 };
 use chrono::{DateTime, Duration, Utc};
 use domain::{
-    coupon::COUPON_LIFETIME_DAYS,
+    coupon::{COUPON_LIFETIME_DAYS, WelcomePack},
     growth::{ReferralOffer, WelcomeOffer, check_claim, check_reward, mask_name, paid_in_full, proof_count},
 };
 use rand::{RngCore, rngs::OsRng};
@@ -26,6 +26,7 @@ use sqlx::{PgConnection, PgExecutor, PgPool};
 use uuid::Uuid;
 
 const WELCOME_KEY: &str = "welcome_offer";
+const WELCOME_PACK_KEY: &str = "welcome_pack";
 const REFERRAL_KEY: &str = "referral_offer";
 const CODE_LEN: usize = 6;
 /// 32 symbols (no 0/O, 1/I) so a byte modulo 32 is unbiased.
@@ -50,6 +51,7 @@ pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/growth", get(overview))
         .route("/growth/welcome", put(put_welcome))
+        .route("/growth/welcome-pack", put(put_welcome_pack))
         .route("/growth/referral", put(put_referral))
         .route("/reviews", get(list_reviews))
         .route("/reviews/{booking_id}", put(moderate_review))
@@ -78,6 +80,11 @@ pub(crate) async fn save_setting<T: Serialize>(db: &PgPool, key: &str, value: &T
 /// Read by booking pricing inside the booking transaction.
 pub async fn load_welcome(conn: &mut PgConnection) -> ApiResult<WelcomeOffer> {
     load_setting(&mut *conn, WELCOME_KEY).await
+}
+
+/// Sign-up coupons, read inside the transaction that claims `users.welcome_issued`.
+pub async fn load_welcome_pack(conn: &mut PgConnection) -> ApiResult<WelcomePack> {
+    load_setting(&mut *conn, WELCOME_PACK_KEY).await
 }
 
 async fn load_referral(db: &PgPool) -> ApiResult<ReferralOffer> {
@@ -273,6 +280,7 @@ pub(crate) async fn dashboard_figures(db: &PgPool) -> ApiResult<DashboardFigures
 
 async fn overview(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Value>> {
     let welcome: WelcomeOffer = load_setting(&s.db, WELCOME_KEY).await?;
+    let pack: WelcomePack = load_setting(&s.db, WELCOME_PACK_KEY).await?;
     let referral = load_referral(&s.db).await?;
     let (rated, avg): (i64, Option<f64>) = sqlx::query_as("SELECT count(*), avg(rating)::float8 FROM reviews WHERE NOT hidden").fetch_one(&s.db).await?;
     let (invited, rewarded): (i64, i64) = sqlx::query_as("SELECT count(*), count(*) FILTER (WHERE state = 'rewarded') FROM referrals")
@@ -280,6 +288,7 @@ async fn overview(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Value
         .await?;
     Ok(Json(json!({
         "welcome": welcome,
+        "welcome_pack": pack,
         "referral": referral,
         "rating": avg.map(round_rating),
         "review_count": rated,
@@ -292,6 +301,21 @@ async fn put_welcome(State(s): State<AppState>, Admin(a): Admin, Json(o): Json<W
     save_setting(&s.db, WELCOME_KEY, &o).await?;
     audit(&s.db, "staff", Some(a.id), "growth.welcome", WELCOME_KEY, json!(o)).await?;
     Ok(Json(json!(o)))
+}
+
+async fn put_welcome_pack(State(s): State<AppState>, Admin(a): Admin, Json(pack): Json<WelcomePack>) -> ApiResult<Json<Value>> {
+    pack.validate()?;
+    let codes: Vec<&str> = pack.0.iter().filter_map(|c| c.service_code.as_deref()).collect();
+    let known: i64 = sqlx::query_scalar("SELECT count(*) FROM services WHERE code = ANY($1)").bind(&codes).fetch_one(&s.db).await?;
+    let mut distinct = codes.clone();
+    distinct.sort_unstable();
+    distinct.dedup();
+    if known != distinct.len() as i64 {
+        return Err(ApiError::BadRequest("invalid_service"));
+    }
+    save_setting(&s.db, WELCOME_PACK_KEY, &pack).await?;
+    audit(&s.db, "staff", Some(a.id), "growth.welcome_pack", WELCOME_PACK_KEY, json!(pack)).await?;
+    Ok(Json(json!(pack)))
 }
 
 async fn put_referral(State(s): State<AppState>, Admin(a): Admin, Json(o): Json<ReferralOffer>) -> ApiResult<Json<Value>> {

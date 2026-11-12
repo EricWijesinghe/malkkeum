@@ -1867,6 +1867,43 @@ class TUz extends T {
   String get bkViewMonth => 'Oylik ko\'rinish';
 
   @override
+  String get dhHomeRecommended => 'Tavsiya etilgan xizmatlar';
+
+  @override
+  String get dhHomeNews => 'Dahae yangiliklari';
+
+  @override
+  String get dhSvcMove => 'Ko‘chib kirish / chiqish tozalashi';
+
+  @override
+  String get dhSvcMoveShort => 'Ko‘chish';
+
+  @override
+  String get dhMovePickTitle => 'Sizga qaysi tozalash kerak?';
+
+  @override
+  String get cKind_news => 'Yangiliklar';
+
+  @override
+  String get cLink => 'Havola (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Ro‘yxatdan o‘tish kuponlari';
+
+  @override
+  String get welcomePackBody =>
+      'Mijoz ro‘yxatdan o‘tishni tugatganda bir marta beriladi. O‘chirish uchun hammasini olib tashlang.';
+
+  @override
+  String get welcomePackAmount => 'Kupon summasi (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Kupon qo‘shish';
+
+  @override
+  String get welcomePackRemove => 'Kuponni olib tashlash';
+
+  @override
   String moreGreeting(String brand) {
     return 'Bugun ham uy ishlarini ${brand}ga topshiring';
   }

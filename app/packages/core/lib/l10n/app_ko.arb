@@ -871,6 +871,18 @@
  "bkStepCompleted": "서비스 완료",
  "bkViewWeek": "주간 보기",
  "bkViewMonth": "월간 보기",
+ "dhHomeRecommended": "추천 서비스",
+ "dhHomeNews": "다해 소식",
+ "dhSvcMove": "이사·입주 청소",
+ "dhSvcMoveShort": "이사·입주",
+ "dhMovePickTitle": "어떤 이사 청소가 필요하세요?",
+ "cKind_news": "소식",
+ "cLink": "링크 (coupons, service/move_in, https://…)",
+ "welcomePackTitle": "가입 웰컴쿠폰",
+ "welcomePackBody": "가입을 마친 고객에게 한 번 발급돼요. 모두 지우면 발급하지 않아요.",
+ "welcomePackAmount": "쿠폰 금액 (원)",
+ "welcomePackAdd": "쿠폰 추가",
+ "welcomePackRemove": "쿠폰 삭제",
  "moreGreeting": "오늘도 집안일은 {brand}에게 맡기세요",
  "@moreGreeting": {
   "placeholders": {

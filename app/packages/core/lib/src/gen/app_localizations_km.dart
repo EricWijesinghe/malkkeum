@@ -1856,6 +1856,43 @@ class TKm extends T {
   String get bkViewMonth => 'មើលប្រចាំខែ';
 
   @override
+  String get dhHomeRecommended => 'សេវាកម្មដែលណែនាំ';
+
+  @override
+  String get dhHomeNews => 'ព័ត៌មាន Dahae';
+
+  @override
+  String get dhSvcMove => 'សម្អាតពេលផ្លាស់ចូល / ផ្លាស់ចេញ';
+
+  @override
+  String get dhSvcMoveShort => 'ផ្លាស់ផ្ទះ';
+
+  @override
+  String get dhMovePickTitle => 'តើអ្នកត្រូវការការសម្អាតប្រភេទណា?';
+
+  @override
+  String get cKind_news => 'ព័ត៌មាន';
+
+  @override
+  String get cLink => 'តំណ (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'គូប៉ុងស្វាគមន៍ពេលចុះឈ្មោះ';
+
+  @override
+  String get welcomePackBody =>
+      'ផ្តល់ម្តងពេលអតិថិជនបញ្ចប់ការចុះឈ្មោះ។ លុបទាំងអស់ដើម្បីបិទ។';
+
+  @override
+  String get welcomePackAmount => 'តម្លៃគូប៉ុង (KRW)';
+
+  @override
+  String get welcomePackAdd => 'បន្ថែមគូប៉ុង';
+
+  @override
+  String get welcomePackRemove => 'លុបគូប៉ុង';
+
+  @override
   String moreGreeting(String brand) {
     return 'ថ្ងៃនេះក៏ទុកកិច្ចការផ្ទះឱ្យ $brand ដែរ';
   }
