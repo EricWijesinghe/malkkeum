@@ -31,7 +31,10 @@ while [ -z "$slot" ]; do
     # A slot whose owner died is freed (owner pid stored inside).
     # No pid file after a minute means the owner was killed between mkdir and writing it
     # (kill -0 0 would wrongly succeed, so never probe pid 0).
-    if [ -d "$d" ]; then
+    # A CI job in WSL holds the slot with a heartbeat file instead (its pid is not visible here).
+    if [ -f "$d/heartbeat" ]; then
+      [ -n "$(find "$d/heartbeat" -mmin +3 2>/dev/null)" ] && rm -rf "$d"
+    elif [ -d "$d" ]; then
       owner=$(cat "$d/pid" 2>/dev/null)
       if [ -n "$owner" ]; then kill -0 "$owner" 2>/dev/null || rm -rf "$d"
       elif [ -n "$(find "$d" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then rm -rf "$d"; fi

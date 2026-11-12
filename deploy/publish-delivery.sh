@@ -2,7 +2,7 @@
 # Publishes the installer and Korean guides to the PUBLIC delivery repo. Never source code.
 #   branch beta -> beta channel: every release (vX.Y.Z and vX.Y.Z-beta.N) lands here
 #   branch main -> stable channel: only releases without a prerelease suffix
-# Needs an ssh-agent holding the write-enabled deploy key (see .github/workflows/release.yml).
+# Needs the write-enabled deploy key via ssh-agent or GIT_SSH_COMMAND (see .github/workflows/release.yml).
 #   Env: DIST_REPO (owner/repo), VER (git tag, e.g. v1.0.0), IMAGE_REPO (ghcr.io/owner)
 set -euo pipefail
 

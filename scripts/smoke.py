@@ -41,7 +41,7 @@ def sql(statement):
     # Test-only shortcut to move a booking to its visit day (local dev DB).
     psql = os.environ.get("PSQL", "F:/tools/pgsql/bin/psql.exe")
     env = {**os.environ, "PGPASSWORD": os.environ.get("PGPASSWORD", "localdev")}
-    subprocess.run([psql, "-h", "localhost", "-p", "5433", "-U", "postgres", "-d", "cleaning", "-qc", statement], check=True, env=env)
+    subprocess.run([psql, "-h", "localhost", "-p", os.environ.get("PGPORT", "5433"), "-U", "postgres", "-d", "cleaning", "-qc", statement], check=True, env=env)
 
 
 def phone():
