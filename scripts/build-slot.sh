@@ -24,8 +24,24 @@ free_commit_kb() {
   powershell.exe -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreeVirtualMemory" 2>/dev/null | tr -dc '0-9'
 }
 
+# Fair queue: each waiter holds a ticket named <start-ns>-<pid> (CI in WSL: <start-ns>-ci, kept fresh by touch);
+# only the oldest live ticket may try for a slot, so a long-waiting build is never overtaken. Every waiter touches its
+# ticket each loop; a ticket untouched for 3 minutes (or whose Windows pid is gone) is stale. CI: scripts/ci/runner.
+Q="$LOCKS/queue"; mkdir -p "$Q"
+ticket="$Q/$(date +%s%N)-$$"; : > "$ticket"
 slot=""
+trap 'rm -f "$ticket"; [ -n "$slot" ] && rm -rf "$slot"' EXIT
+queue_head() {
+  local t
+  for t in $(ls "$Q" 2>/dev/null | sort); do
+    if [ -n "$(find "$Q/$t" -mmin +3 2>/dev/null)" ]; then rm -f "$Q/$t"; continue; fi
+    case "$t" in *-ci) ;; *) kill -0 "${t##*-}" 2>/dev/null || { rm -f "$Q/$t"; continue; } ;; esac
+    echo "$t"; return
+  done
+}
 while [ -z "$slot" ]; do
+  touch "$ticket"
+  if [ "$(queue_head)" != "$(basename "$ticket")" ]; then sleep 10; continue; fi
   for i in $(seq 1 $SLOTS); do
     d="$LOCKS/slot$i"
     # A slot whose owner died is freed (owner pid stored inside).
@@ -48,6 +64,6 @@ while [ -z "$slot" ]; do
   done
   [ -z "$slot" ] && sleep 20
 done
-trap 'rm -rf "$slot"' EXIT
+rm -f "$ticket"
 echo "[build-slot] $(basename "$slot"): $*" >&2
 "$@"
