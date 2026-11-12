@@ -38,6 +38,12 @@ Future<String?> _supportHours(ApiClient api) async {
   }
 }
 
+/// Room for the empty-state art under the header; it scrolls inside when text is large.
+const _emptyHeight = 360.0;
+
+/// Below this title width the app-bar avatar is dropped so the team name keeps its room.
+const _avatarMinTitleWidth = 180.0;
+
 String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
 
 String _buildingLabel(T t, String code) => switch (code) {
@@ -143,37 +149,37 @@ class _ChatListTabState extends State<ChatListTab> {
         icon: const Icon3D('chat_new', size: 28),
         label: Text(t.chatNew),
       ),
-      body: Column(
-        children: [
-          FutureBuilder<String?>(
-            future: _hours,
-            builder: (context, snap) =>
-                _TeamHeader(hours: snap.data ?? t.chatHours),
+      body: AsyncView<List<ChatThread>>(
+        key: _view,
+        load: _load,
+        // The header scrolls with the threads so large text never overflows a short screen.
+        builder: (context, threads, reload) => RefreshIndicator(
+          onRefresh: reload,
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 96),
+            children: [
+              FutureBuilder<String?>(
+                future: _hours,
+                builder: (context, snap) =>
+                    _TeamHeader(hours: snap.data ?? t.chatHours),
+              ),
+              if (threads.isEmpty)
+                SizedBox(
+                  height: _emptyHeight,
+                  child: EmptyState(
+                    icon: Icons.forum_rounded,
+                    title: t.chatEmpty,
+                    body: t.chatReplyFast,
+                    hue: ServiceHues.aircon,
+                  ),
+                ),
+              for (final (i, th) in threads.indexed) ...[
+                if (i > 0) const Divider(indent: 84),
+                _ThreadTile(thread: th, onReturn: reload),
+              ],
+            ],
           ),
-          Expanded(
-            child: AsyncView<List<ChatThread>>(
-              key: _view,
-              load: _load,
-              builder: (context, threads, reload) => threads.isEmpty
-                  ? EmptyState(
-                      icon: Icons.forum_rounded,
-                      title: t.chatEmpty,
-                      body: t.chatReplyFast,
-                      hue: ServiceHues.aircon,
-                    )
-                  : RefreshIndicator(
-                      onRefresh: reload,
-                      child: ListView.separated(
-                        padding: const EdgeInsets.only(bottom: 96),
-                        itemCount: threads.length,
-                        separatorBuilder: (_, _) => const Divider(indent: 84),
-                        itemBuilder: (_, i) =>
-                            _ThreadTile(thread: threads[i], onReturn: reload),
-                      ),
-                    ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -341,9 +347,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Future<void> _load() async {
     final seq = ++_loadSeq;
     try {
-      final r = await context.api.get(
-        '/chat/threads/${widget.threadId}/messages',
-      ) as List;
+      final r =
+          await context.api.get('/chat/threads/${widget.threadId}/messages')
+              as List;
       // A newer load (e.g. after resync) supersedes this one.
       if (!mounted || seq != _loadSeq) return;
       setState(() {
@@ -368,9 +374,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     try {
       final m = ChatMessage.fromJson(
         await context.api.post(
-          '/chat/threads/${widget.threadId}/messages',
-          body,
-        ) as Json,
+              '/chat/threads/${widget.threadId}/messages',
+              body,
+            )
+            as Json,
       );
       if (!mounted) return;
       setState(() => _messages = [..._messages.where((x) => x.id != m.id), m]);
@@ -468,38 +475,49 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Row(
-          children: [
-            const Icon3D('chat_team_avatar', size: 36),
-            const SizedBox(width: Space.xs),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_teamName(t), style: context.text.titleMedium),
-                  FutureBuilder<String?>(
-                    future: _hours,
-                    builder: (context, snap) => Text(
-                      '${topicLabel(t, widget.topic)} · ${snap.data ?? t.chatHours}',
-                      style: context.text.labelSmall,
+        title: LayoutBuilder(
+          builder: (context, c) => Row(
+            children: [
+              if (c.maxWidth >= _avatarMinTitleWidth) ...[
+                const Icon3D('chat_team_avatar', size: 36),
+                const SizedBox(width: Space.xs),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _teamName(t),
+                      style: context.text.titleMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    FutureBuilder<String?>(
+                      future: _hours,
+                      builder: (context, snap) => Text(
+                        '${topicLabel(t, widget.topic)} · ${snap.data ?? t.chatHours}',
+                        style: context.text.labelSmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
+          // An icon, not a text button: a long label squeezes the title out on small phones.
           if (widget.bookingId != null)
-            TextButton(
+            IconButton(
+              tooltip: t.viewBooking,
+              icon: const Icon(Icons.receipt_long_rounded),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => BookingDetailScreen(id: widget.bookingId!),
                 ),
               ),
-              child: Text(t.viewBooking),
             ),
         ],
       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:customer/screens/chat.dart';
 import 'package:flutter/material.dart';
@@ -152,7 +154,8 @@ void main() {
     final fake = await _chatApi([quote()]);
     fake.onPost('/bookings/bk-9/deposit', (_) => bookingJson(id: 'bk-9', status: 1));
     final env = await TestEnv.create(fake: fake);
-    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    final app = await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    unawaited(app.loadMethods());
     final pay = find.text(koT.quotePayAmount(formatWon(35000, 'ko')));
     await pumpUntilFound(tester, pay);
 
