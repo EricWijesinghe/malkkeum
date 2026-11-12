@@ -14,8 +14,8 @@
 | `screenshots/` | 스크린샷 (생성된 경우) / Screenshots, when generated |
 
 **제출 전 필수 / Before upload**
-- 서버 주소를 `MALKKEUM_API_BASE=https://<도메인>` 로 지정해 다시 빌드하세요. 지정하지 않으면 AAB/APK 에 플레이스홀더 주소 (`api.example.invalid`) 가 들어가요.
-  Rebuild with `MALKKEUM_API_BASE=https://<domain>`; otherwise the binaries carry the placeholder address.
+- 서버 주소를 `MALKKEUM_API_BASE=https://<도메인>` 로 지정해 빌드하세요. 지정하지 않으면 빌드가 멈춰요. `-AllowPlaceholder` 로 만든 AAB/APK 에는 플레이스홀더 주소 (`api.example.invalid`) 가 들어가니 제출하지 마세요.
+  Build with `MALKKEUM_API_BASE=https://<domain>`; without it the build stops. Binaries built with `-AllowPlaceholder` carry the placeholder address: do not upload them.
 - 버전 코드는 업로드마다 올라가야 해요 (`pubspec.yaml` 의 `+N`). Play 는 같은 번호를 거부해요.
 - 구글·카카오·네이버 로그인과 푸시 키는 CI (Codemagic) 에서만 주입돼요. 이 로컬 빌드에는 없어서 해당 로그인 버튼은 숨겨져요.
   Social-login and push keys are injected only by CI (Codemagic); those buttons are hidden in this local build.

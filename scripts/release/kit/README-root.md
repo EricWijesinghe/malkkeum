@@ -26,8 +26,8 @@ This folder is the **complete hand-over package** for Malkkeum (Korean home-clea
   Keep signing/ and PASSWORD.txt private. If lost, Play support must reset the upload key.
 - 체험판 빌드의 앱 주소는 이 PC 의 Wi-Fi 주소입니다 (1-Demo/api-address.txt). 주소가 바뀌면 다시 빌드해야 해요.
   Demo apps point to this PC's Wi-Fi address (1-Demo/api-address.txt); rebuild if it changes.
-- 스토어 빌드의 서버 주소 (MALKKEUM_API_BASE) 가 지정되지 않았다면 AAB/APK 는 **플레이스홀더** 주소로 만들어졌어요. 제출 전에 다시 빌드하세요.
-  If MALKKEUM_API_BASE was not set, store binaries carry a placeholder server address; rebuild before upload.
+- 스토어 빌드의 서버 주소 (MALKKEUM_API_BASE) 없이 `-AllowPlaceholder` 로 빌드했다면 AAB/APK/MSIX 는 **플레이스홀더** 주소로 만들어졌어요. 제출 전에 다시 빌드하세요.
+  If built with `-AllowPlaceholder` instead of MALKKEUM_API_BASE, store binaries (AAB/APK/MSIX) carry a placeholder server address; rebuild before upload.
 
 ## 버전 정보 · Build info
 
