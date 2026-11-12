@@ -89,3 +89,32 @@ async fn real_rows_survive_load_and_clear(pool: PgPool) {
     let addresses_after: i64 = sqlx::query_scalar("SELECT count(*) FROM addresses WHERE user_id = $1").bind(c.user).fetch_one(&pool).await.expect("count");
     assert_eq!(addresses_after, addresses_before);
 }
+
+async fn business(db: &PgPool) -> Option<serde_json::Value> {
+    sqlx::query_scalar("SELECT value FROM settings WHERE key = 'business'").fetch_optional(db).await.expect("business")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn load_adds_a_fake_business_profile_and_clear_removes_only_that(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let config = config();
+
+    demo::load(&pool, &config, false).await.expect("demo load");
+    let b = business(&pool).await.expect("demo profile written");
+    assert_eq!(b["name"], "다해");
+    assert_eq!(b["company"]["registration_no"], "000-00-00000", "fake registration number");
+    assert!(b["company"]["hosting_provider"].as_str().is_some_and(|h| h.contains("예시")), "{b}");
+    assert!(b["support_email"].as_str().is_some_and(|e| e.ends_with(".invalid")), "{b}");
+    demo::clear(&pool, &config).await.expect("demo clear");
+    assert!(business(&pool).await.is_none(), "untouched demo profile is removed");
+
+    // A profile the owner saved is neither replaced by load nor removed by clear.
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('business', $1)")
+        .bind(serde_json::json!({"name": "우리집청소"}))
+        .execute(&pool)
+        .await
+        .expect("owner profile");
+    demo::load(&pool, &config, false).await.expect("demo load");
+    demo::clear(&pool, &config).await.expect("demo clear");
+    assert_eq!(business(&pool).await.expect("owner profile kept")["name"], "우리집청소");
+}

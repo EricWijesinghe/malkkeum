@@ -13,10 +13,20 @@ import 'screens/ops.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
+import 'src/u1_stub.dart';
 import 'state.dart';
 
 class _Section {
-  const _Section(this.icon, this.label, this.build, {this.adminOnly = false});
+  const _Section(
+    this.id,
+    this.icon,
+    this.label,
+    this.build, {
+    this.adminOnly = false,
+  });
+
+  /// 3D rail art id (plan §4). [icon] stays for the command palette.
+  final String id;
   final IconData icon;
   final String Function(T) label;
   final Widget Function() build;
@@ -25,66 +35,88 @@ class _Section {
 
 final _sections = <_Section>[
   _Section(
+    'c_dashboard',
     Icons.space_dashboard_rounded,
     (t) => t.cDashboard,
     () => const DashboardScreen(),
   ),
   _Section(
+    'c_bookings',
     Icons.event_note_rounded,
     (t) => t.cBookings,
     () => const BookingsScreen(),
   ),
   _Section(
+    'c_quotes',
     Icons.request_quote_rounded,
     (t) => t.cQuoteDesk,
     () => const BookingsScreen(quoteDesk: true),
   ),
-  _Section(Icons.forum_rounded, (t) => t.cInbox, () => const InboxScreen()),
-  _Section(Icons.sell_rounded, (t) => t.cCatalog, () => const CatalogScreen()),
   _Section(
+    'c_settings',
+    Icons.forum_rounded,
+    (t) => t.cInbox,
+    () => const InboxScreen(),
+  ),
+  _Section(
+    'c_monitor',
+    Icons.sell_rounded,
+    (t) => t.cCatalog,
+    () => const CatalogScreen(),
+  ),
+  _Section(
+    'c_chat',
     Icons.campaign_rounded,
     (t) => t.cMarketing,
     () => const MarketingScreen(),
   ),
   _Section(
+    'c_pricing',
     Icons.engineering_rounded,
     (t) => t.cPartners,
     () => const PartnersScreen(),
   ),
   _Section(
+    'c_marketing',
     Icons.payments_rounded,
     (t) => t.cSettlements,
     () => const SettlementsScreen(),
   ),
   _Section(
+    'c_partners',
     Icons.account_balance_wallet_rounded,
     (t) => t.fFinance,
     () => const FinanceScreen(),
     adminOnly: true,
   ),
   _Section(
+    'c_payments',
     Icons.event_repeat_rounded,
     (t) => t.cSubsTitle,
     () => const SubscriptionsScreen(),
   ),
   _Section(
+    'c_payouts',
     Icons.people_alt_rounded,
     (t) => t.cCustomers,
     () => const CustomersScreen(),
   ),
   _Section(
+    'c_subscriptions',
     Icons.badge_rounded,
     (t) => t.cStaff,
     () => const StaffScreen(),
     adminOnly: true,
   ),
   _Section(
+    'c_customers',
     Icons.tune_rounded,
     (t) => t.cSetup,
     () => const SetupScreen(),
     adminOnly: true,
   ),
   _Section(
+    'c_staff',
     Icons.monitor_heart_rounded,
     (t) => t.cOps,
     () => const OpsScreen(),
@@ -165,7 +197,13 @@ class _ConsoleShellState extends State<ConsoleShell> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          leading: Icon(s.icon, size: 20),
+          // Dense desktop rail: no tilt or bounce, the selected row shows by colour only.
+          leading: MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: ExcludeSemantics(
+              child: Icon3D(s.id, active: selected, size: 24),
+            ),
+          ),
           title: Text(
             s.label(t),
             style: context.text.labelLarge?.copyWith(
@@ -194,19 +232,7 @@ class _ConsoleShellState extends State<ConsoleShell> {
           ),
           child: Row(
             children: [
-              Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  color: context.primary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.auto_awesome_rounded,
-                  size: 16,
-                  color: Colors.white,
-                ),
-              ),
+              const DahaeLogo(size: 26),
               const SizedBox(width: Space.xs),
               Expanded(
                 child: Text(

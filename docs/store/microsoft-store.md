@@ -1,6 +1,6 @@
 # Microsoft Store 제출 가이드 · Microsoft Store submission guide
 
-대상 앱은 **2개**예요: 고객 앱(말끔), 파트너 앱(말끔 파트너). 각각 Partner Center에서 **별도 앱**으로 등록해요.
+대상 앱은 **2개**예요: 고객 앱(다해), 파트너 앱(다해 파트너). 각각 Partner Center에서 **별도 앱**으로 등록해요.
 Two apps (customer, partner). Each is a **separate app** in Partner Center.
 
 **사장님용 관리 화면(콘솔)은 스토어 앱이 아니에요.** 웹 브라우저에서 `https://도메인/admin/` 으로 접속해요. Microsoft Store 에 올리지 않고, 이름 예약도 하지 않아요.
@@ -28,8 +28,8 @@ Listing text: copy from `listing-ko.md`, `listing-en.md` and the others. Check l
 
 1. Partner Center 로그인 → **앱 관리 > 앱 만들기** / Sign in → **Apps > New product**.
 2. 앱 이름 입력 후 예약 / Enter the name and reserve it.
-   - 고객: `말끔` (영문 Malkkeum) / Customer: 말끔 (Malkkeum)
-   - 파트너: `말끔 파트너` / Partner: 말끔 파트너
+   - 고객: `다해` (영문 Dahae) / Customer: 다해 (Dahae)
+   - 파트너: `다해 파트너` / Partner: 다해 파트너
 3. **제품 ID / 패키지 ID 값 복사** (앱 관리 > 제품 식별 / App identity): **Package/Identity/Name**, **Package/Identity/Publisher**, **Package/Identity/PublisherDisplayName**.
    이 값을 `scripts/store/msix.local.psd1` 파일 또는 환경 변수에 넣어요. 이 값은 Git에 올리지 않아요.
    Copy the values from **App identity**. Put them in `scripts/store/msix.local.psd1` (or env vars). Never commit them.
@@ -38,9 +38,9 @@ Listing text: copy from `listing-ko.md`, `listing-en.md` and the others. Check l
 # scripts/store/msix.local.psd1  (gitignored)
 @{
   MSIX_PUBLISHER                = 'CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
-  MSIX_PUBLISHER_DISPLAY_NAME   = 'Malkkeum'
-  MSIX_IDENTITY_CUSTOMER        = '12345Malkkeum.Customer'
-  MSIX_IDENTITY_PARTNER         = '12345Malkkeum.Partner'
+  MSIX_PUBLISHER_DISPLAY_NAME   = 'Dahae'
+  MSIX_IDENTITY_CUSTOMER        = '12345Dahae.Customer'
+  MSIX_IDENTITY_PARTNER         = '12345Dahae.Partner'
 }
 ```
 
@@ -121,11 +121,11 @@ Account deletion: More > Account > Delete account.
 
 Microsoft Store has no 80/30-char fields; use the first lines as the hook (search shows them). Use the full description from `listing-*.md` for the remaining languages. Windows build has no social login or push (see section 6), so these texts do not mention them.
 
-**고객 앱 · 말끔 (ko)**
+**고객 앱 · 다해 (ko)**
 ```
 입주청소·이사청소·에어컨청소, 가격부터 확인하고 1분 만에 예약하세요.
 
-말끔은 본인 인증과 심사를 거친 청소 전문가만 연결해 드리는 홈클리닝 앱이에요.
+다해는 본인 인증과 심사를 거친 청소 전문가만 연결해 드리는 홈클리닝 앱이에요.
 · 원룸 · 주방 · 욕실 · 매트리스 · 에어컨 · 소파 청소: 앱에서 바로 보는 정찰제 요금
 · 이사청소 · 입주청소: 전문가 견적을 받아 비교
 · 취소 수수료와 환불액을 취소 전에 미리 안내, 방문 2일 전까지 무료 취소
@@ -134,11 +134,11 @@ Microsoft Store has no 80/30-char fields; use the first lines as the hook (searc
 · 14개 언어 지원
 ```
 
-**Customer app · Malkkeum (en)**
+**Customer app · Dahae (en)**
 ```
 Move-in, move-out and aircon cleaning in Korea. See the price first, book in a minute.
 
-Malkkeum connects you only with cleaning professionals who passed identity checks and review.
+Dahae connects you only with cleaning professionals who passed identity checks and review.
 · Studio, kitchen, bathroom, mattress, air conditioner and sofa cleaning at fixed prices
 · Move-out and move-in cleaning: compare quotes from professionals
 · Cancellation fee and refund shown before you cancel; free cancellation up to 2 days before the visit
@@ -147,9 +147,9 @@ Malkkeum connects you only with cleaning professionals who passed identity check
 · 14 languages
 ```
 
-**파트너 앱 · 말끔 파트너 (ko)**
+**파트너 앱 · 다해 파트너 (ko)**
 ```
-말끔 청소 전문가 전용 앱. 내 동네 작업 받기, 이사·입주청소 견적, 일정, 매주 수요일 정산.
+다해 청소 전문가 전용 앱. 내 동네 작업 받기, 이사·입주청소 견적, 일정, 매주 수요일 정산.
 
 · 내 활동 지역과 시간에 맞는 작업만 골라 받기
 · 이사·입주청소는 직접 견적 내기
@@ -158,9 +158,9 @@ Malkkeum connects you only with cleaning professionals who passed identity check
 · 14개 언어 지원
 ```
 
-**Partner app · Malkkeum Partner (en)**
+**Partner app · Dahae Partner (en)**
 ```
-The app for Malkkeum cleaning professionals: jobs in your area, quotes, schedule and weekly payouts.
+The app for Dahae cleaning professionals: jobs in your area, quotes, schedule and weekly payouts.
 
 · Pick jobs that match your areas and available hours
 · Send your own quotes for move-in and move-out cleanings

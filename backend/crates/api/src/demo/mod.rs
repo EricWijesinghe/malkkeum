@@ -187,6 +187,11 @@ pub async fn load(db: &PgPool, config: &Config, force: bool) -> Result<Report, D
     let mut world = people::run(&mut c).await?;
     let booked = bookings::run(&mut c, &mut world).await?;
     social::run(&mut c, &world, &booked).await?;
+    // Never replaces a profile the owner saved. Not in `demo_rows`: clear finds it by its `demo` flag.
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('business', $1) ON CONFLICT (key) DO NOTHING")
+        .bind(demo_business())
+        .execute(&mut *c.tx)
+        .await?;
     // Written before commit: a failed commit leaves a file that clear removes.
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     tokio::fs::write(placeholder_path(config), placeholder_bytes()).await?;
@@ -213,6 +218,8 @@ pub async fn clear(db: &PgPool, config: &Config) -> Result<Report, DemoError> {
         }
     }
     sqlx::query("DELETE FROM demo_rows").execute(&mut *tx).await?;
+    // Saving the profile in the console drops the `demo` flag (unknown keys are stripped), so an edited profile stays.
+    sqlx::query("DELETE FROM settings WHERE key = 'business' AND value->>'demo' = 'true'").execute(&mut *tx).await?;
     tx.commit().await?;
     match tokio::fs::remove_file(placeholder_path(config)).await {
         Ok(()) => {}
@@ -220,6 +227,29 @@ pub async fn clear(db: &PgPool, config: &Config) -> Result<Report, DemoError> {
         Err(e) => return Err(e.into()),
     }
     Ok(report)
+}
+
+/// Business profile for the demo kit, so the website footer and the in-app seller details show every
+/// field. All values are obviously fake: reserved phone number, `.invalid` emails, zeroed registration numbers.
+fn demo_business() -> serde_json::Value {
+    serde_json::json!({
+        "demo": true,
+        "name": "다해",
+        "primary_color": "#187A8F",
+        "support_phone": "010-0000-0000",
+        "support_email": "help@dahae.invalid",
+        "support_hours": "평일 09:00~18:00 (예시)",
+        "company": {
+            "legal_name": "(예시) 다해 주식회사",
+            "ceo": "홍길동 (예시)",
+            "registration_no": "000-00-00000",
+            "mail_order_no": "제0000-서울예시-0000호",
+            "address": "서울특별시 예시구 예시로 1 (예시 주소)",
+            "privacy_officer": "홍길동 (예시)",
+            "privacy_email": "privacy@dahae.invalid",
+            "hosting_provider": "(예시) 예시호스팅 주식회사"
+        }
+    })
 }
 
 fn placeholder_path(config: &Config) -> PathBuf {

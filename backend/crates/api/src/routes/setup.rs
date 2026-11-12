@@ -266,7 +266,7 @@ async fn review_summary(db: &PgPool) -> Result<Value, sqlx::Error> {
 
 /// Shop name from the business profile, sent as the `#{brand}` AlimTalk variable.
 pub async fn brand_name(db: &PgPool) -> String {
-    const DEFAULT_BRAND: &str = "말끔";
+    const DEFAULT_BRAND: &str = "다해";
     match business(db).await {
         Ok(v) => v["name"].as_str().map(str::trim).filter(|s| !s.is_empty()).unwrap_or(DEFAULT_BRAND).to_owned(),
         Err(e) => {
@@ -672,12 +672,12 @@ mod tests {
         let v = clean_business(
             "http://127.0.0.1:8080",
             &json!({
-                "name": "  말끔 ", "primary_color": "#3b5bfd", "logo_url": "/files/0123456789abcdef0123456789abcdef.png",
+                "name": "  다해 ", "primary_color": "#3b5bfd", "logo_url": "/files/0123456789abcdef0123456789abcdef.png",
                 "company": { "ceo": "홍길동", "hosting_provider": " 예시호스팅(주) ", "unknown": "x" }, "evil": 1
             }),
         )
         .unwrap();
-        assert_eq!(v["name"], "말끔");
+        assert_eq!(v["name"], "다해");
         assert_eq!(v["primary_color"], "#3B5BFD");
         assert_eq!(v["company"]["ceo"], "홍길동");
         assert_eq!(v["company"]["hosting_provider"], "예시호스팅(주)");

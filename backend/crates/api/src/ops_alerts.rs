@@ -261,8 +261,9 @@ async fn deliver(s: &AppState, phone: Option<&str>, f: &Finding) {
     if let Err(e) = notify(s, Recipient::Staff, "ops_alert", f.title, f.body, json!({ "rule": f.rule })).await {
         tracing::warn!(error = %e, rule = f.rule, "ops alert inbox failed");
     }
+    let brand = crate::routes::setup::brand_name(&s.db).await;
     if let Some(phone) = phone {
-        let text = format!("[말끔] {}\n{}", f.title, f.body);
+        let text = format!("[{brand}] {}\n{}", f.title, f.body);
         if let Err(e) = s.providers.send_sms(phone, &text).await {
             tracing::warn!(error = %e, rule = f.rule, "ops alert sms failed");
         }
@@ -270,7 +271,7 @@ async fn deliver(s: &AppState, phone: Option<&str>, f: &Finding) {
     let tokens: Result<Vec<String>, sqlx::Error> = sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'").fetch_all(&s.db).await;
     match tokens {
         Ok(t) if !t.is_empty() => {
-            if let Err(e) = s.providers.push(&t, "말끔 운영 알림", f.title, &json!({ "kind": "ops_alert", "rule": f.rule })).await {
+            if let Err(e) = s.providers.push(&t, &format!("{brand} 운영 알림"), f.title, &json!({ "kind": "ops_alert", "rule": f.rule })).await {
                 tracing::warn!(error = %e, rule = f.rule, "ops alert push failed");
             }
         }

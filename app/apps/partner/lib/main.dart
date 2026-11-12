@@ -9,14 +9,14 @@ import 'screens/shell.dart';
 import 'outbox.dart';
 import 'state.dart';
 
-/// The partner app shares the design system but leads with ink + fresh mint,
-/// so pros never confuse it with the customer app.
+/// The partner app shares the Dahae palette but leads with ink (customer app: dark teal),
+/// so pros never confuse the two.
 const partnerBrand = BrandConfig(
-  name: '말끔 파트너',
-  primary: Color(0xFF111827),
-  primaryDeep: Color(0xFF000000),
-  fresh: Color(0xFF12B48F),
-  sun: Color(0xFFFFB400),
+  name: '다해 파트너',
+  primary: Color(0xFF17232C),
+  primaryDeep: Color(0xFF0B1217),
+  fresh: Color(0xFF1E9EBA),
+  sun: Color(0xFFFFD95A),
 );
 
 Future<void> main() async {
@@ -30,7 +30,11 @@ Future<void> main() async {
   runApp(
     PartnerApp(
       session: session,
-      app: PartnerState(api, Realtime(api), outbox: await CompletionOutbox.open()),
+      app: PartnerState(
+        api,
+        Realtime(api),
+        outbox: await CompletionOutbox.open(),
+      ),
       locale: locale,
       theme: theme,
     ),
@@ -64,7 +68,10 @@ class PartnerApp extends StatelessWidget {
           child: UpdateGate(
             api: session.api,
             app: 'partner',
-            child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
+            child: RemoteConfigGate(
+              api: session.api,
+              child: child ?? const SizedBox.shrink(),
+            ),
           ),
         ),
         onGenerateTitle: (_) => partnerBrand.name,

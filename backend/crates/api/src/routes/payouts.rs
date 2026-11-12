@@ -420,7 +420,7 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
         bank_code,
         account,
         holder: row.holder.clone(),
-        memo: format!("말끔 정산 {}", row.payout_date),
+        memo: payout_memo(&super::setup::brand_name(&s.db).await, row.payout_date),
     };
     match s.providers.send_transfer(&row.idempotency_key, &id.to_string(), &seller_id, &transfer).await {
         Ok(transfer_id) => {
@@ -568,4 +568,21 @@ pub(crate) async fn notify_paid(s: &AppState, id: Uuid) {
         notify(s, Recipient::Pro(pro_id), "settlement.paid", "정산 완료", &format!("{amount}원"), json!({ "total": amount })),
     )
     .await;
+}
+
+/// Text on the partner's bank statement. Toss keeps the first 7 characters, so the shop name leads.
+fn payout_memo(brand: &str, payout_date: NaiveDate) -> String {
+    format!("{brand} 정산 {payout_date}")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn memo_leads_with_the_shop_name() {
+        let date = NaiveDate::from_ymd_opt(2026, 11, 18).expect("date");
+        assert_eq!(payout_memo("다해", date), "다해 정산 2026-11-18");
+        assert_eq!(payout_memo("우리집청소", date), "우리집청소 정산 2026-11-18");
+    }
 }

@@ -1,5 +1,7 @@
 # Generates the website's legal and partner pages from one shared layout.
 # Run from the repo root:  python -I scripts/build_legal.py website
+# Check only (exit 1 when a page differs from the generator):  python -I scripts/build_legal.py website --check
+# Never edit the generated .html by hand: change the text here and regenerate.
 # Business details (상호, 대표, 사업자번호 ...) are filled in the browser from /v1/brand,
 # i.e. from what the owner typed in the console setup wizard. No editing needed here.
 import json
@@ -18,8 +20,11 @@ HEAD = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{title} · 말끔</title>
+  <title>다해 · {title}</title>
+  <meta name="theme-color" content="#0B1217">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="site.webmanifest">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="assets/site.css">
   <script>try {{ const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; }} catch (e) {{}}</script>
@@ -28,7 +33,7 @@ HEAD = """<!doctype html>
 <body>
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
   <header class="nav"><div class="wrap">
-    <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>말끔</span></a>
+    <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>다해</span></a>
     <div class="tools"><select id="lang" class="lang" aria-label="Language"></select><button id="theme" class="icon-btn" type="button" aria-label="Light mode">☀️</button></div>
   </div></header>
   <main class="wrap doc">
@@ -36,7 +41,7 @@ HEAD = """<!doctype html>
 
 FOOT = """  </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><p>© <span id="year"></span> <span data-brand-name>말끔</span></p></div>
+    <div><p class="company" id="company"></p><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
     <div><b data-t="f_support">고객센터</b><br><a data-support-phone href="#"></a><br><a data-support-email href="#"></a></div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
@@ -46,7 +51,9 @@ FOOT = """  </main>
 """
 
 CO = '<span data-fill="company.legal_name">[상호]</span>'
-SVC = '<span data-brand-name>말끔</span>'
+SVC = '<span data-brand-name>다해</span>'
+# 공정거래위원회 통신판매사업자 조회. site.js adds the registration number and unhides the link.
+BIZCHECK = '<a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener">사업자정보확인</a>'
 OFFICER = '<span data-fill="company.privacy_officer">[개인정보 보호책임자]</span>'
 CONTACT = '<a data-support-email href="#"></a> · <a data-support-phone href="#"></a>'
 
@@ -123,7 +130,8 @@ def cancel_rows(policy):
     rows = []
     for t in policy["tiers"]:
         days, pct = t["min_days"], t["percent"]
-        when = "당일" if days == 0 else f"방문일 {days}일 전부터" if days > 0 else "방문 후"
+        # A tier applies while days-before-visit >= min_days, i.e. until the next (smaller) tier starts.
+        when = "방문 당일 취소" if days == 0 else f"방문일 {days}일 전까지 취소" if days > 0 else "방문 후"
         if pct is None:
             rows.append(f"<li>{when}: 앱에서 취소 불가, 상담팀 확인 후 처리</li>")
         elif pct == 0:
@@ -146,7 +154,8 @@ TERMS = f"""
     <h2>제8조 (서비스 변경·중단)</h2><p>설비 점검 등 부득이한 경우 서비스를 일시 중단할 수 있으며 미리 공지합니다.</p>
     <h2>제9조 (이용자 생성 콘텐츠 · 후기)</h2><p>후기 등 이용자가 올린 콘텐츠는 다른 이용자에게 공개될 수 있습니다. 욕설·차별·혐오 표현, 음란물, 개인정보나 연락처, 허위 내용, 광고나 타인의 권리를 침해하는 내용은 금지하며, 이를 발견하면 회사는 사전 통지 없이 숨김 또는 삭제하고 해당 이용자의 후기 작성을 제한할 수 있습니다. 이용자는 앱에서 후기를 신고할 수 있으며, 회사는 신고된 후기를 검토해 조치 결과를 처리합니다. 무관용 원칙을 적용합니다.</p>
     <h2>제10조 (분쟁 해결)</h2><p>분쟁은 고객센터를 통해 먼저 협의하며, 협의가 안 되면 관할 법원은 민사소송법에 따릅니다.</p>
-    <h2>사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span></p>
+    <h2>사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span> · 호스팅 제공자 <span data-fill="company.hosting_provider">[호스팅 제공자]</span></p>
+    <p>고객센터 전화 <a data-support-phone href="#"></a> · 이메일 <a data-support-email href="#"></a> {BIZCHECK}</p>
 """
 
 DELETE = f"""
@@ -165,9 +174,9 @@ PARTNERS = f"""
     <h1>{SVC} 파트너가 되어 주세요</h1>
     <p class="lead">원하는 지역과 시간에 일하고, 완료한 작업은 매주 수요일에 정산받아요.</p>
     <div class="trust" style="margin:32px 0">
-      <div class="item"><span class="emoji" aria-hidden="true">🗺️</span><b>원하는 지역만</b><p>서울 25개 구 가운데 활동 지역을 직접 골라요.</p></div>
-      <div class="item"><span class="emoji" aria-hidden="true">⏰</span><b>원하는 시간만</b><p>가능한 요일과 시간대를 정하면 맞는 작업만 보여요.</p></div>
-      <div class="item"><span class="emoji" aria-hidden="true">💸</span><b>매주 정산</b><p>완료한 작업은 수수료를 뺀 금액이 매주 수요일에 입금돼요.</p></div>
+      <div class="item"><img class="emoji icon3d" src="assets/icons3d/menu_addresses.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b>원하는 지역만</b><p>서울 25개 구 가운데 활동 지역을 직접 골라요.</p></div>
+      <div class="item"><img class="emoji icon3d" src="assets/icons3d/ui_calendar.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b>원하는 시간만</b><p>가능한 요일과 시간대를 정하면 맞는 작업만 보여요.</p></div>
+      <div class="item"><img class="emoji icon3d" src="assets/icons3d/ui_points.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b>매주 정산</b><p>완료한 작업은 수수료를 뺀 금액이 매주 수요일에 입금돼요.</p></div>
     </div>
     <h2>지원 방법</h2>
     <ol><li>파트너 앱을 내려받아 휴대전화로 가입합니다.</li><li>팀 이름, 활동 지역, 가능 시간을 입력합니다.</li><li>심사가 끝나면 바로 작업을 받을 수 있어요.</li></ol>
@@ -200,6 +209,14 @@ PAGES = {
 }
 
 if __name__ == "__main__":
+    check = "--check" in sys.argv
+    stale = []
     for name, (title, body) in PAGES.items():
-        (OUT / name).write_text(HEAD.format(title=title) + body + FOOT, encoding="utf-8")
-        print("wrote", name)
+        page = HEAD.format(title=title) + body + FOOT
+        if not check:
+            (OUT / name).write_text(page, encoding="utf-8", newline="\n")
+            print("wrote", name)
+        elif (OUT / name).read_text(encoding="utf-8").replace("\r\n", "\n") != page:
+            stale.append(name)
+    if stale:
+        sys.exit(f"out of date (edit scripts/build_legal.py, then regenerate): {', '.join(stale)}")

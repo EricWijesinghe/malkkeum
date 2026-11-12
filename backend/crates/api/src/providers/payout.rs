@@ -261,7 +261,7 @@ mod tests {
     }
 
     fn transfer() -> Transfer {
-        Transfer { amount: 120_000, bank_code: "004", account: "12345678901".into(), holder: "홍길동".into(), memo: "말끔 정산".into() }
+        Transfer { amount: 120_000, bank_code: "004", account: "12345678901".into(), holder: "홍길동".into(), memo: "다해 정산".into() }
     }
 
     fn body_text(req: &Request) -> String {
@@ -281,7 +281,7 @@ mod tests {
         assert_eq!(sent["destination"], "seller-7");
         assert_eq!(sent["scheduleType"], "EXPRESS");
         assert_eq!(sent["amount"], json!({"currency": "KRW", "value": 120_000}));
-        assert_eq!(sent["transactionDescription"], "말끔 정산");
+        assert_eq!(sent["transactionDescription"], "다해 정산");
         assert!(sent.get("accountNumber").is_none(), "account data belongs to the seller, not the transfer");
     }
 
@@ -411,7 +411,7 @@ mod tests {
     #[test]
     fn description_is_seven_chars() {
         let mut t = transfer();
-        t.memo = "말끔청소정산서비스".into();
-        assert_eq!(payout_body("payout-1", "s", &t)["transactionDescription"], "말끔청소정산서");
+        t.memo = "다해청소정산서비스".into();
+        assert_eq!(payout_body("payout-1", "s", &t)["transactionDescription"], "다해청소정산서");
     }
 }

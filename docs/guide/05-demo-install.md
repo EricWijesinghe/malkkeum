@@ -1,6 +1,6 @@
 # 5. 체험용 설치 (이미지 파일로, GitHub 없이)
 
-GitHub 에서 이미지를 내려받지 않고, 미리 만들어 둔 **이미지 파일(.tar) 하나**로 말끔 서버를 설치해요.
+GitHub 에서 이미지를 내려받지 않고, 미리 만들어 둔 **이미지 파일(.tar) 하나**로 다해 서버를 설치해요.
 친구 집이나 발표 장소처럼 인터넷이 불안한 곳에서 시연할 때 써요. 설치가 끝나면 서비스는 인터넷 없이도 돌아요.
 
 > English summary: build the two images on your own PC, `docker save` them into one `.tar`,

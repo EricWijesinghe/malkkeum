@@ -119,7 +119,7 @@ void main() {
         ..reply('POST', '/auth/staff/mfa/enrol', {
           'secret': secret,
           'otpauth_uri':
-              'otpauth://totp/Malkkeum%20staff:ops%40example.test?secret=$secret',
+              'otpauth://totp/Dahae%20staff:ops%40example.test?secret=$secret',
         })
         ..reply('POST', '/auth/staff/mfa/enrol/confirm', {
           ..._tokens,

@@ -30,7 +30,7 @@ flutter:
 # Windows MSIX, built by scripts/store/build-msix.ps1 (msix:create CLI flags override these).
 # identity/publisher below are placeholders: real Partner Center values come from scripts/store/msix.local.psd1 or env.
 msix_config:
-  display_name: 말끔 관리자
+  display_name: 다해 관리자
   publisher_display_name: Malkkeum Test
   identity_name: com.malkkeum.console
   publisher: CN=Malkkeum Test

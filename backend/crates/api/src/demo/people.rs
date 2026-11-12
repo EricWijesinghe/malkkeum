@@ -25,7 +25,7 @@ pub const SERVICE_CODES: [&str; 8] = ["studio", "kitchen", "bathroom", "mattress
 
 /// (leader name, team name, status, fee bps, self-deleted)
 const PROS: [(&str, &str, &str, i64, bool); 12] = [
-    ("김태현", "말끔케어 강남팀", "verified", 2000, false),
+    ("김태현", "다해케어 강남팀", "verified", 2000, false),
     ("박소영", "햇살청소 송파팀", "verified", 2000, false),
     ("이준호", "깔끔홈 마포점", "verified", 1800, false),
     ("최유나", "반짝이네 서초팀", "verified", 2000, false),

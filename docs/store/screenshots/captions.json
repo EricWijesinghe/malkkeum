@@ -79,10 +79,10 @@
     }
   },
   "feature": {
-    "ko": { "title": "말끔", "tagline": "검증된 청소 전문가, 투명한 가격" },
-    "en": { "title": "Malkkeum", "tagline": "Verified cleaners, clear prices" },
-    "ja": { "title": "말끔", "tagline": "認証済みのプロ、わかりやすい料金" },
-    "zh": { "title": "말끔", "tagline": "认证清洁专家，价格透明" },
-    "vi": { "title": "Malkkeum", "tagline": "Chuyên gia vệ sinh được xác minh, giá minh bạch" }
+    "ko": { "title": "다해", "tagline": "검증된 청소 전문가, 투명한 가격" },
+    "en": { "title": "Dahae", "tagline": "Verified cleaners, clear prices" },
+    "ja": { "title": "다해", "tagline": "認証済みのプロ、わかりやすい料金" },
+    "zh": { "title": "다해", "tagline": "认证清洁专家，价格透明" },
+    "vi": { "title": "Dahae", "tagline": "Chuyên gia vệ sinh được xác minh, giá minh bạch" }
   }
 }
