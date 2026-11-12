@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -94,5 +95,14 @@ void main() {
     final first = Analytics.newAnonId();
     expect(RegExp(r'^[0-9a-f]{32}$').hasMatch(first), isTrue);
     expect(Analytics.newAnonId(), isNot(first));
+  });
+
+  test('platform labels match analytics.rs PLATFORMS, desktop included', () {
+    expect(analyticsPlatform(web: true, target: TargetPlatform.windows), 'web');
+    expect(analyticsPlatform(web: false, target: TargetPlatform.android), 'android');
+    expect(analyticsPlatform(web: false, target: TargetPlatform.iOS), 'ios');
+    expect(analyticsPlatform(web: false, target: TargetPlatform.windows), 'windows');
+    expect(analyticsPlatform(web: false, target: TargetPlatform.macOS), 'macos');
+    expect(analyticsPlatform(web: false, target: TargetPlatform.linux), '');
   });
 }

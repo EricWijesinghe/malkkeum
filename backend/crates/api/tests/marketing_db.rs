@@ -205,3 +205,18 @@ async fn funnel_and_cohorts_count_installs_signups_and_bookings(pool: PgPool) {
     assert_eq!(size, 2, "both signups land in a cohort");
     assert_eq!(w1, 0, "no booking falls in week 1 after signup");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn desktop_platforms_are_stored_and_unknown_ones_rejected_by_the_db(pool: PgPool) {
+    let app = app(pool.clone());
+    let anon = Uuid::now_v7();
+    let events = json!([{ "name": "app_open", "platform": "windows" }, { "name": "app_open", "platform": "macos" }]);
+    let (st, body) = call(&app, "POST", "/v1/events", None, Some(json!({ "anon_id": anon, "events": events }))).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let stored: Vec<String> = sqlx::query_scalar("SELECT platform FROM analytics_events WHERE anon_id = $1 ORDER BY platform").bind(anon).fetch_all(&pool).await.expect("rows");
+    assert_eq!(stored, ["macos", "windows"]);
+
+    // The CHECK (0110) still guards writes that bypass the API allowlist.
+    let bad = sqlx::query("INSERT INTO analytics_events (anon_id, name, platform) VALUES ($1, 'app_open', 'linux')").bind(anon).execute(&pool).await;
+    assert!(bad.is_err(), "the DB must reject a platform outside the allowlist");
+}

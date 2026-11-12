@@ -20,7 +20,7 @@ use uuid::Uuid;
 pub const MAX_BATCH: usize = 50;
 /// Event names the apps may send. Anything else is rejected, so no new data shape gets in unreviewed.
 pub const EVENT_NAMES: [&str; 8] = ["app_open", "signup_start", "signup_done", "quote_view", "booking_start", "booking_done", "payment_done", "review_done"];
-const PLATFORMS: [&str; 3] = ["android", "ios", "web"];
+const PLATFORMS: [&str; 5] = ["android", "ios", "web", "windows", "macos"];
 pub const RETENTION_DAYS: i64 = 90;
 
 #[derive(Deserialize)]
@@ -206,5 +206,11 @@ mod tests {
     fn rejects_unknown_platforms() {
         let b = batch(r#"{"anon_id":"0195e0a2-0000-7000-8000-000000000001","events":[{"name":"app_open","platform":"windows-phone"}]}"#);
         assert!(validate(&b).is_err());
+    }
+
+    #[test]
+    fn accepts_desktop_platforms() {
+        let b = batch(r#"{"anon_id":"0195e0a2-0000-7000-8000-000000000001","events":[{"name":"app_open","platform":"windows"},{"name":"app_open","platform":"macos"}]}"#);
+        assert!(validate(&b).is_ok());
     }
 }

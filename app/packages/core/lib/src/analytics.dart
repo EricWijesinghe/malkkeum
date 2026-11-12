@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Product events the server accepts (analytics.rs EVENT_NAMES). Anything else is dropped here.
@@ -14,6 +15,18 @@ const analyticsEventNames = {
   'payment_done',
   'review_done',
 };
+
+/// The label for analytics.rs PLATFORMS; '' (sent as none) where there is none, e.g. Linux.
+String analyticsPlatform({bool web = kIsWeb, TargetPlatform? target}) {
+  if (web) return 'web';
+  return switch (target ?? defaultTargetPlatform) {
+    TargetPlatform.iOS => 'ios',
+    TargetPlatform.android => 'android',
+    TargetPlatform.windows => 'windows',
+    TargetPlatform.macOS => 'macos',
+    _ => '',
+  };
+}
 
 final _screenPattern = RegExp(r'^[a-z_]{1,40}$');
 final _anonPattern = RegExp(r'^[0-9a-f]{32}$');
@@ -56,7 +69,7 @@ class Analytics {
   bool track(String name, {String? screen}) {
     if (!_consented || !analyticsEventNames.contains(name)) return false;
     if (screen != null && !_screenPattern.hasMatch(screen)) return false;
-    // Desktop builds pass no platform: the API stores NULL instead of a wrong label (it accepts android/ios/web only).
+    // An unknown platform (e.g. Linux) is sent as none: the API stores NULL instead of a wrong label.
     _queue.add({'name': name, if (platform.isNotEmpty) 'platform': platform, 'screen': ?screen});
     if (_queue.length >= _batchSize) unawaited(flush());
     return true;
