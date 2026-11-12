@@ -63,6 +63,7 @@ pub fn test_config() -> Config {
         apple_team_id: None,
         ai_chat_retention_days: 180,
         upload_orphan_days: 30,
+        db: Default::default(),
         metrics_token: None,
         noshow_grace_minutes: 30,
     }

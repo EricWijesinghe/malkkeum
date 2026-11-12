@@ -73,9 +73,9 @@ async fn insert_settlement(db: &PgPool, pro: Uuid, booking: Uuid, gross: i64, fe
 /// Three March bookings plus one out-of-period booking, with payments, settlements and checkouts.
 async fn seed_march(db: &PgPool) -> Uuid {
     seed_catalog(db).await;
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('010-7000-0001', 'fin') RETURNING id").fetch_one(db).await.expect("user");
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000001', 'fin') RETURNING id").fetch_one(db).await.expect("user");
     let pro: Uuid = sqlx::query_scalar(
-        "INSERT INTO pros (phone, name, team_name, status) VALUES ('010-7000-0101', 'pro', 'team', 'verified') RETURNING id",
+        "INSERT INTO pros (phone, name, team_name, status) VALUES ('01070000101', 'pro', 'team', 'verified') RETURNING id",
     )
     .fetch_one(db)
     .await

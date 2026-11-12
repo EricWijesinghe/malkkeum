@@ -9,6 +9,10 @@ services:
       POSTGRES_DB: cleaning
       POSTGRES_USER: app
       POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+    # Sized for a 2 GB VPS (API pool 10 + headroom). Autovacuum is tuned for churn; see docs/DEPLOY.md.
+    command: >-
+      postgres -c shared_buffers=256MB -c effective_cache_size=1GB -c work_mem=8MB -c maintenance_work_mem=128MB -c max_connections=50 -c wal_compression=on -c max_wal_size=1GB -c min_wal_size=256MB -c checkpoint_completion_target=0.9 -c random_page_cost=1.1 -c password_encryption=scram-sha-256 -c autovacuum_max_workers=2 -c autovacuum_naptime=30s -c autovacuum_vacuum_scale_factor=0.05 -c autovacuum_analyze_scale_factor=0.02 -c autovacuum_vacuum_cost_limit=1000 -c log_min_duration_statement=500 -c log_lock_waits=on -c log_temp_files=10MB -c log_checkpoints=on
+    shm_size: 256mb
     volumes: [dbdata:/var/lib/postgresql/data]
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
 
@@ -19,6 +23,7 @@ services:
     depends_on: { db: { condition: service_healthy } }
     environment:
       DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
+      DB_MAX_CONNECTIONS: "10"
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
       HEARTBEAT_URL: ${HEARTBEAT_URL:-}

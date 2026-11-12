@@ -24,9 +24,9 @@ fn admin_token() -> String {
 /// Returns (settlement id, pro id).
 async fn seed(db: &PgPool) -> (Uuid, Uuid) {
     seed_catalog(db).await;
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('010-7100-0001', 'pay') RETURNING id").fetch_one(db).await.expect("user");
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01071000001', 'pay') RETURNING id").fetch_one(db).await.expect("user");
     let pro: Uuid = sqlx::query_scalar(
-        "INSERT INTO pros (phone, name, team_name, status) VALUES ('010-7100-0101', 'pro', 'team', 'verified') RETURNING id",
+        "INSERT INTO pros (phone, name, team_name, status) VALUES ('01071000101', 'pro', 'team', 'verified') RETURNING id",
     )
     .fetch_one(db)
     .await

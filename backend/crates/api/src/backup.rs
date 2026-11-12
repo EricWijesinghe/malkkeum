@@ -474,6 +474,37 @@ async fn fetch_cmd(config: &Config, name: &str, out: &str) -> i32 {
     }
 }
 
+/// `api backup-seal <in> <out>` / `api backup-open <in> <out>`: the offsite encryption without the upload.
+/// The restore drill (scripts/ci/backup-drill.sh) runs a real dump through these to prove it survives
+/// the same code path the offsite copy uses. Half-written output is removed on failure.
+fn convert_cmd(config: &Config, input: &str, output: &str, seal: bool) -> i32 {
+    let key = file_key(&config.data_key);
+    let result = convert(&key, Path::new(input), Path::new(output), seal);
+    match result {
+        Ok(()) => {
+            println!("{}: {output}", if seal { "sealed" } else { "opened" });
+            0
+        }
+        Err(e) => {
+            let _ = std::fs::remove_file(output);
+            eprintln!("{} failed: {e}", if seal { "seal" } else { "open" });
+            1
+        }
+    }
+}
+
+fn convert(key: &[u8; 32], input: &Path, output: &Path, seal: bool) -> Result<(), Fail> {
+    let src = io::BufReader::new(std::fs::File::open(input)?);
+    let mut dst = io::BufWriter::new(std::fs::File::create(output)?);
+    if seal {
+        encrypt_stream(key, src, &mut dst)?;
+    } else {
+        decrypt_stream(key, src, &mut dst).map_err(|_| Fail::Corrupt)?;
+    }
+    dst.flush()?;
+    Ok(())
+}
+
 /// `api backup-list`: object names, newest last.
 async fn list_cmd(config: &Config) -> i32 {
     let Ok((_db, integ)) = open(config).await else {
@@ -511,9 +542,11 @@ pub async fn cli(args: &[String]) -> i32 {
     match args {
         [cmd, file] if cmd == "backup-upload" => upload_cmd(&config, file).await,
         [cmd, name, out] if cmd == "backup-fetch" => fetch_cmd(&config, name, out).await,
+        [cmd, input, output] if cmd == "backup-seal" => convert_cmd(&config, input, output, true),
+        [cmd, input, output] if cmd == "backup-open" => convert_cmd(&config, input, output, false),
         [cmd] if cmd == "backup-list" => list_cmd(&config).await,
         _ => {
-            eprintln!("usage: api backup-upload <file> | backup-fetch <object> <out> | backup-list");
+            eprintln!("usage: api backup-upload <file> | backup-fetch <object> <out> | backup-list | backup-seal <in> <out> | backup-open <in> <out>");
             2
         }
     }

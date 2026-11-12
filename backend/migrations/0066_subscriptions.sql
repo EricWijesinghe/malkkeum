@@ -45,4 +45,4 @@ CREATE TABLE subscription_visits (
 CREATE INDEX subscription_visits_due_idx ON subscription_visits (visit_date) WHERE state = 'planned';
 
 ALTER TABLE bookings ADD COLUMN subscription_id UUID REFERENCES subscriptions(id);
-CREATE INDEX bookings_subscription_idx ON bookings (subscription_id) WHERE subscription_id IS NOT NULL;
+-- bookings_subscription_idx is built concurrently in 0098 (bookings is a big table).

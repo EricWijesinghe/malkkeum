@@ -124,7 +124,7 @@ async fn funnel(State(s): State<AppState>, _st: Staff, Query(q): Query<WindowQue
            (SELECT count(*) FROM cohort) AS signed_up,
            (SELECT count(*) FROM cohort c WHERE EXISTS (SELECT 1 FROM bookings b WHERE b.user_id = c.id)) AS quoted,
            (SELECT count(*) FROM cohort c WHERE EXISTS (SELECT 1 FROM bookings b WHERE b.user_id = c.id AND b.status BETWEEN 1 AND 3)) AS booked,
-           (SELECT count(*) FROM cohort c WHERE EXISTS (SELECT 1 FROM payments p JOIN bookings b ON b.id = p.booking_id WHERE b.user_id = c.id AND p.status IN ('paid', 'partially_refunded', 'refunded'))) AS paid,
+           (SELECT count(*) FROM cohort c WHERE EXISTS (SELECT 1 FROM payments p JOIN bookings b ON b.id = p.booking_id WHERE b.user_id = c.id AND p.kind <> 'tip' AND p.status IN ('paid','partially_refunded','refunded'))) AS paid,
            (SELECT count(*) FROM cohort c WHERE (SELECT count(*) FROM bookings b WHERE b.user_id = c.id AND b.status = 3) >= 2) AS repeat_buyers",
     )
     .bind(days)
