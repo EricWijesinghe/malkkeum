@@ -286,6 +286,17 @@ role_extractor!(Member, is_member_role);
 role_extractor!(Staff, |r| r.is_staff());
 role_extractor!(Admin, |r| r == Role::StaffAdmin);
 
+/// The staff member's role as stored now, not as the token claims (a token outlives a demotion
+/// for up to ACCESS_TTL_MIN). Missing or deactivated is 401. Use it for money decisions.
+pub async fn live_staff_role(db: &sqlx::PgPool, id: Uuid) -> Result<Role, ApiError> {
+    let role: Option<String> = sqlx::query_scalar("SELECT role FROM staff WHERE id = $1 AND active").bind(id).fetch_optional(db).await?;
+    match role.as_deref() {
+        Some("admin") => Ok(Role::StaffAdmin),
+        Some(_) => Ok(Role::StaffConsultant),
+        None => Err(ApiError::Unauthorized),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

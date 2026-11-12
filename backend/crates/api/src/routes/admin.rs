@@ -7,7 +7,7 @@ use super::{
     chat::{self, MessageRow, THREAD_COLS, ThreadRow},
 };
 use crate::{
-    auth::{Role, Staff},
+    auth::{Role, Staff, live_staff_role},
     contract::{cursor_part, decode_cursor, encode_cursor, page_limit, paged},
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
@@ -316,15 +316,9 @@ fn check_quote_price(price: Won, deposit: Won, estimate: Option<i64>, override_o
 }
 
 async fn send_quote(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>, Json(q): Json<SendQuote>) -> ApiResult<Json<MessageRow>> {
-    // A deactivated account's access token lives up to ACCESS_TTL_MIN; money actions check the row now.
-    let active: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)")
-        .bind(st.id)
-        .fetch_one(&s.db)
-        .await?;
-    if !active {
-        return Err(ApiError::Unauthorized);
-    }
-    if q.override_ratio && st.role != Role::StaffAdmin {
+    // Role and active flag from the staff row, not the token: a demoted or deactivated account's token lives on.
+    let role = live_staff_role(&s.db, st.id).await?;
+    if q.override_ratio && role != Role::StaffAdmin {
         return Err(ApiError::Forbidden);
     }
     if q.note.as_ref().is_some_and(|n| n.chars().count() > MAX_NOTE) {

@@ -331,6 +331,9 @@ struct AdjustInput {
 
 /// Console grant (positive) or deduction (negative, oldest lots first). Always audited.
 async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<AdjustInput>) -> ApiResult<Json<Value>> {
+    if crate::auth::live_staff_role(&s.db, a.id).await? != crate::auth::Role::StaffAdmin {
+        return Err(ApiError::Forbidden);
+    }
     let reason = input.reason.trim().to_string();
     if input.amount == 0 || input.amount.abs() > MAX_ADJUST {
         return Err(ApiError::BadRequest("points_adjust_amount"));
