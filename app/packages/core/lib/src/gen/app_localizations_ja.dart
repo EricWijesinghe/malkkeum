@@ -1796,6 +1796,24 @@ class TJa extends T {
   String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
 
   @override
+  String get bkStepConsult => '相談依頼';
+
+  @override
+  String get bkStepConfirmed => '予約確定';
+
+  @override
+  String get bkStepMatched => 'マッチング完了';
+
+  @override
+  String get bkStepCompleted => 'サービス完了';
+
+  @override
+  String get bkViewWeek => '週表示';
+
+  @override
+  String get bkViewMonth => '月表示';
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override

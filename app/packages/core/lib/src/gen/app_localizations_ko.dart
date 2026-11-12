@@ -1796,6 +1796,24 @@ class TKo extends T {
   String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
 
   @override
+  String get bkStepConsult => '상담요청';
+
+  @override
+  String get bkStepConfirmed => '예약확정';
+
+  @override
+  String get bkStepMatched => '매칭 완료';
+
+  @override
+  String get bkStepCompleted => '서비스 완료';
+
+  @override
+  String get bkViewWeek => '주간 보기';
+
+  @override
+  String get bkViewMonth => '월간 보기';
+
+  @override
   String get themeTitle => '테마';
 
   @override

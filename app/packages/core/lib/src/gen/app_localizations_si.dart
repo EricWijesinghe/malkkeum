@@ -1842,6 +1842,24 @@ class TSi extends T {
   String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
 
   @override
+  String get bkStepConsult => 'උපදේශන ඉල්ලීම';
+
+  @override
+  String get bkStepConfirmed => 'වෙන්කිරීම තහවුරුයි';
+
+  @override
+  String get bkStepMatched => 'කණ්ඩායම ගැළපුණා';
+
+  @override
+  String get bkStepCompleted => 'සේවාව අවසන්';
+
+  @override
+  String get bkViewWeek => 'සතිපතා දසුන';
+
+  @override
+  String get bkViewMonth => 'මාසික දසුන';
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override

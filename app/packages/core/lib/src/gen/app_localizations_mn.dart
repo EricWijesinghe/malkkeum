@@ -1842,6 +1842,24 @@ class TMn extends T {
       'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
+  String get bkStepConsult => 'Зөвлөгөө хүссэн';
+
+  @override
+  String get bkStepConfirmed => 'Захиалга баталгаажсан';
+
+  @override
+  String get bkStepMatched => 'Баг томилогдсон';
+
+  @override
+  String get bkStepCompleted => 'Үйлчилгээ дууссан';
+
+  @override
+  String get bkViewWeek => 'Долоо хоногоор харах';
+
+  @override
+  String get bkViewMonth => 'Сараар харах';
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override

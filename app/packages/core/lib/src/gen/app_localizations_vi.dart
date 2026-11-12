@@ -1824,6 +1824,24 @@ class TVi extends T {
   String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
 
   @override
+  String get bkStepConsult => 'Yêu cầu tư vấn';
+
+  @override
+  String get bkStepConfirmed => 'Đã xác nhận đặt lịch';
+
+  @override
+  String get bkStepMatched => 'Đã ghép đội';
+
+  @override
+  String get bkStepCompleted => 'Hoàn tất dịch vụ';
+
+  @override
+  String get bkViewWeek => 'Xem theo tuần';
+
+  @override
+  String get bkViewMonth => 'Xem theo tháng';
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override

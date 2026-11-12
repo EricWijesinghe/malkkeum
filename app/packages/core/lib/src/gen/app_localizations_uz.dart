@@ -1849,6 +1849,24 @@ class TUz extends T {
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
 
   @override
+  String get bkStepConsult => 'Maslahat so\'raldi';
+
+  @override
+  String get bkStepConfirmed => 'Bron tasdiqlandi';
+
+  @override
+  String get bkStepMatched => 'Jamoa biriktirildi';
+
+  @override
+  String get bkStepCompleted => 'Xizmat yakunlandi';
+
+  @override
+  String get bkViewWeek => 'Haftalik ko\'rinish';
+
+  @override
+  String get bkViewMonth => 'Oylik ko\'rinish';
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override

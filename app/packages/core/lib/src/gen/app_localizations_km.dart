@@ -1838,6 +1838,24 @@ class TKm extends T {
       'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
 
   @override
+  String get bkStepConsult => 'បានស្នើសុំពិគ្រោះ';
+
+  @override
+  String get bkStepConfirmed => 'បានបញ្ជាក់ការកក់';
+
+  @override
+  String get bkStepMatched => 'បានផ្គូផ្គងរួច';
+
+  @override
+  String get bkStepCompleted => 'សេវាបានបញ្ចប់';
+
+  @override
+  String get bkViewWeek => 'មើលប្រចាំសប្តាហ៍';
+
+  @override
+  String get bkViewMonth => 'មើលប្រចាំខែ';
+
+  @override
   String get themeTitle => 'ធីម';
 
   @override

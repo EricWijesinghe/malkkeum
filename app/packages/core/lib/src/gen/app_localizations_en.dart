@@ -1827,6 +1827,24 @@ class TEn extends T {
   String get hhHint => 'Saved to this address and editable per booking.';
 
   @override
+  String get bkStepConsult => 'Consultation requested';
+
+  @override
+  String get bkStepConfirmed => 'Booking confirmed';
+
+  @override
+  String get bkStepMatched => 'Matched';
+
+  @override
+  String get bkStepCompleted => 'Service completed';
+
+  @override
+  String get bkViewWeek => 'Week view';
+
+  @override
+  String get bkViewMonth => 'Month view';
+
+  @override
   String get themeTitle => 'Theme';
 
   @override

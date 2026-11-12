@@ -1840,6 +1840,24 @@ class TRu extends T {
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
 
   @override
+  String get bkStepConsult => 'Запрос консультации';
+
+  @override
+  String get bkStepConfirmed => 'Бронь подтверждена';
+
+  @override
+  String get bkStepMatched => 'Команда назначена';
+
+  @override
+  String get bkStepCompleted => 'Услуга выполнена';
+
+  @override
+  String get bkViewWeek => 'По неделям';
+
+  @override
+  String get bkViewMonth => 'По месяцам';
+
+  @override
   String get themeTitle => 'Тема';
 
   @override

@@ -1841,6 +1841,24 @@ class TId extends T {
   String get hhHint => 'Disimpan di alamat ini dan bisa diubah per pemesanan.';
 
   @override
+  String get bkStepConsult => 'Konsultasi diminta';
+
+  @override
+  String get bkStepConfirmed => 'Pemesanan dikonfirmasi';
+
+  @override
+  String get bkStepMatched => 'Tim ditetapkan';
+
+  @override
+  String get bkStepCompleted => 'Layanan selesai';
+
+  @override
+  String get bkViewWeek => 'Tampilan minggu';
+
+  @override
+  String get bkViewMonth => 'Tampilan bulan';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override
