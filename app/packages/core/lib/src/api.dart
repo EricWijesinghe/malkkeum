@@ -11,13 +11,23 @@ import 'session.dart';
 /// API base URL. Override at build time: --dart-define=API_BASE=https://api.example.com
 const _localHosts = {'localhost', '127.0.0.1', ''};
 
-String defaultApiBase() {
-  const fromEnv = String.fromEnvironment('API_BASE');
+/// The parameters exist for tests; apps call `defaultApiBase()`.
+String defaultApiBase({
+  String fromEnv = const String.fromEnvironment('API_BASE'),
+  bool release = kReleaseMode,
+  bool web = kIsWeb,
+}) {
   if (fromEnv.isNotEmpty) return fromEnv;
   // Deployed web build (console): the API lives on the same domain, so one build fits every install.
-  if (kIsWeb && !_localHosts.contains(Uri.base.host)) return Uri.base.origin;
+  if (web && !_localHosts.contains(Uri.base.host)) return Uri.base.origin;
+  // A store build without API_BASE would send logins in cleartext to the device itself: stop at launch.
+  if (release && !web) {
+    throw StateError(
+      'API_BASE is not set. Build with --dart-define=API_BASE=https://<domain>',
+    );
+  }
   // Android emulator reaches the host machine through 10.0.2.2.
-  if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:8080';
+  if (!web && Platform.isAndroid) return 'http://10.0.2.2:8080';
   return 'http://127.0.0.1:8080';
 }
 
@@ -49,9 +59,8 @@ class ApiClient {
       for (final e in (query ?? {}).entries)
         if (e.value != null) e.key: e.value!,
     };
-    return Uri.parse(
-      '$baseUrl/v1$path',
-    ).replace(queryParameters: q.isEmpty ? null : q);
+    return Uri.parse('$baseUrl/v1$path')
+        .replace(queryParameters: q.isEmpty ? null : q);
   }
 
   Future<dynamic> get(String path, {Map<String, String?>? query}) =>
@@ -152,13 +161,11 @@ class ApiClient {
   /// token signs the user out; a network blip keeps the session for the next attempt.
   Future<bool> _refresh() => _refreshing ??= () async {
     try {
-      final r =
-          await _exec('/auth/refresh', () {
-                return http.Request('POST', _uri('/auth/refresh'))
-                  ..headers['Content-Type'] = 'application/json'
-                  ..body = jsonEncode({'refresh_token': session.refreshToken});
-              }, retried: true)
-              as Map<String, dynamic>;
+      final r = await _exec('/auth/refresh', () {
+        return http.Request('POST', _uri('/auth/refresh'))
+          ..headers['Content-Type'] = 'application/json'
+          ..body = jsonEncode({'refresh_token': session.refreshToken});
+      }, retried: true) as Map<String, dynamic>;
       await session.save(r);
       return true;
     } on ApiException catch (e) {
