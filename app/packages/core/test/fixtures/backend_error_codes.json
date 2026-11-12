@@ -116,6 +116,7 @@
     "invalid_provider",
     "invalid_push_token",
     "invalid_quote",
+    "invalid_request",
     "invalid_review",
     "invalid_sender",
     "invalid_service",

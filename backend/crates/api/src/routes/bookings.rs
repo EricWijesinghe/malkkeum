@@ -3,7 +3,7 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_seen_quote, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
         SeenQuote, price_for, record_payment, take_balance, take_deposit,
     },
     catalog::{load_formula, load_peak_config},
@@ -536,9 +536,9 @@ struct DepositRequest {
 async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<DepositRequest>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
     let deposit = deposit_due(&b)?;
-    check_seen_quote(&s.db, &b, deposit, &p.seen).await?;
+    p.seen.validate()?;
     let mut tx = s.db.begin().await?;
-    take_deposit(&mut tx, id, deposit).await?;
+    take_deposit(&mut tx, id, deposit, &p.seen).await?;
     // Charge last: after this only the commit can fail, and that path refunds.
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(deposit), "deposit").await?;
     if let Err(e) = tx.commit().await {

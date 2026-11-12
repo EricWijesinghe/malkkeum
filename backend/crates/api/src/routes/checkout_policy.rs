@@ -68,6 +68,7 @@ pub fn refund_reason(e: &ApiError) -> String {
     match e {
         ApiError::Conflict(code) | ApiError::BadRequest(code) => (*code).to_string(),
         ApiError::Domain(d) => d.code().to_string(),
+        ApiError::PriceChanged(_) => "price_changed".to_string(),
         _ => "fulfil_failed".to_string(),
     }
 }
