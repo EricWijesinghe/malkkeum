@@ -1850,6 +1850,15 @@ class TVi extends T {
   String get cQuoteOverride => 'Gửi báo giá chênh lệch lớn so với ước tính';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Báo giá $price · ước tính $estimate · $ratio×. Vẫn gửi?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Giá chênh lệch lớn so với ước tính: cần quản trị viên duyệt';
+
+  @override
   String get quick_reschedule => 'Muốn đổi lịch';
 
   @override

@@ -1822,6 +1822,14 @@ class TKo extends T {
   String get cQuoteOverride => '예상 금액과 크게 다른 견적 보내기';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return '견적 $price · 예상 금액 $estimate · $ratio배. 그래도 보낼까요?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin => '예상 금액과 차이가 커서 관리자 승인이 필요해요';
+
+  @override
   String get quick_reschedule => '일정 변경할래요';
 
   @override

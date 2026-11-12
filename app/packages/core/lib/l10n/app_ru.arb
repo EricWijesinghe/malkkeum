@@ -576,6 +576,8 @@
  "quoteSuperseded": "Заменено новой сметой",
  "quick_quote": "Вопрос по смете",
  "cQuoteOverride": "Отправить смету, сильно отличающуюся от оценки",
+ "cQuoteOverrideBody": "Смета {price} · оценка {estimate} · {ratio}×. Всё равно отправить?",
+ "cQuoteNeedsAdmin": "Цена сильно отличается от оценки: нужно одобрение администратора",
  "quick_reschedule": "Изменить время",
  "themeTitle": "Тема",
  "themeDark": "Тёмная",

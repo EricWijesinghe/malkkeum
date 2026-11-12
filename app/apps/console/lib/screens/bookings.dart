@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
-import 'confirm_action.dart';
 import 'inbox.dart';
 
 /// List + detail. Desktop shows both side by side; phones push the detail.
@@ -616,20 +615,54 @@ class _QuoteDeskState extends State<_QuoteDesk> {
       widget.onSent();
     } on ApiException catch (e) {
       if (!mounted) return;
-      // Far from the estimate: ask, then resend with the override (the server allows it for admins only).
-      if (e.code == 'quote_override_required' &&
-          await confirmAction(context, context.t.cQuoteOverride) &&
-          mounted) {
-        setState(() => _busy = false);
-        await _send(override: true);
+      // Far from the estimate: admins confirm and resend with the override; others need an admin.
+      if (e.code == 'quote_override_required') {
+        if (!context.console.isAdmin) {
+          showToast(context, context.t.cQuoteNeedsAdmin);
+        } else if (await _confirmOverride() && mounted) {
+          setState(() => _busy = false);
+          await _send(override: true);
+        }
         return;
       }
-      if (mounted) showToast(context, context.t.error(e));
+      showToast(context, context.t.error(e));
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Shows the typed price against the estimate before an admin overrides the ratio guard.
+  Future<bool> _confirmOverride() async {
+    final t = context.t;
+    final price = int.parse(_price.text);
+    final estimate = widget.booking.estimate ?? 0;
+    final ratio = estimate > 0 ? (price / estimate).toStringAsFixed(1) : '–';
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.cQuoteOverride),
+        content: Text(
+          t.cQuoteOverrideBody(
+            context.won(price),
+            context.won(estimate),
+            ratio,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(t.cQuoteOverride),
+          ),
+        ],
+      ),
+    );
+    return ok ?? false;
   }
 
   @override

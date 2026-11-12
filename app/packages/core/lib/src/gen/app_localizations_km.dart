@@ -1864,6 +1864,15 @@ class TKm extends T {
   String get cQuoteOverride => 'ផ្ញើសម្រង់តម្លៃដែលខុសឆ្ងាយពីការប៉ាន់ស្មាន';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'សម្រង់តម្លៃ $price · ប៉ាន់ស្មាន $estimate · $ratio×។ នៅតែផ្ញើ?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'តម្លៃខុសឆ្ងាយពីការប៉ាន់ស្មាន៖ ត្រូវការការអនុម័តពីអ្នកគ្រប់គ្រង';
+
+  @override
   String get quick_reschedule => 'ប្តូរកាលវិភាគ';
 
   @override

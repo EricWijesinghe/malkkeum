@@ -1856,6 +1856,15 @@ class TTh extends T {
   String get cQuoteOverride => 'ส่งใบเสนอราคาที่ต่างจากราคาประเมินมาก';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'ใบเสนอราคา $price · ประเมิน $estimate · $ratio× ยังจะส่งไหม?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'ราคาต่างจากที่ประเมินมาก ต้องให้ผู้ดูแลอนุมัติ';
+
+  @override
   String get quick_reschedule => 'ขอเปลี่ยนนัด';
 
   @override

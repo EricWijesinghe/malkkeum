@@ -1818,6 +1818,14 @@ class TZh extends T {
   String get cQuoteOverride => '发送与预估差距很大的报价';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return '报价 $price · 预估 $estimate · $ratio倍。仍要发送吗？';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin => '与预估差距过大，需要管理员批准';
+
+  @override
   String get quick_reschedule => '想改时间';
 
   @override

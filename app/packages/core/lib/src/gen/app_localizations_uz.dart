@@ -1876,6 +1876,15 @@ class TUz extends T {
       'Taxmindan ancha farq qiladigan narx taklifini yuborish';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Narx taklifi $price · taxmin $estimate · $ratio×. Baribir yuborilsinmi?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Narx taxmindan ancha farq qiladi: admin tasdiqlashi kerak';
+
+  @override
   String get quick_reschedule => 'Jadvalni oʻzgartirish';
 
   @override

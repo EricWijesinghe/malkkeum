@@ -576,6 +576,8 @@
  "quoteSuperseded": "नयाँ उद्धरणले बदलियो",
  "quick_quote": "उद्धरणबारे",
  "cQuoteOverride": "अनुमानभन्दा धेरै फरक उद्धरण पठाउनुहोस्",
+ "cQuoteOverrideBody": "उद्धरण {price} · अनुमान {estimate} · {ratio}×। पठाउने?",
+ "cQuoteNeedsAdmin": "मूल्य अनुमानभन्दा धेरै फरक छ: एडमिनको स्वीकृति चाहिन्छ",
  "quick_reschedule": "समय परिवर्तन गर्न चाहन्छु",
  "themeTitle": "थिम",
  "themeDark": "डार्क",

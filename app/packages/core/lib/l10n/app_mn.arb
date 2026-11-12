@@ -576,6 +576,8 @@
  "quoteSuperseded": "Шинэ үнийн саналаар солигдсон",
  "quick_quote": "Үнийн саналын талаар",
  "cQuoteOverride": "Тооцооноос их зөрүүтэй үнийн санал илгээх",
+ "cQuoteOverrideBody": "Үнийн санал {price} · тооцоо {estimate} · {ratio}×. Илгээх үү?",
+ "cQuoteNeedsAdmin": "Үнэ тооцооноос их зөрүүтэй: админ зөвшөөрөх шаардлагатай",
  "quick_reschedule": "Хуваарь өөрчлөх",
  "themeTitle": "Загвар",
  "themeDark": "Харанхуй",

@@ -1864,6 +1864,15 @@ class TNe extends T {
   String get cQuoteOverride => 'अनुमानभन्दा धेरै फरक उद्धरण पठाउनुहोस्';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'उद्धरण $price · अनुमान $estimate · $ratio×। पठाउने?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'मूल्य अनुमानभन्दा धेरै फरक छ: एडमिनको स्वीकृति चाहिन्छ';
+
+  @override
   String get quick_reschedule => 'समय परिवर्तन गर्न चाहन्छु';
 
   @override

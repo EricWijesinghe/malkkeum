@@ -1868,6 +1868,15 @@ class TMn extends T {
   String get cQuoteOverride => 'Тооцооноос их зөрүүтэй үнийн санал илгээх';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Үнийн санал $price · тооцоо $estimate · $ratio×. Илгээх үү?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Үнэ тооцооноос их зөрүүтэй: админ зөвшөөрөх шаардлагатай';
+
+  @override
   String get quick_reschedule => 'Хуваарь өөрчлөх';
 
   @override

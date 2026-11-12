@@ -1867,6 +1867,15 @@ class TId extends T {
   String get cQuoteOverride => 'Kirim penawaran yang jauh dari perkiraan';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Penawaran $price · perkiraan $estimate · $ratio×. Tetap kirim?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Harga jauh dari perkiraan: perlu persetujuan admin';
+
+  @override
   String get quick_reschedule => 'Ubah jadwal';
 
   @override

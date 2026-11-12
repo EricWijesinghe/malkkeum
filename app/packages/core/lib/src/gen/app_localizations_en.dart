@@ -1853,6 +1853,15 @@ class TEn extends T {
   String get cQuoteOverride => 'Send a quote far from the estimate';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Quote $price · estimate $estimate · $ratio×. Send anyway?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'This price is far from the estimate: an admin needs to approve it';
+
+  @override
   String get quick_reschedule => 'Change the schedule';
 
   @override

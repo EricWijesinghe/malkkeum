@@ -1876,6 +1876,15 @@ class TFil extends T {
   String get cQuoteOverride => 'Ipadala ang quote na malayo sa tantya';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Quote $price · tantya $estimate · $ratio×. Ipadala pa rin?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Malayo ang presyo sa tantya: kailangan ng admin na mag-apruba';
+
+  @override
   String get quick_reschedule => 'Palitan ang iskedyul';
 
   @override

@@ -576,6 +576,8 @@
  "quoteSuperseded": "新しい見積に更新されました",
  "quick_quote": "見積について",
  "cQuoteOverride": "概算と大きく異なる見積を送る",
+ "cQuoteOverrideBody": "見積 {price}・概算 {estimate}・{ratio}倍。送信しますか？",
+ "cQuoteNeedsAdmin": "概算との差が大きいため、管理者の承認が必要です",
  "quick_reschedule": "日程を変更したい",
  "themeTitle": "テーマ",
  "themeDark": "ダーク",

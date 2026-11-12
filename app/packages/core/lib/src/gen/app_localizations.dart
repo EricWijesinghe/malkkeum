@@ -3577,6 +3577,18 @@ abstract class T {
   /// **'예상 금액과 크게 다른 견적 보내기'**
   String get cQuoteOverride;
 
+  /// No description provided for @cQuoteOverrideBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 {price} · 예상 금액 {estimate} · {ratio}배. 그래도 보낼까요?'**
+  String cQuoteOverrideBody(String price, String estimate, String ratio);
+
+  /// No description provided for @cQuoteNeedsAdmin.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액과 차이가 커서 관리자 승인이 필요해요'**
+  String get cQuoteNeedsAdmin;
+
   /// No description provided for @quick_reschedule.
   ///
   /// In ko, this message translates to:

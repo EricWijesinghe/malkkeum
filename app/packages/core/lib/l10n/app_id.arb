@@ -576,6 +576,8 @@
  "quoteSuperseded": "Diganti penawaran yang lebih baru",
  "quick_quote": "Tanya soal penawaran",
  "cQuoteOverride": "Kirim penawaran yang jauh dari perkiraan",
+ "cQuoteOverrideBody": "Penawaran {price} · perkiraan {estimate} · {ratio}×. Tetap kirim?",
+ "cQuoteNeedsAdmin": "Harga jauh dari perkiraan: perlu persetujuan admin",
  "quick_reschedule": "Ubah jadwal",
  "themeTitle": "Tema",
  "themeDark": "Gelap",

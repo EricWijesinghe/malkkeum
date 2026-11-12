@@ -576,6 +576,8 @@
  "quoteSuperseded": "已被新报价取代",
  "quick_quote": "想了解报价",
  "cQuoteOverride": "发送与预估差距很大的报价",
+ "cQuoteOverrideBody": "报价 {price} · 预估 {estimate} · {ratio}倍。仍要发送吗？",
+ "cQuoteNeedsAdmin": "与预估差距过大，需要管理员批准",
  "quick_reschedule": "想改时间",
  "themeTitle": "主题",
  "themeDark": "深色",

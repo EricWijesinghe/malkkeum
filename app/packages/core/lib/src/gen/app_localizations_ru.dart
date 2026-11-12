@@ -1866,6 +1866,15 @@ class TRu extends T {
   String get cQuoteOverride => 'Отправить смету, сильно отличающуюся от оценки';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Смета $price · оценка $estimate · $ratio×. Всё равно отправить?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Цена сильно отличается от оценки: нужно одобрение администратора';
+
+  @override
   String get quick_reschedule => 'Изменить время';
 
   @override

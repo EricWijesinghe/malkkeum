@@ -880,6 +880,21 @@
  "quoteSuperseded": "새 견적으로 바뀌었어요",
  "quick_quote": "견적이 궁금해요",
  "cQuoteOverride": "예상 금액과 크게 다른 견적 보내기",
+ "cQuoteOverrideBody": "견적 {price} · 예상 금액 {estimate} · {ratio}배. 그래도 보낼까요?",
+ "@cQuoteOverrideBody": {
+  "placeholders": {
+   "price": {
+    "type": "String"
+   },
+   "estimate": {
+    "type": "String"
+   },
+   "ratio": {
+    "type": "String"
+   }
+  }
+ },
+ "cQuoteNeedsAdmin": "예상 금액과 차이가 커서 관리자 승인이 필요해요",
  "quick_reschedule": "일정 변경할래요",
  "themeTitle": "테마",
  "themeDark": "다크",

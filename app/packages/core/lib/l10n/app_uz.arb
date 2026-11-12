@@ -576,6 +576,8 @@
  "quoteSuperseded": "Yangi narx taklifi bilan almashtirildi",
  "quick_quote": "Narx taklifi haqida",
  "cQuoteOverride": "Taxmindan ancha farq qiladigan narx taklifini yuborish",
+ "cQuoteOverrideBody": "Narx taklifi {price} · taxmin {estimate} · {ratio}×. Baribir yuborilsinmi?",
+ "cQuoteNeedsAdmin": "Narx taxmindan ancha farq qiladi: admin tasdiqlashi kerak",
  "quick_reschedule": "Jadvalni oʻzgartirish",
  "themeTitle": "Mavzu",
  "themeDark": "Tungi",

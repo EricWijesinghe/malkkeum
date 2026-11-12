@@ -576,6 +576,8 @@
  "quoteSuperseded": "Pinalitan ng mas bagong quote",
  "quick_quote": "Tungkol sa quote",
  "cQuoteOverride": "Ipadala ang quote na malayo sa tantya",
+ "cQuoteOverrideBody": "Quote {price} · tantya {estimate} · {ratio}×. Ipadala pa rin?",
+ "cQuoteNeedsAdmin": "Malayo ang presyo sa tantya: kailangan ng admin na mag-apruba",
  "quick_reschedule": "Palitan ang iskedyul",
  "themeTitle": "Tema",
  "themeDark": "Madilim",

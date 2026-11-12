@@ -576,6 +576,8 @@
  "quoteSuperseded": "Replaced by a newer quote",
  "quick_quote": "About the quote",
  "cQuoteOverride": "Send a quote far from the estimate",
+ "cQuoteOverrideBody": "Quote {price} · estimate {estimate} · {ratio}×. Send anyway?",
+ "cQuoteNeedsAdmin": "This price is far from the estimate: an admin needs to approve it",
  "quick_reschedule": "Change the schedule",
  "themeTitle": "Theme",
  "themeDark": "Dark",

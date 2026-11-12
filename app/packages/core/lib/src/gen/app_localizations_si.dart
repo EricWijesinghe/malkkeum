@@ -1868,6 +1868,15 @@ class TSi extends T {
   String get cQuoteOverride => 'ඇස්තමේන්තුවෙන් බොහෝ වෙනස් මිල ගණනක් යවන්න';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'මිල ගණන $price · ඇස්තමේන්තුව $estimate · $ratio×. තවමත් යවන්නද?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'මිල ඇස්තමේන්තුවෙන් බොහෝ වෙනස්: පරිපාලක අනුමැතිය අවශ්‍යයි';
+
+  @override
   String get quick_reschedule => 'කාලසටහන වෙනස් කරන්න';
 
   @override

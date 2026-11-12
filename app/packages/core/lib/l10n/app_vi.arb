@@ -576,6 +576,8 @@
  "quoteSuperseded": "Đã có báo giá mới hơn",
  "quick_quote": "Hỏi về báo giá",
  "cQuoteOverride": "Gửi báo giá chênh lệch lớn so với ước tính",
+ "cQuoteOverrideBody": "Báo giá {price} · ước tính {estimate} · {ratio}×. Vẫn gửi?",
+ "cQuoteNeedsAdmin": "Giá chênh lệch lớn so với ước tính: cần quản trị viên duyệt",
  "quick_reschedule": "Muốn đổi lịch",
  "themeTitle": "Giao diện",
  "themeDark": "Tối",

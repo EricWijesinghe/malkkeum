@@ -1822,6 +1822,14 @@ class TJa extends T {
   String get cQuoteOverride => '概算と大きく異なる見積を送る';
 
   @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return '見積 $price・概算 $estimate・$ratio倍。送信しますか？';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin => '概算との差が大きいため、管理者の承認が必要です';
+
+  @override
   String get quick_reschedule => '日程を変更したい';
 
   @override
