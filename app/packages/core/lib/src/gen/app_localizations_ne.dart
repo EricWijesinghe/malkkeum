@@ -1838,6 +1838,32 @@ class TNe extends T {
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
 
   @override
+  String get chatHoursTitle => 'परामर्श समय';
+
+  @override
+  String get chatReplyFast => 'प्रायः १० मिनेटभित्र जवाफ';
+
+  @override
+  String get quoteVisit => 'भ्रमण';
+
+  @override
+  String get quoteKind => 'प्रकार';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'अग्रिम भुक्तानी $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'नयाँ उद्धरणले बदलियो';
+
+  @override
+  String get quick_quote => 'उद्धरणबारे';
+
+  @override
+  String get quick_reschedule => 'समय परिवर्तन गर्न चाहन्छु';
+
+  @override
   String get themeTitle => 'थिम';
 
   @override

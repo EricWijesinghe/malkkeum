@@ -1849,6 +1849,32 @@ class TUz extends T {
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
 
   @override
+  String get chatHoursTitle => 'Maslahat vaqti';
+
+  @override
+  String get chatReplyFast => 'Odatda 10 daqiqada javob beramiz';
+
+  @override
+  String get quoteVisit => 'Tashrif';
+
+  @override
+  String get quoteKind => 'Turi';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Oldindan toʻlov $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Yangi narx taklifi bilan almashtirildi';
+
+  @override
+  String get quick_quote => 'Narx taklifi haqida';
+
+  @override
+  String get quick_reschedule => 'Jadvalni oʻzgartirish';
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override

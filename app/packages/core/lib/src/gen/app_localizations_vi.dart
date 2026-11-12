@@ -1824,6 +1824,32 @@ class TVi extends T {
   String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
 
   @override
+  String get chatHoursTitle => 'Giờ tư vấn';
+
+  @override
+  String get chatReplyFast => 'Thường trả lời trong 10 phút';
+
+  @override
+  String get quoteVisit => 'Lịch đến';
+
+  @override
+  String get quoteKind => 'Loại';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Trả cọc $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Đã có báo giá mới hơn';
+
+  @override
+  String get quick_quote => 'Hỏi về báo giá';
+
+  @override
+  String get quick_reschedule => 'Muốn đổi lịch';
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override

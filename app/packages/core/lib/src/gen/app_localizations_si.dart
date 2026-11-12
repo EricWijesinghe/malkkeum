@@ -1842,6 +1842,32 @@ class TSi extends T {
   String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
 
   @override
+  String get chatHoursTitle => 'උපදේශන වේලාව';
+
+  @override
+  String get chatReplyFast => 'සාමාන්‍යයෙන් මිනිත්තු 10ක් ඇතුළත පිළිතුරු';
+
+  @override
+  String get quoteVisit => 'පැමිණීම';
+
+  @override
+  String get quoteKind => 'වර්ගය';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'අත්තිකාරම ගෙවන්න $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'නව මිල ගණනකින් ප්‍රතිස්ථාපනය විය';
+
+  @override
+  String get quick_quote => 'මිල ගණන ගැන';
+
+  @override
+  String get quick_reschedule => 'කාලසටහන වෙනස් කරන්න';
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override

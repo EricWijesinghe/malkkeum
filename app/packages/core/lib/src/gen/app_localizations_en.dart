@@ -1827,6 +1827,32 @@ class TEn extends T {
   String get hhHint => 'Saved to this address and editable per booking.';
 
   @override
+  String get chatHoursTitle => 'Chat hours';
+
+  @override
+  String get chatReplyFast => 'Usually replies within 10 min';
+
+  @override
+  String get quoteVisit => 'Visit';
+
+  @override
+  String get quoteKind => 'Type';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Pay deposit $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Replaced by a newer quote';
+
+  @override
+  String get quick_quote => 'About the quote';
+
+  @override
+  String get quick_reschedule => 'Change the schedule';
+
+  @override
   String get themeTitle => 'Theme';
 
   @override

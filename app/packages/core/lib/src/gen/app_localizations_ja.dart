@@ -1796,6 +1796,32 @@ class TJa extends T {
   String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
 
   @override
+  String get chatHoursTitle => '相談受付時間';
+
+  @override
+  String get chatReplyFast => '通常10分以内に返信';
+
+  @override
+  String get quoteVisit => '訪問日程';
+
+  @override
+  String get quoteKind => 'タイプ';
+
+  @override
+  String quotePayAmount(String amount) {
+    return '予約金を支払う $amount';
+  }
+
+  @override
+  String get quoteSuperseded => '新しい見積に更新されました';
+
+  @override
+  String get quick_quote => '見積について';
+
+  @override
+  String get quick_reschedule => '日程を変更したい';
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override

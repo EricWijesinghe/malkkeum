@@ -3529,6 +3529,54 @@ abstract class T {
   /// **'주소에 저장되고, 예약마다 바꿀 수 있어요.'**
   String get hhHint;
 
+  /// No description provided for @chatHoursTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 운영시간'**
+  String get chatHoursTitle;
+
+  /// No description provided for @chatReplyFast.
+  ///
+  /// In ko, this message translates to:
+  /// **'보통 10분 내 답변'**
+  String get chatReplyFast;
+
+  /// No description provided for @quoteVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 일정'**
+  String get quoteVisit;
+
+  /// No description provided for @quoteKind.
+  ///
+  /// In ko, this message translates to:
+  /// **'유형'**
+  String get quoteKind;
+
+  /// No description provided for @quotePayAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금 결제 {amount}'**
+  String quotePayAmount(String amount);
+
+  /// No description provided for @quoteSuperseded.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 견적으로 바뀌었어요'**
+  String get quoteSuperseded;
+
+  /// No description provided for @quick_quote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적이 궁금해요'**
+  String get quick_quote;
+
+  /// No description provided for @quick_reschedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경할래요'**
+  String get quick_reschedule;
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:

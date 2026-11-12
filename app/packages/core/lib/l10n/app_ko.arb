@@ -865,6 +865,21 @@
  "hhElevator": "엘리베이터 있음",
  "hhNotes": "메모",
  "hhHint": "주소에 저장되고, 예약마다 바꿀 수 있어요.",
+ "chatHoursTitle": "상담 운영시간",
+ "chatReplyFast": "보통 10분 내 답변",
+ "quoteVisit": "방문 일정",
+ "quoteKind": "유형",
+ "quotePayAmount": "예약금 결제 {amount}",
+ "@quotePayAmount": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "quoteSuperseded": "새 견적으로 바뀌었어요",
+ "quick_quote": "견적이 궁금해요",
+ "quick_reschedule": "일정 변경할래요",
  "themeTitle": "테마",
  "themeDark": "다크",
  "themeLight": "라이트",

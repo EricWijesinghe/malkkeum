@@ -1850,6 +1850,32 @@ class TFil extends T {
       'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
 
   @override
+  String get chatHoursTitle => 'Oras ng chat';
+
+  @override
+  String get chatReplyFast => 'Karaniwang sumasagot sa loob ng 10 minuto';
+
+  @override
+  String get quoteVisit => 'Pagbisita';
+
+  @override
+  String get quoteKind => 'Uri';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Bayaran ang deposito $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Pinalitan ng mas bagong quote';
+
+  @override
+  String get quick_quote => 'Tungkol sa quote';
+
+  @override
+  String get quick_reschedule => 'Palitan ang iskedyul';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

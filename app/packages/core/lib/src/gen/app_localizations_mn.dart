@@ -1842,6 +1842,32 @@ class TMn extends T {
       'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
+  String get chatHoursTitle => 'Зөвлөгөөний цаг';
+
+  @override
+  String get chatReplyFast => 'Ихэвчлэн 10 минутын дотор хариулна';
+
+  @override
+  String get quoteVisit => 'Ирэх хуваарь';
+
+  @override
+  String get quoteKind => 'Төрөл';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Урьдчилгаа төлөх $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Шинэ үнийн саналаар солигдсон';
+
+  @override
+  String get quick_quote => 'Үнийн саналын талаар';
+
+  @override
+  String get quick_reschedule => 'Хуваарь өөрчлөх';
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override

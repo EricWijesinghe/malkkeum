@@ -1840,6 +1840,32 @@ class TRu extends T {
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
 
   @override
+  String get chatHoursTitle => 'Часы работы чата';
+
+  @override
+  String get chatReplyFast => 'Обычно отвечаем за 10 минут';
+
+  @override
+  String get quoteVisit => 'Визит';
+
+  @override
+  String get quoteKind => 'Тип';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Оплатить предоплату $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Заменено новой сметой';
+
+  @override
+  String get quick_quote => 'Вопрос по смете';
+
+  @override
+  String get quick_reschedule => 'Изменить время';
+
+  @override
   String get themeTitle => 'Тема';
 
   @override

@@ -1792,6 +1792,32 @@ class TZh extends T {
   String get hhHint => '保存到该地址，每次预约可单独修改。';
 
   @override
+  String get chatHoursTitle => '咨询时间';
+
+  @override
+  String get chatReplyFast => '通常10分钟内回复';
+
+  @override
+  String get quoteVisit => '上门时间';
+
+  @override
+  String get quoteKind => '类型';
+
+  @override
+  String quotePayAmount(String amount) {
+    return '支付定金 $amount';
+  }
+
+  @override
+  String get quoteSuperseded => '已被新报价取代';
+
+  @override
+  String get quick_quote => '想了解报价';
+
+  @override
+  String get quick_reschedule => '想改时间';
+
+  @override
   String get themeTitle => '主题';
 
   @override

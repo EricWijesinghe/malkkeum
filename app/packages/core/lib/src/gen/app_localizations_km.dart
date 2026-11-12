@@ -1838,6 +1838,32 @@ class TKm extends T {
       'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
 
   @override
+  String get chatHoursTitle => 'ម៉ោងពិគ្រោះ';
+
+  @override
+  String get chatReplyFast => 'ជាធម្មតាឆ្លើយក្នុង 10 នាទី';
+
+  @override
+  String get quoteVisit => 'ការមកដល់';
+
+  @override
+  String get quoteKind => 'ប្រភេទ';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'បង់ប្រាក់កក់ $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'ត្រូវបានជំនួសដោយសម្រង់តម្លៃថ្មី';
+
+  @override
+  String get quick_quote => 'សួរអំពីសម្រង់តម្លៃ';
+
+  @override
+  String get quick_reschedule => 'ប្តូរកាលវិភាគ';
+
+  @override
   String get themeTitle => 'ធីម';
 
   @override

@@ -1796,6 +1796,32 @@ class TKo extends T {
   String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
 
   @override
+  String get chatHoursTitle => '상담 운영시간';
+
+  @override
+  String get chatReplyFast => '보통 10분 내 답변';
+
+  @override
+  String get quoteVisit => '방문 일정';
+
+  @override
+  String get quoteKind => '유형';
+
+  @override
+  String quotePayAmount(String amount) {
+    return '예약금 결제 $amount';
+  }
+
+  @override
+  String get quoteSuperseded => '새 견적으로 바뀌었어요';
+
+  @override
+  String get quick_quote => '견적이 궁금해요';
+
+  @override
+  String get quick_reschedule => '일정 변경할래요';
+
+  @override
   String get themeTitle => '테마';
 
   @override

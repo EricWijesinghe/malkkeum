@@ -1841,6 +1841,32 @@ class TId extends T {
   String get hhHint => 'Disimpan di alamat ini dan bisa diubah per pemesanan.';
 
   @override
+  String get chatHoursTitle => 'Jam layanan chat';
+
+  @override
+  String get chatReplyFast => 'Biasanya membalas dalam 10 menit';
+
+  @override
+  String get quoteVisit => 'Kunjungan';
+
+  @override
+  String get quoteKind => 'Jenis';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Bayar DP $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Diganti penawaran yang lebih baru';
+
+  @override
+  String get quick_quote => 'Tanya soal penawaran';
+
+  @override
+  String get quick_reschedule => 'Ubah jadwal';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

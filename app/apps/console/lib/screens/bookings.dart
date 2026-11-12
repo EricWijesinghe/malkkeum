@@ -638,6 +638,11 @@ class _QuoteDeskState extends State<_QuoteDesk> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(t.cQuoteDesk, style: context.text.titleMedium),
+          // The server copies these booking rows into the customer's quote card.
+          Text(
+            '${t.quoteVisit} ${dateLabel(widget.booking.visitDate, context.lang)} ${widget.booking.startHour < 12 ? t.morning : t.afternoon} · ${t.service(widget.booking.serviceCode)}',
+            style: context.text.bodySmall,
+          ),
           const SizedBox(height: Space.sm),
           Text(t.cAnswers, style: context.text.labelSmall),
           Wrap(

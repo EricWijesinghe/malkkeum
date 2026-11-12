@@ -1830,6 +1830,32 @@ class TTh extends T {
   String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
 
   @override
+  String get chatHoursTitle => 'เวลาให้คำปรึกษา';
+
+  @override
+  String get chatReplyFast => 'ปกติตอบภายใน 10 นาที';
+
+  @override
+  String get quoteVisit => 'วันเข้าบริการ';
+
+  @override
+  String get quoteKind => 'ประเภท';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'ชำระมัดจำ $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'มีใบเสนอราคาใหม่แทนแล้ว';
+
+  @override
+  String get quick_quote => 'สอบถามใบเสนอราคา';
+
+  @override
+  String get quick_reschedule => 'ขอเปลี่ยนนัด';
+
+  @override
   String get themeTitle => 'ธีม';
 
   @override
