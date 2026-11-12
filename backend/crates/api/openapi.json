@@ -1364,7 +1364,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Start a payment checkout (idempotent)",
+        "summary": "Start a payment checkout (idempotent). Optional `points` pays part with points: checked against balance and cap here, debited when the checkout settles; the response `amount` is what the PG charges (`total - points`)",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -3990,7 +3990,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Peak surcharge rules",
+        "summary": "Peak-pricing rules",
         "responses": {
           "200": {
             "description": "OK"
@@ -4005,7 +4005,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Replace peak surcharge rules",
+        "summary": "Replace the peak-pricing rules",
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
         },
@@ -4040,7 +4040,386 @@
         "tags": [
           "admin"
         ],
-        "summary": "Set partner quality thresholds",
+        "summary": "Replace the partner quality thresholds",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/acquisition": {
+      "get": {
+        "operationId": "adminAcquisition",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Customer acquisition table",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns": {
+      "get": {
+        "operationId": "adminListCampaigns",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Marketing campaigns",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "post": {
+        "operationId": "adminCreateCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create a marketing campaign",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns/preview": {
+      "post": {
+        "operationId": "adminPreviewCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Preview a campaign audience and message",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns/test": {
+      "post": {
+        "operationId": "adminTestCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Send a campaign test message",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns/{id}": {
+      "get": {
+        "operationId": "adminGetCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "One campaign with its results",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns/{id}/schedule": {
+      "post": {
+        "operationId": "adminScheduleCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Schedule a campaign",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/campaigns/{id}/cancel": {
+      "post": {
+        "operationId": "adminCancelCampaign",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Cancel a scheduled campaign",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/analytics/funnel": {
+      "get": {
+        "operationId": "adminAnalyticsFunnel",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Booking funnel from analytics events",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/analytics/cohorts": {
+      "get": {
+        "operationId": "adminAnalyticsCohorts",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Retention cohorts from analytics events",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/client-errors": {
+      "get": {
+        "operationId": "adminListClientErrors",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Errors reported by the apps",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions": {
+      "get": {
+        "operationId": "adminListSubscriptions",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Subscriptions (all customers)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions/policy": {
+      "get": {
+        "operationId": "adminGetSubscriptionPolicy",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Subscription policy",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminPutSubscriptionPolicy",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Replace the subscription policy",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions/metrics": {
+      "get": {
+        "operationId": "adminSubscriptionMetrics",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Subscription metrics",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions/{id}": {
+      "get": {
+        "operationId": "adminGetSubscription",
+        "tags": [
+          "admin"
+        ],
+        "summary": "One subscription",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminEditSubscription",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Edit a subscription",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions/{id}/pause": {
+      "post": {
+        "operationId": "adminPauseSubscription",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Pause a subscription for the customer",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/subscriptions/{id}/resume": {
+      "post": {
+        "operationId": "adminResumeSubscription",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Resume a subscription for the customer",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
         },
@@ -4060,7 +4439,7 @@
         "tags": [
           "auth"
         ],
-        "summary": "Signed-in devices of the caller",
+        "summary": "Signed-in devices of the current account",
         "responses": {
           "200": {
             "description": "OK"
@@ -4104,7 +4483,7 @@
         "tags": [
           "public"
         ],
-        "summary": "Feed cards for a guest",
+        "summary": "Home feed for guests",
         "responses": {
           "200": {
             "description": "OK"
@@ -4121,7 +4500,64 @@
         "tags": [
           "customer"
         ],
-        "summary": "Personalized feed cards",
+        "summary": "Home feed for the signed-in customer",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/policy/subscription": {
+      "get": {
+        "operationId": "subscriptionPolicy",
+        "tags": [
+          "public"
+        ],
+        "summary": "Public subscription policy",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/client-errors": {
+      "post": {
+        "operationId": "reportClientError",
+        "tags": [
+          "public"
+        ],
+        "summary": "Report an app error",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "post": {
+        "operationId": "ingestEvents",
+        "tags": [
+          "public"
+        ],
+        "summary": "Send analytics events",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -4138,7 +4574,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "The caller's regular-cleaning subscriptions",
+        "summary": "The customer's subscriptions",
         "responses": {
           "200": {
             "description": "OK"
@@ -4153,7 +4589,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Start a regular-cleaning subscription",
+        "summary": "Start a subscription (idempotent)",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -4275,7 +4711,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Skip one planned visit",
+        "summary": "Skip one visit of a subscription",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -4308,7 +4744,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Move one planned visit",
+        "summary": "Move one visit of a subscription",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -4325,23 +4761,6 @@
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/policy/subscription": {
-      "get": {
-        "operationId": "subscriptionPolicy",
-        "tags": [
-          "public"
-        ],
-        "summary": "Subscription discount policy",
         "responses": {
           "200": {
             "description": "OK"
@@ -4369,432 +4788,13 @@
         }
       }
     },
-    "/v1/admin/subscriptions": {
-      "get": {
-        "operationId": "adminListSubscriptions",
-        "tags": [
-          "admin"
-        ],
-        "summary": "All subscriptions",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/subscriptions/policy": {
-      "get": {
-        "operationId": "adminGetSubscriptionPolicy",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Subscription discount policy",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      },
-      "put": {
-        "operationId": "adminPutSubscriptionPolicy",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Set the subscription discount policy",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/subscriptions/metrics": {
-      "get": {
-        "operationId": "adminSubscriptionMetrics",
-        "tags": [
-          "admin"
-        ],
-        "summary": "MRR and churn",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/subscriptions/{id}": {
-      "get": {
-        "operationId": "adminGetSubscription",
-        "tags": [
-          "admin"
-        ],
-        "summary": "One subscription",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      },
-      "put": {
-        "operationId": "adminEditSubscription",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Edit a subscription",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/subscriptions/{id}/pause": {
-      "post": {
-        "operationId": "adminPauseSubscription",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Pause a subscription",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/subscriptions/{id}/resume": {
-      "post": {
-        "operationId": "adminResumeSubscription",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Resume a subscription",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/acquisition": {
-      "get": {
-        "operationId": "adminAcquisition",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Install and signup sources",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/events": {
-      "post": {
-        "operationId": "ingestEvents",
-        "tags": [
-          "public"
-        ],
-        "summary": "Consent-gated analytics events",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/analytics/funnel": {
-      "get": {
-        "operationId": "adminAnalyticsFunnel",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Install-to-repeat funnel",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/analytics/cohorts": {
-      "get": {
-        "operationId": "adminAnalyticsCohorts",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Weekly signup cohorts",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/client-errors": {
-      "post": {
-        "operationId": "reportClientError",
-        "tags": [
-          "public"
-        ],
-        "summary": "Report an app error (PII-scrubbed)",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/client-errors": {
-      "get": {
-        "operationId": "adminListClientErrors",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Latest client error reports",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns": {
-      "get": {
-        "operationId": "adminListCampaigns",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Marketing campaigns",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      },
-      "post": {
-        "operationId": "adminCreateCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Draft a marketing campaign",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns/preview": {
-      "post": {
-        "operationId": "adminPreviewCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Audience size and consented share",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns/test": {
-      "post": {
-        "operationId": "adminTestCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Test text to the owner's own phone",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns/{id}": {
-      "get": {
-        "operationId": "adminGetCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "One campaign with send stats",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns/{id}/schedule": {
-      "post": {
-        "operationId": "adminScheduleCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Schedule a campaign",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
-    "/v1/admin/campaigns/{id}/cancel": {
-      "post": {
-        "operationId": "adminCancelCampaign",
-        "tags": [
-          "admin"
-        ],
-        "summary": "Cancel a campaign",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/Object"
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
     "/v1/bookings/{id}/tip": {
       "post": {
         "operationId": "tipBooking",
         "tags": [
           "customer"
         ],
-        "summary": "Tip the partner after a completed job",
+        "summary": "Tip the partner for a completed booking",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -4819,7 +4819,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "The caller's waitlist entries and offers",
+        "summary": "The customer's waitlist entries",
         "responses": {
           "200": {
             "description": "OK"
@@ -4834,7 +4834,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Wait for a seat in a full slot",
+        "summary": "Join the waitlist for a full slot",
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
         },
@@ -4876,7 +4876,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Accept an offered seat into a booking",
+        "summary": "Accept an offered waitlist slot",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"

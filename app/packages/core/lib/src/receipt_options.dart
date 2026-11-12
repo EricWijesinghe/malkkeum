@@ -4,7 +4,6 @@ import 'package:ui/ui.dart';
 
 import 'api.dart';
 import 'checkout.dart';
-import 'models.dart';
 import 'i18n.dart';
 import 'models.dart';
 

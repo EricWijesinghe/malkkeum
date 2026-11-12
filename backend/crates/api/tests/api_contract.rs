@@ -79,9 +79,9 @@ fn contains_call(expr: &str, method: &str) -> bool {
 fn route_sources() -> Vec<(String, String)> {
     let dir = manifest().join("src/routes");
     let mut files: Vec<PathBuf> = fs::read_dir(&dir).expect("routes dir").filter_map(|e| e.ok().map(|e| e.path())).collect();
-    // Route modules that live outside src/routes.
-    for f in ["app_links", "acquisition", "analytics", "client_errors", "marketing"] {
-        files.push(manifest().join(format!("src/{f}.rs")));
+    // Modules outside routes/ that mount API routes of their own.
+    for module in ["app_links", "acquisition", "analytics", "client_errors", "marketing"] {
+        files.push(manifest().join(format!("src/{module}.rs")));
     }
     files
         .into_iter()

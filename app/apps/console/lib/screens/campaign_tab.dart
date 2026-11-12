@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
 import 'analytics_view.dart';
 import 'campaigns.dart';
 
