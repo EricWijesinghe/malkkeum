@@ -149,7 +149,11 @@ class AppleSocialSignIn extends SocialSignIn {
   String get provider => SocialProviders.apple;
 
   @override
-  Future<String?> obtainToken(BuildContext context) async {
+  Future<String?> obtainToken(BuildContext context) async =>
+      (await obtainCredential(context))?['token'];
+
+  @override
+  Future<Map<String, String>?> obtainCredential(BuildContext context) async {
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -157,7 +161,10 @@ class AppleSocialSignIn extends SocialSignIn {
           AppleIDAuthorizationScopes.fullName,
         ],
       );
-      return _requireToken(credential.identityToken, SocialProviders.apple);
+      return appleCredentialFields(
+        _requireToken(credential.identityToken, SocialProviders.apple),
+        credential.authorizationCode,
+      );
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) return null;
       rethrow;

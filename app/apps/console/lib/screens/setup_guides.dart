@@ -223,7 +223,15 @@ final guides = <String, Guide>{
         'Enable Kakao Login and the email consent item. Send the Native app key to whoever builds the apps.',
       ),
     ],
-    fields: const {'app_id': FieldGuide(Tr('앱 ID (숫자)', 'App ID (number)'))},
+    fields: const {
+      'app_id': FieldGuide(Tr('앱 ID (숫자)', 'App ID (number)')),
+      'admin_key': FieldGuide(
+        Tr(
+          'Admin 키 (선택: 탈퇴 시 카카오 연결 끊기)',
+          'Admin key (optional: unlinks Kakao on account deletion)',
+        ),
+      ),
+    },
   ),
   'naver': Guide(
     title: (t) => t.cIntNaver,
@@ -280,7 +288,22 @@ final guides = <String, Guide>{
         'Paste both bundle IDs separated by commas, e.g. com.malkkeum.customer, com.malkkeum.partner',
       ),
     ],
-    fields: const {'client_ids': FieldGuide(Tr('번들 ID 목록', 'Bundle IDs'))},
+    fields: const {
+      'client_ids': FieldGuide(Tr('번들 ID 목록', 'Bundle IDs')),
+      'team_id': FieldGuide(Tr('Team ID (10자리)', 'Team ID (10 characters)')),
+      'key_id': FieldGuide(
+        Tr(
+          'Sign in with Apple 키 ID (Keys 화면)',
+          'Sign in with Apple Key ID (Keys page)',
+        ),
+      ),
+      'private_key': FieldGuide(
+        Tr(
+          '키 파일 (.p8 내용, 탈퇴 시 Apple 연결 해제에 필요)',
+          'Key file (.p8 contents, needed to revoke Apple sign-in on deletion)',
+        ),
+      ),
+    },
   ),
   'juso': Guide(
     title: (t) => t.cIntJuso,

@@ -55,13 +55,19 @@ async fn export(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>
 /// Deletes the partner's account: refused while a job is assigned or money is still owed to them,
 /// so nobody loses a visit or a payout. History rows stay; personal data is wiped.
 async fn delete_account(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
+    delete_pro(&s, a.id).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+/// The partner deletion itself; also run for an Apple `account-delete` notification (privacy.rs).
+pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
     let mut tx = s.db.begin().await?;
-    sqlx::query("SELECT id FROM pros WHERE id = $1 FOR UPDATE").bind(a.id).execute(&mut *tx).await?;
+    sqlx::query("SELECT id FROM pros WHERE id = $1 FOR UPDATE").bind(id).execute(&mut *tx).await?;
     let (jobs, owed): (bool, bool) = sqlx::query_as(
         "SELECT EXISTS (SELECT 1 FROM bookings WHERE pro_id = $1 AND status = 2),
                 EXISTS (SELECT 1 FROM settlements WHERE pro_id = $1 AND state IN ('waiting_balance','pending','held'))",
     )
-    .bind(a.id)
+    .bind(id)
     .fetch_one(&mut *tx)
     .await?;
     if jobs {
@@ -70,39 +76,42 @@ async fn delete_account(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Jso
     if owed {
         return Err(ApiError::Conflict("pending_payouts"));
     }
+    // Read before the identities are deleted below; the provider calls run after commit (no lock held over HTTP).
+    let links = crate::providers::social::links(&mut tx, &s.config.data_key, "pro", id).await?;
     sqlx::query("UPDATE pros SET deleted_at = now(), status = 'suspended', name = '', team_name = '', phone = NULL WHERE id = $1")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     sqlx::query("DELETE FROM user_identities WHERE role = 'pro' AND subject_id = $1")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     sqlx::query(
         "UPDATE refresh_tokens SET revoked_at = now()
          WHERE revoked_at IS NULL AND (subject = $1 OR subject IN (SELECT id FROM team_members WHERE pro_id = $1))",
     )
-    .bind(a.id)
+    .bind(id)
     .execute(&mut *tx)
     .await?;
     sqlx::query("DELETE FROM push_tokens WHERE owner_id = $1 OR owner_id IN (SELECT id FROM team_members WHERE pro_id = $1)")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     sqlx::query("DELETE FROM notifications WHERE (owner_role = 'pro' AND owner_id = $1) OR (owner_role = 'member' AND owner_id IN (SELECT id FROM team_members WHERE pro_id = $1))")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     sqlx::query("UPDATE team_members SET invite_status = 'removed', name = '', phone = '' WHERE pro_id = $1")
-        .bind(a.id)
+        .bind(id)
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
-    Ok(Json(json!({ "ok": true })))
+    crate::providers::social::unlink(&s.providers, "pro", id, links).await;
+    Ok(())
 }
 
 async fn profile(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {

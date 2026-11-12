@@ -2,7 +2,11 @@ use crate::{
     auth::{self, Auth, Role},
     error::{ApiError, ApiResult},
     lockout,
-    providers::social::{self, SocialUser},
+    crypto,
+    providers::{
+        apple,
+        social::{self, SocialUser},
+    },
     state::AppState,
 };
 use axum::{
@@ -39,6 +43,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/sessions/{family}", delete(revoke_session))
         .route("/auth/staff/login", post(staff_login))
         .route("/auth/social", post(social_login))
+        .route("/auth/apple/notifications", post(apple_notifications))
 }
 
 #[derive(Deserialize, Clone, Copy, PartialEq, Eq)]
@@ -328,7 +333,7 @@ async fn reject_reuse(s: &AppState, hash: &str) -> ApiResult<()> {
 async fn ensure_active(s: &AppState, id: Uuid, role: Role) -> ApiResult<()> {
     let ok: bool = match role {
         Role::Customer => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM users WHERE id = $1 AND deleted_at IS NULL)"),
-        Role::Pro => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1)"),
+        Role::Pro => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1 AND deleted_at IS NULL)"),
         Role::Member => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM team_members WHERE id = $1 AND role = 'member' AND invite_status <> 'removed')"),
         Role::StaffAdmin | Role::StaffConsultant => sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)"),
     }
@@ -479,6 +484,10 @@ struct SocialLogin {
     /// Raw nonce the app generated for this sign-in; Apple and Google tokens must echo it when one was requested.
     #[serde(default)]
     nonce: Option<String>,
+    /// Apple only: the credential's authorization code. Exchanged for a refresh token that is kept (encrypted)
+    /// solely to revoke the sign-in when the account is deleted.
+    #[serde(default)]
+    authorization_code: Option<String>,
     audience: Audience,
     #[serde(default)]
     attribution: Option<Value>,
@@ -508,9 +517,59 @@ async fn social_login(State(s): State<AppState>, Json(req): Json<SocialLogin>) -
     let attribution = crate::acquisition::clean(req.attribution.as_ref());
     let (id, is_new) = find_or_create_identity(&s, &req.provider, &social, role, attribution).await?;
     ensure_active(&s, id, role).await?;
+    let code = req.authorization_code.as_deref().filter(|c| !c.is_empty() && c.len() <= MAX_SOCIAL_TOKEN);
+    let refresh = match (req.provider.as_str(), code) {
+        ("apple", Some(code)) => apple::exchange_code(&s.providers, social.audience.as_deref(), code, &social.provider_user_id).await,
+        _ => social.refresh_token.clone(),
+    };
+    if let Some(token) = refresh {
+        store_social_token(&s, &req.provider, &social, role, &token).await?;
+    }
     let needs_phone = phone_missing(&s, id, role).await?;
     let tokens = issue_tokens(&s, id, role, is_new, None).await?;
     Ok(Json(SocialTokens { tokens, needs_phone }))
+}
+
+/// Keeps the newest provider refresh token for the identity, encrypted with DATA_KEY.
+async fn store_social_token(s: &AppState, provider: &str, social: &SocialUser, role: Role, token: &str) -> ApiResult<()> {
+    sqlx::query(
+        "INSERT INTO social_tokens (identity_id, client_id, refresh_token_enc)
+         SELECT id, $4, $5 FROM user_identities WHERE provider = $1 AND provider_user_id = $2 AND role = $3
+         ON CONFLICT (identity_id) DO UPDATE SET client_id = EXCLUDED.client_id, refresh_token_enc = EXCLUDED.refresh_token_enc, updated_at = now()",
+    )
+    .bind(provider)
+    .bind(&social.provider_user_id)
+    .bind(role.as_str())
+    .bind(social.audience.as_deref().unwrap_or_default())
+    .bind(crypto::encrypt(&s.config.data_key, token))
+    .execute(&s.db)
+    .await?;
+    Ok(())
+}
+
+/// Largest notification body accepted; Apple's JWS is a few hundred bytes.
+const MAX_APPLE_NOTIFICATION: usize = 16 * 1024;
+
+/// The `payload` JWS from Apple's POST: a JSON object `{"payload": ...}`, or the same field form-encoded.
+fn apple_payload(body: &[u8]) -> Option<String> {
+    if let Ok(v) = serde_json::from_slice::<Value>(body) {
+        return v["payload"].as_str().map(str::to_string);
+    }
+    let text = std::str::from_utf8(body).ok()?;
+    let url = reqwest::Url::parse(&format!("http://form.invalid/?{text}")).ok()?;
+    url.query_pairs().find(|(k, _)| k == "payload").map(|(_, v)| v.into_owned())
+}
+
+/// Sign in with Apple server-to-server notifications (register this URL in the Apple developer account).
+/// Unsigned, forged or foreign notifications get 401; a replayed one is acknowledged without acting again.
+async fn apple_notifications(State(s): State<AppState>, body: axum::body::Bytes) -> ApiResult<Json<Value>> {
+    if body.len() > MAX_APPLE_NOTIFICATION {
+        return Err(ApiError::BadRequest("invalid_payload"));
+    }
+    let jws = apple_payload(&body).filter(|p| !p.is_empty()).ok_or(ApiError::BadRequest("invalid_payload"))?;
+    let n = apple::verify_notification(&s.providers, &jws).await?;
+    crate::privacy::apple_notification(&s, &n).await?;
+    Ok(Json(json!({ "ok": true })))
 }
 
 async fn find_identity(s: &AppState, provider: &str, social: &SocialUser, role: Role) -> ApiResult<Option<Uuid>> {

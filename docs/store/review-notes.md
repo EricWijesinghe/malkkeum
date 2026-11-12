@@ -66,3 +66,4 @@ Malkkeum signs users in with a phone number and a one-time code sent by SMS. Rev
 - [ ] 위 `<…>` 자리 채우기 (Play "앱 액세스", App Store "심사 메모")
 - [ ] 심사 기간이 끝나기 전 제출, 승인 후 심사 계정을 끄거나 기간 만료 확인
 - [ ] 콘솔 > 마케팅 > 성장 > 후기 신고 관리에 대기 건이 있으면 처리 (심사 중 신고가 들어오면 바로 처리)
+- [ ] Sign in with Apple: 콘솔 Apple 카드에 키(.p8) 입력, Apple 개발자 계정에 서버 알림 URL `https://<API_DOMAIN>/v1/auth/apple/notifications` 등록

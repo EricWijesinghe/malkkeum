@@ -7,7 +7,7 @@
 
 use crate::{
     ai::{self, AiConfig, Caps, Mode},
-    config::{Config, PortOne, SolapiConfig},
+    config::{AppleSignInKey, Config, PortOne, SolapiConfig},
     crypto,
     providers::fcm::ServiceAccount,
 };
@@ -20,11 +20,15 @@ use std::{collections::HashMap, ops::RangeInclusive};
 #[derive(Clone, Debug, Default)]
 pub struct Integrations {
     pub kakao_app_id: Option<String>,
+    /// Kakao Admin key: unlinks the Kakao account on account deletion (providers/social.rs). Optional.
+    pub kakao_admin_key: Option<String>,
     pub naver_client_id: Option<String>,
     /// Naver app secret: the server exchanges each Naver login code with it (providers/social.rs).
     pub naver_client_secret: Option<String>,
     pub google_client_ids: Vec<String>,
     pub apple_client_ids: Vec<String>,
+    /// Sign in with Apple key: code exchange at sign-in and token revocation on deletion. Optional.
+    pub apple_signin: Option<AppleSignInKey>,
     pub portone: PortOne,
     pub solapi: Option<SolapiConfig>,
     pub fcm: Option<ServiceAccount>,
@@ -96,10 +100,12 @@ impl Integrations {
     pub fn from_config(c: &Config) -> Self {
         Self {
             kakao_app_id: c.kakao_app_id.clone(),
+            kakao_admin_key: c.kakao_admin_key.clone(),
             naver_client_id: None,
             naver_client_secret: None,
             google_client_ids: c.google_client_ids.clone(),
             apple_client_ids: c.apple_client_ids.clone(),
+            apple_signin: c.apple_signin.clone(),
             portone: c.portone.clone(),
             solapi: c.solapi.clone(),
             fcm: c.fcm.clone(),
@@ -200,7 +206,8 @@ impl Section {
             Self::Push => &PUSH_FIELDS,
             Self::Kakao => &KAKAO_FIELDS,
             Self::Naver => &NAVER_FIELDS,
-            Self::Google | Self::Apple => &CLIENT_ID_FIELDS,
+            Self::Google => &CLIENT_ID_FIELDS,
+            Self::Apple => &APPLE_FIELDS,
             Self::Ai => &AI_FIELDS,
             Self::Backup => &BACKUP_FIELDS,
             Self::Payout => &PAYOUT_FIELDS,
@@ -223,9 +230,16 @@ const SOLAPI_FIELDS: [Field; 5] = [
     f("templates", Kind::Map, false),
 ];
 const PUSH_FIELDS: [Field; 1] = [f("service_account", Kind::File, true)];
-const KAKAO_FIELDS: [Field; 1] = [f("app_id", Kind::Text, true)];
+const KAKAO_FIELDS: [Field; 2] = [f("app_id", Kind::Text, true), f("admin_key", Kind::Secret, false)];
 const NAVER_FIELDS: [Field; 2] = [f("client_id", Kind::Text, true), f("client_secret", Kind::Secret, true)];
 const CLIENT_ID_FIELDS: [Field; 1] = [f("client_ids", Kind::List, true)];
+/// The key fields are optional together: without them sign-in works but deletion cannot revoke the Apple token.
+const APPLE_FIELDS: [Field; 4] = [
+    f("client_ids", Kind::List, true),
+    f("team_id", Kind::Text, false),
+    f("key_id", Kind::Text, false),
+    f("private_key", Kind::File, false),
+];
 const AI_FIELDS: [Field; 6] = [
     f("api_key", Kind::Secret, true),
     f("model", Kind::Text, false),
@@ -373,6 +387,15 @@ fn payout_settings(v: &Map<String, Value>, toss_ready: bool) -> Result<PayoutSet
     Ok(PayoutSettings { mode, secret_key, security_key })
 }
 
+/// Team id, key id and .p8 key go together: all three or none.
+fn apple_key(v: &Map<String, Value>) -> Result<Option<AppleSignInKey>, Invalid> {
+    match (text(v, "team_id"), text(v, "key_id"), text(v, "private_key")) {
+        (None, None, None) => Ok(None),
+        (Some(team), Some(key), Some(pem)) => AppleSignInKey::new(&team, &key, &pem).map(Some).map_err(Invalid),
+        _ => Err(Invalid("missing_field")),
+    }
+}
+
 fn service_account(v: &Map<String, Value>) -> Result<ServiceAccount, Invalid> {
     let parsed = match v.get("service_account") {
         Some(Value::String(s)) => serde_json::from_str::<ServiceAccount>(s.trim()),
@@ -424,7 +447,10 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
         Section::Push => out.fcm = Some(service_account(v)?),
         Section::Backup => out.backup = Some(s3_config(v)?),
         Section::Payout => out.payout = Some(payout_settings(v, base.payout_toss_ready)?),
-        Section::Kakao => out.kakao_app_id = Some(required(v, "app_id")?),
+        Section::Kakao => {
+            out.kakao_app_id = Some(required(v, "app_id")?);
+            out.kakao_admin_key = text(v, "admin_key");
+        }
         Section::Naver => {
             out.naver_client_id = Some(required(v, "client_id")?);
             out.naver_client_secret = Some(required(v, "client_secret")?);
@@ -452,6 +478,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
                 out.google_client_ids = ids;
             } else {
                 out.apple_client_ids = ids;
+                out.apple_signin = apple_key(v)?;
             }
         }
     }
@@ -621,6 +648,23 @@ mod tests {
         assert_eq!(out.google_client_ids, vec!["a.apps", "b.apps"]);
         let out = apply(&Integrations::default(), Section::Apple, &obj(json!({"client_ids": ["com.x"]}))).unwrap();
         assert_eq!(out.apple_client_ids, vec!["com.x"]);
+        assert!(out.apple_signin.is_none(), "key fields are optional");
+    }
+
+    #[test]
+    fn apple_key_fields_go_together_and_must_parse() {
+        let pem = include_str!("providers/testdata/test_only_ec.p8");
+        let full = json!({"client_ids": "com.x", "team_id": "TEAM123456", "key_id": "KEY1234567", "private_key": pem});
+        let out = apply(&Integrations::default(), Section::Apple, &obj(full.clone())).unwrap();
+        assert_eq!(out.apple_signin.as_ref().map(|k| k.key_id.as_str()), Some("KEY1234567"));
+        let mut partial = full.clone();
+        partial["private_key"] = json!("");
+        assert_eq!(apply(&Integrations::default(), Section::Apple, &obj(partial)).unwrap_err(), Invalid("missing_field"));
+        let mut bad = full;
+        bad["private_key"] = json!("-----BEGIN PRIVATE KEY-----\nnot a key\n-----END PRIVATE KEY-----");
+        assert_eq!(apply(&Integrations::default(), Section::Apple, &obj(bad)).unwrap_err(), Invalid("invalid_private_key"));
+        let kakao = apply(&Integrations::default(), Section::Kakao, &obj(json!({"app_id": "1", "admin_key": "adm"}))).unwrap();
+        assert_eq!(kakao.kakao_admin_key.as_deref(), Some("adm"));
     }
 
     #[test]

@@ -26,6 +26,8 @@ pub struct Config {
     pub setup_code: Option<String>,
     /// Kakao REST app id: a Kakao token is only accepted if it was issued to this app.
     pub kakao_app_id: Option<String>,
+    /// Kakao Admin key (`KAKAO_ADMIN_KEY`): unlinks the Kakao account when the user deletes theirs. None: no unlink.
+    pub kakao_admin_key: Option<String>,
     pub google_client_ids: Vec<String>,
     pub apple_client_ids: Vec<String>,
     pub portone: PortOne,
@@ -51,6 +53,9 @@ pub struct Config {
     pub android_cert_sha256: Vec<String>,
     /// Apple Team ID. None: no apple-app-site-association.
     pub apple_team_id: Option<String>,
+    /// Sign in with Apple key (`APPLE_KEY_ID` + `APPLE_PRIVATE_KEY`, with `APPLE_TEAM_ID`): code exchange and token
+    /// revocation on account deletion. None: neither runs (deletion still succeeds, with a warning).
+    pub apple_signin: Option<AppleSignInKey>,
     /// Retention purge (see `retention.rs`): AI-assisted chat messages older than this many days are deleted.
     pub ai_chat_retention_days: u32,
     /// Retention purge: uploads not attached to any record after this many days are deleted.
@@ -87,6 +92,39 @@ pub struct PortOne {
     pub channel_keys: HashMap<String, String>,
     /// 현금영수증 issuing and cancelling. Off by default until verified in the PortOne sandbox.
     pub cash_receipts: bool,
+}
+
+/// Sign in with Apple private key (.p8) and the ids Apple's client secret is built from.
+#[derive(Clone, PartialEq, Eq)]
+pub struct AppleSignInKey {
+    pub team_id: String,
+    pub key_id: String,
+    /// PEM contents of the .p8 file (PKCS#8 EC P-256).
+    pub private_key: String,
+}
+
+impl std::fmt::Debug for AppleSignInKey {
+    // The private key never reaches logs or panics.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AppleSignInKey").field("team_id", &self.team_id).field("key_id", &self.key_id).finish_non_exhaustive()
+    }
+}
+
+impl AppleSignInKey {
+    /// Checks the ids are Apple's 10-character form and the key parses as an ES256 signing key.
+    pub fn new(team_id: &str, key_id: &str, private_key: &str) -> Result<Self, &'static str> {
+        let id_ok = |s: &str| s.len() == TEAM_ID_LEN && s.bytes().all(|b| b.is_ascii_alphanumeric());
+        if !id_ok(team_id) {
+            return Err("invalid_team_id");
+        }
+        if !id_ok(key_id) {
+            return Err("invalid_key_id");
+        }
+        // Env values often carry the PEM on one line with literal `\n`.
+        let pem = private_key.trim().replace("\\n", "\n");
+        jsonwebtoken::EncodingKey::from_ec_pem(pem.as_bytes()).map_err(|_| "invalid_private_key")?;
+        Ok(Self { team_id: team_id.into(), key_id: key_id.into(), private_key: pem })
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -187,6 +225,17 @@ fn solapi() -> Result<Option<SolapiConfig>, ConfigError> {
     }))
 }
 
+fn apple_signin(team_id: Option<&str>) -> Result<Option<AppleSignInKey>, ConfigError> {
+    match (opt("APPLE_KEY_ID"), opt("APPLE_PRIVATE_KEY")) {
+        (None, None) => Ok(None),
+        (Some(key_id), Some(pem)) => {
+            let team = team_id.ok_or(ConfigError::Missing("APPLE_TEAM_ID"))?;
+            AppleSignInKey::new(team, &key_id, &pem).map(Some).map_err(|e| ConfigError::Invalid("APPLE_PRIVATE_KEY", e.into()))
+        }
+        _ => Err(ConfigError::Invalid("APPLE_KEY_ID", "set APPLE_KEY_ID and APPLE_PRIVATE_KEY together".into())),
+    }
+}
+
 /// `FCM_SERVICE_ACCOUNT` is either the JSON itself or a path to the downloaded key file.
 fn fcm_account() -> Result<Option<ServiceAccount>, ConfigError> {
     let Some(raw) = opt("FCM_SERVICE_ACCOUNT") else {
@@ -237,6 +286,8 @@ impl Config {
                 "refusing to run dev mode with a public PUBLIC_BASE_URL".into(),
             ));
         }
+        let apple_team_id = team_id(opt("APPLE_TEAM_ID"))?;
+        let apple_signin = apple_signin(apple_team_id.as_deref())?;
         Ok(Self {
             database_url: req("DATABASE_URL")?,
             bind: bind.parse().map_err(|_| ConfigError::Invalid("BIND_ADDR", bind.clone()))?,
@@ -253,6 +304,7 @@ impl Config {
             seed_admin,
             setup_code: opt("SETUP_CODE").map(|c| c.to_uppercase().replace(['-', ' '], "")),
             kakao_app_id: opt("KAKAO_APP_ID"),
+            kakao_admin_key: opt("KAKAO_ADMIN_KEY"),
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
             apple_client_ids: list("APPLE_CLIENT_IDS"),
             portone: portone()?,
@@ -269,7 +321,8 @@ impl Config {
             reconcile_interval_secs: number("RECONCILE_INTERVAL_SECS", 60, 10)?,
             anthropic_base_url: opt("ANTHROPIC_BASE_URL").unwrap_or_else(|| "https://api.anthropic.com".into()),
             android_cert_sha256: cert_fingerprints("ANDROID_CERT_SHA256", list("ANDROID_CERT_SHA256"))?,
-            apple_team_id: team_id(opt("APPLE_TEAM_ID"))?,
+            apple_team_id,
+            apple_signin,
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
             db: DbSettings {

@@ -26,7 +26,24 @@ abstract class SocialSignIn {
   const SocialSignIn();
   String get provider;
   Future<String?> obtainToken(BuildContext context);
+
+  /// Fields for POST /v1/auth/social beyond provider and audience: `token`, plus `authorization_code` for
+  /// Apple (the server exchanges it so account deletion can revoke the sign-in). Null when cancelled.
+  Future<Map<String, String>?> obtainCredential(BuildContext context) async {
+    final token = await obtainToken(context);
+    return token == null ? null : {'token': token};
+  }
 }
+
+/// Apple credential as sent to the server: the identity token and, when present, the one-time authorization code.
+Map<String, String> appleCredentialFields(
+  String identityToken,
+  String? authorizationCode,
+) => {
+  'token': identityToken,
+  if (authorizationCode != null && authorizationCode.isNotEmpty)
+    'authorization_code': authorizationCode,
+};
 
 /// Dev stand-in: a stable random id per provider, so the same tester keeps the same account.
 /// Only offered when the API base is local (see [socialSignInsFor]).
@@ -230,16 +247,14 @@ Future<SocialAuthResult?> signInWithSocial({
   required SocialSignIn provider,
   required String audience,
 }) async {
-  final token = await provider.obtainToken(context);
-  if (token == null) return null;
-  final body =
-      await api.post('/auth/social', {
-            'provider': provider.provider,
-            'token': token,
-            'audience': audience,
-            'attribution': ?Attribution.get(),
-          })
-          as Map<String, dynamic>;
+  final credential = await provider.obtainCredential(context);
+  if (credential == null) return null;
+  final body = await api.post('/auth/social', {
+    'provider': provider.provider,
+    ...credential,
+    'audience': audience,
+    'attribution': ?Attribution.get(),
+  }) as Map<String, dynamic>;
   await session.save(body);
   return SocialAuthResult.fromJson(body);
 }
