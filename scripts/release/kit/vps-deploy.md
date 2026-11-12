@@ -3,16 +3,16 @@
 ## 한국어
 
 **준비물**
-- Ubuntu 24.04 / 22.04 또는 Debian 12 서버 (메모리 4GB 이상, 공인 IP 1개)
-- 도메인 (예: `malkkeum.example.kr`) 과 DNS **A 레코드**를 서버 IP 로 지정
-- 방화벽에서 **80, 443** 포트 열기 (HTTPS 인증서 발급에 필요)
+- Ubuntu 24.04 / 22.04 또는 Debian 12 서버 (권장 2 vCPU / 메모리 4GB, 최소 2GB, 공인 IP 1개)
+- 도메인 (예: `dahae.example.kr`) 과 DNS **A 레코드**를 서버 IP 로 지정
+- 방화벽에서 **22, 80, 443** 포트 열기 (HTTPS 인증서 발급에 필요)
 - 이 폴더의 `install.sh` 와 `malkkeum-demo.tar` (이미지 묶음) 를 서버로 복사
 
 **설치 (서버에서 실행)**
 ```
 sudo MALKKEUM_IMAGES_TAR=/root/malkkeum-demo.tar \
      MALKKEUM_VERSION=demo \
-     MALKKEUM_DOMAIN=malkkeum.example.kr \
+     MALKKEUM_DOMAIN=dahae.example.kr \
      MALKKEUM_EMAIL=you@example.kr \
      bash /root/install.sh
 ```
@@ -21,8 +21,9 @@ sudo MALKKEUM_IMAGES_TAR=/root/malkkeum-demo.tar \
 - 로컬 주소 (`malkkeum.localhost`) 로 시험할 때만 `MALKKEUM_TLS=internal` 을 추가하세요. 실제 도메인에는 넣지 않아요 (자동 HTTPS 를 씁니다).
 
 **확인과 관리**
-- 상태: `malkkeum status` / 로그: `malkkeum logs` / 업데이트: `malkkeum load <파일.tar>` 후 `malkkeum update <태그>`
-- 매일 백업이 자동으로 돌아요. 복구 방법은 `docs/DEPLOY.md` (6-Docs 폴더) 를 보세요.
+- 상태: `sudo dahae status` / 로그: `sudo dahae logs` / 업데이트: `sudo dahae load <파일.tar>` 후 `sudo dahae update <태그>`
+- 매일 백업이 자동으로 돌아요. 복구: `sudo dahae restore backups/db-날짜-시각.sql.gz`. 모든 명령은 `docs/guide/07-운영-명령어.md` (6-Docs 폴더) 를 보세요.
+- 가동 알림: `sudo dahae heartbeat https://hc-ping.com/...` / 제거: `sudo dahae uninstall` (데이터까지 지우려면 `--purge`). 설정 파일을 직접 고칠 일은 없어요.
 - 체험용 이미지 (`demo`) 는 시연용이에요. 정식 운영은 릴리스된 이미지 (`MALKKEUM_CHANNEL=stable`) 로 설치하세요.
 
 **문제가 생기면**: 설치 로그를 보내 주세요. 설치 코드와 개인정보는 로그에 적지 않아요.
@@ -30,16 +31,16 @@ sudo MALKKEUM_IMAGES_TAR=/root/malkkeum-demo.tar \
 ## English
 
 **You need**
-- An Ubuntu 24.04 / 22.04 or Debian 12 server (4 GB RAM or more, one public IPv4)
-- A domain (for example `malkkeum.example.kr`) whose DNS **A record** points at the server IP
-- Ports **80 and 443** open in the firewall (needed for the HTTPS certificate)
+- An Ubuntu 24.04 / 22.04 or Debian 12 server (recommended 2 vCPU / 4 GB RAM, minimum 2 GB, one public IPv4)
+- A domain (for example `dahae.example.kr`) whose DNS **A record** points at the server IP
+- Ports **22, 80 and 443** open in the firewall (needed for the HTTPS certificate)
 - Copy `install.sh` and `malkkeum-demo.tar` from this folder to the server
 
 **Install (run on the server)**
 ```
 sudo MALKKEUM_IMAGES_TAR=/root/malkkeum-demo.tar \
      MALKKEUM_VERSION=demo \
-     MALKKEUM_DOMAIN=malkkeum.example.kr \
+     MALKKEUM_DOMAIN=dahae.example.kr \
      MALKKEUM_EMAIL=you@example.kr \
      bash /root/install.sh
 ```
@@ -48,8 +49,9 @@ sudo MALKKEUM_IMAGES_TAR=/root/malkkeum-demo.tar \
 - Add `MALKKEUM_TLS=internal` only for a local test domain (`*.localhost`). Never for a real domain.
 
 **Operate**
-- Status: `malkkeum status`; logs: `malkkeum logs`; update: `malkkeum load <file.tar>` then `malkkeum update <tag>`.
-- Daily backups run automatically. Restore steps: `docs/DEPLOY.md` (folder 6-Docs).
+- Status: `sudo dahae status`; logs: `sudo dahae logs`; update: `sudo dahae load <file.tar>` then `sudo dahae update <tag>`.
+- Daily backups run automatically. Restore: `sudo dahae restore backups/db-<date>-<time>.sql.gz`. All commands: `docs/guide/07-운영-명령어.md` (folder 6-Docs).
+- Uptime alerts: `sudo dahae heartbeat https://hc-ping.com/...`; remove: `sudo dahae uninstall` (`--purge` also deletes data). No config file needs editing.
 - The `demo` images are for trials. For real operation install the released images (`MALKKEUM_CHANNEL=stable`).
 
 **Problems:** send the install log. The setup code and personal data are never written to it.

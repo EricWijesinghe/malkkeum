@@ -26,14 +26,45 @@ unless that passes. The same job runs on every push and PR via `ci.yml`.
    `malkkeum-install` under *Settings → Deploy keys* with **Allow write access** ticked.
    In the private repo: secret `DIST_DEPLOY_KEY` = contents of `malkkeum-dist` (then delete the local
    files). Variable `DIST_REPO=<owner>/malkkeum-install`.
-4. Release: `git tag v1.0.0 && git push --tags`. Then, once, open both GHCR packages
-   (`malkkeum-api`, `malkkeum-web`) → Package settings → **Change visibility → Public**.
+4. Release: `git tag v1.0.0 && git push --tags`.
+5. **GHCR packages Public (developer, one time; never the owner).** A package pushed under a user
+   account starts private, and the installer pulls without logging in. Until both packages are
+   public every install stops at "새 버전을 내려받지 못했어요". After the first release, for each of
+   `malkkeum-api` and `malkkeum-web`: GitHub → your profile → **Packages** → the package →
+   **Package settings** → Danger Zone → **Change visibility → Public** → type the package name.
+   Visibility sticks for later tags, so this is not repeated per release.
    The packages link to the public delivery repo through the OCI source label.
    Images contain compiled binaries and minified web assets only.
-5. Check: `docker pull ghcr.io/<owner>/malkkeum-api:stable` from a logged-out machine.
+6. Check from a logged-out machine (`docker logout ghcr.io` first):
+   `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
 
-Send the client the delivery repo link. Guide 01 already contains the exact install line
+Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
 (`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`).
+
+The owner never edits a file on the server. Everything after the install line is either the console
+wizard or a `dahae` command (`guide/07-운영-명령어.md`); `/opt/malkkeum/.env` is only copied somewhere
+safe. Brand: the user-visible name is 다해 / Dahae and the CLI is `dahae` (`malkkeum` stays as a
+symlink). Internal ids keep the old name: `/opt/malkkeum`, image names, bundle ids, the
+`malkkeum-install` repo, `MALKKEUM_*` installer variables (`DAHAE_*` is accepted too).
+
+### Server sizing (what the guides tell the owner)
+
+Ubuntu 24.04 (22.04 and Debian 12 also install), x86_64 or arm64. Recommended 2 vCPU / 4 GB RAM,
+minimum 2 GB. The installer refuses below about 1 GB, creates a 2 GB `/swapfile` when RAM is under
+2 GB and there is no swap, needs 5 GB free disk (2 GB on a re-run), and stops if a non-Docker
+process holds port 80 or 443.
+
+### Outside the server (owner checklist, mirrored in guide 01)
+
+1. Domain and an A record for the bare domain pointing at the server IP.
+2. Ports 22/80/443 open in the cloud firewall (the installer only touches `ufw`, and only
+   when it is already active).
+3. PortOne + PG merchant contracts; keys go into the console wizard.
+4. Solapi account, sender-number registration, Kakao channel and approved AlimTalk templates (guide 06).
+5. Kakao / Naver / Google / Apple developer apps for sign-in; Apple Developer and Google Play accounts (guide 03).
+6. Firebase project for push; AI and address-search keys in the wizard.
+7. 사업자등록, 통신판매업 신고, privacy-policy contact.
+8. Optional: offsite backup bucket (wizard), uptime check URL (`dahae heartbeat`, §8).
 
 ## 2. Releases and channels
 
@@ -42,12 +73,19 @@ Send the client the delivery repo link. Guide 01 already contains the exact inst
 | `v1.2.3` | `1.2.3`, `beta`, `stable`, `latest` | `beta` and `main` |
 | `v1.3.0-beta.1` | `1.3.0-beta.1`, `beta` | `beta` only |
 
-- `stable` (client default) and `beta` are image tags; `malkkeum channel beta|stable` switches a server.
+- `stable` (client default) and `beta` are image tags; `sudo dahae channel beta|stable` switches a server.
 - Every installed server keeps its channel tag in `/opt/malkkeum/.env` (`VERSION=stable`). Each
   Monday 04:00 KST it backs up, pulls the tag, checks health, and rolls back to the recorded previous
   image digests if the new one does not answer within 3 minutes.
-- `malkkeum rollback` returns to the digests recorded by the last update (forward-only migrations:
-  restore a backup if the schema changed; see guide 01).
+- `sudo dahae rollback` returns to the images recorded by the last update (a registry digest, or a
+  local `keep-…` tag for tar installs). It swaps the program only: migrations are not undone and
+  no data is removed. To go back in time as well, `sudo dahae restore <backup>` (guide 07).
+- **Migrations stay additive (expand/contract).** A rollback, automatic or manual, runs the previous
+  binary against the already-migrated schema. So a release may add tables, columns and indexes, but
+  must not drop, rename or tighten anything the previous release still reads or writes. Remove the
+  old shape one release later, once no rollback target uses it.
+- Re-running the installer on an installed server is the same safe update (backup → new images →
+  health check → rollback on failure); settings and data are kept.
 - Apps bake in the API version floor: set `min_app_version` / `latest_app_version` per app in the
   console (사업장 정보). Below the minimum the app shows a blocking update screen.
 
@@ -82,7 +120,7 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 | `API_BASE` | `https://<client domain>` |
 | `KAKAO_NATIVE_KEY` | developers.kakao.com → app → 앱 키 → 네이티브 앱 키. Register Android key hash (Play App Signing SHA-1 → base64) and iOS bundle id under 플랫폼 |
 | `NAVER_CLIENT_ID` | developers.naver.com → 애플리케이션 → 네아로. Callback URL: `https://<APP_LINK_DOMAIN>/auth/naver/callback` (see Naver App Link below). The secret stays on the server |
-| `APP_LINK_DOMAIN` | bare server host, same as the server `DOMAIN` (e.g. `malkkeum.co.kr`). Android App Link host and iOS `applinks:` domain. Naver is hidden without it |
+| `APP_LINK_DOMAIN` | bare server host, same as the server `DOMAIN` (e.g. `myshop.co.kr`). Android App Link host and iOS `applinks:` domain. Naver is hidden without it |
 | `GOOGLE_SERVER_CLIENT_ID` | Google Cloud console → Credentials → *Web* OAuth client id (also put it in the console wizard Google card) |
 | `GOOGLE_IOS_CLIENT_ID` | Google Cloud console → *iOS* OAuth client for each bundle id (the reversed id is derived) |
 | `GOOGLE_SERVICES_JSON_B64`, `GOOGLE_SERVICE_INFO_PLIST_B64` | Firebase project → customer Android/iOS app config files, `base64 -w0` |
@@ -93,10 +131,11 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 Android verifies an `android:autoVerify` intent filter (`https`, host, path) against
 `/.well-known/assetlinks.json`; iOS 17.4+ uses ASWebAuthenticationSession with the `applinks:` entitlement
 against `/.well-known/apple-app-site-association`. Only the app can take that URL. Setup:
-1. Server `.env` (the API serves both files from these; empty = 404, so the link does not verify):
-   `ANDROID_CERT_SHA256=AA:BB:…` (comma list: Play Console → Release → App integrity → *App signing key certificate* SHA-256,
-   plus the upload key if you sideload) and `APPLE_TEAM_ID=ABCDE12345`. Then
-   `sudo docker compose --env-file .env up -d api` in `/opt/malkkeum`.
+1. On the server (the API serves both files from these values; unset = 404, so the link does not verify):
+   `sudo dahae applinks --android-sha256 AA:BB:…[,CC:DD:…] --apple-team-id ABCDE12345`.
+   The fingerprint list is Play Console → Release → App integrity → *App signing key certificate* SHA-256,
+   plus the upload key if you sideload. The command validates both values, stores them and restarts
+   the API; either flag can be given alone. Send the owner this exact line; no file is edited.
 2. Naver Developers app: add the callback URL `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
 3. Apple Developer portal: enable **Associated Domains** on both bundle ids (`com.malkkeum.customer`,
    `com.malkkeum.partner`) so the entitlement can be signed. Codemagic signing fails without it.
@@ -197,10 +236,11 @@ Not in the docs (do not assume): the webhook signature scheme (none documented, 
 
 The server cannot report its own outage, so watch it from outside.
 
-- **Heartbeat (required):** create a check at healthchecks.io (or any compatible service) with period 5 min, grace 15 min. Put its ping URL in `.env` as `HEARTBEAT_URL=` (or run install with `MALKKEUM_HEARTBEAT_URL=`), then `sudo malkkeum-heartbeat` once to test. Cron runs `/usr/local/bin/malkkeum-heartbeat` every 5 minutes. It pings only when `https://DOMAIN/health` returns `"ok":true`, so a dead API stops the pings and the service alerts you by email/SMS.
-- **Missing config:** without `HEARTBEAT_URL`, `malkkeum status` prints a warning and the heartbeat log says so. Nothing is alerted until the URL is set.
+- **Heartbeat (required):** create a check at healthchecks.io (or any compatible service) with period 5 min, grace 15 min, then on the server run `sudo dahae heartbeat <ping URL>` (https only; `sudo dahae heartbeat off` disables it). The command stores the URL, restarts the API so the console checklist item clears, and sends one test ping. Unattended installs can pass `MALKKEUM_HEARTBEAT_URL=` instead. Cron runs `/usr/local/bin/malkkeum-heartbeat` every 5 minutes. It pings only when `https://DOMAIN/health` returns `"ok":true`, so a dead API stops the pings and the service alerts you by email/SMS.
+- **Missing config:** without a heartbeat URL, `sudo dahae status` prints a warning and the heartbeat log says so. Nothing is alerted until the URL is set.
 - **HTTP checks (optional, free tiers):** UptimeRobot or BetterStack, HTTPS `GET https://DOMAIN/health`, expect keyword `"ok":true`, interval 5 min. Use this to catch a crashed proxy as well.
-- Logs: `DIR/backups/heartbeat.log`. Server metrics and request ids are covered by the ops screens, not here.
+- Logs: `/opt/malkkeum/backups/heartbeat.log` (rotated weekly, 8 kept). Server metrics and request ids are covered by the ops screens, not here.
+
 ## 9. Operations: probes, logs, metrics, shutdown (operators)
 
 - **Liveness** `GET /health` answers while the process is up; it never touches the database.
@@ -216,3 +256,13 @@ The server cannot report its own outage, so watch it from outside.
   - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
 - **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).
 - **Several API replicas.** Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
+
+## 10. Uninstall
+
+- `sudo dahae uninstall` (asks for `yes`): stops the stack, removes the cron file, logrotate rule and the
+  `dahae` / `malkkeum` / `malkkeum-heartbeat` commands. Data volumes, `/opt/malkkeum/.env` and
+  `/opt/malkkeum/backups` stay, so re-running the installer resumes the same server.
+- `sudo dahae uninstall --purge` (asks for the domain): also deletes the Docker volumes (database,
+  uploads, certificates) and `/opt/malkkeum` with its backups and keys. Not reversible. Offsite backups
+  are untouched but need the old `DATA_KEY` to decrypt. Docker itself is left installed.
+- `--yes` skips the prompt for scripts.
