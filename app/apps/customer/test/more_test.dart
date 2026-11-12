@@ -120,7 +120,12 @@ void main() {
       expect(find.descendant(of: badge, matching: find.text(wordmark)), findsOneWidget);
     }
     expect(find.byKey(const ValueKey('channel-card')), findsOneWidget);
-    expect(find.byType(Image), findsNothing, reason: 'no third-party logo artwork');
+    // Our own 3D art (Icon3D) is allowed; any other image would be third-party logo artwork.
+    expect(
+      find.byWidgetPredicate((w) => w is Image && !(w.image is AssetImage && (w.image as AssetImage).assetName.contains('icons3d/'))),
+      findsNothing,
+      reason: 'no third-party logo artwork',
+    );
     expect(find.text(koT.apPayManageTitle), findsNothing, reason: 'nothing to register without PortOne');
     await unmount(tester);
   });

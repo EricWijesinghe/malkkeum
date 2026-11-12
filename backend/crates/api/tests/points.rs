@@ -267,7 +267,8 @@ async fn cancel_fee_is_kept_from_points_and_cash_alike(pool: PgPool) {
     let c = customer(&app, &pool, "010-6100-0014").await;
     grant(&pool, c.user, 10_000, "seed:14").await;
     let token = Some(c.token.as_str());
-    let (st, intent) = call(&app, "POST", "/v1/checkouts", token, Some(checkout_body(&c, 1, 10_000))).await;
+    // 2 days out, still in the 50% tier: "tomorrow" on the UTC clock is today in KST before 09:00 (out of range).
+    let (st, intent) = call(&app, "POST", "/v1/checkouts", token, Some(checkout_body(&c, 2, 10_000))).await;
     assert_eq!(st, StatusCode::OK, "{intent}");
     let total = intent["total"].as_i64().expect("total");
     let uri = format!("/v1/checkouts/{}/confirm", intent["id"].as_str().expect("id"));
