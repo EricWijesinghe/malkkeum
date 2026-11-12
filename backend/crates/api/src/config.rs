@@ -273,7 +273,7 @@ impl Config {
             ai_chat_retention_days: number("AI_CHAT_RETENTION_DAYS", 180, 1)?,
             upload_orphan_days: number("UPLOAD_ORPHAN_DAYS", 30, 1)?,
             db: DbSettings {
-                max_connections: number("DB_MAX_CONNECTIONS", 10, 1)?,
+                max_connections: number("DB_MAX_CONNECTIONS", 20, 1)?,
                 statement_timeout_ms: number("DB_STATEMENT_TIMEOUT_MS", 30_000, 0)?,
                 idle_tx_timeout_ms: number("DB_IDLE_TX_TIMEOUT_MS", 60_000, 1_000)?,
                 slow_query_ms: number("DB_SLOW_QUERY_MS", 500, 1)?,

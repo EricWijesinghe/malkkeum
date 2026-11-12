@@ -24,7 +24,7 @@ pub struct DbSettings {
 
 impl Default for DbSettings {
     fn default() -> Self {
-        Self { max_connections: 10, statement_timeout_ms: 30_000, idle_tx_timeout_ms: 60_000, slow_query_ms: 500 }
+        Self { max_connections: 20, statement_timeout_ms: 30_000, idle_tx_timeout_ms: 60_000, slow_query_ms: 500 }
     }
 }
 

@@ -188,7 +188,7 @@ services:
     depends_on: { db: { condition: service_healthy } }
     environment:
       DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
-      DB_MAX_CONNECTIONS: "10"
+      DB_MAX_CONNECTIONS: "20"
       JWT_SECRET: "${JWT_SECRET}"
       DATA_KEY: "${DATA_KEY}"
       SETUP_CODE: "${SETUP_CODE}"
