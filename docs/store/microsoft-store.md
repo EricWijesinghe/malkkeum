@@ -47,14 +47,12 @@ Listing text: copy from `listing-ko.md`, `listing-en.md` and the others. Check l
 ## 3. 패키지 만들기 · Build the package (developer)
 
 ```powershell
-pwsh scripts/store/build-msix.ps1 -Store -Apps customer,partner
+pwsh scripts/store/build-msix.ps1 -Store -ApiBase https://도메인
 ```
 
 - 결과: `dist/msix/malkkeum-customer.msix`, `malkkeum-partner.msix` (서명되지 않은 스토어용 패키지). / Output: unsigned store packages.
-- `-Apps customer,partner` 를 꼭 붙이세요. 지금 스크립트는 기본값으로 콘솔 패키지도 만들지만 콘솔은 스토어에 올리지 않아요. / Always pass `-Apps customer,partner`: the script still builds a console package by default, and the console is not a Store app.
 - 로컬 설치 테스트용은 `-Store` 없이 실행해요 (인증서로 서명). / Without `-Store` it is test-signed for local install.
-
-> **병합 대기 (pending merge, 빌드 스크립트 작업 WP-D).** 기준 커밋 `a365e37` 의 `build-msix.ps1` 은 (1) 서버 주소(`API_BASE`)를 패키지에 넣지 않아서 앱이 `http://127.0.0.1:8080` 을 바라보고, (2) 패키지 버전이 `1.0.0.0` 으로 고정이라 두 번째 제출이 거절돼요. 이 두 가지가 고쳐진 스크립트로 만든 패키지만 스토어에 올리세요. 올리기 전에 설치해서 실제 서버로 로그인되는지 확인하세요.
+- 서버 주소는 `-ApiBase https://도메인` (또는 `MSIX_API_BASE`) 으로 넣어요. 패키지 버전은 스토어 빌드 번호에서 자동으로 올라가요. / Pass the server as `-ApiBase https://DOMAIN` (or `MSIX_API_BASE`); the package version rises with the store build number.
 
 ## 4. 연령 등급 · Age rating (IARC)
 

@@ -66,6 +66,10 @@ workflows:
           ../../../scripts/ci/native-keys.sh customer
           build_number=$(python3 -I ../../../scripts/ci/build-number.py)
           flutter build appbundle --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json
+          # The built bundle (16 KB alignment) and the manifest Gradle merged from every plugin (permissions, FGS types).
+          aab=build/app/outputs/bundle/release/app-release.aab
+          manifest=build/app/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
+          python3 -I ../../../scripts/ci/check-native.py --aab "$aab" --manifest "$manifest"
     artifacts:
       - app/apps/customer/build/**/outputs/**/*.aab
       - app/apps/customer/build/**/outputs/**/mapping.txt
@@ -116,6 +120,10 @@ workflows:
           ../../../scripts/ci/native-keys.sh partner
           build_number=$(python3 -I ../../../scripts/ci/build-number.py)
           flutter build appbundle --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json
+          # The built bundle (16 KB alignment) and the manifest Gradle merged from every plugin (permissions, FGS types).
+          aab=build/app/outputs/bundle/release/app-release.aab
+          manifest=build/app/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
+          python3 -I ../../../scripts/ci/check-native.py --aab "$aab" --manifest "$manifest"
     artifacts:
       - app/apps/partner/build/**/outputs/**/*.aab
       - app/apps/partner/build/**/outputs/**/mapping.txt
