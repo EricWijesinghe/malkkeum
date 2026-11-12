@@ -70,7 +70,7 @@ PASS 인증 지원, 카카오·네이버·구글·애플 로그인
 · 이사청소·입주청소는 직접 견적을 내고 고객에게 선택받아요
 · 방문 주소 길찾기, 일정, 방문 메모를 한 화면에서
 · 작업 전후 사진을 올려 완료를 바로 보고해요
-· 고객과 앱 채팅으로 바로 소통해요
+· 운영팀과 앱 채팅으로 바로 소통해요
 · 팀원을 초대해 함께 일하고 작업을 나눠요
 · 완료한 작업은 매주 수요일 정산, 수입 내역은 앱에서 확인
 · 14개 언어 지원
@@ -87,7 +87,7 @@ PASS 인증 지원, 카카오·네이버·구글·애플 로그인
 ```
 This is a home-cleaning marketplace for Korea. Customers book cleaning visits; partner
 cleaners use the separate partner app. Physical services are paid through Korean payment
-gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e) / 3.1.5).
+gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e)).
 Sign in with Apple is offered next to the other social logins.
 Demo login: phone <demo number>, code <6-digit code> (set in the console under Setup → Store review demo account). Account deletion: More → Account → Delete account.
 ```

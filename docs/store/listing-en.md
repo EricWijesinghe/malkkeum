@@ -70,7 +70,7 @@ Malkkeum Partner is the app for Malkkeum cleaning professionals. (It is separate
 · Send your own quotes for move-in and move-out cleanings and get chosen
 · Directions to the visit address, schedule and visit notes on one screen
 · Upload before and after photos to report a finished job
-· Chat with customers in the app
+· Chat with the operations team in the app
 · Invite team members and share the work
 · Finished jobs are paid out every Wednesday; see your earnings in the app
 · 14 languages
@@ -87,7 +87,7 @@ First release. Accept jobs, send quotes, manage your schedule and payouts in one
 ```
 This is a home-cleaning marketplace for Korea. Customers book cleaning visits; partner
 cleaners use the separate partner app. Physical services are paid through Korean payment
-gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e) / 3.1.5).
+gateways (PortOne), so In-App Purchase does not apply (Guideline 3.1.3(e)).
 Sign in with Apple is offered next to the other social logins.
 Demo login: phone <demo number>, code <6-digit code> (set in the console under Setup → Store review demo account). Account deletion: More → Account → Delete account.
 ```
