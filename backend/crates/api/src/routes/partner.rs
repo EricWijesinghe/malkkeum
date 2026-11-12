@@ -76,8 +76,8 @@ pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
     if owed {
         return Err(ApiError::Conflict("pending_payouts"));
     }
-    // Before the identities are deleted below: Apple revoke, Kakao unlink, Naver token delete (best effort).
-    crate::providers::social::unlink_all(&s.providers, &s.db, "pro", id).await?;
+    // Read before the identities are deleted below; the provider calls run after commit (no lock held over HTTP).
+    let links = crate::providers::social::links(&mut tx, &s.config.data_key, "pro", id).await?;
     sqlx::query("UPDATE pros SET deleted_at = now(), status = 'suspended', name = '', team_name = '', phone = NULL WHERE id = $1")
         .bind(id)
         .execute(&mut *tx)
@@ -110,6 +110,7 @@ pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    crate::providers::social::unlink(&s.providers, "pro", id, links).await;
     Ok(())
 }
 

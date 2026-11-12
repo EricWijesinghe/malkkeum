@@ -21,6 +21,9 @@ use serde_json::Value;
 const CLIENT_SECRET_TTL: i64 = 300;
 /// Clock skew allowed on a notification's `iat`.
 const MAX_SKEW: i64 = 300;
+/// Oldest notification accepted. Seen ids are kept for good (`apple_notifications` is never purged), so this
+/// only bounds how far back a captured payload can be replayed against a fresh database.
+const MAX_AGE: i64 = 7 * 24 * 60 * 60;
 
 #[derive(Serialize)]
 struct SecretClaims<'a> {
@@ -154,7 +157,7 @@ struct NotificationClaims {
 }
 
 /// Signature (RS256 only, Apple's key for `kid`), issuer, audience (one of our bundle ids), `iat` not in the
-/// future, `exp` when present, and a typed event with a user.
+/// future or over a week old, `exp` when present, and a typed event with a user.
 fn decode_notification(jws: &str, jwk: &Jwk, client_ids: &[String], now: i64) -> ApiResult<Notification> {
     let key = DecodingKey::from_rsa_components(&jwk.n, &jwk.e).map_err(|_| ApiError::Unauthorized)?;
     let mut v = Validation::new(Algorithm::RS256);
@@ -162,7 +165,7 @@ fn decode_notification(jws: &str, jwk: &Jwk, client_ids: &[String], now: i64) ->
     v.validate_aud = false;
     v.required_spec_claims.clear();
     let c = decode::<NotificationClaims>(jws, &key, &v).map_err(|_| ApiError::Unauthorized)?.claims;
-    let fresh = c.iat <= now + MAX_SKEW && c.exp.is_none_or(|e| e > now);
+    let fresh = c.iat <= now + MAX_SKEW && c.iat >= now - MAX_AGE && c.exp.is_none_or(|e| e > now);
     if c.iss != APPLE_ISS || !client_ids.contains(&c.aud) || !fresh || c.jti.is_empty() {
         return Err(ApiError::Unauthorized);
     }
@@ -275,6 +278,9 @@ mod tests {
         let mut c = claims(event("account-delete"));
         c["iat"] = json!(NOW + MAX_SKEW + 60);
         assert!(reject(sign(RSA_PEM, &c)), "issued in the future");
+        let mut c = claims(event("account-delete"));
+        c["iat"] = json!(NOW - MAX_AGE - 1);
+        assert!(reject(sign(RSA_PEM, &c)), "older than a week");
         assert!(reject(sign(RSA_PEM, &claims(json!({"type": "account-delete"})))), "no user");
         assert!(reject(sign(RSA_PEM, &claims(json!("not json")))), "events unreadable");
         let mut c = claims(event("account-delete"));

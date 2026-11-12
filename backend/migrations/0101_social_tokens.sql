@@ -10,9 +10,13 @@ CREATE TABLE social_tokens (
 );
 
 -- Apple server-to-server notifications already handled, by JWS id (jti). Replays are acknowledged and skipped.
--- No user identifier is stored.
+-- No user identifier is stored. Never purged: a seen id must stay seen (retention.rs leaves this table alone).
 CREATE TABLE apple_notifications (
     jti         TEXT PRIMARY KEY,
     event_type  TEXT NOT NULL,
     received_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Apple account-delete for a partner with an open job or unpaid settlement: the deletion waits until that clears
+-- (retention.rs retries it every run).
+ALTER TABLE pros ADD COLUMN deletion_requested_at TIMESTAMPTZ;

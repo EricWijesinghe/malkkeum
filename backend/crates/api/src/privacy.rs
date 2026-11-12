@@ -197,16 +197,17 @@ async fn delete_billing_keys(s: &AppState, user: Uuid) -> ApiResult<()> {
     Ok(())
 }
 
-/// Account deletion (PIPA 파기). Disconnects social sign-ins at the provider, then anonymises the user row and
-/// removes contact data, sign-in identities, addresses, devices, notifications and gateway keys; ends
-/// subscriptions (no further charge or visit is planned) and waitlist places. Kept for legal retention: bookings,
-/// payments and tips (전자상거래법 5년), the consent log (proof of consent), chat text with the sender unlinked
-/// (분쟁 처리), and a referral's phone only as a SHA-256 so the one-reward-per-phone rule still holds.
-/// Safe to run twice.
+/// Account deletion (PIPA 파기). Anonymises the user row and removes contact data, sign-in identities (then
+/// disconnects them at the provider), addresses, devices, notifications, uploads, gateway keys, review text and
+/// photos, waitlist and unpaid-checkout snapshots; ends subscriptions (no further charge or visit is planned) and
+/// waitlist places. Kept for legal retention, linked only to the anonymised row: bookings, payments, paid
+/// checkouts, tips, cash receipts, tax invoice requests and payouts (전자상거래법 5년, 부가가치세법), review ratings,
+/// the consent log (proof of consent), chat text with the sender unlinked (분쟁 처리), and a referral's phone only
+/// as a keyed digest (`crypto::phone_digest`) so the one-reward-per-phone rule still holds. Safe to run twice.
 pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
     delete_billing_keys(s, user).await?;
-    crate::providers::social::unlink_all(&s.providers, &s.db, "customer", user).await?;
     let mut tx = s.db.begin().await?;
+    let links = crate::providers::social::links(&mut tx, &s.config.data_key, "customer", user).await?;
     // Login codes are keyed by phone, so they go before the phone is wiped.
     sqlx::query("DELETE FROM otp_codes WHERE phone = (SELECT phone FROM users WHERE id = $1)")
         .bind(user)
@@ -219,13 +220,18 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
     .bind(user)
     .execute(&mut *tx)
     .await?;
-    sqlx::query(
-        "UPDATE referrals SET referred_phone = 'sha256:' || encode(sha256(convert_to(referred_phone, 'UTF8')), 'hex')
-         WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'sha256:%'",
-    )
-    .bind(user)
-    .execute(&mut *tx)
-    .await?;
+    let referral_phone: Option<String> =
+        sqlx::query_scalar("SELECT referred_phone FROM referrals WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'hmac:%' FOR UPDATE")
+            .bind(user)
+            .fetch_optional(&mut *tx)
+            .await?;
+    if let Some(phone) = referral_phone {
+        sqlx::query("UPDATE referrals SET referred_phone = $2 WHERE referred_user_id = $1")
+            .bind(user)
+            .bind(crate::crypto::phone_digest(&s.config.data_key, &phone))
+            .execute(&mut *tx)
+            .await?;
+    }
     // Provider ids and emails; their stored refresh tokens go with them (ON DELETE CASCADE).
     sqlx::query("DELETE FROM user_identities WHERE role = 'customer' AND subject_id = $1")
         .bind(user)
@@ -255,6 +261,18 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .bind(user)
         .execute(&mut *tx)
         .await?;
+    // The booking request snapshot holds the address and notes.
+    sqlx::query("UPDATE waitlist_entries SET body = '{}'::jsonb WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
+    // Unsettled checkouts may still be paid (late deposit), so their draft stays until retention clears it.
+    sqlx::query(
+        "UPDATE checkouts SET draft = NULL, virtual_account = NULL
+         WHERE user_id = $1 AND status IN ('failed','cancelled','refunded') AND (draft IS NOT NULL OR virtual_account IS NOT NULL)",
+    )
+    .bind(user)
+    .execute(&mut *tx)
+    .await?;
+    // Ratings stay for the partner's score; the customer's words and photos go.
+    sqlx::query("UPDATE reviews SET body = '', photos = '[]'::jsonb WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
     // A subscription references its address, so that row is emptied instead of deleted.
     sqlx::query("UPDATE addresses SET label = '', road_address = '', detail = '', deleted_at = COALESCE(deleted_at, now()) WHERE user_id = $1")
         .bind(user)
@@ -288,11 +306,52 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    // Network and disk work after commit: no row lock is held across it.
+    crate::providers::social::unlink(&s.providers, "customer", user, links).await;
+    delete_uploads(s, user).await?;
     // An offered waitlist seat was being held for this customer: offer it to the next waiter.
     for (date, hour) in offered {
         crate::util::best_effort("waitlist offer on account deletion", crate::routes::waitlist::offer_for_slot(s, date, hour as u8)).await;
     }
     Ok(())
+}
+
+/// The customer's uploaded photos (review, chat, booking): file first, then its row, so a failed removal
+/// leaves the row and a second deletion run retries it.
+async fn delete_uploads(s: &AppState, user: Uuid) -> ApiResult<()> {
+    let files: Vec<(Uuid, String)> = sqlx::query_as("SELECT id, file FROM uploads WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .fetch_all(&s.db)
+        .await?;
+    for (id, file) in files {
+        match tokio::fs::remove_file(s.config.upload_dir.join(&file)).await {
+            Ok(()) => {}
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => {
+                tracing::warn!(%user, error = %e, "upload not removed on account deletion");
+                continue;
+            }
+        }
+        sqlx::query("DELETE FROM uploads WHERE id = $1").bind(id).execute(&s.db).await?;
+    }
+    Ok(())
+}
+
+/// Retention step: partners whose Apple ID was deleted while a job or payout was open are deleted once that
+/// clears. Still blocked ones wait for the next run. Returns how many were deleted.
+pub async fn finish_pending_partner_deletions(s: &AppState) -> ApiResult<u64> {
+    let pending: Vec<Uuid> = sqlx::query_scalar("SELECT id FROM pros WHERE deletion_requested_at IS NOT NULL AND deleted_at IS NULL")
+        .fetch_all(&s.db)
+        .await?;
+    let mut done = 0;
+    for id in pending {
+        match crate::routes::partner::delete_pro(s, id).await {
+            Ok(()) => done += 1,
+            Err(ApiError::Conflict(_)) => {}
+            Err(e) => return Err(e),
+        }
+    }
+    Ok(done)
 }
 
 async fn end_sessions(db: &PgPool, subject: Uuid) -> sqlx::Result<()> {
@@ -304,18 +363,28 @@ async fn end_sessions(db: &PgPool, subject: Uuid) -> sqlx::Result<()> {
 }
 
 /// Acts on a verified Apple server-to-server notification, once per `jti` (Apple may deliver it again).
-/// `account-delete`: the Apple ID is gone, so the accounts signed in with it are deleted (a partner whose
-/// deletion is blocked by an open job or payout keeps the account, minus the Apple link). `consent-revoked`:
-/// the user stopped using Apple sign-in here, so their sessions end and the stored Apple token is dropped; the
-/// link stays so signing in again reaches the same account. Email relay changes need nothing from us.
+/// `account-delete`: the Apple ID is gone, so the accounts signed in with it are deleted. A partner whose
+/// deletion is blocked by an open job or payout is marked and deleted by the retention job once that clears.
+/// `consent-revoked`: the user stopped using Apple sign-in here, so their sessions end and the stored Apple
+/// token is dropped; the link stays so signing in again reaches the same account. Email relay changes need
+/// nothing from us. On any error the `jti` is released so Apple's retry is handled.
 pub async fn apple_notification(s: &AppState, n: &crate::providers::apple::Notification) -> ApiResult<()> {
-    let seen: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM apple_notifications WHERE jti = $1)")
+    let claimed: Option<String> = sqlx::query_scalar("INSERT INTO apple_notifications (jti, event_type) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING jti")
         .bind(&n.jti)
-        .fetch_one(&s.db)
+        .bind(&n.kind)
+        .fetch_optional(&s.db)
         .await?;
-    if seen {
+    if claimed.is_none() {
         return Ok(());
     }
+    let handled = handle_apple_event(s, n).await;
+    if handled.is_err() {
+        sqlx::query("DELETE FROM apple_notifications WHERE jti = $1").bind(&n.jti).execute(&s.db).await?;
+    }
+    handled
+}
+
+async fn handle_apple_event(s: &AppState, n: &crate::providers::apple::Notification) -> ApiResult<()> {
     let accounts: Vec<(Uuid, String, Uuid)> =
         sqlx::query_as("SELECT id, role, subject_id FROM user_identities WHERE provider = 'apple' AND provider_user_id = $1")
             .bind(&n.sub)
@@ -324,13 +393,17 @@ pub async fn apple_notification(s: &AppState, n: &crate::providers::apple::Notif
     for (identity, role, subject) in accounts {
         match (n.kind.as_str(), role.as_str()) {
             ("account-delete" | "account-deleted", "customer") => delete_account(s, subject).await?,
-            ("account-delete" | "account-deleted", _) => {
-                if let Err(e) = crate::routes::partner::delete_pro(s, subject).await {
-                    tracing::warn!(%subject, error = %e, "apple account-delete: partner deletion blocked; apple link removed");
-                    sqlx::query("DELETE FROM user_identities WHERE id = $1").bind(identity).execute(&s.db).await?;
-                    end_sessions(&s.db, subject).await?;
+            ("account-delete" | "account-deleted", _) => match crate::routes::partner::delete_pro(s, subject).await {
+                Ok(()) => {}
+                Err(ApiError::Conflict(reason)) => {
+                    tracing::warn!(%subject, reason, "apple account-delete: partner deletion waits for open work to clear");
+                    sqlx::query("UPDATE pros SET deletion_requested_at = COALESCE(deletion_requested_at, now()) WHERE id = $1")
+                        .bind(subject)
+                        .execute(&s.db)
+                        .await?;
                 }
-            }
+                Err(e) => return Err(e),
+            },
             ("consent-revoked", _) => {
                 sqlx::query("DELETE FROM social_tokens WHERE identity_id = $1").bind(identity).execute(&s.db).await?;
                 end_sessions(&s.db, subject).await?;
@@ -338,10 +411,5 @@ pub async fn apple_notification(s: &AppState, n: &crate::providers::apple::Notif
             _ => {}
         }
     }
-    sqlx::query("INSERT INTO apple_notifications (jti, event_type) VALUES ($1, $2) ON CONFLICT DO NOTHING")
-        .bind(&n.jti)
-        .bind(&n.kind)
-        .execute(&s.db)
-        .await?;
     Ok(())
 }

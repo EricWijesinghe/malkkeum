@@ -139,9 +139,9 @@ async fn claim_referral(State(s): State<AppState>, Customer(a): Customer, Json(c
         return Err(ApiError::BadRequest("self_referral"));
     }
     check_claim(&referrer_phone, &friend_phone, friend_bookings).map_err(|e| ApiError::BadRequest(e.code()))?;
-    // A deleted account's referral keeps only the phone's hash (privacy.rs delete_account); it still counts.
-    let hashed_taken: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM referrals WHERE referred_phone = 'sha256:' || encode(sha256(convert_to($1, 'UTF8')), 'hex'))")
-        .bind(&friend_phone)
+    // A deleted account's referral keeps only the phone's keyed digest (privacy.rs delete_account); it still counts.
+    let hashed_taken: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM referrals WHERE referred_phone = $1)")
+        .bind(crate::crypto::phone_digest(&s.config.data_key, &friend_phone))
         .fetch_one(&s.db)
         .await?;
     if hashed_taken {

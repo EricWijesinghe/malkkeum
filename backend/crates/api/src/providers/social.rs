@@ -9,7 +9,6 @@ use crate::{
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use serde::Deserialize;
 use serde_json::Value;
-use sqlx::PgPool;
 use std::{
     sync::Mutex,
     time::{Duration, Instant},
@@ -219,6 +218,10 @@ struct IdClaims {
 pub struct KeyCache {
     url: &'static str,
     slot: Mutex<Option<(Instant, Vec<Jwk>)>>,
+    /// Last fetch attempt, successful or not: refetches are rate-limited even while the provider fails.
+    attempt: Mutex<Option<Instant>>,
+    /// Single flight: one fetch at a time; the others wait and reuse its result.
+    fetching: tokio::sync::Mutex<()>,
 }
 
 pub(super) static APPLE_KEYS: KeyCache = KeyCache::new(APPLE_KEYS_URL);
@@ -230,16 +233,31 @@ pub fn use_cache(age: Duration, kid_known: bool) -> bool {
     if kid_known { age < KEYS_TTL } else { age < UNKNOWN_KID_REFETCH }
 }
 
+/// A new fetch may start only once the last attempt is older than the unknown-kid wait.
+pub fn may_refetch(last_attempt_age: Option<Duration>) -> bool {
+    last_attempt_age.is_none_or(|a| a >= UNKNOWN_KID_REFETCH)
+}
+
 impl KeyCache {
     const fn new(url: &'static str) -> Self {
-        Self { url, slot: Mutex::new(None) }
+        Self { url, slot: Mutex::new(None), attempt: Mutex::new(None), fetching: tokio::sync::Mutex::const_new(()) }
     }
 
     fn stored(&self) -> Option<(Instant, Vec<Jwk>)> {
         self.slot.lock().ok()?.clone()
     }
 
+    /// The cache's answer for `kid`, or None when it is stale for this kid.
+    fn lookup(&self, kid: &str) -> Option<ApiResult<Jwk>> {
+        let (at, keys) = self.stored()?;
+        let known = keys.into_iter().find(|k| k.kid == kid);
+        use_cache(at.elapsed(), known.is_some()).then(|| known.ok_or(ApiError::Unauthorized))
+    }
+
     async fn fetch(&self, p: &Providers) -> ApiResult<Vec<Jwk>> {
+        if let Ok(mut a) = self.attempt.lock() {
+            *a = Some(Instant::now());
+        }
         let jwks: Jwks = p.http().get(self.url).send().await.map_err(unreachable_provider)?.json().await.map_err(unreachable_provider)?;
         if let Ok(mut guard) = self.slot.lock() {
             *guard = Some((Instant::now(), jwks.keys.clone()));
@@ -248,13 +266,20 @@ impl KeyCache {
     }
 }
 
-/// The key for `kid`: from cache when `use_cache` allows, otherwise refetched from the provider.
+/// The key for `kid`: from cache when `use_cache` allows, otherwise refetched (one fetch at a time, at most one per
+/// `UNKNOWN_KID_REFETCH`). Inside that wait a stale key set still answers; with none the provider counts as down.
 pub(super) async fn signing_key(p: &Providers, cache: &KeyCache, kid: &str) -> ApiResult<Jwk> {
-    if let Some((at, keys)) = cache.stored() {
-        let known = keys.iter().find(|k| k.kid == kid);
-        if use_cache(at.elapsed(), known.is_some()) {
-            return known.cloned().ok_or(ApiError::Unauthorized);
-        }
+    if let Some(r) = cache.lookup(kid) {
+        return r;
+    }
+    let _flight = cache.fetching.lock().await;
+    if let Some(r) = cache.lookup(kid) {
+        return r;
+    }
+    let last = cache.attempt.lock().ok().and_then(|a| a.map(|t| t.elapsed()));
+    if !may_refetch(last) {
+        let stale = cache.stored().and_then(|(_, keys)| keys.into_iter().find(|k| k.kid == kid));
+        return stale.ok_or(ApiError::Unavailable("provider_unreachable"));
     }
     cache.fetch(p).await?.into_iter().find(|k| k.kid == kid).ok_or(ApiError::Unauthorized)
 }
@@ -339,36 +364,51 @@ async fn naver_delete(p: &Providers, refresh: Option<&str>) -> UnlinkResult {
     if reply["result"] == "success" { Ok(()) } else { Err("provider_error") }
 }
 
-/// Disconnects every social sign-in of an account at its provider before the identities are deleted: Apple
-/// revoke (5.1.1(v)), Kakao unlink, Naver token delete. Google has no stored token (follow-up). Best effort: a
-/// missing key or a provider error is logged without token values and never blocks the deletion.
-pub async fn unlink_all(p: &Providers, db: &PgPool, role: &str, subject: uuid::Uuid) -> sqlx::Result<()> {
+/// One social sign-in of an account, read inside the deletion transaction so it can be unlinked after commit.
+pub struct Link {
+    provider: String,
+    user_id: String,
+    client_id: Option<String>,
+    token: Option<String>,
+}
+
+/// The account's sign-ins with their decrypted refresh tokens. Run in the deletion transaction, before the
+/// identities are deleted; the provider calls happen after commit (`unlink`), so no lock is held over HTTP.
+pub async fn links(conn: &mut sqlx::PgConnection, data_key: &[u8; 32], role: &str, subject: uuid::Uuid) -> sqlx::Result<Vec<Link>> {
     let rows: Vec<(String, String, Option<String>, Option<String>)> = sqlx::query_as(
         "SELECT i.provider, i.provider_user_id, t.client_id, t.refresh_token_enc
          FROM user_identities i LEFT JOIN social_tokens t ON t.identity_id = i.id WHERE i.role = $1 AND i.subject_id = $2",
     )
     .bind(role)
     .bind(subject)
-    .fetch_all(db)
+    .fetch_all(conn)
     .await?;
-    for (provider, user_id, client_id, enc) in rows {
-        let token = enc.and_then(|e| crypto::decrypt(&p.cfg().data_key, &e));
+    Ok(rows
+        .into_iter()
+        .map(|(provider, user_id, client_id, enc)| Link { provider, user_id, client_id, token: enc.and_then(|e| crypto::decrypt(data_key, &e)) })
+        .collect())
+}
+
+/// Disconnects each sign-in at its provider: Apple revoke (5.1.1(v)), Kakao unlink, Naver token delete. Google
+/// has no stored token (follow-up). Best effort: a missing key or a provider error is logged without token
+/// values and never undoes the deletion.
+pub async fn unlink(p: &Providers, role: &str, subject: uuid::Uuid, links: Vec<Link>) {
+    for l in links {
         let result = if p.cfg().dev_mode {
-            tracing::info!(target: "fake_social", provider, has_token = token.is_some(), "social sign-in unlinked");
+            tracing::info!(target: "fake_social", provider = l.provider, has_token = l.token.is_some(), "social sign-in unlinked");
             Ok(())
         } else {
-            match provider.as_str() {
-                "apple" => apple::revoke(p, client_id.as_deref(), token.as_deref()).await,
-                "kakao" => kakao_unlink(p, &user_id).await,
-                "naver" => naver_delete(p, token.as_deref()).await,
+            match l.provider.as_str() {
+                "apple" => apple::revoke(p, l.client_id.as_deref(), l.token.as_deref()).await,
+                "kakao" => kakao_unlink(p, &l.user_id).await,
+                "naver" => naver_delete(p, l.token.as_deref()).await,
                 _ => Err("unsupported"),
             }
         };
         if let Err(reason) = result {
-            tracing::warn!(provider, role, %subject, reason, "social sign-in not unlinked at the provider");
+            tracing::warn!(provider = l.provider, role, %subject, reason, "social sign-in not unlinked at the provider");
         }
     }
-    Ok(())
 }
 
 #[cfg(test)]
@@ -412,6 +452,13 @@ mod tests {
         assert!(!use_cache(KEYS_TTL, true), "stale known key set refetches");
         assert!(use_cache(Duration::from_secs(60), false), "unknown kid inside the wait does not refetch");
         assert!(!use_cache(UNKNOWN_KID_REFETCH, false), "unknown kid after the wait refetches (rotation)");
+    }
+
+    #[test]
+    fn refetch_waits_after_any_attempt_even_a_failed_one() {
+        assert!(may_refetch(None), "never fetched");
+        assert!(!may_refetch(Some(Duration::from_secs(1))), "just tried");
+        assert!(may_refetch(Some(UNKNOWN_KID_REFETCH)));
     }
 
     #[test]

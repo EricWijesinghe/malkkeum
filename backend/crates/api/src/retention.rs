@@ -18,6 +18,7 @@ pub struct Report {
     pub uploads: u64,
     pub entry_codes: u64,
     pub analytics_events: u64,
+    pub checkout_snapshots: u64,
 }
 
 pub fn spawn(state: AppState) -> JoinHandle<()> {
@@ -29,6 +30,11 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
             match purge(&state.db, cfg).await {
                 Ok(r) => tracing::info!(?r, "retention purge done"),
                 Err(e) => tracing::warn!(error = %e, "retention purge failed"),
+            }
+            match crate::privacy::finish_pending_partner_deletions(&state).await {
+                Ok(n) if n > 0 => tracing::info!(n, "pending partner deletions completed"),
+                Ok(_) => {}
+                Err(e) => tracing::warn!(error = %e, "pending partner deletions failed"),
             }
         }
     })
@@ -57,7 +63,16 @@ pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::err
         .execute(db)
         .await?
         .rows_affected();
-    Ok(Report { otp_codes, refresh_tokens, ai_messages, uploads, entry_codes, analytics_events })
+    // Deleted customers' unpaid checkouts keep their booking snapshot only while a late payment could still land.
+    let checkout_snapshots = sqlx::query(
+        "UPDATE checkouts c SET draft = NULL, virtual_account = NULL FROM users u
+         WHERE u.id = c.user_id AND u.deleted_at IS NOT NULL AND c.status <> 'paid' AND c.created_at < now() - interval '30 days'
+           AND (c.draft IS NOT NULL OR c.virtual_account IS NOT NULL)",
+    )
+    .execute(db)
+    .await?
+    .rows_affected();
+    Ok(Report { otp_codes, refresh_tokens, ai_messages, uploads, entry_codes, analytics_events, checkout_snapshots })
 }
 
 /// Deletes uploads older than `days` that no record refers to. The file goes first, then its row, so a

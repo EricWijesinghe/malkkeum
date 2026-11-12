@@ -119,12 +119,40 @@ async fn customer_deletion_leaves_no_personal_data_in_any_table(pool: PgPool) {
         .execute(&pool)
         .await
         .expect("visit");
-    sqlx::query("INSERT INTO waitlist_entries (user_id, service_code, visit_date, start_hour, end_hour) VALUES ($1, $2, current_date + 3, 10, 12)")
+    sqlx::query(
+        "INSERT INTO waitlist_entries (user_id, service_code, visit_date, start_hour, end_hour, body)
+         VALUES ($1, $2, current_date + 3, 10, 12, '{\"notes\": \"door code 1234\"}')",
+    )
+    .bind(c.user)
+    .bind(&service)
+    .execute(&pool)
+    .await
+    .expect("waitlist");
+    sqlx::query(
+        "INSERT INTO checkouts (user_id, kind, draft, method, amount, status, virtual_account, expires_at)
+         VALUES ($1, 'booking', '{\"notes\": \"x\"}', 'card', 1000, 'failed', '{\"holder\": \"x\"}', now())",
+    )
+    .bind(c.user)
+    .execute(&pool)
+    .await
+    .expect("checkout");
+    let (booking, _) = common::book(&app, &c, 10, None).await;
+    sqlx::query("INSERT INTO reviews (booking_id, user_id, rating, body, photos) VALUES ($1, $2, 5, 'great, see you at 101-1203', '[\"x.jpg\"]')")
+        .bind(booking)
         .bind(c.user)
-        .bind(&service)
         .execute(&pool)
         .await
-        .expect("waitlist");
+        .expect("review");
+    let upload_dir = test_config().upload_dir;
+    std::fs::create_dir_all(&upload_dir).expect("upload dir");
+    let file = format!("del-{}.jpg", c.user.simple());
+    std::fs::write(upload_dir.join(&file), b"jpg").expect("upload file");
+    sqlx::query("INSERT INTO uploads (owner_role, owner_id, file, bytes) VALUES ('customer', $1, $2, 3)")
+        .bind(c.user)
+        .bind(&file)
+        .execute(&pool)
+        .await
+        .expect("upload row");
 
     let (st, body) = call(&app, "DELETE", "/v1/me", Some(c.token.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{body}");
@@ -169,7 +197,7 @@ async fn customer_deletion_leaves_no_personal_data_in_any_table(pool: PgPool) {
         ("billing tickets", "SELECT count(*) FROM billing_issues WHERE user_id = $1"),
         (
             "raw referral phone",
-            "SELECT count(*) FROM referrals WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'sha256:%'",
+            "SELECT count(*) FROM referrals WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'hmac:%'",
         ),
         (
             "live subscriptions",
@@ -184,6 +212,19 @@ async fn customer_deletion_leaves_no_personal_data_in_any_table(pool: PgPool) {
             "SELECT count(*) FROM waitlist_entries WHERE user_id = $1 AND status IN ('waiting','offered')",
         ),
         (
+            "waitlist snapshots",
+            "SELECT count(*) FROM waitlist_entries WHERE user_id = $1 AND body <> '{}'::jsonb",
+        ),
+        (
+            "unpaid checkout snapshots",
+            "SELECT count(*) FROM checkouts WHERE user_id = $1 AND status <> 'paid' AND (draft IS NOT NULL OR virtual_account IS NOT NULL)",
+        ),
+        (
+            "review text and photos",
+            "SELECT count(*) FROM reviews WHERE user_id = $1 AND (body <> '' OR photos <> '[]'::jsonb)",
+        ),
+        ("uploads", "SELECT count(*) FROM uploads WHERE owner_role = 'customer' AND owner_id = $1"),
+        (
             "chat sender links",
             "SELECT count(*) FROM chat_messages WHERE sender = 'customer' AND sender_id = $1",
         ),
@@ -197,14 +238,25 @@ async fn customer_deletion_leaves_no_personal_data_in_any_table(pool: PgPool) {
         .await
         .expect("otp");
     assert_eq!(codes, 0, "login codes for the phone removed");
-    let hashed: bool =
-        sqlx::query_scalar("SELECT referred_phone = 'sha256:' || encode(sha256(convert_to($2, 'UTF8')), 'hex') FROM referrals WHERE referred_user_id = $1")
-            .bind(c.user)
-            .bind(&phone)
-            .fetch_one(&pool)
-            .await
-            .expect("referral kept");
-    assert!(hashed, "referral keeps only the phone hash");
+    assert!(!upload_dir.join(&file).exists(), "uploaded file removed from disk");
+    let kept: String = sqlx::query_scalar("SELECT referred_phone FROM referrals WHERE referred_user_id = $1")
+        .bind(c.user)
+        .fetch_one(&pool)
+        .await
+        .expect("referral kept");
+    assert_eq!(
+        kept,
+        api::crypto::phone_digest(&test_config().data_key, &phone),
+        "referral keeps only the keyed digest"
+    );
+    let plain = sqlx::query_scalar::<_, String>("SELECT encode(sha256(convert_to($1, 'UTF8')), 'hex')")
+        .bind(&phone)
+        .fetch_one(&pool)
+        .await
+        .expect("sha");
+    assert!(!kept.contains(&plain), "not an unsalted hash of the phone");
+    let ratings: i64 = count(&pool, "SELECT count(*) FROM reviews WHERE user_id = $1 AND rating = 5", c.user).await;
+    assert_eq!(ratings, 1, "rating kept for the partner score");
 
     // Deleting twice (a replayed Apple account-delete) changes nothing and does not fail.
     privacy::delete_account(&build_state(pool.clone(), test_config()).expect("state"), c.user)
@@ -314,4 +366,66 @@ async fn notification_endpoint_rejects_unsigned_or_malformed_payloads(pool: PgPo
     }
     let (st, _) = call(&app, "POST", "/v1/auth/apple/notifications", None, Some(json!({}))).await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "no payload");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_deleted_friends_phone_still_counts_for_one_referral_reward(pool: PgPool) {
+    seed_catalog(&pool).await;
+    sqlx::query(
+        "INSERT INTO settings (key, value) VALUES ('referral_offer', '{\"enabled\": true, \"amount\": 3000}')
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+    )
+    .execute(&pool)
+    .await
+    .expect("setting");
+    let app = app(pool.clone());
+    let referrer = customer(&app, &pool, "010-8200-0101").await;
+    let (_, mine) = call(&app, "GET", "/v1/me/referral", Some(referrer.token.as_str()), None).await;
+    let code = mine["code"].as_str().expect("code").to_string();
+    let (friend, _) = login(&app, "010-8200-0102", "customer").await;
+    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.as_str()), Some(json!({ "code": code }))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, b) = call(&app, "DELETE", "/v1/me", Some(friend.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+
+    let (again, _) = login(&app, "010-8200-0102", "customer").await;
+    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(again.as_str()), Some(json!({ "code": code }))).await;
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("already_referred")), "{b}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn apple_account_delete_for_a_busy_partner_waits_then_completes(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = app(pool.clone());
+    let state = build_state(pool.clone(), test_config()).expect("state");
+    let (st, partner) = social(&app, "apple-sub-5p", None, "partner").await;
+    assert_eq!(st, StatusCode::OK, "{partner}");
+    let pro: Uuid = partner["subject"].as_str().expect("subject").parse().expect("uuid");
+    let c = customer(&app, &pool, "010-8200-0201").await;
+    let (booking, _) = common::book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET pro_id = $2, status = 2 WHERE id = $1")
+        .bind(booking)
+        .bind(pro)
+        .execute(&pool)
+        .await
+        .expect("assign");
+
+    privacy::apple_notification(&state, &notification("jti-5", "account-delete", "apple-sub-5p"))
+        .await
+        .expect("handled");
+    let marked = "SELECT count(*) FROM pros WHERE id = $1 AND deleted_at IS NULL AND deletion_requested_at IS NOT NULL";
+    assert_eq!(count(&pool, marked, pro).await, 1, "marked, not deleted");
+    assert_eq!(privacy::finish_pending_partner_deletions(&state).await.expect("retry"), 0, "still busy");
+
+    sqlx::query("UPDATE bookings SET status = 3 WHERE id = $1")
+        .bind(booking)
+        .execute(&pool)
+        .await
+        .expect("done");
+    assert_eq!(privacy::finish_pending_partner_deletions(&state).await.expect("retry"), 1);
+    assert_eq!(count(&pool, "SELECT count(*) FROM pros WHERE id = $1 AND deleted_at IS NOT NULL", pro).await, 1);
+    assert_eq!(count(&pool, "SELECT count(*) FROM user_identities WHERE subject_id = $1", pro).await, 0);
+    let (st, again) = social(&app, "apple-sub-5p", None, "partner").await;
+    assert_eq!(st, StatusCode::OK, "{again}");
+    assert_ne!(again["subject"], partner["subject"], "same Apple id signs up fresh");
 }
