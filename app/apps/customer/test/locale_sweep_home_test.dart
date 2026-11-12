@@ -8,7 +8,7 @@ import 'support/customer_routes.dart';
 
 /// Dahae home (U2) on the smallest phone we support at large and largest system text, in every
 /// language: banner, 7 tiles, recommended, news and tips rails, and the move sheet. Any RenderFlex
-/// overflow or exception fails the test.
+/// overflow or exception fails the test, named with the widget that caused it.
 const _smallPhone = Size(320, 568);
 const _scales = [1.3, 2.0];
 const _scrollSteps = 20;
@@ -59,10 +59,15 @@ void main() {
         final t = lookupT(locale);
         final env = await TestEnv.create(fake: _homeApi(), localeCode: code);
 
+        // Capture layout errors with their widget details (the test binding keeps only the bare message).
+        final saved = FlutterError.onError;
+        final errors = <FlutterErrorDetails>[];
+        FlutterError.onError = errors.add;
+        addTearDown(() => FlutterError.onError = saved);
+
         await pumpCustomerApp(tester, env);
         await pumpUntilFound(tester, find.text(t.tabHome));
         await settle(tester, duration: const Duration(milliseconds: 600));
-        expect(tester.takeException(), isNull, reason: 'top of home');
 
         // On this screen the grid starts below the fold: centre the move tile, clear of the bottom bar.
         final list = find.byType(CustomScrollView).first;
@@ -71,11 +76,9 @@ void main() {
         await tester.scrollUntilVisible(tile, 120, scrollable: scrollable);
         await Scrollable.ensureVisible(tester.element(tile), alignment: 0.5);
         await settle(tester, duration: const Duration(milliseconds: 400));
-        expect(tester.takeException(), isNull, reason: 'banner and grid');
         await tester.tap(tile);
         await settle(tester, duration: const Duration(milliseconds: 600));
         expect(find.text(t.dhMovePickTitle), findsOneWidget);
-        expect(tester.takeException(), isNull, reason: 'move sheet');
         Navigator.of(tester.element(find.text(t.dhMovePickTitle))).pop();
         await settle(tester, duration: const Duration(milliseconds: 600));
 
@@ -83,10 +86,17 @@ void main() {
         for (var i = 0; i < _scrollSteps; i++) {
           await tester.dragFrom(_gutter, const Offset(0, -260)); // start beside the cards, on no tile
           await settle(tester, duration: const Duration(milliseconds: 300));
-          expect(tester.takeException(), isNull, reason: 'scroll step $i');
           sawNews |= find.text(t.dhHomeNews).evaluate().isNotEmpty;
           sawTips |= find.text(t.moreTips).evaluate().isNotEmpty;
         }
+        FlutterError.onError = saved;
+        final where = RegExp(r'file:///[^\s)]+/(?:customer/lib|ui/lib)/[^\s)]+');
+        final failures = {
+          for (final d in errors)
+            '${d.exceptionAsString().split('\n').first} @ '
+                '${where.allMatches(d.toString()).map((m) => m.group(0)).take(3).join(' ')}',
+        };
+        expect(failures, isEmpty, reason: failures.join('\n'));
         expect((sawNews, sawTips), (true, true), reason: 'both rails were built while scrolling');
         await unmount(tester);
       });

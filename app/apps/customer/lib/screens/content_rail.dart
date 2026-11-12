@@ -39,13 +39,16 @@ class ContentRail extends StatelessWidget {
       children: [
         SectionTitle(
           title,
-          trailing: TextButton(
+          // An icon, not a text button: "see all" is long in several languages and the heading
+          // must keep its room at large text sizes.
+          trailing: IconButton(
+            tooltip: context.t.viewAll,
+            icon: const Icon(Icons.chevron_right_rounded),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => ContentListScreen(kind: kind, title: title),
               ),
             ),
-            child: Text(context.t.viewAll),
           ),
         ),
         SizedBox(
