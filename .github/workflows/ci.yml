@@ -74,7 +74,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Installer and scripts pass shellcheck
-        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh scripts/ci/backup-drill.sh
+        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh scripts/ci/backup-drill.sh scripts/ci/installer-selftest.sh
+      - name: Installer self-test (pure functions + shellcheck of the embedded dahae CLI; no root)
+        run: bash scripts/ci/installer-selftest.sh
 
   # Released migrations are immutable; new ones must be safe on big tables (scripts/ci/check-migrations.py).
   migrations:

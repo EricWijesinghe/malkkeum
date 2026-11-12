@@ -1,10 +1,13 @@
 # Production stack on one server: Postgres + API + web (Caddy: website, console, automatic HTTPS).
 # Installed and managed by deploy/install.sh — nobody needs to edit this file.
-# Images are prebuilt by .github/workflows/release.yml; `malkkeum update` pulls new ones.
+# Images are prebuilt by .github/workflows/release.yml; `dahae update` pulls new ones.
+# install.sh writes an equivalent copy to /opt/malkkeum (keep the two in sync).
+x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "3" } }
 services:
   db:
     image: postgres:17
     restart: unless-stopped
+    logging: *log
     environment:
       POSTGRES_DB: cleaning
       POSTGRES_USER: app
@@ -17,9 +20,10 @@ services:
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
 
   api:
-    image: ${API_IMAGE:-${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-api:${VERSION:-stable}}
+    image: ${API_IMAGE:-${IMAGE_REPO:-ghcr.io/ericwijesinghe}/malkkeum-api:${VERSION:-stable}}
     build: { context: ../backend }
     restart: unless-stopped
+    logging: *log
     depends_on: { db: { condition: service_healthy } }
     environment:
       DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
@@ -33,7 +37,7 @@ services:
       TRUSTED_PROXY: "1"
       DEV_MODE: "0"
       RUST_LOG: info,sqlx=warn
-      # App Links for Naver login (/.well-known/*). Set in .env; empty = not served.
+      # App Links for Naver login (/.well-known/*). Set with `dahae applinks`; empty = not served.
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
       LOG_FORMAT: json
@@ -41,14 +45,17 @@ services:
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
-    image: ${WEB_IMAGE:-${IMAGE_REPO:-ghcr.io/malkkeum}/malkkeum-web:${VERSION:-stable}}
+    image: ${WEB_IMAGE:-${IMAGE_REPO:-ghcr.io/ericwijesinghe}/malkkeum-web:${VERSION:-stable}}
     build: { context: .., dockerfile: deploy/web.Dockerfile }
     restart: unless-stopped
+    logging: *log
     depends_on: [api]
     ports: ["80:80", "443:443", "443:443/udp"]
     environment:
       DOMAIN: ${DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:-}
+      TLS_MODE: ${TLS_MODE:-}
     volumes: [caddydata:/data, caddyconfig:/config]
+    healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
 
 volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
