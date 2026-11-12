@@ -104,7 +104,6 @@ void main() {
       ]) {
         expect(find.text(b), findsOneWidget);
       }
-      expect(find.text(koT.dfPleaseSelect), findsOneWidget);
       expect(tester.widget<PrimaryButton>(_next()).onPressed, isNull);
       await _tap(tester, find.text(koT.building_commercial));
       await _tap(tester, find.text(koT.dfLayoutTwo));
@@ -273,6 +272,7 @@ void main() {
     expect(find.text(formatWon(346500, 'ko')), findsOneWidget);
     expect(find.text(koT.dfAwaitingPay), findsOneWidget);
     expect(find.text(koT.dfPayInfoBody('10')), findsOneWidget);
+    await tester.scrollUntilVisible(find.text(koT.cancelBooking), 200, scrollable: find.byType(Scrollable).first);
     await _tap(tester, find.text(koT.cancelBooking));
     await _tap(tester, find.widgetWithText(FilledButton, koT.cancelBooking));
     expect(

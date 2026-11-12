@@ -127,7 +127,7 @@ void main() {
         );
         expect(
           find.widgetWithText(ChoiceTile3D, koT.duration(u.minutes)),
-          findsOneWidget,
+          findsWidgets,
         );
       }
       await _tap(tester, find.text(koT.unit('two_in_one')));

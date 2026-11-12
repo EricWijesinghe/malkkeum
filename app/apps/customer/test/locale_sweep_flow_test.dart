@@ -103,6 +103,13 @@ void main() {
           tester.platformDispatcher.textScaleFactorTestValue = scale;
           addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
           final t = lookupT(locale);
+          // Prints each framework error in full, so a failing locale names the widget.
+          final orig = FlutterError.onError;
+          FlutterError.onError = (d) {
+            debugPrint('SWEEP-ERROR ${d.toString().split('\n').take(30).join('\n')}');
+            orig?.call(d);
+          };
+          addTearDown(() => FlutterError.onError = orig);
           final env = await TestEnv.create(fake: _api(), localeCode: code);
           final app = AppState(env.api, FakeRealtime(env.api));
           await app.loadAll();

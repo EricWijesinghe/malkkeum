@@ -232,13 +232,17 @@ class ScopeLink extends StatelessWidget {
   const ScopeLink({super.key, required this.code});
   final String code;
   @override
-  Widget build(BuildContext context) => TextButton.icon(
+  Widget build(BuildContext context) => ConstrainedBox(
+    // Long translations at large text must not push the app bar past the screen.
+    constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.5),
+    child: TextButton.icon(
     icon: const Icon(Icons.info_rounded),
-    label: Text(context.t.moreScope),
+    label: Text(context.t.moreScope, overflow: TextOverflow.ellipsis),
     onPressed: () => Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => ServiceScopeScreen(initialGroup: scopeGroupFor(code)),
       ),
+    ),
     ),
   );
 }

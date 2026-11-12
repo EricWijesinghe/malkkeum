@@ -147,11 +147,11 @@ class _ServiceScopeScreenState extends State<ServiceScopeScreen> {
               const SizedBox(height: Space.sm),
               CheckList([for (final k in areas[_area]!) scopeLabel(t, k)]),
               const SizedBox(height: Space.sm),
-              Container(
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceHigh,
-                  borderRadius: BorderRadius.circular(Radii.tile),
-                ),
+              // Material, not a decorated box: the ExpansionTile paints its ink on it.
+              Material(
+                color: context.colors.surfaceHigh,
+                borderRadius: BorderRadius.circular(Radii.tile),
+                clipBehavior: Clip.antiAlias,
                 child: Theme(
                   data: Theme.of(
                     context,
