@@ -3125,6 +3125,42 @@ class TKo extends T {
   }
 
   @override
+  String get apPgPickMethod => '결제 수단을 골라 주세요';
+
+  @override
+  String get apPgConfirmTitle => '결제 내용 확인';
+
+  @override
+  String get apPgConfirmBtn => '결제 확인';
+
+  @override
+  String get apPgProcessing => '결제를 처리하고 있어요';
+
+  @override
+  String get apPgDoneTitle => '결제가 완료됐어요';
+
+  @override
+  String get apPgReceiptTitle => '전자 영수증';
+
+  @override
+  String get apPgReceiptApproval => '승인번호';
+
+  @override
+  String get apPgReceiptMethod => '결제 수단';
+
+  @override
+  String get apPgReceiptAmount => '결제 금액';
+
+  @override
+  String get apPgReceiptDone => '확인';
+
+  @override
+  String get apPgVaIssued => '가상계좌가 발급됐어요 (테스트 계좌)';
+
+  @override
+  String get apPgTestBadge => '테스트 결제';
+
+  @override
   String get cIntPayout => '파트너 지급';
 
   @override
@@ -3304,6 +3340,9 @@ class TKo extends T {
 
   @override
   String get pvMarketingHint => '쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.';
+
+  @override
+  String get pvLocation => '위치 정보 이용 동의';
 
   @override
   String get pvReconsent => '개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.';
@@ -4106,6 +4145,135 @@ class TKo extends T {
 
   @override
   String get uLatestVersion => '최신 버전';
+
+  @override
+  String get walletTitle => '포인트 지갑';
+
+  @override
+  String get walletBalance => '사용 가능한 포인트';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days일 안에 $count P가 사라져요';
+  }
+
+  @override
+  String get walletOff => '포인트 적립은 아직 열리지 않았어요';
+
+  @override
+  String get walletEmpty => '아직 포인트 내역이 없어요';
+
+  @override
+  String get walletHistory => '최근 내역';
+
+  @override
+  String get walletKindEarn => '예약 적립';
+
+  @override
+  String get walletKindWelcome => '가입 환영 포인트';
+
+  @override
+  String get walletKindReferral => '친구 추천 보상';
+
+  @override
+  String get walletKindRefund => '취소로 돌려받은 포인트';
+
+  @override
+  String get walletKindSpend => '예약 결제에 사용';
+
+  @override
+  String get walletKindExpire => '기간 만료로 소멸';
+
+  @override
+  String get walletKindOther => '포인트 조정';
+
+  @override
+  String get moreWallet => '포인트 지갑';
+
+  @override
+  String get payHistoryTitle => '결제 내역';
+
+  @override
+  String get payHistoryEmpty => '결제 내역이 없어요';
+
+  @override
+  String get payStatusPaid => '결제 완료';
+
+  @override
+  String get payStatusRefunded => '환불 완료';
+
+  @override
+  String get payStatusPending => '결제·입금 대기';
+
+  @override
+  String get payStatusClosed => '결제되지 않음';
+
+  @override
+  String get receiptTitle => '전자 영수증';
+
+  @override
+  String get receiptLegal => '상호';
+
+  @override
+  String get receiptRegNo => '사업자등록번호';
+
+  @override
+  String get receiptAddr => '사업장 주소';
+
+  @override
+  String get receiptPhone => '고객센터';
+
+  @override
+  String get receiptDate => '결제일';
+
+  @override
+  String get receiptCopy => '영수증 내용 복사';
+
+  @override
+  String get receiptCopied => '영수증 내용을 복사했어요';
+
+  @override
+  String get receiptNote => '결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.';
+
+  @override
+  String get checkoutPointsUse => '포인트 사용';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '보유 $count P · 이번 결제에 최대 $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow => '포인트는 결제창으로 결제할 때 쓸 수 있어요';
+
+  @override
+  String get pointsLedgerTitle => '포인트 원장';
+
+  @override
+  String get pointsAdjustAmount => '포인트 (차감은 음수로 입력)';
+
+  @override
+  String get pointsAdjustReason => '조정 사유';
+
+  @override
+  String get pointsAdjustInvalid => '0이 아닌 포인트와 사유를 입력해 주세요';
+
+  @override
+  String get pointsAdjustDone => '포인트를 조정했어요';
+
+  @override
+  String get err_points_insufficient => '포인트가 부족해요. 사용할 포인트를 줄여 주세요.';
+
+  @override
+  String get err_points_over_cap => '이번 결제에 쓸 수 있는 포인트 한도를 넘었어요.';
+
+  @override
+  String get err_points_cover_total => '포인트로 전액을 결제할 수는 없어요. 조금 줄여 주세요.';
 
   @override
   String get webBookNow => '웹에서 바로 예약';

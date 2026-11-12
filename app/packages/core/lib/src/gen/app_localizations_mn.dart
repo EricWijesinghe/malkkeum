@@ -3226,6 +3226,42 @@ class TMn extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Төлбөрийн хэрэгслээ сонгоно уу';
+
+  @override
+  String get apPgConfirmTitle => 'Төлбөрийн мэдээлэл шалгах';
+
+  @override
+  String get apPgConfirmBtn => 'Төлбөрөө баталгаажуулах';
+
+  @override
+  String get apPgProcessing => 'Төлбөрийг боловсруулж байна…';
+
+  @override
+  String get apPgDoneTitle => 'Төлбөр амжилттай';
+
+  @override
+  String get apPgReceiptTitle => 'Цахим баримт';
+
+  @override
+  String get apPgReceiptApproval => 'Зөвшөөрлийн дугаар';
+
+  @override
+  String get apPgReceiptMethod => 'Хэрэгсэл';
+
+  @override
+  String get apPgReceiptAmount => 'Дүн';
+
+  @override
+  String get apPgReceiptDone => 'Дуусгах';
+
+  @override
+  String get apPgVaIssued => 'Виртуал данс нээгдлээ (туршилтын данс)';
+
+  @override
+  String get apPgTestBadge => 'ТУРШИЛТ';
+
+  @override
   String get cIntPayout => 'Түншийн төлбөр';
 
   @override
@@ -3409,6 +3445,9 @@ class TMn extends T {
   @override
   String get pvMarketingHint =>
       'Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.';
+
+  @override
+  String get pvLocation => 'Байршлын мэдээлэл ашиглах зөвшөөрөл';
 
   @override
   String get pvReconsent =>
@@ -4235,6 +4274,140 @@ class TMn extends T {
 
   @override
   String get uLatestVersion => 'Хамгийн сүүлийн хувилбар';
+
+  @override
+  String get walletTitle => 'Оноогоо хэтэвч';
+
+  @override
+  String get walletBalance => 'Ашиглах боломжтой оноо';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days хоногийн дотор $count P дуусна';
+  }
+
+  @override
+  String get walletOff => 'Оноо цуглуулах хөтөлбөр хараахан нээгдээгүй';
+
+  @override
+  String get walletEmpty => 'Оноогийн түүх одоохондоо алга';
+
+  @override
+  String get walletHistory => 'Сүүлийн үйл явдал';
+
+  @override
+  String get walletKindEarn => 'Захиалгын буцаан олголт';
+
+  @override
+  String get walletKindWelcome => 'Тавтай морилсон оноо';
+
+  @override
+  String get walletKindReferral => 'Найз урилгын шагнал';
+
+  @override
+  String get walletKindRefund => 'Цуцлалтаар буцаасан оноо';
+
+  @override
+  String get walletKindSpend => 'Захиалгад зарцуулсан';
+
+  @override
+  String get walletKindExpire => 'Хугацаа дууссан';
+
+  @override
+  String get walletKindOther => 'Оноо тохируулга';
+
+  @override
+  String get moreWallet => 'Оноогоо хэтэвч';
+
+  @override
+  String get payHistoryTitle => 'Төлбөрийн түүх';
+
+  @override
+  String get payHistoryEmpty => 'Төлбөр одоохондоо алга';
+
+  @override
+  String get payStatusPaid => 'Төлсөн';
+
+  @override
+  String get payStatusRefunded => 'Буцаан олгосон';
+
+  @override
+  String get payStatusPending => 'Төлбөр хүлээгдэж байна';
+
+  @override
+  String get payStatusClosed => 'Төлөгдөөгүй';
+
+  @override
+  String get receiptTitle => 'Цахим баримт';
+
+  @override
+  String get receiptLegal => 'Байгууллагын нэр';
+
+  @override
+  String get receiptRegNo => 'Бүртгэлийн дугаар';
+
+  @override
+  String get receiptAddr => 'Хаяг';
+
+  @override
+  String get receiptPhone => 'Харилцагчийн үйлчилгээ';
+
+  @override
+  String get receiptDate => 'Төлсөн огноо';
+
+  @override
+  String get receiptCopy => 'Баримтыг хуулах';
+
+  @override
+  String get receiptCopied => 'Баримтыг хуулсан';
+
+  @override
+  String get receiptNote =>
+      'Зөвхөн төлбөрийн баталгаа. Татварын нэхэмжлэх хэрэгтэй бол захиалгын мэдээллээс хүсэлт гаргана уу.';
+
+  @override
+  String get checkoutPointsUse => 'Оноо ашиглах';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P байна · энэ төлбөрт дээд тал нь $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Оноог төлбөрийн цонхоор төлөхөд ашиглана';
+
+  @override
+  String get pointsLedgerTitle => 'Онооны дэвтэр';
+
+  @override
+  String get pointsAdjustAmount => 'Оноо (хасах бол сөрөг тоо)';
+
+  @override
+  String get pointsAdjustReason => 'Тохируулгын шалтгаан';
+
+  @override
+  String get pointsAdjustInvalid => '0-ээс өөр оноо болон шалтгаан оруулна уу';
+
+  @override
+  String get pointsAdjustDone => 'Оноог тохирууллаа';
+
+  @override
+  String get err_points_insufficient =>
+      'Оноо хүрэлцэхгүй байна. Ашиглах оноогоо багасгана уу.';
+
+  @override
+  String get err_points_over_cap =>
+      'Энэ төлбөрт ашиглах онооны дээд хэмжээнээс хэтэрлээ.';
+
+  @override
+  String get err_points_cover_total =>
+      'Нийт дүнг зөвхөн оноогоор төлөх боломжгүй. Бага зэрэг багасгана уу.';
 
   @override
   String get webBookNow => 'Вэбээр шууд захиалах';

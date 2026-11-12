@@ -1594,6 +1594,18 @@
    }
   }
  },
+ "apPgPickMethod": "결제 수단을 골라 주세요",
+ "apPgConfirmTitle": "결제 내용 확인",
+ "apPgConfirmBtn": "결제 확인",
+ "apPgProcessing": "결제를 처리하고 있어요",
+ "apPgDoneTitle": "결제가 완료됐어요",
+ "apPgReceiptTitle": "전자 영수증",
+ "apPgReceiptApproval": "승인번호",
+ "apPgReceiptMethod": "결제 수단",
+ "apPgReceiptAmount": "결제 금액",
+ "apPgReceiptDone": "확인",
+ "apPgVaIssued": "가상계좌가 발급됐어요 (테스트 계좌)",
+ "apPgTestBadge": "테스트 결제",
  "cIntPayout": "파트너 지급",
  "poTabSettlements": "정산",
  "poTabPayouts": "지급 내역",
@@ -1680,6 +1692,7 @@
  "pvOverseas": "개인정보 국외 이전 동의",
  "pvMarketing": "마케팅 정보 수신 동의",
  "pvMarketingHint": "쿠폰과 이벤트 소식을 문자, 알림톡, 앱 푸시로 받아요. 언제든지 끌 수 있어요.",
+ "pvLocation": "위치 정보 이용 동의",
  "pvReconsent": "개인정보 처리방침이 바뀌었어요. 다시 확인하고 동의해 주세요.",
  "pvSaved": "동의 내용을 저장했어요",
  "pvExport": "내 데이터 내려받기",
@@ -2024,6 +2037,74 @@
  "uAppVersionHint": "최소 버전보다 낮은 앱은 업데이트 화면에서 멈춰요. 최신 버전보다 낮으면 안내 배너가 떠요. 형식: 1.2.0",
  "uMinVersion": "최소 버전",
  "uLatestVersion": "최신 버전",
+ "walletTitle": "포인트 지갑",
+ "walletBalance": "사용 가능한 포인트",
+ "walletPoints": "{count} P",
+ "@walletPoints": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "walletExpiring": "{days}일 안에 {count} P가 사라져요",
+ "@walletExpiring": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   },
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "walletOff": "포인트 적립은 아직 열리지 않았어요",
+ "walletEmpty": "아직 포인트 내역이 없어요",
+ "walletHistory": "최근 내역",
+ "walletKindEarn": "예약 적립",
+ "walletKindWelcome": "가입 환영 포인트",
+ "walletKindReferral": "친구 추천 보상",
+ "walletKindRefund": "취소로 돌려받은 포인트",
+ "walletKindSpend": "예약 결제에 사용",
+ "walletKindExpire": "기간 만료로 소멸",
+ "walletKindOther": "포인트 조정",
+ "moreWallet": "포인트 지갑",
+ "payHistoryTitle": "결제 내역",
+ "payHistoryEmpty": "결제 내역이 없어요",
+ "payStatusPaid": "결제 완료",
+ "payStatusRefunded": "환불 완료",
+ "payStatusPending": "결제·입금 대기",
+ "payStatusClosed": "결제되지 않음",
+ "receiptTitle": "전자 영수증",
+ "receiptLegal": "상호",
+ "receiptRegNo": "사업자등록번호",
+ "receiptAddr": "사업장 주소",
+ "receiptPhone": "고객센터",
+ "receiptDate": "결제일",
+ "receiptCopy": "영수증 내용 복사",
+ "receiptCopied": "영수증 내용을 복사했어요",
+ "receiptNote": "결제 확인용 영수증이에요. 세금계산서가 필요하면 예약 상세에서 따로 신청해 주세요.",
+ "checkoutPointsUse": "포인트 사용",
+ "checkoutPointsAvail": "보유 {count} P · 이번 결제에 최대 {max} P",
+ "@checkoutPointsAvail": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   },
+   "max": {
+    "type": "String"
+   }
+  }
+ },
+ "checkoutPointsNeedsWindow": "포인트는 결제창으로 결제할 때 쓸 수 있어요",
+ "pointsLedgerTitle": "포인트 원장",
+ "pointsAdjustAmount": "포인트 (차감은 음수로 입력)",
+ "pointsAdjustReason": "조정 사유",
+ "pointsAdjustInvalid": "0이 아닌 포인트와 사유를 입력해 주세요",
+ "pointsAdjustDone": "포인트를 조정했어요",
+ "err_points_insufficient": "포인트가 부족해요. 사용할 포인트를 줄여 주세요.",
+ "err_points_over_cap": "이번 결제에 쓸 수 있는 포인트 한도를 넘었어요.",
+ "err_points_cover_total": "포인트로 전액을 결제할 수는 없어요. 조금 줄여 주세요.",
  "webBookNow": "웹에서 바로 예약",
  "webBookSub": "앱 설치 없이 바로 예약해요",
  "apPgBrowserNote": "브라우저에서 결제를 마친 뒤 이 화면으로 돌아와 아래 버튼을 눌러 주세요.",

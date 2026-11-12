@@ -15,7 +15,7 @@ use super::{
 use crate::{
     auth::{Customer, Staff},
     error::{ApiError, ApiResult},
-    providers::{PaymentInfo, ProviderError},
+    providers::{PaymentInfo, ProviderError, portone::dev_method},
     realtime::{Recipient, notify},
     state::AppState,
     util::{best_effort, refund_or_alert, today_kst},
@@ -29,6 +29,7 @@ use axum::{
 use crate::contract::{decode_cursor, cursor_part, encode_cursor, page_limit, paged, ts_key};
 use chrono::{DateTime, Duration, Utc};
 use domain::{
+    Won,
     catalog::Service,
     schedule::{check_date, check_slot},
 };
@@ -38,7 +39,7 @@ use sqlx::{PgPool, Postgres, Transaction};
 use uuid::Uuid;
 
 const CHECKOUT_TTL_MIN: i64 = 30;
-const CHECKOUT_COLS: &str = "id, user_id, kind, booking_id, draft, amount, status, provider_payment_id, result_booking_id, expires_at";
+const CHECKOUT_COLS: &str = "id, user_id, kind, booking_id, draft, amount, points, status, provider_payment_id, result_booking_id, expires_at";
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -66,6 +67,15 @@ impl CheckoutRequest {
     }
 }
 
+#[derive(Deserialize)]
+struct CreateBody {
+    #[serde(flatten)]
+    req: CheckoutRequest,
+    /// Points the customer asks to pay with. Checked here against balance and cap, debited at settlement.
+    #[serde(default)]
+    points: i64,
+}
+
 /// The booking request as the customer saw it, frozen until payment settles.
 #[derive(Serialize, Deserialize)]
 struct Draft {
@@ -88,7 +98,10 @@ struct Intent {
 #[derive(Serialize)]
 struct CheckoutIntent {
     id: Uuid,
+    /// What the PG must charge: `total - points`.
     amount: i64,
+    total: i64,
+    points: i64,
     order_name: &'static str,
     method: String,
     store_id: Option<String>,
@@ -105,10 +118,18 @@ pub struct CheckoutRow {
     pub booking_id: Option<Uuid>,
     pub draft: Option<Value>,
     pub amount: i64,
+    pub points: i64,
     pub status: String,
     pub provider_payment_id: Option<String>,
     pub result_booking_id: Option<Uuid>,
     pub expires_at: DateTime<Utc>,
+}
+
+impl CheckoutRow {
+    /// What the PG charges: the total less the points applied. Always > 0 (checked at create).
+    pub fn charge(&self) -> i64 {
+        self.amount - self.points
+    }
 }
 
 #[derive(Serialize)]
@@ -146,7 +167,8 @@ pub fn can_settle(status: &str) -> bool {
     matches!(status, "pending" | "awaiting_deposit" | "expired")
 }
 
-async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Json<CheckoutRequest>) -> ApiResult<Json<CheckoutIntent>> {
+async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Json<CreateBody>) -> ApiResult<Json<CheckoutIntent>> {
+    let CreateBody { req, points } = body;
     ensure_enabled(&s.db, req.method()).await?;
     let intent = match &req {
         CheckoutRequest::Booking { booking, .. } => booking_intent(&s, a.id, booking).await?,
@@ -169,8 +191,20 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
             }
         }
     };
+    // Nothing is debited yet; the same rules run again under lock when the checkout settles.
+    let points = if points == 0 {
+        0
+    } else {
+        let mut conn = s.db.acquire().await?;
+        let split = crate::points::quote(&mut conn, a.id, intent.booking_id, Won(intent.amount), points).await?;
+        if split.pg.0 <= 0 {
+            // The PG cannot charge zero won.
+            return Err(ApiError::BadRequest("points_cover_total"));
+        }
+        split.points
+    };
     let id = Uuid::now_v7();
-    sqlx::query("INSERT INTO checkouts (id, user_id, kind, booking_id, draft, method, amount, status, expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7,'pending',$8)")
+    sqlx::query("INSERT INTO checkouts (id, user_id, kind, booking_id, draft, method, amount, points, status, expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$9,'pending',$8)")
         .bind(id)
         .bind(a.id)
         .bind(intent.kind)
@@ -179,6 +213,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
         .bind(req.method())
         .bind(intent.amount)
         .bind(Utc::now() + Duration::minutes(CHECKOUT_TTL_MIN))
+        .bind(points)
         .execute(&s.db)
         .await?;
     let method = req.method();
@@ -186,7 +221,9 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
     let portone = &integ.portone;
     Ok(Json(CheckoutIntent {
         id,
-        amount: intent.amount,
+        amount: intent.amount - points,
+        total: intent.amount,
+        points,
         order_name: order_name(intent.kind),
         method: method.to_string(),
         store_id: portone.store_id.clone(),
@@ -241,10 +278,14 @@ pub async fn settle(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResu
     if ck.status == "paid" && ck.provider_payment_id.as_deref() == Some(payment_id) {
         return Ok(ConfirmResult::paid(ck.result_booking_id));
     }
-    let info = s.providers.payment(payment_id, ck.amount).await.map_err(|e| match e {
+    let info = s.providers.payment(payment_id, ck.charge()).await.map_err(|e| match e {
         ProviderError::NotFound => ApiError::BadRequest("payment_not_found"),
         other => other.into(),
     })?;
+    // Dev window: the method the customer picked is the one the payment is stored under.
+    if let (Some(code), "pending") = (dev_method(payment_id), ck.status.as_str()) {
+        sqlx::query("UPDATE checkouts SET method = $2 WHERE id = $1 AND status = 'pending'").bind(ck.id).bind(code).execute(&s.db).await?;
+    }
     apply(s, ck, payment_id, Some(&info)).await
 }
 
@@ -254,7 +295,7 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
         status: &ck.status,
         expired: ck.expires_at < Utc::now(),
         provider_status: info.map(|i| i.status.as_str()),
-        amount_ok: info.is_some_and(|i| amount_matches(ck.amount, i)),
+        amount_ok: info.is_some_and(|i| amount_matches(ck.charge(), i)),
         paid_by_this: ck.provider_payment_id.as_deref() == Some(payment_id),
     });
     let provider_status = info.map_or("NOT_FOUND", |i| i.status.as_str());
@@ -263,7 +304,7 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
         Action::Fulfil | Action::FulfilLate => match fulfil(s, ck, payment_id).await {
             Ok(booking_id) => Ok(ConfirmResult::paid(Some(booking_id))),
             Err(e) => {
-                refund_or_alert(s, "portone", payment_id, ck.amount).await;
+                refund_or_alert(s, "portone", payment_id, ck.charge()).await;
                 if action == Action::FulfilLate {
                     // Paid after expiry and the slot or coupon is gone: the money went back, say so.
                     refund_late(s, ck, &refund_reason(&e)).await?;
@@ -426,7 +467,12 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
             (booking.id, "balance", None)
         }
     };
-    record_payment(&mut tx, booking_id, ck.amount, db_kind, "portone", payment_id, &format!("checkout:{}", ck.id)).await?;
+    if ck.points > 0 {
+        // Same transaction as the booking and the payment: balance and cap are re-checked under the
+        // user lock, and a failure rolls everything back (the PG charge is then refunded by `apply`).
+        crate::points::spend(&mut tx, ck.user_id, booking_id, Won(ck.amount), ck.points).await?;
+    }
+    record_payment(&mut tx, booking_id, ck.charge(), db_kind, "portone", payment_id, &format!("checkout:{}", ck.id)).await?;
     sqlx::query("UPDATE checkouts SET status = 'paid', provider_payment_id = $2, result_booking_id = $3 WHERE id = $1")
         .bind(ck.id)
         .bind(payment_id)
@@ -557,7 +603,7 @@ pub(crate) async fn reconcile_pass(s: &AppState) -> ApiResult<usize> {
 async fn reconcile_one(s: &AppState, ck: &CheckoutRow) {
     // Payment id = checkout id, as the app pays with it.
     let payment_id = ck.id.to_string();
-    let info = match s.providers.payment(&payment_id, ck.amount).await {
+    let info = match s.providers.payment(&payment_id, ck.charge()).await {
         Ok(info) => Some(info),
         Err(ProviderError::NotFound) => None,
         Err(e) => {

@@ -3215,6 +3215,42 @@ class TRu extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Выберите способ оплаты';
+
+  @override
+  String get apPgConfirmTitle => 'Проверьте оплату';
+
+  @override
+  String get apPgConfirmBtn => 'Подтвердить оплату';
+
+  @override
+  String get apPgProcessing => 'Обрабатываем платёж…';
+
+  @override
+  String get apPgDoneTitle => 'Оплата прошла';
+
+  @override
+  String get apPgReceiptTitle => 'Электронный чек';
+
+  @override
+  String get apPgReceiptApproval => 'Номер подтверждения';
+
+  @override
+  String get apPgReceiptMethod => 'Способ';
+
+  @override
+  String get apPgReceiptAmount => 'Сумма';
+
+  @override
+  String get apPgReceiptDone => 'Готово';
+
+  @override
+  String get apPgVaIssued => 'Виртуальный счёт выдан (тестовый)';
+
+  @override
+  String get apPgTestBadge => 'ТЕСТ';
+
+  @override
   String get cIntPayout => 'Выплаты партнёрам';
 
   @override
@@ -3398,6 +3434,9 @@ class TRu extends T {
   @override
   String get pvMarketingHint =>
       'Купоны и новости акций по SMS, в KakaoTalk и push-уведомлениях приложения. Отключить можно в любой момент.';
+
+  @override
+  String get pvLocation => 'Согласие на использование данных о местоположении';
 
   @override
   String get pvReconsent =>
@@ -4222,6 +4261,140 @@ class TRu extends T {
 
   @override
   String get uLatestVersion => 'Последняя версия';
+
+  @override
+  String get walletTitle => 'Кошелёк баллов';
+
+  @override
+  String get walletBalance => 'Доступные баллы';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P сгорят в течение $days дн.';
+  }
+
+  @override
+  String get walletOff => 'Программа баллов пока не открыта';
+
+  @override
+  String get walletEmpty => 'Пока нет операций с баллами';
+
+  @override
+  String get walletHistory => 'Последние операции';
+
+  @override
+  String get walletKindEarn => 'Кешбэк за услугу';
+
+  @override
+  String get walletKindWelcome => 'Приветственные баллы';
+
+  @override
+  String get walletKindReferral => 'Бонус за приглашение';
+
+  @override
+  String get walletKindRefund => 'Возврат баллов после отмены';
+
+  @override
+  String get walletKindSpend => 'Списано за услугу';
+
+  @override
+  String get walletKindExpire => 'Сгорели';
+
+  @override
+  String get walletKindOther => 'Корректировка баллов';
+
+  @override
+  String get moreWallet => 'Кошелёк баллов';
+
+  @override
+  String get payHistoryTitle => 'История платежей';
+
+  @override
+  String get payHistoryEmpty => 'Платежей пока нет';
+
+  @override
+  String get payStatusPaid => 'Оплачено';
+
+  @override
+  String get payStatusRefunded => 'Возвращено';
+
+  @override
+  String get payStatusPending => 'Ожидает оплаты';
+
+  @override
+  String get payStatusClosed => 'Не оплачено';
+
+  @override
+  String get receiptTitle => 'Электронный чек';
+
+  @override
+  String get receiptLegal => 'Наименование';
+
+  @override
+  String get receiptRegNo => 'Рег. номер бизнеса';
+
+  @override
+  String get receiptAddr => 'Адрес';
+
+  @override
+  String get receiptPhone => 'Поддержка';
+
+  @override
+  String get receiptDate => 'Дата оплаты';
+
+  @override
+  String get receiptCopy => 'Скопировать чек';
+
+  @override
+  String get receiptCopied => 'Чек скопирован';
+
+  @override
+  String get receiptNote =>
+      'Подтверждение оплаты. Для налогового счёта запросите его в деталях бронирования.';
+
+  @override
+  String get checkoutPointsUse => 'Использовать баллы';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'Доступно $count P · до $max P на эту оплату';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Баллы можно использовать при оплате в платёжном окне';
+
+  @override
+  String get pointsLedgerTitle => 'Журнал баллов';
+
+  @override
+  String get pointsAdjustAmount => 'Баллы (отрицательное число для списания)';
+
+  @override
+  String get pointsAdjustReason => 'Причина корректировки';
+
+  @override
+  String get pointsAdjustInvalid => 'Введите ненулевое количество и причину';
+
+  @override
+  String get pointsAdjustDone => 'Баллы скорректированы';
+
+  @override
+  String get err_points_insufficient =>
+      'Недостаточно баллов. Уменьшите количество баллов.';
+
+  @override
+  String get err_points_over_cap =>
+      'Это больше баллов, чем можно использовать для этой оплаты.';
+
+  @override
+  String get err_points_cover_total =>
+      'Нельзя оплатить баллами всю сумму. Используйте чуть меньше.';
 
   @override
   String get webBookNow => 'Забронировать в браузере';

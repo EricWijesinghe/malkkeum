@@ -3196,6 +3196,42 @@ class TTh extends T {
   }
 
   @override
+  String get apPgPickMethod => 'เลือกวิธีการชำระเงิน';
+
+  @override
+  String get apPgConfirmTitle => 'ตรวจสอบการชำระเงิน';
+
+  @override
+  String get apPgConfirmBtn => 'ยืนยันการชำระเงิน';
+
+  @override
+  String get apPgProcessing => 'กำลังดำเนินการชำระเงิน…';
+
+  @override
+  String get apPgDoneTitle => 'ชำระเงินสำเร็จ';
+
+  @override
+  String get apPgReceiptTitle => 'ใบเสร็จรับเงินอิเล็กทรอนิกส์';
+
+  @override
+  String get apPgReceiptApproval => 'หมายเลขอนุมัติ';
+
+  @override
+  String get apPgReceiptMethod => 'วิธีการ';
+
+  @override
+  String get apPgReceiptAmount => 'จำนวนเงิน';
+
+  @override
+  String get apPgReceiptDone => 'เสร็จสิ้น';
+
+  @override
+  String get apPgVaIssued => 'ออกบัญชีเสมือนแล้ว (บัญชีทดสอบ)';
+
+  @override
+  String get apPgTestBadge => 'ทดสอบ';
+
+  @override
   String get cIntPayout => 'การจ่ายเงินพาร์ทเนอร์';
 
   @override
@@ -3379,6 +3415,9 @@ class TTh extends T {
   @override
   String get pvMarketingHint =>
       'รับข่าวคูปองและกิจกรรมทาง SMS, KakaoTalk และแจ้งเตือนในแอป ปิดได้ทุกเมื่อ';
+
+  @override
+  String get pvLocation => 'ความยินยอมใช้ข้อมูลตำแหน่ง';
 
   @override
   String get pvReconsent =>
@@ -4200,6 +4239,139 @@ class TTh extends T {
 
   @override
   String get uLatestVersion => 'เวอร์ชันล่าสุด';
+
+  @override
+  String get walletTitle => 'กระเป๋าพอยท์';
+
+  @override
+  String get walletBalance => 'พอยท์ที่ใช้ได้';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return 'พอยท์ $count P จะหมดอายุภายใน $days วัน';
+  }
+
+  @override
+  String get walletOff => 'ยังไม่เปิดโปรแกรมพอยท์';
+
+  @override
+  String get walletEmpty => 'ยังไม่มีรายการพอยท์';
+
+  @override
+  String get walletHistory => 'รายการล่าสุด';
+
+  @override
+  String get walletKindEarn => 'คืนเงินจากการจอง';
+
+  @override
+  String get walletKindWelcome => 'พอยท์ต้อนรับ';
+
+  @override
+  String get walletKindReferral => 'รางวัลแนะนำเพื่อน';
+
+  @override
+  String get walletKindRefund => 'พอยท์คืนหลังยกเลิก';
+
+  @override
+  String get walletKindSpend => 'ใช้กับการจอง';
+
+  @override
+  String get walletKindExpire => 'หมดอายุ';
+
+  @override
+  String get walletKindOther => 'ปรับยอดพอยท์';
+
+  @override
+  String get moreWallet => 'กระเป๋าพอยท์';
+
+  @override
+  String get payHistoryTitle => 'ប្រវត្តិការបង់ប្រាក់';
+
+  @override
+  String get payHistoryEmpty => 'ยังไม่มีการชำระเงิน';
+
+  @override
+  String get payStatusPaid => 'ชำระแล้ว';
+
+  @override
+  String get payStatusRefunded => 'คืนเงินแล้ว';
+
+  @override
+  String get payStatusPending => 'รอชำระเงิน';
+
+  @override
+  String get payStatusClosed => 'ยังไม่ได้ชำระ';
+
+  @override
+  String get receiptTitle => 'ใบเสร็จอิเล็กทรอนิกส์';
+
+  @override
+  String get receiptLegal => 'ชื่อกิจการ';
+
+  @override
+  String get receiptRegNo => 'เลขทะเบียนธุรกิจ';
+
+  @override
+  String get receiptAddr => 'ที่อยู่';
+
+  @override
+  String get receiptPhone => 'ฝ่ายช่วยเหลือลูกค้า';
+
+  @override
+  String get receiptDate => 'วันที่ชำระ';
+
+  @override
+  String get receiptCopy => 'คัดลอกใบเสร็จ';
+
+  @override
+  String get receiptCopied => 'คัดลอกใบเสร็จแล้ว';
+
+  @override
+  String get receiptNote =>
+      'ใช้เป็นหลักฐานการชำระเงินเท่านั้น หากต้องการใบกำกับภาษี ขอได้จากรายละเอียดการจอง';
+
+  @override
+  String get checkoutPointsUse => 'ใช้คะแนน';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'มี $count P · ใช้ได้สูงสุด $max P ในครั้งนี้';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'ใช้คะแนนได้เมื่อชำระผ่านหน้าต่างชำระเงิน';
+
+  @override
+  String get pointsLedgerTitle => 'บัญชีคะแนน';
+
+  @override
+  String get pointsAdjustAmount => 'คะแนน (ใส่ค่าลบเพื่อหัก)';
+
+  @override
+  String get pointsAdjustReason => 'เหตุผลในการปรับ';
+
+  @override
+  String get pointsAdjustInvalid => 'กรอกคะแนนที่ไม่ใช่ 0 และเหตุผล';
+
+  @override
+  String get pointsAdjustDone => 'ปรับคะแนนแล้ว';
+
+  @override
+  String get err_points_insufficient => 'คะแนนไม่พอ กรุณาลดคะแนนที่ใช้';
+
+  @override
+  String get err_points_over_cap =>
+      'เกินจำนวนคะแนนที่ใช้ได้สำหรับการชำระครั้งนี้';
+
+  @override
+  String get err_points_cover_total =>
+      'ใช้คะแนนชำระเต็มจำนวนไม่ได้ กรุณาลดลงเล็กน้อย';
 
   @override
   String get webBookNow => 'จองบนเว็บเลย';

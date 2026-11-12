@@ -3213,6 +3213,42 @@ class TSi extends T {
   }
 
   @override
+  String get apPgPickMethod => 'ගෙවීම් ක්‍රමය තෝරන්න';
+
+  @override
+  String get apPgConfirmTitle => 'ගෙවීම පරීක්ෂා කරන්න';
+
+  @override
+  String get apPgConfirmBtn => 'ගෙවීම තහවුරු කරන්න';
+
+  @override
+  String get apPgProcessing => 'ගෙවීම සකසමින්…';
+
+  @override
+  String get apPgDoneTitle => 'ගෙවීම සම්පූර්ණයි';
+
+  @override
+  String get apPgReceiptTitle => 'ඉලෙක්ට්‍රොනික රිසිට්පත';
+
+  @override
+  String get apPgReceiptApproval => 'අනුමත අංකය';
+
+  @override
+  String get apPgReceiptMethod => 'ක්‍රමය';
+
+  @override
+  String get apPgReceiptAmount => 'මුදල';
+
+  @override
+  String get apPgReceiptDone => 'නිමයි';
+
+  @override
+  String get apPgVaIssued => 'අත්‍ය ගිණුම නිකුත් විය (පරීක්ෂණ ගිණුම)';
+
+  @override
+  String get apPgTestBadge => 'පරීක්ෂණ';
+
+  @override
   String get cIntPayout => 'හවුල්කරු ගෙවීම්';
 
   @override
@@ -3396,6 +3432,9 @@ class TSi extends T {
   @override
   String get pvMarketingHint =>
       'කූපන් සහ සිදුවීම් පිළිබඳ පණිවිඩ SMS, KakaoTalk සහ යෙදුම් push මගින් ලැබේ. ඕනෑම වේලාවක නවත්වා ගත හැකිය.';
+
+  @override
+  String get pvLocation => 'ස්ථාන තොරතුරු භාවිතයට එකඟතාව';
 
   @override
   String get pvReconsent =>
@@ -4220,6 +4259,140 @@ class TSi extends T {
 
   @override
   String get uLatestVersion => 'නවතම අනුවාදය';
+
+  @override
+  String get walletTitle => 'ලකුණු පසුම්බිය';
+
+  @override
+  String get walletBalance => 'භාවිත කළ හැකි ලකුණු';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return 'දින $days ඇතුළත ලකුණු $count P කල් ඉකුත් වේ';
+  }
+
+  @override
+  String get walletOff => 'ලකුණු වැඩසටහන තවම විවෘත වී නැත';
+
+  @override
+  String get walletEmpty => 'ලකුණු ක්‍රියාකාරකම් තවම නැත';
+
+  @override
+  String get walletHistory => 'මෑත ක්‍රියාකාරකම්';
+
+  @override
+  String get walletKindEarn => 'වෙන්කිරීම් ආපසු ගෙවීම';
+
+  @override
+  String get walletKindWelcome => 'සාදරයෙන් පිළිගැනීමේ ලකුණු';
+
+  @override
+  String get walletKindReferral => 'යොමු කිරීමේ ත්‍යාගය';
+
+  @override
+  String get walletKindRefund => 'අවලංගු කිරීමෙන් ආපසු ලැබුණු';
+
+  @override
+  String get walletKindSpend => 'වෙන්කිරීමට භාවිතා කළා';
+
+  @override
+  String get walletKindExpire => 'කල් ඉකුත් වුණි';
+
+  @override
+  String get walletKindOther => 'ලකුණු සකස් කිරීම';
+
+  @override
+  String get moreWallet => 'ලකුණු පසුම්බිය';
+
+  @override
+  String get payHistoryTitle => 'ගෙවීම් ඉතිහාසය';
+
+  @override
+  String get payHistoryEmpty => 'ගෙවීම් තවම නැත';
+
+  @override
+  String get payStatusPaid => 'ගෙවා ඇත';
+
+  @override
+  String get payStatusRefunded => 'ආපසු ගෙවා ඇත';
+
+  @override
+  String get payStatusPending => 'ගෙවීම බලාපොරොත්තුවෙන්';
+
+  @override
+  String get payStatusClosed => 'ගෙවා නැත';
+
+  @override
+  String get receiptTitle => 'ඉලෙක්ට්‍රොනික රිසිට්පත';
+
+  @override
+  String get receiptLegal => 'ව්‍යාපාරයේ නම';
+
+  @override
+  String get receiptRegNo => 'ව්‍යාපාර ලියාපදිංචි අංකය';
+
+  @override
+  String get receiptAddr => 'ලිපිනය';
+
+  @override
+  String get receiptPhone => 'පාරිභෝගික සේවා';
+
+  @override
+  String get receiptDate => 'ගෙවූ දිනය';
+
+  @override
+  String get receiptCopy => 'රිසිට්පත පිටපත් කරන්න';
+
+  @override
+  String get receiptCopied => 'රිසිට්පත පිටපත් කළා';
+
+  @override
+  String get receiptNote =>
+      'ගෙවීම් සාක්ෂියක් පමණි. බදු ඉන්වොයිසුවක් සඳහා වෙන්කිරීම් විස්තරවලින් ඉල්ලන්න.';
+
+  @override
+  String get checkoutPointsUse => 'ලකුණු භාවිත කරන්න';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P ඇත · මෙම ගෙවීමට උපරිම $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'ගෙවීම් කවුළුවෙන් ගෙවන විට ලකුණු භාවිත කළ හැක';
+
+  @override
+  String get pointsLedgerTitle => 'ලකුණු ලෙජරය';
+
+  @override
+  String get pointsAdjustAmount => 'ලකුණු (අඩු කිරීමට ඍණ අගයක්)';
+
+  @override
+  String get pointsAdjustReason => 'ගැළපීමට හේතුව';
+
+  @override
+  String get pointsAdjustInvalid => '0 නොවන ලකුණු සහ හේතුව ඇතුළත් කරන්න';
+
+  @override
+  String get pointsAdjustDone => 'ලකුණු ගැළපිණි';
+
+  @override
+  String get err_points_insufficient =>
+      'ලකුණු ප්‍රමාණවත් නැත. භාවිත කරන ලකුණු අඩු කරන්න.';
+
+  @override
+  String get err_points_over_cap =>
+      'මෙම ගෙවීමට භාවිත කළ හැකි ලකුණු සීමාව ඉක්මවා ඇත.';
+
+  @override
+  String get err_points_cover_total =>
+      'සම්පූර්ණ මුදල ලකුණු වලින් ගෙවිය නොහැක. ටිකක් අඩු කරන්න.';
 
   @override
   String get webBookNow => 'වෙබ් අඩවියෙන් වහාම වෙන් කරන්න';

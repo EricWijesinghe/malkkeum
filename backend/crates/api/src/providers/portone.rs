@@ -234,12 +234,25 @@ fn issued(info: &Value) -> Result<(), ProviderError> {
     }
 }
 
-/// Dev fakes: `dev:paid` settles at the expected total, `dev:va` issues a virtual account,
-/// and a checkout id pays as a card payment (the dev gateway has no real payer).
+/// Methods the dev payment window offers. Must match `devPaymentMethods` in dev_payment_sheet.dart.
+pub const DEV_METHODS: [&str; 6] = ["card", "kakaopay", "naverpay", "tosspay", "transfer", "virtual_account"];
+
+/// The method code a `dev:<method>` payment id carries, when it is one the dev window offers.
+pub fn dev_method(id: &str) -> Option<&str> {
+    id.strip_prefix("dev:").filter(|c| DEV_METHODS.contains(c))
+}
+
+/// Dev fakes: `dev:<method>` settles as that method (`dev:va` / `dev:virtual_account` issue a virtual
+/// account), `dev:paid` settles at the expected total, and a checkout id pays as a card payment
+/// (the dev gateway has no real payer).
 pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
     let (status, method) = match id {
         "dev:paid" => ("PAID", json!({ "type": "PaymentMethodEasyPay" })),
-        "dev:va" => (
+        "dev:card" => ("PAID", json!({ "type": "PaymentMethodCard" })),
+        _ if dev_method(id).is_some() && id != "dev:virtual_account" => {
+            ("PAID", json!({ "type": "PaymentMethodEasyPay", "easyPayProvider": &id[4..] }))
+        }
+        "dev:va" | "dev:virtual_account" => (
             "VIRTUAL_ACCOUNT_ISSUED",
             json!({ "type": "PaymentMethodVirtualAccount", "bank": "KB", "accountNumber": "123-456-789012" }),
         ),
@@ -443,6 +456,9 @@ mod tests {
         assert_eq!(dev_payment(&id, 52_000).map(|p| (p.status, p.total)), Some(("PAID".into(), 52_000)));
         assert_eq!(dev_payment("dev:paid", 1).map(|p| p.status), Some("PAID".into()));
         assert_eq!(dev_payment("dev:va", 1).map(|p| p.status), Some("VIRTUAL_ACCOUNT_ISSUED".into()));
+        assert_eq!(dev_payment("dev:kakaopay", 1).map(|p| p.status), Some("PAID".into()));
+        assert_eq!(dev_method("dev:kakaopay"), Some("kakaopay"));
+        assert_eq!(dev_method("dev:nope"), None);
         assert!(dev_payment("random-string", 1).is_none());
     }
 }

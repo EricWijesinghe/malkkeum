@@ -3184,6 +3184,42 @@ class TVi extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Chọn phương thức thanh toán';
+
+  @override
+  String get apPgConfirmTitle => 'Xem lại thanh toán';
+
+  @override
+  String get apPgConfirmBtn => 'Xác nhận thanh toán';
+
+  @override
+  String get apPgProcessing => 'Đang xử lý thanh toán…';
+
+  @override
+  String get apPgDoneTitle => 'Thanh toán thành công';
+
+  @override
+  String get apPgReceiptTitle => 'Biên lai điện tử';
+
+  @override
+  String get apPgReceiptApproval => 'Số phê duyệt';
+
+  @override
+  String get apPgReceiptMethod => 'Phương thức';
+
+  @override
+  String get apPgReceiptAmount => 'Số tiền';
+
+  @override
+  String get apPgReceiptDone => 'Xong';
+
+  @override
+  String get apPgVaIssued => 'Đã cấp tài khoản ảo (tài khoản thử)';
+
+  @override
+  String get apPgTestBadge => 'THỬ NGHIỆM';
+
+  @override
   String get cIntPayout => 'Chi trả đối tác';
 
   @override
@@ -3367,6 +3403,9 @@ class TVi extends T {
   @override
   String get pvMarketingHint =>
       'Nhận tin ưu đãi và sự kiện qua SMS, KakaoTalk và thông báo ứng dụng. Bạn có thể tắt bất cứ lúc nào.';
+
+  @override
+  String get pvLocation => 'Đồng ý sử dụng thông tin vị trí';
 
   @override
   String get pvReconsent =>
@@ -4190,6 +4229,140 @@ class TVi extends T {
 
   @override
   String get uLatestVersion => 'Phiên bản mới nhất';
+
+  @override
+  String get walletTitle => 'Ví điểm';
+
+  @override
+  String get walletBalance => 'Điểm khả dụng';
+
+  @override
+  String walletPoints(String count) {
+    return '$count điểm';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count điểm hết hạn trong $days ngày';
+  }
+
+  @override
+  String get walletOff => 'Chương trình điểm chưa mở';
+
+  @override
+  String get walletEmpty => 'Chưa có lịch sử điểm';
+
+  @override
+  String get walletHistory => 'Lịch sử gần đây';
+
+  @override
+  String get walletKindEarn => 'Hoàn tiền đặt lịch';
+
+  @override
+  String get walletKindWelcome => 'Điểm chào mừng';
+
+  @override
+  String get walletKindReferral => 'Thưởng giới thiệu bạn';
+
+  @override
+  String get walletKindRefund => 'Điểm hoàn lại sau khi hủy';
+
+  @override
+  String get walletKindSpend => 'Dùng cho đặt lịch';
+
+  @override
+  String get walletKindExpire => 'Hết hạn';
+
+  @override
+  String get walletKindOther => 'Điều chỉnh điểm';
+
+  @override
+  String get moreWallet => 'Ví điểm';
+
+  @override
+  String get payHistoryTitle => 'Lịch sử thanh toán';
+
+  @override
+  String get payHistoryEmpty => 'Chưa có giao dịch';
+
+  @override
+  String get payStatusPaid => 'Đã thanh toán';
+
+  @override
+  String get payStatusRefunded => 'Đã hoàn tiền';
+
+  @override
+  String get payStatusPending => 'Chờ thanh toán';
+
+  @override
+  String get payStatusClosed => 'Chưa thanh toán';
+
+  @override
+  String get receiptTitle => 'Biên lai điện tử';
+
+  @override
+  String get receiptLegal => 'Tên doanh nghiệp';
+
+  @override
+  String get receiptRegNo => 'Mã số doanh nghiệp';
+
+  @override
+  String get receiptAddr => 'Địa chỉ';
+
+  @override
+  String get receiptPhone => 'Hỗ trợ khách hàng';
+
+  @override
+  String get receiptDate => 'Ngày thanh toán';
+
+  @override
+  String get receiptCopy => 'Sao chép biên lai';
+
+  @override
+  String get receiptCopied => 'Đã sao chép biên lai';
+
+  @override
+  String get receiptNote =>
+      'Chỉ là chứng từ thanh toán. Cần hóa đơn thuế, hãy yêu cầu trong chi tiết đặt lịch.';
+
+  @override
+  String get checkoutPointsUse => 'Dùng điểm';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return 'Có $count điểm · tối đa $max cho lần này';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Điểm dùng được khi thanh toán qua cửa sổ thanh toán';
+
+  @override
+  String get pointsLedgerTitle => 'Sổ điểm';
+
+  @override
+  String get pointsAdjustAmount => 'Điểm (số âm để trừ)';
+
+  @override
+  String get pointsAdjustReason => 'Lý do điều chỉnh';
+
+  @override
+  String get pointsAdjustInvalid => 'Nhập số điểm khác 0 và lý do';
+
+  @override
+  String get pointsAdjustDone => 'Đã điều chỉnh điểm';
+
+  @override
+  String get err_points_insufficient =>
+      'Không đủ điểm. Hãy giảm số điểm sử dụng.';
+
+  @override
+  String get err_points_over_cap =>
+      'Vượt quá số điểm được dùng cho lần thanh toán này.';
+
+  @override
+  String get err_points_cover_total =>
+      'Không thể trả toàn bộ bằng điểm. Hãy dùng ít hơn một chút.';
 
   @override
   String get webBookNow => 'Đặt lịch ngay trên web';

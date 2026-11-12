@@ -3218,6 +3218,42 @@ class TId extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Pilih metode pembayaran';
+
+  @override
+  String get apPgConfirmTitle => 'Tinjau pembayaran Anda';
+
+  @override
+  String get apPgConfirmBtn => 'Konfirmasi pembayaran';
+
+  @override
+  String get apPgProcessing => 'Memproses pembayaran…';
+
+  @override
+  String get apPgDoneTitle => 'Pembayaran berhasil';
+
+  @override
+  String get apPgReceiptTitle => 'Struk elektronik';
+
+  @override
+  String get apPgReceiptApproval => 'No. persetujuan';
+
+  @override
+  String get apPgReceiptMethod => 'Metode';
+
+  @override
+  String get apPgReceiptAmount => 'Jumlah';
+
+  @override
+  String get apPgReceiptDone => 'Selesai';
+
+  @override
+  String get apPgVaIssued => 'Rekening virtual diterbitkan (rekening uji)';
+
+  @override
+  String get apPgTestBadge => 'UJI';
+
+  @override
   String get cIntPayout => 'Pembayaran mitra';
 
   @override
@@ -3401,6 +3437,9 @@ class TId extends T {
   @override
   String get pvMarketingHint =>
       'Terima info kupon dan acara lewat SMS, KakaoTalk, dan notifikasi aplikasi. Anda bisa mematikannya kapan saja.';
+
+  @override
+  String get pvLocation => 'Persetujuan penggunaan informasi lokasi';
 
   @override
   String get pvReconsent =>
@@ -4231,6 +4270,139 @@ class TId extends T {
 
   @override
   String get uLatestVersion => 'Versi terbaru';
+
+  @override
+  String get walletTitle => 'Dompet poin';
+
+  @override
+  String get walletBalance => 'Poin tersedia';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P akan hangus dalam $days hari';
+  }
+
+  @override
+  String get walletOff => 'Program poin belum dibuka';
+
+  @override
+  String get walletEmpty => 'Belum ada aktivitas poin';
+
+  @override
+  String get walletHistory => 'Aktivitas terbaru';
+
+  @override
+  String get walletKindEarn => 'Cashback pemesanan';
+
+  @override
+  String get walletKindWelcome => 'Poin selamat datang';
+
+  @override
+  String get walletKindReferral => 'Hadiah rujukan';
+
+  @override
+  String get walletKindRefund => 'Poin dikembalikan';
+
+  @override
+  String get walletKindSpend => 'Dipakai untuk pemesanan';
+
+  @override
+  String get walletKindExpire => 'Hangus';
+
+  @override
+  String get walletKindOther => 'Penyesuaian poin';
+
+  @override
+  String get moreWallet => 'Dompet poin';
+
+  @override
+  String get payHistoryTitle => 'Riwayat pembayaran';
+
+  @override
+  String get payHistoryEmpty => 'Belum ada pembayaran';
+
+  @override
+  String get payStatusPaid => 'Lunas';
+
+  @override
+  String get payStatusRefunded => 'Sudah dikembalikan';
+
+  @override
+  String get payStatusPending => 'Menunggu pembayaran';
+
+  @override
+  String get payStatusClosed => 'Belum dibayar';
+
+  @override
+  String get receiptTitle => 'Struk elektronik';
+
+  @override
+  String get receiptLegal => 'Nama usaha';
+
+  @override
+  String get receiptRegNo => 'No. registrasi usaha';
+
+  @override
+  String get receiptAddr => 'Alamat';
+
+  @override
+  String get receiptPhone => 'Layanan pelanggan';
+
+  @override
+  String get receiptDate => 'Tanggal bayar';
+
+  @override
+  String get receiptCopy => 'Salin struk';
+
+  @override
+  String get receiptCopied => 'Struk disalin';
+
+  @override
+  String get receiptNote =>
+      'Hanya bukti pembayaran. Untuk faktur pajak, ajukan dari detail pemesanan.';
+
+  @override
+  String get checkoutPointsUse => 'Gunakan poin';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P tersedia · maksimal $max P untuk pembayaran ini';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Poin bisa dipakai saat membayar lewat jendela pembayaran';
+
+  @override
+  String get pointsLedgerTitle => 'Buku besar poin';
+
+  @override
+  String get pointsAdjustAmount => 'Poin (negatif untuk mengurangi)';
+
+  @override
+  String get pointsAdjustReason => 'Alasan penyesuaian';
+
+  @override
+  String get pointsAdjustInvalid => 'Masukkan poin bukan nol dan alasannya';
+
+  @override
+  String get pointsAdjustDone => 'Poin disesuaikan';
+
+  @override
+  String get err_points_insufficient =>
+      'Poin Anda tidak cukup. Kurangi poin yang dipakai.';
+
+  @override
+  String get err_points_over_cap => 'Melebihi batas poin untuk pembayaran ini.';
+
+  @override
+  String get err_points_cover_total =>
+      'Poin tidak bisa membayar seluruh jumlah. Kurangi sedikit.';
 
   @override
   String get webBookNow => 'Pesan lewat web';

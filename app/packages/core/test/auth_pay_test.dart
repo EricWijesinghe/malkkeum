@@ -291,9 +291,31 @@ void main() {
 
     final approved = const DevPaymentLauncher().pay(context: ctx, intent: intent);
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(PrimaryButton));
+    await tester.tap(find.byKey(const ValueKey('pay-next')));
     await tester.pumpAndSettle();
-    expect(await approved, isA<PaymentApproved>());
+    await tester.tap(find.byKey(const ValueKey('pay-confirm')));
+    // Processing spinner animates forever, so pumpAndSettle would time out: advance past the pause.
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('pay-done')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pay-done')));
+    await tester.pumpAndSettle();
+    final ok = await approved;
+    expect(ok, isA<PaymentApproved>());
+    expect((ok as PaymentApproved).paymentId, 'dev:kakaopay');
+
+    final va = const DevPaymentLauncher().pay(context: ctx, intent: intent);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pay-method-virtual_account')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pay-next')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pay-confirm')));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pay-done')));
+    await tester.pumpAndSettle();
+    expect(((await va) as PaymentApproved).paymentId, 'dev:virtual_account');
 
     final cancelled = const DevPaymentLauncher().pay(context: ctx, intent: intent);
     await tester.pumpAndSettle();

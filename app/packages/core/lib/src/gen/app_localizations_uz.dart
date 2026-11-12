@@ -3231,6 +3231,42 @@ class TUz extends T {
   }
 
   @override
+  String get apPgPickMethod => 'To\'lov usulini tanlang';
+
+  @override
+  String get apPgConfirmTitle => 'To\'lovni tekshiring';
+
+  @override
+  String get apPgConfirmBtn => 'To\'lovni tasdiqlash';
+
+  @override
+  String get apPgProcessing => 'To\'lov qayta ishlanmoqda…';
+
+  @override
+  String get apPgDoneTitle => 'To\'lov yakunlandi';
+
+  @override
+  String get apPgReceiptTitle => 'Elektron kvitansiya';
+
+  @override
+  String get apPgReceiptApproval => 'Tasdiq raqami';
+
+  @override
+  String get apPgReceiptMethod => 'Usul';
+
+  @override
+  String get apPgReceiptAmount => 'Summa';
+
+  @override
+  String get apPgReceiptDone => 'Tayyor';
+
+  @override
+  String get apPgVaIssued => 'Virtual hisob ochildi (test hisob)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
+
+  @override
   String get cIntPayout => 'Hamkor to‘lovlari';
 
   @override
@@ -3415,6 +3451,9 @@ class TUz extends T {
   @override
   String get pvMarketingHint =>
       'Kupon va tadbirlar yangiliklarini SMS, KakaoTalk va ilova bildirishnomalari orqali olasiz. Istalgan vaqtda o\'chirishingiz mumkin.';
+
+  @override
+  String get pvLocation => 'Joylashuv ma\'lumotlaridan foydalanishga rozilik';
 
   @override
   String get pvReconsent =>
@@ -4244,6 +4283,140 @@ class TUz extends T {
 
   @override
   String get uLatestVersion => 'So\'nggi versiya';
+
+  @override
+  String get walletTitle => 'Ball hamyoni';
+
+  @override
+  String get walletBalance => 'Foydalanish mumkin bo\'lgan ball';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days kun ichida $count P muddati tugaydi';
+  }
+
+  @override
+  String get walletOff => 'Ball dasturi hali ochilmagan';
+
+  @override
+  String get walletEmpty => 'Hozircha ball faolligi yo\'q';
+
+  @override
+  String get walletHistory => 'So\'nggi faollik';
+
+  @override
+  String get walletKindEarn => 'Buyurtma uchun keshbek';
+
+  @override
+  String get walletKindWelcome => 'Xush kelibsiz ballari';
+
+  @override
+  String get walletKindReferral => 'Do\'st taklif mukofoti';
+
+  @override
+  String get walletKindRefund => 'Bekor qilingach qaytarilgan ball';
+
+  @override
+  String get walletKindSpend => 'Buyurtmaga ishlatilgan';
+
+  @override
+  String get walletKindExpire => 'Muddati tugagan';
+
+  @override
+  String get walletKindOther => 'Ball tuzatish';
+
+  @override
+  String get moreWallet => 'Ball hamyoni';
+
+  @override
+  String get payHistoryTitle => 'To\'lovlar tarixi';
+
+  @override
+  String get payHistoryEmpty => 'Hozircha to\'lovlar yo\'q';
+
+  @override
+  String get payStatusPaid => 'To\'landi';
+
+  @override
+  String get payStatusRefunded => 'Qaytarildi';
+
+  @override
+  String get payStatusPending => 'To\'lov kutilmoqda';
+
+  @override
+  String get payStatusClosed => 'To\'lanmagan';
+
+  @override
+  String get receiptTitle => 'Elektron kvitansiya';
+
+  @override
+  String get receiptLegal => 'Tashkilot nomi';
+
+  @override
+  String get receiptRegNo => 'Ro\'yxat raqami';
+
+  @override
+  String get receiptAddr => 'Manzil';
+
+  @override
+  String get receiptPhone => 'Mijozlar xizmati';
+
+  @override
+  String get receiptDate => 'To\'lov sanasi';
+
+  @override
+  String get receiptCopy => 'Kvitansiyani nusxalash';
+
+  @override
+  String get receiptCopied => 'Kvitansiya nusxalandi';
+
+  @override
+  String get receiptNote =>
+      'Faqat to\'lov tasdig\'i. Soliq hisobvarag\'i kerak bo\'lsa, buyurtma tafsilotlaridan so\'rang.';
+
+  @override
+  String get checkoutPointsUse => 'Ballardan foydalanish';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P mavjud · bu to\'lovga ko\'pi bilan $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Ballarni to\'lov oynasi orqali to\'laganda ishlatish mumkin';
+
+  @override
+  String get pointsLedgerTitle => 'Ballar daftari';
+
+  @override
+  String get pointsAdjustAmount => 'Ballar (ayirish uchun manfiy son)';
+
+  @override
+  String get pointsAdjustReason => 'Tuzatish sababi';
+
+  @override
+  String get pointsAdjustInvalid => '0 dan farqli ball va sababni kiriting';
+
+  @override
+  String get pointsAdjustDone => 'Ballar tuzatildi';
+
+  @override
+  String get err_points_insufficient =>
+      'Ballar yetarli emas. Ishlatiladigan ballarni kamaytiring.';
+
+  @override
+  String get err_points_over_cap =>
+      'Bu to\'lov uchun ruxsat etilgan ballar chegarasidan oshdi.';
+
+  @override
+  String get err_points_cover_total =>
+      'Butun summani ballar bilan to\'lab bo\'lmaydi. Biroz kamaytiring.';
 
   @override
   String get webBookNow => 'Veb orqali darhol band qiling';

@@ -8,6 +8,7 @@ import 'finance_tax.dart';
 import 'confirm_action.dart';
 import 'payout_seller_dialog.dart';
 import 'staff_reset.dart';
+import 'points_ledger.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -575,6 +576,17 @@ class _CustomersState extends State<CustomersScreen> {
                       '${c['phone']} · ${t.cJoined} ${dateLabel(DateTime.parse(c['created_at'] as String), context.lang)}',
                     ),
                     trailing: Text(t.cBookingsCount('${c['bookings']}')),
+                    // The points ledger is admin-only on the server too.
+                    onTap: context.console.isAdmin
+                        ? () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => PointsLedgerPage(
+                                userId: c['id'] as String,
+                                name: c['name'] as String,
+                              ),
+                            ),
+                          )
+                        : null,
                   ),
               ],
             ),

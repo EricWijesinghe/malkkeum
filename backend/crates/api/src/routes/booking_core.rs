@@ -283,6 +283,7 @@ pub async fn take_balance(conn: &mut PgConnection, b: &BookingRow, balance: i64)
         return Err(ApiError::Conflict("balance_not_due"));
     }
     growth::reward_on_paid_completion(&mut *conn, b.id).await?;
+    crate::points::on_completed(&mut *conn, b.id).await?;
     let completed = b.completed_at.map(|c| (c + chrono::Duration::hours(9)).date_naive()).unwrap_or_else(today_kst);
     sqlx::query("UPDATE settlements SET state = 'pending', payout_date = $2 WHERE booking_id = $1 AND state = 'waiting_balance'")
         .bind(b.id)

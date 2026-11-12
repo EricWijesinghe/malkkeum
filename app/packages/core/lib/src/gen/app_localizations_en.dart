@@ -3195,6 +3195,42 @@ class TEn extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Choose a payment method';
+
+  @override
+  String get apPgConfirmTitle => 'Review your payment';
+
+  @override
+  String get apPgConfirmBtn => 'Confirm payment';
+
+  @override
+  String get apPgProcessing => 'Processing payment…';
+
+  @override
+  String get apPgDoneTitle => 'Payment complete';
+
+  @override
+  String get apPgReceiptTitle => 'Receipt';
+
+  @override
+  String get apPgReceiptApproval => 'Approval no.';
+
+  @override
+  String get apPgReceiptMethod => 'Method';
+
+  @override
+  String get apPgReceiptAmount => 'Amount';
+
+  @override
+  String get apPgReceiptDone => 'Done';
+
+  @override
+  String get apPgVaIssued => 'Virtual account issued (test account)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
+
+  @override
   String get cIntPayout => 'Partner payouts';
 
   @override
@@ -3378,6 +3414,9 @@ class TEn extends T {
   @override
   String get pvMarketingHint =>
       'Get coupon and event news by SMS, KakaoTalk and app push. You can turn this off any time.';
+
+  @override
+  String get pvLocation => 'Location information';
 
   @override
   String get pvReconsent =>
@@ -4206,6 +4245,140 @@ class TEn extends T {
 
   @override
   String get uLatestVersion => 'Latest version';
+
+  @override
+  String get walletTitle => 'Points wallet';
+
+  @override
+  String get walletBalance => 'Available points';
+
+  @override
+  String walletPoints(String count) {
+    return '$count pts';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count pts expire within $days days';
+  }
+
+  @override
+  String get walletOff => 'Points rewards are not open yet';
+
+  @override
+  String get walletEmpty => 'No points activity yet';
+
+  @override
+  String get walletHistory => 'Recent activity';
+
+  @override
+  String get walletKindEarn => 'Booking cashback';
+
+  @override
+  String get walletKindWelcome => 'Welcome points';
+
+  @override
+  String get walletKindReferral => 'Referral reward';
+
+  @override
+  String get walletKindRefund => 'Points returned after cancellation';
+
+  @override
+  String get walletKindSpend => 'Used for a booking';
+
+  @override
+  String get walletKindExpire => 'Expired';
+
+  @override
+  String get walletKindOther => 'Points adjustment';
+
+  @override
+  String get moreWallet => 'Points wallet';
+
+  @override
+  String get payHistoryTitle => 'Payment history';
+
+  @override
+  String get payHistoryEmpty => 'No payments yet';
+
+  @override
+  String get payStatusPaid => 'Paid';
+
+  @override
+  String get payStatusRefunded => 'Refunded';
+
+  @override
+  String get payStatusPending => 'Awaiting payment';
+
+  @override
+  String get payStatusClosed => 'Not paid';
+
+  @override
+  String get receiptTitle => 'Receipt';
+
+  @override
+  String get receiptLegal => 'Business name';
+
+  @override
+  String get receiptRegNo => 'Business reg. no.';
+
+  @override
+  String get receiptAddr => 'Address';
+
+  @override
+  String get receiptPhone => 'Support';
+
+  @override
+  String get receiptDate => 'Paid on';
+
+  @override
+  String get receiptCopy => 'Copy receipt';
+
+  @override
+  String get receiptCopied => 'Receipt copied';
+
+  @override
+  String get receiptNote =>
+      'Proof of payment only. For a tax invoice, request one from the booking details.';
+
+  @override
+  String get checkoutPointsUse => 'Use points';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count pts available · up to $max on this payment';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Points can be used when you pay in the payment window';
+
+  @override
+  String get pointsLedgerTitle => 'Points ledger';
+
+  @override
+  String get pointsAdjustAmount => 'Points (negative to deduct)';
+
+  @override
+  String get pointsAdjustReason => 'Reason for adjustment';
+
+  @override
+  String get pointsAdjustInvalid => 'Enter a non-zero amount and a reason';
+
+  @override
+  String get pointsAdjustDone => 'Points adjusted';
+
+  @override
+  String get err_points_insufficient =>
+      'You don\'t have enough points. Lower the points to use.';
+
+  @override
+  String get err_points_over_cap =>
+      'That is more points than this payment allows.';
+
+  @override
+  String get err_points_cover_total =>
+      'Points can\'t cover the whole amount. Use a little less.';
 
   @override
   String get webBookNow => 'Book on the web';

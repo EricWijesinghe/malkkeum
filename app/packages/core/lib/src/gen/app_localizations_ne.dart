@@ -3209,6 +3209,42 @@ class TNe extends T {
   }
 
   @override
+  String get apPgPickMethod => 'भुक्तानी विधि छान्नुहोस्';
+
+  @override
+  String get apPgConfirmTitle => 'भुक्तानी जाँच गर्नुहोस्';
+
+  @override
+  String get apPgConfirmBtn => 'भुक्तानी पुष्टि गर्नुहोस्';
+
+  @override
+  String get apPgProcessing => 'भुक्तानी प्रशोधन हुँदैछ…';
+
+  @override
+  String get apPgDoneTitle => 'भुक्तानी सम्पन्न भयो';
+
+  @override
+  String get apPgReceiptTitle => 'इलेक्ट्रोनिक रसिद';
+
+  @override
+  String get apPgReceiptApproval => 'स्वीकृति नम्बर';
+
+  @override
+  String get apPgReceiptMethod => 'विधि';
+
+  @override
+  String get apPgReceiptAmount => 'रकम';
+
+  @override
+  String get apPgReceiptDone => 'सम्पन्न';
+
+  @override
+  String get apPgVaIssued => 'भर्चुअल खाता जारी भयो (परीक्षण खाता)';
+
+  @override
+  String get apPgTestBadge => 'परीक्षण';
+
+  @override
   String get cIntPayout => 'साझेदार भुक्तानी';
 
   @override
@@ -3392,6 +3428,9 @@ class TNe extends T {
   @override
   String get pvMarketingHint =>
       'कुपन र कार्यक्रमका समाचार SMS, KakaoTalk र एप पुशमार्फत पाउनुहुनेछ। जुनसुकै बेला बन्द गर्न सकिन्छ।';
+
+  @override
+  String get pvLocation => 'स्थान जानकारी प्रयोगको सहमति';
 
   @override
   String get pvReconsent =>
@@ -4218,6 +4257,140 @@ class TNe extends T {
 
   @override
   String get uLatestVersion => 'नवीनतम संस्करण';
+
+  @override
+  String get walletTitle => 'पोइन्ट वालेट';
+
+  @override
+  String get walletBalance => 'प्रयोग गर्न मिल्ने पोइन्ट';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days दिनभित्र $count P सकिनेछ';
+  }
+
+  @override
+  String get walletOff => 'पोइन्ट कार्यक्रम अहिले खुलेको छैन';
+
+  @override
+  String get walletEmpty => 'अहिलेसम्म पोइन्ट गतिविधि छैन';
+
+  @override
+  String get walletHistory => 'हालैका गतिविधि';
+
+  @override
+  String get walletKindEarn => 'बुकिङ क्यासब्याक';
+
+  @override
+  String get walletKindWelcome => 'स्वागत पोइन्ट';
+
+  @override
+  String get walletKindReferral => 'रेफरल पुरस्कार';
+
+  @override
+  String get walletKindRefund => 'रद्दबाट फिर्ता भएको पोइन्ट';
+
+  @override
+  String get walletKindSpend => 'बुकिङमा प्रयोग';
+
+  @override
+  String get walletKindExpire => 'म्याद सकियो';
+
+  @override
+  String get walletKindOther => 'पोइन्ट समायोजन';
+
+  @override
+  String get moreWallet => 'पोइन्ट वालेट';
+
+  @override
+  String get payHistoryTitle => 'भुक्तानी इतिहास';
+
+  @override
+  String get payHistoryEmpty => 'अहिलेसम्म भुक्तानी छैन';
+
+  @override
+  String get payStatusPaid => 'भुक्तानी भयो';
+
+  @override
+  String get payStatusRefunded => 'फिर्ता भयो';
+
+  @override
+  String get payStatusPending => 'भुक्तानी बाँकी';
+
+  @override
+  String get payStatusClosed => 'भुक्तानी भएन';
+
+  @override
+  String get receiptTitle => 'इलेक्ट्रोनिक रसिद';
+
+  @override
+  String get receiptLegal => 'व्यवसायको नाम';
+
+  @override
+  String get receiptRegNo => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get receiptAddr => 'ठेगाना';
+
+  @override
+  String get receiptPhone => 'ग्राहक सेवा';
+
+  @override
+  String get receiptDate => 'भुक्तानी मिति';
+
+  @override
+  String get receiptCopy => 'रसिद प्रतिलिपि गर्नुहोस्';
+
+  @override
+  String get receiptCopied => 'रसिद प्रतिलिपि गरियो';
+
+  @override
+  String get receiptNote =>
+      'यो भुक्तानी प्रमाण मात्र हो। कर इनभ्वाइसका लागि बुकिङ विवरणबाट अनुरोध गर्नुहोस्।';
+
+  @override
+  String get checkoutPointsUse => 'पोइन्ट प्रयोग गर्नुहोस्';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P उपलब्ध · यो भुक्तानीमा बढीमा $max P';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'भुक्तानी विन्डोबाट तिर्दा पोइन्ट प्रयोग गर्न सकिन्छ';
+
+  @override
+  String get pointsLedgerTitle => 'पोइन्ट खाता';
+
+  @override
+  String get pointsAdjustAmount => 'पोइन्ट (घटाउन ऋणात्मक)';
+
+  @override
+  String get pointsAdjustReason => 'समायोजनको कारण';
+
+  @override
+  String get pointsAdjustInvalid => '0 बाहेकको पोइन्ट र कारण लेख्नुहोस्';
+
+  @override
+  String get pointsAdjustDone => 'पोइन्ट समायोजन भयो';
+
+  @override
+  String get err_points_insufficient =>
+      'पोइन्ट पुगेन। प्रयोग गर्ने पोइन्ट घटाउनुहोस्।';
+
+  @override
+  String get err_points_over_cap =>
+      'यो भुक्तानीमा प्रयोग गर्न मिल्ने पोइन्टको सीमा नाघ्यो।';
+
+  @override
+  String get err_points_cover_total =>
+      'पूरै रकम पोइन्टले तिर्न मिल्दैन। अलि घटाउनुहोस्।';
 
   @override
   String get webBookNow => 'वेबमा तुरुन्त बुक गर्नुहोस्';

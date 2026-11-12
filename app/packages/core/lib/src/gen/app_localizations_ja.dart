@@ -3123,6 +3123,42 @@ class TJa extends T {
   }
 
   @override
+  String get apPgPickMethod => '支払い方法を選んでください';
+
+  @override
+  String get apPgConfirmTitle => 'お支払い内容の確認';
+
+  @override
+  String get apPgConfirmBtn => '支払いを確定';
+
+  @override
+  String get apPgProcessing => '決済を処理しています…';
+
+  @override
+  String get apPgDoneTitle => 'お支払いが完了しました';
+
+  @override
+  String get apPgReceiptTitle => '領収書';
+
+  @override
+  String get apPgReceiptApproval => '承認番号';
+
+  @override
+  String get apPgReceiptMethod => '決済手段';
+
+  @override
+  String get apPgReceiptAmount => '金額';
+
+  @override
+  String get apPgReceiptDone => '閉じる';
+
+  @override
+  String get apPgVaIssued => '仮想口座を発行しました（テスト口座）';
+
+  @override
+  String get apPgTestBadge => 'テスト';
+
+  @override
   String get cIntPayout => 'パートナーへの支払い';
 
   @override
@@ -3303,6 +3339,9 @@ class TJa extends T {
   @override
   String get pvMarketingHint =>
       'クーポンやイベント情報をSMS、KakaoTalk、アプリのプッシュ通知で受け取ります。いつでも停止できます。';
+
+  @override
+  String get pvLocation => '位置情報の利用への同意';
 
   @override
   String get pvReconsent => 'プライバシーポリシーが変更されました。内容をご確認のうえ、改めて同意してください。';
@@ -4105,6 +4144,135 @@ class TJa extends T {
 
   @override
   String get uLatestVersion => '最新バージョン';
+
+  @override
+  String get walletTitle => 'ポイントウォレット';
+
+  @override
+  String get walletBalance => '利用可能なポイント';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days日以内に$count Pが失効します';
+  }
+
+  @override
+  String get walletOff => 'ポイント特典はまだ開始していません';
+
+  @override
+  String get walletEmpty => 'ポイントの履歴はまだありません';
+
+  @override
+  String get walletHistory => '最近の履歴';
+
+  @override
+  String get walletKindEarn => '予約の還元';
+
+  @override
+  String get walletKindWelcome => 'ウェルカムポイント';
+
+  @override
+  String get walletKindReferral => '友達紹介の特典';
+
+  @override
+  String get walletKindRefund => 'キャンセルで戻ったポイント';
+
+  @override
+  String get walletKindSpend => '予約の支払いに使用';
+
+  @override
+  String get walletKindExpire => '期限切れで失効';
+
+  @override
+  String get walletKindOther => 'ポイント調整';
+
+  @override
+  String get moreWallet => 'ポイントウォレット';
+
+  @override
+  String get payHistoryTitle => '決済履歴';
+
+  @override
+  String get payHistoryEmpty => '決済履歴はありません';
+
+  @override
+  String get payStatusPaid => '決済完了';
+
+  @override
+  String get payStatusRefunded => '返金済み';
+
+  @override
+  String get payStatusPending => '決済・入金待ち';
+
+  @override
+  String get payStatusClosed => '未決済';
+
+  @override
+  String get receiptTitle => '領収書';
+
+  @override
+  String get receiptLegal => '屋号';
+
+  @override
+  String get receiptRegNo => '事業者登録番号';
+
+  @override
+  String get receiptAddr => '所在地';
+
+  @override
+  String get receiptPhone => 'カスタマーサポート';
+
+  @override
+  String get receiptDate => '決済日';
+
+  @override
+  String get receiptCopy => '領収書の内容をコピー';
+
+  @override
+  String get receiptCopied => '領収書の内容をコピーしました';
+
+  @override
+  String get receiptNote => '決済確認用の領収書です。税金計算書が必要な場合は予約詳細から申請してください。';
+
+  @override
+  String get checkoutPointsUse => 'ポイントを使う';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '保有 $count P · 今回は最大 $max Pまで';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow => 'ポイントは決済画面でのお支払い時に使えます';
+
+  @override
+  String get pointsLedgerTitle => 'ポイント台帳';
+
+  @override
+  String get pointsAdjustAmount => 'ポイント（減算はマイナス）';
+
+  @override
+  String get pointsAdjustReason => '調整の理由';
+
+  @override
+  String get pointsAdjustInvalid => '0以外のポイントと理由を入力してください';
+
+  @override
+  String get pointsAdjustDone => 'ポイントを調整しました';
+
+  @override
+  String get err_points_insufficient => 'ポイントが足りません。使うポイントを減らしてください。';
+
+  @override
+  String get err_points_over_cap => '今回のお支払いで使えるポイントの上限を超えています。';
+
+  @override
+  String get err_points_cover_total => 'ポイントだけで全額は支払えません。少し減らしてください。';
 
   @override
   String get webBookNow => 'ウェブで今すぐ予約';

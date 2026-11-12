@@ -3112,6 +3112,42 @@ class TZh extends T {
   }
 
   @override
+  String get apPgPickMethod => '请选择支付方式';
+
+  @override
+  String get apPgConfirmTitle => '确认支付内容';
+
+  @override
+  String get apPgConfirmBtn => '确认付款';
+
+  @override
+  String get apPgProcessing => '正在处理付款…';
+
+  @override
+  String get apPgDoneTitle => '付款完成';
+
+  @override
+  String get apPgReceiptTitle => '电子收据';
+
+  @override
+  String get apPgReceiptApproval => '批准编号';
+
+  @override
+  String get apPgReceiptMethod => '支付方式';
+
+  @override
+  String get apPgReceiptAmount => '金额';
+
+  @override
+  String get apPgReceiptDone => '完成';
+
+  @override
+  String get apPgVaIssued => '已发放虚拟账户（测试账户）';
+
+  @override
+  String get apPgTestBadge => '测试';
+
+  @override
   String get cIntPayout => '合作伙伴付款';
 
   @override
@@ -3289,6 +3325,9 @@ class TZh extends T {
 
   @override
   String get pvMarketingHint => '通过短信、KakaoTalk 和应用推送接收优惠券与活动消息。可随时关闭。';
+
+  @override
+  String get pvLocation => '同意使用位置信息';
 
   @override
   String get pvReconsent => '隐私政策已更新，请重新查看并同意。';
@@ -4085,6 +4124,135 @@ class TZh extends T {
 
   @override
   String get uLatestVersion => '最新版本';
+
+  @override
+  String get walletTitle => '积分钱包';
+
+  @override
+  String get walletBalance => '可用积分';
+
+  @override
+  String walletPoints(String count) {
+    return '$count 积分';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$days天内 $count 积分将到期';
+  }
+
+  @override
+  String get walletOff => '积分奖励尚未开放';
+
+  @override
+  String get walletEmpty => '暂无积分记录';
+
+  @override
+  String get walletHistory => '最近记录';
+
+  @override
+  String get walletKindEarn => '预约返现';
+
+  @override
+  String get walletKindWelcome => '欢迎积分';
+
+  @override
+  String get walletKindReferral => '好友推荐奖励';
+
+  @override
+  String get walletKindRefund => '取消后退还的积分';
+
+  @override
+  String get walletKindSpend => '用于预约支付';
+
+  @override
+  String get walletKindExpire => '到期失效';
+
+  @override
+  String get walletKindOther => '积分调整';
+
+  @override
+  String get moreWallet => '积分钱包';
+
+  @override
+  String get payHistoryTitle => '支付记录';
+
+  @override
+  String get payHistoryEmpty => '暂无支付记录';
+
+  @override
+  String get payStatusPaid => '已支付';
+
+  @override
+  String get payStatusRefunded => '已退款';
+
+  @override
+  String get payStatusPending => '等待付款';
+
+  @override
+  String get payStatusClosed => '未付款';
+
+  @override
+  String get receiptTitle => '电子收据';
+
+  @override
+  String get receiptLegal => '商号';
+
+  @override
+  String get receiptRegNo => '营业执照号';
+
+  @override
+  String get receiptAddr => '地址';
+
+  @override
+  String get receiptPhone => '客服';
+
+  @override
+  String get receiptDate => '支付日期';
+
+  @override
+  String get receiptCopy => '复制收据内容';
+
+  @override
+  String get receiptCopied => '收据内容已复制';
+
+  @override
+  String get receiptNote => '仅作支付凭证。如需税务发票，请在预约详情中另行申请。';
+
+  @override
+  String get checkoutPointsUse => '使用积分';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '可用 $count 积分 · 本次最多可用 $max';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow => '积分可在支付窗口付款时使用';
+
+  @override
+  String get pointsLedgerTitle => '积分账本';
+
+  @override
+  String get pointsAdjustAmount => '积分（扣减请输入负数）';
+
+  @override
+  String get pointsAdjustReason => '调整原因';
+
+  @override
+  String get pointsAdjustInvalid => '请输入非零积分和原因';
+
+  @override
+  String get pointsAdjustDone => '积分已调整';
+
+  @override
+  String get err_points_insufficient => '积分不足，请减少使用的积分。';
+
+  @override
+  String get err_points_over_cap => '超出本次支付可使用的积分上限。';
+
+  @override
+  String get err_points_cover_total => '积分不能支付全部金额，请少用一些。';
 
   @override
   String get webBookNow => '网页直接预约';

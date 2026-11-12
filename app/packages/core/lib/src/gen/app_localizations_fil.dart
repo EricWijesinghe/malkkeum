@@ -3237,6 +3237,42 @@ class TFil extends T {
   }
 
   @override
+  String get apPgPickMethod => 'Pumili ng paraan ng pagbabayad';
+
+  @override
+  String get apPgConfirmTitle => 'Suriin ang bayad';
+
+  @override
+  String get apPgConfirmBtn => 'Kumpirmahin ang bayad';
+
+  @override
+  String get apPgProcessing => 'Pinoproseso ang bayad…';
+
+  @override
+  String get apPgDoneTitle => 'Tapos na ang bayad';
+
+  @override
+  String get apPgReceiptTitle => 'Resibo';
+
+  @override
+  String get apPgReceiptApproval => 'Numero ng pag-apruba';
+
+  @override
+  String get apPgReceiptMethod => 'Paraan';
+
+  @override
+  String get apPgReceiptAmount => 'Halaga';
+
+  @override
+  String get apPgReceiptDone => 'Tapos';
+
+  @override
+  String get apPgVaIssued => 'Nagawa ang virtual account (test account)';
+
+  @override
+  String get apPgTestBadge => 'TEST';
+
+  @override
   String get cIntPayout => 'Bayad sa mga partner';
 
   @override
@@ -3422,6 +3458,9 @@ class TFil extends T {
   @override
   String get pvMarketingHint =>
       'Makakatanggap ng balita tungkol sa coupon at event sa SMS, KakaoTalk, at app push. Maaari mo itong i-off anumang oras.';
+
+  @override
+  String get pvLocation => 'Pagsang-ayon sa paggamit ng lokasyon';
 
   @override
   String get pvReconsent =>
@@ -4255,6 +4294,140 @@ class TFil extends T {
 
   @override
   String get uLatestVersion => 'Pinakabagong bersyon';
+
+  @override
+  String get walletTitle => 'Wallet ng puntos';
+
+  @override
+  String get walletBalance => 'Magagamit na puntos';
+
+  @override
+  String walletPoints(String count) {
+    return '$count P';
+  }
+
+  @override
+  String walletExpiring(String days, String count) {
+    return '$count P ang mawawala sa loob ng $days araw';
+  }
+
+  @override
+  String get walletOff => 'Hindi pa bukas ang puntos';
+
+  @override
+  String get walletEmpty => 'Wala pang aktibidad sa puntos';
+
+  @override
+  String get walletHistory => 'Kamakailang aktibidad';
+
+  @override
+  String get walletKindEarn => 'Cashback sa booking';
+
+  @override
+  String get walletKindWelcome => 'Welcome na puntos';
+
+  @override
+  String get walletKindReferral => 'Gantimpala sa referral';
+
+  @override
+  String get walletKindRefund => 'Ibinalik na puntos';
+
+  @override
+  String get walletKindSpend => 'Ginamit sa booking';
+
+  @override
+  String get walletKindExpire => 'Nag-expire';
+
+  @override
+  String get walletKindOther => 'Pagsasaayos ng puntos';
+
+  @override
+  String get moreWallet => 'Wallet ng puntos';
+
+  @override
+  String get payHistoryTitle => 'Kasaysayan ng bayad';
+
+  @override
+  String get payHistoryEmpty => 'Wala pang bayad';
+
+  @override
+  String get payStatusPaid => 'Bayad na';
+
+  @override
+  String get payStatusRefunded => 'Naibalik na ang bayad';
+
+  @override
+  String get payStatusPending => 'Naghihintay ng bayad';
+
+  @override
+  String get payStatusClosed => 'Hindi nabayaran';
+
+  @override
+  String get receiptTitle => 'Resibo';
+
+  @override
+  String get receiptLegal => 'Pangalan ng negosyo';
+
+  @override
+  String get receiptRegNo => 'Numero ng rehistro';
+
+  @override
+  String get receiptAddr => 'Address';
+
+  @override
+  String get receiptPhone => 'Customer support';
+
+  @override
+  String get receiptDate => 'Petsa ng bayad';
+
+  @override
+  String get receiptCopy => 'Kopyahin ang resibo';
+
+  @override
+  String get receiptCopied => 'Nakopya ang resibo';
+
+  @override
+  String get receiptNote =>
+      'Patunay lamang ng bayad. Para sa tax invoice, humiling sa detalye ng booking.';
+
+  @override
+  String get checkoutPointsUse => 'Gamitin ang puntos';
+
+  @override
+  String checkoutPointsAvail(String count, String max) {
+    return '$count P ang magagamit · hanggang $max P sa bayad na ito';
+  }
+
+  @override
+  String get checkoutPointsNeedsWindow =>
+      'Magagamit ang puntos kapag nagbayad sa payment window';
+
+  @override
+  String get pointsLedgerTitle => 'Ledger ng puntos';
+
+  @override
+  String get pointsAdjustAmount => 'Puntos (negatibo para magbawas)';
+
+  @override
+  String get pointsAdjustReason => 'Dahilan ng pagsasaayos';
+
+  @override
+  String get pointsAdjustInvalid => 'Maglagay ng puntos na hindi 0 at dahilan';
+
+  @override
+  String get pointsAdjustDone => 'Naayos ang puntos';
+
+  @override
+  String get err_points_insufficient =>
+      'Kulang ang puntos mo. Bawasan ang gagamiting puntos.';
+
+  @override
+  String get err_points_over_cap =>
+      'Lampas ito sa puntos na puwedeng gamitin sa bayad na ito.';
+
+  @override
+  String get err_points_cover_total =>
+      'Hindi puwedeng puntos lang ang ibayad sa buong halaga. Bawasan nang kaunti.';
 
   @override
   String get webBookNow => 'Mag-book sa web';

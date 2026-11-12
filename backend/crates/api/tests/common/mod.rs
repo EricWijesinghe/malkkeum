@@ -81,7 +81,15 @@ pub async fn seed_catalog(db: &PgPool) {
 
 /// One request through the router. Returns the status and the parsed JSON body (Null when empty).
 pub async fn call(app: &Router, method: &str, uri: &str, token: Option<&str>, body: Option<Value>) -> (StatusCode, Value) {
+    call_keyed(app, method, uri, token, body, None).await
+}
+
+/// `call` with an `Idempotency-Key` header.
+pub async fn call_keyed(app: &Router, method: &str, uri: &str, token: Option<&str>, body: Option<Value>, key: Option<&str>) -> (StatusCode, Value) {
     let mut req = Request::builder().method(method).uri(uri);
+    if let Some(k) = key {
+        req = req.header("idempotency-key", k);
+    }
     if let Some(t) = token {
         req = req.header(header::AUTHORIZATION, format!("Bearer {t}"));
     }
