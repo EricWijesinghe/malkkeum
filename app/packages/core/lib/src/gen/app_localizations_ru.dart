@@ -793,7 +793,7 @@ class TRu extends T {
   String get tabHome => 'Главная';
 
   @override
-  String get tabBookings => 'Брони';
+  String get tabBookings => 'Мои брони';
 
   @override
   String get tabChat => 'Чат';
@@ -2352,7 +2352,7 @@ class TRu extends T {
 
   @override
   String get err_invalid_photos =>
-      'Можно прикрепить только фото, загруженные через Malkkeum';
+      'Можно прикрепить только фото, загруженные через Dahae';
 
   @override
   String get welcomeOfferTitle => 'Скидка на первую запись';

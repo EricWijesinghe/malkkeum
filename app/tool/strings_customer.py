@@ -36,7 +36,7 @@ S = {
   "err_invalid_address": ["주소 정보를 모두 입력해 주세요", "Fill in every address field", "住所をすべて入力してください", "请填写完整地址", "Điền đủ thông tin địa chỉ"],
   # brand-neutral app chrome
   "tabHome": ["홈", "Home", "ホーム", "首页", "Trang chủ"],
-  "tabBookings": ["예약", "Bookings", "予約", "预约", "Lịch hẹn"],
+  "tabBookings": ["내 예약", "My bookings", "マイ予約", "我的预约", "Lịch của tôi"],
   "tabChat": ["상담", "Chat", "相談", "咨询", "Tư vấn"],
   "tabMore": ["더보기", "More", "その他", "更多", "Thêm"],
   # auth

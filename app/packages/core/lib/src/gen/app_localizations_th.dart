@@ -785,7 +785,7 @@ class TTh extends T {
   String get tabHome => 'หน้าหลัก';
 
   @override
-  String get tabBookings => 'การจอง';
+  String get tabBookings => 'การจองของฉัน';
 
   @override
   String get tabChat => 'แชท';
@@ -2335,7 +2335,7 @@ class TTh extends T {
   String get err_referral_disabled => 'ตอนนี้ปิดระบบแนะนำเพื่อน';
 
   @override
-  String get err_invalid_photos => 'แนบได้เฉพาะรูปที่อัปโหลดผ่าน Malkkeum';
+  String get err_invalid_photos => 'แนบได้เฉพาะรูปที่อัปโหลดผ่าน Dahae';
 
   @override
   String get welcomeOfferTitle => 'ส่วนลดการจองครั้งแรก';

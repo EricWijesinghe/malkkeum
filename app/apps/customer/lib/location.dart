@@ -117,7 +117,7 @@ bool get locationSupported =>
     !kIsWeb && (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
 /// [LocationDevice] over the geolocator and geocoding plugins. Coordinates stay on the device:
-/// the OS geocoder turns them into an address and nothing is sent to the Malkkeum server.
+/// the OS geocoder turns them into an address and nothing is sent to the Dahae server.
 class PluginLocationDevice implements LocationDevice {
   const PluginLocationDevice();
 

@@ -796,7 +796,7 @@ class TFil extends T {
   String get tabHome => 'Simula';
 
   @override
-  String get tabBookings => 'Mga booking';
+  String get tabBookings => 'Aking booking';
 
   @override
   String get tabChat => 'Usapan';
@@ -2371,7 +2371,7 @@ class TFil extends T {
 
   @override
   String get err_invalid_photos =>
-      'Mga larawang galing sa Malkkeum lang ang maaaring ilakip';
+      'Mga larawang galing sa Dahae lang ang maaaring ilakip';
 
   @override
   String get welcomeOfferTitle => 'Diskuwento sa unang booking';

@@ -787,7 +787,7 @@ class TEn extends T {
   String get tabHome => 'Home';
 
   @override
-  String get tabBookings => 'Bookings';
+  String get tabBookings => 'My bookings';
 
   @override
   String get tabChat => 'Chat';
@@ -2339,7 +2339,7 @@ class TEn extends T {
 
   @override
   String get err_invalid_photos =>
-      'Only photos uploaded through Malkkeum can be attached';
+      'Only photos uploaded through Dahae can be attached';
 
   @override
   String get welcomeOfferTitle => 'First-booking offer';

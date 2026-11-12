@@ -770,7 +770,7 @@ class TZh extends T {
   String get tabHome => '首页';
 
   @override
-  String get tabBookings => '预约';
+  String get tabBookings => '我的预约';
 
   @override
   String get tabChat => '咨询';

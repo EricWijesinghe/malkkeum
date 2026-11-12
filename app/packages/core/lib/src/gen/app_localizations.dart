@@ -1618,7 +1618,7 @@ abstract class T {
   /// No description provided for @tabBookings.
   ///
   /// In ko, this message translates to:
-  /// **'예약'**
+  /// **'내 예약'**
   String get tabBookings;
 
   /// No description provided for @tabChat.
@@ -4450,7 +4450,7 @@ abstract class T {
   /// No description provided for @err_invalid_photos.
   ///
   /// In ko, this message translates to:
-  /// **'사진은 말끔이 올린 파일만 첨부할 수 있어요'**
+  /// **'사진은 다해에 올린 파일만 첨부할 수 있어요'**
   String get err_invalid_photos;
 
   /// No description provided for @welcomeOfferTitle.

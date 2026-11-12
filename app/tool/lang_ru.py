@@ -217,7 +217,7 @@ T = {
     "err_already_taken": "Другой мастер уже принял этот заказ",
     "err_invalid_address": "Заполните все поля адреса",
     "tabHome": "Главная",
-    "tabBookings": "Брони",
+    "tabBookings": "Мои брони",
     "tabChat": "Чат",
     "tabMore": "Ещё",
     "introTitle": "Уборка от профессионалов\nзабронируйте за минуту",

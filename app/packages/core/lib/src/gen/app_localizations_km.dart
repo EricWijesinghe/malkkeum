@@ -789,7 +789,7 @@ class TKm extends T {
   String get tabHome => 'ទំព័រដើម';
 
   @override
-  String get tabBookings => 'ការកក់';
+  String get tabBookings => 'ការកក់ខ្ញុំ';
 
   @override
   String get tabChat => 'សន្ទនា';
@@ -2347,7 +2347,7 @@ class TKm extends T {
 
   @override
   String get err_invalid_photos =>
-      'អាចភ្ជាប់តែរូបភាពដែលផ្ទុកឡើងតាម Malkkeum ប៉ុណ្ណោះ';
+      'អាចភ្ជាប់តែរូបភាពដែលផ្ទុកឡើងតាម Dahae ប៉ុណ្ណោះ';
 
   @override
   String get welcomeOfferTitle => 'បញ្ចុះតម្លៃការកក់ដំបូង';

@@ -217,7 +217,7 @@ T = {
     "err_already_taken": "Boshqa hamkor buyurtmani birinchi bo'lib qabul qildi",
     "err_invalid_address": "Manzil maydonlarini to'liq to'ldiring",
     "tabHome": "Bosh sahifa",
-    "tabBookings": "Bronlar",
+    "tabBookings": "Bronlarim",
     "tabChat": "Suhbat",
     "tabMore": "Yana",
     "introTitle": "Mutaxassis tozalashini\neng oson bron qiling",

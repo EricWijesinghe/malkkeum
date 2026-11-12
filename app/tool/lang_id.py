@@ -217,7 +217,7 @@ T = {
     "err_already_taken": "Mitra lain sudah menerimanya lebih dulu",
     "err_invalid_address": "Isi semua kolom alamat",
     "tabHome": "Beranda",
-    "tabBookings": "Pemesanan",
+    "tabBookings": "Pesananku",
     "tabChat": "Obrolan",
     "tabMore": "Lainnya",
     "introTitle": "Pembersihan profesional,\ndipesan dalam semenit",

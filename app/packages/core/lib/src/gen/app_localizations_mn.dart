@@ -795,7 +795,7 @@ class TMn extends T {
   String get tabHome => 'Нүүр';
 
   @override
-  String get tabBookings => 'Захиалга';
+  String get tabBookings => 'Миний захиалга';
 
   @override
   String get tabChat => 'Чат';
@@ -2362,7 +2362,7 @@ class TMn extends T {
 
   @override
   String get err_invalid_photos =>
-      'Зөвхөн Malkkeum-оор байршуулсан зургийг хавсаргана';
+      'Зөвхөн Dahae апп-аар байршуулсан зургийг хавсаргана';
 
   @override
   String get welcomeOfferTitle => 'Анхны захиалгын хөнгөлөлт';

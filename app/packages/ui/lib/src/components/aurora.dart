@@ -59,9 +59,9 @@ class _AuroraBackgroundState extends State<AuroraBackground>
     final palette =
         widget.colors ??
         [
-          const Color(0xFF3B5BFD),
-          const Color(0xFF12B48F),
-          const Color(0xFFFFB400),
+          const Color(0xFF1E9EBA),
+          const Color(0xFF187A8F),
+          const Color(0xFFFFD95A),
         ];
     return Stack(
       children: [

@@ -6,35 +6,36 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="말끔 - 검증된 청소 전문가를 1분 만에 예약하세요.">
-  <meta name="theme-color" content="#070B16">
+  <meta name="description" content="다해 - 검증된 청소 전문가를 1분 만에 예약하세요.">
+  <meta name="theme-color" content="#0B1217">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="말끔">
+  <meta name="apple-mobile-web-app-title" content="다해">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
-  <title>말끔</title>
+  <title>다해</title>
 
   <!-- Painted before the Flutter engine loads, in the app's dark canvas colour: no white flash. -->
   <style>
-    html, body { margin: 0; height: 100%; background: #070B16; }
-    #splash { position: fixed; inset: 0; display: grid; place-items: center; background: #070B16; color: #F2F5FA;
+    html, body { margin: 0; height: 100%; background: #0B1217; }
+    #splash { position: fixed; inset: 0; display: grid; place-items: center; background: #0B1217; color: #EEF4F7;
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
       transition: opacity .3s ease; z-index: 1; }
     #splash.done { opacity: 0; pointer-events: none; }
     #splash .wrap { text-align: center; }
+    #splash .mark { display: block; margin: 0 auto 14px; }
     #splash .word { font-size: 32px; font-weight: 800; letter-spacing: -.02em; }
-    #splash .dot { width: 8px; height: 8px; margin: 18px auto 0; border-radius: 50%; background: #7C93FF; animation: pulse 1.1s ease-in-out infinite; }
+    #splash .dot { width: 8px; height: 8px; margin: 18px auto 0; border-radius: 50%; background: #FFD95A; animation: pulse 1.1s ease-in-out infinite; }
     @keyframes pulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
     @media (prefers-color-scheme: light) {
-      html, body, #splash { background: #F5F7FB; color: #111827; }
+      html, body, #splash { background: #F7FAFB; color: #17232C; }
     }
   </style>
 </head>
 <body>
-  <div id="splash" aria-hidden="true"><div class="wrap"><div class="word">말끔</div><div class="dot"></div></div></div>
+  <div id="splash" aria-hidden="true"><div class="wrap"><svg class="mark" viewBox="0 0 1024 1024" width="72" height="72" aria-hidden="true"><path d="M150 470 512 175 874 470V890a40 40 0 0 1-40 40H190a40 40 0 0 1-40-40Z" fill="#1E9EBA"/><path d="M110 440 512 110 914 440" fill="none" stroke="#187A8F" stroke-width="110" stroke-linecap="round" stroke-linejoin="round"/><path d="M345 650 455 760 690 520" fill="none" stroke="#FFD95A" stroke-width="105" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="word">다해</div><div class="dot"></div></div></div>
   <script>
     // Hide the splash on the first Flutter frame; a safety timeout covers a stalled engine load.
     (function () {
