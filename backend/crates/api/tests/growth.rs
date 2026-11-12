@@ -5,7 +5,7 @@ mod common;
 
 use api::auth::{self, Role};
 use axum::http::StatusCode;
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use common::{Customer, PHOTO, SECRET, book, call, customer, seed_catalog, verified_pro};
 use serde_json::{Value, json};
 use sqlx::PgPool;
@@ -189,7 +189,7 @@ async fn slot_shows_seats_left_only_when_two_or_fewer_remain(pool: PgPool) {
     seed_catalog(&pool).await;
     sqlx::query("UPDATE slot_capacity SET capacity = 3 WHERE start_hour = 9").execute(&pool).await.expect("capacity");
     let app = common::app(pool.clone());
-    let date = (Utc::now() + Duration::days(10)).date_naive();
+    let date = api::util::today_kst() + Duration::days(10);
     let uri = format!("/v1/slots?date={date}");
     let hour9 = |v: &Value| v.as_array().and_then(|a| a.iter().find(|s| s["start_hour"] == 9)).cloned().expect("hour 9");
 

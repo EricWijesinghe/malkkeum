@@ -5,7 +5,7 @@ mod common;
 
 use api::auth::{self, Role};
 use axum::http::StatusCode;
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use common::{PHOTO, SECRET, book, call, customer, login, seed_catalog, verified_pro};
 use serde_json::json;
 use sqlx::PgPool;
@@ -118,7 +118,7 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
     let (st, me) = call(&app, "GET", "/v1/member/me", Some(m.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{me}");
 
-    let from = Utc::now().date_naive();
+    let from = api::util::today_kst();
     let to = from + Duration::days(30);
     let (st, list) = call(&app, "GET", &format!("/v1/member/jobs?from={from}&to={to}"), Some(m.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{list}");
