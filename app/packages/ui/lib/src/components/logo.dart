@@ -79,7 +79,7 @@ class DahaeLogo extends StatelessWidget {
       painter: DahaeMarkPainter(brand, mono: color ?? context.colors.ink),
     ),
     DahaeLogoVariant.threeD => Image.asset(
-      Icon3DRegistry.assetFor('logo_3d'),
+      Icon3DRegistry.assetFor('logo_3d', size: size),
       package: Icon3DRegistry.package,
       width: size,
       height: size,

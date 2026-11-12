@@ -12,6 +12,7 @@ class Icon3DSpec {
     this.hue = _teal,
     this.hasIdle = false,
     this.alias,
+    this.large = false,
   });
 
   /// Material glyph on the clay fallback plate.
@@ -26,6 +27,9 @@ class Icon3DSpec {
 
   /// Another id whose art this one reuses (no second asset).
   final String? alias;
+
+  /// Also rendered at 160dp (`large/`, 320/480 px) for hero sizes.
+  final bool large;
 }
 
 const _teal = Color(0xFF1E9EBA);
@@ -75,6 +79,7 @@ abstract final class Icon3DRegistry {
     'banner_coupon': const Icon3DSpec(
       Icons.confirmation_number_rounded,
       hue: _sun,
+      large: true,
     ),
     // Content.
     'news_megaphone': const Icon3DSpec(Icons.campaign_rounded),
@@ -94,10 +99,7 @@ abstract final class Icon3DRegistry {
     'scope_bathroom': const Icon3DSpec(Icons.wc_rounded),
     'scope_trash': const Icon3DSpec(Icons.delete_rounded),
     // Prep tools (core prepTools codes).
-    'tool_vacuum': const Icon3DSpec(
-      Icons.cleaning_services_rounded,
-      alias: 'scope_vacuum',
-    ),
+    'tool_vacuum': const Icon3DSpec(Icons.cleaning_services_rounded),
     'tool_mop': const Icon3DSpec(Icons.cleaning_services_rounded),
     'tool_trash': const Icon3DSpec(Icons.delete_outline_rounded),
     'tool_gloves': const Icon3DSpec(Icons.back_hand_rounded, hue: _sun),
@@ -164,22 +166,14 @@ abstract final class Icon3DRegistry {
     'menu_payments': const Icon3DSpec(Icons.payments_rounded),
     'menu_addresses': const Icon3DSpec(Icons.maps_home_work_rounded),
     'menu_account': const Icon3DSpec(Icons.badge_rounded),
-    'menu_notices': const Icon3DSpec(
-      Icons.campaign_rounded,
-      alias: 'news_megaphone',
-    ),
-    'menu_tips': const Icon3DSpec(
-      Icons.lightbulb_rounded,
-      hue: _sun,
-      alias: 'tip_bulb',
-    ),
-    'menu_faq': const Icon3DSpec(Icons.help_rounded, alias: 'faq_bubble'),
+    'menu_notices': const Icon3DSpec(Icons.campaign_rounded),
+    'menu_tips': const Icon3DSpec(Icons.lightbulb_rounded, hue: _sun),
+    'menu_faq': const Icon3DSpec(Icons.help_rounded),
     'menu_contact': const Icon3DSpec(Icons.headset_mic_rounded),
     'menu_version': const Icon3DSpec(Icons.info_rounded),
     'menu_coupons': const Icon3DSpec(
       Icons.confirmation_number_rounded,
       hue: _sun,
-      alias: 'ui_coupon',
     ),
     'menu_subscriptions': const Icon3DSpec(Icons.autorenew_rounded, hue: _deep),
     'menu_partner': const Icon3DSpec(Icons.handshake_rounded, hue: _deep),
@@ -189,8 +183,8 @@ abstract final class Icon3DRegistry {
     'menu_terms': const Icon3DSpec(Icons.description_rounded, hue: _deep),
     'menu_licenses': const Icon3DSpec(Icons.article_rounded, hue: _deep),
     // Brand moments.
-    'confirm_check': const Icon3DSpec(Icons.check_rounded),
-    'logo_3d': const Icon3DSpec(Icons.home_rounded),
+    'confirm_check': const Icon3DSpec(Icons.check_rounded, large: true),
+    'logo_3d': const Icon3DSpec(Icons.home_rounded, large: true),
     'empty_inbox': const Icon3DSpec(Icons.inbox_rounded, hue: _grey),
     'error_offline': const Icon3DSpec(Icons.cloud_off_rounded, hue: _grey),
     // Partner app.
@@ -199,10 +193,7 @@ abstract final class Icon3DRegistry {
       Icons.request_quote_rounded,
       hasIdle: true,
     ),
-    'p_nav_schedule': const Icon3DSpec(
-      Icons.calendar_month_rounded,
-      alias: 'ui_calendar',
-    ),
+    'p_nav_schedule': const Icon3DSpec(Icons.calendar_month_rounded),
     'p_camera': const Icon3DSpec(Icons.photo_camera_rounded),
     'p_verified': const Icon3DSpec(Icons.verified_rounded),
     'p_payout': const Icon3DSpec(Icons.savings_rounded, hue: _deep),
@@ -227,11 +218,16 @@ abstract final class Icon3DRegistry {
 
   static bool has(String id) => specs.containsKey(id);
 
-  /// Asset key (resolution variants live in `2.0x/` and `3.0x/`).
-  static String assetFor(String id, {bool idle = false}) {
+  /// Edge (dp) from which ids with a [Icon3DSpec.large] set use it: above
+  /// ~96dp the 64dp set (192 px at 3.0x) starts to look soft.
+  static const largeFrom = 96.0;
+
+  /// Asset key (resolution variants live in `2.0x/` and `3.0x/` beside it).
+  static String assetFor(String id, {bool idle = false, double size = 48}) {
     final spec = of(id);
     final file = spec.alias ?? id;
-    return '$_dir/${idle && spec.hasIdle ? '${file}_idle' : file}.webp';
+    final dir = spec.large && size >= largeFrom ? '$_dir/large' : _dir;
+    return '$dir/${idle && spec.hasIdle ? '${file}_idle' : file}.webp';
   }
 
   /// `svc_<code>` for a catalog service code (move_in / move_out stay apart).

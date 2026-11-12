@@ -187,9 +187,60 @@ void main() {
     );
     expect(
       Icon3DRegistry.assetFor('menu_tips'),
-      'assets/icons3d/tip_bulb.webp',
+      'assets/icons3d/menu_tips.webp',
+    );
+    // Hero sizes read the 160dp large set; small sizes the 64dp set.
+    expect(
+      Icon3DRegistry.assetFor('confirm_check', size: 160),
+      'assets/icons3d/large/confirm_check.webp',
+    );
+    expect(
+      Icon3DRegistry.assetFor('confirm_check', size: 48),
+      'assets/icons3d/confirm_check.webp',
+    );
+    expect(
+      Icon3DRegistry.assetFor('nav_home', size: 200),
+      'assets/icons3d/nav_home.webp',
     );
   });
+
+  test(
+    'every registered id ships art (except the optional second menu group)',
+    () {
+      const optional = {
+        'menu_language',
+        'menu_licenses',
+        'menu_partner',
+        'menu_privacy',
+        'menu_subscriptions',
+        'menu_terms',
+        'menu_theme',
+      };
+      for (final e in Icon3DRegistry.specs.entries) {
+        if (optional.contains(e.key)) continue;
+        expect(
+          File(Icon3DRegistry.assetFor(e.key)).existsSync(),
+          isTrue,
+          reason: e.key,
+        );
+        if (e.value.hasIdle) {
+          expect(
+            File(Icon3DRegistry.assetFor(e.key, idle: true)).existsSync() ||
+                e.key.startsWith('p_'),
+            isTrue,
+            reason: '${e.key} idle',
+          );
+        }
+        if (e.value.large) {
+          expect(
+            File(Icon3DRegistry.assetFor(e.key, size: 160)).existsSync(),
+            isTrue,
+            reason: '${e.key} large',
+          );
+        }
+      }
+    },
+  );
 
   test(
     'every 2.0x/3.0x icon has its 1x main file (else it is never bundled)',

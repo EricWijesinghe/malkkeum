@@ -199,8 +199,13 @@ class _Icon3DArt extends StatelessWidget {
   Widget build(BuildContext context) {
     final spec = Icon3DRegistry.of(id);
     final dimIdle = idle && spec.hasIdle;
-    Widget art = Image.asset(
-      Icon3DRegistry.assetFor(id, idle: idle),
+    final plate = Clay3DPlate(
+      icon: spec.icon,
+      hue: dimIdle ? const Color(0xFF8C9AA3) : spec.hue,
+      size: size,
+    );
+    Widget image(String path, Widget Function() onError) => Image.asset(
+      path,
       package: Icon3DRegistry.package,
       width: size,
       height: size,
@@ -211,18 +216,17 @@ class _Icon3DArt extends StatelessWidget {
       excludeFromSemantics: true,
       frameBuilder: (_, child, frame, sync) =>
           frame == null && !sync ? SizedBox.square(dimension: size) : child,
-      errorBuilder: (_, _, _) => Clay3DPlate(
-        icon: spec.icon,
-        hue: dimIdle ? const Color(0xFF8C9AA3) : spec.hue,
-        size: size,
-      ),
+      errorBuilder: (_, _, _) => onError(),
     );
-    if (!enabled) {
-      art = Opacity(
-        opacity: 0.6,
-        child: ColorFiltered(colorFilter: _greyscale, child: art),
-      );
-    }
+    final active = Icon3DRegistry.assetFor(id, size: size);
+    // No grey idle file for this id: the active art, greyed, before the plate.
+    Widget art = dimIdle
+        ? image(
+            Icon3DRegistry.assetFor(id, idle: true, size: size),
+            () => _greyed(image(active, () => plate)),
+          )
+        : image(active, () => plate);
+    if (!enabled) art = _greyed(art);
     return SizedBox.square(
       key: ValueKey('icon3d:$id'),
       dimension: size,
@@ -230,6 +234,11 @@ class _Icon3DArt extends StatelessWidget {
     );
   }
 }
+
+Widget _greyed(Widget child) => Opacity(
+  opacity: 0.6,
+  child: ColorFiltered(colorFilter: _greyscale, child: child),
+);
 
 const _greyscale = ColorFilter.matrix([
   0.2126, 0.7152, 0.0722, 0, 0, //

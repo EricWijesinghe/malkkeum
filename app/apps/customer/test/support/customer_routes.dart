@@ -15,14 +15,23 @@ void stockCustomerApi(
 }) {
   api
     ..reply('GET', '/me', {'name': name, 'phone': '01012345678', 'email': null})
-    ..reply('PATCH', '/me', {'name': name, 'phone': '01012345678', 'email': null})
+    ..reply('PATCH', '/me', {
+      'name': name,
+      'phone': '01012345678',
+      'email': null,
+    })
     ..reply('GET', '/services', catalogJson())
     ..reply('GET', '/me/addresses', addresses ?? [addressJson()])
     ..reply('GET', '/me/coupons', coupons ?? const <Json>[])
     ..reply('GET', '/me/payment-methods', methods ?? [paymentMethodJson()])
     ..reply('GET', '/chat/threads', threads ?? const <Json>[])
     ..reply('GET', '/bookings', bookings ?? const <Json>[])
-    ..reply('GET', '/content', [contentJson(kind: 'notice', title: const {'ko': '점검 안내', 'en': 'Maintenance'})])
+    ..reply('GET', '/content', [
+      contentJson(
+        kind: 'notice',
+        title: const {'ko': '점검 안내', 'en': 'Maintenance'},
+      ),
+    ])
     ..reply('GET', '/me/notifications', const <Json>[])
     ..reply('GET', '/feed', {'cards': feed ?? const <Json>[]})
     ..reply('GET', '/me/feed', {'cards': feed ?? const <Json>[]});

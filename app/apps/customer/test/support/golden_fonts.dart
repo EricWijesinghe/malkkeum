@@ -25,7 +25,10 @@ Future<void> precacheIcon3D(WidgetTester tester) async {
   await tester.runAsync(() async {
     for (final i in icons) {
       await precacheImage(
-        AssetImage(Icon3DRegistry.assetFor(i.id, idle: !i.active), package: Icon3DRegistry.package),
+        AssetImage(
+          Icon3DRegistry.assetFor(i.id, idle: !i.active, size: i.size),
+          package: Icon3DRegistry.package,
+        ),
         context,
         onError: (_, _) {},
       );
