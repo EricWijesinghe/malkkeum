@@ -5,7 +5,7 @@
 use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use super::{
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_expected, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
         take_balance, take_deposit,
     },
     bookings::{BookingRow, load_booking, owned},
@@ -55,7 +55,8 @@ pub fn admin_routes() -> Router<AppState> {
 #[serde(tag = "kind", rename_all = "snake_case")]
 enum CheckoutRequest {
     Booking { booking: BookingBody, method: String },
-    Deposit { booking_id: Uuid, method: String },
+    /// `expected_deposit`: the amount on the quote card the customer tapped (see `check_expected`).
+    Deposit { booking_id: Uuid, method: String, expected_deposit: Option<i64> },
     Balance { booking_id: Uuid, method: String },
 }
 
@@ -172,13 +173,15 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Js
     ensure_enabled(&s.db, req.method()).await?;
     let intent = match &req {
         CheckoutRequest::Booking { booking, .. } => booking_intent(&s, a.id, booking).await?,
-        CheckoutRequest::Deposit { booking_id, .. } => {
+        CheckoutRequest::Deposit { booking_id, expected_deposit, .. } => {
             let b = owned(&s, a.id, *booking_id).await?;
+            let amount = deposit_due(&b)?;
+            check_expected(amount, *expected_deposit)?;
             Intent {
                 kind: "deposit",
                 booking_id: Some(b.id),
                 draft: None,
-                amount: deposit_due(&b)?,
+                amount,
             }
         }
         CheckoutRequest::Balance { booking_id, .. } => {

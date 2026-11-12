@@ -222,6 +222,14 @@ pub async fn record_payment(conn: &mut PgConnection, booking: Uuid, amount: i64,
 }
 
 /// Deposit due on a quoted booking (10%), while the quote is still awaiting payment.
+/// Binds a payment to the amount the customer was shown. `None` (older apps) skips the check.
+pub fn check_expected(due: i64, expected: Option<i64>) -> ApiResult<()> {
+    match expected {
+        Some(e) if e != due => Err(ApiError::PriceChanged(due)),
+        _ => Ok(()),
+    }
+}
+
 pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
     let (Some(_), Some(deposit)) = (b.final_price, b.deposit) else {
         return Err(ApiError::Conflict("quote_not_sent"));
@@ -240,7 +248,8 @@ pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64) -> Ap
         .fetch_optional(&mut *conn)
         .await?;
     let new_status = if selected.is_some() { 2 } else { 1 };
-    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0")
+    // `deposit = $3`: a re-quote between the read and this write is booking_changed, never the old price.
+    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0 AND deposit = $3")
         .bind(id)
         .bind(new_status)
         .bind(deposit)
