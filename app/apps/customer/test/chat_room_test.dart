@@ -166,10 +166,60 @@ void main() {
 
     final calls = fake.callsTo('POST', '/bookings/bk-9/deposit');
     expect(calls, hasLength(1));
-    expect(calls.single.json, {'payment_method_id': 'pm-1'}, reason: 'no amount from the client');
+    expect(calls.single.json, {'payment_method_id': 'pm-1', 'expected_deposit': 35000}, reason: 'binds to the card the customer saw');
     expect(calls.single.headers.keys.map((k) => k.toLowerCase()), contains('idempotency-key'));
     expect(find.text(koT.quotePaid), findsOneWidget);
     expect(pay, findsNothing);
+    await unmount(tester);
+  });
+
+  Future<FakeApi> openAndPay(WidgetTester tester, FakeApi fake) async {
+    final env = await TestEnv.create(fake: fake);
+    final app = await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    unawaited(app.loadMethods());
+    await pumpUntilFound(tester, find.text(koT.quotePayAmount(formatWon(35000, 'ko'))));
+    return fake;
+  }
+
+  Future<void> tapPay(WidgetTester tester) async {
+    await tester.tap(find.text(koT.quotePayAmount(formatWon(35000, 'ko'))));
+    await settle(tester);
+    await tester.tap(find.text('신한 1234'));
+    await settle(tester);
+  }
+
+  testWidgets('a quote changed since the card was shown: the room reloads and says so', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    fake.onPost('/bookings/bk-9/deposit', (_) => const ApiReply(409, {'error': {'code': 'price_changed', 'current': 50000}}));
+    await openAndPay(tester, fake);
+    final loadsBefore = fake.callsTo('GET', '/chat/threads/th-1/messages').length;
+
+    await tapPay(tester);
+
+    expect(find.text(koT.error(const ApiException(409, 'price_changed'))), findsOneWidget, reason: 'toast');
+    expect(fake.callsTo('GET', '/chat/threads/th-1/messages').length, greaterThan(loadsBefore), reason: 'messages reloaded');
+    expect(find.text(koT.quotePaid), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('a retry after a lost reply reuses the idempotency key; a refusal gets a fresh one', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    final replies = [const ApiReply(503, {'error': {'code': 'unavailable'}}), const ApiReply(409, {'error': {'code': 'booking_changed'}})];
+    fake.onPost('/bookings/bk-9/deposit', (_) => replies.isEmpty ? bookingJson(id: 'bk-9', status: 1) : replies.removeAt(0));
+    await openAndPay(tester, fake);
+
+    String key(ApiCall c) => c.headers.entries.firstWhere((h) => h.key.toLowerCase() == 'idempotency-key').value;
+    await tapPay(tester);
+    await tapPay(tester);
+    await tapPay(tester);
+
+    final calls = fake.callsTo('POST', '/bookings/bk-9/deposit');
+    expect(calls, hasLength(3));
+    expect(key(calls[1]), key(calls[0]), reason: '5xx: same attempt');
+    expect(key(calls[2]), isNot(key(calls[1])), reason: '4xx ended that attempt');
+    expect(find.text(koT.quotePaid), findsOneWidget);
     await unmount(tester);
   });
 

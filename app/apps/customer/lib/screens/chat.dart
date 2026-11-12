@@ -38,6 +38,8 @@ Future<String?> _supportHours(ApiClient api) async {
   }
 }
 
+const _priceChanged = 'price_changed';
+
 /// Room for the empty-state art under the header; it scrolls inside when text is large.
 const _emptyHeight = 360.0;
 
@@ -407,22 +409,36 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     }
   }
 
-  /// Quote card pay button: same method choice as checkout and booking detail.
-  Future<void> _payDeposit(String bookingId) async {
+  /// One Idempotency-Key per quote card until its deposit succeeds, so a retry after a
+  /// timeout replays the first attempt instead of hitting `already_confirmed`.
+  final _depositKeys = <String, String>{};
+
+  /// Quote card pay button: same method choice as checkout and booking detail. The card's
+  /// deposit goes along as `expected_deposit`; the server refuses it if the quote changed.
+  Future<void> _payDeposit(ChatMessage quote) async {
+    final bookingId = quote.body['booking_id'] as String;
+    final expected = (quote.body['deposit'] as num?)?.toInt();
     final choice = await choosePayMethod(context);
     if (choice == null || !mounted) return;
     setState(() => _paying = true);
     try {
       switch (choice) {
         case SavedChoice(:final methodId):
+          final key = _depositKeys.putIfAbsent(
+            quote.id,
+            ApiClient.newIdempotencyKey,
+          );
           await context.api.post('/bookings/$bookingId/deposit', {
             'payment_method_id': methodId,
-          }, ApiClient.newIdempotencyKey());
+            'expected_deposit': ?expected,
+          }, key);
+          _depositKeys.remove(quote.id);
           _paidHere = true;
         case ChannelChoice(:final channel):
           final result = await payWithChannel(context, channel, {
             'kind': 'deposit',
             'booking_id': bookingId,
+            'expected_deposit': ?expected,
           });
           if (!mounted) return;
           switch (result) {
@@ -430,6 +446,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               await showVirtualAccount(context, account);
             case CheckoutFailed(:final code):
               showToast(context, context.t.checkoutFailure(code));
+              if (code == _priceChanged) unawaited(_load());
               return;
             case CheckoutPaid():
               _paidHere = true;
@@ -440,6 +457,17 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       if (!mounted) return;
       context.appRead.bookingsChanged();
       if (_paidHere) unawaited(_load());
+    } on ApiException catch (e) {
+      // A definite answer ends this attempt; only a lost or failed-server reply keeps the key.
+      if (!e.isNetwork && e.status < 500) _depositKeys.remove(quote.id);
+      if (!mounted) return;
+      if (e.code == _priceChanged) {
+        // The quote changed after this card was shown: reload so the newest card is the one to pay.
+        showToast(context, context.t.error(e));
+        unawaited(_load());
+      } else {
+        showToast(context, context.t.payError(e));
+      }
     } catch (e) {
       if (mounted) showToast(context, context.t.payError(e));
     } finally {
@@ -623,7 +651,7 @@ class _Bubble extends StatelessWidget {
   final String? latestQuote;
 
   /// Null while a payment is in flight.
-  final void Function(String bookingId)? onPay;
+  final void Function(ChatMessage quote)? onPay;
 
   @override
   Widget build(BuildContext context) {
@@ -667,9 +695,7 @@ class _Bubble extends StatelessWidget {
         body: m.body,
         paid: depositPaid,
         superseded: m.id != latestQuote,
-        onPay: onPay == null
-            ? null
-            : () => onPay!(m.body['booking_id'] as String),
+        onPay: onPay == null ? null : () => onPay!(m),
       ),
       _ => Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
