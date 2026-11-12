@@ -6,6 +6,7 @@ import 'package:ui/ui.dart';
 import 'screens/member.dart';
 import 'screens/auth.dart';
 import 'screens/shell.dart';
+import 'outbox.dart';
 import 'state.dart';
 
 /// The partner app shares the design system but leads with ink + fresh mint,
@@ -29,7 +30,7 @@ Future<void> main() async {
   runApp(
     PartnerApp(
       session: session,
-      app: PartnerState(api, Realtime(api)),
+      app: PartnerState(api, Realtime(api), outbox: await CompletionOutbox.open()),
       locale: locale,
       theme: theme,
     ),

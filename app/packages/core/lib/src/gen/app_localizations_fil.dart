@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -497,6 +496,31 @@ class TFil extends T {
   String get cFormula => 'Formula ng quote';
 
   @override
+  String get cTabCancelPolicy => 'Patakaran sa pagkansela';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Ito ang default. Pakisuri at i-save para makumpirma.';
+
+  @override
+  String get cPolicyDaysBefore => 'Ilang araw bago ang bisita (mula)';
+
+  @override
+  String get cPolicyPercent =>
+      'Bayad % (blangko = hindi maaaring kanselahin sa app)';
+
+  @override
+  String get cPolicyMinFee => 'Pinakamababang bayad (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Puwedeng i-reschedule (ilang araw bago ang bisita)';
+
+  @override
+  String get cPolicyHint =>
+      'Agad itong makikita sa cancel screen ng app ng customer. Ma-a-update ang mga tuntunin sa susunod na legal build.';
+
+  @override
   String get f_base_studio => 'Batayan: studio';
 
   @override
@@ -653,6 +677,9 @@ class TFil extends T {
   String get cNewMessage => 'Bagong mensahe';
 
   @override
+  String get cConfirmAsk => 'Sigurado ka ba?';
+
+  @override
   String get ok => 'Sige';
 
   @override
@@ -745,7 +772,7 @@ class TFil extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Dalawang araw bago ang bisita, sa team natin na lang puwedeng magkansela';
+      'Hindi na puwedeng magkansela sa app para sa booking na ito. Makipag-ugnayan po sa aming team';
 
   @override
   String get err_address_required => 'Maglagay ng address para sa bisita';
@@ -1304,6 +1331,11 @@ class TFil extends T {
   String get photosSoon => 'Lalabas dito ang before at after photos pagtapos';
 
   @override
+  String photoThumb(String n) {
+    return 'Larawan $n';
+  }
+
+  @override
   String get before => 'Bago';
 
   @override
@@ -1336,6 +1368,16 @@ class TFil extends T {
 
   @override
   String get cancelKeep => 'Ituloy';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Kung kakanselahin mo ngayon, may bayad na $fee at ibabalik ang $refund.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return 'Tanggapin ang bayad na $fee at kanselahin';
+  }
 
   @override
   String get cancelled => 'Kinansela na ang booking';
@@ -1754,6 +1796,51 @@ class TFil extends T {
   String get summaryDate => 'Bisita';
 
   @override
+  String get cpTitle => 'Patakaran sa pagkansela';
+
+  @override
+  String cpWhen(String days) {
+    return '$days araw o higit pa bago ang bisita';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Sa mismong araw ng bisita';
+
+  @override
+  String get cpFree => 'Buong refund';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return 'Bayad $percent% ($fee), refund $refund';
+  }
+
+  @override
+  String get cpClosed =>
+      'Hindi maaaring kanselahin sa app (sisiyasatin ng team)';
+
+  @override
+  String get hhTitle => 'Impormasyon ng sambahayan';
+
+  @override
+  String get hhAddPet => 'Magdagdag ng alagang hayop';
+
+  @override
+  String get hhPetCount => 'Bilang';
+
+  @override
+  String get hhFloorLabel => 'Palapag (negatibo para sa basement)';
+
+  @override
+  String get hhElevator => 'May elevator';
+
+  @override
+  String get hhNotes => 'Mga tala';
+
+  @override
+  String get hhHint =>
+      'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override
@@ -1939,6 +2026,93 @@ class TFil extends T {
 
   @override
   String get err_invalid_capacity => 'Maglagay ng valid na kapasidad.';
+
+  @override
+  String get err_seller_declined =>
+      'Hindi inaprubahan ng Toss ang pagpaparehistro ng seller. Suriin ang impormasyon ng negosyo.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Walang na-verify na payout account ang partner na ito. I-verify muna ang account.';
+
+  @override
+  String get guestSheetTitle => 'Mag-sign in para magpatuloy';
+
+  @override
+  String get guestSheetBody =>
+      'Nakatago ang mga nilagay mo. Didiretso ka agad kung saan ka tumigil.';
+
+  @override
+  String get greetMorning => 'Magandang umaga';
+
+  @override
+  String get greetAfternoon => 'Magandang hapon';
+
+  @override
+  String get greetEvening => 'Magandang gabi';
+
+  @override
+  String get feedHeading => 'Para sa iyo';
+
+  @override
+  String get feedTitleDue => 'Oras na para sa susunod na paglilinis';
+
+  @override
+  String get feedTitleRebook => 'I-book muli ang iyong 5-star na partner';
+
+  @override
+  String get feedTitleDraft => 'Tapusin ang quote na sinimulan mo';
+
+  @override
+  String get feedTitleSeasonal => 'Paglilinis na bagay sa panahong ito';
+
+  @override
+  String get feedTitleSize => 'Quote batay sa naka-save mong laki ng bahay';
+
+  @override
+  String get feedTitleSubscription => 'Mas tipid sa subscription';
+
+  @override
+  String get feedTitleDistrict => 'Nagpapa-book din ang mga kapitbahay';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '$days araw na mula nang huli kang magpalinis';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Binigyan mo ng 5 bituin ang partner na ito $days araw na ang nakalipas';
+  }
+
+  @override
+  String get feedWhyDraft => 'May quote kang hindi natapos sa device na ito';
+
+  @override
+  String get feedWhySummer =>
+      'Magandang panahon para linisin ang aircon bago ang tag-init';
+
+  @override
+  String get feedWhyMoving => 'Abala ang panahon ng paglipat at pag-move in';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '$days araw bago ang malalim na paglilinis para sa holiday';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Agad na quote para sa naka-save mong $pyeong pyeong na bahay';
+  }
+
+  @override
+  String get feedWhyRepeat =>
+      'Mas mura ang subscription kung madalas ka mag-book';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '$count bahay sa $district ang nag-book ngayong linggo';
+  }
 
   @override
   String get fFinance => 'Pananalapi';
@@ -2261,6 +2435,128 @@ class TFil extends T {
       'Pinapaganda namin ang serbisyo. Pakibalik-balikan mamaya.';
 
   @override
+  String get cmTab => 'Kampanya';
+
+  @override
+  String get cmNew => 'Bagong kampanya';
+
+  @override
+  String get cmAudience => 'Target na customer';
+
+  @override
+  String get cmSegAll => 'Lahat ng customer';
+
+  @override
+  String get cmSegNever => 'Walang booking kailanman';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Huling booking $days+ araw na ang nakalipas';
+  }
+
+  @override
+  String get cmDays => 'Bilang ng araw';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented sa $total ang pumayag sa marketing';
+  }
+
+  @override
+  String get cmChannel => 'Channel';
+
+  @override
+  String get cmPush => 'App push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Pamagat';
+
+  @override
+  String get cmBody => 'Mensahe';
+
+  @override
+  String get cmOptout => 'Opt-out number (080)';
+
+  @override
+  String get cmPreview => 'Preview';
+
+  @override
+  String get cmSchedule => 'Oras ng pagpapadala';
+
+  @override
+  String get cmSendNow => 'Ipadala ngayon';
+
+  @override
+  String get cmTestSend => 'Subukang ipadala sa aking numero';
+
+  @override
+  String get cmCreate => 'I-save ang kampanya';
+
+  @override
+  String get cmNeedOptout => 'Kailangan ng SMS ng 080 opt-out number';
+
+  @override
+  String get cmLog => 'Talaan ng pagpapadala';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Naipadala $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Walang consent $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Bigo $count';
+  }
+
+  @override
+  String get cmSaved => 'Na-save ang kampanya';
+
+  @override
+  String anFunnel(String days) {
+    return 'Signup funnel (huling $days araw)';
+  }
+
+  @override
+  String get anInstalls => 'Nagbukas ng app (pumayag)';
+
+  @override
+  String get anSignedUp => 'Nag-signup';
+
+  @override
+  String get anQuoted => 'Humingi ng quote';
+
+  @override
+  String get anBooked => 'Nakapag-book';
+
+  @override
+  String get anPaid => 'Nagbayad';
+
+  @override
+  String get anRepeat => 'Paulit-ulit (2+)';
+
+  @override
+  String get anCohorts =>
+      'Lingguhang cohort (booking rate ayon sa linggo ng signup)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Signup $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Nag-book sa linggo $n';
+  }
+
+  @override
   String get cOps => 'Katayuan ng sistema';
 
   @override
@@ -2421,6 +2717,9 @@ class TFil extends T {
 
   @override
   String get oRuleDisk => 'Halos puno ang disk';
+
+  @override
+  String get oRuleAuth => 'Kahina-hinalang aktibidad sa pag-login';
 
   @override
   String get oQuietHours => 'Tahimik na oras';
@@ -2677,6 +2976,47 @@ class TFil extends T {
   String get pCustomerRequests => 'Mga request ng customer';
 
   @override
+  String get pHousehold => 'Impormasyon ng sambahayan';
+
+  @override
+  String get pPets => 'Alagang hayop';
+
+  @override
+  String get pPetDog => 'Aso';
+
+  @override
+  String get pPetCat => 'Pusa';
+
+  @override
+  String get pPetBird => 'Ibon';
+
+  @override
+  String get pPetFish => 'Isda';
+
+  @override
+  String get pPetOther => 'Iba pang hayop';
+
+  @override
+  String get pAllergies => 'Allergy at sensitibidad';
+
+  @override
+  String get pPreferredProducts => 'Gustong produkto';
+
+  @override
+  String get pParking => 'Paradahan';
+
+  @override
+  String pFloor(String floor) {
+    return 'Palapag $floor';
+  }
+
+  @override
+  String get pElevatorYes => 'May elevator';
+
+  @override
+  String get pElevatorNo => 'Walang elevator';
+
+  @override
   String get pTeamMemo => 'Team memo (hindi ito makikita ng customer)';
 
   @override
@@ -2874,6 +3214,29 @@ class TFil extends T {
   String get pSpace => 'Impormasyon ng espasyo';
 
   @override
+  String get pNavigate => 'Mga direksyon';
+
+  @override
+  String get pNavHint =>
+      'Bubuksan ang address ng bisita sa map app. Kung walang app, bubuksan ang web map.';
+
+  @override
+  String get pOfflineSaved =>
+      'Walang signal. Naka-save at ipapadala kapag may koneksyon na.';
+
+  @override
+  String get pPhotoRetry => 'Subukan ulit';
+
+  @override
+  String get pPhotoWaiting =>
+      'Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$done sa $total ang na-upload';
+  }
+
+  @override
   String get cIntPayout => 'Bayad sa mga partner';
 
   @override
@@ -2952,6 +3315,91 @@ class TFil extends T {
   String get poRevealNote => 'Naitatala ang pagtingin sa detalye ng account';
 
   @override
+  String get poSellerAction => 'Irehistro bilang Toss seller';
+
+  @override
+  String get poSellerTitle => 'Irehistro bilang Toss seller';
+
+  @override
+  String get poSellerHint =>
+      'Gagamitin ang na-verify na payout account ng partner. Ilagay lang ang impormasyon ng negosyo.';
+
+  @override
+  String get poSellerIndividual => 'Indibidwal';
+
+  @override
+  String get poSellerCompany => 'Negosyo';
+
+  @override
+  String get poSellerName => 'Pangalan';
+
+  @override
+  String get poSellerRepresentative => 'Pangalan ng kinatawan';
+
+  @override
+  String get poSellerRegNo => 'Numero ng pagpaparehistro ng negosyo (10 digit)';
+
+  @override
+  String get poSellerEmail => 'Email para sa settlement';
+
+  @override
+  String get poSellerPhone => 'Telepono';
+
+  @override
+  String get poSellerSubmit => 'Irehistro';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Katayuan ng seller: $status';
+  }
+
+  @override
+  String get oFlags => 'Mga switch ng feature';
+
+  @override
+  String get oFlagBooking => 'Mga booking';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI assistant';
+
+  @override
+  String get oFlagPayments => 'Mga bayad';
+
+  @override
+  String get oMaintenance => 'Maintenance mode';
+
+  @override
+  String get oMaintenanceHint =>
+      'Kapag naka-on, magpapakita ng maintenance screen ang customer at partner app. Gumagana pa rin ang console.';
+
+  @override
+  String get oMaintenanceMessage => 'Mensahe sa maintenance';
+
+  @override
+  String get oClientErrors => 'Mga ulat ng error sa app';
+
+  @override
+  String get oClientErrorsHint =>
+      'Mga kamakailang error mula sa web, Windows at console. Awtomatikong tinatakpan ang personal na impormasyon.';
+
+  @override
+  String get oClientErrorsEmpty => 'Walang kamakailang error';
+
+  @override
+  String get oHeartbeat => 'Uptime heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Nakakonekta. Naaabisuhan ang panlabas na serbisyo habang gumagana ang server.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Hindi pa nakatakda: idagdag ang MALKKEUM_HEARTBEAT_URL sa install.sh.';
+
+  @override
   String get pvManage => 'Mga pahintulot';
 
   @override
@@ -2998,6 +3446,122 @@ class TFil extends T {
   @override
   String get pvExportFailed =>
       'Hindi ma-load ang iyong datos. Subukan muli mamaya.';
+
+  @override
+  String get safetyEmergency => 'Mga emergency contact';
+
+  @override
+  String get emergencyPolice => '112 Pulis';
+
+  @override
+  String get emergencyFire => '119 Bumbero at rescue';
+
+  @override
+  String get emergencyShop => 'Customer support';
+
+  @override
+  String get caseReportAction => 'I-report ang problema';
+
+  @override
+  String get caseReportTitle => 'Ano ang nangyari?';
+
+  @override
+  String get caseKindDamage => 'Pinsala';
+
+  @override
+  String get caseKindLoss => 'Nawala';
+
+  @override
+  String get caseKindComplaint => 'Reklamo';
+
+  @override
+  String get caseKindNoShow => 'Hindi dumating ang cleaner';
+
+  @override
+  String get caseKindSafety => 'Alalahanin sa kaligtasan';
+
+  @override
+  String get caseKindPayment => 'Dispute sa bayad';
+
+  @override
+  String get caseSummaryHint => 'Ilarawan ang nangyari (hanggang 300 karakter)';
+
+  @override
+  String get caseSubmit => 'Isumite';
+
+  @override
+  String get caseSubmitted =>
+      'Natanggap na. Sasagot ang team sa loob ng 24 na oras.';
+
+  @override
+  String get caseFailed => 'Hindi naipadala. Subukan ulit.';
+
+  @override
+  String get checkInAction => 'Mag-check in';
+
+  @override
+  String get checkOutAction => 'Mag-check out';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Dumating $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Umalis $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Ipakita ang entry code';
+
+  @override
+  String get entryCodeTitle => 'Entry code';
+
+  @override
+  String get entryCodeNotToday => 'Sa araw lang ng pagbisita makikita';
+
+  @override
+  String get entryCodeEmpty => 'Walang nakalagay na entry code';
+
+  @override
+  String get actionFailed => 'Hindi natapos. Subukan ulit.';
+
+  @override
+  String get consoleCasesTitle => 'Pila ng mga kaso';
+
+  @override
+  String get consoleCasesEmpty => 'Walang bukas na kaso';
+
+  @override
+  String get caseOverdue => 'Lampas sa takda';
+
+  @override
+  String get caseStatusOpen => 'Bukas';
+
+  @override
+  String get caseStatusInvestigating => 'Iniimbestigahan';
+
+  @override
+  String get caseStatusResolved => 'Nalutas';
+
+  @override
+  String get caseStatusRejected => 'Tinanggihan';
+
+  @override
+  String get caseReassign => 'Ilipat ang partner';
+
+  @override
+  String get caseRefund => 'Refund';
+
+  @override
+  String get caseHold => 'I-hold ang settlement';
+
+  @override
+  String get caseNoteHint => 'Internal na tala';
+
+  @override
+  String get caseSave => 'I-save';
 
   @override
   String get cSetup => 'Pag-setup';
@@ -3237,6 +3801,340 @@ class TFil extends T {
 
   @override
   String get cInvalidValue => 'Pakisuri ang inilagay na value';
+
+  @override
+  String get cMfaTitle => 'Dalawang-hakbang na pag-sign in';
+
+  @override
+  String get cMfaCode => '6-digit na code mula sa authenticator app';
+
+  @override
+  String get cMfaRecovery => 'Recovery code';
+
+  @override
+  String get cMfaUseRecovery => 'Gumamit ng recovery code';
+
+  @override
+  String get cMfaUseCode => 'Gumamit ng code mula sa authenticator';
+
+  @override
+  String get cMfaVerify => 'I-verify';
+
+  @override
+  String get cMfaBack => 'Bumalik sa sign-in';
+
+  @override
+  String get cMfaEnrolTitle => 'I-set up ang dalawang-hakbang na sign-in';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Kailangan ng admin ng authenticator app. Idagdag ang key sa ibaba sa Google Authenticator, 1Password o katulad, pagkatapos ilagay ang 6-digit na code na ipinapakita nito.';
+
+  @override
+  String get cMfaSecret => 'Setup key';
+
+  @override
+  String get cMfaLink => 'Setup link (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Kopyahin';
+
+  @override
+  String get cMfaCopied => 'Nakopya';
+
+  @override
+  String get cMfaConfirm => 'Kumpirmahin at i-on';
+
+  @override
+  String get cMfaCodesTitle => 'I-save ang iyong recovery codes';
+
+  @override
+  String get cMfaCodesBody =>
+      'Kung mawala ang authenticator, bawat code ay magagamit nang isang beses sa pag-sign in. Ipinapakita lamang ang mga ito ngayon.';
+
+  @override
+  String get cMfaDownload => 'I-download';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Hindi maisave ang file sa device na ito. Kopyahin ang mga code at itago nang ligtas.';
+
+  @override
+  String get cMfaContinue => 'Magpatuloy sa console';
+
+  @override
+  String get cMfaInvalid =>
+      'Hindi tugma ang code. Tiyaking tama ang oras ng telepono at subukan muli.';
+
+  @override
+  String get cMfaExpired =>
+      'Nag-expire ang sign-in. Magsimulang muli sa hakbang ng password.';
+
+  @override
+  String get cMfaLocked =>
+      'Napakaraming pagsubok. Maghintay ng ilang minuto at subukan muli.';
+
+  @override
+  String get cStaffReset => 'I-reset ang password';
+
+  @override
+  String get cStaffResetConfirm =>
+      'I-reset ang password ng staff na ito? Made-log out siya sa lahat ng lugar.';
+
+  @override
+  String get cStaffResetTitle => 'Reset token';
+
+  @override
+  String get cStaffResetBody =>
+      'Ibigay ang token na ito sa staff. Isang beses lang magagamit, sa loob ng 30 minuto. Hindi na ito makikita pagkasara.';
+
+  @override
+  String get subTitle => 'Regular na paglilinis';
+
+  @override
+  String get subNew => 'Mag-subscribe';
+
+  @override
+  String get subCadence => 'Gaano kadalas';
+
+  @override
+  String get subWeekly => 'Kada linggo';
+
+  @override
+  String get subBiweekly => 'Kada 2 linggo';
+
+  @override
+  String get subEvery4Weeks => 'Kada 4 linggo';
+
+  @override
+  String get subWeekday => 'Araw ng linggo';
+
+  @override
+  String get subHour => 'Oras ng dating';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '$percent% diskuwento sa bawat bisita';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Sisingilin ang naka-save na card isang araw bago ang bisita';
+
+  @override
+  String get subCreate => 'Mag-subscribe';
+
+  @override
+  String get subCreated => 'Nagsimula na ang subscription';
+
+  @override
+  String get subNeedAddress => 'Magdagdag muna ng address';
+
+  @override
+  String get subListEmpty => 'Wala pang subscription';
+
+  @override
+  String get subStatusActive => 'Aktibo';
+
+  @override
+  String get subStatusPaused => 'Naka-pause';
+
+  @override
+  String get subStatusCancelled => 'Kinansela';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Susunod na bisita $date';
+  }
+
+  @override
+  String get subPause => 'I-pause';
+
+  @override
+  String get subResume => 'Ituloy';
+
+  @override
+  String get subCancelSub => 'Kanselahin ang subscription';
+
+  @override
+  String get subCancelConfirm =>
+      'Makakansela ang mga susunod na bisita. Kanselahin nang hiwalay ang mga nakareserba na.';
+
+  @override
+  String get subSkip => 'Laktawan ang bisitang ito';
+
+  @override
+  String get subMove => 'Ilipat ang petsa';
+
+  @override
+  String get subVisitLocked =>
+      'Hindi na mababago mula isang araw bago ang bisita';
+
+  @override
+  String get subPausedPayment =>
+      'Naka-pause dahil paulit-ulit na nabigo ang bayad. Palitan ang card at ituloy.';
+
+  @override
+  String get subStatePlanned => 'Nakaplano';
+
+  @override
+  String get subStateBooked => 'Naka-book';
+
+  @override
+  String get subStateSkipped => 'Nilaktawan';
+
+  @override
+  String get subStateMissed => 'Hindi natuloy';
+
+  @override
+  String get pSubsTitle => 'Mga regular na customer';
+
+  @override
+  String get pSubsEmpty => 'Wala pang regular na customer';
+
+  @override
+  String get cSubsTitle => 'Mga subscription';
+
+  @override
+  String get cSubsEdit => 'I-edit para sa customer';
+
+  @override
+  String get cMrr => 'Buwanang paulit-ulit na kita (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Aktibong subscription';
+
+  @override
+  String get cRecognized => 'Kinilalang kita sa panahon';
+
+  @override
+  String get cSubsLoadFailed => 'Hindi ma-load ang mga subscription';
+
+  @override
+  String get tTaxSection => 'Buwis';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'VAT CSV Q$q';
+  }
+
+  @override
+  String get tVatYear => 'Taon';
+
+  @override
+  String get tExportWithholding => 'CSV ng withholding statement';
+
+  @override
+  String get tExportTaxInvoices => 'CSV para sa tax invoice upload';
+
+  @override
+  String get tTaxLayoutNote =>
+      'I-check sa aktuwal na template ng 홈택스 bago mag-upload. Hindi pa beripikado ang layout.';
+
+  @override
+  String get tCashReceipts => 'Cash receipts';
+
+  @override
+  String get tCashIssued => 'Naibigay na';
+
+  @override
+  String get tCashFailed => 'Nabigo';
+
+  @override
+  String get tCashPending => 'Naghihintay';
+
+  @override
+  String get tCashCancelled => 'Kinansela';
+
+  @override
+  String get tReissue => 'Muling ibigay';
+
+  @override
+  String get tTaxInvoices => 'Tax invoices';
+
+  @override
+  String get tApprovalNumber => 'Approval no.';
+
+  @override
+  String get tIssuedOn => 'Petsa ng isyu';
+
+  @override
+  String get tMarkIssued => 'Markahang naibigay';
+
+  @override
+  String get tQueueEmpty => 'Walang nakabinbing request';
+
+  @override
+  String get tWithholdingLabel => 'Withholding';
+
+  @override
+  String get tGrossAmount => 'Kabuuan';
+
+  @override
+  String get tIncomeTax => 'Buwis sa kita';
+
+  @override
+  String get tLocalTax => 'Lokal na buwis sa kita';
+
+  @override
+  String get tNetAmount => 'Netong natanggap';
+
+  @override
+  String get tNoWithholding => 'Walang withholding (rehistradong negosyo)';
+
+  @override
+  String get tEstWithholding => 'Tinatayang withholding (nakabinbin)';
+
+  @override
+  String get tReceiptOptions => 'Mga opsyon sa resibo';
+
+  @override
+  String get tWantCashReceipt => 'Kumuha ng cash receipt';
+
+  @override
+  String get tCashForIncome => 'Para sa tax deduction (numero ng telepono)';
+
+  @override
+  String get tCashForBusiness => 'Para sa gastos ng negosyo (business no.)';
+
+  @override
+  String get tWantTaxInvoice => 'Kumuha ng tax invoice (negosyo)';
+
+  @override
+  String get tPhoneForReceipt => 'Numero ng telepono';
+
+  @override
+  String get tBusinessNumber => 'Business registration no.';
+
+  @override
+  String get tCompanyName => 'Pangalan ng kumpanya';
+
+  @override
+  String get tRepresentative => 'Kinatawan';
+
+  @override
+  String get tInvoiceEmail => 'Email para sa invoice';
+
+  @override
+  String get tReceiptSave => 'I-save at magbayad';
+
+  @override
+  String get tReceiptSaveFailed => 'Hindi na-save ang detalye ng resibo';
+
+  @override
+  String get tTaxType => 'Uri ng buwis';
+
+  @override
+  String get tTaxFreelancer => 'Freelancer (may withholding)';
+
+  @override
+  String get tTaxBusiness => 'Rehistradong negosyo (walang withholding)';
+
+  @override
+  String get tReceiptSettings => 'Mga setting ng resibo';
 
   @override
   String get reviewRuleLine =>

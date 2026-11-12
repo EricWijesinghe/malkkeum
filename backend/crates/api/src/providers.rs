@@ -4,6 +4,7 @@
 pub mod fcm;
 pub mod payout;
 pub mod portone;
+pub mod portone_cash_receipt;
 pub mod sms;
 pub mod social;
 pub mod toss_jwe;
@@ -23,6 +24,7 @@ use std::{
     sync::{Arc, RwLock},
     time::Duration,
 };
+use uuid::Uuid;
 
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -63,6 +65,8 @@ pub struct PaymentInfo {
 
 /// Identity verification result (PASS / 본인인증).
 pub struct IdentityInfo {
+    /// The verification id the provider reports; must equal the id we asked about.
+    pub id: String,
     pub status: String,
     pub ci: Option<String>,
     pub name: Option<String>,
@@ -113,9 +117,9 @@ impl Providers {
     }
 
     /// Feeds the status page and alert rules. Live traffic only: dev fakes never count as health.
-    pub fn observe(&self, integration: &'static str, outcome: Result<(), &'static str>) {
+    pub async fn observe(&self, integration: &'static str, outcome: Result<(), &'static str>) {
         if !self.dev() {
-            ops::record(&self.db, integration, outcome);
+            ops::record(&self.db, integration, outcome).await;
         }
     }
 
@@ -156,34 +160,34 @@ impl Providers {
             let integ = self.integ();
             let cfg = integ.solapi.as_ref().ok_or(ProviderError::NotConfigured("sms"))?;
             let sent = sms::send_sms(&self.http, cfg, phone, text).await;
-            self.observe("solapi", outcome(&sent));
+            self.observe("solapi", outcome(&sent)).await;
             return sent;
         }
         tracing::info!(target: "fake_sms", phone, text, "sms sent");
         Ok(())
     }
 
-    /// Customer message for an event kind. Sent as AlimTalk when a template is configured for `kind`
-    /// (Solapi carries the text as SMS fallback); if that call fails, a plain SMS goes out instead.
-    /// Kinds without a template send nothing here (in-app and push still cover them).
-    pub async fn send_customer_message(&self, phone: &str, kind: &str, title: &str, body: &str) -> Result<(), ProviderError> {
+    /// Transactional message for an alert kind (see `sms::alert_key`), in Korean.
+    /// AlimTalk when a template and channel id are configured. SMS with the same text when there is no
+    /// template, or when the AlimTalk call fails. Dev mode only logs.
+    pub async fn send_customer_message(&self, phone: &str, kind: &str, brand: &str, title: &str, body: &str) -> Result<(), ProviderError> {
         let integ = self.integ();
         let Some(cfg) = integ.solapi.as_ref() else {
             return Ok(());
         };
-        let Some(template) = cfg.templates.get(kind) else {
-            return Ok(());
-        };
         let text = format!("{title}\n{body}");
+        let template = cfg.templates.get(kind).zip(cfg.pf_id.as_deref());
         if self.dev() {
-            tracing::info!(target: "fake_alimtalk", phone, kind, text, "alimtalk sent");
+            tracing::info!(target: "fake_alimtalk", phone, kind, text, has_template = template.is_some(), "customer message sent");
             return Ok(());
         }
-        let variables = json!({ "#{title}": title, "#{body}": body });
-        let sent = match cfg.pf_id.as_deref() {
-            Some(pf_id) => sms::send_alimtalk(&self.http, cfg, pf_id, template, phone, &text, variables).await,
-            None => Err(ProviderError::NotConfigured("alimtalk")),
+        let Some((template_id, pf_id)) = template else {
+            let sent = sms::send_sms(&self.http, cfg, phone, &text).await;
+            self.observe("solapi", outcome(&sent)).await;
+            return sent;
         };
+        let variables = json!({ "#{brand}": brand, "#{title}": title, "#{body}": body });
+        let sent = sms::send_alimtalk(&self.http, cfg, pf_id, template_id, phone, &text, variables).await;
         let final_result = match sent {
             Ok(()) => Ok(()),
             Err(e) => {
@@ -191,7 +195,7 @@ impl Providers {
                 sms::send_sms(&self.http, cfg, phone, &text).await
             }
         };
-        self.observe("solapi", outcome(&final_result));
+        self.observe("solapi", outcome(&final_result)).await;
         final_result
     }
 
@@ -200,7 +204,7 @@ impl Providers {
     pub async fn issue_billing_key(&self, auth_key: &str, customer: &str, issue: &str) -> Result<String, ProviderError> {
         if !self.dev() {
             let verified = portone::verify_billing_key(self, auth_key, customer, issue).await;
-            self.observe("portone", outcome(&verified));
+            self.observe("portone", outcome(&verified)).await;
             return verified.map(|()| auth_key.to_string());
         }
         if auth_key == FAKE_DECLINE_KEY {
@@ -218,12 +222,26 @@ impl Providers {
         Ok(random_id("tx"))
     }
 
+    /// Charges a saved PortOne billing key once for a subscription visit. Dev mode fakes it; `FAKE_DECLINE_KEY` declines.
+    pub async fn charge_billing(&self, billing_key: &str, amount: i64, payment_id: &str, order: &str, customer: Uuid) -> Result<String, ProviderError> {
+        if !self.dev() {
+            let charged = portone::charge_billing(self, billing_key, payment_id, amount, order, customer).await;
+            self.observe("portone", outcome(&charged)).await;
+            return charged;
+        }
+        if billing_key == FAKE_DECLINE_KEY {
+            return Err(ProviderError::Declined("card_declined".into()));
+        }
+        tracing::info!(target: "fake_pg", amount, payment_id, "billed");
+        Ok(random_id("tx"))
+    }
+
     /// Refunds (or cancels) a payment at the gateway that took it.
     pub async fn refund(&self, provider: &str, tx_id: &str, amount: i64) -> Result<(), ProviderError> {
         match provider {
             "portone" if !self.dev() => {
                 let cancelled = portone::cancel(self, tx_id, amount).await;
-                self.observe("portone", outcome(&cancelled));
+                self.observe("portone", outcome(&cancelled)).await;
                 cancelled
             }
             _ => {
@@ -238,7 +256,7 @@ impl Providers {
     pub async fn payment(&self, payment_id: &str, dev_total: i64) -> Result<PaymentInfo, ProviderError> {
         if !self.dev() {
             let found = portone::payment(self, payment_id).await;
-            self.observe("portone", outcome(&found));
+            self.observe("portone", outcome(&found)).await;
             return found;
         }
         portone::dev_payment(payment_id, dev_total).ok_or(ProviderError::NotFound)
@@ -248,7 +266,7 @@ impl Providers {
     pub async fn identity(&self, verification_id: &str) -> Result<IdentityInfo, ProviderError> {
         if !self.dev() {
             let verified = portone::identity(self, verification_id).await;
-            self.observe("portone", outcome(&verified));
+            self.observe("portone", outcome(&verified)).await;
             return verified;
         }
         portone::dev_identity(verification_id).ok_or(ProviderError::NotFound)
@@ -342,7 +360,7 @@ impl Providers {
         }
         let fcm = self.fcm().ok_or(ProviderError::NotConfigured("push"))?;
         let sent = fcm.send(&self.http, tokens, title, body, data).await;
-        self.observe("push", outcome(&sent));
+        self.observe("push", outcome(&sent)).await;
         sent
     }
 }

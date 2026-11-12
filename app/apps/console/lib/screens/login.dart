@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'staff_mfa.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _busy = false;
   String? _error;
+  StaffMfaChallenge? _challenge;
 
   Future<void> _login() async {
     setState(() {
@@ -22,9 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await Deps.read(
+      final challenge = await Deps.read(
         context,
       ).session.staffLogin(_email.text.trim(), _password.text);
+      if (mounted && challenge != null) setState(() => _challenge = challenge);
     } on ApiException catch (e) {
       if (mounted) {
         setState(
@@ -54,56 +57,61 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(Space.gutter),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
-            child: AutofillGroup(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final c in const [
-                        'bathroom',
-                        'kitchen',
-                        'aircon',
-                        'sofa',
-                        'move_in',
-                      ])
-                        ServiceGlyph(c, size: 40),
-                    ],
-                  ),
-                  const SizedBox(height: Space.xl),
-                  Text(
-                    '${BrandConfig.placeholder.name} ${t.cTitle}',
-                    style: context.text.headlineMedium,
-                  ),
-                  const SizedBox(height: Space.xl),
-                  TextField(
-                    controller: _email,
-                    autofillHints: const [AutofillHints.username],
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(labelText: t.cEmail),
-                  ),
-                  const SizedBox(height: Space.sm),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                    decoration: InputDecoration(
-                      labelText: t.cPassword,
-                      errorText: _error,
+            child: _challenge != null
+                ? StaffMfaPanel(
+                    challenge: _challenge!,
+                    onCancel: () => setState(() => _challenge = null),
+                  )
+                : AutofillGroup(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final c in const [
+                              'bathroom',
+                              'kitchen',
+                              'aircon',
+                              'sofa',
+                              'move_in',
+                            ])
+                              ServiceGlyph(c, size: 40),
+                          ],
+                        ),
+                        const SizedBox(height: Space.xl),
+                        Text(
+                          '${BrandConfig.placeholder.name} ${t.cTitle}',
+                          style: context.text.headlineMedium,
+                        ),
+                        const SizedBox(height: Space.xl),
+                        TextField(
+                          controller: _email,
+                          autofillHints: const [AutofillHints.username],
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(labelText: t.cEmail),
+                        ),
+                        const SizedBox(height: Space.sm),
+                        TextField(
+                          controller: _password,
+                          obscureText: true,
+                          autofillHints: const [AutofillHints.password],
+                          decoration: InputDecoration(
+                            labelText: t.cPassword,
+                            errorText: _error,
+                          ),
+                          onSubmitted: (_) => _login(),
+                        ),
+                        const SizedBox(height: Space.lg),
+                        PrimaryButton(
+                          label: t.cLogin,
+                          busy: _busy,
+                          onPressed: _login,
+                        ),
+                      ],
                     ),
-                    onSubmitted: (_) => _login(),
                   ),
-                  const SizedBox(height: Space.lg),
-                  PrimaryButton(
-                    label: t.cLogin,
-                    busy: _busy,
-                    onPressed: _login,
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),

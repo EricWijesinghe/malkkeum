@@ -2,6 +2,7 @@
 //! with teams, preferences and payout accounts; two demo staff; sign-in records (refresh tokens, OTP).
 
 use super::{Ctx, DemoError};
+use crate::seo::SEOUL_DISTRICTS;
 use crate::{auth::hash_password, crypto};
 use chrono::{DateTime, Duration, Utc};
 use rand::seq::SliceRandom;
@@ -19,14 +20,6 @@ const GIVEN: [&str; 24] = [
 ];
 const ROADS: [&str; 10] = ["테헤란로", "반포대로", "올림픽로", "마포대로", "양재대로", "강변북로", "언주로", "도산대로", "월드컵북로", "동작대로"];
 const DETAILS: [&str; 6] = ["101동 1204호", "102동 805호", "3층 302호", "빌라 2층", "오피스텔 1502호", "가든하우스 1층"];
-/// Seoul's 25 districts (code, Korean name), same codes as the app's `districts.dart`.
-pub const DISTRICTS: [(&str, &str); 25] = [
-    ("11680", "강남구"), ("11650", "서초구"), ("11710", "송파구"), ("11740", "강동구"), ("11440", "마포구"),
-    ("11560", "영등포구"), ("11170", "용산구"), ("11200", "성동구"), ("11215", "광진구"), ("11590", "동작구"),
-    ("11620", "관악구"), ("11500", "강서구"), ("11470", "양천구"), ("11530", "구로구"), ("11545", "금천구"),
-    ("11410", "서대문구"), ("11380", "은평구"), ("11110", "종로구"), ("11140", "중구"), ("11230", "동대문구"),
-    ("11260", "중랑구"), ("11290", "성북구"), ("11305", "강북구"), ("11320", "도봉구"), ("11350", "노원구"),
-];
 /// Service codes from `domain::catalog::default_catalog`.
 pub const SERVICE_CODES: [&str; 8] = ["studio", "kitchen", "bathroom", "mattress", "aircon", "sofa", "move_out", "move_in"];
 
@@ -108,7 +101,7 @@ pub async fn run(c: &mut Ctx<'_>) -> Result<World, DemoError> {
 }
 
 fn district_name(code: &str) -> &'static str {
-    DISTRICTS.iter().find(|(c, _)| *c == code).map_or("", |(_, n)| n)
+    SEOUL_DISTRICTS.iter().find(|(c, _, _)| *c == code).map_or("", |(_, n, _)| n)
 }
 
 /// Demo customer phones are 0100000NNNN (normalised digits, as the API stores them).
@@ -160,7 +153,7 @@ async fn addresses(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Resul
     for n in 0..count {
         let id = c.id();
         let (kind, label) = if n == 0 { ("home", "집") } else { ("office", "회사") };
-        let (code, _) = *c.pick(&DISTRICTS);
+        let (code, _, _) = *c.pick(&SEOUL_DISTRICTS);
         let road = format!("서울특별시 {} {} {}", district_name(code), c.pick(&ROADS), c.range(1, 200));
         let detail = c.pick(&DETAILS).to_string();
         let size = c.range(8, 45) as i16;
@@ -321,7 +314,7 @@ async fn pros(c: &mut Ctx<'_>) -> Result<Vec<Pro>, DemoError> {
         }
         let verified = *status == "verified";
         let services = pick_subset(c, &SERVICE_CODES, 5, 8);
-        let districts = pick_subset(c, &DISTRICTS.map(|d| d.0), 8, 25);
+        let districts = pick_subset(c, &SEOUL_DISTRICTS.map(|d| d.0), 8, 25);
         prefs(c, id, &services, &districts).await?;
         if verified && !deleted {
             payout(c, id, name, i, created).await?;
@@ -420,12 +413,13 @@ async fn sign_in_records(c: &mut Ctx<'_>, customers: &[Customer], pros: &[Pro]) 
     for (n, (subject, role)) in subjects.iter().copied().enumerate() {
         let hash = c.hex(32);
         let revoked: Option<DateTime<Utc>> = (n % 3 == 0).then(|| c.now - Duration::days(5));
-        sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, revoked_at) VALUES ($1,$2,$3,$4,$5)")
+        sqlx::query("INSERT INTO refresh_tokens (token_hash, subject, role, expires_at, revoked_at, family_id) VALUES ($1,$2,$3,$4,$5,$6)")
             .bind(&hash)
             .bind(subject)
             .bind(role)
             .bind(c.now + Duration::days(30))
             .bind(revoked)
+            .bind(Uuid::now_v7())
             .execute(&mut *c.tx)
             .await?;
         c.reg("refresh_tokens", &hash).await?;

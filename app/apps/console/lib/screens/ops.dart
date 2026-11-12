@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'platform.dart';
 
 /// System status: green / yellow / red per check, the external services, and the owner's alert settings.
 /// Every red item says what to do, in the owner's language.
@@ -27,6 +28,7 @@ class _OpsScreenState extends State<OpsScreen> {
         return {
           'status': await api.get('/admin/ops/status') as Json,
           'alerts': await api.get('/admin/ops/alerts') as Json,
+          'config': await api.get('/admin/config') as Json,
         };
       },
       builder: (context, data, reload) {
@@ -38,7 +40,9 @@ class _OpsScreenState extends State<OpsScreen> {
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(t.cOps, style: context.text.headlineMedium)),
+                  Expanded(
+                    child: Text(t.cOps, style: context.text.headlineMedium),
+                  ),
                   IconButton(
                     tooltip: t.oRefresh,
                     onPressed: _reload,
@@ -67,6 +71,14 @@ class _OpsScreenState extends State<OpsScreen> {
                 initial: data['alerts'] as Json,
                 onSaved: _reload,
               ),
+              const SizedBox(height: Space.lg),
+              SectionTitle(t.oFlags),
+              const SizedBox(height: Space.sm),
+              FlagsCard(initial: data['config'] as Json, onSaved: _reload),
+              const SizedBox(height: Space.lg),
+              SectionTitle(t.oClientErrors),
+              const SizedBox(height: Space.sm),
+              const ClientErrorsCard(),
             ],
           ),
         );
@@ -85,20 +97,23 @@ Color levelColor(BuildContext context, String level) {
 }
 
 String levelLabel(T t, String level) => switch (level) {
-      'red' => t.oLevelRed,
-      'yellow' => t.oLevelYellow,
-      _ => t.oLevelGreen,
-    };
+  'red' => t.oLevelRed,
+  'yellow' => t.oLevelYellow,
+  _ => t.oLevelGreen,
+};
 
 class _Dot extends StatelessWidget {
   const _Dot(this.level);
   final String level;
   @override
   Widget build(BuildContext context) => Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(color: levelColor(context, level), shape: BoxShape.circle),
-      );
+    width: 12,
+    height: 12,
+    decoration: BoxDecoration(
+      color: levelColor(context, level),
+      shape: BoxShape.circle,
+    ),
+  );
 }
 
 class _Overall extends StatelessWidget {
@@ -115,10 +130,14 @@ class _Overall extends StatelessWidget {
         children: [
           _Dot(level),
           const SizedBox(width: Space.sm),
-          Expanded(
-            child: Text(t.oOverall, style: context.text.titleLarge),
+          Expanded(child: Text(t.oOverall, style: context.text.titleLarge)),
+          Flexible(
+            child: Text(
+              levelLabel(t, level),
+              textAlign: TextAlign.end,
+              style: context.text.titleSmall,
+            ),
           ),
-          Flexible(child: Text(levelLabel(t, level), textAlign: TextAlign.end, style: context.text.titleSmall)),
           const SizedBox(width: Space.lg),
           Flexible(
             child: Text(
@@ -136,18 +155,21 @@ class _Overall extends StatelessWidget {
 String _mb(num bytes) => (bytes / (1024 * 1024)).round().toString();
 
 String _checkTitle(T t, String key) => switch (key) {
-      'db' => t.oCheckDb,
-      'disk' => t.oCheckDisk,
-      'backup' => t.oCheckBackup,
-      'errors' => t.oCheckErrors,
-      'payments' => t.oCheckPayments,
-      _ => t.oCheckWebhook,
-    };
+  'db' => t.oCheckDb,
+  'disk' => t.oCheckDisk,
+  'backup' => t.oCheckBackup,
+  'errors' => t.oCheckErrors,
+  'payments' => t.oCheckPayments,
+  _ => t.oCheckWebhook,
+};
 
 String _checkValue(T t, Json status, Json check) {
   final v = check['value'];
   return switch (check['key']) {
-    'db' => t.oCheckDbValue('${v ?? 0}', _mb((status['db']['size_bytes'] as num?) ?? 0)),
+    'db' => t.oCheckDbValue(
+      '${v ?? 0}',
+      _mb((status['db']['size_bytes'] as num?) ?? 0),
+    ),
     'disk' => v == null ? t.oNoData : t.oCheckDiskValue('$v'),
     'backup' => v == null ? t.oCheckBackupNone : t.oCheckBackupValue('$v'),
     'errors' => t.oCheckErrorsValue('$v'),
@@ -157,14 +179,14 @@ String _checkValue(T t, Json status, Json check) {
 }
 
 String? _checkAction(T t, String key) => switch (key) {
-      'db' => t.oActDb,
-      'disk' => t.oActDisk,
-      'backup' => t.oActBackup,
-      'errors' => t.oActErrors,
-      'payments' => t.oActPayments,
-      'webhook' => t.oActWebhook,
-      _ => null,
-    };
+  'db' => t.oActDb,
+  'disk' => t.oActDisk,
+  'backup' => t.oActBackup,
+  'errors' => t.oActErrors,
+  'payments' => t.oActPayments,
+  'webhook' => t.oActWebhook,
+  _ => null,
+};
 
 class _Checks extends StatelessWidget {
   const _Checks({required this.status});
@@ -189,15 +211,35 @@ class _Checks extends StatelessWidget {
                     children: [
                       _Dot(c['level'] as String),
                       const SizedBox(width: Space.xs),
-                      Expanded(child: Text(_checkTitle(t, c['key'] as String), style: context.text.titleSmall)),
-                      Flexible(child: Text(levelLabel(t, c['level'] as String), textAlign: TextAlign.end, style: context.text.bodySmall)),
+                      Expanded(
+                        child: Text(
+                          _checkTitle(t, c['key'] as String),
+                          style: context.text.titleSmall,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          levelLabel(t, c['level'] as String),
+                          textAlign: TextAlign.end,
+                          style: context.text.bodySmall,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: Space.xs),
-                  Text(_checkValue(t, status, c), style: context.text.bodyMedium),
-                  if (c['level'] == 'red' && _checkAction(t, c['key'] as String) != null) ...[
+                  Text(
+                    _checkValue(t, status, c),
+                    style: context.text.bodyMedium,
+                  ),
+                  if (c['level'] == 'red' &&
+                      _checkAction(t, c['key'] as String) != null) ...[
                     const SizedBox(height: Space.sm),
-                    Text(_checkAction(t, c['key'] as String)!, style: context.text.bodySmall?.copyWith(color: context.colors.danger)),
+                    Text(
+                      _checkAction(t, c['key'] as String)!,
+                      style: context.text.bodySmall?.copyWith(
+                        color: context.colors.danger,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -239,10 +281,18 @@ class _IntegrationRow extends StatelessWidget {
     final configured = item['configured'] == true;
     final ok = item['last_ok_at'] as String?;
     final fail = item['last_fail_at'] as String?;
-    final failing = fail != null && (ok == null || (DateTime.tryParse(fail) ?? DateTime(0)).isAfter(DateTime.tryParse(ok) ?? DateTime(0)));
+    final failing =
+        fail != null &&
+        (ok == null ||
+            (DateTime.tryParse(fail) ?? DateTime(0)).isAfter(
+              DateTime.tryParse(ok) ?? DateTime(0),
+            ));
     final detail = switch ((configured, failing, ok, fail)) {
       (false, _, _, _) => t.oIntNotSet,
-      (true, true, _, _) => t.oIntLastFail(_when(fail), item['last_error'] as String? ?? '-'),
+      (true, true, _, _) => t.oIntLastFail(
+        _when(fail),
+        item['last_error'] as String? ?? '-',
+      ),
       (true, false, final String o, _) => t.oIntLastOk(_when(o)),
       _ => t.oIntNever,
     };
@@ -255,18 +305,24 @@ class _IntegrationRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: _Dot(level),
-          ),
+          Padding(padding: const EdgeInsets.only(top: 6), child: _Dot(level)),
           const SizedBox(width: Space.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_integrationNames[code]!(t), style: context.text.titleSmall),
+                Text(
+                  _integrationNames[code]!(t),
+                  style: context.text.titleSmall,
+                ),
                 Text(detail, style: context.text.bodySmall),
-                if (action != null) Text(action, style: context.text.bodySmall?.copyWith(color: levelColor(context, level))),
+                if (action != null)
+                  Text(
+                    action,
+                    style: context.text.bodySmall?.copyWith(
+                      color: levelColor(context, level),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -284,6 +340,7 @@ final _ruleLabels = <String, String Function(T)>{
   'social_failing': (T t) => t.oRuleSocial,
   'backup_stale': (T t) => t.oRuleBackup,
   'disk_low': (T t) => t.oRuleDisk,
+  'auth_suspicious': (T t) => t.oRuleAuth,
 };
 
 class _AlertsCard extends StatefulWidget {
@@ -307,9 +364,7 @@ class _AlertsCardState extends State<_AlertsCard> {
     super.initState();
     final p = widget.initial['prefs'] as Json;
     final saved = (p['rules'] as Map?) ?? const {};
-    _rules = {
-      for (final r in _ruleLabels.keys) r: saved[r] as bool? ?? true,
-    };
+    _rules = {for (final r in _ruleLabels.keys) r: saved[r] as bool? ?? true};
     _from = (p['quiet_start'] as num).toInt();
     _to = (p['quiet_end'] as num).toInt();
     _phone = TextEditingController(text: p['alert_phone'] as String? ?? '');
@@ -356,7 +411,9 @@ class _AlertsCardState extends State<_AlertsCard> {
               contentPadding: EdgeInsets.zero,
               title: Text(e.value(t)),
               value: _rules[e.key] ?? true,
-              onChanged: canSave ? (v) => setState(() => _rules[e.key] = v) : null,
+              onChanged: canSave
+                  ? (v) => setState(() => _rules[e.key] = v)
+                  : null,
             ),
           const SizedBox(height: Space.sm),
           Text(t.oQuietHours, style: context.text.titleSmall),
@@ -364,9 +421,17 @@ class _AlertsCardState extends State<_AlertsCard> {
           const SizedBox(height: Space.xs),
           Row(
             children: [
-              _HourPicker(label: t.oQuietFrom, value: _from, onChanged: canSave ? (h) => setState(() => _from = h) : null),
+              _HourPicker(
+                label: t.oQuietFrom,
+                value: _from,
+                onChanged: canSave ? (h) => setState(() => _from = h) : null,
+              ),
               const SizedBox(width: Space.lg),
-              _HourPicker(label: t.oQuietTo, value: _to, onChanged: canSave ? (h) => setState(() => _to = h) : null),
+              _HourPicker(
+                label: t.oQuietTo,
+                value: _to,
+                onChanged: canSave ? (h) => setState(() => _to = h) : null,
+              ),
             ],
           ),
           const SizedBox(height: Space.md),
@@ -376,11 +441,14 @@ class _AlertsCardState extends State<_AlertsCard> {
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
               labelText: t.oAlertPhone,
-              helperText: defaultPhone == null ? t.oAlertPhoneHint : '${t.oAlertPhoneHint} ($defaultPhone)',
+              helperText: defaultPhone == null
+                  ? t.oAlertPhoneHint
+                  : '${t.oAlertPhoneHint} ($defaultPhone)',
             ),
           ),
           const SizedBox(height: Space.md),
-          if (canSave) PrimaryButton(label: t.oSave, busy: _busy, onPressed: _save),
+          if (canSave)
+            PrimaryButton(label: t.oSave, busy: _busy, onPressed: _save),
         ],
       ),
     );
@@ -388,7 +456,11 @@ class _AlertsCardState extends State<_AlertsCard> {
 }
 
 class _HourPicker extends StatelessWidget {
-  const _HourPicker({required this.label, required this.value, required this.onChanged});
+  const _HourPicker({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
   final String label;
   final int value;
   final ValueChanged<int>? onChanged;
@@ -402,9 +474,12 @@ class _HourPicker extends StatelessWidget {
         initialValue: value,
         decoration: InputDecoration(labelText: label),
         items: [
-          for (var h = 0; h < 24; h++) DropdownMenuItem(value: h, child: Text(t.oHour('$h'))),
+          for (var h = 0; h < 24; h++)
+            DropdownMenuItem(value: h, child: Text(t.oHour('$h'))),
         ],
-        onChanged: onChanged == null ? null : (h) => h == null ? null : onChanged!(h),
+        onChanged: onChanged == null
+            ? null
+            : (h) => h == null ? null : onChanged!(h),
       ),
     );
   }

@@ -3,8 +3,9 @@
 //! `FOR UPDATE SKIP LOCKED` and stamps them with a cooldown, and settlement itself is
 //! idempotent (`fulfil` re-locks the checkout row).
 
-use crate::{routes::checkouts, state::AppState};
+use crate::{lifecycle::next_tick, metrics::job_pass, routes::checkouts, state::AppState};
 use std::time::Duration;
+use tokio::task::JoinHandle;
 
 /// Dev mode always runs it (the fake gateway answers); production needs PortOne configured.
 /// Only against a real PortOne account: in dev mode the fake gateway reports every
@@ -15,22 +16,30 @@ pub fn enabled(_dev_mode: bool, portone_configured: bool) -> bool {
 
 /// Starts the periodic pass. Each tick re-checks the live keys, so PortOne entered later in the
 /// setup wizard switches recovery on without a restart. Errors are logged and the loop goes on.
-pub fn spawn(state: AppState) {
+pub fn spawn(state: AppState) -> JoinHandle<()> {
     let every = Duration::from_secs(state.config.reconcile_interval_secs);
+    let mut stop = state.hub.drain_signal();
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(every);
-        loop {
-            tick.tick().await;
+        while next_tick(&mut tick, &mut stop).await {
             if !enabled(state.config.dev_mode, state.providers.integ().portone.api_secret.is_some()) {
+                job_pass("reconciler", true);
                 continue;
             }
-            match checkouts::reconcile_pass(&state).await {
-                Ok(0) => {}
-                Ok(checked) => tracing::info!(checked, "checkout reconcile pass"),
-                Err(e) => tracing::warn!(error = %e, "checkout reconcile pass failed"),
-            }
+            let ok = match checkouts::reconcile_pass(&state).await {
+                Ok(0) => true,
+                Ok(checked) => {
+                    tracing::info!(checked, "checkout reconcile pass");
+                    true
+                }
+                Err(e) => {
+                    tracing::warn!(error = %e, "checkout reconcile pass failed");
+                    false
+                }
+            };
+            job_pass("reconciler", ok);
         }
-    });
+    })
 }
 
 #[cfg(test)]

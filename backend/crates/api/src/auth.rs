@@ -4,7 +4,7 @@ use crate::{error::ApiError, state::AppState};
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::SaltString};
 use axum::{extract::FromRequestParts, http::request::Parts};
 use chrono::{Duration, Utc};
-use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, decode_header, encode};
 use rand::{Rng, RngCore, rngs::OsRng};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -12,6 +12,22 @@ use uuid::Uuid;
 
 pub const ACCESS_TTL_MIN: i64 = 15;
 pub const REFRESH_TTL_DAYS: i64 = 30;
+/// Issuer and audience stamped on every access token and required on verify.
+pub const JWT_ISS: &str = "malkkeum-api";
+pub const JWT_AUD: &str = "malkkeum-api";
+/// Tolerated clock drift between the signer and the verifier.
+const CLOCK_SKEW_SECS: u64 = 30;
+/// NIST SP 800-63B: length is the composition rule; no forced character classes.
+pub const MIN_PASSWORD_CHARS: usize = 12;
+pub const MAX_PASSWORD_BYTES: usize = 256;
+/// Known-breached passwords (SecLists 10k most common), lowercase, one per line. Bundled at compile time.
+const BREACHED_PASSWORDS: &str = include_str!("data/breached_passwords.txt");
+static BREACHED_SET: std::sync::OnceLock<std::collections::HashSet<&'static str>> = std::sync::OnceLock::new();
+
+/// Parsed once on first use; each policy check is then a set lookup.
+fn breached_set() -> &'static std::collections::HashSet<&'static str> {
+    BREACHED_SET.get_or_init(|| BREACHED_PASSWORDS.lines().filter(|l| !l.is_empty()).collect())
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -55,6 +71,8 @@ struct Claims {
     role: Role,
     exp: i64,
     iat: i64,
+    iss: String,
+    aud: String,
 }
 
 /// Authenticated caller. Use the narrower extractors in handlers.
@@ -64,6 +82,54 @@ pub struct Auth {
     pub role: Role,
 }
 
+/// Audience of the short-lived token that stands for a password-verified staff login awaiting a second factor.
+/// Access verification requires `JWT_AUD`, so this token cannot be used as an access token.
+pub const MFA_AUD: &str = "malkkeum-mfa";
+pub const MFA_TTL_MIN: i64 = 5;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct MfaClaims {
+    sub: Uuid,
+    exp: i64,
+    iat: i64,
+    iss: String,
+    aud: String,
+}
+
+pub fn issue_mfa(secret: &[u8], staff: Uuid) -> Result<String, ApiError> {
+    let now = Utc::now();
+    let claims = MfaClaims {
+        sub: staff,
+        iat: now.timestamp(),
+        exp: (now + Duration::minutes(MFA_TTL_MIN)).timestamp(),
+        iss: JWT_ISS.into(),
+        aud: MFA_AUD.into(),
+    };
+    let header = Header {
+        kid: Some(key_id(secret)),
+        ..Header::default()
+    };
+    encode(&header, &claims, &EncodingKey::from_secret(secret)).map_err(|e| ApiError::Internal(e.to_string()))
+}
+
+/// Staff id from a second-factor challenge token, checked against the same key set as access tokens.
+pub fn verify_mfa(keys: &[&[u8]], token: &str) -> Result<Uuid, ApiError> {
+    let kid = decode_header(token).ok().and_then(|h| h.kid).ok_or(ApiError::Unauthorized)?;
+    let key = keys.iter().find(|k| key_id(k) == kid).ok_or(ApiError::Unauthorized)?;
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.leeway = CLOCK_SKEW_SECS;
+    validation.set_issuer(&[JWT_ISS]);
+    validation.set_audience(&[MFA_AUD]);
+    validation.set_required_spec_claims(&["exp", "iss", "aud", "sub"]);
+    let data = decode::<MfaClaims>(token, &DecodingKey::from_secret(key), &validation).map_err(|_| ApiError::Unauthorized)?;
+    Ok(data.claims.sub)
+}
+
+/// Public fingerprint of a signing key, carried in the token header so verifiers pick the right key during rotation.
+pub fn key_id(secret: &[u8]) -> String {
+    sha256_hex(secret)[..16].to_string()
+}
+
 pub fn issue_access(secret: &[u8], id: Uuid, role: Role) -> Result<String, ApiError> {
     let now = Utc::now();
     let claims = Claims {
@@ -71,12 +137,27 @@ pub fn issue_access(secret: &[u8], id: Uuid, role: Role) -> Result<String, ApiEr
         role,
         iat: now.timestamp(),
         exp: (now + Duration::minutes(ACCESS_TTL_MIN)).timestamp(),
+        iss: JWT_ISS.into(),
+        aud: JWT_AUD.into(),
     };
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(secret)).map_err(|e| ApiError::Internal(e.to_string()))
+    let header = Header {
+        kid: Some(key_id(secret)),
+        ..Header::default()
+    };
+    encode(&header, &claims, &EncodingKey::from_secret(secret)).map_err(|e| ApiError::Internal(e.to_string()))
 }
 
-pub fn verify_access(secret: &[u8], token: &str) -> Result<Auth, ApiError> {
-    let data = decode::<Claims>(token, &DecodingKey::from_secret(secret), &Validation::default()).map_err(|_| ApiError::Unauthorized)?;
+/// Verifies against the key named by the token's `kid`. `keys` is the current secret plus, during
+/// rotation, the previous one; a token that names no listed key, or has no `kid`, is refused.
+pub fn verify_access(keys: &[&[u8]], token: &str) -> Result<Auth, ApiError> {
+    let kid = decode_header(token).ok().and_then(|h| h.kid).ok_or(ApiError::Unauthorized)?;
+    let key = keys.iter().find(|k| key_id(k) == kid).ok_or(ApiError::Unauthorized)?;
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.leeway = CLOCK_SKEW_SECS;
+    validation.set_issuer(&[JWT_ISS]);
+    validation.set_audience(&[JWT_AUD]);
+    validation.set_required_spec_claims(&["exp", "iss", "aud", "sub"]);
+    let data = decode::<Claims>(token, &DecodingKey::from_secret(key), &validation).map_err(|_| ApiError::Unauthorized)?;
     Ok(Auth {
         id: data.claims.sub,
         role: data.claims.role,
@@ -107,6 +188,18 @@ pub fn otp_hash(secret: &[u8], phone: &str, code: &str) -> String {
     h.update(phone.as_bytes());
     h.update(code.as_bytes());
     hex::encode(h.finalize())
+}
+
+/// Policy for passwords a person chooses: length floor, byte cap, and no known-breached values.
+pub fn check_password_policy(password: &str) -> Result<(), &'static str> {
+    if password.chars().count() < MIN_PASSWORD_CHARS || password.len() > MAX_PASSWORD_BYTES {
+        return Err("weak_password");
+    }
+    let lowered = password.to_lowercase();
+    if breached_set().contains(lowered.as_str()) {
+        return Err("breached_password");
+    }
+    Ok(())
 }
 
 pub fn hash_password(password: &str) -> Result<String, ApiError> {
@@ -164,7 +257,7 @@ impl FromRequestParts<AppState> for Auth {
     type Rejection = ApiError;
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
         let token = bearer(parts).ok_or(ApiError::Unauthorized)?;
-        verify_access(&state.config.jwt_secret, token)
+        verify_access(&state.config.jwt_keys(), token)
     }
 }
 
@@ -212,14 +305,64 @@ mod tests {
         assert_eq!(mask_name("이준"), "이*");
     }
 
+    const OLD: &[u8] = b"old-key-old-key-old-key-old-key-00";
+    const NEW: &[u8] = b"new-key-new-key-new-key-new-key-11";
+
+    fn sign(claims: &Claims, secret: &[u8], kid: Option<String>) -> String {
+        let header = Header { kid, ..Header::default() };
+        encode(&header, claims, &EncodingKey::from_secret(secret)).unwrap()
+    }
+
+    fn claims(exp_offset_secs: i64, iss: &str, aud: &str) -> Claims {
+        let now = Utc::now().timestamp();
+        Claims { sub: Uuid::now_v7(), role: Role::Pro, exp: now + exp_offset_secs, iat: now, iss: iss.into(), aud: aud.into() }
+    }
+
     #[test]
     fn token_roundtrip_and_tamper() {
-        let secret = b"0123456789abcdef0123456789abcdef";
         let id = Uuid::now_v7();
-        let t = issue_access(secret, id, Role::Pro).unwrap();
-        let a = verify_access(secret, &t).unwrap();
+        let t = issue_access(NEW, id, Role::Pro).unwrap();
+        let a = verify_access(&[NEW], &t).unwrap();
         assert_eq!((a.id, a.role), (id, Role::Pro));
-        assert!(verify_access(b"another-secret-another-secret-xx", &t).is_err());
+        assert!(verify_access(&[OLD], &t).is_err());
+    }
+
+    #[test]
+    fn rotation_accepts_previous_key_and_refuses_retired_one() {
+        let t_old = issue_access(OLD, Uuid::now_v7(), Role::Customer).unwrap();
+        let t_new = issue_access(NEW, Uuid::now_v7(), Role::Customer).unwrap();
+        assert!(verify_access(&[NEW, OLD], &t_old).is_ok(), "previous key still verifies during rotation");
+        assert!(verify_access(&[NEW, OLD], &t_new).is_ok());
+        assert!(verify_access(&[NEW], &t_old).is_err(), "retired key is refused once dropped");
+    }
+
+    #[test]
+    fn token_without_kid_or_with_unknown_kid_is_refused() {
+        let good = claims(600, JWT_ISS, JWT_AUD);
+        assert!(verify_access(&[NEW], &sign(&good, NEW, None)).is_err());
+        assert!(verify_access(&[NEW], &sign(&good, NEW, Some("0000000000000000".into()))).is_err());
+    }
+
+    #[test]
+    fn issuer_audience_and_expiry_are_enforced() {
+        let kid = Some(key_id(NEW));
+        assert!(verify_access(&[NEW], &sign(&claims(600, JWT_ISS, JWT_AUD), NEW, kid.clone())).is_ok());
+        assert!(verify_access(&[NEW], &sign(&claims(600, "evil", JWT_AUD), NEW, kid.clone())).is_err(), "wrong iss");
+        assert!(verify_access(&[NEW], &sign(&claims(600, JWT_ISS, "other-svc"), NEW, kid.clone())).is_err(), "wrong aud");
+        assert!(verify_access(&[NEW], &sign(&claims(-120, JWT_ISS, JWT_AUD), NEW, kid.clone())).is_err(), "expired beyond skew");
+        assert!(verify_access(&[NEW], &sign(&claims(-10, JWT_ISS, JWT_AUD), NEW, kid)).is_ok(), "expired within clock skew");
+    }
+
+    #[test]
+    fn password_policy_length_and_breach_list() {
+        assert_eq!(check_password_policy("short-pass1"), Err("weak_password"));
+        assert_eq!(check_password_policy("Password"), Err("weak_password"), "below length floor");
+        assert_eq!(check_password_policy("MasterBaiting"), Err("breached_password"), "case-insensitive match");
+        assert_eq!(check_password_policy("contortionists"), Ok(()), "not in the list");
+        assert!(breached_set().len() >= 10_000, "full top-10k list is bundled");
+        assert_eq!(check_password_policy("correct horse battery"), Ok(()));
+        assert_eq!(check_password_policy("aaaaaaaaaaaaaaaa"), Ok(()), "no composition rules");
+        assert_eq!(check_password_policy(&"가".repeat(100)), Err("weak_password"), "byte cap");
     }
 
     #[test]

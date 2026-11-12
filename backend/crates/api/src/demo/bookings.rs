@@ -2,17 +2,18 @@
 //! reviews. Money is won with VAT included, as the API stores it. Prices come from the domain crate.
 
 use super::{
-    Ctx, DemoError, photo_url,
+    Ctx, DemoError,
     people::{Customer, Pro, World},
+    photo_url,
 };
 use chrono::{DateTime, Duration, NaiveDate, TimeZone, Utc};
-use rand::seq::SliceRandom;
 use domain::{
     Won,
     catalog::{Pricing, Service, default_catalog},
     partner::{payout, payout_date},
     quote::{BuildingType, CleaningType, Layout, LuggageState, QuoteAnswers, QuoteFormula},
 };
+use rand::seq::SliceRandom;
 use serde_json::{Value, json};
 use uuid::Uuid;
 
@@ -23,9 +24,22 @@ const START_HOURS: [i16; 4] = [8, 9, 13, 14];
 const SERVICE_POOL: [&str; 13] = [
     "studio", "studio", "studio", "kitchen", "kitchen", "bathroom", "bathroom", "aircon", "aircon", "sofa", "mattress", "move_in", "move_out",
 ];
-const PARKING: [&str; 4] = ["지하 주차장 방문자석", "단지 방문자 주차장", "건물 앞 노상 (주차 가능)", "주차 공간 없음, 대중교통 이용"];
-const ACCESS: [&str; 3] = ["현관 비밀번호는 앱 메모에 적어 두었어요", "경비실에 방문 사실을 알려 주세요", "초인종 누르시면 제가 나갈게요"];
-const QUOTE_NOTES: [&str; 3] = ["평수와 짐 상태를 반영한 견적이에요.", "베란다 청소 포함 금액입니다.", "작업은 약 5시간 예상해요."];
+const PARKING: [&str; 4] = [
+    "지하 주차장 방문자석",
+    "단지 방문자 주차장",
+    "건물 앞 노상 (주차 가능)",
+    "주차 공간 없음, 대중교통 이용",
+];
+const ACCESS: [&str; 3] = [
+    "현관 비밀번호는 앱 메모에 적어 두었어요",
+    "경비실에 방문 사실을 알려 주세요",
+    "초인종 누르시면 제가 나갈게요",
+];
+const QUOTE_NOTES: [&str; 3] = [
+    "평수와 짐 상태를 반영한 견적이에요.",
+    "베란다 청소 포함 금액입니다.",
+    "작업은 약 5시간 예상해요.",
+];
 const REVIEWS: [&str; 6] = [
     "약속 시간 딱 맞춰 오셨고 꼼꼼했어요. 다음에도 부탁드려요.",
     "욕실 물때가 완전히 사라졌어요. 기사님이 친절하셨습니다.",
@@ -113,7 +127,11 @@ async fn one(
         Some(a) => Some(formula.estimate(a).map_err(data_err)?.total.0),
         None => None,
     };
-    let coupon = if is_quote { None } else { take_coupon(c, &mut world.customers[ci], svc.code.as_str(), created) };
+    let coupon = if is_quote {
+        None
+    } else {
+        take_coupon(c, &mut world.customers[ci], svc.code.as_str(), created)
+    };
     let (list, minutes) = if is_quote {
         (None, None)
     } else {
@@ -141,15 +159,21 @@ async fn one(
     let assignee = pro_row.as_ref().map(|p| *c.pick(&p.assignees));
     let accepted = pro.map(|_| created + Duration::hours(2));
     let updated = completed.or(cancelled).or(accepted).unwrap_or(created);
-    let notes = json!({ "parking": c.pick(&PARKING), "access": c.pick(&ACCESS), "pets": c.chance(0.15) });
-    let memo = if pro.is_some() && c.chance(0.3) { "현관 비번 확인 후 방문" } else { "" };
+    let notes = json!({ "parking": c.pick(&PARKING), "access": c.pick(&ACCESS) });
+    let pets = if c.chance(0.15) { json!([{ "kind": "dog", "count": 1 }]) } else { json!([]) };
+    let household = json!({ "pets": pets, "parking": c.pick(&PARKING), "elevator": c.chance(0.5) });
+    let memo = if pro.is_some() && c.chance(0.3) {
+        "현관 비번 확인 후 방문"
+    } else {
+        ""
+    };
     let answers_json = answers.as_ref().map(|a| serde_json::to_value(a).expect("quote answers serialise"));
     let address = super::people::address_snapshot(&addr);
     sqlx::query(
         "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes,
             status, answers, estimate, final_price, deposit, list_price, discount, paid_amount, balance_paid, coupon_id, team_name,
-            pro_id, assignee_id, accepted_at, visit_notes, team_memo, cancelled_at, completed_at, created_at, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)",
+            pro_id, assignee_id, accepted_at, visit_notes, team_memo, cancelled_at, completed_at, created_at, updated_at, household)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)",
     )
     .bind(id)
     .bind(&number)
@@ -181,11 +205,16 @@ async fn one(
     .bind(completed)
     .bind(created)
     .bind(updated)
+    .bind(&household)
     .execute(&mut *c.tx)
     .await?;
     c.reg("bookings", id).await?;
     if let Some((cid, _)) = coupon {
-        sqlx::query("UPDATE coupons SET used_booking_id = $2 WHERE id = $1").bind(cid).bind(id).execute(&mut *c.tx).await?;
+        sqlx::query("UPDATE coupons SET used_booking_id = $2 WHERE id = $1")
+            .bind(cid)
+            .bind(id)
+            .execute(&mut *c.tx)
+            .await?;
     }
 
     let user = world.customers[ci].id;
@@ -240,20 +269,48 @@ fn payments_for(
     if is_quote {
         if status >= 1 {
             let dep = deposit.unwrap_or(0);
-            out.push(Pay { kind: "deposit", amount: dep, status: "paid", refunded: 0, at: created + Duration::days(1) });
+            out.push(Pay {
+                kind: "deposit",
+                amount: dep,
+                status: "paid",
+                refunded: 0,
+                at: created + Duration::days(1),
+            });
             if status == 3 && c.chance(0.8) {
                 let at = completed.unwrap_or(created);
-                out.push(Pay { kind: "balance", amount: total - dep, status: "paid", refunded: 0, at });
+                out.push(Pay {
+                    kind: "balance",
+                    amount: total - dep,
+                    status: "paid",
+                    refunded: 0,
+                    at,
+                });
             }
         }
         return out;
     }
     let at = created + Duration::minutes(5);
     if status == -1 {
-        let (st, refunded) = if c.chance(0.85) { ("refunded", total) } else { ("partially_refunded", total / 2) };
-        out.push(Pay { kind: "full", amount: total, status: st, refunded, at });
+        let (st, refunded) = if c.chance(0.85) {
+            ("refunded", total)
+        } else {
+            ("partially_refunded", total / 2)
+        };
+        out.push(Pay {
+            kind: "full",
+            amount: total,
+            status: st,
+            refunded,
+            at,
+        });
     } else if status >= 1 {
-        out.push(Pay { kind: "full", amount: total, status: "paid", refunded: 0, at });
+        out.push(Pay {
+            kind: "full",
+            amount: total,
+            status: "paid",
+            refunded: 0,
+            at,
+        });
     }
     out
 }
@@ -281,7 +338,20 @@ async fn payment(c: &mut Ctx<'_>, booking: Uuid, user: Uuid, p: &Pay, draft: &Va
     if p.kind == "balance" {
         checkout(c, user, "balance", Some(booking), None, p.amount, "paid", Some(tx_id), None, p.at, None).await
     } else {
-        checkout(c, user, "booking", Some(booking), Some(draft.clone()), p.amount, "paid", Some(tx_id), Some(booking), p.at, None).await
+        checkout(
+            c,
+            user,
+            "booking",
+            Some(booking),
+            Some(draft.clone()),
+            p.amount,
+            "paid",
+            Some(tx_id),
+            Some(booking),
+            p.at,
+            None,
+        )
+        .await
     }
 }
 
@@ -340,7 +410,20 @@ async fn extra_checkouts(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError
         let cust = &world.customers[n as usize % world.customers.len()];
         let created = now - Duration::days(3 + n * 4);
         let tx_id = (status == "refunded").then(|| format!("demo_pay_{}", c.hex(12)));
-        checkout(c, cust.id, "booking", None, Some(json!({ "body": { "service_code": "studio" }, "district_code": cust.addresses[0].district })), 45_000, status, tx_id, None, created, reason).await?;
+        checkout(
+            c,
+            cust.id,
+            "booking",
+            None,
+            Some(json!({ "body": { "service_code": "studio" }, "district_code": cust.addresses[0].district })),
+            45_000,
+            status,
+            tx_id,
+            None,
+            created,
+            reason,
+        )
+        .await?;
     }
     Ok(())
 }
@@ -358,7 +441,11 @@ fn pick_service<'a>(c: &mut Ctx<'_>, catalog: &'a [Service], size: i16) -> &'a S
 /// Status and assigned pro. Past visits end completed (85%) or cancelled; upcoming ones are open or assigned.
 fn pick_status(c: &mut Ctx<'_>, world: &World, is_quote: bool, past: bool, service: &str, district: &str) -> (i16, Option<usize>) {
     if past {
-        return if c.chance(0.85) { (3, pick_pro(c, world, service, district)) } else { (-1, None) };
+        return if c.chance(0.85) {
+            (3, pick_pro(c, world, service, district))
+        } else {
+            (-1, None)
+        };
     }
     if is_quote {
         return match c.range(0, 9) {
@@ -367,7 +454,11 @@ fn pick_status(c: &mut Ctx<'_>, world: &World, is_quote: bool, past: bool, servi
             _ => (2, pick_pro(c, world, service, district)),
         };
     }
-    if c.chance(0.6) { (2, pick_pro(c, world, service, district)) } else { (1, None) }
+    if c.chance(0.6) {
+        (2, pick_pro(c, world, service, district))
+    } else {
+        (1, None)
+    }
 }
 
 /// A verified, non-deleted pro who offers the service in the district; falls back to looser matches.
@@ -376,9 +467,17 @@ fn pick_pro(c: &mut Ctx<'_>, world: &World, service: &str, district: &str) -> Op
     let strict: Vec<usize> = (0..world.pros.len())
         .filter(|&i| active(&world.pros[i]) && world.pros[i].services.contains(&service) && world.pros[i].districts.contains(&district))
         .collect();
-    let loose: Vec<usize> = (0..world.pros.len()).filter(|&i| active(&world.pros[i]) && world.pros[i].services.contains(&service)).collect();
+    let loose: Vec<usize> = (0..world.pros.len())
+        .filter(|&i| active(&world.pros[i]) && world.pros[i].services.contains(&service))
+        .collect();
     let any: Vec<usize> = (0..world.pros.len()).filter(|&i| active(&world.pros[i])).collect();
-    let pool = if !strict.is_empty() { strict } else if !loose.is_empty() { loose } else { any };
+    let pool = if !strict.is_empty() {
+        strict
+    } else if !loose.is_empty() {
+        loose
+    } else {
+        any
+    };
     if pool.is_empty() { None } else { Some(*c.pick(&pool)) }
 }
 
@@ -427,8 +526,19 @@ fn quote_answers(c: &mut Ctx<'_>, service: &str, size: i16) -> QuoteAnswers {
     };
     QuoteAnswers {
         cleaning_type: cleaning,
-        luggage: *c.pick(&[LuggageState::Empty, LuggageState::PartlyUnpacked, LuggageState::FullyLivedIn, LuggageState::Unknown]),
-        building: *c.pick(&[BuildingType::Apartment, BuildingType::Apartment, BuildingType::Apartment, BuildingType::Villa, BuildingType::Officetel]),
+        luggage: *c.pick(&[
+            LuggageState::Empty,
+            LuggageState::PartlyUnpacked,
+            LuggageState::FullyLivedIn,
+            LuggageState::Unknown,
+        ]),
+        building: *c.pick(&[
+            BuildingType::Apartment,
+            BuildingType::Apartment,
+            BuildingType::Apartment,
+            BuildingType::Villa,
+            BuildingType::Officetel,
+        ]),
         layout,
         duplex: c.chance(0.1),
         bathrooms: c.range(1, 2) as u8,
@@ -440,7 +550,15 @@ fn quote_answers(c: &mut Ctx<'_>, service: &str, size: i16) -> QuoteAnswers {
 
 /// Quote desk rows. An open quote gets three waiting bids. A chosen quote gets the winner (selected,
 /// at the final price) and two rejected bids from other pros. `winner` is (pro index, final price).
-async fn quotes(c: &mut Ctx<'_>, world: &World, booking: Uuid, service: &str, winner: Option<(usize, i64)>, estimate: i64, created: DateTime<Utc>) -> Result<(), DemoError> {
+async fn quotes(
+    c: &mut Ctx<'_>,
+    world: &World,
+    booking: Uuid,
+    service: &str,
+    winner: Option<(usize, i64)>,
+    estimate: i64,
+    created: DateTime<Utc>,
+) -> Result<(), DemoError> {
     let mut bidders: Vec<usize> = (0..world.pros.len())
         .filter(|&i| world.pros[i].verified && !world.pros[i].deleted && world.pros[i].services.contains(&service))
         .filter(|&i| winner.is_none_or(|(w, _)| i != w))
@@ -477,7 +595,16 @@ async fn insert_quote(c: &mut Ctx<'_>, booking: Uuid, pro: Uuid, amount: i64, st
 
 /// Completed job: photo report, then the settlement row that the payout run works from.
 #[allow(clippy::too_many_arguments)]
-async fn completion(c: &mut Ctx<'_>, world: &World, pro: usize, booking: Uuid, done: DateTime<Utc>, gross: i64, balance_paid: bool, is_quote: bool) -> Result<(), DemoError> {
+async fn completion(
+    c: &mut Ctx<'_>,
+    world: &World,
+    pro: usize,
+    booking: Uuid,
+    done: DateTime<Utc>,
+    gross: i64,
+    balance_paid: bool,
+    is_quote: bool,
+) -> Result<(), DemoError> {
     let p = &world.pros[pro];
     let photo = photo_url(&c.public_base);
     sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by, submitted_at) VALUES ($1,$2,$3,$4,$5,$6)")
@@ -504,26 +631,31 @@ async fn completion(c: &mut Ctx<'_>, world: &World, pro: usize, booking: Uuid, d
         ("pending", Some(due), None)
     };
     let id = c.id();
-    sqlx::query("INSERT INTO settlements (id, pro_id, booking_id, gross, fee, net, payout_date, state, paid_at, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)")
-        .bind(id)
-        .bind(p.id)
-        .bind(booking)
-        .bind(split.gross.0)
-        .bind(split.fee.0)
-        .bind(split.net.0)
-        .bind(date)
-        .bind(state)
-        .bind(paid_at)
-        .bind(done)
-        .execute(&mut *c.tx)
-        .await?;
+    sqlx::query(
+        "INSERT INTO settlements (id, pro_id, booking_id, gross, fee, net, payout_date, state, paid_at, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+    )
+    .bind(id)
+    .bind(p.id)
+    .bind(booking)
+    .bind(split.gross.0)
+    .bind(split.fee.0)
+    .bind(split.net.0)
+    .bind(date)
+    .bind(state)
+    .bind(paid_at)
+    .bind(done)
+    .execute(&mut *c.tx)
+    .await?;
     c.reg("settlements", id).await
 }
 
 /// Two completed jobs are held for a dispute; reviews come from about half the completed jobs.
 async fn reviews_and_holds(c: &mut Ctx<'_>, world: &World, booked: &[BookingRec]) -> Result<(), DemoError> {
     for b in booked.iter().filter(|b| b.status == 3 && !b.is_quote).take(2) {
-        sqlx::query("UPDATE settlements SET state = 'held' WHERE booking_id = $1").bind(b.id).execute(&mut *c.tx).await?;
+        sqlx::query("UPDATE settlements SET state = 'held' WHERE booking_id = $1")
+            .bind(b.id)
+            .execute(&mut *c.tx)
+            .await?;
     }
     for b in booked.iter().filter(|b| b.status == 3) {
         if !c.chance(0.55) {

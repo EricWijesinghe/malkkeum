@@ -26,7 +26,6 @@ use serde_json::{Map, Value, json};
 use sqlx::PgPool;
 use subtle::ConstantTimeEq;
 
-const MIN_ADMIN_PASSWORD: usize = 12;
 const MAX_FIELD_CHARS: usize = 200;
 const SETUP_CODE_LEN: usize = 12;
 /// No 0/O/1/I/L: the code is read off a screen and typed by hand.
@@ -114,9 +113,7 @@ async fn create_admin(State(s): State<AppState>, Json(req): Json<NewAdmin>) -> A
     if !email.contains('@') || email.len() > MAX_FIELD_CHARS || name.is_empty() || name.chars().count() > MAX_FIELD_CHARS {
         return Err(ApiError::BadRequest("invalid_input"));
     }
-    if req.password.chars().count() < MIN_ADMIN_PASSWORD || req.password.len() > 256 {
-        return Err(ApiError::BadRequest("weak_password"));
-    }
+    crate::auth::check_password_policy(&req.password).map_err(ApiError::BadRequest)?;
     let hash = hash_password(&req.password)?;
     let mut tx = s.db.begin().await?;
     // Serialises concurrent attempts: only the first one can create the owner.
@@ -223,6 +220,7 @@ async fn seed_review_samples(db: &PgPool, phone: &str) -> ApiResult<usize> {
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct ReviewAccount {
     phone: String,
     code: String,
@@ -266,6 +264,18 @@ async fn review_summary(db: &PgPool) -> Result<Value, sqlx::Error> {
     Ok(v.map(|v| json!({ "phone": v["phone"], "expires_at": v["expires_at"] })).unwrap_or(Value::Null))
 }
 
+/// Shop name from the business profile, sent as the `#{brand}` AlimTalk variable.
+pub async fn brand_name(db: &PgPool) -> String {
+    const DEFAULT_BRAND: &str = "말끔";
+    match business(db).await {
+        Ok(v) => v["name"].as_str().map(str::trim).filter(|s| !s.is_empty()).unwrap_or(DEFAULT_BRAND).to_owned(),
+        Err(e) => {
+            tracing::warn!(error = %e, "brand lookup failed; using default brand");
+            DEFAULT_BRAND.to_owned()
+        }
+    }
+}
+
 async fn business(db: &PgPool) -> Result<Value, sqlx::Error> {
     let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
         .bind(BUSINESS_KEY)
@@ -281,7 +291,10 @@ async fn brand(State(s): State<AppState>) -> ApiResult<Json<Value>> {
 
 const BUSINESS_TEXT: [&str; 4] = ["name", "support_phone", "support_email", "support_hours"];
 /// Store pages the website's download buttons point to.
-const STORE_LINKS: [&str; 4] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url"];
+/// https links: store pages, the Kakao channel and Naver Talk Talk (website chat buttons).
+const STORE_LINKS: [&str; 6] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url", "kakao_channel_url", "naver_talk_url"];
+/// Search Console / Search Advisor verification tokens, served as meta tags and verification files.
+const VERIFY_KEYS: [&str; 2] = ["google_site_verification", "naver_site_verification"];
 const COMPANY_TEXT: [&str; 7] = [
     "legal_name",
     "ceo",
@@ -370,6 +383,14 @@ pub fn clean_business(base: &str, input: &Value) -> Result<Value, ApiError> {
                 return Err(ApiError::BadRequest("invalid_link"));
             }
             out.insert(k.into(), json!(u));
+        }
+    }
+    for k in VERIFY_KEYS {
+        if let Some(t) = clean_text(input, k)? {
+            if !crate::seo::is_verification_token(&t) {
+                return Err(ApiError::BadRequest("invalid_token"));
+            }
+            out.insert(k.into(), json!(t));
         }
     }
     let empty = json!({});

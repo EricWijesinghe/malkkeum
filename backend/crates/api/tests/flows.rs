@@ -145,7 +145,7 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
         .expect("visit today");
     common::register_photo(&pool, member_id.parse().expect("member uuid")).await;
     let done_body = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
-    let (st, done) = call(&app, "POST", &format!("/v1/member/jobs/{job_a}/complete"), Some(m.as_str()), Some(done_body)).await;
+    let (st, done) = call(&app, "POST", &format!("/v1/member/jobs/{job_a}/complete"), Some(m.as_str()), Some(done_body.clone())).await;
     assert_eq!(st, StatusCode::OK, "{done}");
     assert!(done.get("net").is_none(), "no payout in the member response");
     let (status,): (i16,) = sqlx::query_as("SELECT status FROM bookings WHERE id = $1")
@@ -154,6 +154,9 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
         .await
         .expect("status");
     assert_eq!(status, 3, "job completed");
+    // A retried completion (the first response was lost) gets the same answer and writes nothing new.
+    let (st, again) = call(&app, "POST", &format!("/v1/member/jobs/{job_a}/complete"), Some(m.as_str()), Some(done_body)).await;
+    assert_eq!(st, StatusCode::OK, "{again}");
 
     // Owner-only routes stay closed to members.
     let (st, _) = call(&app, "GET", "/v1/partner/me", Some(m.as_str()), None).await;

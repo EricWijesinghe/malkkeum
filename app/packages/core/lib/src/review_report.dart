@@ -21,15 +21,21 @@ String reviewReportLabel(T t, String reason) => switch (reason) {
 
 /// Store rule (Google Play UGC, App Store 1.2): every public review can be reported in the app.
 /// Returns true when the report was accepted.
-Future<bool> showReviewReport(BuildContext context, {required String bookingId}) async {
-  final api = context.api;
+Future<bool> showReviewReport(
+  BuildContext context, {
+  required ApiClient api,
+  required String bookingId,
+}) async {
   final sent = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
     builder: (_) => ReviewReportSheet(
       bookingId: bookingId,
-      submit: (reason, note) => api.post('/reviews/$bookingId/report', {'reason': reason, 'note': note}),
+      submit: (reason, note) => api.post('/reviews/$bookingId/report', {
+        'reason': reason,
+        'note': note,
+      }),
     ),
   );
   return sent ?? false;
@@ -37,17 +43,28 @@ Future<bool> showReviewReport(BuildContext context, {required String bookingId})
 
 /// Report action for one review card. Shows a thank-you snackbar after a successful report.
 class ReviewReportButton extends StatelessWidget {
-  const ReviewReportButton({super.key, required this.bookingId});
+  const ReviewReportButton({
+    super.key,
+    required this.api,
+    required this.bookingId,
+  });
 
+  final ApiClient api;
   final String bookingId;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () async {
-        final sent = await showReviewReport(context, bookingId: bookingId);
+        final sent = await showReviewReport(
+          context,
+          api: api,
+          bookingId: bookingId,
+        );
         if (sent && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.t.reportThanks)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.t.reportThanks)));
         }
       },
       child: Text(context.t.reportAction),
@@ -57,7 +74,11 @@ class ReviewReportButton extends StatelessWidget {
 
 /// The report form. `submit` sends the report; an [ApiException] shows an error and keeps the form.
 class ReviewReportSheet extends StatefulWidget {
-  const ReviewReportSheet({super.key, required this.bookingId, required this.submit});
+  const ReviewReportSheet({
+    super.key,
+    required this.bookingId,
+    required this.submit,
+  });
 
   final String bookingId;
   final Future<dynamic> Function(String reason, String note) submit;
@@ -93,7 +114,9 @@ class _ReviewReportSheetState extends State<ReviewReportSheet> {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = e.code == 'already_reported' ? t.reportAlready : t.reportFailed;
+        _error = e.code == 'already_reported'
+            ? t.reportAlready
+            : t.reportFailed;
       });
     }
   }
@@ -103,7 +126,12 @@ class _ReviewReportSheetState extends State<ReviewReportSheet> {
     final t = context.t;
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     return Padding(
-      padding: EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.gutter + bottom),
+      padding: EdgeInsets.fromLTRB(
+        Space.gutter,
+        0,
+        Space.gutter,
+        Space.gutter + bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +146,9 @@ class _ReviewReportSheetState extends State<ReviewReportSheet> {
                 ChoiceChip(
                   label: Text(reviewReportLabel(t, reason)),
                   selected: _reason == reason,
-                  onSelected: _busy ? null : (_) => setState(() => _reason = reason),
+                  onSelected: _busy
+                      ? null
+                      : (_) => setState(() => _reason = reason),
                 ),
             ],
           ),

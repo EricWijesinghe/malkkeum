@@ -4,6 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'attribution.dart';
+
+/// Staff second-factor step after the password. [enrol] means TOTP must be set up first (admins).
+class StaffMfaChallenge {
+  const StaffMfaChallenge({required this.enrol, required this.token});
+  final bool enrol;
+  final String token;
+}
 
 /// Who is signed in. Tokens live in the OS keystore (Keychain / Keystore / DPAPI).
 /// Web: flutter_secure_storage has no keystore, so the refresh token sits in localStorage, encrypted
@@ -11,7 +19,8 @@ import 'api.dart';
 /// open: the tradeoff is accepted for a no-install web app, guarded by the CSP in deploy/Caddyfile.
 /// An httpOnly refresh cookie would be stronger but needs server work. logout() deletes it on web too.
 class Session extends ChangeNotifier {
-  Session({FlutterSecureStorage? storage, required this.namespace}) : _storage = storage ?? const FlutterSecureStorage();
+  Session({FlutterSecureStorage? storage, required this.namespace})
+    : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
 
@@ -69,20 +78,80 @@ class Session extends ChangeNotifier {
   /// Returns the dev code when the server runs in DEV_MODE (local testing only).
   /// [locale] is the app language, so the code SMS arrives in it.
   Future<String?> requestOtp(String phone, {String? locale}) async {
-    final r = await api.post('/auth/otp', {'phone': phone, 'locale': ?locale}) as Map<String, dynamic>;
+    final r =
+        await api.post('/auth/otp', {'phone': phone, 'locale': ?locale})
+            as Map<String, dynamic>;
     return r['dev_code'] as String?;
   }
 
   /// Returns true for a brand-new account (show the profile step).
-  Future<bool> verifyOtp(String phone, String code, {required String audience}) async {
-    final r = await api.post('/auth/verify', {'phone': phone, 'code': code, 'audience': audience}) as Map<String, dynamic>;
+  Future<bool> verifyOtp(
+    String phone,
+    String code, {
+    required String audience,
+  }) async {
+    final r =
+        await api.post('/auth/verify', {
+              'phone': phone,
+              'code': code,
+              'audience': audience,
+              'attribution': Attribution.get(),
+            })
+            as Map<String, dynamic>;
     await save(r);
     return r['is_new'] as bool? ?? false;
   }
 
-  Future<void> staffLogin(String email, String password) async {
-    await save(await api.post('/auth/staff/login', {'email': email, 'password': password}) as Map<String, dynamic>);
+  /// Password step. Returns the second factor the server wants (null once signed in).
+  Future<StaffMfaChallenge?> staffLogin(String email, String password) async {
+    final r =
+        await api.post('/auth/staff/login', {
+              'email': email,
+              'password': password,
+            })
+            as Map<String, dynamic>;
+    if (r['mfa_required'] == true || r['mfa_enrol_required'] == true) {
+      return StaffMfaChallenge(
+        enrol: r['mfa_enrol_required'] == true,
+        token: r['mfa_token'] as String,
+      );
+    }
+    await save(r);
+    return null;
   }
+
+  /// Second factor at sign-in: a TOTP [code] or one unused [recoveryCode]. Signs in on success.
+  Future<void> staffMfaVerify(
+    String token, {
+    String? code,
+    String? recoveryCode,
+  }) async {
+    await save(
+      await api.post('/auth/staff/mfa/verify', {
+            'mfa_token': token,
+            'code': ?code,
+            'recovery_code': ?recoveryCode,
+          })
+          as Map<String, dynamic>,
+    );
+  }
+
+  /// Enrolment step 1: the TOTP secret and its otpauth URI (for a QR code or manual entry).
+  Future<Map<String, dynamic>> staffMfaEnrolStart(String token) async =>
+      await api.post('/auth/staff/mfa/enrol', {'mfa_token': token})
+          as Map<String, dynamic>;
+
+  /// Enrolment step 2: confirms the first code. Returns the tokens plus `recovery_codes` (shown once).
+  /// Does not sign in: the caller saves the tokens after the owner has kept the codes.
+  Future<Map<String, dynamic>> staffMfaEnrolConfirm(
+    String token,
+    String code,
+  ) async =>
+      await api.post('/auth/staff/mfa/enrol/confirm', {
+            'mfa_token': token,
+            'code': code,
+          })
+          as Map<String, dynamic>;
 
   /// Runs before local sign-out, while the access token still works (push token removal).
   Future<void> Function()? beforeLogout;
@@ -107,7 +176,8 @@ class Session extends ChangeNotifier {
 
 /// App language, persisted; null = follow the device.
 class LocaleController extends ChangeNotifier {
-  LocaleController({FlutterSecureStorage? storage}) : _storage = storage ?? const FlutterSecureStorage();
+  LocaleController({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
   final FlutterSecureStorage _storage;
   Locale? locale;
 
@@ -142,7 +212,9 @@ class LocaleController extends ChangeNotifier {
       // First launch: save the device language right away, even if the user never registers.
       firstRun = true;
       locale = Locale(effectiveCode);
-      await _storage.write(key: 'app.locale', value: locale!.languageCode).catchError((_) {});
+      await _storage
+          .write(key: 'app.locale', value: locale!.languageCode)
+          .catchError((_) {});
     } else {
       locale = code == _system ? null : Locale(code);
     }
@@ -151,7 +223,10 @@ class LocaleController extends ChangeNotifier {
 
   Future<void> set(Locale? value) async {
     locale = value;
-    await _storage.write(key: 'app.locale', value: value?.languageCode ?? _system);
+    await _storage.write(
+      key: 'app.locale',
+      value: value?.languageCode ?? _system,
+    );
     notifyListeners();
   }
 
@@ -162,6 +237,8 @@ class LocaleController extends ChangeNotifier {
 
   String get effectiveCode {
     final l = locale ?? PlatformDispatcher.instance.locale;
-    return supported.any((s) => s.languageCode == l.languageCode) ? l.languageCode : 'ko';
+    return supported.any((s) => s.languageCode == l.languageCode)
+        ? l.languageCode
+        : 'ko';
   }
 }

@@ -17,7 +17,6 @@
     // Theme before first paint: no flash of the wrong theme.
     try { const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
-  <script type="module" src="assets/hero3d.js"></script>
   <script defer src="assets/site.js"></script>
 </head>
 <body>
@@ -163,5 +162,9 @@
       </div>
     </div>
   </footer>
+  <nav class="chat-fab" aria-label="문의하기">
+    <a class="fab" data-link="kakao_channel_url" hidden target="_blank" rel="noopener">카카오 채널 문의</a>
+    <a class="fab" data-link="naver_talk_url" hidden target="_blank" rel="noopener">네이버 톡톡 문의</a>
+  </nav>
 </body>
 </html>

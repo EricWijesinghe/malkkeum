@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_flow.dart';
@@ -23,24 +24,36 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   Service get s => widget.service;
 
-  void _continue() {
+  /// The estimate is free to browse; booking asks for sign-in first and keeps the draft in place.
+  Future<void> _continue() async {
     if (s.isQuote) {
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => QuoteFlowScreen(service: s)));
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => QuoteFlowScreen(service: s)),
+      );
       return;
     }
+    if (!await requireSignIn(context) || !mounted) return;
     final d = _draft.draft;
     final addresses = context.appRead.addresses;
     final only = addresses.length == 1 ? addresses.first : null;
-    final fits = only != null && (s.maxPyeong == null || only.sizePyeong <= s.maxPyeong!);
+    final fits =
+        only != null &&
+        (s.maxPyeong == null || only.sizePyeong <= s.maxPyeong!);
     // One saved address that fits: skip the address step (the schedule screen shows it with "change").
     if (fits) {
       d
         ..address = only
         ..totalSteps = 3;
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ScheduleScreen(draft: d, step: 2, total: 3)));
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ScheduleScreen(draft: d, step: 2, total: 3),
+        ),
+      );
       return;
     }
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => AddressPickScreen(draft: d)));
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => AddressPickScreen(draft: d)),
+    );
   }
 
   @override

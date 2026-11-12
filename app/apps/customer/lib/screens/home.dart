@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
+import 'feed.dart';
 import 'growth.dart';
 import 'more.dart';
 import 'notifications.dart';
@@ -21,18 +22,25 @@ class _HomeTabState extends State<HomeTab> {
   List<Booking> _bookings = const [];
   List<ContentItem> _banners = const [];
   List<ContentItem> _notices = const [];
+  List<Json> _feed = const [];
   int _unread = 0;
   int _seenVersion = -1;
 
+  /// Guests see the public feed and content; account data loads only when signed in.
   Future<void> _load() async {
     final api = context.api;
-    unreadAlerts(api).then((n) {
-      if (mounted) setState(() => _unread = n);
-    }).ignore();
+    final signedIn = Deps.read(context).session.signedIn;
+    if (signedIn) {
+      unreadAlerts(api).then((n) {
+        if (mounted) setState(() => _unread = n);
+      }).ignore();
+    }
+    final district = context.app.addresses.firstOrNull?.districtCode;
     final results = await Future.wait([
-      api.get('/bookings'),
+      signedIn ? api.get('/bookings') : Future.value(const <Json>[]),
       api.get('/content', query: {'kind': 'banner'}),
       api.get('/content', query: {'kind': 'notice'}),
+      api.get(signedIn ? '/me/feed' : '/feed', query: {'district': district}),
     ]);
     if (!mounted) return;
     setState(() {
@@ -46,6 +54,7 @@ class _HomeTabState extends State<HomeTab> {
           .map((e) => ContentItem(e as Json))
           .take(3)
           .toList();
+      _feed = ((results[3] as Json)['cards'] as List).cast<Json>();
     });
   }
 
@@ -75,6 +84,7 @@ class _HomeTabState extends State<HomeTab> {
     final next = _next;
     final last = _lastDone;
     final usableCoupons = app.coupons.where((c) => c.usable).length;
+    final signedIn = Deps.of(context).session.signedIn;
     return RefreshIndicator(
       onRefresh: () async {
         await Future.wait([_load(), app.loadCoupons(), app.loadAddresses()]);
@@ -119,7 +129,7 @@ class _HomeTabState extends State<HomeTab> {
                   index: 0,
                   child: Text(
                     app.name.isEmpty
-                        ? t.homeGreetingAnon
+                        ? timeGreeting(t, DateTime.now())
                         : t.homeGreeting(app.name),
                     style: context.text.headlineSmall,
                   ),
@@ -129,7 +139,9 @@ class _HomeTabState extends State<HomeTab> {
                   StaggerIn(index: 1, child: _UpcomingCard(booking: next)),
                   const SizedBox(height: Space.md),
                 ],
-                if (app.addresses.isEmpty && app.services.isNotEmpty) ...[
+                FeedSection(cards: _feed),
+                const SizedBox(height: Space.lg),
+                if (signedIn && app.addresses.isEmpty && app.services.isNotEmpty) ...[
                   _AddAddressCard(),
                   const SizedBox(height: Space.md),
                 ],
@@ -152,8 +164,10 @@ class _HomeTabState extends State<HomeTab> {
                 ],
                 const SizedBox(height: Space.lg),
                 const SocialProofCard(),
-                const SizedBox(height: Space.md),
-                const ReferralCard(),
+                if (signedIn) ...[
+                  const SizedBox(height: Space.md),
+                  const ReferralCard(),
+                ],
                 const SizedBox(height: Space.lg),
                 const StaggerIn(index: 4, child: _TrustRow()),
                 if (_notices.isNotEmpty) ...[
@@ -182,6 +196,14 @@ class _HomeTabState extends State<HomeTab> {
       ),
     );
   }
+}
+
+/// Greeting by local time of day; the name replaces it once the account has one.
+String timeGreeting(T t, DateTime now) {
+  final h = now.hour;
+  if (h < 12) return t.greetMorning;
+  if (h < 18) return t.greetAfternoon;
+  return t.greetEvening;
 }
 
 class _AddressChip extends StatelessWidget {
@@ -292,34 +314,39 @@ class _UpcomingCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: Space.xs),
-                            Flexible(child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.18),
-                                borderRadius: BorderRadius.circular(Radii.pill),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const _LiveDot(),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(
-                                      t.status(b.status),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: context.text.labelMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 12,
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(
+                                    Radii.pill,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const _LiveDot(),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        t.status(b.status),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: context.text.labelMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            )),
+                            ),
                           ],
                         ),
                         const SizedBox(height: Space.sm),
@@ -407,43 +434,48 @@ class _ServiceGrid extends StatelessWidget {
                         ),
                         // Large system fonts scale the tile down instead of overflowing it. The fixed
                         // width keeps every tile the same size; only height can trigger the scaling.
-                        child: LayoutBuilder(builder: (context, box) => FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: SizedBox(width: box.maxWidth, child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Hero(
-                              tag: 'svc-${s.code}',
-                              child: ServiceGlyph(s.code, size: 58),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              t.serviceShort(s.code),
-                              style: context.text.labelMedium,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            // Price is visible on the tile itself, in the service hue.
-                            // Scale the tag down rather than let neighbours collide on narrow phones.
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 2,
+                        child: LayoutBuilder(
+                          builder: (context, box) => FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: SizedBox(
+                              width: box.maxWidth,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Hero(
+                                    tag: 'svc-${s.code}',
+                                    child: ServiceGlyph(s.code, size: 58),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    t.serviceShort(s.code),
+                                    style: context.text.labelMedium,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  // Price is visible on the tile itself, in the service hue.
+                                  // Scale the tag down rather than let neighbours collide on narrow phones.
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 2,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Tag(
+                                        label: s.isQuote
+                                            ? t.quoteBadge
+                                            : t.fromPrice(
+                                                context.won(s.fromPrice ?? 0),
+                                              ),
+                                        hue: ServiceHues.of(s.code),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Tag(
-                                  label: s.isQuote
-                                      ? t.quoteBadge
-                                      : t.fromPrice(
-                                          context.won(s.fromPrice ?? 0),
-                                        ),
-                                  hue: ServiceHues.of(s.code),
-                                ),
-                              ),
                             ),
-                          ],
-                          )),
-                        )),
+                          ),
+                        ),
                       ),
                     ),
                   ),

@@ -400,6 +400,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
                 webhook_secret,
                 store_id: Some(required(v, "store_id")?),
                 channel_keys: string_map(v, "channel_keys")?,
+                cash_receipts: base.portone.cash_receipts,
             };
         }
         Section::Solapi => {
@@ -407,12 +408,17 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
             if !(8..=12).contains(&sender.len()) {
                 return Err(Invalid("invalid_sender"));
             }
+            let templates = string_map(v, "templates")?;
+            // A misspelled key would silently fall back to SMS for that alert, so refuse it here.
+            if templates.keys().any(|k| !crate::providers::sms::TEMPLATE_KEYS.contains(&k.as_str())) {
+                return Err(Invalid("unknown_template_key"));
+            }
             out.solapi = Some(SolapiConfig {
                 api_key: required(v, "api_key")?,
                 api_secret: required(v, "api_secret")?,
                 sender,
                 pf_id: text(v, "pf_id"),
-                templates: string_map(v, "templates")?,
+                templates,
             });
         }
         Section::Push => out.fcm = Some(service_account(v)?),
@@ -584,6 +590,17 @@ mod tests {
         assert_eq!(
             apply(&Integrations::default(), Section::Solapi, &obj(short)).unwrap_err(),
             Invalid("invalid_sender")
+        );
+    }
+
+    #[test]
+    fn solapi_template_keys_must_be_known_alert_keys() {
+        let ok = json!({"api_key": "k", "api_secret": "s", "sender": "0212345678", "templates": {"booking.arrival": "T1"}});
+        assert!(apply(&Integrations::default(), Section::Solapi, &obj(ok)).is_ok());
+        let typo = json!({"api_key": "k", "api_secret": "s", "sender": "0212345678", "templates": {"booking.arival": "T1"}});
+        assert_eq!(
+            apply(&Integrations::default(), Section::Solapi, &obj(typo)).unwrap_err(),
+            Invalid("unknown_template_key")
         );
     }
 

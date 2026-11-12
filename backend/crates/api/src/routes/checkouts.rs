@@ -23,8 +23,10 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
+    response::Response,
     routing::{get, post},
 };
+use crate::contract::{decode_cursor, cursor_part, encode_cursor, page_limit, paged, ts_key};
 use chrono::{DateTime, Duration, Utc};
 use domain::{
     catalog::Service,
@@ -36,13 +38,12 @@ use sqlx::{PgPool, Postgres, Transaction};
 use uuid::Uuid;
 
 const CHECKOUT_TTL_MIN: i64 = 30;
-const LIST_LIMIT: i64 = 50;
 const CHECKOUT_COLS: &str = "id, user_id, kind, booking_id, draft, amount, status, provider_payment_id, result_booking_id, expires_at";
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/checkouts", get(list).post(create))
-        .route("/checkouts/{id}/confirm", post(confirm))
+        .route("/checkouts", crate::idempotency::replayable(get(list).post(create)))
+        .route("/checkouts/{id}/confirm", crate::idempotency::replayable(post(confirm)))
 }
 
 pub fn admin_routes() -> Router<AppState> {
@@ -72,6 +73,9 @@ struct Draft {
     district_code: String,
     snapshot: Value,
     notes: Value,
+    /// Stored so the checkout books exactly the household the customer saw.
+    #[serde(default)]
+    household: Value,
 }
 
 struct Intent {
@@ -89,6 +93,8 @@ struct CheckoutIntent {
     method: String,
     store_id: Option<String>,
     channel_key: Option<String>,
+    /// 현금영수증 request is offered only when the server has it switched on.
+    cash_receipts: bool,
 }
 
 #[derive(sqlx::FromRow)]
@@ -185,6 +191,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
         method: method.to_string(),
         store_id: portone.store_id.clone(),
         channel_key: portone.channel_keys.get(method).cloned(),
+        cash_receipts: portone.cash_receipts,
     }))
 }
 
@@ -207,6 +214,7 @@ async fn booking_intent(s: &AppState, user: Uuid, body: &BookingBody) -> ApiResu
         district_code: prep.district_code,
         snapshot: prep.snapshot,
         notes: prep.notes,
+        household: prep.household,
     };
     Ok(Intent {
         kind: "booking",
@@ -355,6 +363,7 @@ async fn plan(s: &AppState, ck: &CheckoutRow) -> ApiResult<Plan> {
                 district_code: draft.district_code,
                 snapshot: draft.snapshot,
                 notes: draft.notes,
+                household: draft.household,
             };
             Ok(Plan::Booking { prep, body: draft.body })
         }
@@ -405,7 +414,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
     }
     let (booking_id, db_kind, number) = match plan {
         Plan::Booking { prep, body } => {
-            let (id, number) = book(&mut tx, ck.user_id, &prep, &body, ck.amount).await?;
+            let (id, number) = book(&mut tx, &s.config.data_key, ck.user_id, &prep, &body, ck.amount).await?;
             (id, "full", Some(number))
         }
         Plan::Deposit { booking, amount } => {
@@ -425,6 +434,20 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    best_effort(
+        "payment receipt",
+        notify(
+            s,
+            Recipient::User(ck.user_id),
+            "payment.receipt",
+            "결제가 완료됐어요",
+            "결제 내역은 예약 상세에서 확인할 수 있어요",
+            json!({ "checkout_id": ck.id, "booking_id": booking_id }),
+        ),
+    )
+    .await;
+    super::cash_receipts::on_settled(s, ck.id, payment_id).await;
+    super::tax_invoices::on_settled(s, ck.id, payment_id).await;
     match number {
         Some(n) => after_booking_created(s, booking_id, &n).await,
         None if db_kind == "deposit" => {
@@ -437,7 +460,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
 }
 
 /// Re-runs the slot, date and coupon rules inside the transaction and inserts the booking.
-async fn book(tx: &mut Transaction<'_, Postgres>, user: Uuid, prep: &Prepared, body: &BookingBody, amount: i64) -> ApiResult<(Uuid, String)> {
+async fn book(tx: &mut Transaction<'_, Postgres>, key: &[u8; 32], user: Uuid, prep: &Prepared, body: &BookingBody, amount: i64) -> ApiResult<(Uuid, String)> {
     check_date(today_kst(), body.visit_date)?;
     check_slot(prep.service.is_quote(), body.start_hour)?;
     lock_slot(tx, body.visit_date, body.start_hour).await?;
@@ -446,11 +469,11 @@ async fn book(tx: &mut Transaction<'_, Postgres>, user: Uuid, prep: &Prepared, b
         return Err(ApiError::Conflict("price_changed"));
     }
     let id = Uuid::now_v7();
-    let number = insert_paid(tx, id, user, prep, body, &price).await?;
+    let number = insert_paid(tx, key, id, user, prep, body, &price).await?;
     Ok((id, number))
 }
 
-async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
+pub(super) async fn load_owned(db: &PgPool, user: Uuid, id: Uuid) -> ApiResult<CheckoutRow> {
     sqlx::query_as(&format!("SELECT {CHECKOUT_COLS} FROM checkouts WHERE id = $1 AND user_id = $2"))
         .bind(id)
         .bind(user)
@@ -550,6 +573,8 @@ async fn reconcile_one(s: &AppState, ck: &CheckoutRow) {
 #[derive(Deserialize)]
 struct ListQuery {
     status: Option<String>,
+    limit: Option<i64>,
+    cursor: Option<String>,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
@@ -566,25 +591,47 @@ struct CheckoutView {
     created_at: DateTime<Utc>,
 }
 
-async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<ListQuery>) -> ApiResult<Json<Vec<CheckoutView>>> {
+/// Newest first; keyset cursor over (created_at, id). `status` must be a known checkout status.
+async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<ListQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let status = checked_status(q.status.as_deref())?;
+    let (ts, id) = keyset(q.cursor.as_deref())?;
     sqlx::query("UPDATE checkouts SET status = 'expired' WHERE user_id = $1 AND status = 'pending' AND expires_at < now()")
         .bind(a.id)
         .execute(&s.db)
         .await?;
-    let rows = sqlx::query_as(
+    let rows: Vec<CheckoutView> = sqlx::query_as(
         "SELECT id, kind, booking_id, method, amount, status, virtual_account, result_booking_id, expires_at, created_at
-         FROM checkouts WHERE user_id = $1 AND ($2::text IS NULL OR status = $2) ORDER BY created_at DESC LIMIT $3",
+         FROM checkouts WHERE user_id = $1 AND ($2::text IS NULL OR status = $2)
+           AND ($3::timestamptz IS NULL OR (created_at, id) < ($3, $4)) ORDER BY created_at DESC, id DESC LIMIT $5",
     )
     .bind(a.id)
-    .bind(q.status)
-    .bind(LIST_LIMIT)
+    .bind(status)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
-const ADMIN_STATUSES: [&str; 5] = ["pending", "awaiting_deposit", "paid", "refunded", "expired"];
-const ADMIN_LIST_LIMIT: i64 = 200;
+/// Every status a checkout can hold; list filters outside this set are a client error.
+const STATUSES: [&str; 7] = ["pending", "awaiting_deposit", "paid", "refunded", "expired", "failed", "cancelled"];
+
+fn checked_status(status: Option<&str>) -> ApiResult<Option<String>> {
+    match status {
+        Some(s) if !STATUSES.contains(&s) => Err(ApiError::BadRequest("invalid_status")),
+        other => Ok(other.map(str::to_owned)),
+    }
+}
+
+fn keyset(cursor: Option<&str>) -> ApiResult<(Option<DateTime<Utc>>, Option<Uuid>)> {
+    Ok(match decode_cursor(cursor, 2)? {
+        Some(p) => (Some(cursor_part(&p[0])?), Some(cursor_part(&p[1])?)),
+        None => (None, None),
+    })
+}
+
 
 #[derive(Serialize, sqlx::FromRow)]
 struct AdminCheckoutView {
@@ -600,21 +647,22 @@ struct AdminCheckoutView {
 }
 
 /// Console view of checkouts, newest first. Staff only.
-async fn admin_list(State(s): State<AppState>, _staff: Staff, Query(q): Query<ListQuery>) -> ApiResult<Json<Vec<AdminCheckoutView>>> {
-    if let Some(status) = &q.status
-        && !ADMIN_STATUSES.contains(&status.as_str())
-    {
-        return Err(ApiError::BadRequest("invalid_status"));
-    }
-    let rows = sqlx::query_as(
+async fn admin_list(State(s): State<AppState>, _staff: Staff, Query(q): Query<ListQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let status = checked_status(q.status.as_deref())?;
+    let (ts, id) = keyset(q.cursor.as_deref())?;
+    let rows: Vec<AdminCheckoutView> = sqlx::query_as(
         "SELECT id, kind, method, amount, status, created_at, booking_id, result_booking_id, user_id
-         FROM checkouts WHERE ($1::text IS NULL OR status = $1) ORDER BY created_at DESC LIMIT $2",
+         FROM checkouts WHERE ($1::text IS NULL OR status = $1)
+           AND ($2::timestamptz IS NULL OR (created_at, id) < ($2, $3)) ORDER BY created_at DESC, id DESC LIMIT $4",
     )
-    .bind(q.status)
-    .bind(ADMIN_LIST_LIMIT)
+    .bind(status)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.id.to_string()])))
 }
 
 #[cfg(test)]

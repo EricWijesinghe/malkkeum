@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -483,6 +482,27 @@ class TJa extends T {
   String get cFormula => '見積算定式';
 
   @override
+  String get cTabCancelPolicy => 'キャンセル規定';
+
+  @override
+  String get cPolicyDefaultBanner => '初期設定のままです。内容を確認して保存してください。';
+
+  @override
+  String get cPolicyDaysBefore => '訪問の何日前から（日）';
+
+  @override
+  String get cPolicyPercent => '手数料％（空欄はアプリで取消不可）';
+
+  @override
+  String get cPolicyMinFee => '最低手数料（ウォン）';
+
+  @override
+  String get cPolicyReschedule => '日程変更可能（訪問の何日前から）';
+
+  @override
+  String get cPolicyHint => '顧客アプリのキャンセル画面にすぐ反映されます。規約は次回ビルドで更新されます。';
+
+  @override
   String get f_base_studio => '基本：ワンルーム';
 
   @override
@@ -639,6 +659,9 @@ class TJa extends T {
   String get cNewMessage => '新着メッセージ';
 
   @override
+  String get cConfirmAsk => 'よろしいですか？';
+
+  @override
   String get ok => '確認';
 
   @override
@@ -723,7 +746,8 @@ class TJa extends T {
   String get err_payment_method_required => '支払い方法を選んでください';
 
   @override
-  String get err_cancellation_window_closed => '訪問2日前からは相談チーム経由でキャンセルできます';
+  String get err_cancellation_window_closed =>
+      'この時点からはアプリでキャンセルできません。サポートにお問い合わせください';
 
   @override
   String get err_address_required => '訪問先住所を登録してください';
@@ -1263,6 +1287,11 @@ class TJa extends T {
   String get photosSoon => '完了後にビフォーアフター写真が表示されます';
 
   @override
+  String photoThumb(String n) {
+    return '写真 $n';
+  }
+
+  @override
   String get before => 'ビフォー';
 
   @override
@@ -1294,6 +1323,16 @@ class TJa extends T {
 
   @override
   String get cancelKeep => 'キャンセルしない';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return '今キャンセルすると手数料$feeがかかり、$refundが返金されます。';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '手数料$feeに同意してキャンセル';
+  }
 
   @override
   String get cancelled => 'キャンセルしました';
@@ -1705,6 +1744,49 @@ class TJa extends T {
   String get summaryDate => '訪問日程';
 
   @override
+  String get cpTitle => 'キャンセル・変更の規定';
+
+  @override
+  String cpWhen(String days) {
+    return '訪問の$days日以上前';
+  }
+
+  @override
+  String get cpWhenSameDay => '訪問当日';
+
+  @override
+  String get cpFree => '全額返金';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '手数料$percent%（$fee）、返金$refund';
+  }
+
+  @override
+  String get cpClosed => 'アプリでは取消不可（相談チーム確認）';
+
+  @override
+  String get hhTitle => '世帯情報';
+
+  @override
+  String get hhAddPet => 'ペットを追加';
+
+  @override
+  String get hhPetCount => '頭数';
+
+  @override
+  String get hhFloorLabel => '階数（地下はマイナス）';
+
+  @override
+  String get hhElevator => 'エレベーターあり';
+
+  @override
+  String get hhNotes => 'メモ';
+
+  @override
+  String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override
@@ -1863,6 +1945,89 @@ class TJa extends T {
 
   @override
   String get err_invalid_capacity => '定員は正しい数字で入力してください。';
+
+  @override
+  String get err_seller_declined => 'Tossが販売者登録を承認しませんでした。事業者情報を確認してください。';
+
+  @override
+  String get err_payout_account_unverified =>
+      'この受取人には確認済みの口座がありません。先に口座を確認してください。';
+
+  @override
+  String get guestSheetTitle => '続けるにはログインしてください';
+
+  @override
+  String get guestSheetBody => '入力内容はそのまま残ります。認証後すぐに続きから進めます。';
+
+  @override
+  String get greetMorning => 'おはようございます';
+
+  @override
+  String get greetAfternoon => 'こんにちは';
+
+  @override
+  String get greetEvening => 'こんばんは';
+
+  @override
+  String get feedHeading => 'あなたへのおすすめ';
+
+  @override
+  String get feedTitleDue => '次の清掃の時期です';
+
+  @override
+  String get feedTitleRebook => '高評価のパートナーをもう一度';
+
+  @override
+  String get feedTitleDraft => '途中の見積もりを続けましょう';
+
+  @override
+  String get feedTitleSeasonal => '今の季節におすすめの清掃';
+
+  @override
+  String get feedTitleSize => '保存した広さで見積もり';
+
+  @override
+  String get feedTitleSubscription => '定期購読でお得に';
+
+  @override
+  String get feedTitleDistrict => '近所でもご予約が続いています';
+
+  @override
+  String feedWhyCadence(String days) {
+    return '前回の清掃から$days日が経過しました';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return '$days日前に5つ星をつけたパートナーです';
+  }
+
+  @override
+  String get feedWhyDraft => 'この端末で見積もりが途中のままです';
+
+  @override
+  String get feedWhySummer => '夏前にエアコン清掃がおすすめの時期です';
+
+  @override
+  String get feedWhyMoving => '入居・引っ越しが集中する時期です';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return '連休前の大掃除まであと$days日';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return '保存済みの$pyeong坪で、すぐに見積もれます';
+  }
+
+  @override
+  String get feedWhyRepeat => 'よくご予約いただくなら定期購読がお得です';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return '今週$districtで$count件のお宅がご予約';
+  }
 
   @override
   String get fFinance => '財務';
@@ -2180,6 +2345,127 @@ class TJa extends T {
   String get uMaintenanceBody => 'サービス改善のためメンテナンスを行っています。しばらくしてから再度お試しください。';
 
   @override
+  String get cmTab => 'キャンペーン';
+
+  @override
+  String get cmNew => '新規キャンペーン';
+
+  @override
+  String get cmAudience => '対象のお客様';
+
+  @override
+  String get cmSegAll => '全顧客';
+
+  @override
+  String get cmSegNever => '予約履歴なし';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '最終予約から$days日以上';
+  }
+
+  @override
+  String get cmDays => '日数';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total人中、マーケティング同意 $consented人';
+  }
+
+  @override
+  String get cmChannel => '配信チャネル';
+
+  @override
+  String get cmPush => 'アプリ通知';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'タイトル';
+
+  @override
+  String get cmBody => '本文';
+
+  @override
+  String get cmOptout => '配信停止番号 (080)';
+
+  @override
+  String get cmPreview => 'プレビュー';
+
+  @override
+  String get cmSchedule => '配信日時';
+
+  @override
+  String get cmSendNow => '今すぐ配信';
+
+  @override
+  String get cmTestSend => '自分の番号にテスト送信';
+
+  @override
+  String get cmCreate => 'キャンペーンを保存';
+
+  @override
+  String get cmNeedOptout => 'SMSには080の配信停止番号が必要です';
+
+  @override
+  String get cmLog => '配信履歴';
+
+  @override
+  String cmStatSent(String count) {
+    return '送信 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '同意なし $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '失敗 $count';
+  }
+
+  @override
+  String get cmSaved => 'キャンペーンを保存しました';
+
+  @override
+  String anFunnel(String days) {
+    return '登録後ファネル（直近$days日）';
+  }
+
+  @override
+  String get anInstalls => 'アプリ起動（同意済み）';
+
+  @override
+  String get anSignedUp => '登録';
+
+  @override
+  String get anQuoted => '見積依頼';
+
+  @override
+  String get anBooked => '予約';
+
+  @override
+  String get anPaid => '支払い';
+
+  @override
+  String get anRepeat => 'リピート（2回以上）';
+
+  @override
+  String get anCohorts => '週次コホート（登録週別の予約率）';
+
+  @override
+  String anCohortSize(String count) {
+    return '登録 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n週目に予約';
+  }
+
+  @override
   String get cOps => 'システム状態';
 
   @override
@@ -2336,6 +2622,9 @@ class TJa extends T {
 
   @override
   String get oRuleDisk => 'ディスク不足';
+
+  @override
+  String get oRuleAuth => '不審なログイン活動';
 
   @override
   String get oQuietHours => 'おやすみ時間';
@@ -2580,6 +2869,47 @@ class TJa extends T {
   String get pCustomerRequests => 'お客様のご要望';
 
   @override
+  String get pHousehold => '世帯情報';
+
+  @override
+  String get pPets => 'ペット';
+
+  @override
+  String get pPetDog => '犬';
+
+  @override
+  String get pPetCat => '猫';
+
+  @override
+  String get pPetBird => '鳥';
+
+  @override
+  String get pPetFish => '魚';
+
+  @override
+  String get pPetOther => 'その他';
+
+  @override
+  String get pAllergies => 'アレルギー・敏感な点';
+
+  @override
+  String get pPreferredProducts => '希望の製品';
+
+  @override
+  String get pParking => '駐車';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor階';
+  }
+
+  @override
+  String get pElevatorYes => 'エレベーターあり';
+
+  @override
+  String get pElevatorNo => 'エレベーターなし';
+
+  @override
   String get pTeamMemo => 'チームメモ（顧客には非表示）';
 
   @override
@@ -2773,6 +3103,26 @@ class TJa extends T {
   String get pSpace => '空間情報';
 
   @override
+  String get pNavigate => '道案内';
+
+  @override
+  String get pNavHint => '訪問先の住所を地図アプリで開きます。アプリがなければWeb地図を開きます。';
+
+  @override
+  String get pOfflineSaved => '電波がありません。保存して、つながったら自動で送信します。';
+
+  @override
+  String get pPhotoRetry => '再アップロード';
+
+  @override
+  String get pPhotoWaiting => 'アップロードできなかった写真は、つながったら自動で送信されます。';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total枚中$done枚アップロード済み';
+  }
+
+  @override
   String get cIntPayout => 'パートナーへの支払い';
 
   @override
@@ -2851,6 +3201,88 @@ class TJa extends T {
   String get poRevealNote => '口座情報の閲覧は記録されます';
 
   @override
+  String get poSellerAction => '販売者登録';
+
+  @override
+  String get poSellerTitle => 'Toss販売者として登録';
+
+  @override
+  String get poSellerHint => '確認済みの振込口座で登録します。事業者情報のみ入力してください。';
+
+  @override
+  String get poSellerIndividual => '個人';
+
+  @override
+  String get poSellerCompany => '事業者';
+
+  @override
+  String get poSellerName => '名前';
+
+  @override
+  String get poSellerRepresentative => '代表者名';
+
+  @override
+  String get poSellerRegNo => '事業者登録番号（10桁）';
+
+  @override
+  String get poSellerEmail => '精算用メール';
+
+  @override
+  String get poSellerPhone => '電話番号';
+
+  @override
+  String get poSellerSubmit => '登録する';
+
+  @override
+  String poSellerDone(String status) {
+    return '販売者の状態：$status';
+  }
+
+  @override
+  String get oFlags => '機能スイッチ';
+
+  @override
+  String get oFlagBooking => '予約';
+
+  @override
+  String get oFlagChat => 'チャット';
+
+  @override
+  String get oFlagAi => 'AI相談';
+
+  @override
+  String get oFlagPayments => '決済';
+
+  @override
+  String get oMaintenance => 'メンテナンスモード';
+
+  @override
+  String get oMaintenanceHint => 'ONにすると顧客・パートナーアプリにメンテナンス画面を表示します。コンソールは使えます。';
+
+  @override
+  String get oMaintenanceMessage => 'メンテナンス案内文';
+
+  @override
+  String get oClientErrors => 'アプリのエラー報告';
+
+  @override
+  String get oClientErrorsHint =>
+      'Web・Windows・コンソールから報告された最近のエラーです。個人情報は自動的に伏せられます。';
+
+  @override
+  String get oClientErrorsEmpty => '最近のエラーはありません';
+
+  @override
+  String get oHeartbeat => '稼働監視ハートビート';
+
+  @override
+  String get oHeartbeatOn => '接続済み。サーバー稼働中は外部に通知されます。';
+
+  @override
+  String get oHeartbeatOff =>
+      '未設定: install.sh に MALKKEUM_HEARTBEAT_URL を追加してください。';
+
+  @override
   String get pvManage => '同意の管理';
 
   @override
@@ -2892,6 +3324,121 @@ class TJa extends T {
 
   @override
   String get pvExportFailed => 'データを読み込めませんでした。しばらくしてから再度お試しください。';
+
+  @override
+  String get safetyEmergency => '緊急連絡先';
+
+  @override
+  String get emergencyPolice => '112 警察';
+
+  @override
+  String get emergencyFire => '119 消防・救急';
+
+  @override
+  String get emergencyShop => 'カスタマーサポート';
+
+  @override
+  String get caseReportAction => '問題を報告';
+
+  @override
+  String get caseReportTitle => 'どんな問題がありましたか？';
+
+  @override
+  String get caseKindDamage => '破損';
+
+  @override
+  String get caseKindLoss => '紛失';
+
+  @override
+  String get caseKindComplaint => '苦情';
+
+  @override
+  String get caseKindNoShow => '清掃スタッフが来ませんでした';
+
+  @override
+  String get caseKindSafety => '安全上の問題';
+
+  @override
+  String get caseKindPayment => '決済への異議';
+
+  @override
+  String get caseSummaryHint => '詳しく入力してください（300文字以内）';
+
+  @override
+  String get caseSubmit => '送信する';
+
+  @override
+  String get caseSubmitted => '受け付けました。24時間以内に担当者が確認します。';
+
+  @override
+  String get caseFailed => '送信できませんでした。もう一度お試しください。';
+
+  @override
+  String get checkInAction => '到着チェックイン';
+
+  @override
+  String get checkOutAction => '作業終了チェックアウト';
+
+  @override
+  String checkedInAt(String time) {
+    return '到着 $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return '終了 $time';
+  }
+
+  @override
+  String get entryCodeAction => '入館パスワードを表示';
+
+  @override
+  String get entryCodeTitle => '入館パスワード';
+
+  @override
+  String get entryCodeNotToday => '訪問当日のみ表示できます';
+
+  @override
+  String get entryCodeEmpty => '登録された暗証番号はありません';
+
+  @override
+  String get actionFailed => '処理できませんでした。もう一度お試しください。';
+
+  @override
+  String get consoleCasesTitle => '案件キュー';
+
+  @override
+  String get consoleCasesEmpty => '未対応の案件はありません';
+
+  @override
+  String get caseOverdue => '期限切れ';
+
+  @override
+  String get caseStatusOpen => '受付';
+
+  @override
+  String get caseStatusInvestigating => '調査中';
+
+  @override
+  String get caseStatusResolved => '解決';
+
+  @override
+  String get caseStatusRejected => '却下';
+
+  @override
+  String get caseReassign => 'スタッフを再割り当て';
+
+  @override
+  String get caseRefund => '返金';
+
+  @override
+  String get caseHold => '精算を保留';
+
+  @override
+  String get caseNoteHint => '社内メモ';
+
+  @override
+  String get caseSave => '保存';
 
   @override
   String get cSetup => '設定';
@@ -3118,6 +3665,330 @@ class TJa extends T {
 
   @override
   String get cInvalidValue => '入力内容を確認してください';
+
+  @override
+  String get cMfaTitle => '2段階認証';
+
+  @override
+  String get cMfaCode => '認証アプリの6桁のコード';
+
+  @override
+  String get cMfaRecovery => 'リカバリーコード';
+
+  @override
+  String get cMfaUseRecovery => 'リカバリーコードを使う';
+
+  @override
+  String get cMfaUseCode => '認証アプリのコードを使う';
+
+  @override
+  String get cMfaVerify => '確認';
+
+  @override
+  String get cMfaBack => 'ログイン画面に戻る';
+
+  @override
+  String get cMfaEnrolTitle => '2段階認証を設定';
+
+  @override
+  String get cMfaEnrolBody =>
+      '管理者は認証アプリが必要です。Google Authenticator や 1Password などに下のキーを追加し、表示される6桁のコードを入力してください。';
+
+  @override
+  String get cMfaSecret => '設定キー';
+
+  @override
+  String get cMfaLink => '設定リンク（otpauth）';
+
+  @override
+  String get cMfaCopy => 'コピー';
+
+  @override
+  String get cMfaCopied => 'コピーしました';
+
+  @override
+  String get cMfaConfirm => '確認して有効にする';
+
+  @override
+  String get cMfaCodesTitle => 'リカバリーコードを保存してください';
+
+  @override
+  String get cMfaCodesBody => '認証アプリを紛失した場合、各コードで一度だけサインインできます。この画面にのみ表示されます。';
+
+  @override
+  String get cMfaDownload => 'ファイルに保存';
+
+  @override
+  String get cMfaSaveFailed => 'この端末ではファイルを保存できません。コピーして安全に保管してください。';
+
+  @override
+  String get cMfaContinue => 'コンソールへ進む';
+
+  @override
+  String get cMfaInvalid => 'コードが一致しません。スマホの時刻が正しいか確認して、もう一度入力してください。';
+
+  @override
+  String get cMfaExpired => 'サインインの有効期限が切れました。パスワードから入力し直してください。';
+
+  @override
+  String get cMfaLocked => '試行回数が多すぎます。数分後にもう一度お試しください。';
+
+  @override
+  String get cStaffReset => 'パスワードをリセット';
+
+  @override
+  String get cStaffResetConfirm => 'このスタッフのパスワードをリセットしますか？すべての端末からサインアウトされます。';
+
+  @override
+  String get cStaffResetTitle => 'リセットトークン';
+
+  @override
+  String get cStaffResetBody =>
+      'このトークンをスタッフに渡してください。1回限りで、30分間有効です。閉じると二度と表示されません。';
+
+  @override
+  String get subTitle => '定期清掃';
+
+  @override
+  String get subNew => '定期清掃を申し込む';
+
+  @override
+  String get subCadence => '頻度';
+
+  @override
+  String get subWeekly => '毎週';
+
+  @override
+  String get subBiweekly => '2週間ごと';
+
+  @override
+  String get subEvery4Weeks => '4週間ごと';
+
+  @override
+  String get subWeekday => '曜日';
+
+  @override
+  String get subHour => '到着時間';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '定期清掃は毎回$percent%割引になります';
+  }
+
+  @override
+  String get subChargeNote => '訪問の前日に登録済みのカードで決済します';
+
+  @override
+  String get subCreate => '申し込む';
+
+  @override
+  String get subCreated => '定期清掃を申し込みました';
+
+  @override
+  String get subNeedAddress => '先に訪問先住所を登録してください';
+
+  @override
+  String get subListEmpty => '定期清掃はまだありません';
+
+  @override
+  String get subStatusActive => '利用中';
+
+  @override
+  String get subStatusPaused => '一時停止中';
+
+  @override
+  String get subStatusCancelled => '解約済み';
+
+  @override
+  String subNextVisit(String date) {
+    return '次回 $date';
+  }
+
+  @override
+  String get subPause => '一時停止';
+
+  @override
+  String get subResume => '再開';
+
+  @override
+  String get subCancelSub => '定期清掃を解約';
+
+  @override
+  String get subCancelConfirm =>
+      '今後の定期訪問はキャンセルされます。予約済みの訪問は個別にキャンセルしてください（手数料がかかる場合があります）。';
+
+  @override
+  String get subSkip => 'この訪問をスキップ';
+
+  @override
+  String get subMove => '日程を変更';
+
+  @override
+  String get subVisitLocked => '前日からは変更できません';
+
+  @override
+  String get subPausedPayment => '決済が続けて失敗したため停止しました。カードを変更して再開してください。';
+
+  @override
+  String get subStatePlanned => '予定';
+
+  @override
+  String get subStateBooked => '予約済み';
+
+  @override
+  String get subStateSkipped => 'スキップ';
+
+  @override
+  String get subStateMissed => '未実施';
+
+  @override
+  String get pSubsTitle => '定期顧客';
+
+  @override
+  String get pSubsEmpty => '定期顧客はまだいません';
+
+  @override
+  String get cSubsTitle => '定期清掃';
+
+  @override
+  String get cSubsEdit => '顧客に代わって編集';
+
+  @override
+  String get cMrr => '月次経常収益（MRR）';
+
+  @override
+  String get cChurn => '解約率';
+
+  @override
+  String get cActiveSubs => '利用中の定期清掃';
+
+  @override
+  String get cRecognized => '期間内の認識売上';
+
+  @override
+  String get cSubsLoadFailed => '定期清掃を読み込めませんでした';
+
+  @override
+  String get tTaxSection => '税務';
+
+  @override
+  String tVatQuarter(String q) {
+    return '第$q四半期 消費税 CSV';
+  }
+
+  @override
+  String get tVatYear => '年';
+
+  @override
+  String get tExportWithholding => '源泉徴収データ CSV';
+
+  @override
+  String get tExportTaxInvoices => '税額票アップロード CSV';
+
+  @override
+  String get tTaxLayoutNote => '홈タックスの実際の書式と照合してからアップロードしてください。列構成は未確認です。';
+
+  @override
+  String get tCashReceipts => '現金領収書';
+
+  @override
+  String get tCashIssued => '発行済み';
+
+  @override
+  String get tCashFailed => '発行失敗';
+
+  @override
+  String get tCashPending => '保留中';
+
+  @override
+  String get tCashCancelled => '取消済み';
+
+  @override
+  String get tReissue => '再発行';
+
+  @override
+  String get tTaxInvoices => '税額票';
+
+  @override
+  String get tApprovalNumber => '承認番号';
+
+  @override
+  String get tIssuedOn => '発行日';
+
+  @override
+  String get tMarkIssued => '発行済みにする';
+
+  @override
+  String get tQueueEmpty => '待機中のリクエストはありません';
+
+  @override
+  String get tWithholdingLabel => '源泉徴収';
+
+  @override
+  String get tGrossAmount => '支払総額';
+
+  @override
+  String get tIncomeTax => '所得税';
+
+  @override
+  String get tLocalTax => '住民税';
+
+  @override
+  String get tNetAmount => '手取り';
+
+  @override
+  String get tNoWithholding => '源泉徴収なし（事業者登録）';
+
+  @override
+  String get tEstWithholding => '見込み源泉徴収（未払い分）';
+
+  @override
+  String get tReceiptOptions => '領収書の選択';
+
+  @override
+  String get tWantCashReceipt => '現金領収書を受け取る';
+
+  @override
+  String get tCashForIncome => '所得控除用（携帯番号）';
+
+  @override
+  String get tCashForBusiness => '経費証憑用（事業者番号）';
+
+  @override
+  String get tWantTaxInvoice => '税額票を受け取る（事業者）';
+
+  @override
+  String get tPhoneForReceipt => '携帯番号';
+
+  @override
+  String get tBusinessNumber => '事業者登録番号';
+
+  @override
+  String get tCompanyName => '会社名';
+
+  @override
+  String get tRepresentative => '代表者';
+
+  @override
+  String get tInvoiceEmail => '請求書の受取メール';
+
+  @override
+  String get tReceiptSave => '保存して決済';
+
+  @override
+  String get tReceiptSaveFailed => '領収書の情報を保存できませんでした';
+
+  @override
+  String get tTaxType => '税務区分';
+
+  @override
+  String get tTaxFreelancer => 'フリーランス（源泉徴収）';
+
+  @override
+  String get tTaxBusiness => '事業者登録（源泉徴収なし）';
+
+  @override
+  String get tReceiptSettings => '領収書設定';
 
   @override
   String get reviewRuleLine => '暴言・個人情報・虚偽や宣伝の内容は禁止です。通報されたレビューは非表示になります。';

@@ -65,8 +65,14 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (status, code) = self.status_and_code();
         if status.is_server_error() {
+            // The request span carries the request id, so this line can be matched to the client's report.
             tracing::error!(error = %self, "request failed");
         }
-        (status, Json(json!({ "error": { "code": code } }))).into_response()
+        // The id is the only extra thing a client sees; internal details stay in the logs.
+        let mut body = json!({ "error": { "code": code } });
+        if let Some(id) = crate::telemetry::current_request_id() {
+            body["error"]["request_id"] = json!(id);
+        }
+        (status, Json(body)).into_response()
     }
 }

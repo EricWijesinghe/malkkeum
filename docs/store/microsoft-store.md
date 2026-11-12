@@ -85,3 +85,57 @@ pwsh scripts/store/build-msix.ps1 -Store
 | 업로드 시 "Publisher 불일치" | `msix.local.psd1` 의 Publisher 값이 Partner Center와 다름 | 제품 식별 값 다시 복사 / Copy the identity values again |
 | 로컬 설치 시 "신뢰할 수 없는 게시자" | 테스트 인증서 미설치 | `build-msix.ps1` 를 다시 실행 (인증서를 TrustedPeople에 설치) / Re-run the script |
 | 파트너 앱 아이콘이 기본값 | 아이콘 빌드 누락 | `app/apps/partner/windows/runner/resources/app_icon.ico` 확인 / Check the file |
+
+---
+
+## 10. 스토어 설명 · Store description (short; paste into the "Description" field)
+
+Microsoft Store has no 80/30-char fields; use the first lines as the hook (search shows them). Use the full description from `listing-*.md` for the remaining languages. Windows build has no social login or push (see section 6), so these texts do not mention them.
+
+**고객 앱 · 말끔 (ko)**
+```
+입주청소·이사청소·에어컨청소, 가격부터 확인하고 1분 만에 예약하세요.
+
+말끔은 본인 인증과 심사를 거친 청소 전문가만 연결해 드리는 홈클리닝 앱이에요.
+· 원룸 · 주방 · 욕실 · 매트리스 · 에어컨 · 소파 청소: 앱에서 바로 보는 정찰제 요금
+· 이사청소 · 입주청소: 전문가 견적을 받아 비교
+· 취소 수수료와 환불액을 취소 전에 미리 안내, 방문 2일 전까지 무료 취소
+· 청소팀 배정부터 완료까지 실시간 진행 상황, 전후 사진과 후기
+· 앱 채팅 상담, 청소 포인트와 쿠폰
+· 14개 언어 지원
+```
+
+**Customer app · Malkkeum (en)**
+```
+Move-in, move-out and aircon cleaning in Korea. See the price first, book in a minute.
+
+Malkkeum connects you only with cleaning professionals who passed identity checks and review.
+· Studio, kitchen, bathroom, mattress, air conditioner and sofa cleaning at fixed prices
+· Move-out and move-in cleaning: compare quotes from professionals
+· Cancellation fee and refund shown before you cancel; free cancellation up to 2 days before the visit
+· Live progress from team assigned to finished, with before and after photos and reviews
+· In-app chat, cleaning points and coupons
+· 14 languages
+```
+
+**파트너 앱 · 말끔 파트너 (ko)**
+```
+말끔 청소 전문가 전용 앱. 내 동네 작업 받기, 이사·입주청소 견적, 일정, 매주 수요일 정산.
+
+· 내 활동 지역과 시간에 맞는 작업만 골라 받기
+· 이사·입주청소는 직접 견적 내기
+· 길찾기, 일정, 방문 메모, 전후 사진 업로드
+· 팀원 초대, 고객과 앱 채팅
+· 14개 언어 지원
+```
+
+**Partner app · Malkkeum Partner (en)**
+```
+The app for Malkkeum cleaning professionals: jobs in your area, quotes, schedule and weekly payouts.
+
+· Pick jobs that match your areas and available hours
+· Send your own quotes for move-in and move-out cleanings
+· Directions, schedule, visit notes, before and after photos
+· Invite team members, chat with customers
+· Paid out every Wednesday; 14 languages
+```

@@ -9,6 +9,8 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'chat.dart';
 import 'complete.dart';
+import 'site_actions.dart';
+import 'navigate.dart';
 
 String slotLabel(BuildContext context, int hour, bool isQuote) => isQuote
     ? (hour < 12 ? context.t.morning : context.t.afternoon)
@@ -385,9 +387,13 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final answers = b['answers'] as Json?;
     final notes = (b['visit_notes'] as Json?) ?? const {};
     final reschedule = b['reschedule'] as Json?;
+    final addr = committed
+        ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'.trim()
+        : null;
     return ListView(
       padding: const EdgeInsets.all(Space.gutter),
       children: [
+        if (committed) ...[SiteActionsCard(raw: b, act: _act), const SizedBox(height: Space.sm)],
         Tilt3D(
           child: AppCard(
             glow: hue.tone,
@@ -450,10 +456,15 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 leading: const Icon(Icons.place_outlined),
                 title: Text(committed ? t.visitAddress : t.addressDistrict),
                 subtitle: Text(
-                  committed
-                      ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'
-                      : districtName(context, b['district_code'] as String),
+                  addr ?? districtName(context, b['district_code'] as String),
                 ),
+                trailing: addr == null
+                    ? null
+                    : IconButton(
+                        tooltip: t.pNavigate,
+                        icon: const Icon(Icons.directions_rounded),
+                        onPressed: () => showNavigateSheet(context, addr),
+                      ),
               ),
               if (answers != null)
                 ListTile(
@@ -538,6 +549,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       notes['parking'],
       notes['other'],
     ].whereType<String>().where((s) => s.isNotEmpty).toList();
+    final householdLines = _householdLines((b['household'] as Json?) ?? const {});
     return [
       const SizedBox(height: Space.sm),
       AppCard(
@@ -565,6 +577,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                 child: Text(t.change),
               ),
             ),
+            if (householdLines.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: Text(t.pHousehold),
+                subtitle: Text(householdLines.join('\n')),
+              ),
             if (noteLines.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.sticky_note_2_outlined),
@@ -632,6 +650,36 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       _ => t.building_other,
     };
     return '$building · $layout · ${t.bathroomsLabel} ${a['bathrooms']} · ${t.balconiesLabel} ${a['balconies']}${a['duplex'] == true ? ' · ${t.duplexTitle}' : ''}';
+  }
+
+  /// Household profile as display lines; empty fields are skipped.
+  List<String> _householdLines(Json h) {
+    final t = context.t;
+    String petLabel(String kind) => switch (kind) {
+      'dog' => t.pPetDog,
+      'cat' => t.pPetCat,
+      'bird' => t.pPetBird,
+      'fish' => t.pPetFish,
+      _ => t.pPetOther,
+    };
+    String text(String key) => (h[key] as String?)?.trim() ?? '';
+    final pets = (h['pets'] as List? ?? const []).cast<Json>();
+    final floor = h['floor'];
+    final elevator = h['elevator'];
+    return [
+      if (pets.isNotEmpty)
+        '${t.pPets}: ${pets.map((p) => '${petLabel(p['kind'] as String)} ${p['count']}').join(', ')}',
+      if (text('allergies').isNotEmpty) '${t.pAllergies}: ${text('allergies')}',
+      if (text('preferred_products').isNotEmpty) '${t.pPreferredProducts}: ${text('preferred_products')}',
+      if (text('parking').isNotEmpty) '${t.pParking}: ${text('parking')}',
+      if (floor != null)
+        [
+          t.pFloor('$floor'),
+          if (elevator == true) t.pElevatorYes,
+          if (elevator == false) t.pElevatorNo,
+        ].join(' · '),
+      if (text('notes').isNotEmpty) text('notes'),
+    ];
   }
 
   Widget _row(String l, String v, {bool bold = false}) => Padding(

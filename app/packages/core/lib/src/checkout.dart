@@ -11,7 +11,10 @@ class PayChannel {
 
   bool get isBilling => flow == 'billing';
 
-  factory PayChannel.fromJson(Json j) => PayChannel(code: j['code'] as String, flow: j['flow'] as String? ?? 'checkout');
+  factory PayChannel.fromJson(Json j) => PayChannel(
+    code: j['code'] as String,
+    flow: j['flow'] as String? ?? 'checkout',
+  );
 }
 
 Future<List<PayChannel>> fetchPayChannels(ApiClient api) async {
@@ -28,6 +31,7 @@ class CheckoutIntent {
     required this.method,
     required this.storeId,
     required this.channelKey,
+    this.cashReceipts = false,
   });
 
   final String id;
@@ -37,19 +41,28 @@ class CheckoutIntent {
   final String storeId;
   final String channelKey;
 
+  /// Server has 현금영수증 switched on; receipt options are shown only then.
+  final bool cashReceipts;
+
   factory CheckoutIntent.fromJson(Json j) => CheckoutIntent(
-        id: j['id'] as String,
-        amount: (j['amount'] as num).toInt(),
-        orderName: j['order_name'] as String? ?? '',
-        method: j['method'] as String,
-        storeId: j['store_id'] as String? ?? '',
-        channelKey: j['channel_key'] as String? ?? '',
-      );
+    id: j['id'] as String,
+    amount: (j['amount'] as num).toInt(),
+    orderName: j['order_name'] as String? ?? '',
+    method: j['method'] as String,
+    storeId: j['store_id'] as String? ?? '',
+    channelKey: j['channel_key'] as String? ?? '',
+    cashReceipts: j['cash_receipts'] == true,
+  );
 }
 
 /// Bank details for a virtual-account deposit.
 class VirtualAccount {
-  const VirtualAccount({required this.bank, required this.accountNumber, required this.holder, required this.due});
+  const VirtualAccount({
+    required this.bank,
+    required this.accountNumber,
+    required this.holder,
+    required this.due,
+  });
 
   final String bank;
   final String accountNumber;
@@ -57,16 +70,22 @@ class VirtualAccount {
   final DateTime? due;
 
   factory VirtualAccount.fromJson(Json j) => VirtualAccount(
-        bank: j['bank'] as String? ?? '',
-        accountNumber: j['account_number'] as String? ?? '',
-        holder: j['holder'] as String? ?? '',
-        due: DateTime.tryParse(j['due'] as String? ?? '')?.toLocal(),
-      );
+    bank: j['bank'] as String? ?? '',
+    accountNumber: j['account_number'] as String? ?? '',
+    holder: j['holder'] as String? ?? '',
+    due: DateTime.tryParse(j['due'] as String? ?? '')?.toLocal(),
+  );
 }
 
 /// A virtual account still waiting for money (GET /v1/checkouts?status=awaiting_deposit).
 class PendingDeposit {
-  const PendingDeposit({required this.id, required this.amount, required this.account, this.bookingId, this.orderName = ''});
+  const PendingDeposit({
+    required this.id,
+    required this.amount,
+    required this.account,
+    this.bookingId,
+    this.orderName = '',
+  });
 
   final String id;
   final int amount;
@@ -89,6 +108,8 @@ class PendingDeposit {
 }
 
 Future<List<PendingDeposit>> fetchPendingDeposits(ApiClient api) async {
-  final list = await api.get('/checkouts', query: {'status': 'awaiting_deposit'}) as List;
+  final list =
+      await api.get('/checkouts', query: {'status': 'awaiting_deposit'})
+          as List;
   return [for (final e in list) ?PendingDeposit.tryParse(e as Json)];
 }

@@ -7,7 +7,7 @@ LOCKS=D:/Temp/malkkeum-locks
 SLOTS=1
 MIN_FREE_KB=$((6 * 1024 * 1024))
 export CARGO_BUILD_JOBS=2
-# Each git worktree gets its own cargo target so branches never link each other's builds.
+# Each worktree gets its own cargo target: a shared one mixes up same-named path crates across worktrees (stale artifacts).
 top=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 case "$top" in
   /f/EC|F:/EC) ;;

@@ -20,6 +20,7 @@ use chrono::{Datelike, NaiveDate};
 use domain::{
     Won,
     finance::{self, Cell, Grain},
+    tax::{self, VatInput, VatMethod},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -88,6 +89,8 @@ pub fn routes() -> Router<AppState> {
         .route("/finance/export/ledger", get(export_ledger))
         .route("/finance/export/settlements", get(export_settlements))
         .route("/finance/export/monthly", get(export_monthly))
+        .route("/finance/export/vat", get(export_vat))
+        .route("/finance/export/withholding", get(export_withholding))
 }
 
 pub fn partner_routes() -> Router<AppState> {
@@ -95,16 +98,16 @@ pub fn partner_routes() -> Router<AppState> {
 }
 
 #[derive(Deserialize)]
-struct PeriodQuery {
+pub(super) struct PeriodQuery {
     /// day | week | month | custom (default month)
-    period: Option<String>,
+    pub(super) period: Option<String>,
     /// Any date inside the wanted day, week or month (default today, KST).
-    anchor: Option<NaiveDate>,
-    from: Option<NaiveDate>,
-    to: Option<NaiveDate>,
+    pub(super) anchor: Option<NaiveDate>,
+    pub(super) from: Option<NaiveDate>,
+    pub(super) to: Option<NaiveDate>,
 }
 
-fn resolve(q: &PeriodQuery) -> ApiResult<(NaiveDate, NaiveDate)> {
+pub(super) fn resolve(q: &PeriodQuery) -> ApiResult<(NaiveDate, NaiveDate)> {
     Ok(finance::period(q.period.as_deref().unwrap_or("month"), q.anchor.unwrap_or_else(today_kst), q.from, q.to)?)
 }
 
@@ -250,6 +253,8 @@ struct Summary {
     #[serde(flatten)]
     metrics: Metrics,
     payment_methods: Vec<MethodRow>,
+    /// MRR, churn and prorated recurring revenue for the period (see `subscriptions::recurring_metrics`).
+    recurring: serde_json::Value,
     vat_basis: &'static str,
 }
 
@@ -261,6 +266,7 @@ async fn summary(State(s): State<AppState>, _st: Staff, Query(q): Query<PeriodQu
         to,
         metrics: total_of(&rows).into(),
         payment_methods: payment_methods(&s.db, from, to).await?,
+        recurring: super::subscriptions::recurring_metrics(&s.db, from, to).await?,
         vat_basis: "platform_fee_10pct_estimate",
     }))
 }
@@ -399,6 +405,11 @@ struct Earnings {
     pending_total: i64,
     paid_total: i64,
     series: Vec<EarnRow>,
+    /// Partner's current tax type; `estimated_*` apply it to `pending_total` (the actual split is fixed per payout).
+    tax_type: String,
+    estimated_income_tax: i64,
+    estimated_local_tax: i64,
+    estimated_net: i64,
 }
 
 async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<EarningsQuery>) -> ApiResult<Json<Earnings>> {
@@ -445,11 +456,17 @@ async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Quer
         .bind(a.id)
         .fetch_one(&s.db)
         .await?;
+    let tax_type: String = sqlx::query_scalar("SELECT tax_type FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let estimate = tax::payout_withholding(&tax_type, Won(pending_total));
     Ok(Json(Earnings {
         next_payout,
         pending_total,
         paid_total,
         series,
+        tax_type,
+        estimated_income_tax: estimate.income_tax.0,
+        estimated_local_tax: estimate.local_tax.0,
+        estimated_net: estimate.net.0,
     }))
 }
 
@@ -459,7 +476,7 @@ fn text(v: impl Into<String>) -> Cell {
     Cell::Text(v.into())
 }
 
-fn csv_response(name: &str, body: String) -> ApiResult<Response> {
+pub(super) fn csv_response(name: &str, body: String) -> ApiResult<Response> {
     let mut h = HeaderMap::new();
     h.insert(header::CONTENT_TYPE, HeaderValue::from_static("text/csv; charset=utf-8"));
     h.insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
@@ -638,4 +655,62 @@ async fn export_monthly(State(s): State<AppState>, Admin(a): Admin, Query(q): Qu
     doc.push(total_row);
     audit(&s.db, "staff", Some(a.id), "finance.export", "monthly", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("monthly", from, to), finance::csv_document(&doc))
+}
+
+/// 지급명세서 for paid payouts to withheld partners, by KST payment date. The monthly 간이지급명세서 and the
+/// annual 지급명세서 are both this range. Layout UNVERIFIED; see domain::tax::WITHHOLDING_HEADERS.
+async fn export_withholding(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
+    let (from, to) = resolve(&q)?;
+    let rows: Vec<(NaiveDate, String, String, i64, String)> = sqlx::query_as(
+        "SELECT (p.paid_at AT TIME ZONE 'Asia/Seoul')::date, pr.name, pr.team_name, p.amount, p.tax_type
+         FROM payouts p JOIN pros pr ON pr.id = p.pro_id
+         WHERE p.state = 'paid' AND p.tax_type IN ('freelancer', 'unset')
+           AND (p.paid_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
+         ORDER BY p.paid_at, p.id",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_all(&s.db)
+    .await?;
+    let lines: Vec<tax::WithholdingLine> = rows
+        .into_iter()
+        .map(|(day, payee, team, gross, tax_type)| tax::WithholdingLine { day, payee, team, split: tax::payout_withholding(&tax_type, Won(gross)) })
+        .collect();
+    audit(&s.db, "staff", Some(a.id), "finance.export", "withholding", json!({ "from": from, "to": to })).await?;
+    csv_response(&export_name("withholding", from, to), finance::csv_document(&tax::withholding_document(&lines)))
+}
+
+#[derive(Deserialize)]
+struct VatQuery {
+    year: i32,
+    /// Korean calendar quarter 1..=4.
+    quarter: u32,
+}
+
+/// Quarterly VAT summary (owner only). Sales are paid checkouts by method; fee and refunds follow the
+/// settlement and payment dates already used by the other exports. ACCOUNTANT: confirm these bases.
+async fn export_vat(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<VatQuery>) -> ApiResult<Response> {
+    let (from, to) = tax::quarter_range(q.year, q.quarter)?;
+    let methods = payment_methods(&s.db, from, to).await?;
+    let platform_fee: i64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM(fee), 0)::bigint FROM settlements WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_one(&s.db)
+    .await?;
+    let refunds: i64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
+    )
+    .bind(from)
+    .bind(to)
+    .fetch_one(&s.db)
+    .await?;
+    let input = VatInput {
+        methods: methods.into_iter().map(|m| VatMethod { method: m.method, count: m.count, amount: m.amount }).collect(),
+        platform_fee: Won(platform_fee),
+        refunds: Won(refunds),
+    };
+    audit(&s.db, "staff", Some(a.id), "finance.export", "vat", json!({ "from": from, "to": to })).await?;
+    csv_response(&export_name("vat", from, to), finance::csv_document(&tax::vat_document(&input)))
 }

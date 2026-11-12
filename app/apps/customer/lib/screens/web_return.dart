@@ -7,11 +7,13 @@ import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
 import 'pay_flow.dart' show showVirtualAccount;
-import 'web_history_stub.dart' if (dart.library.js_interop) 'web_history_web.dart';
+import 'web_history_stub.dart'
+    if (dart.library.js_interop) 'web_history_web.dart';
 
 /// Web deep links live in the URL hash: /app/#/booking/`<id>`, and /app/#/pay-return?paymentId=..
 /// after the hosted PortOne page. Null when there is no hash (every mobile launch).
-Uri? webHashRoute(Uri base) => base.fragment.isEmpty ? null : Uri.parse(base.fragment);
+Uri? webHashRoute(Uri base) =>
+    base.fragment.isEmpty ? null : Uri.parse(base.fragment);
 
 /// Runs the hash route once, then clears the hash so a reload never repeats a payment confirm.
 /// The Shell calls this after sign-in, so a link opened while signed out waits for sign-in.
@@ -22,7 +24,9 @@ Future<void> openWebHashRoute(BuildContext context) async {
   final segments = route.pathSegments;
   if (segments.length == 2 && segments.first == 'booking') {
     final id = segments[1];
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: id)));
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: id)),
+    );
   } else if (route.path == '/pay-return') {
     await _resumePayment(context, route);
   }
@@ -37,13 +41,20 @@ Future<void> _resumePayment(BuildContext context, Uri route) async {
     final result = switch (outcomeFromRedirect(route, id)) {
       null => const CheckoutCancelled(),
       PaymentRejected(:final code) => CheckoutFailed(code),
-      PaymentApproved(:final paymentId) => await CheckoutService(api: app.api, launcher: paymentLauncherFor(app.api.baseUrl)).confirm(id, paymentId),
+      PaymentApproved(:final paymentId) => await CheckoutService(
+        api: app.api,
+        launcher: paymentLauncherFor(app.api.baseUrl),
+      ).confirm(id, paymentId),
     };
     if (!context.mounted) return;
     switch (result) {
       case CheckoutPaid(:final booking):
         app.bookingsChanged();
-        await Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)), (r) => r.isFirst);
+        app.analytics.track('payment_done', screen: 'web_return');
+        await Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)),
+          (r) => r.isFirst,
+        );
       case CheckoutAwaitingDeposit(:final account):
         app.bookingsChanged();
         await showVirtualAccount(context, account);

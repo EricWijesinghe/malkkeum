@@ -28,7 +28,7 @@ pub async fn refund_or_alert(s: &AppState, provider: &str, tx_id: &str, amount: 
     if let Err(e) = s.providers.refund(provider, tx_id, amount).await {
         // Money is out of sync with the DB: this must reach a human.
         tracing::error!(error = %e, provider, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
-        crate::ops::record(&s.db, "payment_stuck", Err("refund_failed"));
+        crate::ops::record(&s.db, "payment_stuck", Err("refund_failed")).await;
     }
 }
 
@@ -46,6 +46,16 @@ pub async fn lock_and_count_slot(conn: &mut PgConnection, date: NaiveDate, hour:
             .bind(except)
             .fetch_one(&mut *conn)
             .await?;
+    // A live waitlist offer holds a seat for 15 minutes.
+    let holds: i64 = sqlx::query_scalar(
+        "SELECT count(*) FROM waitlist_entries WHERE status = 'offered' AND offer_expires_at > now()
+           AND visit_date = $1 AND start_hour <= $2 AND end_hour > $2",
+    )
+    .bind(date)
+    .bind(i16::from(hour))
+    .fetch_one(&mut *conn)
+    .await?;
+    let used = used + holds;
     let cap: Option<i32> = sqlx::query_scalar("SELECT capacity FROM slot_capacity WHERE start_hour = $1")
         .bind(i16::from(hour))
         .fetch_optional(&mut *conn)

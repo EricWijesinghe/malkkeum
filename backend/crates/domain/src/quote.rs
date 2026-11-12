@@ -133,6 +133,9 @@ pub struct Estimate {
     pub base: Won,
     pub extras: Won,
     pub surcharge_bps: i64,
+    /// Peak (weekend/holiday/evening) rate and its won amount on `base + extras`, shown as its own line.
+    pub peak_bps: i64,
+    pub peak: Won,
     pub before_vat: Won,
     pub total: Won,
 }
@@ -170,6 +173,15 @@ impl QuoteFormula {
     }
 
     pub fn estimate(&self, a: &QuoteAnswers) -> Result<Estimate, DomainError> {
+        self.estimate_with_peak(a, 0)
+    }
+
+    /// `peak_bps` comes from `peak::peak_surcharge(..).bps` for the requested start time.
+    /// shortcut: peak amount is rounded separately, so the displayed lines can differ from `total` by up to 100 won.
+    pub fn estimate_with_peak(&self, a: &QuoteAnswers, peak_bps: i64) -> Result<Estimate, DomainError> {
+        if !(0..=FULL_BPS).contains(&peak_bps) {
+            return Err(DomainError::OutOfRange("peak_bps"));
+        }
         if a.bathrooms > MAX_ROOMS_COUNT {
             return Err(DomainError::OutOfRange("bathrooms"));
         }
@@ -186,12 +198,16 @@ impl QuoteFormula {
             extras = extras + self.no_elevator_high_floor;
         }
         let surcharge_bps = self.type_surcharge(a.cleaning_type) + self.luggage_surcharge(a.luggage);
-        let before_vat = (base + extras).times_bps(FULL_BPS + surcharge_bps);
+        let subtotal = base + extras;
+        let peak = subtotal.times_bps(peak_bps).round100();
+        let before_vat = subtotal.times_bps(FULL_BPS + surcharge_bps + peak_bps);
         let total = before_vat.times_bps(FULL_BPS + self.vat_bps).round100();
         Ok(Estimate {
             base,
             extras,
             surcharge_bps,
+            peak_bps,
+            peak,
             before_vat,
             total,
         })
@@ -219,6 +235,28 @@ mod tests {
             elevator: true,
             floor_3_or_higher: true,
         }
+    }
+
+    #[test]
+    fn peak_surcharge_is_its_own_line_before_vat() {
+        // subtotal 440,000; AfterInterior +20% and peak +20% stack: x1.4 = 616,000; VAT x1.1 = 677,600.
+        // Peak line = 440,000 x 20% = 88,000.
+        let e = QuoteFormula::default().estimate_with_peak(&answers(), 2_000).unwrap();
+        assert_eq!((e.peak_bps, e.peak), (2_000, Won(88_000)));
+        assert_eq!(e.before_vat, Won(616_000));
+        assert_eq!(e.total, Won(677_600));
+    }
+
+    #[test]
+    fn zero_peak_matches_plain_estimate() {
+        let f = QuoteFormula::default();
+        assert_eq!(f.estimate_with_peak(&answers(), 0).unwrap(), f.estimate(&answers()).unwrap());
+    }
+
+    #[test]
+    fn peak_bps_out_of_range_is_rejected() {
+        assert!(QuoteFormula::default().estimate_with_peak(&answers(), 10_001).is_err());
+        assert!(QuoteFormula::default().estimate_with_peak(&answers(), -1).is_err());
     }
 
     #[test]

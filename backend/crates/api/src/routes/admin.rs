@@ -8,6 +8,7 @@ use super::{
 };
 use crate::{
     auth::Staff,
+    contract::{cursor_part, decode_cursor, encode_cursor, page_limit, paged},
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
     state::AppState,
@@ -15,6 +16,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
+    response::Response,
     routing::{get, post},
 };
 use chrono::NaiveDate;
@@ -31,7 +33,7 @@ pub fn routes() -> Router<AppState> {
         .route("/bookings", get(list_bookings))
         .route("/bookings/{id}", get(booking_detail))
         .route("/bookings/{id}/status", post(change_status))
-        .route("/bookings/{id}/cancel", post(cancel))
+        .route("/bookings/{id}/cancel", crate::idempotency::replayable(post(cancel)))
         .route("/bookings/{id}/quotes", get(quotes_for))
         .route("/bookings/{id}/send-quote", post(send_quote))
         .route("/threads", get(inbox))
@@ -93,26 +95,38 @@ struct BookingFilter {
     from: Option<NaiveDate>,
     to: Option<NaiveDate>,
     q: Option<String>,
+    limit: Option<i64>,
+    cursor: Option<String>,
 }
 
-async fn list_bookings(State(s): State<AppState>, _st: Staff, Query(f): Query<BookingFilter>) -> ApiResult<Json<Vec<BookingRow>>> {
+/// Earliest visit first; keyset cursor over (visit_date, start_hour, id).
+async fn list_bookings(State(s): State<AppState>, _st: Staff, Query(f): Query<BookingFilter>) -> ApiResult<Response> {
+    let limit = page_limit(f.limit)?;
+    let (date, hour, id) = match decode_cursor(f.cursor.as_deref(), 3)? {
+        Some(p) => (Some(cursor_part::<NaiveDate>(&p[0])?), Some(cursor_part::<i16>(&p[1])?), Some(cursor_part::<Uuid>(&p[2])?)),
+        None => (None, None, None),
+    };
     let q = f.q.map(|q| format!("%{}%", q.replace(['%', '_'], "")));
-    let rows = sqlx::query_as(&format!(
+    let rows: Vec<BookingRow> = sqlx::query_as(&format!(
         "SELECT {BOOKING_COLS} FROM bookings b LEFT JOIN users u ON u.id = b.user_id
          WHERE ($1::smallint IS NULL OR b.status = $1) AND ($2::text IS NULL OR b.service_code = $2)
            AND ($3::date IS NULL OR b.visit_date >= $3) AND ($4::date IS NULL OR b.visit_date <= $4)
            AND ($5::text IS NULL OR b.number ILIKE $5 OR u.phone LIKE $5 OR u.name ILIKE $5 OR b.address->>'road_address' ILIKE $5)
-         ORDER BY b.visit_date, b.start_hour LIMIT $6"
+           AND ($7::date IS NULL OR b.visit_date > $7 OR (b.visit_date = $7 AND (b.start_hour > $8 OR (b.start_hour = $8 AND b.id > $9))))
+         ORDER BY b.visit_date, b.start_hour, b.id LIMIT $6"
     ))
     .bind(f.status)
     .bind(f.service)
     .bind(f.from)
     .bind(f.to)
     .bind(q)
-    .bind(LIST_LIMIT)
+    .bind(limit)
+    .bind(date)
+    .bind(hour)
+    .bind(id)
     .fetch_all(&s.db)
     .await?;
-    Ok(Json(rows))
+    Ok(paged(rows, limit, |r| encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])))
 }
 
 #[derive(Serialize)]
@@ -222,6 +236,7 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct CancelRequest {
     /// None = full refund; otherwise refund at most this amount (late-cancel fee).
     refund_amount: Option<i64>,

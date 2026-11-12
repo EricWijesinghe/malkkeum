@@ -73,7 +73,9 @@
     "invalid_cap",
     "unsupported_bank",
     "unsupported_image",
-    "upload_quota"
+    "upload_quota",
+    "seller_declined",
+    "payout_account_unverified"
   ],
   "fallback": [
     "already_confirmed",

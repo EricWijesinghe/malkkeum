@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -498,6 +497,30 @@ class TNe extends T {
   String get cFormula => 'मूल्य गणना सूत्र';
 
   @override
+  String get cTabCancelPolicy => 'रद्द नीति';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'यो पूर्वनिर्धारित सेटिङ हो। जाँचेर सुरक्षित गरी पुष्टि गर्नुहोस्।';
+
+  @override
+  String get cPolicyDaysBefore => 'भ्रमणभन्दा कति दिन अगाडिदेखि';
+
+  @override
+  String get cPolicyPercent => 'शुल्क % (खाली = एपमा रद्द गर्न मिल्दैन)';
+
+  @override
+  String get cPolicyMinFee => 'न्यूनतम शुल्क (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'तालिका परिवर्तन गर्न मिल्ने (भ्रमणभन्दा कति दिन अगाडि)';
+
+  @override
+  String get cPolicyHint =>
+      'ग्राहक एपको रद्द स्क्रिनमा तुरुन्तै लागू हुन्छ। सर्तहरू अर्को कानुनी बिल्डमा अद्यावधिक हुनेछन्।';
+
+  @override
   String get f_base_studio => 'आधार: स्टुडियो';
 
   @override
@@ -654,6 +677,9 @@ class TNe extends T {
   String get cNewMessage => 'नयाँ सन्देश';
 
   @override
+  String get cConfirmAsk => 'के तपाईं निश्चित हुनुहुन्छ?';
+
+  @override
   String get ok => 'ठिक छ';
 
   @override
@@ -744,7 +770,7 @@ class TNe extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'भ्रमणको २ दिन अगादेखि हाम्रो परामर्श टोलीमार्फत मात्र रद्द गर्न सकिन्छ';
+      'यो बुकिङ अब एपबाट रद्द गर्न सकिँदैन। कृपया हाम्रो टोलीसँग सम्पर्क गर्नुहोस्';
 
   @override
   String get err_address_required => 'भ्रमण ठेगाना थप्नुहोस्';
@@ -1298,6 +1324,11 @@ class TNe extends T {
   String get photosSoon => 'सफाइपछि अघि र पछिका फोटो यहाँ देखिनेछन्';
 
   @override
+  String photoThumb(String n) {
+    return 'फोटो $n';
+  }
+
+  @override
   String get before => 'सफाइअघि';
 
   @override
@@ -1330,6 +1361,16 @@ class TNe extends T {
 
   @override
   String get cancelKeep => 'राख्नुहोस्';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'अहिले रद्द गर्दा $fee शुल्क लाग्छ र $refund फिर्ता हुनेछ।';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee शुल्क स्वीकार गरी रद्द गर्नुहोस्';
+  }
 
   @override
   String get cancelled => 'बुकिङ रद्द भयो';
@@ -1744,6 +1785,50 @@ class TNe extends T {
   String get summaryDate => 'भ्रमण मिति';
 
   @override
+  String get cpTitle => 'रद्द नीति';
+
+  @override
+  String cpWhen(String days) {
+    return 'भ्रमणभन्दा $days दिन वा सो भन्दा अगाडि';
+  }
+
+  @override
+  String get cpWhenSameDay => 'भ्रमणको दिन';
+
+  @override
+  String get cpFree => 'पूरा फिर्ता';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% शुल्क ($fee), फिर्ता $refund';
+  }
+
+  @override
+  String get cpClosed => 'एपमा रद्द गर्न मिल्दैन (टोलीले हेर्छ)';
+
+  @override
+  String get hhTitle => 'घरपरिवारको जानकारी';
+
+  @override
+  String get hhAddPet => 'घरपालुवा जनावर थप्नुहोस्';
+
+  @override
+  String get hhPetCount => 'संख्या';
+
+  @override
+  String get hhFloorLabel => 'तला (तहखानाका लागि ऋणात्मक)';
+
+  @override
+  String get hhElevator => 'लिफ्ट छ';
+
+  @override
+  String get hhNotes => 'टिप्पणी';
+
+  @override
+  String get hhHint =>
+      'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
+
+  @override
   String get themeTitle => 'थिम';
 
   @override
@@ -1921,6 +2006,92 @@ class TNe extends T {
 
   @override
   String get err_invalid_capacity => 'मान्य क्षमता प्रविष्ट गर्नुहोस्।';
+
+  @override
+  String get err_seller_declined =>
+      'Toss ले विक्रेता दर्ता स्वीकृत गरेन। व्यवसायको विवरण जाँच गर्नुहोस्।';
+
+  @override
+  String get err_payout_account_unverified =>
+      'यो साझेदारसँग प्रमाणित भुक्तानी खाता छैन। पहिले खाता प्रमाणित गर्नुहोस्।';
+
+  @override
+  String get guestSheetTitle => 'जारी राख्न साइन इन गर्नुहोस्';
+
+  @override
+  String get guestSheetBody =>
+      'तपाईंले भरेको सबै जानकारी सुरक्षित रहन्छ। जहाँ छाड्नुभयो त्यहीँबाट जारी रहन्छ।';
+
+  @override
+  String get greetMorning => 'सुप्रभात';
+
+  @override
+  String get greetAfternoon => 'शुभ दिउँसो';
+
+  @override
+  String get greetEvening => 'शुभ साँझ';
+
+  @override
+  String get feedHeading => 'तपाईंका लागि छनोट';
+
+  @override
+  String get feedTitleDue => 'अर्को सफाइको समय भयो';
+
+  @override
+  String get feedTitleRebook => '५ तारे पार्टनरलाई फेरि बुक गर्नुहोस्';
+
+  @override
+  String get feedTitleDraft => 'सुरु गरेको कोटेशन पूरा गर्नुहोस्';
+
+  @override
+  String get feedTitleSeasonal => 'यस मौसमका लागि उपयुक्त सफाइ';
+
+  @override
+  String get feedTitleSize => 'सुरक्षित घरको आकारअनुसार कोटेशन';
+
+  @override
+  String get feedTitleSubscription => 'सदस्यतामार्फत बढी बचत गर्नुहोस्';
+
+  @override
+  String get feedTitleDistrict => 'छिमेकीहरूले पनि बुक गरिरहेका छन्';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'अन्तिम सफाइपछि $days दिन भयो';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'तपाईंले $days दिन अघि यो पार्टनरलाई ५ तारा दिनुभएको थियो';
+  }
+
+  @override
+  String get feedWhyDraft => 'यो यन्त्रमा तपाईंको कोटेशन अधूरो छ';
+
+  @override
+  String get feedWhySummer =>
+      'गर्मी सुरु हुनुअघि एयरकन्डिसन सफा गर्ने राम्रो समय हो';
+
+  @override
+  String get feedWhyMoving => 'घर सर्ने र सार्ने समय व्यस्त छ';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'चाडपर्वको ठूलो सफाइसम्म $days दिन बाँकी छ';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'सुरक्षित $pyeong पियोङ घरका लागि तुरुन्त कोटेशन';
+  }
+
+  @override
+  String get feedWhyRepeat => 'बारम्बार बुक गर्नुहुन्छ भने सदस्यता सस्तो पर्छ';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'यो हप्ता $district मा $count घरले बुक गरे';
+  }
 
   @override
   String get fFinance => 'वित्त';
@@ -2243,6 +2414,127 @@ class TNe extends T {
       'हामी सेवा सुधार्न मर्मत गरिरहेका छौं। केही समयपछि फेरि आउनुहोस्।';
 
   @override
+  String get cmTab => 'अभियान';
+
+  @override
+  String get cmNew => 'नयाँ अभियान';
+
+  @override
+  String get cmAudience => 'लक्षित ग्राहक';
+
+  @override
+  String get cmSegAll => 'सबै ग्राहक';
+
+  @override
+  String get cmSegNever => 'कहिल्यै बुक नगरेका';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'अन्तिम बुकिङ $days+ दिन अघि';
+  }
+
+  @override
+  String get cmDays => 'दिनको संख्या';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total मध्ये $consented जनाले मार्केटिङ सहमति दिएका छन्';
+  }
+
+  @override
+  String get cmChannel => 'च्यानल';
+
+  @override
+  String get cmPush => 'एप पुश';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'शीर्षक';
+
+  @override
+  String get cmBody => 'सन्देश';
+
+  @override
+  String get cmOptout => 'अप्ट-आउट नम्बर (080)';
+
+  @override
+  String get cmPreview => 'पूर्वावलोकन';
+
+  @override
+  String get cmSchedule => 'पठाउने समय';
+
+  @override
+  String get cmSendNow => 'अहिले पठाउनुहोस्';
+
+  @override
+  String get cmTestSend => 'मेरो नम्बरमा परीक्षण पठाउनुहोस्';
+
+  @override
+  String get cmCreate => 'अभियान सुरक्षित गर्नुहोस्';
+
+  @override
+  String get cmNeedOptout => 'SMS का लागि 080 अप्ट-आउट नम्बर आवश्यक छ';
+
+  @override
+  String get cmLog => 'पठाउने लग';
+
+  @override
+  String cmStatSent(String count) {
+    return 'पठाइएको $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'सहमति छैन $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'असफल $count';
+  }
+
+  @override
+  String get cmSaved => 'अभियान सुरक्षित भयो';
+
+  @override
+  String anFunnel(String days) {
+    return 'दर्ता फनेल (पछिल्ला $days दिन)';
+  }
+
+  @override
+  String get anInstalls => 'एप खोल्ने (सहमति दिएका)';
+
+  @override
+  String get anSignedUp => 'दर्ता गरेका';
+
+  @override
+  String get anQuoted => 'मूल्याङ्कन माग्ने';
+
+  @override
+  String get anBooked => 'बुक गरेका';
+
+  @override
+  String get anPaid => 'भुक्तानी गरेका';
+
+  @override
+  String get anRepeat => 'दोहोर्याउने (२+)';
+
+  @override
+  String get anCohorts => 'साप्ताहिक समूह (दर्ता हप्ताअनुसार बुकिङ दर)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'दर्ता $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'हप्ता $n मा बुक';
+  }
+
+  @override
   String get cOps => 'प्रणाली स्थिति';
 
   @override
@@ -2403,6 +2695,9 @@ class TNe extends T {
 
   @override
   String get oRuleDisk => 'डिस्क लगभग भरियो';
+
+  @override
+  String get oRuleAuth => 'शंकास्पद लगइन गतिविधि';
 
   @override
   String get oQuietHours => 'शान्त समय';
@@ -2656,6 +2951,47 @@ class TNe extends T {
   String get pCustomerRequests => 'ग्राहकका अनुरोध';
 
   @override
+  String get pHousehold => 'घरपरिवारको जानकारी';
+
+  @override
+  String get pPets => 'घरपालुवा जनावर';
+
+  @override
+  String get pPetDog => 'कुकुर';
+
+  @override
+  String get pPetCat => 'बिरालो';
+
+  @override
+  String get pPetBird => 'चरा';
+
+  @override
+  String get pPetFish => 'माछा';
+
+  @override
+  String get pPetOther => 'अन्य जनावर';
+
+  @override
+  String get pAllergies => 'एलर्जी र संवेदनशीलता';
+
+  @override
+  String get pPreferredProducts => 'मनपर्ने उत्पादन';
+
+  @override
+  String get pParking => 'पार्किङ';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor तला';
+  }
+
+  @override
+  String get pElevatorYes => 'लिफ्ट छ';
+
+  @override
+  String get pElevatorNo => 'लिफ्ट छैन';
+
+  @override
   String get pTeamMemo => 'टोली नोट (ग्राहकले देख्दैनन्)';
 
   @override
@@ -2852,6 +3188,27 @@ class TNe extends T {
   String get pSpace => 'ठाउँको जानकारी';
 
   @override
+  String get pNavigate => 'दिशानिर्देश';
+
+  @override
+  String get pNavHint =>
+      'नक्सा एपमा भ्रमण ठेगाना खुल्छ। एप नभए वेब नक्सा खुल्छ।';
+
+  @override
+  String get pOfflineSaved => 'सिग्नल छैन। सुरक्षित गरियो, जडान भएपछि पठाइनेछ।';
+
+  @override
+  String get pPhotoRetry => 'फेरि अपलोड';
+
+  @override
+  String get pPhotoWaiting => 'अपलोड नभएका फोटोहरू जडान भएपछि स्वतः पठाइनेछन्।';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total मध्ये $done अपलोड';
+  }
+
+  @override
   String get cIntPayout => 'साझेदार भुक्तानी';
 
   @override
@@ -2930,6 +3287,91 @@ class TNe extends T {
   String get poRevealNote => 'खाता विवरण हेर्ने कार्य लग गरिन्छ';
 
   @override
+  String get poSellerAction => 'विक्रेता दर्ता गर्नुहोस्';
+
+  @override
+  String get poSellerTitle => 'Toss विक्रेताको रूपमा दर्ता गर्नुहोस्';
+
+  @override
+  String get poSellerHint =>
+      'साझेदारको प्रमाणित भुक्तानी खाता प्रयोग हुन्छ। व्यवसायको विवरण मात्र भर्नुहोस्।';
+
+  @override
+  String get poSellerIndividual => 'व्यक्तिगत';
+
+  @override
+  String get poSellerCompany => 'व्यवसाय';
+
+  @override
+  String get poSellerName => 'नाम';
+
+  @override
+  String get poSellerRepresentative => 'प्रतिनिधिको नाम';
+
+  @override
+  String get poSellerRegNo => 'व्यवसाय दर्ता नम्बर (१० अंक)';
+
+  @override
+  String get poSellerEmail => 'भुक्तानी इमेल';
+
+  @override
+  String get poSellerPhone => 'फोन';
+
+  @override
+  String get poSellerSubmit => 'दर्ता गर्नुहोस्';
+
+  @override
+  String poSellerDone(String status) {
+    return 'विक्रेता स्थिति: $status';
+  }
+
+  @override
+  String get oFlags => 'सुविधा स्विच';
+
+  @override
+  String get oFlagBooking => 'बुकिङ';
+
+  @override
+  String get oFlagChat => 'च्याट';
+
+  @override
+  String get oFlagAi => 'AI सहायक';
+
+  @override
+  String get oFlagPayments => 'भुक्तानी';
+
+  @override
+  String get oMaintenance => 'मर्मत मोड';
+
+  @override
+  String get oMaintenanceHint =>
+      'खुला हुँदा ग्राहक र साझेदार एपमा मर्मत स्क्रिन देखिन्छ। कन्सोल चलिरहन्छ।';
+
+  @override
+  String get oMaintenanceMessage => 'मर्मत सूचना';
+
+  @override
+  String get oClientErrors => 'एप त्रुटि रिपोर्ट';
+
+  @override
+  String get oClientErrorsHint =>
+      'वेब, Windows र कन्सोलबाट भर्खरका त्रुटिहरू। व्यक्तिगत जानकारी स्वतः लुकाइन्छ।';
+
+  @override
+  String get oClientErrorsEmpty => 'हालैका त्रुटि छैनन्';
+
+  @override
+  String get oHeartbeat => 'अपटाइम हार्टबिट';
+
+  @override
+  String get oHeartbeatOn =>
+      'जडान भयो। सर्भर चल्दा बाहिरी सेवालाई सूचना जान्छ।';
+
+  @override
+  String get oHeartbeatOff =>
+      'सेट गरिएको छैन: install.sh मा MALKKEUM_HEARTBEAT_URL थप्नुहोस्।';
+
+  @override
   String get pvManage => 'सहमति व्यवस्थापन';
 
   @override
@@ -2974,6 +3416,121 @@ class TNe extends T {
   @override
   String get pvExportFailed =>
       'तपाईंको डेटा लोड गर्न सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get safetyEmergency => 'आपतकालीन सम्पर्क';
+
+  @override
+  String get emergencyPolice => '112 प्रहरी';
+
+  @override
+  String get emergencyFire => '119 दमकल र उद्धार';
+
+  @override
+  String get emergencyShop => 'ग्राहक सेवा';
+
+  @override
+  String get caseReportAction => 'समस्या रिपोर्ट गर्नुहोस्';
+
+  @override
+  String get caseReportTitle => 'के भयो?';
+
+  @override
+  String get caseKindDamage => 'क्षति';
+
+  @override
+  String get caseKindLoss => 'हराएको';
+
+  @override
+  String get caseKindComplaint => 'गुनासो';
+
+  @override
+  String get caseKindNoShow => 'सफाइकर्मी आएनन्';
+
+  @override
+  String get caseKindSafety => 'सुरक्षा चिन्ता';
+
+  @override
+  String get caseKindPayment => 'भुक्तानी विवाद';
+
+  @override
+  String get caseSummaryHint => 'के भयो वर्णन गर्नुहोस् (300 अक्षरसम्म)';
+
+  @override
+  String get caseSubmit => 'पेश गर्नुहोस्';
+
+  @override
+  String get caseSubmitted => 'प्राप्त भयो। टोलीले २४ घण्टाभित्र जवाफ दिनेछ।';
+
+  @override
+  String get caseFailed => 'पठाउन सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get checkInAction => 'चेक इन';
+
+  @override
+  String get checkOutAction => 'चेक आउट';
+
+  @override
+  String checkedInAt(String time) {
+    return 'आइपुग्यो $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'निस्कियो $time';
+  }
+
+  @override
+  String get entryCodeAction => 'प्रवेश कोड देखाउनुहोस्';
+
+  @override
+  String get entryCodeTitle => 'प्रवेश कोड';
+
+  @override
+  String get entryCodeNotToday => 'भ्रमणको दिनमा मात्र देखिन्छ';
+
+  @override
+  String get entryCodeEmpty => 'प्रवेश कोड दर्ता छैन';
+
+  @override
+  String get actionFailed => 'सम्पन्न गर्न सकिएन। फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get consoleCasesTitle => 'केस सूची';
+
+  @override
+  String get consoleCasesEmpty => 'कुनै खुला केस छैन';
+
+  @override
+  String get caseOverdue => 'म्याद नाघेको';
+
+  @override
+  String get caseStatusOpen => 'खुला';
+
+  @override
+  String get caseStatusInvestigating => 'अनुसन्धानमा';
+
+  @override
+  String get caseStatusResolved => 'समाधान भयो';
+
+  @override
+  String get caseStatusRejected => 'अस्वीकृत';
+
+  @override
+  String get caseReassign => 'साझेदार पुनः तोक्नुहोस्';
+
+  @override
+  String get caseRefund => 'रिफन्ड';
+
+  @override
+  String get caseHold => 'भुक्तानी रोक्नुहोस्';
+
+  @override
+  String get caseNoteHint => 'आन्तरिक टिप्पणी';
+
+  @override
+  String get caseSave => 'सेभ गर्नुहोस्';
 
   @override
   String get cSetup => 'सेटअप';
@@ -3208,6 +3765,339 @@ class TNe extends T {
 
   @override
   String get cInvalidValue => 'कृपया मान जाँच्नुहोस्';
+
+  @override
+  String get cMfaTitle => 'दुई-चरण साइन-इन';
+
+  @override
+  String get cMfaCode => 'प्रमाणिकरण एपबाट ६ अंकको कोड';
+
+  @override
+  String get cMfaRecovery => 'रिकभरी कोड';
+
+  @override
+  String get cMfaUseRecovery => 'बरु रिकभरी कोड प्रयोग गर्नुहोस्';
+
+  @override
+  String get cMfaUseCode => 'बरु प्रमाणिकरण एपको कोड प्रयोग गर्नुहोस्';
+
+  @override
+  String get cMfaVerify => 'प्रमाणित गर्नुहोस्';
+
+  @override
+  String get cMfaBack => 'साइन-इनमा फर्कनुहोस्';
+
+  @override
+  String get cMfaEnrolTitle => 'दुई-चरण साइन-इन सेटअप गर्नुहोस्';
+
+  @override
+  String get cMfaEnrolBody =>
+      'एडमिनलाई प्रमाणिकरण एप चाहिन्छ। तलको कुञ्जी Google Authenticator, 1Password वा त्यस्तै एपमा थप्नुहोस्, त्यसपछि देखिएको ६ अंकको कोड हाल्नुहोस्।';
+
+  @override
+  String get cMfaSecret => 'सेटअप कुञ्जी';
+
+  @override
+  String get cMfaLink => 'सेटअप लिङ्क (otpauth)';
+
+  @override
+  String get cMfaCopy => 'प्रतिलिपि गर्नुहोस्';
+
+  @override
+  String get cMfaCopied => 'प्रतिलिपि गरियो';
+
+  @override
+  String get cMfaConfirm => 'पुष्टि गरेर सक्रिय गर्नुहोस्';
+
+  @override
+  String get cMfaCodesTitle => 'तपाईंका रिकभरी कोडहरू सुरक्षित गर्नुहोस्';
+
+  @override
+  String get cMfaCodesBody =>
+      'प्रमाणिकरण एप हराएमा प्रत्येक कोडले एक पटक साइन-इन गर्न दिन्छ। यी अहिले मात्र देखिन्छन्।';
+
+  @override
+  String get cMfaDownload => 'डाउनलोड गर्नुहोस्';
+
+  @override
+  String get cMfaSaveFailed =>
+      'यो उपकरणमा फाइल सुरक्षित गर्न सकिँदैन। कोडहरू प्रतिलिपि गरी सुरक्षित राख्नुहोस्।';
+
+  @override
+  String get cMfaContinue => 'कन्सोलमा जानुहोस्';
+
+  @override
+  String get cMfaInvalid =>
+      'कोड मिलेन। फोनको समय सही छ कि छैन जाँचेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get cMfaExpired =>
+      'साइन-इनको समय सकियो। पासवर्ड चरणबाट फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get cMfaLocked =>
+      'धेरै प्रयासहरू भए। केही मिनेट पर्खेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get cStaffReset => 'पासवर्ड रिसेट गर्नुहोस्';
+
+  @override
+  String get cStaffResetConfirm =>
+      'यस कर्मचारीको पासवर्ड रिसेट गर्ने हो? उनीहरू सबै ठाउँबाट साइन-आउट हुनेछन्।';
+
+  @override
+  String get cStaffResetTitle => 'रिसेट टोकन';
+
+  @override
+  String get cStaffResetBody =>
+      'यो टोकन कर्मचारीलाई दिनुहोस्। यो एक पटक, ३० मिनेटभित्र मात्र काम गर्छ। बन्द गरेपछि फेरि देखिँदैन।';
+
+  @override
+  String get subTitle => 'नियमित सफाइ';
+
+  @override
+  String get subNew => 'सदस्यता सुरु गर्नुहोस्';
+
+  @override
+  String get subCadence => 'कति बेला';
+
+  @override
+  String get subWeekly => 'हरेक हप्ता';
+
+  @override
+  String get subBiweekly => 'हरेक २ हप्ता';
+
+  @override
+  String get subEvery4Weeks => 'हरेक ४ हप्ता';
+
+  @override
+  String get subWeekday => 'वार';
+
+  @override
+  String get subHour => 'आइपुग्ने समय';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'हरेक भ्रमणमा $percent% छुट';
+  }
+
+  @override
+  String get subChargeNote =>
+      'भ्रमणको एक दिन अगाडि सेभ गरिएको कार्डबाट शुल्क लाग्छ';
+
+  @override
+  String get subCreate => 'सदस्यता लिनुहोस्';
+
+  @override
+  String get subCreated => 'सदस्यता सुरु भयो';
+
+  @override
+  String get subNeedAddress => 'पहिले भ्रमण ठेगाना थप्नुहोस्';
+
+  @override
+  String get subListEmpty => 'अहिलेसम्म सदस्यता छैन';
+
+  @override
+  String get subStatusActive => 'सक्रिय';
+
+  @override
+  String get subStatusPaused => 'रोकिएको';
+
+  @override
+  String get subStatusCancelled => 'रद्द गरिएको';
+
+  @override
+  String subNextVisit(String date) {
+    return 'अर्को भ्रमण $date';
+  }
+
+  @override
+  String get subPause => 'रोक्नुहोस्';
+
+  @override
+  String get subResume => 'फेरि सुरु गर्नुहोस्';
+
+  @override
+  String get subCancelSub => 'सदस्यता रद्द गर्नुहोस्';
+
+  @override
+  String get subCancelConfirm =>
+      'आगामी भ्रमणहरू रद्द हुनेछन्। बुक भइसकेका भ्रमण छुट्टै रद्द गर्नुपर्छ।';
+
+  @override
+  String get subSkip => 'यो भ्रमण छोड्नुहोस्';
+
+  @override
+  String get subMove => 'मिति सार्नुहोस्';
+
+  @override
+  String get subVisitLocked => 'भ्रमणको एक दिन अगाडिदेखि परिवर्तन गर्न मिल्दैन';
+
+  @override
+  String get subPausedPayment =>
+      'बारम्बार भुक्तानी असफल भएकाले रोकियो। कार्ड बदलेर फेरि सुरु गर्नुहोस्।';
+
+  @override
+  String get subStatePlanned => 'तय गरिएको';
+
+  @override
+  String get subStateBooked => 'बुक गरिएको';
+
+  @override
+  String get subStateSkipped => 'छोडिएको';
+
+  @override
+  String get subStateMissed => 'छुटेको';
+
+  @override
+  String get pSubsTitle => 'नियमित ग्राहक';
+
+  @override
+  String get pSubsEmpty => 'अहिलेसम्म नियमित ग्राहक छैनन्';
+
+  @override
+  String get cSubsTitle => 'सदस्यताहरू';
+
+  @override
+  String get cSubsEdit => 'ग्राहकको तर्फबाट सम्पादन';
+
+  @override
+  String get cMrr => 'मासिक दोहोरिने आम्दानी (MRR)';
+
+  @override
+  String get cChurn => 'च्युर्न';
+
+  @override
+  String get cActiveSubs => 'सक्रिय सदस्यता';
+
+  @override
+  String get cRecognized => 'अवधिमा मान्यता प्राप्त आम्दानी';
+
+  @override
+  String get cSubsLoadFailed => 'सदस्यता लोड गर्न सकिएन';
+
+  @override
+  String get tTaxSection => 'कर';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q VAT CSV';
+  }
+
+  @override
+  String get tVatYear => 'वर्ष';
+
+  @override
+  String get tExportWithholding => 'कर कट्टी विवरण CSV';
+
+  @override
+  String get tExportTaxInvoices => 'कर बिल अपलोड CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'अपलोड गर्नु अघि 홈택스 टेम्प्लेटसँग स्तम्भ जाँच गर्नुहोस्। बनोट अझै प्रमाणित भएको छैन।';
+
+  @override
+  String get tCashReceipts => 'नगद रसिद';
+
+  @override
+  String get tCashIssued => 'जारी भयो';
+
+  @override
+  String get tCashFailed => 'असफल';
+
+  @override
+  String get tCashPending => 'पर्खाइमा';
+
+  @override
+  String get tCashCancelled => 'रद्द भयो';
+
+  @override
+  String get tReissue => 'पुनः जारी';
+
+  @override
+  String get tTaxInvoices => 'कर बिल';
+
+  @override
+  String get tApprovalNumber => 'स्वीकृति नम्बर';
+
+  @override
+  String get tIssuedOn => 'जारी मिति';
+
+  @override
+  String get tMarkIssued => 'जारी भएको चिन्ह लगाउनुहोस्';
+
+  @override
+  String get tQueueEmpty => 'पर्खिरहेको अनुरोध छैन';
+
+  @override
+  String get tWithholdingLabel => 'कर कट्टी';
+
+  @override
+  String get tGrossAmount => 'कुल रकम';
+
+  @override
+  String get tIncomeTax => 'आयकर';
+
+  @override
+  String get tLocalTax => 'स्थानीय आयकर';
+
+  @override
+  String get tNetAmount => 'खुद रकम';
+
+  @override
+  String get tNoWithholding => 'कर कट्टी छैन (दर्ता व्यवसाय)';
+
+  @override
+  String get tEstWithholding => 'अनुमानित कर कट्टी (बाँकी)';
+
+  @override
+  String get tReceiptOptions => 'रसिद विकल्पहरू';
+
+  @override
+  String get tWantCashReceipt => 'नगद रसिद चाहियो';
+
+  @override
+  String get tCashForIncome => 'कर छुट का लागि (फोन नम्बर)';
+
+  @override
+  String get tCashForBusiness => 'व्यावसायिक खर्चका लागि (व्यवसाय नम्बर)';
+
+  @override
+  String get tWantTaxInvoice => 'कर बिल चाहियो (व्यवसाय)';
+
+  @override
+  String get tPhoneForReceipt => 'फोन नम्बर';
+
+  @override
+  String get tBusinessNumber => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get tCompanyName => 'कम्पनीको नाम';
+
+  @override
+  String get tRepresentative => 'प्रतिनिधि';
+
+  @override
+  String get tInvoiceEmail => 'बिलका लागि इमेल';
+
+  @override
+  String get tReceiptSave => 'सुरक्षित गरेर भुक्तानी गर्नुहोस्';
+
+  @override
+  String get tReceiptSaveFailed => 'रसिद विवरण सुरक्षित गर्न सकिएन';
+
+  @override
+  String get tTaxType => 'कर प्रकार';
+
+  @override
+  String get tTaxFreelancer => 'फ्रीलान्सर (कर कट्टी)';
+
+  @override
+  String get tTaxBusiness => 'दर्ता व्यवसाय (कर कट्टी छैन)';
+
+  @override
+  String get tReceiptSettings => 'रसिद सेटिङ';
 
   @override
   String get reviewRuleLine =>

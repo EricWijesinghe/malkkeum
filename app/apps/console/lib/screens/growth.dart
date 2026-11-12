@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'acquisition.dart';
+import 'cases.dart';
 import 'review_reports.dart';
 
 class GrowthSettings extends StatefulWidget {
@@ -47,7 +49,10 @@ class _GrowthSettingsState extends State<GrowthSettings> {
     final api = context.api;
     final t = context.t;
     try {
-      final results = await Future.wait([api.get('/admin/growth'), api.get('/admin/reviews')]);
+      final results = await Future.wait([
+        api.get('/admin/growth'),
+        api.get('/admin/reviews'),
+      ]);
       if (!mounted) return;
       final overview = results[0] as Json;
       final welcome = overview['welcome'] as Json;
@@ -100,7 +105,9 @@ class _GrowthSettingsState extends State<GrowthSettings> {
     final t = context.t;
     final hide = review['hidden'] != true;
     try {
-      await context.api.put('/admin/reviews/${review['booking_id']}', {'hidden': hide});
+      await context.api.put('/admin/reviews/${review['booking_id']}', {
+        'hidden': hide,
+      });
       await _load();
     } catch (e) {
       if (mounted) showToast(context, t.error(e));
@@ -114,6 +121,7 @@ class _GrowthSettingsState extends State<GrowthSettings> {
     return ListView(
       padding: const EdgeInsets.all(Space.lg),
       children: [
+        const AcquisitionTable(),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
           child: Column(
@@ -133,8 +141,14 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                   initialValue: _kind,
                   decoration: const InputDecoration(),
                   items: [
-                    DropdownMenuItem(value: 'amount', child: Text(t.offerKindAmount)),
-                    DropdownMenuItem(value: 'percent', child: Text(t.offerKindPercent)),
+                    DropdownMenuItem(
+                      value: 'amount',
+                      child: Text(t.offerKindAmount),
+                    ),
+                    DropdownMenuItem(
+                      value: 'percent',
+                      child: Text(t.offerKindPercent),
+                    ),
                   ],
                   onChanged: (v) => setState(() => _kind = v ?? 'amount'),
                 ),
@@ -148,7 +162,10 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                 const SizedBox(height: Space.sm),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FilledButton(onPressed: _saveWelcome, child: Text(t.save)),
+                  child: FilledButton(
+                    onPressed: _saveWelcome,
+                    child: Text(t.save),
+                  ),
                 ),
                 const Divider(height: Space.xxl),
               ],
@@ -165,24 +182,52 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                   controller: _referralAmount,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(labelText: t.referralRewardAmount),
+                  decoration: InputDecoration(
+                    labelText: t.referralRewardAmount,
+                  ),
                 ),
                 const SizedBox(height: Space.sm),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FilledButton(onPressed: _saveReferral, child: Text(t.save)),
+                  child: FilledButton(
+                    onPressed: _saveReferral,
+                    child: Text(t.save),
+                  ),
                 ),
                 const Divider(height: Space.xxl),
               ],
               ReviewReportQueue(
-                fetch: () async => (await context.api.get('/admin/reviews/reports') as List).cast<Json>(),
-                decide: (id, action) async => context.api.put('/admin/reviews/$id/decision', {'action': action}),
-                setAuthorBlocked: (id, blocked) async => context.api.put('/admin/reviews/$id/author', {'blocked': blocked}),
+                fetch: () async =>
+                    (await context.api.get('/admin/reviews/reports') as List)
+                        .cast<Json>(),
+                decide: (id, action) async => context.api.put(
+                  '/admin/reviews/$id/decision',
+                  {'action': action},
+                ),
+                setAuthorBlocked: (id, blocked) async => context.api.put(
+                  '/admin/reviews/$id/author',
+                  {'blocked': blocked},
+                ),
+              ),
+              const Divider(height: Space.xxl),
+              CaseQueue(
+                fetch: () async =>
+                    (await context.api.get('/admin/cases') as List)
+                        .cast<Json>(),
+                detail: (id) async =>
+                    await context.api.get('/admin/cases/$id') as Json,
+                update: (id, body) async =>
+                    await context.api.put('/admin/cases/$id', body) as Json,
+                reassign: (id, body) async =>
+                    await context.api.post('/admin/cases/$id/reassign', body)
+                        as Json,
+                isAdmin: context.console.isAdmin,
               ),
               const Divider(height: Space.xxl),
               Text(t.reviewsModerationTitle, style: context.text.titleMedium),
               const SizedBox(height: Space.sm),
-              if (_reviews.isEmpty) Text(t.growthReviewCount('0'), style: context.text.bodySmall),
+              if (_reviews.isEmpty)
+                Text(t.growthReviewCount('0'), style: context.text.bodySmall),
               for (final r in _reviews)
                 Padding(
                   padding: const EdgeInsets.only(bottom: Space.sm),
@@ -190,18 +235,35 @@ class _GrowthSettingsState extends State<GrowthSettings> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(children: [
-                          Text('★${r['rating']}', style: context.text.titleSmall),
-                          const SizedBox(width: Space.xs),
-                          Expanded(child: Text('${r['number']} · ${r['customer_name']}', style: context.text.bodySmall)),
-                          if (r['hidden'] == true) Chip(label: Text(t.reviewHiddenTag)),
-                        ]),
-                        if ((r['body'] as String).isNotEmpty) Text(r['body'] as String, style: context.text.bodyMedium),
+                        Row(
+                          children: [
+                            Text(
+                              '★${r['rating']}',
+                              style: context.text.titleSmall,
+                            ),
+                            const SizedBox(width: Space.xs),
+                            Expanded(
+                              child: Text(
+                                '${r['number']} · ${r['customer_name']}',
+                                style: context.text.bodySmall,
+                              ),
+                            ),
+                            if (r['hidden'] == true)
+                              Chip(label: Text(t.reviewHiddenTag)),
+                          ],
+                        ),
+                        if ((r['body'] as String).isNotEmpty)
+                          Text(
+                            r['body'] as String,
+                            style: context.text.bodyMedium,
+                          ),
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () => _moderate(r),
-                            child: Text(r['hidden'] == true ? t.reviewShow : t.reviewHide),
+                            child: Text(
+                              r['hidden'] == true ? t.reviewShow : t.reviewHide,
+                            ),
                           ),
                         ),
                       ],

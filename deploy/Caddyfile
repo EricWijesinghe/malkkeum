@@ -34,8 +34,23 @@
 		-Server
 	}
 
+	# Probes and metrics are for the container runtime and the scraper on the server, never the internet.
+	@internal path /ready /metrics
+	respond @internal 404
+
 	@api path /v1/* /health /.well-known/assetlinks.json /.well-known/apple-app-site-association
 	handle @api {
+		reverse_proxy api:8080
+	}
+
+	# Public SEO pages and feeds are rendered by the API from live data (crates/api/src/seo.rs).
+	@seo path /c/* /sitemap.xml /robots.txt /notices.xml
+	handle @seo {
+		reverse_proxy api:8080
+	}
+	# Search Console / Search Advisor HTML-file verification (googleTOKEN.html, naverTOKEN.html).
+	@verify path_regexp verify ^/(google|naver)[A-Za-z0-9_-]+\.html$
+	handle @verify {
 		reverse_proxy api:8080
 	}
 

@@ -9,6 +9,7 @@
 //
 // Use a dev-only pro account. If the code screen is pre-filled (DEV_MODE), E2E_CODE is ignored.
 import 'package:core/core.dart';
+import 'package:partner/outbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -32,7 +33,7 @@ void main() {
     final theme = ThemeController();
     await locale.set(const Locale('ko'));
     await theme.set(ThemeMode.dark);
-    final state = PartnerState(api, Realtime(api));
+    final state = PartnerState(api, Realtime(api), outbox: await CompletionOutbox.open());
     final t = lookupT(const Locale('ko'));
 
     await tester.pumpWidget(PartnerApp(session: session, app: state, locale: locale, theme: theme));

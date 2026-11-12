@@ -1,10 +1,10 @@
 //! Partner jobs: feed, preview, atomic accept, quotes, schedule, assignment, memo, completion, reschedule replies.
 
+use super::uploads;
 use super::{
     bookings::{BOOKING_COLS, BookingRow, load_booking},
     chat, growth,
 };
-use super::uploads;
 use crate::{
     auth::{Pro, mask_name},
     error::{ApiError, ApiResult},
@@ -45,7 +45,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Same rule as `domain::partner::is_visible`, expressed in SQL for the feed.
-const VISIBLE: &str = "p.status = 'verified'
+pub const VISIBLE: &str = "p.status = 'verified'
     AND b.service_code = ANY(pp.services) AND b.district_code = ANY(pp.districts)
     AND (EXTRACT(ISODOW FROM b.visit_date)::int - 1)::smallint = ANY(pp.weekdays)
     AND (CASE WHEN b.start_hour < 12 THEN 'morning' ELSE 'afternoon' END) = ANY(pp.day_parts)
@@ -142,10 +142,15 @@ async fn job(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> Ap
         "estimate": b.estimate, "size_pyeong": b.address.get("size_pyeong"), "kind": b.address.get("kind"),
         "reschedule": b.reschedule, "cancelled": b.status == -1, "is_quote": b.answers.is_some(), "balance_paid": b.balance_paid,
     });
+    view["emergency"] = crate::safety::emergency_contacts(&s.db).await?;
+    view["entry_code_set"] = json!(b.entry_code_set);
+    view["checked_in_at"] = json!(b.checked_in_at);
+    view["checked_out_at"] = json!(b.checked_out_at);
     let (mut name, mut assignee, mut memo) = (None, None, None);
     if committed {
         view["address"] = b.address.clone();
         view["visit_notes"] = b.visit_notes.clone();
+        view["household"] = b.household.clone();
         let raw: String = sqlx::query_scalar("SELECT name FROM users WHERE id = $1")
             .bind(b.user_id)
             .fetch_one(&s.db)
@@ -200,6 +205,7 @@ async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
 
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
+    crate::quality::check_offer_gate(&s.db, a.id).await?;
     if !visible_to(&s, id, a.id).await? {
         return Err(ApiError::NotFound);
     }
@@ -408,6 +414,15 @@ struct Completion {
     checklist: Vec<bool>,
 }
 
+/// A completion that already landed (the app retried after a lost response): the first result, no second write.
+pub(crate) async fn settled_once(db: &sqlx::PgPool, booking: Uuid, pro: Uuid) -> ApiResult<Option<(i64, Option<NaiveDate>)>> {
+    Ok(sqlx::query_as("SELECT net, payout_date FROM settlements WHERE booking_id = $1 AND pro_id = $2")
+        .bind(booking)
+        .bind(pro)
+        .fetch_optional(db)
+        .await?)
+}
+
 async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
     let base = &s.config.public_base_url;
@@ -424,6 +439,9 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
     let b = load_booking(&s.db, id).await?;
     if b.pro_id != Some(a.id) {
         return Err(ApiError::NotFound);
+    }
+    if let Some((net, date)) = settled_once(&s.db, id, a.id).await? {
+        return Ok(Json(json!({ "ok": true, "payout_date": date, "net": net })));
     }
     let today = today_kst();
     // A job can't be completed (and paid) before it has happened.
@@ -471,7 +489,7 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
         Recipient::User(b.user_id),
         "booking.completed",
         "청소가 끝났어요",
-        "전후 사진을 확인해 보세요",
+        "전후 사진을 확인하고 후기를 남겨 주세요",
         json!({ "booking_id": id, "status": 3 }),
     )
     .await?;

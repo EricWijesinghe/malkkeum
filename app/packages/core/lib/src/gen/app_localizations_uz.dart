@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -500,6 +499,31 @@ class TUz extends T {
   String get cFormula => 'Narx hisoblash formulasi';
 
   @override
+  String get cTabCancelPolicy => 'Bekor qilish siyosati';
+
+  @override
+  String get cPolicyDefaultBanner =>
+      'Bu standart sozlama. Ko‘rib chiqing va tasdiqlash uchun saqlang.';
+
+  @override
+  String get cPolicyDaysBefore => 'Tashrifdan necha kun oldin (dan)';
+
+  @override
+  String get cPolicyPercent =>
+      'To‘lov % (bo‘sh = ilovada bekor qilib bo‘lmaydi)';
+
+  @override
+  String get cPolicyMinFee => 'Minimal to‘lov (KRW)';
+
+  @override
+  String get cPolicyReschedule =>
+      'Qayta rejalashtirish mumkin (tashrifdan necha kun oldin)';
+
+  @override
+  String get cPolicyHint =>
+      'Mijoz ilovasidagi bekor qilish ekranida darhol qo‘llanadi. Shartlar keyingi huquqiy buildda yangilanadi.';
+
+  @override
   String get f_base_studio => 'Studiya asosiy narxi';
 
   @override
@@ -656,6 +680,9 @@ class TUz extends T {
   String get cNewMessage => 'Yangi xabar';
 
   @override
+  String get cConfirmAsk => 'Ishonchingiz komilmi?';
+
+  @override
   String get ok => 'Tayyor';
 
   @override
@@ -748,7 +775,7 @@ class TUz extends T {
 
   @override
   String get err_cancellation_window_closed =>
-      'Tashrifga 2 kun qolganda bekor qilish faqat jamoamiz orqali mumkin';
+      'Bu bronni ilovada bekor qilib bo‘lmaydi. Iltimos, jamoamizga murojaat qiling';
 
   @override
   String get err_address_required => 'Tashrif manzilini kiriting';
@@ -1306,6 +1333,11 @@ class TUz extends T {
   String get photosSoon => 'Tugagach, oldin-keyin suratlar shu yerda chiqadi';
 
   @override
+  String photoThumb(String n) {
+    return 'Foto $n';
+  }
+
+  @override
   String get before => 'Oldin';
 
   @override
@@ -1338,6 +1370,16 @@ class TUz extends T {
 
   @override
   String get cancelKeep => 'Qoldirish';
+
+  @override
+  String cancelFeeNow(String fee, String refund) {
+    return 'Hozir bekor qilsangiz $fee to‘lov olinadi va $refund qaytariladi.';
+  }
+
+  @override
+  String cancelFeeAccept(String fee) {
+    return '$fee to‘lovga rozi bo‘lib bekor qilish';
+  }
 
   @override
   String get cancelled => 'Bron bekor qilindi';
@@ -1754,6 +1796,50 @@ class TUz extends T {
   String get summaryDate => 'Tashrif';
 
   @override
+  String get cpTitle => 'Bekor qilish siyosati';
+
+  @override
+  String cpWhen(String days) {
+    return 'Tashrifdan $days kun yoki undan oldin';
+  }
+
+  @override
+  String get cpWhenSameDay => 'Tashrif kuni';
+
+  @override
+  String get cpFree => 'To‘liq qaytarish';
+
+  @override
+  String cpFee(String percent, String fee, String refund) {
+    return '$percent% to‘lov ($fee), qaytarish $refund';
+  }
+
+  @override
+  String get cpClosed => 'Ilovada bekor qilib bo‘lmaydi (jamoa ko‘rib chiqadi)';
+
+  @override
+  String get hhTitle => 'Uy ma’lumotlari';
+
+  @override
+  String get hhAddPet => 'Uy hayvonini qo‘shish';
+
+  @override
+  String get hhPetCount => 'Soni';
+
+  @override
+  String get hhFloorLabel => 'Qavat (yerto‘la uchun manfiy)';
+
+  @override
+  String get hhElevator => 'Lift bor';
+
+  @override
+  String get hhNotes => 'Eslatma';
+
+  @override
+  String get hhHint =>
+      'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override
@@ -1934,6 +2020,92 @@ class TUz extends T {
 
   @override
   String get err_invalid_capacity => 'To‘g‘ri sig‘imni kiriting.';
+
+  @override
+  String get err_seller_declined =>
+      'Toss sotuvchini ro‘yxatdan o‘tkazishni tasdiqlamadi. Biznes ma’lumotlarini tekshiring.';
+
+  @override
+  String get err_payout_account_unverified =>
+      'Bu hamkorda hali tasdiqlangan to‘lov hisobi yo‘q. Avval hisobni tasdiqlang.';
+
+  @override
+  String get guestSheetTitle => 'Davom etish uchun kiring';
+
+  @override
+  String get guestSheetBody =>
+      'Kiritgan ma\'lumotlaringiz saqlanadi. To\'xtagan joyingizdan davom etasiz.';
+
+  @override
+  String get greetMorning => 'Xayrli tong';
+
+  @override
+  String get greetAfternoon => 'Xayrli kun';
+
+  @override
+  String get greetEvening => 'Xayrli kech';
+
+  @override
+  String get feedHeading => 'Siz uchun tanlangan';
+
+  @override
+  String get feedTitleDue => 'Keyingi tozalash vaqti keldi';
+
+  @override
+  String get feedTitleRebook => '5 yulduzli hamkoringizni qayta band qiling';
+
+  @override
+  String get feedTitleDraft => 'Boshlagan hisob-kitobni davom ettiring';
+
+  @override
+  String get feedTitleSeasonal => 'Shu fasl uchun mos tozalash';
+
+  @override
+  String get feedTitleSize => 'Saqlangan uy o\'lchami bo\'yicha narx';
+
+  @override
+  String get feedTitleSubscription => 'Obuna bilan ko\'proq tejang';
+
+  @override
+  String get feedTitleDistrict => 'Qo\'shnilaringiz ham band qilmoqda';
+
+  @override
+  String feedWhyCadence(String days) {
+    return 'So\'nggi tozalashdan $days kun o\'tdi';
+  }
+
+  @override
+  String feedWhyRated(String days) {
+    return 'Siz bu hamkorga $days kun oldin 5 yulduz qo\'ygansiz';
+  }
+
+  @override
+  String get feedWhyDraft => 'Bu qurilmada yakunlanmagan hisob-kitob bor';
+
+  @override
+  String get feedWhySummer =>
+      'Yozdan oldin konditsionerni tozalash uchun yaxshi payt';
+
+  @override
+  String get feedWhyMoving => 'Ko\'chish va ko\'chib kirish mavsumi gavjum';
+
+  @override
+  String feedWhyHoliday(String days) {
+    return 'Bayram oldi katta tozalashgacha $days kun qoldi';
+  }
+
+  @override
+  String feedWhySize(String pyeong) {
+    return 'Saqlangan $pyeong pyong uy uchun darhol narx';
+  }
+
+  @override
+  String get feedWhyRepeat => 'Tez-tez buyurtma qilsangiz, obuna arzonroq';
+
+  @override
+  String feedWhyDistrict(String district, String count) {
+    return 'Bu hafta ${district}da $count ta uy band qildi';
+  }
 
   @override
   String get fFinance => 'Moliya';
@@ -2258,6 +2430,128 @@ class TUz extends T {
       'Xizmatni yaxshilash uchun texnik ishlar olib borilmoqda. Iltimos, keyinroq qayta urinib ko\'ring.';
 
   @override
+  String get cmTab => 'Kampaniyalar';
+
+  @override
+  String get cmNew => 'Yangi kampaniya';
+
+  @override
+  String get cmAudience => 'Auditoriya';
+
+  @override
+  String get cmSegAll => 'Barcha mijozlar';
+
+  @override
+  String get cmSegNever => 'Hech qachon band qilmagan';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Oxirgi buyurtma $days+ kun oldin';
+  }
+
+  @override
+  String get cmDays => 'Kunlar soni';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total tadan $consented tasi marketing rozilik bergan';
+  }
+
+  @override
+  String get cmChannel => 'Kanal';
+
+  @override
+  String get cmPush => 'Ilova push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Sarlavha';
+
+  @override
+  String get cmBody => 'Matn';
+
+  @override
+  String get cmOptout => 'Rad etish raqami (080)';
+
+  @override
+  String get cmPreview => 'Ko‘rib chiqish';
+
+  @override
+  String get cmSchedule => 'Yuborish vaqti';
+
+  @override
+  String get cmSendNow => 'Hozir yuborish';
+
+  @override
+  String get cmTestSend => 'Test xabarni o‘z raqamimga yuborish';
+
+  @override
+  String get cmCreate => 'Kampaniyani saqlash';
+
+  @override
+  String get cmNeedOptout => 'SMS uchun 080 rad etish raqami kerak';
+
+  @override
+  String get cmLog => 'Yuborish jurnali';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Yuborildi $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Rozilik yo‘q $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Xato $count';
+  }
+
+  @override
+  String get cmSaved => 'Kampaniya saqlandi';
+
+  @override
+  String anFunnel(String days) {
+    return 'Ro‘yxatdan o‘tish voronkasi (so‘nggi $days kun)';
+  }
+
+  @override
+  String get anInstalls => 'Ilova ochilgan (rozilik bilan)';
+
+  @override
+  String get anSignedUp => 'Ro‘yxatdan o‘tgan';
+
+  @override
+  String get anQuoted => 'Narx so‘raganlar';
+
+  @override
+  String get anBooked => 'Band qilgan';
+
+  @override
+  String get anPaid => 'To‘lagan';
+
+  @override
+  String get anRepeat => 'Qayta (2+)';
+
+  @override
+  String get anCohorts =>
+      'Haftalik kogortalar (ro‘yxatdan o‘tgan hafta bo‘yicha bron ulushi)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Ro‘yxat $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n-haftada band qilgan';
+  }
+
+  @override
   String get cOps => 'Tizim holati';
 
   @override
@@ -2417,6 +2711,9 @@ class TUz extends T {
 
   @override
   String get oRuleDisk => 'Disk deyarli to‘lgan';
+
+  @override
+  String get oRuleAuth => 'Shubhali kirish faolligi';
 
   @override
   String get oQuietHours => 'Jim soatlar';
@@ -2674,6 +2971,47 @@ class TUz extends T {
   String get pCustomerRequests => 'Mijoz so\'rovlari';
 
   @override
+  String get pHousehold => 'Uy ma’lumotlari';
+
+  @override
+  String get pPets => 'Uy hayvonlari';
+
+  @override
+  String get pPetDog => 'It';
+
+  @override
+  String get pPetCat => 'Mushuk';
+
+  @override
+  String get pPetBird => 'Qush';
+
+  @override
+  String get pPetFish => 'Baliq';
+
+  @override
+  String get pPetOther => 'Boshqa hayvon';
+
+  @override
+  String get pAllergies => 'Allergiya va sezgirlik';
+
+  @override
+  String get pPreferredProducts => 'Afzal mahsulotlar';
+
+  @override
+  String get pParking => 'Parkovka';
+
+  @override
+  String pFloor(String floor) {
+    return '$floor-qavat';
+  }
+
+  @override
+  String get pElevatorYes => 'Lift bor';
+
+  @override
+  String get pElevatorNo => 'Lift yo‘q';
+
+  @override
   String get pTeamMemo => 'Jamoa eslatmasi (mijozga ko\'rinmaydi)';
 
   @override
@@ -2870,6 +3208,29 @@ class TUz extends T {
   String get pSpace => 'Joy ma\'lumoti';
 
   @override
+  String get pNavigate => 'Yo\'nalish';
+
+  @override
+  String get pNavHint =>
+      'Manzilni xarita ilovasida ochadi. Ilova bo\'lmasa, veb-xarita ochiladi.';
+
+  @override
+  String get pOfflineSaved =>
+      'Signal yo\'q. Saqlandi, ulanish qaytgach yuboriladi.';
+
+  @override
+  String get pPhotoRetry => 'Qayta yuklash';
+
+  @override
+  String get pPhotoWaiting =>
+      'Yuklanmagan suratlar ulanish qaytgach avtomatik yuboriladi.';
+
+  @override
+  String pUploadedCount(String total, String done) {
+    return '$total tadan $done yuklandi';
+  }
+
+  @override
   String get cIntPayout => 'Hamkor to‘lovlari';
 
   @override
@@ -2948,6 +3309,91 @@ class TUz extends T {
   String get poRevealNote => 'Hisob tafsilotlarini ko‘rish qayd etiladi';
 
   @override
+  String get poSellerAction => 'Sotuvchi ro‘yxatdan o‘tkazish';
+
+  @override
+  String get poSellerTitle => 'Toss sotuvchi sifatida ro‘yxatdan o‘tish';
+
+  @override
+  String get poSellerHint =>
+      'Hamkorning tasdiqlangan to‘lov hisobi ishlatiladi. Faqat biznes ma’lumotlarini kiriting.';
+
+  @override
+  String get poSellerIndividual => 'Jismoniy shaxs';
+
+  @override
+  String get poSellerCompany => 'Tadbirkor';
+
+  @override
+  String get poSellerName => 'Ism';
+
+  @override
+  String get poSellerRepresentative => 'Vakil ismi';
+
+  @override
+  String get poSellerRegNo => 'Biznes ro‘yxat raqami (10 raqam)';
+
+  @override
+  String get poSellerEmail => 'Hisob-kitob uchun email';
+
+  @override
+  String get poSellerPhone => 'Telefon';
+
+  @override
+  String get poSellerSubmit => 'Ro‘yxatdan o‘tkazish';
+
+  @override
+  String poSellerDone(String status) {
+    return 'Sotuvchi holati: $status';
+  }
+
+  @override
+  String get oFlags => 'Funksiya kalitlari';
+
+  @override
+  String get oFlagBooking => 'Bronlar';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI yordamchi';
+
+  @override
+  String get oFlagPayments => 'To\'lovlar';
+
+  @override
+  String get oMaintenance => 'Texnik xizmat rejimi';
+
+  @override
+  String get oMaintenanceHint =>
+      'Yoqilsa, mijoz va hamkor ilovalari texnik xizmat ekranini ko\'rsatadi. Konsol ishlashda davom etadi.';
+
+  @override
+  String get oMaintenanceMessage => 'Texnik xizmat xabari';
+
+  @override
+  String get oClientErrors => 'Ilova xatolari hisoboti';
+
+  @override
+  String get oClientErrorsHint =>
+      'Veb, Windows va konsoldan so\'nggi xatolar. Shaxsiy ma\'lumotlar avtomatik yashiriladi.';
+
+  @override
+  String get oClientErrorsEmpty => 'So\'nggi xatolar yo\'q';
+
+  @override
+  String get oHeartbeat => 'Ishlash heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Ulangan. Server ishlaganda tashqi xizmat xabardor qilinadi.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Sozlanmagan: install.sh ga MALKKEUM_HEARTBEAT_URL ni qo\'shing.';
+
+  @override
   String get pvManage => 'Rozilik sozlamalari';
 
   @override
@@ -2993,6 +3439,122 @@ class TUz extends T {
   @override
   String get pvExportFailed =>
       'Ma\'lumotlaringizni yuklab bo\'lmadi. Keyinroq qayta urinib ko\'ring.';
+
+  @override
+  String get safetyEmergency => 'Favqulodda aloqa';
+
+  @override
+  String get emergencyPolice => '112 Politsiya';
+
+  @override
+  String get emergencyFire => '119 Yong\'in va qutqaruv';
+
+  @override
+  String get emergencyShop => 'Mijozlar xizmati';
+
+  @override
+  String get caseReportAction => 'Muammo haqida xabar berish';
+
+  @override
+  String get caseReportTitle => 'Nima bo\'ldi?';
+
+  @override
+  String get caseKindDamage => 'Shikastlanish';
+
+  @override
+  String get caseKindLoss => 'Yo\'qolish';
+
+  @override
+  String get caseKindComplaint => 'Shikoyat';
+
+  @override
+  String get caseKindNoShow => 'Tozalovchi kelmadi';
+
+  @override
+  String get caseKindSafety => 'Xavfsizlik masalasi';
+
+  @override
+  String get caseKindPayment => 'To\'lov nizosi';
+
+  @override
+  String get caseSummaryHint => 'Nima bo\'lganini yozing (300 belgigacha)';
+
+  @override
+  String get caseSubmit => 'Yuborish';
+
+  @override
+  String get caseSubmitted =>
+      'Qabul qilindi. Jamoa 24 soat ichida javob beradi.';
+
+  @override
+  String get caseFailed => 'Yuborib bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get checkInAction => 'Kelganini qayd etish';
+
+  @override
+  String get checkOutAction => 'Ketganini qayd etish';
+
+  @override
+  String checkedInAt(String time) {
+    return 'Kelgan vaqt $time';
+  }
+
+  @override
+  String checkedOutAt(String time) {
+    return 'Ketgan vaqt $time';
+  }
+
+  @override
+  String get entryCodeAction => 'Kirish kodini ko\'rsatish';
+
+  @override
+  String get entryCodeTitle => 'Kirish kodi';
+
+  @override
+  String get entryCodeNotToday => 'Faqat tashrif kunida ko\'rinadi';
+
+  @override
+  String get entryCodeEmpty => 'Kirish kodi kiritilmagan';
+
+  @override
+  String get actionFailed => 'Bajarib bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get consoleCasesTitle => 'Holatlar navbati';
+
+  @override
+  String get consoleCasesEmpty => 'Ochiq holatlar yo\'q';
+
+  @override
+  String get caseOverdue => 'Muddati o\'tgan';
+
+  @override
+  String get caseStatusOpen => 'Ochiq';
+
+  @override
+  String get caseStatusInvestigating => 'Tekshirilmoqda';
+
+  @override
+  String get caseStatusResolved => 'Hal qilindi';
+
+  @override
+  String get caseStatusRejected => 'Rad etildi';
+
+  @override
+  String get caseReassign => 'Hamkorni qayta tayinlash';
+
+  @override
+  String get caseRefund => 'Qaytarish';
+
+  @override
+  String get caseHold => 'To\'lovni to\'xtatish';
+
+  @override
+  String get caseNoteHint => 'Ichki eslatma';
+
+  @override
+  String get caseSave => 'Saqlash';
 
   @override
   String get cSetup => 'Sozlash';
@@ -3229,6 +3791,340 @@ class TUz extends T {
 
   @override
   String get cInvalidValue => 'Kiritilgan qiymatni tekshiring';
+
+  @override
+  String get cMfaTitle => 'Ikki bosqichli kirish';
+
+  @override
+  String get cMfaCode => 'Autentifikator ilovasidagi 6 xonali kod';
+
+  @override
+  String get cMfaRecovery => 'Tiklash kodi';
+
+  @override
+  String get cMfaUseRecovery => 'O‘rniga tiklash kodidan foydalaning';
+
+  @override
+  String get cMfaUseCode => 'O‘rniga autentifikator kodidan foydalaning';
+
+  @override
+  String get cMfaVerify => 'Tasdiqlash';
+
+  @override
+  String get cMfaBack => 'Kirishga qaytish';
+
+  @override
+  String get cMfaEnrolTitle => 'Ikki bosqichli kirishni sozlang';
+
+  @override
+  String get cMfaEnrolBody =>
+      'Administratorga autentifikator ilova kerak. Quyidagi kalitni Google Authenticator, 1Password yoki o‘xshash ilovaga qo‘shing, so‘ng u ko‘rsatgan 6 xonali kodni kiriting.';
+
+  @override
+  String get cMfaSecret => 'Sozlash kaliti';
+
+  @override
+  String get cMfaLink => 'Sozlash havolasi (otpauth)';
+
+  @override
+  String get cMfaCopy => 'Nusxalash';
+
+  @override
+  String get cMfaCopied => 'Nusxalandi';
+
+  @override
+  String get cMfaConfirm => 'Tasdiqlab yoqish';
+
+  @override
+  String get cMfaCodesTitle => 'Tiklash kodlaringizni saqlang';
+
+  @override
+  String get cMfaCodesBody =>
+      'Autentifikator yo‘qolsa, har bir kod bilan bir marta kirish mumkin. Ular faqat hozir ko‘rsatiladi.';
+
+  @override
+  String get cMfaDownload => 'Yuklab olish';
+
+  @override
+  String get cMfaSaveFailed =>
+      'Bu qurilma faylni saqlay olmaydi. Kodlarni nusxalab, xavfsiz saqlang.';
+
+  @override
+  String get cMfaContinue => 'Konsolga o‘tish';
+
+  @override
+  String get cMfaInvalid =>
+      'Kod mos kelmadi. Telefon vaqti to‘g‘riligini tekshirib, qayta urinib ko‘ring.';
+
+  @override
+  String get cMfaExpired =>
+      'Kirish muddati tugadi. Parol bosqichidan qayta boshlang.';
+
+  @override
+  String get cMfaLocked =>
+      'Urinishlar juda ko‘p. Bir necha daqiqa kutib, qayta urinib ko‘ring.';
+
+  @override
+  String get cStaffReset => 'Parolni tiklash';
+
+  @override
+  String get cStaffResetConfirm =>
+      'Bu xodimning parolini tiklaysizmi? U barcha qurilmalardan chiqariladi.';
+
+  @override
+  String get cStaffResetTitle => 'Tiklash tokeni';
+
+  @override
+  String get cStaffResetBody =>
+      'Bu tokenni xodimga bering. U bir marta, 30 daqiqa ichida ishlaydi. Yopilgandan keyin qayta ko‘rsatilmaydi.';
+
+  @override
+  String get subTitle => 'Muntazam tozalash';
+
+  @override
+  String get subNew => 'Obuna boshlash';
+
+  @override
+  String get subCadence => 'Necha marta';
+
+  @override
+  String get subWeekly => 'Har hafta';
+
+  @override
+  String get subBiweekly => 'Har 2 haftada';
+
+  @override
+  String get subEvery4Weeks => 'Har 4 haftada';
+
+  @override
+  String get subWeekday => 'Hafta kuni';
+
+  @override
+  String get subHour => 'Kelish vaqti';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Har bir tashrif uchun $percent% chegirma';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Har tashrifdan bir kun oldin saqlangan kartadan to\'lanadi';
+
+  @override
+  String get subCreate => 'Obuna bo\'lish';
+
+  @override
+  String get subCreated => 'Obuna boshlandi';
+
+  @override
+  String get subNeedAddress => 'Avval tashrif manzilini qo\'shing';
+
+  @override
+  String get subListEmpty => 'Hozircha obuna yo\'q';
+
+  @override
+  String get subStatusActive => 'Faol';
+
+  @override
+  String get subStatusPaused => 'To\'xtatilgan';
+
+  @override
+  String get subStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Keyingi tashrif $date';
+  }
+
+  @override
+  String get subPause => 'To\'xtatish';
+
+  @override
+  String get subResume => 'Davom ettirish';
+
+  @override
+  String get subCancelSub => 'Obunani bekor qilish';
+
+  @override
+  String get subCancelConfirm =>
+      'Kelgusi tashriflar bekor qilinadi. Band qilingan tashriflarni alohida bekor qiling.';
+
+  @override
+  String get subSkip => 'Bu tashrifni o\'tkazib yuborish';
+
+  @override
+  String get subMove => 'Sanani o\'zgartirish';
+
+  @override
+  String get subVisitLocked =>
+      'Tashrifdan bir kun oldin o\'zgartirib bo\'lmaydi';
+
+  @override
+  String get subPausedPayment =>
+      'Takroriy to\'lov xatolari tufayli to\'xtatildi. Kartani almashtirib, davom ettiring.';
+
+  @override
+  String get subStatePlanned => 'Rejalashtirilgan';
+
+  @override
+  String get subStateBooked => 'Band qilingan';
+
+  @override
+  String get subStateSkipped => 'O\'tkazib yuborilgan';
+
+  @override
+  String get subStateMissed => 'O\'tkazib yuborilgan (o\'tmagan)';
+
+  @override
+  String get pSubsTitle => 'Doimiy mijozlar';
+
+  @override
+  String get pSubsEmpty => 'Hozircha doimiy mijozlar yo\'q';
+
+  @override
+  String get cSubsTitle => 'Obunalar';
+
+  @override
+  String get cSubsEdit => 'Mijoz o\'rniga tahrirlash';
+
+  @override
+  String get cMrr => 'Oylik takroriy daromad (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Faol obunalar';
+
+  @override
+  String get cRecognized => 'Davrda e\'tirof etilgan daromad';
+
+  @override
+  String get cSubsLoadFailed => 'Obunalarni yuklab bo\'lmadi';
+
+  @override
+  String get tTaxSection => 'Soliq';
+
+  @override
+  String tVatQuarter(String q) {
+    return 'Q$q QQS CSV';
+  }
+
+  @override
+  String get tVatYear => 'Yil';
+
+  @override
+  String get tExportWithholding => 'Ushlab qolish hisoboti CSV';
+
+  @override
+  String get tExportTaxInvoices => 'Soliq hisob-fakturasini yuklash CSV';
+
+  @override
+  String get tTaxLayoutNote =>
+      'Yuklashdan oldin ustunlarni 홈택스 shabloni bilan tekshiring. Tuzilma hali tasdiqlanmagan.';
+
+  @override
+  String get tCashReceipts => 'Naqd kvitansiyalar';
+
+  @override
+  String get tCashIssued => 'Berilgan';
+
+  @override
+  String get tCashFailed => 'Xatolik';
+
+  @override
+  String get tCashPending => 'Kutilmoqda';
+
+  @override
+  String get tCashCancelled => 'Bekor qilingan';
+
+  @override
+  String get tReissue => 'Qayta berish';
+
+  @override
+  String get tTaxInvoices => 'Soliq hisob-fakturalari';
+
+  @override
+  String get tApprovalNumber => 'Tasdiqlash raqami';
+
+  @override
+  String get tIssuedOn => 'Berilgan sana';
+
+  @override
+  String get tMarkIssued => 'Berilgan deb belgilash';
+
+  @override
+  String get tQueueEmpty => 'Kutilayotgan so‘rovlar yo‘q';
+
+  @override
+  String get tWithholdingLabel => 'Ushlab qolish';
+
+  @override
+  String get tGrossAmount => 'Yalpi summa';
+
+  @override
+  String get tIncomeTax => 'Daromad solig‘i';
+
+  @override
+  String get tLocalTax => 'Mahalliy daromad solig‘i';
+
+  @override
+  String get tNetAmount => 'Sof summa';
+
+  @override
+  String get tNoWithholding => 'Ushlab qolinmaydi (ro‘yxatdan o‘tgan biznes)';
+
+  @override
+  String get tEstWithholding => 'Taxminiy ushlab qolish (to‘lanmagan)';
+
+  @override
+  String get tReceiptOptions => 'Kvitansiya sozlamalari';
+
+  @override
+  String get tWantCashReceipt => 'Naqd kvitansiya olish';
+
+  @override
+  String get tCashForIncome => 'Soliq chegirmasi uchun (telefon raqami)';
+
+  @override
+  String get tCashForBusiness => 'Biznes xarajatlari uchun (biznes raqami)';
+
+  @override
+  String get tWantTaxInvoice => 'Soliq hisob-fakturasi olish (biznes)';
+
+  @override
+  String get tPhoneForReceipt => 'Telefon raqami';
+
+  @override
+  String get tBusinessNumber => 'Biznes ro‘yxat raqami';
+
+  @override
+  String get tCompanyName => 'Kompaniya nomi';
+
+  @override
+  String get tRepresentative => 'Vakil';
+
+  @override
+  String get tInvoiceEmail => 'Hisob-faktura uchun email';
+
+  @override
+  String get tReceiptSave => 'Saqlab to‘lash';
+
+  @override
+  String get tReceiptSaveFailed => 'Kvitansiya ma’lumotlari saqlanmadi';
+
+  @override
+  String get tTaxType => 'Soliq turi';
+
+  @override
+  String get tTaxFreelancer => 'Frilanser (ushlab qolinadi)';
+
+  @override
+  String get tTaxBusiness => 'Ro‘yxatdan o‘tgan biznes (ushlanmaydi)';
+
+  @override
+  String get tReceiptSettings => 'Kvitansiya sozlamalari';
 
   @override
   String get reviewRuleLine =>
