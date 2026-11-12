@@ -222,7 +222,10 @@ void main() {
     await tester.scrollUntilVisible(checklist, 200, scrollable: find.byType(Scrollable).first);
     expect(find.descendant(of: checklist, matching: find.byType(ChoiceTile3D)), findsNWidgets(prepTools.length));
     expect(find.text(koT.dfPrepCount('0', '${prepTools.length}')), findsOneWidget);
-    await tester.tap(find.descendant(of: checklist, matching: find.text(koT.tool('gloves'))));
+    final gloves = find.descendant(of: checklist, matching: find.text(koT.tool('gloves')));
+    await tester.ensureVisible(gloves);
+    await tester.pump();
+    await tester.tap(gloves);
     await settle(tester);
     expect(find.text(koT.dfPrepCount('1', '${prepTools.length}')), findsOneWidget);
 

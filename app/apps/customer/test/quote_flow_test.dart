@@ -15,6 +15,13 @@ import 'support/customer_routes.dart';
 /// route is the last match in tree order.
 Finder _topNext() => find.text(koT.next).last;
 
+/// Tiles can sit below the fold on a phone: scroll them in before tapping.
+Future<void> _tap(WidgetTester tester, Finder f) async {
+  await tester.ensureVisible(f);
+  await tester.pump();
+  await tester.tap(f);
+}
+
 /// The server's itemised estimate; the screen only renders it.
 const _estimate = {
   'base': 300000,
@@ -51,8 +58,8 @@ void main() {
 
     // Step 1: cleaning type and the condition boxes (3 tiles, "not sure" stays a chip).
     expect(find.byType(ChoiceTile3D), findsNWidgets(3));
-    await tester.tap(find.text(koT.type_standard));
-    await tester.tap(find.text(koT.luggage_partly_unpacked));
+    await _tap(tester, find.text(koT.type_standard));
+    await _tap(tester, find.text(koT.luggage_partly_unpacked));
     await settle(tester);
     await tester.tap(_topNext());
     await settle(tester);
@@ -61,20 +68,20 @@ void main() {
     // Step 2: Apartment / Villa / Commercial + "기타", structure tiles, duplex.
     expect(find.text(koT.building_commercial), findsOneWidget);
     expect(find.text(koT.building_officetel), findsNothing, reason: 'other buildings sit under 기타');
-    await tester.tap(find.text(koT.building_other));
+    await _tap(tester, find.text(koT.building_other));
     await settle(tester);
     expect(find.text(koT.building_officetel), findsOneWidget);
-    await tester.tap(find.text(koT.building_commercial));
-    await tester.tap(find.text(koT.layout_two_rooms));
+    await _tap(tester, find.text(koT.building_commercial));
+    await _tap(tester, find.text(koT.layout_two_rooms));
     await settle(tester);
-    await tester.tap(find.text(koT.yes).first);
+    await _tap(tester, find.text(koT.yes).first);
     await settle(tester);
     await tester.tap(_topNext());
     await settle(tester);
     expect(find.text(koT.stepOf('3', '5')), findsOneWidget);
 
     // Step 3: counts 0-5 and the elevator tiles (the last yes/no in tree order).
-    await tester.tap(find.text(koT.no).last);
+    await _tap(tester, find.text(koT.no).last);
     await settle(tester);
     await tester.tap(_topNext());
     await settle(tester);
@@ -83,11 +90,12 @@ void main() {
     expect(find.byType(ScheduleScreen), findsOneWidget);
     expect(find.text(koT.stepOf('4', '5')), findsOneWidget);
     expect(find.text(koT.morning), findsOneWidget);
-    await tester.tap(find.text(koT.dfAcAddonAdd));
+    await _tap(tester, find.text(koT.dfAcAddonAdd));
     await settle(tester);
     final wall = find.widgetWithText(CountStepper, '${koT.unit('wall')} · ${formatWon(79000, 'ko')}');
+    expect(find.byType(BottomSheet), findsOneWidget);
     expect(wall, findsOneWidget, reason: 'price comes from the catalog');
-    await tester.tap(find.descendant(of: wall, matching: find.byTooltip('+')));
+    await _tap(tester, find.descendant(of: wall, matching: find.byTooltip('+')));
     await settle(tester);
     Navigator.of(tester.element(wall)).pop();
     await settle(tester);
@@ -106,7 +114,7 @@ void main() {
       {'unit': 'wall', 'count': 1},
     ]);
 
-    await tester.tap(find.text(koT.quoteRequest));
+    await _tap(tester, find.text(koT.quoteRequest));
     await settle(tester, duration: const Duration(seconds: 1));
 
     final body = fake.lastCall('POST', '/bookings')!.json;
@@ -142,7 +150,7 @@ void main() {
 
     final next = find.widgetWithText(PrimaryButton, koT.next).last;
     expect(tester.widget<PrimaryButton>(next).onPressed, isNull);
-    await tester.tap(find.text(koT.type_normal_move_in));
+    await _tap(tester, find.text(koT.type_normal_move_in));
     await settle(tester);
     expect(tester.widget<PrimaryButton>(next).onPressed, isNotNull);
     await unmount(tester);

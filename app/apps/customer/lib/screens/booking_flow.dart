@@ -110,27 +110,24 @@ class ChoiceTile3D extends StatelessWidget {
   }
 }
 
-/// Lays [children] out [cols] per row, each row as tall as its tallest tile, so long
-/// translations and large system fonts wrap instead of clipping.
+/// Lays [children] out [cols] per row; tiles grow with long translations and large fonts.
 Widget tileRows(List<Widget> children, {int cols = 2}) => Column(
   children: [
     for (var i = 0; i < children.length; i += cols)
       Padding(
         padding: const EdgeInsets.only(bottom: Space.xs),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var j = i; j < i + cols; j++) ...[
-                if (j > i) const SizedBox(width: Space.xs),
-                Expanded(
-                  child: j < children.length
-                      ? children[j]
-                      : const SizedBox.shrink(),
-                ),
-              ],
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var j = i; j < i + cols; j++) ...[
+              if (j > i) const SizedBox(width: Space.xs),
+              Expanded(
+                child: j < children.length
+                    ? children[j]
+                    : const SizedBox.shrink(),
+              ),
             ],
-          ),
+          ],
         ),
       ),
   ],
@@ -601,21 +598,25 @@ class _DayChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: selected ? accent : context.colors.line),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                day.day == 1 || selected ? '${day.month}/${day.day}' : dow,
-                style: context.text.labelSmall?.copyWith(color: dowColor),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${day.day}',
-                style: context.text.titleLarge?.copyWith(
-                  color: selected ? Colors.white : context.colors.ink,
+          // Fixed 56x84 chip: large system fonts scale down instead of overflowing.
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  day.day == 1 || selected ? '${day.month}/${day.day}' : dow,
+                  style: context.text.labelSmall?.copyWith(color: dowColor),
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  '${day.day}',
+                  style: context.text.titleLarge?.copyWith(
+                    color: selected ? Colors.white : context.colors.ink,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -689,7 +690,6 @@ class AcAddonBanner extends StatelessWidget {
     final count = _count;
     return AppCard(
       color: context.colors.sunTint,
-      onTap: () => _open(context),
       padding: const EdgeInsets.all(Space.md),
       child: Row(
         children: [
@@ -797,7 +797,7 @@ class PgNotice extends StatelessWidget {
               onPressed: () => showAppSheet<void>(
                 context,
                 title: t.dfRefundPolicy,
-                builder: (_) => Padding(
+                builder: (_) => SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(
                     Space.gutter,
                     0,
@@ -1116,8 +1116,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 Row(
                   children: [
-                    Text(t.total, style: context.text.titleMedium),
-                    const Spacer(),
+                    Expanded(
+                      child: Text(t.total, style: context.text.titleMedium),
+                    ),
                     RollingAmount(
                       value: due,
                       format: context.won,
@@ -1227,11 +1228,15 @@ class _Line extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Text(
-        label,
-        style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft),
+      Expanded(
+        child: Text(
+          label,
+          style: context.text.bodyMedium?.copyWith(
+            color: context.colors.inkSoft,
+          ),
+        ),
       ),
-      const Spacer(),
+      const SizedBox(width: Space.xs),
       Text(
         value,
         style: context.text.bodyMedium?.copyWith(

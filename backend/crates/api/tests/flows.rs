@@ -264,7 +264,12 @@ async fn quote_booking_stores_the_addon_estimate_and_rejects_hourly_slots(pool: 
     let (st, b) = call(&app, "POST", "/v1/bookings", Some(c.token.as_str()), Some(body(8))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (_, e) = call(&app, "POST", "/v1/quote/estimate", None, Some(answers.clone())).await;
-    assert_eq!(b["estimate"], e["total"], "the booking keeps the same priced estimate");
+    // The booking adds the date's peak surcharge on top; the add-on is priced into it either way.
+    let est = b["estimate"].as_i64().unwrap();
+    let preview = e["total"].as_i64().unwrap();
+    let addons = e["addons"].as_i64().unwrap();
+    assert_eq!(addons, 107_100, "119,000 stand, 10% off");
+    assert!(est >= preview, "booking {est} vs preview {preview}");
     assert_eq!(b["answers"]["ac_addons"][0]["unit"], "stand");
     assert!(b["thread_id"].is_string(), "the app opens this chat after submit: {b}");
 }

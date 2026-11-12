@@ -60,8 +60,9 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     super.initState();
     // After the first frame: the app is only reachable through the context once mounted.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted)
+      if (mounted) {
         context.appRead.analytics.track('quote_view', screen: 'quote');
+      }
     });
   }
 
@@ -258,7 +259,9 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             () => a.building = b,
           ),
         _tile('bld_other', t.building_other, other, () {
-          if (!other) a.building = 'other';
+          if (!other) {
+            a.building = 'other';
+          }
         }),
       ]),
       if (other)
