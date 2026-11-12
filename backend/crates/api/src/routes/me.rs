@@ -199,7 +199,7 @@ async fn issue_welcome_pack(s: &AppState, user: Uuid) -> ApiResult<()> {
         .execute(&mut *tx)
         .await?;
     if claimed.rows_affected() == 1 {
-        let pack = super::growth::load_welcome_pack(&mut *tx).await?;
+        let pack = super::growth::load_welcome_pack(&mut tx).await?;
         for c in pack.issue(Utc::now()) {
             let name = if c.service_code.is_some() { "welcome_studio" } else { "welcome_any" };
             sqlx::query("INSERT INTO coupons (user_id, name, amount, service_code, campaign, issued_at, expires_at) VALUES ($1,$2,$3,$4,'welcome',$5,$6)")

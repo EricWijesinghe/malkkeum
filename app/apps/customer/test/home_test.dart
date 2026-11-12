@@ -128,13 +128,13 @@ void main() {
     await tester.tap(find.text(_news));
     await settle(tester);
     expect(tester.widget<ContentDetailScreen>(find.byType(ContentDetailScreen)).item.id, 'n-1');
-    await tester.pageBack();
+    await tester.tap(find.byType(BackButton));
     await settle(tester);
 
     await tester.tap(find.text(_pick));
     await settle(tester);
     expect(tester.widget<ServiceScreen>(find.byType(ServiceScreen)).service.code, 'move_in');
-    await tester.pageBack();
+    await tester.tap(find.byType(BackButton));
     await settle(tester);
 
     await tester.tap(find.text(_hero));

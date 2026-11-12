@@ -11,7 +11,8 @@ import 'support/customer_routes.dart';
 /// overflow or exception fails the test.
 const _smallPhone = Size(320, 568);
 const _scales = [1.3, 2.0];
-const _scrollSteps = 14;
+const _scrollSteps = 20;
+const _gutter = Offset(3, 300);
 
 /// Long titles in the app language where one exists: content is written per language in the console.
 Json _item(String id, String kind, String title, {String? link}) =>
@@ -59,21 +60,28 @@ void main() {
         final env = await TestEnv.create(fake: _homeApi(), localeCode: code);
 
         await pumpCustomerApp(tester, env);
-        await pumpUntilFound(tester, find.text(t.dhSvcMoveShort));
+        await pumpUntilFound(tester, find.text(t.tabHome));
         await settle(tester, duration: const Duration(milliseconds: 600));
         expect(tester.takeException(), isNull, reason: 'top of home');
 
-        await tester.tap(find.text(t.dhSvcMoveShort));
+        // On this screen the grid starts below the fold: centre the move tile, clear of the bottom bar.
+        final list = find.byType(CustomScrollView).first;
+        final scrollable = find.descendant(of: list, matching: find.byType(Scrollable)).first;
+        final tile = find.text(t.dhSvcMoveShort);
+        await tester.scrollUntilVisible(tile, 120, scrollable: scrollable);
+        await Scrollable.ensureVisible(tester.element(tile), alignment: 0.5);
+        await settle(tester, duration: const Duration(milliseconds: 400));
+        expect(tester.takeException(), isNull, reason: 'banner and grid');
+        await tester.tap(tile);
         await settle(tester, duration: const Duration(milliseconds: 600));
         expect(find.text(t.dhMovePickTitle), findsOneWidget);
         expect(tester.takeException(), isNull, reason: 'move sheet');
-        await tester.tapAt(const Offset(160, 8)); // scrim
+        Navigator.of(tester.element(find.text(t.dhMovePickTitle))).pop();
         await settle(tester, duration: const Duration(milliseconds: 600));
 
-        final list = find.byType(CustomScrollView).first;
         var sawNews = false, sawTips = false;
         for (var i = 0; i < _scrollSteps; i++) {
-          await tester.drag(list, const Offset(0, -260));
+          await tester.dragFrom(_gutter, const Offset(0, -260)); // start beside the cards, on no tile
           await settle(tester, duration: const Duration(milliseconds: 300));
           expect(tester.takeException(), isNull, reason: 'scroll step $i');
           sawNews |= find.text(t.dhHomeNews).evaluate().isNotEmpty;

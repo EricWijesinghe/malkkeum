@@ -149,21 +149,22 @@ class _GrowthSettingsState extends State<GrowthSettings> {
         ),
       ),
     const SizedBox(height: Space.sm),
-    Row(
-      children: [
-        TextButton.icon(
-          onPressed: () => setState(
-            () => _pack = [
-              ..._pack,
-              (amount: TextEditingController(), service: null),
-            ],
-          ),
-          icon: const Icon(Icons.add_rounded),
-          label: Text(t.welcomePackAdd),
+    Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: TextButton.icon(
+        onPressed: () => setState(
+          () => _pack = [
+            ..._pack,
+            (amount: TextEditingController(), service: null),
+          ],
         ),
-        const Spacer(),
-        FilledButton(onPressed: _savePack, child: Text(t.save)),
-      ],
+        icon: const Icon(Icons.add_rounded),
+        label: Text(t.welcomePackAdd),
+      ),
+    ),
+    Align(
+      alignment: Alignment.centerRight,
+      child: FilledButton(onPressed: _savePack, child: Text(t.save)),
     ),
     const Divider(height: Space.xxl),
   ];
