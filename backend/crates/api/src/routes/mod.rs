@@ -5,7 +5,7 @@ mod auth;
 mod booking_core;
 pub(crate) mod bookings;
 pub mod cases;
-mod catalog;
+pub(crate) mod catalog;
 mod feed;
 pub(crate) mod chat;
 mod cash_receipts;
@@ -20,6 +20,10 @@ mod member;
 mod ops;
 mod partner;
 pub(crate) mod partner_jobs;
+pub(crate) mod tips;
+pub(crate) mod waitlist;
+pub mod subscription_engine;
+pub(crate) mod subscriptions;
 pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
@@ -72,6 +76,8 @@ pub fn router(state: AppState) -> Router {
         .merge(bookings::routes())
         .merge(cases::customer_routes())
         .merge(bookings::public_routes())
+        .merge(waitlist::routes())
+        .merge(tips::routes())
         .merge(chat::routes())
         .merge(uploads::routes().layer(DefaultBodyLimit::max(contract::UPLOAD_BODY_LIMIT)))
         .merge(checkouts::routes())
@@ -80,17 +86,21 @@ pub fn router(state: AppState) -> Router {
         .merge(growth::public_routes())
         .merge(growth::customer_routes())
         .merge(payments::routes())
+        .merge(subscriptions::routes())
+        .merge(subscriptions::public_routes())
         .merge(webhooks::routes())
         .merge(setup::public_routes())
         .merge(address::public_routes())
         .merge(config::routes())
         .merge(crate::client_errors::routes())
+        .merge(crate::analytics::public_routes())
         .nest(
             "/admin",
             admin::routes()
                 .merge(staff_password::admin_routes())
                 .merge(admin_content::routes())
                 .merge(growth::admin_routes())
+                .merge(crate::acquisition::admin_routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
@@ -102,9 +112,20 @@ pub fn router(state: AppState) -> Router {
                 .merge(tax_invoices::admin_routes())
                 .merge(ops::admin_routes())
                 .merge(cases::admin_routes())
-                .merge(site::admin_routes()),
+                .merge(site::admin_routes())
+                .merge(crate::marketing::admin_routes())
+                .merge(crate::analytics::admin_routes())
+                .merge(subscriptions::admin_routes()),
         )
-        .nest("/partner", partner::routes().merge(partner_jobs::routes()).merge(finance::partner_routes()).merge(cases::partner_routes()).merge(site::partner_routes()))
+        .nest(
+            "/partner",
+            partner::routes()
+                .merge(partner_jobs::routes())
+                .merge(finance::partner_routes())
+                .merge(cases::partner_routes())
+                .merge(site::partner_routes())
+                .merge(subscriptions::partner_routes()),
+        )
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler))
         .route("/openapi.json", get(crate::openapi::spec))
@@ -116,6 +137,7 @@ pub fn router(state: AppState) -> Router {
         .route("/ready", get(lifecycle::ready))
         .route("/metrics", get(metrics::handler))
         .merge(crate::app_links::routes())
+        .merge(crate::seo::routes())
         .nest("/v1", api)
         .layer(axum::middleware::from_fn_with_state(state.clone(), config::enforce))
         .layer(RequestBodyLimitLayer::new(BODY_LIMIT_BYTES))

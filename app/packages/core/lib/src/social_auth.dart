@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'attribution.dart';
 import 'desktop.dart';
 import 'session.dart';
 import 'social_native_stub.dart' if (dart.library.io) 'social_native_io.dart';
@@ -154,7 +155,16 @@ bool isDevApiBase(String baseUrl) {
   return host == 'localhost' ||
       host == '127.0.0.1' ||
       host == '10.0.2.2' ||
-      host.endsWith('.local');
+      host.endsWith('.local') ||
+      _isPrivateIpv4(host);
+}
+
+/// RFC 1918 addresses: a demo server on the office Wi-Fi (the server refuses dev mode on public hosts).
+bool _isPrivateIpv4(String host) {
+  final p = host.split('.').map(int.tryParse).toList();
+  if (p.length != 4 || p.any((n) => n == null || n < 0 || n > 255)) return false;
+  final a = p[0]!, b = p[1]!;
+  return a == 10 || (a == 172 && b >= 16 && b <= 31) || (a == 192 && b == 168);
 }
 
 /// Apple is offered where Sign in with Apple exists (iOS, macOS); never on the web.
@@ -227,6 +237,7 @@ Future<SocialAuthResult?> signInWithSocial({
             'provider': provider.provider,
             'token': token,
             'audience': audience,
+            'attribution': ?Attribution.get(),
           })
           as Map<String, dynamic>;
   await session.save(body);

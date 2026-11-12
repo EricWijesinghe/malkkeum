@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2345,6 +2344,127 @@ class TKo extends T {
   String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
 
   @override
+  String get cmTab => '캠페인';
+
+  @override
+  String get cmNew => '새 캠페인';
+
+  @override
+  String get cmAudience => '대상 고객';
+
+  @override
+  String get cmSegAll => '전체 고객';
+
+  @override
+  String get cmSegNever => '예약 이력 없음';
+
+  @override
+  String cmSegLapsed(String days) {
+    return '마지막 예약 $days일 이상 전';
+  }
+
+  @override
+  String get cmDays => '일 수';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '전체 $total명 중 마케팅 동의 $consented명';
+  }
+
+  @override
+  String get cmChannel => '발송 채널';
+
+  @override
+  String get cmPush => '앱 푸시';
+
+  @override
+  String get cmSms => '문자(SMS)';
+
+  @override
+  String get cmTitle => '제목';
+
+  @override
+  String get cmBody => '내용';
+
+  @override
+  String get cmOptout => '수신거부 번호 (080)';
+
+  @override
+  String get cmPreview => '미리보기';
+
+  @override
+  String get cmSchedule => '발송 시각';
+
+  @override
+  String get cmSendNow => '바로 발송';
+
+  @override
+  String get cmTestSend => '내 번호로 테스트 발송';
+
+  @override
+  String get cmCreate => '캠페인 저장';
+
+  @override
+  String get cmNeedOptout => '문자 발송에는 080 수신거부 번호가 필요해요';
+
+  @override
+  String get cmLog => '발송 기록';
+
+  @override
+  String cmStatSent(String count) {
+    return '발송 $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return '동의 없음 $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return '실패 $count';
+  }
+
+  @override
+  String get cmSaved => '캠페인을 만들었어요';
+
+  @override
+  String anFunnel(String days) {
+    return '가입 후 퍼널 (최근 $days일)';
+  }
+
+  @override
+  String get anInstalls => '앱 실행 (동의)';
+
+  @override
+  String get anSignedUp => '가입';
+
+  @override
+  String get anQuoted => '견적 요청';
+
+  @override
+  String get anBooked => '예약';
+
+  @override
+  String get anPaid => '결제';
+
+  @override
+  String get anRepeat => '재구매 (2회 이상)';
+
+  @override
+  String get anCohorts => '주간 코호트 (가입 주 기준 예약률)';
+
+  @override
+  String anCohortSize(String count) {
+    return '가입 $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n주 후 예약';
+  }
+
+  @override
   String get cOps => '시스템 상태';
 
   @override
@@ -2503,6 +2623,9 @@ class TKo extends T {
 
   @override
   String get oRuleDisk => '디스크 부족';
+
+  @override
+  String get oRuleAuth => '계정 보안 이상(로그인 잠금 등)';
 
   @override
   String get oQuietHours => '조용한 시간';
@@ -3118,6 +3241,50 @@ class TKo extends T {
   }
 
   @override
+  String get oFlags => '기능 스위치';
+
+  @override
+  String get oFlagBooking => '예약';
+
+  @override
+  String get oFlagChat => '채팅';
+
+  @override
+  String get oFlagAi => 'AI 상담';
+
+  @override
+  String get oFlagPayments => '결제';
+
+  @override
+  String get oMaintenance => '점검 모드';
+
+  @override
+  String get oMaintenanceHint => '켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.';
+
+  @override
+  String get oMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get oClientErrors => '앱 오류 보고';
+
+  @override
+  String get oClientErrorsHint =>
+      '웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.';
+
+  @override
+  String get oClientErrorsEmpty => '최근 오류가 없어요';
+
+  @override
+  String get oHeartbeat => '업타임 하트비트';
+
+  @override
+  String get oHeartbeatOn => '연결됨. 서버가 살아 있으면 외부에서 알려줘요.';
+
+  @override
+  String get oHeartbeatOff =>
+      '설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.';
+
+  @override
   String get pvManage => '동의 관리';
 
   @override
@@ -3580,6 +3747,127 @@ class TKo extends T {
   @override
   String get cStaffResetBody =>
       '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+
+  @override
+  String get subTitle => '정기 청소';
+
+  @override
+  String get subNew => '정기 청소 신청';
+
+  @override
+  String get subCadence => '주기';
+
+  @override
+  String get subWeekly => '매주';
+
+  @override
+  String get subBiweekly => '2주마다';
+
+  @override
+  String get subEvery4Weeks => '4주마다';
+
+  @override
+  String get subWeekday => '요일';
+
+  @override
+  String get subHour => '시작 시간';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '정기 청소는 방문마다 $percent% 할인돼요';
+  }
+
+  @override
+  String get subChargeNote => '방문 하루 전에 등록된 카드로 결제해요';
+
+  @override
+  String get subCreate => '신청하기';
+
+  @override
+  String get subCreated => '정기 청소를 신청했어요';
+
+  @override
+  String get subNeedAddress => '방문할 주소를 먼저 등록해 주세요';
+
+  @override
+  String get subListEmpty => '아직 정기 청소가 없어요';
+
+  @override
+  String get subStatusActive => '이용 중';
+
+  @override
+  String get subStatusPaused => '일시 정지';
+
+  @override
+  String get subStatusCancelled => '해지됨';
+
+  @override
+  String subNextVisit(String date) {
+    return '다음 방문 $date';
+  }
+
+  @override
+  String get subPause => '일시 정지';
+
+  @override
+  String get subResume => '다시 시작';
+
+  @override
+  String get subCancelSub => '정기 청소 해지';
+
+  @override
+  String get subCancelConfirm => '앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.';
+
+  @override
+  String get subSkip => '이번 방문 건너뛰기';
+
+  @override
+  String get subMove => '날짜 변경';
+
+  @override
+  String get subVisitLocked => '방문 하루 전부터는 변경할 수 없어요';
+
+  @override
+  String get subPausedPayment => '결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.';
+
+  @override
+  String get subStatePlanned => '예정';
+
+  @override
+  String get subStateBooked => '예약됨';
+
+  @override
+  String get subStateSkipped => '건너뜀';
+
+  @override
+  String get subStateMissed => '놓침';
+
+  @override
+  String get pSubsTitle => '정기 고객';
+
+  @override
+  String get pSubsEmpty => '정기 고객이 아직 없어요';
+
+  @override
+  String get cSubsTitle => '정기 청소 구독';
+
+  @override
+  String get cSubsEdit => '고객 대신 수정';
+
+  @override
+  String get cMrr => '월 반복 매출 (MRR)';
+
+  @override
+  String get cChurn => '해지율';
+
+  @override
+  String get cActiveSubs => '이용 중 구독';
+
+  @override
+  String get cRecognized => '기간 인식 매출';
+
+  @override
+  String get cSubsLoadFailed => '구독 목록을 불러오지 못했어요';
 
   @override
   String get tTaxSection => '세무';

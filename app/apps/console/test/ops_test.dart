@@ -49,12 +49,21 @@ const _alerts = <String, Object?>{
   'cooldown_hours': 6,
 };
 
+const _config = <String, Object?>{
+  'flags': {'booking': true, 'chat': true, 'ai': true, 'payments': true},
+  'maintenance': {'on': false, 'message': ''},
+};
+
+const _errors = <String, Object?>{'items': <Object?>[]};
+
 void main() {
   testWidgets('a red disk check shows its Korean action line and the server level', (tester) async {
     setViewport(tester, wideSize);
     final fake = FakeApi()
       ..reply('GET', '/admin/ops/status', _status(level: 'red'))
-      ..reply('GET', '/admin/ops/alerts', _alerts);
+      ..reply('GET', '/admin/ops/alerts', _alerts)
+      ..reply('GET', '/admin/config', _config)
+      ..reply('GET', '/admin/client-errors', _errors);
     final env = await TestEnv.create(fake: fake, role: 'staff_admin');
     await pumpConsoleScreen(tester, env, const OpsScreen());
     await settle(tester);
@@ -73,6 +82,8 @@ void main() {
     final fake = FakeApi()
       ..reply('GET', '/admin/ops/status', _status(level: 'green'))
       ..reply('GET', '/admin/ops/alerts', _alerts)
+      ..reply('GET', '/admin/config', _config)
+      ..reply('GET', '/admin/client-errors', _errors)
       ..reply('PUT', '/admin/ops/alerts', {'prefs': {}});
     final env = await TestEnv.create(fake: fake, role: 'staff_admin');
     await pumpConsoleScreen(tester, env, const OpsScreen());
@@ -83,7 +94,8 @@ void main() {
     await tester.tap(sms);
     await settle(tester, duration: const Duration(milliseconds: 200));
 
-    final save = find.widgetWithText(PrimaryButton, koT.oSave);
+    // The alerts card comes first; the flags card has its own save button further down.
+    final save = find.widgetWithText(PrimaryButton, koT.oSave).first;
     await tester.scrollUntilVisible(save, 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(save);
     await settle(tester);
@@ -99,7 +111,9 @@ void main() {
     setViewport(tester, wideSize);
     final fake = FakeApi()
       ..reply('GET', '/admin/ops/status', _status(level: 'green'))
-      ..reply('GET', '/admin/ops/alerts', _alerts);
+      ..reply('GET', '/admin/ops/alerts', _alerts)
+      ..reply('GET', '/admin/config', _config)
+      ..reply('GET', '/admin/client-errors', _errors);
     final env = await TestEnv.create(fake: fake, role: 'staff_consultant');
     await pumpConsoleScreen(tester, env, const OpsScreen());
     await settle(tester);

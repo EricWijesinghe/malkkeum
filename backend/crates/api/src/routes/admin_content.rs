@@ -28,6 +28,8 @@ pub fn routes() -> Router<AppState> {
         .route("/services/{code}", put(update_service))
         .route("/slot-capacity", get(get_capacity).put(put_capacity))
         .route("/quote-formula", get(get_formula).put(put_formula))
+        .route("/peak-pricing", get(get_peak_pricing).put(put_peak_pricing))
+        .route("/quality-thresholds", get(get_quality_thresholds).put(put_quality_thresholds))
         .route("/cancel-policy", put(put_cancel_policy))
         .route("/coupons", post(issue_coupons))
         .route("/content", get(list_content).post(create_content))
@@ -139,6 +141,40 @@ async fn put_formula(State(s): State<AppState>, Admin(a): Admin, Json(f): Json<Q
         .execute(&s.db)
         .await?;
     audit(&s.db, "staff", Some(a.id), "formula.update", "quote_formula", json!(f)).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn get_peak_pricing(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<domain::peak::PeakConfig>> {
+    Ok(Json(super::catalog::load_peak_config(&s.db).await?))
+}
+
+/// Owner-only. Validated before it replaces the built-in default; applies to new quotes and bookings.
+async fn put_peak_pricing(State(s): State<AppState>, Admin(a): Admin, Json(p): Json<domain::peak::PeakConfig>) -> ApiResult<Json<Value>> {
+    p.validate()?;
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('peak_pricing', $1) ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = now()")
+        .bind(sqlx::types::Json(&p))
+        .execute(&s.db)
+        .await?;
+    audit(&s.db, "staff", Some(a.id), "peak_pricing.update", "peak_pricing", json!(p)).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn get_quality_thresholds(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<domain::quality::QualityThresholds>> {
+    let (warning_below, pause_below): (i16, i16) = sqlx::query_as("SELECT warning_below, pause_below FROM quality_settings WHERE id = 1")
+        .fetch_one(&s.db)
+        .await?;
+    Ok(Json(domain::quality::QualityThresholds { warning_below: warning_below as u8, pause_below: pause_below as u8 }))
+}
+
+/// Owner-only. Changing thresholds re-evaluates auto-pause on the next quality recompute.
+async fn put_quality_thresholds(State(s): State<AppState>, Admin(a): Admin, Json(t): Json<domain::quality::QualityThresholds>) -> ApiResult<Json<Value>> {
+    t.validate()?;
+    sqlx::query("UPDATE quality_settings SET warning_below = $1, pause_below = $2 WHERE id = 1")
+        .bind(i16::from(t.warning_below))
+        .bind(i16::from(t.pause_below))
+        .execute(&s.db)
+        .await?;
+    audit(&s.db, "staff", Some(a.id), "quality_thresholds.update", "quality_settings", json!(t)).await?;
     Ok(Json(json!({ "ok": true })))
 }
 

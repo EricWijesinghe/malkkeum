@@ -12,6 +12,7 @@ import 'screens/marketing.dart';
 import 'screens/ops.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
+import 'screens/subscriptions.dart';
 import 'state.dart';
 
 class _Section {
@@ -60,6 +61,11 @@ final _sections = <_Section>[
     (t) => t.fFinance,
     () => const FinanceScreen(),
     adminOnly: true,
+  ),
+  _Section(
+    Icons.event_repeat_rounded,
+    (t) => t.cSubsTitle,
+    () => const SubscriptionsScreen(),
   ),
   _Section(
     Icons.people_alt_rounded,

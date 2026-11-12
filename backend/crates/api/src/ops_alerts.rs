@@ -18,7 +18,7 @@ use sqlx::PgPool;
 use tokio::task::JoinHandle;
 use std::{collections::{BTreeMap, HashMap}, time::Duration as StdDuration};
 
-pub const RULES: [&str; 7] = ["sms_failing", "push_failing", "payment_failing", "payment_stuck", "social_failing", "backup_stale", "disk_low"];
+pub const RULES: [&str; 8] = ["sms_failing", "push_failing", "payment_failing", "payment_stuck", "social_failing", "auth_suspicious", "backup_stale", "disk_low"];
 pub const COOLDOWN_HOURS: i64 = 6;
 const PREFS_KEY: &str = "ops_alerts";
 const BUSINESS_KEY: &str = "business";
@@ -33,6 +33,9 @@ const STUCK_WINDOW_MIN: i64 = 60;
 const SOCIAL_WINDOW_MIN: i64 = 30;
 const SOCIAL_FAILURES: i64 = 5;
 const SOCIAL_PROVIDERS: [&str; 4] = ["kakao", "naver", "google", "apple"];
+/// Lockouts, refresh-token reuse and MFA lockouts across the window before the owner hears about it.
+const AUTH_WINDOW_MIN: i64 = 60;
+const AUTH_EVENTS: i64 = 5;
 const KST_OFFSET_SECS: i32 = 9 * 3600;
 
 /// What the owner chose on the console's alert card.
@@ -162,6 +165,13 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
             rule: "social_failing",
             title: "소셜 로그인이 계속 실패해요",
             body: "설정에서 카카오·네이버·구글·애플 로그인 키(클라이언트 ID)를 확인하세요.",
+        });
+    }
+    if count(db, &["auth_abuse"], AUTH_WINDOW_MIN).await? >= AUTH_EVENTS {
+        out.push(Finding {
+            rule: "auth_suspicious",
+            title: "로그인 시도가 비정상적으로 많아요",
+            body: "직원 로그인 또는 인증 번호에 반복 실패가 있어 잠금이 걸렸어요. 감사 로그에서 대상 계정과 시간을 확인하고, 본인이 아니면 비밀번호를 바꾸세요.",
         });
     }
     out.extend(payout_findings(db).await?);

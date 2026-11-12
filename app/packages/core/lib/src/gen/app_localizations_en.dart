@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2404,6 +2403,127 @@ class TEn extends T {
       'We are improving the service. Please come back shortly.';
 
   @override
+  String get cmTab => 'Campaigns';
+
+  @override
+  String get cmNew => 'New campaign';
+
+  @override
+  String get cmAudience => 'Audience';
+
+  @override
+  String get cmSegAll => 'All customers';
+
+  @override
+  String get cmSegNever => 'Never booked';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Last booking $days+ days ago';
+  }
+
+  @override
+  String get cmDays => 'Days';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented of $total have marketing consent';
+  }
+
+  @override
+  String get cmChannel => 'Channel';
+
+  @override
+  String get cmPush => 'App push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Title';
+
+  @override
+  String get cmBody => 'Message';
+
+  @override
+  String get cmOptout => 'Opt-out number (080)';
+
+  @override
+  String get cmPreview => 'Preview';
+
+  @override
+  String get cmSchedule => 'Send at';
+
+  @override
+  String get cmSendNow => 'Send now';
+
+  @override
+  String get cmTestSend => 'Send a test to my phone';
+
+  @override
+  String get cmCreate => 'Save campaign';
+
+  @override
+  String get cmNeedOptout => 'SMS needs an 080 opt-out number';
+
+  @override
+  String get cmLog => 'Send log';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Sent $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'No consent $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Failed $count';
+  }
+
+  @override
+  String get cmSaved => 'Campaign saved';
+
+  @override
+  String anFunnel(String days) {
+    return 'Signup funnel (last $days days)';
+  }
+
+  @override
+  String get anInstalls => 'App opened (consented)';
+
+  @override
+  String get anSignedUp => 'Signed up';
+
+  @override
+  String get anQuoted => 'Requested a quote';
+
+  @override
+  String get anBooked => 'Booked';
+
+  @override
+  String get anPaid => 'Paid';
+
+  @override
+  String get anRepeat => 'Repeat (2+ visits)';
+
+  @override
+  String get anCohorts => 'Weekly cohorts (booking rate by signup week)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Signups $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Booked in week $n';
+  }
+
+  @override
   String get cOps => 'System status';
 
   @override
@@ -2563,6 +2683,9 @@ class TEn extends T {
 
   @override
   String get oRuleDisk => 'Disk nearly full';
+
+  @override
+  String get oRuleAuth => 'Suspicious sign-in activity';
 
   @override
   String get oQuietHours => 'Quiet hours';
@@ -3189,6 +3312,52 @@ class TEn extends T {
   }
 
   @override
+  String get oFlags => 'Feature switches';
+
+  @override
+  String get oFlagBooking => 'Bookings';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI assistant';
+
+  @override
+  String get oFlagPayments => 'Payments';
+
+  @override
+  String get oMaintenance => 'Maintenance mode';
+
+  @override
+  String get oMaintenanceHint =>
+      'When on, customer and partner apps show a maintenance screen. The console keeps working.';
+
+  @override
+  String get oMaintenanceMessage => 'Maintenance message';
+
+  @override
+  String get oClientErrors => 'App error reports';
+
+  @override
+  String get oClientErrorsHint =>
+      'Recent errors reported by web, Windows and console. Personal data is masked automatically.';
+
+  @override
+  String get oClientErrorsEmpty => 'No recent errors';
+
+  @override
+  String get oHeartbeat => 'Uptime heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Connected. An outside service is notified while the server is up.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Not set: add MALKKEUM_HEARTBEAT_URL to install.sh.';
+
+  @override
   String get pvManage => 'Consent settings';
 
   @override
@@ -3671,6 +3840,130 @@ class TEn extends T {
   @override
   String get cStaffResetBody =>
       'Give this token to the staff member. It works once, for 30 minutes. You cannot see it again after closing.';
+
+  @override
+  String get subTitle => 'Regular cleaning';
+
+  @override
+  String get subNew => 'Start a subscription';
+
+  @override
+  String get subCadence => 'How often';
+
+  @override
+  String get subWeekly => 'Every week';
+
+  @override
+  String get subBiweekly => 'Every 2 weeks';
+
+  @override
+  String get subEvery4Weeks => 'Every 4 weeks';
+
+  @override
+  String get subWeekday => 'Day of week';
+
+  @override
+  String get subHour => 'Arrival time';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Subscriptions get $percent% off each visit';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Each visit is charged the day before, to your saved card';
+
+  @override
+  String get subCreate => 'Subscribe';
+
+  @override
+  String get subCreated => 'Subscription started';
+
+  @override
+  String get subNeedAddress => 'Add a visit address first';
+
+  @override
+  String get subListEmpty => 'No subscriptions yet';
+
+  @override
+  String get subStatusActive => 'Active';
+
+  @override
+  String get subStatusPaused => 'Paused';
+
+  @override
+  String get subStatusCancelled => 'Cancelled';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Next visit $date';
+  }
+
+  @override
+  String get subPause => 'Pause';
+
+  @override
+  String get subResume => 'Resume';
+
+  @override
+  String get subCancelSub => 'Cancel subscription';
+
+  @override
+  String get subCancelConfirm =>
+      'Future visits will be cancelled. Booked visits need separate cancellation, and fees may apply.';
+
+  @override
+  String get subSkip => 'Skip this visit';
+
+  @override
+  String get subMove => 'Move this visit';
+
+  @override
+  String get subVisitLocked => 'Visits can\'t change from the day before';
+
+  @override
+  String get subPausedPayment =>
+      'Paused after repeated payment failures. Change your card, then resume.';
+
+  @override
+  String get subStatePlanned => 'Planned';
+
+  @override
+  String get subStateBooked => 'Booked';
+
+  @override
+  String get subStateSkipped => 'Skipped';
+
+  @override
+  String get subStateMissed => 'Missed';
+
+  @override
+  String get pSubsTitle => 'Recurring customers';
+
+  @override
+  String get pSubsEmpty => 'No recurring customers yet';
+
+  @override
+  String get cSubsTitle => 'Subscriptions';
+
+  @override
+  String get cSubsEdit => 'Edit for customer';
+
+  @override
+  String get cMrr => 'Monthly recurring revenue (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Active subscriptions';
+
+  @override
+  String get cRecognized => 'Recognized in period';
+
+  @override
+  String get cSubsLoadFailed => 'Could not load subscriptions';
 
   @override
   String get tTaxSection => 'Tax';

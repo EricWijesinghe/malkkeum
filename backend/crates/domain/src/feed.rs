@@ -164,11 +164,16 @@ fn subscription(f: &FeedFacts) -> Option<FeedCard> {
     })
 }
 
-/// Aggregate district proof, shown only when enough homes are behind the number.
+/// The number shown for a district: under ten it reads as "5+", from ten up it rounds down to the ten ("30+").
+pub fn bucket_homes(homes: i64) -> i64 {
+    if homes < 10 { MIN_DISTRICT_K } else { homes / 10 * 10 }
+}
+
+/// Aggregate district proof, shown only when enough distinct homes are behind the number. The count is bucketed.
 fn district_proof(f: &FeedFacts) -> Option<FeedCard> {
     let (name, count) = f.district.as_ref()?;
     (*count >= MIN_DISTRICT_K).then(|| FeedCard {
-        facts: *count,
+        facts: bucket_homes(*count),
         district: Some(name.clone()),
         ..card(CardKind::DistrictProof, 200, "district_booked")
     })
@@ -309,6 +314,12 @@ mod tests {
         f.district = Some(("강남구".into(), MIN_DISTRICT_K));
         let card = rank(&f).into_iter().find(|c| c.kind == CardKind::DistrictProof).unwrap();
         assert_eq!((card.district.as_deref(), card.facts), (Some("강남구"), MIN_DISTRICT_K));
+    }
+
+    #[test]
+    fn district_count_is_bucketed_not_exact() {
+        assert_eq!((bucket_homes(5), bucket_homes(9)), (MIN_DISTRICT_K, MIN_DISTRICT_K));
+        assert_eq!((bucket_homes(10), bucket_homes(37), bucket_homes(59)), (10, 30, 50));
     }
 
     #[test]

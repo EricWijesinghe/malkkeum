@@ -405,7 +405,7 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
             Err(e) => tracing::warn!(error = %e, "push failed; notification kept in inbox"),
         }
         if let Recipient::User(user) = to {
-            kakao_to_customer(state, user, kind, ko_title, ko_body);
+            kakao_to_customer(state, user, kind, &locale, (ko_title, ko_body), (title, body), &data);
         }
     }
     state.hub.send(to, kind, data);
@@ -428,14 +428,20 @@ async fn prune_push_tokens(state: &AppState, role: &str, owner: Uuid, dead: &[St
     }
 }
 
-/// AlimTalk (or SMS fallback) to a customer for kinds that have a template. Runs off the request path;
-/// failures only log, so a provider outage never fails the business action that triggered it.
-fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, title: &str, body: &str) {
-    if !state.providers.integ().solapi.as_ref().is_some_and(|c| c.templates.contains_key(kind)) {
+/// Transactional alert to a customer by phone. Korean customers get AlimTalk (SMS fallback). Other
+/// languages get SMS in their own language, because the approved AlimTalk templates are Korean only.
+/// Runs off the request path; failures only log, so a provider outage never fails the business action.
+fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, locale: &str, ko: (&str, &str), translated: (&str, &str), data: &Value) {
+    let Some(key) = crate::providers::sms::alert_key(kind, data) else {
+        return;
+    };
+    if state.providers.integ().solapi.is_none() {
         return;
     }
+    let korean = locale == "ko";
+    let (ko_title, ko_body) = (ko.0.to_string(), ko.1.to_string());
+    let (title, body) = (translated.0.to_string(), translated.1.to_string());
     let state = state.clone();
-    let (title, body) = (title.to_string(), body.to_string());
     tokio::spawn(async move {
         let found = sqlx::query_scalar::<_, Option<String>>("SELECT phone FROM users WHERE id = $1")
             .bind(user)
@@ -451,7 +457,13 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, title: &s
         let Some(phone) = phone else {
             return;
         };
-        if let Err(e) = state.providers.send_customer_message(&phone, kind, &title, &body).await {
+        let sent = if korean {
+            let brand = crate::routes::setup::brand_name(&state.db).await;
+            state.providers.send_customer_message(&phone, key, &brand, &ko_title, &ko_body).await
+        } else {
+            state.providers.send_sms(&phone, &format!("{title}\n{body}")).await
+        };
+        if let Err(e) = sent {
             tracing::warn!(error = %e, kind, "customer message failed");
         }
     });

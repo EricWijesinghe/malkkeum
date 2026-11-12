@@ -1157,6 +1157,100 @@
  },
  "uMaintenanceTitle": "점검 중이에요",
  "uMaintenanceBody": "더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.",
+ "cmTab": "캠페인",
+ "cmNew": "새 캠페인",
+ "cmAudience": "대상 고객",
+ "cmSegAll": "전체 고객",
+ "cmSegNever": "예약 이력 없음",
+ "cmSegLapsed": "마지막 예약 {days}일 이상 전",
+ "@cmSegLapsed": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "cmDays": "일 수",
+ "cmConsentCount": "전체 {total}명 중 마케팅 동의 {consented}명",
+ "@cmConsentCount": {
+  "placeholders": {
+   "total": {
+    "type": "String"
+   },
+   "consented": {
+    "type": "String"
+   }
+  }
+ },
+ "cmChannel": "발송 채널",
+ "cmPush": "앱 푸시",
+ "cmSms": "문자(SMS)",
+ "cmTitle": "제목",
+ "cmBody": "내용",
+ "cmOptout": "수신거부 번호 (080)",
+ "cmPreview": "미리보기",
+ "cmSchedule": "발송 시각",
+ "cmSendNow": "바로 발송",
+ "cmTestSend": "내 번호로 테스트 발송",
+ "cmCreate": "캠페인 저장",
+ "cmNeedOptout": "문자 발송에는 080 수신거부 번호가 필요해요",
+ "cmLog": "발송 기록",
+ "cmStatSent": "발송 {count}",
+ "@cmStatSent": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "cmStatSkipped": "동의 없음 {count}",
+ "@cmStatSkipped": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "cmStatFailed": "실패 {count}",
+ "@cmStatFailed": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "cmSaved": "캠페인을 만들었어요",
+ "anFunnel": "가입 후 퍼널 (최근 {days}일)",
+ "@anFunnel": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "anInstalls": "앱 실행 (동의)",
+ "anSignedUp": "가입",
+ "anQuoted": "견적 요청",
+ "anBooked": "예약",
+ "anPaid": "결제",
+ "anRepeat": "재구매 (2회 이상)",
+ "anCohorts": "주간 코호트 (가입 주 기준 예약률)",
+ "anCohortSize": "가입 {count}",
+ "@anCohortSize": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "anWeekAfter": "{n}주 후 예약",
+ "@anWeekAfter": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
  "cOps": "시스템 상태",
  "oLevelGreen": "정상",
  "oLevelYellow": "확인 필요",
@@ -1274,6 +1368,7 @@
  "oRuleSocial": "소셜 로그인 실패",
  "oRuleBackup": "자동 백업 누락",
  "oRuleDisk": "디스크 부족",
+ "oRuleAuth": "계정 보안 이상(로그인 잠금 등)",
  "oQuietHours": "조용한 시간",
  "oQuietFrom": "시작",
  "oQuietTo": "끝",
@@ -1564,6 +1659,20 @@
    }
   }
  },
+ "oFlags": "기능 스위치",
+ "oFlagBooking": "예약",
+ "oFlagChat": "채팅",
+ "oFlagAi": "AI 상담",
+ "oFlagPayments": "결제",
+ "oMaintenance": "점검 모드",
+ "oMaintenanceHint": "켜면 고객·파트너 앱이 점검 화면을 보여줘요. 콘솔은 계속 쓸 수 있어요.",
+ "oMaintenanceMessage": "점검 안내 문구",
+ "oClientErrors": "앱 오류 보고",
+ "oClientErrorsHint": "웹·Windows·콘솔에서 보고된 최근 오류예요. 개인정보는 자동으로 가려져요.",
+ "oClientErrorsEmpty": "최근 오류가 없어요",
+ "oHeartbeat": "업타임 하트비트",
+ "oHeartbeatOn": "연결됨. 서버가 살아 있으면 외부에서 알려줘요.",
+ "oHeartbeatOff": "설정 필요: install.sh 에 MALKKEUM_HEARTBEAT_URL 을 넣어주세요.",
  "pvManage": "동의 관리",
  "pvOptional": "선택",
  "pvTerms": "이용약관 동의",
@@ -1758,6 +1867,59 @@
  "cStaffResetConfirm": "이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.",
  "cStaffResetTitle": "재설정 토큰",
  "cStaffResetBody": "이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.",
+ "subTitle": "정기 청소",
+ "subNew": "정기 청소 신청",
+ "subCadence": "주기",
+ "subWeekly": "매주",
+ "subBiweekly": "2주마다",
+ "subEvery4Weeks": "4주마다",
+ "subWeekday": "요일",
+ "subHour": "시작 시간",
+ "subDiscountNote": "정기 청소는 방문마다 {percent}% 할인돼요",
+ "@subDiscountNote": {
+  "placeholders": {
+   "percent": {
+    "type": "String"
+   }
+  }
+ },
+ "subChargeNote": "방문 하루 전에 등록된 카드로 결제해요",
+ "subCreate": "신청하기",
+ "subCreated": "정기 청소를 신청했어요",
+ "subNeedAddress": "방문할 주소를 먼저 등록해 주세요",
+ "subListEmpty": "아직 정기 청소가 없어요",
+ "subStatusActive": "이용 중",
+ "subStatusPaused": "일시 정지",
+ "subStatusCancelled": "해지됨",
+ "subNextVisit": "다음 방문 {date}",
+ "@subNextVisit": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "subPause": "일시 정지",
+ "subResume": "다시 시작",
+ "subCancelSub": "정기 청소 해지",
+ "subCancelConfirm": "앞으로의 정기 방문이 취소돼요. 이미 예약된 방문은 따로 취소해 주세요.",
+ "subSkip": "이번 방문 건너뛰기",
+ "subMove": "날짜 변경",
+ "subVisitLocked": "방문 하루 전부터는 변경할 수 없어요",
+ "subPausedPayment": "결제가 계속 실패해 멈췄어요. 카드를 바꾼 뒤 다시 시작해 주세요.",
+ "subStatePlanned": "예정",
+ "subStateBooked": "예약됨",
+ "subStateSkipped": "건너뜀",
+ "subStateMissed": "놓침",
+ "pSubsTitle": "정기 고객",
+ "pSubsEmpty": "정기 고객이 아직 없어요",
+ "cSubsTitle": "정기 청소 구독",
+ "cSubsEdit": "고객 대신 수정",
+ "cMrr": "월 반복 매출 (MRR)",
+ "cChurn": "해지율",
+ "cActiveSubs": "이용 중 구독",
+ "cRecognized": "기간 인식 매출",
+ "cSubsLoadFailed": "구독 목록을 불러오지 못했어요",
  "tTaxSection": "세무",
  "tVatQuarter": "{q}분기 부가세 CSV",
  "@tVatQuarter": {

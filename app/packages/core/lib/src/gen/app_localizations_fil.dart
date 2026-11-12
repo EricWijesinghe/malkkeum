@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2436,6 +2435,128 @@ class TFil extends T {
       'Pinapaganda namin ang serbisyo. Pakibalik-balikan mamaya.';
 
   @override
+  String get cmTab => 'Kampanya';
+
+  @override
+  String get cmNew => 'Bagong kampanya';
+
+  @override
+  String get cmAudience => 'Target na customer';
+
+  @override
+  String get cmSegAll => 'Lahat ng customer';
+
+  @override
+  String get cmSegNever => 'Walang booking kailanman';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Huling booking $days+ araw na ang nakalipas';
+  }
+
+  @override
+  String get cmDays => 'Bilang ng araw';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented sa $total ang pumayag sa marketing';
+  }
+
+  @override
+  String get cmChannel => 'Channel';
+
+  @override
+  String get cmPush => 'App push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Pamagat';
+
+  @override
+  String get cmBody => 'Mensahe';
+
+  @override
+  String get cmOptout => 'Opt-out number (080)';
+
+  @override
+  String get cmPreview => 'Preview';
+
+  @override
+  String get cmSchedule => 'Oras ng pagpapadala';
+
+  @override
+  String get cmSendNow => 'Ipadala ngayon';
+
+  @override
+  String get cmTestSend => 'Subukang ipadala sa aking numero';
+
+  @override
+  String get cmCreate => 'I-save ang kampanya';
+
+  @override
+  String get cmNeedOptout => 'Kailangan ng SMS ng 080 opt-out number';
+
+  @override
+  String get cmLog => 'Talaan ng pagpapadala';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Naipadala $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Walang consent $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Bigo $count';
+  }
+
+  @override
+  String get cmSaved => 'Na-save ang kampanya';
+
+  @override
+  String anFunnel(String days) {
+    return 'Signup funnel (huling $days araw)';
+  }
+
+  @override
+  String get anInstalls => 'Nagbukas ng app (pumayag)';
+
+  @override
+  String get anSignedUp => 'Nag-signup';
+
+  @override
+  String get anQuoted => 'Humingi ng quote';
+
+  @override
+  String get anBooked => 'Nakapag-book';
+
+  @override
+  String get anPaid => 'Nagbayad';
+
+  @override
+  String get anRepeat => 'Paulit-ulit (2+)';
+
+  @override
+  String get anCohorts =>
+      'Lingguhang cohort (booking rate ayon sa linggo ng signup)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Signup $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'Nag-book sa linggo $n';
+  }
+
+  @override
   String get cOps => 'Katayuan ng sistema';
 
   @override
@@ -2596,6 +2717,9 @@ class TFil extends T {
 
   @override
   String get oRuleDisk => 'Halos puno ang disk';
+
+  @override
+  String get oRuleAuth => 'Kahina-hinalang aktibidad sa pag-login';
 
   @override
   String get oQuietHours => 'Tahimik na oras';
@@ -3230,6 +3354,52 @@ class TFil extends T {
   }
 
   @override
+  String get oFlags => 'Mga switch ng feature';
+
+  @override
+  String get oFlagBooking => 'Mga booking';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI assistant';
+
+  @override
+  String get oFlagPayments => 'Mga bayad';
+
+  @override
+  String get oMaintenance => 'Maintenance mode';
+
+  @override
+  String get oMaintenanceHint =>
+      'Kapag naka-on, magpapakita ng maintenance screen ang customer at partner app. Gumagana pa rin ang console.';
+
+  @override
+  String get oMaintenanceMessage => 'Mensahe sa maintenance';
+
+  @override
+  String get oClientErrors => 'Mga ulat ng error sa app';
+
+  @override
+  String get oClientErrorsHint =>
+      'Mga kamakailang error mula sa web, Windows at console. Awtomatikong tinatakpan ang personal na impormasyon.';
+
+  @override
+  String get oClientErrorsEmpty => 'Walang kamakailang error';
+
+  @override
+  String get oHeartbeat => 'Uptime heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Nakakonekta. Naaabisuhan ang panlabas na serbisyo habang gumagana ang server.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Hindi pa nakatakda: idagdag ang MALKKEUM_HEARTBEAT_URL sa install.sh.';
+
+  @override
   String get pvManage => 'Mga pahintulot';
 
   @override
@@ -3717,6 +3887,131 @@ class TFil extends T {
   @override
   String get cStaffResetBody =>
       'Ibigay ang token na ito sa staff. Isang beses lang magagamit, sa loob ng 30 minuto. Hindi na ito makikita pagkasara.';
+
+  @override
+  String get subTitle => 'Regular na paglilinis';
+
+  @override
+  String get subNew => 'Mag-subscribe';
+
+  @override
+  String get subCadence => 'Gaano kadalas';
+
+  @override
+  String get subWeekly => 'Kada linggo';
+
+  @override
+  String get subBiweekly => 'Kada 2 linggo';
+
+  @override
+  String get subEvery4Weeks => 'Kada 4 linggo';
+
+  @override
+  String get subWeekday => 'Araw ng linggo';
+
+  @override
+  String get subHour => 'Oras ng dating';
+
+  @override
+  String subDiscountNote(String percent) {
+    return '$percent% diskuwento sa bawat bisita';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Sisingilin ang naka-save na card isang araw bago ang bisita';
+
+  @override
+  String get subCreate => 'Mag-subscribe';
+
+  @override
+  String get subCreated => 'Nagsimula na ang subscription';
+
+  @override
+  String get subNeedAddress => 'Magdagdag muna ng address';
+
+  @override
+  String get subListEmpty => 'Wala pang subscription';
+
+  @override
+  String get subStatusActive => 'Aktibo';
+
+  @override
+  String get subStatusPaused => 'Naka-pause';
+
+  @override
+  String get subStatusCancelled => 'Kinansela';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Susunod na bisita $date';
+  }
+
+  @override
+  String get subPause => 'I-pause';
+
+  @override
+  String get subResume => 'Ituloy';
+
+  @override
+  String get subCancelSub => 'Kanselahin ang subscription';
+
+  @override
+  String get subCancelConfirm =>
+      'Makakansela ang mga susunod na bisita. Kanselahin nang hiwalay ang mga nakareserba na.';
+
+  @override
+  String get subSkip => 'Laktawan ang bisitang ito';
+
+  @override
+  String get subMove => 'Ilipat ang petsa';
+
+  @override
+  String get subVisitLocked =>
+      'Hindi na mababago mula isang araw bago ang bisita';
+
+  @override
+  String get subPausedPayment =>
+      'Naka-pause dahil paulit-ulit na nabigo ang bayad. Palitan ang card at ituloy.';
+
+  @override
+  String get subStatePlanned => 'Nakaplano';
+
+  @override
+  String get subStateBooked => 'Naka-book';
+
+  @override
+  String get subStateSkipped => 'Nilaktawan';
+
+  @override
+  String get subStateMissed => 'Hindi natuloy';
+
+  @override
+  String get pSubsTitle => 'Mga regular na customer';
+
+  @override
+  String get pSubsEmpty => 'Wala pang regular na customer';
+
+  @override
+  String get cSubsTitle => 'Mga subscription';
+
+  @override
+  String get cSubsEdit => 'I-edit para sa customer';
+
+  @override
+  String get cMrr => 'Buwanang paulit-ulit na kita (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Aktibong subscription';
+
+  @override
+  String get cRecognized => 'Kinilalang kita sa panahon';
+
+  @override
+  String get cSubsLoadFailed => 'Hindi ma-load ang mga subscription';
 
   @override
   String get tTaxSection => 'Buwis';

@@ -8,37 +8,44 @@ Tên thương hiệu 말끔 giữ nguyên; tên viết bằng chữ Latin là Ma
 |---|---|---|
 | Tên ứng dụng | 30 | Malkkeum - Dọn dẹp uy tín |
 | Phụ đề (iOS) | 30 | Đặt dọn nhà trong 1 phút |
-| Mô tả ngắn (Google) | 80 | Chuyên gia được xác minh, giá minh bạch. Đặt dọn nhà chỉ trong 1 phút. |
-| Từ khóa (iOS) | 100 | dọn nhà,vệ sinh,dọn nhà trọn gói,tổng vệ sinh,giúp việc,vệ sinh máy lạnh,phòng tắm,nệm,sofa,căn hộ |
-| Văn bản quảng bá (iOS) | 170 | Miễn phí hủy lịch trước 2 ngày. Mọi nhân viên đều được xác minh danh tính và kiểm duyệt trước khi tham gia. |
+| Mô tả ngắn (Google) | 80 | Dọn nhà chuyển đến/đi, vệ sinh máy lạnh. Xem giá trước, đặt trong 1 phút. |
+| Từ khóa (iOS) | 100 | dọn nhà,vệ sinh nhà,giúp việc,máy lạnh,điều hòa,phòng tắm,nệm,sofa,phòng đơn,Hàn Quốc |
+| Văn bản quảng bá (iOS) | 170 | Xem giá và phí hủy trước khi đặt. Hủy miễn phí đến 2 ngày trước giờ hẹn. Mọi đối tác đều được xác minh danh tính và duyệt. Có phiếu giảm giá cho lần đặt đầu. |
 | Danh mục | | Lối sống |
 
 ### Mô tả chi tiết
 ```
-Giao việc nhà cho chúng tôi, tận hưởng ngày sạch sẽ.
+Dọn nhà khi chuyển đến, chuyển đi và vệ sinh máy lạnh. Xem giá trước, đặt trong 1 phút.
 
-Malkkeum kết nối bạn với các chuyên gia vệ sinh nhà cửa đã được kiểm duyệt. Chỉ cần chọn dịch vụ
-bạn cần, xem giá ngay và đặt lịch trong khoảng 1 phút.
+Malkkeum (말끔) là ứng dụng dọn dẹp nhà chỉ kết nối bạn với những chuyên gia đã được xác minh danh tính và duyệt hồ sơ.
+Không lo phát sinh chi phí khi đến nơi: bạn thấy giá ngay trước khi đặt.
 
-■ Dịch vụ bạn có thể đặt
-· Vệ sinh căn hộ studio, bếp, phòng tắm, nệm, máy lạnh và sofa
-· Dọn nhà khi chuyển đi và khi chuyển đến (so sánh báo giá của các chuyên gia)
+■ Dịch vụ có thể đặt
+· Dọn phòng đơn, bếp, phòng tắm, nệm, máy lạnh, sofa (giá cố định)
+· Dọn nhà khi chuyển đi và chuyển đến (nhập thông tin nhà, so sánh báo giá từ chuyên gia)
 
 ■ Vì sao chọn Malkkeum
-· Giá minh bạch: giá cố định, xem trước trong ứng dụng trước khi đặt
-· Chuyên gia được xác minh: mọi đối tác đều qua kiểm tra danh tính và đánh giá
-· Ảnh trước và sau khi làm: xem kết quả qua hình ảnh
-· Miễn phí hủy lịch trước 2 ngày
-· Chat trực tiếp: hỏi bất cứ điều gì ngay trong ứng dụng
+· Giá minh bạch: giá cố định ngay trong ứng dụng, không phụ phí ẩn
+· Báo trước phí hủy: xem phí và số tiền hoàn lại trước khi hủy
+· Hủy miễn phí đến 2 ngày trước giờ hẹn
+· Đối tác đã xác minh: mọi đối tác đều qua xác minh danh tính và duyệt hồ sơ
+· Theo dõi tiến độ trực tiếp: từ lúc phân đội đến khi hoàn thành
+· Ảnh trước và sau khi làm cùng đánh giá: kiểm tra kết quả bằng ảnh
+· Trò chuyện trong ứng dụng: hỏi bất cứ lúc nào
+· Điểm dọn dẹp, phiếu giảm giá, thưởng giới thiệu bạn bè
+
+■ Đăng nhập dễ dàng
+Xác minh PASS tại Hàn Quốc; đăng nhập bằng Kakao, Naver, Google, Apple
 
 ■ Thanh toán tiện lợi
-Thẻ tín dụng và thẻ ghi nợ, Kakao Pay, Naver Pay, Toss Pay, PAYCO, Samsung Pay, Apple Pay,
-chuyển khoản ngân hàng, tài khoản ảo và thanh toán qua điện thoại.
+Thẻ tín dụng/ghi nợ, Kakao Pay, Naver Pay, Toss Pay, PAYCO, Samsung Pay, Apple Pay, chuyển khoản, tài khoản ảo, thanh toán qua điện thoại.
 
-■ Hỗ trợ 14 ngôn ngữ
+■ 14 ngôn ngữ
 한국어, English, 日本語, 中文, Tiếng Việt, Русский, नेपाली, සිංහල, ไทย, Bahasa Indonesia, Монгол, O'zbek, Filipino, ខ្មែរ
 
-Hỗ trợ khách hàng: trong ứng dụng, chọn Thêm → Hỗ trợ khách hàng.
+Đang sống ở Hàn Quốc? Đặt dịch vụ bằng chính ngôn ngữ của bạn.
+
+Hỗ trợ: Thêm → Trung tâm hỗ trợ trong ứng dụng.
 ```
 
 ### Có gì mới
@@ -50,21 +57,26 @@ Phiên bản đầu tiên. Đặt dọn dẹp trong 1 phút, thanh toán an toà
 | Mục | Giới hạn | Nội dung |
 |---|---|---|
 | Tên ứng dụng | 30 | Malkkeum Partner: Nhân viên |
-| Phụ đề (iOS) | 30 | Việc gần bạn, đúng giờ rảnh |
-| Mô tả ngắn (Google) | 80 | Ứng dụng nhân viên Malkkeum: nhận việc, báo giá, lịch và thanh toán hằng tuần. |
-| Từ khóa (iOS) | 100 | nhân viên,dọn dẹp,giúp việc,báo giá,lịch làm,thanh toán,thu nhập,nhóm,đối tác |
-| Văn bản quảng bá (iOS) | 170 | Chọn việc gần bạn, gửi báo giá cho dọn nhà khi chuyển đến và chuyển đi, nhận thanh toán mỗi tuần. |
+| Phụ đề (iOS) | 30 | Việc ở khu vực và giờ bạn chọn |
+| Mô tả ngắn (Google) | 80 | Ứng dụng cho đối tác dọn dẹp: việc gần bạn, báo giá, lịch, thanh toán hằng tuần. |
+| Từ khóa (iOS) | 100 | dọn dẹp,việc làm dọn dẹp,giúp việc,báo giá,lịch làm việc,thu nhập,đội nhóm,dọn nhà,đối tác |
+| Văn bản quảng bá (iOS) | 170 | Chọn việc phù hợp khu vực và giờ rảnh của bạn. Tự báo giá cho dọn nhà chuyển đến/đi. Việc hoàn thành được thanh toán vào thứ Tư hằng tuần. |
 | Danh mục | | Kinh doanh |
 
 ### Mô tả chi tiết
 ```
-Malkkeum Partner là ứng dụng dành cho nhân viên vệ sinh của Malkkeum.
+Malkkeum Partner là ứng dụng dành cho chuyên gia dọn dẹp của Malkkeum. (Tách biệt với ứng dụng khách hàng.)
 
 · Nhận việc phù hợp với khu vực hoạt động và thời gian rảnh của bạn
-· Tự báo giá cho dọn nhà khi chuyển đến và chuyển đi, khách hàng sẽ chọn
-· Lịch làm, ghi chú khi đến nhà và ảnh trước sau trên cùng một màn hình
-· Mời thành viên trong nhóm và chia việc cùng nhau
-· Việc đã hoàn thành được thanh toán vào thứ Tư hằng tuần
+· Tự báo giá cho dọn nhà chuyển đến/đi và được khách chọn
+· Chỉ đường đến địa chỉ, lịch làm việc và ghi chú trên một màn hình
+· Tải ảnh trước và sau khi làm để báo hoàn thành
+· Trò chuyện với khách ngay trong ứng dụng
+· Mời thành viên vào đội và chia việc
+· Việc hoàn thành được thanh toán vào thứ Tư hằng tuần; xem thu nhập trong ứng dụng
+· 14 ngôn ngữ
+
+Để tham gia, nhập khu vực và dịch vụ trong ứng dụng rồi chờ duyệt.
 ```
 
 ### Có gì mới

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2412,6 +2411,127 @@ class TKm extends T {
       'យើងកំពុងថែទាំដើម្បីធ្វើឱ្យសេវាកម្មកាន់តែប្រសើរ។ សូមត្រឡប់មកវិញក្នុងពេលឆាប់ៗ។';
 
   @override
+  String get cmTab => 'យុទ្ធនាការ';
+
+  @override
+  String get cmNew => 'យុទ្ធនាការថ្មី';
+
+  @override
+  String get cmAudience => 'អតិថិជនគោលដៅ';
+
+  @override
+  String get cmSegAll => 'អតិថិជនទាំងអស់';
+
+  @override
+  String get cmSegNever => 'មិនដែលកក់';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'កក់ចុងក្រោយ $days+ ថ្ងៃមុន';
+  }
+
+  @override
+  String get cmDays => 'ចំនួនថ្ងៃ';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$consented ក្នុង $total បានយល់ព្រមទទួលការផ្សព្វផ្សាយ';
+  }
+
+  @override
+  String get cmChannel => 'បណ្តាញ';
+
+  @override
+  String get cmPush => 'ជូនដំណឹងក្នុងកម្មវិធី';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'ចំណងជើង';
+
+  @override
+  String get cmBody => 'សារ';
+
+  @override
+  String get cmOptout => 'លេខបដិសេធ (080)';
+
+  @override
+  String get cmPreview => 'មើលជាមុន';
+
+  @override
+  String get cmSchedule => 'ពេលផ្ញើ';
+
+  @override
+  String get cmSendNow => 'ផ្ញើឥឡូវនេះ';
+
+  @override
+  String get cmTestSend => 'ផ្ញើសាកល្បងទៅលេខខ្ញុំ';
+
+  @override
+  String get cmCreate => 'រក្សាទុកយុទ្ធនាការ';
+
+  @override
+  String get cmNeedOptout => 'SMS ត្រូវការលេខបដិសេធ 080';
+
+  @override
+  String get cmLog => 'កំណត់ហេតុផ្ញើ';
+
+  @override
+  String cmStatSent(String count) {
+    return 'បានផ្ញើ $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'គ្មានការយល់ព្រម $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'បរាជ័យ $count';
+  }
+
+  @override
+  String get cmSaved => 'បានរក្សាទុកយុទ្ធនាការ';
+
+  @override
+  String anFunnel(String days) {
+    return 'ផ្លូវការចុះឈ្មោះ ($days ថ្ងៃចុងក្រោយ)';
+  }
+
+  @override
+  String get anInstalls => 'បើកកម្មវិធី (បានយល់ព្រម)';
+
+  @override
+  String get anSignedUp => 'បានចុះឈ្មោះ';
+
+  @override
+  String get anQuoted => 'ស្នើសុំតម្លៃ';
+
+  @override
+  String get anBooked => 'បានកក់';
+
+  @override
+  String get anPaid => 'បានបង់';
+
+  @override
+  String get anRepeat => 'ការទិញម្តងទៀត (2+ ដង)';
+
+  @override
+  String get anCohorts => 'ក្រុមប្រចាំសប្តាហ៍ (អត្រាកក់តាមសប្តាហ៍ចុះឈ្មោះ)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'ចុះឈ្មោះ $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return 'កក់ក្នុងសប្តាហ៍ $n';
+  }
+
+  @override
   String get cOps => 'ស្ថានភាពប្រព័ន្ធ';
 
   @override
@@ -2571,6 +2691,9 @@ class TKm extends T {
 
   @override
   String get oRuleDisk => 'ថាសជិតពេញ';
+
+  @override
+  String get oRuleAuth => 'សកម្មភាពចូលគណនីគួរឱ្យសង្ស័យ';
 
   @override
   String get oQuietHours => 'ម៉ោងស្ងាត់';
@@ -3203,6 +3326,52 @@ class TKm extends T {
   }
 
   @override
+  String get oFlags => 'ប៊ូតុងបើកមុខងារ';
+
+  @override
+  String get oFlagBooking => 'ការកក់';
+
+  @override
+  String get oFlagChat => 'ជជែក';
+
+  @override
+  String get oFlagAi => 'ជំនួយការ AI';
+
+  @override
+  String get oFlagPayments => 'ការទូទាត់';
+
+  @override
+  String get oMaintenance => 'របៀបថែទាំ';
+
+  @override
+  String get oMaintenanceHint =>
+      'នៅពេលបើក អ្នកប្រើនិងដៃគូនឹងឃើញអេក្រង់ថែទាំ។ កុងសូលនៅតែប្រើបាន។';
+
+  @override
+  String get oMaintenanceMessage => 'សារថែទាំ';
+
+  @override
+  String get oClientErrors => 'របាយការណ៍កំហុសកម្មវិធី';
+
+  @override
+  String get oClientErrorsHint =>
+      'កំហុសថ្មីៗពីវែប Windows និងកុងសូល។ ព័ត៌មានផ្ទាល់ខ្លួនត្រូវបានលាក់ដោយស្វ័យប្រវត្តិ។';
+
+  @override
+  String get oClientErrorsEmpty => 'គ្មានកំហុសថ្មីៗ';
+
+  @override
+  String get oHeartbeat => 'ជីពចរតាមដាន';
+
+  @override
+  String get oHeartbeatOn =>
+      'បានភ្ជាប់។ សេវាខាងក្រៅនឹងត្រូវបានជូនដំណឹងនៅពេលម៉ាស៊ីនមេដំណើរការ។';
+
+  @override
+  String get oHeartbeatOff =>
+      'មិនទាន់កំណត់៖ បន្ថែម MALKKEUM_HEARTBEAT_URL ទៅ install.sh។';
+
+  @override
   String get pvManage => 'ការគ្រប់គ្រងការយល់ព្រម';
 
   @override
@@ -3684,6 +3853,129 @@ class TKm extends T {
   @override
   String get cStaffResetBody =>
       'ផ្តល់តូកែននេះឲ្យបុគ្គលិក។ ប្រើបានតែម្តង ក្នុងរយៈពេល 30 នាទី។ បិទហើយនឹងមើលមិនឃើញទៀតទេ។';
+
+  @override
+  String get subTitle => 'សម្អាតតាមកាលកំណត់';
+
+  @override
+  String get subNew => 'ចុះឈ្មោះ';
+
+  @override
+  String get subCadence => 'ញឹកញាប់';
+
+  @override
+  String get subWeekly => 'រាល់សប្តាហ៍';
+
+  @override
+  String get subBiweekly => 'រាល់ ២ សប្តាហ៍';
+
+  @override
+  String get subEvery4Weeks => 'រាល់ ៤ សប្តាហ៍';
+
+  @override
+  String get subWeekday => 'ថ្ងៃ';
+
+  @override
+  String get subHour => 'ម៉ោងមកដល់';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'បញ្ចុះតម្លៃ $percent% ក្នុងការមកម្តងៗ';
+  }
+
+  @override
+  String get subChargeNote => 'គិតប្រាក់ពីកាតដែលបានរក្សាទុកមួយថ្ងៃមុនការមក';
+
+  @override
+  String get subCreate => 'ចុះឈ្មោះ';
+
+  @override
+  String get subCreated => 'បានចាប់ផ្តើមការជាវ';
+
+  @override
+  String get subNeedAddress => 'សូមបន្ថែមអាសយដ្ឋានជាមុនសិន';
+
+  @override
+  String get subListEmpty => 'មិនទាន់មានការជាវ';
+
+  @override
+  String get subStatusActive => 'កំពុងប្រើ';
+
+  @override
+  String get subStatusPaused => 'បានផ្អាក';
+
+  @override
+  String get subStatusCancelled => 'បានបោះបង់';
+
+  @override
+  String subNextVisit(String date) {
+    return 'ការមកលើកក្រោយ $date';
+  }
+
+  @override
+  String get subPause => 'ផ្អាក';
+
+  @override
+  String get subResume => 'បន្ត';
+
+  @override
+  String get subCancelSub => 'បោះបង់ការជាវ';
+
+  @override
+  String get subCancelConfirm =>
+      'ការមកនាពេលខាងមុខនឹងត្រូវបោះបង់។ ការមកដែលបានកក់ត្រូវបោះបង់ដាច់ដោយឡែក។';
+
+  @override
+  String get subSkip => 'រំលងការមកនេះ';
+
+  @override
+  String get subMove => 'ប្តូរកាលបរិច្ឆេទ';
+
+  @override
+  String get subVisitLocked => 'មិនអាចប្តូរបានចាប់ពីមួយថ្ងៃមុនការមក';
+
+  @override
+  String get subPausedPayment =>
+      'បានផ្អាកដោយសារការបង់ប្រាក់បរាជ័យច្រើនដង។ សូមប្តូរកាត ហើយបន្ត។';
+
+  @override
+  String get subStatePlanned => 'បានកំណត់';
+
+  @override
+  String get subStateBooked => 'បានកក់';
+
+  @override
+  String get subStateSkipped => 'បានរំលង';
+
+  @override
+  String get subStateMissed => 'ខកខាន';
+
+  @override
+  String get pSubsTitle => 'អតិថិជនប្រចាំ';
+
+  @override
+  String get pSubsEmpty => 'មិនទាន់មានអតិថិជនประจำ';
+
+  @override
+  String get cSubsTitle => 'ការជាវ';
+
+  @override
+  String get cSubsEdit => 'កែសម្រួលជំនួសអតិថិជន';
+
+  @override
+  String get cMrr => 'ចំណូលប្រចាំខែ (MRR)';
+
+  @override
+  String get cChurn => 'អត្រាបោះបង់';
+
+  @override
+  String get cActiveSubs => 'ការជាវដែលកំពុងដំណើរការ';
+
+  @override
+  String get cRecognized => 'ចំណូលដែលបានទទួលស្គាល់ក្នុងរយៈពេល';
+
+  @override
+  String get cSubsLoadFailed => 'មិនអាចផ្ទុកការជាវបានទេ';
 
   @override
   String get tTaxSection => 'ពន្ធ';

@@ -13,10 +13,16 @@ pub mod growth;
 pub mod household;
 pub mod money;
 pub mod partner;
+pub mod peak;
 pub mod pricing;
+pub mod quality;
 pub mod quote;
 pub mod schedule;
+pub mod subscription;
 pub mod tax;
+pub mod tip;
+pub mod training;
+pub mod waitlist;
 
 pub use error::DomainError;
 pub use money::Won;

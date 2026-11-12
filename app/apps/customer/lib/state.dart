@@ -5,14 +5,27 @@ import 'package:flutter/widgets.dart';
 
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
-  AppState(this.api, this.realtime, {JsonCache? cache})
-    : cache = cache ?? JsonCache() {
+  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics})
+    : cache = cache ?? JsonCache(),
+      analytics = analytics ?? Analytics.off() {
     realtime.events.listen(_onEvent);
   }
 
   final ApiClient api;
   final Realtime realtime;
   final JsonCache cache;
+  final Analytics analytics;
+
+  /// Analytics follow the server's marketing consent. Any failure leaves analytics off.
+  Future<void> syncAnalyticsConsent() async {
+    try {
+      final s = await api.get('/me/consents') as Json;
+      final items = (s['items'] as List).cast<Json>();
+      analytics.setConsent(items.any((i) => i['kind'] == 'marketing' && i['granted'] == true));
+    } on Object {
+      analytics.setConsent(false);
+    }
+  }
 
   String name = '';
   String phone = '';

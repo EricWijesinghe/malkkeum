@@ -205,6 +205,7 @@ async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
 
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
+    crate::quality::check_offer_gate(&s.db, a.id).await?;
     if !visible_to(&s, id, a.id).await? {
         return Err(ApiError::NotFound);
     }
@@ -488,7 +489,7 @@ async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, 
         Recipient::User(b.user_id),
         "booking.completed",
         "청소가 끝났어요",
-        "전후 사진을 확인해 보세요",
+        "전후 사진을 확인하고 후기를 남겨 주세요",
         json!({ "booking_id": id, "status": 3 }),
     )
     .await?;

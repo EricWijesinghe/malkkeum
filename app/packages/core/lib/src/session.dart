@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'api.dart';
+import 'attribution.dart';
 
 /// Staff second-factor step after the password. [enrol] means TOTP must be set up first (admins).
 class StaffMfaChallenge {
@@ -94,6 +95,7 @@ class Session extends ChangeNotifier {
               'phone': phone,
               'code': code,
               'audience': audience,
+              'attribution': Attribution.get(),
             })
             as Map<String, dynamic>;
     await save(r);

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2431,6 +2430,128 @@ class TUz extends T {
       'Xizmatni yaxshilash uchun texnik ishlar olib borilmoqda. Iltimos, keyinroq qayta urinib ko\'ring.';
 
   @override
+  String get cmTab => 'Kampaniyalar';
+
+  @override
+  String get cmNew => 'Yangi kampaniya';
+
+  @override
+  String get cmAudience => 'Auditoriya';
+
+  @override
+  String get cmSegAll => 'Barcha mijozlar';
+
+  @override
+  String get cmSegNever => 'Hech qachon band qilmagan';
+
+  @override
+  String cmSegLapsed(String days) {
+    return 'Oxirgi buyurtma $days+ kun oldin';
+  }
+
+  @override
+  String get cmDays => 'Kunlar soni';
+
+  @override
+  String cmConsentCount(String total, String consented) {
+    return '$total tadan $consented tasi marketing rozilik bergan';
+  }
+
+  @override
+  String get cmChannel => 'Kanal';
+
+  @override
+  String get cmPush => 'Ilova push';
+
+  @override
+  String get cmSms => 'SMS';
+
+  @override
+  String get cmTitle => 'Sarlavha';
+
+  @override
+  String get cmBody => 'Matn';
+
+  @override
+  String get cmOptout => 'Rad etish raqami (080)';
+
+  @override
+  String get cmPreview => 'Ko‘rib chiqish';
+
+  @override
+  String get cmSchedule => 'Yuborish vaqti';
+
+  @override
+  String get cmSendNow => 'Hozir yuborish';
+
+  @override
+  String get cmTestSend => 'Test xabarni o‘z raqamimga yuborish';
+
+  @override
+  String get cmCreate => 'Kampaniyani saqlash';
+
+  @override
+  String get cmNeedOptout => 'SMS uchun 080 rad etish raqami kerak';
+
+  @override
+  String get cmLog => 'Yuborish jurnali';
+
+  @override
+  String cmStatSent(String count) {
+    return 'Yuborildi $count';
+  }
+
+  @override
+  String cmStatSkipped(String count) {
+    return 'Rozilik yo‘q $count';
+  }
+
+  @override
+  String cmStatFailed(String count) {
+    return 'Xato $count';
+  }
+
+  @override
+  String get cmSaved => 'Kampaniya saqlandi';
+
+  @override
+  String anFunnel(String days) {
+    return 'Ro‘yxatdan o‘tish voronkasi (so‘nggi $days kun)';
+  }
+
+  @override
+  String get anInstalls => 'Ilova ochilgan (rozilik bilan)';
+
+  @override
+  String get anSignedUp => 'Ro‘yxatdan o‘tgan';
+
+  @override
+  String get anQuoted => 'Narx so‘raganlar';
+
+  @override
+  String get anBooked => 'Band qilgan';
+
+  @override
+  String get anPaid => 'To‘lagan';
+
+  @override
+  String get anRepeat => 'Qayta (2+)';
+
+  @override
+  String get anCohorts =>
+      'Haftalik kogortalar (ro‘yxatdan o‘tgan hafta bo‘yicha bron ulushi)';
+
+  @override
+  String anCohortSize(String count) {
+    return 'Ro‘yxat $count';
+  }
+
+  @override
+  String anWeekAfter(String n) {
+    return '$n-haftada band qilgan';
+  }
+
+  @override
   String get cOps => 'Tizim holati';
 
   @override
@@ -2590,6 +2711,9 @@ class TUz extends T {
 
   @override
   String get oRuleDisk => 'Disk deyarli to‘lgan';
+
+  @override
+  String get oRuleAuth => 'Shubhali kirish faolligi';
 
   @override
   String get oQuietHours => 'Jim soatlar';
@@ -3224,6 +3348,52 @@ class TUz extends T {
   }
 
   @override
+  String get oFlags => 'Funksiya kalitlari';
+
+  @override
+  String get oFlagBooking => 'Bronlar';
+
+  @override
+  String get oFlagChat => 'Chat';
+
+  @override
+  String get oFlagAi => 'AI yordamchi';
+
+  @override
+  String get oFlagPayments => 'To\'lovlar';
+
+  @override
+  String get oMaintenance => 'Texnik xizmat rejimi';
+
+  @override
+  String get oMaintenanceHint =>
+      'Yoqilsa, mijoz va hamkor ilovalari texnik xizmat ekranini ko\'rsatadi. Konsol ishlashda davom etadi.';
+
+  @override
+  String get oMaintenanceMessage => 'Texnik xizmat xabari';
+
+  @override
+  String get oClientErrors => 'Ilova xatolari hisoboti';
+
+  @override
+  String get oClientErrorsHint =>
+      'Veb, Windows va konsoldan so\'nggi xatolar. Shaxsiy ma\'lumotlar avtomatik yashiriladi.';
+
+  @override
+  String get oClientErrorsEmpty => 'So\'nggi xatolar yo\'q';
+
+  @override
+  String get oHeartbeat => 'Ishlash heartbeat';
+
+  @override
+  String get oHeartbeatOn =>
+      'Ulangan. Server ishlaganda tashqi xizmat xabardor qilinadi.';
+
+  @override
+  String get oHeartbeatOff =>
+      'Sozlanmagan: install.sh ga MALKKEUM_HEARTBEAT_URL ni qo\'shing.';
+
+  @override
   String get pvManage => 'Rozilik sozlamalari';
 
   @override
@@ -3707,6 +3877,131 @@ class TUz extends T {
   @override
   String get cStaffResetBody =>
       'Bu tokenni xodimga bering. U bir marta, 30 daqiqa ichida ishlaydi. Yopilgandan keyin qayta ko‘rsatilmaydi.';
+
+  @override
+  String get subTitle => 'Muntazam tozalash';
+
+  @override
+  String get subNew => 'Obuna boshlash';
+
+  @override
+  String get subCadence => 'Necha marta';
+
+  @override
+  String get subWeekly => 'Har hafta';
+
+  @override
+  String get subBiweekly => 'Har 2 haftada';
+
+  @override
+  String get subEvery4Weeks => 'Har 4 haftada';
+
+  @override
+  String get subWeekday => 'Hafta kuni';
+
+  @override
+  String get subHour => 'Kelish vaqti';
+
+  @override
+  String subDiscountNote(String percent) {
+    return 'Har bir tashrif uchun $percent% chegirma';
+  }
+
+  @override
+  String get subChargeNote =>
+      'Har tashrifdan bir kun oldin saqlangan kartadan to\'lanadi';
+
+  @override
+  String get subCreate => 'Obuna bo\'lish';
+
+  @override
+  String get subCreated => 'Obuna boshlandi';
+
+  @override
+  String get subNeedAddress => 'Avval tashrif manzilini qo\'shing';
+
+  @override
+  String get subListEmpty => 'Hozircha obuna yo\'q';
+
+  @override
+  String get subStatusActive => 'Faol';
+
+  @override
+  String get subStatusPaused => 'To\'xtatilgan';
+
+  @override
+  String get subStatusCancelled => 'Bekor qilingan';
+
+  @override
+  String subNextVisit(String date) {
+    return 'Keyingi tashrif $date';
+  }
+
+  @override
+  String get subPause => 'To\'xtatish';
+
+  @override
+  String get subResume => 'Davom ettirish';
+
+  @override
+  String get subCancelSub => 'Obunani bekor qilish';
+
+  @override
+  String get subCancelConfirm =>
+      'Kelgusi tashriflar bekor qilinadi. Band qilingan tashriflarni alohida bekor qiling.';
+
+  @override
+  String get subSkip => 'Bu tashrifni o\'tkazib yuborish';
+
+  @override
+  String get subMove => 'Sanani o\'zgartirish';
+
+  @override
+  String get subVisitLocked =>
+      'Tashrifdan bir kun oldin o\'zgartirib bo\'lmaydi';
+
+  @override
+  String get subPausedPayment =>
+      'Takroriy to\'lov xatolari tufayli to\'xtatildi. Kartani almashtirib, davom ettiring.';
+
+  @override
+  String get subStatePlanned => 'Rejalashtirilgan';
+
+  @override
+  String get subStateBooked => 'Band qilingan';
+
+  @override
+  String get subStateSkipped => 'O\'tkazib yuborilgan';
+
+  @override
+  String get subStateMissed => 'O\'tkazib yuborilgan (o\'tmagan)';
+
+  @override
+  String get pSubsTitle => 'Doimiy mijozlar';
+
+  @override
+  String get pSubsEmpty => 'Hozircha doimiy mijozlar yo\'q';
+
+  @override
+  String get cSubsTitle => 'Obunalar';
+
+  @override
+  String get cSubsEdit => 'Mijoz o\'rniga tahrirlash';
+
+  @override
+  String get cMrr => 'Oylik takroriy daromad (MRR)';
+
+  @override
+  String get cChurn => 'Churn';
+
+  @override
+  String get cActiveSubs => 'Faol obunalar';
+
+  @override
+  String get cRecognized => 'Davrda e\'tirof etilgan daromad';
+
+  @override
+  String get cSubsLoadFailed => 'Obunalarni yuklab bo\'lmadi';
 
   @override
   String get tTaxSection => 'Soliq';

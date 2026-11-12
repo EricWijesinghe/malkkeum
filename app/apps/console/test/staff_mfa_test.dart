@@ -173,7 +173,7 @@ void main() {
           },
         ])
         ..onPost(
-          '/staff/st-1/password-reset',
+          '/admin/staff/st-1/password-reset',
           (_) => {'token': 'reset-abc-123', 'expires_in': 1800},
         );
       final env = await TestEnv.create(fake: fake, role: 'staff_admin');
@@ -185,7 +185,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, koT.cStaffReset));
       await settle(tester);
 
-      expect(fake.lastCall('POST', '/staff/st-1/password-reset'), isNotNull);
+      expect(fake.lastCall('POST', '/admin/staff/st-1/password-reset'), isNotNull);
       expect(find.text(koT.cStaffResetTitle), findsOneWidget);
       expect(_selectable('reset-abc-123'), findsOneWidget);
       await unmount(tester);

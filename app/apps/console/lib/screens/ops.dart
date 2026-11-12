@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'platform.dart';
 
 /// System status: green / yellow / red per check, the external services, and the owner's alert settings.
 /// Every red item says what to do, in the owner's language.
@@ -27,6 +28,7 @@ class _OpsScreenState extends State<OpsScreen> {
         return {
           'status': await api.get('/admin/ops/status') as Json,
           'alerts': await api.get('/admin/ops/alerts') as Json,
+          'config': await api.get('/admin/config') as Json,
         };
       },
       builder: (context, data, reload) {
@@ -65,7 +67,18 @@ class _OpsScreenState extends State<OpsScreen> {
               const SizedBox(height: Space.lg),
               SectionTitle(t.oAlerts),
               const SizedBox(height: Space.sm),
-              _AlertsCard(initial: data['alerts'] as Json, onSaved: _reload),
+              _AlertsCard(
+                initial: data['alerts'] as Json,
+                onSaved: _reload,
+              ),
+              const SizedBox(height: Space.lg),
+              SectionTitle(t.oFlags),
+              const SizedBox(height: Space.sm),
+              FlagsCard(initial: data['config'] as Json, onSaved: _reload),
+              const SizedBox(height: Space.lg),
+              SectionTitle(t.oClientErrors),
+              const SizedBox(height: Space.sm),
+              const ClientErrorsCard(),
             ],
           ),
         );
@@ -327,6 +340,7 @@ final _ruleLabels = <String, String Function(T)>{
   'social_failing': (T t) => t.oRuleSocial,
   'backup_stale': (T t) => t.oRuleBackup,
   'disk_low': (T t) => t.oRuleDisk,
+  'auth_suspicious': (T t) => t.oRuleAuth,
 };
 
 class _AlertsCard extends StatefulWidget {

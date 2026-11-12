@@ -61,7 +61,7 @@ Dev mode (`DEV_MODE=1`) always uses the fakes, whatever the vars say.
 Solapi (`docs.solapi.com`):
 - Endpoint `POST https://api.solapi.com/messages/v4/send`, body `{"message": {...}}`. Message fields `to`, `from`, `text`, `type` (`SMS`/`LMS`/`ATA`), `kakaoOptions: {pfId, templateId, variables, disableSms}`.
 - Auth header `HMAC-SHA256 apiKey=…, date=…, salt=…, signature=…`, signature = hex(HMAC-SHA256(secret, date ‖ salt)). `date` is sent as RFC 3339 UTC with seconds (`2026-11-10T01:02:03Z`). Confirm Solapi accepts `Z` (some docs show `+09:00`).
-- AlimTalk template variables are assumed to be `#{title}` and `#{body}`. Approved templates must use those placeholders.
+- AlimTalk template variables are `#{brand}` (shop name from the business profile), `#{title}` and `#{body}`. Approved templates must use those placeholders.
 - SMS vs LMS split is 45 characters (EUC-KR 90 bytes).
 
 FCM (`firebase.google.com/docs/cloud-messaging`):
