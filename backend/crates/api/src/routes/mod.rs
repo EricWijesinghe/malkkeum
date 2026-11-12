@@ -18,7 +18,7 @@ pub(crate) mod growth;
 pub(crate) mod me;
 mod member;
 mod ops;
-mod partner;
+pub(crate) mod partner;
 pub(crate) mod partner_jobs;
 pub(crate) mod tips;
 pub(crate) mod waitlist;

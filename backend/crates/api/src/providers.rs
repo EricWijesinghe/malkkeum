@@ -1,6 +1,7 @@
 //! Adapters for paid external services. Dev mode uses in-process fakes so the
 //! whole system runs offline; production adapters plug in behind the same API.
 
+pub mod apple;
 pub mod fcm;
 pub mod payout;
 pub mod portone;

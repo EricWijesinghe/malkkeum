@@ -42,6 +42,17 @@ class _FakeSocial extends SocialSignIn {
   Future<String?> obtainToken(BuildContext context) async => token;
 }
 
+/// Fake Apple SDK: identity token plus authorization code, like `AppleSocialSignIn`.
+class _FakeApple extends SocialSignIn {
+  const _FakeApple();
+  @override
+  String get provider => 'apple';
+  @override
+  Future<String?> obtainToken(BuildContext context) async => 'id-tok';
+  @override
+  Future<Map<String, String>?> obtainCredential(BuildContext context) async => appleCredentialFields('id-tok', 'code-1');
+}
+
 /// Fake PG: returns a scripted outcome and records the intent it was given.
 class _FakeLauncher extends PaymentLauncher {
   _FakeLauncher(this.outcome);
@@ -145,6 +156,23 @@ void main() {
       expect(result.needsPhone, isTrue);
       expect(api.session.refreshToken, 'r1');
       expect(api.session.signedIn, isTrue);
+    });
+
+    test('apple credential carries the authorization code only when Apple gave one', () {
+      expect(appleCredentialFields('id-tok', 'code-1'), {'token': 'id-tok', 'authorization_code': 'code-1'});
+      expect(appleCredentialFields('id-tok', ''), {'token': 'id-tok'});
+      expect(appleCredentialFields('id-tok', null), {'token': 'id-tok'});
+    });
+
+    testWidgets('apple sign-in posts the authorization code for server-side revocation', (tester) async {
+      Object? sent;
+      final api = _client((req) async {
+        sent = jsonDecode(req.body);
+        return _json(200, {'access_token': 'a1', 'refresh_token': 'r1', 'role': 'customer', 'subject': 'u1'});
+      });
+      final ctx = await _context(tester);
+      await tester.runAsync(() => signInWithSocial(context: ctx, api: api, session: api.session, provider: const _FakeApple(), audience: 'customer'));
+      expect(sent, {'provider': 'apple', 'token': 'id-tok', 'authorization_code': 'code-1', 'audience': 'customer'});
     });
 
     testWidgets('a cancelled SDK sheet makes no request', (tester) async {

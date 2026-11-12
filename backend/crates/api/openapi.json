@@ -478,13 +478,34 @@
         }
       }
     },
+    "/v1/auth/apple/notifications": {
+      "post": {
+        "operationId": "appleNotifications",
+        "tags": [
+          "webhook"
+        ],
+        "summary": "Sign in with Apple server-to-server notifications (JWS verified against Apple's keys; replays acknowledged once)",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/auth/social": {
       "post": {
         "operationId": "socialLogin",
         "tags": [
           "auth"
         ],
-        "summary": "Sign in with Kakao, Google or Apple identity token",
+        "summary": "Sign in with Kakao, Naver, Google or Apple (Apple may add authorization_code for revocation on deletion)",
         "security": [],
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
