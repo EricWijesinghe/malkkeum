@@ -87,6 +87,34 @@ async fn campaign_reaches_consented_customers_and_logs_the_rest(pool: PgPool) {
     assert_eq!(campaign_status(&pool, campaign).await, "sent");
     assert_eq!(send_status(&pool, yes.user).await.as_deref(), Some("sent"));
     assert_eq!(send_status(&pool, no.user).await.as_deref(), Some("skipped_consent"));
+    let inbox: Value = sqlx::query_scalar("SELECT data FROM notifications WHERE owner_id = $1 AND kind = 'marketing.campaign'")
+        .bind(yes.user)
+        .fetch_one(&pool)
+        .await
+        .expect("push inbox row");
+    assert!(inbox["title"].as_str().is_some_and(|t| t.starts_with("(광고)")), "advertising push is marked: {inbox}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn campaigns_are_admin_only_and_tests_go_to_the_owner_phone_only(pool: PgPool) {
+    let app = app(pool.clone());
+    let consultant = auth::issue_access(SECRET, Uuid::now_v7(), auth::Role::StaffConsultant).expect("consultant token");
+    let (st, _) = call(&app, "GET", "/v1/admin/campaigns", Some(&consultant), None).await;
+    assert_eq!(st, StatusCode::FORBIDDEN, "consultants cannot see campaigns");
+
+    let admin = staff_token();
+    let body = |phone: &str| json!({ "phone": phone, "body": "테스트 문구", "optout_number": "080-123-4567" });
+    let (st, _) = call(&app, "POST", "/v1/admin/campaigns/test", Some(&admin), Some(body("010-9999-0000"))).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "no owner phone set: refused");
+    sqlx::query("INSERT INTO settings (key, value) VALUES ('ops_alerts', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value")
+        .bind(json!({ "rules": {}, "quiet_start": 22, "quiet_end": 7, "alert_phone": "01012345678" }))
+        .execute(&pool)
+        .await
+        .expect("owner alert phone");
+    let (st, _) = call(&app, "POST", "/v1/admin/campaigns/test", Some(&admin), Some(body("010-9999-0000"))).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "someone else's number is refused");
+    let (st, b) = call(&app, "POST", "/v1/admin/campaigns/test", Some(&admin), Some(body("010-1234-5678"))).await;
+    assert_eq!(st, StatusCode::OK, "the owner's own phone gets the test: {b}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -135,7 +163,7 @@ async fn rebook_nudge_is_held_during_quiet_hours(pool: PgPool) {
         .execute(&pool)
         .await
         .expect("completed 30 days ago");
-    let key = format!("nudge:rebook:{booking}");
+    let key = format!("nudge:rebook:{booking}:{}:push", c.user);
 
     assert_eq!(marketing::run_nudges_at(&state(&pool), night()).await.expect("nudges"), 0);
     let held: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&pool).await.expect("row");

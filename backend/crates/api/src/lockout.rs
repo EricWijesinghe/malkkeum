@@ -3,6 +3,7 @@
 //! - the account alone has a wider free budget and locks it against a distributed guesser. Login refuses
 //!   while it is locked; a staff account lock only delays (see `delay`). OTP has no account key: the
 //!   per-code attempt cap and the send rate limit already bound guessing.
+//!
 //! A successful step clears both. State is per process; the database lockout on staff stays the backstop.
 
 use crate::{error::ApiError, state::AppState};

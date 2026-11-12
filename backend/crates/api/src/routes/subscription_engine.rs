@@ -375,7 +375,7 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
         .execute(&mut *tx)
         .await?;
     if let Some(pro) = sub.preferred_pro_id
-        && pro_free_for(&mut *tx, id, pro).await?
+        && pro_free_for(&mut tx, id, pro).await?
     {
         sqlx::query(
             "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),

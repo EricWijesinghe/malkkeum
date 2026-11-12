@@ -201,10 +201,21 @@ async fn refunds_and_settlement_holds_are_admin_only_and_run_once(pool: PgPool) 
         .expect("case")
         .to_string();
     let admin = token(Role::StaffAdmin);
+    // A newer tip payment on the same booking: a case refund must never take it back from the partner.
+    let tip: Uuid = sqlx::query_scalar(
+        "INSERT INTO payments (booking_id, amount, kind, status, provider, provider_tx_id, idempotency_key, created_at)
+         VALUES ($1, 5000, 'tip', 'paid', 'fake', 'tip-tx', 'tip-key', now() + interval '1 minute') RETURNING id",
+    )
+    .bind(id)
+    .fetch_one(&pool)
+    .await
+    .expect("tip payment");
 
     let (st, b) = call(&app, "PUT", &format!("/v1/admin/cases/{case}"), Some(admin.as_str()), Some(json!({ "refund_amount": 1000 }))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     assert_eq!(b["case"]["outcome"]["refund"]["refunded"], 1000);
+    let tip_refunded: i64 = sqlx::query_scalar("SELECT refunded_amount FROM payments WHERE id = $1").bind(tip).fetch_one(&pool).await.expect("tip row");
+    assert_eq!(tip_refunded, 0, "refund_all leaves tips alone");
     let (st, _) = call(&app, "PUT", &format!("/v1/admin/cases/{case}"), Some(admin.as_str()), Some(json!({ "refund_amount": 1000 }))).await;
     assert_eq!(st, StatusCode::CONFLICT, "a case refunds once");
 

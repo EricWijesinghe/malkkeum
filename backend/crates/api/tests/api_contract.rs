@@ -79,7 +79,10 @@ fn contains_call(expr: &str, method: &str) -> bool {
 fn route_sources() -> Vec<(String, String)> {
     let dir = manifest().join("src/routes");
     let mut files: Vec<PathBuf> = fs::read_dir(&dir).expect("routes dir").filter_map(|e| e.ok().map(|e| e.path())).collect();
-    files.push(manifest().join("src/app_links.rs"));
+    // Route modules that live outside src/routes.
+    for f in ["app_links", "acquisition", "analytics", "client_errors", "marketing"] {
+        files.push(manifest().join(format!("src/{f}.rs")));
+    }
     files
         .into_iter()
         .filter(|p| p.extension().is_some_and(|x| x == "rs"))

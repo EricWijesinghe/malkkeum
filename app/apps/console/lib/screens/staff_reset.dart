@@ -13,7 +13,7 @@ Future<void> issueStaffPasswordReset(BuildContext context, Json staff) async {
   if (!await confirmAction(context, t.cStaffReset) || !context.mounted) return;
   try {
     final r =
-        await context.api.post('/staff/${staff['id']}/password-reset', {})
+        await context.api.post('/admin/staff/${staff['id']}/password-reset', {})
             as Json;
     if (!context.mounted) return;
     await showDialog<void>(
