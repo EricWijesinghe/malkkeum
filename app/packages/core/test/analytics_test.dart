@@ -5,11 +5,11 @@ void main() {
   late List<Map<String, Object>> sent;
   late bool failNext;
 
-  Analytics make({bool consent = true}) {
+  Analytics make({bool consent = true, String platform = 'android'}) {
     sent = [];
     failNext = false;
     final a = Analytics(
-      platform: 'android',
+      platform: platform,
       anonId: 'a1b2',
       send: (body) async {
         if (failNext) throw StateError('offline');
@@ -44,6 +44,15 @@ void main() {
     expect(sent.single['events'], [
       {'name': 'app_open', 'platform': 'android'},
       {'name': 'quote_view', 'platform': 'android', 'screen': 'quote'},
+    ]);
+  });
+
+  test('an empty platform (desktop) is left out instead of sent as a wrong label', () async {
+    final a = make(platform: '');
+    a.track('app_open');
+    await a.flush();
+    expect(sent.single['events'], [
+      {'name': 'app_open'},
     ]);
   });
 

@@ -21,7 +21,7 @@ Future<void> main() async {
   final restored = boot.elapsedMilliseconds;
   final analytics = Analytics(
     send: (body) async => api.post('/events', body),
-    platform: kIsWeb ? 'web' : (defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android'),
+    platform: kIsWeb ? 'web' : switch (defaultTargetPlatform) { TargetPlatform.iOS => 'ios', TargetPlatform.android => 'android', _ => '' },
     anonId: await Analytics.loadOrCreateAnonId(),
   );
   final app = AppState(api, Realtime(api), analytics: analytics);
