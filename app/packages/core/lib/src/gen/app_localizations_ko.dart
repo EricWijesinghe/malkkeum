@@ -1819,6 +1819,9 @@ class TKo extends T {
   String get quick_quote => '견적이 궁금해요';
 
   @override
+  String get cQuoteOverride => '예상 금액과 크게 다른 견적 보내기';
+
+  @override
   String get quick_reschedule => '일정 변경할래요';
 
   @override

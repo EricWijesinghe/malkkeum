@@ -575,6 +575,7 @@
  "quotePayAmount": "Pay deposit {amount}",
  "quoteSuperseded": "Replaced by a newer quote",
  "quick_quote": "About the quote",
+ "cQuoteOverride": "Send a quote far from the estimate",
  "quick_reschedule": "Change the schedule",
  "themeTitle": "Theme",
  "themeDark": "Dark",

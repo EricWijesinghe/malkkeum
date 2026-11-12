@@ -575,6 +575,7 @@
  "quotePayAmount": "Trả cọc {amount}",
  "quoteSuperseded": "Đã có báo giá mới hơn",
  "quick_quote": "Hỏi về báo giá",
+ "cQuoteOverride": "Gửi báo giá chênh lệch lớn so với ước tính",
  "quick_reschedule": "Muốn đổi lịch",
  "themeTitle": "Giao diện",
  "themeDark": "Tối",

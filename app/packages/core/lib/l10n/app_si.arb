@@ -575,6 +575,7 @@
  "quotePayAmount": "අත්තිකාරම ගෙවන්න {amount}",
  "quoteSuperseded": "නව මිල ගණනකින් ප්‍රතිස්ථාපනය විය",
  "quick_quote": "මිල ගණන ගැන",
+ "cQuoteOverride": "ඇස්තමේන්තුවෙන් බොහෝ වෙනස් මිල ගණනක් යවන්න",
  "quick_reschedule": "කාලසටහන වෙනස් කරන්න",
  "themeTitle": "තේමාව",
  "themeDark": "අඳුරු",

@@ -1861,6 +1861,9 @@ class TKm extends T {
   String get quick_quote => 'សួរអំពីសម្រង់តម្លៃ';
 
   @override
+  String get cQuoteOverride => 'ផ្ញើសម្រង់តម្លៃដែលខុសឆ្ងាយពីការប៉ាន់ស្មាន';
+
+  @override
   String get quick_reschedule => 'ប្តូរកាលវិភាគ';
 
   @override

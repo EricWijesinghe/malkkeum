@@ -1865,6 +1865,9 @@ class TSi extends T {
   String get quick_quote => 'මිල ගණන ගැන';
 
   @override
+  String get cQuoteOverride => 'ඇස්තමේන්තුවෙන් බොහෝ වෙනස් මිල ගණනක් යවන්න';
+
+  @override
   String get quick_reschedule => 'කාලසටහන වෙනස් කරන්න';
 
   @override

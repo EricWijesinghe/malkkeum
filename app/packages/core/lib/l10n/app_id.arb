@@ -575,6 +575,7 @@
  "quotePayAmount": "Bayar DP {amount}",
  "quoteSuperseded": "Diganti penawaran yang lebih baru",
  "quick_quote": "Tanya soal penawaran",
+ "cQuoteOverride": "Kirim penawaran yang jauh dari perkiraan",
  "quick_reschedule": "Ubah jadwal",
  "themeTitle": "Tema",
  "themeDark": "Gelap",

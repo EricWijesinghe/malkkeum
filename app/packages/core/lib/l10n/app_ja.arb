@@ -575,6 +575,7 @@
  "quotePayAmount": "予約金を支払う {amount}",
  "quoteSuperseded": "新しい見積に更新されました",
  "quick_quote": "見積について",
+ "cQuoteOverride": "概算と大きく異なる見積を送る",
  "quick_reschedule": "日程を変更したい",
  "themeTitle": "テーマ",
  "themeDark": "ダーク",

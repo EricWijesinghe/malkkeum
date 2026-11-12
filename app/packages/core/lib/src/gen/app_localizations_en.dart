@@ -1850,6 +1850,9 @@ class TEn extends T {
   String get quick_quote => 'About the quote';
 
   @override
+  String get cQuoteOverride => 'Send a quote far from the estimate';
+
+  @override
   String get quick_reschedule => 'Change the schedule';
 
   @override

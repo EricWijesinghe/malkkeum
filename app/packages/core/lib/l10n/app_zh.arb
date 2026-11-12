@@ -575,6 +575,7 @@
  "quotePayAmount": "支付定金 {amount}",
  "quoteSuperseded": "已被新报价取代",
  "quick_quote": "想了解报价",
+ "cQuoteOverride": "发送与预估差距很大的报价",
  "quick_reschedule": "想改时间",
  "themeTitle": "主题",
  "themeDark": "深色",

@@ -3571,6 +3571,12 @@ abstract class T {
   /// **'견적이 궁금해요'**
   String get quick_quote;
 
+  /// No description provided for @cQuoteOverride.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액과 크게 다른 견적 보내기'**
+  String get cQuoteOverride;
+
   /// No description provided for @quick_reschedule.
   ///
   /// In ko, this message translates to:

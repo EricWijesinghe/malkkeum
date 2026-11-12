@@ -575,6 +575,7 @@
  "quotePayAmount": "ชำระมัดจำ {amount}",
  "quoteSuperseded": "มีใบเสนอราคาใหม่แทนแล้ว",
  "quick_quote": "สอบถามใบเสนอราคา",
+ "cQuoteOverride": "ส่งใบเสนอราคาที่ต่างจากราคาประเมินมาก",
  "quick_reschedule": "ขอเปลี่ยนนัด",
  "themeTitle": "ธีม",
  "themeDark": "มืด",

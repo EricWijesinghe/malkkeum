@@ -575,6 +575,7 @@
  "quotePayAmount": "Oldindan toʻlov {amount}",
  "quoteSuperseded": "Yangi narx taklifi bilan almashtirildi",
  "quick_quote": "Narx taklifi haqida",
+ "cQuoteOverride": "Taxmindan ancha farq qiladigan narx taklifini yuborish",
  "quick_reschedule": "Jadvalni oʻzgartirish",
  "themeTitle": "Mavzu",
  "themeDark": "Tungi",

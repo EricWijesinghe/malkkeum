@@ -575,6 +575,7 @@
  "quotePayAmount": "Оплатить предоплату {amount}",
  "quoteSuperseded": "Заменено новой сметой",
  "quick_quote": "Вопрос по смете",
+ "cQuoteOverride": "Отправить смету, сильно отличающуюся от оценки",
  "quick_reschedule": "Изменить время",
  "themeTitle": "Тема",
  "themeDark": "Тёмная",

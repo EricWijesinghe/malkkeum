@@ -1872,6 +1872,10 @@ class TUz extends T {
   String get quick_quote => 'Narx taklifi haqida';
 
   @override
+  String get cQuoteOverride =>
+      'Taxmindan ancha farq qiladigan narx taklifini yuborish';
+
+  @override
   String get quick_reschedule => 'Jadvalni oʻzgartirish';
 
   @override

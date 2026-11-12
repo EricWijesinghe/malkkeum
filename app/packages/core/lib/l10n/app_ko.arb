@@ -879,6 +879,7 @@
  },
  "quoteSuperseded": "새 견적으로 바뀌었어요",
  "quick_quote": "견적이 궁금해요",
+ "cQuoteOverride": "예상 금액과 크게 다른 견적 보내기",
  "quick_reschedule": "일정 변경할래요",
  "themeTitle": "테마",
  "themeDark": "다크",

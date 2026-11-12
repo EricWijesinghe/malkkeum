@@ -1865,6 +1865,9 @@ class TMn extends T {
   String get quick_quote => 'Үнийн саналын талаар';
 
   @override
+  String get cQuoteOverride => 'Тооцооноос их зөрүүтэй үнийн санал илгээх';
+
+  @override
   String get quick_reschedule => 'Хуваарь өөрчлөх';
 
   @override

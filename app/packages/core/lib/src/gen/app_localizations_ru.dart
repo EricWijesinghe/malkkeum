@@ -1863,6 +1863,9 @@ class TRu extends T {
   String get quick_quote => 'Вопрос по смете';
 
   @override
+  String get cQuoteOverride => 'Отправить смету, сильно отличающуюся от оценки';
+
+  @override
   String get quick_reschedule => 'Изменить время';
 
   @override

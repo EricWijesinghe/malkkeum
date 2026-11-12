@@ -1861,6 +1861,9 @@ class TNe extends T {
   String get quick_quote => 'उद्धरणबारे';
 
   @override
+  String get cQuoteOverride => 'अनुमानभन्दा धेरै फरक उद्धरण पठाउनुहोस्';
+
+  @override
   String get quick_reschedule => 'समय परिवर्तन गर्न चाहन्छु';
 
   @override

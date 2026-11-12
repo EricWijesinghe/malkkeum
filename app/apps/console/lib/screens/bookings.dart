@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'confirm_action.dart';
 import 'inbox.dart';
 
 /// List + detail. Desktop shows both side by side; phones push the detail.
@@ -600,7 +601,7 @@ class _QuoteDeskState extends State<_QuoteDesk> {
   final _note = TextEditingController();
   bool _busy = false;
 
-  Future<void> _send() async {
+  Future<void> _send({bool override = false}) async {
     setState(() => _busy = true);
     try {
       await context.api
@@ -608,10 +609,22 @@ class _QuoteDeskState extends State<_QuoteDesk> {
             'final_price': int.parse(_price.text),
             'quote_id': _quoteId,
             'note': _note.text.isEmpty ? null : _note.text,
+            if (override) 'override': true,
           });
       if (!mounted) return;
       showToast(context, context.t.cQuoteSent);
       widget.onSent();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      // Far from the estimate: ask, then resend with the override (the server allows it for admins only).
+      if (e.code == 'quote_override_required' &&
+          await confirmAction(context, context.t.cQuoteOverride) &&
+          mounted) {
+        setState(() => _busy = false);
+        await _send(override: true);
+        return;
+      }
+      if (mounted) showToast(context, context.t.error(e));
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {

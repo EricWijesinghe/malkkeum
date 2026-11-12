@@ -1819,6 +1819,9 @@ class TJa extends T {
   String get quick_quote => '見積について';
 
   @override
+  String get cQuoteOverride => '概算と大きく異なる見積を送る';
+
+  @override
   String get quick_reschedule => '日程を変更したい';
 
   @override

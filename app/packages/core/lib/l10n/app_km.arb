@@ -575,6 +575,7 @@
  "quotePayAmount": "បង់ប្រាក់កក់ {amount}",
  "quoteSuperseded": "ត្រូវបានជំនួសដោយសម្រង់តម្លៃថ្មី",
  "quick_quote": "សួរអំពីសម្រង់តម្លៃ",
+ "cQuoteOverride": "ផ្ញើសម្រង់តម្លៃដែលខុសឆ្ងាយពីការប៉ាន់ស្មាន",
  "quick_reschedule": "ប្តូរកាលវិភាគ",
  "themeTitle": "ធីម",
  "themeDark": "ងងឹត",

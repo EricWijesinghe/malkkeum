@@ -1864,6 +1864,9 @@ class TId extends T {
   String get quick_quote => 'Tanya soal penawaran';
 
   @override
+  String get cQuoteOverride => 'Kirim penawaran yang jauh dari perkiraan';
+
+  @override
   String get quick_reschedule => 'Ubah jadwal';
 
   @override

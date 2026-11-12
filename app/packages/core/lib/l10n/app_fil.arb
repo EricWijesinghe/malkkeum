@@ -575,6 +575,7 @@
  "quotePayAmount": "Bayaran ang deposito {amount}",
  "quoteSuperseded": "Pinalitan ng mas bagong quote",
  "quick_quote": "Tungkol sa quote",
+ "cQuoteOverride": "Ipadala ang quote na malayo sa tantya",
  "quick_reschedule": "Palitan ang iskedyul",
  "themeTitle": "Tema",
  "themeDark": "Madilim",

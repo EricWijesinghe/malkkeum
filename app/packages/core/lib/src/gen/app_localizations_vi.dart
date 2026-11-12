@@ -1847,6 +1847,9 @@ class TVi extends T {
   String get quick_quote => 'Hỏi về báo giá';
 
   @override
+  String get cQuoteOverride => 'Gửi báo giá chênh lệch lớn so với ước tính';
+
+  @override
   String get quick_reschedule => 'Muốn đổi lịch';
 
   @override

@@ -1853,6 +1853,9 @@ class TTh extends T {
   String get quick_quote => 'สอบถามใบเสนอราคา';
 
   @override
+  String get cQuoteOverride => 'ส่งใบเสนอราคาที่ต่างจากราคาประเมินมาก';
+
+  @override
   String get quick_reschedule => 'ขอเปลี่ยนนัด';
 
   @override

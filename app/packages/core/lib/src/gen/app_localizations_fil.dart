@@ -1873,6 +1873,9 @@ class TFil extends T {
   String get quick_quote => 'Tungkol sa quote';
 
   @override
+  String get cQuoteOverride => 'Ipadala ang quote na malayo sa tantya';
+
+  @override
   String get quick_reschedule => 'Palitan ang iskedyul';
 
   @override

@@ -1815,6 +1815,9 @@ class TZh extends T {
   String get quick_quote => '想了解报价';
 
   @override
+  String get cQuoteOverride => '发送与预估差距很大的报价';
+
+  @override
   String get quick_reschedule => '想改时间';
 
   @override

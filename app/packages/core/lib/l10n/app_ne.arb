@@ -575,6 +575,7 @@
  "quotePayAmount": "अग्रिम भुक्तानी {amount}",
  "quoteSuperseded": "नयाँ उद्धरणले बदलियो",
  "quick_quote": "उद्धरणबारे",
+ "cQuoteOverride": "अनुमानभन्दा धेरै फरक उद्धरण पठाउनुहोस्",
  "quick_reschedule": "समय परिवर्तन गर्न चाहन्छु",
  "themeTitle": "थिम",
  "themeDark": "डार्क",
