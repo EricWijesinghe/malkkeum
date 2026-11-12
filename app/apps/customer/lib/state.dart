@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
@@ -28,7 +30,8 @@ class AppState extends ChangeNotifier {
       services.where((s) => s.code == code).firstOrNull;
 
   Future<void> loadAll() async {
-    await restoreServices();
+    // Disk restore never gates the network: a slow or stuck keystore must not hold up sign-in data.
+    unawaited(restoreServices());
     await Future.wait([
       loadProfile(),
       loadServices(),
@@ -51,7 +54,7 @@ class AppState extends ChangeNotifier {
   Future<void> restoreServices() async {
     if (services.isNotEmpty) return;
     final cached = await cache.read('services');
-    if (cached is! List) return;
+    if (cached is! List || services.isNotEmpty) return; // the network won the race
     try {
       services = cached.map((e) => Service.fromJson(e as Json)).toList();
     } on Object {
@@ -65,7 +68,7 @@ class AppState extends ChangeNotifier {
     final raw = await api.get('/services') as List;
     services = raw.map((e) => Service.fromJson(e as Json)).toList();
     notifyListeners();
-    await cache.write('services', raw);
+    unawaited(cache.write('services', raw));
   }
 
   Future<void> loadAddresses() async {
