@@ -1841,6 +1841,37 @@ class TId extends T {
   String get hhHint => 'Disimpan di alamat ini dan bisa diubah per pemesanan.';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Serahkan pekerjaan rumah hari ini kepada $brand';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'Tips $brand';
+  }
+
+  @override
+  String get moreContact => 'Hubungi kami';
+
+  @override
+  String get moreVersionInfo => 'Info versi';
+
+  @override
+  String get payAvailableTitle => 'Metode pembayaran tersedia';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

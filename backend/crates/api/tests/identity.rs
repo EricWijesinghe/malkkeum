@@ -59,3 +59,36 @@ async fn setup_reports_enabled_in_dev_mode(db: PgPool) {
     assert_eq!(st, StatusCode::OK);
     assert_eq!(b["enabled"], json!(true));
 }
+
+/// `/me.logins` lists only the caller's own customer identities: never another account's, never a pro's.
+#[sqlx::test(migrations = "../../migrations")]
+async fn me_logins_lists_only_the_callers_identities(db: PgPool) {
+    let app = common::app(db.clone());
+    let (alice, alice_id) = login(&app, "010-7100-0006", "customer").await;
+    let (bob, bob_id) = login(&app, "010-7100-0007", "customer").await;
+    let (carol, _) = login(&app, "010-7100-0008", "customer").await;
+    let (alice_id, bob_id): (uuid::Uuid, uuid::Uuid) = (alice_id.parse().expect("uuid"), bob_id.parse().expect("uuid"));
+
+    for (provider, uid, role, subject) in [
+        ("kakao", "k-alice", "customer", alice_id),
+        ("apple", "a-alice", "customer", alice_id),
+        ("naver", "n-bob", "customer", bob_id),
+        // The same subject id under the pro role must not leak into the customer profile.
+        ("google", "g-pro", "pro", alice_id),
+    ] {
+        sqlx::query("INSERT INTO user_identities (provider, provider_user_id, role, subject_id) VALUES ($1,$2,$3,$4)")
+            .bind(provider)
+            .bind(uid)
+            .bind(role)
+            .bind(subject)
+            .execute(&db)
+            .await
+            .expect("identity");
+    }
+
+    for (token, expected) in [(alice, json!(["apple", "kakao"])), (bob, json!(["naver"])), (carol, json!([]))] {
+        let (st, me) = call(&app, "GET", "/v1/me", Some(token.as_str()), None).await;
+        assert_eq!(st, StatusCode::OK, "{me}");
+        assert_eq!(me["logins"], expected);
+    }
+}

@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../src/u1_stub.dart'; // u1-stub: delete when U1 lands
 import '../state.dart';
 import 'pay_method_picker.dart';
 
@@ -25,14 +26,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     _billing = _loadBilling();
   }
 
-  /// Saved-card section is hidden unless PortOne is configured (see [BillingSetup]).
+  /// Every channel the server offers. The register grid shows only the billing ones PortOne
+  /// is configured for (see [BillingSetup]).
   Future<List<PayChannel>> _loadBilling() async {
     final api = context.api;
     final channels = await fetchPayChannels(api);
     _setup = await fetchBillingSetup(api);
-    return channels
-        .where((c) => c.isBilling && _setup.supports(c.code))
-        .toList();
+    return channels;
   }
 
   void _reload() {
@@ -141,33 +141,70 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     onRetry: _reload,
                   );
                 }
-                final channels = snap.data;
-                if (channels == null) {
+                final all = snap.data;
+                if (all == null) {
                   return const Padding(
                     padding: EdgeInsets.all(Space.lg),
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                if (channels.isEmpty) return const SizedBox.shrink();
+                final channels = all
+                    .where((c) => c.isBilling && _setup.supports(c.code))
+                    .toList();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: Space.lg),
-                    Text(t.apPayManageTitle, style: context.text.titleSmall),
-                    const SizedBox(height: Space.xs),
-                    Wrap(
-                      spacing: Space.xs,
-                      runSpacing: Space.xs,
-                      children: [
-                        for (final ch in channels)
-                          PayChannelTile(
-                            code: ch.code,
-                            label: t.payMethod(ch.code),
-                            busy: _adding == ch.code,
-                            onTap: _adding == null ? () => _add(ch) : null,
-                          ),
-                      ],
-                    ),
+                    if (all.isNotEmpty) ...[
+                      const SizedBox(height: Space.lg),
+                      Text(t.payAvailableTitle, style: context.text.titleSmall),
+                      const SizedBox(height: Space.xs),
+                      AppCard(
+                        padding: const EdgeInsets.symmetric(vertical: Space.xs),
+                        child: Column(
+                          children: [
+                            for (final ch in all)
+                              ListTile(
+                                key: ValueKey('channel-${ch.code}'),
+                                leading: Icon3D(
+                                  _channelIcon(ch.code),
+                                  size: 36,
+                                ),
+                                title: Text(t.payMethod(ch.code)),
+                                // Text wordmark only: no third-party logo artwork is bundled.
+                                // Decorative, so it keeps its size; the title scales.
+                                // Unconstrained: the badge would otherwise stretch
+                                // to the whole tile width.
+                                trailing: UnconstrainedBox(
+                                  child: MediaQuery.withNoTextScaling(
+                                    child: PayBrandBadge(
+                                      code: ch.code,
+                                      height: 28,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (channels.isNotEmpty) ...[
+                      const SizedBox(height: Space.lg),
+                      Text(t.apPayManageTitle, style: context.text.titleSmall),
+                      const SizedBox(height: Space.xs),
+                      Wrap(
+                        spacing: Space.xs,
+                        runSpacing: Space.xs,
+                        children: [
+                          for (final ch in channels)
+                            PayChannelTile(
+                              code: ch.code,
+                              label: t.payMethod(ch.code),
+                              busy: _adding == ch.code,
+                              onTap: _adding == null ? () => _add(ch) : null,
+                            ),
+                        ],
+                      ),
+                    ],
                   ],
                 );
               },
@@ -178,3 +215,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     );
   }
 }
+
+/// Generic art per channel kind; easy-pay brands share the wallet.
+String _channelIcon(String code) => switch (code) {
+  'card' => 'pay_card',
+  'transfer' => 'pay_bank',
+  'virtual_account' => 'pay_virtual',
+  _ => 'pay_wallet',
+};

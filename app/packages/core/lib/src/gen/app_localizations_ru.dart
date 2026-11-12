@@ -1840,6 +1840,37 @@ class TRu extends T {
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Доверьте домашние дела $brand и сегодня';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'Советы $brand';
+  }
+
+  @override
+  String get moreContact => 'Связаться с нами';
+
+  @override
+  String get moreVersionInfo => 'Версия';
+
+  @override
+  String get payAvailableTitle => 'Доступные способы оплаты';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Тема';
 
   @override

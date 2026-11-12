@@ -30,6 +30,12 @@ class AppState extends ChangeNotifier {
   String name = '';
   String phone = '';
   String? email;
+
+  /// Social providers linked to this account (`kakao`, `naver`, `apple`, `google`), read-only.
+  List<String> logins = const [];
+
+  /// Points balance for the More counter. Null until it loads, or when the wallet is unreachable.
+  int? points;
   List<Service> services = const [];
   List<Address> addresses = const [];
   List<Coupon> coupons = const [];
@@ -53,6 +59,19 @@ class AppState extends ChangeNotifier {
       loadMethods(),
       loadUnread(),
     ]);
+    // A counter only: the wallet must never hold up or fail sign-in data.
+    unawaited(loadPoints());
+  }
+
+  Future<void> loadPoints() async {
+    try {
+      final p = await api.get('/me/points') as Json;
+      points = (p['balance'] as num? ?? 0).toInt();
+    } on Exception {
+      // Shown as a dash; the wallet screen reports the actual error.
+      points = null;
+    }
+    notifyListeners();
   }
 
   Future<void> loadProfile() async {
@@ -60,6 +79,7 @@ class AppState extends ChangeNotifier {
     name = p['name'] as String? ?? '';
     phone = p['phone'] as String? ?? '';
     email = p['email'] as String?;
+    logins = ((p['logins'] as List?) ?? const []).cast<String>();
     notifyListeners();
   }
 

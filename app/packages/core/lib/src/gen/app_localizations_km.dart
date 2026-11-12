@@ -1838,6 +1838,37 @@ class TKm extends T {
       'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
 
   @override
+  String moreGreeting(String brand) {
+    return 'ថ្ងៃនេះក៏ទុកកិច្ចការផ្ទះឱ្យ $brand ដែរ';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'គន្លឹះពី $brand';
+  }
+
+  @override
+  String get moreContact => 'ទាក់ទងយើង';
+
+  @override
+  String get moreVersionInfo => 'ព័ត៌មានកំណែ';
+
+  @override
+  String get payAvailableTitle => 'វិធីបង់ប្រាក់ដែលអាចប្រើបាន';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'ធីម';
 
   @override

@@ -55,11 +55,15 @@ struct Profile {
     email: Option<String>,
     locale: String,
     created_at: DateTime<Utc>,
+    /// Social providers linked to this customer (read-only), e.g. `["kakao"]`.
+    logins: Vec<String>,
 }
 
 async fn profile(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Profile>> {
     let p = sqlx::query_as(
-        "SELECT id, phone, phone IS NOT NULL AS phone_verified, identity_verified_at IS NOT NULL AS identity_verified, name, email, locale, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",
+        "SELECT id, phone, phone IS NOT NULL AS phone_verified, identity_verified_at IS NOT NULL AS identity_verified, name, email, locale, created_at,
+                ARRAY(SELECT DISTINCT i.provider FROM user_identities i WHERE i.role = 'customer' AND i.subject_id = users.id ORDER BY 1) AS logins
+         FROM users WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(a.id)
     .fetch_one(&s.db)

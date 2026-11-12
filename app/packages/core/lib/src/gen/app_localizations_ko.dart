@@ -1796,6 +1796,37 @@ class TKo extends T {
   String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
 
   @override
+  String moreGreeting(String brand) {
+    return '오늘도 집안일은 $brand에게 맡기세요';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand 팁';
+  }
+
+  @override
+  String get moreContact => '문의하기';
+
+  @override
+  String get moreVersionInfo => '버전 정보';
+
+  @override
+  String get payAvailableTitle => '사용할 수 있는 결제수단';
+
+  @override
+  String get accountLoginKakao => '카카오';
+
+  @override
+  String get accountLoginNaver => '네이버';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => '테마';
 
   @override

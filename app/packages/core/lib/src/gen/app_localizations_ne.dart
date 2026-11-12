@@ -1838,6 +1838,37 @@ class TNe extends T {
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
 
   @override
+  String moreGreeting(String brand) {
+    return 'आज पनि घरको काम $brandलाई छोड्नुहोस्';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand सुझावहरू';
+  }
+
+  @override
+  String get moreContact => 'सम्पर्क गर्नुहोस्';
+
+  @override
+  String get moreVersionInfo => 'संस्करण जानकारी';
+
+  @override
+  String get payAvailableTitle => 'उपलब्ध भुक्तानी विधिहरू';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'थिम';
 
   @override

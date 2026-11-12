@@ -865,6 +865,29 @@
  "hhElevator": "엘리베이터 있음",
  "hhNotes": "메모",
  "hhHint": "주소에 저장되고, 예약마다 바꿀 수 있어요.",
+ "moreGreeting": "오늘도 집안일은 {brand}에게 맡기세요",
+ "@moreGreeting": {
+  "placeholders": {
+   "brand": {
+    "type": "String"
+   }
+  }
+ },
+ "moreBrandTips": "{brand} 팁",
+ "@moreBrandTips": {
+  "placeholders": {
+   "brand": {
+    "type": "String"
+   }
+  }
+ },
+ "moreContact": "문의하기",
+ "moreVersionInfo": "버전 정보",
+ "payAvailableTitle": "사용할 수 있는 결제수단",
+ "accountLoginKakao": "카카오",
+ "accountLoginNaver": "네이버",
+ "accountLoginApple": "Apple",
+ "accountLoginGoogle": "Google",
  "themeTitle": "테마",
  "themeDark": "다크",
  "themeLight": "라이트",

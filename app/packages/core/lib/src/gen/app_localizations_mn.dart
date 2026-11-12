@@ -1842,6 +1842,37 @@ class TMn extends T {
       'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Өнөөдөр ч гэрийн ажлаа $brand-д даатгаарай';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return '$brand зөвлөгөө';
+  }
+
+  @override
+  String get moreContact => 'Холбоо барих';
+
+  @override
+  String get moreVersionInfo => 'Хувилбарын мэдээлэл';
+
+  @override
+  String get payAvailableTitle => 'Боломжтой төлбөрийн хэрэгсэл';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override

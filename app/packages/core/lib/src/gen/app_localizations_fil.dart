@@ -1850,6 +1850,37 @@ class TFil extends T {
       'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
 
   @override
+  String moreGreeting(String brand) {
+    return 'Ipaubaya sa $brand ang gawaing-bahay ngayon';
+  }
+
+  @override
+  String moreBrandTips(String brand) {
+    return 'Mga tip ng $brand';
+  }
+
+  @override
+  String get moreContact => 'Makipag-ugnayan';
+
+  @override
+  String get moreVersionInfo => 'Bersyon';
+
+  @override
+  String get payAvailableTitle => 'Mga magagamit na paraan ng bayad';
+
+  @override
+  String get accountLoginKakao => 'Kakao';
+
+  @override
+  String get accountLoginNaver => 'Naver';
+
+  @override
+  String get accountLoginApple => 'Apple';
+
+  @override
+  String get accountLoginGoogle => 'Google';
+
+  @override
   String get themeTitle => 'Tema';
 
   @override
