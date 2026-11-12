@@ -38,8 +38,10 @@ Icon3DSpec _svc(String code) =>
     Icon3DSpec(serviceIcon(code), hue: ServiceHues.of(code).tone);
 
 /// Every 3D icon id of DAHAE-PLAN §4 with its fallback. Art lives in
-/// `packages/ui/assets/icons3d/{2.0x,3.0x}/<id>.webp`; each WP drops its own
-/// files there by id and [Icon3D] picks them up without a code change.
+/// `packages/ui/assets/icons3d/<id>.webp` (1x main, REQUIRED: a folder asset
+/// entry only lists main files, so variants without one are never bundled)
+/// plus `2.0x/<id>.webp` and `3.0x/<id>.webp`. Each WP drops its own files
+/// there by id and [Icon3D] picks them up without a code change.
 abstract final class Icon3DRegistry {
   static const package = 'ui';
   static const _dir = 'assets/icons3d';

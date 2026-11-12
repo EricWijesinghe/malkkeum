@@ -14,7 +14,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter:
-  # 3D icon art by id: <id>.webp with 2.0x/ and 3.0x/ variants (DAHAE-PLAN §4).
+  # 3D icon art by id: <id>.webp (1x main, required) + 2.0x/ and 3.0x/ variants (DAHAE-PLAN §4).
   assets:
     - assets/icons3d/
   fonts:

@@ -15,7 +15,7 @@ class SuccessMark extends StatefulWidget {
   final double size;
   final String? semanticLabel;
 
-  /// Frame files in `packages/ui/assets/icons3d/2.0x/`.
+  /// Frame files (one 288px density) in `packages/ui/assets/icons3d/`.
   static const frameCount = 24;
   static String frameAsset(int i) =>
       'assets/icons3d/confirm_check_f${i.toString().padLeft(2, '0')}.webp';

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -10,16 +12,28 @@ class _EmptyBundle extends CachingAssetBundle {
   Future<ByteData> load(String key) async => throw FlutterError('missing $key');
 }
 
+final _empty = _EmptyBundle();
+// Built once: a fresh ThemeData per pump would start an AnimatedTheme lerp (a ticker).
+final _themes = {
+  for (final b in Brightness.values) b: buildTheme(BrandConfig.placeholder, b),
+};
+
+/// [empty]: no art at all (fallback path). Otherwise the real bundle, whose
+/// decodes never finish under fake async, so no load errors on idle/active swaps.
 Widget _app(
   Widget child, {
   bool reduce = false,
+  bool empty = true,
   Brightness b = Brightness.light,
 }) => MaterialApp(
-  theme: buildTheme(BrandConfig.placeholder, b),
-  builder: (ctx, c) => MediaQuery(
-    data: MediaQuery.of(ctx).copyWith(disableAnimations: reduce),
-    child: DefaultAssetBundle(bundle: _EmptyBundle(), child: c!),
-  ),
+  theme: _themes[b],
+  builder: (ctx, c) {
+    final media = MediaQuery(
+      data: MediaQuery.of(ctx).copyWith(disableAnimations: reduce),
+      child: c!,
+    );
+    return empty ? DefaultAssetBundle(bundle: _empty, child: media) : media;
+  },
   home: Scaffold(body: Center(child: child)),
 );
 
@@ -177,6 +191,26 @@ void main() {
     );
   });
 
+  test(
+    'every 2.0x/3.0x icon has its 1x main file (else it is never bundled)',
+    () {
+      final mains = {
+        for (final f in Directory(
+          'assets/icons3d',
+        ).listSync().whereType<File>())
+          f.uri.pathSegments.last,
+      };
+      for (final density in ['2.0x', '3.0x']) {
+        final sub = Directory('assets/icons3d/$density');
+        if (!sub.existsSync()) continue;
+        for (final f in sub.listSync().whereType<File>()) {
+          final name = f.uri.pathSegments.last;
+          expect(mains, contains(name), reason: '$density/$name');
+        }
+      }
+    },
+  );
+
   testWidgets(
     'missing art falls back to the clay plate with the registry glyph',
     (tester) async {
@@ -200,7 +234,8 @@ void main() {
   testWidgets('active pops to 1.12 and settles; inactive returns to 1', (
     tester,
   ) async {
-    Widget icon(bool on) => _app(Icon3D('nav_home', active: on, size: 28));
+    Widget icon(bool on) =>
+        _app(Icon3D('nav_home', active: on, size: 28), empty: false);
     await tester.pumpWidget(icon(false));
     await tester.pumpAndSettle();
     expect(_scaleOf(tester, 'nav_home'), 1);
@@ -228,30 +263,32 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _app(const Icon3D('nav_chat', size: 28), reduce: true),
+      _app(const Icon3D('nav_chat', size: 28), reduce: true, empty: false),
     );
     await tester.pumpAndSettle();
     await tester.pumpWidget(
       _app(
         const Icon3D('nav_chat', active: true, size: 28, tilt: true),
         reduce: true,
+        empty: false,
       ),
     );
     expect(SchedulerBinding.instance.transientCallbackCount, 0);
     expect(tester.hasRunningAnimations, isFalse);
-    expect(
-      find.descendant(
-        of: find.byType(Icon3D),
-        matching: find.byType(Transform),
-      ),
-      findsNothing,
-    );
+    for (final type in [Transform, AnimatedBuilder, Listener]) {
+      expect(
+        find.descendant(of: find.byType(Icon3D), matching: find.byType(type)),
+        findsNothing,
+        reason: '$type',
+      );
+    }
     final before = tester
         .renderObject<RenderBox>(find.byType(Icon3D))
         .localToGlobal(Offset.zero);
     final g = await tester.press(find.byType(Icon3D));
     await tester.pump(const Duration(milliseconds: 100));
     await g.up();
+    expect(SchedulerBinding.instance.transientCallbackCount, 0);
     expect(tester.hasRunningAnimations, isFalse);
     expect(
       tester
