@@ -224,7 +224,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(t.cancel),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(t.locConsentAgree),
           ),
@@ -387,7 +387,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                             onPressed: () => setState(() => _suggestion = null),
                             child: Text(t.close),
                           ),
-                          FilledButton(
+                          TextButton(
                             onPressed: _acceptSuggestion,
                             child: Text(t.locUseAddress),
                           ),
