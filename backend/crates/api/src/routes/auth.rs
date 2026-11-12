@@ -359,11 +359,12 @@ async fn staff_login(State(s): State<AppState>, Json(req): Json<StaffLogin>) -> 
     if enrolled {
         return Ok(Json(json!({ "mfa_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
-    if role == "admin" {
+    if role == "admin" && s.config.staff_mfa_required {
         return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
-    let tokens = issue_tokens(&s, id, Role::StaffConsultant, false, None).await?;
+    let staff_role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
+    let tokens = issue_tokens(&s, id, staff_role, false, None).await?;
     Ok(Json(serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))?))
 }
 

@@ -18,6 +18,8 @@ pub struct Config {
     pub public_base_url: String,
     /// Dev mode: fake SMS/payment/push/social/identity providers, OTP code echoed in logs.
     pub dev_mode: bool,
+    /// Admins must enrol TOTP before signing in. Default on; the local demo kit turns it off (STAFF_MFA_REQUIRED=0).
+    pub staff_mfa_required: bool,
     pub allowed_origins: Vec<String>,
     pub seed_admin: Option<(String, String)>,
     /// One-time code for creating the owner account in the console (installer sets it; random otherwise).
@@ -242,6 +244,7 @@ impl Config {
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "./data/uploads".into()).into(),
             public_base_url,
             dev_mode,
+            staff_mfa_required: env::var("STAFF_MFA_REQUIRED").map(|v| v != "0" && v != "false").unwrap_or(true),
             allowed_origins: env::var("ALLOWED_ORIGINS")
                 .map(|v| v.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect())
                 .unwrap_or_default(),
