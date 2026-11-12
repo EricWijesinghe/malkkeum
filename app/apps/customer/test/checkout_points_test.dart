@@ -35,9 +35,11 @@ Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<J
   await pumpUntilFound(tester, find.text(koT.serviceShort('studio')));
   await tester.tap(find.text(koT.serviceShort('studio')));
   await settle(tester);
-  await tester.tap(find.text(koT.chooseDate));
+  await tester.tap(find.text(koT.dfBookNow));
   await settle(tester);
-  await tester.tap(find.text(koT.goToPayment));
+  await tester.tap(find.text(koT.next).last); // date step
+  await settle(tester);
+  await tester.tap(find.text(koT.next).last); // prep tools step (studio needs tools)
   await settle(tester);
   expect(find.byType(CheckoutScreen), findsOneWidget);
   return fake;
@@ -49,22 +51,23 @@ void main() {
   testWidgets('applying points adds the points line, lowers the amount due and sends the points', (tester) async {
     final fake = await _openCheckout(tester, wallet: _wallet());
 
-    // No method yet: the card is offered but cannot be switched on.
+    // No method yet: "포인트 우선 사용" is offered but cannot be switched on.
     expect(find.text(koT.checkoutPointsNeedsWindow), findsOneWidget);
-    expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged, isNull);
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).onChanged, isNull);
 
-    await tester.ensureVisible(find.text(koT.payMethod('transfer')));
-    await tester.tap(find.text(koT.payMethod('transfer')));
+    // The pay button opens the method sheet while no method is chosen.
+    await tester.tap(find.text(koT.needMethod).last);
+    await settle(tester);
+    await tester.tap(find.text(koT.payMethod('transfer')).last);
     await settle(tester);
     expect(find.text(koT.checkoutPointsAvail('8000', '8000')), findsOneWidget);
     expect(_pointsLine(), findsNothing, reason: 'points are opt-in');
     expect(find.text(koT.payAmount(formatWon(45000, 'ko'))), findsOneWidget);
 
-    await tester.ensureVisible(find.byType(SwitchListTile));
-    await tester.tap(find.byType(SwitchListTile));
+    await tester.ensureVisible(find.byType(Checkbox));
+    await tester.tap(find.byType(Checkbox));
     await settle(tester);
-    expect(_pointsLine(), findsOneWidget);
-    expect(find.byType(Slider), findsOneWidget);
+    expect(_pointsLine(), findsWidgets, reason: 'the points row and the breakdown line');
     final payLabel = koT.payAmount(formatWon(37000, 'ko'));
     expect(find.text(payLabel), findsOneWidget);
     expect(
@@ -81,8 +84,8 @@ void main() {
     expect(body['method'], 'transfer');
 
     // Switching it back off restores the full amount.
-    await tester.ensureVisible(find.byType(SwitchListTile));
-    await tester.tap(find.byType(SwitchListTile));
+    await tester.ensureVisible(find.byType(Checkbox));
+    await tester.tap(find.byType(Checkbox));
     await settle(tester);
     expect(_pointsLine(), findsNothing);
     expect(find.text(koT.payAmount(formatWon(45000, 'ko'))), findsOneWidget);
@@ -92,7 +95,7 @@ void main() {
   testWidgets('no points card when the programme is off', (tester) async {
     await _openCheckout(tester, wallet: _wallet(enabled: false));
 
-    expect(find.byType(SwitchListTile), findsNothing);
+    expect(find.byType(Checkbox), findsNothing);
     expect(find.text(koT.checkoutPointsUse), findsNothing);
     await unmount(tester);
   });

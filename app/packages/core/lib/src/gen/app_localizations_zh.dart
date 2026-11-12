@@ -1792,19 +1792,119 @@ class TZh extends T {
   String get hhHint => '保存到该地址，每次预约可单独修改。';
 
   @override
-  String get dfScopeDusting => '除尘';
+  String get dfScopeDusting => '家具表面除尘';
 
   @override
-  String get dfScopeVacuum => '吸尘';
+  String get dfScopeVacuum => '吸尘和拖地';
 
   @override
-  String get dfScopeDishes => '洗碗';
+  String get dfScopeDishes => '洗碗和清洗水槽';
 
   @override
-  String get dfScopeBathroom => '卫生间清洁';
+  String get dfScopeBathroom => '水龙头、洗手盆、马桶内外清洁';
 
   @override
-  String get dfScopeTrash => '倒垃圾';
+  String get dfScopeTrash => '垃圾分类和倒垃圾';
+
+  @override
+  String get dfScopeBedding => '整理床铺';
+
+  @override
+  String get dfScopeTidy => '物品归位';
+
+  @override
+  String get dfScopeStove => '擦拭灶台和台面';
+
+  @override
+  String get dfScopeFridge => '擦拭冰箱外部';
+
+  @override
+  String get dfScopeTiles => '浴室地面和墙砖清洁';
+
+  @override
+  String get dfScopeMold => '去除霉斑和水垢';
+
+  @override
+  String get dfScopeHood => '去除油烟机和灶台油污';
+
+  @override
+  String get dfScopeCabinets => '嵌入式衣柜和柜子内部清洁';
+
+  @override
+  String get dfScopeWindows => '窗框和窗轨除尘';
+
+  @override
+  String get dfScopeShoes => '鞋柜内部清洁';
+
+  @override
+  String get dfScopeEntrance => '玄关地面清洁';
+
+  @override
+  String get dfBasicService => '基本服务';
+
+  @override
+  String get dfNotProvided => '不提供的服务';
+
+  @override
+  String get dfNp1 => '洗衣和整理衣物';
+
+  @override
+  String get dfNp2 => '够不到的地方';
+
+  @override
+  String get dfNp3 => '特殊清洁';
+
+  @override
+  String get dfNp4 => '清洁以外的家务';
+
+  @override
+  String get dfRoom => '房间';
+
+  @override
+  String get dfKitchen => '厨房';
+
+  @override
+  String get dfBath => '卫生间';
+
+  @override
+  String get dfEntrance => '玄关';
+
+  @override
+  String get dfEntranceTrash => '玄关/垃圾';
+
+  @override
+  String get dfScopeMove => '搬家/入住清洁';
+
+  @override
+  String get dfScopeBathKitchen => '卫生间·厨房';
+
+  @override
+  String get dfDuration => '所需时间';
+
+  @override
+  String get dfPriceVat => '金额 (含税)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ 超过$max坪的房屋无法预约单间清洁，我们会在咨询中推荐合适的服务。';
+  }
+
+  @override
+  String get dfBookNow => '立即预约';
+
+  @override
+  String get dfMustCheck => '请务必确认';
+
+  @override
+  String get dfAddressTitle => '请选择预约地址。';
+
+  @override
+  String get dfEdit => '修改';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service仅限$max坪以下。$label($size坪)将通过咨询为您安排。';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1812,9 +1912,88 @@ class TZh extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '已准备 $done/$total';
+  String get dfDateTitle => '请选择日期和时间。';
+
+  @override
+  String get dfManagerIntro => '由受过培训的管家上门。';
+
+  @override
+  String get dfServiceTime => '服务时长';
+
+  @override
+  String get dfChange => '更改';
+
+  @override
+  String get dfVisitDay => '上门日期';
+
+  @override
+  String get dfVisitTime => '上门时间';
+
+  @override
+  String get dfSelect => '选择';
+
+  @override
+  String get dfSlotClosed => '已满';
+
+  @override
+  String get dfSelectDone => '完成选择';
+
+  @override
+  String get dfDateNote => '根据日期和时间可能会加价。';
+
+  @override
+  String get dfAmVisit => '上午上门';
+
+  @override
+  String get dfPmVisit => '下午上门';
+
+  @override
+  String dfArrive(String range) {
+    return '$range 到达';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name您好\n服务前请务必准备！';
+  }
+
+  @override
+  String get dfPrepTools => '需准备的清洁工具';
+
+  @override
+  String get dfNoTools => '没有工具吗？';
+
+  @override
+  String get dfNoToolsBody => '向咨询团队询问需准备的物品';
+
+  @override
+  String get dfPayTitle => '请选择优惠和付款方式。';
+
+  @override
+  String get dfPoints => '积分';
+
+  @override
+  String get dfPointsFirst => '优先使用积分';
+
+  @override
+  String get dfPointsOff => '未使用';
+
+  @override
+  String get dfPointsNone => '没有可用积分';
+
+  @override
+  String get dfPayMethod => '付款方式';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return '基础金额 ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => '优惠券折扣';
+
+  @override
+  String get dfDue => '应付金额';
 
   @override
   String get dfPgNotice => '付款由电子支付代理机构(PG)处理。付款即表示您同意服务条款及取消与退款规定。';
@@ -1823,40 +2002,81 @@ class TZh extends T {
   String get dfRefundPolicy => '取消与退款规定';
 
   @override
-  String get building_commercial => '商铺';
+  String get dfSummaryService => '服务';
 
   @override
-  String get dfSafeBooking => '安心预约';
+  String get dfSummaryWhen => '上门时间';
 
   @override
-  String get dfSafeBookingBody => '咨询团队确认后会在聊天中发送最终报价';
+  String get dfSummaryAddress => '地址';
 
   @override
-  String get dfEstBase => '基础费用';
+  String get dfSummaryPaid => '支付金额';
 
   @override
-  String get dfEstExtras => '附加空间与选项';
+  String get luggage_not_unpacked => '搬家行李尚未拆';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return '清洁类型与行李加价 $pct%';
+  String get dfReviewsTitle => '看看真实的用户评价。';
+
+  @override
+  String get dfBasicBody => '所选内容为服务必需信息，可能影响价格。';
+
+  @override
+  String get building_commercial => '商业空间';
+
+  @override
+  String get dfBldVillaHouse => '多层住宅/独栋';
+
+  @override
+  String get dfLayoutOneHalf => '1.5室 (分离式单间 / 客厅+1室)';
+
+  @override
+  String get dfLayoutTwo => '客厅+2室';
+
+  @override
+  String get dfLayoutThree => '客厅+3室';
+
+  @override
+  String get dfLayoutFour => '客厅+4室以上';
+
+  @override
+  String get dfDuplexTitle => '是否复式';
+
+  @override
+  String get dfNone => '无';
+
+  @override
+  String get dfHas => '有';
+
+  @override
+  String get dfPleaseSelect => '请选择';
+
+  @override
+  String get dfBathCount => '卫生间数量';
+
+  @override
+  String get dfBalconyCount => '阳台/多用途间数量';
+
+  @override
+  String dfCountN(String n) {
+    return '$n个';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return '周末与旺季加价 $pct%';
-  }
+  String get dfElevatorTitle => '是否有电梯';
 
   @override
-  String dfEstAddons(String pct) {
-    return '加购空调清洁 (优惠$pct%)';
-  }
+  String get dfFloor3 => '服务地点在3楼及以上';
 
   @override
-  String get dfAcAddonBanner => '搬家清洁加购空调清洁可享优惠';
+  String get dfAcAddonBanner => '加购空调清洁可享优惠';
 
   @override
-  String get dfAcAddonAdd => '加购空调';
+  String get dfAcAddonBody => '让新家的空调也焕然一新。';
+
+  @override
+  String get dfAcAddonAdd => '加购';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1867,12 +2087,151 @@ class TZh extends T {
   String get dfAcAddonNote => '优惠后的金额可在报价中查看';
 
   @override
-  String get f_ac_addon_discount_bps => '空调加购优惠 (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return '加购空调清洁 (优惠$pct%)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count台';
   }
+
+  @override
+  String get f_ac_addon_discount_bps => '空调加购优惠 (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => '请确认报价方式\n并继续预约。';
+
+  @override
+  String get dfSafeBooking => 'Dahae安心预约';
+
+  @override
+  String get dfRecommended => '推荐！';
+
+  @override
+  String get dfEstimateVat => '预估报价 (含税) · 咨询后可能变动';
+
+  @override
+  String get dfBenefit1 => '由经过培训认证的专业团队完成';
+
+  @override
+  String get dfBenefit2 => '服务后7天免费售后';
+
+  @override
+  String get dfBenefit3 => '通过咨询聊天实时了解进度';
+
+  @override
+  String get dfBenefit4 => '使用环保清洁剂';
+
+  @override
+  String get dfBenefit5 => '撰写评价赠送积分';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ 现在不扣款。咨询确定金额后支付$pct%定金即可确认预约。';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\n请完成预约。';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return '上门时间：$slot';
+  }
+
+  @override
+  String get dfReviewNote => '※ 提交后将开启咨询聊天。与团队确定报价和日程后支付定金即确认预约。';
+
+  @override
+  String get dfHomeInfo => '房屋信息';
+
+  @override
+  String get dfName => '名称';
+
+  @override
+  String get dfBasicInfo => '基本信息';
+
+  @override
+  String get dfCleanType => '清洁类型';
+
+  @override
+  String get dfBuilding => '建筑';
+
+  @override
+  String get dfSpaceInfo => '空间信息';
+
+  @override
+  String get dfPayInfo => '付款信息';
+
+  @override
+  String get dfEstAmount => '预估服务金额';
+
+  @override
+  String get dfDepositOnConfirm => '定金 (确认时支付)';
+
+  @override
+  String get dfNotes => '注意事项';
+
+  @override
+  String get dfNote1 => '咨询中或上门前2天可免费取消。';
+
+  @override
+  String get dfNote2 => '最终金额在咨询聊天中确定，尾款服务后支付。';
+
+  @override
+  String get dfNote3 => '当天联系不上无法进入时，等待30分钟后撤离。请提前确认进入方式。';
+
+  @override
+  String get dfNoteWarn => '如管家要求私下交易可能造成损失，请立即告知客服。';
+
+  @override
+  String get dfSubmitRequest => '提交预约';
+
+  @override
+  String get dfRequested => '已申请咨询。';
+
+  @override
+  String get dfStatusNote => '※ 咨询团队会在聊天中发送最终报价，支付定金后即确认预约。';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return '服务金额咨询后可能变动。定金为确认金额的$pct%。';
+  }
+
+  @override
+  String get dfQuoteMethod => '报价方式';
+
+  @override
+  String get dfDeposit => '定金';
+
+  @override
+  String get dfAwaitingPay => '待付款';
+
+  @override
+  String get dfServiceInfo => '服务信息';
+
+  @override
+  String get dfSpace => '空间';
+
+  @override
+  String get dfChat => '咨询聊天';
+
+  @override
+  String get dfRequestDone => '预约申请完成';
+
+  @override
+  String get dfRequestDoneBody => '咨询聊天已开启。\n咨询团队将发送最终报价。';
+
+  @override
+  String get dfAcUpsell => '搬家后也清洁空调吗？';
+
+  @override
+  String get dfAcUpsellCta => '预约空调清洁';
+
+  @override
+  String get dfViewChat => '查看咨询聊天';
 
   @override
   String get themeTitle => '主题';

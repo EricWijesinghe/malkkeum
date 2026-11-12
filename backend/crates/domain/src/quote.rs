@@ -35,6 +35,8 @@ pub enum CleaningType {
 #[serde(rename_all = "snake_case")]
 pub enum LuggageState {
     Empty,
+    /// Moving boxes in, none opened yet.
+    NotUnpacked,
     PartlyUnpacked,
     FullyLivedIn,
     Unknown,
@@ -100,6 +102,13 @@ pub struct QuoteFormula {
 /// 10% off; the owner edits it in the console catalog.
 pub const DEFAULT_AC_ADDON_DISCOUNT_BPS: i64 = 1_000;
 
+/// shortcut: prototype value between empty and partly unpacked, owner to confirm in the console formula.
+const DEFAULT_NOT_UNPACKED_BPS: i64 = 300;
+
+fn default_not_unpacked_bps() -> i64 {
+    DEFAULT_NOT_UNPACKED_BPS
+}
+
 fn default_ac_addon_discount_bps() -> i64 {
     DEFAULT_AC_ADDON_DISCOUNT_BPS
 }
@@ -114,6 +123,9 @@ pub struct TypeSurcharges {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LuggageSurcharges {
+    /// Added after the other states; saved formulas without it get the default.
+    #[serde(default = "default_not_unpacked_bps")]
+    pub not_unpacked: i64,
     pub partly_unpacked: i64,
     pub fully_lived_in: i64,
     pub unknown: i64,
@@ -139,6 +151,7 @@ impl Default for QuoteFormula {
                 some_luggage_left: 500,
             },
             luggage_bps: LuggageSurcharges {
+                not_unpacked: DEFAULT_NOT_UNPACKED_BPS,
                 partly_unpacked: 500,
                 fully_lived_in: 1_500,
                 unknown: 1_000,
@@ -204,6 +217,11 @@ pub struct Estimate {
     #[serde(default)]
     pub addon_discount_bps: i64,
     pub total: Won,
+    /// What the deposit would be if the total were confirmed as-is (the app's "예약금" preview).
+    #[serde(default)]
+    pub deposit: Won,
+    #[serde(default)]
+    pub deposit_bps: i64,
 }
 
 impl QuoteFormula {
@@ -232,6 +250,7 @@ impl QuoteFormula {
         let s = &self.luggage_bps;
         match l {
             LuggageState::Empty => 0,
+            LuggageState::NotUnpacked => s.not_unpacked,
             LuggageState::PartlyUnpacked => s.partly_unpacked,
             LuggageState::FullyLivedIn => s.fully_lived_in,
             LuggageState::Unknown => s.unknown,
@@ -289,6 +308,8 @@ impl QuoteFormula {
             addons,
             addon_discount_bps: if addon_lines.is_empty() { 0 } else { self.ac_addon_discount_bps },
             total,
+            deposit: self.deposit(total),
+            deposit_bps: self.deposit_bps,
         })
     }
 
@@ -344,6 +365,27 @@ mod tests {
         assert_eq!(f.ac_addon_discount_bps, 1_000);
         let e: Estimate = serde_json::from_str(r#"{"base":1,"extras":0,"surcharge_bps":0,"peak_bps":0,"peak":0,"before_vat":1,"total":1}"#).unwrap();
         assert_eq!(e.addons, Won(0));
+    }
+
+    #[test]
+    fn not_unpacked_luggage_parses_and_has_its_own_surcharge() {
+        let l: LuggageState = serde_json::from_str(r#""not_unpacked""#).unwrap();
+        let a = QuoteAnswers { luggage: l, ..answers() };
+        // 440,000 x (1 + 20% + 3%) = 541,200; x1.1 = 595,320 -> 595,300
+        let e = QuoteFormula::default().estimate(&a).unwrap();
+        assert_eq!((e.surcharge_bps, e.total), (2_300, Won(595_300)));
+        let mut f = serde_json::to_value(QuoteFormula::default()).unwrap();
+        f["luggage_bps"].as_object_mut().unwrap().remove("not_unpacked");
+        let f: QuoteFormula = serde_json::from_value(f).unwrap();
+        assert_eq!(f.luggage_bps.not_unpacked, 300);
+    }
+
+    #[test]
+    fn estimate_previews_the_deposit_of_its_total() {
+        // Brief example: 346,500 estimate -> 34,700 deposit (10%, rounded to 100).
+        let e = QuoteFormula::default().estimate(&answers()).unwrap();
+        assert_eq!((e.deposit, e.deposit_bps), (QuoteFormula::default().deposit(e.total), 1_000));
+        assert_eq!(QuoteFormula::default().deposit(Won(346_500)), Won(34_700));
     }
 
     #[test]

@@ -1842,19 +1842,119 @@ class TMn extends T {
       'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
-  String get dfScopeDusting => 'Тоос арчих';
+  String get dfScopeDusting => 'Тавилгын тоос арчих';
 
   @override
-  String get dfScopeVacuum => 'Тоос сорох';
+  String get dfScopeVacuum => 'Шал тоос сорж, угаах';
 
   @override
-  String get dfScopeDishes => 'Аяга таваг угаах';
+  String get dfScopeDishes => 'Аяга таваг, угаалтуур угаах';
 
   @override
-  String get dfScopeBathroom => 'Угаалгын өрөө';
+  String get dfScopeBathroom => 'Цорго, угаалтуур, жорлон дотор гадна';
 
   @override
-  String get dfScopeTrash => 'Хог гаргах';
+  String get dfScopeTrash => 'Хог ангилж гаргах';
+
+  @override
+  String get dfScopeBedding => 'Ор дэрийг цэгцлэх';
+
+  @override
+  String get dfScopeTidy => 'Эд зүйлсийг байранд нь тавих';
+
+  @override
+  String get dfScopeStove => 'Плитка, тавцан арчих';
+
+  @override
+  String get dfScopeFridge => 'Хөргөгчийн гадна арчих';
+
+  @override
+  String get dfScopeTiles => 'Угаалгын өрөөний шал, ханын хавтан';
+
+  @override
+  String get dfScopeMold => 'Хөгц, шохойжилт арилгах';
+
+  @override
+  String get dfScopeHood => 'Сорогч, плитканы тос арилгах';
+
+  @override
+  String get dfScopeCabinets => 'Суурилуулсан шүүгээний дотор';
+
+  @override
+  String get dfScopeWindows => 'Цонхны хүрээний тоос арчих';
+
+  @override
+  String get dfScopeShoes => 'Гутлын шүүгээний дотор';
+
+  @override
+  String get dfScopeEntrance => 'Үүдний шал';
+
+  @override
+  String get dfBasicService => 'Үндсэн үйлчилгээ';
+
+  @override
+  String get dfNotProvided => 'Ороогүй үйлчилгээ';
+
+  @override
+  String get dfNp1 => 'Угаалга, хувцас эвхэх';
+
+  @override
+  String get dfNp2 => 'Гар хүрэхгүй газар';
+
+  @override
+  String get dfNp3 => 'Тусгай цэвэрлэгээ';
+
+  @override
+  String get dfNp4 => 'Цэвэрлэгээнээс бусад гэрийн ажил';
+
+  @override
+  String get dfRoom => 'Өрөө';
+
+  @override
+  String get dfKitchen => 'Гал тогоо';
+
+  @override
+  String get dfBath => 'Угаалгын өрөө';
+
+  @override
+  String get dfEntrance => 'Үүд';
+
+  @override
+  String get dfEntranceTrash => 'Үүд / хог';
+
+  @override
+  String get dfScopeMove => 'Нүүлтийн цэвэрлэгээ';
+
+  @override
+  String get dfScopeBathKitchen => 'Угаалгын өрөө ба гал тогоо';
+
+  @override
+  String get dfDuration => 'Үргэлжлэх хугацаа';
+
+  @override
+  String get dfPriceVat => 'Үнэ (НӨАТ орсон)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max pyeong-оос том байр студи цэвэрлэгээ захиалах боломжгүй. Тохирох үйлчилгээг чатаар санал болгоно.';
+  }
+
+  @override
+  String get dfBookNow => 'Захиалах';
+
+  @override
+  String get dfMustCheck => 'Заавал шалгана уу';
+
+  @override
+  String get dfAddressTitle => 'Захиалах хаягаа сонгоно уу.';
+
+  @override
+  String get dfEdit => 'Засах';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service нь $max pyeong хүртэлх байранд. $label ($size pyeong)-д чатаар туслана.';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1862,9 +1962,88 @@ class TMn extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$total-с $done бэлэн';
+  String get dfDateTitle => 'Огноо, цагаа сонгоно уу.';
+
+  @override
+  String get dfManagerIntro => 'Сургалтад хамрагдсан менежер очно.';
+
+  @override
+  String get dfServiceTime => 'Үйлчилгээний хугацаа';
+
+  @override
+  String get dfChange => 'Өөрчлөх';
+
+  @override
+  String get dfVisitDay => 'Очих өдөр';
+
+  @override
+  String get dfVisitTime => 'Очих цаг';
+
+  @override
+  String get dfSelect => 'Сонгох';
+
+  @override
+  String get dfSlotClosed => 'Дүүрсэн';
+
+  @override
+  String get dfSelectDone => 'Болсон';
+
+  @override
+  String get dfDateNote => 'Зарим өдөр, цагт нэмэлт төлбөртэй.';
+
+  @override
+  String get dfAmVisit => 'Өглөөний айлчлал';
+
+  @override
+  String get dfPmVisit => 'Үдээс хойших айлчлал';
+
+  @override
+  String dfArrive(String range) {
+    return '$range ирнэ';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name\nүйлчилгээний өмнө бэлдээрэй!';
+  }
+
+  @override
+  String get dfPrepTools => 'Бэлдэх цэвэрлэгээний хэрэгсэл';
+
+  @override
+  String get dfNoTools => 'Хэрэгсэл дутуу юу?';
+
+  @override
+  String get dfNoToolsBody => 'Багаас юу бэлдэхийг асуугаарай';
+
+  @override
+  String get dfPayTitle => 'Хямдрал, төлбөрөө сонгоно уу.';
+
+  @override
+  String get dfPoints => 'Оноо';
+
+  @override
+  String get dfPointsFirst => 'Оноогоо түрүүлж ашиглах';
+
+  @override
+  String get dfPointsOff => 'Хэрэглээгүй';
+
+  @override
+  String get dfPointsNone => 'Ашиглах оноо алга';
+
+  @override
+  String get dfPayMethod => 'Төлбөрийн хэрэгсэл';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Үндсэн үнэ ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Купоны хөнгөлөлт';
+
+  @override
+  String get dfDue => 'Төлөх дүн';
 
   @override
   String get dfPgNotice =>
@@ -1874,42 +2053,81 @@ class TMn extends T {
   String get dfRefundPolicy => 'Цуцлалт ба буцаан олголтын журам';
 
   @override
-  String get building_commercial => 'Худалдааны';
+  String get dfSummaryService => 'Үйлчилгээ';
 
   @override
-  String get dfSafeBooking => 'Найдвартай захиалга';
+  String get dfSummaryWhen => 'Очих огноо';
 
   @override
-  String get dfSafeBookingBody =>
-      'Манай баг шалгаад эцсийн үнийн саналыг чатаар илгээнэ';
+  String get dfSummaryAddress => 'Хаяг';
 
   @override
-  String get dfEstBase => 'Үндсэн үнэ';
+  String get dfSummaryPaid => 'Төлсөн';
 
   @override
-  String get dfEstExtras => 'Нэмэлт өрөө ба сонголт';
+  String get luggage_not_unpacked => 'Ачаагаа задлаагүй';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return 'Төрөл ба ачааны нэмэгдэл $pct%';
+  String get dfReviewsTitle => 'Хэрэглэгчдийн сэтгэгдэл.';
+
+  @override
+  String get dfBasicBody => 'Заавал шаардлагатай, үнэд нөлөөлж болно.';
+
+  @override
+  String get building_commercial => 'Худалдааны талбай';
+
+  @override
+  String get dfBldVillaHouse => 'Вилла / байшин';
+
+  @override
+  String get dfLayoutOneHalf => '1.5 өрөө (тусгаарласан / зочны + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Зочны + 2 өрөө';
+
+  @override
+  String get dfLayoutThree => 'Зочны + 3 өрөө';
+
+  @override
+  String get dfLayoutFour => 'Зочны + 4-өөс дээш';
+
+  @override
+  String get dfDuplexTitle => 'Хоёр давхар';
+
+  @override
+  String get dfNone => 'Үгүй';
+
+  @override
+  String get dfHas => 'Тийм';
+
+  @override
+  String get dfPleaseSelect => 'Сонгоно уу';
+
+  @override
+  String get dfBathCount => 'Угаалгын өрөөний тоо';
+
+  @override
+  String get dfBalconyCount => 'Тагт / ахуйн өрөөний тоо';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return 'Ачаалалтай цагийн нэмэгдэл $pct%';
-  }
+  String get dfElevatorTitle => 'Лифт';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'Агааржуулагч цэвэрлэгээ нэмэх ($pct% хямдрал)';
-  }
+  String get dfFloor3 => '3-р давхар ба түүнээс дээш';
 
   @override
-  String get dfAcAddonBanner =>
-      'Нүүлтийн цэвэрлэгээнд агааржуулагчийн цэвэрлэгээ нэмбэл хямдрална';
+  String get dfAcAddonBanner => 'Агааржуулагч цэвэрлэгээ нэмбэл хямдарна';
 
   @override
-  String get dfAcAddonAdd => 'Агааржуулагч нэмэх';
+  String get dfAcAddonBody => 'Шинэ байрандаа цэвэр агааржуулагчтай орно уу.';
+
+  @override
+  String get dfAcAddonAdd => 'Нэмэх';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1920,13 +2138,159 @@ class TMn extends T {
   String get dfAcAddonNote => 'Хямдарсан үнэ үнийн санал дээр харагдана';
 
   @override
-  String get f_ac_addon_discount_bps =>
-      'Агааржуулагч нэмэлтийн хямдрал (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'Агааржуулагч цэвэрлэгээ нэмэх ($pct% хямдрал)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count ширхэг';
   }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Агааржуулагч нэмэлтийн хямдрал (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle =>
+      'Үнийн саналын аргыг шалгаад\nүргэлжлүүлнэ үү.';
+
+  @override
+  String get dfSafeBooking => 'Dahae найдвартай захиалга';
+
+  @override
+  String get dfRecommended => 'Санал болгох';
+
+  @override
+  String get dfEstimateVat => 'Урьдчилсан үнэ (НӨАТ орсон) · өөрчлөгдөж болно';
+
+  @override
+  String get dfBenefit1 => 'Сургалттай, баталгаат баг';
+
+  @override
+  String get dfBenefit2 => 'Үйлчилгээний дараа 7 хоног үнэгүй засвар';
+
+  @override
+  String get dfBenefit3 => 'Явцыг чатаар шууд хянах';
+
+  @override
+  String get dfBenefit4 => 'Байгальд ээлтэй угаалгын бодис';
+
+  @override
+  String get dfBenefit5 => 'Сэтгэгдэл бичвэл оноо';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Одоо төлбөр авахгүй. Үнийг чатаар тохирсны дараа $pct% урьдчилгаа төлж баталгаажуулна.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nЗахиалгаа дуусгана уу.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Очих цаг: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ Хүсэлт илгээсний дараа чат нээгдэнэ. Үнэ, хуваарийг тохироод урьдчилгаа төлнө.';
+
+  @override
+  String get dfHomeInfo => 'Байрны мэдээлэл';
+
+  @override
+  String get dfName => 'Нэр';
+
+  @override
+  String get dfBasicInfo => 'Үндсэн мэдээлэл';
+
+  @override
+  String get dfCleanType => 'Цэвэрлэгээний төрөл';
+
+  @override
+  String get dfBuilding => 'Барилга';
+
+  @override
+  String get dfSpaceInfo => 'Орон зай';
+
+  @override
+  String get dfPayInfo => 'Төлбөрийн мэдээлэл';
+
+  @override
+  String get dfEstAmount => 'Урьдчилсан үнэ';
+
+  @override
+  String get dfDepositOnConfirm => 'Урьдчилгаа (баталгаажуулахад)';
+
+  @override
+  String get dfNotes => 'Анхаарах зүйл';
+
+  @override
+  String get dfNote1 =>
+      'Зөвлөгөөний үеэр эсвэл 2 хоногийн өмнө үнэгүй цуцална.';
+
+  @override
+  String get dfNote2 =>
+      'Эцсийн үнийг чатаар тохирч, үлдэгдлийг дараа нь төлнө.';
+
+  @override
+  String get dfNote3 =>
+      'Холбогдож чадахгүй бол баг 30 минутын дараа явна. Орох аргаа урьдчилан шалгана уу.';
+
+  @override
+  String get dfNoteWarn =>
+      'Менежер шууд төлбөр шаардвал тусламжийн төвд даруй мэдэгдэнэ үү.';
+
+  @override
+  String get dfSubmitRequest => 'Захиалгын хүсэлт илгээх';
+
+  @override
+  String get dfRequested => 'Зөвлөгөө хүссэн.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Баг эцсийн үнийг чатаар илгээнэ. Урьдчилгаа төлж баталгаажуулна.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Үнэ өөрчлөгдөж болно. Урьдчилгаа нь тохирсон үнийн $pct%.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Үнийн саналын төрөл';
+
+  @override
+  String get dfDeposit => 'Урьдчилгаа';
+
+  @override
+  String get dfAwaitingPay => 'Төлбөр хүлээгдэж буй';
+
+  @override
+  String get dfServiceInfo => 'Үйлчилгээний мэдээлэл';
+
+  @override
+  String get dfSpace => 'Орон зай';
+
+  @override
+  String get dfChat => 'Зөвлөгөөний чат';
+
+  @override
+  String get dfRequestDone => 'Хүсэлт илгээгдлээ';
+
+  @override
+  String get dfRequestDoneBody => 'Чат нээгдлээ.\nБаг эцсийн үнийг илгээнэ.';
+
+  @override
+  String get dfAcUpsell => 'Нүүсний дараа агааржуулагчаа цэвэрлэх үү?';
+
+  @override
+  String get dfAcUpsellCta => 'Агааржуулагч цэвэрлэгээ захиалах';
+
+  @override
+  String get dfViewChat => 'Чат нээх';
 
   @override
   String get themeTitle => 'Загвар';

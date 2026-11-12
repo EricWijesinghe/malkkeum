@@ -1838,19 +1838,119 @@ class TKm extends T {
       'រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។';
 
   @override
-  String get dfScopeDusting => 'ជូតធូលី';
+  String get dfScopeDusting => 'ជូតធូលីលើគ្រឿងសង្ហារិម';
 
   @override
-  String get dfScopeVacuum => 'បូមធូលី';
+  String get dfScopeVacuum => 'បូមធូលី និងជូតឥដ្ឋ';
 
   @override
-  String get dfScopeDishes => 'លាងចាន';
+  String get dfScopeDishes => 'លាងចាន និងអាងលាង';
 
   @override
-  String get dfScopeBathroom => 'បន្ទប់ទឹក';
+  String get dfScopeBathroom => 'ក្បាលទឹក អាងលាងមុខ និងបង្គន់ ខាងក្នុងក្រៅ';
 
   @override
-  String get dfScopeTrash => 'យកសំរាមចេញ';
+  String get dfScopeTrash => 'បែងចែក និងយកសំរាមចេញ';
+
+  @override
+  String get dfScopeBedding => 'រៀបចំភួយខ្នើយ';
+
+  @override
+  String get dfScopeTidy => 'រៀបចំរបស់ទៅកន្លែងវិញ';
+
+  @override
+  String get dfScopeStove => 'ជូតចង្ក្រាន និងតុ';
+
+  @override
+  String get dfScopeFridge => 'ជូតទូទឹកកកខាងក្រៅ';
+
+  @override
+  String get dfScopeTiles => 'ការ៉ូឥដ្ឋ និងជញ្ជាំងបន្ទប់ទឹក';
+
+  @override
+  String get dfScopeMold => 'លុបផ្សិត និងស្នាមទឹក';
+
+  @override
+  String get dfScopeHood => 'លុបខ្លាញ់លើម៉ាស៊ីនបឺតផ្សែង និងចង្ក្រាន';
+
+  @override
+  String get dfScopeCabinets => 'ខាងក្នុងទូជាប់ជញ្ជាំង និងទូដាក់របស់';
+
+  @override
+  String get dfScopeWindows => 'ជូតធូលីស៊ុមបង្អួច';
+
+  @override
+  String get dfScopeShoes => 'ខាងក្នុងទូស្បែកជើង';
+
+  @override
+  String get dfScopeEntrance => 'ឥដ្ឋច្រកចូល';
+
+  @override
+  String get dfBasicService => 'សេវាមូលដ្ឋាន';
+
+  @override
+  String get dfNotProvided => 'សេវាមិនផ្តល់';
+
+  @override
+  String get dfNp1 => 'បោកគក់ និងបត់ខោអាវ';
+
+  @override
+  String get dfNp2 => 'កន្លែងដៃមិនដល់';
+
+  @override
+  String get dfNp3 => 'ការសម្អាតពិសេស';
+
+  @override
+  String get dfNp4 => 'ការងារផ្ទះក្រៅពីសម្អាត';
+
+  @override
+  String get dfRoom => 'បន្ទប់';
+
+  @override
+  String get dfKitchen => 'ផ្ទះបាយ';
+
+  @override
+  String get dfBath => 'បន្ទប់ទឹក';
+
+  @override
+  String get dfEntrance => 'ច្រកចូល';
+
+  @override
+  String get dfEntranceTrash => 'ច្រកចូល / សំរាម';
+
+  @override
+  String get dfScopeMove => 'សម្អាតផ្លាស់ផ្ទះ';
+
+  @override
+  String get dfScopeBathKitchen => 'បន្ទប់ទឹក និងផ្ទះបាយ';
+
+  @override
+  String get dfDuration => 'រយៈពេល';
+
+  @override
+  String get dfPriceVat => 'តម្លៃ (រួម VAT)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ ផ្ទះលើស $max pyeong មិនអាចកក់សម្អាតស្ទូឌីយោបានទេ។ យើងនឹងណែនាំសេវាសមរម្យក្នុងការជជែក។';
+  }
+
+  @override
+  String get dfBookNow => 'កក់ឥឡូវ';
+
+  @override
+  String get dfMustCheck => 'សូមពិនិត្យ';
+
+  @override
+  String get dfAddressTitle => 'ជ្រើសរើសអាសយដ្ឋានសម្រាប់កក់។';
+
+  @override
+  String get dfEdit => 'កែ';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service សម្រាប់ផ្ទះមិនលើស $max pyeong។ $label ($size pyeong) យើងនឹងជួយក្នុងការជជែក។';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1858,9 +1958,88 @@ class TKm extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return 'រួចរាល់ $done/$total';
+  String get dfDateTitle => 'ជ្រើសរើសថ្ងៃ និងម៉ោង។';
+
+  @override
+  String get dfManagerIntro => 'អ្នកគ្រប់គ្រងដែលបានបណ្តុះបណ្តាលនឹងមក។';
+
+  @override
+  String get dfServiceTime => 'ពេលសេវា';
+
+  @override
+  String get dfChange => 'ប្តូរ';
+
+  @override
+  String get dfVisitDay => 'ថ្ងៃមក';
+
+  @override
+  String get dfVisitTime => 'ម៉ោងមក';
+
+  @override
+  String get dfSelect => 'ជ្រើស';
+
+  @override
+  String get dfSlotClosed => 'ពេញ';
+
+  @override
+  String get dfSelectDone => 'រួចរាល់';
+
+  @override
+  String get dfDateNote => 'ថ្ងៃ និងម៉ោងខ្លះអាចមានថ្លៃបន្ថែម។';
+
+  @override
+  String get dfAmVisit => 'មកពេលព្រឹក';
+
+  @override
+  String get dfPmVisit => 'មកពេលរសៀល';
+
+  @override
+  String dfArrive(String range) {
+    return 'មកដល់ $range';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name\nសូមរៀបចំមុនសេវា!';
+  }
+
+  @override
+  String get dfPrepTools => 'ឧបករណ៍សម្អាតត្រូវរៀបចំ';
+
+  @override
+  String get dfNoTools => 'ខ្វះឧបករណ៍?';
+
+  @override
+  String get dfNoToolsBody => 'សួរក្រុមថាត្រូវរៀបចំអ្វី';
+
+  @override
+  String get dfPayTitle => 'ជ្រើសរើសការបញ្ចុះតម្លៃ និងការទូទាត់។';
+
+  @override
+  String get dfPoints => 'ពិន្ទុ';
+
+  @override
+  String get dfPointsFirst => 'ប្រើពិន្ទុមុន';
+
+  @override
+  String get dfPointsOff => 'មិនបានប្រើ';
+
+  @override
+  String get dfPointsNone => 'គ្មានពិន្ទុប្រើ';
+
+  @override
+  String get dfPayMethod => 'វិធីទូទាត់';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'តម្លៃមូលដ្ឋាន ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'បញ្ចុះតម្លៃគូប៉ុង';
+
+  @override
+  String get dfDue => 'ចំនួនត្រូវបង់';
 
   @override
   String get dfPgNotice =>
@@ -1870,42 +2049,82 @@ class TKm extends T {
   String get dfRefundPolicy => 'គោលនយោបាយបោះបង់ និងសងប្រាក់វិញ';
 
   @override
-  String get building_commercial => 'ពាណិជ្ជកម្ម';
+  String get dfSummaryService => 'សេវា';
 
   @override
-  String get dfSafeBooking => 'ការកក់ដោយទុកចិត្ត';
+  String get dfSummaryWhen => 'ពេលមក';
 
   @override
-  String get dfSafeBookingBody =>
-      'ក្រុមរបស់យើងពិនិត្យ ហើយផ្ញើតម្លៃចុងក្រោយក្នុងការជជែក';
+  String get dfSummaryAddress => 'អាសយដ្ឋាន';
 
   @override
-  String get dfEstBase => 'តម្លៃមូលដ្ឋាន';
+  String get dfSummaryPaid => 'បានបង់';
 
   @override
-  String get dfEstExtras => 'បន្ទប់ និងជម្រើសបន្ថែម';
+  String get luggage_not_unpacked => 'មិនទាន់ស្រាយឥវ៉ាន់';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return 'ថ្លៃបន្ថែមប្រភេទ និងឥវ៉ាន់ $pct%';
+  String get dfReviewsTitle => 'មើលមតិអតិថិជន។';
+
+  @override
+  String get dfBasicBody => 'ព័ត៌មានចាំបាច់ ហើយអាចប៉ះពាល់តម្លៃ។';
+
+  @override
+  String get building_commercial => 'ទីតាំងពាណិជ្ជកម្ម';
+
+  @override
+  String get dfBldVillaHouse => 'វីឡា / ផ្ទះ';
+
+  @override
+  String get dfLayoutOneHalf =>
+      '1.5 បន្ទប់ (ស្ទូឌីយោបំបែក / បន្ទប់ទទួលភ្ញៀវ + 1)';
+
+  @override
+  String get dfLayoutTwo => 'បន្ទប់ទទួលភ្ញៀវ + 2';
+
+  @override
+  String get dfLayoutThree => 'បន្ទប់ទទួលភ្ញៀវ + 3';
+
+  @override
+  String get dfLayoutFour => 'បន្ទប់ទទួលភ្ញៀវ + 4 ឡើង';
+
+  @override
+  String get dfDuplexTitle => 'ផ្ទះពីរជាន់';
+
+  @override
+  String get dfNone => 'គ្មាន';
+
+  @override
+  String get dfHas => 'មាន';
+
+  @override
+  String get dfPleaseSelect => 'សូមជ្រើស';
+
+  @override
+  String get dfBathCount => 'ចំនួនបន្ទប់ទឹក';
+
+  @override
+  String get dfBalconyCount => 'ចំនួនយ៉ ឬបន្ទប់ប្រើប្រាស់';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return 'ថ្លៃបន្ថែមម៉ោងមមាញឹក $pct%';
-  }
+  String get dfElevatorTitle => 'ជណ្តើរយន្ត';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'បន្ថែមលាងម៉ាស៊ីនត្រជាក់ (បញ្ចុះ $pct%)';
-  }
+  String get dfFloor3 => 'ទីតាំងនៅជាន់ទី 3 ឡើង';
 
   @override
-  String get dfAcAddonBanner =>
-      'បន្ថែមការលាងម៉ាស៊ីនត្រជាក់ជាមួយការសម្អាតផ្លាស់ផ្ទះ ដើម្បីបានបញ្ចុះតម្លៃ';
+  String get dfAcAddonBanner => 'បន្ថែមលាងម៉ាស៊ីនត្រជាក់ បានបញ្ចុះតម្លៃ';
 
   @override
-  String get dfAcAddonAdd => 'បន្ថែមម៉ាស៊ីនត្រជាក់';
+  String get dfAcAddonBody => 'ចូលផ្ទះថ្មីជាមួយម៉ាស៊ីនត្រជាក់ស្អាត។';
+
+  @override
+  String get dfAcAddonAdd => 'បន្ថែម';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1916,13 +2135,156 @@ class TKm extends T {
   String get dfAcAddonNote => 'តម្លៃបញ្ចុះនឹងបង្ហាញក្នុងការប៉ាន់តម្លៃ';
 
   @override
-  String get f_ac_addon_discount_bps =>
-      'បញ្ចុះតម្លៃម៉ាស៊ីនត្រជាក់បន្ថែម (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'បន្ថែមលាងម៉ាស៊ីនត្រជាក់ (បញ្ចុះ $pct%)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count គ្រឿង';
   }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'បញ្ចុះតម្លៃម៉ាស៊ីនត្រជាក់បន្ថែម (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'ពិនិត្យរបៀបប៉ាន់តម្លៃ\nហើយបន្ត។';
+
+  @override
+  String get dfSafeBooking => 'ការកក់ទុកចិត្ត Dahae';
+
+  @override
+  String get dfRecommended => 'ណែនាំ';
+
+  @override
+  String get dfEstimateVat => 'ការប៉ាន់ស្មាន (រួម VAT) · អាចប្តូរ';
+
+  @override
+  String get dfBenefit1 => 'ក្រុមអ្នកជំនាញបានបណ្តុះបណ្តាល';
+
+  @override
+  String get dfBenefit2 => 'កែលម្អឥតគិតថ្លៃ 7 ថ្ងៃក្រោយសេវា';
+
+  @override
+  String get dfBenefit3 => 'តាមដានវឌ្ឍនភាពផ្ទាល់ក្នុងការជជែក';
+
+  @override
+  String get dfBenefit4 => 'ប្រើសាប៊ូមិនប៉ះពាល់បរិស្ថាន';
+
+  @override
+  String get dfBenefit5 => 'ពិន្ទុសម្រាប់សរសេរមតិ';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ មិនទាន់គិតប្រាក់ទេ។ ពេលព្រមតម្លៃក្នុងការជជែក ប្រាក់កក់ $pct% បញ្ជាក់ការកក់។';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nបញ្ចប់ការកក់។';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'ម៉ោងមក៖ $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ បន្ទាប់ពីស្នើ ការជជែកនឹងបើក។ ព្រមតម្លៃ និងកាលវិភាគ រួចបង់ប្រាក់កក់។';
+
+  @override
+  String get dfHomeInfo => 'ព័ត៌មានផ្ទះ';
+
+  @override
+  String get dfName => 'ឈ្មោះ';
+
+  @override
+  String get dfBasicInfo => 'ព័ត៌មានមូលដ្ឋាន';
+
+  @override
+  String get dfCleanType => 'ប្រភេទសម្អាត';
+
+  @override
+  String get dfBuilding => 'អគារ';
+
+  @override
+  String get dfSpaceInfo => 'ព័ត៌មានទីតាំង';
+
+  @override
+  String get dfPayInfo => 'ព័ត៌មានទូទាត់';
+
+  @override
+  String get dfEstAmount => 'តម្លៃប៉ាន់ស្មាន';
+
+  @override
+  String get dfDepositOnConfirm => 'ប្រាក់កក់ (បង់ពេលបញ្ជាក់)';
+
+  @override
+  String get dfNotes => 'ចំណាំ';
+
+  @override
+  String get dfNote1 => 'បោះបង់ឥតគិតថ្លៃពេលពិគ្រោះ ឬមុន 2 ថ្ងៃ។';
+
+  @override
+  String get dfNote2 => 'តម្លៃចុងក្រោយក្នុងការជជែក ប្រាក់នៅសល់បង់ក្រោយសេវា។';
+
+  @override
+  String get dfNote3 =>
+      'បើទាក់ទងមិនបាន ក្រុមនឹងចាកចេញក្រោយ 30 នាទី។ សូមពិនិត្យរបៀបចូល។';
+
+  @override
+  String get dfNoteWarn =>
+      'បើអ្នកគ្រប់គ្រងស្នើបង់ផ្ទាល់ សូមប្រាប់ផ្នែកជំនួយភ្លាម។';
+
+  @override
+  String get dfSubmitRequest => 'ផ្ញើសំណើកក់';
+
+  @override
+  String get dfRequested => 'បានស្នើពិគ្រោះ។';
+
+  @override
+  String get dfStatusNote =>
+      '※ ក្រុមនឹងផ្ញើតម្លៃចុងក្រោយក្នុងការជជែក។ ប្រាក់កក់បញ្ជាក់ការកក់។';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'តម្លៃអាចប្តូរ។ ប្រាក់កក់ $pct% នៃតម្លៃព្រមព្រៀង។';
+  }
+
+  @override
+  String get dfQuoteMethod => 'ប្រភេទប៉ាន់តម្លៃ';
+
+  @override
+  String get dfDeposit => 'ប្រាក់កក់';
+
+  @override
+  String get dfAwaitingPay => 'រង់ចាំការទូទាត់';
+
+  @override
+  String get dfServiceInfo => 'ព័ត៌មានសេវា';
+
+  @override
+  String get dfSpace => 'ទីតាំង';
+
+  @override
+  String get dfChat => 'ជជែកពិគ្រោះ';
+
+  @override
+  String get dfRequestDone => 'បានផ្ញើសំណើ';
+
+  @override
+  String get dfRequestDoneBody => 'ការជជែកបានបើក។\nក្រុមនឹងផ្ញើតម្លៃចុងក្រោយ។';
+
+  @override
+  String get dfAcUpsell => 'លាងម៉ាស៊ីនត្រជាក់ក្រោយផ្លាស់ផ្ទះដែរទេ?';
+
+  @override
+  String get dfAcUpsellCta => 'កក់លាងម៉ាស៊ីនត្រជាក់';
+
+  @override
+  String get dfViewChat => 'បើកការជជែក';
 
   @override
   String get themeTitle => 'ធីម';

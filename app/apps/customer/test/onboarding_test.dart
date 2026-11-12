@@ -11,7 +11,7 @@ import 'support/customer_routes.dart';
 Future<void> openSignInFromBooking(WidgetTester tester) async {
   await tester.tap(find.text(koT.serviceShort('studio')).first);
   await settle(tester);
-  await tester.tap(find.text(koT.chooseDate));
+  await tester.tap(find.text(koT.dfBookNow));
   await settle(tester);
 }
 

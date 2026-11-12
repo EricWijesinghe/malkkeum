@@ -1796,19 +1796,119 @@ class TKo extends T {
   String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
 
   @override
-  String get dfScopeDusting => '먼지 털기';
+  String get dfScopeDusting => '가구 위 먼지 제거';
 
   @override
-  String get dfScopeVacuum => '청소기';
+  String get dfScopeVacuum => '청소기 및 막대걸레로 바닥 청소';
 
   @override
-  String get dfScopeDishes => '설거지';
+  String get dfScopeDishes => '식기 설거지 및 싱크볼 세척';
 
   @override
-  String get dfScopeBathroom => '화장실 청소';
+  String get dfScopeBathroom => '수전, 세면대, 변기 내/외부 청소';
 
   @override
-  String get dfScopeTrash => '쓰레기 배출';
+  String get dfScopeTrash => '분리수거 및 쓰레기 배출';
+
+  @override
+  String get dfScopeBedding => '침구 정리정돈';
+
+  @override
+  String get dfScopeTidy => '물건 제자리 정리정돈';
+
+  @override
+  String get dfScopeStove => '가스레인지·상판 닦기';
+
+  @override
+  String get dfScopeFridge => '냉장고 외부 닦기';
+
+  @override
+  String get dfScopeTiles => '욕실 바닥·벽 타일 청소';
+
+  @override
+  String get dfScopeMold => '곰팡이·물때 제거';
+
+  @override
+  String get dfScopeHood => '후드·가스레인지 기름때 제거';
+
+  @override
+  String get dfScopeCabinets => '붙박이장·수납장 내부 청소';
+
+  @override
+  String get dfScopeWindows => '창틀·샷시 먼지 제거';
+
+  @override
+  String get dfScopeShoes => '신발장 내부 청소';
+
+  @override
+  String get dfScopeEntrance => '현관 바닥 청소';
+
+  @override
+  String get dfBasicService => '기본 서비스';
+
+  @override
+  String get dfNotProvided => '제공하지 않는 서비스';
+
+  @override
+  String get dfNp1 => '세탁 및 빨래 정리';
+
+  @override
+  String get dfNp2 => '손이 닿지 않는 곳';
+
+  @override
+  String get dfNp3 => '특수 청소';
+
+  @override
+  String get dfNp4 => '청소 외의 가사 업무';
+
+  @override
+  String get dfRoom => '방';
+
+  @override
+  String get dfKitchen => '주방';
+
+  @override
+  String get dfBath => '화장실';
+
+  @override
+  String get dfEntrance => '현관';
+
+  @override
+  String get dfEntranceTrash => '현관/쓰레기';
+
+  @override
+  String get dfScopeMove => '이사/입주 청소';
+
+  @override
+  String get dfScopeBathKitchen => '화장실·주방';
+
+  @override
+  String get dfDuration => '소요 시간';
+
+  @override
+  String get dfPriceVat => '금액 (VAT 포함)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max평을 넘는 집은 원룸 청소를 예약할 수 없어요. 상담으로 맞는 서비스를 안내해 드려요.';
+  }
+
+  @override
+  String get dfBookNow => '예약하기';
+
+  @override
+  String get dfMustCheck => '꼭 확인해 주세요';
+
+  @override
+  String get dfAddressTitle => '예약할 주소를 선택해 주세요.';
+
+  @override
+  String get dfEdit => '수정';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service는 $max평 이하만 가능해요. $label($size평)는 상담으로 안내해 드릴게요.';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1816,9 +1916,88 @@ class TKo extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$done/$total 준비 완료';
+  String get dfDateTitle => '날짜/시간을 선택해 주세요.';
+
+  @override
+  String get dfManagerIntro => '교육받은 매니저님이 방문합니다.';
+
+  @override
+  String get dfServiceTime => '서비스 시간';
+
+  @override
+  String get dfChange => '변경';
+
+  @override
+  String get dfVisitDay => '방문 일';
+
+  @override
+  String get dfVisitTime => '방문 시간';
+
+  @override
+  String get dfSelect => '선택';
+
+  @override
+  String get dfSlotClosed => '마감';
+
+  @override
+  String get dfSelectDone => '선택 완료';
+
+  @override
+  String get dfDateNote => '날짜와 시간에 따라 금액이 추가될 수 있어요.';
+
+  @override
+  String get dfAmVisit => '오전 방문';
+
+  @override
+  String get dfPmVisit => '오후 방문';
+
+  @override
+  String dfArrive(String range) {
+    return '$range 도착';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name님\n서비스 전 꼭 준비해 주세요!';
+  }
+
+  @override
+  String get dfPrepTools => '준비할 청소도구';
+
+  @override
+  String get dfNoTools => '도구가 없으신가요?';
+
+  @override
+  String get dfNoToolsBody => '상담팀에 준비물을 물어보세요';
+
+  @override
+  String get dfPayTitle => '할인 및 결제 수단을 선택해 주세요.';
+
+  @override
+  String get dfPoints => '포인트';
+
+  @override
+  String get dfPointsFirst => '포인트 우선 사용';
+
+  @override
+  String get dfPointsOff => '미적용';
+
+  @override
+  String get dfPointsNone => '사용 가능한 포인트가 없어요';
+
+  @override
+  String get dfPayMethod => '결제수단';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return '기본금액 ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => '쿠폰 할인';
+
+  @override
+  String get dfDue => '결제 예정 금액';
 
   @override
   String get dfPgNotice =>
@@ -1828,40 +2007,81 @@ class TKo extends T {
   String get dfRefundPolicy => '취소·환불 규정';
 
   @override
-  String get building_commercial => '상가';
+  String get dfSummaryService => '서비스';
 
   @override
-  String get dfSafeBooking => '안심 예약';
+  String get dfSummaryWhen => '방문 일시';
 
   @override
-  String get dfSafeBookingBody => '상담팀이 확인한 뒤 채팅으로 확정 견적을 보내드려요';
+  String get dfSummaryAddress => '주소';
 
   @override
-  String get dfEstBase => '기본 요금';
+  String get dfSummaryPaid => '결제 금액';
 
   @override
-  String get dfEstExtras => '추가 공간·옵션';
+  String get luggage_not_unpacked => '이삿짐을 풀지 않은 상태';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return '청소 유형·짐 할증 $pct%';
+  String get dfReviewsTitle => '생생한 이용 후기를 확인하세요.';
+
+  @override
+  String get dfBasicBody => '선택한 내용은 서비스에 필요한 필수정보예요. 서비스 가격에 영향을 줄 수 있어요.';
+
+  @override
+  String get building_commercial => '상업공간';
+
+  @override
+  String get dfBldVillaHouse => '빌라/주택';
+
+  @override
+  String get dfLayoutOneHalf => '1.5룸 (분리형 원룸 / 거실+방 1개)';
+
+  @override
+  String get dfLayoutTwo => '거실+방 2개';
+
+  @override
+  String get dfLayoutThree => '거실+방 3개';
+
+  @override
+  String get dfLayoutFour => '거실+방 4개 이상';
+
+  @override
+  String get dfDuplexTitle => '복층 유무';
+
+  @override
+  String get dfNone => '없음';
+
+  @override
+  String get dfHas => '있음';
+
+  @override
+  String get dfPleaseSelect => '선택해 주세요';
+
+  @override
+  String get dfBathCount => '화장실 개수';
+
+  @override
+  String get dfBalconyCount => '베란다/다용도실 개수';
+
+  @override
+  String dfCountN(String n) {
+    return '$n개';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return '주말·성수기 할증 $pct%';
-  }
+  String get dfElevatorTitle => '엘리베이터 유무';
 
   @override
-  String dfEstAddons(String pct) {
-    return '에어컨 청소 추가 ($pct% 할인)';
-  }
+  String get dfFloor3 => '서비스 받을 공간이 3층 이상입니다';
 
   @override
-  String get dfAcAddonBanner => '이사 청소와 에어컨 청소를 함께하면 할인돼요';
+  String get dfAcAddonBanner => '에어컨 청소도 함께하면 할인돼요';
 
   @override
-  String get dfAcAddonAdd => '에어컨 추가';
+  String get dfAcAddonBody => '새 집 에어컨까지 깨끗하게 맞이하세요.';
+
+  @override
+  String get dfAcAddonAdd => '추가하기';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1872,12 +2092,153 @@ class TKo extends T {
   String get dfAcAddonNote => '할인된 금액은 견적에서 확인할 수 있어요';
 
   @override
-  String get f_ac_addon_discount_bps => '에어컨 추가 할인 (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return '에어컨 청소 추가 ($pct% 할인)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count대';
   }
+
+  @override
+  String get f_ac_addon_discount_bps => '에어컨 추가 할인 (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => '견적 방식을 확인하고\n예약을 진행해 주세요.';
+
+  @override
+  String get dfSafeBooking => '다해 안심예약';
+
+  @override
+  String get dfRecommended => '추천!';
+
+  @override
+  String get dfEstimateVat => '예상 견적 (VAT 포함) · 상담 후 변경될 수 있어요';
+
+  @override
+  String get dfBenefit1 => '교육 인증을 받은 전문 청소팀이 진행';
+
+  @override
+  String get dfBenefit2 => '서비스 후 7일 무상 AS 제공';
+
+  @override
+  String get dfBenefit3 => '상담 채팅으로 진행 상황 실시간 확인';
+
+  @override
+  String get dfBenefit4 => '친환경 세제 사용';
+
+  @override
+  String get dfBenefit5 => '후기 작성 시 포인트 증정';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ 지금은 결제되지 않아요. 상담으로 금액을 확정한 뒤 예약금 $pct%를 결제하면 예약이 확정돼요.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\n예약을 완료해 주세요.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return '방문 시간 : $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ 예약 신청 후 상담 채팅방이 열려요. 상담팀과 견적·일정을 확정한 뒤 예약금을 결제하면 예약이 확정돼요.';
+
+  @override
+  String get dfHomeInfo => '집 정보';
+
+  @override
+  String get dfName => '이름';
+
+  @override
+  String get dfBasicInfo => '기본 정보';
+
+  @override
+  String get dfCleanType => '청소 유형';
+
+  @override
+  String get dfBuilding => '건물';
+
+  @override
+  String get dfSpaceInfo => '공간 정보';
+
+  @override
+  String get dfPayInfo => '결제 정보';
+
+  @override
+  String get dfEstAmount => '예상 서비스 금액';
+
+  @override
+  String get dfDepositOnConfirm => '예약금 (확정 시 결제)';
+
+  @override
+  String get dfNotes => '유의사항';
+
+  @override
+  String get dfNote1 => '상담 중이거나 방문 2일 전까지는 무료로 취소할 수 있어요.';
+
+  @override
+  String get dfNote2 => '최종 금액은 상담 채팅에서 확정되며, 잔금은 서비스 후 결제해요.';
+
+  @override
+  String get dfNote3 =>
+      '방문 당일 연락이 닿지 않아 입실하지 못하면 30분 대기 후 철수해요. 출입 방법을 미리 확인해 주세요.';
+
+  @override
+  String get dfNoteWarn => '매니저가 직거래를 요구하면 피해가 생길 수 있어요. 바로 고객센터로 알려주세요.';
+
+  @override
+  String get dfSubmitRequest => '예약 신청하기';
+
+  @override
+  String get dfRequested => '상담을 요청했습니다.';
+
+  @override
+  String get dfStatusNote => '※ 상담팀이 채팅으로 확정 견적을 보내드려요. 예약금을 결제하면 예약이 확정됩니다.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return '서비스 금액은 상담 후 변경될 수 있어요. 예약금은 확정 금액의 $pct%예요.';
+  }
+
+  @override
+  String get dfQuoteMethod => '견적 방식';
+
+  @override
+  String get dfDeposit => '예약금';
+
+  @override
+  String get dfAwaitingPay => '결제 대기';
+
+  @override
+  String get dfServiceInfo => '서비스 정보';
+
+  @override
+  String get dfSpace => '공간';
+
+  @override
+  String get dfChat => '상담 채팅';
+
+  @override
+  String get dfRequestDone => '예약 신청 완료';
+
+  @override
+  String get dfRequestDoneBody => '상담 채팅방이 열렸어요.\n상담팀이 확정 견적을 보내드릴게요.';
+
+  @override
+  String get dfAcUpsell => '이사 후 에어컨도 청소할까요?';
+
+  @override
+  String get dfAcUpsellCta => '에어컨 청소 예약하기';
+
+  @override
+  String get dfViewChat => '상담 채팅 보기';
 
   @override
   String get themeTitle => '테마';

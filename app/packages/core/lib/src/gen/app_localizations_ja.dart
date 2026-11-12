@@ -1796,19 +1796,119 @@ class TJa extends T {
   String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
 
   @override
-  String get dfScopeDusting => 'ほこり取り';
+  String get dfScopeDusting => '家具の上のほこり取り';
 
   @override
-  String get dfScopeVacuum => '掃除機がけ';
+  String get dfScopeVacuum => '掃除機とモップで床掃除';
 
   @override
-  String get dfScopeDishes => '皿洗い';
+  String get dfScopeDishes => '食器洗いとシンク洗浄';
 
   @override
-  String get dfScopeBathroom => 'トイレ・浴室掃除';
+  String get dfScopeBathroom => '蛇口・洗面台・便器の内外清掃';
 
   @override
-  String get dfScopeTrash => 'ゴミ出し';
+  String get dfScopeTrash => '分別とゴミ出し';
+
+  @override
+  String get dfScopeBedding => '寝具の整頓';
+
+  @override
+  String get dfScopeTidy => '物を元の場所に整頓';
+
+  @override
+  String get dfScopeStove => 'コンロ・天板拭き';
+
+  @override
+  String get dfScopeFridge => '冷蔵庫の外側拭き';
+
+  @override
+  String get dfScopeTiles => '浴室の床・壁タイル清掃';
+
+  @override
+  String get dfScopeMold => 'カビ・水垢の除去';
+
+  @override
+  String get dfScopeHood => 'レンジフード・コンロの油汚れ除去';
+
+  @override
+  String get dfScopeCabinets => '造り付け収納の内部清掃';
+
+  @override
+  String get dfScopeWindows => '窓枠・サッシのほこり取り';
+
+  @override
+  String get dfScopeShoes => '靴箱の内部清掃';
+
+  @override
+  String get dfScopeEntrance => '玄関の床掃除';
+
+  @override
+  String get dfBasicService => '基本サービス';
+
+  @override
+  String get dfNotProvided => '提供しないサービス';
+
+  @override
+  String get dfNp1 => '洗濯と洗濯物の整理';
+
+  @override
+  String get dfNp2 => '手の届かない場所';
+
+  @override
+  String get dfNp3 => '特殊清掃';
+
+  @override
+  String get dfNp4 => '清掃以外の家事';
+
+  @override
+  String get dfRoom => '部屋';
+
+  @override
+  String get dfKitchen => 'キッチン';
+
+  @override
+  String get dfBath => 'トイレ・浴室';
+
+  @override
+  String get dfEntrance => '玄関';
+
+  @override
+  String get dfEntranceTrash => '玄関/ゴミ';
+
+  @override
+  String get dfScopeMove => '引越し・入居清掃';
+
+  @override
+  String get dfScopeBathKitchen => 'トイレ・キッチン';
+
+  @override
+  String get dfDuration => '所要時間';
+
+  @override
+  String get dfPriceVat => '料金 (税込)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max坪を超えるお宅はワンルーム清掃を予約できません。相談で合うサービスをご案内します。';
+  }
+
+  @override
+  String get dfBookNow => '予約する';
+
+  @override
+  String get dfMustCheck => '必ずご確認ください';
+
+  @override
+  String get dfAddressTitle => '予約する住所を選んでください。';
+
+  @override
+  String get dfEdit => '編集';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$serviceは$max坪以下のみです。$label($size坪)は相談でご案内します。';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1816,9 +1916,88 @@ class TJa extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$done/$total 準備完了';
+  String get dfDateTitle => '日付と時間を選んでください。';
+
+  @override
+  String get dfManagerIntro => '研修を受けたマネージャーが伺います。';
+
+  @override
+  String get dfServiceTime => 'サービス時間';
+
+  @override
+  String get dfChange => '変更';
+
+  @override
+  String get dfVisitDay => '訪問日';
+
+  @override
+  String get dfVisitTime => '訪問時間';
+
+  @override
+  String get dfSelect => '選択';
+
+  @override
+  String get dfSlotClosed => '締切';
+
+  @override
+  String get dfSelectDone => '選択完了';
+
+  @override
+  String get dfDateNote => '日時によって料金が加算される場合があります。';
+
+  @override
+  String get dfAmVisit => '午前訪問';
+
+  @override
+  String get dfPmVisit => '午後訪問';
+
+  @override
+  String dfArrive(String range) {
+    return '$range 到着';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name様\nサービス前に必ずご準備ください！';
+  }
+
+  @override
+  String get dfPrepTools => '準備する掃除道具';
+
+  @override
+  String get dfNoTools => '道具がありませんか？';
+
+  @override
+  String get dfNoToolsBody => '相談チームに準備物を聞いてください';
+
+  @override
+  String get dfPayTitle => '割引と支払い方法を選んでください。';
+
+  @override
+  String get dfPoints => 'ポイント';
+
+  @override
+  String get dfPointsFirst => 'ポイント優先使用';
+
+  @override
+  String get dfPointsOff => '未適用';
+
+  @override
+  String get dfPointsNone => '使えるポイントがありません';
+
+  @override
+  String get dfPayMethod => '支払い方法';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return '基本料金 ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'クーポン割引';
+
+  @override
+  String get dfDue => 'お支払い予定額';
 
   @override
   String get dfPgNotice =>
@@ -1828,40 +2007,81 @@ class TJa extends T {
   String get dfRefundPolicy => 'キャンセル・返金規定';
 
   @override
-  String get building_commercial => '店舗';
+  String get dfSummaryService => 'サービス';
 
   @override
-  String get dfSafeBooking => '安心予約';
+  String get dfSummaryWhen => '訪問日時';
 
   @override
-  String get dfSafeBookingBody => '相談チームが確認し、チャットで確定見積をお送りします';
+  String get dfSummaryAddress => '住所';
 
   @override
-  String get dfEstBase => '基本料金';
+  String get dfSummaryPaid => 'お支払い額';
 
   @override
-  String get dfEstExtras => '追加スペース・オプション';
+  String get luggage_not_unpacked => '引越し荷物を開けていない';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return '清掃タイプ・荷物の割増 $pct%';
+  String get dfReviewsTitle => '生の利用レビューをご覧ください。';
+
+  @override
+  String get dfBasicBody => '選択内容はサービスに必要な必須情報です。料金に影響することがあります。';
+
+  @override
+  String get building_commercial => '商業スペース';
+
+  @override
+  String get dfBldVillaHouse => 'ヴィラ/戸建て';
+
+  @override
+  String get dfLayoutOneHalf => '1.5ルーム (分離型 / リビング+1部屋)';
+
+  @override
+  String get dfLayoutTwo => 'リビング+2部屋';
+
+  @override
+  String get dfLayoutThree => 'リビング+3部屋';
+
+  @override
+  String get dfLayoutFour => 'リビング+4部屋以上';
+
+  @override
+  String get dfDuplexTitle => 'メゾネット';
+
+  @override
+  String get dfNone => 'なし';
+
+  @override
+  String get dfHas => 'あり';
+
+  @override
+  String get dfPleaseSelect => '選択してください';
+
+  @override
+  String get dfBathCount => 'トイレ・浴室の数';
+
+  @override
+  String get dfBalconyCount => 'ベランダ・多目的室の数';
+
+  @override
+  String dfCountN(String n) {
+    return '$n個';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return '週末・繁忙期の割増 $pct%';
-  }
+  String get dfElevatorTitle => 'エレベーター';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'エアコン清掃の追加 ($pct%割引)';
-  }
+  String get dfFloor3 => 'サービスを受ける場所は3階以上です';
 
   @override
-  String get dfAcAddonBanner => '引越し清掃と一緒にエアコン清掃を頼むと割引されます';
+  String get dfAcAddonBanner => 'エアコン清掃も一緒なら割引';
 
   @override
-  String get dfAcAddonAdd => 'エアコンを追加';
+  String get dfAcAddonBody => '新居のエアコンまできれいに。';
+
+  @override
+  String get dfAcAddonAdd => '追加';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1872,12 +2092,152 @@ class TJa extends T {
   String get dfAcAddonNote => '割引後の金額は見積で確認できます';
 
   @override
-  String get f_ac_addon_discount_bps => 'エアコン追加割引 (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'エアコン清掃の追加 ($pct%割引)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count台';
   }
+
+  @override
+  String get f_ac_addon_discount_bps => 'エアコン追加割引 (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => '見積方式を確認して\n予約を進めてください。';
+
+  @override
+  String get dfSafeBooking => 'ダヘ安心予約';
+
+  @override
+  String get dfRecommended => 'おすすめ！';
+
+  @override
+  String get dfEstimateVat => '概算見積 (税込) · 相談後に変わる場合があります';
+
+  @override
+  String get dfBenefit1 => '研修認証を受けた専門チームが担当';
+
+  @override
+  String get dfBenefit2 => 'サービス後7日間の無償アフターサービス';
+
+  @override
+  String get dfBenefit3 => '相談チャットで進行状況をリアルタイム確認';
+
+  @override
+  String get dfBenefit4 => '環境にやさしい洗剤を使用';
+
+  @override
+  String get dfBenefit5 => 'レビュー作成でポイント進呈';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ 今は決済されません。相談で金額確定後、予約金$pct%のお支払いで予約が確定します。';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\n予約を完了してください。';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return '訪問時間：$slot';
+  }
+
+  @override
+  String get dfReviewNote => '※ 予約申込後に相談チャットが開きます。見積・日程を確定し予約金を支払うと予約が確定します。';
+
+  @override
+  String get dfHomeInfo => 'お部屋の情報';
+
+  @override
+  String get dfName => '名前';
+
+  @override
+  String get dfBasicInfo => '基本情報';
+
+  @override
+  String get dfCleanType => '清掃タイプ';
+
+  @override
+  String get dfBuilding => '建物';
+
+  @override
+  String get dfSpaceInfo => '空間情報';
+
+  @override
+  String get dfPayInfo => 'お支払い情報';
+
+  @override
+  String get dfEstAmount => '予想サービス料金';
+
+  @override
+  String get dfDepositOnConfirm => '予約金 (確定時に決済)';
+
+  @override
+  String get dfNotes => '注意事項';
+
+  @override
+  String get dfNote1 => '相談中または訪問2日前まで無料でキャンセルできます。';
+
+  @override
+  String get dfNote2 => '最終金額は相談チャットで確定し、残金はサービス後にお支払いいただきます。';
+
+  @override
+  String get dfNote3 => '当日連絡が取れず入室できない場合、30分待機後に撤収します。入室方法を事前にご確認ください。';
+
+  @override
+  String get dfNoteWarn =>
+      'マネージャーが直接取引を求めた場合はトラブルの恐れがあります。すぐにカスタマーセンターへお知らせください。';
+
+  @override
+  String get dfSubmitRequest => '予約を申し込む';
+
+  @override
+  String get dfRequested => '相談を依頼しました。';
+
+  @override
+  String get dfStatusNote => '※ 相談チームがチャットで確定見積をお送りします。予約金のお支払いで予約が確定します。';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'サービス料金は相談後に変わる場合があります。予約金は確定金額の$pct%です。';
+  }
+
+  @override
+  String get dfQuoteMethod => '見積方式';
+
+  @override
+  String get dfDeposit => '予約金';
+
+  @override
+  String get dfAwaitingPay => '支払い待ち';
+
+  @override
+  String get dfServiceInfo => 'サービス情報';
+
+  @override
+  String get dfSpace => '空間';
+
+  @override
+  String get dfChat => '相談チャット';
+
+  @override
+  String get dfRequestDone => '予約申込完了';
+
+  @override
+  String get dfRequestDoneBody => '相談チャットが開きました。\n相談チームが確定見積をお送りします。';
+
+  @override
+  String get dfAcUpsell => '引越し後にエアコンも掃除しますか？';
+
+  @override
+  String get dfAcUpsellCta => 'エアコン清掃を予約';
+
+  @override
+  String get dfViewChat => '相談チャットを見る';
 
   @override
   String get themeTitle => 'テーマ';

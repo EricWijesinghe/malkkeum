@@ -54,9 +54,9 @@ void main() {
 
       await tester.tap(find.text(koT.serviceShort('studio')).first);
       await settle(tester);
-      expect(find.text(koT.chooseDate), findsOneWidget);
+      expect(find.text(koT.dfBookNow), findsOneWidget);
 
-      await tester.tap(find.text(koT.chooseDate));
+      await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);
       expect(find.text(koT.guestSheetTitle), findsOneWidget, reason: 'protected action opens the sheet');
       expect(fake.callsTo('POST', '/auth/otp'), isEmpty);
@@ -85,7 +85,7 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 500));
       await tester.tap(find.text(koT.serviceShort('studio')).first);
       await settle(tester);
-      await tester.tap(find.text(koT.chooseDate));
+      await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);
       await tester.enterText(find.byType(TextField).last, '01012345678');
       await settle(tester, duration: const Duration(milliseconds: 300));
@@ -111,7 +111,7 @@ void main() {
       await settle(tester, duration: const Duration(milliseconds: 500));
       await tester.tap(find.text(koT.serviceShort('studio')).first);
       await settle(tester);
-      await tester.tap(find.text(koT.chooseDate));
+      await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);
 
       const keyboard = 320.0;

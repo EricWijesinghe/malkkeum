@@ -1849,19 +1849,119 @@ class TUz extends T {
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
 
   @override
-  String get dfScopeDusting => 'Chang artish';
+  String get dfScopeDusting => 'Mebel ustidagi changni artish';
 
   @override
-  String get dfScopeVacuum => 'Changyutgich';
+  String get dfScopeVacuum => 'Polni changyutgich va shvabra bilan tozalash';
 
   @override
-  String get dfScopeDishes => 'Idish yuvish';
+  String get dfScopeDishes => 'Idish va rakovinani yuvish';
 
   @override
-  String get dfScopeBathroom => 'Hammom';
+  String get dfScopeBathroom => 'Jo\'mrak, rakovina va unitaz ichi-tashi';
 
   @override
-  String get dfScopeTrash => 'Chiqindini chiqarish';
+  String get dfScopeTrash => 'Chiqindini saralash va chiqarish';
+
+  @override
+  String get dfScopeBedding => 'Ko\'rpa-to\'shakni yig\'ishtirish';
+
+  @override
+  String get dfScopeTidy => 'Buyumlarni joyiga qo\'yish';
+
+  @override
+  String get dfScopeStove => 'Plita va stol ustini artish';
+
+  @override
+  String get dfScopeFridge => 'Muzlatgichning tashqarisini artish';
+
+  @override
+  String get dfScopeTiles => 'Hammom pol va devor plitkasi';
+
+  @override
+  String get dfScopeMold => 'Mog\'or va ohak dog\'ini ketkazish';
+
+  @override
+  String get dfScopeHood => 'So\'rg\'ich va plitadagi yog\'ni tozalash';
+
+  @override
+  String get dfScopeCabinets => 'O\'rnatilgan shkaflar ichi';
+
+  @override
+  String get dfScopeWindows => 'Deraza romlaridagi changni artish';
+
+  @override
+  String get dfScopeShoes => 'Poyabzal javoni ichi';
+
+  @override
+  String get dfScopeEntrance => 'Dahliz poli';
+
+  @override
+  String get dfBasicService => 'Asosiy xizmat';
+
+  @override
+  String get dfNotProvided => 'Kirmaydigan xizmatlar';
+
+  @override
+  String get dfNp1 => 'Kir yuvish va taxlash';
+
+  @override
+  String get dfNp2 => 'Qo\'l yetmaydigan joylar';
+
+  @override
+  String get dfNp3 => 'Maxsus tozalash';
+
+  @override
+  String get dfNp4 => 'Tozalashdan boshqa uy ishlari';
+
+  @override
+  String get dfRoom => 'Xona';
+
+  @override
+  String get dfKitchen => 'Oshxona';
+
+  @override
+  String get dfBath => 'Hammom';
+
+  @override
+  String get dfEntrance => 'Dahliz';
+
+  @override
+  String get dfEntranceTrash => 'Dahliz / chiqindi';
+
+  @override
+  String get dfScopeMove => 'Ko\'chish tozalashi';
+
+  @override
+  String get dfScopeBathKitchen => 'Hammom va oshxona';
+
+  @override
+  String get dfDuration => 'Davomiyligi';
+
+  @override
+  String get dfPriceVat => 'Narx (QQS bilan)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max pyeongdan katta uylar studiya tozalashini bron qila olmaydi. Mos xizmatni chatda taklif qilamiz.';
+  }
+
+  @override
+  String get dfBookNow => 'Bron qilish';
+
+  @override
+  String get dfMustCheck => 'Albatta tekshiring';
+
+  @override
+  String get dfAddressTitle => 'Bron uchun manzilni tanlang.';
+
+  @override
+  String get dfEdit => 'Tahrirlash';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service faqat $max pyeonggacha uylar uchun. $label ($size pyeong) bo\'yicha chatda yordam beramiz.';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1869,71 +1969,336 @@ class TUz extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$total tadan $done tasi tayyor';
+  String get dfDateTitle => 'Sana va vaqtni tanlang.';
+
+  @override
+  String get dfManagerIntro => 'O\'qitilgan menejer tashrif buyuradi.';
+
+  @override
+  String get dfServiceTime => 'Xizmat vaqti';
+
+  @override
+  String get dfChange => 'O\'zgartirish';
+
+  @override
+  String get dfVisitDay => 'Tashrif sanasi';
+
+  @override
+  String get dfVisitTime => 'Tashrif vaqti';
+
+  @override
+  String get dfSelect => 'Tanlash';
+
+  @override
+  String get dfSlotClosed => 'Band';
+
+  @override
+  String get dfSelectDone => 'Tayyor';
+
+  @override
+  String get dfDateNote => 'Ayrim kun va soatlarda narx biroz yuqori.';
+
+  @override
+  String get dfAmVisit => 'Ertalabki tashrif';
+
+  @override
+  String get dfPmVisit => 'Tushdan keyingi tashrif';
+
+  @override
+  String dfArrive(String range) {
+    return '$range yetib keladi';
   }
 
   @override
+  String dfPrepHeader(String name) {
+    return '$name\nxizmatdan oldin tayyorlang!';
+  }
+
+  @override
+  String get dfPrepTools => 'Tayyorlanadigan jihozlar';
+
+  @override
+  String get dfNoTools => 'Jihozlar yo\'qmi?';
+
+  @override
+  String get dfNoToolsBody => 'Jamoadan nima tayyorlashni so\'rang';
+
+  @override
+  String get dfPayTitle => 'Chegirma va to\'lovni tanlang.';
+
+  @override
+  String get dfPoints => 'Ballar';
+
+  @override
+  String get dfPointsFirst => 'Avval ballarni ishlatish';
+
+  @override
+  String get dfPointsOff => 'Qo\'llanmagan';
+
+  @override
+  String get dfPointsNone => 'Ishlatish uchun ball yo\'q';
+
+  @override
+  String get dfPayMethod => 'To\'lov usuli';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Asosiy narx ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Kupon chegirmasi';
+
+  @override
+  String get dfDue => 'To\'lanadigan summa';
+
+  @override
   String get dfPgNotice =>
-      'Toʻlov toʻlov provayderi (PG) orqali amalga oshiriladi. Toʻlov qilib, siz xizmat shartlari hamda bekor qilish va pulni qaytarish qoidalariga rozilik bildirasiz.';
+      'To\'lov to\'lov provayderi (PG) orqali amalga oshiriladi. To\'lov qilib, siz xizmat shartlari hamda bekor qilish va pulni qaytarish qoidalariga rozilik bildirasiz.';
 
   @override
   String get dfRefundPolicy => 'Bekor qilish va pulni qaytarish qoidalari';
 
   @override
-  String get building_commercial => 'Tijorat';
+  String get dfSummaryService => 'Xizmat';
 
   @override
-  String get dfSafeBooking => 'Ishonchli bron';
+  String get dfSummaryWhen => 'Tashrif';
 
   @override
-  String get dfSafeBookingBody =>
-      'Jamoamiz tekshirib, yakuniy narxni chatda yuboradi';
+  String get dfSummaryAddress => 'Manzil';
 
   @override
-  String get dfEstBase => 'Asosiy narx';
+  String get dfSummaryPaid => 'To\'langan';
 
   @override
-  String get dfEstExtras => 'Qoʻshimcha xonalar va variantlar';
+  String get luggage_not_unpacked => 'Yuklar hali ochilmagan';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return 'Tur va yuk ustamasi $pct%';
+  String get dfReviewsTitle => 'Mijozlar fikrlarini ko\'ring.';
+
+  @override
+  String get dfBasicBody =>
+      'Majburiy ma\'lumot, narxga ta\'sir qilishi mumkin.';
+
+  @override
+  String get building_commercial => 'Tijorat maydoni';
+
+  @override
+  String get dfBldVillaHouse => 'Villa / uy';
+
+  @override
+  String get dfLayoutOneHalf =>
+      '1,5 xona (ajratilgan studiya / mehmonxona + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Mehmonxona + 2 xona';
+
+  @override
+  String get dfLayoutThree => 'Mehmonxona + 3 xona';
+
+  @override
+  String get dfLayoutFour => 'Mehmonxona + 4 va undan ko\'p';
+
+  @override
+  String get dfDuplexTitle => 'Ikki qavatli';
+
+  @override
+  String get dfNone => 'Yo\'q';
+
+  @override
+  String get dfHas => 'Bor';
+
+  @override
+  String get dfPleaseSelect => 'Tanlang';
+
+  @override
+  String get dfBathCount => 'Hammomlar soni';
+
+  @override
+  String get dfBalconyCount => 'Balkon / xo\'jalik xonalari';
+
+  @override
+  String dfCountN(String n) {
+    return '$n ta';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return 'Band vaqt ustamasi $pct%';
-  }
+  String get dfElevatorTitle => 'Lift';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'Konditsioner tozalash qoʻshimchasi ($pct% chegirma)';
-  }
+  String get dfFloor3 => 'Joy 3-qavat yoki undan yuqorida';
 
   @override
-  String get dfAcAddonBanner =>
-      'Koʻchish tozalashiga konditsioner tozalashni qoʻshib, chegirma oling';
+  String get dfAcAddonBanner => 'Konditsioner tozalashni qo\'shsangiz chegirma';
 
   @override
-  String get dfAcAddonAdd => 'Konditsioner qoʻshish';
+  String get dfAcAddonBody => 'Yangi uyga toza konditsioner bilan ko\'ching.';
+
+  @override
+  String get dfAcAddonAdd => 'Qo\'shish';
 
   @override
   String dfAcAddonAdded(String count) {
-    return '$count ta konditsioner qoʻshildi';
+    return '$count ta konditsioner qo\'shildi';
   }
 
   @override
-  String get dfAcAddonNote => 'Chegirmali narx smetada koʻrinadi';
+  String get dfAcAddonNote => 'Chegirmali narx smetada ko\'rinadi';
 
   @override
-  String get f_ac_addon_discount_bps =>
-      'Konditsioner qoʻshimchasi chegirmasi (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'Konditsioner tozalash qo\'shimchasi ($pct% chegirma)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count ta';
   }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Konditsioner qo\'shimchasi chegirmasi (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'Narx hisobini tekshirib\ndavom eting.';
+
+  @override
+  String get dfSafeBooking => 'Dahae ishonchli bron';
+
+  @override
+  String get dfRecommended => 'Tavsiya';
+
+  @override
+  String get dfEstimateVat => 'Taxminiy narx (QQS bilan) · o\'zgarishi mumkin';
+
+  @override
+  String get dfBenefit1 => 'O\'qitilgan, sertifikatli jamoa';
+
+  @override
+  String get dfBenefit2 => 'Xizmatdan so\'ng 7 kun bepul tuzatish';
+
+  @override
+  String get dfBenefit3 => 'Jarayonni chatda jonli kuzatish';
+
+  @override
+  String get dfBenefit4 => 'Ekologik toza vositalar';
+
+  @override
+  String get dfBenefit5 => 'Fikr yozganingiz uchun ballar';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Hozir to\'lov olinmaydi. Narx chatda kelishilgach, $pct% oldindan to\'lov bronni tasdiqlaydi.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nBronni yakunlang.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Tashrif vaqti: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ So\'rovdan so\'ng chat ochiladi. Narx va jadvalni kelishib, oldindan to\'lovni to\'lang.';
+
+  @override
+  String get dfHomeInfo => 'Uy ma\'lumoti';
+
+  @override
+  String get dfName => 'Nomi';
+
+  @override
+  String get dfBasicInfo => 'Asosiy ma\'lumot';
+
+  @override
+  String get dfCleanType => 'Tozalash turi';
+
+  @override
+  String get dfBuilding => 'Bino';
+
+  @override
+  String get dfSpaceInfo => 'Joy ma\'lumoti';
+
+  @override
+  String get dfPayInfo => 'To\'lov ma\'lumoti';
+
+  @override
+  String get dfEstAmount => 'Taxminiy narx';
+
+  @override
+  String get dfDepositOnConfirm => 'Oldindan to\'lov (tasdiqlanganda)';
+
+  @override
+  String get dfNotes => 'Eslatmalar';
+
+  @override
+  String get dfNote1 => 'Maslahat paytida yoki 2 kun oldin bepul bekor qilish.';
+
+  @override
+  String get dfNote2 => 'Yakuniy narx chatda, qoldiq xizmatdan keyin.';
+
+  @override
+  String get dfNote3 =>
+      'Bog\'lana olmasak, jamoa 30 daqiqadan so\'ng ketadi. Kirish yo\'lini oldindan tekshiring.';
+
+  @override
+  String get dfNoteWarn =>
+      'Menejer to\'g\'ridan-to\'g\'ri to\'lov so\'rasa, darhol qo\'llab-quvvatlashga xabar bering.';
+
+  @override
+  String get dfSubmitRequest => 'Bron so\'rovini yuborish';
+
+  @override
+  String get dfRequested => 'Maslahat so\'raldi.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Jamoa yakuniy narxni chatda yuboradi. Oldindan to\'lov bronni tasdiqlaydi.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Narx o\'zgarishi mumkin. Oldindan to\'lov kelishilgan narxning $pct%.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Narx turi';
+
+  @override
+  String get dfDeposit => 'Oldindan to\'lov';
+
+  @override
+  String get dfAwaitingPay => 'To\'lov kutilmoqda';
+
+  @override
+  String get dfServiceInfo => 'Xizmat ma\'lumoti';
+
+  @override
+  String get dfSpace => 'Joy';
+
+  @override
+  String get dfChat => 'Maslahat chati';
+
+  @override
+  String get dfRequestDone => 'So\'rov yuborildi';
+
+  @override
+  String get dfRequestDoneBody =>
+      'Chat ochildi.\nJamoa yakuniy narxni yuboradi.';
+
+  @override
+  String get dfAcUpsell =>
+      'Ko\'chgandan so\'ng konditsionerni ham tozalaymizmi?';
+
+  @override
+  String get dfAcUpsellCta => 'Konditsioner tozalashni bron qilish';
+
+  @override
+  String get dfViewChat => 'Chatni ochish';
 
   @override
   String get themeTitle => 'Mavzu';

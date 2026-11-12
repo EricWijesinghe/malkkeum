@@ -1827,19 +1827,119 @@ class TEn extends T {
   String get hhHint => 'Saved to this address and editable per booking.';
 
   @override
-  String get dfScopeDusting => 'Dusting';
+  String get dfScopeDusting => 'Dusting furniture surfaces';
 
   @override
-  String get dfScopeVacuum => 'Vacuuming';
+  String get dfScopeVacuum => 'Vacuuming and mopping floors';
 
   @override
-  String get dfScopeDishes => 'Dishwashing';
+  String get dfScopeDishes => 'Washing dishes and the sink';
 
   @override
-  String get dfScopeBathroom => 'Bathroom';
+  String get dfScopeBathroom => 'Taps, basin and toilet inside and out';
 
   @override
-  String get dfScopeTrash => 'Taking out trash';
+  String get dfScopeTrash => 'Sorting recycling and taking out trash';
+
+  @override
+  String get dfScopeBedding => 'Tidying the bedding';
+
+  @override
+  String get dfScopeTidy => 'Putting things back in place';
+
+  @override
+  String get dfScopeStove => 'Wiping the stove and counters';
+
+  @override
+  String get dfScopeFridge => 'Wiping the fridge outside';
+
+  @override
+  String get dfScopeTiles => 'Bathroom floor and wall tiles';
+
+  @override
+  String get dfScopeMold => 'Removing mould and limescale';
+
+  @override
+  String get dfScopeHood => 'Degreasing the hood and stove';
+
+  @override
+  String get dfScopeCabinets => 'Inside built-in wardrobes and cabinets';
+
+  @override
+  String get dfScopeWindows => 'Dusting window frames and sashes';
+
+  @override
+  String get dfScopeShoes => 'Inside the shoe cabinet';
+
+  @override
+  String get dfScopeEntrance => 'Entrance floor';
+
+  @override
+  String get dfBasicService => 'Included';
+
+  @override
+  String get dfNotProvided => 'Not included';
+
+  @override
+  String get dfNp1 => 'Laundry and folding';
+
+  @override
+  String get dfNp2 => 'Places out of reach';
+
+  @override
+  String get dfNp3 => 'Specialist cleaning';
+
+  @override
+  String get dfNp4 => 'Chores other than cleaning';
+
+  @override
+  String get dfRoom => 'Room';
+
+  @override
+  String get dfKitchen => 'Kitchen';
+
+  @override
+  String get dfBath => 'Bathroom';
+
+  @override
+  String get dfEntrance => 'Entrance';
+
+  @override
+  String get dfEntranceTrash => 'Entrance / trash';
+
+  @override
+  String get dfScopeMove => 'Move-in / move-out';
+
+  @override
+  String get dfScopeBathKitchen => 'Bathroom & kitchen';
+
+  @override
+  String get dfDuration => 'Duration';
+
+  @override
+  String get dfPriceVat => 'Price (VAT incl.)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ Homes over $max pyeong can\'t book studio cleaning. We\'ll suggest the right service in chat.';
+  }
+
+  @override
+  String get dfBookNow => 'Book now';
+
+  @override
+  String get dfMustCheck => 'Please check';
+
+  @override
+  String get dfAddressTitle => 'Choose the address to book.';
+
+  @override
+  String get dfEdit => 'Edit';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service is for homes up to $max pyeong. We\'ll help with $label ($size pyeong) in chat.';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1847,9 +1947,88 @@ class TEn extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$done of $total ready';
+  String get dfDateTitle => 'Choose a date and time.';
+
+  @override
+  String get dfManagerIntro => 'A trained manager visits you.';
+
+  @override
+  String get dfServiceTime => 'Service time';
+
+  @override
+  String get dfChange => 'Change';
+
+  @override
+  String get dfVisitDay => 'Visit date';
+
+  @override
+  String get dfVisitTime => 'Visit time';
+
+  @override
+  String get dfSelect => 'Choose';
+
+  @override
+  String get dfSlotClosed => 'Full';
+
+  @override
+  String get dfSelectDone => 'Done';
+
+  @override
+  String get dfDateNote => 'Some dates and times cost a little more.';
+
+  @override
+  String get dfAmVisit => 'Morning visit';
+
+  @override
+  String get dfPmVisit => 'Afternoon visit';
+
+  @override
+  String dfArrive(String range) {
+    return 'Arrive $range';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name,\nplease have these ready!';
+  }
+
+  @override
+  String get dfPrepTools => 'Cleaning tools to prepare';
+
+  @override
+  String get dfNoTools => 'Missing some tools?';
+
+  @override
+  String get dfNoToolsBody => 'Ask our team what to prepare';
+
+  @override
+  String get dfPayTitle => 'Choose discounts and payment.';
+
+  @override
+  String get dfPoints => 'Points';
+
+  @override
+  String get dfPointsFirst => 'Use points first';
+
+  @override
+  String get dfPointsOff => 'Not applied';
+
+  @override
+  String get dfPointsNone => 'No points to use';
+
+  @override
+  String get dfPayMethod => 'Payment method';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Base price ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Coupon discount';
+
+  @override
+  String get dfDue => 'Amount to pay';
 
   @override
   String get dfPgNotice =>
@@ -1859,42 +2038,82 @@ class TEn extends T {
   String get dfRefundPolicy => 'Cancellation & refund policy';
 
   @override
-  String get building_commercial => 'Commercial';
+  String get dfSummaryService => 'Service';
 
   @override
-  String get dfSafeBooking => 'Safe booking';
+  String get dfSummaryWhen => 'Visit';
 
   @override
-  String get dfSafeBookingBody =>
-      'Our team checks it and sends the final quote in chat';
+  String get dfSummaryAddress => 'Address';
 
   @override
-  String get dfEstBase => 'Base price';
+  String get dfSummaryPaid => 'Paid';
 
   @override
-  String get dfEstExtras => 'Extra rooms & options';
+  String get luggage_not_unpacked => 'Boxes not unpacked yet';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return 'Type & luggage surcharge $pct%';
+  String get dfReviewsTitle => 'See what customers say.';
+
+  @override
+  String get dfBasicBody =>
+      'These details are required and can affect the price.';
+
+  @override
+  String get building_commercial => 'Commercial space';
+
+  @override
+  String get dfBldVillaHouse => 'Villa / house';
+
+  @override
+  String get dfLayoutOneHalf => '1.5 rooms (split studio / living + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Living room + 2 rooms';
+
+  @override
+  String get dfLayoutThree => 'Living room + 3 rooms';
+
+  @override
+  String get dfLayoutFour => 'Living room + 4 or more';
+
+  @override
+  String get dfDuplexTitle => 'Duplex';
+
+  @override
+  String get dfNone => 'No';
+
+  @override
+  String get dfHas => 'Yes';
+
+  @override
+  String get dfPleaseSelect => 'Please choose';
+
+  @override
+  String get dfBathCount => 'Bathrooms';
+
+  @override
+  String get dfBalconyCount => 'Balconies / utility rooms';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return 'Peak-time surcharge $pct%';
-  }
+  String get dfElevatorTitle => 'Elevator';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'AC cleaning add-on ($pct% off)';
-  }
+  String get dfFloor3 => 'The home is on floor 3 or higher';
 
   @override
-  String get dfAcAddonBanner =>
-      'Add AC cleaning to your move clean for a discount';
+  String get dfAcAddonBanner => 'Add AC cleaning for a discount';
 
   @override
-  String get dfAcAddonAdd => 'Add AC cleaning';
+  String get dfAcAddonBody => 'Move in with clean air conditioners too.';
+
+  @override
+  String get dfAcAddonAdd => 'Add';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1906,12 +2125,159 @@ class TEn extends T {
       'You\'ll see the discounted price in your estimate';
 
   @override
-  String get f_ac_addon_discount_bps => 'AC add-on discount (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'AC cleaning add-on ($pct% off)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count units';
   }
+
+  @override
+  String get f_ac_addon_discount_bps => 'AC add-on discount (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'Check how the quote works\nand continue.';
+
+  @override
+  String get dfSafeBooking => 'Dahae Safe Booking';
+
+  @override
+  String get dfRecommended => 'Recommended';
+
+  @override
+  String get dfEstimateVat =>
+      'Estimate (VAT incl.) · may change after consultation';
+
+  @override
+  String get dfBenefit1 => 'Done by a trained, certified team';
+
+  @override
+  String get dfBenefit2 => '7 days of free touch-ups after service';
+
+  @override
+  String get dfBenefit3 => 'Live progress in your consultation chat';
+
+  @override
+  String get dfBenefit4 => 'Eco-friendly detergents';
+
+  @override
+  String get dfBenefit5 => 'Points for writing a review';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Nothing is charged now. Once the price is agreed in chat, a $pct% deposit confirms the booking.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nFinish your booking.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Visit time: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ A consultation chat opens after you send the request. Agree the quote and schedule there, then pay the deposit to confirm.';
+
+  @override
+  String get dfHomeInfo => 'Home';
+
+  @override
+  String get dfName => 'Name';
+
+  @override
+  String get dfBasicInfo => 'Basics';
+
+  @override
+  String get dfCleanType => 'Cleaning type';
+
+  @override
+  String get dfBuilding => 'Building';
+
+  @override
+  String get dfSpaceInfo => 'Space';
+
+  @override
+  String get dfPayInfo => 'Payment';
+
+  @override
+  String get dfEstAmount => 'Estimated price';
+
+  @override
+  String get dfDepositOnConfirm => 'Deposit (paid on confirmation)';
+
+  @override
+  String get dfNotes => 'Good to know';
+
+  @override
+  String get dfNote1 =>
+      'Free cancellation during consultation or up to 2 days before the visit.';
+
+  @override
+  String get dfNote2 =>
+      'The final price is set in chat; the balance is paid after the service.';
+
+  @override
+  String get dfNote3 =>
+      'If we can\'t reach you to get in on the day, the team leaves after 30 minutes. Please check how to get in beforehand.';
+
+  @override
+  String get dfNoteWarn =>
+      'If a manager asks you to pay them directly, please tell our support team right away.';
+
+  @override
+  String get dfSubmitRequest => 'Send booking request';
+
+  @override
+  String get dfRequested => 'Consultation requested.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Our team sends the final quote in chat. Paying the deposit confirms the booking.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'The price may change after consultation. The deposit is $pct% of the agreed price.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Quote type';
+
+  @override
+  String get dfDeposit => 'Deposit';
+
+  @override
+  String get dfAwaitingPay => 'Awaiting payment';
+
+  @override
+  String get dfServiceInfo => 'Service';
+
+  @override
+  String get dfSpace => 'Space';
+
+  @override
+  String get dfChat => 'Consultation chat';
+
+  @override
+  String get dfRequestDone => 'Request sent';
+
+  @override
+  String get dfRequestDoneBody =>
+      'Your consultation chat is open.\nOur team will send the final quote.';
+
+  @override
+  String get dfAcUpsell => 'Clean the air conditioners after the move too?';
+
+  @override
+  String get dfAcUpsellCta => 'Book AC cleaning';
+
+  @override
+  String get dfViewChat => 'Open consultation chat';
 
   @override
   String get themeTitle => 'Theme';

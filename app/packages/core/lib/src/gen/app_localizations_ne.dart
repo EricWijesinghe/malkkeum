@@ -1838,19 +1838,119 @@ class TNe extends T {
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
 
   @override
-  String get dfScopeDusting => 'धुलो सफा';
+  String get dfScopeDusting => 'फर्निचरमाथिको धुलो सफा';
 
   @override
-  String get dfScopeVacuum => 'भ्याकुम';
+  String get dfScopeVacuum => 'भ्याकुम र पोछाले भुइँ सफा';
 
   @override
-  String get dfScopeDishes => 'भाँडा माझ्ने';
+  String get dfScopeDishes => 'भाँडा र सिङ्क सफा';
 
   @override
-  String get dfScopeBathroom => 'बाथरुम';
+  String get dfScopeBathroom => 'धारा, बेसिन र शौचालय भित्र-बाहिर';
 
   @override
-  String get dfScopeTrash => 'फोहोर फाल्ने';
+  String get dfScopeTrash => 'फोहोर छुट्याउने र फाल्ने';
+
+  @override
+  String get dfScopeBedding => 'ओछ्यान मिलाउने';
+
+  @override
+  String get dfScopeTidy => 'सामान ठाउँमा राख्ने';
+
+  @override
+  String get dfScopeStove => 'चुलो र काउन्टर पुछ्ने';
+
+  @override
+  String get dfScopeFridge => 'फ्रिजको बाहिर पुछ्ने';
+
+  @override
+  String get dfScopeTiles => 'बाथरुमको भुइँ र भित्ता टायल';
+
+  @override
+  String get dfScopeMold => 'ढुसी र पानीको दाग हटाउने';
+
+  @override
+  String get dfScopeHood => 'हुड र चुलोको चिल्लो हटाउने';
+
+  @override
+  String get dfScopeCabinets => 'भित्ता दराज र क्याबिनेट भित्र';
+
+  @override
+  String get dfScopeWindows => 'झ्यालको फ्रेमको धुलो';
+
+  @override
+  String get dfScopeShoes => 'जुत्ता दराज भित्र';
+
+  @override
+  String get dfScopeEntrance => 'प्रवेशको भुइँ';
+
+  @override
+  String get dfBasicService => 'आधारभूत सेवा';
+
+  @override
+  String get dfNotProvided => 'समावेश नभएको सेवा';
+
+  @override
+  String get dfNp1 => 'लुगा धुने र पट्याउने';
+
+  @override
+  String get dfNp2 => 'हात नपुग्ने ठाउँ';
+
+  @override
+  String get dfNp3 => 'विशेष सफाइ';
+
+  @override
+  String get dfNp4 => 'सफाइबाहेकका घरायसी काम';
+
+  @override
+  String get dfRoom => 'कोठा';
+
+  @override
+  String get dfKitchen => 'भान्सा';
+
+  @override
+  String get dfBath => 'बाथरुम';
+
+  @override
+  String get dfEntrance => 'प्रवेश';
+
+  @override
+  String get dfEntranceTrash => 'प्रवेश / फोहोर';
+
+  @override
+  String get dfScopeMove => 'सर्ने सफाइ';
+
+  @override
+  String get dfScopeBathKitchen => 'बाथरुम र भान्सा';
+
+  @override
+  String get dfDuration => 'अवधि';
+
+  @override
+  String get dfPriceVat => 'मूल्य (भ्याट सहित)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max pyeong भन्दा ठूला घरले स्टुडियो सफाइ बुक गर्न सक्दैनन्। च्याटमा उपयुक्त सेवा सुझाउँछौं।';
+  }
+
+  @override
+  String get dfBookNow => 'बुक गर्नुहोस्';
+
+  @override
+  String get dfMustCheck => 'कृपया हेर्नुहोस्';
+
+  @override
+  String get dfAddressTitle => 'बुक गर्ने ठेगाना छान्नुहोस्।';
+
+  @override
+  String get dfEdit => 'सम्पादन';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service $max pyeong सम्मका घरका लागि हो। $label ($size pyeong) का लागि च्याटमा मद्दत गर्छौं।';
+  }
 
   @override
   String dfOverPyeong(String max) {
@@ -1858,9 +1958,88 @@ class TNe extends T {
   }
 
   @override
-  String dfPrepCount(String done, String total) {
-    return '$total मध्ये $done तयार';
+  String get dfDateTitle => 'मिति र समय छान्नुहोस्।';
+
+  @override
+  String get dfManagerIntro => 'तालिम प्राप्त म्यानेजर आउनुहुन्छ।';
+
+  @override
+  String get dfServiceTime => 'सेवा समय';
+
+  @override
+  String get dfChange => 'परिवर्तन';
+
+  @override
+  String get dfVisitDay => 'भ्रमण मिति';
+
+  @override
+  String get dfVisitTime => 'भ्रमण समय';
+
+  @override
+  String get dfSelect => 'छान्नुहोस्';
+
+  @override
+  String get dfSlotClosed => 'भरिएको';
+
+  @override
+  String get dfSelectDone => 'सकियो';
+
+  @override
+  String get dfDateNote => 'केही मिति र समयमा थप शुल्क लाग्न सक्छ।';
+
+  @override
+  String get dfAmVisit => 'बिहानको भ्रमण';
+
+  @override
+  String get dfPmVisit => 'दिउँसोको भ्रमण';
+
+  @override
+  String dfArrive(String range) {
+    return '$range आइपुग्ने';
   }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name\nसेवाअघि यी तयार राख्नुहोस्!';
+  }
+
+  @override
+  String get dfPrepTools => 'तयार राख्ने सफाइ सामग्री';
+
+  @override
+  String get dfNoTools => 'सामग्री छैन?';
+
+  @override
+  String get dfNoToolsBody => 'के तयार गर्ने टोलीलाई सोध्नुहोस्';
+
+  @override
+  String get dfPayTitle => 'छुट र भुक्तानी छान्नुहोस्।';
+
+  @override
+  String get dfPoints => 'अंक';
+
+  @override
+  String get dfPointsFirst => 'पहिले अंक प्रयोग';
+
+  @override
+  String get dfPointsOff => 'लागू छैन';
+
+  @override
+  String get dfPointsNone => 'प्रयोग गर्ने अंक छैन';
+
+  @override
+  String get dfPayMethod => 'भुक्तानी विधि';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'आधार मूल्य ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'कुपन छुट';
+
+  @override
+  String get dfDue => 'तिर्ने रकम';
 
   @override
   String get dfPgNotice =>
@@ -1870,41 +2049,81 @@ class TNe extends T {
   String get dfRefundPolicy => 'रद्द र फिर्ता नीति';
 
   @override
-  String get building_commercial => 'व्यावसायिक';
+  String get dfSummaryService => 'सेवा';
 
   @override
-  String get dfSafeBooking => 'सुरक्षित बुकिङ';
+  String get dfSummaryWhen => 'भ्रमण';
 
   @override
-  String get dfSafeBookingBody =>
-      'हाम्रो टोलीले जाँचेर अन्तिम मूल्य च्याटमा पठाउँछ';
+  String get dfSummaryAddress => 'ठेगाना';
 
   @override
-  String get dfEstBase => 'आधार मूल्य';
+  String get dfSummaryPaid => 'तिरेको';
 
   @override
-  String get dfEstExtras => 'थप कोठा र विकल्प';
+  String get luggage_not_unpacked => 'सामान खोलिएको छैन';
 
   @override
-  String dfEstSurcharge(String pct) {
-    return 'प्रकार र सामान अतिरिक्त शुल्क $pct%';
+  String get dfReviewsTitle => 'ग्राहकका प्रतिक्रिया हेर्नुहोस्।';
+
+  @override
+  String get dfBasicBody => 'यो आवश्यक जानकारी हो, मूल्यमा असर गर्न सक्छ।';
+
+  @override
+  String get building_commercial => 'व्यावसायिक स्थान';
+
+  @override
+  String get dfBldVillaHouse => 'भिला / घर';
+
+  @override
+  String get dfLayoutOneHalf => '१.५ कोठा (छुट्टिएको स्टुडियो / बैठक + १)';
+
+  @override
+  String get dfLayoutTwo => 'बैठक + २ कोठा';
+
+  @override
+  String get dfLayoutThree => 'बैठक + ३ कोठा';
+
+  @override
+  String get dfLayoutFour => 'बैठक + ४ वा बढी';
+
+  @override
+  String get dfDuplexTitle => 'डुप्लेक्स';
+
+  @override
+  String get dfNone => 'छैन';
+
+  @override
+  String get dfHas => 'छ';
+
+  @override
+  String get dfPleaseSelect => 'छान्नुहोस्';
+
+  @override
+  String get dfBathCount => 'बाथरुम संख्या';
+
+  @override
+  String get dfBalconyCount => 'बालकनी / युटिलिटी संख्या';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
   }
 
   @override
-  String dfEstPeak(String pct) {
-    return 'व्यस्त समय अतिरिक्त शुल्क $pct%';
-  }
+  String get dfElevatorTitle => 'लिफ्ट';
 
   @override
-  String dfEstAddons(String pct) {
-    return 'एसी सफाइ थप ($pct% छुट)';
-  }
+  String get dfFloor3 => 'सेवा स्थान तेस्रो तला वा माथि';
 
   @override
-  String get dfAcAddonBanner => 'सर्ने सफाइसँग एसी सफाइ थप्दा छुट पाउनुहोस्';
+  String get dfAcAddonBanner => 'एसी सफाइ थप्दा छुट';
 
   @override
-  String get dfAcAddonAdd => 'एसी थप्नुहोस्';
+  String get dfAcAddonBody => 'नयाँ घरमा सफा एसीसहित सर्नुहोस्।';
+
+  @override
+  String get dfAcAddonAdd => 'थप्नुहोस्';
 
   @override
   String dfAcAddonAdded(String count) {
@@ -1915,12 +2134,155 @@ class TNe extends T {
   String get dfAcAddonNote => 'छुटपछिको मूल्य अनुमानमा देखिन्छ';
 
   @override
-  String get f_ac_addon_discount_bps => 'एसी थप छुट (bps, 1000 = 10%)';
+  String dfEstAddons(String pct) {
+    return 'एसी सफाइ थप ($pct% छुट)';
+  }
 
   @override
   String dfCountUnits(String count) {
     return '$count वटा';
   }
+
+  @override
+  String get f_ac_addon_discount_bps => 'एसी थप छुट (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'मूल्याङ्कन तरिका हेरेर\nअगाडि बढ्नुहोस्।';
+
+  @override
+  String get dfSafeBooking => 'Dahae सुरक्षित बुकिङ';
+
+  @override
+  String get dfRecommended => 'सिफारिस';
+
+  @override
+  String get dfEstimateVat => 'अनुमान (भ्याट सहित) · परिवर्तन हुन सक्छ';
+
+  @override
+  String get dfBenefit1 => 'तालिम प्राप्त प्रमाणित टोली';
+
+  @override
+  String get dfBenefit2 => 'सेवापछि ७ दिन निःशुल्क सुधार';
+
+  @override
+  String get dfBenefit3 => 'च्याटमा प्रत्यक्ष प्रगति';
+
+  @override
+  String get dfBenefit4 => 'वातावरणमैत्री डिटर्जेन्ट';
+
+  @override
+  String get dfBenefit5 => 'समीक्षा लेख्दा अंक';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ अहिले शुल्क लाग्दैन। च्याटमा मूल्य तय भएपछि $pct% अग्रिमले बुकिङ पक्का हुन्छ।';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nबुकिङ पूरा गर्नुहोस्।';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'भ्रमण समय: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ अनुरोधपछि च्याट खुल्छ। मूल्य र तालिका तय गरी अग्रिम तिर्नुहोस्।';
+
+  @override
+  String get dfHomeInfo => 'घर जानकारी';
+
+  @override
+  String get dfName => 'नाम';
+
+  @override
+  String get dfBasicInfo => 'आधारभूत जानकारी';
+
+  @override
+  String get dfCleanType => 'सफाइ प्रकार';
+
+  @override
+  String get dfBuilding => 'भवन';
+
+  @override
+  String get dfSpaceInfo => 'स्थान जानकारी';
+
+  @override
+  String get dfPayInfo => 'भुक्तानी जानकारी';
+
+  @override
+  String get dfEstAmount => 'अनुमानित मूल्य';
+
+  @override
+  String get dfDepositOnConfirm => 'अग्रिम (पक्का हुँदा)';
+
+  @override
+  String get dfNotes => 'ध्यान दिनुहोस्';
+
+  @override
+  String get dfNote1 => 'परामर्शमा वा २ दिनअघिसम्म निःशुल्क रद्द।';
+
+  @override
+  String get dfNote2 => 'अन्तिम मूल्य च्याटमा, बाँकी सेवापछि।';
+
+  @override
+  String get dfNote3 =>
+      'सम्पर्क नभएमा टोली ३० मिनेटपछि फर्किन्छ। प्रवेश तरिका पहिले नै जाँच्नुहोस्।';
+
+  @override
+  String get dfNoteWarn =>
+      'म्यानेजरले सिधै भुक्तानी मागेमा तुरुन्तै सहायतालाई जानकारी दिनुहोस्।';
+
+  @override
+  String get dfSubmitRequest => 'बुकिङ अनुरोध पठाउनुहोस्';
+
+  @override
+  String get dfRequested => 'परामर्श अनुरोध गरियो।';
+
+  @override
+  String get dfStatusNote =>
+      '※ टोलीले अन्तिम मूल्य च्याटमा पठाउँछ। अग्रिमले बुकिङ पक्का हुन्छ।';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'मूल्य परिवर्तन हुन सक्छ। अग्रिम तय मूल्यको $pct% हो।';
+  }
+
+  @override
+  String get dfQuoteMethod => 'मूल्याङ्कन प्रकार';
+
+  @override
+  String get dfDeposit => 'अग्रिम';
+
+  @override
+  String get dfAwaitingPay => 'भुक्तानी पर्खँदै';
+
+  @override
+  String get dfServiceInfo => 'सेवा जानकारी';
+
+  @override
+  String get dfSpace => 'स्थान';
+
+  @override
+  String get dfChat => 'परामर्श च्याट';
+
+  @override
+  String get dfRequestDone => 'अनुरोध पठाइयो';
+
+  @override
+  String get dfRequestDoneBody => 'च्याट खुल्यो।\nटोलीले अन्तिम मूल्य पठाउँछ।';
+
+  @override
+  String get dfAcUpsell => 'सरेपछि एसी पनि सफा गर्ने?';
+
+  @override
+  String get dfAcUpsellCta => 'एसी सफाइ बुक गर्नुहोस्';
+
+  @override
+  String get dfViewChat => 'च्याट खोल्नुहोस्';
 
   @override
   String get themeTitle => 'थिम';

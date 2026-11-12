@@ -3532,32 +3532,224 @@ abstract class T {
   /// No description provided for @dfScopeDusting.
   ///
   /// In ko, this message translates to:
-  /// **'먼지 털기'**
+  /// **'가구 위 먼지 제거'**
   String get dfScopeDusting;
 
   /// No description provided for @dfScopeVacuum.
   ///
   /// In ko, this message translates to:
-  /// **'청소기'**
+  /// **'청소기 및 막대걸레로 바닥 청소'**
   String get dfScopeVacuum;
 
   /// No description provided for @dfScopeDishes.
   ///
   /// In ko, this message translates to:
-  /// **'설거지'**
+  /// **'식기 설거지 및 싱크볼 세척'**
   String get dfScopeDishes;
 
   /// No description provided for @dfScopeBathroom.
   ///
   /// In ko, this message translates to:
-  /// **'화장실 청소'**
+  /// **'수전, 세면대, 변기 내/외부 청소'**
   String get dfScopeBathroom;
 
   /// No description provided for @dfScopeTrash.
   ///
   /// In ko, this message translates to:
-  /// **'쓰레기 배출'**
+  /// **'분리수거 및 쓰레기 배출'**
   String get dfScopeTrash;
+
+  /// No description provided for @dfScopeBedding.
+  ///
+  /// In ko, this message translates to:
+  /// **'침구 정리정돈'**
+  String get dfScopeBedding;
+
+  /// No description provided for @dfScopeTidy.
+  ///
+  /// In ko, this message translates to:
+  /// **'물건 제자리 정리정돈'**
+  String get dfScopeTidy;
+
+  /// No description provided for @dfScopeStove.
+  ///
+  /// In ko, this message translates to:
+  /// **'가스레인지·상판 닦기'**
+  String get dfScopeStove;
+
+  /// No description provided for @dfScopeFridge.
+  ///
+  /// In ko, this message translates to:
+  /// **'냉장고 외부 닦기'**
+  String get dfScopeFridge;
+
+  /// No description provided for @dfScopeTiles.
+  ///
+  /// In ko, this message translates to:
+  /// **'욕실 바닥·벽 타일 청소'**
+  String get dfScopeTiles;
+
+  /// No description provided for @dfScopeMold.
+  ///
+  /// In ko, this message translates to:
+  /// **'곰팡이·물때 제거'**
+  String get dfScopeMold;
+
+  /// No description provided for @dfScopeHood.
+  ///
+  /// In ko, this message translates to:
+  /// **'후드·가스레인지 기름때 제거'**
+  String get dfScopeHood;
+
+  /// No description provided for @dfScopeCabinets.
+  ///
+  /// In ko, this message translates to:
+  /// **'붙박이장·수납장 내부 청소'**
+  String get dfScopeCabinets;
+
+  /// No description provided for @dfScopeWindows.
+  ///
+  /// In ko, this message translates to:
+  /// **'창틀·샷시 먼지 제거'**
+  String get dfScopeWindows;
+
+  /// No description provided for @dfScopeShoes.
+  ///
+  /// In ko, this message translates to:
+  /// **'신발장 내부 청소'**
+  String get dfScopeShoes;
+
+  /// No description provided for @dfScopeEntrance.
+  ///
+  /// In ko, this message translates to:
+  /// **'현관 바닥 청소'**
+  String get dfScopeEntrance;
+
+  /// No description provided for @dfBasicService.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 서비스'**
+  String get dfBasicService;
+
+  /// No description provided for @dfNotProvided.
+  ///
+  /// In ko, this message translates to:
+  /// **'제공하지 않는 서비스'**
+  String get dfNotProvided;
+
+  /// No description provided for @dfNp1.
+  ///
+  /// In ko, this message translates to:
+  /// **'세탁 및 빨래 정리'**
+  String get dfNp1;
+
+  /// No description provided for @dfNp2.
+  ///
+  /// In ko, this message translates to:
+  /// **'손이 닿지 않는 곳'**
+  String get dfNp2;
+
+  /// No description provided for @dfNp3.
+  ///
+  /// In ko, this message translates to:
+  /// **'특수 청소'**
+  String get dfNp3;
+
+  /// No description provided for @dfNp4.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 외의 가사 업무'**
+  String get dfNp4;
+
+  /// No description provided for @dfRoom.
+  ///
+  /// In ko, this message translates to:
+  /// **'방'**
+  String get dfRoom;
+
+  /// No description provided for @dfKitchen.
+  ///
+  /// In ko, this message translates to:
+  /// **'주방'**
+  String get dfKitchen;
+
+  /// No description provided for @dfBath.
+  ///
+  /// In ko, this message translates to:
+  /// **'화장실'**
+  String get dfBath;
+
+  /// No description provided for @dfEntrance.
+  ///
+  /// In ko, this message translates to:
+  /// **'현관'**
+  String get dfEntrance;
+
+  /// No description provided for @dfEntranceTrash.
+  ///
+  /// In ko, this message translates to:
+  /// **'현관/쓰레기'**
+  String get dfEntranceTrash;
+
+  /// No description provided for @dfScopeMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사/입주 청소'**
+  String get dfScopeMove;
+
+  /// No description provided for @dfScopeBathKitchen.
+  ///
+  /// In ko, this message translates to:
+  /// **'화장실·주방'**
+  String get dfScopeBathKitchen;
+
+  /// No description provided for @dfDuration.
+  ///
+  /// In ko, this message translates to:
+  /// **'소요 시간'**
+  String get dfDuration;
+
+  /// No description provided for @dfPriceVat.
+  ///
+  /// In ko, this message translates to:
+  /// **'금액 (VAT 포함)'**
+  String get dfPriceVat;
+
+  /// No description provided for @dfStudioNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ {max}평을 넘는 집은 원룸 청소를 예약할 수 없어요. 상담으로 맞는 서비스를 안내해 드려요.'**
+  String dfStudioNote(String max);
+
+  /// No description provided for @dfBookNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약하기'**
+  String get dfBookNow;
+
+  /// No description provided for @dfMustCheck.
+  ///
+  /// In ko, this message translates to:
+  /// **'꼭 확인해 주세요'**
+  String get dfMustCheck;
+
+  /// No description provided for @dfAddressTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약할 주소를 선택해 주세요.'**
+  String get dfAddressTitle;
+
+  /// No description provided for @dfEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정'**
+  String get dfEdit;
+
+  /// No description provided for @dfStudioToast.
+  ///
+  /// In ko, this message translates to:
+  /// **'{service}는 {max}평 이하만 가능해요. {label}({size}평)는 상담으로 안내해 드릴게요.'**
+  String dfStudioToast(String service, String max, String label, String size);
 
   /// No description provided for @dfOverPyeong.
   ///
@@ -3565,11 +3757,161 @@ abstract class T {
   /// **'{max}평 이하만 예약할 수 있어요'**
   String dfOverPyeong(String max);
 
-  /// No description provided for @dfPrepCount.
+  /// No description provided for @dfDateTitle.
   ///
   /// In ko, this message translates to:
-  /// **'{done}/{total} 준비 완료'**
-  String dfPrepCount(String done, String total);
+  /// **'날짜/시간을 선택해 주세요.'**
+  String get dfDateTitle;
+
+  /// No description provided for @dfManagerIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'교육받은 매니저님이 방문합니다.'**
+  String get dfManagerIntro;
+
+  /// No description provided for @dfServiceTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 시간'**
+  String get dfServiceTime;
+
+  /// No description provided for @dfChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'변경'**
+  String get dfChange;
+
+  /// No description provided for @dfVisitDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 일'**
+  String get dfVisitDay;
+
+  /// No description provided for @dfVisitTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 시간'**
+  String get dfVisitTime;
+
+  /// No description provided for @dfSelect.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택'**
+  String get dfSelect;
+
+  /// No description provided for @dfSlotClosed.
+  ///
+  /// In ko, this message translates to:
+  /// **'마감'**
+  String get dfSlotClosed;
+
+  /// No description provided for @dfSelectDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택 완료'**
+  String get dfSelectDone;
+
+  /// No description provided for @dfDateNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜와 시간에 따라 금액이 추가될 수 있어요.'**
+  String get dfDateNote;
+
+  /// No description provided for @dfAmVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'오전 방문'**
+  String get dfAmVisit;
+
+  /// No description provided for @dfPmVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'오후 방문'**
+  String get dfPmVisit;
+
+  /// No description provided for @dfArrive.
+  ///
+  /// In ko, this message translates to:
+  /// **'{range} 도착'**
+  String dfArrive(String range);
+
+  /// No description provided for @dfPrepHeader.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님\n서비스 전 꼭 준비해 주세요!'**
+  String dfPrepHeader(String name);
+
+  /// No description provided for @dfPrepTools.
+  ///
+  /// In ko, this message translates to:
+  /// **'준비할 청소도구'**
+  String get dfPrepTools;
+
+  /// No description provided for @dfNoTools.
+  ///
+  /// In ko, this message translates to:
+  /// **'도구가 없으신가요?'**
+  String get dfNoTools;
+
+  /// No description provided for @dfNoToolsBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담팀에 준비물을 물어보세요'**
+  String get dfNoToolsBody;
+
+  /// No description provided for @dfPayTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인 및 결제 수단을 선택해 주세요.'**
+  String get dfPayTitle;
+
+  /// No description provided for @dfPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트'**
+  String get dfPoints;
+
+  /// No description provided for @dfPointsFirst.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 우선 사용'**
+  String get dfPointsFirst;
+
+  /// No description provided for @dfPointsOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'미적용'**
+  String get dfPointsOff;
+
+  /// No description provided for @dfPointsNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 포인트가 없어요'**
+  String get dfPointsNone;
+
+  /// No description provided for @dfPayMethod.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제수단'**
+  String get dfPayMethod;
+
+  /// No description provided for @dfBaseAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본금액 ({duration})'**
+  String dfBaseAmount(String duration);
+
+  /// No description provided for @dfCouponDiscount.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰 할인'**
+  String get dfCouponDiscount;
+
+  /// No description provided for @dfDue.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 예정 금액'**
+  String get dfDue;
 
   /// No description provided for @dfPgNotice.
   ///
@@ -3583,64 +3925,154 @@ abstract class T {
   /// **'취소·환불 규정'**
   String get dfRefundPolicy;
 
+  /// No description provided for @dfSummaryService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스'**
+  String get dfSummaryService;
+
+  /// No description provided for @dfSummaryWhen.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 일시'**
+  String get dfSummaryWhen;
+
+  /// No description provided for @dfSummaryAddress.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소'**
+  String get dfSummaryAddress;
+
+  /// No description provided for @dfSummaryPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 금액'**
+  String get dfSummaryPaid;
+
+  /// No description provided for @luggage_not_unpacked.
+  ///
+  /// In ko, this message translates to:
+  /// **'이삿짐을 풀지 않은 상태'**
+  String get luggage_not_unpacked;
+
+  /// No description provided for @dfReviewsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'생생한 이용 후기를 확인하세요.'**
+  String get dfReviewsTitle;
+
+  /// No description provided for @dfBasicBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택한 내용은 서비스에 필요한 필수정보예요. 서비스 가격에 영향을 줄 수 있어요.'**
+  String get dfBasicBody;
+
   /// No description provided for @building_commercial.
   ///
   /// In ko, this message translates to:
-  /// **'상가'**
+  /// **'상업공간'**
   String get building_commercial;
 
-  /// No description provided for @dfSafeBooking.
+  /// No description provided for @dfBldVillaHouse.
   ///
   /// In ko, this message translates to:
-  /// **'안심 예약'**
-  String get dfSafeBooking;
+  /// **'빌라/주택'**
+  String get dfBldVillaHouse;
 
-  /// No description provided for @dfSafeBookingBody.
+  /// No description provided for @dfLayoutOneHalf.
   ///
   /// In ko, this message translates to:
-  /// **'상담팀이 확인한 뒤 채팅으로 확정 견적을 보내드려요'**
-  String get dfSafeBookingBody;
+  /// **'1.5룸 (분리형 원룸 / 거실+방 1개)'**
+  String get dfLayoutOneHalf;
 
-  /// No description provided for @dfEstBase.
+  /// No description provided for @dfLayoutTwo.
   ///
   /// In ko, this message translates to:
-  /// **'기본 요금'**
-  String get dfEstBase;
+  /// **'거실+방 2개'**
+  String get dfLayoutTwo;
 
-  /// No description provided for @dfEstExtras.
+  /// No description provided for @dfLayoutThree.
   ///
   /// In ko, this message translates to:
-  /// **'추가 공간·옵션'**
-  String get dfEstExtras;
+  /// **'거실+방 3개'**
+  String get dfLayoutThree;
 
-  /// No description provided for @dfEstSurcharge.
+  /// No description provided for @dfLayoutFour.
   ///
   /// In ko, this message translates to:
-  /// **'청소 유형·짐 할증 {pct}%'**
-  String dfEstSurcharge(String pct);
+  /// **'거실+방 4개 이상'**
+  String get dfLayoutFour;
 
-  /// No description provided for @dfEstPeak.
+  /// No description provided for @dfDuplexTitle.
   ///
   /// In ko, this message translates to:
-  /// **'주말·성수기 할증 {pct}%'**
-  String dfEstPeak(String pct);
+  /// **'복층 유무'**
+  String get dfDuplexTitle;
 
-  /// No description provided for @dfEstAddons.
+  /// No description provided for @dfNone.
   ///
   /// In ko, this message translates to:
-  /// **'에어컨 청소 추가 ({pct}% 할인)'**
-  String dfEstAddons(String pct);
+  /// **'없음'**
+  String get dfNone;
+
+  /// No description provided for @dfHas.
+  ///
+  /// In ko, this message translates to:
+  /// **'있음'**
+  String get dfHas;
+
+  /// No description provided for @dfPleaseSelect.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택해 주세요'**
+  String get dfPleaseSelect;
+
+  /// No description provided for @dfBathCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'화장실 개수'**
+  String get dfBathCount;
+
+  /// No description provided for @dfBalconyCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'베란다/다용도실 개수'**
+  String get dfBalconyCount;
+
+  /// No description provided for @dfCountN.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}개'**
+  String dfCountN(String n);
+
+  /// No description provided for @dfElevatorTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'엘리베이터 유무'**
+  String get dfElevatorTitle;
+
+  /// No description provided for @dfFloor3.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 받을 공간이 3층 이상입니다'**
+  String get dfFloor3;
 
   /// No description provided for @dfAcAddonBanner.
   ///
   /// In ko, this message translates to:
-  /// **'이사 청소와 에어컨 청소를 함께하면 할인돼요'**
+  /// **'에어컨 청소도 함께하면 할인돼요'**
   String get dfAcAddonBanner;
+
+  /// No description provided for @dfAcAddonBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 집 에어컨까지 깨끗하게 맞이하세요.'**
+  String get dfAcAddonBody;
 
   /// No description provided for @dfAcAddonAdd.
   ///
   /// In ko, this message translates to:
-  /// **'에어컨 추가'**
+  /// **'추가하기'**
   String get dfAcAddonAdd;
 
   /// No description provided for @dfAcAddonAdded.
@@ -3655,17 +4087,275 @@ abstract class T {
   /// **'할인된 금액은 견적에서 확인할 수 있어요'**
   String get dfAcAddonNote;
 
-  /// No description provided for @f_ac_addon_discount_bps.
+  /// No description provided for @dfEstAddons.
   ///
   /// In ko, this message translates to:
-  /// **'에어컨 추가 할인 (bps, 1000 = 10%)'**
-  String get f_ac_addon_discount_bps;
+  /// **'에어컨 청소 추가 ({pct}% 할인)'**
+  String dfEstAddons(String pct);
 
   /// No description provided for @dfCountUnits.
   ///
   /// In ko, this message translates to:
   /// **'{count}대'**
   String dfCountUnits(String count);
+
+  /// No description provided for @f_ac_addon_discount_bps.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 추가 할인 (bps, 1000 = 10%)'**
+  String get f_ac_addon_discount_bps;
+
+  /// No description provided for @dfQuoteMethodTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 방식을 확인하고\n예약을 진행해 주세요.'**
+  String get dfQuoteMethodTitle;
+
+  /// No description provided for @dfSafeBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'다해 안심예약'**
+  String get dfSafeBooking;
+
+  /// No description provided for @dfRecommended.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천!'**
+  String get dfRecommended;
+
+  /// No description provided for @dfEstimateVat.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 견적 (VAT 포함) · 상담 후 변경될 수 있어요'**
+  String get dfEstimateVat;
+
+  /// No description provided for @dfBenefit1.
+  ///
+  /// In ko, this message translates to:
+  /// **'교육 인증을 받은 전문 청소팀이 진행'**
+  String get dfBenefit1;
+
+  /// No description provided for @dfBenefit2.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 후 7일 무상 AS 제공'**
+  String get dfBenefit2;
+
+  /// No description provided for @dfBenefit3.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 채팅으로 진행 상황 실시간 확인'**
+  String get dfBenefit3;
+
+  /// No description provided for @dfBenefit4.
+  ///
+  /// In ko, this message translates to:
+  /// **'친환경 세제 사용'**
+  String get dfBenefit4;
+
+  /// No description provided for @dfBenefit5.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 작성 시 포인트 증정'**
+  String get dfBenefit5;
+
+  /// No description provided for @dfDepositNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ 지금은 결제되지 않아요. 상담으로 금액을 확정한 뒤 예약금 {pct}%를 결제하면 예약이 확정돼요.'**
+  String dfDepositNote(String pct);
+
+  /// No description provided for @dfReviewHeader.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date}\n예약을 완료해 주세요.'**
+  String dfReviewHeader(String date);
+
+  /// No description provided for @dfVisitTimeLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 시간 : {slot}'**
+  String dfVisitTimeLine(String slot);
+
+  /// No description provided for @dfReviewNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ 예약 신청 후 상담 채팅방이 열려요. 상담팀과 견적·일정을 확정한 뒤 예약금을 결제하면 예약이 확정돼요.'**
+  String get dfReviewNote;
+
+  /// No description provided for @dfHomeInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 정보'**
+  String get dfHomeInfo;
+
+  /// No description provided for @dfName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get dfName;
+
+  /// No description provided for @dfBasicInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 정보'**
+  String get dfBasicInfo;
+
+  /// No description provided for @dfCleanType.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 유형'**
+  String get dfCleanType;
+
+  /// No description provided for @dfBuilding.
+  ///
+  /// In ko, this message translates to:
+  /// **'건물'**
+  String get dfBuilding;
+
+  /// No description provided for @dfSpaceInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'공간 정보'**
+  String get dfSpaceInfo;
+
+  /// No description provided for @dfPayInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 정보'**
+  String get dfPayInfo;
+
+  /// No description provided for @dfEstAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 서비스 금액'**
+  String get dfEstAmount;
+
+  /// No description provided for @dfDepositOnConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금 (확정 시 결제)'**
+  String get dfDepositOnConfirm;
+
+  /// No description provided for @dfNotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'유의사항'**
+  String get dfNotes;
+
+  /// No description provided for @dfNote1.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 중이거나 방문 2일 전까지는 무료로 취소할 수 있어요.'**
+  String get dfNote1;
+
+  /// No description provided for @dfNote2.
+  ///
+  /// In ko, this message translates to:
+  /// **'최종 금액은 상담 채팅에서 확정되며, 잔금은 서비스 후 결제해요.'**
+  String get dfNote2;
+
+  /// No description provided for @dfNote3.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 당일 연락이 닿지 않아 입실하지 못하면 30분 대기 후 철수해요. 출입 방법을 미리 확인해 주세요.'**
+  String get dfNote3;
+
+  /// No description provided for @dfNoteWarn.
+  ///
+  /// In ko, this message translates to:
+  /// **'매니저가 직거래를 요구하면 피해가 생길 수 있어요. 바로 고객센터로 알려주세요.'**
+  String get dfNoteWarn;
+
+  /// No description provided for @dfSubmitRequest.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 신청하기'**
+  String get dfSubmitRequest;
+
+  /// No description provided for @dfRequested.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담을 요청했습니다.'**
+  String get dfRequested;
+
+  /// No description provided for @dfStatusNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ 상담팀이 채팅으로 확정 견적을 보내드려요. 예약금을 결제하면 예약이 확정됩니다.'**
+  String get dfStatusNote;
+
+  /// No description provided for @dfPayInfoBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 금액은 상담 후 변경될 수 있어요. 예약금은 확정 금액의 {pct}%예요.'**
+  String dfPayInfoBody(String pct);
+
+  /// No description provided for @dfQuoteMethod.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 방식'**
+  String get dfQuoteMethod;
+
+  /// No description provided for @dfDeposit.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금'**
+  String get dfDeposit;
+
+  /// No description provided for @dfAwaitingPay.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 대기'**
+  String get dfAwaitingPay;
+
+  /// No description provided for @dfServiceInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 정보'**
+  String get dfServiceInfo;
+
+  /// No description provided for @dfSpace.
+  ///
+  /// In ko, this message translates to:
+  /// **'공간'**
+  String get dfSpace;
+
+  /// No description provided for @dfChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 채팅'**
+  String get dfChat;
+
+  /// No description provided for @dfRequestDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 신청 완료'**
+  String get dfRequestDone;
+
+  /// No description provided for @dfRequestDoneBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 채팅방이 열렸어요.\n상담팀이 확정 견적을 보내드릴게요.'**
+  String get dfRequestDoneBody;
+
+  /// No description provided for @dfAcUpsell.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사 후 에어컨도 청소할까요?'**
+  String get dfAcUpsell;
+
+  /// No description provided for @dfAcUpsellCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 청소 예약하기'**
+  String get dfAcUpsellCta;
+
+  /// No description provided for @dfViewChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 채팅 보기'**
+  String get dfViewChat;
 
   /// No description provided for @themeTitle.
   ///

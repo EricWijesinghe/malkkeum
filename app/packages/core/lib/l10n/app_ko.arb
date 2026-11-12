@@ -865,11 +865,66 @@
  "hhElevator": "엘리베이터 있음",
  "hhNotes": "메모",
  "hhHint": "주소에 저장되고, 예약마다 바꿀 수 있어요.",
- "dfScopeDusting": "먼지 털기",
- "dfScopeVacuum": "청소기",
- "dfScopeDishes": "설거지",
- "dfScopeBathroom": "화장실 청소",
- "dfScopeTrash": "쓰레기 배출",
+ "dfScopeDusting": "가구 위 먼지 제거",
+ "dfScopeVacuum": "청소기 및 막대걸레로 바닥 청소",
+ "dfScopeDishes": "식기 설거지 및 싱크볼 세척",
+ "dfScopeBathroom": "수전, 세면대, 변기 내/외부 청소",
+ "dfScopeTrash": "분리수거 및 쓰레기 배출",
+ "dfScopeBedding": "침구 정리정돈",
+ "dfScopeTidy": "물건 제자리 정리정돈",
+ "dfScopeStove": "가스레인지·상판 닦기",
+ "dfScopeFridge": "냉장고 외부 닦기",
+ "dfScopeTiles": "욕실 바닥·벽 타일 청소",
+ "dfScopeMold": "곰팡이·물때 제거",
+ "dfScopeHood": "후드·가스레인지 기름때 제거",
+ "dfScopeCabinets": "붙박이장·수납장 내부 청소",
+ "dfScopeWindows": "창틀·샷시 먼지 제거",
+ "dfScopeShoes": "신발장 내부 청소",
+ "dfScopeEntrance": "현관 바닥 청소",
+ "dfBasicService": "기본 서비스",
+ "dfNotProvided": "제공하지 않는 서비스",
+ "dfNp1": "세탁 및 빨래 정리",
+ "dfNp2": "손이 닿지 않는 곳",
+ "dfNp3": "특수 청소",
+ "dfNp4": "청소 외의 가사 업무",
+ "dfRoom": "방",
+ "dfKitchen": "주방",
+ "dfBath": "화장실",
+ "dfEntrance": "현관",
+ "dfEntranceTrash": "현관/쓰레기",
+ "dfScopeMove": "이사/입주 청소",
+ "dfScopeBathKitchen": "화장실·주방",
+ "dfDuration": "소요 시간",
+ "dfPriceVat": "금액 (VAT 포함)",
+ "dfStudioNote": "※ {max}평을 넘는 집은 원룸 청소를 예약할 수 없어요. 상담으로 맞는 서비스를 안내해 드려요.",
+ "@dfStudioNote": {
+  "placeholders": {
+   "max": {
+    "type": "String"
+   }
+  }
+ },
+ "dfBookNow": "예약하기",
+ "dfMustCheck": "꼭 확인해 주세요",
+ "dfAddressTitle": "예약할 주소를 선택해 주세요.",
+ "dfEdit": "수정",
+ "dfStudioToast": "{service}는 {max}평 이하만 가능해요. {label}({size}평)는 상담으로 안내해 드릴게요.",
+ "@dfStudioToast": {
+  "placeholders": {
+   "service": {
+    "type": "String"
+   },
+   "max": {
+    "type": "String"
+   },
+   "label": {
+    "type": "String"
+   },
+   "size": {
+    "type": "String"
+   }
+  }
+ },
  "dfOverPyeong": "{max}평 이하만 예약할 수 있어요",
  "@dfOverPyeong": {
   "placeholders": {
@@ -878,50 +933,87 @@
    }
   }
  },
- "dfPrepCount": "{done}/{total} 준비 완료",
- "@dfPrepCount": {
+ "dfDateTitle": "날짜/시간을 선택해 주세요.",
+ "dfManagerIntro": "교육받은 매니저님이 방문합니다.",
+ "dfServiceTime": "서비스 시간",
+ "dfChange": "변경",
+ "dfVisitDay": "방문 일",
+ "dfVisitTime": "방문 시간",
+ "dfSelect": "선택",
+ "dfSlotClosed": "마감",
+ "dfSelectDone": "선택 완료",
+ "dfDateNote": "날짜와 시간에 따라 금액이 추가될 수 있어요.",
+ "dfAmVisit": "오전 방문",
+ "dfPmVisit": "오후 방문",
+ "dfArrive": "{range} 도착",
+ "@dfArrive": {
   "placeholders": {
-   "done": {
-    "type": "String"
-   },
-   "total": {
+   "range": {
     "type": "String"
    }
   }
  },
+ "dfPrepHeader": "{name}님\n서비스 전 꼭 준비해 주세요!",
+ "@dfPrepHeader": {
+  "placeholders": {
+   "name": {
+    "type": "String"
+   }
+  }
+ },
+ "dfPrepTools": "준비할 청소도구",
+ "dfNoTools": "도구가 없으신가요?",
+ "dfNoToolsBody": "상담팀에 준비물을 물어보세요",
+ "dfPayTitle": "할인 및 결제 수단을 선택해 주세요.",
+ "dfPoints": "포인트",
+ "dfPointsFirst": "포인트 우선 사용",
+ "dfPointsOff": "미적용",
+ "dfPointsNone": "사용 가능한 포인트가 없어요",
+ "dfPayMethod": "결제수단",
+ "dfBaseAmount": "기본금액 ({duration})",
+ "@dfBaseAmount": {
+  "placeholders": {
+   "duration": {
+    "type": "String"
+   }
+  }
+ },
+ "dfCouponDiscount": "쿠폰 할인",
+ "dfDue": "결제 예정 금액",
  "dfPgNotice": "결제는 전자결제대행사(PG)를 통해 처리돼요. 결제하면 이용약관과 취소·환불 규정에 동의하는 것으로 봐요.",
  "dfRefundPolicy": "취소·환불 규정",
- "building_commercial": "상가",
- "dfSafeBooking": "안심 예약",
- "dfSafeBookingBody": "상담팀이 확인한 뒤 채팅으로 확정 견적을 보내드려요",
- "dfEstBase": "기본 요금",
- "dfEstExtras": "추가 공간·옵션",
- "dfEstSurcharge": "청소 유형·짐 할증 {pct}%",
- "@dfEstSurcharge": {
+ "dfSummaryService": "서비스",
+ "dfSummaryWhen": "방문 일시",
+ "dfSummaryAddress": "주소",
+ "dfSummaryPaid": "결제 금액",
+ "luggage_not_unpacked": "이삿짐을 풀지 않은 상태",
+ "dfReviewsTitle": "생생한 이용 후기를 확인하세요.",
+ "dfBasicBody": "선택한 내용은 서비스에 필요한 필수정보예요. 서비스 가격에 영향을 줄 수 있어요.",
+ "building_commercial": "상업공간",
+ "dfBldVillaHouse": "빌라/주택",
+ "dfLayoutOneHalf": "1.5룸 (분리형 원룸 / 거실+방 1개)",
+ "dfLayoutTwo": "거실+방 2개",
+ "dfLayoutThree": "거실+방 3개",
+ "dfLayoutFour": "거실+방 4개 이상",
+ "dfDuplexTitle": "복층 유무",
+ "dfNone": "없음",
+ "dfHas": "있음",
+ "dfPleaseSelect": "선택해 주세요",
+ "dfBathCount": "화장실 개수",
+ "dfBalconyCount": "베란다/다용도실 개수",
+ "dfCountN": "{n}개",
+ "@dfCountN": {
   "placeholders": {
-   "pct": {
+   "n": {
     "type": "String"
    }
   }
  },
- "dfEstPeak": "주말·성수기 할증 {pct}%",
- "@dfEstPeak": {
-  "placeholders": {
-   "pct": {
-    "type": "String"
-   }
-  }
- },
- "dfEstAddons": "에어컨 청소 추가 ({pct}% 할인)",
- "@dfEstAddons": {
-  "placeholders": {
-   "pct": {
-    "type": "String"
-   }
-  }
- },
- "dfAcAddonBanner": "이사 청소와 에어컨 청소를 함께하면 할인돼요",
- "dfAcAddonAdd": "에어컨 추가",
+ "dfElevatorTitle": "엘리베이터 유무",
+ "dfFloor3": "서비스 받을 공간이 3층 이상입니다",
+ "dfAcAddonBanner": "에어컨 청소도 함께하면 할인돼요",
+ "dfAcAddonBody": "새 집 에어컨까지 깨끗하게 맞이하세요.",
+ "dfAcAddonAdd": "추가하기",
  "dfAcAddonAdded": "에어컨 {count}대 추가됨",
  "@dfAcAddonAdded": {
   "placeholders": {
@@ -931,7 +1023,14 @@
   }
  },
  "dfAcAddonNote": "할인된 금액은 견적에서 확인할 수 있어요",
- "f_ac_addon_discount_bps": "에어컨 추가 할인 (bps, 1000 = 10%)",
+ "dfEstAddons": "에어컨 청소 추가 ({pct}% 할인)",
+ "@dfEstAddons": {
+  "placeholders": {
+   "pct": {
+    "type": "String"
+   }
+  }
+ },
  "dfCountUnits": "{count}대",
  "@dfCountUnits": {
   "placeholders": {
@@ -940,6 +1039,77 @@
    }
   }
  },
+ "f_ac_addon_discount_bps": "에어컨 추가 할인 (bps, 1000 = 10%)",
+ "dfQuoteMethodTitle": "견적 방식을 확인하고\n예약을 진행해 주세요.",
+ "dfSafeBooking": "다해 안심예약",
+ "dfRecommended": "추천!",
+ "dfEstimateVat": "예상 견적 (VAT 포함) · 상담 후 변경될 수 있어요",
+ "dfBenefit1": "교육 인증을 받은 전문 청소팀이 진행",
+ "dfBenefit2": "서비스 후 7일 무상 AS 제공",
+ "dfBenefit3": "상담 채팅으로 진행 상황 실시간 확인",
+ "dfBenefit4": "친환경 세제 사용",
+ "dfBenefit5": "후기 작성 시 포인트 증정",
+ "dfDepositNote": "※ 지금은 결제되지 않아요. 상담으로 금액을 확정한 뒤 예약금 {pct}%를 결제하면 예약이 확정돼요.",
+ "@dfDepositNote": {
+  "placeholders": {
+   "pct": {
+    "type": "String"
+   }
+  }
+ },
+ "dfReviewHeader": "{date}\n예약을 완료해 주세요.",
+ "@dfReviewHeader": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "dfVisitTimeLine": "방문 시간 : {slot}",
+ "@dfVisitTimeLine": {
+  "placeholders": {
+   "slot": {
+    "type": "String"
+   }
+  }
+ },
+ "dfReviewNote": "※ 예약 신청 후 상담 채팅방이 열려요. 상담팀과 견적·일정을 확정한 뒤 예약금을 결제하면 예약이 확정돼요.",
+ "dfHomeInfo": "집 정보",
+ "dfName": "이름",
+ "dfBasicInfo": "기본 정보",
+ "dfCleanType": "청소 유형",
+ "dfBuilding": "건물",
+ "dfSpaceInfo": "공간 정보",
+ "dfPayInfo": "결제 정보",
+ "dfEstAmount": "예상 서비스 금액",
+ "dfDepositOnConfirm": "예약금 (확정 시 결제)",
+ "dfNotes": "유의사항",
+ "dfNote1": "상담 중이거나 방문 2일 전까지는 무료로 취소할 수 있어요.",
+ "dfNote2": "최종 금액은 상담 채팅에서 확정되며, 잔금은 서비스 후 결제해요.",
+ "dfNote3": "방문 당일 연락이 닿지 않아 입실하지 못하면 30분 대기 후 철수해요. 출입 방법을 미리 확인해 주세요.",
+ "dfNoteWarn": "매니저가 직거래를 요구하면 피해가 생길 수 있어요. 바로 고객센터로 알려주세요.",
+ "dfSubmitRequest": "예약 신청하기",
+ "dfRequested": "상담을 요청했습니다.",
+ "dfStatusNote": "※ 상담팀이 채팅으로 확정 견적을 보내드려요. 예약금을 결제하면 예약이 확정됩니다.",
+ "dfPayInfoBody": "서비스 금액은 상담 후 변경될 수 있어요. 예약금은 확정 금액의 {pct}%예요.",
+ "@dfPayInfoBody": {
+  "placeholders": {
+   "pct": {
+    "type": "String"
+   }
+  }
+ },
+ "dfQuoteMethod": "견적 방식",
+ "dfDeposit": "예약금",
+ "dfAwaitingPay": "결제 대기",
+ "dfServiceInfo": "서비스 정보",
+ "dfSpace": "공간",
+ "dfChat": "상담 채팅",
+ "dfRequestDone": "예약 신청 완료",
+ "dfRequestDoneBody": "상담 채팅방이 열렸어요.\n상담팀이 확정 견적을 보내드릴게요.",
+ "dfAcUpsell": "이사 후 에어컨도 청소할까요?",
+ "dfAcUpsellCta": "에어컨 청소 예약하기",
+ "dfViewChat": "상담 채팅 보기",
  "themeTitle": "테마",
  "themeDark": "다크",
  "themeLight": "라이트",
