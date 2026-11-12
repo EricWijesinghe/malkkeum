@@ -158,8 +158,9 @@ void main() {
     }
     for (final e in Icon3DRegistry.specs.entries) {
       final alias = e.value.alias;
-      if (alias != null)
+      if (alias != null) {
         expect(Icon3DRegistry.has(alias), isTrue, reason: e.key);
+      }
     }
     expect(Icon3DRegistry.assetFor('nav_home'), 'assets/icons3d/nav_home.webp');
     expect(

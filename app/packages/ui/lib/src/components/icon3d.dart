@@ -67,6 +67,7 @@ class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
       _scale.value = 1;
       return;
     }
+    if (_scale.value == _target && !_scale.isAnimating) return;
     _scale.animateWith(
       SpringSimulation(
         Motion.iconBounce,
