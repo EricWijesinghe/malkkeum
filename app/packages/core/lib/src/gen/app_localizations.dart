@@ -3529,6 +3529,144 @@ abstract class T {
   /// **'주소에 저장되고, 예약마다 바꿀 수 있어요.'**
   String get hhHint;
 
+  /// No description provided for @dfScopeDusting.
+  ///
+  /// In ko, this message translates to:
+  /// **'먼지 털기'**
+  String get dfScopeDusting;
+
+  /// No description provided for @dfScopeVacuum.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소기'**
+  String get dfScopeVacuum;
+
+  /// No description provided for @dfScopeDishes.
+  ///
+  /// In ko, this message translates to:
+  /// **'설거지'**
+  String get dfScopeDishes;
+
+  /// No description provided for @dfScopeBathroom.
+  ///
+  /// In ko, this message translates to:
+  /// **'화장실 청소'**
+  String get dfScopeBathroom;
+
+  /// No description provided for @dfScopeTrash.
+  ///
+  /// In ko, this message translates to:
+  /// **'쓰레기 배출'**
+  String get dfScopeTrash;
+
+  /// No description provided for @dfOverPyeong.
+  ///
+  /// In ko, this message translates to:
+  /// **'{max}평 이하만 예약할 수 있어요'**
+  String dfOverPyeong(String max);
+
+  /// No description provided for @dfPrepCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{done}/{total} 준비 완료'**
+  String dfPrepCount(String done, String total);
+
+  /// No description provided for @dfPgNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제는 전자결제대행사(PG)를 통해 처리돼요. 결제하면 이용약관과 취소·환불 규정에 동의하는 것으로 봐요.'**
+  String get dfPgNotice;
+
+  /// No description provided for @dfRefundPolicy.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소·환불 규정'**
+  String get dfRefundPolicy;
+
+  /// No description provided for @building_commercial.
+  ///
+  /// In ko, this message translates to:
+  /// **'상가'**
+  String get building_commercial;
+
+  /// No description provided for @dfSafeBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'안심 예약'**
+  String get dfSafeBooking;
+
+  /// No description provided for @dfSafeBookingBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담팀이 확인한 뒤 채팅으로 확정 견적을 보내드려요'**
+  String get dfSafeBookingBody;
+
+  /// No description provided for @dfEstBase.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 요금'**
+  String get dfEstBase;
+
+  /// No description provided for @dfEstExtras.
+  ///
+  /// In ko, this message translates to:
+  /// **'추가 공간·옵션'**
+  String get dfEstExtras;
+
+  /// No description provided for @dfEstSurcharge.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 유형·짐 할증 {pct}%'**
+  String dfEstSurcharge(String pct);
+
+  /// No description provided for @dfEstPeak.
+  ///
+  /// In ko, this message translates to:
+  /// **'주말·성수기 할증 {pct}%'**
+  String dfEstPeak(String pct);
+
+  /// No description provided for @dfEstAddons.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 청소 추가 ({pct}% 할인)'**
+  String dfEstAddons(String pct);
+
+  /// No description provided for @dfAcAddonBanner.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사 청소와 에어컨 청소를 함께하면 할인돼요'**
+  String get dfAcAddonBanner;
+
+  /// No description provided for @dfAcAddonAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 추가'**
+  String get dfAcAddonAdd;
+
+  /// No description provided for @dfAcAddonAdded.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 {count}대 추가됨'**
+  String dfAcAddonAdded(String count);
+
+  /// No description provided for @dfAcAddonNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인된 금액은 견적에서 확인할 수 있어요'**
+  String get dfAcAddonNote;
+
+  /// No description provided for @f_ac_addon_discount_bps.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 추가 할인 (bps, 1000 = 10%)'**
+  String get f_ac_addon_discount_bps;
+
+  /// No description provided for @dfCountUnits.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}대'**
+  String dfCountUnits(String count);
+
   /// No description provided for @themeTitle.
   ///
   /// In ko, this message translates to:

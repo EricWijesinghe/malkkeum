@@ -1842,6 +1842,93 @@ class TMn extends T {
       'Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.';
 
   @override
+  String get dfScopeDusting => 'Тоос арчих';
+
+  @override
+  String get dfScopeVacuum => 'Тоос сорох';
+
+  @override
+  String get dfScopeDishes => 'Аяга таваг угаах';
+
+  @override
+  String get dfScopeBathroom => 'Угаалгын өрөө';
+
+  @override
+  String get dfScopeTrash => 'Хог гаргах';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Зөвхөн $max pyeong хүртэлх байр';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$total-с $done бэлэн';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Төлбөрийг төлбөрийн үйлчилгээ үзүүлэгч (PG) боловсруулна. Төлснөөр та үйлчилгээний нөхцөл болон цуцлалт, буцаан олголтын журмыг зөвшөөрнө.';
+
+  @override
+  String get dfRefundPolicy => 'Цуцлалт ба буцаан олголтын журам';
+
+  @override
+  String get building_commercial => 'Худалдааны';
+
+  @override
+  String get dfSafeBooking => 'Найдвартай захиалга';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Манай баг шалгаад эцсийн үнийн саналыг чатаар илгээнэ';
+
+  @override
+  String get dfEstBase => 'Үндсэн үнэ';
+
+  @override
+  String get dfEstExtras => 'Нэмэлт өрөө ба сонголт';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Төрөл ба ачааны нэмэгдэл $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Ачаалалтай цагийн нэмэгдэл $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Агааржуулагч цэвэрлэгээ нэмэх ($pct% хямдрал)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Нүүлтийн цэвэрлэгээнд агааржуулагчийн цэвэрлэгээ нэмбэл хямдрална';
+
+  @override
+  String get dfAcAddonAdd => 'Агааржуулагч нэмэх';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count агааржуулагч нэмэгдсэн';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Хямдарсан үнэ үнийн санал дээр харагдана';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Агааржуулагч нэмэлтийн хямдрал (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count ширхэг';
+  }
+
+  @override
   String get themeTitle => 'Загвар';
 
   @override

@@ -545,6 +545,7 @@ fn quote_answers(c: &mut Ctx<'_>, service: &str, size: i16) -> QuoteAnswers {
         balconies: c.range(0, 2) as u8,
         elevator: c.chance(0.7),
         floor_3_or_higher: c.chance(0.5),
+        ac_addons: vec![],
     }
 }
 

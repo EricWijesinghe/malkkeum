@@ -169,6 +169,8 @@ pub(crate) async fn create_core(s: &AppState, user: Uuid, req: &CreateBooking) -
 async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared) -> ApiResult<Uuid> {
     // Anything needing its own pool connection is read before the slot lock is taken.
     let formula = load_formula(&s.db).await?;
+    let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
+    let addons = super::catalog::addon_lines(&s.db, &answers).await?;
     let mut tx = s.db.begin().await?;
     // Per-customer lock first: two concurrent requests cannot both pass the open-request count.
     sqlx::query("SELECT pg_advisory_xact_lock(hashtext($1))")
@@ -186,10 +188,9 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
     lock_slot(&mut tx, b.visit_date, b.start_hour).await?;
     let id = Uuid::now_v7();
     let number = next_number(&mut tx).await?;
-    let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
     let start = domain::peak::kst_to_utc(b.visit_date, u32::from(b.start_hour)).ok_or(ApiError::BadRequest("invalid_slot"))?;
     let peak = domain::peak::peak_surcharge(&load_peak_config(&s.db).await?, start);
-    let est = formula.estimate_with_peak(&answers, peak.bps)?;
+    let est = formula.estimate_with_addons(&answers, peak.bps, &addons)?;
     sqlx::query(
         "INSERT INTO bookings (id, number, user_id, service_code, address, district_code, visit_date, start_hour, status, answers, estimate, visit_notes, household, peak_surcharge)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,$9,$10,$11,$12,$13)",

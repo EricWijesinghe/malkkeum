@@ -1827,6 +1827,93 @@ class TEn extends T {
   String get hhHint => 'Saved to this address and editable per booking.';
 
   @override
+  String get dfScopeDusting => 'Dusting';
+
+  @override
+  String get dfScopeVacuum => 'Vacuuming';
+
+  @override
+  String get dfScopeDishes => 'Dishwashing';
+
+  @override
+  String get dfScopeBathroom => 'Bathroom';
+
+  @override
+  String get dfScopeTrash => 'Taking out trash';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Only homes up to $max pyeong';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$done of $total ready';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Payments are processed by a licensed payment gateway (PG). By paying you agree to the terms of service and the cancellation & refund policy.';
+
+  @override
+  String get dfRefundPolicy => 'Cancellation & refund policy';
+
+  @override
+  String get building_commercial => 'Commercial';
+
+  @override
+  String get dfSafeBooking => 'Safe booking';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Our team checks it and sends the final quote in chat';
+
+  @override
+  String get dfEstBase => 'Base price';
+
+  @override
+  String get dfEstExtras => 'Extra rooms & options';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Type & luggage surcharge $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Peak-time surcharge $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'AC cleaning add-on ($pct% off)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Add AC cleaning to your move clean for a discount';
+
+  @override
+  String get dfAcAddonAdd => 'Add AC cleaning';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count AC units added';
+  }
+
+  @override
+  String get dfAcAddonNote =>
+      'You\'ll see the discounted price in your estimate';
+
+  @override
+  String get f_ac_addon_discount_bps => 'AC add-on discount (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count units';
+  }
+
+  @override
   String get themeTitle => 'Theme';
 
   @override

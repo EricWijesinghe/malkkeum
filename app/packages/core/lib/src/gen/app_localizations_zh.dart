@@ -1792,6 +1792,89 @@ class TZh extends T {
   String get hhHint => '保存到该地址，每次预约可单独修改。';
 
   @override
+  String get dfScopeDusting => '除尘';
+
+  @override
+  String get dfScopeVacuum => '吸尘';
+
+  @override
+  String get dfScopeDishes => '洗碗';
+
+  @override
+  String get dfScopeBathroom => '卫生间清洁';
+
+  @override
+  String get dfScopeTrash => '倒垃圾';
+
+  @override
+  String dfOverPyeong(String max) {
+    return '仅限$max坪以下的房屋';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '已准备 $done/$total';
+  }
+
+  @override
+  String get dfPgNotice => '付款由电子支付代理机构(PG)处理。付款即表示您同意服务条款及取消与退款规定。';
+
+  @override
+  String get dfRefundPolicy => '取消与退款规定';
+
+  @override
+  String get building_commercial => '商铺';
+
+  @override
+  String get dfSafeBooking => '安心预约';
+
+  @override
+  String get dfSafeBookingBody => '咨询团队确认后会在聊天中发送最终报价';
+
+  @override
+  String get dfEstBase => '基础费用';
+
+  @override
+  String get dfEstExtras => '附加空间与选项';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return '清洁类型与行李加价 $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return '周末与旺季加价 $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return '加购空调清洁 (优惠$pct%)';
+  }
+
+  @override
+  String get dfAcAddonBanner => '搬家清洁加购空调清洁可享优惠';
+
+  @override
+  String get dfAcAddonAdd => '加购空调';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '已加购$count台空调';
+  }
+
+  @override
+  String get dfAcAddonNote => '优惠后的金额可在报价中查看';
+
+  @override
+  String get f_ac_addon_discount_bps => '空调加购优惠 (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count台';
+  }
+
+  @override
   String get themeTitle => '主题';
 
   @override

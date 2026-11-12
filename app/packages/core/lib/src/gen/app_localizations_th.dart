@@ -1830,6 +1830,91 @@ class TTh extends T {
   String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
 
   @override
+  String get dfScopeDusting => 'ปัดฝุ่น';
+
+  @override
+  String get dfScopeVacuum => 'ดูดฝุ่น';
+
+  @override
+  String get dfScopeDishes => 'ล้างจาน';
+
+  @override
+  String get dfScopeBathroom => 'ห้องน้ำ';
+
+  @override
+  String get dfScopeTrash => 'ทิ้งขยะ';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'เฉพาะบ้านไม่เกิน $max พยอง';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return 'พร้อมแล้ว $done/$total';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'การชำระเงินดำเนินการโดยผู้ให้บริการชำระเงิน (PG) เมื่อชำระเงิน ถือว่าคุณยอมรับข้อกำหนดการให้บริการและนโยบายการยกเลิกและคืนเงิน';
+
+  @override
+  String get dfRefundPolicy => 'นโยบายการยกเลิกและคืนเงิน';
+
+  @override
+  String get building_commercial => 'อาคารพาณิชย์';
+
+  @override
+  String get dfSafeBooking => 'จองอย่างอุ่นใจ';
+
+  @override
+  String get dfSafeBookingBody => 'ทีมงานจะตรวจสอบแล้วส่งราคาสุดท้ายทางแชท';
+
+  @override
+  String get dfEstBase => 'ราคาพื้นฐาน';
+
+  @override
+  String get dfEstExtras => 'ห้องและตัวเลือกเพิ่มเติม';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'ค่าบริการเพิ่มตามประเภทและสัมภาระ $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'ค่าบริการช่วงเวลาเร่งด่วน $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'เพิ่มล้างแอร์ (ลด $pct%)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'เพิ่มล้างแอร์พร้อมทำความสะอาดย้ายบ้านเพื่อรับส่วนลด';
+
+  @override
+  String get dfAcAddonAdd => 'เพิ่มแอร์';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'เพิ่มแอร์แล้ว $count เครื่อง';
+  }
+
+  @override
+  String get dfAcAddonNote => 'ดูราคาหลังหักส่วนลดได้ในใบประเมินราคา';
+
+  @override
+  String get f_ac_addon_discount_bps => 'ส่วนลดเพิ่มแอร์ (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count เครื่อง';
+  }
+
+  @override
   String get themeTitle => 'ธีม';
 
   @override

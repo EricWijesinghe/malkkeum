@@ -1842,6 +1842,93 @@ class TSi extends T {
   String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
 
   @override
+  String get dfScopeDusting => 'දූවිලි පිසීම';
+
+  @override
+  String get dfScopeVacuum => 'වැකුම් කිරීම';
+
+  @override
+  String get dfScopeDishes => 'පිඟන් සේදීම';
+
+  @override
+  String get dfScopeBathroom => 'නාන කාමරය';
+
+  @override
+  String get dfScopeTrash => 'කුණු ඉවත් කිරීම';
+
+  @override
+  String dfOverPyeong(String max) {
+    return '$max pyeong දක්වා නිවාස පමණි';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$total න් $done සූදානම්';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'ගෙවීම් ගෙවීම් සේවා සපයන්නෙකු (PG) හරහා සකසනු ලැබේ. ගෙවීමෙන් ඔබ සේවා කොන්දේසි සහ අවලංගු කිරීමේ සහ මුදල් ආපසු දීමේ ප්‍රතිපත්තියට එකඟ වේ.';
+
+  @override
+  String get dfRefundPolicy => 'අවලංගු කිරීම සහ මුදල් ආපසු දීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String get building_commercial => 'වාණිජ';
+
+  @override
+  String get dfSafeBooking => 'ආරක්ෂිත වෙන්කිරීම';
+
+  @override
+  String get dfSafeBookingBody =>
+      'අපගේ කණ්ඩායම පරීක්ෂා කර අවසාන මිල චැට් හරහා එවයි';
+
+  @override
+  String get dfEstBase => 'මූලික මිල';
+
+  @override
+  String get dfEstExtras => 'අමතර කාමර සහ විකල්ප';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'වර්ගය සහ බඩු අමතර ගාස්තුව $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'කාර්යබහුල කාල අමතර ගාස්තුව $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'AC පිරිසිදු කිරීම එකතු ($pct% වට්ටම්)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'නිවස මාරු පිරිසිදු කිරීමට AC පිරිසිදු කිරීම එක් කර වට්ටමක් ලබාගන්න';
+
+  @override
+  String get dfAcAddonAdd => 'AC එක් කරන්න';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'AC $count ක් එක් කළා';
+  }
+
+  @override
+  String get dfAcAddonNote => 'වට්ටම් මිල ඇස්තමේන්තුවේ පෙනේ';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'AC එකතු කිරීමේ වට්ටම (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count ක්';
+  }
+
+  @override
   String get themeTitle => 'තේමාව';
 
   @override

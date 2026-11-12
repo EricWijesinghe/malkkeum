@@ -203,3 +203,101 @@ async fn partner_cannot_delete_with_an_assigned_job_but_can_once_free(pool: PgPo
     assert_eq!(st, StatusCode::CONFLICT, "{b}");
     assert_eq!(b["error"]["code"], "has_active_jobs");
 }
+
+fn move_answers(addons: serde_json::Value) -> serde_json::Value {
+    json!({
+        "cleaning_type": "standard", "luggage": "empty", "building": "commercial", "layout": "two_rooms",
+        "duplex": false, "bathrooms": 1, "balconies": 0, "elevator": true, "floor_3_or_higher": false,
+        "ac_addons": addons
+    })
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn estimate_prices_ac_addons_from_the_catalog_with_the_formula_discount(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (st, plain) = call(&app, "POST", "/v1/quote/estimate", None, Some(move_answers(json!([])))).await;
+    assert_eq!(st, StatusCode::OK, "{plain}");
+    assert_eq!((plain["addons"].as_i64(), plain["addon_discount_bps"].as_i64()), (Some(0), Some(0)));
+
+    // The owner changes the wall price in the console catalog: the add-on follows it.
+    sqlx::query("UPDATE services SET pricing = jsonb_set(pricing, '{units,0,price}', '90000') WHERE code = 'aircon'")
+        .execute(&pool)
+        .await
+        .unwrap();
+    let wall2 = move_answers(json!([{"unit": "wall", "count": 2}]));
+    let (st, e) = call(&app, "POST", "/v1/quote/estimate", None, Some(wall2)).await;
+    assert_eq!(st, StatusCode::OK, "{e}");
+    // 2 x 90,000 = 180,000, 10% off by default = 162,000, added on top of the move total.
+    assert_eq!(e["addons"], 162_000);
+    assert_eq!(e["addon_discount_bps"], 1_000);
+    assert_eq!(e["total"].as_i64().unwrap(), plain["total"].as_i64().unwrap() + 162_000);
+
+    let bad = [
+        (json!([{"unit": "window", "count": 1}]), "invalid_unit"),
+        (json!([{"unit": "wall", "count": 6}]), "out_of_range"),
+    ];
+    for (addons, code) in bad {
+        let (st, b) = call(&app, "POST", "/v1/quote/estimate", None, Some(move_answers(addons))).await;
+        assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{b}");
+        assert_eq!(b["error"]["code"], code);
+    }
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn quote_booking_stores_the_addon_estimate_and_rejects_hourly_slots(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0401").await;
+    let visit = (Utc::now() + Duration::days(10)).date_naive();
+    let answers = move_answers(json!([{"unit": "stand", "count": 1}]));
+    let body = |hour: u8| {
+        json!({
+            "service_code": "move_out", "address_id": c.address, "visit_date": visit,
+            "start_hour": hour, "visit_notes": {}, "answers": answers
+        })
+    };
+    let (st, b) = call(&app, "POST", "/v1/bookings", Some(c.token.as_str()), Some(body(9))).await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{b}");
+    assert_eq!(b["error"]["code"], "invalid_slot");
+
+    let (st, b) = call(&app, "POST", "/v1/bookings", Some(c.token.as_str()), Some(body(8))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (_, e) = call(&app, "POST", "/v1/quote/estimate", None, Some(answers.clone())).await;
+    assert_eq!(b["estimate"], e["total"], "the booking keeps the same priced estimate");
+    assert_eq!(b["answers"]["ac_addons"][0]["unit"], "stand");
+    assert!(b["thread_id"].is_string(), "the app opens this chat after submit: {b}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn studio_at_eleven_pyeong_is_refused_by_the_server(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0402").await;
+    let (st, addr) = call(
+        &app,
+        "POST",
+        "/v1/me/addresses",
+        Some(c.token.as_str()),
+        Some(json!({
+            "kind": "home", "label": "부모님댁", "road_address": "서울특별시 강남구 테헤란로 2", "detail": "",
+            "district_code": common::DISTRICT, "size_pyeong": 11
+        })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{addr}");
+    let visit = (Utc::now() + Duration::days(10)).date_naive();
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/bookings",
+        Some(c.token.as_str()),
+        Some(json!({
+            "service_code": "studio", "address_id": addr["id"], "visit_date": visit,
+            "start_hour": 9, "visit_notes": {}, "payment_method_id": c.card
+        })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{b}");
+    assert_eq!(b["error"]["code"], "studio_too_large");
+}

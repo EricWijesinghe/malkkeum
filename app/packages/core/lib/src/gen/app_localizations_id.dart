@@ -1841,6 +1841,92 @@ class TId extends T {
   String get hhHint => 'Disimpan di alamat ini dan bisa diubah per pemesanan.';
 
   @override
+  String get dfScopeDusting => 'Membersihkan debu';
+
+  @override
+  String get dfScopeVacuum => 'Menyedot debu';
+
+  @override
+  String get dfScopeDishes => 'Mencuci piring';
+
+  @override
+  String get dfScopeBathroom => 'Kamar mandi';
+
+  @override
+  String get dfScopeTrash => 'Membuang sampah';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Hanya rumah hingga $max pyeong';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$done dari $total siap';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Pembayaran diproses oleh payment gateway (PG). Dengan membayar, Anda menyetujui ketentuan layanan serta kebijakan pembatalan dan pengembalian dana.';
+
+  @override
+  String get dfRefundPolicy => 'Kebijakan pembatalan dan pengembalian dana';
+
+  @override
+  String get building_commercial => 'Komersial';
+
+  @override
+  String get dfSafeBooking => 'Pemesanan aman';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Tim kami memeriksanya lalu mengirim penawaran akhir lewat chat';
+
+  @override
+  String get dfEstBase => 'Harga dasar';
+
+  @override
+  String get dfEstExtras => 'Ruang dan opsi tambahan';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Biaya tambahan jenis dan barang $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Biaya tambahan jam sibuk $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Tambahan cuci AC (diskon $pct%)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Tambahkan cuci AC ke pembersihan pindahan untuk mendapat diskon';
+
+  @override
+  String get dfAcAddonAdd => 'Tambah AC';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count AC ditambahkan';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Harga setelah diskon terlihat di penawaran Anda';
+
+  @override
+  String get f_ac_addon_discount_bps => 'Diskon tambahan AC (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count unit';
+  }
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

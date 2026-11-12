@@ -1849,6 +1849,93 @@ class TUz extends T {
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
 
   @override
+  String get dfScopeDusting => 'Chang artish';
+
+  @override
+  String get dfScopeVacuum => 'Changyutgich';
+
+  @override
+  String get dfScopeDishes => 'Idish yuvish';
+
+  @override
+  String get dfScopeBathroom => 'Hammom';
+
+  @override
+  String get dfScopeTrash => 'Chiqindini chiqarish';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Faqat $max pyeonggacha uylar';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$total tadan $done tasi tayyor';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Toʻlov toʻlov provayderi (PG) orqali amalga oshiriladi. Toʻlov qilib, siz xizmat shartlari hamda bekor qilish va pulni qaytarish qoidalariga rozilik bildirasiz.';
+
+  @override
+  String get dfRefundPolicy => 'Bekor qilish va pulni qaytarish qoidalari';
+
+  @override
+  String get building_commercial => 'Tijorat';
+
+  @override
+  String get dfSafeBooking => 'Ishonchli bron';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Jamoamiz tekshirib, yakuniy narxni chatda yuboradi';
+
+  @override
+  String get dfEstBase => 'Asosiy narx';
+
+  @override
+  String get dfEstExtras => 'Qoʻshimcha xonalar va variantlar';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Tur va yuk ustamasi $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Band vaqt ustamasi $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Konditsioner tozalash qoʻshimchasi ($pct% chegirma)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Koʻchish tozalashiga konditsioner tozalashni qoʻshib, chegirma oling';
+
+  @override
+  String get dfAcAddonAdd => 'Konditsioner qoʻshish';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count ta konditsioner qoʻshildi';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Chegirmali narx smetada koʻrinadi';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Konditsioner qoʻshimchasi chegirmasi (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count ta';
+  }
+
+  @override
   String get themeTitle => 'Mavzu';
 
   @override

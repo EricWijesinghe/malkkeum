@@ -1838,6 +1838,91 @@ class TNe extends T {
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
 
   @override
+  String get dfScopeDusting => 'धुलो सफा';
+
+  @override
+  String get dfScopeVacuum => 'भ्याकुम';
+
+  @override
+  String get dfScopeDishes => 'भाँडा माझ्ने';
+
+  @override
+  String get dfScopeBathroom => 'बाथरुम';
+
+  @override
+  String get dfScopeTrash => 'फोहोर फाल्ने';
+
+  @override
+  String dfOverPyeong(String max) {
+    return '$max pyeong सम्मका घर मात्र';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$total मध्ये $done तयार';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'भुक्तानी भुक्तानी सेवा प्रदायक (PG) मार्फत प्रशोधन हुन्छ। भुक्तानी गर्दा तपाईं सेवाका सर्त र रद्द तथा फिर्ता नीतिमा सहमत हुनुहुन्छ।';
+
+  @override
+  String get dfRefundPolicy => 'रद्द र फिर्ता नीति';
+
+  @override
+  String get building_commercial => 'व्यावसायिक';
+
+  @override
+  String get dfSafeBooking => 'सुरक्षित बुकिङ';
+
+  @override
+  String get dfSafeBookingBody =>
+      'हाम्रो टोलीले जाँचेर अन्तिम मूल्य च्याटमा पठाउँछ';
+
+  @override
+  String get dfEstBase => 'आधार मूल्य';
+
+  @override
+  String get dfEstExtras => 'थप कोठा र विकल्प';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'प्रकार र सामान अतिरिक्त शुल्क $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'व्यस्त समय अतिरिक्त शुल्क $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'एसी सफाइ थप ($pct% छुट)';
+  }
+
+  @override
+  String get dfAcAddonBanner => 'सर्ने सफाइसँग एसी सफाइ थप्दा छुट पाउनुहोस्';
+
+  @override
+  String get dfAcAddonAdd => 'एसी थप्नुहोस्';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count एसी थपियो';
+  }
+
+  @override
+  String get dfAcAddonNote => 'छुटपछिको मूल्य अनुमानमा देखिन्छ';
+
+  @override
+  String get f_ac_addon_discount_bps => 'एसी थप छुट (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count वटा';
+  }
+
+  @override
   String get themeTitle => 'थिम';
 
   @override

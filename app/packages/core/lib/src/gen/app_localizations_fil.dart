@@ -1850,6 +1850,94 @@ class TFil extends T {
       'Naka-save sa address na ito at puwedeng baguhin sa bawat booking.';
 
   @override
+  String get dfScopeDusting => 'Pag-alis ng alikabok';
+
+  @override
+  String get dfScopeVacuum => 'Pag-vacuum';
+
+  @override
+  String get dfScopeDishes => 'Paghuhugas ng pinggan';
+
+  @override
+  String get dfScopeBathroom => 'Banyo';
+
+  @override
+  String get dfScopeTrash => 'Pagtapon ng basura';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Bahay na hanggang $max pyeong lang';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$done sa $total handa';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Ang bayad ay pinoproseso ng payment gateway (PG). Sa pagbabayad, sumasang-ayon ka sa mga tuntunin ng serbisyo at sa patakaran sa pagkansela at refund.';
+
+  @override
+  String get dfRefundPolicy => 'Patakaran sa pagkansela at refund';
+
+  @override
+  String get building_commercial => 'Komersiyal';
+
+  @override
+  String get dfSafeBooking => 'Ligtas na booking';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Susuriin ito ng aming team at ipapadala ang huling quote sa chat';
+
+  @override
+  String get dfEstBase => 'Batayang presyo';
+
+  @override
+  String get dfEstExtras => 'Dagdag na kuwarto at opsyon';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Dagdag-singil sa uri at gamit $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Dagdag-singil sa peak $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Dagdag na AC cleaning ($pct% diskwento)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Idagdag ang AC cleaning sa iyong move clean para sa diskwento';
+
+  @override
+  String get dfAcAddonAdd => 'Magdagdag ng AC';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count AC ang naidagdag';
+  }
+
+  @override
+  String get dfAcAddonNote =>
+      'Makikita mo ang may diskwentong presyo sa iyong quote';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Diskwento sa dagdag na AC (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count unit';
+  }
+
+  @override
   String get themeTitle => 'Tema';
 
   @override

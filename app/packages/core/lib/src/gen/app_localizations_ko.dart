@@ -1796,6 +1796,90 @@ class TKo extends T {
   String get hhHint => '주소에 저장되고, 예약마다 바꿀 수 있어요.';
 
   @override
+  String get dfScopeDusting => '먼지 털기';
+
+  @override
+  String get dfScopeVacuum => '청소기';
+
+  @override
+  String get dfScopeDishes => '설거지';
+
+  @override
+  String get dfScopeBathroom => '화장실 청소';
+
+  @override
+  String get dfScopeTrash => '쓰레기 배출';
+
+  @override
+  String dfOverPyeong(String max) {
+    return '$max평 이하만 예약할 수 있어요';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$done/$total 준비 완료';
+  }
+
+  @override
+  String get dfPgNotice =>
+      '결제는 전자결제대행사(PG)를 통해 처리돼요. 결제하면 이용약관과 취소·환불 규정에 동의하는 것으로 봐요.';
+
+  @override
+  String get dfRefundPolicy => '취소·환불 규정';
+
+  @override
+  String get building_commercial => '상가';
+
+  @override
+  String get dfSafeBooking => '안심 예약';
+
+  @override
+  String get dfSafeBookingBody => '상담팀이 확인한 뒤 채팅으로 확정 견적을 보내드려요';
+
+  @override
+  String get dfEstBase => '기본 요금';
+
+  @override
+  String get dfEstExtras => '추가 공간·옵션';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return '청소 유형·짐 할증 $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return '주말·성수기 할증 $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return '에어컨 청소 추가 ($pct% 할인)';
+  }
+
+  @override
+  String get dfAcAddonBanner => '이사 청소와 에어컨 청소를 함께하면 할인돼요';
+
+  @override
+  String get dfAcAddonAdd => '에어컨 추가';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '에어컨 $count대 추가됨';
+  }
+
+  @override
+  String get dfAcAddonNote => '할인된 금액은 견적에서 확인할 수 있어요';
+
+  @override
+  String get f_ac_addon_discount_bps => '에어컨 추가 할인 (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count대';
+  }
+
+  @override
   String get themeTitle => '테마';
 
   @override

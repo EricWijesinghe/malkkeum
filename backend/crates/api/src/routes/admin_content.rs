@@ -133,7 +133,7 @@ async fn put_cancel_policy(State(s): State<AppState>, Admin(a): Admin, Json(p): 
 }
 
 async fn put_formula(State(s): State<AppState>, Admin(a): Admin, Json(f): Json<QuoteFormula>) -> ApiResult<Json<Value>> {
-    if f.vat_bps < 0 || f.deposit_bps <= 0 || f.deposit_bps > 10_000 || f.base_studio.0 <= 0 {
+    if f.vat_bps < 0 || f.deposit_bps <= 0 || f.deposit_bps > 10_000 || !(0..=10_000).contains(&f.ac_addon_discount_bps) || f.base_studio.0 <= 0 {
         return Err(ApiError::BadRequest("invalid_formula"));
     }
     sqlx::query("INSERT INTO settings (key, value) VALUES ('quote_formula', $1) ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = now()")

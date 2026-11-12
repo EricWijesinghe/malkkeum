@@ -1840,6 +1840,93 @@ class TRu extends T {
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
 
   @override
+  String get dfScopeDusting => 'Удаление пыли';
+
+  @override
+  String get dfScopeVacuum => 'Пылесос';
+
+  @override
+  String get dfScopeDishes => 'Мытьё посуды';
+
+  @override
+  String get dfScopeBathroom => 'Санузел';
+
+  @override
+  String get dfScopeTrash => 'Вынос мусора';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Только жильё до $max пхён';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return 'Готово $done из $total';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Платёж обрабатывает платёжный агрегатор (PG). Оплачивая, вы соглашаетесь с условиями сервиса и правилами отмены и возврата.';
+
+  @override
+  String get dfRefundPolicy => 'Правила отмены и возврата';
+
+  @override
+  String get building_commercial => 'Коммерческое';
+
+  @override
+  String get dfSafeBooking => 'Надёжное бронирование';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Команда проверит заявку и пришлёт итоговую цену в чат';
+
+  @override
+  String get dfEstBase => 'Базовая цена';
+
+  @override
+  String get dfEstExtras => 'Доп. комнаты и опции';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Надбавка за тип и вещи $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Надбавка за пиковое время $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Чистка кондиционера ($pct% скидка)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Добавьте чистку кондиционера к уборке при переезде со скидкой';
+
+  @override
+  String get dfAcAddonAdd => 'Добавить кондиционер';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'Добавлено кондиционеров: $count';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Цену со скидкой вы увидите в смете';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Скидка на кондиционер (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count шт.';
+  }
+
+  @override
   String get themeTitle => 'Тема';
 
   @override

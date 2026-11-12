@@ -5,11 +5,13 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../src/u1_stub.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
 import 'cancel_policy_card.dart';
 import 'chat.dart';
+import 'more.dart' show LegalScreen;
 import 'pay_flow.dart';
 import 'pay_method_picker.dart';
 import 'virtual_account.dart';
@@ -18,16 +20,121 @@ const _maxDaysAhead = 60;
 const _standardSlots = [8, 9, 13, 14];
 const _quoteSlots = [8, 13];
 const _freeCancelDays = 2;
+const _confirmSize = 160.0;
+const _minConfirmSize = 112.0; // SuccessMark's own default
 
 /// Last free-cancel day for a visit on [visit], or null when that day is already past
 /// (a booking inside the window), so checkout never promises a deadline that has gone.
 DateTime? freeCancelDeadline(DateTime visit, DateTime now) {
-  final day = DateTime(visit.year, visit.month, visit.day).subtract(const Duration(days: _freeCancelDays));
+  final day = DateTime(
+    visit.year,
+    visit.month,
+    visit.day,
+  ).subtract(const Duration(days: _freeCancelDays));
   return day.isBefore(DateTime(now.year, now.month, now.day)) ? null : day;
 }
 
 String isoDate(DateTime d) =>
     '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+/// Vertical choice tile: 3D icon over its label. Used in 2-column grids where an
+/// [OptionCard] row would leave the label no room at 320dp.
+class ChoiceTile3D extends StatelessWidget {
+  const ChoiceTile3D({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.subtitle,
+    this.accent,
+  });
+  final String icon;
+  final String label;
+  final String? subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color? accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final a = accent ?? context.primary;
+    final radius = BorderRadius.circular(Radii.tile);
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      button: true,
+      child: Pressable(
+        onTap: onTap,
+        radius: radius,
+        child: AnimatedContainer(
+          duration: Motion.standard,
+          curve: Motion.ease,
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.all(Space.sm),
+          decoration: BoxDecoration(
+            color: selected
+                ? Color.alphaBlend(
+                    a.withValues(alpha: c.isDark ? 0.18 : 0.08),
+                    c.surface,
+                  )
+                : c.surface,
+            borderRadius: radius,
+            border: Border.all(
+              color: selected ? a : c.line,
+              width: selected ? 2 : 1.2,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ExcludeSemantics(child: Icon3D(icon, active: selected, size: 52)),
+              const SizedBox(height: Space.xs),
+              Text(
+                label,
+                style: context.text.titleSmall,
+                textAlign: TextAlign.center,
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  style: context.text.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Lays [children] out [cols] per row, each row as tall as its tallest tile, so long
+/// translations and large system fonts wrap instead of clipping.
+Widget tileRows(List<Widget> children, {int cols = 2}) => Column(
+  children: [
+    for (var i = 0; i < children.length; i += cols)
+      Padding(
+        padding: const EdgeInsets.only(bottom: Space.xs),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var j = i; j < i + cols; j++) ...[
+                if (j > i) const SizedBox(width: Space.xs),
+                Expanded(
+                  child: j < children.length
+                      ? children[j]
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+  ],
+);
 
 /// Step 2 (fixed/unit) — pick a saved address, or add one. Enforces the studio size rule.
 class AddressPickScreen extends StatefulWidget {
@@ -95,7 +202,10 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
-    d.address ??= app.addresses.firstOrNull;
+    final max = d.service.maxPyeong;
+    bool fits(Address a) => max == null || a.sizePyeong <= max;
+    d.address ??=
+        app.addresses.where(fits).firstOrNull ?? app.addresses.firstOrNull;
     return Scaffold(
       appBar: AppBar(
         title: Text(t.stepOf('${widget.step}', '${widget.total}')),
@@ -123,8 +233,11 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
                         : Icons.home_rounded,
                     color: context.colors.inkMuted,
                   ),
+                  // Saved label first ("우리집", "부모님댁"); an address over the studio limit says why.
                   title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
-                  subtitle: '${a.roadAddress} ${a.detail}',
+                  subtitle: fits(a)
+                      ? '${a.roadAddress} ${a.detail}'
+                      : t.dfOverPyeong('$max'),
                   selected: d.address?.id == a.id,
                   onTap: () => setState(() => d.address = a),
                 ),
@@ -394,9 +507,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   ),
                 const SizedBox(height: Space.md),
-                if (d.service.isQuote)
-                  Text(t.scheduleQuoteNote, style: context.text.bodySmall)
-                else if (endHour != null)
+                if (d.service.isQuote) ...[
+                  Text(t.scheduleQuoteNote, style: context.text.bodySmall),
+                  if (context.app.service('aircon') case final ac?) ...[
+                    const SizedBox(height: Space.md),
+                    AcAddonBanner(
+                      aircon: ac,
+                      answers: d.answers,
+                      onChanged: () => setState(() {}),
+                    ),
+                  ],
+                ] else if (endHour != null)
                   AppCard(
                     color: context.colors.tintOf(hue),
                     padding: const EdgeInsets.all(Space.md),
@@ -498,6 +619,199 @@ class _DayChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Move-in/out: add aircon units at the catalog price; the discount is applied by the
+/// server's estimate (formula `ac_addon_discount_bps`) and shown on the review step.
+class AcAddonBanner extends StatelessWidget {
+  const AcAddonBanner({
+    super.key,
+    required this.aircon,
+    required this.answers,
+    required this.onChanged,
+  });
+  final Service aircon;
+  final QuoteAnswers answers;
+  final VoidCallback onChanged;
+
+  int get _count => answers.acAddons.values.fold(0, (a, b) => a + b);
+
+  Future<void> _open(BuildContext context) async {
+    await showAppSheet<void>(
+      context,
+      title: context.t.dfAcAddonAdd,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            0,
+            Space.gutter,
+            Space.gutter,
+          ),
+          children: [
+            for (final u in aircon.units)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.sm),
+                child: Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon3D('ac_${u.labelKey}', size: 40),
+                    ),
+                    const SizedBox(width: Space.sm),
+                    Expanded(
+                      child: CountStepper(
+                        label:
+                            '${ctx.t.unit(u.labelKey)} · ${ctx.won(u.price)}',
+                        value: answers.acAddons[u.labelKey] ?? 0,
+                        onChanged: (v) {
+                          setSheet(() => answers.acAddons[u.labelKey] = v);
+                          onChanged();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Text(ctx.t.dfAcAddonNote, style: ctx.text.bodySmall),
+          ],
+        ),
+      ),
+    );
+    onChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final count = _count;
+    return AppCard(
+      color: context.colors.sunTint,
+      onTap: () => _open(context),
+      padding: const EdgeInsets.all(Space.md),
+      child: Row(
+        children: [
+          const ExcludeSemantics(child: Icon3D('promo_ac_addon', size: 48)),
+          const SizedBox(width: Space.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(t.dfAcAddonBanner, style: context.text.titleSmall),
+                Text(
+                  count == 0 ? t.dfAcAddonNote : t.dfAcAddonAdded('$count'),
+                  style: context.text.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => _open(context),
+            child: Text(t.dfAcAddonAdd),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tools the customer prepares, as a 2-column 3D checklist they can tick off.
+class PrepChecklist extends StatefulWidget {
+  const PrepChecklist({super.key, this.accent});
+  final Color? accent;
+  @override
+  State<PrepChecklist> createState() => _PrepChecklistState();
+}
+
+class _PrepChecklistState extends State<PrepChecklist> {
+  final _ready = <String>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionTitle(
+          t.prepTitle,
+          trailing: Text(
+            t.dfPrepCount('${_ready.length}', '${prepTools.length}'),
+            style: context.text.labelSmall,
+          ),
+        ),
+        tileRows([
+          for (final tool in prepTools)
+            Semantics(
+              checked: _ready.contains(tool),
+              child: ChoiceTile3D(
+                icon: 'tool_$tool',
+                label: t.tool(tool),
+                selected: _ready.contains(tool),
+                accent: widget.accent,
+                onTap: () => setState(
+                  () => _ready.contains(tool)
+                      ? _ready.remove(tool)
+                      : _ready.add(tool),
+                ),
+              ),
+            ),
+        ]),
+        Text(t.prepBody, style: context.text.bodySmall),
+      ],
+    );
+  }
+}
+
+/// 결제대행(PG) notice with the terms and the cancel/refund rules, shown right above the pay button.
+class PgNotice extends StatelessWidget {
+  const PgNotice({super.key, required this.total});
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          t.dfPgNotice,
+          style: context.text.bodySmall?.copyWith(
+            color: context.colors.inkMuted,
+          ),
+        ),
+        Wrap(
+          spacing: Space.xs,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) =>
+                      LegalScreen(slug: 'terms', title: t.moreTerms),
+                ),
+              ),
+              child: Text(t.moreTerms),
+            ),
+            TextButton(
+              onPressed: () => showAppSheet<void>(
+                context,
+                title: t.dfRefundPolicy,
+                builder: (_) => Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.gutter,
+                    0,
+                    Space.gutter,
+                    Space.gutter,
+                  ),
+                  child: CancelPolicyCard(total: total),
+                ),
+              ),
+              child: Text(t.dfRefundPolicy),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -826,19 +1140,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t.prepTitle, style: context.text.titleSmall),
-                  const SizedBox(height: Space.xs),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      for (final tool in prepTools)
-                        Chip(
-                          label: Text(t.tool(tool)),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                    ],
-                  ),
+                  PrepChecklist(accent: ServiceHues.of(d.service.code).tone),
                   TextButton.icon(
                     icon: const Icon(
                       Icons.chat_bubble_outline_rounded,
@@ -851,6 +1153,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
           ],
+          const SizedBox(height: Space.md),
+          PgNotice(total: total),
         ],
       ),
       bottomNavigationBar: BottomActionBar(
@@ -868,9 +1172,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ],
         ),
         child: PrimaryButton(
-          label: _choice == null
-              ? t.needMethod
-              : t.payAmount(context.won(due)),
+          label: _choice == null ? t.needMethod : t.payAmount(context.won(due)),
           busy: _busy,
           onPressed: _choice == null ? null : () => _pay(due, points),
         ),
@@ -957,8 +1259,13 @@ class DoneScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(),
+              // Big confirm check (U1 renders it as the 3D confirm_check), scaled down on short screens.
               FlipIn(
                 child: SuccessMark(
+                  size: (MediaQuery.sizeOf(context).height * 0.2).clamp(
+                    _minConfirmSize,
+                    _confirmSize,
+                  ),
                   semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle,
                 ),
               ),

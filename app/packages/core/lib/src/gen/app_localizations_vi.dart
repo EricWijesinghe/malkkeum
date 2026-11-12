@@ -1824,6 +1824,93 @@ class TVi extends T {
   String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
 
   @override
+  String get dfScopeDusting => 'Lau bụi';
+
+  @override
+  String get dfScopeVacuum => 'Hút bụi';
+
+  @override
+  String get dfScopeDishes => 'Rửa bát';
+
+  @override
+  String get dfScopeBathroom => 'Dọn phòng tắm';
+
+  @override
+  String get dfScopeTrash => 'Đổ rác';
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Chỉ nhận nhà tối đa $max pyeong';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return 'Đã chuẩn bị $done/$total';
+  }
+
+  @override
+  String get dfPgNotice =>
+      'Thanh toán được xử lý qua cổng thanh toán (PG). Khi thanh toán, bạn đồng ý với điều khoản dịch vụ và chính sách hủy và hoàn tiền.';
+
+  @override
+  String get dfRefundPolicy => 'Chính sách hủy và hoàn tiền';
+
+  @override
+  String get building_commercial => 'Mặt bằng kinh doanh';
+
+  @override
+  String get dfSafeBooking => 'Đặt lịch an tâm';
+
+  @override
+  String get dfSafeBookingBody =>
+      'Đội tư vấn kiểm tra rồi gửi báo giá cuối qua chat';
+
+  @override
+  String get dfEstBase => 'Giá cơ bản';
+
+  @override
+  String get dfEstExtras => 'Phòng và tùy chọn thêm';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return 'Phụ phí loại dọn và đồ đạc $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return 'Phụ phí giờ cao điểm $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Thêm vệ sinh máy lạnh (giảm $pct%)';
+  }
+
+  @override
+  String get dfAcAddonBanner =>
+      'Thêm vệ sinh máy lạnh cùng dọn chuyển nhà để được giảm giá';
+
+  @override
+  String get dfAcAddonAdd => 'Thêm máy lạnh';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'Đã thêm $count máy lạnh';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Giá đã giảm sẽ hiện trong báo giá';
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Giảm giá thêm máy lạnh (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count máy';
+  }
+
+  @override
   String get themeTitle => 'Giao diện';
 
   @override

@@ -1796,6 +1796,90 @@ class TJa extends T {
   String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
 
   @override
+  String get dfScopeDusting => 'ほこり取り';
+
+  @override
+  String get dfScopeVacuum => '掃除機がけ';
+
+  @override
+  String get dfScopeDishes => '皿洗い';
+
+  @override
+  String get dfScopeBathroom => 'トイレ・浴室掃除';
+
+  @override
+  String get dfScopeTrash => 'ゴミ出し';
+
+  @override
+  String dfOverPyeong(String max) {
+    return '$max坪以下のみ予約できます';
+  }
+
+  @override
+  String dfPrepCount(String done, String total) {
+    return '$done/$total 準備完了';
+  }
+
+  @override
+  String get dfPgNotice =>
+      '決済は決済代行会社(PG)を通じて処理されます。お支払いにより利用規約とキャンセル・返金規定に同意したものとみなされます。';
+
+  @override
+  String get dfRefundPolicy => 'キャンセル・返金規定';
+
+  @override
+  String get building_commercial => '店舗';
+
+  @override
+  String get dfSafeBooking => '安心予約';
+
+  @override
+  String get dfSafeBookingBody => '相談チームが確認し、チャットで確定見積をお送りします';
+
+  @override
+  String get dfEstBase => '基本料金';
+
+  @override
+  String get dfEstExtras => '追加スペース・オプション';
+
+  @override
+  String dfEstSurcharge(String pct) {
+    return '清掃タイプ・荷物の割増 $pct%';
+  }
+
+  @override
+  String dfEstPeak(String pct) {
+    return '週末・繁忙期の割増 $pct%';
+  }
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'エアコン清掃の追加 ($pct%割引)';
+  }
+
+  @override
+  String get dfAcAddonBanner => '引越し清掃と一緒にエアコン清掃を頼むと割引されます';
+
+  @override
+  String get dfAcAddonAdd => 'エアコンを追加';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'エアコン$count台を追加済み';
+  }
+
+  @override
+  String get dfAcAddonNote => '割引後の金額は見積で確認できます';
+
+  @override
+  String get f_ac_addon_discount_bps => 'エアコン追加割引 (bps, 1000 = 10%)';
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count台';
+  }
+
+  @override
   String get themeTitle => 'テーマ';
 
   @override

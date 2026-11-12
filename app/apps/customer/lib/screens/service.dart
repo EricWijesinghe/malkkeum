@@ -1,8 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../src/u1_stub.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_flow.dart';
@@ -107,19 +110,44 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         const SizedBox(width: Space.xs),
                         Expanded(
                           child: Text(
-                            t.about(t.duration(s.minutes!)),
+                            t.duration(s.minutes!),
                             style: context.text.titleSmall,
                           ),
                         ),
                         const SizedBox(width: Space.xs),
-                        Text(
-                          context.won(s.price!),
-                          style: context.text.titleLarge,
+                        // Catalog price and minutes (console-editable), VAT included.
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              context.won(s.price!),
+                              style: context.text.titleLarge,
+                            ),
+                            Text(t.vatIncluded, style: context.text.labelSmall),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                if (s.type == PricingType.unit) ...[
+                if (s.code == 'studio') ...[
+                  const SizedBox(height: Space.lg),
+                  SectionTitle(t.moreScope),
+                  const ScopeBlueprint(),
+                ],
+                if (s.code == 'aircon') ...[
+                  SectionTitle(t.unitTitle(s.code)),
+                  tileRows([
+                    for (var i = 0; i < s.units.length; i++)
+                      ChoiceTile3D(
+                        icon: 'ac_${s.units[i].labelKey}',
+                        label: t.unit(s.units[i].labelKey),
+                        subtitle: context.won(s.units[i].price),
+                        selected: d.unitIndex == i,
+                        accent: hue.tone,
+                        onTap: () => setState(() => d.unitIndex = i),
+                      ),
+                  ]),
+                ] else if (s.type == PricingType.unit) ...[
                   SectionTitle(t.unitTitle(s.code)),
                   for (var i = 0; i < s.units.length; i++)
                     Padding(
@@ -241,4 +269,120 @@ class _ServiceScreenState extends State<ServiceScreen> {
 class BookingDraftBox {
   BookingDraftBox(Service s) : draft = BookingDraft(s);
   final BookingDraft draft;
+}
+
+/// What a studio clean covers. shortcut: client constant, move to the catalog's content JSON if the owner wants to edit it.
+const serviceScope = ['dusting', 'vacuum', 'dishes', 'bathroom', 'trash'];
+
+/// Floor-plan style card: a drawn room outline with the five scope items on it.
+class ScopeBlueprint extends StatelessWidget {
+  const ScopeBlueprint({super.key});
+
+  String _label(T t, String k) => switch (k) {
+    'dusting' => t.dfScopeDusting,
+    'vacuum' => t.dfScopeVacuum,
+    'dishes' => t.dfScopeDishes,
+    'bathroom' => t.dfScopeBathroom,
+    _ => t.dfScopeTrash,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final c = context.colors;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Radii.card),
+      child: CustomPaint(
+        painter: _BlueprintPainter(line: c.fresh, grid: c.line),
+        child: Padding(
+          padding: const EdgeInsets.all(Space.lg),
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final w = ((box.maxWidth - 2 * Space.xs) / 3).floorToDouble();
+              return Wrap(
+                spacing: Space.xs,
+                runSpacing: Space.md,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (final k in serviceScope)
+                    SizedBox(
+                      width: w,
+                      child: Column(
+                        children: [
+                          ExcludeSemantics(child: Icon3D('scope_$k', size: 44)),
+                          const SizedBox(height: 4),
+                          Text(
+                            _label(t, k),
+                            style: context.text.labelMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BlueprintPainter extends CustomPainter {
+  const _BlueprintPainter({required this.line, required this.grid});
+  final Color line;
+  final Color grid;
+
+  static const _cell = 16.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = line.withValues(alpha: 0.06),
+    );
+    final g = Paint()
+      ..color = grid
+      ..strokeWidth = 0.6;
+    for (var x = _cell; x < size.width; x += _cell) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), g);
+    }
+    for (var y = _cell; y < size.height; y += _cell) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), g);
+    }
+    final wall = Paint()
+      ..color = line.withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    final room = Rect.fromLTWH(6, 6, size.width - 12, size.height - 12);
+    canvas.drawRect(room, wall);
+    // Bathroom corner and the door swing make it read as a floor plan.
+    final bath = room.width * 0.3;
+    canvas.drawLine(
+      Offset(room.right - bath, room.top),
+      Offset(room.right - bath, room.top + room.height * 0.4),
+      wall,
+    );
+    canvas.drawLine(
+      Offset(room.right - bath, room.top + room.height * 0.4),
+      Offset(room.right, room.top + room.height * 0.4),
+      wall,
+    );
+    final door = Rect.fromCircle(
+      center: Offset(room.left, room.bottom),
+      radius: 28,
+    );
+    canvas.drawArc(
+      door,
+      -math.pi / 2,
+      math.pi / 2,
+      false,
+      wall..strokeWidth = 1.5,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_BlueprintPainter old) =>
+      old.line != line || old.grid != grid;
 }
