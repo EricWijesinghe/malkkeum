@@ -222,12 +222,36 @@ pub async fn record_payment(conn: &mut PgConnection, booking: Uuid, amount: i64,
 }
 
 /// Deposit due on a quoted booking (10%), while the quote is still awaiting payment.
-/// Binds a payment to the amount the customer was shown. `None` (older apps) skips the check.
-pub fn check_expected(due: i64, expected: Option<i64>) -> ApiResult<()> {
-    match expected {
-        Some(e) if e != due => Err(ApiError::PriceChanged(due)),
-        _ => Ok(()),
+/// The quote card the customer tapped to pay its deposit.
+#[derive(Debug, Default, Deserialize)]
+pub struct SeenQuote {
+    pub expected_deposit: Option<i64>,
+    pub expected_final_price: Option<i64>,
+    pub expected_quote_message_id: Option<Uuid>,
+}
+
+/// Binds a deposit to the card the customer tapped. Any difference (amount, price, or a newer quote
+/// message, e.g. another pro at the same price) is 409 `price_changed` with the current values.
+pub async fn check_seen_quote(db: &PgPool, b: &BookingRow, deposit: i64, seen: &SeenQuote) -> ApiResult<()> {
+    let Some(expected) = seen.expected_deposit else {
+        // TODO(2027-03-01): require expected_deposit once app versions before v1.4 are retired.
+        tracing::warn!(booking_id = %b.id, "deposit without expected_deposit");
+        return Ok(());
+    };
+    let latest: Option<Uuid> = sqlx::query_scalar(
+        "SELECT m.id FROM chat_messages m JOIN chat_threads t ON t.id = m.thread_id
+         WHERE t.booking_id = $1 AND t.audience = 'customer' AND m.kind = 'quote' ORDER BY m.created_at DESC, m.id DESC LIMIT 1",
+    )
+    .bind(b.id)
+    .fetch_optional(db)
+    .await?;
+    let changed = expected != deposit
+        || seen.expected_final_price.is_some_and(|p| Some(p) != b.final_price)
+        || seen.expected_quote_message_id.is_some_and(|m| Some(m) != latest);
+    if changed {
+        return Err(ApiError::PriceChanged(json!({ "current": deposit, "final_price": b.final_price, "quote_message_id": latest })));
     }
+    Ok(())
 }
 
 pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
@@ -242,6 +266,8 @@ pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
 
 /// Confirms a quoted booking on deposit: attaches the chosen pro and rejects the other quotes.
 pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64) -> ApiResult<()> {
+    // Booking row first, then quotes: the same order as send_quote, so the two never deadlock.
+    sqlx::query("SELECT 1 FROM bookings WHERE id = $1 FOR UPDATE").bind(id).execute(&mut *conn).await?;
     // Read the chosen quote under lock so a concurrent staff change can't attach the wrong pro.
     let selected: Option<(Uuid, Uuid)> = sqlx::query_as("SELECT id, pro_id FROM quotes WHERE booking_id = $1 AND state = 'selected' FOR UPDATE")
         .bind(id)

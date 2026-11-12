@@ -4,7 +4,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use domain::DomainError;
-use serde_json::json;
+use serde_json::{Value, json};
 
 /// Every API failure. Responses carry a stable `code` the apps translate;
 /// internal details are logged, never returned.
@@ -18,9 +18,10 @@ pub enum ApiError {
     NotFound,
     #[error("conflict: {0}")]
     Conflict(&'static str),
-    /// 409 `price_changed`: the amount the customer saw is no longer the amount due; `current` carries the new one.
-    #[error("price changed: now {0}")]
-    PriceChanged(i64),
+    /// 409 `price_changed`: what the customer saw is no longer what is due. The object's fields
+    /// (`current` deposit, `final_price`, `quote_message_id`) are copied into the error envelope.
+    #[error("price changed")]
+    PriceChanged(Value),
     #[error("bad request: {0}")]
     BadRequest(&'static str),
     #[error("too many requests")]
@@ -72,10 +73,12 @@ impl IntoResponse for ApiError {
             // The request span carries the request id, so this line can be matched to the client's report.
             tracing::error!(error = %self, "request failed");
         }
-        // The id is the only extra thing a client sees; internal details stay in the logs.
+        // Only the request id (and price_changed's current values) reach the client; internals stay in the logs.
         let mut body = json!({ "error": { "code": code } });
-        if let Self::PriceChanged(current) = self {
-            body["error"]["current"] = json!(current);
+        if let Self::PriceChanged(Value::Object(current)) = &self {
+            for (k, v) in current {
+                body["error"][k.as_str()] = v.clone();
+            }
         }
         if let Some(id) = crate::telemetry::current_request_id() {
             body["error"]["request_id"] = json!(id);

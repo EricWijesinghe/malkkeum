@@ -5,8 +5,8 @@
 use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use super::{
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_expected, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
-        take_balance, take_deposit,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_seen_quote, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
+        SeenQuote, take_balance, take_deposit,
     },
     bookings::{BookingRow, load_booking, owned},
     catalog::load_service,
@@ -55,8 +55,14 @@ pub fn admin_routes() -> Router<AppState> {
 #[serde(tag = "kind", rename_all = "snake_case")]
 enum CheckoutRequest {
     Booking { booking: BookingBody, method: String },
-    /// `expected_deposit`: the amount on the quote card the customer tapped (see `check_expected`).
-    Deposit { booking_id: Uuid, method: String, expected_deposit: Option<i64> },
+    /// `expected_*`: the quote card the customer tapped (see `check_seen_quote`).
+    Deposit {
+        booking_id: Uuid,
+        method: String,
+        expected_deposit: Option<i64>,
+        expected_final_price: Option<i64>,
+        expected_quote_message_id: Option<Uuid>,
+    },
     Balance { booking_id: Uuid, method: String },
 }
 
@@ -173,10 +179,21 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Js
     ensure_enabled(&s.db, req.method()).await?;
     let intent = match &req {
         CheckoutRequest::Booking { booking, .. } => booking_intent(&s, a.id, booking).await?,
-        CheckoutRequest::Deposit { booking_id, expected_deposit, .. } => {
+        CheckoutRequest::Deposit {
+            booking_id,
+            expected_deposit,
+            expected_final_price,
+            expected_quote_message_id,
+            ..
+        } => {
             let b = owned(&s, a.id, *booking_id).await?;
             let amount = deposit_due(&b)?;
-            check_expected(amount, *expected_deposit)?;
+            let seen = SeenQuote {
+                expected_deposit: *expected_deposit,
+                expected_final_price: *expected_final_price,
+                expected_quote_message_id: *expected_quote_message_id,
+            };
+            check_seen_quote(&s.db, &b, amount, &seen).await?;
             Intent {
                 kind: "deposit",
                 booking_id: Some(b.id),

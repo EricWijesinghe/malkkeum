@@ -3,8 +3,8 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_expected, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
-        price_for, record_payment, take_balance, take_deposit,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_seen_quote, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
+        SeenQuote, price_for, record_payment, take_balance, take_deposit,
     },
     catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
@@ -527,15 +527,16 @@ struct PayRequest {
 #[derive(Deserialize)]
 struct DepositRequest {
     payment_method_id: Uuid,
-    /// The deposit on the quote card the customer tapped; a re-quote since then is a 409 `price_changed`.
-    expected_deposit: Option<i64>,
+    /// The quote card the customer tapped; a re-quote since then is a 409 `price_changed`.
+    #[serde(flatten)]
+    seen: SeenQuote,
 }
 
 /// Quote booking: pay 10% deposit after the staff quote -> confirmed (or team assigned).
 async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<DepositRequest>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
     let deposit = deposit_due(&b)?;
-    check_expected(deposit, p.expected_deposit)?;
+    check_seen_quote(&s.db, &b, deposit, &p.seen).await?;
     let mut tx = s.db.begin().await?;
     take_deposit(&mut tx, id, deposit).await?;
     // Charge last: after this only the commit can fail, and that path refunds.
