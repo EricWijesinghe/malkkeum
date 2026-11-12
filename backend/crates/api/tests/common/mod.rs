@@ -13,7 +13,7 @@ use axum::{
     extract::ConnectInfo,
     http::{Request, StatusCode, header},
 };
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use serde_json::{Value, json};
 use sqlx::PgPool;
 use std::net::SocketAddr;
@@ -206,7 +206,7 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
 
 /// Books a studio clean `days` from now, paid with the customer's card. Returns (booking id, response body).
 pub async fn book(app: &Router, c: &Customer, days: i64, coupon: Option<Uuid>) -> (Uuid, Value) {
-    let visit = (Utc::now() + Duration::days(days)).date_naive();
+    let visit = api::util::today_kst() + Duration::days(days);
     let (st, b) = call(
         app,
         "POST",

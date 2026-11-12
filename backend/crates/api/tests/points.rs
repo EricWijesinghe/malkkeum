@@ -139,7 +139,8 @@ async fn set_cap(pool: &PgPool, max_use_bps: i64) {
 }
 
 fn checkout_body(c: &Customer, days: i64, points: i64) -> Value {
-    let visit = (chrono::Utc::now() + chrono::Duration::days(days)).date_naive();
+    // KST, like the API: a UTC date is "today" in Korea after 15:00 UTC.
+    let visit = api::util::today_kst() + chrono::Duration::days(days);
     json!({ "kind": "booking", "method": "card", "points": points,
             "booking": { "service_code": "studio", "address_id": c.address, "visit_date": visit, "start_hour": 9, "visit_notes": {} } })
 }
