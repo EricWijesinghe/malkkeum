@@ -40,6 +40,9 @@ jobs:
           tags="$repo/$NAME:$ver,$repo/$NAME:beta"
           case "$ver" in *-*) ;; *) tags="$tags,$repo/$NAME:stable,$repo/$NAME:latest" ;; esac
           { echo "tags=$tags"; echo "version=$ver"; } >> "$GITHUB_OUTPUT"
+      # linux/arm64 on the x86 self-hosted runner: registers the QEMU binfmt handler (needs privileged docker).
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+        with: { platforms: arm64 }
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
@@ -54,8 +57,42 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
           tags: ${{ steps.meta.outputs.tags }}
 
-  delivery:
+  # The installer pulls without a login, so both packages must be public and carry both CPU types.
+  # Runs before delivery: an installer that cannot pull its images is never published.
+  pull-check:
     needs: images
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: [self-hosted, malkkeum]
+    steps:
+      - name: Anonymous pull check (amd64 + arm64)
+        run: |
+          # Empty docker config = no stored login and no credential helper; the runner's own config is untouched.
+          export DOCKER_CONFIG="$RUNNER_TEMP/docker-anon"
+          rm -rf "$DOCKER_CONFIG" && mkdir -p "$DOCKER_CONFIG"
+          docker logout ghcr.io >/dev/null 2>&1 || true
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          ver="${GITHUB_REF_NAME#v}"
+          bad=0
+          for name in malkkeum-api malkkeum-web; do
+            ref="ghcr.io/$owner/$name:$ver"
+            if ! manifest=$(docker manifest inspect "$ref" 2>&1); then
+              echo "::error title=$name is not public::Cannot pull $ref without a login. Make the GHCR package public once: https://github.com/users/$GITHUB_REPOSITORY_OWNER/packages/container/$name/settings -> Danger Zone -> Change visibility -> Public (organisation: https://github.com/orgs/$GITHUB_REPOSITORY_OWNER/packages/container/$name/settings). Then re-run this job. Registry said: $(printf '%s' "$manifest" | tail -n 1)"
+              bad=1
+              continue
+            fi
+            for arch in amd64 arm64; do
+              if ! printf '%s' "$manifest" | grep -Eq "\"architecture\": *\"$arch\""; then
+                echo "::error title=$name has no linux/$arch image::$ref is public but its manifest lists no linux/$arch image. Check the images job (QEMU / platforms)."
+                bad=1
+              fi
+            done
+            [ "$bad" = 1 ] || echo "ok: $ref pulls anonymously (linux/amd64, linux/arm64)"
+          done
+          rm -rf "$DOCKER_CONFIG"
+          exit "$bad"
+
+  delivery:
+    needs: [images, pull-check]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: [self-hosted, malkkeum]
     steps:

@@ -64,13 +64,19 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
     })
 }
 
+/// Applies pending migrations. Rows written by a newer release are ignored, so the previous image
+/// still starts after a rollback (migrations stay additive: expand, then contract a release later).
+pub async fn migrate(db: &PgPool) -> Result<(), sqlx::migrate::MigrateError> {
+    sqlx::migrate!("../../migrations").set_ignore_missing(true).run(db).await
+}
+
 /// Reads config, connects, migrates, seeds and serves until SIGTERM or Ctrl+C, then drains.
 pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     crate::ops::mark_started();
     let config = Config::from_env()?;
     // Migrations get their own single connection without the statement timeout (index builds can be slow).
     let migrate_db = db::connect(&config.database_url, &config.db.for_migrations()).await?;
-    sqlx::migrate!("../../migrations").run(&migrate_db).await?;
+    migrate(&migrate_db).await?;
     migrate_db.close().await;
     let db = db::connect(&config.database_url, &config.db).await?;
     seed::run(&db, &config).await?;
