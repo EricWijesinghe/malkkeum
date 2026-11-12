@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1794,6 +1795,42 @@ class TJa extends T {
 
   @override
   String get hhHint => 'この住所に保存され、予約ごとに変更できます。';
+
+  @override
+  String get dhHomeRecommended => 'おすすめサービス';
+
+  @override
+  String get dhHomeNews => 'ダヘのお知らせ';
+
+  @override
+  String get dhSvcMove => '入居・退去清掃';
+
+  @override
+  String get dhSvcMoveShort => '引越し';
+
+  @override
+  String get dhMovePickTitle => 'どちらの清掃が必要ですか？';
+
+  @override
+  String get cKind_news => 'ニュース';
+
+  @override
+  String get cLink => 'リンク (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => '新規登録クーポン';
+
+  @override
+  String get welcomePackBody => '登録完了時に一度だけ発行します。すべて削除すると発行しません。';
+
+  @override
+  String get welcomePackAmount => 'クーポン金額（ウォン）';
+
+  @override
+  String get welcomePackAdd => 'クーポンを追加';
+
+  @override
+  String get welcomePackRemove => 'クーポンを削除';
 
   @override
   String get themeTitle => 'テーマ';

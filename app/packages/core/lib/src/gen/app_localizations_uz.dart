@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1847,6 +1848,43 @@ class TUz extends T {
   @override
   String get hhHint =>
       'Ushbu manzilga saqlanadi va har bir buyurtmada o‘zgartirish mumkin.';
+
+  @override
+  String get dhHomeRecommended => 'Tavsiya etilgan xizmatlar';
+
+  @override
+  String get dhHomeNews => 'Dahae yangiliklari';
+
+  @override
+  String get dhSvcMove => 'Ko‘chib kirish / chiqish tozalashi';
+
+  @override
+  String get dhSvcMoveShort => 'Ko‘chish';
+
+  @override
+  String get dhMovePickTitle => 'Sizga qaysi tozalash kerak?';
+
+  @override
+  String get cKind_news => 'Yangiliklar';
+
+  @override
+  String get cLink => 'Havola (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Ro‘yxatdan o‘tish kuponlari';
+
+  @override
+  String get welcomePackBody =>
+      'Mijoz ro‘yxatdan o‘tishni tugatganda bir marta beriladi. O‘chirish uchun hammasini olib tashlang.';
+
+  @override
+  String get welcomePackAmount => 'Kupon summasi (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Kupon qo‘shish';
+
+  @override
+  String get welcomePackRemove => 'Kuponni olib tashlash';
 
   @override
   String get themeTitle => 'Mavzu';

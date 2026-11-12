@@ -2910,6 +2910,53 @@
         }
       }
     },
+    "/v1/admin/growth/welcome-pack": {
+      "put": {
+        "operationId": "adminPutWelcomePack",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Set the sign-up welcome coupons (array of {amount, service_code?}; empty = off)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "amount"
+                  ],
+                  "properties": {
+                    "amount": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 100000
+                    },
+                    "service_code": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/growth/referral": {
       "put": {
         "operationId": "adminPutReferralOffer",

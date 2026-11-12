@@ -207,3 +207,77 @@ async fn slot_shows_seats_left_only_when_two_or_fewer_remain(pool: PgPool) {
     assert_eq!(hour9(&two)["seats_left"], 1);
     assert_eq!(hour9(&two)["available"], true);
 }
+
+// ---- Sign-up welcome coupons (setting `welcome_pack`) ----
+
+async fn staff_token(pool: &PgPool, email: &str, role: &str, as_role: Role) -> String {
+    let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role) VALUES ($1, 'Staff', 'unused', $2) RETURNING id")
+        .bind(email)
+        .bind(role)
+        .fetch_one(pool)
+        .await
+        .expect("staff row");
+    auth::issue_access(SECRET, id, as_role).expect("token")
+}
+
+/// Completes sign-up (first name) and returns the account's welcome coupons as (name, amount, service).
+async fn sign_up(app: &axum::Router, pool: &PgPool, phone: &str) -> Vec<(String, i64, Option<String>)> {
+    let (token, subject) = common::login(app, phone, "customer").await;
+    for _ in 0..2 {
+        let (st, b) = call(app, "PATCH", "/v1/me", Some(token.as_str()), Some(json!({ "name": "지민" }))).await;
+        assert_eq!(st, StatusCode::OK, "{b}");
+    }
+    let user: Uuid = subject.parse().expect("user id");
+    sqlx::query_as("SELECT name, amount::bigint, service_code FROM coupons WHERE user_id = $1 AND campaign = 'welcome' ORDER BY amount DESC")
+        .bind(user)
+        .fetch_all(pool)
+        .await
+        .expect("coupons")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn sign_up_issues_one_15000_welcome_coupon_by_default_and_only_once(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    // sign_up saves the name twice: the second save must not issue again.
+    let coupons = sign_up(&app, &pool, "010-5600-0001").await;
+    assert_eq!(coupons, vec![("welcome_any".to_string(), 15_000, None)]);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn admin_edits_the_welcome_pack_and_new_sign_ups_get_it(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let admin = staff_token(&pool, "owner@test.local", "admin", Role::StaffAdmin).await;
+    let consultant = staff_token(&pool, "consult@test.local", "consultant", Role::StaffConsultant).await;
+    let uri = "/v1/admin/growth/welcome-pack";
+
+    let (_, overview) = call(&app, "GET", "/v1/admin/growth", Some(admin.as_str()), None).await;
+    assert_eq!(overview["welcome_pack"], json!([{ "amount": 15000, "service_code": null }]), "default");
+
+    let pack = json!([{ "amount": 7000, "service_code": "studio" }, { "amount": 3000 }]);
+    let (st, b) = call(&app, "PUT", uri, Some(consultant.as_str()), Some(pack.clone())).await;
+    assert_eq!(st, StatusCode::FORBIDDEN, "{b}");
+    for (bad, code) in [
+        (json!([{ "amount": 15050 }]), "out_of_range"),
+        (json!([{ "amount": 0 }]), "out_of_range"),
+        (json!([{ "amount": 200000 }]), "out_of_range"),
+        (json!([{ "amount": 5000, "service_code": "no_such_service" }]), "invalid_service"),
+    ] {
+        let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(bad.clone())).await;
+        assert!(st.is_client_error(), "{bad}: {st} {b}");
+        assert_eq!(b["error"]["code"], code, "{bad}");
+    }
+    let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(pack)).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'growth.welcome_pack'").fetch_one(&pool).await.expect("audit");
+    assert_eq!(audited, 1);
+
+    let coupons = sign_up(&app, &pool, "010-5600-0002").await;
+    assert_eq!(coupons, vec![("welcome_studio".to_string(), 7_000, Some("studio".to_string())), ("welcome_any".to_string(), 3_000, None)]);
+
+    // An empty pack switches the coupons off.
+    let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(json!([]))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    assert!(sign_up(&app, &pool, "010-5600-0003").await.is_empty());
+}

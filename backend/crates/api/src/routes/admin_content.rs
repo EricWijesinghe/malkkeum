@@ -271,7 +271,7 @@ impl ContentInput {
             .image_url
             .as_deref()
             .is_none_or(|u| u.starts_with("https://") || crate::util::own_upload(&s.config.public_base_url, u).is_some());
-        let ok = matches!(self.kind.as_str(), "notice" | "tip" | "faq" | "banner" | "legal")
+        let ok = matches!(self.kind.as_str(), "notice" | "tip" | "faq" | "banner" | "legal" | "news")
             && self.title.is_object()
             && self.body.is_object()
             && safe_link

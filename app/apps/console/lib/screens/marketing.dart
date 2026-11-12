@@ -10,10 +10,11 @@ import 'growth.dart';
 
 // Content can be written in every app language; missing ones fall back to Korean.
 final _langs = LocaleController.names.keys.toList();
-const _kinds = ['notice', 'tip', 'faq', 'banner', 'legal'];
+const _kinds = ['notice', 'news', 'tip', 'faq', 'banner', 'legal'];
 
 String kindLabel(T t, String k) => switch (k) {
   'notice' => t.cKind_notice,
+  'news' => t.cKind_news,
   'tip' => t.cKind_tip,
   'faq' => t.cKind_faq,
   'banner' => t.cKind_banner,
@@ -75,19 +76,17 @@ class _CouponsState extends State<_Coupons> {
     setState(() => _busy = true);
     final t = context.t;
     try {
-      final r =
-          await context.api.post('/admin/coupons', {
-                'name': _name.text.trim(),
-                'amount': int.parse(_amount.text),
-                'service_code': _service,
-                'phones': _phones.text
-                    .split('\n')
-                    .map((s) => s.trim())
-                    .where((s) => s.isNotEmpty)
-                    .toList(),
-                'all_customers': _all,
-              })
-              as Json;
+      final r = await context.api.post('/admin/coupons', {
+        'name': _name.text.trim(),
+        'amount': int.parse(_amount.text),
+        'service_code': _service,
+        'phones': _phones.text
+            .split('\n')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList(),
+        'all_customers': _all,
+      }) as Json;
       if (mounted) showToast(context, t.cIssued('${r['issued']}'));
     } catch (e) {
       if (mounted) showToast(context, t.error(e));
@@ -191,6 +190,8 @@ class _ContentState extends State<_Content> {
     var kind = item?['kind'] as String? ?? 'notice';
     var active = item?['active'] as bool? ?? true;
     final slug = TextEditingController(text: item?['slug'] as String? ?? '');
+    // Where a tap goes: an in-app route (`coupons`, `service/<code>` = home recommendation) or https.
+    final link = TextEditingController(text: item?['link'] as String? ?? '');
     final titles = {
       for (final l in _langs)
         l: TextEditingController(
@@ -249,6 +250,14 @@ class _ContentState extends State<_Content> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: Space.sm),
+                  TextField(
+                    controller: link,
+                    decoration: InputDecoration(
+                      labelText: t.cLink,
+                      isDense: true,
+                    ),
+                  ),
                   for (final l in _langs) ...[
                     const SizedBox(height: Space.sm),
                     TextField(
@@ -301,7 +310,7 @@ class _ContentState extends State<_Content> {
           },
         },
         'image_url': item?['image_url'],
-        'link': item?['link'],
+        'link': link.text.trim().isEmpty ? null : link.text.trim(),
         'sort_order': item?['sort_order'] ?? 0,
         'starts_at': null,
         'ends_at': null,
@@ -319,7 +328,7 @@ class _ContentState extends State<_Content> {
         if (mounted) showToast(context, t.error(e));
       }
     }
-    disposeAfterClose([slug, ...titles.values, ...bodies.values]);
+    disposeAfterClose([slug, link, ...titles.values, ...bodies.values]);
   }
 
   @override
@@ -347,6 +356,7 @@ class _ContentState extends State<_Content> {
                     label: kindLabel(t, c['kind'] as String),
                     hue: ServiceHues.of(switch (c['kind']) {
                       'notice' => 'kitchen',
+                      'news' => 'aircon',
                       'tip' => 'studio',
                       'faq' => 'mattress',
                       'banner' => 'sofa',

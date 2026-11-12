@@ -23,10 +23,10 @@ void main() {
     final env = await TestEnv.create(fake: fake);
     await pumpCustomerApp(tester, env);
 
-    await pumpUntilFound(tester, find.text(koT.serviceShort('move_out')));
-    await tester.tap(find.text(koT.serviceShort('move_out')));
+    await pumpUntilFound(tester, find.text(koT.dhSvcMoveShort));
+    await tester.tap(find.text(koT.dhSvcMoveShort));
     await settle(tester);
-    await tester.tap(find.text(koT.next)); // quote services start the questionnaire
+    await tester.tap(find.text(koT.service('move_out'))); // the sheet starts the questionnaire
     await settle(tester);
     expect(find.byType(QuoteFlowScreen), findsOneWidget);
     expect(find.text(koT.stepOf('1', '6')), findsOneWidget);
@@ -90,10 +90,10 @@ void main() {
     final env = await TestEnv.create(fake: fake);
     await pumpCustomerApp(tester, env);
 
-    await pumpUntilFound(tester, find.text(koT.serviceShort('move_in')));
-    await tester.tap(find.text(koT.serviceShort('move_in')));
+    await pumpUntilFound(tester, find.text(koT.dhSvcMoveShort));
+    await tester.tap(find.text(koT.dhSvcMoveShort));
     await settle(tester);
-    await tester.tap(find.text(koT.next));
+    await tester.tap(find.text(koT.service('move_in')));
     await settle(tester);
 
     final next = find.widgetWithText(PrimaryButton, koT.next).last;

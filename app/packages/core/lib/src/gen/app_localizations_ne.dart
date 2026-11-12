@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1836,6 +1837,43 @@ class TNe extends T {
   @override
   String get hhHint =>
       'यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।';
+
+  @override
+  String get dhHomeRecommended => 'सिफारिस गरिएका सेवा';
+
+  @override
+  String get dhHomeNews => 'Dahae समाचार';
+
+  @override
+  String get dhSvcMove => 'सर्दा गरिने सरसफाइ (भित्र / बाहिर)';
+
+  @override
+  String get dhSvcMoveShort => 'घर सराइ';
+
+  @override
+  String get dhMovePickTitle => 'तपाईंलाई कुन सरसफाइ चाहिन्छ?';
+
+  @override
+  String get cKind_news => 'समाचार';
+
+  @override
+  String get cLink => 'लिङ्क (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'साइन-अप स्वागत कुपन';
+
+  @override
+  String get welcomePackBody =>
+      'ग्राहकले साइन-अप पूरा गर्दा एक पटक दिइन्छ। बन्द गर्न सबै हटाउनुहोस्।';
+
+  @override
+  String get welcomePackAmount => 'कुपन रकम (KRW)';
+
+  @override
+  String get welcomePackAdd => 'कुपन थप्नुहोस्';
+
+  @override
+  String get welcomePackRemove => 'कुपन हटाउनुहोस्';
 
   @override
   String get themeTitle => 'थिम';

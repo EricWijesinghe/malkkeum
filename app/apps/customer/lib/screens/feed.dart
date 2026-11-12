@@ -4,15 +4,36 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../src/u1_stub.dart'; // u1-stub: delete when U1 lands
 import '../state.dart';
 import 'service.dart';
 
 const _cardRadius = 16.0;
 
-/// Personalized cards from `/feed` (guest) or `/me/feed` (member), each with its "why" line.
+const _artSize = 48.0;
+const _servicePrefix = 'service/';
+
+/// A banner content item whose link is `service/<code>` is a recommended service, not the hero banner.
+String? pickServiceCode(ContentItem item) {
+  final link = item.link ?? item.body['link'];
+  return link is String && link.startsWith(_servicePrefix)
+      ? link.substring(_servicePrefix.length)
+      : null;
+}
+
+/// "Recommended": console picks (banner content linking to a service) first, then the personalized
+/// cards from `/feed` (guest) or `/me/feed` (member), each with its "why" line.
 class FeedSection extends StatelessWidget {
-  const FeedSection({super.key, required this.cards, this.loading = false});
+  const FeedSection({
+    super.key,
+    required this.cards,
+    this.picks = const [],
+    this.loading = false,
+  });
   final List<Json> cards;
+
+  /// Console-written recommendations; one whose service is not in the catalogue is skipped.
+  final List<ContentItem> picks;
 
   /// True before the first answer with nothing cached: shows skeletons instead of an empty gap.
   final bool loading;
@@ -24,13 +45,23 @@ class FeedSection extends StatelessWidget {
         children: [Skeleton(height: 84), SizedBox(height: Space.sm), Skeleton(height: 84)],
       );
     }
-    if (cards.isEmpty) return const SizedBox.shrink();
+    final app = context.app;
+    final shown = [
+      for (final p in picks)
+        if (app.service(pickServiceCode(p) ?? '') != null) p,
+    ];
+    if (cards.isEmpty && shown.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionTitle(context.t.feedHeading),
+        SectionTitle(context.t.dhHomeRecommended),
+        for (final p in shown)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.sm),
+            child: _PickCard(item: p, service: app.service(pickServiceCode(p)!)!),
+          ),
         ForYouChips(cards: cards),
-        const SizedBox(height: Space.sm),
+        if (cards.isNotEmpty) const SizedBox(height: Space.sm),
         for (var i = 0; i < cards.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.sm),
@@ -125,20 +156,71 @@ class FeedCardTile extends StatelessWidget {
         onTap: () => openFeedCard(context, card),
         child: Padding(
           padding: const EdgeInsets.all(Space.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(heading, style: context.text.titleMedium),
-              if (reason != null) ...[
-                const SizedBox(height: Space.xs),
-                Text(reason, style: context.text.bodySmall?.copyWith(color: context.colors.inkSoft)),
-              ],
-            ],
+          child: _ArtRow(
+            art: card['service'] is String ? 'svc_${card['service']}' : null,
+            title: heading,
+            body: reason,
           ),
         ),
       ),
     );
   }
+}
+
+/// 3D art on the left, heading and one supporting line on the right.
+class _ArtRow extends StatelessWidget {
+  const _ArtRow({required this.art, required this.title, this.body});
+  final String? art;
+  final String title;
+  final String? body;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      if (art != null) ...[
+        ExcludeSemantics(child: Icon3D(art!, size: _artSize)),
+        const SizedBox(width: Space.md),
+      ],
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: context.text.titleMedium),
+            if (body != null && body!.isNotEmpty) ...[
+              const SizedBox(height: Space.xs),
+              Text(
+                body!,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.inkSoft,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+/// A console-written recommendation (e.g. "move-in cleaning incl. pre-move-out"): opens its service.
+class _PickCard extends StatelessWidget {
+  const _PickCard({required this.item, required this.service});
+  final ContentItem item;
+  final Service service;
+
+  @override
+  Widget build(BuildContext context) => AppCard(
+    padding: const EdgeInsets.all(Space.md),
+    color: context.colors.primaryTint,
+    onTap: () => Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => ServiceScreen(service: service)),
+    ),
+    child: _ArtRow(
+      art: service.isQuote ? 'rec_move_combo' : 'svc_${service.code}',
+      title: item.title(context.lang),
+      body: item.text(context.lang),
+    ),
+  );
 }
 
 /// Opens the card's service. A subscription card is an account action, so a guest signs in first

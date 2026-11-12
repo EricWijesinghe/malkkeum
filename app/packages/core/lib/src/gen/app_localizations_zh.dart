@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1790,6 +1791,42 @@ class TZh extends T {
 
   @override
   String get hhHint => '保存到该地址，每次预约可单独修改。';
+
+  @override
+  String get dhHomeRecommended => '推荐服务';
+
+  @override
+  String get dhHomeNews => 'Dahae 动态';
+
+  @override
+  String get dhSvcMove => '入住·搬出清洁';
+
+  @override
+  String get dhSvcMoveShort => '搬家';
+
+  @override
+  String get dhMovePickTitle => '您需要哪种搬家清洁？';
+
+  @override
+  String get cKind_news => '动态';
+
+  @override
+  String get cLink => '链接 (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => '注册欢迎券';
+
+  @override
+  String get welcomePackBody => '客户完成注册时发放一次。全部删除即停止发放。';
+
+  @override
+  String get welcomePackAmount => '优惠券金额（韩元）';
+
+  @override
+  String get welcomePackAdd => '添加优惠券';
+
+  @override
+  String get welcomePackRemove => '删除优惠券';
 
   @override
   String get themeTitle => '主题';

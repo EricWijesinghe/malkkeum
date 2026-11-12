@@ -205,11 +205,10 @@ async fn card(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<(),
     Ok(())
 }
 
-/// Welcome pack issued at sign-up, plus an autumn campaign coupon for some customers.
+/// Welcome coupon issued at sign-up (the default `welcome_pack`), plus an autumn campaign coupon for some customers.
 async fn coupons(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<Vec<Coupon>, DemoError> {
     let mut out = vec![
-        (Coupon { id: c.id(), amount: 10_000, service: Some("studio"), issued: created, expires: created + Duration::days(14), used: false }, "스튜디오 첫 예약 1만원 할인", "welcome"),
-        (Coupon { id: c.id(), amount: 5_000, service: None, issued: created, expires: created + Duration::days(14), used: false }, "전 서비스 5천원 할인", "welcome"),
+        (Coupon { id: c.id(), amount: 15_000, service: None, issued: created, expires: created + Duration::days(14), used: false }, "첫 청소 15,000원 웰컴쿠폰", "welcome"),
     ];
     if c.chance(0.3) {
         let expires = if c.chance(0.5) { c.now + Duration::days(10) } else { c.now - Duration::days(2) };

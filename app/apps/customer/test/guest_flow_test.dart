@@ -33,7 +33,7 @@ void main() {
 
       // Language picker is shown on first run only; the test env has already picked one.
       expect(find.text(koT.introStart), findsNothing);
-      expect(find.text(koT.feedHeading), findsOneWidget);
+      expect(find.text(koT.dhHomeRecommended), findsOneWidget);
       expect(find.text(koT.feedTitleDraft), findsOneWidget);
       expect(find.text(koT.feedWhyDraft), findsOneWidget);
       expect(fake.callsTo('GET', '/me'), isEmpty);

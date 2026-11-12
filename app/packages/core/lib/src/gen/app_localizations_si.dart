@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1840,6 +1841,43 @@ class TSi extends T {
 
   @override
   String get hhHint => 'මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.';
+
+  @override
+  String get dhHomeRecommended => 'නිර්දේශිත සේවා';
+
+  @override
+  String get dhHomeNews => 'Dahae පුවත්';
+
+  @override
+  String get dhSvcMove => 'පදිංචියට ඒමේ / යාමේ පිරිසිදු කිරීම';
+
+  @override
+  String get dhSvcMoveShort => 'නිවාස මාරුව';
+
+  @override
+  String get dhMovePickTitle => 'ඔබට අවශ්‍ය පිරිසිදු කිරීම කුමක්ද?';
+
+  @override
+  String get cKind_news => 'පුවත්';
+
+  @override
+  String get cLink => 'සබැඳිය (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'ලියාපදිංචි පිළිගැනීමේ කූපන්';
+
+  @override
+  String get welcomePackBody =>
+      'පාරිභෝගිකයා ලියාපදිංචිය අවසන් කළ විට එක් වරක් නිකුත් වේ. අක්‍රිය කිරීමට සියල්ල ඉවත් කරන්න.';
+
+  @override
+  String get welcomePackAmount => 'කූපන් වටිනාකම (KRW)';
+
+  @override
+  String get welcomePackAdd => 'කූපනයක් එක් කරන්න';
+
+  @override
+  String get welcomePackRemove => 'කූපනය ඉවත් කරන්න';
 
   @override
   String get themeTitle => 'තේමාව';

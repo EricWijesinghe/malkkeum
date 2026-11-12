@@ -317,14 +317,29 @@ async fn audit(c: &mut Ctx<'_>, world: &World, booked: &[BookingRec]) -> Result<
     Ok(())
 }
 
-/// Console content: banners, notices, tips, FAQ and two legal pages. Every title says "(샘플)".
+/// Console content: banners, news, notices, tips, FAQ and two legal pages. Made-up but realistic copy
+/// for the home screen (banner, recommendation, news, tips); notices, FAQ and legal say "(샘플)".
 async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
+    // The first banner without a service link is the home hero; `service/<code>` makes a recommendation.
     let banners = [
-        (json!({"ko": "(샘플) 가을맞이 입주 청소 할인", "en": "(sample) Autumn move-in cleaning discount"}), json!({"theme": "mint", "link": "coupons"}), Some("coupons")),
-        (json!({"ko": "(샘플) 파트너 모집 중", "en": "(sample) Partners wanted"}), json!({"theme": "sun", "link": "partner"}), None),
+        (json!({"ko": "첫 청소 15,000원 웰컴쿠폰", "en": "₩15,000 welcome coupon for your first clean"}), json!({"theme": "sun"}), Some("coupons")),
+        (
+            json!({"ko": "입주 청소, 이사 전 청소까지 한 번에", "en": "Move-in cleaning, including the pre-move-out clean"}),
+            json!({"text": {"ko": "나가는 집과 들어가는 집을 함께 맡기면 일정을 한 번에 맞춰 드려요.", "en": "Book both homes together and we line up the two visits for you."}}),
+            Some("service/move_in"),
+        ),
+        (json!({"ko": "파트너 모집 중", "en": "Partners wanted"}), json!({"theme": "sun"}), Some("partner")),
     ];
     for (i, (title, body, link)) in banners.into_iter().enumerate() {
         insert_content(c, "banner", None, title, body, link, i as i32).await?;
+    }
+    let news = [
+        (json!({"ko": "원룸 청소 서비스 지역 확대", "en": "Studio cleaning now covers more areas"}), "이번 달부터 성남시 분당구와 하남시에서도 원룸 청소를 예약할 수 있어요. 주소를 등록하면 예약 가능 여부를 바로 알려 드려요."),
+        (json!({"ko": "2in1 에어컨 청소 예약 오픈", "en": "2-in-1 aircon cleaning is open for booking"}), "스탠드와 벽걸이를 한 번에 청소하는 2in1 상품을 예약할 수 있어요. 분해 세척과 살균까지 포함돼요."),
+        (json!({"ko": "상담 운영 시간 안내", "en": "Consultation hours"}), "상담은 평일 09:00~18:00에 운영해요. 보통 10분 안에 답변드려요."),
+    ];
+    for (i, (title, text)) in news.into_iter().enumerate() {
+        insert_content(c, "news", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
     }
     let notices = [
         (json!({"ko": "(샘플) 11월 정기 점검 안내", "en": "(sample) November maintenance"}), "11월 15일 새벽 2시부터 30분간 예약 시스템을 점검해요."),
@@ -334,9 +349,10 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
         insert_content(c, "notice", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
     }
     let tips = [
-        (json!({"ko": "(샘플) 에어컨 필터 청소 주기", "en": "(sample) How often to clean the aircon filter"}), "두세 달에 한 번 물로 헹구면 냄새와 전기료를 함께 줄일 수 있어요."),
-        (json!({"ko": "(샘플) 욕실 물때 없애는 법", "en": "(sample) Removing bathroom limescale"}), "식초 물을 뿌리고 10분 뒤 헹구면 대부분 지워져요."),
-        (json!({"ko": "(샘플) 이사 전 체크리스트", "en": "(sample) Move-out checklist"}), "보관 상자, 가전 분리, 가스·전기 정산일을 미리 적어 두세요."),
+        (json!({"ko": "에어컨 냄새의 원인은?", "en": "What causes aircon odours?"}), "냉각핀에 남은 물기에 곰팡이가 자라면 쉰 냄새가 나요. 끄기 전 10분간 송풍으로 말리고, 필터는 2주에 한 번 씻어 주세요."),
+        (json!({"ko": "에어컨 필터 청소 주기", "en": "How often to clean the aircon filter"}), "두세 달에 한 번 물로 헹구면 냄새와 전기료를 함께 줄일 수 있어요."),
+        (json!({"ko": "욕실 물때 없애는 법", "en": "Removing bathroom limescale"}), "식초 물을 뿌리고 10분 뒤 헹구면 대부분 지워져요."),
+        (json!({"ko": "이사 전 체크리스트", "en": "Move-out checklist"}), "보관 상자, 가전 분리, 가스·전기 정산일을 미리 적어 두세요."),
     ];
     for (i, (title, text)) in tips.into_iter().enumerate() {
         insert_content(c, "tip", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;

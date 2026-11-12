@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1828,6 +1829,43 @@ class TTh extends T {
 
   @override
   String get hhHint => 'บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง';
+
+  @override
+  String get dhHomeRecommended => 'บริการแนะนำ';
+
+  @override
+  String get dhHomeNews => 'ข่าวสาร Dahae';
+
+  @override
+  String get dhSvcMove => 'ทำความสะอาดย้ายเข้า / ย้ายออก';
+
+  @override
+  String get dhSvcMoveShort => 'ย้ายบ้าน';
+
+  @override
+  String get dhMovePickTitle => 'คุณต้องการทำความสะอาดแบบไหน?';
+
+  @override
+  String get cKind_news => 'ข่าวสาร';
+
+  @override
+  String get cLink => 'ลิงก์ (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'คูปองต้อนรับเมื่อสมัครสมาชิก';
+
+  @override
+  String get welcomePackBody =>
+      'ออกให้หนึ่งครั้งเมื่อลูกค้าสมัครเสร็จ ลบทั้งหมดเพื่อปิดใช้งาน';
+
+  @override
+  String get welcomePackAmount => 'มูลค่าคูปอง (KRW)';
+
+  @override
+  String get welcomePackAdd => 'เพิ่มคูปอง';
+
+  @override
+  String get welcomePackRemove => 'ลบคูปอง';
 
   @override
   String get themeTitle => 'ธีม';

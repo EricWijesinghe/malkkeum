@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1825,6 +1826,43 @@ class TEn extends T {
 
   @override
   String get hhHint => 'Saved to this address and editable per booking.';
+
+  @override
+  String get dhHomeRecommended => 'Recommended';
+
+  @override
+  String get dhHomeNews => 'Dahae News';
+
+  @override
+  String get dhSvcMove => 'Move-in / move-out cleaning';
+
+  @override
+  String get dhSvcMoveShort => 'Moving';
+
+  @override
+  String get dhMovePickTitle => 'Which moving clean do you need?';
+
+  @override
+  String get cKind_news => 'News';
+
+  @override
+  String get cLink => 'Link (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Sign-up welcome coupons';
+
+  @override
+  String get welcomePackBody =>
+      'Issued once when a customer finishes sign-up. Remove all to switch it off.';
+
+  @override
+  String get welcomePackAmount => 'Coupon amount (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Add coupon';
+
+  @override
+  String get welcomePackRemove => 'Remove coupon';
 
   @override
   String get themeTitle => 'Theme';

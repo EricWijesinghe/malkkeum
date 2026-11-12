@@ -49,7 +49,7 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
     }
     let has_content: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM content_items)").fetch_one(db).await?;
     if !has_content {
-        let welcome = json!({ "ko": "첫 예약 쿠폰 2장 받기", "en": "2 welcome coupons for your first booking", "ja": "初回予約クーポン2枚", "zh": "首单优惠券2张", "vi": "2 phiếu giảm giá cho lần đặt đầu" });
+        let welcome = json!({ "ko": "첫 청소 15,000원 웰컴쿠폰", "en": "₩15,000 welcome coupon for your first clean", "ja": "初回清掃 15,000ウォン ウェルカムクーポン", "zh": "首次清洁 15,000韩元欢迎券", "vi": "Phiếu chào mừng 15.000 KRW cho lần dọn đầu" });
         sqlx::query("INSERT INTO content_items (kind, title, body, sort_order) VALUES ('banner', $1, $2, 0)")
             .bind(&welcome)
             .bind(json!({"theme":"sun","link":"coupons"}))

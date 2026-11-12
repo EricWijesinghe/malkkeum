@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1822,6 +1823,43 @@ class TVi extends T {
 
   @override
   String get hhHint => 'Lưu theo địa chỉ này và có thể đổi cho từng lịch hẹn.';
+
+  @override
+  String get dhHomeRecommended => 'Dịch vụ gợi ý';
+
+  @override
+  String get dhHomeNews => 'Tin Dahae';
+
+  @override
+  String get dhSvcMove => 'Dọn nhà khi chuyển đến / chuyển đi';
+
+  @override
+  String get dhSvcMoveShort => 'Chuyển nhà';
+
+  @override
+  String get dhMovePickTitle => 'Bạn cần dọn nhà loại nào?';
+
+  @override
+  String get cKind_news => 'Tin tức';
+
+  @override
+  String get cLink => 'Liên kết (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Phiếu chào mừng khi đăng ký';
+
+  @override
+  String get welcomePackBody =>
+      'Phát một lần khi khách hoàn tất đăng ký. Xóa hết để tắt.';
+
+  @override
+  String get welcomePackAmount => 'Giá trị phiếu (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Thêm phiếu';
+
+  @override
+  String get welcomePackRemove => 'Xóa phiếu';
 
   @override
   String get themeTitle => 'Giao diện';

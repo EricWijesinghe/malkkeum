@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1838,6 +1839,43 @@ class TRu extends T {
 
   @override
   String get hhHint => 'Сохраняется за этим адресом и меняется в каждой брони.';
+
+  @override
+  String get dhHomeRecommended => 'Рекомендуем';
+
+  @override
+  String get dhHomeNews => 'Новости Dahae';
+
+  @override
+  String get dhSvcMove => 'Уборка при въезде / выезде';
+
+  @override
+  String get dhSvcMoveShort => 'Переезд';
+
+  @override
+  String get dhMovePickTitle => 'Какая уборка вам нужна?';
+
+  @override
+  String get cKind_news => 'Новости';
+
+  @override
+  String get cLink => 'Ссылка (coupons, service/move_in, https://…)';
+
+  @override
+  String get welcomePackTitle => 'Приветственные купоны при регистрации';
+
+  @override
+  String get welcomePackBody =>
+      'Выдаются один раз после завершения регистрации. Удалите все, чтобы отключить.';
+
+  @override
+  String get welcomePackAmount => 'Сумма купона (KRW)';
+
+  @override
+  String get welcomePackAdd => 'Добавить купон';
+
+  @override
+  String get welcomePackRemove => 'Удалить купон';
 
   @override
   String get themeTitle => 'Тема';
