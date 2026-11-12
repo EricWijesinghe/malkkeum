@@ -61,8 +61,9 @@ class _PayMethodPickerState extends State<PayMethodPicker> {
   }
 
   void _reload() {
-    _channels = _loadChannels();
-    setState(() {});
+    setState(() {
+      _channels = _loadChannels();
+    });
   }
 
   /// A billing channel already saved picks that method; otherwise it is registered first.

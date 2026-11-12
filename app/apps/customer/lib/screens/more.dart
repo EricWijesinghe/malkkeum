@@ -609,7 +609,7 @@ class ContentDetailScreen extends StatelessWidget {
         if (item.imageUrl != null) ...[
           ClipRRect(
             borderRadius: BorderRadius.circular(Radii.card),
-            child: Image.network(item.imageUrl!),
+            child: Image.network(item.imageUrl!, cacheWidth: 720),
           ),
           const SizedBox(height: Space.lg),
         ],

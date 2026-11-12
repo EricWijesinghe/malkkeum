@@ -1,3 +1,5 @@
+import 'dart:async';
+
 // Growth widgets: honest social proof, the review sheet with photos, and the referral card.
 // Every number comes from the server; a missing or null value hides its line.
 
@@ -20,12 +22,22 @@ class SocialProofCard extends StatefulWidget {
 }
 
 class _SocialProofCardState extends State<SocialProofCard> {
+  static const _refreshEvery = Duration(seconds: 30);
   Json? _proof;
+  Timer? _ticker;
 
   @override
   void initState() {
     super.initState();
     _load();
+    // Only this card rebuilds on a tick; the rest of the home stays put.
+    _ticker = Timer.periodic(_refreshEvery, (_) => _load());
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -55,7 +67,11 @@ class _SocialProofCardState extends State<SocialProofCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (homes != null)
-            Text(t.proofHomes('$homes'), style: context.text.titleSmall),
+            CountUp(
+              value: homes,
+              format: (x) => t.proofHomes('$x'),
+              style: context.text.titleSmall,
+            ),
           if (rating != null && count != null) ...[
             const SizedBox(height: Space.xs),
             Text(

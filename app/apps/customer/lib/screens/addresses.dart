@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'household_editor.dart';
 
@@ -174,6 +175,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   }
 
   Future<void> _save() async {
+    // Guest drafts stay on screen while the sign-in sheet is up, so nothing typed is lost.
+    if (!await requireSignIn(context) || !mounted) return;
     setState(() => _busy = true);
     try {
       final saved = await context.appRead.saveAddress({

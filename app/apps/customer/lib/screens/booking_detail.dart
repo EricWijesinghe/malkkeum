@@ -269,7 +269,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 }),
               );
               if (sent) {
-                messenger.showSnackBar(SnackBar(content: Text(t.caseSubmitted)));
+                messenger.showSnackBar(
+                  SnackBar(content: Text(t.caseSubmitted)),
+                );
               }
             },
           ),
@@ -589,49 +591,52 @@ class _Timeline extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < steps.length; i++)
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Column(
-                    children: [
-                      _Dot(
-                        done: b.status >= steps[i].$1,
-                        current: b.status == steps[i].$1,
-                      ),
-                      if (i < steps.length - 1)
-                        Expanded(
-                          child: Container(
-                            width: 2,
-                            color: b.status > steps[i].$1
-                                ? context.colors.fresh
-                                : context.colors.line,
-                          ),
+            EnterMotion(
+              delay: Duration(milliseconds: 80 * i),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      children: [
+                        _Dot(
+                          done: b.status >= steps[i].$1,
+                          current: b.status == steps[i].$1,
                         ),
-                    ],
-                  ),
-                  const SizedBox(width: Space.md),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: Space.md),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            steps[i].$2,
-                            style: context.text.titleSmall?.copyWith(
-                              color: b.status >= steps[i].$1
-                                  ? context.colors.ink
-                                  : context.colors.inkMuted,
+                        if (i < steps.length - 1)
+                          Expanded(
+                            child: Container(
+                              width: 2,
+                              color: b.status > steps[i].$1
+                                  ? context.colors.fresh
+                                  : context.colors.line,
                             ),
                           ),
-                          if (steps[i].$3 != null)
-                            Text(steps[i].$3!, style: context.text.bodySmall),
-                        ],
+                      ],
+                    ),
+                    const SizedBox(width: Space.md),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: Space.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              steps[i].$2,
+                              style: context.text.titleSmall?.copyWith(
+                                color: b.status >= steps[i].$1
+                                    ? context.colors.ink
+                                    : context.colors.inkMuted,
+                              ),
+                            ),
+                            if (steps[i].$3 != null)
+                              Text(steps[i].$3!, style: context.text.bodySmall),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
         ],
@@ -645,30 +650,33 @@ class _Dot extends StatelessWidget {
   final bool done;
   final bool current;
   @override
-  Widget build(BuildContext context) => AnimatedContainer(
-    duration: Motion.standard,
-    width: 24,
-    height: 24,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: done ? context.colors.fresh : context.colors.surface,
-      border: Border.all(
-        color: done ? context.colors.fresh : context.colors.line,
-        width: 2,
+  Widget build(BuildContext context) => Pulse(
+    active: current,
+    child: AnimatedContainer(
+      duration: Motion.standard,
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: done ? context.colors.fresh : context.colors.surface,
+        border: Border.all(
+          color: done ? context.colors.fresh : context.colors.line,
+          width: 2,
+        ),
+        boxShadow: current
+            ? [
+                BoxShadow(
+                  color: context.colors.fresh.withValues(alpha: 0.3),
+                  blurRadius: 0,
+                  spreadRadius: 5,
+                ),
+              ]
+            : null,
       ),
-      boxShadow: current
-          ? [
-              BoxShadow(
-                color: context.colors.fresh.withValues(alpha: 0.3),
-                blurRadius: 0,
-                spreadRadius: 5,
-              ),
-            ]
+      child: done
+          ? const Icon(Icons.check_rounded, size: 15, color: Colors.white)
           : null,
     ),
-    child: done
-        ? const Icon(Icons.check_rounded, size: 15, color: Colors.white)
-        : null,
   );
 }
 

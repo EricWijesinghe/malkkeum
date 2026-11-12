@@ -28,7 +28,7 @@ void main() {
     stockCustomerApi(fake);
     final env = await TestEnv.create(fake: fake);
     final app = await pumpCustomerScreen(tester, env, const AddressesScreen());
-    await app.loadAddresses();
+    await tester.runAsync(app.loadAddresses);
     await settle(tester);
     final before = fake.callsTo('GET', '/me/addresses').length;
 

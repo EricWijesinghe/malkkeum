@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../theme.dart';
@@ -129,7 +130,10 @@ class Tag extends StatelessWidget {
           Flexible(
             child: Text(
               label,
-              style: context.text.labelMedium?.copyWith(color: fg, fontSize: 12),
+              style: context.text.labelMedium?.copyWith(
+                color: fg,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
@@ -178,15 +182,24 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !busy;
+    final c = context.colors;
     final fill = color ?? context.primary;
+    // Brand gradient unless the caller passes a solid color (e.g. danger).
+    final gradient = color == null && enabled
+        ? LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [c.brandStart, c.brandEnd],
+          )
+        : null;
     return Pressable(
       enabled: enabled,
       radius: BorderRadius.circular(Radii.input),
       shadows: enabled
           ? [
               BoxShadow(
-                color: fill.withValues(
-                  alpha: context.colors.isDark ? 0.5 : 0.30,
+                color: (gradient?.colors.first ?? fill).withValues(
+                  alpha: c.isDark ? 0.5 : 0.30,
                 ),
                 blurRadius: 18,
                 spreadRadius: -2,
@@ -194,27 +207,44 @@ class PrimaryButton extends StatelessWidget {
               ),
             ]
           : const [],
-      child: FilledButton(
-        style: color == null
-            ? null
-            : FilledButton.styleFrom(backgroundColor: color),
-        onPressed: busy ? null : onPressed,
-        child: AnimatedSwitcher(
-          duration: Motion.micro,
-          child: busy
-              ? const SizedBox(
-                  key: ValueKey('busy'),
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.4,
-                    color: Colors.white,
-                  ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(Radii.input),
+        ),
+        child: FilledButton(
+          style: gradient != null
+              ? FilledButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                 )
-              : Text(label, key: const ValueKey('label')),
+              : color == null
+              ? null
+              : FilledButton.styleFrom(backgroundColor: color),
+          // Haptic on tap; busy/disabled never fire.
+          onPressed: busy || onPressed == null ? null : _tap,
+          child: AnimatedSwitcher(
+            duration: Motion.micro,
+            child: busy
+                ? const SizedBox(
+                    key: ValueKey('busy'),
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(label, key: const ValueKey('label')),
+          ),
         ),
       ),
     );
+  }
+
+  void _tap() {
+    HapticFeedback.lightImpact();
+    onPressed?.call();
   }
 }
 

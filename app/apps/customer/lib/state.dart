@@ -1,14 +1,19 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
-  AppState(this.api, this.realtime, {Analytics? analytics}) : analytics = analytics ?? Analytics.off() {
+  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics})
+    : cache = cache ?? JsonCache(),
+      analytics = analytics ?? Analytics.off() {
     realtime.events.listen(_onEvent);
   }
 
   final ApiClient api;
   final Realtime realtime;
+  final JsonCache cache;
   final Analytics analytics;
 
   /// Analytics follow the server's marketing consent. Any failure leaves analytics off.
@@ -38,6 +43,8 @@ class AppState extends ChangeNotifier {
       services.where((s) => s.code == code).firstOrNull;
 
   Future<void> loadAll() async {
+    // Disk restore never gates the network: a slow or stuck keystore must not hold up sign-in data.
+    unawaited(restoreServices());
     await Future.wait([
       loadProfile(),
       loadServices(),
@@ -56,11 +63,25 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadServices() async {
-    services = (await api.get('/services') as List)
-        .map((e) => Service.fromJson(e as Json))
-        .toList();
+  /// Paints the last catalogue from disk before the network answers.
+  Future<void> restoreServices() async {
+    if (services.isNotEmpty) return;
+    final cached = await cache.read('services');
+    if (cached is! List || services.isNotEmpty) return; // the network won the race
+    try {
+      services = cached.map((e) => Service.fromJson(e as Json)).toList();
+    } on Object {
+      // Stale snapshot from an older schema: ignore it and wait for the network.
+      return;
+    }
     notifyListeners();
+  }
+
+  Future<void> loadServices() async {
+    final raw = await api.get('/services') as List;
+    services = raw.map((e) => Service.fromJson(e as Json)).toList();
+    notifyListeners();
+    unawaited(cache.write('services', raw));
   }
 
   Future<void> loadAddresses() async {

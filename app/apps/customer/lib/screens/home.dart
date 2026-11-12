@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
@@ -23,8 +26,24 @@ class _HomeTabState extends State<HomeTab> {
   List<ContentItem> _banners = const [];
   List<ContentItem> _notices = const [];
   List<Json> _feed = const [];
+  bool _loaded = false;
   int _unread = 0;
   int _seenVersion = -1;
+
+  /// The feed from the last session paints first; the network answer then replaces it.
+  @override
+  void initState() {
+    super.initState();
+    _restoreFeed();
+  }
+
+  String get _feedKey => Deps.read(context).session.signedIn ? 'feed.me' : 'feed.guest';
+
+  Future<void> _restoreFeed() async {
+    final cached = await context.appRead.cache.read(_feedKey);
+    if (!mounted || _loaded || cached is! List) return;
+    setState(() => _feed = cached.cast<Json>());
+  }
 
   /// Guests see the public feed and content; account data loads only when signed in.
   Future<void> _load() async {
@@ -43,7 +62,10 @@ class _HomeTabState extends State<HomeTab> {
       api.get(signedIn ? '/me/feed' : '/feed', query: {'district': district}),
     ]);
     if (!mounted) return;
+    final feed = ((results[3] as Json)['cards'] as List).cast<Json>();
+    unawaited(context.appRead.cache.write(_feedKey, feed));
     setState(() {
+      _loaded = true;
       _bookings = (results[0] as List)
           .map((e) => Booking.fromJson(e as Json))
           .toList();
@@ -54,7 +76,7 @@ class _HomeTabState extends State<HomeTab> {
           .map((e) => ContentItem(e as Json))
           .take(3)
           .toList();
-      _feed = ((results[3] as Json)['cards'] as List).cast<Json>();
+      _feed = feed;
     });
   }
 
@@ -86,6 +108,8 @@ class _HomeTabState extends State<HomeTab> {
     final usableCoupons = app.coupons.where((c) => c.usable).length;
     final signedIn = Deps.of(context).session.signedIn;
     return RefreshIndicator(
+      color: context.primary,
+      backgroundColor: context.colors.surface,
       onRefresh: () async {
         await Future.wait([_load(), app.loadCoupons(), app.loadAddresses()]);
       },
@@ -127,11 +151,10 @@ class _HomeTabState extends State<HomeTab> {
               children: [
                 StaggerIn(
                   index: 0,
-                  child: Text(
-                    app.name.isEmpty
+                  child: _GreetingHeader(
+                    text: app.name.isEmpty
                         ? timeGreeting(t, DateTime.now())
                         : t.homeGreeting(app.name),
-                    style: context.text.headlineSmall,
                   ),
                 ),
                 const SizedBox(height: Space.lg),
@@ -139,7 +162,7 @@ class _HomeTabState extends State<HomeTab> {
                   StaggerIn(index: 1, child: _UpcomingCard(booking: next)),
                   const SizedBox(height: Space.md),
                 ],
-                FeedSection(cards: _feed),
+                FeedSection(cards: _feed, loading: !_loaded),
                 const SizedBox(height: Space.lg),
                 if (signedIn && app.addresses.isEmpty && app.services.isNotEmpty) ...[
                   _AddAddressCard(),
@@ -164,10 +187,11 @@ class _HomeTabState extends State<HomeTab> {
                 ],
                 const SizedBox(height: Space.lg),
                 const SocialProofCard(),
-                if (signedIn) ...[
-                  const SizedBox(height: Space.md),
-                  const ReferralCard(),
-                ],
+                const SizedBox(height: Space.md),
+                if (signedIn)
+                  const ReferralCard()
+                else
+                  _GuestReferralGate(onSignedIn: _load),
                 const SizedBox(height: Space.lg),
                 const StaggerIn(index: 4, child: _TrustRow()),
                 if (_notices.isNotEmpty) ...[
@@ -204,6 +228,60 @@ String timeGreeting(T t, DateTime now) {
   if (h < 12) return t.greetMorning;
   if (h < 18) return t.greetAfternoon;
   return t.greetEvening;
+}
+
+/// Greeting over a wash that shifts with the time of day (sunrise, afternoon, dusk).
+class _GreetingHeader extends StatelessWidget {
+  const _GreetingHeader({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final h = DateTime.now().hour;
+    final c = context.colors;
+    final top = h < 12
+        ? c.sunTint
+        : (h < 18 ? c.primaryTint : c.tintOf(ServiceHues.of('studio')));
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Radii.card),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [top, c.canvas],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(Space.md),
+        child: Text(text, style: context.text.headlineSmall),
+      ),
+    );
+  }
+}
+
+/// Referral needs an account. Tapping asks for sign-in, then shows the real card in place.
+class _GuestReferralGate extends StatelessWidget {
+  const _GuestReferralGate({required this.onSignedIn});
+  final Future<void> Function() onSignedIn;
+
+  @override
+  Widget build(BuildContext context) => AppCard(
+    color: context.colors.primaryTint,
+    onTap: () async {
+      if (!await requireSignIn(context) || !context.mounted) return;
+      await onSignedIn();
+    },
+    child: Row(
+      children: [
+        Icon(Icons.card_giftcard_rounded, color: context.primary, size: 28),
+        const SizedBox(width: Space.md),
+        Expanded(
+          child: Text(context.t.referralTitle, style: context.text.bodyMedium),
+        ),
+        const Icon(Icons.chevron_right_rounded),
+      ],
+    ),
+  );
 }
 
 class _AddressChip extends StatelessWidget {
