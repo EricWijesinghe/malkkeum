@@ -24,9 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final challenge = await Deps.read(
-        context,
-      ).session.staffLogin(_email.text.trim(), _password.text);
+      final challenge = await Deps.read(context).session
+          .staffLogin(_email.text.trim(), _password.text);
       if (mounted && challenge != null) setState(() => _challenge = challenge);
     } on ApiException catch (e) {
       if (mounted) {
@@ -70,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           spacing: 8,
                           runSpacing: 8,
                           children: [
+                            const DahaeLogo(size: 40),
                             for (final c in const [
                               'bathroom',
                               'kitchen',

@@ -12,6 +12,9 @@ import 'more.dart';
 import 'quotes.dart';
 import 'schedule.dart';
 
+/// Bottom-bar 3D icon size (dp).
+const double _navIcon = 28;
+
 /// Routes by account state: onboarding -> waiting for approval -> app.
 class Gate extends StatefulWidget {
   const Gate({super.key});
@@ -152,11 +155,27 @@ class _PartnerShellState extends State<PartnerShell> {
     try {
       switch (target) {
         case BookingTarget(:final bookingId):
-          await nav.push(MaterialPageRoute<void>(builder: (_) => JobDetailScreen(id: bookingId)));
+          await nav.push(
+            MaterialPageRoute<void>(
+              builder: (_) => JobDetailScreen(id: bookingId),
+            ),
+          );
         case ChatTarget(:final threadId):
-          final thread = await findChatThread(api, '/partner/threads', threadId);
+          final thread = await findChatThread(
+            api,
+            '/partner/threads',
+            threadId,
+          );
           if (thread == null) return;
-          await nav.push(MaterialPageRoute<void>(builder: (_) => OpsRoom(threadId: thread.id, topic: thread.topic, bookingId: thread.bookingId)));
+          await nav.push(
+            MaterialPageRoute<void>(
+              builder: (_) => OpsRoom(
+                threadId: thread.id,
+                topic: thread.topic,
+                bookingId: thread.bookingId,
+              ),
+            ),
+          );
       }
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
@@ -167,8 +186,15 @@ class _PartnerShellState extends State<PartnerShell> {
   Widget build(BuildContext context) {
     final t = context.t;
     final pro = context.pro;
-    Widget badge(IconData i, int n) =>
-        Badge(isLabelVisible: n > 0, label: Text('$n'), child: Icon(i));
+    Widget badge(Widget icon, int n) =>
+        Badge(isLabelVisible: n > 0, label: Text('$n'), child: icon);
+    // 3D nav art (plan §4): the selected tab pops, the rest stay flat.
+    NavigationDestination tab(String id, String label, [int count = 0]) =>
+        NavigationDestination(
+          icon: badge(Icon3D(id, size: _navIcon), count),
+          selectedIcon: badge(Icon3D(id, active: true, size: _navIcon), count),
+          label: label,
+        );
     return Scaffold(
       body: IndexedStack(
         index: _tab,
@@ -184,26 +210,11 @@ class _PartnerShellState extends State<PartnerShell> {
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.search_rounded),
-            label: t.pTabJobs,
-          ),
-          NavigationDestination(
-            icon: badge(Icons.request_quote_outlined, pro.unseenQuotes),
-            label: t.pTabQuotes,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.calendar_month_outlined),
-            label: t.pTabSchedule,
-          ),
-          NavigationDestination(
-            icon: badge(Icons.chat_bubble_outline_rounded, pro.unreadChats),
-            label: t.tabChat,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.menu_rounded),
-            label: t.tabMore,
-          ),
+          tab('p_nav_jobs', t.pTabJobs),
+          tab('p_nav_quotes', t.pTabQuotes, pro.unseenQuotes),
+          tab('p_nav_schedule', t.pTabSchedule),
+          tab('nav_chat', t.tabChat, pro.unreadChats),
+          tab('nav_more', t.tabMore),
         ],
       ),
     );

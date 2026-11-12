@@ -84,7 +84,7 @@ async fn enrol_start(State(s): State<AppState>, Json(req): Json<MfaInput>) -> Ap
         .await?;
     Ok(Json(json!({
         "secret": totp::encode_secret(&secret),
-        "otpauth_uri": totp::otpauth_uri("Malkkeum staff", &email, &secret),
+        "otpauth_uri": totp::otpauth_uri("Dahae staff", &email, &secret),
     })))
 }
 

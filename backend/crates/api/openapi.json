@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Malkkeum API",
+    "title": "Dahae API",
     "version": "1.0.0",
     "summary": "Customer, partner (pro), member and staff API. Versioning and deprecation: docs/api/README.md.",
     "description": "All business routes live under /v1 (health and app-links at the root). Errors use the envelope {\"error\":{\"code\":\"<stable_code>\",\"message\":\"<optional>\"}}. Lists are cursor-paginated where marked: pass the X-Next-Cursor response header back as `cursor`. Business dates are Korean dates (KST); timestamps are RFC 3339 in UTC."

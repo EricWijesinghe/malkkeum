@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1366, 800);
-  if (!window.Create(L"말끔 파트너", origin, size)) {
+  if (!window.Create(L"다해 파트너", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

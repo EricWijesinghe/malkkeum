@@ -64,11 +64,11 @@ function buildHouse(theme) {
   const door = roundedBox(0.56, 0.92, 0.12, 0.08, clay(theme.door, 0.45));
   door.position.set(0, 0.5, 1.02);
   g.add(door);
-  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), clay('#FFD166', 0.3));
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), clay('#17232C', 0.3));
   knob.position.set(0.17, 0.5, 1.1);
   g.add(knob);
 
-  const glow = new THREE.MeshStandardMaterial({ color: '#FFF4C2', emissive: '#FFD166', emissiveIntensity: 1.1, roughness: 0.3 });
+  const glow = new THREE.MeshStandardMaterial({ color: '#FFF6D6', emissive: '#FFD95A', emissiveIntensity: 1.1, roughness: 0.3 });
   for (const x of [-0.75, 0.75]) {
     const w = roundedBox(0.5, 0.46, 0.1, 0.06, glow);
     w.position.set(x, 1.1, 1.02);
@@ -122,15 +122,15 @@ function sparkles(count) {
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  return new THREE.Points(geo, new THREE.PointsMaterial({ color: '#BFD3FF', size: 0.06, transparent: true, opacity: 0.9, depthWrite: false }));
+  return new THREE.Points(geo, new THREE.PointsMaterial({ color: '#E3F4F8', size: 0.06, transparent: true, opacity: 0.9, depthWrite: false }));
 }
 
 function themeColors() {
   const dark = document.documentElement.dataset.theme !== 'light';
-  const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#3B5BFD';
+  const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#187A8F';
   return dark
-    ? { wall: '#F4F1FF', roof: brand, door: '#FF7A59', lawn: '#34D399', soil: '#3B2F5C', bush: '#10B981', key: 1.6, amb: 0.7, wallGlow: 0.18 }
-    : { wall: '#FFFFFF', roof: brand, door: '#FF7A59', lawn: '#4ADE80', soil: '#C7B8F5', bush: '#22C55E', key: 1.9, amb: 0.9, wallGlow: 0.04 };
+    ? { wall: '#EEF4F7', roof: brand, door: '#FFD95A', lawn: '#1E9EBA', soil: '#12606F', bush: '#5CC8DE', key: 1.6, amb: 0.7, wallGlow: 0.18 }
+    : { wall: '#FFFFFF', roof: brand, door: '#FFD95A', lawn: '#5CC8DE', soil: '#BFE6EF', bush: '#1E9EBA', key: 1.9, amb: 0.9, wallGlow: 0.04 };
 }
 
 function start() {
@@ -145,7 +145,7 @@ function start() {
   camera.position.set(0, 3.2, 10.5);
   camera.lookAt(0, 1, 0);
 
-  const hemi = new THREE.HemisphereLight('#E6ECFF', '#2A1F4A', 0.8);
+  const hemi = new THREE.HemisphereLight('#E3F4F8', '#12303A', 0.8);
   scene.add(hemi);
   const key = new THREE.DirectionalLight('#ffffff', 1.6);
   key.position.set(4, 7, 5);
@@ -153,7 +153,7 @@ function start() {
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.radius = 6;
   scene.add(key);
-  const rim = new THREE.PointLight('#7C9BFF', 18, 20);
+  const rim = new THREE.PointLight('#5CC8DE', 18, 20);
   rim.position.set(-4, 3, -3);
   scene.add(rim);
 

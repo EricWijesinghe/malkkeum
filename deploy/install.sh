@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 말끔 서버 설치 프로그램 (Ubuntu 22.04 / 24.04, Debian 12)
+# 다해 서버 설치 프로그램 (Ubuntu 22.04 / 24.04, Debian 12)
 #
 #   curl -fsSL https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/main/install.sh | sudo bash
 #   (베타 채널: .../beta/install.sh)
@@ -80,7 +80,7 @@ wait_healthy() { # 도메인을 이 서버로 직접 불러서 응답을 기다�
 [ "$(id -u)" -eq 0 ] || die "관리자 권한이 필요해요. 명령 앞에 sudo 를 붙여 다시 실행해 주세요."
 command -v apt-get >/dev/null || die "Ubuntu 또는 Debian 서버에서 실행해 주세요."
 
-say "말끔 서버 설치를 시작합니다"
+say "다해 서버 설치를 시작합니다"
 mkdir -p "$DIR/backups"
 cd "$DIR"
 
@@ -149,7 +149,7 @@ fi
 if [ "$FRESH" = 1 ]; then
   umask 077
   cat > .env <<EOF
-# 말끔 서버 설정 — install.sh 가 만들었어요. 이 파일을 안전한 곳에 따로 보관하세요.
+# 다해 서버 설정 — install.sh 가 만들었어요. 이 파일을 안전한 곳에 따로 보관하세요.
 # DATA_KEY 를 잃어버리면 저장된 결제·연동 키와 계좌 정보를 복구할 수 없어요.
 DB_PASSWORD=$(rand_hex 24)
 JWT_SECRET=$(rand_hex 32)
@@ -214,7 +214,7 @@ EOF
 # 관리 명령. 본문은 따옴표 heredoc 이라 그대로 옮겨지고, __DIR__ 만 바꿔 넣어요.
 cat > /usr/local/bin/malkkeum <<'CLI'
 #!/usr/bin/env bash
-# 말끔 관리 명령. 사용법: malkkeum [status|update [태그]|load 파일.tar|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]
+# 다해 관리 명령. 사용법: malkkeum [status|update [태그]|load 파일.tar|rollback|channel stable|beta|version|backup|restore 파일|restore-offsite [이름]|demo load|demo clear|logs|setup-code]
 set -euo pipefail
 DIR=__DIR__
 BACKUP_KEEP_DAYS=14
@@ -405,7 +405,7 @@ ok "매일 새벽 3시 30분 자동 백업, 매주 월요일 자동 업데이트
 # 5분마다 /health 가 정상일 때만 HEARTBEAT_URL 로 핑을 보내요. 핑이 끊기면 외부 서비스가 알려줘요.
 cat > /usr/local/bin/malkkeum-heartbeat <<'HB'
 #!/usr/bin/env bash
-# 말끔 외부 가동 확인 핑 (healthchecks.io 등). HEARTBEAT_URL 이 없으면 로그만 남기고 끝나요.
+# 다해 외부 가동 확인 핑 (healthchecks.io 등). HEARTBEAT_URL 이 없으면 로그만 남기고 끝나요.
 DIR=__DIR__
 URL=$(grep -E '^HEARTBEAT_URL=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
 DOMAIN=$(grep -E '^DOMAIN=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)

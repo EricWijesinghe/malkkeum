@@ -105,8 +105,8 @@ mod tests {
     fn secret_roundtrip_and_uri() {
         let secret = new_secret();
         assert_eq!(decode_secret(&encode_secret(&secret)).as_deref(), Some(secret.as_slice()));
-        let uri = otpauth_uri("Malkkeum", "a@b.kr", SEED);
-        assert!(uri.starts_with("otpauth://totp/Malkkeum:a%40b.kr?secret="));
+        let uri = otpauth_uri("Dahae", "a@b.kr", SEED);
+        assert!(uri.starts_with("otpauth://totp/Dahae:a%40b.kr?secret="));
         assert!(uri.contains("digits=6&period=30"));
     }
 }

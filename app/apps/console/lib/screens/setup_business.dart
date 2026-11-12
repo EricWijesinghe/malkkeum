@@ -7,12 +7,12 @@ import '../state.dart';
 
 /// Brand colours offered as one-tap swatches; any #RRGGBB can still be typed.
 const _swatches = [
-  '#3B5BFD',
+  '#187A8F',
   '#00B386',
   '#FF6B3D',
   '#8B5CF6',
   '#E11D74',
-  '#0EA5E9',
+  '#1E9EBA',
   '#F59E0B',
   '#111827',
 ];

@@ -73,12 +73,12 @@ async fn owner_saves_business_and_keys_secrets_come_back_masked(pool: PgPool) {
         "PUT",
         "/v1/admin/setup/business",
         t,
-        Some(json!({"name": "말끔", "primary_color": "#3b5bfd", "company": {"hosting_provider": "예시호스팅(주)"}})),
+        Some(json!({"name": "다해", "primary_color": "#3b5bfd", "company": {"hosting_provider": "예시호스팅(주)"}})),
     )
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (_, brand) = call(&app, "GET", "/v1/brand", None, None).await;
-    assert_eq!(brand["name"], "말끔");
+    assert_eq!(brand["name"], "다해");
     assert_eq!(brand["primary_color"], "#3B5BFD");
     assert_eq!(brand["company"]["hosting_provider"], "예시호스팅(주)", "seller details are public");
 

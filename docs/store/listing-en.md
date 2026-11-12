@@ -1,12 +1,12 @@
 # Store listing (copy and paste) · English
 
 Check lengths with `python -I docs/store/check_listings.py`. Keep the row order and the limits.
-The brand name Malkkeum (말끔) stays as is; the English name is the transliteration.
+The brand name Dahae (다해) stays as is; the English name is the transliteration.
 
-## Customer app · Malkkeum
+## Customer app · Dahae
 | Field | Limit | Value |
 |---|---|---|
-| App name | 30 | Malkkeum - Trusted Cleaning |
+| App name | 30 | Dahae - Trusted Cleaning |
 | Subtitle (iOS) | 30 | Compare prices, book in 1 min |
 | Short description (Google) | 80 | Move-in, move-out, aircon cleaning. Price first. Vetted pros. 1-min booking. |
 | Keywords (iOS) | 100 | move out cleaning,move in,house cleaner,maid,aircon,bathroom,mattress,sofa,studio,Korea,cleaning |
@@ -17,13 +17,13 @@ The brand name Malkkeum (말끔) stays as is; the English name is the transliter
 ```
 Move-in, move-out and aircon cleaning. See the price first, book in a minute.
 
-Malkkeum is a home-cleaning app that connects you only with professionals who passed identity checks and review. No guessing what a visit will cost: you see the price before you book.
+Dahae is a home-cleaning app that connects you only with professionals who passed identity checks and review. No guessing what a visit will cost: you see the price before you book.
 
 ■ Cleanings you can book
 · Studio, kitchen, bathroom, mattress, air conditioner and sofa cleaning (fixed rates)
 · Move-out and move-in cleaning (enter your home details, then compare quotes from professionals)
 
-■ Why Malkkeum
+■ Why Dahae
 · Clear prices: fixed rates in the app, no surprise add-ons
 · Cancellation fee shown upfront: see the fee and your refund before you cancel
 · Free cancellation up to 2 days before your visit
@@ -52,10 +52,10 @@ Customer support: More → Customer support in the app.
 First release. Book a cleaning in a minute, pay securely, and check every visit with photos.
 ```
 
-## Partner app · Malkkeum Partner
+## Partner app · Dahae Partner
 | Field | Limit | Value |
 |---|---|---|
-| App name | 30 | Malkkeum Partner: Cleaner App |
+| App name | 30 | Dahae Partner: Cleaner App |
 | Subtitle (iOS) | 30 | Jobs in your area and time |
 | Short description (Google) | 80 | Cleaner app: jobs near you, move-in/out quotes, schedule and weekly payouts. |
 | Keywords (iOS) | 100 | cleaner jobs,cleaning job,housekeeping,quote,schedule,payout,earnings,team,partner,move out |
@@ -64,7 +64,7 @@ First release. Book a cleaning in a minute, pay securely, and check every visit 
 
 ### Full description
 ```
-Malkkeum Partner is the app for Malkkeum cleaning professionals. (It is separate from the Malkkeum customer app.)
+Dahae Partner is the app for Dahae cleaning professionals. (It is separate from the Dahae customer app.)
 
 · Pick jobs that match your service areas and available times
 · Send your own quotes for move-in and move-out cleanings and get chosen

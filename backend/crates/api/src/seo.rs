@@ -21,7 +21,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 const BUSINESS_KEY: &str = "business";
-const DEFAULT_COLOR: &str = "#2F6FED";
+const DEFAULT_COLOR: &str = "#187A8F";
 const CACHE_CONTROL: &str = "public, max-age=600";
 const DESCRIPTION_CHARS: usize = 150;
 const FAQ_LIMIT: usize = 10;
@@ -51,12 +51,14 @@ pub const SEOUL_DISTRICTS: [(&str, &str, &str); 25] = [
     ("11290", "성북구", "Seongbuk-gu"), ("11305", "강북구", "Gangbuk-gu"), ("11320", "도봉구", "Dobong-gu"),
     ("11350", "노원구", "Nowon-gu"),
 ];
-const COMPANY_LABELS: [(&str, &str); 5] = [
+const COMPANY_LABELS: [(&str, &str); 6] = [
     ("legal_name", "상호"),
     ("ceo", "대표자"),
     ("registration_no", "사업자등록번호"),
     ("mail_order_no", "통신판매업 신고번호"),
     ("address", "주소"),
+    // 전자상거래법 시행규칙 제7조: the mall operator names its hosting provider.
+    ("hosting_provider", "호스팅 제공자"),
 ];
 
 pub fn routes() -> Router<AppState> {
@@ -671,7 +673,7 @@ mod tests {
     fn rss_items_escape_and_carry_dates() {
         let at = DateTime::parse_from_rfc3339("2026-11-01T00:00:00Z").unwrap().with_timezone(&Utc);
         let items = [Notice { id: Uuid::nil(), title: "점검 & 안내".into(), body: "<b>x</b>".into(), at }];
-        let x = rss_xml("https://example.com", "말끔", &items);
+        let x = rss_xml("https://example.com", "다해", &items);
         assert!(x.contains("<title>점검 &amp; 안내</title>"));
         assert!(x.contains("<description>&lt;b&gt;x&lt;/b&gt;</description>"));
         assert!(x.contains("<pubDate>Sun, 1 Nov 2026 00:00:00 +0000</pubDate>"));
@@ -687,23 +689,29 @@ mod tests {
 
     #[test]
     fn og_card_escapes_and_uses_brand_colour() {
-        let svg = og_svg("말끔 <b>", "#2F6FED", "강남구 입주청소", "45,000원");
+        let svg = og_svg("다해 <b>", "#187A8F", "강남구 입주청소", "45,000원");
         assert!(svg.contains("width=\"1200\" height=\"630\""));
-        assert!(svg.contains("fill=\"#2F6FED\""));
-        assert!(svg.contains("말끔 &lt;b&gt;"));
+        assert!(svg.contains("fill=\"#187A8F\""));
+        assert!(svg.contains("다해 &lt;b&gt;"));
         assert!(!svg.contains("<b>"));
     }
 
     #[test]
     fn brand_colour_falls_back_when_invalid() {
-        let b = Brand::from_value("https://x", &json!({"name": "말끔", "primary_color": "red"})).unwrap();
+        let b = Brand::from_value("https://x", &json!({"name": "다해", "primary_color": "red"})).unwrap();
         assert_eq!(b.color, DEFAULT_COLOR);
+    }
+
+    #[test]
+    fn company_block_names_the_hosting_provider() {
+        let b = Brand::from_value("https://x", &json!({"name": "다해", "company": {"legal_name": "예시(주)", "hosting_provider": "예시호스팅(주)"}})).unwrap();
+        assert_eq!(b.company, vec![("상호", "예시(주)".to_string()), ("호스팅 제공자", "예시호스팅(주)".to_string())]);
     }
 
     #[test]
     fn brand_needs_a_name_and_absolute_logo() {
         assert!(Brand::from_value("https://x", &json!({})).is_none());
-        let b = Brand::from_value("https://x", &json!({"name": "말끔", "logo_url": "/files/a.png"})).unwrap();
+        let b = Brand::from_value("https://x", &json!({"name": "다해", "logo_url": "/files/a.png"})).unwrap();
         assert_eq!(b.logo.as_deref(), Some("https://x/files/a.png"));
     }
 }

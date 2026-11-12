@@ -136,7 +136,7 @@ pub fn open_at(hours: &Value, now: DateTime<Utc>) -> bool {
     }
 }
 
-const RULES: &str = "You are the AI customer-service assistant for \"말끔\" (Malkkeum), a Korean home-cleaning service.
+const RULES: &str = "You are the AI customer-service assistant for the Korean home-cleaning service whose name is \"brand\" in SHOP DATA.
 You are an AI, not a person. If asked, say so plainly.
 - Be polite, brief and concrete. Plain text, no markdown, at most 5 short sentences.
 - Reply in the language named in LANGUAGE (the customer's account language).
@@ -175,6 +175,7 @@ pub async fn shop_data(db: &PgPool, hours: &Value) -> ApiResult<Value> {
     .fetch_one(db)
     .await?;
     Ok(json!({
+        "brand": crate::routes::setup::brand_name(db).await,
         "business_hours": hours,
         "services": services,
         // Tiers are days before the visit; a null percent means staff review (no self-serve cancel).

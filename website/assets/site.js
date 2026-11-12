@@ -2,11 +2,15 @@
 // before/after slider, scroll reveal. No framework, no build step.
 const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'http://127.0.0.1:8080' : '';
 
+// Fair Trade Commission seller lookup; takes the 10-digit 사업자등록번호 without dashes.
+const FTC_LOOKUP = 'https://www.ftc.go.kr/bizCommPop.do?wrkr_no=';
+const BIZ_NO_DIGITS = 10;
+
 const LANGS = { ko: '한국어', en: 'English', ja: '日本語', zh: '中文', vi: 'Tiếng Việt', ru: 'Русский', ne: 'नेपाली', si: 'සිංහල', th: 'ไทย', id: 'Bahasa Indonesia', mn: 'Монгол', uz: "O'zbek", fil: 'Filipino', km: 'ខ្មែរ' };
 
 const COPY = {
   ko: {
-    proof_title: '말끔 이야기', proof_homes: '이번 달 {n}집을 청소했어요', proof_rating: '평균 평점 {r}점 · 후기 {n}개',
+    proof_title: '다해 이야기', proof_homes: '이번 달 {n}집을 청소했어요', proof_rating: '평균 평점 {r}점 · 후기 {n}개',
     nav_services: '서비스', nav_how: '이용 방법', nav_faq: '자주 묻는 질문', nav_partner: '파트너 지원',
     eyebrow: '오늘 예약하면 내일 방문', h1a: '집안일은 맡기고,', h1b: '반짝이는 하루를.',
     lead: '검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격 확인하고 1분 만에 예약하세요.',
@@ -26,11 +30,11 @@ const COPY = {
     band_title: '지금 앱을 내려받고 첫 예약 쿠폰을 받으세요', band_sub: '가입하면 바로 쓸 수 있는 쿠폰을 드려요.',
     partner_title: '청소 전문가로 함께해요', partner_sub: '원하는 지역과 시간에 일하고, 매주 수요일 정산받으세요.', partner_cta: '파트너 앱 받기',
     f_privacy: '개인정보처리방침', f_terms: '이용약관', f_delete: '계정 삭제 안내', f_support: '고객센터',
-    c_ceo: '대표', c_reg: '사업자등록번호', c_mail: '통신판매업 신고', c_addr: '주소', c_privacy: '개인정보 보호책임자',
+    c_ceo: '대표', c_reg: '사업자등록번호', c_mail: '통신판매업 신고', c_addr: '주소', c_privacy: '개인정보 보호책임자', c_host: '호스팅 제공자', c_bizcheck: '사업자정보확인',
     store_soon: '곧 출시',
   },
   en: {
-    proof_title: 'Malkkeum in numbers', proof_homes: '{n} homes cleaned this month', proof_rating: 'Average {r} stars · {n} reviews',
+    proof_title: 'Dahae in numbers', proof_homes: '{n} homes cleaned this month', proof_rating: 'Average {r} stars · {n} reviews',
     nav_services: 'Services', nav_how: 'How it works', nav_faq: 'FAQ', nav_partner: 'Become a pro',
     eyebrow: 'Book today, cleaned tomorrow', h1a: 'Hand over the chores,', h1b: 'keep the sparkle.',
     lead: 'Verified cleaning pros for everything from bathrooms to move-in cleans. See the price in the app and book in a minute.',
@@ -50,11 +54,11 @@ const COPY = {
     band_title: 'Get the app and your first-booking coupons', band_sub: 'Coupons are ready the moment you sign up.',
     partner_title: 'Work with us as a cleaning pro', partner_sub: 'Choose your areas and hours; get paid every Wednesday.', partner_cta: 'Get the partner app',
     f_privacy: 'Privacy policy', f_terms: 'Terms of service', f_delete: 'Delete your account', f_support: 'Support',
-    c_ceo: 'CEO', c_reg: 'Business reg. no.', c_mail: 'Mail-order reg.', c_addr: 'Address', c_privacy: 'Privacy officer',
+    c_ceo: 'CEO', c_reg: 'Business reg. no.', c_mail: 'Mail-order reg.', c_addr: 'Address', c_privacy: 'Privacy officer', c_host: 'Hosting provider', c_bizcheck: 'Verify business registration',
     store_soon: 'Coming soon',
   },
   ja: {
-    proof_title: 'マルックムの実績', proof_homes: '今月 {n}件のお宅を清掃しました', proof_rating: '平均評価 {r}点 · レビュー{n}件',
+    proof_title: 'ダヘの実績', proof_homes: '今月 {n}件のお宅を清掃しました', proof_rating: '平均評価 {r}点 · レビュー{n}件',
     nav_services: 'サービス', nav_how: 'ご利用方法', nav_faq: 'よくある質問', nav_partner: 'パートナー募集',
     eyebrow: '今日予約、明日訪問', h1a: '家事はおまかせ、', h1b: '輝く毎日を。',
     lead: '審査済みの清掃のプロが浴室から引越し清掃まで。アプリで料金を確認して1分で予約。',
@@ -74,11 +78,11 @@ const COPY = {
     band_title: 'アプリをダウンロードして初回クーポンを', band_sub: '登録するとすぐ使えるクーポンを差し上げます。',
     partner_title: '清掃のプロとして一緒に', partner_sub: '好きな地域と時間で働き、毎週水曜日に精算。', partner_cta: 'パートナーアプリ',
     f_privacy: 'プライバシーポリシー', f_terms: '利用規約', f_delete: 'アカウント削除', f_support: 'サポート',
-    c_ceo: '代表', c_reg: '事業者登録番号', c_mail: '通信販売業届出', c_addr: '住所', c_privacy: '個人情報保護責任者',
+    c_ceo: '代表', c_reg: '事業者登録番号', c_mail: '通信販売業届出', c_addr: '住所', c_privacy: '個人情報保護責任者', c_host: 'ホスティング事業者', c_bizcheck: '事業者情報の確認',
     store_soon: '近日公開',
   },
   zh: {
-    proof_title: '末尽的口碑', proof_homes: '本月已清洁 {n} 户', proof_rating: '平均 {r} 分 · {n} 条评价',
+    proof_title: 'Dahae 的口碑', proof_homes: '本月已清洁 {n} 户', proof_rating: '平均 {r} 分 · {n} 条评价',
     nav_services: '服务', nav_how: '使用方法', nav_faq: '常见问题', nav_partner: '成为服务者',
     eyebrow: '今天预约，明天上门', h1a: '家务交给我们，', h1b: '生活焕然一新。',
     lead: '经过认证的保洁专家，从浴室到搬家保洁。应用内查看价格，一分钟完成预约。',
@@ -98,11 +102,11 @@ const COPY = {
     band_title: '下载应用，领取首单优惠券', band_sub: '注册即可使用优惠券。',
     partner_title: '成为保洁专家', partner_sub: '自选区域和时间，每周三结算。', partner_cta: '下载服务者应用',
     f_privacy: '隐私政策', f_terms: '服务条款', f_delete: '删除账号', f_support: '客服',
-    c_ceo: '代表', c_reg: '营业执照号', c_mail: '电商备案', c_addr: '地址', c_privacy: '个人信息负责人',
+    c_ceo: '代表', c_reg: '营业执照号', c_mail: '电商备案', c_addr: '地址', c_privacy: '个人信息负责人', c_host: '托管服务商', c_bizcheck: '核实经营者信息',
     store_soon: '即将上线',
   },
   vi: {
-    proof_title: 'Malkkeum qua con số', proof_homes: 'Tháng này đã dọn {n} nhà', proof_rating: 'Trung bình {r} sao · {n} đánh giá',
+    proof_title: 'Dahae qua con số', proof_homes: 'Tháng này đã dọn {n} nhà', proof_rating: 'Trung bình {r} sao · {n} đánh giá',
     nav_services: 'Dịch vụ', nav_how: 'Cách dùng', nav_faq: 'Hỏi đáp', nav_partner: 'Trở thành đối tác',
     eyebrow: 'Đặt hôm nay, đến ngày mai', h1a: 'Việc nhà để chúng tôi lo,', h1b: 'bạn giữ niềm vui.',
     lead: 'Chuyên gia vệ sinh đã xác minh, từ phòng tắm đến dọn nhà mới. Xem giá trong ứng dụng và đặt trong một phút.',
@@ -122,22 +126,16 @@ const COPY = {
     band_title: 'Tải ứng dụng, nhận phiếu cho lần đặt đầu', band_sub: 'Phiếu dùng ngay khi đăng ký.',
     partner_title: 'Trở thành chuyên gia vệ sinh', partner_sub: 'Chọn khu vực và giờ làm, nhận tiền mỗi thứ Tư.', partner_cta: 'Tải ứng dụng đối tác',
     f_privacy: 'Chính sách bảo mật', f_terms: 'Điều khoản', f_delete: 'Xóa tài khoản', f_support: 'Hỗ trợ',
-    c_ceo: 'Đại diện', c_reg: 'Mã số kinh doanh', c_mail: 'Đăng ký bán hàng', c_addr: 'Địa chỉ', c_privacy: 'Phụ trách bảo mật',
+    c_ceo: 'Đại diện', c_reg: 'Mã số kinh doanh', c_mail: 'Đăng ký bán hàng', c_addr: 'Địa chỉ', c_privacy: 'Phụ trách bảo mật', c_host: 'Nhà cung cấp hosting', c_bizcheck: 'Tra cứu thông tin doanh nghiệp',
     store_soon: 'Sắp ra mắt',
   },
 };
 
-const HUES = { studio: '#3B5BFD', kitchen: '#FF7A59', bathroom: '#19C39A', mattress: '#8B5CF6', aircon: '#0EA5E9', sofa: '#E11D74', move_out: '#F59E0B', move_in: '#10B981' };
-const ICONS = {
-  studio: '<path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
-  kitchen: '<path d="M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-2 6 0 8v10"/>',
-  bathroom: '<path d="M4 12h16v3a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM6 12V6a2 2 0 0 1 4 0"/>',
-  mattress: '<rect x="3" y="8" width="18" height="9" rx="3"/><path d="M3 13h18M7 17v2M17 17v2"/>',
-  aircon: '<rect x="3" y="5" width="18" height="8" rx="2"/><path d="M7 17c0 2-1 3-2 3M12 16v4M17 17c0 2 1 3 2 3"/>',
-  sofa: '<path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M3 12a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/>',
-  move_out: '<path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/>',
-  move_in: '<path d="M3 10 12 3l9 7"/><path d="M5 9v11h14V9"/><path d="M9 14h6M12 11v6"/>',
-};
+// Tile tints per service (recognition); the 3D art itself is palette-coloured.
+const HUES = { studio: '#1E9EBA', kitchen: '#FF7A59', bathroom: '#19C39A', mattress: '#8B5CF6', aircon: '#0EA5E9', sofa: '#E11D74', move_out: '#F59E0B', move_in: '#10B981' };
+// Service code -> rendered art in /assets/icons3d/ (ids follow the app's Icon3D ids).
+const ART = { move_in: 'svc_move', move_out: 'svc_move' };
+const art = (code) => `/assets/icons3d/${ART[code] || (HUES[code] ? `svc_${code}` : 'svc_studio')}.webp`;
 
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
 
@@ -202,7 +200,7 @@ function renderServices() {
     card.className = 'card reveal in';
     card.style.setProperty('--hue', HUES[s.code] || 'var(--brand)');
     card.innerHTML = `<div class="shine"></div>
-      <div class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[s.code] || ICONS.studio}</svg></div>
+      <div class="glyph" aria-hidden="true"><img class="icon3d" src="${art(s.code)}" alt="" width="72" height="72" loading="lazy" decoding="async"></div>
       <h3></h3><p></p><div class="price"></div>`;
     card.querySelector('h3').textContent = n.name || s.code;
     card.querySelector('p').textContent = n.desc || '';
@@ -252,7 +250,7 @@ function applyBrand(b) {
     document.querySelectorAll('[data-brand-name]').forEach((el) => { el.textContent = b.name; });
     document.title = document.title.replace(/^[^·|]+/, `${b.name} `);
   }
-  if (b.logo_url) document.querySelectorAll('.logo-mark').forEach((el) => { el.innerHTML = ''; const img = new Image(); img.alt = ''; img.src = b.logo_url; el.append(img); });
+  if (b.logo_url) document.querySelectorAll('.logo-mark').forEach((el) => { el.innerHTML = ''; el.style.background = 'none'; const img = new Image(); img.alt = ''; img.src = b.logo_url; el.append(img); });
   if (b.support_phone) document.querySelectorAll('[data-support-phone]').forEach((el) => { el.textContent = b.support_phone; el.href = `tel:${b.support_phone.replace(/[^0-9+]/g, '')}`; });
   if (b.support_email) document.querySelectorAll('[data-support-email]').forEach((el) => { el.textContent = b.support_email; el.href = `mailto:${b.support_email}`; });
   for (const key of ['app_store_url', 'play_store_url', 'partner_play_store_url', 'partner_app_store_url']) {
@@ -266,7 +264,7 @@ function applyBrand(b) {
   const box = document.getElementById('company');
   if (box) {
     box.innerHTML = '';
-    const rows = [[b.name || c.legal_name, ''], [c.legal_name, ''], [c.ceo, 'c_ceo'], [c.registration_no, 'c_reg'], [c.mail_order_no, 'c_mail'], [c.address, 'c_addr'], [c.privacy_officer, 'c_privacy']];
+    const rows = [[b.name || c.legal_name, ''], [c.legal_name, ''], [c.ceo, 'c_ceo'], [c.registration_no, 'c_reg'], [c.mail_order_no, 'c_mail'], [c.address, 'c_addr'], [c.privacy_officer, 'c_privacy'], [c.hosting_provider, 'c_host']];
     const seen = new Set();
     for (const [v, k] of rows) {
       if (!v || seen.has(v)) continue;
@@ -275,6 +273,11 @@ function applyBrand(b) {
       span.textContent = k ? `${text(k)} ${v}` : v;
       box.append(span);
     }
+  }
+  // 전자상거래법 제10조: link to the FTC lookup so a buyer can verify the seller's registration.
+  const regNo = String(c.registration_no || '').replace(/\D/g, '');
+  if (regNo.length === BIZ_NO_DIGITS) {
+    document.querySelectorAll('[data-bizcheck]').forEach((a) => { a.href = FTC_LOOKUP + regNo; a.hidden = false; });
   }
   document.querySelectorAll('[data-fill]').forEach((el) => {
     const v = el.dataset.fill.split('.').reduce((o, k) => (o ? o[k] : undefined), b);
