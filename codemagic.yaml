@@ -10,15 +10,32 @@
 #        APP_LINK_DOMAIN                  bare server host, e.g. malkkeum.co.kr (Naver App Link; no host = no Naver button)
 #        GOOGLE_SERVICES_JSON_B64 / GOOGLE_SERVICE_INFO_PLIST_B64          (customer Firebase, base64)
 #        PARTNER_GOOGLE_SERVICES_JSON_B64 / PARTNER_GOOGLE_SERVICE_INFO_PLIST_B64 (partner Firebase)
-#   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android".
+#   4. Start "customer-ios", "customer-android", "partner-ios", "partner-android" on a tag v1.2.3.
 # Run by the developer on the private repo, never by the client. Runbook: docs/DEPLOY.md §3
+#
+# Secrets: none in this file or the repo. The keystore, the App Store Connect key and the group
+# "malkkeum" live in Codemagic (mark every value there as secure); iOS certificates and profiles are
+# fetched with the App Store Connect key at build time (ios_signing below).
+#
+# Where a build goes:
+#   Android: uploaded to the Play internal track as a draft. Promote it in Play Console.
+#   iOS:     uploaded to App Store Connect with the "malkkeum_asc" key (role App Manager) and sent to
+#            TestFlight internal testers after Apple's processing (10-30 min). Nothing is sent to
+#            App Review from here: in App Store Connect add the build to the version, attach
+#            docs/store/review-notes.md and press "Submit for Review".
+#
+# Build numbers come from scripts/ci/build-number.py, the same source as the PC release script
+# (scripts/release/build-all.ps1), so a number is never reused whichever machine built the upload.
+#
+# Builds are obfuscated. The Dart symbol files (build/symbols) and iOS dSYMs are kept as build
+# artifacts only, never inside the app: download them from the build page to read a crash trace
+# (flutter symbolize -i trace.txt -d app.android-arm64.symbols).
 
 definitions:
   prepare: &prepare
     name: Strings and packages
     script: |
-      # Version name comes from the git tag (v1.2.3); build number is Codemagic's $BUILD_NUMBER
-      # (always rising, which Play and App Store both require). No tag: pubspec version is used.
+      # Version name comes from the git tag (v1.2.3). No tag: pubspec version is used.
       if [ -n "$FCI_TAG" ] && ! echo "$FCI_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
         echo "Tag '$FCI_TAG' must look like v1.2.3"; exit 1
       fi
@@ -28,8 +45,9 @@ definitions:
       flutter pub get
       (cd packages/core && flutter gen-l10n)
   env: &env
-    flutter: stable
-    xcode: latest
+    # Pinned so a store build is reproducible: same Flutter as deploy/web.Dockerfile. Raise both together.
+    flutter: 3.47.9
+    xcode: 26.6
     groups: [malkkeum]
 
 workflows:
@@ -44,9 +62,14 @@ workflows:
       - name: Build app bundle
         working_directory: app/apps/customer
         script: |
+          set -euo pipefail
           ../../../scripts/ci/native-keys.sh customer
-          flutter build appbundle --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json
-    artifacts: [app/apps/customer/build/**/outputs/**/*.aab]
+          build_number=$(python3 -I ../../../scripts/ci/build-number.py)
+          flutter build appbundle --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json
+    artifacts:
+      - app/apps/customer/build/**/outputs/**/*.aab
+      - app/apps/customer/build/**/outputs/**/mapping.txt
+      - app/apps/customer/build/symbols/*.symbols
     publishing:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
@@ -67,11 +90,16 @@ workflows:
       - name: Build ipa
         working_directory: app/apps/customer
         script: |
+          set -euo pipefail
           ../../../scripts/ci/native-keys.sh customer
-          flutter build ipa --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
-    artifacts: [app/apps/customer/build/ios/ipa/*.ipa]
+          build_number=$(python3 -I ../../../scripts/ci/build-number.py)
+          flutter build ipa --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - app/apps/customer/build/ios/ipa/*.ipa
+      - app/apps/customer/build/ios/archive/**/*.dSYM
+      - app/apps/customer/build/symbols/*.symbols
     publishing:
-      app_store_connect: { auth: integration, submit_to_testflight: true }
+      app_store_connect: { auth: integration, submit_to_testflight: true, submit_to_app_store: false }
 
   partner-android:
     name: Partner · Google Play
@@ -84,9 +112,14 @@ workflows:
       - name: Build app bundle
         working_directory: app/apps/partner
         script: |
+          set -euo pipefail
           ../../../scripts/ci/native-keys.sh partner
-          flutter build appbundle --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json
-    artifacts: [app/apps/partner/build/**/outputs/**/*.aab]
+          build_number=$(python3 -I ../../../scripts/ci/build-number.py)
+          flutter build appbundle --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json
+    artifacts:
+      - app/apps/partner/build/**/outputs/**/*.aab
+      - app/apps/partner/build/**/outputs/**/mapping.txt
+      - app/apps/partner/build/symbols/*.symbols
     publishing:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
@@ -107,8 +140,13 @@ workflows:
       - name: Build ipa
         working_directory: app/apps/partner
         script: |
+          set -euo pipefail
           ../../../scripts/ci/native-keys.sh partner
-          flutter build ipa --release --build-number=$BUILD_NUMBER ${FCI_TAG:+--build-name=${FCI_TAG#v}} --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
-    artifacts: [app/apps/partner/build/ios/ipa/*.ipa]
+          build_number=$(python3 -I ../../../scripts/ci/build-number.py)
+          flutter build ipa --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - app/apps/partner/build/ios/ipa/*.ipa
+      - app/apps/partner/build/ios/archive/**/*.dSYM
+      - app/apps/partner/build/symbols/*.symbols
     publishing:
-      app_store_connect: { auth: integration, submit_to_testflight: true }
+      app_store_connect: { auth: integration, submit_to_testflight: true, submit_to_app_store: false }

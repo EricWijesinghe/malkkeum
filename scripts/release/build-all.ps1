@@ -10,6 +10,12 @@
   Server addresses are checked before they are baked into a build, and read back out of the built
   file afterwards: demo builds need a private LAN IPv4, store builds need https://<domain>.
 
+  Store builds (AAB, APK, MSIX) all take their build number from scripts/ci/build-number.py, the same
+  source Codemagic uses: it only rises, so a second upload is never rejected for a reused number.
+  Android store builds are obfuscated; their Dart symbol files go to F:\EC\targets\release-symbols
+  (kept on this PC to read crash reports with "flutter symbolize", never staged or shipped).
+  The console is web-only: MSIX packages are built for the customer and partner apps.
+
   -Publish swaps the staged demo kit (1-Demo) in as the Desktop folder "Malkkeum Demo". The old folder
   is renamed "Malkkeum Demo (previous <time>)"; nothing on the Desktop is ever deleted or overwritten.
   Publish refuses unless the verify step passed on the same commit.
@@ -49,6 +55,7 @@ $Work = 'F:\EC\targets\release-work'
 $KeyDir = 'F:\EC\targets\release-keys'
 $LogDir = 'F:\EC\targets\release-logs'
 $CargoDir = 'F:/EC/targets/release-cargo'
+$SymbolsDir = 'F:/EC/targets/release-symbols'
 $GitBash = 'C:\Program Files\Git\bin\bash.exe'
 $BuildSlot = '/f/EC/scripts/build-slot.sh'
 $Jdk = 'C:\Program Files\Java\jdk-21.0.12'
@@ -65,7 +72,7 @@ $ProtectedKits = 'Malkkeum Demo (backup - works)', 'Malkkeum Demo (previous)'
 $KitLayout = 'api.exe', 'console', 'Malkkeum-Customer.apk', 'Malkkeum-Partner.apk', 'api-address.txt',
   'Start-Demo.ps1', 'Run-Server.ps1', 'Run-Emulator.ps1', 'Malkkeum Demo.cmd', 'README.txt', 'docs'
 $DemoSteps = 'apk-demo-customer', 'apk-demo-partner', 'demo-kit'
-$StoreSteps = 'aab-customer', 'aab-partner', 'apk-store-customer', 'apk-store-partner', 'msix-build-customer', 'msix-build-console', 'msix-build-partner'
+$StoreSteps = 'aab-customer', 'aab-partner', 'apk-store-customer', 'apk-store-partner', 'msix-build-customer', 'msix-build-partner'
 # Toolchain for every step, so a single -Only run works the same as a full run.
 $env:JAVA_HOME = $Jdk
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
@@ -148,6 +155,16 @@ function Get-StoreApiBase {
   if ($StoreApiBase) { throw "MALKKEUM_API_BASE '$StoreApiBase' is not https://<domain> (https only, no path)." }
   if ($AllowPlaceholder) { return $PlaceholderApiBase }
   throw 'MALKKEUM_API_BASE is not set. Set it to https://<domain> (or pass -StoreApiBase), or pass -AllowPlaceholder to build test binaries that cannot reach a server.'
+}
+
+# versionCode / MSIX version for this run. One number per run, from the same script Codemagic calls.
+function Get-BuildNumber {
+  if (-not $script:BuildNumber) {
+    $n = [int](& python -I (Join-Path $root 'scripts\ci\build-number.py'))
+    if ($LASTEXITCODE -ne 0 -or $n -lt 1) { throw 'scripts\ci\build-number.py did not return a build number' }
+    $script:BuildNumber = $n
+  }
+  return $script:BuildNumber
 }
 
 # Reads the compiled Dart back out of a build (main.dart.js / app.so, or libapp.so / app.so inside an
@@ -259,6 +276,7 @@ function Step-Preflight {
   if ($names | Where-Object { $StoreSteps -contains $_ }) {
     $api = Get-StoreApiBase
     Log "   API address for store builds: $api"
+    Log "   build number for store builds: $(Get-BuildNumber)"
     if ($api -eq $PlaceholderApiBase) { Log '   WARNING: -AllowPlaceholder: store binaries cannot reach a server. Do not upload them.' }
   }
   Act "create the staging folders under $Stage, $Work, $KeyDir; remove the old .verified marker" {
@@ -351,7 +369,10 @@ function Step-AndroidBuild([string]$App, [string]$Kind) {
   $isBundle = $Kind -eq 'aab'
   $target = if ($isBundle) { 'appbundle' } else { 'apk' }
   Push-Location (Join-Path $root "app\apps\$App")
-  try { With-UploadKey { Slot @('flutter', 'build', $target, '--release', "--dart-define=API_BASE=$api") } } finally { Pop-Location }
+  $n = Get-BuildNumber
+  # The symbols folder is the only way to read an obfuscated crash trace: one per build, outside the stage.
+  $flags = "--build-number=$n", '--obfuscate', "--split-debug-info=$SymbolsDir/$App-$Kind-$n", "--dart-define=API_BASE=$api"
+  try { With-UploadKey { Slot (@('flutter', 'build', $target, '--release') + $flags) } } finally { Pop-Location }
   $outputs = Join-Path $root "app\apps\$App\build\app\outputs"
   $built = if ($isBundle) { "$outputs\bundle\release\app-release.aab" } else { "$outputs\flutter-apk\app-release.apk" }
   Assert-BakedBase $built $api
@@ -371,16 +392,18 @@ function Step-MsixPack {
   $msixScript = Join-Path $root 'scripts\store\build-msix.ps1'
   $dist = Join-Path $root 'dist\msix'
   Reset-Dir "$Msix\test-signed"; Reset-Dir "$Msix\store"
-  Run 'pwsh' @('-NoProfile', '-File', $msixScript, '-SkipBuild')
-  foreach ($app in 'customer', 'console', 'partner') { Copy-Output "$dist\malkkeum-$app.msix" "$Msix\test-signed\malkkeum-$app.msix" }
+  # Both passes get the same version and the address the msix-build steps baked in (the script checks it).
+  $common = '-NoProfile', '-File', $msixScript, '-SkipBuild', '-ApiBase', (Get-StoreApiBase), '-BuildNumber', "$(Get-BuildNumber)"
+  Run 'pwsh' $common
+  foreach ($app in 'customer', 'partner') { Copy-Output "$dist\malkkeum-$app.msix" "$Msix\test-signed\malkkeum-$app.msix" }
   Act "export the public test-signing certificate -> $Msix\malkkeum-test-signing.cer" {
     $cer = Join-Path $root 'scripts\store\.local\test-signing.pfx'
     $pw = (Get-Content -Raw (Join-Path $root 'scripts\store\.local\test-signing.password')).Trim()
     $pfx = [Security.Cryptography.X509Certificates.X509Certificate2]::new($cer, $pw, 'Exportable')
     [IO.File]::WriteAllBytes("$Msix\malkkeum-test-signing.cer", $pfx.Export('Cert'))
   }
-  Run 'pwsh' @('-NoProfile', '-File', $msixScript, '-SkipBuild', '-Store')
-  foreach ($app in 'customer', 'console', 'partner') { Copy-Output "$dist\malkkeum-$app.msix" "$Msix\store\malkkeum-$app.msix" }
+  Run 'pwsh' ($common + '-Store')
+  foreach ($app in 'customer', 'partner') { Copy-Output "$dist\malkkeum-$app.msix" "$Msix\store\malkkeum-$app.msix" }
 }
 
 function Step-DockerStart {
@@ -484,7 +507,7 @@ function Step-Verify {
   $demoApi = if ($DryRun) { 'http://<api-address.txt>:' + $ApiPort } else { "http://$(Get-StagedHost):$ApiPort" }
   foreach ($f in "$Demo\Malkkeum-Customer.apk", "$Demo\Malkkeum-Partner.apk") { Assert-BakedBase $f $demoApi }
   $storeFiles = "$Android\customer-release.aab", "$Android\partner-release.aab", "$Android\customer-universal.apk", "$Android\partner-universal.apk"
-  $msixFiles = foreach ($app in 'customer', 'console', 'partner') { "$Msix\test-signed\malkkeum-$app.msix"; "$Msix\store\malkkeum-$app.msix" }
+  $msixFiles = foreach ($app in 'customer', 'partner') { "$Msix\test-signed\malkkeum-$app.msix"; "$Msix\store\malkkeum-$app.msix" }
   foreach ($f in $storeFiles + $msixFiles) { Assert-BakedBase $f }
   foreach ($f in "$Android\customer-release.aab", "$Android\partner-release.aab") {
     Act "jarsigner -verify $f" {
@@ -604,7 +627,6 @@ $Steps = [ordered]@{
   'apk-store-customer' = { Step-AndroidBuild 'customer' 'apk' }
   'apk-store-partner' = { Step-AndroidBuild 'partner' 'apk' }
   'msix-build-customer' = { Step-MsixBuild 'customer' }
-  'msix-build-console' = { Step-MsixBuild 'console' }
   'msix-build-partner' = { Step-MsixBuild 'partner' }
   'msix-pack' = { Step-MsixPack }
   'docker-start' = { Step-DockerStart }
