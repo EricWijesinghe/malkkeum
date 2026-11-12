@@ -166,7 +166,11 @@ void main() {
 
     final calls = fake.callsTo('POST', '/bookings/bk-9/deposit');
     expect(calls, hasLength(1));
-    expect(calls.single.json, {'payment_method_id': 'pm-1', 'expected_deposit': 35000}, reason: 'binds to the card the customer saw');
+    expect(
+      calls.single.json,
+      {'payment_method_id': 'pm-1', 'expected_deposit': 35000, 'expected_final_price': 350000, 'expected_quote_message_id': 'q1'},
+      reason: 'binds to the card the customer saw',
+    );
     expect(calls.single.headers.keys.map((k) => k.toLowerCase()), contains('idempotency-key'));
     expect(find.text(koT.quotePaid), findsOneWidget);
     expect(pay, findsNothing);
@@ -220,6 +224,26 @@ void main() {
     expect(key(calls[1]), key(calls[0]), reason: '5xx: same attempt');
     expect(key(calls[2]), isNot(key(calls[1])), reason: '4xx ended that attempt');
     expect(find.text(koT.quotePaid), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('a card without a numeric deposit is never paid: error and reload instead', (tester) async {
+    setViewport(tester, phoneSize);
+    final broken = quote();
+    (broken['body'] as Json)['deposit'] = null;
+    final fake = await _chatApi([broken]);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    await pumpUntilFound(tester, find.text(koT.quoteArrived));
+    final loadsBefore = fake.callsTo('GET', '/chat/threads/th-1/messages').length;
+
+    await tester.tap(find.byWidgetPredicate((w) => w is FilledButton && w.onPressed != null));
+    await settle(tester);
+
+    expect(find.text(koT.errorGeneric), findsOneWidget);
+    expect(fake.callsTo('GET', '/chat/threads/th-1/messages').length, greaterThan(loadsBefore));
+    expect(fake.callsTo('POST', '/bookings/bk-9/deposit'), isEmpty);
+    expect(find.text(koT.apPayAllTitle), findsNothing, reason: 'no method picker');
     await unmount(tester);
   });
 

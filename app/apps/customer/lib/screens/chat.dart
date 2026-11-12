@@ -417,7 +417,19 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   /// deposit goes along as `expected_deposit`; the server refuses it if the quote changed.
   Future<void> _payDeposit(ChatMessage quote) async {
     final bookingId = quote.body['booking_id'] as String;
-    final expected = (quote.body['deposit'] as num?)?.toInt();
+    final deposit = quote.body['deposit'];
+    final finalPrice = quote.body['final_price'];
+    // Never pay a card whose amounts can't be bound: say so and fetch the thread again.
+    if (deposit is! int || finalPrice is! int) {
+      showToast(context, context.t.errorGeneric);
+      unawaited(_load());
+      return;
+    }
+    final seen = {
+      'expected_deposit': deposit,
+      'expected_final_price': finalPrice,
+      'expected_quote_message_id': quote.id,
+    };
     final choice = await choosePayMethod(context);
     if (choice == null || !mounted) return;
     setState(() => _paying = true);
@@ -430,7 +442,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           );
           await context.api.post('/bookings/$bookingId/deposit', {
             'payment_method_id': methodId,
-            'expected_deposit': ?expected,
+            ...seen,
           }, key);
           _depositKeys.remove(quote.id);
           _paidHere = true;
@@ -438,7 +450,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           final result = await payWithChannel(context, channel, {
             'kind': 'deposit',
             'booking_id': bookingId,
-            'expected_deposit': ?expected,
+            ...seen,
           });
           if (!mounted) return;
           switch (result) {
