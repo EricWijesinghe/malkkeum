@@ -613,6 +613,24 @@ abstract class T {
   /// **'간편결제 등록'**
   String get apPayManageTitle;
 
+  /// No description provided for @bizInfoTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자 정보'**
+  String get bizInfoTitle;
+
+  /// No description provided for @bizInfoVerify.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자정보확인'**
+  String get bizInfoVerify;
+
+  /// No description provided for @cSetupHostingProvider.
+  ///
+  /// In ko, this message translates to:
+  /// **'호스팅 서비스 제공자'**
+  String get cSetupHostingProvider;
+
   /// No description provided for @cTitle.
   ///
   /// In ko, this message translates to:

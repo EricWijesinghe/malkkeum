@@ -263,6 +263,15 @@ class TJa extends T {
   String get apPayManageTitle => '簡単決済の登録';
 
   @override
+  String get bizInfoTitle => '事業者情報';
+
+  @override
+  String get bizInfoVerify => '事業者情報を確認';
+
+  @override
+  String get cSetupHostingProvider => 'ホスティング事業者';
+
+  @override
   String get cTitle => '運営コンソール';
 
   @override

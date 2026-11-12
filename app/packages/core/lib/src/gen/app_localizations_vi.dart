@@ -275,6 +275,15 @@ class TVi extends T {
   String get apPayManageTitle => 'Đăng ký thanh toán nhanh';
 
   @override
+  String get bizInfoTitle => 'Thông tin doanh nghiệp';
+
+  @override
+  String get bizInfoVerify => 'Tra cứu thông tin doanh nghiệp';
+
+  @override
+  String get cSetupHostingProvider => 'Nhà cung cấp dịch vụ lưu trữ';
+
+  @override
   String get cTitle => 'Bảng điều hành';
 
   @override

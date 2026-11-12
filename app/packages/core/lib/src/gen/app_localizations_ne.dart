@@ -278,6 +278,15 @@ class TNe extends T {
   String get apPayManageTitle => 'छिटो भुक्तानी दर्ता गर्नुहोस्';
 
   @override
+  String get bizInfoTitle => 'व्यवसाय जानकारी';
+
+  @override
+  String get bizInfoVerify => 'व्यवसाय दर्ता जाँच्नुहोस्';
+
+  @override
+  String get cSetupHostingProvider => 'होस्टिङ सेवा प्रदायक';
+
+  @override
   String get cTitle => 'सञ्चालन कन्सोल';
 
   @override

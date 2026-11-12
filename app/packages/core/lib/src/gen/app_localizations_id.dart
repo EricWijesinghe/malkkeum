@@ -275,6 +275,15 @@ class TId extends T {
   String get apPayManageTitle => 'Daftar dompet digital';
 
   @override
+  String get bizInfoTitle => 'Informasi usaha';
+
+  @override
+  String get bizInfoVerify => 'Verifikasi pendaftaran usaha';
+
+  @override
+  String get cSetupHostingProvider => 'Penyedia hosting';
+
+  @override
   String get cTitle => 'Konsol operasional';
 
   @override

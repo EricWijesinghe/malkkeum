@@ -6,6 +6,7 @@ import '../state.dart';
 import 'account_identity.dart';
 import 'addresses.dart';
 import 'booking_flow.dart';
+import 'business_info.dart';
 import 'payments.dart';
 import 'privacy.dart';
 import 'service.dart';
@@ -239,6 +240,7 @@ class MoreTab extends StatelessWidget {
             style: TextButton.styleFrom(foregroundColor: context.colors.danger),
             child: Text(t.deleteAccount),
           ),
+          BusinessInfo(api: app.api),
         ],
       ),
     );

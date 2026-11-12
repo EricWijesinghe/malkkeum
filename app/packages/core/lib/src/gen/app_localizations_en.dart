@@ -274,6 +274,15 @@ class TEn extends T {
   String get apPayManageTitle => 'Register quick-pay';
 
   @override
+  String get bizInfoTitle => 'Business information';
+
+  @override
+  String get bizInfoVerify => 'Verify business registration';
+
+  @override
+  String get cSetupHostingProvider => 'Hosting provider';
+
+  @override
   String get cTitle => 'Operations console';
 
   @override

@@ -263,6 +263,15 @@ class TKo extends T {
   String get apPayManageTitle => '간편결제 등록';
 
   @override
+  String get bizInfoTitle => '사업자 정보';
+
+  @override
+  String get bizInfoVerify => '사업자정보확인';
+
+  @override
+  String get cSetupHostingProvider => '호스팅 서비스 제공자';
+
+  @override
   String get cTitle => '운영 콘솔';
 
   @override

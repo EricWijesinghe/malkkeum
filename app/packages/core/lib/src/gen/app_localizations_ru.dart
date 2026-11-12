@@ -276,6 +276,15 @@ class TRu extends T {
   String get apPayManageTitle => 'Подключить экспресс-оплату';
 
   @override
+  String get bizInfoTitle => 'Сведения о компании';
+
+  @override
+  String get bizInfoVerify => 'Проверить регистрацию компании';
+
+  @override
+  String get cSetupHostingProvider => 'Хостинг-провайдер';
+
+  @override
   String get cTitle => 'Консоль оператора';
 
   @override

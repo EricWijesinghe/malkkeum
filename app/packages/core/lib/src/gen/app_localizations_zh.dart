@@ -263,6 +263,15 @@ class TZh extends T {
   String get apPayManageTitle => '快捷支付绑定';
 
   @override
+  String get bizInfoTitle => '经营者信息';
+
+  @override
+  String get bizInfoVerify => '查询经营者信息';
+
+  @override
+  String get cSetupHostingProvider => '托管服务提供商';
+
+  @override
   String get cTitle => '运营控制台';
 
   @override

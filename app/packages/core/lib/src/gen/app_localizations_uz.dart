@@ -279,6 +279,15 @@ class TUz extends T {
   String get apPayManageTitle => 'Tezkor to\'lovni ulash';
 
   @override
+  String get bizInfoTitle => 'Tadbirkor haqida maʼlumot';
+
+  @override
+  String get bizInfoVerify => 'Biznes roʻyxatini tekshirish';
+
+  @override
+  String get cSetupHostingProvider => 'Xosting provayderi';
+
+  @override
   String get cTitle => 'Operatsion konsol';
 
   @override

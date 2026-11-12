@@ -295,7 +295,7 @@ const BUSINESS_TEXT: [&str; 4] = ["name", "support_phone", "support_email", "sup
 const STORE_LINKS: [&str; 6] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url", "kakao_channel_url", "naver_talk_url"];
 /// Search Console / Search Advisor verification tokens, served as meta tags and verification files.
 const VERIFY_KEYS: [&str; 2] = ["google_site_verification", "naver_site_verification"];
-const COMPANY_TEXT: [&str; 7] = [
+const COMPANY_TEXT: [&str; 8] = [
     "legal_name",
     "ceo",
     "registration_no",
@@ -303,6 +303,8 @@ const COMPANY_TEXT: [&str; 7] = [
     "address",
     "privacy_officer",
     "privacy_email",
+    // 전자상거래법 시행규칙 제7조: the mall operator also names its hosting provider.
+    "hosting_provider",
 ];
 
 fn clean_text(v: &Value, key: &str) -> Result<Option<String>, ApiError> {
@@ -671,13 +673,14 @@ mod tests {
             "http://127.0.0.1:8080",
             &json!({
                 "name": "  말끔 ", "primary_color": "#3b5bfd", "logo_url": "/files/0123456789abcdef0123456789abcdef.png",
-                "company": { "ceo": "홍길동", "unknown": "x" }, "evil": 1
+                "company": { "ceo": "홍길동", "hosting_provider": " 예시호스팅(주) ", "unknown": "x" }, "evil": 1
             }),
         )
         .unwrap();
         assert_eq!(v["name"], "말끔");
         assert_eq!(v["primary_color"], "#3B5BFD");
         assert_eq!(v["company"]["ceo"], "홍길동");
+        assert_eq!(v["company"]["hosting_provider"], "예시호스팅(주)");
         assert!(v["company"].get("unknown").is_none());
         assert!(v.get("evil").is_none());
     }
