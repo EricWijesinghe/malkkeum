@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3449,9 +3450,6 @@ class TTh extends T {
   @override
   String get pvMarketingHint =>
       'รับข่าวคูปองและกิจกรรมทาง SMS, KakaoTalk และแจ้งเตือนในแอป ปิดได้ทุกเมื่อ';
-
-  @override
-  String get pvLocation => 'ความยินยอมใช้ข้อมูลตำแหน่ง';
 
   @override
   String get pvReconsent =>

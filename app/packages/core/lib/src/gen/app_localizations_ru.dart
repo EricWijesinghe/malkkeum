@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3468,9 +3469,6 @@ class TRu extends T {
   @override
   String get pvMarketingHint =>
       'Купоны и новости акций по SMS, в KakaoTalk и push-уведомлениях приложения. Отключить можно в любой момент.';
-
-  @override
-  String get pvLocation => 'Согласие на использование данных о местоположении';
 
   @override
   String get pvReconsent =>

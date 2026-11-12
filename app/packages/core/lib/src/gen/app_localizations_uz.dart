@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3486,9 +3487,6 @@ class TUz extends T {
   @override
   String get pvMarketingHint =>
       'Kupon va tadbirlar yangiliklarini SMS, KakaoTalk va ilova bildirishnomalari orqali olasiz. Istalgan vaqtda o\'chirishingiz mumkin.';
-
-  @override
-  String get pvLocation => 'Joylashuv ma\'lumotlaridan foydalanishga rozilik';
 
   @override
   String get pvReconsent =>

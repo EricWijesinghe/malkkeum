@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3464,9 +3465,6 @@ class TKm extends T {
   @override
   String get pvMarketingHint =>
       'ទទួលព័ត៌មានគូប៉ុង និងព្រឹត្តិការណ៍តាម SMS KakaoTalk និងការជូនដំណឹងក្នុងកម្មវិធី។ អ្នកអាចបិទបានគ្រប់ពេល។';
-
-  @override
-  String get pvLocation => 'ការយល់ព្រមលើការប្រើប្រាស់ទីតាំង';
 
   @override
   String get pvReconsent =>

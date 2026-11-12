@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3493,9 +3494,6 @@ class TFil extends T {
   @override
   String get pvMarketingHint =>
       'Makakatanggap ng balita tungkol sa coupon at event sa SMS, KakaoTalk, at app push. Maaari mo itong i-off anumang oras.';
-
-  @override
-  String get pvLocation => 'Pagsang-ayon sa paggamit ng lokasyon';
 
   @override
   String get pvReconsent =>

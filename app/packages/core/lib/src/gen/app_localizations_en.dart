@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3449,9 +3450,6 @@ class TEn extends T {
   @override
   String get pvMarketingHint =>
       'Get coupon and event news by SMS, KakaoTalk and app push. You can turn this off any time.';
-
-  @override
-  String get pvLocation => 'Location information';
 
   @override
   String get pvReconsent =>

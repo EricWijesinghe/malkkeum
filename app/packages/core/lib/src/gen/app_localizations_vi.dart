@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3437,9 +3438,6 @@ class TVi extends T {
   @override
   String get pvMarketingHint =>
       'Nhận tin ưu đãi và sự kiện qua SMS, KakaoTalk và thông báo ứng dụng. Bạn có thể tắt bất cứ lúc nào.';
-
-  @override
-  String get pvLocation => 'Đồng ý sử dụng thông tin vị trí';
 
   @override
   String get pvReconsent =>

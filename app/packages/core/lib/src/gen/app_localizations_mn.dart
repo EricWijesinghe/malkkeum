@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3479,9 +3480,6 @@ class TMn extends T {
   @override
   String get pvMarketingHint =>
       'Купон болон арга хэмжээний мэдээллийг SMS, KakaoTalk, аппын мэдэгдлээр авна. Хүссэн үедээ унтрааж болно.';
-
-  @override
-  String get pvLocation => 'Байршлын мэдээлэл ашиглах зөвшөөрөл';
 
   @override
   String get pvReconsent =>

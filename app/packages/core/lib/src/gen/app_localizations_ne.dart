@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3462,9 +3463,6 @@ class TNe extends T {
   @override
   String get pvMarketingHint =>
       'कुपन र कार्यक्रमका समाचार SMS, KakaoTalk र एप पुशमार्फत पाउनुहुनेछ। जुनसुकै बेला बन्द गर्न सकिन्छ।';
-
-  @override
-  String get pvLocation => 'स्थान जानकारी प्रयोगको सहमति';
 
   @override
   String get pvReconsent =>

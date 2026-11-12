@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3466,9 +3467,6 @@ class TSi extends T {
   @override
   String get pvMarketingHint =>
       'කූපන් සහ සිදුවීම් පිළිබඳ පණිවිඩ SMS, KakaoTalk සහ යෙදුම් push මගින් ලැබේ. ඕනෑම වේලාවක නවත්වා ගත හැකිය.';
-
-  @override
-  String get pvLocation => 'ස්ථාන තොරතුරු භාවිතයට එකඟතාව';
 
   @override
   String get pvReconsent =>
