@@ -790,7 +790,7 @@ class TId extends T {
   String get tabHome => 'Beranda';
 
   @override
-  String get tabBookings => 'Pemesanan';
+  String get tabBookings => 'Pesananku';
 
   @override
   String get tabChat => 'Obrolan';
@@ -2355,7 +2355,7 @@ class TId extends T {
 
   @override
   String get err_invalid_photos =>
-      'Hanya foto yang diunggah lewat Malkkeum yang bisa dilampirkan';
+      'Hanya foto yang diunggah lewat Dahae yang bisa dilampirkan';
 
   @override
   String get welcomeOfferTitle => 'Diskon pesanan pertama';

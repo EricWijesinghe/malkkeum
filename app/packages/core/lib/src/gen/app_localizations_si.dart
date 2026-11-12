@@ -795,7 +795,7 @@ class TSi extends T {
   String get tabHome => 'මුල්පිටුව';
 
   @override
-  String get tabBookings => 'වෙන්කිරීම්';
+  String get tabBookings => 'මගේ වෙන්කිරීම්';
 
   @override
   String get tabChat => 'උපදේශනය';
@@ -2352,7 +2352,7 @@ class TSi extends T {
 
   @override
   String get err_invalid_photos =>
-      'Malkkeum හරහා උඩුගත කළ ඡායාරූප පමණක් අමුණන්න පුළුවන්';
+      'Dahae හරහා උඩුගත කළ ඡායාරූප පමණක් අමුණන්න පුළුවන්';
 
   @override
   String get welcomeOfferTitle => 'පළමු වෙන්කිරීම් වට්ටම';

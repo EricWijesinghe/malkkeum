@@ -794,7 +794,7 @@ class TNe extends T {
   String get tabHome => 'होम';
 
   @override
-  String get tabBookings => 'बुकिङ';
+  String get tabBookings => 'मेरो बुकिङ';
 
   @override
   String get tabChat => 'परामर्श';
@@ -2350,7 +2350,7 @@ class TNe extends T {
 
   @override
   String get err_invalid_photos =>
-      'Malkkeum मार्फत अपलोड गरिएका फोटो मात्र संलग्न गर्न सकिन्छ';
+      'Dahae मार्फत अपलोड गरिएका फोटो मात्र संलग्न गर्न सकिन्छ';
 
   @override
   String get welcomeOfferTitle => 'पहिलो बुकिङ छुट';

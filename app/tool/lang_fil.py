@@ -217,7 +217,7 @@ T = {
     "err_already_taken": "Naunahan ka ng ibang pro sa pag-accept",
     "err_invalid_address": "Pakisagutan lahat ng field ng address",
     "tabHome": "Simula",
-    "tabBookings": "Mga booking",
+    "tabBookings": "Aking booking",
     "tabChat": "Usapan",
     "tabMore": "Iba pa",
     "introTitle": "Mag-book ng propesyonal na paglilinis\nnang mas madali",

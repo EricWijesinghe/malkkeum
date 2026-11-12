@@ -45,7 +45,9 @@ class FakeLocationDevice implements LocationDevice {
   Future<({double latitude, double longitude})> position() {
     positionReads++;
     final f = fix;
-    return f == null ? Completer<({double latitude, double longitude})>().future : Future.value(f);
+    return f == null
+        ? Completer<({double latitude, double longitude})>().future
+        : Future.value(f);
   }
 
   @override

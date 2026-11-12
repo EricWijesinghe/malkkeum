@@ -771,7 +771,7 @@ class TJa extends T {
   String get tabHome => 'ホーム';
 
   @override
-  String get tabBookings => '予約';
+  String get tabBookings => 'マイ予約';
 
   @override
   String get tabChat => '相談';

@@ -13,7 +13,7 @@ import 'push_target.dart';
 
 /// Matches the default channel id in AndroidManifest.xml (FCM background messages use it).
 const _channelId = 'malkkeum_default';
-const _channelName = '말끔';
+const _channelName = '다해';
 
 /// Firebase push for both apps. Local builds have no google-services.json / GoogleService-Info.plist,
 /// so every step checks for its config and turns push off instead of crashing.

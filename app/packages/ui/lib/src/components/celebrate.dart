@@ -6,11 +6,19 @@ import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../tokens.dart';
 
-/// Success moment: ring fills, check draws, small confetti burst in service colors.
+/// Success moment: the 3D `confirm_check` (teal disc, yellow check, sparkle)
+/// pops in as a 24-frame sequence. Without the art, the painter draws the
+/// ring, the check and a confetti burst instead. Reduced motion shows the
+/// final frame at once.
 class SuccessMark extends StatefulWidget {
   const SuccessMark({super.key, this.size = 112, this.semanticLabel});
   final double size;
   final String? semanticLabel;
+
+  /// Frame files (one 288px density) in `packages/ui/assets/icons3d/`.
+  static const frameCount = 24;
+  static String frameAsset(int i) =>
+      'assets/icons3d/confirm_check_f${i.toString().padLeft(2, '0')}.webp';
 
   @override
   State<SuccessMark> createState() => _SuccessMarkState();
@@ -18,10 +26,12 @@ class SuccessMark extends StatefulWidget {
 
 class _SuccessMarkState extends State<SuccessMark>
     with SingleTickerProviderStateMixin {
+  // 24 frames at 30 fps; the painter fallback uses the same clock.
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 900),
+    duration: const Duration(milliseconds: 800),
   );
+  bool _cached = false;
 
   @override
   void initState() {
@@ -38,6 +48,21 @@ class _SuccessMarkState extends State<SuccessMark>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_cached) return;
+    _cached = true;
+    // Decode every frame up front so the sequence never shows a gap.
+    for (var i = 0; i < SuccessMark.frameCount; i++) {
+      precacheImage(
+        AssetImage(SuccessMark.frameAsset(i), package: 'ui'),
+        context,
+        onError: (_, _) {},
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _c.dispose();
     super.dispose();
@@ -46,13 +71,32 @@ class _SuccessMarkState extends State<SuccessMark>
   @override
   Widget build(BuildContext context) => Semantics(
     label: widget.semanticLabel,
+    image: widget.semanticLabel != null,
     child: SizedBox.square(
       dimension: widget.size * 1.8,
       child: AnimatedBuilder(
         animation: _c,
-        builder: (_, _) => CustomPaint(
-          painter: _MarkPainter(_c.value, context.colors.fresh, widget.size),
-        ),
+        builder: (_, _) {
+          final frame = (_c.value * (SuccessMark.frameCount - 1)).round();
+          return Center(
+            child: Image.asset(
+              SuccessMark.frameAsset(frame),
+              package: 'ui',
+              width: widget.size * 1.5,
+              height: widget.size * 1.5,
+              gaplessPlayback: true,
+              excludeFromSemantics: true,
+              errorBuilder: (_, _, _) => CustomPaint(
+                size: Size.square(widget.size * 1.8),
+                painter: _MarkPainter(
+                  _c.value,
+                  context.colors.fresh,
+                  widget.size,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     ),
   );
@@ -65,12 +109,12 @@ class _MarkPainter extends CustomPainter {
   final double size;
 
   static const _confetti = [
-    Color(0xFF3B5BFD),
-    Color(0xFFFFB400),
-    Color(0xFFC72D6C),
-    Color(0xFF0B8AA3),
-    Color(0xFF5E3FD6),
-    Color(0xFF3E8A12),
+    Color(0xFF1E9EBA),
+    Color(0xFFFFD95A),
+    Color(0xFF187A8F),
+    Color(0xFF5CC8DE),
+    Color(0xFFFFE89A),
+    Color(0xFF17232C),
   ];
 
   @override
@@ -103,7 +147,7 @@ class _MarkPainter extends CustomPainter {
       canvas.drawPath(
         path,
         Paint()
-          ..color = Colors.white
+          ..color = const Color(0xFFFFD95A)
           ..style = PaintingStyle.stroke
           ..strokeWidth = size * 0.09
           ..strokeCap = StrokeCap.round

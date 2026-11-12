@@ -217,7 +217,7 @@ T = {
     "err_already_taken": "अर्को पार्टनरले पहिले स्वीकार गर्नुभयो",
     "err_invalid_address": "सबै ठेगाना विवरण भर्नुहोस्",
     "tabHome": "होम",
-    "tabBookings": "बुकिङ",
+    "tabBookings": "मेरो बुकिङ",
     "tabChat": "परामर्श",
     "tabMore": "थप",
     "introTitle": "विज्ञ सफाइ\nएक मिनेटमै बुक गर्नुहोस्",

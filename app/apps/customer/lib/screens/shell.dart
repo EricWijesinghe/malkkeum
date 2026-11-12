@@ -13,6 +13,9 @@ import 'home.dart';
 import 'more.dart';
 import 'web_return.dart';
 
+/// 3D art ids of the four tabs, in tab order (DAHAE-PLAN §4).
+const _navIcons = ['nav_home', 'nav_bookings', 'nav_chat', 'nav_more'];
+
 /// Four tabs. Phones get a bottom bar; tablets and desktop get a side rail.
 class Shell extends StatefulWidget {
   const Shell({super.key});
@@ -116,21 +119,18 @@ class _ShellState extends State<Shell> {
   Widget build(BuildContext context) {
     final t = context.t;
     final unread = context.app.unreadChats;
-    Widget badge(IconData icon) => Badge(
-      isLabelVisible: unread > 0,
-      label: Text('$unread'),
-      child: Icon(icon),
-    );
-    final destinations = [
-      (Icons.home_outlined, Icons.home_rounded, t.tabHome),
-      (
-        Icons.calendar_month_outlined,
-        Icons.calendar_month_rounded,
-        t.tabBookings,
-      ),
-      (Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, t.tabChat),
-      (Icons.menu_rounded, Icons.menu_rounded, t.tabMore),
-    ];
+    // 3D tab icons: the selected one pops and bounces (static under reduced motion).
+    Widget icon(int i) {
+      final art = Icon3D(_navIcons[i], active: _tab == i, size: 30, tilt: true);
+      if (i != 2) return art;
+      return Badge(
+        isLabelVisible: unread > 0,
+        label: Text('$unread'),
+        child: art,
+      );
+    }
+
+    final labels = [t.tabHome, t.tabBookings, t.tabChat, t.tabMore];
     final signedIn = _session?.signedIn ?? false;
     final pages = [
       HomeTab(onOpenTab: go),
@@ -150,15 +150,10 @@ class _ShellState extends State<Shell> {
               labelType: NavigationRailLabelType.all,
               backgroundColor: context.colors.surface,
               destinations: [
-                for (var i = 0; i < destinations.length; i++)
+                for (var i = 0; i < labels.length; i++)
                   NavigationRailDestination(
-                    icon: i == 2
-                        ? badge(destinations[i].$1)
-                        : Icon(destinations[i].$1),
-                    selectedIcon: i == 2
-                        ? badge(destinations[i].$2)
-                        : Icon(destinations[i].$2),
-                    label: Text(destinations[i].$3),
+                    icon: icon(i),
+                    label: Text(labels[i]),
                   ),
               ],
             ),
@@ -182,16 +177,8 @@ class _ShellState extends State<Shell> {
           selectedIndex: _tab,
           onDestinationSelected: go,
           destinations: [
-            for (var i = 0; i < destinations.length; i++)
-              NavigationDestination(
-                icon: i == 2
-                    ? badge(destinations[i].$1)
-                    : Icon(destinations[i].$1),
-                selectedIcon: i == 2
-                    ? badge(destinations[i].$2)
-                    : Icon(destinations[i].$2),
-                label: destinations[i].$3,
-              ),
+            for (var i = 0; i < labels.length; i++)
+              NavigationDestination(icon: icon(i), label: labels[i]),
           ],
         ),
       ),

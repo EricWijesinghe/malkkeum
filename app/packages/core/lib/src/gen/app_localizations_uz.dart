@@ -800,7 +800,7 @@ class TUz extends T {
   String get tabHome => 'Bosh sahifa';
 
   @override
-  String get tabBookings => 'Bronlar';
+  String get tabBookings => 'Bronlarim';
 
   @override
   String get tabChat => 'Suhbat';
@@ -2366,7 +2366,7 @@ class TUz extends T {
 
   @override
   String get err_invalid_photos =>
-      'Faqat Malkkeum orqali yuklangan suratlarni biriktirish mumkin';
+      'Faqat Dahae orqali yuklangan suratlarni biriktirish mumkin';
 
   @override
   String get welcomeOfferTitle => 'Birinchi buyurtma chegirmasi';

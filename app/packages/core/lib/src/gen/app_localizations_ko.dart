@@ -771,7 +771,7 @@ class TKo extends T {
   String get tabHome => '홈';
 
   @override
-  String get tabBookings => '예약';
+  String get tabBookings => '내 예약';
 
   @override
   String get tabChat => '상담';
@@ -2282,7 +2282,7 @@ class TKo extends T {
   String get err_referral_disabled => '지금은 친구 추천을 받지 않아요';
 
   @override
-  String get err_invalid_photos => '사진은 말끔이 올린 파일만 첨부할 수 있어요';
+  String get err_invalid_photos => '사진은 다해에 올린 파일만 첨부할 수 있어요';
 
   @override
   String get welcomeOfferTitle => '첫 예약 할인';

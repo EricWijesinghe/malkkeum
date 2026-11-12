@@ -786,7 +786,7 @@ class TVi extends T {
   String get tabHome => 'Trang chủ';
 
   @override
-  String get tabBookings => 'Lịch hẹn';
+  String get tabBookings => 'Lịch của tôi';
 
   @override
   String get tabChat => 'Tư vấn';
