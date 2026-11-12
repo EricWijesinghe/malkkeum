@@ -117,7 +117,7 @@ async fn quote_card_carries_the_booking_and_the_deposit_is_paid_once_then_refund
     assert_eq!(body["answers"]["building"], "apartment");
     assert_eq!(body["answers"]["layout"], "two_rooms");
 
-    let pay = json!({ "payment_method_id": c.card, "expected_deposit": 35_000 });
+    let pay = json!({ "payment_method_id": c.card, "expected_deposit": 35_000, "expected_final_price": 350_000, "expected_quote_message_id": msg["id"] });
     let uri = format!("/v1/bookings/{id}/deposit");
     let (st, h1, paid) = send(&app, &uri, &c.token, "u4-deposit-1", pay.clone()).await;
     assert_eq!(st, StatusCode::OK, "deposit: {paid}");
@@ -152,22 +152,25 @@ async fn a_re_quote_after_the_card_was_shown_is_refused_with_the_new_amount(pool
     let c = customer(&app, &pool, "010-5400-0003").await;
     let (id, _) = quote_booking(&app, &c, 10).await;
     let desk = consultant(&pool).await;
-    assert_eq!(send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await.0, StatusCode::OK);
+    let (_, old) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await;
     // Re-quote while the customer still looks at the 35,000 card.
-    assert_eq!(send_quote(&app, &desk, &id, json!({ "final_price": 500_000 })).await.0, StatusCode::OK);
+    let (_, new) = send_quote(&app, &desk, &id, json!({ "final_price": 500_000 })).await;
 
     let uri = format!("/v1/bookings/{id}/deposit");
-    let stale = json!({ "payment_method_id": c.card, "expected_deposit": 35_000 });
+    let stale = json!({ "payment_method_id": c.card, "expected_deposit": 35_000, "expected_final_price": 350_000, "expected_quote_message_id": old["id"] });
     let (st, b) = call_keyed(&app, "POST", &uri, Some(c.token.as_str()), Some(stale), Some("u4-stale")).await;
     assert_eq!((st, code(&b)), (StatusCode::CONFLICT, "price_changed"), "{b}");
     assert_eq!(b["error"]["current"], 50_000, "the amount now due");
     assert_eq!(charged(&pool, &id).await, (0, 0), "nothing charged");
 
     // The checkout path (PortOne channels) binds the same way.
-    let ck = |expected: i64| json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": expected });
-    let (st, b) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck(35_000))).await;
+    let ck = |card: &Value| {
+        json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": card["body"]["deposit"],
+                "expected_final_price": card["body"]["final_price"], "expected_quote_message_id": card["id"] })
+    };
+    let (st, b) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck(&old))).await;
     assert_eq!((st, code(&b)), (StatusCode::CONFLICT, "price_changed"), "{b}");
-    let (st, intent) = call_keyed(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck(50_000)), Some("u4-ck")).await;
+    let (st, intent) = call_keyed(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck(&new)), Some("u4-ck")).await;
     assert_eq!(st, StatusCode::OK, "{intent}");
     assert_eq!(intent["amount"], 50_000);
     let confirm = format!("/v1/checkouts/{}/confirm", intent["id"].as_str().expect("checkout id"));
@@ -179,10 +182,22 @@ async fn a_re_quote_after_the_card_was_shown_is_refused_with_the_new_amount(pool
 }
 
 #[sqlx::test(migrations = "../../migrations")]
-async fn a_re_quote_racing_the_deposit_write_is_booking_changed_and_charges_nothing(pool: PgPool) {
+async fn a_re_quote_racing_the_deposit_changes_the_amount_price_changed_no_charge(pool: PgPool) {
+    race_deposit_against(pool, "010-5400-0004", "UPDATE bookings SET final_price = 500000, deposit = 50000 WHERE id = $1::uuid").await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_re_quote_racing_the_deposit_same_deposit_new_price_is_price_changed_no_charge(pool: PgPool) {
+    // 350,400 keeps the deposit at 35,000: only the locked final-price check catches it.
+    race_deposit_against(pool, "010-5400-0009", "UPDATE bookings SET final_price = 350400 WHERE id = $1::uuid").await;
+}
+
+/// Holds the booking row while a deposit for the 350,000 card starts, applies `requote` under that
+/// lock, releases it, and expects price_changed with no charge.
+async fn race_deposit_against(pool: PgPool, phone: &str, requote: &str) {
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
-    let c = customer(&app, &pool, "010-5400-0004").await;
+    let c = customer(&app, &pool, phone).await;
     let (id, _) = quote_booking(&app, &c, 10).await;
     let (_, pro) = verified_pro(&app, &pool, "010-5400-0104").await;
     let quote: Uuid = sqlx::query_scalar("INSERT INTO quotes (booking_id, pro_id, amount) VALUES ($1::uuid, $2, 350000) RETURNING id")
@@ -192,16 +207,15 @@ async fn a_re_quote_racing_the_deposit_write_is_booking_changed_and_charges_noth
         .await
         .expect("pro quote");
     let desk = consultant(&pool).await;
-    let (st, b) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000, "quote_id": quote })).await;
-    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, card_msg) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000, "quote_id": quote })).await;
+    assert_eq!(st, StatusCode::OK, "{card_msg}");
 
     // Hold the booking row, as send_quote does: the deposit reads 35,000 due, then blocks in take_deposit.
     let mut hold = pool.begin().await.expect("tx");
     sqlx::query("SELECT 1 FROM bookings WHERE id = $1::uuid FOR UPDATE").bind(&id).execute(&mut *hold).await.expect("lock");
-    let (app2, token, card, uri) = (app.clone(), c.token.clone(), c.card, format!("/v1/bookings/{id}/deposit"));
-    let pay = tokio::spawn(async move {
-        call_keyed(&app2, "POST", &uri, Some(token.as_str()), Some(json!({ "payment_method_id": card, "expected_deposit": 35_000 })), Some("u4-race")).await
-    });
+    let (app2, token, uri) = (app.clone(), c.token.clone(), format!("/v1/bookings/{id}/deposit"));
+    let body = json!({ "payment_method_id": c.card, "expected_deposit": 35_000, "expected_final_price": 350_000, "expected_quote_message_id": card_msg["id"] });
+    let pay = tokio::spawn(async move { call_keyed(&app2, "POST", &uri, Some(token.as_str()), Some(body), Some("u4-race")).await });
     let mut waited = 0;
     loop {
         let blocked: i64 = sqlx::query_scalar("SELECT count(*) FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock'").fetch_one(&pool).await.expect("locks");
@@ -217,11 +231,11 @@ async fn a_re_quote_racing_the_deposit_write_is_booking_changed_and_charges_noth
     sqlx::query("SELECT 1 FROM quotes WHERE id = $1 FOR UPDATE NOWAIT").bind(quote).execute(&mut *probe).await.expect("quote row is free");
     probe.rollback().await.expect("rollback");
     // The re-quote lands between the deposit's read and its write.
-    sqlx::query("UPDATE bookings SET final_price = 500000, deposit = 50000 WHERE id = $1::uuid").bind(&id).execute(&mut *hold).await.expect("re-quote");
+    sqlx::query(requote).bind(&id).execute(&mut *hold).await.expect("re-quote");
     hold.commit().await.expect("commit");
 
     let (st, b) = pay.await.expect("join");
-    assert_eq!((st, code(&b)), (StatusCode::CONFLICT, "booking_changed"), "{b}");
+    assert_eq!((st, code(&b)), (StatusCode::CONFLICT, "price_changed"), "re-checked under the lock: {b}");
     assert_eq!(charged(&pool, &id).await, (0, 0), "the card is never charged");
     let status: i16 = sqlx::query_scalar("SELECT status FROM bookings WHERE id = $1::uuid").bind(&id).fetch_one(&pool).await.expect("status");
     assert_eq!(status, 0, "still a consultation");
@@ -361,4 +375,64 @@ async fn an_old_app_without_expected_fields_still_pays(pool: PgPool) {
     let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(json!({ "payment_method_id": c.card }))).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     assert_eq!(charged(&pool, &id).await, (35_000, 0));
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_partial_card_binding_is_a_bad_request(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5400-0010").await;
+    let (id, _) = quote_booking(&app, &c, 10).await;
+    let desk = consultant(&pool).await;
+    assert_eq!(send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await.0, StatusCode::OK);
+    let uri = format!("/v1/bookings/{id}/deposit");
+    let (st, b) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(json!({ "payment_method_id": c.card, "expected_deposit": 35_000 }))).await;
+    assert_eq!((st, code(&b)), (StatusCode::BAD_REQUEST, "invalid_request"), "{b}");
+    let ck = json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": 35_000, "expected_final_price": 350_000 });
+    let (st, b) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck)).await;
+    assert_eq!((st, code(&b)), (StatusCode::BAD_REQUEST, "invalid_request"), "{b}");
+    assert_eq!(charged(&pool, &id).await, (0, 0));
+}
+
+/// A checkout made for one card, then a re-quote, then the payment settles (confirm runs the
+/// same `apply` as the PortOne webhook and the reconciler).
+async fn settle_after_requote(pool: PgPool, phone: &str, requote_price: i64) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, phone).await;
+    let (id, _) = quote_booking(&app, &c, 10).await;
+    let desk = consultant(&pool).await;
+    let (_, card) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await;
+    let ck = json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": 35_000,
+                     "expected_final_price": 350_000, "expected_quote_message_id": card["id"] });
+    let (st, intent) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck)).await;
+    assert_eq!(st, StatusCode::OK, "{intent}");
+    let checkout = intent["id"].as_str().expect("checkout id").to_string();
+
+    // The customer is in the PG window; staff re-quote.
+    assert_eq!(send_quote(&app, &desk, &id, json!({ "final_price": requote_price })).await.0, StatusCode::OK);
+
+    let confirm = format!("/v1/checkouts/{checkout}/confirm");
+    let (st, b) = call(&app, "POST", &confirm, Some(c.token.as_str()), Some(json!({ "payment_id": "dev:paid" }))).await;
+    assert_eq!((st, code(&b)), (StatusCode::CONFLICT, "price_changed"), "{b}");
+    let (status, reason): (String, Option<String>) = sqlx::query_as("SELECT status, refund_reason FROM checkouts WHERE id = $1::uuid")
+        .bind(&checkout)
+        .fetch_one(&pool)
+        .await
+        .expect("checkout");
+    assert_eq!((status.as_str(), reason.as_deref()), ("refunded", Some("price_changed")), "the PG payment was refunded");
+    let booking: i16 = sqlx::query_scalar("SELECT status FROM bookings WHERE id = $1::uuid").bind(&id).fetch_one(&pool).await.expect("status");
+    assert_eq!(booking, 0, "not confirmed");
+    assert_eq!(charged(&pool, &id).await, (0, 0), "no payment recorded");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_checkout_settled_after_a_re_quote_is_refunded(pool: PgPool) {
+    settle_after_requote(pool, "010-5400-0011", 500_000).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_checkout_settled_after_a_same_deposit_re_quote_is_refunded(pool: PgPool) {
+    // Same 35,000 deposit, so the amount check passes; the stored card binding catches it under lock.
+    settle_after_requote(pool, "010-5400-0012", 350_400).await;
 }
