@@ -244,6 +244,35 @@
         }
       }
     },
+    "/v1/public/seller-info": {
+      "get": {
+        "operationId": "publicSellerInfo",
+        "tags": [
+          "public"
+        ],
+        "summary": "Seller details as an HTML fragment for the website (?field= for one value)",
+        "security": [],
+        "parameters": [
+          {
+            "name": "field",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["legal_name", "ceo", "registration_no", "mail_order_no", "address", "privacy_officer", "hosting_provider", "support_phone", "support_email"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK, text/html fragment"
+          },
+          "404": {
+            "description": "Unknown field"
+          }
+        }
+      }
+    },
     "/v1/payments/methods": {
       "get": {
         "operationId": "listEnabledPaymentMethods",

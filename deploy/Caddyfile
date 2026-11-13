@@ -115,6 +115,11 @@
 		@site_pages not path /assets/* /vendor/*
 		header @site_assets Cache-Control "public, max-age=3600"
 		header @site_pages Cache-Control "no-cache"
+		# Seller details (전자상거래법 제10조) are written into the HTML here, on the server: {{httpInclude}}
+		# fetches the API fragment /v1/public/seller-info (backend routes/seller.rs). Only text/html is templated,
+		# and pay/ and auth/ stay as they are. A failing fragment fails the page, so keep the API up.
+		@site_templated not path /assets/* /vendor/* /pay/* /auth/*
+		templates @site_templated
 		try_files {path} {path}.html {path}/index.html /index.html
 		file_server
 	}
