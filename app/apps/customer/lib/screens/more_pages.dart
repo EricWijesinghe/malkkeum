@@ -345,6 +345,8 @@ class AccountScreen extends StatelessWidget {
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                // The badges end at the row's edge, however short the label.
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
                     child: Text(
@@ -359,6 +361,11 @@ class AccountScreen extends StatelessWidget {
                     // Read-only: what this account can sign in with. Fades in once /me answers.
                     child: AnimatedSwitcher(
                       duration: motionFor(context, Motion.standard),
+                      // The default layout centres the badges; the design ends them at the edge.
+                      layoutBuilder: (current, previous) => Stack(
+                        alignment: AlignmentDirectional.centerEnd,
+                        children: [...previous, ?current],
+                      ),
                       child: Wrap(
                         key: ValueKey(logins.length),
                         alignment: WrapAlignment.end,
