@@ -524,6 +524,7 @@ async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> Api
     // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
     let locale = crate::i18n::locale_of(&state.db, q.to).await;
     let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    let (inbox_title, inbox_body) = crate::i18n::notice(&state.db, &locale, &q.kind, &q.title, &q.body, &q.data).await;
     // One statement: the inbox row and the outbox flag commit together, so a retry never stores twice.
     sqlx::query(
         "WITH flagged AS (UPDATE notification_outbox SET stored = true WHERE id = $5)
@@ -532,7 +533,7 @@ async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> Api
     .bind(role)
     .bind(owner)
     .bind(q.kind.as_ref())
-    .bind(json!({ "title": title, "body": body, "data": q.data }))
+    .bind(json!({ "title": inbox_title, "body": inbox_body, "data": q.data }))
     .bind(q.id)
     .execute(&state.db)
     .await?;
@@ -569,7 +570,7 @@ async fn try_push(state: &AppState, q: &Queued) -> Result<(), &'static str> {
         return Ok(());
     }
     let locale = crate::i18n::locale_of(&state.db, q.to).await;
-    let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    let (title, body) = crate::i18n::notice(&state.db, &locale, &q.kind, &q.title, &q.body, &q.data).await;
     match state.providers.push_collect(&tokens, &title, &body, &q.data).await {
         Ok(dead) => {
             prune_push_tokens(state, role, owner, &dead).await;
