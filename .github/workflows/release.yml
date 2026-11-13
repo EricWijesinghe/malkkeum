@@ -1,8 +1,12 @@
 name: release
 
-# Tag vX.Y.Z or vX.Y.Z-beta.N -> install test -> server images on GHCR -> installer + guides into the
-# PUBLIC delivery repo (repo variable DIST_REPO, e.g. owner/malkkeum-install) -> GitHub Release notes
-# in this private repo. Nothing is published unless the full CI suite passes (install e2e is manual: e2e.yml).
+# Tag vX.Y.Z or vX.Y.Z-beta.N -> full CI (ci.yml) + install e2e with image scan (e2e.yml) -> server images
+# on GHCR (SBOM + provenance, cosign-signed by digest) -> installer + guides into the PUBLIC delivery repo
+# (repo variable DIST_REPO, e.g. owner/malkkeum-install) -> GitHub Release notes in this repo.
+# Nothing is published unless both ci.yml and e2e.yml pass on the tagged commit. workflow_dispatch on a
+# branch is a dry run: tests and install e2e only.
+# GitHub-hosted runners only (signing identity, deploy key and package write access never touch a
+# machine anyone else uses).
 #
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
@@ -11,23 +15,32 @@ name: release
 # SHA256SUMS): the pinned install line raw.githubusercontent.com/<DIST_REPO>/v<VER>/install.sh. No token.
 # Images are signed by digest with cosign keyless (this workflow's OIDC identity on refs/tags/v*);
 # install.sh and `dahae update` refuse images without that signature (docs/DEPLOY.md, Image signatures).
+# The signed digest is the multi-arch index, which also lists the SBOM and provenance attestations.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
 
-permissions:
-  contents: write
-  packages: write
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   test:
     uses: ./.github/workflows/ci.yml
+    permissions: { contents: read }
+
+  e2e:
+    uses: ./.github/workflows/e2e.yml
+    permissions: { contents: read }
 
   images:
-    needs: test
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: [self-hosted, malkkeum]
+    needs: [test, e2e]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     permissions:
       contents: read
       packages: write
@@ -38,7 +51,8 @@ jobs:
           - { name: malkkeum-api, context: backend, file: backend/Dockerfile }
           - { name: malkkeum-web, context: ., file: deploy/web.Dockerfile }
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
       - name: Tags
         id: meta
         env: { NAME: "${{ matrix.name }}" }
@@ -48,14 +62,14 @@ jobs:
           tags="$repo/$NAME:$ver,$repo/$NAME:beta"
           case "$ver" in *-*) ;; *) tags="$tags,$repo/$NAME:stable,$repo/$NAME:latest" ;; esac
           { echo "tags=$tags"; echo "version=$ver"; } >> "$GITHUB_OUTPUT"
-      # linux/arm64 on the x86 self-hosted runner: registers the QEMU binfmt handler (needs privileged docker).
+      # linux/arm64 on the x86 runner through QEMU.
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with: { platforms: arm64 }
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
-        with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh
+        with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh (scripts/ci/check-pins.sh)
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         id: build
         with:
@@ -67,6 +81,9 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
           tags: ${{ steps.meta.outputs.tags }}
+          # SPDX SBOM (BuildKit's syft scanner) and SLSA provenance, attached to the index.
+          sbom: true
+          provenance: mode=max
       # Signs the multi-arch index digest (what every tag points at), never a movable tag.
       - name: Sign by digest
         env: { NAME: "${{ matrix.name }}", DIGEST: "${{ steps.build.outputs.digest }}" }
@@ -76,19 +93,20 @@ jobs:
   # Runs before delivery: an installer that cannot pull its images is never published.
   pull-check:
     needs: images
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: [self-hosted, malkkeum]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     permissions: { contents: read }
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh
       - name: Anonymous pull check (amd64 + arm64)
         run: |
-          # Empty docker config = no stored login and no credential helper; the runner's own config is untouched.
+          # Empty docker config = no stored login and no credential helper.
           export DOCKER_CONFIG="$RUNNER_TEMP/docker-anon"
           rm -rf "$DOCKER_CONFIG" && mkdir -p "$DOCKER_CONFIG"
-          docker logout ghcr.io >/dev/null 2>&1 || true
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           ver="${GITHUB_REF_NAME#v}"
           bad=0
@@ -129,11 +147,14 @@ jobs:
 
   delivery:
     needs: [images, pull-check]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: [self-hosted, malkkeum]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions: { contents: write } # gh release create
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      # Self-hosted runner: key and known_hosts live in the job's temp dir, never in the runner user's ~/.ssh.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      # Key and known_hosts live in the job's temp dir only, never in ~/.ssh.
       - name: Deploy key and GitHub host key (fingerprint checked)
         env: { DIST_DEPLOY_KEY: "${{ secrets.DIST_DEPLOY_KEY }}" }
         run: |
@@ -148,12 +169,12 @@ jobs:
           VER: ${{ github.ref_name }}
         # Branches beta/main + annotated tag v<VER> with install.sh and SHA256SUMS (deploy key only).
         run: IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" SIGNER_REPO="$GITHUB_REPOSITORY" bash deploy/publish-delivery.sh
-      - name: Release notes in this (private) repo
+      - name: Release notes in this repo
         env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}" }
         run: |
           flags=()
           case "$VER" in *-*) flags+=(--prerelease) ;; esac
-          gh release create "$VER" --title "$VER" --generate-notes "${flags[@]}"
+          gh release create "$VER" --repo "$GITHUB_REPOSITORY" --title "$VER" --generate-notes "${flags[@]}"
       - name: Remove deploy key
         if: always()
         run: rm -rf "$RUNNER_TEMP/ssh"

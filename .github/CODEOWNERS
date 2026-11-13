@@ -1,0 +1,9 @@
+# Every change needs the owner's review (branch protection: "Require review from Code Owners").
+# Highest risk, listed so the reason is visible: migrations, CI and release, installer, legal pages.
+*                     @EricWijesinghe
+/backend/migrations/  @EricWijesinghe
+/.github/             @EricWijesinghe
+/deploy/              @EricWijesinghe
+/scripts/ci/          @EricWijesinghe
+/scripts/build_legal.py @EricWijesinghe
+/website/*.html       @EricWijesinghe

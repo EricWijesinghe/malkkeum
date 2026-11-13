@@ -1,21 +1,44 @@
 name: install-e2e
 
-# Builds both server images on this runner, then runs the real deploy/install.sh against them and
-# checks the result (deploy/e2e-install.sh). Called by ci.yml on every push/PR and by release.yml
-# before anything is published.
-# Manual only: it installs to /opt/malkkeum as root, so it needs a disposable machine (GitHub-hosted or a
-# throwaway VPS runner), never the self-hosted runner on the dev PC.
+# Builds both server images, scans them, then runs the real deploy/install.sh as root on a throwaway
+# GitHub-hosted VM and uses the stack the way an owner would (deploy/e2e-install.sh: install, backup and
+# restore, re-run upgrade, broken-release rollback, update, uninstall).
+# Runs on pull requests that touch the server build or the installer, on every push to master, and from
+# release.yml (workflow_call): no image or installer is published unless this passes on the tag.
+# GitHub-hosted only: it installs to /opt/malkkeum as root.
 on:
+  pull_request:
+    paths:
+      - deploy/**
+      - backend/Dockerfile
+      - backend/.dockerignore
+      - backend/Cargo.lock
+      - backend/rust-toolchain.toml
+      - .dockerignore
+      - scripts/e2e/**
+      - scripts/smoke.py
+      - .github/workflows/e2e.yml
+  push:
+    branches: [master]
+  workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   install:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
       - name: Local registry for the test images
-        run: docker run -d --name registry -p 5000:5000 registry:2
+        run: docker run -d --name registry -p 5000:5000 registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
         with:
           driver-opts: network=host
@@ -38,6 +61,16 @@ jobs:
           tags: localhost:5000/malkkeum-web:e2e
           cache-from: type=gha,scope=malkkeum-web
           cache-to: type=gha,mode=max,scope=malkkeum-web
+      # Release gate: a HIGH or CRITICAL vulnerability that has a fixed version fails the run (rebuild on
+      # a newer base digest: Dependabot's docker updates). Unfixed ones are listed but do not block.
+      - name: Images into the local engine for scanning
+        run: docker pull -q localhost:5000/malkkeum-api:e2e && docker pull -q localhost:5000/malkkeum-web:e2e
+      - name: Scan API image
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
+        with: { image: "localhost:5000/malkkeum-api:e2e", fail-build: true, severity-cutoff: high, only-fixed: true, output-format: table }
+      - name: Scan web image
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
+        with: { image: "localhost:5000/malkkeum-web:e2e", fail-build: true, severity-cutoff: high, only-fixed: true, output-format: table }
       - name: Install, use, update, roll back
         run: bash deploy/e2e-install.sh
       - name: Update log on failure

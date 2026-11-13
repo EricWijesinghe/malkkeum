@@ -1,0 +1,23 @@
+# Secret scan of the tree (ci.yml job secrets): gitleaks' default rules plus the known fake values below.
+# A new finding fails CI. Real secret: remove it and rotate it. Fake test value: add the narrowest
+# path or line pattern here, never a whole source directory.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Test-only key fixtures, product prototypes and the installer self-test"
+paths = [
+  '''^backend/crates/api/src/providers/testdata/test_only_[A-Za-z0-9_]+\.(pem|p8)$''',
+  '''^docs/specs/[A-Za-z0-9_-]+\.html$''',
+  '''^scripts/ci/installer-selftest\.sh$''',
+]
+
+[[allowlists]]
+description = "Fake credentials inside Rust unit tests"
+regexTarget = "line"
+regexes = [
+  '''json!\(\{"store_id": "store-1", "api_secret": "k", "webhook_secret": "whsec_aGVsbG8="''',
+  '''"private_key": "-----BEGIN PRIVATE KEY-----\\nx"''',
+  '''"secret_key": "test_sk_x", "security_key": "0123456789abcdef"\.repeat\(4\)''',
+  '''verify\(&KEY, "fedcba9876543210fedcba9876543210\.jpg"''',
+]
