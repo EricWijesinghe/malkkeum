@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3946,6 +3947,13 @@ class TEn extends T {
   String pUploadedCount(String total, String done) {
     return '$done of $total uploaded';
   }
+
+  @override
+  String get payConfirmingTitle => 'Checking your payment';
+
+  @override
+  String get payConfirmingBody =>
+      'Your payment went through to the card company and we\'re confirming it. Don\'t pay again. You can leave this screen; the booking shows up in your bookings once it\'s confirmed.';
 
   @override
   String get apPgPickMethod => 'Choose a payment method';

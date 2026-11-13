@@ -2049,6 +2049,8 @@
    }
   }
  },
+ "payConfirmingTitle": "결제 확인 중",
+ "payConfirmingBody": "결제가 카드사에 접수되어 확인하고 있어요. 다시 결제하지 마세요. 이 화면을 나가도 확인이 끝나면 예약 내역에 표시돼요.",
  "apPgPickMethod": "결제 수단을 골라 주세요",
  "apPgConfirmTitle": "결제 내용 확인",
  "apPgConfirmBtn": "결제 확인",

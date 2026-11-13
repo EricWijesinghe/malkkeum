@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "重新上传",
  "pPhotoWaiting": "未上传的照片将在恢复网络后自动上传。",
  "pUploadedCount": "已上传 {done}/{total} 张",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "请选择支付方式",
  "apPgConfirmTitle": "确认支付内容",
  "apPgConfirmBtn": "确认付款",

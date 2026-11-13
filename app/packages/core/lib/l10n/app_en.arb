@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "Retry upload",
  "pPhotoWaiting": "Photos that didn't upload will send automatically once you're online.",
  "pUploadedCount": "{done} of {total} uploaded",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "Choose a payment method",
  "apPgConfirmTitle": "Review your payment",
  "apPgConfirmBtn": "Confirm payment",

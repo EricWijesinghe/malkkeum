@@ -6,7 +6,8 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
-import 'pay_flow.dart' show showVirtualAccount;
+import 'pay_flow.dart'
+    show checkoutServiceFor, showVirtualAccount, untilConfirmed;
 import 'web_history_stub.dart'
     if (dart.library.js_interop) 'web_history_web.dart';
 
@@ -38,23 +39,31 @@ Future<void> _resumePayment(BuildContext context, Uri route) async {
   if (id.isEmpty) return;
   final app = context.appRead;
   try {
-    final result = switch (outcomeFromRedirect(route, id)) {
+    final service = checkoutServiceFor(app.api);
+    var result = switch (outcomeFromRedirect(route, id)) {
       null => const CheckoutCancelled(),
       PaymentRejected(:final code) => CheckoutFailed(code),
-      PaymentApproved(:final paymentId) => await CheckoutService(
-        api: app.api,
-        launcher: paymentLauncherFor(app.api.baseUrl),
-      ).confirm(id, paymentId),
+      PaymentApproved(:final paymentId) => await service.confirm(id, paymentId),
     };
     if (!context.mounted) return;
+    if (result is CheckoutPending) {
+      result = await untilConfirmed(context, service, result);
+      if (!context.mounted) return;
+    }
     switch (result) {
-      case CheckoutPaid(:final booking):
+      case CheckoutPaid(:final booking, :final bookingId):
         app.bookingsChanged();
         app.analytics.track('payment_done', screen: 'web_return');
         await Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: booking)),
+          MaterialPageRoute<void>(
+            builder: (_) => booking == null
+                ? BookingDetailScreen(id: bookingId)
+                : DoneScreen(booking: booking),
+          ),
           (r) => r.isFirst,
         );
+      case CheckoutPending():
+        app.bookingsChanged();
       case CheckoutAwaitingDeposit(:final account):
         app.bookingsChanged();
         await showVirtualAccount(context, account);

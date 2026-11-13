@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "Subukan ulit",
  "pPhotoWaiting": "Ang mga larawang hindi na-upload ay awtomatikong ipapadala kapag may koneksyon.",
  "pUploadedCount": "{done} sa {total} ang na-upload",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "Pumili ng paraan ng pagbabayad",
  "apPgConfirmTitle": "Suriin ang bayad",
  "apPgConfirmBtn": "Kumpirmahin ang bayad",

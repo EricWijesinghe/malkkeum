@@ -206,17 +206,13 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
           as Json;
 
   Future<void> _submit() async {
+    if (_busy) return;
     setState(() => _busy = true);
     final app = context.appRead;
     app.analytics.track('booking_start', screen: 'quote');
     try {
       final b = Booking.fromJson(
-        await app.api.post(
-              '/bookings',
-              d.toJson(),
-              ApiClient.newIdempotencyKey(),
-            )
-            as Json,
+        await app.api.postAction('/bookings', d.toJson()) as Json,
       );
       app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();

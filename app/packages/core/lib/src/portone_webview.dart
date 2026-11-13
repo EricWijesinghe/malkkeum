@@ -182,13 +182,28 @@ class HostedPage<T> extends StatefulWidget {
 class _HostedPageState<T> extends State<HostedPage<T>> {
   late final WebViewController _web;
   bool _finished = false;
+  bool _failed = false;
+  int _progress = 0;
 
   @override
   void initState() {
     super.initState();
     _web = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(onNavigationRequest: _route))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: _route,
+          onProgress: (p) {
+            if (mounted) setState(() => _progress = p);
+          },
+          onWebResourceError: (e) {
+            // A failed image or script inside the page is the page's problem; a failed page is ours.
+            if (mounted && (e.isForMainFrame ?? true)) {
+              setState(() => _failed = true);
+            }
+          },
+        ),
+      )
       ..loadRequest(widget.uri);
   }
 
@@ -198,6 +213,41 @@ class _HostedPageState<T> extends State<HostedPage<T>> {
     Navigator.of(context).pop<T>(outcome);
   }
 
+  Future<void> _retry() async {
+    setState(() {
+      _failed = false;
+      _progress = 0;
+    });
+    // A first load that never committed has nothing to reload.
+    final url = await _web.currentUrl();
+    if (url == null || url.isEmpty || url == 'about:blank') {
+      await _web.loadRequest(widget.uri);
+    } else {
+      await _web.reload();
+    }
+  }
+
+  /// System back walks the page's own history (3DS and card-company steps) and cancels only
+  /// from the first page.
+  Future<void> _back() async {
+    if (_finished) return;
+    if (!_failed && await _web.canGoBack()) {
+      await _web.goBack();
+    } else if (mounted) {
+      _finish(null);
+    }
+  }
+
+  /// https only. Cleartext http is allowed only back to our own page's origin when that page is
+  /// itself http (a local dev API).
+  bool _webAllowed(Uri uri) =>
+      uri.scheme == 'https' ||
+      uri.scheme == 'about' ||
+      (uri.scheme == 'http' &&
+          widget.uri.scheme == 'http' &&
+          uri.host == widget.uri.host &&
+          uri.port == widget.uri.port);
+
   Future<NavigationDecision> _route(NavigationRequest req) async {
     // Some intent: links are not valid URIs; appLinkTargets reads them as text.
     final uri = Uri.tryParse(req.url);
@@ -206,11 +256,8 @@ class _HostedPageState<T> extends State<HostedPage<T>> {
         _finish(widget.onDone(uri));
         return NavigationDecision.prevent;
       }
-      if (uri.scheme == 'http' ||
-          uri.scheme == 'https' ||
-          uri.scheme == 'about') {
-        return NavigationDecision.navigate;
-      }
+      if (_webAllowed(uri)) return NavigationDecision.navigate;
+      if (uri.scheme == 'http') return NavigationDecision.prevent;
     }
     // Card / wallet apps (ISP, KakaoTalk, Toss, bank apps): hand them to the OS. The page keeps
     // waiting here; the app returns by finishing (Android) or through payAppScheme (iOS).
@@ -237,15 +284,56 @@ class _HostedPageState<T> extends State<HostedPage<T>> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(widget.title),
-      leading: IconButton(
-        icon: const Icon(Icons.close_rounded),
-        tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-        onPressed: () => _finish(null),
+  Widget build(BuildContext context) => PopScope<T>(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) _back();
+    },
+    child: Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+          onPressed: () => _finish(null),
+        ),
+        bottom: _progress < 100 && !_failed
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(2),
+                child: LinearProgressIndicator(
+                  value: _progress == 0 ? null : _progress / 100,
+                  minHeight: 2,
+                ),
+              )
+            : null,
+      ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            WebViewWidget(controller: _web),
+            if (_failed) Positioned.fill(child: _offline(context)),
+          ],
+        ),
       ),
     ),
-    body: SafeArea(child: WebViewWidget(controller: _web)),
+  );
+
+  Widget _offline(BuildContext context) => ColoredBox(
+    color: Theme.of(context).colorScheme.surface,
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.wifi_off_rounded, size: 48),
+            const SizedBox(height: 12),
+            Text(context.t.errorNetwork, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: _retry, child: Text(context.t.retry)),
+          ],
+        ),
+      ),
+    ),
   );
 }

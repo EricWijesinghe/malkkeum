@@ -7327,6 +7327,18 @@ abstract class T {
   /// **'{total}장 중 {done}장 업로드됨'**
   String pUploadedCount(String total, String done);
 
+  /// No description provided for @payConfirmingTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 확인 중'**
+  String get payConfirmingTitle;
+
+  /// No description provided for @payConfirmingBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제가 카드사에 접수되어 확인하고 있어요. 다시 결제하지 마세요. 이 화면을 나가도 확인이 끝나면 예약 내역에 표시돼요.'**
+  String get payConfirmingBody;
+
   /// No description provided for @apPgPickMethod.
   ///
   /// In ko, this message translates to:

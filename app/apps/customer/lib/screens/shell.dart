@@ -11,6 +11,7 @@ import 'bookings.dart';
 import 'chat.dart';
 import 'home.dart';
 import 'more.dart';
+import 'pay_flow.dart' show resumePendingPayment;
 import 'web_return.dart';
 
 /// 3D art ids of the four tabs, in tab order (DAHAE-PLAN §4).
@@ -88,11 +89,12 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
     app.startPush(app.api).ignore();
     _pushTaps = PushService.taps.listen(_openPush);
     final launch = PushService.takePending();
-    if (launch != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _openPush(launch);
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (launch != null) _openPush(launch);
+      // A payment approved last time whose confirm never got an answer.
+      resumePendingPayment(context);
+    });
   }
 
   /// Sign-out or another account: the last account's data, taps and tab position go.

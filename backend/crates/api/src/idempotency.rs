@@ -1,8 +1,10 @@
 //! `Idempotency-Key` replay for money-moving and duplicate-prone POSTs. A key is scoped to the caller
-//! (token hash) and path, bound to the request body hash, and replays the stored response for 24h.
+//! (the verified user, not one access token) and path, bound to the request body hash, and replays the stored response for 24h.
 //! Only final answers are stored: a 5xx or an auth/rate refusal releases the key so the client can retry.
 
 use crate::{
+    auth::verify_access,
+    config::Config,
     contract::JSON_BODY_LIMIT,
     error::{ApiError, ApiResult},
     state::AppState,
@@ -10,13 +12,14 @@ use crate::{
 use axum::{
     body::{Body, to_bytes},
     extract::{Extension, Request},
-    http::{HeaderName, Method, StatusCode, header},
+    http::{HeaderName, HeaderValue, Method, StatusCode, header},
     middleware::Next,
     response::{IntoResponse, Response},
     routing::MethodRouter,
 };
 use sha2::{Digest, Sha256};
 use sqlx::PgPool;
+use std::sync::Arc;
 
 const IDEMPOTENCY_KEY: HeaderName = HeaderName::from_static("idempotency-key");
 const KEY_MAX_CHARS: usize = 128;
@@ -47,7 +50,20 @@ enum Slot {
     Done(StatusCode, String),
 }
 
-pub async fn replay(Extension(db): Extension<PgPool>, req: Request, next: Next) -> ApiResult<Response> {
+/// Who owns a key: the user a valid bearer names, so a retry after the app refreshed its access token
+/// (15 min TTL) still replays instead of booking or charging again. Any other header falls back to its
+/// hash; such a request is refused as 401 by the handler, which releases the key.
+fn caller(config: &Config, auth: Option<&HeaderValue>) -> String {
+    let Some(v) = auth else { return "anon".to_owned() };
+    let user = v
+        .to_str()
+        .ok()
+        .and_then(|s| s.strip_prefix("Bearer "))
+        .and_then(|t| verify_access(&config.jwt_keys(), t).ok());
+    user.map_or_else(|| hex(&Sha256::digest(v.as_bytes())), |a| format!("user:{}", a.id))
+}
+
+pub async fn replay(Extension(db): Extension<PgPool>, Extension(config): Extension<Arc<Config>>, req: Request, next: Next) -> ApiResult<Response> {
     if req.method() != Method::POST {
         return Ok(next.run(req).await);
     }
@@ -60,8 +76,7 @@ pub async fn replay(Extension(db): Extension<PgPool>, req: Request, next: Next) 
         Ok(b) => b,
         Err(_) => return Ok(StatusCode::PAYLOAD_TOO_LARGE.into_response()),
     };
-    let caller = parts.headers.get(header::AUTHORIZATION).map_or_else(|| "anon".to_owned(), |v| hex(&Sha256::digest(v.as_bytes())));
-    let scope = format!("{caller}:{}", parts.uri.path());
+    let scope = format!("{}:{}", caller(&config, parts.headers.get(header::AUTHORIZATION)), parts.uri.path());
     let body_hash = hex(&Sha256::digest(&bytes));
     match claim(&db, &scope, &key, &body_hash).await? {
         Slot::Done(status, text) => Ok(replayed(status, text)),

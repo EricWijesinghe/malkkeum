@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "再アップロード",
  "pPhotoWaiting": "アップロードできなかった写真は、つながったら自動で送信されます。",
  "pUploadedCount": "{total}枚中{done}枚アップロード済み",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "支払い方法を選んでください",
  "apPgConfirmTitle": "お支払い内容の確認",
  "apPgConfirmBtn": "支払いを確定",

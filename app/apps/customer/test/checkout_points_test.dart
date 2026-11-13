@@ -17,9 +17,11 @@ Json _wallet({bool enabled = true}) => {
   'entries': const <Json>[],
 };
 
-Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<Json>? methods}) async {
+Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<Json>? methods, void Function(FakeApi)? routes}) async {
   setViewport(tester, tallPhoneSize);
-  final fake = FakeApi()
+  final fake = FakeApi();
+  routes?.call(fake);
+  fake
     ..reply('GET', '/me/points', wallet)
     ..reply('GET', '/payments/methods', [
       {'code': 'transfer', 'flow': 'checkout'},
@@ -89,6 +91,30 @@ void main() {
     await settle(tester);
     expect(_pointsLine(), findsNothing);
     expect(find.text(koT.payAmount(formatWon(45000, 'ko'))), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('a saved-card payment retried after a lost reply sends the same Idempotency-Key', (tester) async {
+    var attempts = 0;
+    final fake = await _openCheckout(
+      tester,
+      wallet: _wallet(enabled: false),
+      methods: [paymentMethodJson()],
+      routes: (f) => f.onPost('/bookings', (_) {
+        // The first reply is lost (the server may have charged); the retry gets an answer.
+        if (attempts++ == 0) throw StateError('connection dropped');
+        return const ApiReply(409, {'error': {'code': 'slot_full'}});
+      }),
+    );
+    final pay = find.text(koT.payAmount(formatWon(45000, 'ko')));
+    await tester.tap(pay);
+    await settle(tester);
+    await tester.tap(pay);
+    await settle(tester);
+    final keys = [for (final c in fake.callsTo('POST', '/bookings')) c.headers['idempotency-key']];
+    expect(keys, hasLength(2));
+    expect(keys.first, isNotNull);
+    expect(keys.last, keys.first, reason: 'a retry of the same draft is the same action');
     await unmount(tester);
   });
 
