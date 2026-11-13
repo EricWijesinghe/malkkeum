@@ -4384,6 +4384,157 @@ class TEn extends T {
   String get caseSave => 'Save';
 
   @override
+  String get rulesTab => 'Operating rules';
+
+  @override
+  String get rulesIntro =>
+      'Changes apply right away or after a server restart. Reset a value to go back to its original setting.';
+
+  @override
+  String get rulesGroupBusiness => 'Business limits';
+
+  @override
+  String get rulesGroupMarketing => 'Advertising';
+
+  @override
+  String get rulesGroupPoints => 'Points';
+
+  @override
+  String get rulesGroupQuality => 'Partner quality';
+
+  @override
+  String get rulesGroupOps => 'Server and alert limits';
+
+  @override
+  String get rulesRange => 'Allowed range';
+
+  @override
+  String get rulesSource => 'Value source';
+
+  @override
+  String get rulesSourceDb => 'Changed here';
+
+  @override
+  String get rulesSourceEnv => 'Installation setting';
+
+  @override
+  String get rulesSourceDefault => 'Default';
+
+  @override
+  String get rulesTightenDown => 'Can only be lowered from the default';
+
+  @override
+  String get rulesTightenUp => 'Can only be raised from the default';
+
+  @override
+  String get rulesApplyInstant => 'Applies now';
+
+  @override
+  String get rulesApplyRebuild => 'Applies after a server restart';
+
+  @override
+  String get rulesReadOnly => 'Cannot be changed here (ask the developer)';
+
+  @override
+  String get rulesReset => 'Reset';
+
+  @override
+  String get rulesSave => 'Save';
+
+  @override
+  String get rulesSaved => 'Saved';
+
+  @override
+  String get rulesNoChanges => 'Nothing changed';
+
+  @override
+  String get rulesInvalid => 'Check the values you entered';
+
+  @override
+  String get rulePointsAdjustMax => 'Most points per manual adjustment';
+
+  @override
+  String get ruleUploadDailyQuota => 'Daily photo upload limit (count)';
+
+  @override
+  String get ruleMaxOpenQuoteRequests => 'Open quote requests per customer';
+
+  @override
+  String get ruleMaxThreadsPerDay => 'Daily chat threads per customer';
+
+  @override
+  String get ruleReviewReportThreshold => 'Review reports before hiding';
+
+  @override
+  String get ruleNoshowGraceMinutes => 'No-show grace period (minutes)';
+
+  @override
+  String get ruleAiChatRetentionDays => 'AI chat retention (days)';
+
+  @override
+  String get ruleUploadOrphanDays => 'Delete unlinked photos after (days)';
+
+  @override
+  String get ruleReconcileIntervalSecs =>
+      'Payment reconciliation interval (seconds)';
+
+  @override
+  String get ruleFreqCapPerWeek => 'Ads per customer per week';
+
+  @override
+  String get ruleNudgeRebookDays => 'Rebooking reminder (days after visit)';
+
+  @override
+  String get ruleQualityWindowDays => 'Quality score window (days)';
+
+  @override
+  String get ruleQualityOnTimeGraceMin => 'On-time grace period (minutes)';
+
+  @override
+  String get ruleBackupStaleHours => 'Backup overdue after (hours)';
+
+  @override
+  String get ruleBackupLateHours => 'Backup late after (hours)';
+
+  @override
+  String get ruleDiskLowPct => 'Disk free space red below (%)';
+
+  @override
+  String get ruleDiskWarnPct => 'Disk free space yellow below (%)';
+
+  @override
+  String get ruleMaintenanceOn => 'Maintenance mode (blocks new bookings)';
+
+  @override
+  String get ruleMaintenanceMessage => 'Maintenance message';
+
+  @override
+  String get rulesApplyStoreManual => 'Edited in the app store';
+
+  @override
+  String get rulesMaxLength => 'Maximum characters';
+
+  @override
+  String get rulesDeleteWarning =>
+      'A shorter period deletes older records at the next cleanup. Deleted records cannot be restored.';
+
+  @override
+  String get rulesNoshowWarning =>
+      'Changing the no-show grace period changes when a partner is marked as a no-show.';
+
+  @override
+  String get err_tighten_only =>
+      'This value is past the default limit. It can only be changed toward the default.';
+
+  @override
+  String get err_threshold_order =>
+      'The yellow and red limits are in the wrong order. Check both values.';
+
+  @override
+  String get err_read_only_setting =>
+      'This value cannot be changed here. Ask the developer.';
+
+  @override
   String get cSetup => 'Setup';
 
   @override
