@@ -330,6 +330,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
         child: !answered && (marked || _asked)
             ? Text(
                 t.dfPleaseSelect,
+                textAlign: TextAlign.end,
                 style: context.text.bodySmall?.copyWith(
                   color: context.colors.danger,
                   fontWeight: FontWeight.w700,

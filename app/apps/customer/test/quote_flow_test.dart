@@ -164,6 +164,22 @@ void main() {
 
       // 7/7: review sections with 변경, payment info, notes.
       expect(find.text(_chip(7)), findsOneWidget);
+      expect(
+        find.text(koT.dfChange, skipOffstage: false),
+        findsNWidgets(3),
+        reason: 'home, basic and space info can each be changed',
+      );
+      // The payment section sits below the fold of the lazy list.
+      await tester.scrollUntilVisible(
+        find.text(koT.quoteNoPayNow),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(QuoteReviewPage),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(find.text(koT.dfEstAddons('10')), findsOneWidget);
       expect(
         find.text(formatWon(40100, 'ko')),
@@ -171,7 +187,6 @@ void main() {
         reason: 'deposit preview from the server',
       );
       expect(find.text(koT.quoteNoPayNow), findsOneWidget);
-      expect(find.text(koT.dfChange), findsNWidgets(3));
       // 변경 on 공간 정보 goes back to step 3.
       await _tap(tester, find.text(koT.dfChange).last);
       expect(find.text(_chip(3)), findsOneWidget);
@@ -316,10 +331,9 @@ void main() {
       await _pumpMoveOut(tester);
       expect(tester.hasRunningAnimations, isFalse, reason: 'step 1 at rest');
 
-      /// Past the framework's own ink splash, nothing may still be ticking.
+      /// Past the framework's own ink splash and button fade, nothing may still be ticking.
       Future<void> rest(String what) async {
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump();
+        await settle(tester);
         expect(tester.hasRunningAnimations, isFalse, reason: what);
       }
 

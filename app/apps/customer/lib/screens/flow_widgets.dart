@@ -10,6 +10,20 @@ export 'flow_motion.dart';
 
 const _checkStagger = Duration(milliseconds: 40);
 
+/// Share of the screen width an [InfoRow] label, and a section's trailing widget, may take.
+const _labelShare = 0.55;
+const _trailingShare = 0.5;
+
+/// Caps a row's fixed-width child at [share] of the screen width, so a long label (large
+/// text, long translation) wraps instead of pushing its neighbour off the row.
+Widget capped(BuildContext context, double share, Widget child) =>
+    ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width * share,
+      ),
+      child: child,
+    );
+
 /// Shared pieces of the booking flows (owner design p07-p22): white page, big title,
 /// grey bands between sections, circle and radio choices, 3D tiles.
 
@@ -122,7 +136,8 @@ class FlowSection extends StatelessWidget {
                     ),
                   ),
                 ),
-                ?trailing,
+                if (trailing != null)
+                  capped(context, _trailingShare, trailing!),
               ],
             ),
           ),
@@ -356,10 +371,14 @@ class InfoRow extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: context.text.bodyMedium?.copyWith(
-            color: context.colors.inkMuted,
+        capped(
+          context,
+          _labelShare,
+          Text(
+            label,
+            style: context.text.bodyMedium?.copyWith(
+              color: context.colors.inkMuted,
+            ),
           ),
         ),
         const SizedBox(width: Space.md),

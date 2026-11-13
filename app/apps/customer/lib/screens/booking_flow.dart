@@ -20,6 +20,7 @@ const _freeCancelDays = 2;
 const _confirmSize = 160.0;
 const _minConfirmSize = 112.0; // SuccessMark's own default
 const _toolStagger = Duration(milliseconds: 30);
+const _pillShare = 0.4;
 const _glyphKickDelay = Duration(milliseconds: 700);
 
 /// Last free-cancel day for a visit on [visit], or null when that day is already past
@@ -245,11 +246,8 @@ class VisitDateRow extends StatelessWidget {
             ],
           ),
         ),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            shape: const StadiumBorder(),
-            minimumSize: const Size(64, 48),
-          ),
+        _PillButton(
+          label: t.dfChange,
           onPressed: () async {
             final picked = await showDatePicker(
               context: context,
@@ -259,11 +257,32 @@ class VisitDateRow extends StatelessWidget {
             );
             if (picked != null) onChanged(picked);
           },
-          child: Text(t.dfChange),
         ),
       ],
     );
   }
+}
+
+/// The design's outlined pill ("변경", "선택"). Capped so a long label at large text wraps
+/// instead of squeezing the value beside it down to nothing.
+class _PillButton extends StatelessWidget {
+  const _PillButton({required this.label, required this.onPressed});
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => capped(
+    context,
+    _pillShare,
+    OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        shape: const StadiumBorder(),
+        minimumSize: const Size(64, 48),
+      ),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    ),
+  );
 }
 
 /// GET /slots for [date]: start hour -> (available, seats left when nearly full).
@@ -474,14 +493,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   else
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        minimumSize: const Size(64, 48),
-                      ),
-                      onPressed: _pickSlot,
-                      child: Text(t.dfSelect),
-                    ),
+                    _PillButton(label: t.dfSelect, onPressed: _pickSlot),
                 ],
               ),
               if (_hours.every((h) => !_open(h))) ...[

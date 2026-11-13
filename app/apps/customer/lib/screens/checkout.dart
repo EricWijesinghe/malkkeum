@@ -13,6 +13,8 @@ import 'pay_flow.dart';
 import 'pay_method_picker.dart';
 import 'virtual_account.dart';
 
+const _actionShare = 0.35;
+
 /// Discount and payment (design p12): coupon, points, method, breakdown, agreement, pay.
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key, required this.draft});
@@ -308,16 +310,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               const Divider(height: Space.lg),
-              Row(
+              // A Wrap: at large text the amount drops under its label, and it only
+              // scales down when it alone is wider than the row.
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: Space.sm,
                 children: [
-                  Expanded(
-                    child: Text(t.dfDue, style: context.text.titleMedium),
-                  ),
-                  RollingAmount(
-                    value: due,
-                    format: context.won,
-                    style: context.text.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                  Text(t.dfDue, style: context.text.titleMedium),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: RollingAmount(
+                      value: due,
+                      format: context.won,
+                      style: context.text.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
@@ -383,28 +391,25 @@ class _PointsFirst extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
 
   @override
-  Widget build(BuildContext context) => Flexible(
-    child: MergeSemantics(
-      child: InkWell(
-        onTap: onChanged == null ? null : () => onChanged!(!value),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Checkbox(
-              value: value,
-              onChanged: onChanged == null
-                  ? null
-                  : (v) => onChanged!(v ?? false),
-              shape: const CircleBorder(),
+  // The section header caps its trailing widget's width, so the label wraps when it must.
+  Widget build(BuildContext context) => MergeSemantics(
+    child: InkWell(
+      onTap: onChanged == null ? null : () => onChanged!(!value),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Checkbox(
+            value: value,
+            onChanged: onChanged == null ? null : (v) => onChanged!(v ?? false),
+            shape: const CircleBorder(),
+          ),
+          Flexible(
+            child: Text(
+              context.t.dfPointsFirst,
+              style: context.text.bodyMedium,
             ),
-            Flexible(
-              child: Text(
-                context.t.dfPointsFirst,
-                style: context.text.bodyMedium,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
@@ -458,13 +463,18 @@ class _IconRow extends StatelessWidget {
         ),
       ),
       if (action case (final label, final onTap))
-        TextButton(
-          onPressed: onTap,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: context.primary,
-              fontWeight: FontWeight.w700,
+        capped(
+          context,
+          _actionShare,
+          TextButton(
+            onPressed: onTap,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: context.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),

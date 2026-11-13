@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
@@ -51,8 +52,12 @@ class _AcAddonBannerState extends State<AcAddonBanner> {
     }
     // shortcut: there is no claim endpoint, the console issues coupons straight into the
     // wallet; this only confirms it. Call a claim API here when the backend gets one.
-    setState(() => _claimed = true);
-    showToast(context, context.t.dfAcCouponClaimed);
+    // The confirmation is the banner's own line: a toast would cover the banner.
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _claimed = true;
+      _kicks++;
+    });
   }
 
   Future<void> _open() async {
@@ -149,14 +154,18 @@ class _AcAddonBannerState extends State<AcAddonBanner> {
                       trigger: _kicks,
                       builder: kick,
                       child: Text(
-                        count == 0
-                            ? t.dfAcAddonBody
-                            : t.dfAcAddonAdded('$count'),
+                        count > 0
+                            ? t.dfAcAddonAdded('$count')
+                            : _claimed
+                            ? t.dfAcCouponClaimed
+                            : t.dfAcAddonBody,
                         style: context.text.bodySmall?.copyWith(
-                          color: count == 0
-                              ? context.colors.inkSoft
-                              : context.primary,
-                          fontWeight: count == 0 ? null : FontWeight.w700,
+                          color: count > 0 || _claimed
+                              ? context.primary
+                              : context.colors.inkSoft,
+                          fontWeight: count > 0 || _claimed
+                              ? FontWeight.w700
+                              : null,
                         ),
                       ),
                     ),
