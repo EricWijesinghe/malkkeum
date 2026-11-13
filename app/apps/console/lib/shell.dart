@@ -9,6 +9,7 @@ import 'screens/dashboard.dart';
 import 'screens/finance.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
+import 'screens/notify_templates.dart';
 import 'screens/ops.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
@@ -112,6 +113,13 @@ final _sections = <_Section>[
     Icons.tune_rounded,
     (t) => t.cSetup,
     () => const SetupScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    'c_settings',
+    Icons.notifications_active_rounded,
+    (t) => t.ntNavLabel,
+    () => const NotifyTemplatesScreen(),
     adminOnly: true,
   ),
   _Section(
