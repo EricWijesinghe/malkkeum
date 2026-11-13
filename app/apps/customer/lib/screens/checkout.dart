@@ -13,6 +13,8 @@ import 'pay_flow.dart';
 import 'pay_method_picker.dart';
 import 'virtual_account.dart';
 
+const _actionShare = 0.35;
+
 /// Discount and payment (design p12): coupon, points, method, breakdown, agreement, pay.
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key, required this.draft});
@@ -273,41 +275,57 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                   children: [
-                    InfoRow(
-                      t.dfBaseAmount(t.duration(d.minutes)),
-                      context.won(d.listPrice),
-                    ),
-                    InfoRow(
-                      t.dfCouponDiscount,
-                      discount == 0
-                          ? context.won(0)
-                          : '−${context.won(discount)}',
-                      valueStyle: context.text.bodyMedium?.copyWith(
-                        color: context.primary,
-                        fontWeight: FontWeight.w600,
+                    // The points line slides in when the wallet loads; changed values fade.
+                    AnimatedSize(
+                      duration: motionFor(context, Motion.standard),
+                      curve: Motion.ease,
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        children: [
+                          InfoRow(
+                            t.dfBaseAmount(t.duration(d.minutes)),
+                            context.won(d.listPrice),
+                          ),
+                          InfoRow(
+                            t.dfCouponDiscount,
+                            discount == 0
+                                ? context.won(0)
+                                : '−${context.won(discount)}',
+                            valueStyle: context.text.bodyMedium?.copyWith(
+                              color: context.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (_pointsOn)
+                            InfoRow(
+                              t.dfPoints,
+                              points == 0
+                                  ? context.won(0)
+                                  : '−${t.walletPoints('$points')}',
+                            ),
+                        ],
                       ),
                     ),
-                    if (_pointsOn)
-                      InfoRow(
-                        t.dfPoints,
-                        points == 0
-                            ? context.won(0)
-                            : '−${t.walletPoints('$points')}',
-                      ),
                   ],
                 ),
               ),
               const Divider(height: Space.lg),
-              Row(
+              // A Wrap: at large text the amount drops under its label, and it only
+              // scales down when it alone is wider than the row.
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: Space.sm,
                 children: [
-                  Expanded(
-                    child: Text(t.dfDue, style: context.text.titleMedium),
-                  ),
-                  RollingAmount(
-                    value: due,
-                    format: context.won,
-                    style: context.text.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                  Text(t.dfDue, style: context.text.titleMedium),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: RollingAmount(
+                      value: due,
+                      format: context.won,
+                      style: context.text.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
@@ -373,28 +391,25 @@ class _PointsFirst extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
 
   @override
-  Widget build(BuildContext context) => Flexible(
-    child: MergeSemantics(
-      child: InkWell(
-        onTap: onChanged == null ? null : () => onChanged!(!value),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Checkbox(
-              value: value,
-              onChanged: onChanged == null
-                  ? null
-                  : (v) => onChanged!(v ?? false),
-              shape: const CircleBorder(),
+  // The section header caps its trailing widget's width, so the label wraps when it must.
+  Widget build(BuildContext context) => MergeSemantics(
+    child: InkWell(
+      onTap: onChanged == null ? null : () => onChanged!(!value),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Checkbox(
+            value: value,
+            onChanged: onChanged == null ? null : (v) => onChanged!(v ?? false),
+            shape: const CircleBorder(),
+          ),
+          Flexible(
+            child: Text(
+              context.t.dfPointsFirst,
+              style: context.text.bodyMedium,
             ),
-            Flexible(
-              child: Text(
-                context.t.dfPointsFirst,
-                style: context.text.bodyMedium,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
@@ -422,10 +437,19 @@ class _IconRow extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: context.text.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+            // An applied coupon, points or another method fades in over the old line.
+            AnimatedSwitcher(
+              duration: motionFor(context, Motion.standard),
+              layoutBuilder: (current, previous) => Stack(
+                alignment: AlignmentDirectional.centerStart,
+                children: [...previous, ?current],
+              ),
+              child: Text(
+                title,
+                key: ValueKey(title),
+                style: context.text.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             if (subtitle != null)
@@ -439,13 +463,18 @@ class _IconRow extends StatelessWidget {
         ),
       ),
       if (action case (final label, final onTap))
-        TextButton(
-          onPressed: onTap,
-          child: Text(
-            label,
-            style: TextStyle(
-              color: context.primary,
-              fontWeight: FontWeight.w700,
+        capped(
+          context,
+          _actionShare,
+          TextButton(
+            onPressed: onTap,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: context.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),

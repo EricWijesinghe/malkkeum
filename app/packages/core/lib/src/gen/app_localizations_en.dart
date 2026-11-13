@@ -2028,6 +2028,9 @@ class TEn extends T {
   String get dfPriceVat => 'Price (VAT incl.)';
 
   @override
+  String get dfDetails => 'Details';
+
+  @override
   String dfStudioNote(String max) {
     return '※ Homes over $max pyeong can\'t book studio cleaning. We\'ll suggest the right service in chat.';
   }
@@ -2164,6 +2167,12 @@ class TEn extends T {
   String get dfReviewsTitle => 'See what customers say.';
 
   @override
+  String get dfBefore => 'BEFORE';
+
+  @override
+  String get dfAfter => 'AFTER';
+
+  @override
   String get dfBasicBody =>
       'These details are required and can affect the price.';
 
@@ -2231,6 +2240,18 @@ class TEn extends T {
   @override
   String get dfAcAddonNote =>
       'You\'ll see the discounted price in your estimate';
+
+  @override
+  String get dfAcCouponCta => 'Get coupon';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return '$amount off AC cleaning';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Coupon saved. Use it when you book AC cleaning.';
 
   @override
   String dfEstAddons(String pct) {

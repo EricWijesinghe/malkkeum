@@ -2051,6 +2051,9 @@ class TFil extends T {
   String get dfPriceVat => 'Presyo (kasama ang VAT)';
 
   @override
+  String get dfDetails => 'Detalye';
+
+  @override
   String dfStudioNote(String max) {
     return '※ Hindi puwedeng mag-book ng studio cleaning ang bahay na lampas $max pyeong. Magmumungkahi kami sa chat.';
   }
@@ -2187,6 +2190,12 @@ class TFil extends T {
   String get dfReviewsTitle => 'Tingnan ang mga review.';
 
   @override
+  String get dfBefore => 'BAGO';
+
+  @override
+  String get dfAfter => 'PAGKATAPOS';
+
+  @override
   String get dfBasicBody =>
       'Kailangan ang mga ito at maaaring makaapekto sa presyo.';
 
@@ -2254,6 +2263,18 @@ class TFil extends T {
   @override
   String get dfAcAddonNote =>
       'Makikita mo ang may diskwentong presyo sa iyong quote';
+
+  @override
+  String get dfAcCouponCta => 'Kunin';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return '$amount bawas sa AC cleaning';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Nakuha na ang kupon. Gamitin sa pag-book ng AC cleaning.';
 
   @override
   String dfEstAddons(String pct) {

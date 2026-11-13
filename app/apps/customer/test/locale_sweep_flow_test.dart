@@ -29,7 +29,9 @@ Future<void> _tap(WidgetTester tester, Finder f) async {
   await tester.ensureVisible(f);
   await tester.pump();
   await tester.tap(f, warnIfMissed: false);
-  await settle(tester, duration: const Duration(milliseconds: 400));
+  // Longer than a step's page slide (Motion.route): the page view ignores taps until the
+  // slide has ended, and it only ends on the first frame after its 300 ms.
+  await settle(tester, duration: const Duration(milliseconds: 500));
 }
 
 const _estimate = {
@@ -87,7 +89,16 @@ FakeApi _api() {
       addressJson(sizePyeong: 8),
       addressJson(id: 'a-2', label: 'Parents', sizePyeong: 24),
     ],
-    coupons: [couponJson(id: 'cp', name: 'welcome_any', amount: 5000)],
+    coupons: [
+      couponJson(id: 'cp', name: 'welcome_any', amount: 5000),
+      // Makes the move flow's AC banner show its coupon wording (design p17).
+      couponJson(
+        id: 'cp-ac',
+        name: 'aircon_any',
+        amount: 7000,
+        serviceCode: 'aircon',
+      ),
+    ],
   );
   return fake;
 }
@@ -128,6 +139,8 @@ void main() {
             'studio detail',
           );
           await show(ServiceScreen(service: app.service('aircon')!), 'aircon');
+          await _tap(tester, find.text(t.dfDetails));
+          _noException(tester, 'price breakdown sheet');
           await show(const ServiceScopeScreen(), 'service scope');
 
           final studio = BookingDraft(app.service('studio')!)
@@ -137,6 +150,12 @@ void main() {
             ).add(const Duration(days: 5));
           await show(AddressPickScreen(draft: studio), 'address');
           await show(ScheduleScreen(draft: studio), 'date');
+          // Below the fold of the lazy list at large text: finders only see what is on screen.
+          await tester.scrollUntilVisible(
+            find.text(t.dfSelect),
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
           await _tap(tester, find.text(t.dfSelect));
           _noException(tester, 'slot sheet');
           await show(PrepToolsScreen(draft: studio), 'prep tools');
@@ -166,27 +185,48 @@ void main() {
             'move 1/7',
           );
           Finder next() => find.widgetWithText(PrimaryButton, t.next).last;
+          // "다음" no longer greys out on 2/7 and 3/7, so each step proves it was reached.
+          void at(int n) {
+            _noException(tester, 'move $n/7');
+            expect(
+              find.text('${t.service('move_out')} · $n/$quoteSteps'),
+              findsOneWidget,
+              reason: 'move $n/7 reached',
+            );
+          }
+
           await _tap(tester, find.text(t.type_standard));
           await _tap(tester, next());
-          _noException(tester, 'move 2/7');
+          at(2);
+          // A blocked "다음" marks every unanswered question: the hints must fit too.
+          await _tap(tester, next());
+          at(2);
           await _tap(tester, find.text(t.building_apartment));
           await _tap(tester, find.text(t.dfLayoutTwo));
           await _tap(tester, find.text(t.dfNone).last);
           await _tap(tester, next());
-          _noException(tester, 'move 3/7');
+          at(3);
           await _tap(tester, find.text(t.dfHas).last);
+          expect(
+            find.text(t.dfPleaseSelect),
+            findsNothing,
+            reason: 'the elevator answer clears its mark',
+          );
           await _tap(tester, next());
-          _noException(tester, 'move 4/7');
+          at(4);
           await _tap(tester, next());
-          _noException(tester, 'move 5/7');
+          at(5);
+          await _tap(tester, find.text(t.dfAcCouponCta));
+          _noException(tester, 'AC coupon taken');
           await _tap(tester, find.text(t.dfAcAddonAdd));
           _noException(tester, 'AC add-on sheet');
-          await tester.tapAt(const Offset(10, 10)); // dismiss the sheet
-          await settle(tester, duration: const Duration(milliseconds: 400));
+          // Popped, not tapped away: at 200% text the sheet can reach the top of the screen.
+          Navigator.of(tester.element(find.byType(CountStepper).first)).pop();
+          await settle(tester, duration: const Duration(milliseconds: 500));
           await _tap(tester, next());
-          _noException(tester, 'move 6/7');
+          at(6);
           await _tap(tester, next());
-          _noException(tester, 'move 7/7');
+          at(7);
           expect(find.text(t.dfSubmitRequest), findsOneWidget);
 
           await show(

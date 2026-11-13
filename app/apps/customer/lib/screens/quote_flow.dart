@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
@@ -34,6 +35,11 @@ const _layouts = [
   'four_plus',
 ];
 const _maxCount = 5;
+const _reviewCardHeight = 132.0;
+const _reviewPhotoHeight = 96.0;
+
+/// Required questions that "다음" points at while they are unanswered (design p15, p16).
+enum _Ask { building, layout, duplex, elevator }
 
 String buildingLabel(T t, String? c) => switch (c) {
   'apartment' => t.building_apartment,
@@ -88,6 +94,11 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   bool _busy = false;
   Future<Json>? _estimate;
   Map<int, (bool, int?)> _slots = {};
+  final _askKeys = {for (final q in _Ask.values) q: GlobalKey()};
+  final _nudges = <_Ask, int>{};
+
+  /// Set by a blocked "다음": every unanswered question then shows "선택해 주세요".
+  bool _asked = false;
 
   QuoteAnswers get a => d.answers;
   bool get _moveIn => widget.service.code == 'move_in';
@@ -118,21 +129,63 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     }
   }
 
+  // Steps 2/7 and 3/7 keep "다음" tappable: it points at what is still missing instead.
   bool get _canNext => switch (_step) {
     0 => a.cleaningType != null,
-    1 => a.stepBasicDone,
-    2 => a.stepSpaceDone,
     _stepAddress => d.address != null,
     _stepDate => d.date != null && d.hour != null,
     _ => true,
+  };
+
+  _Ask? get _missing => switch (_step) {
+    1 =>
+      a.building == null
+          ? _Ask.building
+          : a.layout == null
+          ? _Ask.layout
+          : a.duplex == null
+          ? _Ask.duplex
+          : null,
+    2 => a.elevator == null ? _Ask.elevator : null,
+    _ => null,
   };
 
   void _go(int step) {
     // The estimate depends on every answer before it: ask again after a change.
     if (step <= _stepDate) _estimate = null;
     if (step >= _stepMethod) _estimate ??= _fetchEstimate();
-    setState(() => _step = step);
-    _pages.animateToPage(step, duration: Motion.route, curve: Motion.ease);
+    setState(() {
+      _step = step;
+      _asked = false;
+    });
+    if (reducedMotion(context)) {
+      _pages.jumpToPage(step);
+    } else {
+      _pages.animateToPage(step, duration: Motion.route, curve: Motion.ease);
+    }
+  }
+
+  /// "다음": advance, or nudge the first unanswered question into view and say so.
+  void _next() {
+    final missing = _missing;
+    if (missing == null) return _go(_step + 1);
+    setState(() {
+      _asked = true;
+      _nudges[missing] = (_nudges[missing] ?? 0) + 1;
+    });
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      context.t.dfPleaseSelect,
+      Directionality.of(context),
+    );
+    final section = _askKeys[missing]!.currentContext;
+    if (section == null) return;
+    Scrollable.ensureVisible(
+      section,
+      alignment: 0.1,
+      duration: motionFor(context, Motion.route),
+      curve: Motion.ease,
+    );
   }
 
   Future<Json> _fetchEstimate() async =>
@@ -230,7 +283,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             busy: _busy,
             onPressed: !_canNext
                 ? null
-                : (_step == _stepReview ? _submit : () => _go(_step + 1)),
+                : (_step == _stepReview ? _submit : _next),
           ),
         ),
       ),
@@ -246,11 +299,47 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     String title,
     List<Widget> children, {
     String? body,
-  }) => ListView(
-    children: [
-      FlowTitle(title, chip: _chip(t, i), body: body),
-      ...children,
-    ],
+  }) => SingleChildScrollView(
+    // Not a lazy list: a blocked "다음" must find a question that is scrolled far away.
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FlowTitle(title, chip: _chip(t, i), body: body),
+        ...children,
+      ],
+    ),
+  );
+
+  /// A required question: nudged by a blocked "다음", marked "선택해 주세요" while unanswered
+  /// ([marked]: from the start, as the design does for 복층 and 엘리베이터).
+  Widget _ask(
+    T t,
+    _Ask q, {
+    required String title,
+    required bool answered,
+    required List<Widget> children,
+    bool marked = false,
+  }) => OneShot(
+    key: _askKeys[q],
+    trigger: _nudges[q] ?? 0,
+    builder: nudge,
+    child: FlowSection(
+      title: title,
+      trailing: AnimatedSwitcher(
+        duration: motionFor(context, Motion.standard),
+        child: !answered && (marked || _asked)
+            ? Text(
+                t.dfPleaseSelect,
+                textAlign: TextAlign.end,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.danger,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            : const SizedBox.shrink(),
+      ),
+      children: children,
+    ),
   );
 
   Widget _typeStep(T t) {
@@ -300,8 +389,11 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   Widget _basicStep(T t) =>
       _page(t, 1, t.quoteBasicTitle, body: t.dfBasicBody, [
-        FlowSection(
+        _ask(
+          t,
+          _Ask.building,
           title: t.buildingType,
+          answered: a.building != null,
           children: [
             circleRow([
               for (final b in _buildings)
@@ -315,8 +407,11 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
           ],
         ),
         const FlowBand(),
-        FlowSection(
+        _ask(
+          t,
+          _Ask.layout,
           title: t.layoutTitle,
+          answered: a.layout != null,
           children: [
             for (final l in _layouts)
               RadioRow(
@@ -327,17 +422,12 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
           ],
         ),
         const FlowBand(),
-        FlowSection(
+        _ask(
+          t,
+          _Ask.duplex,
           title: t.dfDuplexTitle,
-          trailing: a.duplex == null
-              ? Text(
-                  t.dfPleaseSelect,
-                  style: context.text.bodySmall?.copyWith(
-                    color: context.colors.danger,
-                    fontWeight: FontWeight.w700,
-                  ),
-                )
-              : null,
+          answered: a.duplex != null,
+          marked: true,
           children: [
             circleRow([
               CircleChoice(
@@ -379,17 +469,12 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     const FlowBand(),
     _counter(t, t.dfBalconyCount, a.balconies, (v) => a.balconies = v),
     const FlowBand(),
-    FlowSection(
+    _ask(
+      t,
+      _Ask.elevator,
       title: t.dfElevatorTitle,
-      trailing: a.elevator == null
-          ? Text(
-              t.dfPleaseSelect,
-              style: context.text.bodySmall?.copyWith(
-                color: context.colors.danger,
-                fontWeight: FontWeight.w700,
-              ),
-            )
-          : null,
+      answered: a.elevator != null,
+      marked: true,
       children: [
         circleRow([
           CircleChoice(
@@ -445,7 +530,8 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
                 title: visitHalf(t, h),
                 subtitle: !(_slots[h]?.$1 ?? true)
                     ? t.scheduleFull
-                    : t.dfArrive(slotRangeLabel(h, lang)),
+                    // The card's title already says 오전/오후 (design p17: "8시~9시 도착").
+                    : t.dfArrive(slotRangeLabel(h, lang, withPeriod: false)),
                 selected: d.hour == h,
                 enabled: _slots[h]?.$1 ?? true,
                 onTap: () => setState(() => d.hour = h),
@@ -478,6 +564,18 @@ class _ReviewCarouselState extends State<ReviewCarousel> {
       .get('/public/proof')
       .then<Object?>((v) => v, onError: (_) => null);
 
+  /// Both photos, or none: half a comparison says nothing.
+  static (String, String)? _photos(Json r) {
+    final before = r['before_url'];
+    final after = r['after_url'];
+    return before is String &&
+            after is String &&
+            before.startsWith('https://') &&
+            after.startsWith('https://')
+        ? (before, after)
+        : null;
+  }
+
   @override
   Widget build(BuildContext context) => FutureBuilder<Object?>(
     future: _proof,
@@ -485,46 +583,93 @@ class _ReviewCarouselState extends State<ReviewCarousel> {
       final reviews = ((snap.data as Json?)?['reviews'] as List? ?? const [])
           .cast<Json>();
       if (reviews.isEmpty) return const SizedBox.shrink();
+      final t = context.t;
+      final withPhotos = reviews.any((r) => _photos(r) != null);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const FlowBand(),
           FlowSection(
-            title: context.t.dfReviewsTitle,
+            title: t.dfReviewsTitle,
             children: [
               SizedBox(
-                height: 132,
+                height:
+                    _reviewCardHeight + (withPhotos ? _reviewPhotoHeight : 0),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: reviews.length,
                   separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                  itemBuilder: (context, i) => SizedBox(
-                    width: 240,
-                    child: AppCard(
-                      padding: const EdgeInsets.all(Space.md),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${'★' * ((reviews[i]['rating'] as num?)?.toInt() ?? 5)} · ${reviews[i]['name'] ?? ''}',
-                            style: context.text.labelMedium?.copyWith(
-                              color: context.colors.inkMuted,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  itemBuilder: (context, i) {
+                    final r = reviews[i];
+                    final photos = _photos(r);
+                    return StaggerIn(
+                      index: i,
+                      child: SizedBox(
+                        width: 240,
+                        child: AppCard(
+                          padding: EdgeInsets.zero,
+                          level: Level.flat,
+                          border: context.colors.line,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (photos != null)
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(Radii.card),
+                                  ),
+                                  child: SizedBox(
+                                    height: _reviewPhotoHeight,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: _Shot(photos.$1, t.dfBefore),
+                                        ),
+                                        Expanded(
+                                          child: _Shot(
+                                            photos.$2,
+                                            t.dfAfter,
+                                            after: true,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(Space.md),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${'★' * ((r['rating'] as num?)?.toInt() ?? 5)} · ${r['name'] ?? ''}',
+                                        style: context.text.labelMedium
+                                            ?.copyWith(
+                                              color: context.colors.inkMuted,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: Space.xs),
+                                      Expanded(
+                                        child: Text(
+                                          r['body'] as String? ?? '',
+                                          style: context.text.bodySmall,
+                                          overflow: TextOverflow.fade,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: Space.xs),
-                          Expanded(
-                            child: Text(
-                              reviews[i]['body'] as String? ?? '',
-                              style: context.text.bodySmall,
-                              overflow: TextOverflow.fade,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -533,4 +678,50 @@ class _ReviewCarouselState extends State<ReviewCarousel> {
       );
     },
   );
+}
+
+/// One half of a review's BEFORE | AFTER split (design p14). A photo that fails to load
+/// leaves the labelled tint, as in the design's placeholder.
+class _Shot extends StatelessWidget {
+  const _Shot(this.url, this.label, {this.after = false});
+  final String url;
+  final String label;
+  final bool after;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ColoredBox(color: after ? c.primaryTint : c.surfaceHigh),
+        Image.network(
+          url,
+          fit: BoxFit.cover,
+          semanticLabel: label,
+          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+        ),
+        Align(
+          alignment: AlignmentDirectional.bottomStart,
+          child: Container(
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: c.surface.withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: ExcludeSemantics(
+              child: Text(
+                label,
+                style: context.text.labelSmall?.copyWith(
+                  color: after ? context.primary : c.inkSoft,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

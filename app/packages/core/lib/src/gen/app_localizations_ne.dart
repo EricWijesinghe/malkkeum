@@ -2039,6 +2039,9 @@ class TNe extends T {
   String get dfPriceVat => 'मूल्य (भ्याट सहित)';
 
   @override
+  String get dfDetails => 'विस्तृत';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max pyeong भन्दा ठूला घरले स्टुडियो सफाइ बुक गर्न सक्दैनन्। च्याटमा उपयुक्त सेवा सुझाउँछौं।';
   }
@@ -2175,6 +2178,12 @@ class TNe extends T {
   String get dfReviewsTitle => 'ग्राहकका प्रतिक्रिया हेर्नुहोस्।';
 
   @override
+  String get dfBefore => 'पहिले';
+
+  @override
+  String get dfAfter => 'पछि';
+
+  @override
   String get dfBasicBody => 'यो आवश्यक जानकारी हो, मूल्यमा असर गर्न सक्छ।';
 
   @override
@@ -2240,6 +2249,18 @@ class TNe extends T {
 
   @override
   String get dfAcAddonNote => 'छुटपछिको मूल्य अनुमानमा देखिन्छ';
+
+  @override
+  String get dfAcCouponCta => 'कुपन लिनुहोस्';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'एसी सफाइमा $amount छुट';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'कुपन प्राप्त भयो। एसी सफाइ बुक गर्दा प्रयोग गर्नुहोस्।';
 
   @override
   String dfEstAddons(String pct) {

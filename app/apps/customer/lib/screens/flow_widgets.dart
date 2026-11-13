@@ -3,6 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+import 'flow_motion.dart';
+
+export 'flow_motion.dart';
+
+const _checkStagger = Duration(milliseconds: 40);
+
+/// Share of the screen width an [InfoRow] label, and a section's trailing widget, may take.
+const _labelShare = 0.55;
+const _trailingShare = 0.5;
+
+/// Caps a row's fixed-width child at [share] of the screen width, so a long label (large
+/// text, long translation) wraps instead of pushing its neighbour off the row.
+Widget capped(BuildContext context, double share, Widget child) =>
+    ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width * share,
+      ),
+      child: child,
+    );
 
 /// Shared pieces of the booking flows (owner design p07-p22): white page, big title,
 /// grey bands between sections, circle and radio choices, 3D tiles.
@@ -35,34 +55,43 @@ class FlowTitle extends StatelessWidget {
               color: context.colors.primaryTint,
               borderRadius: BorderRadius.circular(Radii.chip),
             ),
-            child: Text(
-              chip!,
-              style: context.text.labelMedium?.copyWith(
-                color: context.primary,
-                fontWeight: FontWeight.w700,
+            child: RollIn(
+              child: Text(
+                chip!,
+                style: context.text.labelMedium?.copyWith(
+                  color: context.primary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
           const SizedBox(height: Space.sm),
         ],
-        Semantics(
-          header: true,
-          child: Text(
-            title,
-            style: context.text.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+        EnterMotion(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: context.text.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              if (body != null) ...[
+                const SizedBox(height: Space.xs),
+                Text(
+                  body!,
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.inkMuted,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
-        if (body != null) ...[
-          const SizedBox(height: Space.xs),
-          Text(
-            body!,
-            style: context.text.bodyMedium?.copyWith(
-              color: context.colors.inkMuted,
-            ),
-          ),
-        ],
       ],
     ),
   );
@@ -107,7 +136,8 @@ class FlowSection extends StatelessWidget {
                     ),
                   ),
                 ),
-                ?trailing,
+                if (trailing != null)
+                  capped(context, _trailingShare, trailing!),
               ],
             ),
           ),
@@ -164,26 +194,36 @@ class CircleChoice extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedContainer(
-              duration: Motion.standard,
-              curve: Motion.ease,
-              width: size,
-              height: size,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: selected ? context.primary : c.surfaceHigh,
-              ),
-              child: text != null
-                  ? Text(
-                      text!,
-                      style: context.text.titleLarge?.copyWith(
-                        color: selected ? Colors.white : c.ink,
+            OneShot(
+              trigger: selected,
+              active: selected,
+              builder: (context, t, child) =>
+                  ringRipple(t, size, context.primary, child!),
+              child: AnimatedContainer(
+                duration: motionFor(context, Motion.standard),
+                curve: Motion.ease,
+                width: size,
+                height: size,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected ? context.primary : c.surfaceHigh,
+                ),
+                child: text != null
+                    ? Text(
+                        text!,
+                        style: context.text.titleLarge?.copyWith(
+                          color: selected ? Colors.white : c.ink,
+                        ),
+                      )
+                    : ExcludeSemantics(
+                        child: Icon3D(
+                          icon!,
+                          active: selected,
+                          size: size * 0.6,
+                        ),
                       ),
-                    )
-                  : ExcludeSemantics(
-                      child: Icon3D(icon!, active: selected, size: size * 0.6),
-                    ),
+              ),
             ),
             const SizedBox(height: Space.xs),
             Text(
@@ -275,7 +315,7 @@ class RadioRow extends StatelessWidget {
                 ),
                 const SizedBox(width: Space.sm),
                 AnimatedContainer(
-                  duration: Motion.micro,
+                  duration: motionFor(context, Motion.micro),
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
@@ -286,18 +326,19 @@ class RadioRow extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: selected
-                      ? Center(
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        )
-                      : null,
+                  child: Center(
+                    child: PopIn(
+                      show: selected,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -310,10 +351,19 @@ class RadioRow extends StatelessWidget {
 
 /// Label on the left, value on the right; values wrap instead of overflowing.
 class InfoRow extends StatelessWidget {
-  const InfoRow(this.label, this.value, {super.key, this.valueStyle});
+  const InfoRow(
+    this.label,
+    this.value, {
+    super.key,
+    this.valueStyle,
+    this.valueChild,
+  });
   final String label;
   final String value;
   final TextStyle? valueStyle;
+
+  /// Drawn instead of [value] (an animated amount).
+  final Widget? valueChild;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -321,20 +371,37 @@ class InfoRow extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: context.text.bodyMedium?.copyWith(
-            color: context.colors.inkMuted,
+        capped(
+          context,
+          _labelShare,
+          Text(
+            label,
+            style: context.text.bodyMedium?.copyWith(
+              color: context.colors.inkMuted,
+            ),
           ),
         ),
         const SizedBox(width: Space.md),
         Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style:
-                valueStyle ??
-                context.text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          // A changed value (coupon, points) fades over the old one.
+          child: AnimatedSwitcher(
+            duration: motionFor(context, Motion.standard),
+            layoutBuilder: (current, previous) => Stack(
+              alignment: AlignmentDirectional.centerEnd,
+              children: [...previous, ?current],
+            ),
+            child:
+                valueChild ??
+                Text(
+                  value,
+                  key: ValueKey(value),
+                  textAlign: TextAlign.end,
+                  style:
+                      valueStyle ??
+                      context.text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
           ),
         ),
       ],
@@ -352,20 +419,24 @@ class CheckList extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      for (final item in items)
-        Padding(
-          padding: const EdgeInsets.only(bottom: Space.sm),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                filled ? Icons.check_circle_rounded : Icons.check_rounded,
-                color: context.colors.fresh,
-                size: 24,
-              ),
-              const SizedBox(width: Space.sm),
-              Expanded(child: Text(item, style: context.text.bodyLarge)),
-            ],
+      for (final (i, item) in items.indexed)
+        StaggerIn(
+          index: i,
+          step: _checkStagger,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: Space.sm),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  filled ? Icons.check_circle_rounded : Icons.check_rounded,
+                  color: context.colors.fresh,
+                  size: 24,
+                ),
+                const SizedBox(width: Space.sm),
+                Expanded(child: Text(item, style: context.text.bodyLarge)),
+              ],
+            ),
           ),
         ),
     ],
@@ -452,7 +523,7 @@ class ChoiceTile3D extends StatelessWidget {
         onTap: onTap,
         radius: radius,
         child: AnimatedContainer(
-          duration: Motion.standard,
+          duration: motionFor(context, Motion.standard),
           curve: Motion.ease,
           constraints: const BoxConstraints(minHeight: 48),
           padding: const EdgeInsets.all(Space.md),
@@ -480,9 +551,8 @@ class ChoiceTile3D extends StatelessWidget {
                     child: Icon3D(icon, active: selected, size: 48),
                   ),
                   const Spacer(),
-                  AnimatedOpacity(
-                    duration: Motion.micro,
-                    opacity: selected ? 1 : 0,
+                  PopIn(
+                    show: selected,
                     child: Icon(Icons.check_circle_rounded, color: a, size: 28),
                   ),
                 ],
@@ -548,6 +618,7 @@ class PriceBar extends StatelessWidget {
     required this.onPressed,
     this.caption,
     this.busy = false,
+    this.onDetails,
   });
   final int amount;
   final String? caption;
@@ -555,37 +626,111 @@ class PriceBar extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool busy;
 
+  /// Shows the underlined "자세히" under the amount (design p08, p11); the whole price is its tap target.
+  final VoidCallback? onDetails;
+
   @override
-  Widget build(BuildContext context) => BottomActionBar(
-    child: Row(
+  Widget build(BuildContext context) {
+    final price = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Plain text: RollingAmount lays out a digit column that outgrows the bar at 200% text.
-              Text(
-                context.won(amount),
-                style: context.text.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              if (caption != null)
-                Text(
-                  caption!,
-                  style: context.text.labelSmall?.copyWith(
-                    color: context.colors.inkMuted,
-                  ),
-                ),
-            ],
+        // A new unit's price slides up into place (one text, so it is safe at 200% text).
+        AmountSwitcher(
+          value: amount,
+          format: context.won,
+          style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        if (caption != null)
+          Text(
+            caption!,
+            style: context.text.labelSmall?.copyWith(
+              color: context.colors.inkMuted,
+            ),
           ),
-        ),
-        const SizedBox(width: Space.sm),
-        Expanded(
-          child: PrimaryButton(label: label, busy: busy, onPressed: onPressed),
-        ),
+        if (onDetails != null)
+          Text(
+            context.t.dfDetails,
+            style: context.text.labelMedium?.copyWith(
+              color: context.colors.inkSoft,
+              decoration: TextDecoration.underline,
+            ),
+          ),
       ],
+    );
+    return BottomActionBar(
+      child: Row(
+        children: [
+          Expanded(
+            child: onDetails == null
+                ? price
+                : Semantics(
+                    button: true,
+                    child: InkWell(
+                      onTap: onDetails,
+                      borderRadius: BorderRadius.circular(Radii.chip),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: price,
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          const SizedBox(width: Space.sm),
+          Expanded(
+            child: PrimaryButton(
+              label: label,
+              busy: busy,
+              onPressed: onPressed,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "자세히" sheet: what the listed price is made of. Every figure is the catalog's.
+Future<void> showPriceBreakdown(BuildContext context, BookingDraft d) {
+  final t = context.t;
+  final unit = d.unitIndex == null
+      ? null
+      : t.unit(d.service.units[d.unitIndex!].labelKey);
+  return showAppSheet<void>(
+    context,
+    title: [t.service(d.service.code), ?unit].join(' · '),
+    builder: (ctx) => SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        0,
+        Space.gutter,
+        Space.gutter,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StaggerIn(
+            index: 0,
+            child: InfoRow(
+              t.dfBaseAmount(t.duration(d.minutes)),
+              ctx.won(d.listPrice),
+              valueStyle: ctx.text.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          StaggerIn(
+            index: 1,
+            child: Text(
+              t.vatIncluded,
+              style: ctx.text.bodySmall?.copyWith(color: ctx.colors.inkMuted),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

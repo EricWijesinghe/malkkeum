@@ -104,7 +104,19 @@ void main() {
       ]) {
         expect(find.text(b), findsOneWidget);
       }
-      expect(tester.widget<PrimaryButton>(_next()).onPressed, isNull);
+      expect(
+        find.text(koT.dfPleaseSelect),
+        findsOneWidget,
+        reason: 'only 복층 is marked from the start (design p15)',
+      );
+      // "다음" stays tappable but points at what is missing instead of advancing.
+      await _tap(tester, _next());
+      expect(find.text(_chip(2)), findsOneWidget);
+      expect(
+        find.text(koT.dfPleaseSelect),
+        findsNWidgets(3),
+        reason: 'building, room structure and duplex are all unanswered',
+      );
       await _tap(tester, find.text(koT.building_commercial));
       await _tap(tester, find.text(koT.dfLayoutTwo));
       await _tap(tester, find.text(koT.dfHas).last);
@@ -128,7 +140,8 @@ void main() {
       expect(find.text(koT.dfAmVisit), findsOneWidget);
       expect(find.text(koT.dfPmVisit), findsOneWidget);
       await _tap(tester, find.text(koT.dfPmVisit));
-      await _tap(tester, find.text(koT.dfAcAddonAdd));
+      // No aircon coupon in the wallet: "쿠폰받기" opens the add-on sheet.
+      await _tap(tester, find.text(koT.dfAcCouponCta));
       final wall = find.widgetWithText(
         CountStepper,
         '${koT.unit('wall')} · ${formatWon(79000, 'ko')}',
@@ -151,6 +164,22 @@ void main() {
 
       // 7/7: review sections with 변경, payment info, notes.
       expect(find.text(_chip(7)), findsOneWidget);
+      expect(
+        find.text(koT.dfChange, skipOffstage: false),
+        findsNWidgets(3),
+        reason: 'home, basic and space info can each be changed',
+      );
+      // The payment section sits below the fold of the lazy list.
+      await tester.scrollUntilVisible(
+        find.text(koT.quoteNoPayNow),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(QuoteReviewPage),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(find.text(koT.dfEstAddons('10')), findsOneWidget);
       expect(
         find.text(formatWon(40100, 'ko')),
@@ -158,7 +187,6 @@ void main() {
         reason: 'deposit preview from the server',
       );
       expect(find.text(koT.quoteNoPayNow), findsOneWidget);
-      expect(find.text(koT.dfChange), findsNWidgets(3));
       // 변경 on 공간 정보 goes back to step 3.
       await _tap(tester, find.text(koT.dfChange).last);
       expect(find.text(_chip(3)), findsOneWidget);
@@ -230,6 +258,103 @@ void main() {
     },
   );
 
+  testWidgets(
+    'AC banner: "쿠폰받기" takes the console-issued aircon coupon first, then adds units',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(
+        fake,
+        coupons: [
+          couponJson(id: 'any', name: 'welcome', amount: 5000),
+          couponJson(id: 'ac', name: 'ac', amount: 7000, serviceCode: 'aircon'),
+          couponJson(
+            id: 'ac-used',
+            name: 'ac',
+            amount: 9000,
+            serviceCode: 'aircon',
+            usedBookingId: 'bk-old',
+          ),
+        ],
+      );
+      final env = await TestEnv.create(fake: fake);
+      final app = AppState(env.api, FakeRealtime(env.api));
+      await app.loadAll();
+      final answers = QuoteAnswers();
+      await tester.pumpWidget(
+        CustomerTestHost(
+          env: env,
+          app: app,
+          home: Scaffold(
+            body: AcAddonBanner(
+              aircon: app.service('aircon')!,
+              answers: answers,
+              onChanged: () {},
+            ),
+          ),
+        ),
+      );
+      await settle(tester);
+
+      expect(
+        find.text(koT.dfAcCouponTitle(formatWon(7000, 'ko'))),
+        findsOneWidget,
+        reason: 'the amount is the usable aircon coupon, not a built-in number',
+      );
+      await _tap(tester, find.text(koT.dfAcCouponCta));
+      expect(find.text(koT.dfAcCouponClaimed), findsOneWidget);
+      expect(find.byType(CountStepper), findsNothing);
+      expect(find.text(koT.dfAcCouponCta), findsNothing);
+
+      await _tap(tester, find.text(koT.dfAcAddonAdd));
+      expect(find.byType(CountStepper), findsWidgets);
+      await tester.tap(find.byTooltip('+').first);
+      await settle(tester);
+      Navigator.of(tester.element(find.byType(CountStepper).first)).pop();
+      await settle(tester);
+      expect(find.text(koT.dfAcAddonAdded('1')), findsOneWidget);
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
+    'reduced motion: the quote steps switch at once and leave no ticker running',
+    (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      // Idle icon loops on, as in the real app: reduced motion alone must hold them still.
+      Icon3D.idleMotion = true;
+      addTearDown(() => Icon3D.idleMotion = false);
+      await _pumpMoveOut(tester);
+      expect(tester.hasRunningAnimations, isFalse, reason: 'step 1 at rest');
+
+      /// Past the framework's own ink splash and button fade, nothing may still be ticking.
+      Future<void> rest(String what) async {
+        await settle(tester);
+        expect(tester.hasRunningAnimations, isFalse, reason: what);
+      }
+
+      await tester.tap(find.text(koT.type_standard));
+      await rest('cleaning type chosen');
+      await tester.tap(_next());
+      await tester.pump();
+      await tester.pump();
+      expect(find.text(_chip(2)), findsOneWidget);
+      expect(find.text(_chip(1)), findsNothing, reason: 'no page slide');
+      await rest('step 2');
+
+      // A blocked "다음" marks the missing answers without moving anything.
+      await tester.tap(_next());
+      await tester.pump();
+      expect(find.text(koT.dfPleaseSelect), findsNWidgets(3));
+      await rest('blocked next');
+      await unmount(tester);
+    },
+  );
+
   testWidgets('request status shows the tracker and cancels a consultation', (
     tester,
   ) async {
@@ -261,11 +386,12 @@ void main() {
     await settle(tester);
 
     expect(find.text(koT.dfRequested), findsOneWidget);
+    // The tracker speaks the bookings list's words (design p20).
     for (final s in [
-      koT.stepRequested,
-      koT.stepConfirmed,
-      koT.stepAssigned,
-      koT.stepCompleted,
+      koT.bkStepConsult,
+      koT.bkStepConfirmed,
+      koT.bkStepMatched,
+      koT.bkStepCompleted,
     ]) {
       expect(find.text(s), findsOneWidget);
     }

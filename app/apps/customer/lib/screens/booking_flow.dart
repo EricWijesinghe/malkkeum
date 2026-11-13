@@ -9,6 +9,7 @@ import 'chat.dart';
 import 'checkout.dart';
 import 'flow_widgets.dart';
 
+export 'ac_addon_banner.dart';
 export 'checkout.dart';
 export 'flow_widgets.dart';
 
@@ -18,6 +19,9 @@ const _quoteSlots = [8, 13];
 const _freeCancelDays = 2;
 const _confirmSize = 160.0;
 const _minConfirmSize = 112.0; // SuccessMark's own default
+const _toolStagger = Duration(milliseconds: 30);
+const _pillShare = 0.4;
+const _glyphKickDelay = Duration(milliseconds: 700);
 
 /// Last free-cancel day for a visit on [visit], or null when that day is already past
 /// (a booking inside the window), so checkout never promises a deadline that has gone.
@@ -242,11 +246,8 @@ class VisitDateRow extends StatelessWidget {
             ],
           ),
         ),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            shape: const StadiumBorder(),
-            minimumSize: const Size(64, 48),
-          ),
+        _PillButton(
+          label: t.dfChange,
           onPressed: () async {
             final picked = await showDatePicker(
               context: context,
@@ -256,11 +257,32 @@ class VisitDateRow extends StatelessWidget {
             );
             if (picked != null) onChanged(picked);
           },
-          child: Text(t.dfChange),
         ),
       ],
     );
   }
+}
+
+/// The design's outlined pill ("변경", "선택"). Capped so a long label at large text wraps
+/// instead of squeezing the value beside it down to nothing.
+class _PillButton extends StatelessWidget {
+  const _PillButton({required this.label, required this.onPressed});
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => capped(
+    context,
+    _pillShare,
+    OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        shape: const StadiumBorder(),
+        minimumSize: const Size(64, 48),
+      ),
+      onPressed: onPressed,
+      child: Text(label, textAlign: TextAlign.center),
+    ),
+  );
 }
 
 /// GET /slots for [date]: start hour -> (available, seats left when nearly full).
@@ -344,17 +366,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
               const SizedBox(height: Space.sm),
               tileRows([
-                for (final h in _hours)
-                  _SlotTile(
-                    label: slotRangeLabel(h, ctx.lang),
-                    note: !_open(h)
-                        ? t.dfSlotClosed
-                        : _slots[h]?.$2 != null
-                        ? t.seatsLeft('${_slots[h]!.$2}')
-                        : null,
-                    enabled: _open(h),
-                    selected: chosen == h,
-                    onTap: () => setSheet(() => chosen = h),
+                for (final (i, h) in _hours.indexed)
+                  StaggerIn(
+                    index: i,
+                    child: _SlotTile(
+                      label: slotRangeLabel(h, ctx.lang),
+                      note: !_open(h)
+                          ? t.dfSlotClosed
+                          : _slots[h]?.$2 != null
+                          ? t.seatsLeft('${_slots[h]!.$2}')
+                          : null,
+                      enabled: _open(h),
+                      selected: chosen == h,
+                      onTap: () => setSheet(() => chosen = h),
+                    ),
                   ),
               ]),
               const SizedBox(height: Space.md),
@@ -404,7 +429,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 Expanded(
                   child: Text(t.dfManagerIntro, style: context.text.bodyMedium),
                 ),
-                const ExcludeSemantics(child: Icon3D('step_consult', size: 64)),
+                const ExcludeSemantics(
+                  child: Icon3D(
+                    'step_consult',
+                    size: 64,
+                    idle: Icon3DIdle.float,
+                  ),
+                ),
               ],
             ),
           ),
@@ -462,14 +493,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   else
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        minimumSize: const Size(64, 48),
-                      ),
-                      onPressed: _pickSlot,
-                      child: Text(t.dfSelect),
-                    ),
+                    _PillButton(label: t.dfSelect, onPressed: _pickSlot),
                 ],
               ),
               if (_hours.every((h) => !_open(h))) ...[
@@ -521,7 +545,7 @@ class _SlotTile extends StatelessWidget {
         onTap: enabled ? onTap : null,
         borderRadius: BorderRadius.circular(Radii.tile),
         child: AnimatedContainer(
-          duration: Motion.micro,
+          duration: motionFor(context, Motion.micro),
           constraints: const BoxConstraints(minHeight: 56),
           padding: const EdgeInsets.symmetric(
             horizontal: Space.sm,
@@ -596,19 +620,30 @@ class PrepToolsScreen extends StatelessWidget {
               ),
               const SizedBox(height: Space.lg),
               tileRows(cols: 4, [
-                for (final tool in prepTools)
-                  Column(
-                    children: [
-                      ExcludeSemantics(
-                        child: Tilt3D(child: Icon3D('tool_$tool', size: 52)),
-                      ),
-                      const SizedBox(height: Space.xs),
-                      Text(
-                        t.tool(tool),
-                        style: context.text.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                for (final (i, tool) in prepTools.indexed)
+                  StaggerIn(
+                    index: i,
+                    step: _toolStagger,
+                    child: Column(
+                      children: [
+                        ExcludeSemantics(
+                          // Seven icons, each swaying on its own phase.
+                          child: Tilt3D(
+                            child: Icon3D(
+                              'tool_$tool',
+                              size: 52,
+                              idle: Icon3DIdle.sway,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: Space.xs),
+                        Text(
+                          t.tool(tool),
+                          style: context.text.bodySmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
               ]),
             ],
@@ -622,12 +657,18 @@ class PrepToolsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(Space.md),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: context.colors.surface,
-                    child: Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      color: context.primary,
-                      size: 20,
+                  // One kick after the tools have landed: help is a tap away.
+                  OneShot(
+                    onMount: true,
+                    delay: _glyphKickDelay,
+                    builder: kick,
+                    child: CircleAvatar(
+                      backgroundColor: context.colors.surface,
+                      child: Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        color: context.primary,
+                        size: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(width: Space.sm),
@@ -650,115 +691,10 @@ class PrepToolsScreen extends StatelessWidget {
       bottomNavigationBar: PriceBar(
         amount: draft.listPrice,
         label: t.next,
+        onDetails: () => showPriceBreakdown(context, draft),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => CheckoutScreen(draft: draft)),
         ),
-      ),
-    );
-  }
-}
-
-/// Move-in/out: add aircon units at the catalog price; the discount is applied by the
-/// server's estimate (formula `ac_addon_discount_bps`) and shown on the review step.
-class AcAddonBanner extends StatelessWidget {
-  const AcAddonBanner({
-    super.key,
-    required this.aircon,
-    required this.answers,
-    required this.onChanged,
-  });
-  final Service aircon;
-  final QuoteAnswers answers;
-  final VoidCallback onChanged;
-
-  int get _count => answers.acAddons.values.fold(0, (a, b) => a + b);
-
-  Future<void> _open(BuildContext context) async {
-    await showAppSheet<void>(
-      context,
-      title: context.t.service('aircon'),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(
-            Space.gutter,
-            0,
-            Space.gutter,
-            Space.gutter,
-          ),
-          children: [
-            for (final u in aircon.units)
-              Padding(
-                padding: const EdgeInsets.only(bottom: Space.sm),
-                child: Row(
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon3D('ac_${u.labelKey}', size: 40),
-                    ),
-                    const SizedBox(width: Space.sm),
-                    Expanded(
-                      child: CountStepper(
-                        label:
-                            '${ctx.t.unit(u.labelKey)} · ${ctx.won(u.price)}',
-                        value: answers.acAddons[u.labelKey] ?? 0,
-                        onChanged: (v) {
-                          setSheet(() => answers.acAddons[u.labelKey] = v);
-                          onChanged();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            Text(ctx.t.dfAcAddonNote, style: ctx.text.bodySmall),
-          ],
-        ),
-      ),
-    );
-    onChanged();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    final count = _count;
-    return Container(
-      padding: const EdgeInsets.all(Space.md),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceHigh,
-        borderRadius: BorderRadius.circular(Radii.tile),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const ExcludeSemantics(child: Icon3D('promo_ac_addon', size: 44)),
-              const SizedBox(width: Space.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(t.dfAcAddonBanner, style: context.text.titleSmall),
-                    Text(
-                      count == 0 ? t.dfAcAddonBody : t.dfAcAddonAdded('$count'),
-                      style: context.text.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              icon: const Icon(Icons.download_rounded, size: 18),
-              label: Text(t.dfAcAddonAdd),
-              onPressed: () => _open(context),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -806,12 +742,15 @@ class DoneScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: Space.xs),
-            Text(
-              b.isQuote ? t.doneQuoteBody : t.doneBody,
-              style: context.text.bodyMedium?.copyWith(
-                color: context.colors.inkSoft,
+            StaggerIn(
+              index: 1,
+              child: Text(
+                b.isQuote ? t.doneQuoteBody : t.doneBody,
+                style: context.text.bodyMedium?.copyWith(
+                  color: context.colors.inkSoft,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             const SizedBox(height: Space.xl),
             StaggerIn(
@@ -820,27 +759,35 @@ class DoneScreen extends StatelessWidget {
                 color: context.colors.surfaceHigh,
                 child: Column(
                   children: [
-                    InfoRow(
-                      t.dfSummaryService,
-                      minutes == null
-                          ? t.service(b.serviceCode)
-                          : '${t.service(b.serviceCode)} (${t.duration(minutes)})',
-                    ),
-                    InfoRow(
-                      t.dfSummaryWhen,
-                      '${dateLabel(b.visitDate, context.lang)} ${slotRangeLabel(b.startHour, context.lang)}',
-                    ),
-                    if (road.isNotEmpty) InfoRow(t.dfSummaryAddress, road),
-                    if (!b.isQuote) ...[
-                      const Divider(height: Space.lg),
+                    // Each line lands after the card, the paid amount last, counting up.
+                    for (final (i, row) in [
                       InfoRow(
-                        t.dfSummaryPaid,
-                        context.won(b.paidAmount),
-                        valueStyle: context.text.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                        t.dfSummaryService,
+                        minutes == null
+                            ? t.service(b.serviceCode)
+                            : '${t.service(b.serviceCode)} (${t.duration(minutes)})',
                       ),
-                    ],
+                      InfoRow(
+                        t.dfSummaryWhen,
+                        '${dateLabel(b.visitDate, context.lang)} ${slotRangeLabel(b.startHour, context.lang)}',
+                      ),
+                      if (road.isNotEmpty) InfoRow(t.dfSummaryAddress, road),
+                      if (!b.isQuote) ...[
+                        const Divider(height: Space.lg),
+                        InfoRow(
+                          t.dfSummaryPaid,
+                          context.won(b.paidAmount),
+                          valueChild: CountIn(
+                            value: b.paidAmount,
+                            format: context.won,
+                            style: context.text.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ].indexed)
+                      StaggerIn(index: i + 3, child: row),
                   ],
                 ),
               ),

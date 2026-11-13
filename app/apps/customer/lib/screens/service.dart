@@ -24,7 +24,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
         widget.initialUnit ??
         (widget.service.type == PricingType.unit ? 0 : null);
 
+  /// Drives the hero art's parallax.
+  final _scroll = ScrollController();
+
   Service get s => widget.service;
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   /// The detail is free to browse; booking asks for sign-in first and keeps the draft in place.
   Future<void> _continue() async {
@@ -54,6 +63,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return Scaffold(
       appBar: AppBar(actions: [ScopeLink(code: s.code)]),
       body: ListView(
+        controller: _scroll,
         children: [
           FlowTitle(
             s.type == PricingType.unit
@@ -79,9 +89,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
       ),
       bottomNavigationBar: PriceBar(
         amount: d.listPrice,
+        // Design p07 captions the fixed price; p08 links to the breakdown instead.
         caption: s.type == PricingType.fixed
             ? '${t.duration(d.minutes)} · ${t.vatIncluded}'
-            : t.vatIncluded,
+            : null,
+        onDetails: s.type == PricingType.fixed
+            ? null
+            : () => showPriceBreakdown(context, d),
         label: s.type == PricingType.fixed ? t.dfBookNow : t.next,
         onPressed: _continue,
       ),
@@ -94,16 +108,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ServiceHero(service: s),
+          ServiceHero(service: s, scroll: _scroll),
           const SizedBox(height: Space.md),
           AppCard(
             padding: const EdgeInsets.all(Space.md),
+            level: Level.flat,
+            border: context.colors.line,
             child: IntrinsicHeight(
               child: Row(
                 children: [
-                  Expanded(child: _Fact(t.dfDuration, t.duration(s.minutes!))),
+                  Expanded(child: _Fact(t.dfDuration, s.minutes!, t.duration)),
                   const VerticalDivider(width: Space.lg),
-                  Expanded(child: _Fact(t.dfPriceVat, context.won(s.price!))),
+                  Expanded(child: _Fact(t.dfPriceVat, s.price!, context.won)),
                 ],
               ),
             ),
@@ -172,9 +188,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
 }
 
 class _Fact extends StatelessWidget {
-  const _Fact(this.label, this.value);
+  const _Fact(this.label, this.value, this.format);
   final String label;
-  final String value;
+  final int value;
+  final String Function(int) format;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,8 +201,9 @@ class _Fact extends StatelessWidget {
         style: context.text.bodySmall?.copyWith(color: context.colors.inkMuted),
       ),
       const SizedBox(height: 4),
-      Text(
-        value,
+      CountIn(
+        value: value,
+        format: format,
         style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
       ),
     ],
@@ -194,8 +212,32 @@ class _Fact extends StatelessWidget {
 
 /// The design's photo slot: the catalog photo when the console set one, else the 3D art.
 class ServiceHero extends StatelessWidget {
-  const ServiceHero({super.key, required this.service});
+  const ServiceHero({super.key, required this.service, this.scroll});
   final Service service;
+
+  /// The page's scroll position: the 3D art trails it for a little depth.
+  final ScrollController? scroll;
+
+  static const _parallax = 0.3;
+
+  Widget _art(BuildContext context) {
+    final art = Hero(
+      tag: 'svc-${service.code}',
+      child: Tilt3D(
+        child: Icon3D('svc_${service.code}', size: 120, idle: Icon3DIdle.float),
+      ),
+    );
+    final scroll = this.scroll;
+    if (scroll == null || reducedMotion(context)) return art;
+    return AnimatedBuilder(
+      animation: scroll,
+      child: art,
+      builder: (_, child) => Transform.translate(
+        offset: Offset(0, (scroll.hasClients ? scroll.offset : 0) * _parallax),
+        child: child,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,14 +254,7 @@ class ServiceHero extends StatelessWidget {
                   fit: BoxFit.cover,
                   semanticLabel: context.t.service(service.code),
                 )
-              : Center(
-                  child: Hero(
-                    tag: 'svc-${service.code}',
-                    child: Tilt3D(
-                      child: Icon3D('svc_${service.code}', size: 120),
-                    ),
-                  ),
-                ),
+              : Center(child: _art(context)),
         ),
       ),
     );
@@ -233,15 +268,18 @@ class ScopeLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ConstrainedBox(
     // Long translations at large text must not push the app bar past the screen.
-    constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.5),
-    child: TextButton.icon(
-    icon: const Icon(Icons.info_rounded),
-    label: Text(context.t.moreScope, overflow: TextOverflow.ellipsis),
-    onPressed: () => Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ServiceScopeScreen(initialGroup: scopeGroupFor(code)),
-      ),
+    constraints: BoxConstraints(
+      maxWidth: MediaQuery.sizeOf(context).width * 0.5,
     ),
+    child: TextButton.icon(
+      // Design p07: a filled dark-teal disc, not the button's default tone.
+      icon: Icon(Icons.info_rounded, color: context.primary),
+      label: Text(context.t.moreScope, overflow: TextOverflow.ellipsis),
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ServiceScopeScreen(initialGroup: scopeGroupFor(code)),
+        ),
+      ),
     ),
   );
 }

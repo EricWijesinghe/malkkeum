@@ -12,7 +12,9 @@ String pctOf(int bps) =>
 
 int _n(Json e, String k) => (e[k] as num? ?? 0).toInt();
 
-/// Waits for the server estimate; shows a skeleton until it lands.
+const _checkKickDelay = Duration(milliseconds: 260);
+
+/// Waits for the server estimate; shows a skeleton until it lands, then fades the figures in.
 class _EstimateView extends StatelessWidget {
   const _EstimateView({required this.estimate, required this.builder});
   final Future<Json>? estimate;
@@ -29,7 +31,14 @@ class _EstimateView extends StatelessWidget {
         );
       }
       final e = snap.data;
-      return e == null ? const Skeleton(height: 120) : builder(context, e);
+      return FadeThroughSwitcher(
+        child: e == null
+            ? const Skeleton(key: ValueKey('wait'), height: 120)
+            : KeyedSubtree(
+                key: const ValueKey('estimate'),
+                child: builder(context, e),
+              ),
+      );
     },
   );
 }
@@ -101,15 +110,22 @@ class QuoteMethodPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Icon(
-                            Icons.check_circle_rounded,
-                            color: context.colors.fresh,
-                            size: 36,
+                          // The chosen method's check answers with one kick.
+                          OneShot(
+                            onMount: true,
+                            delay: _checkKickDelay,
+                            builder: kick,
+                            child: Icon(
+                              Icons.check_circle_rounded,
+                              color: context.colors.fresh,
+                              size: 36,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: Space.sm),
-                      RollingAmount(
+                      // Counts up from zero: the estimate was just worked out for these answers.
+                      CountIn(
                         value: _n(e, 'total'),
                         format: context.won,
                         style: context.text.headlineMedium?.copyWith(
@@ -205,6 +221,9 @@ class QuoteReviewPage extends StatelessWidget {
       for (final MapEntry(key: unit, value: count) in a.acAddons.entries)
         if (count > 0) '${t.unit(unit)} ${t.dfCountUnits('$count')}',
     ];
+    // Sections rise in one after another as the page lands.
+    var order = 0;
+    Widget inTurn(Widget section) => StaggerIn(index: order++, child: section);
     return ListView(
       children: [
         FlowTitle(t.dfReviewHeader(dateLabel(date, lang)), chip: chip),
@@ -237,91 +256,104 @@ class QuoteReviewPage extends StatelessWidget {
           ),
         ),
         const FlowBand(),
-        FlowSection(
-          title: t.dfHomeInfo,
-          trailing: _edit(context, 3),
-          children: [
-            _field(
-              context,
-              t.dfSummaryAddress,
-              '${address.roadAddress} ${address.detail}',
-            ),
-            _field(context, t.dfName, address.label),
-          ],
+        inTurn(
+          FlowSection(
+            title: t.dfHomeInfo,
+            trailing: _edit(context, 3),
+            children: [
+              _field(
+                context,
+                t.dfSummaryAddress,
+                '${address.roadAddress} ${address.detail}',
+              ),
+              _field(context, t.dfName, address.label),
+            ],
+          ),
         ),
         const FlowBand(),
-        FlowSection(
-          title: t.dfBasicInfo,
-          trailing: _edit(context, 0),
-          children: [
-            _field(
-              context,
-              t.dfCleanType,
-              '${cleaningTypeLabel(t, a.cleaningType)} · ${luggageLabel(t, a.luggage)}',
-            ),
-            _field(
-              context,
-              t.dfBuilding,
-              '${buildingLabel(t, a.building)} · ${layoutLabel(t, a.layout)} · ${t.dfDuplexTitle} ${a.duplex == true ? t.dfHas : t.dfNone}',
-            ),
-          ],
-        ),
-        const FlowBand(),
-        FlowSection(
-          title: t.dfSpaceInfo,
-          trailing: _edit(context, 2),
-          children: [
-            Text(
-              '${t.bathroomsLabel} ${t.dfCountN('${a.bathrooms}')} · ${t.balconiesLabel} ${t.dfCountN('${a.balconies}')} · '
-              '${t.dfElevatorTitle} ${a.elevator == true ? t.dfHas : t.dfNone}',
-              style: context.text.bodyMedium,
-            ),
-            if (addons.isNotEmpty) ...[
-              const SizedBox(height: Space.sm),
-              Text(
-                '${t.service('aircon')}: ${addons.join(' · ')}',
-                style: context.text.bodyMedium,
+        inTurn(
+          FlowSection(
+            title: t.dfBasicInfo,
+            trailing: _edit(context, 0),
+            children: [
+              _field(
+                context,
+                t.dfCleanType,
+                '${cleaningTypeLabel(t, a.cleaningType)} · ${luggageLabel(t, a.luggage)}',
+              ),
+              _field(
+                context,
+                t.dfBuilding,
+                '${buildingLabel(t, a.building)} · ${layoutLabel(t, a.layout)} · ${t.dfDuplexTitle} ${a.duplex == true ? t.dfHas : t.dfNone}',
               ),
             ],
-          ],
+          ),
         ),
         const FlowBand(),
-        FlowSection(
-          title: t.dfPayInfo,
-          children: [
-            _EstimateView(
-              estimate: estimate,
-              builder: (context, e) => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_n(e, 'addons') > 0)
-                    InfoRow(
-                      t.dfEstAddons(pctOf(_n(e, 'addon_discount_bps'))),
-                      '+${context.won(_n(e, 'addons'))}',
-                    ),
-                  InfoRow(t.dfEstAmount, context.won(_n(e, 'total'))),
-                  InfoRow(t.dfDepositOnConfirm, context.won(_n(e, 'deposit'))),
-                  Text(
-                    t.quoteNoPayNow,
-                    style: context.text.bodySmall?.copyWith(
-                      color: context.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+        inTurn(
+          FlowSection(
+            title: t.dfSpaceInfo,
+            trailing: _edit(context, 2),
+            children: [
+              Text(
+                '${t.bathroomsLabel} ${t.dfCountN('${a.bathrooms}')} · ${t.balconiesLabel} ${t.dfCountN('${a.balconies}')} · '
+                '${t.dfElevatorTitle} ${a.elevator == true ? t.dfHas : t.dfNone}',
+                style: context.text.bodyMedium,
               ),
-            ),
-          ],
+              if (addons.isNotEmpty) ...[
+                const SizedBox(height: Space.sm),
+                Text(
+                  '${t.service('aircon')}: ${addons.join(' · ')}',
+                  style: context.text.bodyMedium,
+                ),
+              ],
+            ],
+          ),
         ),
         const FlowBand(),
-        FlowSection(
-          title: t.dfNotes,
-          children: [
-            NoteBox(
-              items: [t.dfNote1, t.dfNote2, t.dfNote3, t.dfNoteWarn],
-              danger: const {3},
-            ),
-          ],
+        inTurn(
+          FlowSection(
+            title: t.dfPayInfo,
+            children: [
+              _EstimateView(
+                estimate: estimate,
+                builder: (context, e) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_n(e, 'addons') > 0)
+                      InfoRow(
+                        t.dfEstAddons(pctOf(_n(e, 'addon_discount_bps'))),
+                        '+${context.won(_n(e, 'addons'))}',
+                      ),
+                    InfoRow(t.dfEstAmount, context.won(_n(e, 'total'))),
+                    InfoRow(
+                      t.dfDepositOnConfirm,
+                      context.won(_n(e, 'deposit')),
+                    ),
+                    Text(
+                      t.quoteNoPayNow,
+                      style: context.text.bodySmall?.copyWith(
+                        color: context.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const FlowBand(),
+        inTurn(
+          FlowSection(
+            title: t.dfNotes,
+            children: [
+              NoteBox(
+                items: [t.dfNote1, t.dfNote2, t.dfNote3, t.dfNoteWarn],
+                danger: const {3},
+              ),
+            ],
+          ),
         ),
       ],
     );

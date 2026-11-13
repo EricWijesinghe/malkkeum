@@ -2031,6 +2031,9 @@ class TTh extends T {
   String get dfPriceVat => 'ราคา (รวม VAT)';
 
   @override
+  String get dfDetails => 'รายละเอียด';
+
+  @override
   String dfStudioNote(String max) {
     return '※ บ้านที่เกิน $max พยองจองทำความสะอาดห้องสตูดิโอไม่ได้ เราจะแนะนำบริการที่เหมาะสมทางแชท';
   }
@@ -2167,6 +2170,12 @@ class TTh extends T {
   String get dfReviewsTitle => 'ดูรีวิวจากผู้ใช้จริง';
 
   @override
+  String get dfBefore => 'ก่อน';
+
+  @override
+  String get dfAfter => 'หลัง';
+
+  @override
   String get dfBasicBody => 'ข้อมูลจำเป็นที่อาจมีผลต่อราคา';
 
   @override
@@ -2232,6 +2241,17 @@ class TTh extends T {
 
   @override
   String get dfAcAddonNote => 'ดูราคาหลังหักส่วนลดได้ในใบประเมินราคา';
+
+  @override
+  String get dfAcCouponCta => 'รับคูปอง';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'ลด $amount ล้างแอร์';
+  }
+
+  @override
+  String get dfAcCouponClaimed => 'รับคูปองแล้ว ใช้ได้เมื่อจองล้างแอร์';
 
   @override
   String dfEstAddons(String pct) {

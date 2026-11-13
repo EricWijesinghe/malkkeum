@@ -1995,6 +1995,9 @@ class TKo extends T {
   String get dfPriceVat => '금액 (VAT 포함)';
 
   @override
+  String get dfDetails => '자세히';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max평을 넘는 집은 원룸 청소를 예약할 수 없어요. 상담으로 맞는 서비스를 안내해 드려요.';
   }
@@ -2131,6 +2134,12 @@ class TKo extends T {
   String get dfReviewsTitle => '생생한 이용 후기를 확인하세요.';
 
   @override
+  String get dfBefore => 'BEFORE';
+
+  @override
+  String get dfAfter => 'AFTER';
+
+  @override
   String get dfBasicBody => '선택한 내용은 서비스에 필요한 필수정보예요. 서비스 가격에 영향을 줄 수 있어요.';
 
   @override
@@ -2196,6 +2205,17 @@ class TKo extends T {
 
   @override
   String get dfAcAddonNote => '할인된 금액은 견적에서 확인할 수 있어요';
+
+  @override
+  String get dfAcCouponCta => '쿠폰받기';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return '에어컨 청소 $amount 할인';
+  }
+
+  @override
+  String get dfAcCouponClaimed => '쿠폰이 쿠폰함에 담겼어요. 에어컨 청소를 예약할 때 쓸 수 있어요.';
 
   @override
   String dfEstAddons(String pct) {
