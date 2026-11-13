@@ -79,4 +79,37 @@ void main() {
     expect(find.text('row-1'), findsOneWidget);
     expect(find.byType(ErrorRetry), findsNothing);
   });
+
+  testWidgets('failed reloads toast at most once per 30 s, so offline live reloads stay quiet', (tester) async {
+    var online = true;
+    await tester.pumpWidget(
+      _host(() async {
+        if (!online) throw const ApiException(0, 'network');
+        return ['row-1'];
+      }),
+    );
+    await tester.pump();
+    online = false;
+
+    Future<void> failedReload() async {
+      await tester.tap(find.text('refresh'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    await failedReload();
+    expect(find.text(_t.errorNetwork), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5)); // the toast leaves
+    expect(find.text(_t.errorNetwork), findsNothing);
+
+    await failedReload();
+    await failedReload();
+    expect(find.text(_t.errorNetwork), findsNothing, reason: 'within 30 s of the last toast');
+    expect(find.text('row-1'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 30));
+    await failedReload();
+    expect(find.text(_t.errorNetwork), findsOneWidget, reason: 'a later failure is reported again');
+    await tester.pump(const Duration(seconds: 5));
+  });
 }

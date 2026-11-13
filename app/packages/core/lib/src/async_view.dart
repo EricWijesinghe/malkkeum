@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import 'i18n.dart';
 
 /// Loads once, shows skeletons, a friendly error with retry, then content.
-/// Once content is on screen a failed reload keeps it and shows a toast (needs a Scaffold above).
+/// Once content is on screen a failed reload keeps it and shows a toast (needs a Scaffold above),
+/// at most one per [toastGap] per view, so a screen reloading on every event while offline stays quiet.
 /// Call [AsyncViewState.reload] (via GlobalKey or `onRefresh`) to refetch.
 class AsyncView<V> extends StatefulWidget {
   const AsyncView({
@@ -30,8 +33,19 @@ class AsyncView<V> extends StatefulWidget {
 }
 
 class AsyncViewState<V> extends State<AsyncView<V>> {
+  static const toastGap = Duration(seconds: 30);
+
   late Future<V> _future = widget.load();
   V? _last;
+
+  /// Running while a failed-reload toast was shown less than [toastGap] ago.
+  Timer? _toastQuiet;
+
+  @override
+  void dispose() {
+    _toastQuiet?.cancel();
+    super.dispose();
+  }
 
   Future<void> reload() async {
     final f = widget.load();
@@ -42,7 +56,10 @@ class AsyncViewState<V> extends State<AsyncView<V>> {
       await f;
     } catch (e) {
       // With nothing loaded yet the error state renders below. With data on screen it stays, so say why.
-      if (mounted && _last != null) showToast(context, context.t.error(e));
+      if (mounted && _last != null && _toastQuiet == null) {
+        showToast(context, context.t.error(e));
+        _toastQuiet = Timer(toastGap, () => _toastQuiet = null);
+      }
     }
   }
 
