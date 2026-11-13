@@ -11,15 +11,16 @@
 | 4 | [사장님 가이드](guide/04-사장님-가이드.md) | 사장님 | 매일 5분 |
 
 ## 설치 명령
-서버 SSH 화면에 붙여넣기 (이 브랜치의 채널 설치 명령 — 안정 버전은 `main`, 베타는 `beta` 브랜치):
+서버 SSH 화면에 붙여넣기 (주소의 `v…` 버전 태그는 바뀌지 않아요):
 ```
 curl -fsSL INSTALL_URL | sudo bash
 ```
-설치 파일은 이 저장소의 [릴리스](https://github.com/EricWijesinghe/malkkeum-install/releases)에 버전별로 올라가요. 받은 파일을 먼저 확인하려면:
+받은 파일을 먼저 확인하려면 (지문 파일 `SHA256SUMS` 는 같은 태그에 있어요):
 ```
 curl -fsSLO INSTALL_URL && curl -fsSLO SUMS_URL && sha256sum -c SHA256SUMS && sudo bash install.sh
 ```
-베타 버전을 먼저 써 보려면 릴리스 목록에서 가장 최근 베타(`-beta`) 릴리스의 `install.sh` 를 쓰세요.
+이 채널의 최신 버전은 언제나 `BRANCH_URL` 이에요 (안정 버전은 `main`, 베타는 `beta` 브랜치).
+베타 버전을 먼저 써 보려면 `https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/beta/install.sh` 를 쓰세요.
 (설치 후에도 `sudo dahae channel beta` 로 바꿀 수 있어요.)
 
 ## 릴리스 확인

@@ -225,5 +225,33 @@ chmod 644 .env
 lock_env
 t  ".env locked to 600"    eq "$(stat -c %a .env)" 600
 
+# ---- publish-delivery.sh: channel branches + immutable annotated tag (a local bare repo stands in for DIST_REPO) ----
+DIST=EricWijesinghe/malkkeum-install
+git init -q --bare "$SB/dist.git"
+pub() { # pub 태그 : the release job's delivery step, pushing to $SB/dist.git instead of GitHub
+  GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="url.$SB/dist.git.insteadOf" GIT_CONFIG_VALUE_0="git@github.com:$DIST.git" \
+    DIST_REPO=$DIST VER="$1" IMAGE_REPO=ghcr.io/o SIGNER_REPO=o/src bash "$ROOT/deploy/publish-delivery.sh" >/dev/null 2>&1
+}
+g() { git -C "$SB/dist.git" "$@"; }
+has() { grep -qF -- "$2" <<< "$(g show "$1")"; } # has 태그:파일 문자열 (no pipe: grep -q + pipefail = SIGPIPE)
+sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | cut -d' ' -f1)" ]; }
+t  "publish stable"        pub v1.0.0
+t  "tag is annotated"      eq "$(g cat-file -t v1.0.0)" tag
+t  "tag = main commit"     eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
+t  "tag installer is stable" has v1.0.0:install.sh DEFAULT_CHANNEL=stable
+t  "tag installer names the signer" has v1.0.0:install.sh SIGNER_REPO_DEFAULT=o/src
+t  "tag SHA256SUMS matches" sums_ok v1.0.0
+t  "tag guide uses the tag URL" has "v1.0.0:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/v1.0.0/install.sh"
+t  "tag README uses the tag URL" has v1.0.0:README.md "raw.githubusercontent.com/$DIST/v1.0.0/SHA256SUMS"
+t  "beta branch keeps the stable-branch line" has "beta:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/main/install.sh"
+t  "re-run is a no-op"     pub v1.0.0
+t  "publish beta"          pub v1.1.0-beta.1
+t  "beta tag = beta commit" eq "$(g rev-parse 'v1.1.0-beta.1^{commit}')" "$(g rev-parse beta)"
+t  "beta tag installer is beta" has v1.1.0-beta.1:install.sh DEFAULT_CHANNEL=beta
+t  "beta tag SHA256SUMS matches" sums_ok v1.1.0-beta.1
+t  "stable tag unchanged by beta" eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
+g -c user.name=t -c user.email=t@t tag -f -a v1.0.0 -m moved beta >/dev/null
+nt "moved tag is refused"  pub v1.0.0
+
 echo "installer self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

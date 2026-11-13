@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # 다해 서버 설치 프로그램 (Ubuntu 22.04 / 24.04, Debian 12)
 #
-#   curl -fsSL https://github.com/EricWijesinghe/malkkeum-install/releases/latest/download/install.sh | sudo bash
-#   (베타 채널: .../releases/download/<베타 버전 태그>/install.sh. 파일 지문은 같은 릴리스의 SHA256SUMS)
+#   curl -fsSL https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/v1.2.3/install.sh | sudo bash
+#   (버전 태그 v… 는 바뀌지 않고, 같은 태그에 지문 파일 SHA256SUMS 가 있어요. 채널 최신: .../main/install.sh, 베타 .../beta/install.sh)
 #
 # 질문 두 개(도메인, 이메일)에 답하면 서버 점검, Docker 설치, 보안 키 생성, HTTPS 자동 설정, 매일 백업,
 # `dahae` 관리 명령 설치까지 끝냅니다. 다시 실행하면 안전하게 업데이트해요: 먼저 백업하고, 새 버전이

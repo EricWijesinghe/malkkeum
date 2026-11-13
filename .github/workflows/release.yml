@@ -7,8 +7,8 @@ name: release
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
 # Secret DIST_DEPLOY_KEY: SSH private key with write access to DIST_REPO (deploy key).
-# Secret DIST_TOKEN: fine-grained token, Contents read/write on DIST_REPO only: creates the release there
-# whose assets (install.sh + SHA256SUMS) the install line downloads.
+# The same key pushes an annotated tag v<VER> in DIST_REPO on the release's channel commit (install.sh +
+# SHA256SUMS): the pinned install line raw.githubusercontent.com/<DIST_REPO>/v<VER>/install.sh. No token.
 # Images are signed by digest with cosign keyless (this workflow's OIDC identity on refs/tags/v*);
 # install.sh and `dahae update` refuse images without that signature (docs/DEPLOY.md, Image signatures).
 on:
@@ -132,10 +132,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: [self-hosted, malkkeum]
     steps:
-      - name: Release token for the delivery repo
-        env: { DIST_TOKEN: "${{ secrets.DIST_TOKEN }}" }
-        run: |
-          [ -n "$DIST_TOKEN" ] || { echo "::error title=DIST_TOKEN missing::Add secret DIST_TOKEN (fine-grained token, Contents read/write on DIST_REPO). Nothing was published."; exit 1; }
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       # Self-hosted runner: key and known_hosts live in the job's temp dir, never in the runner user's ~/.ssh.
       - name: Deploy key and GitHub host key (fingerprint checked)
@@ -150,27 +146,8 @@ jobs:
         env:
           DIST_REPO: ${{ vars.DIST_REPO }}
           VER: ${{ github.ref_name }}
-        run: |
-          rm -rf "$RUNNER_TEMP/assets"
-          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" SIGNER_REPO="$GITHUB_REPOSITORY" ASSET_DIR="$RUNNER_TEMP/assets" \
-            bash deploy/publish-delivery.sh
-      # The install line downloads these assets (releases/latest/download = newest stable; betas by tag).
-      - name: Installer release in the delivery repo (install.sh + SHA256SUMS)
-        env:
-          GH_TOKEN: ${{ secrets.DIST_TOKEN }}
-          DIST_REPO: ${{ vars.DIST_REPO }}
-          VER: ${{ github.ref_name }}
-        run: |
-          a="$RUNNER_TEMP/assets"; flags=(); target=main
-          case "$VER" in *-*) flags+=(--prerelease); target=beta ;; esac
-          if gh release view "$VER" -R "$DIST_REPO" >/dev/null 2>&1; then
-            gh release upload "$VER" -R "$DIST_REPO" --clobber "$a/install.sh" "$a/SHA256SUMS"
-          else
-            gh release create "$VER" -R "$DIST_REPO" --target "$target" --title "다해 $VER" "${flags[@]}" \
-              --notes "설치: curl -fsSL https://github.com/$DIST_REPO/releases/download/$VER/install.sh | sudo bash (파일 지문: SHA256SUMS)" \
-              "$a/install.sh" "$a/SHA256SUMS"
-          fi
-          rm -rf "$a"
+        # Branches beta/main + annotated tag v<VER> with install.sh and SHA256SUMS (deploy key only).
+        run: IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" SIGNER_REPO="$GITHUB_REPOSITORY" bash deploy/publish-delivery.sh
       - name: Release notes in this (private) repo
         env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}" }
         run: |

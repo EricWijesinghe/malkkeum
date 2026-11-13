@@ -7,7 +7,7 @@ store accounts. Source stays in the private repo.
 | Piece | Built by | Client receives |
 |---|---|---|
 | API image, web image (website + console at `/admin/`) | `release.yml` → GHCR | `docker pull` via install.sh |
-| install.sh + `guide/` + `store/` | `release.yml` → `DIST_REPO` (branches `main` = stable, `beta`; install.sh + `SHA256SUMS` as assets of the tagged release there) | one `curl … \| sudo bash` line |
+| install.sh + `SHA256SUMS` + `guide/` + `store/` | `release.yml` → `DIST_REPO` (branches `main` = stable, `beta`; annotated tag `v<VER>` on the release's channel commit) | one `curl … \| sudo bash` line |
 | Customer / partner apps | Codemagic on the private repo | TestFlight / Play internal test, then stores |
 
 ## 0. Release gate
@@ -26,9 +26,6 @@ unless that passes. The same job runs on every push and PR via `ci.yml`.
    `malkkeum-install` under *Settings → Deploy keys* with **Allow write access** ticked.
    In the private repo: secret `DIST_DEPLOY_KEY` = contents of `malkkeum-dist` (then delete the local
    files). Variable `DIST_REPO=<owner>/malkkeum-install`.
-   Secret `DIST_TOKEN`: a fine-grained personal access token limited to `malkkeum-install` with
-   **Contents: Read and write** (deploy keys cannot create releases). The delivery job stops before
-   publishing anything when it is missing.
 4. Release: `git tag v1.0.0 && git push --tags`.
 5. **GHCR packages Public (developer, one time; never the owner).** A package pushed under a user
    account starts private, and the installer pulls without logging in. Until both packages are
@@ -42,8 +39,11 @@ unless that passes. The same job runs on every push and PR via `ci.yml`.
    `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
 
 Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
-(`https://github.com/<owner>/malkkeum-install/releases/latest/download/install.sh`: the newest stable
-release asset; each release also carries `SHA256SUMS`, and the delivery README links the tagged URL).
+(`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`, the stable channel's
+latest). In the delivery repo the copies on the release's own branch carry the pinned line instead,
+`…/malkkeum-install/v<VER>/install.sh`: `publish-delivery.sh` commits `install.sh` + `SHA256SUMS` and
+pushes an annotated tag `v<VER>` with the same deploy key (no token). Tags are never moved: a re-run on
+the same commit is a no-op, anything else fails the job. Branches keep moving as the channels.
 
 ### Image signatures
 
