@@ -8,35 +8,63 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-13
+
 ### Added
+- 다해 (Dahae) brand across the apps, console, website and store material: design tokens, 3D icon set,
+  new home, bookings, chat, booking flows and More tab; remaining design gaps closed (white flow canvas,
+  banner art card, address sheet with search, teal brand word).
+- One-command installer with the `dahae` CLI: preflight, signed images (cosign keyless), restore,
+  uninstall, update channels, rollback-safe migrator, arm64 images, `www` redirect.
+- Install end-to-end test (tar mode, wizard, restore, smoke, uninstall), upgrade path from an older
+  installer, and a WSL harness.
+- Owner console as a sideloadable Android APK with a first-launch server address screen.
+- iOS release hardening (web credentials, per-app signing, IPA checks).
+- Crash and error reports from the customer and partner apps to the API's own `client_errors`
+  (no third-party SDK), declared in the store privacy answers and iOS privacy manifests.
+- Durable notification outbox and a replica-safe background job runner with per-job health; the console
+  status page shows each job's last success and flags stalled ones.
+- Durable refund queue: a compensating refund that fails is retried with backoff and alerts the owner;
+  customers see "refund in progress" until it lands.
+- Cursor pagination (`X-Next-Cursor`) on long lists; the console, partner and chat lists load more on
+  scroll.
 - Repository guides: CONTRIBUTING, SECURITY, CODEOWNERS, issue and pull request templates, `.editorconfig`.
 - Website: canonical and Open Graph / Twitter metadata, JSON-LD (`LocalBusiness`, `Service`, `WebSite`),
-  self-hosted font subset, legal-page revision history, build-time business details
+  self-hosted font subset, legal-page revision history, business details baked in on request
   (`scripts/build_legal.py --brand`).
 - `scripts/local.env.example`: machine-specific tool locations, read by `scripts/env.sh` and the
   PowerShell release scripts.
 
 ### Changed
+- Korean and English only. Twelve more languages are archived in `archive/i18n-extra-languages` with
+  restore steps; accounts that used one read English.
+- CI runs on GitHub-hosted runners only; the Rust and Flutter toolchains, actions and base images are
+  pinned; cargo-deny, image scanning and SBOMs gate every release, and a tag publishes nothing unless CI
+  and the install end-to-end test pass on it.
+- Hardened compose stack (read-only filesystems, dropped capabilities, resource limits), working offsite
+  backups, a copy of the encryption keys and alerts on failed unattended jobs; strict website CSP with no
+  third-party hosts.
+- Smaller apps: the Korean font subset (Dahae Sans) cuts fonts from 7.6 MB to 2.9 MB per app.
+- A failed refresh keeps the data on screen with one notice instead of a blank error page; the partner
+  app opened without signal starts from the last saved profile and catches up when the connection returns.
 - The website hero loads a smaller three.js build only after first paint, and never with reduced motion.
 - Documentation states RPO/RTO and how to keep `DATA_KEY` safe.
 
-### Removed
-- Hardcoded developer-machine paths from scripts and docs.
-
-## [1.4.0] - 2026-11-13
-
-### Added
-- 다해 (Dahae) brand across the apps, console, website and store material: design tokens, 3D icon set,
-  new home, bookings, chat, booking flows and More tab.
-- One-command installer with the `dahae` CLI: preflight, signed images (cosign keyless), restore,
-  uninstall, update channels, rollback-safe migrator, arm64 images, `www` redirect.
-- Install end-to-end test (tar mode, wizard, restore, smoke, uninstall) and a WSL harness.
-- Owner console as a sideloadable Android APK with a first-launch server address screen.
-- iOS release hardening (web credentials, per-app signing, IPA checks).
-
 ### Fixed
+- Payments: each PortOne payment is bound to one checkout; idempotency keys are scoped to the verified
+  user and reused per action, so a retry after a lost reply never charges twice; a confirm that never
+  answers waits and resumes for the same account only.
+- Cancellations refund once, under the booking lock, against the provider's cancellable balance; saved-card
+  charges (tips, waitlist, deposits) go through PortOne billing; money actions check the live staff role.
+- Abuse and privacy: durable sign-in lockout and rate limits, review report quorum, EXIF stripped from
+  uploads.
+- Sign-out clears the previous account's data, pending payment and live connection.
 - Payment races: a deposit settled for a booking another checkout already confirmed is refunded.
-- Installer security: non-superuser API database role, restore guards, `.env` permissions.
+- Installer security: non-superuser API database role, restore guards, `.env` permissions; Caddyfile
+  parses on real servers.
+
+### Removed
+- Hardcoded developer-machine paths and account names from scripts and install guides.
 
 ## [1.3.0] - 2026-11-12
 
