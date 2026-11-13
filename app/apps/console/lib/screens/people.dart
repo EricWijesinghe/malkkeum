@@ -650,28 +650,39 @@ class _StaffState extends State<StaffScreen> {
                         onPressed: () => issueStaffPasswordReset(context, s),
                         child: Text(t.cStaffReset),
                       ),
-                    TextButton(
-                      onPressed: () async {
-                        // Only deactivation needs a confirm; reactivating is harmless.
-                        final deactivating = s['active'] == true;
-                        if (deactivating &&
-                            !await confirmAction(context, t.cDeactivate)) {
-                          return;
-                        }
-                        if (!context.mounted) return;
-                        await _act(
+                    // A pending invite cannot be switched on by hand; a fresh invite code is the way in.
+                    if (s['invited'] == true)
+                      TextButton(
+                        onPressed: () => issueStaffPasswordReset(
                           context,
-                          () => context.api.post(
-                            '/admin/staff/${s['id']}/active',
-                            {'active': !deactivating},
-                          ),
-                          reload,
-                        );
-                      },
-                      child: Text(
-                        s['active'] == true ? t.cDeactivate : t.cActivate,
+                          s,
+                          invite: true,
+                        ),
+                        child: Text(t.cStaffInviteResend),
+                      )
+                    else
+                      TextButton(
+                        onPressed: () async {
+                          // Only deactivation needs a confirm; reactivating is harmless.
+                          final deactivating = s['active'] == true;
+                          if (deactivating &&
+                              !await confirmAction(context, t.cDeactivate)) {
+                            return;
+                          }
+                          if (!context.mounted) return;
+                          await _act(
+                            context,
+                            () => context.api.post(
+                              '/admin/staff/${s['id']}/active',
+                              {'active': !deactivating},
+                            ),
+                            reload,
+                          );
+                        },
+                        child: Text(
+                          s['active'] == true ? t.cDeactivate : t.cActivate,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

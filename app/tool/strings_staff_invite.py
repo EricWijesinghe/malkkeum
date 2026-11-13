@@ -15,5 +15,6 @@ S = {
     "cStaffInvited": ["초대했어요", "Invitation sent"],
     "cStaffInvitePending": ["초대 대기 중 (비밀번호 미설정)", "Invitation pending (no password yet)"],
     "cStaffAdminOnly": ["관리자 권한은 관리자만 줄 수 있어요", "Only admins can grant admin access"],
+    "cStaffInviteResend": ["인증번호 다시 보내기", "Resend invite code"],
     "cStaffSendCode": ["보내기", "Send"],
 }

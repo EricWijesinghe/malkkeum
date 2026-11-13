@@ -2363,6 +2363,7 @@
  "cStaffInvited": "초대했어요",
  "cStaffInvitePending": "초대 대기 중 (비밀번호 미설정)",
  "cStaffAdminOnly": "관리자 권한은 관리자만 줄 수 있어요",
+ "cStaffInviteResend": "인증번호 다시 보내기",
  "cStaffSendCode": "보내기",
  "cMfaTitle": "2단계 인증",
  "cMfaCode": "인증 앱의 6자리 코드",

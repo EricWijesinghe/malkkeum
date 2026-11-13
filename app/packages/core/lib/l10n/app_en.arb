@@ -1430,6 +1430,7 @@
  "cStaffInvited": "Invitation sent",
  "cStaffInvitePending": "Invitation pending (no password yet)",
  "cStaffAdminOnly": "Only admins can grant admin access",
+ "cStaffInviteResend": "Resend invite code",
  "cStaffSendCode": "Send",
  "cMfaTitle": "Two-step sign-in",
  "cMfaCode": "6-digit code from your authenticator app",
