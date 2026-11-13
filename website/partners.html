@@ -4,22 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>다해 · 파트너 지원</title>
+  <meta name="description" content="다해 청소 파트너 모집: 원하는 지역과 시간에 일하고 매주 수요일 정산받으세요.">
   <meta name="theme-color" content="#0B1217">
+  <link rel="canonical" href="/partners.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="다해">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:url" content="/partners.html">
+  <meta property="og:title" content="다해 · 파트너 지원">
+  <meta property="og:description" content="다해 청소 파트너 모집: 원하는 지역과 시간에 일하고 매주 수요일 정산받으세요.">
+  <meta property="og:image" content="/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="preload" href="assets/fonts/DahaeSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/site.css">
+  <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
   <script>try { const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <script defer src="assets/site.js"></script>
 </head>
 <body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
   <header class="nav"><div class="wrap">
     <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>다해</span></a>
-    <div class="tools"><select id="lang" class="lang" aria-label="Language"></select><button id="theme" class="icon-btn" type="button" aria-label="Light mode">☀️</button></div>
+    <div class="tools"><select id="lang" class="lang" aria-label="언어 선택 (Language)"></select><button id="theme" class="icon-btn" type="button" aria-label="밝은 화면으로 보기" title="밝은 화면으로 보기"><span aria-hidden="true">☀️</span></button></div>
   </div></header>
-  <main class="wrap doc">
+  <main id="main" class="wrap doc">
 
     <h1><span data-brand-name>다해</span> 파트너가 되어 주세요</h1>
     <p class="lead">원하는 지역과 시간에 일하고, 완료한 작업은 매주 수요일에 정산받아요.</p>
@@ -31,13 +43,13 @@
     <h2>지원 방법</h2>
     <ol><li>파트너 앱을 내려받아 휴대전화로 가입합니다.</li><li>팀 이름, 활동 지역, 가능 시간을 입력합니다.</li><li>심사가 끝나면 바로 작업을 받을 수 있어요.</li></ol>
     <div class="store-badges" style="margin-top:24px">
-      <a class="store" data-link="partner_app_store_url" href="#" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
-      <a class="store" data-link="partner_play_store_url" href="#" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
+      <a class="store" data-link="partner_app_store_url" role="link" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
+      <a class="store" data-link="partner_play_store_url" role="link" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
     </div>
   </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
-    <div><b data-t="f_support">고객센터</b><br><a data-support-phone href="#"></a><br><a data-support-email href="#"></a></div>
+    <div><p class="company" id="company"></p><noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
+    <div><b data-t="f_support">고객센터</b><br><a data-support-phone hidden></a><br><a data-support-email hidden></a></div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>

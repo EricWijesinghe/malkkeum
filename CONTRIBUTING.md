@@ -34,6 +34,7 @@ cd app/apps/customer && flutter test        # likewise partner, console, package
 python -I scripts/ci/check-native.py
 python -I scripts/ci/check-migrations.py
 python -I scripts/build_legal.py website --check
+python -I scripts/build_fonts.py --check     # website font subset covers the copy
 ```
 
 New logic comes with a test (Rust integration tests in `backend/crates/api/tests`, Flutter widget or

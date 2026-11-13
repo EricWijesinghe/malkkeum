@@ -1,7 +1,10 @@
 // Hero scene: a soft "clay" house on a floating island, soap bubbles drifting up and sparkles
 // orbiting it. Follows the pointer (or phone tilt); pauses when off screen; static frame when
 // the visitor prefers reduced motion; falls back to the CSS illustration without WebGL.
-import * as THREE from '../vendor/three.module.min.js';
+// vendor/three.hero.min.js is three@0.170.0 cut down to the classes used here (about 510 KB instead of 690 KB):
+//   export { ...the THREE.* names below } from 'three'  ->  esbuild --bundle --minify --format=esm --legal-comments=inline
+// Rebuild it the same way when this file starts using another three.js class.
+import * as THREE from '../vendor/three.hero.min.js';
 
 const canvas = document.getElementById('hero-3d');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

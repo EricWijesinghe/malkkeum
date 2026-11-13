@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Source before any build. Machine-specific locations come from scripts/local.env (gitignored; see
 # scripts/local.env.example). Without it, the tools and caches already on PATH are used.
 _dahae_scripts="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -6,15 +6,36 @@
   <title>다해 · 믿을 수 있는 홈클리닝</title>
   <meta name="description" content="검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격을 확인하고 1분 만에 예약하세요.">
   <meta name="theme-color" content="#0B1217">
+  <!-- Relative URLs: scripts/build_legal.py --base-url makes canonical, og:url and og:image absolute at deploy. -->
+  <link rel="canonical" href="/">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="다해">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:url" content="/">
   <meta property="og:title" content="다해 · 믿을 수 있는 홈클리닝">
   <meta property="og:description" content="검증된 청소 전문가, 투명한 가격, 1분 예약.">
+  <meta property="og:image" content="/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="다해 · 믿을 수 있는 홈클리닝">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="다해 · 믿을 수 있는 홈클리닝">
+  <meta name="twitter:description" content="검증된 청소 전문가, 투명한 가격, 1분 예약.">
+  <meta name="twitter:image" content="/assets/og-image.png">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="preload" href="assets/fonts/DahaeSans-ExtraBold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/DahaeSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/site.css">
+  <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+  <script type="application/ld+json" id="ld-business">
+  {"@context": "https://schema.org", "@graph": [
+    {"@type": "WebSite", "@id": "/#website", "name": "다해", "url": "/", "inLanguage": ["ko", "en"]},
+    {"@type": "LocalBusiness", "@id": "/#business", "name": "다해", "url": "/", "image": "/assets/icon-512.png", "description": "검증된 청소 전문가가 욕실부터 이사 청소까지. 앱에서 가격을 확인하고 1분 만에 예약하세요.", "areaServed": {"@type": "AdministrativeArea", "name": "서울특별시"}, "priceRange": "₩₩"},
+    {"@type": "Service", "name": "홈클리닝", "serviceType": "가정 청소", "areaServed": {"@type": "AdministrativeArea", "name": "서울특별시"}, "provider": {"@id": "/#business"}, "url": "/#services"}
+  ]}
+  </script>
   <script>
     // Theme before first paint: no flash of the wrong theme.
     try { const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -35,8 +56,8 @@
         <a href="partners.html" data-t="nav_partner">파트너 지원</a>
       </nav>
       <div class="tools">
-        <select id="lang" class="lang" aria-label="Language"></select>
-        <button id="theme" class="icon-btn" type="button" aria-label="Light mode">☀️</button>
+        <select id="lang" class="lang" aria-label="언어 선택 (Language)"></select>
+        <button id="theme" class="icon-btn" type="button" aria-label="밝은 화면으로 보기" title="밝은 화면으로 보기"><span aria-hidden="true">☀️</span></button>
       </div>
     </div>
   </header>
@@ -77,10 +98,10 @@
       <div class="wrap">
         <div class="section-head reveal"><h2 id="how-title" data-t="how_title">예약은 1분, 나머지는 저희가</h2></div>
         <div class="steps">
-          <div class="step reveal"><h3 data-t="how_1t">서비스 선택</h3><p data-t="how_1"></p></div>
-          <div class="step reveal"><h3 data-t="how_2t">날짜 선택</h3><p data-t="how_2"></p></div>
-          <div class="step reveal"><h3 data-t="how_3t">간편 결제</h3><p data-t="how_3"></p></div>
-          <div class="step reveal"><h3 data-t="how_4t">방문 · 완료</h3><p data-t="how_4"></p></div>
+          <div class="step reveal"><h3 data-t="how_1t">서비스 선택</h3><p data-t="how_1">필요한 청소와 집 크기를 고르면 가격이 바로 나와요.</p></div>
+          <div class="step reveal"><h3 data-t="how_2t">날짜 선택</h3><p data-t="how_2">내일부터 60일 안의 원하는 시간으로.</p></div>
+          <div class="step reveal"><h3 data-t="how_3t">간편 결제</h3><p data-t="how_3">카드, 카카오페이, 네이버페이, 토스페이 등 원하는 방법으로.</p></div>
+          <div class="step reveal"><h3 data-t="how_4t">방문 · 완료</h3><p data-t="how_4">전문가가 방문해 청소하고, 전후 사진으로 확인해요.</p></div>
         </div>
       </div>
     </section>
@@ -92,7 +113,7 @@
           <div class="layer before" data-t="ba_before">청소 전</div>
           <div class="layer after" data-t="ba_after">청소 후</div>
           <div class="handle" aria-hidden="true"></div>
-          <input type="range" min="0" max="100" value="50" aria-label="Before / after">
+          <input type="range" min="0" max="100" value="50" aria-label="청소 전후 비교 (Before / after)">
         </div>
       </div>
     </section>
@@ -101,9 +122,9 @@
       <div class="wrap">
         <div class="section-head reveal"><h2 id="trust-title" data-t="trust_title">믿고 맡길 수 있는 이유</h2></div>
         <div class="trust">
-          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/step_matched.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t1t"></b><p data-t="t1"></p></div>
-          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/ui_calendar.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t2t"></b><p data-t="t2"></p></div>
-          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/confirm_check.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t3t"></b><p data-t="t3"></p></div>
+          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/step_matched.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t1t">신원 확인된 전문가</b><p data-t="t1">모든 파트너는 본인 인증과 심사를 거쳐요.</p></div>
+          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/ui_calendar.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t2t">방문 2일 전까지 무료 취소</b><p data-t="t2">일정이 바뀌어도 부담 없이.</p></div>
+          <div class="item reveal"><img class="emoji icon3d" src="assets/icons3d/confirm_check.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><b data-t="t3t">전후 사진 리포트</b><p data-t="t3">작업이 끝나면 사진으로 꼼꼼히 확인해요.</p></div>
         </div>
       </div>
     </section>
@@ -121,22 +142,22 @@
       <div class="wrap">
         <div class="section-head reveal"><h2 id="faq-title" data-t="faq_title">자주 묻는 질문</h2></div>
         <div class="faq">
-          <details class="reveal"><summary data-t="q1"></summary><p data-t="a1"></p></details>
-          <details class="reveal"><summary data-t="q2"></summary><p data-t="a2"></p></details>
-          <details class="reveal"><summary data-t="q3"></summary><p data-t="a3"></p></details>
-          <details class="reveal"><summary data-t="q4"></summary><p data-t="a4"></p></details>
+          <details class="reveal"><summary data-t="q1">취소는 언제까지 무료인가요?</summary><p data-t="a1">방문 2일 전까지는 전액 환불돼요.</p></details>
+          <details class="reveal"><summary data-t="q2">어떤 결제 수단을 쓸 수 있나요?</summary><p data-t="a2">신용·체크카드, 카카오페이, 네이버페이, 토스페이, 페이코, 삼성페이, 애플페이, 계좌이체, 가상계좌, 휴대폰 결제를 지원해요.</p></details>
+          <details class="reveal"><summary data-t="q3">이사 청소 견적은 어떻게 받나요?</summary><p data-t="a3">앱에서 집 정보를 입력하면 전문가 견적을 받아보고 마음에 드는 견적을 선택할 수 있어요.</p></details>
+          <details class="reveal"><summary data-t="q4">청소 도구는 따로 준비해야 하나요?</summary><p data-t="a4">전문가가 전용 장비와 세제를 가져와요.</p></details>
         </div>
       </div>
     </section>
 
-    <section id="download">
+    <section id="download" aria-labelledby="band-title">
       <div class="wrap">
         <div class="band reveal">
-          <div><h2 data-t="band_title">지금 앱을 내려받고 첫 예약 쿠폰을 받으세요</h2><p data-t="band_sub"></p></div>
+          <div><h2 id="band-title" data-t="band_title">지금 앱을 내려받고 첫 예약 쿠폰을 받으세요</h2><p data-t="band_sub">가입하면 바로 쓸 수 있는 쿠폰을 드려요.</p></div>
           <div class="store-badges">
             <a class="btn btn-web" href="/app/"><span data-web-t="bookNow">웹에서 바로 예약</span><small data-web-t="bookSub">앱 설치 없이 바로 예약해요</small></a>
-            <a class="store" data-link="app_store_url" href="#download" aria-disabled="true"><span aria-hidden="true"></span><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
-            <a class="store" data-link="play_store_url" href="#download" aria-disabled="true"><span aria-hidden="true">▶</span><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
+            <a class="store" data-link="app_store_url" role="link" aria-disabled="true"><span aria-hidden="true"></span><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
+            <a class="store" data-link="play_store_url" role="link" aria-disabled="true"><span aria-hidden="true">▶</span><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
           </div>
         </div>
       </div>
@@ -148,13 +169,14 @@
       <div>
         <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>다해</span></a>
         <p class="company" id="company"></p>
+        <noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript>
         <p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p>
         <p>© <span id="year"></span> <span data-brand-name>다해</span></p>
       </div>
       <div>
         <b data-t="f_support">고객센터</b><br>
-        <a data-support-phone href="#"></a><br>
-        <a data-support-email href="#"></a>
+        <a data-support-phone hidden></a><br>
+        <a data-support-email hidden></a>
       </div>
       <div>
         <a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br>

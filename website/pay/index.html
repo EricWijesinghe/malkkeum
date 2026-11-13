@@ -17,7 +17,7 @@
   <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 </head>
 <body>
-  <div class="box"><div class="spin" aria-hidden="true"></div><p id="msg">결제창을 여는 중…</p></div>
+  <main class="box" aria-live="polite"><div class="spin" aria-hidden="true"></div><p id="msg">결제창을 여는 중…</p></main>
   <script>
     // Opened by the app in a WebView: /pay/?checkout=..&store=..&channel=..&amount=..&method=..&name=..
     // paymentId MUST be the checkout id: the server's webhook and recovery pass look payments up by it.

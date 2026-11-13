@@ -40,11 +40,16 @@
   color-scheme: light;
 }
 
+/* Self-hosted subset of Pretendard (scripts/build_fonts.py; fonts/NOTICE). Missing glyphs fall back per character. */
+@font-face { font-family: "Dahae Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/DahaeSans-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Dahae Sans"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/DahaeSans-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Dahae Sans"; font-weight: 800; font-style: normal; font-display: swap; src: url("fonts/DahaeSans-ExtraBold.woff2") format("woff2"); }
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+  font-family: "Dahae Sans", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--ink);
   line-height: 1.6;
@@ -92,6 +97,8 @@ select.lang { padding: 0 10px; }
 .store { display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 18px; border-radius: 16px; background: #000; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,0.18); }
 .store small { display: block; font-size: 0.68rem; opacity: 0.8; line-height: 1; }
 .store b { display: block; font-size: 1.05rem; line-height: 1.2; }
+/* Not yet published: no href (so not focusable or clickable) until site.js sets the store link. */
+.store[aria-disabled="true"] { cursor: default; opacity: 0.75; }
 .btn-web { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; min-height: 56px; padding: 0 22px; border-radius: 16px; background: var(--sun); color: #17232C; text-decoration: none; font-weight: 800; font-size: 1.05rem; box-shadow: 0 14px 30px -12px rgba(0,0,0,0.35); }
 .btn-web small { font-size: 0.72rem; font-weight: 500; color: #3A4A55; }
 
@@ -185,7 +192,7 @@ h2 { font-size: clamp(1.8rem, 3.6vw, 2.7rem); letter-spacing: -0.03em; line-heig
 @media (max-width: 760px) { .band { grid-template-columns: 1fr; } }
 
 /* Footer */
-footer { padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--ink-muted); font-size: 0.9rem; }
+footer { padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--ink-muted); font-size: 0.9rem; background: var(--bg); } /* opaque: the aurora behind would drop small text below 4.5:1 */
 footer .cols { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 24px; }
 @media (max-width: 760px) { footer .cols { grid-template-columns: 1fr; } }
 footer a { color: var(--ink-soft); text-decoration: none; display: inline-block; padding: 6px 0; }
