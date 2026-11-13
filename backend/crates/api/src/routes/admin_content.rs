@@ -429,7 +429,11 @@ async fn hold_settlement(State(s): State<AppState>, Admin(a): Admin, Path(id): P
 }
 
 async fn list_staff(State(s): State<AppState>, _a: Admin) -> ApiResult<Json<Value>> {
-    let v: Value = sqlx::query_scalar("SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'name', name, 'role', role, 'active', active) ORDER BY created_at), '[]') FROM staff")
+    // `has_phone` says whether a reset can be texted; `invited` marks an invite nobody has redeemed yet.
+    let v: Value = sqlx::query_scalar(
+        "SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'name', name, 'role', role, 'active', active,
+                'has_phone', phone IS NOT NULL, 'invited', password_hash = '') ORDER BY created_at), '[]') FROM staff",
+    )
         .fetch_one(&s.db)
         .await?;
     Ok(Json(v))
@@ -479,11 +483,15 @@ async fn set_staff_active(State(s): State<AppState>, Admin(a): Admin, Path(id): 
     if id == a.id && !x.active {
         return Err(ApiError::BadRequest("cannot_deactivate_self"));
     }
-    sqlx::query("UPDATE staff SET active = $2 WHERE id = $1")
+    // An invite that has not been redeemed has no password yet, so it cannot be switched on by hand.
+    let changed = sqlx::query("UPDATE staff SET active = $2 WHERE id = $1 AND (NOT $2 OR password_hash <> '')")
         .bind(id)
         .bind(x.active)
         .execute(&s.db)
         .await?;
+    if changed.rows_affected() == 0 {
+        return Err(ApiError::Conflict("invite_pending"));
+    }
     if !x.active {
         sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1")
             .bind(id)

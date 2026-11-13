@@ -9,6 +9,7 @@ import 'confirm_action.dart';
 import 'payout_seller_dialog.dart';
 import 'staff_reset.dart';
 import 'points_ledger.dart';
+import 'staff_invite.dart';
 
 Future<void> _act(
   BuildContext context,
@@ -612,88 +613,18 @@ class StaffScreen extends StatefulWidget {
 class _StaffState extends State<StaffScreen> {
   final _view = GlobalKey<AsyncViewState<List<Json>>>();
 
-  Future<void> _add() async {
-    final t = context.t;
-    final email = TextEditingController();
-    final name = TextEditingController();
-    final password = TextEditingController();
-    var role = 'consultant';
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, set) => AlertDialog(
-          title: Text(t.cAddStaff),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: name,
-                decoration: InputDecoration(labelText: t.accountName),
-              ),
-              TextField(
-                controller: email,
-                decoration: InputDecoration(labelText: t.cEmail),
-              ),
-              TextField(
-                controller: password,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: t.cPassword,
-                  helperText: t.cPasswordRule,
-                ),
-              ),
-              const SizedBox(height: Space.sm),
-              SegmentedButton<String>(
-                segments: [
-                  ButtonSegment(
-                    value: 'consultant',
-                    label: Text(t.cRoleConsultant),
-                  ),
-                  ButtonSegment(value: 'admin', label: Text(t.cRoleAdmin)),
-                ],
-                selected: {role},
-                onSelectionChanged: (s) => set(() => role = s.first),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(t.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(t.save),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (ok == true && mounted) {
-      final api = context.api;
-      await _act(
-        context,
-        () => api.post('/admin/staff', {
-          'email': email.text,
-          'name': name.text,
-          'role': role,
-          'password': password.text,
-        }),
-        () async => _view.currentState?.reload(),
-      );
-    }
-    disposeAfterClose([email, name, password]);
-  }
-
   @override
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _add,
+        onPressed: () => inviteStaff(
+          context,
+          () async => _view.currentState?.reload(),
+        ),
         icon: const Icon(Icons.person_add_rounded),
-        label: Text(t.cAddStaff),
+        label: Text(t.cStaffInvite),
       ),
       body: AsyncView<List<Json>>(
         key: _view,
@@ -706,7 +637,10 @@ class _StaffState extends State<StaffScreen> {
               ListTile(
                 title: Text('${s['name']} · ${s['email']}'),
                 subtitle: Text(
-                  s['role'] == 'admin' ? t.cRoleAdmin : t.cRoleConsultant,
+                  [
+                    s['role'] == 'admin' ? t.cRoleAdmin : t.cRoleConsultant,
+                    if (s['invited'] == true) t.cStaffInvitePending,
+                  ].join(' · '),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
