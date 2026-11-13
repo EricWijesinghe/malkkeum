@@ -12,6 +12,9 @@ CLI=${DAHAE_CLI:-/usr/local/bin/dahae}
 JOB_UID=${DAHAE_JOB_UID:-10001}     # API 컨테이너의 사용자 번호: 이 번호가 아닌 주인의 파일은 무시해요
 LOCK=${DAHAE_LOCK:-/run/dahae.lock} # 예약 작업(cron)과 같은 잠금
 RUN_TIMEOUT=${DAHAE_RUN_TIMEOUT:-1800}
+LOCK_WAIT=$((RUN_TIMEOUT + 60))     # 잠금 대기는 작업 하나의 제한 시간보다 길어야 뒤의 작업이 버려지지 않아요
+OWNER_UID=${DAHAE_OWNER_UID:-0}     # 상태·작업·호스트 폴더의 주인: 관리자(root)만 쓸 수 있어야 해요
+JOB_RUNNING=""
 MAX_JOB_BYTES=4096
 ID_WINDOW_MS=900000                 # 작업 번호(UUIDv7)의 시각은 15분 안이어야 해요
 MAX_JOB_LINES=8
@@ -20,11 +23,19 @@ warn() { printf '! %s\n' "$*" >&2; }
 die()  { printf '✘ %s\n' "$*" >&2; exit 1; }
 
 # ---- 상태 기록 (사용자에게 보여요: 단계 줄만, 명령 출력은 남기지 않아요) ----
-say_step() { printf '%s %s\n' "$1" "$2" >> "$JOBS/status/$JOB_ID.log"; }
-set_state() { # set_state 상태 : status/<id>.json 을 원자적으로 바꿔요 (값은 모두 검사한 것만 들어가요)
-  local tmp="$JOBS/status/.$JOB_ID.tmp"
-  printf '{"id":"%s","kind":"%s","state":"%s"}\n' "$JOB_ID" "$JOB_KIND" "$1" > "$tmp"
-  mv -f -- "$tmp" "$JOBS/status/$JOB_ID.json"
+say_step() { # say_step 기호 내용 : 단계 줄을 덧붙여요 (기록이 안 돼도 작업은 계속해요)
+  local log="$JOBS/status/$JOB_ID.log"
+  # shortcut: -L 검사와 쓰기 사이에 틈이 남아요. status/ 가 관리자 소유라야 API 가 링크를 못 만들어요 (dir_ok)
+  [ ! -L "$log" ] && printf '%s %s\n' "$1" "$2" >> "$log" || warn "단계 기록을 못 했어요"
+}
+set_state() { # set_state 상태 : status/<id>.json 을 임시 파일로 쓴 뒤 바꿔요 (값은 모두 검사한 것만 들어가요)
+  local tmp dst="$JOBS/status/$JOB_ID.json"
+  tmp=$(mktemp "$JOBS/status/.$JOB_ID.XXXXXX") || return 1   # mktemp 은 기존 이름(링크 포함)을 따르지 않아요
+  if printf '{"id":"%s","kind":"%s","state":"%s"}\n' "$JOB_ID" "$JOB_KIND" "$1" > "$tmp" \
+     && chmod 0644 -- "$tmp" && mv -fT -- "$tmp" "$dst"; then
+    return 0
+  fi
+  rm -f -- "$tmp"; return 1
 }
 
 # ---- 검사 (규칙 2~6) ----
@@ -89,9 +100,13 @@ run_compose() { # run_compose 인자... : compose 명령을 설치 폴더에서 
 }
 
 host_refresh() { # 호스트 정보 파일(host.json)을 새로 써요: 확인 시각
-  local tmp="$HOST_DIR/.host.tmp"
-  printf '{"checked":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$tmp"
-  mv -f -- "$tmp" "$HOST_DIR/host.json"
+  local tmp
+  tmp=$(mktemp "$HOST_DIR/.host.XXXXXX") || return 1
+  if printf '{"checked":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$tmp" \
+     && chmod 0644 -- "$tmp" && mv -fT -- "$tmp" "$HOST_DIR/host.json"; then
+    return 0
+  fi
+  rm -f -- "$tmp"; return 1
 }
 
 dispatch() { # 종류에 맞는 명령 하나만 실행해요
@@ -99,6 +114,7 @@ dispatch() { # 종류에 맞는 명령 하나만 실행해요
     status-refresh) host_refresh ;;
     backup-now) run_cli backup ;;
     update) run_cli update ;;
+    # shortcut: 건너뛰기 표시는 아직 아무도 읽지 않아요. 예약 업데이트 스크립트가 읽도록 붙이기 전까지 효과가 없어요
     update-skip) : > "$HOST_DIR/skip-next-update" ;;
     channel) run_cli channel "$JOB_ARG" ;;
     restart)
@@ -106,22 +122,40 @@ dispatch() { # 종류에 맞는 명령 하나만 실행해요
   esac
 }
 
-run_job() { # 작업 하나를 실행하고 결과를 상태에 남겨요
-  set_state running
+run_job() { # 작업 하나를 실행하고 결과를 상태에 남겨요 (잠금 안에서 한 번만 받은 작업이라, 기록이 실패해도 실행해요)
+  JOB_RUNNING=1
+  set_state running || warn "진행 상태를 못 남겼어요"
   say_step "▶" "$JOB_KIND"
   if dispatch; then
-    say_step "✔" "완료"; set_state ok
+    say_step "✔" "완료"; set_state ok || warn "완료 상태를 못 남겼어요"
   else
-    say_step "✘" "실패"; set_state failed
+    say_step "✘" "실패"; set_state failed || warn "실패 상태를 못 남겼어요"
   fi
+  JOB_RUNNING=""
+}
+
+abort_job() { # 실행 도중 끝나면(신호 등) 그 작업을 실패로 남겨요
+  if [ -n "$JOB_RUNNING" ]; then set_state failed 2>/dev/null || true; fi
+}
+
+dir_ok() { # dir_ok 폴더 : 심볼릭 링크가 아니고, 관리자 소유이며, 그룹·다른 사용자가 쓸 수 없어야 해요
+  [ -d "$1" ] && [ ! -L "$1" ] || return 1
+  [ "$(stat -c %u -- "$1")" = "$OWNER_UID" ] || return 1
+  [ $((0$(stat -c %a -- "$1") & 022)) -eq 0 ]
+}
+
+dirs_ok() { dir_ok "$HOST_DIR" && dir_ok "$JOBS/status" && dir_ok "$JOBS/work" && dir_ok "$JOBS/work/done"; }
+
+sweep_work() { # 예전 실행이 중간에 끝나서 남긴 작업 파일과 사본을 치워요 (잠금 안에서만 불러요)
+  rm -f -- "$JOBS"/work/*.job "$JOBS"/work/copy.* 2>/dev/null || true
 }
 
 # ---- 흐름 ----
 reject_job() { # reject_job 번호 : 검사에 실패한 작업은 상태를 rejected 로 두고 치워요
-  local id="$1"
-  # 이미 상태가 있는 번호(예전 작업의 재전송)는 덮어쓰지 않아요
-  if printf '%s' "$id" | grep -Eq '^[0-9a-f-]{36}$' && [ ! -e "$JOBS/status/$id.json" ]; then
-    printf '{"id":"%s","kind":"unknown","state":"rejected"}\n' "$id" > "$JOBS/status/$id.json"
+  local id="$1" dst="$JOBS/status/$1.json"
+  # 이미 상태가 있는 번호(예전 작업의 재전송)는 덮어쓰지 않아요. 끊어진 링크도 따라가지 않아요
+  if printf '%s' "$id" | grep -Eq '^[0-9a-f-]{36}$' && [ ! -e "$dst" ] && [ ! -L "$dst" ]; then
+    printf '{"id":"%s","kind":"unknown","state":"rejected"}\n' "$id" > "$dst" || warn "거부 기록을 못 했어요"
   fi
   warn "작업을 거부했어요: $id"
 }
@@ -158,7 +192,11 @@ intake_all() {
 main() {
   case "${1:-}" in
     run)
-      exec 9>"$LOCK" && flock -w 900 9 || die "잠금을 잡지 못했어요"
+      trap 'exit 143' TERM INT HUP
+      trap abort_job EXIT
+      exec 9>"$LOCK" && flock -w "$LOCK_WAIT" 9 || die "잠금을 잡지 못했어요"
+      dirs_ok || die "작업 폴더의 주인이나 권한이 안전하지 않아요"
+      sweep_work
       intake_all ;;
     *) die "사용법: agent.sh run" ;;
   esac
