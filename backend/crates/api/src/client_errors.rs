@@ -1,5 +1,6 @@
-//! Client error reports from web, Windows and console apps: `POST /v1/client-errors` stores a capped,
-//! PII-scrubbed row; the console lists the latest ones. Mobile crashes go to Crashlytics instead.
+//! Client error reports from every app (core `ErrorReporter`): `POST /v1/client-errors` stores a capped,
+//! PII-scrubbed row; the console lists the latest ones. `app` is the surface: customer web, Windows,
+//! Android and iOS, the console, and the partner app per platform.
 use crate::{
     auth::Admin,
     error::{ApiError, ApiResult},
@@ -17,7 +18,7 @@ use sqlx::PgPool;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
-const APPS: [&str; 3] = ["web", "windows", "console"];
+const APPS: [&str; 7] = ["web", "windows", "console", "android", "ios", "partner_android", "partner_ios"];
 const MAX_MESSAGE_CHARS: usize = 1000;
 const MAX_STACK_CHARS: usize = 4000;
 const MAX_VERSION_CHARS: usize = 40;
@@ -56,8 +57,9 @@ pub struct Row {
     stack: String,
 }
 
-/// Blanks out e-mail addresses and phone-like digit runs (9+ digits, dashes allowed). Lines and
-/// spacing are kept. Addresses (street names) cannot be detected reliably: the apps must not send them.
+/// Blanks out e-mail addresses and phone-like digit runs (9+ digits, dashes allowed). Hex words (a
+/// release stack trace's addresses, which `flutter symbolize` needs) are kept. Lines and spacing are
+/// kept. Addresses (street names) cannot be detected reliably: the apps must not send them.
 pub fn scrub(text: &str) -> String {
     text.split('\n')
         .map(|line| line.split(' ').map(scrub_token).collect::<Vec<_>>().join(" "))
@@ -68,7 +70,12 @@ pub fn scrub(text: &str) -> String {
 fn scrub_token(tok: &str) -> String {
     let digits = tok.chars().filter(char::is_ascii_digit).count();
     let email = tok.split_once('@').is_some_and(|(local, domain)| !local.is_empty() && domain.contains('.'));
-    if email || digits >= 9 { "[redacted]".to_string() } else { tok.to_string() }
+    let hex = tok.chars().all(|c| c.is_ascii_hexdigit()) && tok.chars().any(|c| c.is_ascii_alphabetic());
+    if email || (digits >= 9 && !hex) {
+        "[redacted]".to_string()
+    } else {
+        tok.to_string()
+    }
 }
 
 fn cap(s: &str, max: usize) -> String {
@@ -160,6 +167,20 @@ mod tests {
     #[test]
     fn unknown_app_is_rejected() {
         assert!(matches!(clean(report("customer", "boom")), Err(ApiError::BadRequest("invalid_app"))));
+    }
+
+    #[test]
+    fn every_app_surface_is_accepted() {
+        for app in APPS {
+            assert!(clean(report(app, "boom")).is_ok(), "{app}");
+        }
+    }
+
+    #[test]
+    fn scrub_keeps_stack_hex_addresses() {
+        let frame = "#00 abs 0000007a1c3d4e5f virt 00000000001b2c3d _kDartIsolateSnapshotInstructions+0x1a2b3c";
+        assert_eq!(scrub(frame), frame);
+        assert_eq!(scrub("01012345678"), "[redacted]");
     }
 
     #[test]
