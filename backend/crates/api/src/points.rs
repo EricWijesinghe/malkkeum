@@ -5,13 +5,15 @@
 
 use crate::{
     auth::{Admin, Customer},
+    contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
     routes::{audit, growth::{load_setting, save_setting}},
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    response::Response,
     routing::{get, post, put},
 };
 use chrono::{DateTime, Utc};
@@ -20,7 +22,7 @@ use domain::{
     growth::paid_in_full,
     points::{Lot, PointsError, PointsPolicy, Split, allocate, available, cashback, expiring_within, lapsed, split_payment},
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgPool};
 use uuid::Uuid;
@@ -30,7 +32,7 @@ const MAX_ADJUST: i64 = 100_000;
 const LEDGER_PAGE: i64 = 50;
 
 pub fn customer_routes() -> Router<AppState> {
-    Router::new().route("/me/points", get(my_points))
+    Router::new().route("/me/points", get(my_points)).route("/me/points/ledger", get(my_ledger))
 }
 
 pub fn admin_routes() -> Router<AppState> {
@@ -306,6 +308,34 @@ async fn snapshot(conn: &mut PgConnection, user: Uuid, staff: bool) -> ApiResult
 async fn my_points(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
     let mut conn = s.db.acquire().await?;
     Ok(Json(snapshot(&mut conn, a.id, false).await?))
+}
+
+#[derive(Serialize, sqlx::FromRow)]
+struct LedgerView {
+    id: Uuid,
+    kind: String,
+    amount: i64,
+    at: DateTime<Utc>,
+    expires_at: Option<DateTime<Utc>>,
+    booking_id: Option<Uuid>,
+}
+
+/// The customer's own ledger, newest first; keyset cursor over (created_at, id).
+async fn my_ledger(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<LedgerView> = sqlx::query_as(
+        "SELECT id, kind, amount, created_at AS at, expires_at, booking_id FROM points_ledger
+         WHERE user_id = $1 AND ($2::timestamptz IS NULL OR (created_at, id) < ($2, $3))
+         ORDER BY created_at DESC, id DESC LIMIT $4",
+    )
+    .bind(a.id)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
+    .fetch_all(&s.db)
+    .await?;
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.at), &r.id.to_string()])))
 }
 
 async fn user_points(State(s): State<AppState>, Admin(_): Admin, Path(user): Path<Uuid>) -> ApiResult<Json<Value>> {
