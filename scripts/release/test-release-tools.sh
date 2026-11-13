@@ -82,6 +82,36 @@ for v in $page_vars; do
 done
 nt "page: no answers file or page-made setup code" grep -qE 'dahae-answers|MALKKEUM_ANSWERS|SETUP_CODE' "$page"
 
+# ---- delivery re-run: the same release again changes no commit, and the tag stays where it was ----
+pd="$SB/pd"; mkdir -p "$pd/bin"
+git init -q --bare "$pd/dist.git"
+cat > "$pd/bin/cosign" <<'STUB'
+#!/usr/bin/env bash
+# Stub for `cosign sign-blob --bundle <file> <blob>`: each call writes a different bundle, as keyless signing does.
+while [ $# -gt 0 ]; do
+  if [ "$1" = --bundle ]; then printf 'bundle %s %s\n' "$RANDOM" "$RANDOM" > "$2"; exit 0; fi
+  shift
+done
+exit 1
+STUB
+chmod +x "$pd/bin/cosign"
+publish_release() {
+  env PATH="$pd/bin:$PATH" DIST_URL="$pd/dist.git" DIST_REPO=owner/dist VER=v9.9.9 \
+    IMAGE_REPO=ghcr.io/owner SIGNER_REPO=owner/app SIGN_RELEASE=1 \
+    MANIFEST_KEY_FILE="$SB/priv.pem" ASSET_DIR="$pd/assets" bash "$ROOT/deploy/publish-delivery.sh"
+}
+published() { git -C "$pd/dist.git" rev-parse --verify -q "$1"; }
+t  "delivery: first publish of a release" publish_release
+t  "delivery: tag published" published 'v9.9.9^{commit}'
+t  "delivery: first run signs SHA256SUMS" git -C "$pd/dist.git" cat-file -e 'main:SHA256SUMS.bundle'
+beta1=$(published refs/heads/beta); main1=$(published refs/heads/main); tag1=$(published 'v9.9.9^{commit}')
+bundle1=$(cat "$pd/assets/SHA256SUMS.bundle")
+t  "delivery: re-run of the same release succeeds" publish_release
+t  "delivery: re-run keeps the beta commit" [ "$(published refs/heads/beta)" = "$beta1" ]
+t  "delivery: re-run keeps the main commit" [ "$(published refs/heads/main)" = "$main1" ]
+t  "delivery: re-run keeps the tag on its commit" [ "$(published 'v9.9.9^{commit}')" = "$tag1" ]
+t  "delivery: re-run ships the same signature" [ "$(cat "$pd/assets/SHA256SUMS.bundle")" = "$bundle1" ]
+
 # ---- syntax ----
 for s in make-manifest.sh verify-manifest.sh sign-blob.sh verify-blob.sh build-install-page.sh test-release-tools.sh; do
   t "syntax: $s" bash -n "$R/$s"
