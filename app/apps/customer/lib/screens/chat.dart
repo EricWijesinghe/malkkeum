@@ -417,6 +417,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   StreamSubscription<Json>? _sub;
   bool _sending = false;
   bool _loading = true;
+
+  /// Why the first load failed; cleared by the load that succeeds.
+  Object? _error;
   bool _paying = false;
 
   /// Set when this screen's own payment succeeded, before the `deposit_paid` message arrives.
@@ -462,10 +465,18 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       setState(() {
         _messages = r.map((e) => ChatMessage.fromJson(e as Json)).toList();
         _loading = false;
+        _error = null;
       });
       _markRead();
     } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      if (!mounted || seq != _loadSeq) return;
+      // Nothing loaded yet: an error with retry instead of a spinner that never ends.
+      // With the room on screen the messages stay and a toast says why.
+      if (_loading) {
+        setState(() => _error = e);
+      } else {
+        showToast(context, context.t.error(e));
+      }
     }
   }
 
@@ -490,6 +501,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       if (!_messages.any((x) => x.id == m.id)) _arrived(m.id);
       setState(() => _messages = [..._messages.where((x) => x.id != m.id), m]);
       _input.clear();
+      // The send got through, so the history that failed to load will too.
+      if (_error != null) unawaited(_load());
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {
@@ -694,7 +707,13 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       body: Column(
         children: [
           Expanded(
-            child: _loading
+            child: _error != null
+                ? ErrorRetry(
+                    message: t.error(_error!),
+                    retryLabel: t.retry,
+                    onRetry: _load,
+                  )
+                : _loading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     controller: _scroll,

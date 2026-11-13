@@ -70,37 +70,72 @@ class QueuedCompletion {
   };
 }
 
-/// Job-day completions and their photos, kept on disk. One entry per booking.
+/// Job-day completions and their photos, kept on disk. One entry per booking, one folder per account.
 /// Uploads run one at a time (mobile data), and [drain] stops at the first network error.
 class CompletionOutbox {
-  CompletionOutbox(this.dir);
+  CompletionOutbox(this.root);
 
   static Future<CompletionOutbox> open() async {
     final root = await getApplicationSupportDirectory();
     return CompletionOutbox(Directory('${root.path}/outbox'));
   }
 
-  final Directory dir;
+  final Directory root;
+
+  /// Who is signed in (set by PartnerState), so one pro's queue is never sent under another's sign-in.
+  String? Function() account = () => null;
+
+  Directory get dir {
+    final who = account();
+    return who == null ? root : Directory('${root.path}/${who.replaceAll(RegExp(r'[^\w-]'), '_')}');
+  }
 
   File _entryFile(String bookingId) => File('${dir.path}/$bookingId.json');
 
+  /// Null for a file that does not decode (the app was killed mid-write by an older build). The file is
+  /// renamed out of the queue, not deleted, so it never blocks the other entries or its job's screen.
+  static Future<QueuedCompletion?> _read(File f) async {
+    final raw = await f.readAsString();
+    try {
+      return QueuedCompletion.fromJson(jsonDecode(raw) as Json);
+    } catch (_) {
+      await f.rename('${f.path}.corrupt');
+      return null;
+    }
+  }
+
   Future<QueuedCompletion?> find(String bookingId) async {
     final f = _entryFile(bookingId);
-    if (!await f.exists()) return null;
-    return QueuedCompletion.fromJson(jsonDecode(await f.readAsString()) as Json);
+    return await f.exists() ? _read(f) : null;
   }
 
   Future<List<QueuedCompletion>> all() async {
+    await _adoptUnscoped();
     if (!await dir.exists()) return const [];
     return [
       for (final e in await dir.list().toList())
-        if (e is File && e.path.endsWith('.json')) QueuedCompletion.fromJson(jsonDecode(await e.readAsString()) as Json),
+        if (e is File && e.path.endsWith('.json'))
+          ?await _read(e),
     ];
   }
 
+  /// Entries queued before folders were per account go to whoever is signed in at the upgrade.
+  Future<void> _adoptUnscoped() async {
+    if (dir.path == root.path || !await root.exists()) return;
+    for (final e in await root.list().toList()) {
+      if (e is! File || !e.path.endsWith('.json')) continue;
+      await dir.create(recursive: true);
+      await e.rename('${dir.path}/${e.uri.pathSegments.last}');
+    }
+  }
+
+  /// Written to a temp file and renamed over the entry, so a kill mid-write never leaves half an entry.
   Future<void> save(QueuedCompletion c) async {
     await dir.create(recursive: true);
-    await _entryFile(c.bookingId).writeAsString(jsonEncode(c.toJson()), flush: true);
+    final f = _entryFile(c.bookingId);
+    final tmp = File('${f.path}.tmp');
+    await tmp.writeAsString(jsonEncode(c.toJson()), flush: true);
+    await tmp.rename(f.path);
   }
 
   /// Keeps the picked photo on disk before any upload attempt.

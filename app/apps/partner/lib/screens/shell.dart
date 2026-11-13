@@ -23,25 +23,66 @@ class Gate extends StatefulWidget {
 }
 
 class _GateState extends State<Gate> {
-  late final Future<void> _boot = _start();
+  /// How often an app opened without signal asks the server again.
+  static const _offlineRetry = Duration(seconds: 20);
+
+  late Future<void> _boot = _start();
+  Timer? _catchUp;
 
   Future<void> _start() async {
     final pro = context.proRead;
-    await pro.loadAll();
+    final fresh = await pro.boot();
     pro.realtime.connect();
-    pro.syncOutbox().ignore();
+    if (fresh) {
+      pro.syncOutbox().ignore();
+    } else if (mounted) {
+      _catchUpLater();
+    }
+  }
+
+  /// Opened from the saved profile: keep asking until the real one loads, then send the queue.
+  void _catchUpLater() => _catchUp = Timer(_offlineRetry, () async {
+    final pro = context.proRead;
+    try {
+      await pro.loadAll();
+      pro.syncOutbox().ignore();
+    } catch (e) {
+      // Still no signal: ask again. Any other failure is left to the next realtime resync.
+      if (e is ApiException && e.isNetwork && mounted) _catchUpLater();
+    }
+  });
+
+  /// Runs the boot again. The session is kept: no signal is no reason to make a pro sign in again.
+  Future<void> _retry() async {
+    final boot = _start();
+    setState(() {
+      _boot = boot;
+    });
+    // The FutureBuilder shows the outcome; this only tells the button when to stop spinning.
+    await boot.then((_) {}, onError: (Object _) {});
+  }
+
+  @override
+  void dispose() {
+    _catchUp?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<void>(
     future: _boot,
     builder: (context, snap) {
+      // A retry keeps the last error on screen (its button shows progress) until it settles.
       if (snap.hasError) {
         return Scaffold(
           body: ErrorRetry(
             message: context.t.error(snap.error!),
             retryLabel: context.t.retry,
-            onRetry: () => Deps.read(context).session.logout(),
+            onRetry: _retry,
+            secondary: TextButton(
+              onPressed: () => Deps.read(context).session.logout(),
+              child: Text(context.t.logout),
+            ),
           ),
         );
       }

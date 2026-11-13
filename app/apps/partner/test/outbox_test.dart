@@ -27,7 +27,7 @@ void main() {
     box = CompletionOutbox(Directory.systemTemp.createTempSync('outbox_test'));
   });
 
-  tearDown(() => box.dir.deleteSync(recursive: true));
+  tearDown(() => box.root.deleteSync(recursive: true));
 
   Future<QueuedCompletion> completion({required String id, bool ready = true}) async => QueuedCompletion(
     basePath: '/partner',
@@ -100,5 +100,59 @@ void main() {
     final kept = await box.find('bk-1');
     expect(kept, isNotNull);
     expect(kept!.error, 'job_not_active');
+  });
+
+  test('a corrupt entry is set aside and the other entries still drain', () async {
+    await box.save(await completion(id: 'bk-1'));
+    // The app was killed mid-write by an older build: half a JSON document.
+    final broken = File('${box.dir.path}/bk-0.json')..writeAsStringSync('{"basePath": "/partner", "booki');
+
+    await box.drain(env.api);
+
+    expect(env.fake.callsTo('POST', _complete), hasLength(1), reason: 'the good entry went out');
+    expect(await box.find('bk-1'), isNull);
+    expect(broken.existsSync(), isFalse, reason: 'no longer in the queue');
+    expect(File('${broken.path}.corrupt').existsSync(), isTrue, reason: 'kept on disk, not deleted');
+    expect(await box.find('bk-0'), isNull, reason: 'the complete screen opens a fresh draft');
+    expect(await box.all(), isEmpty);
+  });
+
+  test('a corrupt entry opened from the job screen is set aside too', () async {
+    await box.dir.create(recursive: true);
+    final broken = File('${box.dir.path}/bk-0.json')..writeAsStringSync('[1, 2]');
+
+    expect(await box.find('bk-0'), isNull);
+    expect(File('${broken.path}.corrupt').existsSync(), isTrue);
+  });
+
+  test('saving replaces the entry in one step and leaves no temp file', () async {
+    final c = await completion(id: 'bk-1', ready: false);
+    await box.save(c);
+    c.ready = true;
+    await box.save(c);
+
+    final names = [for (final e in box.dir.listSync().whereType<File>()) e.uri.pathSegments.last];
+    expect(names, ['bk-1.json']);
+    expect((await box.find('bk-1'))!.ready, isTrue);
+
+    // A write cut off before the rename leaves only the temp file: the saved entry is untouched.
+    File('${box.dir.path}/bk-1.json.tmp').writeAsStringSync('{"basePath": "/par');
+    expect((await box.all()).single.ready, isTrue);
+  });
+
+  test('each account has its own queue; entries from before that go to the account signed in', () async {
+    await box.save(await completion(id: 'bk-1'));
+    var who = 'pro-a';
+    box.account = () => who;
+
+    expect([for (final c in await box.all()) c.bookingId], ['bk-1'], reason: 'the old entry is adopted');
+    await box.save(await completion(id: 'bk-2'));
+
+    who = 'pro-b';
+    expect(await box.all(), isEmpty);
+    expect(await box.find('bk-1'), isNull);
+
+    who = 'pro-a';
+    expect([for (final c in await box.all()) c.bookingId]..sort(), ['bk-1', 'bk-2']);
   });
 }
