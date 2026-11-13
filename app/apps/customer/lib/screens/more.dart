@@ -341,7 +341,7 @@ class _Counter extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Flexible(
+            Expanded(
               child: Text(
                 label,
                 maxLines: 1,
@@ -352,8 +352,14 @@ class _Counter extends StatelessWidget {
               ),
             ),
             const SizedBox(width: Space.xs),
-            const Spacer(),
-            value,
+            // Large balances at large text shrink instead of overflowing the half-width cell.
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerEnd,
+                child: value,
+              ),
+            ),
           ],
         ),
       ),
@@ -465,10 +471,12 @@ class _LabelValueRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            label,
-            style: context.text.bodyMedium?.copyWith(
-              color: context.colors.inkSoft,
+          Flexible(
+            child: Text(
+              label,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.inkSoft,
+              ),
             ),
           ),
           const SizedBox(width: Space.md),
@@ -483,7 +491,8 @@ class _LabelValueRow extends StatelessWidget {
               ),
             ),
           ),
-          ?extra,
+          // Flexible: a long translated link wraps instead of pushing the row off screen.
+          if (extra case final e?) Flexible(child: e),
         ],
       ),
     ),

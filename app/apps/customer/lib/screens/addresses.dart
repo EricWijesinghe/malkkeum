@@ -382,7 +382,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
             showSelectedIcon: false,
             style: SegmentedButton.styleFrom(
               selectedBackgroundColor: context.colors.primaryTint,
-              selectedForegroundColor: context.colors.accent,
+              selectedForegroundColor: context.colors.ink,
               side: BorderSide(color: context.colors.line),
               minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(

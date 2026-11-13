@@ -80,7 +80,8 @@ void main() {
         expect(tester.takeException(), isNull, reason: 'account');
         await unmount(tester);
 
-        await pumpCustomerScreen(tester, env, const CouponsScreen());
+        final coupons = await pumpCustomerScreen(tester, env, const CouponsScreen());
+        await coupons.loadCoupons();
         await settle(tester, duration: const Duration(milliseconds: 400));
         await tester.scrollUntilVisible(find.text(t.couponsNote), 300, scrollable: find.byType(Scrollable).first);
         expect(tester.takeException(), isNull, reason: 'coupons');

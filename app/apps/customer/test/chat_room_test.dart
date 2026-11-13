@@ -92,6 +92,9 @@ void main() {
     expect(find.byType(ActionChip), findsNWidgets(3));
     expect(find.widgetWithText(ActionChip, koT.quick_hello), findsNothing);
 
+    // The chip row scrolls sideways (design p04): bring the third reply into view first.
+    await tester.ensureVisible(find.widgetWithText(ActionChip, koT.quick_reschedule));
+    await settle(tester);
     await tester.tap(find.widgetWithText(ActionChip, koT.quick_reschedule));
     await settle(tester);
     expect(fake.lastCall('POST', '/chat/threads/th-1/messages')!.json, {'kind': 'text', 'text': koT.quick_reschedule});
@@ -309,7 +312,8 @@ void main() {
     expect(border.color, colors.fresh);
     final button = find.byType(FilledButton);
     final fill = tester.widget<Material>(find.descendant(of: button, matching: find.byType(Material)).first).color;
-    expect(fill, Theme.of(ctx).colorScheme.primary, reason: 'teal (primary) fill');
+    expect(fill, BrandConfig.placeholder.primary, reason: 'teal fill (dark teal keeps white text AA)');
+    expect(1.05 / (fill!.computeLuminance() + 0.05), greaterThanOrEqualTo(4.5), reason: 'white label contrast');
     expect(fill, isNot(colors.sun), reason: 'no yellow');
     expect(tester.getSize(button).width, lessThan(tester.getSize(card).width), reason: 'inset, not full-bleed');
     await unmount(tester);

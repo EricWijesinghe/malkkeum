@@ -66,8 +66,13 @@ const _priceChanged = 'price_changed';
 /// Room for the empty-state art under the header; it scrolls inside when text is large.
 const _emptyHeight = 360.0;
 
-/// Below this logical width (after text scaling) "예약 보기" collapses to an icon so the title keeps its room.
+/// Below this logical width (after text scaling) a header pill collapses to its icon so the title keeps its room.
 const _pillMinWidth = 360.0;
+
+bool _roomy(BuildContext context) =>
+    MediaQuery.sizeOf(context).width /
+        MediaQuery.textScalerOf(context).scale(1) >=
+    _pillMinWidth;
 
 String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
 
@@ -191,17 +196,24 @@ class _ChatListTabState extends State<ChatListTab> {
         actions: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: Space.md),
-            child: OutlinedButton.icon(
-              onPressed: _newChat,
-              style: OutlinedButton.styleFrom(
-                shape: const StadiumBorder(),
-                side: BorderSide(color: context.colors.line),
-                foregroundColor: context.colors.ink,
-                padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-              ),
-              icon: Icon3D('chat_new', size: 20, attention: _nudge),
-              label: Text(t.chatNew),
-            ),
+            // Small phones and large text: the glyph alone, so the title keeps its room.
+            child: _roomy(context)
+                ? OutlinedButton.icon(
+                    onPressed: _newChat,
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      side: BorderSide(color: context.colors.line),
+                      foregroundColor: context.colors.ink,
+                      padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                    ),
+                    icon: Icon3D('chat_new', size: 20, attention: _nudge),
+                    label: Text(t.chatNew),
+                  )
+                : IconButton(
+                    tooltip: t.chatNew,
+                    onPressed: _newChat,
+                    icon: Icon3D('chat_new', size: 24, attention: _nudge),
+                  ),
           ),
         ],
       ),
@@ -596,10 +608,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   );
 
   PreferredSizeWidget _appBar(T t) {
-    final roomy =
-        MediaQuery.sizeOf(context).width /
-            MediaQuery.textScalerOf(context).scale(1) >=
-        _pillMinWidth;
+    final roomy = _roomy(context);
     return AppBar(
       centerTitle: false,
       titleSpacing: 0,
@@ -741,6 +750,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                       child: ActionChip(
                         label: Text(q),
                         shape: const StadiumBorder(),
+                        visualDensity: VisualDensity.compact,
+                        labelPadding: const EdgeInsets.symmetric(
+                          horizontal: Space.xxs,
+                        ),
                         // The first reply is the suggested one (design p04).
                         side: BorderSide(
                           color: i == 0 ? context.colors.accent : c.line,

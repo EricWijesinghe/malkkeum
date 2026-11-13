@@ -1,6 +1,7 @@
 import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:ui/ui.dart';
 
 import '../state.dart';
@@ -97,6 +98,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 .toList();
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
+              // A short page: build every row so the register tiles below the fold exist too.
+              scrollCacheExtent: const ScrollCacheExtent.viewport(4),
               padding: const EdgeInsets.symmetric(vertical: Space.xs),
               children: [
                 if (app.methods.isEmpty)
@@ -231,51 +234,75 @@ class _MethodRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-      minTileHeight: 64,
-      // Text wordmark only: no third-party logo artwork is bundled. Decorative, so it keeps
-      // its size; the title scales. Unconstrained so it never stretches across the tile.
-      leading: UnconstrainedBox(
-        child: MediaQuery.withNoTextScaling(
-          child: PayBrandBadge(code: code, height: 28),
+    final c = context.colors;
+    // A plain row, not a ListTile: at the largest text the tag and delete button would
+    // leave a ListTile title no room at all; here the name and the tag share it instead.
+    return InkWell(
+      onTap: onTap,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 64),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: Space.gutter,
+            end: Space.sm,
+            top: Space.xs,
+            bottom: Space.xs,
+          ),
+          child: Row(
+            children: [
+              // Text wordmark only: no third-party logo artwork is bundled. Decorative, so it
+              // keeps its size while the name scales.
+              MediaQuery.withNoTextScaling(
+                child: PayBrandBadge(code: code, height: 28),
+              ),
+              const SizedBox(width: Space.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: context.text.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        style: context.text.bodySmall?.copyWith(
+                          color: c.inkSoft,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (registered)
+                Flexible(
+                  // Pops in when the method appears (e.g. right after registering it).
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0.6, end: 1),
+                    duration: motionFor(context, Motion.iconPop),
+                    curve: Curves.easeOutBack,
+                    builder: (_, s, child) =>
+                        Transform.scale(scale: s, child: child),
+                    child: Tag(
+                      label: t.methodRegistered,
+                      hue: StatusHues.assigned,
+                    ),
+                  ),
+                ),
+              if (onDelete != null)
+                IconButton(
+                  tooltip: t.delete,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  onPressed: onDelete,
+                ),
+              if (onTap != null)
+                Icon(Icons.chevron_right_rounded, color: c.inkMuted),
+            ],
+          ),
         ),
       ),
-      title: Text(
-        title,
-        style: context.text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-      ),
-      subtitle: subtitle == null
-          ? null
-          : Text(
-              subtitle!,
-              style: context.text.bodySmall?.copyWith(
-                color: context.colors.inkSoft,
-              ),
-            ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (registered)
-            // Pops in when the method appears (e.g. right after registering it).
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.6, end: 1),
-              duration: motionFor(context, Motion.iconPop),
-              curve: Curves.easeOutBack,
-              builder: (_, s, child) => Transform.scale(scale: s, child: child),
-              child: Tag(label: t.methodRegistered, hue: StatusHues.assigned),
-            ),
-          if (onDelete != null)
-            IconButton(
-              tooltip: t.delete,
-              icon: const Icon(Icons.delete_outline_rounded),
-              onPressed: onDelete,
-            ),
-          if (onTap != null)
-            Icon(Icons.chevron_right_rounded, color: context.colors.inkMuted),
-        ],
-      ),
-      onTap: onTap,
     );
   }
 }

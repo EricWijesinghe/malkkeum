@@ -239,9 +239,13 @@ class _LoginBadge extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        Text(
-          _loginLabel(context.t, provider),
-          style: context.text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        Flexible(
+          child: Text(
+            _loginLabel(context.t, provider),
+            style: context.text.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
@@ -342,9 +346,13 @@ class AccountScreen extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    t.accountLogin,
-                    style: context.text.bodyMedium?.copyWith(color: c.inkSoft),
+                  Flexible(
+                    child: Text(
+                      t.accountLogin,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: c.inkSoft,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: Space.md),
                   Expanded(
