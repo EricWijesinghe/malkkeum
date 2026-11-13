@@ -400,23 +400,23 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
       body: ListView(
         padding: const EdgeInsets.all(Space.gutter),
         children: [
-          SegmentedButton<String>(
-            showSelectedIcon: false,
-            style: SegmentedButton.styleFrom(
-              selectedBackgroundColor: context.colors.primaryTint,
-              selectedForegroundColor: context.colors.ink,
-              side: BorderSide(color: context.colors.line),
-              minimumSize: const Size.fromHeight(48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Radii.chip),
-              ),
-            ),
-            segments: [
-              ButtonSegment(value: 'home', label: Text(t.addressHome)),
-              ButtonSegment(value: 'office', label: Text(t.addressOffice)),
+          // Two tiles side by side (design p25), not a joined segmented bar.
+          Row(
+            children: [
+              for (final (i, (kind, label)) in [
+                ('home', t.addressHome),
+                ('office', t.addressOffice),
+              ].indexed) ...[
+                if (i > 0) const SizedBox(width: Space.sm),
+                Expanded(
+                  child: _KindTile(
+                    label: label,
+                    selected: _kind == kind,
+                    onTap: () => setState(() => _kind = kind),
+                  ),
+                ),
+              ],
             ],
-            selected: {_kind},
-            onSelectionChanged: (s) => setState(() => _kind = s.first),
           ),
           const SizedBox(height: Space.lg),
           TextField(
@@ -614,6 +614,55 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
           label: t.save,
           busy: _busy,
           onPressed: _valid ? _save : null,
+        ),
+      ),
+    );
+  }
+}
+
+/// One of the 집 / 사무실 tiles: tinted with a brand border when chosen, outlined otherwise.
+class _KindTile extends StatelessWidget {
+  const _KindTile({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final radius = BorderRadius.circular(Radii.chip);
+    return Semantics(
+      button: true,
+      selected: selected,
+      inMutuallyExclusiveGroup: true,
+      child: Material(
+        color: selected ? c.primaryTint : c.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: BorderSide(
+            color: selected ? context.primary : c.line,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: InkWell(
+          borderRadius: radius,
+          onTap: onTap,
+          child: SizedBox(
+            height: 48,
+            child: Center(
+              child: Text(
+                label,
+                style: context.text.titleSmall?.copyWith(
+                  color: selected ? context.primary : c.ink,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
