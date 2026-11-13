@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:customer/screens/chat.dart';
+import 'package:customer/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
@@ -22,6 +24,17 @@ Future<FakeApi> _chatApi(List<Json> history) async {
         ));
   stockCustomerApi(fake);
   return fake;
+}
+
+/// A realtime double whose events the test sends itself.
+class _LiveRealtime extends FakeRealtime {
+  _LiveRealtime(super.api);
+  final _sent = StreamController<Json>.broadcast();
+
+  @override
+  Stream<Json> get events => _sent.stream;
+
+  void emit(Json event) => _sent.add(event);
 }
 
 void main() {
@@ -408,6 +421,58 @@ void main() {
 
     final fade = tester.widget<FadeTransition>(find.ancestor(of: find.text(koT.quick_hello).first, matching: find.byType(FadeTransition)).first);
     expect(fade.opacity.value, 1, reason: 'no entrance animation');
+    await unmount(tester);
+  });
+
+  testWidgets('a failed first load shows the error state with retry, and the retry loads the room', (tester) async {
+    setViewport(tester, phoneSize);
+    var online = false;
+    final fake = FakeApi()
+      ..onGet('/chat/threads/th-1/messages', (_) {
+        if (!online) throw const SocketException('no signal');
+        return [chatMessageJson(id: 'm1', sender: 'staff', kind: 'text', body: {'text': '방문 일정 확인했어요'})];
+      })
+      ..reply('POST', '/chat/threads/th-1/read', null);
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'studio'));
+    await pumpUntilFound(tester, find.byType(ErrorRetry));
+
+    expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'no spinner forever');
+    expect(find.text(koT.errorNetwork), findsOneWidget);
+    expect(find.textContaining('SocketException'), findsNothing);
+
+    online = true;
+    await tester.tap(find.text(koT.retry));
+    await pumpUntilFound(tester, find.text('방문 일정 확인했어요'));
+    expect(find.byType(ErrorRetry), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('a failed reload keeps the messages already in the room', (tester) async {
+    setViewport(tester, phoneSize);
+    var online = true;
+    final fake = FakeApi()
+      ..onGet('/chat/threads/th-1/messages', (_) {
+        if (!online) throw const SocketException('no signal');
+        return [chatMessageJson(id: 'm1', sender: 'staff', kind: 'text', body: {'text': '방문 일정 확인했어요'})];
+      })
+      ..reply('POST', '/chat/threads/th-1/read', null);
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    final live = _LiveRealtime(env.api);
+    await tester.pumpWidget(
+      CustomerTestHost(env: env, app: AppState(env.api, live), home: const ChatRoomScreen(threadId: 'th-1', topic: 'studio')),
+    );
+    await pumpUntilFound(tester, find.text('방문 일정 확인했어요'));
+
+    online = false;
+    live.emit({'type': 'resync'});
+    await settle(tester, duration: const Duration(milliseconds: 500));
+
+    expect(find.text('방문 일정 확인했어요'), findsOneWidget);
+    expect(find.byType(ErrorRetry), findsNothing);
+    await settle(tester, duration: const Duration(seconds: 5)); // let the toast leave
     await unmount(tester);
   });
 }

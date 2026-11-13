@@ -28,28 +28,42 @@ final _brand = BrandConfig.placeholder.name;
 
 /// Console content per kind, the way the public `/content?kind=` endpoint filters it.
 /// Register before [stockCustomerApi]: the first matching route wins.
-void _stockContent(FakeApi fake) {
-  fake.onGet('/content', (call) => switch (call.query['kind']) {
-    'banner' => [
-      contentJson(id: 'b-1', kind: 'banner', title: const {'ko': _hero}, link: 'coupons'),
-      {
-        ...contentJson(id: 'b-2', kind: 'banner', title: const {'ko': _pick}, link: 'service/move_out'),
-        'body': {
-          'text': {'ko': _pickLine},
-        },
+void _stockContent(FakeApi fake) => fake.onGet('/content', _content);
+
+Object? _content(ApiCall call) => switch (call.query['kind']) {
+  'banner' => [
+    contentJson(id: 'b-1', kind: 'banner', title: const {'ko': _hero}, link: 'coupons'),
+    {
+      ...contentJson(id: 'b-2', kind: 'banner', title: const {'ko': _pick}, link: 'service/move_out'),
+      'body': {
+        'text': {'ko': _pickLine},
       },
-      contentJson(id: 'b-3', kind: 'banner', title: const {'ko': _hero2}),
-    ],
-    'notice' => [contentJson(id: 'c-1', title: const {'ko': _notice})],
-    'news' => [
-      {
-        ...contentJson(id: 'n-1', kind: 'news', title: const {'ko': _news}),
-        'body': {'service': 'studio'},
-      },
-    ],
-    'tip' => [contentJson(id: 't-1', kind: 'tip', title: const {'ko': _tip})],
-    _ => const <Json>[],
+    },
+    contentJson(id: 'b-3', kind: 'banner', title: const {'ko': _hero2}),
+  ],
+  'notice' => [contentJson(id: 'c-1', title: const {'ko': _notice})],
+  'news' => [
+    {
+      ...contentJson(id: 'n-1', kind: 'news', title: const {'ko': _news}),
+      'body': {'service': 'studio'},
+    },
+  ],
+  'tip' => [contentJson(id: 't-1', kind: 'tip', title: const {'ko': _tip})],
+  _ => const <Json>[],
+};
+
+/// Home's API with one active booking; [tipFails] and [bookingsUp] break one call each.
+FakeApi _homeApi({bool tipFails = false, bool Function()? bookingsUp}) {
+  const down = ApiReply(500, {
+    'error': {'code': 'internal'},
   });
+  final booking = bookingJson(id: 'bk-1', status: 1, visitDate: DateTime.now().add(const Duration(days: 2)));
+  final fake = FakeApi();
+  if (tipFails) fake.onGet('/content', (call) => call.query['kind'] == 'tip' ? down : _content(call));
+  fake.onGet('/bookings', (_) => (bookingsUp?.call() ?? true) ? [booking] : down);
+  _stockContent(fake);
+  stockCustomerApi(fake);
+  return fake;
 }
 
 /// The catalogue in the owner's tile order, with the seeded N / HOT badges.
@@ -347,6 +361,46 @@ void main() {
     await pumpCustomerApp(tester, env);
     await pumpUntilFound(tester, find.text(_oneLine(timeGreeting(koT, DateTime.now()))));
     await pumpUntilFound(tester, find.text(koT.service('studio')));
+    await unmount(tester);
+  });
+
+  testWidgets('one failing content list does not hold back the bookings, the feed or the banners', (tester) async {
+    setViewport(tester, _tallPhone);
+    final env = await TestEnv.create(fake: _homeApi(tipFails: true));
+
+    await pumpCustomerApp(tester, env);
+    await pumpUntilFound(tester, find.textContaining(koT.homeUpcoming));
+    await settle(tester);
+
+    expect(find.text(_hero), findsOneWidget, reason: 'banners');
+    expect(find.text(_pick), findsOneWidget, reason: 'the recommendation');
+    expect(find.text(_news), findsOneWidget);
+    expect(find.text(_tip), findsNothing);
+    expect(find.byType(Skeleton), findsNothing, reason: 'never skeletons forever');
+    expect(find.byType(ErrorRetry), findsNothing, reason: 'a missing tip list is not worth an error');
+    await unmount(tester);
+  });
+
+  testWidgets('bookings failing shows an error card with retry, and the retry brings the next booking', (tester) async {
+    setViewport(tester, _tallPhone);
+    var online = false;
+    final env = await TestEnv.create(fake: _homeApi(bookingsUp: () => online));
+
+    await pumpCustomerApp(tester, env);
+    await pumpUntilFound(tester, find.byType(ErrorRetry));
+    await settle(tester);
+
+    expect(find.text(koT.errorGeneric), findsOneWidget);
+    expect(find.textContaining('ApiException'), findsNothing);
+    expect(find.byType(Skeleton), findsNothing, reason: 'never skeletons forever');
+    expect(find.text(_hero), findsOneWidget, reason: 'the rest of home still loads');
+    expect(find.textContaining(koT.homeUpcoming), findsNothing);
+
+    online = true;
+    await tester.tap(find.text(koT.retry));
+    await pumpUntilFound(tester, find.textContaining(koT.homeUpcoming));
+    await settle(tester);
+    expect(find.byType(ErrorRetry), findsNothing);
     await unmount(tester);
   });
 }

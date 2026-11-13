@@ -31,6 +31,31 @@ const _badgeSize = 22.0;
 
 enum _HomeView { all, pick }
 
+/// One home section's answer, or null when its request or its parsing fails ([onError] gets the
+/// cause). Each section settles on its own, so one failed list never holds back the others.
+Future<V?> _section<V>(
+  Future<Object?> request,
+  V Function(Object?) parse, {
+  void Function(Object error)? onError,
+}) async {
+  try {
+    return parse(await request);
+  } catch (e) {
+    onError?.call(e);
+    return null;
+  }
+}
+
+// shortcut: the API sends no date, so news and tips alternate (each newest first);
+// sort by date once /content returns created_at.
+List<ContentItem> _alternate(List<ContentItem> news, List<ContentItem> tips) =>
+    [
+      for (var i = 0; i < news.length || i < tips.length; i++) ...[
+        if (i < news.length) news[i],
+        if (i < tips.length) tips[i],
+      ],
+    ].take(newsListMax).toList();
+
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key, required this.onOpenTab});
   final ValueChanged<int> onOpenTab;
@@ -45,6 +70,9 @@ class _HomeTabState extends State<HomeTab> {
   List<ContentItem> _articles = const [];
   List<Json> _feed = const [];
   bool _loaded = false;
+
+  /// Why the last load could not get the bookings or the feed; null once a load gets both.
+  Object? _error;
   int _unread = 0;
   int _seenVersion = -1;
   _HomeView _view = _HomeView.all;
@@ -75,39 +103,52 @@ class _HomeTabState extends State<HomeTab> {
       }).ignore();
     }
     final district = context.app.addresses.firstOrNull?.districtCode;
-    final results = await Future.wait([
-      signedIn ? api.get('/bookings') : Future.value(const <Json>[]),
-      api.get('/content', query: {'kind': 'banner'}),
-      api.get('/content', query: {'kind': 'notice'}),
-      api.get(signedIn ? '/me/feed' : '/feed', query: {'district': district}),
-      api.get('/content', query: {'kind': 'news'}),
-      api.get('/content', query: {'kind': 'tip'}),
-    ]);
-    if (!mounted) return;
+    // Only the bookings and the feed raise the error card; a missing banner or tip list just stays out.
+    Object? failure;
+    void vital(Object e) => failure ??= e;
     List<ContentItem> items(Object? rows) =>
         (rows as List).map((e) => ContentItem(e as Json)).toList();
-    final feed = ((results[3] as Json)['cards'] as List).cast<Json>();
-    unawaited(context.appRead.cache.write(_feedKey, feed));
-    final news = items(results[4]);
-    final tips = items(results[5]);
+    Future<List<ContentItem>?> content(String kind) =>
+        _section(api.get('/content', query: {'kind': kind}), items);
+    final (bookings, feed, banners, notice, news, tips) = await (
+      _section(
+        signedIn ? api.get('/bookings') : Future.value(const <Json>[]),
+        (r) => (r as List).map((e) => Booking.fromJson(e as Json)).toList(),
+        onError: vital,
+      ),
+      _section(
+        api.get(signedIn ? '/me/feed' : '/feed', query: {'district': district}),
+        (r) => ((r as Json)['cards'] as List).cast<Json>(),
+        onError: vital,
+      ),
+      content('banner'),
+      content('notice'),
+      content('news'),
+      content('tip'),
+    ).wait;
+    if (!mounted) return;
+    if (feed != null) unawaited(context.appRead.cache.write(_feedKey, feed));
     setState(() {
       _loaded = true;
-      _bookings = (results[0] as List)
-          .map((e) => Booking.fromJson(e as Json))
-          .toList();
-      _banners = items(results[1]);
-      _notice = items(results[2]).firstOrNull;
-      // shortcut: the API sends no date, so news and tips alternate (each newest first);
-      // sort by date once /content returns created_at.
-      _articles = [
-        for (var i = 0; i < news.length || i < tips.length; i++) ...[
-          if (i < news.length) news[i],
-          if (i < tips.length) tips[i],
-        ],
-      ].take(newsListMax).toList();
-      _feed = feed;
+      _error = failure;
+      // A section that failed keeps what it showed before.
+      _bookings = bookings ?? _bookings;
+      _banners = banners ?? _banners;
+      if (notice != null) _notice = notice.firstOrNull;
+      if (news != null || tips != null) {
+        _articles = _alternate(news ?? const [], tips ?? const []);
+      }
+      _feed = feed ?? _feed;
     });
   }
+
+  /// Inline, so the rest of home stays usable; retry runs the whole load again.
+  Widget _errorCard(Object error) => ErrorRetry(
+    compact: true,
+    message: context.t.error(error),
+    retryLabel: context.t.retry,
+    onRetry: _load,
+  );
 
   @override
   void didChangeDependencies() {
@@ -115,7 +156,7 @@ class _HomeTabState extends State<HomeTab> {
     final v = context.app.bookingsVersion;
     if (v != _seenVersion) {
       _seenVersion = v;
-      _load().catchError((_) {});
+      unawaited(_load());
     }
   }
 
@@ -179,7 +220,9 @@ class _HomeTabState extends State<HomeTab> {
           ),
           SliverToBoxAdapter(
             child: FadeThroughSwitcher(
-              child: _view == _HomeView.pick ? _pickView(picks) : _allView(picks),
+              child: _view == _HomeView.pick
+                  ? _pickView(picks)
+                  : _allView(picks),
             ),
           ),
         ],
@@ -223,6 +266,10 @@ class _HomeTabState extends State<HomeTab> {
                 _ServiceGrid(services: app.services),
                 const SizedBox(height: Space.md),
                 Divider(height: 1, thickness: 1, color: c.line),
+                if (_error case final e?) ...[
+                  const SizedBox(height: Space.md),
+                  _errorCard(e),
+                ],
                 if (next != null) ...[
                   const SizedBox(height: Space.md),
                   _UpcomingCard(booking: next),
@@ -296,14 +343,17 @@ class _HomeTabState extends State<HomeTab> {
         loading: !_loaded,
         empty: Padding(
           padding: const EdgeInsets.symmetric(vertical: Space.xxxl),
-          child: Center(
-            child: Text(
-              context.t.noContent,
-              style: context.text.bodyMedium?.copyWith(
-                color: context.colors.inkMuted,
-              ),
-            ),
-          ),
+          // "Nothing here yet" would be a lie when the feed simply did not load.
+          child: _error != null
+              ? _errorCard(_error!)
+              : Center(
+                  child: Text(
+                    context.t.noContent,
+                    style: context.text.bodyMedium?.copyWith(
+                      color: context.colors.inkMuted,
+                    ),
+                  ),
+                ),
         ),
       ),
     ),
@@ -461,9 +511,9 @@ class _UpcomingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final days = DateUtils.dateOnly(booking.visitDate)
-        .difference(DateUtils.dateOnly(DateTime.now()))
-        .inDays;
+    final days = DateUtils.dateOnly(
+      booking.visitDate,
+    ).difference(DateUtils.dateOnly(DateTime.now())).inDays;
     return AppCard(
       level: Level.flat,
       border: context.colors.line,
@@ -577,7 +627,10 @@ class _ServiceTile extends StatelessWidget {
                       PositionedDirectional(
                         top: -6,
                         end: -8,
-                        child: _TileBadge(label: badge, after: _tileStep * index),
+                        child: _TileBadge(
+                          label: badge,
+                          after: _tileStep * index,
+                        ),
                       ),
                   ],
                 ),
