@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
+import 'screens/audit.dart';
 import 'screens/bookings.dart';
 import 'screens/catalog.dart';
 import 'screens/dashboard.dart';
@@ -119,6 +120,13 @@ final _sections = <_Section>[
     Icons.monitor_heart_rounded,
     (t) => t.cOps,
     () => const OpsScreen(),
+  ),
+  _Section(
+    'c_audit',
+    Icons.history_rounded,
+    (t) => t.cAudit,
+    () => const AuditScreen(),
+    adminOnly: true,
   ),
 ];
 
