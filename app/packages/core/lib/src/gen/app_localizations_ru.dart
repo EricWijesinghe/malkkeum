@@ -1992,6 +1992,9 @@ class TRu extends T {
   String get dfPriceVat => 'Цена (с НДС)';
 
   @override
+  String get dfDetails => 'Подробнее';
+
+  @override
   String dfStudioNote(String max) {
     return '※ Жильё больше $max пхён не подходит для уборки студии. Подберём услугу в чате.';
   }
@@ -2128,6 +2131,12 @@ class TRu extends T {
   String get dfReviewsTitle => 'Отзывы клиентов.';
 
   @override
+  String get dfBefore => 'ДО';
+
+  @override
+  String get dfAfter => 'ПОСЛЕ';
+
+  @override
   String get dfBasicBody => 'Обязательные данные, влияют на цену.';
 
   @override
@@ -2194,6 +2203,18 @@ class TRu extends T {
 
   @override
   String get dfAcAddonNote => 'Цену со скидкой вы увидите в смете';
+
+  @override
+  String get dfAcCouponCta => 'Получить';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'Скидка $amount на чистку кондиционера';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Купон получен. Используйте его при заказе чистки кондиционера.';
 
   @override
   String dfEstAddons(String pct) {

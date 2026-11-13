@@ -4,10 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'bookings.dart' show bookingStepLabel;
 import 'chat.dart';
 import 'flow_widgets.dart';
 import 'quote_flow.dart';
 import 'service.dart';
+
+const _trackerSteps = 4;
+const _sheetCtaKickDelay = Duration(milliseconds: 1200);
 
 /// Quote request status (design p20): date, 4-step tracker, payment and service info,
 /// "상담 채팅" and "예약 취소". Right after submitting it opens the completion sheet (p21).
@@ -76,56 +80,78 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
               alignment: Alignment.centerRight,
               child: CloseButton(onPressed: () => Navigator.of(ctx).pop()),
             ),
-            Text(
-              t.dfRequestDone,
-              textAlign: TextAlign.center,
-              style: ctx.text.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
+            StaggerIn(
+              index: 0,
+              child: Text(
+                t.dfRequestDone,
+                textAlign: TextAlign.center,
+                style: ctx.text.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             const SizedBox(height: Space.xs),
-            Text(
-              t.dfRequestDoneBody,
-              textAlign: TextAlign.center,
-              style: ctx.text.bodyMedium?.copyWith(color: ctx.colors.inkSoft),
+            StaggerIn(
+              index: 1,
+              child: Text(
+                t.dfRequestDoneBody,
+                textAlign: TextAlign.center,
+                style: ctx.text.bodyMedium?.copyWith(color: ctx.colors.inkSoft),
+              ),
             ),
             if (aircon != null) ...[
               const SizedBox(height: Space.lg),
-              Container(
-                padding: const EdgeInsets.all(Space.md),
-                decoration: BoxDecoration(
-                  color: ctx.colors.surfaceHigh,
-                  borderRadius: BorderRadius.circular(Radii.tile),
-                ),
-                child: Column(
-                  children: [
-                    const ExcludeSemantics(
-                      child: Icon3D('svc_aircon', size: 56),
-                    ),
-                    const SizedBox(height: Space.xs),
-                    Text(
-                      t.dfAcUpsell,
-                      textAlign: TextAlign.center,
-                      style: ctx.text.bodyMedium,
-                    ),
-                    const SizedBox(height: Space.sm),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        minimumSize: const Size(0, 48),
+              StaggerIn(
+                index: 2,
+                child: Container(
+                  padding: const EdgeInsets.all(Space.md),
+                  decoration: BoxDecoration(
+                    color: ctx.colors.surfaceHigh,
+                    borderRadius: BorderRadius.circular(Radii.tile),
+                  ),
+                  child: Column(
+                    children: [
+                      const ExcludeSemantics(
+                        child: Icon3D(
+                          'svc_aircon',
+                          size: 56,
+                          idle: Icon3DIdle.sway,
+                        ),
                       ),
-                      onPressed: () => Navigator.of(ctx).pop('aircon'),
-                      child: Text(t.dfAcUpsellCta),
-                    ),
-                  ],
+                      const SizedBox(height: Space.xs),
+                      Text(
+                        t.dfAcUpsell,
+                        textAlign: TextAlign.center,
+                        style: ctx.text.bodyMedium,
+                      ),
+                      const SizedBox(height: Space.sm),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          minimumSize: const Size(0, 48),
+                        ),
+                        onPressed: () => Navigator.of(ctx).pop('aircon'),
+                        child: Text(t.dfAcUpsellCta),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
             const SizedBox(height: Space.md),
             if (b.threadId != null)
-              PrimaryButton(
-                label: t.dfViewChat,
-                onPressed: () => Navigator.of(ctx).pop('chat'),
+              StaggerIn(
+                index: 3,
+                // One kick once the sheet has been read: the chat is the next step.
+                child: OneShot(
+                  onMount: true,
+                  delay: _sheetCtaKickDelay,
+                  builder: kick,
+                  child: PrimaryButton(
+                    label: t.dfViewChat,
+                    onPressed: () => Navigator.of(ctx).pop('chat'),
+                  ),
+                ),
               ),
           ],
         ),
@@ -186,11 +212,9 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
     final road = b.j['address'] is Json
         ? (b.address['road_address'] as String? ?? '')
         : '';
+    // The same wording as the bookings list: 상담요청, 예약확정, 매칭 완료, 서비스 완료.
     final steps = [
-      t.stepRequested,
-      t.stepConfirmed,
-      t.stepAssigned,
-      t.stepCompleted,
+      for (var i = 0; i < _trackerSteps; i++) bookingStepLabel(t, i),
     ];
     return Scaffold(
       appBar: AppBar(leading: const CloseButton()),
@@ -212,7 +236,13 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
                   style: context.text.titleSmall,
                 ),
                 const SizedBox(height: Space.lg),
-                const ExcludeSemantics(child: Icon3D('step_consult', size: 96)),
+                const ExcludeSemantics(
+                  child: Icon3D(
+                    'step_consult',
+                    size: 96,
+                    idle: Icon3DIdle.float,
+                  ),
+                ),
                 const SizedBox(height: Space.md),
                 Text(t.dfRequested, style: context.text.titleLarge),
                 const SizedBox(height: Space.lg),
@@ -330,7 +360,10 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
   }
 }
 
-/// 상담요청 → 예약확정 → 매칭완료 → 서비스완료; the current step pulses.
+const _dotRow = 32.0;
+
+/// 상담요청 → 예약확정 → 매칭완료 → 서비스완료 on one line that fills up to the current
+/// step as the screen opens; the current step pulses.
 class _Tracker extends StatelessWidget {
   const _Tracker({required this.labels, required this.current});
   final List<String> labels;
@@ -341,43 +374,67 @@ class _Tracker extends StatelessWidget {
     final c = context.colors;
     return Semantics(
       label: labels[current],
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          for (final (i, l) in labels.indexed)
-            Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 32,
-                    child: Center(
-                      child: i == current
-                          ? Pulse(
-                              child: _dot(
-                                context.primary,
-                                22,
-                                ring: c.primaryTint,
-                              ),
-                            )
-                          : _dot(i < current ? context.primary : c.line, 14),
-                    ),
-                  ),
-                  const SizedBox(height: Space.xs),
-                  ExcludeSemantics(
-                    child: Text(
-                      l,
-                      textAlign: TextAlign.center,
-                      style: context.text.labelMedium?.copyWith(
-                        color: i == current ? context.primary : c.inkMuted,
-                        fontWeight: i == current
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
+          // The connector runs from the first dot's centre to the last one's, under the dots.
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            height: _dotRow,
+            child: Center(
+              child: FractionallySizedBox(
+                widthFactor: (labels.length - 1) / labels.length,
+                child: ProgressLine(
+                  fraction: current / (labels.length - 1),
+                  color: context.primary,
+                  thickness: 3,
+                ),
               ),
             ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final (i, l) in labels.indexed)
+                Expanded(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: _dotRow,
+                        child: Center(
+                          child: i == current
+                              ? Pulse(
+                                  child: _dot(
+                                    context.primary,
+                                    22,
+                                    ring: c.primaryTint,
+                                  ),
+                                )
+                              : _dot(
+                                  i < current ? context.primary : c.line,
+                                  14,
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: Space.xs),
+                      ExcludeSemantics(
+                        child: Text(
+                          l,
+                          textAlign: TextAlign.center,
+                          style: context.text.labelMedium?.copyWith(
+                            color: i == current ? context.primary : c.inkMuted,
+                            fontWeight: i == current
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

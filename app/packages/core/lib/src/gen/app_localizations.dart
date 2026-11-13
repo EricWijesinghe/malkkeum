@@ -3823,6 +3823,12 @@ abstract class T {
   /// **'금액 (VAT 포함)'**
   String get dfPriceVat;
 
+  /// No description provided for @dfDetails.
+  ///
+  /// In ko, this message translates to:
+  /// **'자세히'**
+  String get dfDetails;
+
   /// No description provided for @dfStudioNote.
   ///
   /// In ko, this message translates to:
@@ -4069,6 +4075,18 @@ abstract class T {
   /// **'생생한 이용 후기를 확인하세요.'**
   String get dfReviewsTitle;
 
+  /// No description provided for @dfBefore.
+  ///
+  /// In ko, this message translates to:
+  /// **'BEFORE'**
+  String get dfBefore;
+
+  /// No description provided for @dfAfter.
+  ///
+  /// In ko, this message translates to:
+  /// **'AFTER'**
+  String get dfAfter;
+
   /// No description provided for @dfBasicBody.
   ///
   /// In ko, this message translates to:
@@ -4194,6 +4212,24 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'할인된 금액은 견적에서 확인할 수 있어요'**
   String get dfAcAddonNote;
+
+  /// No description provided for @dfAcCouponCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰받기'**
+  String get dfAcCouponCta;
+
+  /// No description provided for @dfAcCouponTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'에어컨 청소 {amount} 할인'**
+  String dfAcCouponTitle(String amount);
+
+  /// No description provided for @dfAcCouponClaimed.
+  ///
+  /// In ko, this message translates to:
+  /// **'쿠폰이 쿠폰함에 담겼어요. 에어컨 청소를 예약할 때 쓸 수 있어요.'**
+  String get dfAcCouponClaimed;
 
   /// No description provided for @dfEstAddons.
   ///

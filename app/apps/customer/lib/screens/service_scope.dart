@@ -145,7 +145,17 @@ class _ServiceScopeScreenState extends State<ServiceScopeScreen> {
                 ),
               ),
               const SizedBox(height: Space.sm),
-              CheckList([for (final k in areas[_area]!) scopeLabel(t, k)]),
+              // A new area fades its list in (the checks stagger again); the height follows.
+              AnimatedSize(
+                duration: motionFor(context, Motion.standard),
+                curve: Motion.ease,
+                alignment: Alignment.topCenter,
+                child: FadeThroughSwitcher(
+                  child: CheckList(key: ValueKey((_group, _area)), [
+                    for (final k in areas[_area]!) scopeLabel(t, k),
+                  ]),
+                ),
+              ),
               const SizedBox(height: Space.sm),
               // Material, not a decorated box: the ExpansionTile paints its ink on it.
               Material(
@@ -203,7 +213,9 @@ class _AreaTab extends StatelessWidget {
     button: true,
     child: InkWell(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: motionFor(context, Motion.standard),
+        curve: Motion.ease,
         constraints: const BoxConstraints(minHeight: 48),
         padding: const EdgeInsets.symmetric(horizontal: Space.sm),
         alignment: Alignment.center,
@@ -264,12 +276,18 @@ class FloorPlan extends StatelessWidget {
         builder: (context, box) => Stack(
           children: [
             Positioned.fill(
-              child: CustomPaint(
-                painter: _PlanPainter(
-                  highlight: highlight,
-                  wall: c.inkMuted,
-                  accent: c.fresh,
-                  fill: c.surface,
+              // The hatched room slides and resizes to the next area instead of jumping.
+              child: TweenAnimationBuilder<Rect?>(
+                tween: RectTween(end: rects[highlight]),
+                duration: motionFor(context, Motion.route),
+                curve: Motion.emphasized,
+                builder: (_, rect, _) => CustomPaint(
+                  painter: _PlanPainter(
+                    highlight: rect!,
+                    wall: c.inkMuted,
+                    accent: c.fresh,
+                    fill: c.surface,
+                  ),
                 ),
               ),
             ),
@@ -288,13 +306,16 @@ class FloorPlan extends StatelessWidget {
                     onTap: available.contains(a) ? () => onTap(a) : null,
                     child: Align(
                       alignment: Alignment.topLeft,
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: motionFor(context, Motion.standard),
                         margin: const EdgeInsets.all(6),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
-                        color: a == highlight ? context.primary : null,
+                        color: a == highlight
+                            ? context.primary
+                            : context.primary.withValues(alpha: 0),
                         child: ExcludeSemantics(
                           child: Text(
                             label(a),
@@ -322,7 +343,9 @@ class _PlanPainter extends CustomPainter {
     required this.accent,
     required this.fill,
   });
-  final ScopeArea highlight;
+
+  /// Fractional rect of the hatched area (see [FloorPlan.rects]); tweened between areas.
+  final Rect highlight;
   final Color wall;
   final Color accent;
   final Color fill;
@@ -341,7 +364,7 @@ class _PlanPainter extends CustomPainter {
     final outer = Offset.zero & size;
     canvas.drawRect(outer, Paint()..color = fill);
     // Hatched highlight first, so the walls draw over its edges.
-    final h = _abs(FloorPlan.rects[highlight]!, size).deflate(3);
+    final h = _abs(highlight, size).deflate(3);
     canvas.save();
     canvas.clipRect(h);
     canvas.drawRect(h, Paint()..color = accent.withValues(alpha: 0.08));

@@ -1993,6 +1993,9 @@ class TId extends T {
   String get dfPriceVat => 'Harga (termasuk PPN)';
 
   @override
+  String get dfDetails => 'Rincian';
+
+  @override
   String dfStudioNote(String max) {
     return '※ Rumah di atas $max pyeong tidak bisa memesan pembersihan studio. Kami sarankan layanan yang cocok lewat chat.';
   }
@@ -2130,6 +2133,12 @@ class TId extends T {
   String get dfReviewsTitle => 'Lihat ulasan pelanggan.';
 
   @override
+  String get dfBefore => 'SEBELUM';
+
+  @override
+  String get dfAfter => 'SESUDAH';
+
+  @override
   String get dfBasicBody => 'Informasi wajib ini bisa memengaruhi harga.';
 
   @override
@@ -2195,6 +2204,18 @@ class TId extends T {
 
   @override
   String get dfAcAddonNote => 'Harga setelah diskon terlihat di penawaran Anda';
+
+  @override
+  String get dfAcCouponCta => 'Ambil kupon';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'Diskon $amount cuci AC';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Kupon tersimpan. Gunakan saat memesan cuci AC.';
 
   @override
   String dfEstAddons(String pct) {

@@ -2002,6 +2002,9 @@ class TUz extends T {
   String get dfPriceVat => 'Narx (QQS bilan)';
 
   @override
+  String get dfDetails => 'Batafsil';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max pyeongdan katta uylar studiya tozalashini bron qila olmaydi. Mos xizmatni chatda taklif qilamiz.';
   }
@@ -2138,6 +2141,12 @@ class TUz extends T {
   String get dfReviewsTitle => 'Mijozlar fikrlarini ko\'ring.';
 
   @override
+  String get dfBefore => 'OLDIN';
+
+  @override
+  String get dfAfter => 'KEYIN';
+
+  @override
   String get dfBasicBody =>
       'Majburiy ma\'lumot, narxga ta\'sir qilishi mumkin.';
 
@@ -2205,6 +2214,18 @@ class TUz extends T {
 
   @override
   String get dfAcAddonNote => 'Chegirmali narx smetada ko\'rinadi';
+
+  @override
+  String get dfAcCouponCta => 'Kupon olish';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'Konditsioner tozalashga $amount chegirma';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Kupon olindi. Konditsioner tozalashni band qilishda foydalaning.';
 
   @override
   String dfEstAddons(String pct) {

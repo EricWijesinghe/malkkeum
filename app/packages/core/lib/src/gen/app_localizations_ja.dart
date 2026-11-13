@@ -1947,6 +1947,9 @@ class TJa extends T {
   String get dfPriceVat => '料金 (税込)';
 
   @override
+  String get dfDetails => '詳しく';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max坪を超えるお宅はワンルーム清掃を予約できません。相談で合うサービスをご案内します。';
   }
@@ -2083,6 +2086,12 @@ class TJa extends T {
   String get dfReviewsTitle => '生の利用レビューをご覧ください。';
 
   @override
+  String get dfBefore => 'BEFORE';
+
+  @override
+  String get dfAfter => 'AFTER';
+
+  @override
   String get dfBasicBody => '選択内容はサービスに必要な必須情報です。料金に影響することがあります。';
 
   @override
@@ -2148,6 +2157,17 @@ class TJa extends T {
 
   @override
   String get dfAcAddonNote => '割引後の金額は見積で確認できます';
+
+  @override
+  String get dfAcCouponCta => 'クーポン取得';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'エアコン清掃 $amount割引';
+  }
+
+  @override
+  String get dfAcCouponClaimed => 'クーポンを受け取りました。エアコン清掃の予約時に使えます。';
 
   @override
   String dfEstAddons(String pct) {

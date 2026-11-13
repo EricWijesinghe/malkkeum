@@ -1976,6 +1976,9 @@ class TVi extends T {
   String get dfPriceVat => 'Giá (gồm VAT)';
 
   @override
+  String get dfDetails => 'Chi tiết';
+
+  @override
   String dfStudioNote(String max) {
     return '※ Nhà trên $max pyeong không đặt được dọn studio. Chúng tôi sẽ tư vấn dịch vụ phù hợp.';
   }
@@ -2112,6 +2115,12 @@ class TVi extends T {
   String get dfReviewsTitle => 'Xem đánh giá thực tế.';
 
   @override
+  String get dfBefore => 'TRƯỚC';
+
+  @override
+  String get dfAfter => 'SAU';
+
+  @override
   String get dfBasicBody => 'Thông tin bắt buộc, có thể ảnh hưởng đến giá.';
 
   @override
@@ -2177,6 +2186,17 @@ class TVi extends T {
 
   @override
   String get dfAcAddonNote => 'Giá đã giảm sẽ hiện trong báo giá';
+
+  @override
+  String get dfAcCouponCta => 'Nhận mã';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'Giảm $amount vệ sinh máy lạnh';
+  }
+
+  @override
+  String get dfAcCouponClaimed => 'Đã nhận mã. Dùng khi đặt vệ sinh máy lạnh.';
 
   @override
   String dfEstAddons(String pct) {

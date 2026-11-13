@@ -87,7 +87,16 @@ FakeApi _api() {
       addressJson(sizePyeong: 8),
       addressJson(id: 'a-2', label: 'Parents', sizePyeong: 24),
     ],
-    coupons: [couponJson(id: 'cp', name: 'welcome_any', amount: 5000)],
+    coupons: [
+      couponJson(id: 'cp', name: 'welcome_any', amount: 5000),
+      // Makes the move flow's AC banner show its coupon wording (design p17).
+      couponJson(
+        id: 'cp-ac',
+        name: 'aircon_any',
+        amount: 7000,
+        serviceCode: 'aircon',
+      ),
+    ],
   );
   return fake;
 }
@@ -128,6 +137,8 @@ void main() {
             'studio detail',
           );
           await show(ServiceScreen(service: app.service('aircon')!), 'aircon');
+          await _tap(tester, find.text(t.dfDetails));
+          _noException(tester, 'price breakdown sheet');
           await show(const ServiceScopeScreen(), 'service scope');
 
           final studio = BookingDraft(app.service('studio')!)
@@ -179,6 +190,8 @@ void main() {
           _noException(tester, 'move 4/7');
           await _tap(tester, next());
           _noException(tester, 'move 5/7');
+          await _tap(tester, find.text(t.dfAcCouponCta));
+          _noException(tester, 'AC coupon taken');
           await _tap(tester, find.text(t.dfAcAddonAdd));
           _noException(tester, 'AC add-on sheet');
           await tester.tapAt(const Offset(10, 10)); // dismiss the sheet

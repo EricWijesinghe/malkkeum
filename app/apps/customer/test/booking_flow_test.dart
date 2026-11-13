@@ -68,6 +68,40 @@ void main() {
   );
 
   testWidgets(
+    'AC detail: "자세히" under the price opens the breakdown for the chosen unit',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake);
+      final env = await TestEnv.create(fake: fake);
+      final aircon = Service.fromJson(serviceJson('aircon'));
+      await pumpCustomerScreen(tester, env, ServiceScreen(service: aircon));
+      await settle(tester);
+
+      final unit = aircon.units[1];
+      await _tap(tester, find.text(koT.unit(unit.labelKey)));
+      expect(_barAmount(unit.price), findsOneWidget);
+      expect(
+        find.text(koT.vatIncluded),
+        findsNothing,
+        reason: 'design p08: the link replaces the caption',
+      );
+      await _tap(tester, find.text(koT.dfDetails));
+      expect(
+        find.text(koT.dfBaseAmount(koT.duration(unit.minutes))),
+        findsOneWidget,
+      );
+      expect(
+        find.text(formatWon(unit.price, 'ko')),
+        findsNWidgets(3),
+        reason: 'the tile, the bar and the breakdown all show the catalog price',
+      );
+      expect(find.text(koT.vatIncluded), findsOneWidget);
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
     'studio detail: duration and price cards from the catalog, 5 included items, size note',
     (tester) async {
       setViewport(tester, phoneSize);
@@ -414,6 +448,45 @@ void main() {
         findsWidgets,
         reason: 'refund link shows the live cancellation rules',
       );
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
+    'studio detail: the hero art idles, and nothing moves with reduced motion',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      // On, as in the real app (the test config turns idle loops off for every other test).
+      Icon3D.idleMotion = true;
+      addTearDown(() => Icon3D.idleMotion = false);
+      final fake = FakeApi();
+      stockCustomerApi(fake);
+      final env = await TestEnv.create(fake: fake);
+      Future<void> show() async {
+        await tester.pumpWidget(const SizedBox());
+        await pumpCustomerScreen(
+          tester,
+          env,
+          ServiceScreen(service: Service.fromJson(serviceJson('studio'))),
+        );
+        await settle(tester);
+      }
+
+      await show();
+      expect(
+        tester.hasRunningAnimations,
+        isTrue,
+        reason: 'the 3D hero floats while the page rests',
+      );
+
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await show();
+      expect(tester.hasRunningAnimations, isFalse);
+      expect(find.text(formatWon(45000, 'ko')), findsNWidgets(2));
       await unmount(tester);
     },
   );

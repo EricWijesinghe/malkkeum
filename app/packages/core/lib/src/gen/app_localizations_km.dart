@@ -1990,6 +1990,9 @@ class TKm extends T {
   String get dfPriceVat => 'តម្លៃ (រួម VAT)';
 
   @override
+  String get dfDetails => 'លម្អិត';
+
+  @override
   String dfStudioNote(String max) {
     return '※ ផ្ទះលើស $max pyeong មិនអាចកក់សម្អាតស្ទូឌីយោបានទេ។ យើងនឹងណែនាំសេវាសមរម្យក្នុងការជជែក។';
   }
@@ -2126,6 +2129,12 @@ class TKm extends T {
   String get dfReviewsTitle => 'មើលមតិអតិថិជន។';
 
   @override
+  String get dfBefore => 'មុន';
+
+  @override
+  String get dfAfter => 'ក្រោយ';
+
+  @override
   String get dfBasicBody => 'ព័ត៌មានចាំបាច់ ហើយអាចប៉ះពាល់តម្លៃ។';
 
   @override
@@ -2192,6 +2201,18 @@ class TKm extends T {
 
   @override
   String get dfAcAddonNote => 'តម្លៃបញ្ចុះនឹងបង្ហាញក្នុងការប៉ាន់តម្លៃ';
+
+  @override
+  String get dfAcCouponCta => 'យកគូប៉ុង';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'បញ្ចុះ $amount សម្អាតម៉ាស៊ីនត្រជាក់';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'បានទទួលគូប៉ុង។ ប្រើពេលកក់សម្អាតម៉ាស៊ីនត្រជាក់។';
 
   @override
   String dfEstAddons(String pct) {

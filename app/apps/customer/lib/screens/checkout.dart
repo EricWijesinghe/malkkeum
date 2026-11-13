@@ -273,27 +273,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                   children: [
-                    InfoRow(
-                      t.dfBaseAmount(t.duration(d.minutes)),
-                      context.won(d.listPrice),
-                    ),
-                    InfoRow(
-                      t.dfCouponDiscount,
-                      discount == 0
-                          ? context.won(0)
-                          : '−${context.won(discount)}',
-                      valueStyle: context.text.bodyMedium?.copyWith(
-                        color: context.primary,
-                        fontWeight: FontWeight.w600,
+                    // The points line slides in when the wallet loads; changed values fade.
+                    AnimatedSize(
+                      duration: motionFor(context, Motion.standard),
+                      curve: Motion.ease,
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        children: [
+                          InfoRow(
+                            t.dfBaseAmount(t.duration(d.minutes)),
+                            context.won(d.listPrice),
+                          ),
+                          InfoRow(
+                            t.dfCouponDiscount,
+                            discount == 0
+                                ? context.won(0)
+                                : '−${context.won(discount)}',
+                            valueStyle: context.text.bodyMedium?.copyWith(
+                              color: context.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (_pointsOn)
+                            InfoRow(
+                              t.dfPoints,
+                              points == 0
+                                  ? context.won(0)
+                                  : '−${t.walletPoints('$points')}',
+                            ),
+                        ],
                       ),
                     ),
-                    if (_pointsOn)
-                      InfoRow(
-                        t.dfPoints,
-                        points == 0
-                            ? context.won(0)
-                            : '−${t.walletPoints('$points')}',
-                      ),
                   ],
                 ),
               ),
@@ -422,10 +432,19 @@ class _IconRow extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: context.text.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+            // An applied coupon, points or another method fades in over the old line.
+            AnimatedSwitcher(
+              duration: motionFor(context, Motion.standard),
+              layoutBuilder: (current, previous) => Stack(
+                alignment: AlignmentDirectional.centerStart,
+                children: [...previous, ?current],
+              ),
+              child: Text(
+                title,
+                key: ValueKey(title),
+                style: context.text.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             if (subtitle != null)

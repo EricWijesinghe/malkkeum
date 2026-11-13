@@ -1994,6 +1994,9 @@ class TMn extends T {
   String get dfPriceVat => 'Үнэ (НӨАТ орсон)';
 
   @override
+  String get dfDetails => 'Дэлгэрэнгүй';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max pyeong-оос том байр студи цэвэрлэгээ захиалах боломжгүй. Тохирох үйлчилгээг чатаар санал болгоно.';
   }
@@ -2130,6 +2133,12 @@ class TMn extends T {
   String get dfReviewsTitle => 'Хэрэглэгчдийн сэтгэгдэл.';
 
   @override
+  String get dfBefore => 'ӨМНӨ';
+
+  @override
+  String get dfAfter => 'ДАРАА';
+
+  @override
   String get dfBasicBody => 'Заавал шаардлагатай, үнэд нөлөөлж болно.';
 
   @override
@@ -2195,6 +2204,18 @@ class TMn extends T {
 
   @override
   String get dfAcAddonNote => 'Хямдарсан үнэ үнийн санал дээр харагдана';
+
+  @override
+  String get dfAcCouponCta => 'Купон авах';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'Агааржуулагч цэвэрлэгээ $amount хөнгөлөлт';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'Купон авлаа. Агааржуулагч цэвэрлэгээ захиалахдаа ашиглана уу.';
 
   @override
   String dfEstAddons(String pct) {

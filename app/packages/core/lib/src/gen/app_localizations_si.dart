@@ -1994,6 +1994,9 @@ class TSi extends T {
   String get dfPriceVat => 'මිල (VAT ඇතුළුව)';
 
   @override
+  String get dfDetails => 'විස්තර';
+
+  @override
   String dfStudioNote(String max) {
     return '※ $max pyeong ට වැඩි නිවසට ස්ටුඩියෝ පිරිසිදු කිරීම වෙන් කළ නොහැක. චැට් හරහා සුදුසු සේවාව යෝජනා කරමු.';
   }
@@ -2130,6 +2133,12 @@ class TSi extends T {
   String get dfReviewsTitle => 'පාරිභෝගික සමාලෝචන බලන්න.';
 
   @override
+  String get dfBefore => 'පෙර';
+
+  @override
+  String get dfAfter => 'පසු';
+
+  @override
   String get dfBasicBody => 'මෙය අවශ්‍ය තොරතුරු වන අතර මිලට බලපෑ හැක.';
 
   @override
@@ -2195,6 +2204,18 @@ class TSi extends T {
 
   @override
   String get dfAcAddonNote => 'වට්ටම් මිල ඇස්තමේන්තුවේ පෙනේ';
+
+  @override
+  String get dfAcCouponCta => 'කූපනය ගන්න';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return 'AC පිරිසිදු කිරීමට $amount වට්ටමක්';
+  }
+
+  @override
+  String get dfAcCouponClaimed =>
+      'කූපනය ලැබුණා. AC පිරිසිදු කිරීම වෙන්කරන විට භාවිත කරන්න.';
 
   @override
   String dfEstAddons(String pct) {

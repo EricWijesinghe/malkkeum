@@ -1943,6 +1943,9 @@ class TZh extends T {
   String get dfPriceVat => '金额 (含税)';
 
   @override
+  String get dfDetails => '详情';
+
+  @override
   String dfStudioNote(String max) {
     return '※ 超过$max坪的房屋无法预约单间清洁，我们会在咨询中推荐合适的服务。';
   }
@@ -2078,6 +2081,12 @@ class TZh extends T {
   String get dfReviewsTitle => '看看真实的用户评价。';
 
   @override
+  String get dfBefore => '清洁前';
+
+  @override
+  String get dfAfter => '清洁后';
+
+  @override
   String get dfBasicBody => '所选内容为服务必需信息，可能影响价格。';
 
   @override
@@ -2143,6 +2152,17 @@ class TZh extends T {
 
   @override
   String get dfAcAddonNote => '优惠后的金额可在报价中查看';
+
+  @override
+  String get dfAcCouponCta => '领券';
+
+  @override
+  String dfAcCouponTitle(String amount) {
+    return '空调清洁立减$amount';
+  }
+
+  @override
+  String get dfAcCouponClaimed => '已领取优惠券，预约空调清洁时可用。';
 
   @override
   String dfEstAddons(String pct) {
