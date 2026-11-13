@@ -39,7 +39,7 @@ use axum::{
     Router,
     extract::DefaultBodyLimit,
     http::{HeaderName, HeaderValue, Method, header},
-    routing::get,
+    routing::{get, post},
 };
 use std::time::Duration;
 
@@ -131,6 +131,7 @@ pub fn router(state: AppState) -> Router {
         )
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler))
+        .route("/realtime/ticket", post(crate::realtime_ticket::issue_ticket))
         .route("/openapi.json", get(crate::openapi::spec))
         .layer(DefaultBodyLimit::max(contract::JSON_BODY_LIMIT));
 
@@ -148,7 +149,7 @@ pub fn router(state: AppState) -> Router {
         .layer(cors)
         .layer(axum::middleware::from_fn_with_state(state.clone(), uploads::sign_json))
         .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
-        // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
+        // Span records the path only: query strings can carry tokens (/v1/ws?ticket=... or the old ?token=...).
         .layer(TraceLayer::new_for_http().make_span_with(|req: &axum::http::Request<_>| {
             let request_id = req.extensions().get::<telemetry::RequestId>().map_or("", |r| r.0.as_str());
             tracing::info_span!("http", method = %req.method(), path = %req.uri().path(), request_id)

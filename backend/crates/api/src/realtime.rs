@@ -6,9 +6,11 @@
 //! After a listener outage the node broadcasts `resync`, because events sent in the gap were missed.
 
 use crate::{
-    auth::{Role, verify_access},
+    auth::Role,
     error::ApiResult,
     lifecycle::drained,
+    realtime_heartbeat::{Beat, Heartbeat, PING_EVERY},
+    realtime_ticket::{WsQuery, authenticate_socket},
     state::AppState,
 };
 use axum::{
@@ -38,7 +40,6 @@ use uuid::Uuid;
 
 const HUB_CAPACITY: usize = 1024;
 const PUBLISH_QUEUE: usize = 1024;
-const PING_EVERY: Duration = Duration::from_secs(25);
 const CHANNEL: &str = "malkkeum_events";
 /// Postgres rejects NOTIFY payloads of 8000 bytes or more; keep a margin.
 const NOTIFY_INLINE_MAX: usize = 7000;
@@ -303,9 +304,10 @@ async fn fetch_stored(db: &PgPool, id: Uuid) -> Result<Option<Wire>, sqlx::Error
     Ok(payload.map(|p| p.0))
 }
 
-/// Deletes stored payloads older than a few minutes; listeners read them within moments.
+/// Deletes stored payloads older than a few minutes (listeners read them within moments) and tickets never spent.
 pub async fn prune_stored(db: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'").execute(db).await.map(|_| ())
+    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'").execute(db).await?;
+    sqlx::query("DELETE FROM realtime_tickets WHERE expires_at < now()").execute(db).await.map(|_| ())
 }
 
 fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
@@ -317,17 +319,12 @@ fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
     }
 }
 
-#[derive(Deserialize)]
-pub struct WsQuery {
-    token: String,
-}
-
 /// Sockets close when the access token would expire; clients reconnect with a fresh token,
 /// so a deactivated account stops receiving events within one token lifetime.
 const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MIN as u64 * 60);
 
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
-    let auth = verify_access(&state.config.jwt_keys(), &q.token)?;
+    let auth = authenticate_socket(&state, &q).await?;
     let rx = state.hub.subscribe();
     let presence = auth.role.is_staff().then(|| state.hub.staff_join());
     let draining = state.hub.drain_signal();
@@ -344,6 +341,7 @@ async fn pump(
 ) {
     let (mut sink, mut stream) = socket.split();
     let mut ping = tokio::time::interval(PING_EVERY);
+    let mut heartbeat = Heartbeat::new(tokio::time::Instant::now());
     let expiry = tokio::time::sleep(SOCKET_LIFETIME);
     tokio::pin!(expiry);
     loop {
@@ -371,9 +369,13 @@ async fn pump(
             },
             msg = stream.next() => match msg {
                 Some(Ok(Message::Close(_))) | None | Some(Err(_)) => break,
-                _ => {}
+                Some(Ok(_)) => heartbeat.heard(tokio::time::Instant::now()),
             },
             _ = ping.tick() => {
+                if heartbeat.on_tick(tokio::time::Instant::now()) == Beat::Reap {
+                    tracing::info!("realtime socket silent past the pong timeout; closed");
+                    break;
+                }
                 if sink.send(Message::Ping(Vec::new().into())).await.is_err() { break; }
             }
         }

@@ -38,6 +38,8 @@ pub mod safety;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;
+pub mod realtime_ticket;
+mod realtime_heartbeat;
 pub mod reconciler;
 pub mod routes;
 pub mod seed;

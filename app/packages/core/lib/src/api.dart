@@ -143,7 +143,9 @@ class ApiClient {
     void Function(Map<String, String> headers)? onHeaders,
   }) async {
     final pending = _refreshing;
-    if (pending != null && !retried && !path.startsWith('/auth/')) await pending;
+    if (pending != null && !retried && !path.startsWith('/auth/')) {
+      await pending;
+    }
     final req = build();
     final token = session.accessToken;
     if (token != null) req.headers['Authorization'] = 'Bearer $token';
@@ -162,7 +164,14 @@ class ApiClient {
         session.refreshToken != null &&
         !path.startsWith('/auth/')) {
       if (await _refresh()) {
-        return _exec(path, build, timeout: timeout, retried: true, raw: raw, onHeaders: onHeaders);
+        return _exec(
+          path,
+          build,
+          timeout: timeout,
+          retried: true,
+          raw: raw,
+          onHeaders: onHeaders,
+        );
       }
     }
     final decoded = raw ? res.bodyBytes : _decode(res);
@@ -222,12 +231,18 @@ class ApiClient {
     return url;
   }
 
-  Uri wsUri() {
+  /// Socket address carrying a fresh single-use ticket (valid 30 s). The access token stays out of the URL.
+  Future<Uri> wsUri() async {
+    final r = await post('/realtime/ticket');
+    final ticket = r is Map ? r['ticket'] as String? : null;
+    if (ticket == null || ticket.isEmpty) {
+      throw const ApiException(500, 'ticket_missing');
+    }
     final base = Uri.parse(baseUrl);
     return base.replace(
       scheme: base.scheme == 'https' ? 'wss' : 'ws',
       path: '/v1/ws',
-      queryParameters: {'token': session.accessToken ?? ''},
+      queryParameters: {'ticket': ticket},
     );
   }
 }
