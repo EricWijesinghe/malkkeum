@@ -16,15 +16,15 @@ ver=${VER#v}
 work=$(mktemp -d)
 GUIDE_01="docs/guide/01-서버-설치.md"
 RAW="https://raw.githubusercontent.com/$DIST_REPO"
-# The guides are written against this delivery repo; copies get DIST_REPO instead.
-DOC_REPO=EricWijesinghe/malkkeum-install
+# The guides write the install line as the token INSTALL_URL; each published copy gets its channel's URL.
+URL_TOKEN=INSTALL_URL
 # Developer-only guide (builds from the private source on a dev PC): never shipped to clients.
 DEV_ONLY_GUIDE=05-demo-install.md
 GIT_ID=(-c user.name=release -c user.email=release@users.noreply.github.com)
 
-# The guides carry the stable-branch line; the tagged branch's copies get the pinned tag line instead.
-grep -qF "https://raw.githubusercontent.com/$DOC_REPO/main/install.sh" "$src/$GUIDE_01" \
-  || { echo "::error::$GUIDE_01 does not mention https://raw.githubusercontent.com/$DOC_REPO/main/install.sh" >&2; exit 1; }
+# Branch copies carry the stable-branch line; the tagged branch's copies get the pinned tag line instead.
+grep -qF "curl -fsSL $URL_TOKEN | sudo bash" "$src/$GUIDE_01" \
+  || { echo "::error::$GUIDE_01 does not carry the install line 'curl -fsSL $URL_TOKEN | sudo bash'" >&2; exit 1; }
 
 case "$ver" in *-*) tag_branch=beta ;; *) tag_branch=main ;; esac
 
@@ -55,10 +55,12 @@ publish() { # publish 브랜치 채널
   rm -f "guide/$DEV_ONLY_GUIDE"
   # Its row in the guide index goes; other mentions lose the link (the sentence stays).
   sed -i -e "/^| *[0-9][0-9]* *| *\[[^]]*\]($DEV_ONLY_GUIDE)/d" -e "s| *(\[[^]]*\]($DEV_ONLY_GUIDE))||g" -e "s|\[\([^]]*\)\]($DEV_ONLY_GUIDE)|\1|g" guide/*.md
-  sed -i "s|github\.com/$DOC_REPO/|github.com/$DIST_REPO/|g; s|githubusercontent\.com/$DOC_REPO/|githubusercontent.com/$DIST_REPO/|g" guide/*.md
-  if [ "$ref" = "$VER" ]; then sed -i "s|$RAW/main/install.sh|$RAW/$VER/install.sh|g" guide/*.md; fi
+  local guide_url="$RAW/main/install.sh"
+  [ "$ref" = "$VER" ] && guide_url="$RAW/$VER/install.sh"
+  sed -i "s|$URL_TOKEN|$guide_url|g" guide/*.md
+  if grep -rqF "$URL_TOKEN" guide; then echo "::error::unreplaced $URL_TOKEN in guide/" >&2; exit 1; fi
   sed -e "s|INSTALL_URL|$RAW/$ref/install.sh|g" -e "s|SUMS_URL|$RAW/$ref/SHA256SUMS|g" \
-      -e "s|BRANCH_URL|$RAW/$branch/install.sh|g" -e "s|githubusercontent\.com/$DOC_REPO/|githubusercontent.com/$DIST_REPO/|g" \
+      -e "s|BRANCH_URL|$RAW/$branch/install.sh|g" \
       "$src/docs/delivery-README.md" > README.md
   printf '%s\n' "$channel" > CHANNEL
   printf '%s\n' "$ver" > VERSION

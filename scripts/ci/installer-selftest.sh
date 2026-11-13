@@ -259,7 +259,7 @@ for job in update backup; do
 done
 
 # ---- publish-delivery.sh: channel branches + immutable annotated tag (a local bare repo stands in for DIST_REPO) ----
-DIST=EricWijesinghe/malkkeum-install
+DIST=example-owner/example-install # any repo: the guides carry a URL token, not an account name
 git init -q --bare "$SB/dist.git"
 pub() { # pub 태그 : the release job's delivery step, pushing to $SB/dist.git instead of GitHub
   GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="url.$SB/dist.git.insteadOf" GIT_CONFIG_VALUE_0="git@github.com:$DIST.git" \
@@ -277,6 +277,8 @@ t  "tag SHA256SUMS matches" sums_ok v1.0.0
 t  "tag guide uses the tag URL" has "v1.0.0:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/v1.0.0/install.sh"
 t  "tag README uses the tag URL" has v1.0.0:README.md "raw.githubusercontent.com/$DIST/v1.0.0/SHA256SUMS"
 t  "beta branch keeps the stable-branch line" has "beta:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/main/install.sh"
+t  "first-install guide gets the URL too" has "v1.0.0:guide/00-한번에-설치.md" "raw.githubusercontent.com/$DIST/v1.0.0/install.sh"
+nt "no URL token left in published guides" sh -c "git -C '$SB/dist.git' grep -q INSTALL_URL v1.0.0 -- guide"
 nt "developer-only guide not shipped" sub g cat-file -e v1.0.0:guide/05-demo-install.md
 nt "no link to the developer-only guide" sh -c "git -C '$SB/dist.git' grep -q 05-demo-install v1.0.0 -- guide"
 t  "re-run is a no-op"     pub v1.0.0
