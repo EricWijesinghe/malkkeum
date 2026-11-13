@@ -7,34 +7,57 @@
 #   https://www.DOMAIN/*     permanent redirect to https://DOMAIN/* (needs a www DNS record; harmless without one)
 #   https://DOMAIN/auth/naver/callback   Naver login: the app takes this URL (App Link); the page is only the browser fallback
 {
-	email {$ACME_EMAIL}
+	# Quoted: an empty ACME_EMAIL (the installer allows it) is then one empty argument, not a parse error.
+	email "{$ACME_EMAIL}"
+}
+
+# TLS_MODE picks one of these (`import tls-{$TLS_MODE}`): empty = automatic public HTTPS, internal = Caddy's
+# own CA (installer tests only). A bare `tls {$TLS_MODE}` fails to parse when TLS_MODE is empty.
+(tls-) {
+}
+(tls-internal) {
+	tls internal
 }
 
 {$DOMAIN} {
-	# Empty = automatic public HTTPS; TLS_MODE=internal = Caddy CA (installer tests only).
-	tls {$TLS_MODE}
+	# TLS_MODE: see the tls- snippets above.
+	import tls-{$TLS_MODE}
 	encode zstd gzip
 
+	# Deferred (it deletes a field), so these are set when the response is written, over anything upstream sent.
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
-		# Site-wide CSP. Every API, websocket and PWA call is same-origin ('self' also covers ws/wss).
-		# script-src: 'unsafe-inline' for the website theme snippet, the PortOne page and Flutter's
-		#   bootstrap (no hashes: Flutter rewrites its bootstrap per build). cdn.portone.io = PortOne V2 browser SDK
-		#   (website/pay/index.html). No 'unsafe-eval': both web builds are compiled with --wasm (skwasm).
-		# wasm-unsafe-eval: WebAssembly compile for skwasm/CanvasKit (self-hosted, --no-web-resources-cdn).
-		# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts:
-		#   the Flutter apps load their fallback fonts from /webfonts/ (same origin).
-		# connect-src: *.portone.io = PortOne API (api.portone.io) and SDK calls. Social sign-in (Kakao, Naver,
-		#   Google, Apple) runs in the native apps only; the web build offers no social SDK, so no hosts here.
-		# frame-src / form-action: PG payment windows (card, KakaoPay, NaverPay...) are hosted by many PGs whose
-		#   hosts PortOne does not publish as a fixed list; keep https: or checkout breaks.
-		# frame-ancestors none: nothing may embed us.
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://*.portone.io; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
+		# No camera, microphone or USB for any page; location only for our own pages (address search).
+		Permissions-Policy "camera=(), microphone=(), usb=(), geolocation=(self), browsing-topics=()"
+		# Our pages keep their opener links to the PG payment popups they open, nothing else does.
+		Cross-Origin-Opener-Policy same-origin-allow-popups
 		-Server
 	}
+
+	# Two CSPs, chosen by path (the matchers are exact opposites, so exactly one applies).
+	# Apps, payment pages and API-rendered pages get the policy below; the static website gets the strict
+	# one after it.
+	@app_csp path /v1/* /health /.well-known/* /c/* /sitemap.xml /robots.txt /notices.xml /webfonts/* /admin /admin/* /app /app/* /pay /pay/*
+	@site_csp not path /v1/* /health /.well-known/* /c/* /sitemap.xml /robots.txt /notices.xml /webfonts/* /admin /admin/* /app /app/* /pay /pay/*
+	# Every API, websocket and PWA call is same-origin ('self' also covers ws/wss).
+	# script-src: 'unsafe-inline' for the PortOne pages (website/pay/) and Flutter's
+	#   bootstrap (no hashes: Flutter rewrites its bootstrap per build). cdn.portone.io = PortOne V2 browser SDK
+	#   (website/pay/index.html). No 'unsafe-eval': both web builds are compiled with --wasm (skwasm).
+	# wasm-unsafe-eval: WebAssembly compile for skwasm/CanvasKit (self-hosted, --no-web-resources-cdn).
+	# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts:
+	#   the Flutter apps load their fallback fonts from /webfonts/ (same origin).
+	# connect-src: *.portone.io = PortOne API (api.portone.io) and SDK calls. Social sign-in (Kakao, Naver,
+	#   Google, Apple) runs in the native apps only; the web build offers no social SDK, so no hosts here.
+	# frame-src / form-action: PG payment windows (card, KakaoPay, NaverPay...) are hosted by many PGs whose
+	#   hosts PortOne does not publish as a fixed list; keep https: or checkout breaks.
+	# frame-ancestors none: nothing may embed us.
+	header @app_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://*.portone.io; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
+	# Static website: no inline script except the theme snippet in its pages' <head>, allowed by hash
+	# (scripts/ci/check-native.py fails when a page's inline script has no hash here). No PG, no frames.
+	header @site_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-BAOxqSXTXY0xct7XpdRWh4Q+kVwbxikbI09LZ/Tqsqg=' 'sha256-UtC0U60paHl4CC9DOzN7OY+bZaNnUQ9p4kyLhFax6ts='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 	# Probes and metrics are for the container runtime and the scraper on the server, never the internet.
 	@internal path /ready /metrics
@@ -85,8 +108,13 @@
 		file_server
 	}
 
+	# Website file names carry no content hash, so assets are cached for an hour and pages revalidate.
 	handle {
 		root * /srv/website
+		@site_assets path /assets/* /vendor/*
+		@site_pages not path /assets/* /vendor/*
+		header @site_assets Cache-Control "public, max-age=3600"
+		header @site_pages Cache-Control "no-cache"
 		try_files {path} {path}.html {path}/index.html /index.html
 		file_server
 	}
@@ -95,7 +123,7 @@
 # www -> apex. HSTS above covers subdomains, so without this site a visitor typing www gets a TLS error.
 # Without a www DNS record Caddy only logs failed certificate attempts for www; the main site is unaffected.
 www.{$DOMAIN} {
-	tls {$TLS_MODE}
+	import tls-{$TLS_MODE}
 	header -Server
 	redir https://{$DOMAIN}{uri} permanent
 }

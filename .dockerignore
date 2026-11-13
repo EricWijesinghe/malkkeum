@@ -11,3 +11,6 @@ scripts
 **/node_modules
 app/apps/*/android/.gradle
 app/apps/*/ios/Pods
+.claude
+.github
+.env

@@ -79,12 +79,25 @@ api_healthy() { get /health | grep -q '"ok":true'; }
 api_version_is_test() { get /health | grep -q "\"version\":\"$TAG\""; }
 website_served() { [ "$(code /)" = 200 ] && get / | grep -qi '<html'; }
 console_served() { [ "$(code /admin/)" = 200 ] && get /admin/ | grep -q 'base href="/admin/"'; }
-csp_tight() { # CSP on the site: PortOne-only connect-src, no unsafe-eval, nothing may frame us
-  local csp; csp="$(curl_d -D - -o /dev/null "https://$DOMAIN/" | grep -i '^content-security-policy:')"
+csp_of() { curl_d -D - -o /dev/null "https://$DOMAIN$1" | grep -i '^content-security-policy:'; }
+csp_tight() { # apps: PortOne-only connect-src, no unsafe-eval, nothing may frame us
+  local csp; csp="$(csp_of /admin/)"
   echo "$csp" | grep -q "connect-src 'self' https://\*\.portone\.io" \
     && echo "$csp" | grep -q "frame-ancestors 'none'" \
     && ! echo "$csp" | grep -qi "'unsafe-eval'" # 'wasm-unsafe-eval' (Flutter --wasm) is fine
 }
+site_csp_strict() { # website: inline scripts by hash only, nothing but same-origin calls
+  local csp; csp="$(csp_of /)"
+  echo "$csp" | grep -q "script-src 'self' 'sha256-" && ! echo "$csp" | grep -q "'unsafe-inline' 'wasm" \
+    && echo "$csp" | grep -q "connect-src 'self';" && echo "$csp" | grep -q "frame-ancestors 'none'"
+}
+hardened() { # hardened 서비스 : read-only root, every capability dropped, no privilege gain
+  local id; id=$(dc ps -q "$1") && [ -n "$id" ] \
+    && [ "$($SUDO docker inspect -f '{{.HostConfig.ReadonlyRootfs}} {{.HostConfig.CapDrop}} {{.HostConfig.SecurityOpt}}' "$id")" = "true [ALL] [no-new-privileges:true]" ]
+}
+KEYS_PASS=e2e-keys-passphrase
+keys_file() { $SUDO sh -c 'ls -t /opt/malkkeum/backups/keys-*.env.enc 2>/dev/null | head -n1'; }
+data_key() { $SUDO grep -E '^DATA_KEY=' /opt/malkkeum/.env | cut -d= -f2; }
 needs_owner() { get /v1/setup | grep -q '"needs_admin":true'; }
 owner_is_set_up() { get /v1/setup | grep -q '"needs_admin":false'; }
 staff_count_is() { [ "$(dbq 'select count(*) from staff')" = "$1" ]; }
@@ -136,6 +149,8 @@ expect "backups readable by root only" mode_is /opt/malkkeum/backups 700
 expect "cron jobs installed" $SUDO test -f /etc/cron.d/malkkeum
 expect "log rotation installed" $SUDO test -f /etc/logrotate.d/dahae
 expect "API uses the non-superuser DB role" app_role_ok
+for s in db api web; do expect "$s container hardened (read-only, no capabilities)" hardened "$s"; done
+expect "cron reports a failed unattended update" $SUDO grep -q 'dahae update .*|| .*dahae alert update' /etc/cron.d/malkkeum
 memcap; dc up -d >/dev/null 2>&1
 expect "healthy with 2 GB VPS memory limits" wait_until 180 api_healthy
 
@@ -144,7 +159,8 @@ expect "API health" api_healthy
 expect "API reports the image version" api_version_is_test
 expect "website served" website_served
 expect "console served at /admin/" console_served
-expect "CSP limits connect-src to PortOne and forbids eval" csp_tight
+expect "app CSP limits connect-src to PortOne and forbids eval" csp_tight
+expect "website CSP allows inline scripts by hash only" site_csp_strict
 expect "setup wizard waits for the owner" needs_owner
 expect "dahae status" dahae status
 expect "dahae version shows the image version" version_shown
@@ -177,6 +193,13 @@ expect "uploads restored" upload_marker
 expect "owner kept" staff_count_is 1
 expect "API healthy after restore" api_healthy
 expect "restore kept the DB owned by the app role" app_role_ok
+KEY_BEFORE=$(data_key)
+expect "dahae keys-backup" $SUDO env DAHAE_KEYS_PASSPHRASE=$KEYS_PASS /usr/local/bin/dahae keys-backup
+expect "key copy is not plain text" sh -c "! $SUDO grep -q DATA_KEY '$(keys_file)'"
+expect "wrong passphrase changes nothing" sh -c "! $SUDO env DAHAE_KEYS_PASSPHRASE=wrong-passphrase-x /usr/local/bin/dahae keys-restore '$(keys_file)' --yes"
+expect "dahae keys-restore" $SUDO env DAHAE_KEYS_PASSPHRASE=$KEYS_PASS /usr/local/bin/dahae keys-restore "$(keys_file)" --yes
+expect "same DATA_KEY after the round trip" test "$(data_key)" = "$KEY_BEFORE"
+expect "API healthy after keys-restore" api_healthy
 
 step "5. re-running install.sh is a safe upgrade"
 before=$(backups_count)

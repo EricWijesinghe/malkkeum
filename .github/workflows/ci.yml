@@ -1,100 +1,214 @@
 name: ci
 
+# Every push to master, every pull request, weekly (new RustSec advisories), and from release.yml
+# (workflow_call) before anything is published.
+# GitHub-hosted runners only: the repository is public, so anyone's pull request runs here. Never add a
+# self-hosted runner to a job of this repository.
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
+  schedule:
+    - cron: "17 3 * * 1"
   workflow_call:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Pull requests skip the heavy jobs their files cannot affect (a skipped job counts as passed for
+  # required checks). Pushes, the weekly run and releases run everything.
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.f.outputs.backend }}
+      app: ${{ steps.f.outputs.app }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { fetch-depth: 0, persist-credentials: false }
+      - id: f
+        env: { EVENT: "${{ github.event_name }}", BASE: "${{ github.base_ref }}" }
+        run: |
+          if [ "$EVENT" != pull_request ]; then printf 'backend=true\napp=true\n' >> "$GITHUB_OUTPUT"; exit 0; fi
+          files=$(git diff --name-only "origin/$BASE...HEAD")
+          hit() { if grep -Eq "$1" <<< "$files"; then echo true; else echo false; fi; }
+          {
+            echo "backend=$(hit '^(backend/|scripts/smoke\.py|scripts/ci/backup-drill\.sh|\.github/workflows/ci\.yml)')"
+            echo "app=$(hit '^(app/|\.github/workflows/ci\.yml|\.github/actions/|scripts/ci/goldens\.sh)')"
+          } >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
   backend:
-    runs-on: [self-hosted, malkkeum]
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:17
         env: { POSTGRES_PASSWORD: localdev, POSTGRES_DB: cleaning }
-        ports: ["55433:5432"]  # not 5433: that is the PC's own Postgres
+        ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
     defaults: { run: { working-directory: backend } }
+    env:
+      DATABASE_URL: postgres://postgres:localdev@localhost:5432/cleaning
+      DATA_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with: { components: "rustfmt, clippy" }
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { fetch-depth: 0, persist-credentials: false }
+      - name: Rust toolchain from backend/rust-toolchain.toml
+        run: rustup toolchain install "$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" --profile minimal -c rustfmt,clippy
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with: { workspaces: backend }
-      - run: cargo fmt --all -- --check
-      - run: cargo clippy --all-targets -- -D warnings
+      # Most of the tree predates rustfmt in CI: files are checked when a pull request touches them.
+      - name: Formatting of the Rust files this pull request changes
+        if: github.event_name == 'pull_request'
+        env: { BASE: "${{ github.base_ref }}" }
+        run: git diff --relative --name-only --diff-filter=ACMR "origin/$BASE...HEAD" -- '*.rs' | xargs -r rustfmt --check --edition 2024
+      - run: cargo clippy --locked --all-targets -- -D warnings
       - name: Unit and database flow tests
-        env: { DATABASE_URL: "postgres://postgres:localdev@localhost:55433/cleaning" }
-        run: cargo test
+        run: cargo test --locked
       - name: End-to-end smoke test
         env:
-          DATABASE_URL: postgres://postgres:localdev@localhost:55433/cleaning
           JWT_SECRET: ci-only-secret-ci-only-secret-0123456789
-          DATA_KEY: "0000000000000000000000000000000000000000000000000000000000000000"
           DEV_MODE: "1"
           RATE_LIMIT_AUTH_PER_MIN: "1000"
           SEED_ADMIN_EMAIL: admin@local.test
           SEED_ADMIN_PASSWORD: change-me-now-please
           PSQL: psql
-          PGPORT: "55433"
-          BIND_ADDR: 127.0.0.1:18080  # 8080 is the demo server's port on this PC
+          PGPORT: "5432"
           PGPASSWORD: localdev
+          BIND_ADDR: 127.0.0.1:18080
         run: |
-          cargo build -q -p api
-          ./target/debug/api &
-          for i in $(seq 1 60); do curl -sf http://127.0.0.1:18080/health && break; sleep 1; done
+          cargo build --locked -q -p api
+          ./target/debug/api & api=$!
+          trap 'kill "$api" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 60); do curl -sf http://127.0.0.1:18080/health >/dev/null && break; sleep 1; done
           python3 -I ../scripts/smoke.py http://127.0.0.1:18080
+      # pg_dump must be at least the server's major version; the runner image ships an older client.
+      - name: PostgreSQL 17 client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common >/dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq postgresql-client-17 >/dev/null
+      - name: Backup drill (dump, offsite seal/open, restore, compare row counts)
+        env: { PG_URL: "postgres://postgres:localdev@localhost:5432", SRC_DB: cleaning }
+        run: PATH="/usr/lib/postgresql/17/bin:$PATH" bash ../scripts/ci/backup-drill.sh ./target/debug/api
 
-  apps:
-    runs-on: [self-hosted, malkkeum]
-    defaults: { run: { working-directory: app } }
+  # RustSec advisories, licenses, banned crates and sources (backend/deny.toml).
+  supply-chain:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with: { channel: stable, cache: true }
-      - run: python3 -I tool/gen_arb.py
-      - run: flutter pub get
-      - run: (cd packages/core && flutter gen-l10n)
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          manifest-path: backend/Cargo.toml
+          arguments: --all-features --locked
+          command: check
+
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - name: Secret scan (gitleaks, .github/gitleaks.toml)
+        run: >-
+          docker run --rm -v "$PWD:/repo" -w /repo
+          ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          dir . --config .github/gitleaks.toml --redact --no-banner
+
+  app-analyze:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: ./.github/actions/flutter-setup
       - run: dart analyze --fatal-infos
+        working-directory: app
+
+  app-test:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [packages/core, packages/ui, apps/customer, apps/partner, apps/console]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: ./.github/actions/flutter-setup
       - name: Widget tests
         # store_screenshots = generated store images (scripts/store/generate.sh), not part of CI.
-        run: for p in packages/core packages/ui apps/customer apps/partner apps/console; do (cd $p && flutter test --exclude-tags store_screenshots) || exit 1; done
-      - name: Golden tests (skipped locally by dart_test.yaml; compared once baselines are committed)
-        run: |
-          for p in packages/ui apps/customer apps/partner apps/console; do (cd $p && if find test -path '*goldens*' -name '*.png' | grep -q .; then flutter test --run-skipped --tags golden; else echo "$p: no golden baselines yet"; fi) || exit 1; done
+        working-directory: app/${{ matrix.package }}
+        run: flutter test --exclude-tags store_screenshots
 
-  # install-e2e is manual only (e2e.yml): it installs a full server as root, which must not run on the
-  # self-hosted runner (this PC). Run it on a throwaway VPS before a store release.
+  # Pixel comparison against baselines made on this runner (scripts/ci/goldens.sh has the rule;
+  # .github/workflows/goldens.yml makes new baselines).
+  goldens:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - uses: ./.github/actions/flutter-setup
+      - run: bash scripts/ci/goldens.sh check
 
   shell:
-    runs-on: [self-hosted, malkkeum]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
       - name: Installer and scripts pass shellcheck
-        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh scripts/ci/backup-drill.sh scripts/ci/installer-selftest.sh
-      - name: Installer self-test (pure functions + shellcheck of the embedded dahae CLI; no root)
+        run: shellcheck deploy/install.sh deploy/e2e-install.sh deploy/publish-delivery.sh scripts/ci/*.sh
+      - name: Installer self-test (pure functions, embedded CLI, compose parity; no root)
         run: bash scripts/ci/installer-selftest.sh
+      - name: Pinned versions agree (Rust, Flutter, cosign)
+        run: bash scripts/ci/check-pins.sh
+      - name: Caddyfile parses with every installer setting (public HTTPS, internal CA, with and without email)
+        run: bash scripts/ci/caddy-check.sh
+      - name: Workflows pass actionlint
+        run: >-
+          docker run --rm -v "$PWD:/repo" -w /repo
+          rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
 
   # Released migrations are immutable; new ones must be safe on big tables (scripts/ci/check-migrations.py).
   migrations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with: { fetch-depth: 0 }
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { fetch-depth: 0, persist-credentials: false }
       - name: Migration gate unit tests
         run: python3 -I -m unittest discover -s scripts/ci -p 'test_*.py'
       - name: Migration safety against the base branch
-        run: python3 -I scripts/ci/check-migrations.py --base "origin/${{ github.base_ref || 'master' }}"
+        env: { BASE: "${{ github.base_ref || 'master' }}" }
+        run: python3 -I scripts/ci/check-migrations.py --base "origin/$BASE"
 
-  # Static iOS/Android store-build checks (plists, entitlements, pbxproj, gradle); no Mac needed.
+  # Static iOS/Android store-build checks (plists, entitlements, pbxproj, gradle) and web/CSP rules; no Mac needed.
   native:
-    runs-on: [self-hosted, malkkeum]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
       - run: python3 -I scripts/ci/check-native.py

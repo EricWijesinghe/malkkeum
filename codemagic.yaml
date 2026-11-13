@@ -42,8 +42,11 @@ definitions:
       cd app
       python3 -I ../scripts/ci/check-native.py
       python3 -I tool/gen_arb.py
-      flutter pub get
+      flutter pub get --enforce-lockfile
       (cd packages/core && flutter gen-l10n)
+      # Same gate as ci.yml (app-analyze): a store build never ships code CI would reject.
+      # Start store builds only on a tag whose release workflow (ci + install e2e) passed.
+      dart analyze --fatal-infos
   env: &env
     # Pinned so a store build is reproducible: same Flutter as deploy/web.Dockerfile. Raise both together.
     flutter: 3.47.9

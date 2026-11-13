@@ -1,0 +1,53 @@
+# Supply-chain gate: `cargo deny --locked check` (CI job supply-chain in .github/workflows/ci.yml).
+# Reference: https://embarkstudios.github.io/cargo-deny/
+[graph]
+# Only what ships: the two server image platforms. Windows-only crates in Cargo.lock are not checked.
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+[advisories]
+# RustSec advisories (vulnerable, unmaintained, unsound) fail the build; a yanked version too.
+# An accepted advisory goes in `ignore` with its id and a reason, never silently.
+yanked = "deny"
+ignore = [
+  # Both come from jsonwebtoken 10 (feature rust_crypto). The fix is jsonwebtoken 11 (rsa 0.10,
+  # elliptic-curve 0.14), an API change in backend/crates/api: drop these two lines with that upgrade.
+  { id = "RUSTSEC-2023-0071", reason = "rsa 0.9 Marvin attack, no fixed 0.9.x: the API decrypts nothing with RSA; it only signs/verifies JWTs locally, no remote timing oracle" },
+  { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5 timing (p256/p384 via jsonwebtoken): ES256 client-secret signing runs server-side with no attacker-timed oracle" },
+]
+
+[licenses]
+# Permissive licenses only (no copyleft in the shipped binary). Add one only after reading it.
+allow = [
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0",
+  "CDLA-Permissive-2.0",
+  "ISC",
+  "MIT",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+]
+confidence-threshold = 0.9
+
+# Our own workspace crates (license = "UNLICENSED", publish = false) are not license-checked.
+[licenses.private]
+ignore = true
+
+[bans]
+# Two versions of one crate are common in a tree this size (windows-sys, rand): report, don't fail.
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true # the workspace's own path dependencies
+deny = [
+  # TLS is rustls only; OpenSSL in the tree would need libssl in the runtime image.
+  { crate = "openssl-sys", reason = "rustls only" },
+  { crate = "native-tls", reason = "rustls only" },
+]
+
+[sources]
+# crates.io only: a git or other-registry dependency must be added here on purpose.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

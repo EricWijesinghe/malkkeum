@@ -225,6 +225,39 @@ chmod 644 .env
 lock_env
 t  ".env locked to 600"    eq "$(stat -c %a .env)" 600
 
+# ---- the compose file install.sh writes = deploy/docker-compose.yml (minus comments, build and app image lines) ----
+norm_compose() { sed -E -e '/^[[:space:]]*#/d' -e 's/[[:space:]]+#[[:space:]].*$//' -e '/^[[:space:]]*build:/d' \
+  -e '/^[[:space:]]*image: \$\{(API|WEB)_IMAGE/d' -e '/^[[:space:]]*$/d' "$1"; }
+mkdir -p "$SB/compose" && (cd "$SB/compose" && write_compose)
+t  "embedded compose = deploy/docker-compose.yml" diff <(norm_compose "$ROOT/deploy/docker-compose.yml") <(norm_compose "$SB/compose/docker-compose.yml")
+# shellcheck disable=SC2016 # literal ${...} on purpose
+t  "embedded compose pins images from .env" eq "$(grep -c 'image: ${\(API\|WEB\)_IMAGE:?set by install.sh}' "$SB/compose/docker-compose.yml")" 2
+t  "every service hardened" eq "$(grep -c '<<: \*hardened' "$ROOT/deploy/docker-compose.yml")" 3
+for k in 'no-new-privileges:true' 'cap_drop: \[ALL\]' 'read_only: true'; do
+  t "hardening has $k" grep -q "^  .*$k" "$ROOT/deploy/docker-compose.yml"
+done
+t  "every service memory-capped" eq "$(grep -c '^    mem_limit:' "$ROOT/deploy/docker-compose.yml")" 3
+
+# ---- secret key copy (dahae keys-backup / keys-restore) ----
+printf 'DB_PASSWORD=%s\nDATA_KEY=%s\nJWT_SECRET=%s\n' "$(printf 'a%.0s' $(seq 48))" "$(printf 'b%.0s' $(seq 64))" "$(printf 'c%.0s' $(seq 64))" > "$SB/keys.env"
+keys_seal 'correct horse battery' < "$SB/keys.env" > "$SB/keys.enc"
+t  "sealed copy is not plain text" sh -c "! grep -q DATA_KEY '$SB/keys.enc'"
+t  "sealed copy opens with its passphrase" eq "$(keys_open 'correct horse battery' < "$SB/keys.enc")" "$(cat "$SB/keys.env")"
+opens() { keys_open "$1" < "$SB/keys.enc" >/dev/null; } # a wrong passphrase can print bytes before it fails
+nt "wrong passphrase refused" opens 'wrong horse battery'
+t  "DATA_KEY read back" eq "$(keys_field DATA_KEY < "$SB/keys.env")" "$(printf 'b%.0s' $(seq 64))"
+# shellcheck disable=SC2016 # literal $(id) on purpose
+t  "non-hex value ignored" eq "$(printf 'DATA_KEY=$(id)\n' | keys_field DATA_KEY)" ""
+
+# ---- failed unattended jobs alert through the heartbeat URL ----
+t  "fail url"              eq "$(fail_url https://hc-ping.com/abc)" https://hc-ping.com/abc/fail
+t  "fail url, trailing /"  eq "$(fail_url https://hc-ping.com/abc/)" https://hc-ping.com/abc/fail
+t  "fail url keeps query"  eq "$(fail_url 'https://x.io/p?k=1')" 'https://x.io/p/fail?k=1'
+nt "alert takes update|backup only" sub cmd_alert ../../etc
+for job in update backup; do
+  t "cron alerts on a failed $job" grep -qF "dahae $job >> \$DIR/backups/$job.log 2>&1 || \$BIN/dahae alert $job" "$ROOT/deploy/install.sh"
+done
+
 # ---- publish-delivery.sh: channel branches + immutable annotated tag (a local bare repo stands in for DIST_REPO) ----
 DIST=EricWijesinghe/malkkeum-install
 git init -q --bare "$SB/dist.git"
@@ -244,6 +277,8 @@ t  "tag SHA256SUMS matches" sums_ok v1.0.0
 t  "tag guide uses the tag URL" has "v1.0.0:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/v1.0.0/install.sh"
 t  "tag README uses the tag URL" has v1.0.0:README.md "raw.githubusercontent.com/$DIST/v1.0.0/SHA256SUMS"
 t  "beta branch keeps the stable-branch line" has "beta:guide/01-서버-설치.md" "raw.githubusercontent.com/$DIST/main/install.sh"
+nt "developer-only guide not shipped" sub g cat-file -e v1.0.0:guide/05-demo-install.md
+nt "no link to the developer-only guide" sh -c "git -C '$SB/dist.git' grep -q 05-demo-install v1.0.0 -- guide"
 t  "re-run is a no-op"     pub v1.0.0
 t  "publish beta"          pub v1.1.0-beta.1
 t  "beta tag = beta commit" eq "$(g rev-parse 'v1.1.0-beta.1^{commit}')" "$(g rev-parse beta)"

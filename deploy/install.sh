@@ -232,51 +232,90 @@ dns_check() { # DNS_OK=1 이면 도메인이 이 서버를 가리켜요
 write_compose() {
   cat > docker-compose.yml <<'EOF'
 # Managed by install.sh — re-run the installer or `dahae update` instead of editing.
-# Keep in sync with deploy/docker-compose.yml.
+# Same as deploy/docker-compose.yml in the source repo except the image lines (installer-selftest checks).
 x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+# Every container: no privilege gain through setuid binaries or file capabilities, no Linux capability
+# unless listed under cap_add, a read-only root filesystem (writes go to volumes and tmpfs only), and
+# memory and process caps sized for a 2 GB VPS. No CPU caps: `cpus` above the host's core count stops
+# `docker compose up` on a 1-vCPU server.
+x-hardened: &hardened
+  restart: unless-stopped
+  logging: *log
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
+  read_only: true
 services:
   db:
+    <<: *hardened
     image: postgres:17
-    restart: unless-stopped
-    logging: *log
-    environment: { POSTGRES_DB: cleaning, POSTGRES_USER: app, POSTGRES_PASSWORD: "${DB_PASSWORD}" }
+    # The entrypoint starts as root, fixes ownership of the data and socket dirs, then drops to postgres.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    tmpfs: [/tmp, /var/run/postgresql]
+    mem_limit: 768m
+    pids_limit: 200
+    stop_grace_period: 60s # a clean shutdown instead of crash recovery on the next start
+    environment:
+      POSTGRES_DB: cleaning
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+    # Sized for a 2 GB VPS (API pool 10 + headroom). Autovacuum is tuned for churn; see docs/DEPLOY.md.
     command: >-
       postgres -c shared_buffers=256MB -c effective_cache_size=1GB -c work_mem=8MB -c maintenance_work_mem=128MB -c max_connections=50 -c wal_compression=on -c max_wal_size=1GB -c min_wal_size=256MB -c checkpoint_completion_target=0.9 -c random_page_cost=1.1 -c password_encryption=scram-sha-256 -c autovacuum_max_workers=2 -c autovacuum_naptime=30s -c autovacuum_vacuum_scale_factor=0.05 -c autovacuum_analyze_scale_factor=0.02 -c autovacuum_vacuum_cost_limit=1000 -c log_min_duration_statement=500 -c log_lock_waits=on -c log_temp_files=10MB -c log_checkpoints=on
     shm_size: 256mb
     volumes: [dbdata:/var/lib/postgresql/data]
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
+
   api:
+    <<: *hardened
     image: ${API_IMAGE:?set by install.sh}
-    restart: unless-stopped
-    logging: *log
+    # Runs as uid 10001 (backend/Dockerfile) and needs no capability. Backup commands write their temp
+    # files to the backups folder (TMPDIR), so /tmp stays small.
+    tmpfs: ["/tmp:size=64m"]
+    init: true
+    mem_limit: 512m
+    pids_limit: 256
     depends_on: { db: { condition: service_healthy } }
     environment:
-      # 앱 전용 계정(슈퍼유저 아님). app 은 DB 관리·백업용 슈퍼유저예요. 계정은 dahae 명령이 만들어요.
-      DATABASE_URL: postgres://dahae_api:${API_DB_PASSWORD:?set by install.sh}@db:5432/cleaning
+      # Non-superuser app role (owner of the cleaning DB); `app` stays the admin/backup superuser.
+      # `dahae` (install.sh) creates the role and moves ownership before every install, update and restore.
+      DATABASE_URL: postgres://dahae_api:${API_DB_PASSWORD:?set API_DB_PASSWORD}@db:5432/cleaning
       DB_MAX_CONNECTIONS: "20"
-      JWT_SECRET: "${JWT_SECRET}"
-      DATA_KEY: "${DATA_KEY}"
-      HEARTBEAT_URL: "${HEARTBEAT_URL:-}"
-      SETUP_CODE: "${SETUP_CODE}"
-      PUBLIC_BASE_URL: https://${DOMAIN}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      DATA_KEY: ${DATA_KEY:?set DATA_KEY}
+      HEARTBEAT_URL: ${HEARTBEAT_URL:-}
+      SETUP_CODE: ${SETUP_CODE:-}
+      PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}
       TRUSTED_PROXY: "1"
       DEV_MODE: "0"
       RUST_LOG: info,sqlx=warn
+      # App Links for Naver login (/.well-known/*). Set with `dahae applinks`; empty = not served.
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
       LOG_FORMAT: json
     volumes: [uploads:/data/uploads]
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
+
   web:
+    <<: *hardened
     image: ${WEB_IMAGE:?set by install.sh}
-    restart: unless-stopped
-    logging: *log
+    # Caddy's image runs it as root; with every other capability dropped it can only bind 80/443.
+    # Certificates and config live in the caddydata/caddyconfig volumes.
+    cap_add: [NET_BIND_SERVICE]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 256
+    # Plain start order, not service_healthy: an API that never gets healthy would make `docker compose up`
+    # fail before `dahae update` can roll back to the previous version.
     depends_on: [api]
     ports: ["80:80", "443:443", "443:443/udp"]
-    environment: { DOMAIN: "${DOMAIN}", ACME_EMAIL: "${ACME_EMAIL}", TLS_MODE: "${TLS_MODE}" }
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+      TLS_MODE: ${TLS_MODE:-}
     volumes: [caddydata:/data, caddyconfig:/config]
     healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
+
 volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
 EOF
 }
@@ -311,7 +350,10 @@ USAGE='사용법: dahae <명령>
   logs [api|web|db]           로그 보기
   setup-code                  사장님 계정 설치 코드
   uninstall [--yes]           서비스 끄기 (데이터와 백업은 남겨요)
-  uninstall --purge [--confirm 도메인]  데이터와 백업까지 삭제 (도메인을 입력해 확인. --yes 로는 넘어가지 않아요)'
+  uninstall --purge [--confirm 도메인]  데이터와 백업까지 삭제 (도메인을 입력해 확인. --yes 로는 넘어가지 않아요)
+  keys-backup                 비밀 키 사본을 비밀번호로 잠가 만들기 (서버 밖에 보관: 외부 백업을 풀 때 필요)
+  keys-restore 파일 [--yes]   새 서버에 예전 비밀 키 넣기 (restore-offsite 전에)
+  alert update|backup         자동 작업 실패를 외부 가동 확인 주소로 알리기 (예약 작업용)'
 
 dc() { docker compose --env-file .env "$@"; }
 ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }
@@ -337,6 +379,15 @@ confirm() { # confirm "질문" 기대값 : 터미널에서 기대값을 입력�
   [ "$a" = "$2" ] || die "취소했어요."
 }
 uploads_for() { local b; b=$(basename "$1"); b=${b#db-}; printf '%s/uploads-%s.tar.gz' "$(dirname "$1")" "${b%.sql.gz}"; }
+# api 이미지의 백업 명령(backup-upload, -fetch, -list). backups/ 는 root 전용(700)이라 컨테이너 안에서도 root 로
+# 실행해요. 권한(capability)은 모두 빠진 채라 이 폴더와 앱 볼륨에만 닿아요. 임시 파일은 메모리(/tmp) 대신 backups/ 에.
+api_backup() { dc run --rm --no-deps -T --user 0 -e TMPDIR=/backups -v "$DIR/backups:/backups" api api "$@"; }
+# 비밀 키 사본(.env)을 비밀번호로 잠그고 풀어요. 비밀번호는 표준 입력이 아니라 환경 변수로 넘겨요(표준 입력은 내용).
+KEYS_ENC=(-aes-256-cbc -pbkdf2 -iter 600000 -md sha256)
+keys_seal() { KEYS_PASS="$1" openssl enc "${KEYS_ENC[@]}" -salt -pass env:KEYS_PASS; }
+keys_open() { KEYS_PASS="$1" openssl enc -d "${KEYS_ENC[@]}" -pass env:KEYS_PASS 2>/dev/null; }
+# 실패 신호 주소: healthchecks.io 방식으로 핑 주소 끝에 /fail 을 붙여요 (?쿼리 는 뒤에 그대로).
+fail_url() { local base="${1%%\?*}"; printf '%s/fail%s' "${base%/}" "${1#"$base"}"; }
 valid_fingerprints() { printf '%s' "$1" | grep -Eq '^([0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){31})(,[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){31})*$'; }
 valid_team_id() { printf '%s' "$1" | grep -Eq '^[A-Za-z0-9]{10}$'; }
 valid_backup_name() { printf '%s' "$1" | grep -Eq "$BACKUP_NAME_RE"; }
@@ -517,8 +568,8 @@ cmd_backup() { # BACKUP_WARN=1 이면 DB 는 백업됐지만 사진 파일이나
   fi
   [ "$prune" = noprune ] || find backups \( -name 'db-*.sql.gz' -o -name 'uploads-*.tar.gz' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
   # Offsite copy (콘솔: 설정 > 외부 백업). The local backup stays good if this fails or isn't set up.
-  if [ -f "$up" ]; then dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-upload "/$up" >> backups/backup.log 2>&1 || true; fi
-  dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-upload "/$db" >> backups/backup.log 2>&1 \
+  if [ -f "$up" ]; then api_backup backup-upload "/$up" >> backups/backup.log 2>&1 || true; fi
+  api_backup backup-upload "/$db" >> backups/backup.log 2>&1 \
     || warn "외부 백업 실패 또는 미설정 — 콘솔 [설정 > 외부 백업]을 확인하세요"
   ok "백업 완료: $DIR/$db"
 }
@@ -611,6 +662,60 @@ cmd_status() {
   if https_ok; then ok "HTTPS 정상: https://$(env_get DOMAIN)/admin/"
   else warn "HTTPS 인증서가 아직 없어요. 도메인 A 레코드가 이 서버를 가리키면 몇 분 안에 자동으로 발급돼요."; fi
   if [ -n "$(env_get HEARTBEAT_URL)" ]; then ok "외부 가동 확인(heartbeat) 설정됨"; else warn "외부 가동 확인이 없어요 — 'dahae heartbeat <주소>' 로 켜세요 (healthchecks.io 등)"; fi
+  # 로컬 백업은 DB 와 같은 디스크에 있어요: 외부 백업이 없으면 디스크 하나를 잃을 때 전부 잃어요.
+  if tail -n 40 backups/backup.log 2>/dev/null | grep -q 'offsite backup uploaded'; then ok "외부 백업 정상"
+  else warn "최근 외부 백업이 없어요 — 서버 디스크를 잃으면 데이터도 모두 잃어요. 콘솔 [설정 > 외부 백업]에서 켜세요"; fi
+  if compgen -G 'backups/keys-*.env.enc' >/dev/null; then ok "비밀 키 사본 있음 (서버 밖에도 보관했는지 확인하세요)"
+  else warn "비밀 키 사본이 없어요 — 'dahae keys-backup' 으로 만들어 서버 밖에 보관하세요. 없으면 외부 백업을 풀 수 없어요"; fi
+}
+
+cmd_keys_backup() { # dahae keys-backup : 외부 백업은 DATA_KEY 로 잠겨요. 서버를 잃어도 풀 수 있게 .env 를 비밀번호로 잠근 사본을 만들어요
+  local out pass="${DAHAE_KEYS_PASSPHRASE:-}" again
+  out="backups/keys-$(date +%Y%m%d-%H%M%S).env.enc"
+  if [ -z "$pass" ]; then
+    has_tty || die "비밀번호를 물어볼 터미널이 없어요. 터미널에서 'sudo dahae keys-backup' 을 실행하세요."
+    IFS= read -rsp "잠금 비밀번호 (12자 이상, 서버 밖에 적어 두세요): " pass </dev/tty; echo
+    IFS= read -rsp "한 번 더: " again </dev/tty; echo
+    [ "$pass" = "$again" ] || die "두 비밀번호가 달라요. 다시 실행하세요."
+  fi
+  [ "${#pass}" -ge 12 ] || die "비밀번호는 12자 이상이어야 해요."
+  keys_seal "$pass" < .env > "$out" || { rm -f "$out"; die "비밀 키 사본을 만들지 못했어요 (openssl)."; }
+  ok "비밀 키 사본: $DIR/$out"
+  echo "  이 파일과 비밀번호를 서버 밖(USB, 비밀번호 관리자 등)에 따로 보관하세요. 서버를 잃으면:"
+  echo "  새 서버에 설치 → dahae keys-restore <이 파일> → 콘솔에서 외부 백업 연결 → dahae restore-offsite"
+}
+
+keys_field() { sed -n "s/^$1=\([0-9a-f]\{32,\}\)\$/\1/p" | tail -n1; } # keys_field 이름 < 내용 : 16진수 값만
+
+cmd_keys_restore() { # dahae keys-restore 파일 [--yes] : 잠근 사본의 DATA_KEY·JWT_SECRET 을 이 서버에 넣어요
+  local f="" a pass="${DAHAE_KEYS_PASSPHRASE:-}" plain key jwt
+  for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) f="$a" ;; esac; done
+  { [ -n "$f" ] && [ -f "$f" ]; } || die "사용법: dahae keys-restore keys-20261110-033000.env.enc [--yes]"
+  if [ -z "$pass" ]; then
+    has_tty || die "비밀번호를 물어볼 터미널이 없어요."
+    IFS= read -rsp "잠금 비밀번호: " pass </dev/tty; echo
+  fi
+  plain=$(keys_open "$pass" < "$f") || die "비밀번호가 틀렸거나 파일이 손상됐어요. 아무것도 바뀌지 않았어요."
+  # 파이프로 넘겨요: here-string 은 오래된 bash 에서 /tmp 에 임시 파일을 만들어요.
+  key=$(printf '%s\n' "$plain" | keys_field DATA_KEY); jwt=$(printf '%s\n' "$plain" | keys_field JWT_SECRET)
+  [ "${#key}" = 64 ] || die "사본에 DATA_KEY 가 없어요. 아무것도 바뀌지 않았어요."
+  confirm "이 서버의 DATA_KEY 를 사본의 키로 바꿀까요? 이 서버에서 새로 입력한 연동 키는 다시 입력해야 해요." yes
+  cp -p .env "backups/env-before-keys-restore-$(date +%Y%m%d-%H%M%S)"
+  env_set DATA_KEY "$key"
+  if [ -n "$jwt" ]; then env_set JWT_SECRET "$jwt"; fi
+  dc up -d api >/dev/null
+  wait_healthy || die "키를 바꾼 뒤 앱이 응답하지 않아요. 'dahae logs' 를 확인하세요. 예전 .env 는 backups/ 에 있어요."
+  ok "예전 비밀 키를 넣었어요. 이제 콘솔에서 외부 백업을 연결하고 'dahae restore-offsite' 로 되돌리세요."
+}
+
+cmd_alert() { # dahae alert update|backup : 예약 작업(cron)이 실패하면 외부 가동 확인 주소로 실패 신호와 로그 끝부분을 보내요
+  local what="${1:-}" url
+  case "$what" in update|backup) ;; *) die "사용법: dahae alert update|backup" ;; esac
+  url=$(env_get HEARTBEAT_URL)
+  [ -n "$url" ] || { warn "외부 가동 확인 주소가 없어 실패를 알리지 못했어요 ('dahae heartbeat <주소>' 로 켜세요)"; return 1; }
+  tail -n 30 "backups/$what.log" 2>/dev/null | curl -fsS --max-time 15 -o /dev/null --data-binary @- "$(fail_url "$url")" \
+    || { warn "실패 알림을 보내지 못했어요"; return 1; }
+  ok "자동 $what 실패를 알렸어요"
 }
 
 cmd_restore() { # dahae restore 파일 [--yes]
@@ -648,11 +753,11 @@ cmd_restore() { # dahae restore 파일 [--yes]
 cmd_restore_offsite() { # dahae restore-offsite [이름] [--yes]
   local name="" a up_name
   for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) name="$a" ;; esac; done
-  if [ -z "$name" ]; then dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-list; return 0; fi
+  if [ -z "$name" ]; then api_backup backup-list; return 0; fi
   valid_backup_name "$name" || die "외부 백업 이름이 아니에요 (예: db-20261110-033000.sql.gz.enc): $name"
-  dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-fetch "$name" "/backups/${name%.enc}" || die "외부 백업을 내려받지 못했어요"
+  api_backup backup-fetch "$name" "/backups/${name%.enc}" || die "외부 백업을 내려받지 못했어요"
   up_name=$(basename "$(uploads_for "${name%.enc}")")
-  dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-fetch "$up_name.enc" "/backups/$up_name" >/dev/null 2>&1 \
+  api_backup backup-fetch "$up_name.enc" "/backups/$up_name" >/dev/null 2>&1 \
     || warn "외부 백업에 같은 시각의 사진 파일이 없어요"
   cmd_restore "backups/${name%.enc}"
 }
@@ -739,6 +844,9 @@ main() {
     restore) shift; cmd_restore "$@" ;;
     restore-offsite) shift; cmd_restore_offsite "$@" ;;
     heartbeat) shift; cmd_heartbeat "$@" ;;
+    keys-backup) cmd_keys_backup ;;
+    keys-restore) shift; cmd_keys_restore "$@" ;;
+    alert) shift; cmd_alert "$@" ;;
     applinks) shift; cmd_applinks "$@" ;;
     uninstall) shift; cmd_uninstall "$@" ;;
     demo)
@@ -770,8 +878,11 @@ write_heartbeat() { # 5분마다 /health 가 정상일 때만 HEARTBEAT_URL 로 
 DIR=__DIR__
 URL=$(grep -E '^HEARTBEAT_URL=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
 DOMAIN=$(grep -E '^DOMAIN=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
+TLS=$(grep -E '^TLS_MODE=' "$DIR/.env" 2>/dev/null | tail -n1 | cut -d= -f2-)
+# 공인 인증서는 검사까지 해요: 인증서 만료나 발급 실패도 핑이 끊겨 알림이 가요. 내부 인증서(테스트)만 -k.
+insecure=; [ "$TLS" = internal ] && insecure=1
 if [ -z "$URL" ]; then echo "$(date -Is) HEARTBEAT_URL 없음 - 외부 가동 확인이 꺼져 있어요" >&2; exit 0; fi
-if curl -fsSk --max-time 10 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" 2>/dev/null | grep -q '"ok":true'; then
+if curl -fsS ${insecure:+-k} --max-time 10 --resolve "$DOMAIN:443:127.0.0.1" "https://$DOMAIN/health" 2>/dev/null | grep -q '"ok":true'; then
   curl -fsS --max-time 10 -o /dev/null "$URL" || echo "$(date -Is) 핑 전송 실패" >&2
 fi
 HB
@@ -782,8 +893,8 @@ HB
 write_schedules() { # 매일 03:30 백업, 매주 월요일 04:00 자동 업데이트 (업데이트 전에도 백업하고, 실패하면 자동으로 되돌려요).
   timedatectl set-timezone Asia/Seoul 2>/dev/null || true
   cat > /etc/cron.d/malkkeum <<EOF
-30 3 * * * root $BIN/dahae backup >> $DIR/backups/backup.log 2>&1
-0 4 * * 1 root $BIN/dahae update >> $DIR/backups/update.log 2>&1
+30 3 * * * root $BIN/dahae backup >> $DIR/backups/backup.log 2>&1 || $BIN/dahae alert backup >> $DIR/backups/backup.log 2>&1
+0 4 * * 1 root $BIN/dahae update >> $DIR/backups/update.log 2>&1 || $BIN/dahae alert update >> $DIR/backups/update.log 2>&1
 */5 * * * * root $BIN/malkkeum-heartbeat >> $DIR/backups/heartbeat.log 2>&1
 EOF
   cat > /etc/logrotate.d/dahae <<EOF
@@ -828,7 +939,7 @@ final_banner() { # final_banner https정상(1/0)
     printf '  1) 인증서가 나오면 브라우저에서 이 주소를 여세요:   https://%s/admin/\n' "$DOMAIN"
   fi
   printf '%s\n  3) [설정] 메뉴에서 결제·문자·로그인 연동을 차례로 연결하세요.\n\n' "$code"
-  printf '  ⚠ %s/.env 파일을 USB 나 안전한 곳에 꼭 복사해 두세요.\n    (이 파일이 없으면 백업을 복원할 수 없어요)\n\n' "$DIR"
+  printf '  ⚠ 비밀 키 사본을 꼭 만들어 서버 밖에 보관하세요:  sudo dahae keys-backup\n    (%s/.env 의 키가 없으면 외부 백업을 복원할 수 없어요)\n\n' "$DIR"
   printf '  관리 명령:  dahae status | update | rollback | backup | restore | logs | help\n%s\n' "$line"
 }
 

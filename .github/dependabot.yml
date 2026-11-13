@@ -1,0 +1,32 @@
+# Weekly dependency PRs; each one runs the full ci.yml (and e2e.yml for server-side changes).
+# Pins that live in two places fail scripts/ci/check-pins.sh until the PR updates both
+# (e.g. a rust image bump also needs backend/rust-toolchain.toml).
+# Not managed here on purpose: postgres:17 in deploy/docker-compose.yml (a major bump needs a data
+# migration, never an automatic PR).
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /backend
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+    groups:
+      cargo-minor: { update-types: [minor, patch] }
+
+  - package-ecosystem: pub
+    directory: /app
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+    groups:
+      pub-minor: { update-types: [minor, patch] }
+
+  - package-ecosystem: github-actions
+    directories: [/, /.github/actions/flutter-setup]
+    schedule: { interval: weekly }
+    groups:
+      actions: { patterns: ["*"] }
+
+  - package-ecosystem: docker
+    directories: [/backend, /deploy]
+    schedule: { interval: weekly }
+    groups:
+      base-images: { patterns: ["*"] }

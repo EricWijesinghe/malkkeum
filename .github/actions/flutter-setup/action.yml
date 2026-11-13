@@ -1,0 +1,16 @@
+name: Flutter setup
+description: >-
+  Pinned Flutter (the same version as deploy/web.Dockerfile and codemagic.yaml; scripts/ci/check-pins.sh),
+  packages exactly as app/pubspec.lock says, generated strings. Run after actions/checkout.
+runs:
+  using: composite
+  steps:
+    - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+      with: { flutter-version: 3.47.9, channel: stable, cache: true }
+    - name: Strings, locked packages, l10n
+      shell: bash
+      working-directory: app
+      run: |
+        python3 -I tool/gen_arb.py
+        flutter pub get --enforce-lockfile
+        (cd packages/core && flutter gen-l10n)

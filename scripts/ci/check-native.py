@@ -6,6 +6,8 @@
 
 Console ships only as web (website image), so it has no native store build to check.
 """
+import base64
+import hashlib
 import plistlib
 import re
 import sys
@@ -520,9 +522,31 @@ def check_web():
     check(len(csp) >= 1, "deploy/Caddyfile: Content-Security-Policy header missing")
     for value in csp:
         check(GOOGLE_HOSTS.search(value) is None, "deploy/Caddyfile: CSP must not allow Google hosts (web builds are self-contained)")
+    check_site_csp(caddy)
     compose = (REPO / "deploy" / "docker-compose.yml").read_text(encoding="utf-8")
     check("ANDROID_CERT_SHA256" in compose and "APPLE_TEAM_ID" in compose,
           "deploy/docker-compose.yml: API needs ANDROID_CERT_SHA256 and APPLE_TEAM_ID")
+
+
+def check_site_csp(caddy):
+    """The static website's strict CSP allows inline scripts by hash only: every inline script in its pages
+    (website/pay/ has the loose app CSP) must have its sha256 in the policy, or browsers block it."""
+    m = re.search(r'header @site_csp Content-Security-Policy "([^"]*)"', caddy)
+    check(m is not None, "deploy/Caddyfile: strict website CSP (@site_csp) missing")
+    policy = m.group(1) if m else ""
+    script_src = re.search(r"script-src ([^;]*)", policy)
+    check(script_src is not None and "'unsafe-inline'" not in script_src.group(1),
+          "deploy/Caddyfile: website CSP script-src must not allow 'unsafe-inline'")
+    for page in sorted((REPO / "website").rglob("*.html")):
+        rel = page.relative_to(REPO).as_posix()
+        if rel.startswith("website/pay/"):
+            continue
+        for attrs, body in re.findall(r"<script([^>]*)>(.*?)</script>", page.read_text(encoding="utf-8"), re.S):
+            if "src=" in attrs or "application/ld+json" in attrs:
+                continue
+            digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode()
+            check(f"'sha256-{digest}'" in policy,
+                  f"{rel}: inline script not allowed by the website CSP; add 'sha256-{digest}' to @site_csp in deploy/Caddyfile")
 
 
 def check_codemagic_ios(cm):

@@ -4,6 +4,7 @@ description = "Pure business rules: pricing, quotes, coupons, bookings, scheduli
 edition.workspace = true
 version.workspace = true
 license.workspace = true
+publish = false
 
 [dependencies]
 chrono.workspace = true
