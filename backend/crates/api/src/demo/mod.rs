@@ -218,6 +218,9 @@ pub async fn clear(db: &PgPool, config: &Config) -> Result<Report, DemoError> {
         }
     }
     sqlx::query("DELETE FROM demo_rows").execute(&mut *tx).await?;
+    sqlx::query("UPDATE content_items SET active = TRUE, body = body - 'demo_hidden' WHERE kind = 'banner' AND body ? 'demo_hidden'")
+        .execute(&mut *tx)
+        .await?;
     // Saving the profile in the console drops the `demo` flag (unknown keys are stripped), so an edited profile stays.
     sqlx::query("DELETE FROM settings WHERE key = 'business' AND value->>'demo' = 'true'").execute(&mut *tx).await?;
     tx.commit().await?;

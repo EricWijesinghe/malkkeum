@@ -345,6 +345,15 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
     for (i, (title, body, link)) in banners.into_iter().enumerate() {
         insert_content(c, "banner", None, title, body, link, i as i32).await?;
     }
+    // The base seed's welcome banner says the same as the demo hero: hide it (only if untouched) so the
+    // carousel shows one. `clear` shows it again by this flag.
+    sqlx::query(
+        "UPDATE content_items SET active = FALSE, body = body || '{\"demo_hidden\": true}'
+         WHERE kind = 'banner' AND active AND title = $1",
+    )
+    .bind(crate::seed::welcome_title())
+    .execute(&mut *c.tx)
+    .await?;
     let news = [
         (json!({"ko": "원룸 청소 서비스 지역 확대", "en": "Studio cleaning now covers more areas"}), "이번 달부터 성남시 분당구와 하남시에서도 원룸 청소를 예약할 수 있어요. 주소를 등록하면 예약 가능 여부를 바로 알려 드려요."),
         (json!({"ko": "2in1 에어컨 청소 예약 오픈", "en": "2-in-1 aircon cleaning is open for booking"}), "스탠드와 벽걸이를 한 번에 청소하는 2in1 상품을 예약할 수 있어요. 분해 세척과 살균까지 포함돼요."),

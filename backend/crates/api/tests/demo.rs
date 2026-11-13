@@ -161,3 +161,26 @@ async fn demo_sign_in_customer_has_a_usable_coupon_and_home_content(pool: PgPool
         .expect("training tip");
     assert_eq!(training, 1);
 }
+
+async fn active_banners(db: &PgPool) -> i64 {
+    sqlx::query_scalar("SELECT count(*) FROM content_items WHERE kind = 'banner' AND active").fetch_one(db).await.expect("banners")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn demo_hides_the_seed_welcome_banner_and_clear_brings_it_back(pool: PgPool) {
+    seed_catalog(&pool).await;
+    assert_eq!(active_banners(&pool).await, 1, "a real install has the seed welcome banner");
+    let config = config();
+    demo::load(&pool, &config, false).await.expect("demo load");
+    let welcome: i64 = sqlx::query_scalar(
+        "SELECT count(*) FROM content_items WHERE kind = 'banner' AND active AND (link = 'coupons' OR body->>'link' = 'coupons')",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("welcome banners");
+    assert_eq!(welcome, 1, "one welcome banner in the carousel with demo data");
+    demo::clear(&pool, &config).await.expect("demo clear");
+    assert_eq!(active_banners(&pool).await, 1, "clear shows the seed banner again");
+    let flagged: i64 = sqlx::query_scalar("SELECT count(*) FROM content_items WHERE body ? 'demo_hidden'").fetch_one(&pool).await.expect("flag");
+    assert_eq!(flagged, 0);
+}

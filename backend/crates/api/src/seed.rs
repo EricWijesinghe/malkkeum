@@ -23,7 +23,7 @@ fn old_welcome_title() -> serde_json::Value {
 }
 
 // i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
-fn welcome_title() -> serde_json::Value {
+pub(crate) fn welcome_title() -> serde_json::Value {
     json!({ "ko": "첫 청소 15,000원 웰컴쿠폰", "en": "₩15,000 welcome coupon for your first clean" })
 }
 
