@@ -3,7 +3,8 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Server releases are git tags `vX.Y.Z`
-(see [docs/DEPLOY.md](docs/DEPLOY.md#2-releases-and-channels)).
+(see [docs/DEPLOY.md](docs/DEPLOY.md#2-releases-and-channels)). Entries up to 1.4.0 were reconstructed
+from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
