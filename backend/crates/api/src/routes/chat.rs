@@ -2,6 +2,7 @@
 
 use crate::{
     auth::{Auth, Role, Staff},
+    contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
     realtime::{Recipient, notify},
@@ -12,6 +13,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
+    response::Response,
     routing::{get, post, put},
 };
 use chrono::{DateTime, Utc};
@@ -145,19 +147,27 @@ fn member_filter(a: &Auth) -> ApiResult<(&'static str, &'static str)> {
     }
 }
 
-pub async fn list_threads_for(db: &PgPool, audience: &str, col: &str, owner: Uuid) -> ApiResult<Vec<ThreadRow>> {
-    Ok(sqlx::query_as(&format!(
-        "SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 AND t.{col} = $2 ORDER BY t.last_message_at DESC"
+/// Most recently active first; keyset cursor over (last_message_at, id).
+pub async fn list_threads_for(db: &PgPool, audience: &str, col: &str, owner: Uuid, q: &PageQuery) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<ThreadRow> = sqlx::query_as(&format!(
+        "SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 AND t.{col} = $2
+           AND ($3::timestamptz IS NULL OR (t.last_message_at, t.id) < ($3, $4)) ORDER BY t.last_message_at DESC, t.id DESC LIMIT $5"
     ))
     .bind(audience)
     .bind(owner)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
     .fetch_all(db)
-    .await?)
+    .await?;
+    Ok(paged(rows, limit, |r| encode_cursor(&[&ts_key(r.last_message_at), &r.id.to_string()])))
 }
 
-async fn my_threads(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Vec<ThreadRow>>> {
+async fn my_threads(State(s): State<AppState>, a: Auth, Query(q): Query<PageQuery>) -> ApiResult<Response> {
     let (aud, col) = member_filter(&a)?;
-    Ok(Json(list_threads_for(&s.db, aud, col, a.id).await?))
+    list_threads_for(&s.db, aud, col, a.id, &q).await
 }
 
 #[derive(Deserialize)]
@@ -228,7 +238,7 @@ pub struct Page {
 }
 
 pub async fn messages(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Query(p): Query<Page>) -> ApiResult<Json<Vec<MessageRow>>> {
-    let limit = crate::contract::page_limit(p.limit)?;
+    let limit = page_limit(p.limit)?;
     authorize_thread(&s.db, &a, id).await?;
     let mut rows: Vec<MessageRow> = sqlx::query_as(
         "SELECT id, thread_id, sender, kind, body, created_at FROM chat_messages WHERE thread_id = $1 AND ($2::timestamptz IS NULL OR created_at < $2) ORDER BY created_at DESC LIMIT $3",

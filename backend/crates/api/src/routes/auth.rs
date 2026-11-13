@@ -15,7 +15,7 @@ use axum::{
     http::HeaderMap,
     routing::{delete, get, post},
 };
-use std::{net::SocketAddr, time::Instant};
+use std::net::SocketAddr;
 use serde_json::{Value, json};
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
@@ -157,12 +157,12 @@ async fn verify_otp(
     let phone = auth::normalize_phone(&req.phone).ok_or(ApiError::BadRequest("invalid_phone"))?;
     // Guessing across fresh codes for one number is stopped here, not only by the per-code attempt cap.
     let keys = lockout::keys("otp", lockout::ip_of(&s, peer, &headers), &phone);
-    s.lockout.delay(&keys, Instant::now()).await;
-    s.lockout.check(&keys, Instant::now())?;
+    s.lockout.delay(&keys).await?;
+    s.lockout.check(&keys).await?;
     match consume_otp(&s, &phone, &req.code).await {
-        Ok(()) => s.lockout.success(&keys),
+        Ok(()) => s.lockout.success(&keys).await?,
         Err(e @ ApiError::BadRequest(_)) => {
-            if s.lockout.failure(&keys, Instant::now()) {
+            if s.lockout.failure(&keys).await? {
                 crate::ops::auth_abuse(&s.db, "otp_lockout").await;
             }
             return Err(e);
@@ -418,8 +418,8 @@ async fn staff_login(
         return Err(ApiError::Unauthorized);
     }
     let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &req.email);
-    s.lockout.delay(&keys, Instant::now()).await;
-    s.lockout.check(&keys, Instant::now())?;
+    s.lockout.delay(&keys).await?;
+    s.lockout.check(&keys).await?;
     let row: Option<(Uuid, String, String, bool)> =
         sqlx::query_as("SELECT id, password_hash, role, COALESCE(locked_until > now(), FALSE) FROM staff WHERE lower(email) = lower($1) AND active")
             .bind(req.email.trim())
@@ -431,7 +431,7 @@ async fn staff_login(
     // Verify against a dummy hash when the account is missing to keep timing uniform.
     let hash = row.as_ref().map(|r| r.1.clone()).unwrap_or_else(|| STAFF_DUMMY_HASH.to_string());
     let ok = auth::verify_password_blocking(req.password, hash).await?;
-    if !ok && s.lockout.failure(&keys, Instant::now()) {
+    if !ok && s.lockout.failure(&keys).await? {
         crate::ops::auth_abuse(&s.db, "staff_lockout").await;
     }
     if let (Some(r), false) = (&row, ok) {
@@ -458,7 +458,7 @@ async fn staff_login(
         return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
-    s.lockout.success(&keys);
+    s.lockout.success(&keys).await?;
     let staff_role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
     let tokens = issue_tokens(&s, id, staff_role, false, None).await?;
     Ok(Json(serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))?))

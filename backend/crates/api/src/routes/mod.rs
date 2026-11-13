@@ -64,7 +64,7 @@ pub fn router(state: AppState) -> Router {
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::PATCH, Method::DELETE])
         .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE, HeaderName::from_static("idempotency-key")])
         .expose_headers([contract::NEXT_CURSOR]);
-    let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, std::time::Instant::now()));
+    let gate = std::sync::Arc::new(crate::ratelimit::Gate::new(&state.config, state.db.clone(), std::time::Instant::now()));
 
     let api = Router::new()
         .merge(auth::routes().layer(DefaultBodyLimit::max(contract::AUTH_BODY_LIMIT)))

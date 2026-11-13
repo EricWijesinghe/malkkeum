@@ -16,7 +16,7 @@ use axum::{
     http::HeaderMap,
     routing::post,
 };
-use std::{net::SocketAddr, time::Instant};
+use std::net::SocketAddr;
 use chrono::Utc;
 use data_encoding::BASE32_NOPAD;
 use rand::{RngCore, rngs::OsRng};
@@ -144,8 +144,8 @@ async fn verify(
         return Err(ApiError::Unauthorized);
     }
     let keys = lockout::keys("staff", lockout::ip_of(&s, peer, &headers), &email);
-    s.lockout.delay(&keys, Instant::now()).await;
-    s.lockout.check(&keys, Instant::now())?;
+    s.lockout.delay(&keys).await?;
+    s.lockout.check(&keys).await?;
     let accepted = match (req.code, req.recovery_code) {
         (Some(code), _) => {
             let secret = secret.and_then(|enc| crypto::decrypt(&s.config.data_key, &enc)).and_then(|b32| totp::decode_secret(&b32));
@@ -171,14 +171,14 @@ async fn verify(
         (None, None) => return Err(ApiError::BadRequest("mfa_invalid_code")),
     };
     if !accepted {
-        if s.lockout.failure(&keys, Instant::now()) {
+        if s.lockout.failure(&keys).await? {
             crate::ops::auth_abuse(&s.db, "mfa_lockout").await;
         }
         record_failure(&s, id).await?;
         return Err(ApiError::BadRequest("mfa_invalid_code"));
     }
     sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
-    s.lockout.success(&keys);
+    s.lockout.success(&keys).await?;
     Ok(Json(session_tokens(&s, id, &role).await?))
 }
 

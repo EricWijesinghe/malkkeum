@@ -5,6 +5,7 @@
 use super::audit;
 use crate::{
     auth::Admin,
+    contract::{json_row_cursor, page_limit, paged, ts_id_cursor},
     crypto,
     error::{ApiError, ApiResult},
     integrations::PayoutMode,
@@ -20,7 +21,7 @@ use axum::{
     http::header,
     response::{IntoResponse, Response},
 };
-use chrono::NaiveDate;
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::{PgPool, Postgres, Transaction};
@@ -56,12 +57,15 @@ linked AS (
 SELECT id FROM ins";
 
 /// Payout rows for the console. Account numbers are never included here (see `reveal_account`).
-const LIST_SQL: &str = "SELECT COALESCE(jsonb_agg(x), '[]') FROM (
+const LIST_SQL: &str = "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC, x.id DESC), '[]') FROM (
   SELECT p.id, p.pro_id, pr.name AS pro_name, pr.team_name, p.payout_date, p.amount, p.items, p.provider, p.state,
          p.bank, p.account_last4, p.attempts, p.failure_reason, p.provider_transfer_id, p.created_at, p.paid_at, p.tax_type
   FROM payouts p JOIN pros pr ON pr.id = p.pro_id
   WHERE ($1::text IS NULL OR p.state = $1) AND ($2::uuid[] IS NULL OR p.id = ANY($2))
-  ORDER BY p.created_at DESC LIMIT 200) x";
+    AND ($3::timestamptz IS NULL OR (p.created_at, p.id) < ($3, $4))
+  ORDER BY p.created_at DESC, p.id DESC LIMIT $5) x";
+/// Rows for a run of payouts picked by id: all of them, however many.
+const BY_IDS_LIMIT: i64 = 1000;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -72,6 +76,8 @@ pub struct RunPayouts {
 #[derive(Deserialize)]
 pub struct PayoutFilter {
     state: Option<String>,
+    limit: Option<i64>,
+    cursor: Option<String>,
 }
 
 #[derive(Deserialize, Default)]
@@ -113,16 +119,21 @@ fn mode_str(m: PayoutMode) -> &'static str {
     }
 }
 
-async fn rows(db: &PgPool, state: Option<&str>, ids: Option<&[Uuid]>) -> ApiResult<Value> {
-    Ok(sqlx::query_scalar(LIST_SQL).bind(state).bind(ids).fetch_one(db).await?)
+async fn rows(db: &PgPool, state: Option<&str>, ids: Option<&[Uuid]>, after: (Option<DateTime<Utc>>, Option<Uuid>), limit: i64) -> ApiResult<Value> {
+    Ok(sqlx::query_scalar(LIST_SQL).bind(state).bind(ids).bind(after.0).bind(after.1).bind(limit).fetch_one(db).await?)
 }
 
-pub async fn list_payouts(AxState(s): AxState<AppState>, _a: Admin, axum::extract::Query(f): axum::extract::Query<PayoutFilter>) -> ApiResult<Json<Value>> {
-    let mut list = rows(&s.db, f.state.as_deref(), None).await?;
-    if let Some(items) = list.as_array_mut() {
-        items.iter_mut().for_each(add_split);
-    }
-    Ok(Json(list))
+/// Newest first; keyset cursor over (created_at, id).
+pub async fn list_payouts(AxState(s): AxState<AppState>, _a: Admin, axum::extract::Query(f): axum::extract::Query<PayoutFilter>) -> ApiResult<Response> {
+    let limit = page_limit(f.limit)?;
+    let after = ts_id_cursor(f.cursor.as_deref())?;
+    let list = rows(&s.db, f.state.as_deref(), None, after, limit).await?;
+    let mut items = match list {
+        Value::Array(items) => items,
+        _ => Vec::new(),
+    };
+    items.iter_mut().for_each(add_split);
+    Ok(paged(items, limit, |r| json_row_cursor(r, "created_at", "id")))
 }
 
 /// Adds gross / withholding / net to a payout row. `amount` is the gross settlement total.
@@ -165,7 +176,7 @@ pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r)
         .await?;
     tx.commit().await?;
     audit(&s.db, "staff", Some(a.id), "payout.request", &r.date.to_string(), json!({ "payouts": ids.len() })).await?;
-    Ok(Json(rows(&s.db, None, Some(&ids)).await?))
+    Ok(Json(rows(&s.db, None, Some(&ids), (None, None), BY_IDS_LIMIT).await?))
 }
 
 /// Bank details for a manual transfer. Owner only; every reveal is audit-logged and never cached.

@@ -64,10 +64,14 @@ def add_card(token, auth_key, name):
     return call("POST", "/v1/me/payment-methods", {"provider": "card", "auth_key": auth_key, "display_name": name}, token)
 
 
+# Smallest JPEG the upload metadata stripper accepts: SOI, JFIF, SOS header, scan bytes, EOI.
+TINY_JPEG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00\xff\xda\x00\x08\x01\x01\x00\x00?\x00\x12\x34\xff\xd9"
+
+
 def upload_photo(token):
     # Completion photos must be uploads the pro's team owns (routes/partner_jobs.rs complete).
     body = (b'--e2e\r\nContent-Disposition: form-data; name="file"; filename="p.jpg"\r\nContent-Type: image/jpeg\r\n\r\n'
-            + b"\xff\xd8\xff\xe0smoke\r\n--e2e--\r\n")
+            + TINY_JPEG + b"\r\n--e2e--\r\n")
     req = urllib.request.Request(BASE + "/v1/uploads", data=body, method="POST")
     req.add_header("Content-Type", "multipart/form-data; boundary=e2e")
     req.add_header("Authorization", f"Bearer {token}")

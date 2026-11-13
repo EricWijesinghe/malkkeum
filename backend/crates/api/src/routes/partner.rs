@@ -4,12 +4,14 @@ use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Pro, normalize_phone},
     crypto,
+    contract::{PageQuery, json_row_cursor, page_limit, paged, ts_id_cursor},
     error::{ApiError, ApiResult},
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    response::Response,
     routing::{delete, get, post},
 };
 use chrono::NaiveDate;
@@ -305,27 +307,42 @@ async fn put_account(State(s): State<AppState>, Pro(a): Pro, Json(x): Json<Accou
     get_account(State(s), Pro(a)).await
 }
 
-async fn settlements(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
-    let v: Value = sqlx::query_scalar(
-        "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC), '[]') FROM (SELECT st.id, st.booking_id, st.gross, st.fee, st.net, st.payout_date, st.state, st.paid_at, st.created_at, b.service_code, b.visit_date, b.number
-         FROM settlements st JOIN bookings b ON b.id = st.booking_id WHERE st.pro_id = $1) x",
+/// Newest first; keyset cursor over (created_at, id).
+async fn settlements(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<Value> = sqlx::query_scalar(
+        "SELECT to_jsonb(x) FROM (SELECT st.id, st.booking_id, st.gross, st.fee, st.net, st.payout_date, st.state, st.paid_at, st.created_at, b.service_code, b.visit_date, b.number
+         FROM settlements st JOIN bookings b ON b.id = st.booking_id WHERE st.pro_id = $1
+           AND ($2::timestamptz IS NULL OR (st.created_at, st.id) < ($2, $3)) ORDER BY st.created_at DESC, st.id DESC LIMIT $4) x ORDER BY x.created_at DESC, x.id DESC",
     )
     .bind(a.id)
-    .fetch_one(&s.db)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
+    .fetch_all(&s.db)
     .await?;
-    Ok(Json(v))
+    Ok(paged(rows, limit, |r| json_row_cursor(r, "created_at", "id")))
 }
 
-async fn reviews(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
-    let v: Value = sqlx::query_scalar(
-        "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC), '[]') FROM (SELECT r.booking_id, r.rating, r.body, r.created_at, b.service_code FROM reviews r JOIN bookings b ON b.id = r.booking_id WHERE r.pro_id = $1 AND NOT r.hidden) x",
+/// Newest first; keyset cursor over (created_at, booking_id).
+async fn reviews(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<Value> = sqlx::query_scalar(
+        "SELECT to_jsonb(x) FROM (SELECT r.booking_id, r.rating, r.body, r.created_at, b.service_code FROM reviews r JOIN bookings b ON b.id = r.booking_id
+         WHERE r.pro_id = $1 AND NOT r.hidden AND ($2::timestamptz IS NULL OR (r.created_at, r.booking_id) < ($2, $3))
+         ORDER BY r.created_at DESC, r.booking_id DESC LIMIT $4) x ORDER BY x.created_at DESC, x.booking_id DESC",
     )
     .bind(a.id)
-    .fetch_one(&s.db)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
+    .fetch_all(&s.db)
     .await?;
-    Ok(Json(v))
+    Ok(paged(rows, limit, |r| json_row_cursor(r, "created_at", "booking_id")))
 }
 
-async fn threads(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Vec<super::chat::ThreadRow>>> {
-    Ok(Json(super::chat::list_threads_for(&s.db, "partner", "pro_id", a.id).await?))
+async fn threads(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    super::chat::list_threads_for(&s.db, "partner", "pro_id", a.id, &q).await
 }

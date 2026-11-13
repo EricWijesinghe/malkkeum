@@ -110,6 +110,19 @@ pub fn decode_cursor(cursor: Option<&str>, n: usize) -> ApiResult<Option<Vec<Str
     Ok(Some(parts))
 }
 
+/// Keyset cursor over `(timestamp, id)`; both are None for the first page.
+pub fn ts_id_cursor(cursor: Option<&str>) -> ApiResult<(Option<DateTime<Utc>>, Option<uuid::Uuid>)> {
+    Ok(match decode_cursor(cursor, 2)? {
+        Some(p) => (Some(cursor_part(&p[0])?), Some(cursor_part(&p[1])?)),
+        None => (None, None),
+    })
+}
+
+/// Cursor for a JSON row that carries its sort timestamp and id as strings (a `to_jsonb` row).
+pub fn json_row_cursor(row: &serde_json::Value, ts_field: &str, id_field: &str) -> String {
+    encode_cursor(&[row[ts_field].as_str().unwrap_or_default(), row[id_field].as_str().unwrap_or_default()])
+}
+
 /// JSON array body plus `X-Next-Cursor` when the page came back full.
 pub fn paged<T: Serialize>(rows: Vec<T>, limit: i64, cursor_of: impl FnOnce(&T) -> String) -> Response {
     let next = if i64::try_from(rows.len()).is_ok_and(|n| n == limit) { rows.last().map(cursor_of) } else { None };
