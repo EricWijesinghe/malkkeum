@@ -1,0 +1,13 @@
+// Archived from backend/crates/api/src/ai.rs handoff_text() (see ../README.md).
+
+/// Fixed handoff line, in the customer's language where we have one.
+pub fn handoff_text(locale: &str) -> &'static str {
+    match locale {
+        "ko" => "상담원이 확인 후 답변드릴게요.",
+        "ja" => "担当者が確認して、後ほどご返信いたします。",
+        "zh" => "工作人员确认后会尽快回复您。",
+        "vi" => "Nhân viên sẽ kiểm tra và phản hồi bạn sớm.",
+        _ => "A staff member will check this and reply to you shortly.",
+    }
+}
+

@@ -65,6 +65,6 @@ void main() {
     for (final l in LocaleController.supported) {
       expect(generated, contains(l.languageCode));
     }
-    expect(LocaleController.supported.length, 14);
+    expect(LocaleController.supported.map((l) => l.languageCode), ['ko', 'en']);
   });
 }

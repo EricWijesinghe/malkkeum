@@ -20,7 +20,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use uuid::Uuid;
 
-pub const SUPPORTED_LOCALES: [&str; 14] = ["ko", "en", "zh", "vi", "ja", "ru", "ne", "si", "th", "id", "mn", "uz", "fil", "km"];
+// i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+pub const SUPPORTED_LOCALES: [&str; 2] = ["ko", "en"];
 const MAX_NAME_LEN: usize = 40;
 const MAX_ADDRESS_LEN: usize = 200;
 

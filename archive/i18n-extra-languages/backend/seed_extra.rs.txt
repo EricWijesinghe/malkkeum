@@ -1,0 +1,6 @@
+// Archived from backend/crates/api/src/seed.rs (see ../README.md): seeded content with ja/zh/vi.
+// demo/people.rs also gave every 10th demo customer (i % 10 == 9) the locale "ja".
+
+json!({ "ko": "첫 청소 15,000원 웰컴쿠폰", "en": "₩15,000 welcome coupon for your first clean", "ja": "初回清掃 15,000ウォン ウェルカムクーポン", "zh": "首次清洁 15,000韩元欢迎券", "vi": "Phiếu chào mừng 15.000 KRW cho lần dọn đầu" })
+let faq = json!({ "ko": "취소는 언제까지 무료인가요?", "en": "Until when can I cancel for free?", "ja": "無料キャンセルはいつまで？", "zh": "什么时候可以免费取消？", "vi": "Hủy miễn phí đến khi nào?" });
+let answer = json!({ "ko": "방문 2일 전까지 무료로 취소할 수 있어요.", "en": "Free cancellation up to 2 days before the visit.", "ja": "訪問の2日前まで無料です。", "zh": "上门前2天内可免费取消。", "vi": "Miễn phí đến 2 ngày trước lịch hẹn." });

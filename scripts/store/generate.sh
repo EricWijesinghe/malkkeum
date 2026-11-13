@@ -10,7 +10,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 source "$ROOT/scripts/env.sh"
 
-LANGS="${SHOT_LANGS:-ko,en,ja,zh,vi}"
+# i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+LANGS="${SHOT_LANGS:-ko,en}"
 DEVICES="${SHOT_DEVICES:-ios-6.9,ios-6.5,ipad-13,android}"
 mkdir -p "$ROOT/app/build/store_shots/raw"
 RAW="$(cd "$ROOT/app/build/store_shots/raw" && pwd -W 2>/dev/null || pwd)"

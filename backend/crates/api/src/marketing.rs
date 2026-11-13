@@ -140,6 +140,10 @@ fn push_audience(qb: &mut QueryBuilder<'_, Postgres>, segments: &[Segment]) {
                 qb.push_bind(code.clone());
                 qb.push(")");
             }
+            // Archived languages read English, so the English segment covers every non-Korean account.
+            Segment::Language { locale } if locale == "en" => {
+                qb.push("u.locale <> 'ko'");
+            }
             Segment::Language { locale } => {
                 qb.push("u.locale = ");
                 qb.push_bind(locale.clone());
@@ -632,7 +636,8 @@ mod tests {
         assert!(!segment_ok(&Segment::LastBookingOlderThan { days: 0 }));
         assert!(segment_ok(&Segment::District { code: "11680".into() }));
         assert!(!segment_ok(&Segment::District { code: "1 OR 1=1".into() }));
-        assert!(segment_ok(&Segment::Language { locale: "vi".into() }));
+        assert!(segment_ok(&Segment::Language { locale: "en".into() }));
+        assert!(!segment_ok(&Segment::Language { locale: "vi".into() }), "archived language");
         assert!(!segment_ok(&Segment::Language { locale: "xx".into() }));
     }
 }

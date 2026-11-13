@@ -39,10 +39,8 @@ PASS identity verification in Korea; Kakao, Naver, Google and Apple sign-in
 ■ Easy payment
 Credit and debit cards, Kakao Pay, Naver Pay, Toss Pay, PAYCO, Samsung Pay, Apple Pay, bank transfer, virtual account and phone billing.
 
-■ 14 languages
-한국어, English, 日本語, 中文, Tiếng Việt, Русский, नेपाली, සිංහල, ไทย, Bahasa Indonesia, Монгол, O'zbek, Filipino, ខ្មែរ
-
-Living in Korea? Book in your own language.
+■ Korean and English
+Living in Korea? Book in English too.
 
 Customer support: More → Customer support in the app.
 ```
@@ -73,7 +71,7 @@ Dahae Partner is the app for Dahae cleaning professionals. (It is separate from 
 · Chat with the operations team in the app
 · Invite team members and share the work
 · Finished jobs are paid out every Wednesday; see your earnings in the app
-· 14 languages
+· Korean and English
 
 To join, enter your areas and services in the app and pass review.
 ```

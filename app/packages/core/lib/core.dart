@@ -13,7 +13,6 @@ export 'src/districts.dart';
 export 'src/gen/app_localizations.dart';
 export 'src/i18n.dart';
 export 'src/identity.dart';
-export 'src/language_welcome.dart';
 export 'src/models.dart';
 export 'src/push.dart';
 export 'src/realtime.dart';

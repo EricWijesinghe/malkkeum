@@ -153,7 +153,7 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('choosing Sinhala then English re-renders the chrome and saves the account language', (tester) async {
+  testWidgets('choosing English then Korean re-renders the chrome and saves the account language', (tester) async {
     setViewport(tester, phoneSize);
     final fake = FakeApi()..reply('PATCH', '/me', {'name': '지민', 'phone': '01012345678'});
     stockCustomerApi(fake);
@@ -165,20 +165,19 @@ void main() {
     await tester.tap(find.text(koT.moreLanguage));
     await settle(tester);
 
-    await tester.tap(find.text(LocaleController.names['si']!));
-    await settle(tester, duration: const Duration(milliseconds: 500));
-    final si = lookupT(const Locale('si'));
-    expect(env.locale.locale?.languageCode, 'si');
-    expect(env.storage.data['app.locale'], 'si');
-    expect(find.text(si.moreLanguage), findsWidgets);
-    expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'si');
-
     await tester.tap(find.text(LocaleController.names['en']!));
     await settle(tester, duration: const Duration(milliseconds: 500));
     final en = lookupT(const Locale('en'));
     expect(env.locale.locale?.languageCode, 'en');
+    expect(env.storage.data['app.locale'], 'en');
     expect(find.text(en.moreLanguage), findsWidgets, reason: 'language screen re-renders in English');
     expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'en');
+
+    await tester.tap(find.text(LocaleController.names['ko']!));
+    await settle(tester, duration: const Duration(milliseconds: 500));
+    expect(env.locale.locale?.languageCode, 'ko');
+    expect(find.text(koT.moreLanguage), findsWidgets, reason: 'language screen re-renders in Korean');
+    expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'ko');
     await unmount(tester);
   });
 }

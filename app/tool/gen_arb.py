@@ -1,6 +1,6 @@
 """Builds packages/core/lib/l10n/app_<lang>.arb from the strings_*.py tables.
 
-One table per app area keeps all five languages side by side, so a missing
+One table per app area keeps Korean and English side by side, so a missing
 translation is a visible gap in a row rather than a silently absent key.
 
 Run:  python -I app/tool/gen_arb.py   (then `flutter gen-l10n` runs on build)
@@ -12,8 +12,9 @@ import pathlib
 import re
 import sys
 
-LANGS = ["ko", "en", "ja", "zh", "vi"]
-# Extra languages live in lang_<code>.py as T = {key: text}; they must cover every key.
+# i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+LANGS = ["ko", "en"]
+# Extra languages live in lang_<code>.py as T = {key: text}; they must cover every key (none ship today).
 EXTRA = sorted(p.stem[5:] for p in pathlib.Path(__file__).resolve().parent.glob("lang_*.py"))
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE.parent / "packages" / "core" / "lib" / "l10n"

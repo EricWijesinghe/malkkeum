@@ -135,7 +135,7 @@ connected to the **private** repo:
    `python -I docs/store/check_listings.py`); data safety: `docs/store/data-safety.md` (Google) and
    `docs/store/app-privacy.md` (Apple); demo login from the client's console (guide 03 D).
 6. Store images are generated, not hand-made: `scripts/store/generate.sh` renders both apps at the store
-   sizes (iPhone 6.9"/6.5", iPad 13", Android 1080x2400), frames them with captions in 5 languages, and
+   sizes (iPhone 6.9"/6.5", iPad 13", Android 1080x2400), frames them with captions in Korean and English, and
    writes the Play feature graphics and poster. Output: `docs/store/screenshots/<app>/<size>/<lang>/NN-name.png`,
    `docs/store/graphics/`. Re-run after app screen changes, then upload the folders. Captions:
    `docs/store/screenshots/captions.json`. Screen list and fake data: `app/apps/*/test/store_screenshots/`.

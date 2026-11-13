@@ -96,6 +96,36 @@ async fn campaign_reaches_consented_customers_and_logs_the_rest(pool: PgPool) {
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn english_segment_also_reaches_accounts_on_an_archived_language(pool: PgPool) {
+    let app = app(pool.clone());
+    let ko = customer(&app, &pool, "010-5400-0011").await;
+    let en = customer(&app, &pool, "010-5400-0012").await;
+    let vi = customer(&app, &pool, "010-5400-0013").await;
+    for (c, locale) in [(&ko, "ko"), (&en, "en"), (&vi, "vi")] {
+        sqlx::query("UPDATE users SET locale = $2 WHERE id = $1")
+            .bind(c.user)
+            .bind(locale)
+            .execute(&pool)
+            .await
+            .expect("locale");
+        grant_marketing(&pool, c.user, true).await;
+    }
+    let campaign = scheduled_push(&pool, Utc::now() - Duration::minutes(1)).await;
+    sqlx::query("UPDATE campaigns SET audience = $2 WHERE id = $1")
+        .bind(campaign)
+        .bind(json!([{ "type": "language", "locale": "en" }]))
+        .execute(&pool)
+        .await
+        .expect("audience");
+
+    marketing::dispatch_at(&state(&pool), daytime()).await.expect("dispatch");
+
+    assert_eq!(send_status(&pool, ko.user).await, None);
+    assert_eq!(send_status(&pool, en.user).await.as_deref(), Some("sent"));
+    assert_eq!(send_status(&pool, vi.user).await.as_deref(), Some("sent"), "a stored archived language reads English");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn campaigns_are_admin_only_and_tests_go_to_the_owner_phone_only(pool: PgPool) {
     let app = app(pool.clone());
     let consultant = auth::issue_access(SECRET, Uuid::now_v7(), auth::Role::StaffConsultant).expect("consultant token");

@@ -50,7 +50,7 @@ PortOne과 PG사 계약 조건에 따라 달라서 지금 숫자를 말씀드리
 네. 콘솔에서 직원 계정을 만들 수 있고, 상담원은 예약·상담만, 관리자는 모든 설정까지 볼 수 있어요. 최신 버전은 직원 2단계 인증(OTP 앱)도 지원해요. 파트너 쪽은 팀장이 팀원을 초대해 작업을 나눌 수 있어요.
 
 **15. 외국인 고객이나 외국인 파트너도 쓸 수 있나요?**
-네. 고객·파트너 앱과 콘솔 모두 14개 언어(한국어, 영어, 일본어, 중국어, 베트남어, 러시아어, 네팔어, 싱할라어, 태국어, 인도네시아어, 몽골어, 우즈베크어, 필리핀어, 크메르어)를 지원하고, 알림과 문자도 받는 사람의 언어로 가요. 일부 언어(몽골어·싱할라어·네팔어·우즈베크어·크메르어·필리핀어)는 원어민 검수가 남아 있어요.
+네. 고객·파트너 앱과 콘솔 모두 한국어와 영어를 지원하고, 알림과 문자도 받는 사람의 언어로 가요. 다른 12개 언어는 보관해 두었다가 필요하면 다시 켤 수 있어요.
 
 ---
 
@@ -84,7 +84,7 @@ The newest build has a case screen for damage, loss, complaints, no-shows, safet
 Yes, once a Kakao channel and approved AlimTalk templates are connected through Solapi (fields exist in setup). The Kakao business channel and template approval come first. Push notifications work after Firebase setup.
 
 **10. When will it be in the stores?**
-Once the accounts exist, the developer builds and sends TestFlight (iPhone) and Play internal-test (Android) links first. After your check it goes to review: usually 1–3 days at Apple, 1–7 at Google. Store text (5 languages), screenshots and privacy answers are ready.
+Once the accounts exist, the developer builds and sends TestFlight (iPhone) and Play internal-test (Android) links first. After your check it goes to review: usually 1–3 days at Apple, 1–7 at Google. Store text (Korean and English), screenshots and privacy answers are ready.
 
 **11. Tax: VAT, cash receipts, withholding?**
 Today's kit shows a VAT estimate and accountant CSVs (payments ledger, monthly summary, settlements). The newest build adds cash receipts, tax-invoice requests with a Hometax CSV, 3.3% partner withholding and a quarterly VAT summary. These stay off until tested with the real gateway and confirmed by an accountant; 12 open questions are written up.
@@ -99,4 +99,4 @@ Console [시스템 상태] shows server, database, disk, backup and payment heal
 Yes. The console has staff accounts: consultants see bookings and chats, admins see all settings. The newest build adds staff two-factor sign-in (authenticator app). On the partner side, a team owner can invite members and split jobs.
 
 **15. Foreign customers or partners?**
-Yes. All three apps support 14 languages (Korean, English, Japanese, Chinese, Vietnamese, Russian, Nepali, Sinhala, Thai, Indonesian, Mongolian, Uzbek, Filipino, Khmer), and notifications and SMS go out in the recipient's language. Mongolian, Sinhala, Nepali, Uzbek, Khmer and Filipino still need native-speaker review.
+Yes. All three apps support Korean and English, and notifications and SMS go out in the recipient's language. Twelve more languages are archived and can be switched back on.

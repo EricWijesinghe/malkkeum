@@ -315,7 +315,8 @@ PAY_SCHEMES = ["ispmobile", "kftc-bankpay", "kakaotalk", "supertoss", "payco", "
                "hdcardappcardansimclick", "lottesmartpay", "lotteappcard", "mpocket.online.ios", "kb-acp", "nhappcardansimclick",
                "nonghyupcardansimclick", "hanawalletmembers", "cloudpay", "newsmartpib", "citimobileapp",
                "tauthlink", "ktauthexternalcall", "upluscorporation"]
-IOS_LANGS = ["en", "ko", "ja", "zh-Hans", "vi", "fil", "id", "km", "mn", "ne", "ru", "si", "th", "uz"]
+# i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+IOS_LANGS = ["en", "ko"]
 USAGE_KEYS = ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]
 BANNED_PERMS = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",
                 "android.permission.READ_MEDIA_VISUAL_USER_SELECTED", "android.permission.CAMERA",
@@ -475,7 +476,8 @@ def check_store_docs():
     builds = [ln for ln in cm.splitlines() if "flutter build " in ln]
     check(len(builds) == 4 and all("FCI_TAG" in ln for ln in builds),
           "codemagic.yaml: all four flutter build lines must take the version name from the tag (FCI_TAG)")
-    for lang in ["ko", "en", "ja", "zh", "vi"]:
+    # i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+    for lang in ["ko", "en"]:
         check((REPO / "docs" / "store" / "release-notes" / f"{lang}.md").exists(), f"release notes template missing: {lang}")
     rn = (REPO / "docs" / "store" / "review-notes.md").read_text(encoding="utf-8")
     check("<REVIEW_PHONE>" in rn and "<REVIEW_CODE>" in rn, "review-notes.md: keep the phone and code as placeholders")

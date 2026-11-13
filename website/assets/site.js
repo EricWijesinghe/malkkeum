@@ -6,7 +6,8 @@ const API = location.hostname === 'localhost' || location.hostname === '127.0.0.
 const FTC_LOOKUP = 'https://www.ftc.go.kr/bizCommPop.do?wrkr_no=';
 const BIZ_NO_DIGITS = 10;
 
-const LANGS = { ko: '한국어', en: 'English', ja: '日本語', zh: '中文', vi: 'Tiếng Việt', ru: 'Русский', ne: 'नेपाली', si: 'සිංහල', th: 'ไทย', id: 'Bahasa Indonesia', mn: 'Монгол', uz: "O'zbek", fil: 'Filipino', km: 'ខ្មែរ' };
+// i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+const LANGS = { ko: '한국어', en: 'English' };
 
 const COPY = {
   ko: {
@@ -57,78 +58,6 @@ const COPY = {
     c_ceo: 'CEO', c_reg: 'Business reg. no.', c_mail: 'Mail-order reg.', c_addr: 'Address', c_privacy: 'Privacy officer', c_host: 'Hosting provider', c_bizcheck: 'Verify business registration',
     store_soon: 'Coming soon',
   },
-  ja: {
-    proof_title: 'ダヘの実績', proof_homes: '今月 {n}件のお宅を清掃しました', proof_rating: '平均評価 {r}点 · レビュー{n}件',
-    nav_services: 'サービス', nav_how: 'ご利用方法', nav_faq: 'よくある質問', nav_partner: 'パートナー募集',
-    eyebrow: '今日予約、明日訪問', h1a: '家事はおまかせ、', h1b: '輝く毎日を。',
-    lead: '審査済みの清掃のプロが浴室から引越し清掃まで。アプリで料金を確認して1分で予約。',
-    cta_book: 'アプリで予約', cta_prices: '料金を見る', chip_a: '✨ 審査済みのプロ', chip_b: '💳 かんたん決済',
-    svc_title: '必要な清掃だけ、明確な料金で', svc_sub: '料金はリアルタイムで反映されます。', from: '〜', quote: '訪問見積',
-    how_title: '予約は1分、あとはおまかせ', how_1t: 'サービス選択', how_1: '清掃内容と広さを選ぶとすぐに料金が出ます。',
-    how_2t: '日程選択', how_2: '明日から60日先まで。', how_3t: 'かんたん決済', how_3: 'カード、KakaoPay、Naver Pay など。',
-    how_4t: '訪問・完了', how_4: 'プロが清掃し、ビフォーアフター写真で確認。',
-    ba_title: 'スライドして違いを確認', ba_before: 'ビフォー', ba_after: 'アフター',
-    trust_title: '安心して任せられる理由', t1t: '本人確認済みのプロ', t1: 'すべてのパートナーが本人確認と審査を通過。',
-    t2t: '訪問2日前まで無料キャンセル', t2: '予定が変わっても安心。', t3t: '作業写真レポート', t3: '終了後に写真で確認できます。',
-    faq_title: 'よくある質問',
-    q1: '無料キャンセルはいつまで？', a1: '訪問の2日前まで全額返金されます。',
-    q2: '支払い方法は？', a2: 'カード、KakaoPay、Naver Pay、Toss Pay、PAYCO、Samsung Pay、Apple Pay、振込、仮想口座、携帯決済。',
-    q3: '引越し清掃の見積は？', a3: 'アプリで住まいの情報を入力すると、プロの見積を比べて選べます。',
-    q4: '道具の準備は必要？', a4: 'プロが専用の道具と洗剤を持参します。',
-    band_title: 'アプリをダウンロードして初回クーポンを', band_sub: '登録するとすぐ使えるクーポンを差し上げます。',
-    partner_title: '清掃のプロとして一緒に', partner_sub: '好きな地域と時間で働き、毎週水曜日に精算。', partner_cta: 'パートナーアプリ',
-    f_privacy: 'プライバシーポリシー', f_terms: '利用規約', f_delete: 'アカウント削除', f_support: 'サポート',
-    c_ceo: '代表', c_reg: '事業者登録番号', c_mail: '通信販売業届出', c_addr: '住所', c_privacy: '個人情報保護責任者', c_host: 'ホスティング事業者', c_bizcheck: '事業者情報の確認',
-    store_soon: '近日公開',
-  },
-  zh: {
-    proof_title: 'Dahae 的口碑', proof_homes: '本月已清洁 {n} 户', proof_rating: '平均 {r} 分 · {n} 条评价',
-    nav_services: '服务', nav_how: '使用方法', nav_faq: '常见问题', nav_partner: '成为服务者',
-    eyebrow: '今天预约，明天上门', h1a: '家务交给我们，', h1b: '生活焕然一新。',
-    lead: '经过认证的保洁专家，从浴室到搬家保洁。应用内查看价格，一分钟完成预约。',
-    cta_book: '在应用中预约', cta_prices: '查看价格', chip_a: '✨ 认证专家', chip_b: '💳 便捷支付',
-    svc_title: '只选需要的保洁，价格透明', svc_sub: '以下价格实时更新。', from: '起', quote: '上门报价',
-    how_title: '一分钟预约，其余交给我们', how_1t: '选择服务', how_1: '选择项目和面积，立即显示价格。',
-    how_2t: '选择日期', how_2: '明天起 60 天内任选时间。', how_3t: '便捷支付', how_3: '银行卡、KakaoPay、Naver Pay、Toss Pay 等。',
-    how_4t: '上门完成', how_4: '专家上门保洁，并提供前后对比照片。',
-    ba_title: '滑动查看前后对比', ba_before: '保洁前', ba_after: '保洁后',
-    trust_title: '值得信赖的理由', t1t: '实名认证专家', t1: '所有服务者均通过身份认证与审核。',
-    t2t: '上门前 2 天可免费取消', t2: '计划有变也不用担心。', t3t: '前后照片报告', t3: '完成后用照片确认每个细节。',
-    faq_title: '常见问题',
-    q1: '什么时候可以免费取消？', a1: '上门前 2 天内全额退款。',
-    q2: '支持哪些支付方式？', a2: '银行卡、KakaoPay、Naver Pay、Toss Pay、PAYCO、Samsung Pay、Apple Pay、转账、虚拟账户、手机支付。',
-    q3: '搬家保洁如何报价？', a3: '在应用中填写房屋信息，即可比较专家报价并选择。',
-    q4: '需要准备工具吗？', a4: '不需要，专家自带设备和清洁剂。',
-    band_title: '下载应用，领取首单优惠券', band_sub: '注册即可使用优惠券。',
-    partner_title: '成为保洁专家', partner_sub: '自选区域和时间，每周三结算。', partner_cta: '下载服务者应用',
-    f_privacy: '隐私政策', f_terms: '服务条款', f_delete: '删除账号', f_support: '客服',
-    c_ceo: '代表', c_reg: '营业执照号', c_mail: '电商备案', c_addr: '地址', c_privacy: '个人信息负责人', c_host: '托管服务商', c_bizcheck: '核实经营者信息',
-    store_soon: '即将上线',
-  },
-  vi: {
-    proof_title: 'Dahae qua con số', proof_homes: 'Tháng này đã dọn {n} nhà', proof_rating: 'Trung bình {r} sao · {n} đánh giá',
-    nav_services: 'Dịch vụ', nav_how: 'Cách dùng', nav_faq: 'Hỏi đáp', nav_partner: 'Trở thành đối tác',
-    eyebrow: 'Đặt hôm nay, đến ngày mai', h1a: 'Việc nhà để chúng tôi lo,', h1b: 'bạn giữ niềm vui.',
-    lead: 'Chuyên gia vệ sinh đã xác minh, từ phòng tắm đến dọn nhà mới. Xem giá trong ứng dụng và đặt trong một phút.',
-    cta_book: 'Đặt trong ứng dụng', cta_prices: 'Xem giá', chip_a: '✨ Chuyên gia xác minh', chip_b: '💳 Thanh toán dễ',
-    svc_title: 'Chỉ dịch vụ bạn cần, giá rõ ràng', svc_sub: 'Giá được cập nhật trực tiếp.', from: 'từ', quote: 'Báo giá tại nhà',
-    how_title: 'Một phút để đặt, phần còn lại chúng tôi lo', how_1t: 'Chọn dịch vụ', how_1: 'Chọn công việc và diện tích, giá hiện ngay.',
-    how_2t: 'Chọn ngày', how_2: 'Từ ngày mai đến 60 ngày tới.', how_3t: 'Thanh toán', how_3: 'Thẻ, KakaoPay, Naver Pay, Toss Pay...',
-    how_4t: 'Đến & xong', how_4: 'Chuyên gia dọn dẹp, bạn xem ảnh trước/sau.',
-    ba_title: 'Kéo để thấy khác biệt', ba_before: 'Trước', ba_after: 'Sau',
-    trust_title: 'Vì sao bạn yên tâm', t1t: 'Chuyên gia đã xác minh', t1: 'Mọi đối tác đều qua xác minh danh tính và xét duyệt.',
-    t2t: 'Hủy miễn phí trước 2 ngày', t2: 'Thay đổi kế hoạch không lo.', t3t: 'Báo cáo ảnh trước/sau', t3: 'Ảnh cho mỗi lần hoàn thành.',
-    faq_title: 'Câu hỏi thường gặp',
-    q1: 'Hủy miễn phí đến khi nào?', a1: 'Hoàn tiền đầy đủ đến 2 ngày trước lịch hẹn.',
-    q2: 'Thanh toán thế nào?', a2: 'Thẻ, KakaoPay, Naver Pay, Toss Pay, PAYCO, Samsung Pay, Apple Pay, chuyển khoản, tài khoản ảo, thanh toán qua điện thoại.',
-    q3: 'Báo giá dọn nhà mới thế nào?', a3: 'Nhập thông tin nhà trong ứng dụng, nhận báo giá và chọn.',
-    q4: 'Tôi có cần chuẩn bị dụng cụ?', a4: 'Không, chuyên gia mang theo thiết bị và chất tẩy rửa.',
-    band_title: 'Tải ứng dụng, nhận phiếu cho lần đặt đầu', band_sub: 'Phiếu dùng ngay khi đăng ký.',
-    partner_title: 'Trở thành chuyên gia vệ sinh', partner_sub: 'Chọn khu vực và giờ làm, nhận tiền mỗi thứ Tư.', partner_cta: 'Tải ứng dụng đối tác',
-    f_privacy: 'Chính sách bảo mật', f_terms: 'Điều khoản', f_delete: 'Xóa tài khoản', f_support: 'Hỗ trợ',
-    c_ceo: 'Đại diện', c_reg: 'Mã số kinh doanh', c_mail: 'Đăng ký bán hàng', c_addr: 'Địa chỉ', c_privacy: 'Phụ trách bảo mật', c_host: 'Nhà cung cấp hosting', c_bizcheck: 'Tra cứu thông tin doanh nghiệp',
-    store_soon: 'Sắp ra mắt',
-  },
 };
 
 // Tile tints per service (recognition); the 3D art itself is palette-coloured.
@@ -141,7 +70,7 @@ const store = { get(k) { try { return localStorage.getItem(k); } catch { return 
 
 function pickLang() {
   const saved = store.get('site.lang');
-  if (saved && LANGS[saved]) return saved;
+  if (saved) return LANGS[saved] ? saved : 'en';
   const nav = (navigator.language || 'ko').toLowerCase().split('-')[0];
   return LANGS[nav] ? nav : 'ko';
 }
