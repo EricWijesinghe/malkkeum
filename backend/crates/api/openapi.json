@@ -1252,12 +1252,28 @@
         "tags": [
           "customer"
         ],
-        "summary": "Chat threads visible to the caller",
+        "summary": "Chat threads visible to the caller, most recent first (cursor-paginated)",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ]
       },
       "post": {
         "operationId": "openThread",
@@ -1620,12 +1636,28 @@
         "tags": [
           "pro"
         ],
-        "summary": "Settlement statements",
+        "summary": "Settlement statements, newest first (cursor-paginated)",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ]
       }
     },
     "/v1/partner/reviews": {
@@ -1634,12 +1666,28 @@
         "tags": [
           "pro"
         ],
-        "summary": "Reviews of the partner's work",
+        "summary": "Reviews of the partner's work, newest first (cursor-paginated)",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ]
       }
     },
     "/v1/partner/threads": {
@@ -1648,12 +1696,28 @@
         "tags": [
           "pro"
         ],
-        "summary": "Chat threads for the partner",
+        "summary": "Chat threads for the partner (cursor-paginated)",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ]
       }
     },
     "/v1/partner/export": {
@@ -1903,12 +1967,28 @@
         "tags": [
           "pro"
         ],
-        "summary": "The partner's submitted quotes",
+        "summary": "The partner's submitted quotes, latest activity first (cursor-paginated)",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ]
       }
     },
     "/v1/partner/schedule": {
@@ -2593,7 +2673,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Payouts (filter by state; capped at 200)",
+        "summary": "Payouts, newest first (filter by state; cursor-paginated)",
         "parameters": [
           {
             "name": "state",
@@ -2602,11 +2682,22 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
           },
           "default": {
             "$ref": "#/components/responses/Error"

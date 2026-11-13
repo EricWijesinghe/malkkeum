@@ -24,7 +24,19 @@ const IDEMPOTENT_OPS: [&str; 9] = [
     "adminPayoutAction",
 ];
 /// Operations that page with `limit`/`cursor` and advertise `X-Next-Cursor`.
-const PAGED_OPS: [&str; 5] = ["listBookings", "listNotifications", "listCheckouts", "adminListCheckouts", "adminListBookings"];
+const PAGED_OPS: [&str; 11] = [
+    "listBookings",
+    "listNotifications",
+    "listCheckouts",
+    "adminListCheckouts",
+    "adminListBookings",
+    "partnerSettlements",
+    "partnerReviews",
+    "partnerQuotes",
+    "listMyThreads",
+    "partnerThreads",
+    "adminPayouts",
+];
 
 fn manifest() -> &'static Path {
     Path::new(env!("CARGO_MANIFEST_DIR"))

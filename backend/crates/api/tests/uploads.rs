@@ -17,7 +17,8 @@ use sqlx::PgPool;
 use std::net::SocketAddr;
 use tower::ServiceExt;
 
-const PNG: &[u8] = b"\x89PNG\r\n\x1a\nphoto-bytes";
+/// Smallest container the metadata stripper accepts: signature, IHDR, IEND.
+const PNG: &[u8] = b"\x89PNG\r\n\x1a\n\x00\x00\x00\x0dIHDR\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00IEND\x00\x00\x00\x00";
 
 async fn send(app: &Router, mut req: Request<Body>) -> (StatusCode, String, Vec<u8>) {
     req.extensions_mut().insert(ConnectInfo(SocketAddr::from(([127, 0, 0, 1], 40_000))));
@@ -154,4 +155,79 @@ async fn stored_photo_paths_leave_the_api_signed(pool: PgPool) {
     let url = body[0]["image_url"].as_str().expect("image_url");
     assert!(url.starts_with(&format!("{BASE_URL}/v1/files/0123456789abcdef0123456789abcdef.png?exp=")), "{url}");
     assert!(url.contains("&sig="), "{url}");
+}
+
+/// Uploads arbitrary bytes as the customer. Returns the status and the JSON body.
+async fn upload_raw(app: &Router, token: &str, bytes: &[u8]) -> (StatusCode, Value) {
+    let boundary = "XBOUNDARY";
+    let mut body = format!("--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"p.bin\"\r\nContent-Type: application/octet-stream\r\n\r\n").into_bytes();
+    body.extend_from_slice(bytes);
+    body.extend_from_slice(format!("\r\n--{boundary}--\r\n").as_bytes());
+    let req = Request::builder()
+        .method("POST")
+        .uri("/v1/uploads")
+        .header(header::AUTHORIZATION, format!("Bearer {token}"))
+        .header(header::CONTENT_TYPE, format!("multipart/form-data; boundary={boundary}"))
+        .body(Body::from(body))
+        .expect("request");
+    let (status, _, bytes) = send(app, req).await;
+    (status, serde_json::from_slice(&bytes).unwrap_or(Value::Null))
+}
+
+fn jpeg_segment(marker: u8, body: &[u8]) -> Vec<u8> {
+    let mut s = vec![0xFF, marker];
+    s.extend_from_slice(&u16::try_from(body.len() + 2).expect("small").to_be_bytes());
+    s.extend_from_slice(body);
+    s
+}
+
+/// A JPEG whose EXIF block carries GPS coordinates, device and time, plus an XMP block.
+fn jpeg_with_gps() -> Vec<u8> {
+    let mut j = vec![0xFF, 0xD8];
+    j.extend(jpeg_segment(0xE0, b"JFIF\0\x01\x01\0\0\x01\0\x01\0\0"));
+    j.extend(jpeg_segment(0xE1, b"Exif\0\0MM\0*\0\0\0\x08GPSLatitude37.5665N GPSLongitude126.9780E Make=Acme DateTimeOriginal"));
+    j.extend(jpeg_segment(0xE1, b"http://ns.adobe.com/xap/1.0/\0<x:xmpmeta>GPSLatitude</x:xmpmeta>"));
+    j.extend(jpeg_segment(0xDB, &[0; 65]));
+    j.extend(jpeg_segment(0xDA, &[1, 1, 0, 0, 63, 0]));
+    j.extend_from_slice(&[0x12, 0x34, 0xFF, 0xD9]);
+    j
+}
+
+fn contains(hay: &[u8], needle: &[u8]) -> bool {
+    hay.windows(needle.len()).any(|w| w == needle)
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn uploaded_photos_are_stored_without_exif_or_gps(pool: PgPool) {
+    seed_catalog(&pool).await;
+    std::fs::create_dir_all(test_config().upload_dir).expect("upload dir");
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0602").await;
+    let (status, body) = upload_raw(&app, &c.token, &jpeg_with_gps()).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let (path, name) = path_of(body["url"].as_str().expect("url"));
+    let stored = std::fs::read(test_config().upload_dir.join(&name)).expect("stored file");
+    for needle in [&b"GPSLatitude"[..], b"GPSLongitude", b"Exif", b"Make=Acme", b"xmpmeta"] {
+        assert!(!contains(&stored, needle), "{} survived on disk", String::from_utf8_lossy(needle));
+    }
+    assert!(stored.ends_with(&[0x12, 0x34, 0xFF, 0xD9]), "image data is untouched");
+    let (status, kind, served) = send(&app, get(&path)).await;
+    assert_eq!((status, kind.as_str()), (StatusCode::OK, "image/jpeg"));
+    assert_eq!(served, stored, "what is served is what was stripped");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn images_that_cannot_be_cleaned_are_refused(pool: PgPool) {
+    seed_catalog(&pool).await;
+    std::fs::create_dir_all(test_config().upload_dir).expect("upload dir");
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0603").await;
+    let heic = b"\0\0\0\x18ftypheic\0\0\0\0mif1heicEXIF-GPS";
+    let truncated_jpeg = [0xFF, 0xD8, 0xFF, 0xE1, 0x00, 0x40, b'E'];
+    for (label, bytes) in [("heic keeps its EXIF inside the container", &heic[..]), ("a truncated jpeg", &truncated_jpeg[..])] {
+        let (status, body) = upload_raw(&app, &c.token, bytes).await;
+        assert_eq!((status, body["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("unsupported_image")), "{label}: {body}");
+    }
+    let rows: i64 = sqlx::query_scalar("SELECT count(*) FROM uploads WHERE owner_id = $1").bind(c.user).fetch_one(&pool).await.expect("count");
+    assert_eq!(rows, 0, "refused images leave no upload row");
 }

@@ -1,4 +1,4 @@
-//! Photo uploads (chat photos, completion photos). Validated by magic bytes, stored under random names.
+//! Photo uploads (chat photos, completion photos). Validated by magic bytes, stripped of EXIF/GPS, stored under random names.
 //! Files are never mounted publicly: `/v1/files/<name>?exp=&sig=` serves them when the HMAC (key derived
 //! from DATA_KEY) over name and expiry checks out. Stored values are `/files/<name>`; `sign_json` turns
 //! every such path in a JSON response into a fresh signed URL, so handlers never store expiring links.
@@ -7,6 +7,7 @@ use crate::{
     auth::Auth,
     config::Config,
     error::{ApiError, ApiResult},
+    image_meta,
     ratelimit::within_quota,
     state::AppState,
     util::IMAGE_EXTS,
@@ -238,6 +239,8 @@ async fn upload(State(s): State<AppState>, a: Auth, mut form: Multipart) -> ApiR
         return Err(ApiError::BadRequest("file_too_large"));
     }
     let ext = sniff(&bytes).ok_or(ApiError::BadRequest("unsupported_image"))?;
+    // EXIF/GPS of a customer's home must not reach anyone holding a signed URL. HEIC cannot be rewritten, so it is refused.
+    let bytes = image_meta::strip(ext, &bytes).ok_or(ApiError::BadRequest("unsupported_image"))?;
     let mut name = [0u8; 16];
     OsRng.fill_bytes(&mut name);
     let file = format!("{}.{ext}", hex::encode(name));

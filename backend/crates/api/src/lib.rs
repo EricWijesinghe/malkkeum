@@ -19,6 +19,7 @@ pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
 pub mod lifecycle;
+pub mod image_meta;
 pub mod lockout;
 pub mod marketing;
 pub mod metrics;
@@ -55,12 +56,12 @@ pub fn build_state(db: PgPool, config: Config) -> Result<AppState, reqwest::Erro
     Ok(AppState {
         providers: Arc::new(Providers::new(config.clone(), db.clone())?),
         hub: Hub::new(db.clone()),
+        lockout: Arc::new(lockout::Lockout::new(db.clone())),
         db,
         config: Arc::new(config),
         ai_debounce: Default::default(),
         address_search: Default::default(),
         review_reports: Default::default(),
-        lockout: Default::default(),
     })
 }
 

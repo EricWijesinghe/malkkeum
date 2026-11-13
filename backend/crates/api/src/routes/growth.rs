@@ -3,7 +3,7 @@
 
 use super::{audit, uploads};
 use crate::{
-    auth::{Admin, Auth, Customer, Staff},
+    auth::{Admin, Customer, Staff},
     error::{ApiError, ApiResult},
     state::AppState,
     util::own_uploads,
@@ -380,9 +380,18 @@ struct ReportInput {
     note: String,
 }
 
-/// Any signed-in user reports a review once. Reports from distinct users up to the threshold hide
-/// the review at once and queue it for a staff decision (`report_pending`).
-async fn report_review(State(s): State<AppState>, a: Auth, Path(booking): Path<Uuid>, Json(r): Json<ReportInput>) -> ApiResult<Json<Value>> {
+/// A reporter counts toward the auto-hide only if they completed a booking with the reviewed pro and are not
+/// that pro or one of its team members (matched by phone). Other reports still queue the review for staff.
+const QUALIFIED_REPORTS_SQL: &str = "SELECT count(*) FROM review_reports rr JOIN users u ON u.id = rr.reporter_id
+  WHERE rr.booking_id = $1 AND $2::uuid IS NOT NULL
+    AND EXISTS (SELECT 1 FROM bookings b WHERE b.user_id = u.id AND b.pro_id = $2 AND b.status = 3)
+    AND NOT EXISTS (SELECT 1 FROM pros p WHERE p.id = $2 AND p.phone = u.phone)
+    AND NOT EXISTS (SELECT 1 FROM team_members t WHERE t.pro_id = $2 AND t.phone = u.phone)";
+
+/// A customer reports a review once. Reports from the threshold of distinct customers who booked that pro
+/// hide the review at once; any threshold-many reports queue it for a staff decision (`report_pending`).
+/// The reviewed pro and its team can never hide a review this way.
+async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(booking): Path<Uuid>, Json(r): Json<ReportInput>) -> ApiResult<Json<Value>> {
     let reason = REPORT_REASONS.iter().find(|x| **x == r.reason).ok_or(ApiError::BadRequest("invalid_report"))?;
     let note = r.note.trim();
     if note.chars().count() > REPORT_NOTE_CHARS {
@@ -391,7 +400,7 @@ async fn report_review(State(s): State<AppState>, a: Auth, Path(booking): Path<U
     if !s.review_reports.admit(a.id, REPORTS_PER_WINDOW, Instant::now()) {
         return Err(ApiError::RateLimited);
     }
-    let author: Uuid = sqlx::query_scalar("SELECT user_id FROM reviews WHERE booking_id = $1")
+    let (author, pro): (Uuid, Option<Uuid>) = sqlx::query_as("SELECT user_id, pro_id FROM reviews WHERE booking_id = $1")
         .bind(booking)
         .fetch_optional(&s.db)
         .await?
@@ -409,9 +418,13 @@ async fn report_review(State(s): State<AppState>, a: Auth, Path(booking): Path<U
     if inserted.rows_affected() == 0 {
         return Err(ApiError::Conflict("already_reported"));
     }
+    let threshold = i64::from(s.config.review_report_threshold);
     let reports: i64 = sqlx::query_scalar("SELECT count(*) FROM review_reports WHERE booking_id = $1").bind(booking).fetch_one(&s.db).await?;
-    if reports >= i64::from(s.config.review_report_threshold) {
+    let qualified: i64 = sqlx::query_scalar(QUALIFIED_REPORTS_SQL).bind(booking).bind(pro).fetch_one(&s.db).await?;
+    if qualified >= threshold {
         sqlx::query("UPDATE reviews SET hidden = TRUE, report_pending = TRUE WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
+    } else if reports >= threshold {
+        sqlx::query("UPDATE reviews SET report_pending = TRUE WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
     }
     Ok(Json(json!({ "ok": true })))
 }

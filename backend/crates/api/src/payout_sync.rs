@@ -13,8 +13,11 @@ use crate::{
 use serde_json::json;
 use sqlx::PgPool;
 use std::{
-    sync::atomic::{AtomicBool, Ordering},
-    time::Duration,
+    sync::{
+        Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::{Duration, Instant},
 };
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -61,18 +64,46 @@ pub async fn alert_counts(db: &PgPool) -> Result<(i64, i64), sqlx::Error> {
     sqlx::query_as(ALERT_SQL).bind(ALERT_AFTER_HOURS).fetch_one(db).await
 }
 
-static PASS_RUNNING: AtomicBool = AtomicBool::new(false);
+/// Webhook kicks start a pass at most this often, however many arrive: `/webhooks/toss` is unauthenticated.
+const KICK_MIN_INTERVAL: Duration = Duration::from_secs(30);
 
-/// Runs one pass in the background unless one is already running (webhook bursts coalesce into one pass).
+static PASS_RUNNING: AtomicBool = AtomicBool::new(false);
+static LAST_KICK: Mutex<Option<Instant>> = Mutex::new(None);
+
+/// Clears the running flag when dropped, so a pass that panics cannot leave kicks disabled for good.
+struct RunningGuard(&'static AtomicBool);
+
+impl Drop for RunningGuard {
+    fn drop(&mut self) {
+        self.0.store(false, Ordering::SeqCst);
+    }
+}
+
+/// True when a kick at `now` is far enough after the last accepted one; records it if so.
+fn kick_due(last: &Mutex<Option<Instant>>, now: Instant) -> bool {
+    let mut last = last.lock().unwrap_or_else(|p| p.into_inner());
+    if last.is_some_and(|t| now.saturating_duration_since(t) < KICK_MIN_INTERVAL) {
+        return false;
+    }
+    *last = Some(now);
+    true
+}
+
+/// Runs one pass in the background unless one is already running or one started recently
+/// (webhook bursts coalesce into one pass).
 pub fn kick(state: AppState) {
     if state.config.dev_mode || PASS_RUNNING.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst).is_err() {
         return;
     }
+    let guard = RunningGuard(&PASS_RUNNING);
+    if !kick_due(&LAST_KICK, Instant::now()) {
+        return; // the guard's drop frees the flag
+    }
     tokio::spawn(async move {
+        let _guard = guard;
         if let Err(e) = sync_pass(&state).await {
             tracing::warn!(error = ?e, "payout sync pass from webhook failed");
         }
-        PASS_RUNNING.store(false, Ordering::SeqCst);
     });
 }
 
@@ -99,4 +130,31 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
             job_pass("payout_sync", ok);
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn kicks_are_spaced_by_the_minimum_interval() {
+        let last = Mutex::new(None);
+        let t0 = Instant::now();
+        assert!(kick_due(&last, t0));
+        assert!(!kick_due(&last, t0 + Duration::from_secs(29)), "too soon");
+        assert!(kick_due(&last, t0 + KICK_MIN_INTERVAL), "interval passed");
+    }
+
+    #[tokio::test]
+    async fn a_panicking_pass_frees_the_running_flag() {
+        static FLAG: AtomicBool = AtomicBool::new(true);
+        let guard = RunningGuard(&FLAG);
+        let joined = tokio::spawn(async move {
+            let _guard = guard;
+            panic!("pass blew up");
+        })
+        .await;
+        assert!(joined.is_err());
+        assert!(!FLAG.load(Ordering::SeqCst), "flag reset by the drop guard");
+    }
 }

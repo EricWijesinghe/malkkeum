@@ -7,6 +7,7 @@ use super::{
 };
 use crate::{
     auth::{Pro, mask_name},
+    contract::{PageQuery, json_row_cursor, page_limit, paged, ts_id_cursor},
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
     state::AppState,
@@ -15,6 +16,7 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
+    response::Response,
     routing::{get, post, put},
 };
 use chrono::NaiveDate;
@@ -303,7 +305,10 @@ async fn withdraw_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<U
     Ok(Json(json!({ "ok": true })))
 }
 
-async fn my_quotes(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Value>> {
+/// Latest activity first; keyset cursor over (updated_at, id). Only the quotes on the page are marked seen.
+async fn my_quotes(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
     // Closing stale requests lazily keeps the state right without a scheduler.
     sqlx::query(&format!(
         "UPDATE quotes q SET state = 'closed' FROM bookings b WHERE q.booking_id = b.id AND q.pro_id = $1 AND q.state = 'waiting' AND (b.visit_date <= {KST_TODAY} OR b.status = -1)"
@@ -311,18 +316,25 @@ async fn my_quotes(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Json<Val
     .bind(a.id)
     .execute(&s.db)
     .await?;
-    let v: Value = sqlx::query_scalar(
-        "SELECT COALESCE(jsonb_agg(x ORDER BY x.updated_at DESC), '[]') FROM (SELECT q.id, q.booking_id, q.amount, q.note, q.state, q.seen_by_pro, q.created_at, q.updated_at,
-           b.service_code, b.visit_date, b.start_hour, b.estimate, b.district_code, b.answers FROM quotes q JOIN bookings b ON b.id = q.booking_id WHERE q.pro_id = $1 AND q.state <> 'withdrawn') x",
+    let rows: Vec<Value> = sqlx::query_scalar(
+        "SELECT to_jsonb(x) FROM (SELECT q.id, q.booking_id, q.amount, q.note, q.state, q.seen_by_pro, q.created_at, q.updated_at,
+           b.service_code, b.visit_date, b.start_hour, b.estimate, b.district_code, b.answers FROM quotes q JOIN bookings b ON b.id = q.booking_id
+           WHERE q.pro_id = $1 AND q.state <> 'withdrawn' AND ($2::timestamptz IS NULL OR (q.updated_at, q.id) < ($2, $3))
+           ORDER BY q.updated_at DESC, q.id DESC LIMIT $4) x ORDER BY x.updated_at DESC, x.id DESC",
     )
     .bind(a.id)
-    .fetch_one(&s.db)
+    .bind(ts)
+    .bind(id)
+    .bind(limit)
+    .fetch_all(&s.db)
     .await?;
-    sqlx::query("UPDATE quotes SET seen_by_pro = TRUE WHERE pro_id = $1 AND NOT seen_by_pro")
+    let shown: Vec<Uuid> = rows.iter().filter_map(|r| r["id"].as_str()?.parse().ok()).collect();
+    sqlx::query("UPDATE quotes SET seen_by_pro = TRUE WHERE pro_id = $1 AND NOT seen_by_pro AND id = ANY($2)")
         .bind(a.id)
+        .bind(&shown)
         .execute(&s.db)
         .await?;
-    Ok(Json(v))
+    Ok(paged(rows, limit, |r| json_row_cursor(r, "updated_at", "id")))
 }
 
 #[derive(Deserialize)]
