@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3233,6 +3234,20 @@ class TKo extends T {
 
   @override
   String get guestAccountHint => '로그인하면 확인할 수 있어요';
+
+  @override
+  String guestPriceLine(String amount) {
+    return '예상 금액 $amount · 가입 없이 확인한 견적이에요';
+  }
+
+  @override
+  String get guestPeakNote => '방문 시간대에 따라 피크 요금이 더해질 수 있어요';
+
+  @override
+  String get guestBookWithQuote => '이 견적으로 예약하기';
+
+  @override
+  String get guestSeePrices => '가입 없이 가격 확인';
 
   @override
   String get locUseCurrent => '현재 위치로 찾기';

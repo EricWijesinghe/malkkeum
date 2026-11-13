@@ -6187,6 +6187,30 @@ abstract class T {
   /// **'로그인하면 확인할 수 있어요'**
   String get guestAccountHint;
 
+  /// No description provided for @guestPriceLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액 {amount} · 가입 없이 확인한 견적이에요'**
+  String guestPriceLine(String amount);
+
+  /// No description provided for @guestPeakNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 시간대에 따라 피크 요금이 더해질 수 있어요'**
+  String get guestPeakNote;
+
+  /// No description provided for @guestBookWithQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 견적으로 예약하기'**
+  String get guestBookWithQuote;
+
+  /// No description provided for @guestSeePrices.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 없이 가격 확인'**
+  String get guestSeePrices;
+
   /// No description provided for @locUseCurrent.
   ///
   /// In ko, this message translates to:
