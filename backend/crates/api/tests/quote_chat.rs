@@ -516,6 +516,41 @@ async fn two_concurrent_confirms_of_one_payment_fulfil_once_and_never_refund(poo
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn a_deposit_settled_after_another_checkout_confirmed_the_booking_is_refunded_with_notice(pool: PgPool) {
+    let app = common::app(pool.clone());
+    let (c, id, first) = deposit_checkout(&app, &pool, "010-5400-0016").await;
+    // A second checkout for the same booking (customer retried, or two devices).
+    let ck = json!({ "kind": "deposit", "method": "card", "booking_id": id });
+    let (st, intent) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck)).await;
+    assert_eq!(st, StatusCode::OK, "{intent}");
+    let second = intent["id"].as_str().expect("checkout id").to_string();
+    assert_ne!(first, second);
+
+    let (st, b) = call(&app, "POST", &format!("/v1/checkouts/{first}/confirm"), Some(c.token.as_str()), Some(json!({ "payment_id": "dev:paid" }))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+
+    // The other payment (a different PortOne id) settles for the already confirmed booking, then retries.
+    let confirm = format!("/v1/checkouts/{second}/confirm");
+    for want in ["already_confirmed", "checkout_closed"] {
+        let (st, b) = call(&app, "POST", &confirm, Some(c.token.as_str()), Some(json!({ "payment_id": "dev:card" }))).await;
+        assert_eq!((st, code(&b)), (StatusCode::CONFLICT, want), "{b}");
+    }
+    let (status, reason): (String, Option<String>) = sqlx::query_as("SELECT status, refund_reason FROM checkouts WHERE id = $1::uuid")
+        .bind(&second)
+        .fetch_one(&pool)
+        .await
+        .expect("checkout");
+    assert_eq!((status.as_str(), reason.as_deref()), ("refunded", Some("already_confirmed")));
+    let notices: i64 = sqlx::query_scalar("SELECT count(*) FROM notifications WHERE owner_role = 'customer' AND owner_id = $1 AND kind = 'payment.refunded'")
+        .bind(c.user)
+        .fetch_one(&pool)
+        .await
+        .expect("notices");
+    assert_eq!(notices, 1, "told once, not per retry");
+    assert_paid_once(&pool, &id, &first).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn a_quote_card_is_stamped_when_written_not_when_its_transaction_began(pool: PgPool) {
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());

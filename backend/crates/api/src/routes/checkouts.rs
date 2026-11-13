@@ -401,9 +401,10 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
     }
 }
 
-/// The booking moved between the customer's tap and settlement (re-quote, or changed under lock).
+/// The booking moved between the customer's tap and settlement (re-quote, changed under lock, or
+/// another checkout confirmed it first): the charge was refunded and the customer must hear of it.
 fn deposit_changed(e: &ApiError) -> bool {
-    matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed" | "booking_changed"))
+    matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed" | "booking_changed" | "already_confirmed"))
 }
 
 /// The refusal for a checkout that stays as it is: closed checkouts say so, open ones report the provider state.
@@ -417,11 +418,15 @@ fn refused(ck: &CheckoutRow, provider_status: &str) -> ApiError {
 
 /// Marks a checkout refunded (from any open or closed-by-failure state) and tells the customer.
 async fn refund_late(s: &AppState, ck: &CheckoutRow, reason: &str) -> ApiResult<()> {
-    sqlx::query("UPDATE checkouts SET status = 'refunded', refund_reason = $2 WHERE id = $1 AND status IN ('pending','awaiting_deposit','expired','failed','cancelled')")
+    let moved = sqlx::query("UPDATE checkouts SET status = 'refunded', refund_reason = $2 WHERE id = $1 AND status IN ('pending','awaiting_deposit','expired','failed','cancelled')")
         .bind(ck.id)
         .bind(reason)
         .execute(&s.db)
         .await?;
+    if moved.rows_affected() == 0 {
+        // Already refunded (retry or webhook replay): the customer was told the first time.
+        return Ok(());
+    }
     best_effort(
         "notify",
         notify(
@@ -815,7 +820,8 @@ mod tests {
         assert!(deposit_changed(&ApiError::Conflict("booking_changed")));
         assert!(deposit_changed(&ApiError::Conflict("price_changed")));
         assert!(deposit_changed(&ApiError::PriceChanged(json!({}))));
-        assert!(!deposit_changed(&ApiError::Conflict("already_confirmed")));
+        assert!(deposit_changed(&ApiError::Conflict("already_confirmed")));
+        assert!(!deposit_changed(&ApiError::Conflict("already_paid")));
         assert_eq!(refund_reason(&ApiError::Conflict("booking_changed")), "booking_changed");
     }
 }
