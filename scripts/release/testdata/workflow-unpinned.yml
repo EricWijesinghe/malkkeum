@@ -1,0 +1,17 @@
+name: fixture
+
+# Must FAIL scripts/release/check_workflows.py: a third-party action is pinned to a tag, not a commit SHA,
+# and a publishing job declares no environment.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  images:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo publish

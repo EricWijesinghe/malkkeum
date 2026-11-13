@@ -1,0 +1,43 @@
+name: release-tools
+
+# Checks for the release path: the signing and install-page scripts (scripts/release), the workflow pins
+# (check_workflows.py), the store listing lengths, the publish script's shell syntax and actionlint on the
+# release workflows. Runs on any change that touches them, and on demand as the dry run of the release wiring.
+on:
+  pull_request:
+    paths:
+      - scripts/release/**
+      - website/install/**
+      - docs/store/**
+      - deploy/publish-delivery.sh
+      - .github/workflows/**
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-tools-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - name: Shell syntax and shellcheck
+        run: shellcheck scripts/release/*.sh deploy/publish-delivery.sh
+      - name: Signing, bundle and install-page tests
+        run: bash scripts/release/test-release-tools.sh
+      - name: Python tests and checks (listing lengths, workflow pins)
+        run: |
+          python3 -I -m unittest scripts/release/test_release.py
+          python3 -I docs/store/check_listings.py
+          python3 -I scripts/release/check_workflows.py
+      # Built from a pinned module version (checksummed by the Go module proxy); the runner has Go installed.
+      - name: Actionlint on the release workflows
+        run: |
+          GOBIN="$RUNNER_TEMP/bin" go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          "$RUNNER_TEMP/bin/actionlint" .github/workflows/release.yml .github/workflows/release-tools.yml
