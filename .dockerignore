@@ -1,5 +1,6 @@
 # Web image context is the repo root; it only needs app/, website/, deploy/Caddyfile and deploy/flutter_bootstrap.js.
-.git
+# Hidden files and folders at the root (version control, CI, local env and editor state).
+.*
 backend
 NTD
 design
@@ -11,6 +12,3 @@ scripts
 **/node_modules
 app/apps/*/android/.gradle
 app/apps/*/ios/Pods
-.claude
-.github
-.env
