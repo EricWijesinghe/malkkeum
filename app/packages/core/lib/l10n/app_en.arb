@@ -1303,6 +1303,7 @@
  "pvCopy": "Copy",
  "pvCopied": "Copied",
  "pvExportFailed": "Could not load your data. Please try again later.",
+ "cSetupColorContrast": "White text on this colour is hard to read, so the apps will not use it. Choose a darker colour.",
  "safetyEmergency": "Emergency contacts",
  "emergencyPolice": "112 Police",
  "emergencyFire": "119 Fire & rescue",
