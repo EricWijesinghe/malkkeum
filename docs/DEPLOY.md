@@ -282,7 +282,7 @@ The server cannot report its own outage, so watch it from outside.
   - `malkkeum_http_requests_total{method,route,status}` and `malkkeum_http_request_duration_seconds` (histogram). `route` is the route template (`/v1/bookings/{id}`); unmatched paths share `route="unmatched"`, so cardinality stays bounded.
   - `malkkeum_db_pool_connections{state="open"|"idle"}`.
   - `malkkeum_payouts_pending`: payouts requested or sent and not yet settled.
-  - `malkkeum_job_last_run_timestamp_seconds{job}` and `malkkeum_job_errors_total{job}` for `reconciler`, `ops_alerts`, `payout_sync`, `settings_refresh`. Alert when a timestamp is older than a few intervals.
+  - `malkkeum_job_last_run_timestamp_seconds{job}`, `malkkeum_job_last_success_timestamp_seconds{job}` and `malkkeum_job_errors_total{job}` for every background job: `settings_refresh`, `reconciler`, `ops_alerts`, `payout_sync`, `retention`, `noshow`, `points`, `marketing`, `quality`, `waitlist`, `subscription_engine`, `notify_outbox`. Alert when a last-success timestamp is older than a few intervals. The API does the same check itself: a stalled job turns the console status page red and sends the `job_stalled` owner alert.
   - `malkkeum_realtime_listening`: 0 means this replica is not receiving events from the others.
   - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
 - **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).

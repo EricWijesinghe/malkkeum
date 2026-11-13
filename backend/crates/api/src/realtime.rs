@@ -18,10 +18,10 @@ use axum::{
     },
     response::Response,
 };
-use futures_util::{SinkExt, StreamExt};
+use futures_util::{SinkExt, StreamExt, future::join_all};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::PgPool;
+use sqlx::{PgExecutor, PgPool};
 use std::{
     borrow::Cow,
     sync::{
@@ -31,7 +31,7 @@ use std::{
     time::Duration,
 };
 use tokio::{
-    sync::{broadcast, mpsc, watch},
+    sync::{Semaphore, broadcast, mpsc, watch},
     task::JoinHandle,
 };
 use uuid::Uuid;
@@ -42,6 +42,18 @@ const PING_EVERY: Duration = Duration::from_secs(25);
 const CHANNEL: &str = "malkkeum_events";
 /// Postgres rejects NOTIFY payloads of 8000 bytes or more; keep a margin.
 const NOTIFY_INLINE_MAX: usize = 7000;
+/// How long the `notify_outbox` job leaves a new row to the attempt its own request makes.
+const OUTBOX_GRACE_SECS: f64 = 60.0;
+/// The job's retries start at this delay and double each time.
+const OUTBOX_BACKOFF_SECS: f64 = 60.0;
+/// Six retries span about an hour. After that a push is no longer worth sending.
+const OUTBOX_MAX_ATTEMPTS: i32 = 6;
+/// Rows retried at once; kept under the pool size, since each retry runs a few queries.
+const OUTBOX_BATCH: usize = 10;
+const OUTBOX_MAX_BATCHES: usize = 100;
+const OUTBOX_EVERY: Duration = Duration::from_secs(30);
+/// Pushes started straight from requests. A bulk send past this is drained by the job in batches.
+static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
 const LISTEN_BACKOFF_MIN: Duration = Duration::from_millis(250);
 const LISTEN_BACKOFF_MAX: Duration = Duration::from_secs(30);
 
@@ -126,12 +138,13 @@ impl Hub {
     }
 
     /// Delivers to sockets on this node now, and queues the event for the other nodes.
-    pub fn send(&self, to: Recipient, kind: &'static str, data: Value) {
-        let event = Event { to, kind: Cow::Borrowed(kind), data };
+    pub fn send(&self, to: Recipient, kind: impl Into<Cow<'static, str>>, data: Value) {
+        let kind = kind.into();
+        let event = Event { to, kind: kind.clone(), data };
         // No receivers is normal (nobody online); push covers that case.
         let _ = self.tx.send(Frame::Event(event.clone()));
         if self.publish.try_send(event).is_err() {
-            tracing::warn!(kind, "realtime publish queue full; other nodes miss this event");
+            tracing::warn!(%kind, "realtime publish queue full; other nodes miss this event");
         }
     }
 
@@ -367,49 +380,293 @@ async fn pump(
     }
 }
 
-/// Stores a notification, emits it live, and pushes to the owner's devices.
+impl Recipient {
+    /// Inbox owner as stored in `notifications` and `push_tokens`. Staff have no inbox: live events only.
+    fn owner(self) -> Option<(&'static str, Uuid)> {
+        match self {
+            Recipient::User(id) => Some(("customer", id)),
+            Recipient::Pro(id) => Some(("pro", id)),
+            Recipient::Member(id) => Some(("member", id)),
+            Recipient::Staff => None,
+        }
+    }
+}
+
+/// A notification on its way out. `id` is its outbox row. None for staff (live events only) and when
+/// the row could not be written: then there is one delivery attempt and no retry.
+pub struct Queued {
+    id: Option<i64>,
+    to: Recipient,
+    kind: Cow<'static, str>,
+    /// Korean source text; each delivery translates it for the recipient.
+    title: String,
+    body: String,
+    data: Value,
+    /// The inbox row is written and the live event is out.
+    stored: bool,
+}
+
+async fn insert_outbox<'e>(db: impl PgExecutor<'e>, q: &Queued) -> sqlx::Result<Option<i64>> {
+    let Some((role, owner)) = q.to.owner() else {
+        return Ok(None);
+    };
+    sqlx::query_scalar(
+        "INSERT INTO notification_outbox (owner_role, owner_id, kind, title, body, data, next_attempt_at)
+         VALUES ($1, $2, $3, $4, $5, $6, now() + make_interval(secs => $7)) RETURNING id",
+    )
+    .bind(role)
+    .bind(owner)
+    .bind(q.kind.as_ref())
+    .bind(&q.title)
+    .bind(&q.body)
+    .bind(&q.data)
+    .bind(OUTBOX_GRACE_SECS)
+    .fetch_one(db)
+    .await
+    .map(Some)
+}
+
+/// Queues a notification on `db`. Pass the business transaction, so the notification commits with the
+/// change it reports and survives a crash right after the commit. Hand the result to [`deliver`] once
+/// the transaction is committed.
+pub async fn enqueue<'e>(db: impl PgExecutor<'e>, to: Recipient, kind: &'static str, title: &str, body: &str, data: Value) -> sqlx::Result<Queued> {
+    let mut q = Queued {
+        id: None,
+        to,
+        kind: Cow::Borrowed(kind),
+        title: title.to_string(),
+        body: body.to_string(),
+        data,
+        stored: false,
+    };
+    q.id = insert_outbox(db, &q).await?;
+    Ok(q)
+}
+
+/// Stores a notification, emits it live, and pushes to the owner's devices. Runs after the business
+/// change is committed, so it never fails the caller: a step that fails stays in the outbox and the
+/// `notify_outbox` job retries it. Always `Ok`; the `ApiResult` is kept for the call sites.
 pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: &str, body: &str, data: Value) -> ApiResult<()> {
-    if let Recipient::User(user) = to
-        && crate::privacy::is_marketing(kind)
+    let mut q = Queued {
+        id: None,
+        to,
+        kind: Cow::Borrowed(kind),
+        title: title.to_string(),
+        body: body.to_string(),
+        data,
+        stored: false,
+    };
+    match insert_outbox(&state.db, &q).await {
+        Ok(id) => q.id = id,
+        Err(e) => tracing::warn!(error = %e, kind, "notification not queued: one delivery attempt, no retry"),
+    }
+    deliver(state, q).await;
+    Ok(())
+}
+
+/// Delivers a queued notification: inbox row and live event now, the push on a background task, so a
+/// slow push service never holds the request. Never fails the caller. What could not be done stays in
+/// the outbox for the `notify_outbox` job.
+pub async fn deliver(state: &AppState, mut q: Queued) {
+    if !store(state, &mut q).await {
+        return;
+    }
+    // No free slot (bulk send): the row waits for the job, which pushes in bounded batches.
+    let Ok(slot) = PUSH_SLOTS.try_acquire() else {
+        if q.id.is_none() {
+            tracing::warn!(kind = %q.kind, "push skipped: not queued and no push slot free");
+        }
+        return;
+    };
+    let state = state.clone();
+    tokio::spawn(async move {
+        push(&state, &q).await;
+        drop(slot);
+    });
+}
+
+/// Stage one: inbox row, live event and the customer's AlimTalk or SMS. True when the push may follow.
+async fn store(state: &AppState, q: &mut Queued) -> bool {
+    let Some((role, owner)) = q.to.owner() else {
+        state.hub.send(q.to, q.kind.clone(), q.data.clone());
+        return false;
+    };
+    if q.stored {
+        return true;
+    }
+    match try_store(state, q, role, owner).await {
+        Ok(true) => {
+            q.stored = true;
+            true
+        }
+        Ok(false) => {
+            settle(state, q, Ok(())).await;
+            false
+        }
+        Err(e) => {
+            tracing::warn!(error = %e, kind = %q.kind, "notification not stored");
+            settle(state, q, Err("store_failed")).await;
+            // A queued row is retried whole. Without a row the push is the only trace left, so it still goes out.
+            q.id.is_none()
+        }
+    }
+}
+
+/// False when the notification must not go out at all.
+async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> ApiResult<bool> {
+    if let Recipient::User(user) = q.to
+        && crate::privacy::is_marketing(&q.kind)
         && !crate::privacy::marketing_allowed(&state.db, user).await?
     {
         // 정보통신망법: advertising goes out only while the customer's marketing consent stands.
+        return Ok(false);
+    }
+    // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
+    let locale = crate::i18n::locale_of(&state.db, q.to).await;
+    let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    // One statement: the inbox row and the outbox flag commit together, so a retry never stores twice.
+    sqlx::query(
+        "WITH flagged AS (UPDATE notification_outbox SET stored = true WHERE id = $5)
+         INSERT INTO notifications (owner_role, owner_id, kind, data) VALUES ($1, $2, $3, $4)",
+    )
+    .bind(role)
+    .bind(owner)
+    .bind(q.kind.as_ref())
+    .bind(json!({ "title": title, "body": body, "data": q.data }))
+    .bind(q.id)
+    .execute(&state.db)
+    .await?;
+    if let Recipient::User(user) = q.to {
+        kakao_to_customer(state, user, &q.kind, &locale, (&q.title, &q.body), (&title, &body), &q.data);
+    }
+    state.hub.send(q.to, q.kind.clone(), q.data.clone());
+    Ok(true)
+}
+
+/// Stage two: pushes to the owner's devices, then settles the outbox row.
+async fn push(state: &AppState, q: &Queued) {
+    let sent = try_push(state, q).await;
+    if let (None, Err(code)) = (q.id, sent) {
+        tracing::error!(kind = %q.kind, code, "push lost: the notification was not queued");
+    }
+    settle(state, q, sent).await;
+}
+
+async fn try_push(state: &AppState, q: &Queued) -> Result<(), &'static str> {
+    let Some((role, owner)) = q.to.owner() else {
+        return Ok(());
+    };
+    let tokens: Vec<String> = sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = $1 AND owner_id = $2")
+        .bind(role)
+        .bind(owner)
+        .fetch_all(&state.db)
+        .await
+        .map_err(|e| {
+            tracing::warn!(error = %e, kind = %q.kind, "push token lookup failed");
+            "token_lookup_failed"
+        })?;
+    if tokens.is_empty() {
         return Ok(());
     }
-    let (role, owner) = match to {
-        Recipient::User(id) => ("customer", Some(id)),
-        Recipient::Pro(id) => ("pro", Some(id)),
-        Recipient::Member(id) => ("member", Some(id)),
-        Recipient::Staff => ("staff", None),
-    };
-    if let Some(owner) = owner {
-        // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
-        let locale = crate::i18n::locale_of(&state.db, to).await;
-        let (ko_title, ko_body) = (title, body);
-        let (title, body) = (crate::i18n::tr(&locale, title), crate::i18n::tr(&locale, body));
-        let (title, body) = (title.as_str(), body.as_str());
-        sqlx::query("INSERT INTO notifications (owner_role, owner_id, kind, data) VALUES ($1, $2, $3, $4)")
-            .bind(role)
-            .bind(owner)
-            .bind(kind)
-            .bind(json!({ "title": title, "body": body, "data": data }))
-            .execute(&state.db)
-            .await?;
-        let tokens: Vec<String> = sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = $1 AND owner_id = $2")
-            .bind(role)
-            .bind(owner)
-            .fetch_all(&state.db)
-            .await?;
-        match state.providers.push_collect(&tokens, title, body, &data).await {
-            Ok(dead) => prune_push_tokens(state, role, owner, &dead).await,
-            Err(e) => tracing::warn!(error = %e, "push failed; notification kept in inbox"),
+    let locale = crate::i18n::locale_of(&state.db, q.to).await;
+    let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    match state.providers.push_collect(&tokens, &title, &body, &q.data).await {
+        Ok(dead) => {
+            prune_push_tokens(state, role, owner, &dead).await;
+            Ok(())
         }
-        if let Recipient::User(user) = to {
-            kakao_to_customer(state, user, kind, &locale, (ko_title, ko_body), (title, body), &data);
+        Err(e) => {
+            tracing::warn!(error = %e, kind = %q.kind, "push failed");
+            Err("push_failed")
         }
     }
-    state.hub.send(to, kind, data);
-    Ok(())
+}
+
+/// Closes an attempt on the outbox row: deleted when delivered, kept with a short code for the retry.
+async fn settle(state: &AppState, q: &Queued, outcome: Result<(), &'static str>) {
+    let Some(id) = q.id else {
+        return;
+    };
+    let done = match outcome {
+        Ok(()) => sqlx::query("DELETE FROM notification_outbox WHERE id = $1").bind(id).execute(&state.db).await,
+        Err(code) => {
+            sqlx::query("UPDATE notification_outbox SET last_error = $2 WHERE id = $1")
+                .bind(id)
+                .bind(code)
+                .execute(&state.db)
+                .await
+        }
+    };
+    if let Err(e) = done {
+        tracing::warn!(error = %e, outbox = id, "outbox row not settled; it will be tried again");
+    }
+}
+
+/// id, owner_role, owner_id, kind, title, body, data, stored, attempts.
+type OutboxRow = (i64, String, Uuid, String, String, String, Value, bool, i32);
+
+/// One pass of the `notify_outbox` job: retries what a request could not deliver. Rows are claimed with
+/// `FOR UPDATE SKIP LOCKED` and the next-attempt stamp is the lease, so the job runs on every replica
+/// and no two work the same row. Returns how many rows were tried.
+pub async fn outbox_pass(state: &AppState) -> ApiResult<usize> {
+    let mut tried = 0;
+    for _ in 0..OUTBOX_MAX_BATCHES {
+        let rows: Vec<OutboxRow> = sqlx::query_as(
+            "UPDATE notification_outbox SET attempts = attempts + 1, next_attempt_at = now() + make_interval(secs => $1 * power(2, attempts))
+             WHERE id IN (SELECT id FROM notification_outbox WHERE next_attempt_at <= now() ORDER BY next_attempt_at LIMIT $2 FOR UPDATE SKIP LOCKED)
+             RETURNING id, owner_role, owner_id, kind, title, body, data, stored, attempts",
+        )
+        .bind(OUTBOX_BACKOFF_SECS)
+        .bind(OUTBOX_BATCH as i64)
+        .fetch_all(&state.db)
+        .await?;
+        let claimed = rows.len();
+        join_all(rows.into_iter().map(|row| retry(state, row))).await;
+        tried += claimed;
+        if claimed < OUTBOX_BATCH {
+            break;
+        }
+    }
+    Ok(tried)
+}
+
+async fn retry(state: &AppState, (id, role, owner, kind, title, body, data, stored, attempts): OutboxRow) {
+    let to = match role.as_str() {
+        "customer" => Recipient::User(owner),
+        "pro" => Recipient::Pro(owner),
+        _ => Recipient::Member(owner),
+    };
+    let mut q = Queued {
+        id: Some(id),
+        to,
+        kind: Cow::Owned(kind),
+        title,
+        body,
+        data,
+        stored,
+    };
+    if attempts > OUTBOX_MAX_ATTEMPTS {
+        tracing::error!(kind = %q.kind, stored, retries = OUTBOX_MAX_ATTEMPTS, "notification dropped: retries used up");
+        return settle(state, &q, Ok(())).await;
+    }
+    if store(state, &mut q).await {
+        push(state, &q).await;
+    }
+}
+
+/// Starts the outbox job. Errors are logged and the loop goes on.
+pub fn spawn_outbox(state: AppState) -> JoinHandle<()> {
+    let mut stop = state.hub.drain_signal();
+    tokio::spawn(async move {
+        let mut tick = tokio::time::interval(OUTBOX_EVERY);
+        while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
+            let ok = outbox_pass(&state)
+                .await
+                .inspect_err(|e| tracing::warn!(error = %e, "notification outbox pass failed"))
+                .is_ok();
+            crate::metrics::job_pass("notify_outbox", ok);
+        }
+    })
 }
 
 /// Drops device tokens the push service no longer accepts (app removed, token rotated).
@@ -431,10 +688,11 @@ async fn prune_push_tokens(state: &AppState, role: &str, owner: Uuid, dead: &[St
 /// Transactional alert to a customer by phone. Korean customers get AlimTalk (SMS fallback). Other
 /// languages get SMS in their own language, because the approved AlimTalk templates are Korean only.
 /// Runs off the request path; failures only log, so a provider outage never fails the business action.
-fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, locale: &str, ko: (&str, &str), translated: (&str, &str), data: &Value) {
+fn kakao_to_customer(state: &AppState, user: Uuid, kind: &str, locale: &str, ko: (&str, &str), translated: (&str, &str), data: &Value) {
     let Some(key) = crate::providers::sms::alert_key(kind, data) else {
         return;
     };
+    let kind = kind.to_string();
     if state.providers.integ().solapi.is_none() {
         return;
     }
@@ -450,7 +708,7 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, locale: &
         let phone = match found {
             Ok(row) => row.flatten(),
             Err(e) => {
-                tracing::warn!(error = %e, kind, "customer phone lookup failed");
+                tracing::warn!(error = %e, %kind, "customer phone lookup failed");
                 return;
             }
         };
@@ -464,7 +722,7 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &'static str, locale: &
             state.providers.send_sms(&phone, &format!("{title}\n{body}")).await
         };
         if let Err(e) = sent {
-            tracing::warn!(error = %e, kind, "customer message failed");
+            tracing::warn!(error = %e, %kind, "customer message failed");
         }
     });
 }

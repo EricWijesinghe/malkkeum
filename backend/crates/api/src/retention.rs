@@ -26,18 +26,29 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(EVERY);
         while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
-            let cfg = &state.config;
-            match purge(&state.db, cfg).await {
-                Ok(r) => tracing::info!(?r, "retention purge done"),
-                Err(e) => tracing::warn!(error = %e, "retention purge failed"),
-            }
-            match crate::privacy::finish_pending_partner_deletions(&state).await {
-                Ok(n) if n > 0 => tracing::info!(n, "pending partner deletions completed"),
-                Ok(_) => {}
-                Err(e) => tracing::warn!(error = %e, "pending partner deletions failed"),
-            }
+            crate::jobs::run(&state, "retention", pass(&state)).await;
         }
     })
+}
+
+/// Both steps always run and log their own outcome. The pass fails when either did.
+async fn pass(state: &AppState) -> Result<(), &'static str> {
+    let purged = purge(&state.db, &state.config).await;
+    match &purged {
+        Ok(r) => tracing::info!(?r, "retention purge done"),
+        Err(e) => tracing::warn!(error = %e, "retention purge failed"),
+    }
+    let deleted = crate::privacy::finish_pending_partner_deletions(state).await;
+    match &deleted {
+        Ok(n) if *n > 0 => tracing::info!(n, "pending partner deletions completed"),
+        Ok(_) => {}
+        Err(e) => tracing::warn!(error = %e, "pending partner deletions failed"),
+    }
+    if purged.is_ok() && deleted.is_ok() {
+        Ok(())
+    } else {
+        Err("a retention step failed")
+    }
 }
 
 /// One pass over every purge rule. Stops at the first database error so the run is retried whole.

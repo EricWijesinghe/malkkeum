@@ -60,7 +60,7 @@ pub struct NewCase<'a> {
     pub photos: Value,
 }
 
-pub async fn insert(db: &PgPool, c: NewCase<'_>) -> ApiResult<Uuid> {
+pub async fn insert(db: impl sqlx::PgExecutor<'_>, c: NewCase<'_>) -> ApiResult<Uuid> {
     Ok(sqlx::query_scalar(
         "INSERT INTO cases (booking_id, kind, source, reporter_role, reporter_id, summary, photos, sla_due_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, now() + make_interval(hours => $8)) RETURNING id",

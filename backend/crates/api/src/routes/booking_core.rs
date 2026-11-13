@@ -1,15 +1,16 @@
 //! Booking rules shared by pay-now (bookings.rs) and checkout intents (checkouts.rs):
 //! request validation, server-side pricing, the paid-booking insert, and the deposit
-//! and balance steps. Nothing here decides money; callers own the transaction.
+//! and balance steps. Nothing there decides money; callers own the transaction.
+//! Also the one job completion (`complete_job`) behind the owner's and the team member's handler.
 
-use super::{bookings::BookingRow, catalog::load_service, chat, growth};
+use super::{bookings::BookingRow, catalog::load_service, chat, growth, partner_jobs, uploads};
 use crate::{
     crypto,
     error::{ApiError, ApiResult},
-    realtime::{Recipient, notify},
+    realtime::{Recipient, deliver, enqueue, notify},
     safety::take_entry,
     state::AppState,
-    util::{KST_TODAY, best_effort, lock_and_count_slot, sanitize_notes, today_kst},
+    util::{KST_TODAY, best_effort, lock_and_count_slot, own_uploads, sanitize_notes, today_kst},
 };
 use chrono::{DateTime, NaiveDate, Utc};
 use domain::{
@@ -18,7 +19,7 @@ use domain::{
     catalog::Service,
     coupon::Coupon,
     growth::{apply_welcome, welcome_applies},
-    partner::payout_date,
+    partner::{payout, payout_date},
     pricing::{PriceBreakdown, price_booking},
     quote::QuoteAnswers,
     schedule::{check_capacity, check_date, check_slot},
@@ -386,4 +387,119 @@ pub async fn after_booking_created(s: &AppState, id: Uuid, number: &str) {
         notify(s, Recipient::Staff, "booking.created", "새 예약", number, json!({ "booking_id": id })),
     )
     .await;
+}
+
+const CHECKLIST_ITEMS: usize = 4;
+const MAX_REPORT_PHOTOS: usize = 20;
+
+/// Completion report as both partner apps send it.
+#[derive(Deserialize)]
+pub struct CompletionBody {
+    before_photos: Vec<String>,
+    after_photos: Vec<String>,
+    checklist: Vec<bool>,
+}
+
+/// What a completion settled: the team's net, and when it is paid out (None while a quote's balance is open).
+pub struct Completed {
+    pub net: i64,
+    pub payout_date: Option<NaiveDate>,
+}
+
+/// The report's photos as stored upload names (before, after), when the report is complete: 1 to 20
+/// photos on each side, uploaded by the submitter (`member`) or by the team, and every item ticked.
+async fn checked_report(s: &AppState, pro: Uuid, member: Option<Uuid>, c: &CompletionBody) -> ApiResult<(Vec<String>, Vec<String>)> {
+    let incomplete = || ApiError::BadRequest("completion_incomplete");
+    let base = &s.config.public_base_url;
+    let (Some(before), Some(after)) = (own_uploads(base, &c.before_photos), own_uploads(base, &c.after_photos)) else {
+        return Err(incomplete());
+    };
+    let photos_ok = (1..=MAX_REPORT_PHOTOS).contains(&before.len()) && (1..=MAX_REPORT_PHOTOS).contains(&after.len());
+    if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
+        return Err(incomplete());
+    }
+    for photos in [&before, &after] {
+        let owned = match member {
+            Some(m) => uploads::owned(&s.db, Some(m), photos).await?,
+            None => uploads::owned_by_team(&s.db, pro, photos).await?,
+        };
+        if !owned {
+            return Err(incomplete());
+        }
+    }
+    Ok((before, after))
+}
+
+/// Completes an assigned job. One body for the team owner and for a team member (`member`), so a
+/// money rule can never reach one path only: phone gate, report checks, status move, completion
+/// report, the settlement for the owner `pro`, rewards, points and the customer's notification.
+/// A repeat after a lost response returns the first result and writes nothing.
+pub async fn complete_job(s: &AppState, b: &BookingRow, pro: Uuid, member: Option<Uuid>, c: &CompletionBody) -> ApiResult<Completed> {
+    partner_jobs::require_phone(s, pro).await?;
+    let (before, after) = checked_report(s, pro, member, c).await?;
+    if let Some((net, payout_date)) = partner_jobs::settled_once(&s.db, b.id, pro).await? {
+        return Ok(Completed { net, payout_date });
+    }
+    let today = today_kst();
+    // A job can't be completed (and paid) before it has happened.
+    if b.visit_date > today {
+        return Err(ApiError::Conflict("job_not_started"));
+    }
+    let gross = b.final_price.or(b.list_price).ok_or(ApiError::Conflict("job_unpriced"))?;
+    let fee_bps: i32 = sqlx::query_scalar("SELECT fee_bps FROM pros WHERE id = $1").bind(pro).fetch_one(&s.db).await?;
+    let p = payout(Won(gross), i64::from(fee_bps));
+    // A quote job is paid out only after the customer's balance is in.
+    let (payout_on, state) = if b.answers.is_some() {
+        (None, "waiting_balance")
+    } else {
+        (Some(payout_date(today)), "pending")
+    };
+    let mut tx = s.db.begin().await?;
+    let moved = sqlx::query("UPDATE bookings SET status = 3, completed_at = now(), updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2")
+        .bind(b.id)
+        .bind(pro)
+        .execute(&mut *tx)
+        .await?;
+    if moved.rows_affected() == 0 {
+        return Err(ApiError::Conflict("job_not_active"));
+    }
+    sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by) VALUES ($1,$2,$3,$4,$5)")
+        .bind(b.id)
+        .bind(&before)
+        .bind(&after)
+        .bind(json!(c.checklist))
+        .bind(member.unwrap_or(pro))
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("INSERT INTO settlements (pro_id, booking_id, gross, fee, net, payout_date, state) VALUES ($1,$2,$3,$4,$5,$6,$7)")
+        .bind(pro)
+        .bind(b.id)
+        .bind(p.gross.0)
+        .bind(p.fee.0)
+        .bind(p.net.0)
+        .bind(payout_on)
+        .bind(state)
+        .execute(&mut *tx)
+        .await?;
+    growth::reward_on_paid_completion(&mut tx, b.id).await?;
+    crate::points::on_completed(&mut tx, b.id).await?;
+    // Queued in the same transaction: every committed completion reaches the customer, even after a crash.
+    let notice = enqueue(
+        &mut *tx,
+        Recipient::User(b.user_id),
+        "booking.completed",
+        "청소가 끝났어요",
+        "전후 사진을 확인하고 후기를 남겨 주세요",
+        json!({ "booking_id": b.id, "status": 3 }),
+    )
+    .await?;
+    tx.commit().await?;
+    if let Some(t) = b.thread_id {
+        best_effort("chat", chat::post_system(s, t, "job_completed", json!({}))).await;
+    }
+    deliver(s, notice).await;
+    Ok(Completed {
+        net: p.net.0,
+        payout_date: payout_on,
+    })
 }

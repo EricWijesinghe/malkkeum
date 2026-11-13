@@ -1,16 +1,16 @@
 //! Partner jobs: feed, preview, atomic accept, quotes, schedule, assignment, memo, completion, reschedule replies.
 
-use super::uploads;
 use super::{
+    booking_core::{CompletionBody, complete_job},
     bookings::{BOOKING_COLS, BookingRow, load_booking},
-    chat, growth,
+    chat,
 };
 use crate::{
     auth::{Pro, mask_name},
     error::{ApiError, ApiResult},
-    realtime::{Recipient, notify},
+    realtime::{Recipient, deliver, enqueue, notify},
     state::AppState,
-    util::{KST_TODAY, best_effort, own_uploads, today_kst},
+    util::{KST_TODAY, best_effort, today_kst},
 };
 use axum::{
     Json, Router,
@@ -18,17 +18,12 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::NaiveDate;
-use domain::{
-    Won,
-    partner::{payout, payout_date},
-};
+use domain::{Won, partner::payout};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use uuid::Uuid;
 
 const FEED_LIMIT: i64 = 100;
-const CHECKLIST_ITEMS: usize = 4;
-const MAX_PHOTOS: usize = 20;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -195,7 +190,7 @@ async fn visible_to(s: &AppState, booking: Uuid, pro: Uuid) -> ApiResult<bool> {
 /// First-come accept. The UPDATE's WHERE clause is the lock: exactly one pro wins.
 /// Pros must have a verified phone (bound by OTP) before they take jobs, quote or finish them.
 /// Social sign-ups have none until they bind one. Viewing the feed stays open.
-async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
+pub(crate) async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
     let has_phone: bool = sqlx::query_scalar("SELECT phone IS NOT NULL FROM pros WHERE id = $1")
         .bind(pro)
         .fetch_one(&s.db)
@@ -210,6 +205,7 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
         return Err(ApiError::NotFound);
     }
     // Claim and default assignee in one statement: no half-accepted jobs.
+    let mut tx = s.db.begin().await?;
     let won: Option<(Uuid, String)> = sqlx::query_as(
         "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
            assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
@@ -217,11 +213,13 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
     )
     .bind(id)
     .bind(a.id)
-    .fetch_optional(&s.db)
+    .fetch_optional(&mut *tx)
     .await?;
     let (user, number) = won.ok_or(ApiError::Conflict("already_taken"))?;
-    notify(
-        &s,
+    // Queued with the claim. After the commit nothing can fail the request: a 5xx here would make the
+    // app retry and get `already_taken` for a job it won.
+    let notice = enqueue(
+        &mut *tx,
         Recipient::User(user),
         "booking.status",
         "청소팀이 배정됐어요",
@@ -229,6 +227,8 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
         json!({ "booking_id": id, "status": 2 }),
     )
     .await?;
+    tx.commit().await?;
+    deliver(&s, notice).await;
     s.hub.send(Recipient::Staff, "booking.updated", json!({ "booking_id": id }));
     Ok(Json(json!({ "ok": true, "booking_id": id })))
 }
@@ -407,13 +407,6 @@ async fn memo(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json
     Ok(Json(json!({ "ok": true })))
 }
 
-#[derive(Deserialize)]
-struct Completion {
-    before_photos: Vec<String>,
-    after_photos: Vec<String>,
-    checklist: Vec<bool>,
-}
-
 /// A completion that already landed (the app retried after a lost response): the first result, no second write.
 pub(crate) async fn settled_once(db: &sqlx::PgPool, booking: Uuid, pro: Uuid) -> ApiResult<Option<(i64, Option<NaiveDate>)>> {
     Ok(sqlx::query_as("SELECT net, payout_date FROM settlements WHERE booking_id = $1 AND pro_id = $2")
@@ -423,80 +416,14 @@ pub(crate) async fn settled_once(db: &sqlx::PgPool, booking: Uuid, pro: Uuid) ->
         .await?)
 }
 
-async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<Completion>) -> ApiResult<Json<Value>> {
-    require_phone(&s, a.id).await?;
-    let base = &s.config.public_base_url;
-    let (Some(before), Some(after)) = (own_uploads(base, &c.before_photos), own_uploads(base, &c.after_photos)) else {
-        return Err(ApiError::BadRequest("completion_incomplete"));
-    };
-    let photos_ok = (1..=MAX_PHOTOS).contains(&before.len()) && (1..=MAX_PHOTOS).contains(&after.len());
-    if !photos_ok || c.checklist.len() != CHECKLIST_ITEMS || !c.checklist.iter().all(|x| *x) {
-        return Err(ApiError::BadRequest("completion_incomplete"));
-    }
-    if !uploads::owned_by_team(&s.db, a.id, &before).await? || !uploads::owned_by_team(&s.db, a.id, &after).await? {
-        return Err(ApiError::BadRequest("completion_incomplete"));
-    }
+/// The owner's completion. The rules and writes are `booking_core::complete_job`, shared with the team member's.
+async fn complete(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(c): Json<CompletionBody>) -> ApiResult<Json<Value>> {
     let b = load_booking(&s.db, id).await?;
     if b.pro_id != Some(a.id) {
         return Err(ApiError::NotFound);
     }
-    if let Some((net, date)) = settled_once(&s.db, id, a.id).await? {
-        return Ok(Json(json!({ "ok": true, "payout_date": date, "net": net })));
-    }
-    let today = today_kst();
-    // A job can't be completed (and paid) before it has happened.
-    if b.visit_date > today {
-        return Err(ApiError::Conflict("job_not_started"));
-    }
-    let gross = gross(&b).ok_or(ApiError::Conflict("job_unpriced"))?;
-    let fee_bps: i32 = sqlx::query_scalar("SELECT fee_bps FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
-    let p = payout(Won(gross), i64::from(fee_bps));
-    let is_quote = b.answers.is_some();
-    let mut tx = s.db.begin().await?;
-    let moved = sqlx::query("UPDATE bookings SET status = 3, completed_at = now(), updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2")
-        .bind(id)
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    if moved.rows_affected() == 0 {
-        return Err(ApiError::Conflict("job_not_active"));
-    }
-    sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by) VALUES ($1,$2,$3,$4,$5)")
-        .bind(id)
-        .bind(&before)
-        .bind(&after)
-        .bind(json!(c.checklist))
-        .bind(a.id)
-        .execute(&mut *tx)
-        .await?;
-    sqlx::query("INSERT INTO settlements (pro_id, booking_id, gross, fee, net, payout_date, state) VALUES ($1,$2,$3,$4,$5,$6,$7)")
-        .bind(a.id)
-        .bind(id)
-        .bind(p.gross.0)
-        .bind(p.fee.0)
-        .bind(p.net.0)
-        .bind(if is_quote { None } else { Some(payout_date(today)) })
-        .bind(if is_quote { "waiting_balance" } else { "pending" })
-        .execute(&mut *tx)
-        .await?;
-    growth::reward_on_paid_completion(&mut tx, id).await?;
-    crate::points::on_completed(&mut tx, id).await?;
-    tx.commit().await?;
-    if let Some(t) = b.thread_id {
-        best_effort("chat", chat::post_system(&s, t, "job_completed", json!({}))).await;
-    }
-    notify(
-        &s,
-        Recipient::User(b.user_id),
-        "booking.completed",
-        "청소가 끝났어요",
-        "전후 사진을 확인하고 후기를 남겨 주세요",
-        json!({ "booking_id": id, "status": 3 }),
-    )
-    .await?;
-    Ok(Json(
-        json!({ "ok": true, "payout_date": if is_quote { None } else { Some(payout_date(today)) }, "net": p.net }),
-    ))
+    let done = complete_job(&s, &b, a.id, None, &c).await?;
+    Ok(Json(json!({ "ok": true, "payout_date": done.payout_date, "net": done.net })))
 }
 
 #[derive(Deserialize)]

@@ -81,9 +81,7 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(PASS_EVERY);
         while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = pass(&state).await {
-                tracing::warn!(error = %e, "subscription pass failed");
-            }
+            crate::jobs::run(&state, "subscription_engine", pass(&state)).await;
         }
     })
 }

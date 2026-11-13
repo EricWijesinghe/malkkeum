@@ -199,24 +199,35 @@ async fn advertise(s: &AppState, t: &Target, channel: &str, scope: &str, campaig
     let weekly = sent_last_week(&s.db, t.id).await?;
     // Read the clock per customer: a long pass must not send at a time that was quiet when it started.
     let now = seam.unwrap_or_else(Utc::now);
-    let (status, error) = match gate(consent, weekly, now) {
+    let (status, send) = match gate(consent, weekly, now) {
         Gate::Defer(at) => return Ok(Step::Deferred(at)),
         Gate::Capped => return Ok(Step::Done),
-        Gate::NoConsent => ("skipped_consent", None),
-        Gate::Send => match deliver(s, t, channel, copy).await {
-            Ok(()) => ("sent", None),
-            Err(code) => ("failed", Some(code)),
-        },
+        Gate::NoConsent => ("skipped_consent", false),
+        Gate::Send => ("sent", true),
     };
-    sqlx::query("INSERT INTO marketing_sends (dedupe_key, campaign_id, user_id, channel, status, error) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (dedupe_key) DO NOTHING")
-        .bind(&key)
-        .bind(campaign)
-        .bind(t.id)
-        .bind(channel)
-        .bind(status)
-        .bind(error)
-        .execute(&s.db)
-        .await?;
+    // Claim before sending: the unique key is the lock, so two passes, or a pass resumed after a crash,
+    // never reach the same customer twice. A crash between claim and send costs that one message.
+    let claimed = sqlx::query(
+        "INSERT INTO marketing_sends (dedupe_key, campaign_id, user_id, channel, status) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (dedupe_key) DO NOTHING",
+    )
+    .bind(&key)
+    .bind(campaign)
+    .bind(t.id)
+    .bind(channel)
+    .bind(status)
+    .execute(&s.db)
+    .await?
+    .rows_affected();
+    if claimed == 1
+        && send
+        && let Err(code) = deliver(s, t, channel, copy).await
+    {
+        sqlx::query("UPDATE marketing_sends SET status = 'failed', error = $2 WHERE dedupe_key = $1")
+            .bind(&key)
+            .bind(code)
+            .execute(&s.db)
+            .await?;
+    }
     Ok(Step::Done)
 }
 
@@ -282,6 +293,17 @@ pub async fn dispatch_at(s: &AppState, now: DateTime<Utc>) -> ApiResult<usize> {
 }
 
 async fn dispatch_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult<usize> {
+    // A campaign still `sending` here was cut off by a crash or a deploy: the marketing job runs one
+    // pass at a time (`jobs::run`), so nobody else is sending it. Re-open it. Customers already
+    // recorded are skipped, and if another sender were still alive the per-customer claim keeps
+    // every message single.
+    let resumed = sqlx::query("UPDATE campaigns SET status = 'scheduled' WHERE status = 'sending'")
+        .execute(&s.db)
+        .await?
+        .rows_affected();
+    if resumed > 0 {
+        tracing::warn!(resumed, "interrupted campaigns re-opened");
+    }
     let due: Vec<Uuid> = sqlx::query_scalar("SELECT id FROM campaigns WHERE status = 'scheduled' AND scheduled_at <= now() ORDER BY scheduled_at LIMIT 20")
         .fetch_all(&s.db)
         .await?;
@@ -408,17 +430,26 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(PASS_EVERY);
         while lifecycle::next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = dispatch_due(&state).await {
-                tracing::warn!(error = %e, job = "campaigns", "marketing pass failed");
-            }
-            if let Err(e) = run_nudges(&state).await {
-                tracing::warn!(error = %e, job = "nudges", "marketing pass failed");
-            }
-            if let Err(e) = send_reminders(&state).await {
-                tracing::warn!(error = %e, job = "reminders", "marketing pass failed");
-            }
+            crate::jobs::run(&state, "marketing", pass(&state)).await;
         }
     })
+}
+
+/// All three steps always run. The pass fails when any of them did.
+async fn pass(s: &AppState) -> Result<(), &'static str> {
+    let steps = [
+        ("campaigns", dispatch_due(s).await),
+        ("nudges", run_nudges(s).await),
+        ("reminders", send_reminders(s).await),
+    ];
+    let mut ok = true;
+    for (step, result) in steps {
+        if let Err(e) = result {
+            tracing::warn!(error = %e, step, "marketing step failed");
+            ok = false;
+        }
+    }
+    if ok { Ok(()) } else { Err("a marketing step failed") }
 }
 
 #[derive(Deserialize)]

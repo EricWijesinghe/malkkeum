@@ -39,9 +39,11 @@ static HTTP: Mutex<BTreeMap<RouteKey, Latency>> = Mutex::new(BTreeMap::new());
 static JOBS: Mutex<BTreeMap<&'static str, Job>> = Mutex::new(BTreeMap::new());
 
 #[derive(Default, Clone, Copy)]
-struct Job {
-    last_run_unix: f64,
-    errors: u64,
+pub struct Job {
+    pub last_run_unix: f64,
+    /// Unix time of the last pass that succeeded (0 = never in this process).
+    pub last_ok_unix: f64,
+    pub errors: u64,
 }
 
 /// Locks a metrics map; a panic in another request must not stop metrics for the rest of the process.
@@ -88,9 +90,21 @@ pub fn job_pass(job: &'static str, ok: bool) {
     let mut jobs = locked(&JOBS);
     let entry = jobs.entry(job).or_default();
     entry.last_run_unix = unix_now();
-    if !ok {
+    if ok {
+        entry.last_ok_unix = entry.last_run_unix;
+    } else {
         entry.errors += 1;
     }
+}
+
+/// Every known job with its last pass in this process. A job that has not run yet is listed with
+/// zeros, so the scrape and the status page always show the full set.
+pub fn jobs() -> BTreeMap<&'static str, Job> {
+    let mut jobs = locked(&JOBS).clone();
+    for (job, _) in crate::jobs::ALL {
+        jobs.entry(job).or_default();
+    }
+    jobs
 }
 
 /// Values the exposition reads from outside this module (pool, payouts table, realtime listener).
@@ -112,7 +126,7 @@ fn escape(v: &str) -> String {
 pub fn render(snap: &Snapshot) -> String {
     let mut out = String::new();
     let http = locked(&HTTP).clone();
-    let jobs = locked(&JOBS).clone();
+    let jobs = jobs();
     let _ = writeln!(out, "# HELP malkkeum_build_info Build version of this API process.");
     let _ = writeln!(out, "# TYPE malkkeum_build_info gauge");
     let _ = writeln!(out, "malkkeum_build_info{{version=\"{}\"}} 1", escape(snap.version));
@@ -160,6 +174,14 @@ pub fn render(snap: &Snapshot) -> String {
     let _ = writeln!(out, "# TYPE malkkeum_job_last_run_timestamp_seconds gauge");
     for (job, j) in &jobs {
         let _ = writeln!(out, "malkkeum_job_last_run_timestamp_seconds{{job=\"{job}\"}} {}", j.last_run_unix);
+    }
+    let _ = writeln!(
+        out,
+        "# HELP malkkeum_job_last_success_timestamp_seconds Unix time of the last successful pass of a background job (0 = never)."
+    );
+    let _ = writeln!(out, "# TYPE malkkeum_job_last_success_timestamp_seconds gauge");
+    for (job, j) in &jobs {
+        let _ = writeln!(out, "malkkeum_job_last_success_timestamp_seconds{{job=\"{job}\"}} {}", j.last_ok_unix);
     }
     let _ = writeln!(out, "# HELP malkkeum_job_errors_total Failed passes of a background job.");
     let _ = writeln!(out, "# TYPE malkkeum_job_errors_total counter");

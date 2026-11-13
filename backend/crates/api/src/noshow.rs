@@ -16,6 +16,7 @@ use crate::{
 };
 use domain::{booking::BookingStatus, coupon::COUPON_LIFETIME_DAYS};
 use serde_json::json;
+use sqlx::PgPool;
 use std::time::Duration;
 use uuid::Uuid;
 
@@ -34,16 +35,63 @@ pub async fn scan(s: &AppState) -> ApiResult<usize> {
     .bind(s.config.noshow_grace_minutes as i32)
     .fetch_all(&s.db)
     .await?;
+    let mut opened = 0;
     for (id, number) in &due {
-        let case = cases::insert(
-            &s.db,
-            NewCase { booking: Some(*id), kind: "no_show", source: "no_show", reporter: "system", reporter_id: None, summary: "partner has not checked in", photos: json!([]) },
-        )
-        .await?;
-        tracing::warn!(booking = %number, "no-show case opened");
-        notify(s, Recipient::Staff, "case.no_show", "도착 확인 없음", number, json!({ "booking_id": id, "case_id": case })).await?;
+        // Per booking: one that fails must not leave the rest of the batch without a case.
+        match open_case(&s.db, *id).await {
+            Ok(Some(case)) => {
+                opened += 1;
+                tracing::warn!(booking = %number, "no-show case opened");
+                best_effort(
+                    "no-show: staff",
+                    notify(
+                        s,
+                        Recipient::Staff,
+                        "case.no_show",
+                        "도착 확인 없음",
+                        number,
+                        json!({ "booking_id": id, "case_id": case }),
+                    ),
+                )
+                .await;
+            }
+            Ok(None) => {}
+            Err(e) => tracing::warn!(error = %e, booking = %number, "no-show case not opened; the next scan retries"),
+        }
     }
-    Ok(due.len())
+    Ok(opened)
+}
+
+/// Opens the case unless the booking already has one. The lock makes check-then-insert safe when two
+/// scans (two replicas, or overlapping passes) reach the same booking. None when another scan won.
+async fn open_case(db: &PgPool, booking: Uuid) -> ApiResult<Option<Uuid>> {
+    let mut tx = db.begin().await?;
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtext($1))")
+        .bind(format!("no_show:{booking}"))
+        .execute(&mut *tx)
+        .await?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM cases WHERE booking_id = $1 AND kind = 'no_show')")
+        .bind(booking)
+        .fetch_one(&mut *tx)
+        .await?;
+    if exists {
+        return Ok(None);
+    }
+    let case = cases::insert(
+        &mut *tx,
+        NewCase {
+            booking: Some(booking),
+            kind: "no_show",
+            source: "no_show",
+            reporter: "system",
+            reporter_id: None,
+            summary: "partner has not checked in",
+            photos: json!([]),
+        },
+    )
+    .await?;
+    tx.commit().await?;
+    Ok(Some(case))
 }
 
 /// Starts the periodic scan. Errors are logged and the loop goes on.
@@ -52,9 +100,7 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(PASS_EVERY);
         while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = scan(&state).await {
-                tracing::warn!(error = %e, "no-show scan failed");
-            }
+            crate::jobs::run(&state, "noshow", scan(&state)).await;
         }
     })
 }
