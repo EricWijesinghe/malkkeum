@@ -14,6 +14,7 @@ use crate::{
     contract::{PageQuery, cursor_part, decode_cursor, encode_cursor, page_limit, paged},
     crypto,
     error::{ApiError, ApiResult},
+    providers::ProviderError,
     ratelimit::within_quota,
     realtime::{Recipient, notify},
     safety,
@@ -129,7 +130,8 @@ pub(crate) struct CreateBooking {
     pub(crate) payment_method_id: Option<Uuid>,
 }
 
-/// Charges a saved method and records the payment. Used inside a transaction.
+/// Charges a saved PortOne billing key and records the payment. Used inside a transaction.
+/// The PortOne payment id is stored as the transaction id: cancel and lookup are keyed by it.
 pub async fn charge(s: &AppState, conn: &mut PgConnection, user: Uuid, method: Uuid, booking: Uuid, amount: Won, kind: &str) -> ApiResult<String> {
     let key: String = sqlx::query_scalar("SELECT billing_key FROM payment_methods WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL")
         .bind(method)
@@ -138,16 +140,43 @@ pub async fn charge(s: &AppState, conn: &mut PgConnection, user: Uuid, method: U
         .await?
         .ok_or(ApiError::BadRequest("payment_method_required"))?;
     let idem = format!("{booking}:{kind}");
-    let tx_id = s
-        .providers
-        .charge(&key, amount.0, &idem)
-        .await
-        .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
-    if let Err(e) = record_payment(conn, booking, amount.0, kind, "pg", &tx_id, &idem).await {
-        refund_or_alert(s, "pg", &tx_id, amount.0).await;
+    // A fresh id per attempt, so a declined id is never sent again; `idem` keeps one payment per booking and kind.
+    let pid = format!("{kind}-{}", Uuid::now_v7().simple());
+    match s.providers.charge_billing(&key, amount.0, &pid, order_name(kind), user).await {
+        Ok(_) => {}
+        Err(ProviderError::Upstream(cause)) => confirm_charge(s, &pid, amount.0, &cause).await?,
+        Err(e @ ProviderError::Declined(_)) => return Err(ApiError::PaymentFailed(e.to_string())),
+        Err(e) => return Err(e.into()),
+    }
+    if let Err(e) = record_payment(conn, booking, amount.0, kind, "portone", &pid, &idem).await {
+        refund_or_alert(s, "portone", &pid, amount.0).await;
         return Err(e);
     }
-    Ok(tx_id)
+    Ok(pid)
+}
+
+fn order_name(kind: &str) -> &'static str {
+    match kind {
+        "deposit" => "다해 예약금",
+        "balance" => "다해 잔금",
+        "tip" => "다해 팁",
+        _ => "다해 청소",
+    }
+}
+
+/// The charge answer was lost or unclear: ask PortOne. An unknown outcome is cancelled so nobody pays for nothing.
+async fn confirm_charge(s: &AppState, pid: &str, amount: i64, cause: &str) -> ApiResult<()> {
+    match s.providers.payment(pid, amount).await {
+        Ok(i) if i.status == "PAID" && i.total == amount => Ok(()),
+        Ok(i) if i.status == "FAILED" => Err(ApiError::PaymentFailed("charge_failed".into())),
+        Err(ProviderError::NotFound) => Err(ApiError::PaymentFailed("charge_failed".into())),
+        other => {
+            let status = other.as_ref().map_or("lookup_failed", |i| i.status.as_str());
+            tracing::warn!(payment = pid, cause, status, "charge outcome unknown; cancelling it");
+            refund_or_alert(s, "portone", pid, amount).await;
+            Err(ApiError::Unavailable("provider_unreachable"))
+        }
+    }
 }
 
 async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Json<CreateBooking>) -> ApiResult<Json<BookingRow>> {
@@ -258,7 +287,7 @@ async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepa
     if let Err(e) = tx.commit().await {
         // Charged but not saved: give the money back before reporting the failure.
         if let Some(t) = tx_id {
-            refund_or_alert(s, "pg", &t, price.total.0).await;
+            refund_or_alert(s, "portone", &t, price.total.0).await;
         }
         return Err(e.into());
     }
@@ -295,16 +324,52 @@ async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
     Ok(Json(view))
 }
 
+/// Payments refunded in full by `refund_locked`; their cash receipts are cancelled after the commit.
+struct Refunds {
+    total: i64,
+    closed: Vec<(Uuid, String)>,
+}
+
+impl Refunds {
+    async fn close_receipts(&self, s: &AppState) {
+        for (pid, tx) in &self.closed {
+            super::cash_receipts::on_full_refund(s, *pid, tx).await;
+        }
+    }
+}
+
+/// Locks the booking row until the transaction ends and returns its status as of now.
+async fn lock_status(conn: &mut PgConnection, id: Uuid) -> ApiResult<i16> {
+    sqlx::query_scalar("SELECT status FROM bookings WHERE id = $1 FOR UPDATE")
+        .bind(id)
+        .fetch_optional(conn)
+        .await?
+        .ok_or(ApiError::NotFound)
+}
+
 /// Refunds every paid payment on a booking (full or a capped amount) and records it.
+/// Holds the booking lock, so it never overlaps a cancel of the same booking.
 pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) -> ApiResult<i64> {
+    let mut tx = s.db.begin().await?;
+    lock_status(&mut tx, booking).await?;
+    let refunds = refund_locked(s, &mut tx, booking, max_amount).await?;
+    tx.commit().await?;
+    refunds.close_receipts(s).await;
+    Ok(refunds.total)
+}
+
+/// Refunds inside the caller's transaction, which holds the booking row lock (the provider call waits
+/// inside it; the 10 s HTTP timeout is well under the idle-transaction timeout). Each cancel tells the
+/// provider the balance our books expect, so a duplicate, or a retry after a lost commit, never refunds twice.
+async fn refund_locked(s: &AppState, conn: &mut PgConnection, booking: Uuid, max_amount: Option<i64>) -> ApiResult<Refunds> {
     let pays: Vec<(Uuid, i64, i64, Option<String>, String)> = sqlx::query_as(
-        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') AND kind <> 'tip' ORDER BY created_at DESC",
+        "SELECT id, amount, refunded_amount, provider_tx_id, provider FROM payments WHERE booking_id = $1 AND status IN ('paid','partially_refunded') AND kind <> 'tip' ORDER BY created_at DESC FOR UPDATE",
     )
     .bind(booking)
-    .fetch_all(&s.db)
+    .fetch_all(&mut *conn)
     .await?;
     let mut left = max_amount.unwrap_or(i64::MAX);
-    let mut total = 0;
+    let mut out = Refunds { total: 0, closed: Vec::new() };
     for (pid, amount, refunded, tx, provider) in pays {
         let amt = (amount - refunded).min(left);
         if amt <= 0 {
@@ -312,7 +377,7 @@ pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) ->
         }
         let tx = tx.ok_or_else(|| ApiError::Internal(format!("payment {pid} has no provider transaction id")))?;
         s.providers
-            .refund(&provider, &tx, amt)
+            .refund_checked(&provider, &tx, amt, amount - refunded)
             .await
             .map_err(|e| ApiError::PaymentFailed(e.to_string()))?;
         let status = if refunded + amt == amount { "refunded" } else { "partially_refunded" };
@@ -320,35 +385,36 @@ pub async fn refund_all(s: &AppState, booking: Uuid, max_amount: Option<i64>) ->
             .bind(pid)
             .bind(amt)
             .bind(status)
-            .execute(&s.db)
+            .execute(&mut *conn)
             .await?;
         if status == "refunded" {
-            super::cash_receipts::on_full_refund(s, pid, &tx).await;
+            out.closed.push((pid, tx));
         }
         left -= amt;
-        total += amt;
+        out.total += amt;
     }
-    Ok(total)
+    Ok(out)
 }
 
-/// Shared by customer and staff cancellation.
-/// Money first: refunds are recorded per payment, so if the gateway fails the booking
-/// stays active and the same call can be retried without refunding twice.
+/// Shared by customer and staff cancellation. One transaction holds the booking row lock from the
+/// status check through the refund to the status change: a second cancel or a completion waits, then
+/// sees the new status. Money moves at most once, and never for a booking that stays active.
 pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>, actor: &str) -> ApiResult<()> {
+    let mut tx = s.db.begin().await?;
+    if lock_status(&mut tx, b.id).await? != b.status {
+        return Err(ApiError::Conflict("booking_changed"));
+    }
     // Refused before any money moves: a settlement already at the provider cannot be pulled back.
     if payouts::in_transfer(&s.db, b.id).await? {
         return Err(ApiError::Conflict("settlement_in_transfer"));
     }
-    refund_all(s, b.id, refund_cap).await?;
-    let mut tx = s.db.begin().await?;
-    let updated = sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1 AND status = $2")
+    // The intent commits on its own before the provider call, so a refund that lands just before a crash leaves a trace.
+    audit(&s.db, actor, None, "booking.cancel_intent", &b.id.to_string(), json!({ "status": b.status, "refund_cap": refund_cap })).await?;
+    let refunds = refund_locked(s, &mut tx, b.id, refund_cap).await?;
+    sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1")
         .bind(b.id)
-        .bind(b.status)
         .execute(&mut *tx)
         .await?;
-    if updated.rows_affected() == 0 {
-        return Err(ApiError::Conflict("booking_changed"));
-    }
     if b.coupon_id.is_some() && refund_cap.is_none() {
         // Full refund: the coupon goes back to the customer.
         sqlx::query("UPDATE coupons SET used_booking_id = NULL WHERE id = $1")
@@ -373,6 +439,7 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
+    refunds.close_receipts(s).await;
     if let Some(t) = b.thread_id {
         best_effort(
             "chat",
@@ -543,7 +610,7 @@ async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id):
     // Charge last: after this only the commit can fail, and that path refunds.
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(deposit), "deposit").await?;
     if let Err(e) = tx.commit().await {
-        refund_or_alert(&s, "pg", &tx_id, deposit).await;
+        refund_or_alert(&s, "portone", &tx_id, deposit).await;
         return Err(e.into());
     }
     // Reload: the pro attached by the deposit is needed for the notifications.
@@ -560,7 +627,7 @@ async fn pay_balance(State(s): State<AppState>, Customer(a): Customer, Path(id):
     take_balance(&mut tx, &b, balance).await?;
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(balance), "balance").await?;
     if let Err(e) = tx.commit().await {
-        refund_or_alert(&s, "pg", &tx_id, balance).await;
+        refund_or_alert(&s, "portone", &tx_id, balance).await;
         return Err(e.into());
     }
     Ok(Json(load_booking(&s.db, id).await?))

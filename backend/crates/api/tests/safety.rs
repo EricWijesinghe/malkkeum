@@ -200,7 +200,8 @@ async fn refunds_and_settlement_holds_are_admin_only_and_run_once(pool: PgPool) 
         .as_str()
         .expect("case")
         .to_string();
-    let admin = token(Role::StaffAdmin);
+    // Refunds check the live staff row, so the admin must exist.
+    let admin = staff(&pool, Role::StaffAdmin).await;
     // A newer tip payment on the same booking: a case refund must never take it back from the partner.
     let tip: Uuid = sqlx::query_scalar(
         "INSERT INTO payments (booking_id, amount, kind, status, provider, provider_tx_id, idempotency_key, created_at)

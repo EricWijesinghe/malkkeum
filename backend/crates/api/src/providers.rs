@@ -47,7 +47,11 @@ impl From<ProviderError> for ApiError {
             ProviderError::Declined(m) => ApiError::PaymentFailed(m),
             ProviderError::NotFound => ApiError::NotFound,
             ProviderError::NotConfigured(_) => ApiError::Unavailable("provider_not_configured"),
-            ProviderError::Upstream(_) => ApiError::Unavailable("provider_unreachable"),
+            ProviderError::Upstream(cause) => {
+                // The mapped 503 carries no cause; this is the only place it is still known.
+                tracing::warn!(%cause, "provider request failed");
+                ApiError::Unavailable("provider_unreachable")
+            }
         }
     }
 }
@@ -102,6 +106,7 @@ pub struct Providers {
     http: reqwest::Client,
     live: Arc<RwLock<Live>>,
     db: PgPool,
+    portone_api: String,
 }
 
 fn random_id(prefix: &str) -> String {
@@ -114,7 +119,17 @@ impl Providers {
     pub fn new(cfg: Config, db: PgPool) -> Result<Self, reqwest::Error> {
         let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
         let live = Arc::new(RwLock::new(Live::new(Integrations::from_config(&cfg))));
-        Ok(Self { cfg, http, live, db })
+        Ok(Self { cfg, http, live, db, portone_api: portone::API.into() })
+    }
+
+    /// Points the PortOne adapter at another base URL. Integration tests use it for a mock gateway.
+    pub fn with_portone_api(mut self, base: &str) -> Self {
+        base.trim_end_matches('/').clone_into(&mut self.portone_api);
+        self
+    }
+
+    pub fn portone_api(&self) -> &str {
+        &self.portone_api
     }
 
     /// Feeds the status page and alert rules. Live traffic only: dev fakes never count as health.
@@ -214,16 +229,8 @@ impl Providers {
         Ok(random_id("bk"))
     }
 
-    pub async fn charge(&self, billing_key: &str, amount: i64, idempotency_key: &str) -> Result<String, ProviderError> {
-        self.require_dev("payments")?;
-        if billing_key == FAKE_DECLINE_KEY {
-            return Err(ProviderError::Declined("card_declined".into()));
-        }
-        tracing::info!(target: "fake_pg", amount, idempotency_key, "charged");
-        Ok(random_id("tx"))
-    }
-
-    /// Charges a saved PortOne billing key once for a subscription visit. Dev mode fakes it; `FAKE_DECLINE_KEY` declines.
+    /// Charges a saved PortOne billing key once (subscription visits, booking payments, tips).
+    /// Dev mode fakes it; `FAKE_DECLINE_KEY` declines.
     pub async fn charge_billing(&self, billing_key: &str, amount: i64, payment_id: &str, order: &str, customer: Uuid) -> Result<String, ProviderError> {
         if !self.dev() {
             let charged = portone::charge_billing(self, billing_key, payment_id, amount, order, customer).await;
@@ -239,9 +246,19 @@ impl Providers {
 
     /// Refunds (or cancels) a payment at the gateway that took it.
     pub async fn refund(&self, provider: &str, tx_id: &str, amount: i64) -> Result<(), ProviderError> {
+        self.cancel_at(provider, tx_id, amount, None).await
+    }
+
+    /// `refund` that only goes through while the gateway's cancellable balance is still `cancellable`
+    /// (what our books say is left). A duplicate or a stale retry is refused instead of refunding twice.
+    pub async fn refund_checked(&self, provider: &str, tx_id: &str, amount: i64, cancellable: i64) -> Result<(), ProviderError> {
+        self.cancel_at(provider, tx_id, amount, Some(cancellable)).await
+    }
+
+    async fn cancel_at(&self, provider: &str, tx_id: &str, amount: i64, cancellable: Option<i64>) -> Result<(), ProviderError> {
         match provider {
             "portone" if !self.dev() => {
-                let cancelled = portone::cancel(self, tx_id, amount).await;
+                let cancelled = portone::cancel(self, tx_id, amount, cancellable).await;
                 self.observe("portone", outcome(&cancelled)).await;
                 cancelled
             }

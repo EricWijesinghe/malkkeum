@@ -4,16 +4,13 @@
 
 mod common;
 
-use api::{
-    auth::{self, Role},
-    crypto,
-};
+use api::{auth::Role, crypto};
 use axum::{
     body::Body,
     http::{Request, StatusCode, header},
 };
 use chrono::Duration;
-use common::{SECRET, app, call, seed_catalog, test_config};
+use common::{app, call, seed_catalog, test_config};
 use serde_json::json;
 use sqlx::PgPool;
 use tower::ServiceExt;
@@ -22,8 +19,8 @@ use uuid::Uuid;
 const DATE: &str = "2026-03-12";
 const KEY: [u8; 32] = [7u8; 32];
 
-fn admin_token() -> String {
-    auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffAdmin).expect("token")
+async fn admin_token(db: &PgPool) -> String {
+    common::staff_token(db, Role::StaffAdmin).await.0
 }
 
 /// Verified pro with a bank account and one pending settlement due by `DATE`. Returns (settlement, pro).
@@ -117,7 +114,7 @@ async fn first_payout_id(app: &axum::Router, token: &str) -> String {
 async fn background_sync_settles_open_transfers_and_never_resends(pool: PgPool) {
     let (settlement, _pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let id = first_payout_id(&app, &admin_token()).await;
+    let id = first_payout_id(&app, &admin_token(&pool).await).await;
     make_toss(&pool, &id, "sent", Some("tp_1"), None, 2).await;
 
     let state = api::build_state(pool.clone(), test_config()).expect("state");
@@ -135,7 +132,7 @@ async fn background_sync_settles_open_transfers_and_never_resends(pool: PgPool) 
 async fn background_sync_leaves_an_ambiguous_send_for_a_same_key_resend(pool: PgPool) {
     seed(&pool).await;
     let app = app(pool.clone());
-    let id = first_payout_id(&app, &admin_token()).await;
+    let id = first_payout_id(&app, &admin_token(&pool).await).await;
     make_toss(&pool, &id, "requested", None, Some("timeout"), 0).await;
     let key_before: String = sqlx::query_scalar("SELECT idempotency_key FROM payouts WHERE id = $1::uuid").bind(&id).fetch_one(&pool).await.expect("key");
 
@@ -152,7 +149,7 @@ async fn background_sync_leaves_an_ambiguous_send_for_a_same_key_resend(pool: Pg
 async fn background_sync_ignores_manual_requested_payouts(pool: PgPool) {
     seed(&pool).await;
     let app = app(pool.clone());
-    request_payouts(&app, &admin_token()).await;
+    request_payouts(&app, &admin_token(&pool).await).await;
     let state = api::build_state(pool.clone(), test_config()).expect("state");
     assert_eq!(api::payout_sync::sync_pass(&state).await.expect("pass"), 0);
 }
@@ -161,7 +158,7 @@ async fn background_sync_ignores_manual_requested_payouts(pool: PgPool) {
 async fn owner_alerts_count_stuck_and_failed_transfers(pool: PgPool) {
     seed(&pool).await;
     let app = app(pool.clone());
-    let id = first_payout_id(&app, &admin_token()).await;
+    let id = first_payout_id(&app, &admin_token(&pool).await).await;
     assert_eq!(api::payout_sync::alert_counts(&pool).await.expect("counts"), (0, 0));
 
     make_toss(&pool, &id, "sent", Some("tp_2"), None, 1).await;
@@ -175,7 +172,7 @@ async fn owner_alerts_count_stuck_and_failed_transfers(pool: PgPool) {
 async fn amount_that_no_longer_matches_its_settlements_is_not_paid(pool: PgPool) {
     let (settlement, _pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let id = first_payout_id(&app, &token).await;
     sqlx::query("UPDATE settlements SET fee = fee + 1000, net = net - 1000 WHERE id = $1").bind(settlement).execute(&pool).await.expect("change");
 
@@ -188,7 +185,7 @@ async fn amount_that_no_longer_matches_its_settlements_is_not_paid(pool: PgPool)
 async fn cancelling_a_booking_takes_it_out_of_an_unsent_batch(pool: PgPool) {
     let (settlement, pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let id = first_payout_id(&app, &token).await;
     let other = second_settlement(&pool, pro).await;
     let batch = Uuid::parse_str(&id).expect("uuid");
@@ -211,7 +208,7 @@ async fn cancelling_a_booking_takes_it_out_of_an_unsent_batch(pool: PgPool) {
 async fn cancel_is_refused_while_the_transfer_is_at_the_provider(pool: PgPool) {
     let (settlement, _pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let id = first_payout_id(&app, &token).await;
     make_toss(&pool, &id, "sent", Some("tp_3"), None, 0).await;
     let booking: Uuid = sqlx::query_scalar("SELECT booking_id FROM settlements WHERE id = $1").bind(settlement).fetch_one(&pool).await.expect("booking");
@@ -226,7 +223,7 @@ async fn cancel_is_refused_while_the_transfer_is_at_the_provider(pool: PgPool) {
 async fn run_refuses_future_dates_and_skips_pros_already_in_a_batch(pool: PgPool) {
     let (_settlement, pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let future = (api::util::today_kst() + Duration::days(2)).to_string();
     let (code, _) = call(&app, "POST", "/v1/admin/settlements/run-payouts", Some(&token), Some(json!({ "date": future }))).await;
     assert_eq!(code, StatusCode::BAD_REQUEST, "future payout dates are refused");
@@ -244,7 +241,7 @@ async fn run_refuses_future_dates_and_skips_pros_already_in_a_batch(pool: PgPool
 async fn revealed_account_is_never_cached(pool: PgPool) {
     seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let id = first_payout_id(&app, &token).await;
     let req = Request::builder()
         .method("GET")
