@@ -8,6 +8,11 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Changed
+- Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.
+  A root job runner (`deploy/agent.sh`) checks queued server jobs before running a fixed command; it is not
+  installed on servers yet.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
