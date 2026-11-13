@@ -11,16 +11,26 @@ class ConsoleState extends ChangeNotifier {
   final Realtime realtime;
   final Session session;
 
-  Json dashboard = const {};
+  /// Null until the first answer: "not loaded" must never read as "0 jobs today".
+  Json? dashboard;
+
+  /// Why the last load failed. With [dashboard] set, its numbers are the last good ones (stale).
+  Object? dashboardError;
   int dataVersion = 0;
   String? lastEventType;
 
   bool get isAdmin => session.role == 'staff_admin';
-  int get unreadThreads => (dashboard['unread_threads'] as num? ?? 0).toInt();
-  int get openQuotes => (dashboard['open_quotes'] as num? ?? 0).toInt();
+  int get unreadThreads => (dashboard?['unread_threads'] as num? ?? 0).toInt();
+  int get openQuotes => (dashboard?['open_quotes'] as num? ?? 0).toInt();
 
+  /// Never throws: a failure lands in [dashboardError] for the dashboard to show.
   Future<void> loadDashboard() async {
-    dashboard = await api.get('/admin/dashboard') as Json;
+    try {
+      dashboard = await api.get('/admin/dashboard') as Json;
+      dashboardError = null;
+    } catch (e) {
+      dashboardError = e;
+    }
     notifyListeners();
   }
 

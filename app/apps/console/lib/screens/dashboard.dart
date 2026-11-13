@@ -10,7 +10,20 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final d = context.console.dashboard;
+    final state = context.console;
+    final d = state.dashboard;
+    final failed = switch (state.dashboardError) {
+      null => null,
+      // Over numbers already on screen it is a banner: they are the last good ones, not live.
+      final Object e => ErrorRetry(
+        compact: d != null,
+        message: t.error(e),
+        retryLabel: t.retry,
+        onRetry: state.loadDashboard,
+      ),
+    };
+    // Not loaded is not "0 jobs today": placeholders while loading, the error when it failed.
+    if (d == null) return failed ?? const SkeletonList();
     int n(String k) => (d[k] as num? ?? 0).toInt();
     final kpis = [
       (
@@ -80,6 +93,7 @@ class DashboardScreen extends StatelessWidget {
             index: 0,
             child: Text(t.cDashboard, style: context.text.headlineMedium),
           ),
+          if (failed != null) ...[const SizedBox(height: Space.md), failed],
           const SizedBox(height: Space.lg),
           StaggerIn(
             index: 1,
