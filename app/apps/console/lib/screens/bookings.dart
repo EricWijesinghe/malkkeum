@@ -600,7 +600,7 @@ class _QuoteDeskState extends State<_QuoteDesk> {
   final _note = TextEditingController();
   bool _busy = false;
 
-  Future<void> _send() async {
+  Future<void> _send({bool override = false}) async {
     setState(() => _busy = true);
     try {
       await context.api
@@ -608,15 +608,61 @@ class _QuoteDeskState extends State<_QuoteDesk> {
             'final_price': int.parse(_price.text),
             'quote_id': _quoteId,
             'note': _note.text.isEmpty ? null : _note.text,
+            if (override) 'override': true,
           });
       if (!mounted) return;
       showToast(context, context.t.cQuoteSent);
       widget.onSent();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      // Far from the estimate: admins confirm and resend with the override; others need an admin.
+      if (e.code == 'quote_override_required') {
+        if (!context.console.isAdmin) {
+          showToast(context, context.t.cQuoteNeedsAdmin);
+        } else if (await _confirmOverride() && mounted) {
+          setState(() => _busy = false);
+          await _send(override: true);
+        }
+        return;
+      }
+      showToast(context, context.t.error(e));
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Shows the typed price against the estimate before an admin overrides the ratio guard.
+  Future<bool> _confirmOverride() async {
+    final t = context.t;
+    final price = int.parse(_price.text);
+    final estimate = widget.booking.estimate ?? 0;
+    final ratio = estimate > 0 ? (price / estimate).toStringAsFixed(1) : '–';
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.cQuoteOverride),
+        content: Text(
+          t.cQuoteOverrideBody(
+            context.won(price),
+            context.won(estimate),
+            ratio,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(t.cQuoteOverride),
+          ),
+        ],
+      ),
+    );
+    return ok ?? false;
   }
 
   @override
@@ -638,6 +684,11 @@ class _QuoteDeskState extends State<_QuoteDesk> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(t.cQuoteDesk, style: context.text.titleMedium),
+          // The server copies these booking rows into the customer's quote card.
+          Text(
+            '${t.quoteVisit} ${dateLabel(widget.booking.visitDate, context.lang)} ${widget.booking.startHour < 12 ? t.morning : t.afternoon} · ${t.service(widget.booking.serviceCode)}',
+            style: context.text.bodySmall,
+          ),
           const SizedBox(height: Space.sm),
           Text(t.cAnswers, style: context.text.labelSmall),
           Wrap(

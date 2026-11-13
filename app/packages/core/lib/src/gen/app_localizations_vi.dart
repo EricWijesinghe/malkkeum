@@ -1842,6 +1842,44 @@ class TVi extends T {
   String get bkViewMonth => 'Xem theo tháng';
 
   @override
+  String get chatHoursTitle => 'Giờ tư vấn';
+
+  @override
+  String get chatReplyFast => 'Thường trả lời trong 10 phút';
+
+  @override
+  String get quoteVisit => 'Lịch đến';
+
+  @override
+  String get quoteKind => 'Loại';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Trả cọc $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Đã có báo giá mới hơn';
+
+  @override
+  String get quick_quote => 'Hỏi về báo giá';
+
+  @override
+  String get cQuoteOverride => 'Gửi báo giá chênh lệch lớn so với ước tính';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Báo giá $price · ước tính $estimate · $ratio×. Vẫn gửi?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Giá chênh lệch lớn so với ước tính: cần quản trị viên duyệt';
+
+  @override
+  String get quick_reschedule => 'Muốn đổi lịch';
+
+  @override
   String get dfScopeDusting => 'Lau bụi trên đồ nội thất';
 
   @override

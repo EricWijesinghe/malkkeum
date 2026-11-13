@@ -1814,6 +1814,43 @@ class TJa extends T {
   String get bkViewMonth => '月表示';
 
   @override
+  String get chatHoursTitle => '相談受付時間';
+
+  @override
+  String get chatReplyFast => '通常10分以内に返信';
+
+  @override
+  String get quoteVisit => '訪問日程';
+
+  @override
+  String get quoteKind => 'タイプ';
+
+  @override
+  String quotePayAmount(String amount) {
+    return '予約金を支払う $amount';
+  }
+
+  @override
+  String get quoteSuperseded => '新しい見積に更新されました';
+
+  @override
+  String get quick_quote => '見積について';
+
+  @override
+  String get cQuoteOverride => '概算と大きく異なる見積を送る';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return '見積 $price・概算 $estimate・$ratio倍。送信しますか？';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin => '概算との差が大きいため、管理者の承認が必要です';
+
+  @override
+  String get quick_reschedule => '日程を変更したい';
+
+  @override
   String get dfScopeDusting => '家具の上のほこり取り';
 
   @override

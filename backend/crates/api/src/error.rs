@@ -4,7 +4,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use domain::DomainError;
-use serde_json::json;
+use serde_json::{Value, json};
 
 /// Every API failure. Responses carry a stable `code` the apps translate;
 /// internal details are logged, never returned.
@@ -18,6 +18,10 @@ pub enum ApiError {
     NotFound,
     #[error("conflict: {0}")]
     Conflict(&'static str),
+    /// 409 `price_changed`: what the customer saw is no longer what is due. The object's fields
+    /// (`current` deposit, `final_price`, `quote_message_id`) are copied into the error envelope.
+    #[error("price changed")]
+    PriceChanged(Value),
     #[error("bad request: {0}")]
     BadRequest(&'static str),
     #[error("too many requests")]
@@ -45,6 +49,7 @@ impl ApiError {
             Self::Forbidden => (StatusCode::FORBIDDEN, "forbidden"),
             Self::NotFound => (StatusCode::NOT_FOUND, "not_found"),
             Self::Conflict(c) => (StatusCode::CONFLICT, c),
+            Self::PriceChanged(_) => (StatusCode::CONFLICT, "price_changed"),
             Self::BadRequest(c) => (StatusCode::BAD_REQUEST, c),
             Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate_limited"),
             Self::Quota(c) => (StatusCode::TOO_MANY_REQUESTS, c),
@@ -68,8 +73,13 @@ impl IntoResponse for ApiError {
             // The request span carries the request id, so this line can be matched to the client's report.
             tracing::error!(error = %self, "request failed");
         }
-        // The id is the only extra thing a client sees; internal details stay in the logs.
+        // Only the request id (and price_changed's current values) reach the client; internals stay in the logs.
         let mut body = json!({ "error": { "code": code } });
+        if let Self::PriceChanged(Value::Object(current)) = &self {
+            for (k, v) in current {
+                body["error"][k.as_str()] = v.clone();
+            }
+        }
         if let Some(id) = crate::telemetry::current_request_id() {
             body["error"]["request_id"] = json!(id);
         }

@@ -99,4 +99,52 @@ void main() {
     );
     await unmount(tester);
   });
+
+  Future<FakeApi> openFarQuote(WidgetTester tester, String role) async {
+    final quoteBooking = bookingJson(id: 'bk-1', number: _row, serviceCode: 'move_out', status: 0, estimate: 100000, answers: {'cleaning_type': 'standard'});
+    final fake = FakeApi()
+      ..reply('GET', '/admin/bookings', [quoteBooking])
+      ..onGet('/admin/bookings/bk-1', (_) => bookingDetail(status: 0, answers: {'cleaning_type': 'standard'}, estimate: {'base': 90000, 'extras': 0, 'surcharge_bps': 0, 'before_vat': 90000, 'total': 100000}))
+      ..reply('GET', '/admin/bookings/bk-1/quotes', const <Json>[])
+      ..onPost('/admin/bookings/bk-1/send-quote', (c) => c.json['override'] == true
+          ? {'ok': true}
+          : const ApiReply(409, {'error': {'code': 'quote_override_required'}}));
+    stockConsoleApi(fake);
+    final env = await TestEnv.create(fake: fake, role: role);
+    await pumpConsoleScreen(tester, env, const BookingsScreen(quoteDesk: true));
+    await pumpUntilFound(tester, find.text('$_row · ${koT.serviceShort('move_out')}'));
+    await tester.tap(find.text('$_row · ${koT.serviceShort('move_out')}'));
+    await settle(tester);
+    await tester.enterText(find.widgetWithText(TextField, koT.cFinalPrice), '400000');
+    await tester.ensureVisible(find.widgetWithText(PrimaryButton, koT.cSendQuote));
+    await settle(tester, duration: const Duration(milliseconds: 300));
+    await tester.tap(find.widgetWithText(PrimaryButton, koT.cSendQuote));
+    await settle(tester);
+    return fake;
+  }
+
+  testWidgets('a price far from the estimate: the admin sees price, estimate and ratio, then overrides', (tester) async {
+    setViewport(tester, wideSize);
+    final fake = await openFarQuote(tester, 'staff_admin');
+
+    expect(find.text(koT.cQuoteOverrideBody(formatWon(400000, 'ko'), formatWon(58000, 'ko'), '6.9')), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, koT.cQuoteOverride));
+    await settle(tester);
+
+    final calls = fake.callsTo('POST', '/admin/bookings/bk-1/send-quote');
+    expect(calls, hasLength(2));
+    expect(calls.first.json.containsKey('override'), isFalse);
+    expect(calls.last.json['override'], isTrue);
+    await unmount(tester);
+  });
+
+  testWidgets('a consultant gets no override dialog, only the admin-approval message', (tester) async {
+    setViewport(tester, wideSize);
+    final fake = await openFarQuote(tester, 'staff_consultant');
+
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text(koT.cQuoteNeedsAdmin), findsOneWidget);
+    expect(fake.callsTo('POST', '/admin/bookings/bk-1/send-quote'), hasLength(1));
+    await unmount(tester);
+  });
 }

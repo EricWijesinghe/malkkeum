@@ -1858,6 +1858,44 @@ class TRu extends T {
   String get bkViewMonth => 'По месяцам';
 
   @override
+  String get chatHoursTitle => 'Часы работы чата';
+
+  @override
+  String get chatReplyFast => 'Обычно отвечаем за 10 минут';
+
+  @override
+  String get quoteVisit => 'Визит';
+
+  @override
+  String get quoteKind => 'Тип';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Оплатить предоплату $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Заменено новой сметой';
+
+  @override
+  String get quick_quote => 'Вопрос по смете';
+
+  @override
+  String get cQuoteOverride => 'Отправить смету, сильно отличающуюся от оценки';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Смета $price · оценка $estimate · $ratio×. Всё равно отправить?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Цена сильно отличается от оценки: нужно одобрение администратора';
+
+  @override
+  String get quick_reschedule => 'Изменить время';
+
+  @override
   String get dfScopeDusting => 'Удаление пыли с мебели';
 
   @override

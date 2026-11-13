@@ -1845,6 +1845,44 @@ class TEn extends T {
   String get bkViewMonth => 'Month view';
 
   @override
+  String get chatHoursTitle => 'Chat hours';
+
+  @override
+  String get chatReplyFast => 'Usually replies within 10 min';
+
+  @override
+  String get quoteVisit => 'Visit';
+
+  @override
+  String get quoteKind => 'Type';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Pay deposit $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Replaced by a newer quote';
+
+  @override
+  String get quick_quote => 'About the quote';
+
+  @override
+  String get cQuoteOverride => 'Send a quote far from the estimate';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Quote $price · estimate $estimate · $ratio×. Send anyway?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'This price is far from the estimate: an admin needs to approve it';
+
+  @override
+  String get quick_reschedule => 'Change the schedule';
+
+  @override
   String get dfScopeDusting => 'Dusting furniture surfaces';
 
   @override

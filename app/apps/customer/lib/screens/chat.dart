@@ -26,6 +26,43 @@ const _topics = [
 String topicLabel(T t, String topic) =>
     topic == 'other' ? t.topicOther : t.service(topic);
 
+/// Operating hours from the console's business profile (`/brand`); null when unset or offline.
+Future<String?> _supportHours(ApiClient api) async {
+  try {
+    final brand = await api.get('/brand');
+    final hours = brand is Json ? brand['support_hours'] : null;
+    return hours is String && hours.trim().isNotEmpty ? hours.trim() : null;
+  } on Exception {
+    return null;
+  }
+}
+
+const _priceChanged = 'price_changed';
+
+/// Room for the empty-state art under the header; it scrolls inside when text is large.
+const _emptyHeight = 360.0;
+
+/// Below this title width the app-bar avatar is dropped so the team name keeps its room.
+const _avatarMinTitleWidth = 180.0;
+
+String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
+
+String _buildingLabel(T t, String code) => switch (code) {
+  'apartment' => t.building_apartment,
+  'villa' => t.building_villa,
+  'officetel' => t.building_officetel,
+  'house' => t.building_house,
+  _ => t.building_other,
+};
+
+String _layoutLabel(T t, String code) => switch (code) {
+  'studio' => t.layout_studio,
+  'one_and_half' => t.layout_one_and_half,
+  'two_rooms' => t.layout_two_rooms,
+  'three_rooms' => t.layout_three_rooms,
+  _ => t.layout_four_plus,
+};
+
 class ChatListTab extends StatefulWidget {
   const ChatListTab({super.key});
   @override
@@ -35,6 +72,7 @@ class ChatListTab extends StatefulWidget {
 class _ChatListTabState extends State<ChatListTab> {
   final _view = GlobalKey<AsyncViewState<List<ChatThread>>>();
   StreamSubscription<Json>? _sub;
+  late final Future<String?> _hours = _supportHours(context.api);
 
   @override
   void initState() {
@@ -109,29 +147,86 @@ class _ChatListTabState extends State<ChatListTab> {
       appBar: AppBar(title: Text(t.chatTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _newChat,
-        icon: const Icon(Icons.add_comment_rounded),
+        icon: const Icon3D('chat_new', size: 28),
         label: Text(t.chatNew),
       ),
       body: AsyncView<List<ChatThread>>(
         key: _view,
         load: _load,
-        builder: (context, threads, reload) => threads.isEmpty
-            ? EmptyState(
-                icon: Icons.forum_rounded,
-                title: t.chatEmpty,
-                body: t.chatHours,
-                hue: ServiceHues.aircon,
-              )
-            : RefreshIndicator(
-                onRefresh: reload,
-                child: ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 96),
-                  itemCount: threads.length,
-                  separatorBuilder: (_, _) => const Divider(indent: 84),
-                  itemBuilder: (_, i) =>
-                      _ThreadTile(thread: threads[i], onReturn: reload),
-                ),
+        // The header scrolls with the threads so large text never overflows a short screen.
+        builder: (context, threads, reload) => RefreshIndicator(
+          onRefresh: reload,
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 96),
+            children: [
+              FutureBuilder<String?>(
+                future: _hours,
+                builder: (context, snap) =>
+                    _TeamHeader(hours: snap.data ?? t.chatHours),
               ),
+              if (threads.isEmpty)
+                SizedBox(
+                  height: _emptyHeight,
+                  child: EmptyState(
+                    icon: Icons.forum_rounded,
+                    title: t.chatEmpty,
+                    body: t.chatReplyFast,
+                    hue: ServiceHues.aircon,
+                  ),
+                ),
+              for (final (i, th) in threads.indexed) ...[
+                if (i > 0) const Divider(indent: 84),
+                _ThreadTile(thread: th, onReturn: reload),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Team profile, operating hours and the usual reply time above the thread list.
+class _TeamHeader extends StatelessWidget {
+  const _TeamHeader({required this.hours});
+  final String hours;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        Space.xs,
+        Space.gutter,
+        Space.xs,
+      ),
+      child: AppCard(
+        padding: const EdgeInsets.all(Space.md),
+        child: Row(
+          children: [
+            const Icon3D('chat_team_avatar', size: 48),
+            const SizedBox(width: Space.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_teamName(t), style: context.text.titleSmall),
+                  Text(
+                    '${t.chatHoursTitle} · $hours',
+                    style: context.text.bodySmall,
+                  ),
+                  Text(
+                    t.chatReplyFast,
+                    style: context.text.labelSmall?.copyWith(
+                      color: context.colors.accent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -221,6 +316,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   StreamSubscription<Json>? _sub;
   bool _sending = false;
   bool _loading = true;
+  bool _paying = false;
+
+  /// Set when this screen's own payment succeeded, before the `deposit_paid` message arrives.
+  bool _paidHere = false;
+  late final Future<String?> _hours = _supportHours(context.api);
 
   bool get _isQuoteThread =>
       widget.topic == 'move_in' || widget.topic == 'move_out';
@@ -308,20 +408,48 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     }
   }
 
-  /// Quote card pay button: same method choice as checkout and booking detail.
-  Future<void> _payDeposit(String bookingId) async {
+  /// One Idempotency-Key per quote card until its deposit succeeds, so a retry after a
+  /// timeout replays the first attempt instead of hitting `already_confirmed`.
+  final _depositKeys = <String, String>{};
+
+  /// Quote card pay button: same method choice as checkout and booking detail. The card's
+  /// deposit goes along as `expected_deposit`; the server refuses it if the quote changed.
+  Future<void> _payDeposit(ChatMessage quote) async {
+    final bookingId = quote.body['booking_id'] as String;
+    final deposit = quote.body['deposit'];
+    final finalPrice = quote.body['final_price'];
+    // Never pay a card whose amounts can't be bound: say so and fetch the thread again.
+    if (deposit is! int || finalPrice is! int) {
+      showToast(context, context.t.errorGeneric);
+      unawaited(_load());
+      return;
+    }
+    final seen = {
+      'expected_deposit': deposit,
+      'expected_final_price': finalPrice,
+      'expected_quote_message_id': quote.id,
+    };
     final choice = await choosePayMethod(context);
     if (choice == null || !mounted) return;
+    setState(() => _paying = true);
     try {
       switch (choice) {
         case SavedChoice(:final methodId):
+          final key = _depositKeys.putIfAbsent(
+            quote.id,
+            ApiClient.newIdempotencyKey,
+          );
           await context.api.post('/bookings/$bookingId/deposit', {
             'payment_method_id': methodId,
-          }, ApiClient.newIdempotencyKey());
+            ...seen,
+          }, key);
+          _depositKeys.remove(quote.id);
+          _paidHere = true;
         case ChannelChoice(:final channel):
           final result = await payWithChannel(context, channel, {
             'kind': 'deposit',
             'booking_id': bookingId,
+            ...seen,
           });
           if (!mounted) return;
           switch (result) {
@@ -329,15 +457,32 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               await showVirtualAccount(context, account);
             case CheckoutFailed(:final code):
               showToast(context, context.t.checkoutFailure(code));
+              if (code == _priceChanged) unawaited(_load());
               return;
-            case CheckoutPaid() || CheckoutCancelled():
+            case CheckoutPaid():
+              _paidHere = true;
+            case CheckoutCancelled():
               break;
           }
       }
       if (!mounted) return;
       context.appRead.bookingsChanged();
+      if (_paidHere) unawaited(_load());
+    } on ApiException catch (e) {
+      // A definite answer ends this attempt; only a lost or failed-server reply keeps the key.
+      if (!e.isNetwork && e.status < 500) _depositKeys.remove(quote.id);
+      if (!mounted) return;
+      if (e.code == _priceChanged) {
+        // The quote changed after this card was shown: reload so the newest card is the one to pay.
+        showToast(context, context.t.error(e));
+        unawaited(_load());
+      } else {
+        showToast(context, context.t.payError(e));
+      }
     } catch (e) {
       if (mounted) showToast(context, context.t.payError(e));
+    } finally {
+      if (mounted) setState(() => _paying = false);
     }
   }
 
@@ -352,38 +497,66 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final depositPaid = _messages.any(
-      (m) => m.kind == 'system' && m.body['code'] == 'deposit_paid',
-    );
+    final depositPaid =
+        _paidHere ||
+        _messages.any(
+          (m) => m.kind == 'system' && m.body['code'] == 'deposit_paid',
+        );
+    // Only the newest quote is payable: the server charges the booking's current deposit.
+    final latestQuote = _messages
+        .where((m) => m.kind == 'quote')
+        .lastOrNull
+        ?.id;
     final quick = _isQuoteThread
-        ? [t.quick_confirm, t.quick_price, t.quick_date, t.quick_parking]
+        ? [t.quick_confirm, t.quick_quote, t.quick_reschedule]
         : [t.quick_hello, t.quick_price, t.quick_duration, t.quick_date];
     final reversed = _messages.reversed.toList();
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${BrandConfig.placeholder.name} ${t.chatTeam}',
-              style: context.text.titleMedium,
-            ),
-            Text(
-              '${topicLabel(t, widget.topic)} · ${t.chatHours}',
-              style: context.text.labelSmall,
-            ),
-          ],
+        title: LayoutBuilder(
+          builder: (context, c) => Row(
+            children: [
+              if (c.maxWidth >= _avatarMinTitleWidth) ...[
+                const Icon3D('chat_team_avatar', size: 36),
+                const SizedBox(width: Space.xs),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _teamName(t),
+                      style: context.text.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    FutureBuilder<String?>(
+                      future: _hours,
+                      builder: (context, snap) => Text(
+                        '${topicLabel(t, widget.topic)} · ${snap.data ?? t.chatHours}',
+                        style: context.text.labelSmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
+          // An icon, not a text button: a long label squeezes the title out on small phones.
           if (widget.bookingId != null)
-            TextButton(
+            IconButton(
+              tooltip: t.viewBooking,
+              icon: const Icon(Icons.receipt_long_rounded),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => BookingDetailScreen(id: widget.bookingId!),
                 ),
               ),
-              child: Text(t.viewBooking),
             ),
         ],
       ),
@@ -400,7 +573,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     itemBuilder: (_, i) => _Bubble(
                       message: reversed[i],
                       depositPaid: depositPaid,
-                      onPay: _payDeposit,
+                      latestQuote: latestQuote,
+                      onPay: _paying ? null : _payDeposit,
                     ),
                   ),
           ),
@@ -480,11 +654,15 @@ class _Bubble extends StatelessWidget {
   const _Bubble({
     required this.message,
     required this.depositPaid,
+    required this.latestQuote,
     required this.onPay,
   });
   final ChatMessage message;
   final bool depositPaid;
-  final void Function(String bookingId) onPay;
+  final String? latestQuote;
+
+  /// Null while a payment is in flight.
+  final void Function(ChatMessage quote)? onPay;
 
   @override
   Widget build(BuildContext context) {
@@ -527,7 +705,8 @@ class _Bubble extends StatelessWidget {
       'quote' => _QuoteCard(
         body: m.body,
         paid: depositPaid,
-        onPay: () => onPay(m.body['booking_id'] as String),
+        superseded: m.id != latestQuote,
+        onPay: onPay == null ? null : () => onPay!(m),
       ),
       _ => Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -572,15 +751,7 @@ class _Bubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!mine) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: context.primary,
-              child: const Icon(
-                Icons.support_agent_rounded,
-                size: 18,
-                color: Colors.white,
-              ),
-            ),
+            const Icon3D('chat_team_avatar', size: 32),
             const SizedBox(width: 6),
           ],
           if (mine)
@@ -660,20 +831,68 @@ class _RequestCard extends StatelessWidget {
   }
 }
 
+/// Staff quote: booking rows, confirmed total and the deposit button. Every amount is read
+/// from the message body the server wrote; nothing is computed here.
 class _QuoteCard extends StatelessWidget {
   const _QuoteCard({
     required this.body,
     required this.paid,
+    required this.superseded,
     required this.onPay,
   });
   final Json body;
   final bool paid;
-  final VoidCallback onPay;
+  final bool superseded;
+  final VoidCallback? onPay;
 
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final lang = context.lang;
     int n(String k) => (body[k] as num? ?? 0).toInt();
+    final visit = DateTime.tryParse(body['visit_date'] as String? ?? '');
+    final hour = (body['start_hour'] as num?)?.toInt();
+    final code = body['service_code'] as String?;
+    final answers = body['answers'] is Json
+        ? body['answers'] as Json
+        : const <String, dynamic>{};
+    final structure = [
+      if (answers['building'] case final String b) _buildingLabel(t, b),
+      if (answers['layout'] case final String l) _layoutLabel(t, l),
+    ].join(' · ');
+    final estimate = body['estimate'] as num?;
+    final rows = [
+      if (visit != null)
+        (
+          t.quoteVisit,
+          [
+            dateLabel(visit, lang),
+            if (hour != null) hour < 12 ? t.morning : t.afternoon,
+          ].join(' '),
+        ),
+      if (code != null) (t.quoteKind, t.service(code)),
+      if (structure.isNotEmpty) (t.layoutTitle, structure),
+      if (estimate != null) (t.estimate, context.won(estimate.toInt())),
+    ];
+    Widget line(String label, String value, {TextStyle? style}) => Padding(
+      padding: const EdgeInsets.only(top: Space.xxs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: Text(label, style: context.text.bodySmall)),
+          const SizedBox(width: Space.xs),
+          Flexible(
+            flex: 2,
+            child: Text(
+              value,
+              style: style ?? context.text.bodyMedium,
+              textAlign: TextAlign.end,
+            ),
+          ),
+        ],
+      ),
+    );
+    final payable = !paid && !superseded;
     return Container(
       decoration: BoxDecoration(
         color: context.colors.surface,
@@ -689,44 +908,36 @@ class _QuoteCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  t.quoteArrived,
-                  style: context.text.labelMedium?.copyWith(
-                    color: context.primary,
-                  ),
+                Row(
+                  children: [
+                    const Icon3D('chat_quote', size: 28),
+                    const SizedBox(width: Space.xs),
+                    Expanded(
+                      child: Text(
+                        t.quoteArrived,
+                        style: context.text.labelMedium?.copyWith(
+                          color: context.colors.accent,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                for (final (label, value) in rows) line(label, value),
+                const Divider(height: Space.lg),
+                Text(t.finalPrice, style: context.text.bodySmall),
                 Text(
                   context.won(n('final_price')),
                   style: context.text.headlineMedium,
                 ),
-                const SizedBox(height: Space.xs),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        t.quoteDepositNow,
-                        style: context.text.bodySmall,
-                      ),
-                    ),
-                    Text(
-                      context.won(n('deposit')),
-                      style: context.text.titleSmall,
-                    ),
-                  ],
+                line(
+                  t.quoteDepositNow,
+                  context.won(n('deposit')),
+                  style: context.text.titleSmall,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        t.quoteBalanceLater,
-                        style: context.text.bodySmall,
-                      ),
-                    ),
-                    Text(
-                      context.won(n('balance')),
-                      style: context.text.bodySmall,
-                    ),
-                  ],
+                line(
+                  t.quoteBalanceLater,
+                  context.won(n('balance')),
+                  style: context.text.bodySmall,
                 ),
                 if ((body['note'] as String?)?.isNotEmpty ?? false) ...[
                   const SizedBox(height: Space.xs),
@@ -738,10 +949,19 @@ class _QuoteCard extends StatelessWidget {
           FilledButton(
             style: FilledButton.styleFrom(
               shape: const RoundedRectangleBorder(),
-              backgroundColor: paid ? context.colors.fresh : null,
+              minimumSize: const Size.fromHeight(52),
+              // Accent CTA: check yellow with ink label (never white on yellow).
+              backgroundColor: paid ? context.colors.fresh : context.colors.sun,
+              foregroundColor: Neutral.c900,
             ),
-            onPressed: paid ? null : onPay,
-            child: Text(paid ? t.quotePaid : t.quotePay),
+            onPressed: payable ? onPay : null,
+            child: Text(
+              paid
+                  ? t.quotePaid
+                  : superseded
+                  ? t.quoteSuperseded
+                  : t.quotePayAmount(context.won(n('deposit'))),
+            ),
           ),
         ],
       ),

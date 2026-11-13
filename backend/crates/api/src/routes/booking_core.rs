@@ -221,6 +221,49 @@ pub async fn record_payment(conn: &mut PgConnection, booking: Uuid, amount: i64,
     Ok(())
 }
 
+/// The quote card the customer tapped to pay its deposit: all three fields, or none (apps before v1.4).
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SeenQuote {
+    pub expected_deposit: Option<i64>,
+    pub expected_final_price: Option<i64>,
+    pub expected_quote_message_id: Option<Uuid>,
+}
+
+impl SeenQuote {
+    /// All or nothing: a partial card binding is a client bug, not an old client.
+    pub fn validate(&self) -> ApiResult<()> {
+        let given = [self.expected_deposit.is_some(), self.expected_final_price.is_some(), self.expected_quote_message_id.is_some()];
+        if given.iter().all(|g| *g) || given.iter().all(|g| !*g) { Ok(()) } else { Err(ApiError::BadRequest("invalid_request")) }
+    }
+}
+
+/// Locks the booking row and checks the card the customer tapped is still the current quote: same
+/// deposit, same price, and no newer quote message (e.g. another pro at the same price). A mismatch
+/// is 409 `price_changed` with the current values. Returns the locked final price. Outside a
+/// transaction (checkout create) the lock ends with the statement; the settle path re-runs it in one.
+pub async fn check_seen_quote(conn: &mut PgConnection, id: Uuid, seen: &SeenQuote) -> ApiResult<Option<i64>> {
+    let (deposit, final_price): (Option<i64>, Option<i64>) = sqlx::query_as("SELECT deposit, final_price FROM bookings WHERE id = $1 FOR UPDATE")
+        .bind(id)
+        .fetch_one(&mut *conn)
+        .await?;
+    let Some(expected) = seen.expected_deposit else {
+        // TODO(2027-03-01): require the card binding once app versions before v1.4 are retired.
+        tracing::warn!(booking_id = %id, "deposit without expected_deposit");
+        return Ok(final_price);
+    };
+    let latest: Option<Uuid> = sqlx::query_scalar(
+        "SELECT m.id FROM chat_messages m JOIN chat_threads t ON t.id = m.thread_id
+         WHERE t.booking_id = $1 AND t.audience = 'customer' AND m.kind = 'quote' ORDER BY m.created_at DESC, m.id DESC LIMIT 1",
+    )
+    .bind(id)
+    .fetch_optional(&mut *conn)
+    .await?;
+    if Some(expected) != deposit || seen.expected_final_price != final_price || seen.expected_quote_message_id != latest {
+        return Err(ApiError::PriceChanged(json!({ "current": deposit, "final_price": final_price, "quote_message_id": latest })));
+    }
+    Ok(final_price)
+}
+
 /// Deposit due on a quoted booking (10%), while the quote is still awaiting payment.
 pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
     let (Some(_), Some(deposit)) = (b.final_price, b.deposit) else {
@@ -233,18 +276,23 @@ pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
 }
 
 /// Confirms a quoted booking on deposit: attaches the chosen pro and rejects the other quotes.
-pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64) -> ApiResult<()> {
+/// `seen` is re-checked under the booking row lock, so a re-quote racing the payment never confirms.
+pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64, seen: &SeenQuote) -> ApiResult<()> {
+    // Booking row first, then quotes: the same order as send_quote, so the two never deadlock.
+    let final_price = check_seen_quote(conn, id, seen).await?;
     // Read the chosen quote under lock so a concurrent staff change can't attach the wrong pro.
     let selected: Option<(Uuid, Uuid)> = sqlx::query_as("SELECT id, pro_id FROM quotes WHERE booking_id = $1 AND state = 'selected' FOR UPDATE")
         .bind(id)
         .fetch_optional(&mut *conn)
         .await?;
     let new_status = if selected.is_some() { 2 } else { 1 };
-    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0")
+    // `deposit = $3` and the locked price: a re-quote since the amount was read is booking_changed, never the old price.
+    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0 AND deposit = $3 AND final_price IS NOT DISTINCT FROM $5")
         .bind(id)
         .bind(new_status)
         .bind(deposit)
         .bind(selected.map(|q| q.1))
+        .bind(final_price)
         .execute(&mut *conn)
         .await?;
     if moved.rows_affected() == 0 {

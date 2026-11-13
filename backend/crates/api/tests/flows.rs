@@ -5,7 +5,7 @@ mod common;
 
 use api::auth::{self, Role};
 use axum::http::StatusCode;
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use common::{PHOTO, SECRET, book, call, customer, login, seed_catalog, verified_pro};
 use serde_json::json;
 use sqlx::PgPool;
@@ -118,7 +118,7 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
     let (st, me) = call(&app, "GET", "/v1/member/me", Some(m.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{me}");
 
-    let from = Utc::now().date_naive();
+    let from = api::util::today_kst();
     let to = from + Duration::days(30);
     let (st, list) = call(&app, "GET", &format!("/v1/member/jobs?from={from}&to={to}"), Some(m.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{list}");
@@ -249,7 +249,7 @@ async fn quote_booking_stores_the_addon_estimate_and_rejects_hourly_slots(pool: 
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
     let c = customer(&app, &pool, "010-5000-0401").await;
-    let visit = (Utc::now() + Duration::days(10)).date_naive();
+    let visit = api::util::today_kst() + Duration::days(10);
     let answers = move_answers(json!([{"unit": "stand", "count": 1}]));
     let body = |hour: u8| {
         json!({
@@ -291,7 +291,7 @@ async fn studio_at_eleven_pyeong_is_refused_by_the_server(pool: PgPool) {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "{addr}");
-    let visit = (Utc::now() + Duration::days(10)).date_naive();
+    let visit = api::util::today_kst() + Duration::days(10);
     let (st, b) = call(
         &app,
         "POST",

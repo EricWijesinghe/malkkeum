@@ -1860,6 +1860,44 @@ class TMn extends T {
   String get bkViewMonth => 'Сараар харах';
 
   @override
+  String get chatHoursTitle => 'Зөвлөгөөний цаг';
+
+  @override
+  String get chatReplyFast => 'Ихэвчлэн 10 минутын дотор хариулна';
+
+  @override
+  String get quoteVisit => 'Ирэх хуваарь';
+
+  @override
+  String get quoteKind => 'Төрөл';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Урьдчилгаа төлөх $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Шинэ үнийн саналаар солигдсон';
+
+  @override
+  String get quick_quote => 'Үнийн саналын талаар';
+
+  @override
+  String get cQuoteOverride => 'Тооцооноос их зөрүүтэй үнийн санал илгээх';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Үнийн санал $price · тооцоо $estimate · $ratio×. Илгээх үү?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Үнэ тооцооноос их зөрүүтэй: админ зөвшөөрөх шаардлагатай';
+
+  @override
+  String get quick_reschedule => 'Хуваарь өөрчлөх';
+
+  @override
   String get dfScopeDusting => 'Тавилгын тоос арчих';
 
   @override

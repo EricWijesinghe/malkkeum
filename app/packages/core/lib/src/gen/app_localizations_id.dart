@@ -1859,6 +1859,44 @@ class TId extends T {
   String get bkViewMonth => 'Tampilan bulan';
 
   @override
+  String get chatHoursTitle => 'Jam layanan chat';
+
+  @override
+  String get chatReplyFast => 'Biasanya membalas dalam 10 menit';
+
+  @override
+  String get quoteVisit => 'Kunjungan';
+
+  @override
+  String get quoteKind => 'Jenis';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Bayar DP $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Diganti penawaran yang lebih baru';
+
+  @override
+  String get quick_quote => 'Tanya soal penawaran';
+
+  @override
+  String get cQuoteOverride => 'Kirim penawaran yang jauh dari perkiraan';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Penawaran $price · perkiraan $estimate · $ratio×. Tetap kirim?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Harga jauh dari perkiraan: perlu persetujuan admin';
+
+  @override
+  String get quick_reschedule => 'Ubah jadwal';
+
+  @override
   String get dfScopeDusting => 'Membersihkan debu di atas perabot';
 
   @override

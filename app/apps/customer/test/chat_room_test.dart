@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:customer/screens/chat.dart';
 import 'package:flutter/material.dart';
@@ -77,23 +79,208 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('the quote thread offers the move-in quick replies instead of the general ones', (tester) async {
+  testWidgets('the quote thread offers the three booking quick replies', (tester) async {
     setViewport(tester, phoneSize);
     final fake = await _chatApi([]);
     final env = await TestEnv.create(fake: fake);
     await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_in'));
     await pumpUntilFound(tester, find.text(koT.quick_confirm));
 
-    expect(find.widgetWithText(ActionChip, koT.quick_confirm), findsOneWidget);
-    // The fourth chip sits past the strip's edge; the horizontal ListView builds it only once scrolled into view.
-    final strip = find.byWidgetPredicate((w) => w is ListView && w.scrollDirection == Axis.horizontal);
-    await tester.scrollUntilVisible(
-      find.widgetWithText(ActionChip, koT.quick_parking),
-      60,
-      scrollable: find.descendant(of: strip, matching: find.byType(Scrollable)),
-    );
-    expect(find.widgetWithText(ActionChip, koT.quick_parking), findsOneWidget);
+    for (final q in [koT.quick_confirm, koT.quick_quote, koT.quick_reschedule]) {
+      expect(find.widgetWithText(ActionChip, q), findsOneWidget, reason: q);
+    }
+    expect(find.byType(ActionChip), findsNWidgets(3));
     expect(find.widgetWithText(ActionChip, koT.quick_hello), findsNothing);
+
+    await tester.tap(find.widgetWithText(ActionChip, koT.quick_reschedule));
+    await settle(tester);
+    expect(fake.lastCall('POST', '/chat/threads/th-1/messages')!.json, {'kind': 'text', 'text': koT.quick_reschedule});
+    await unmount(tester);
+  });
+
+  Json quote({String id = 'q1', int finalPrice = 350000, int deposit = 35000, bool structured = true}) => chatMessageJson(
+        id: id,
+        sender: 'staff',
+        kind: 'quote',
+        body: {
+          'booking_id': 'bk-9',
+          'final_price': finalPrice,
+          'deposit': deposit,
+          'balance': finalPrice - deposit,
+          'note': null,
+          if (structured) ...{
+            'service_code': 'move_out',
+            'visit_date': '2026-11-19',
+            'start_hour': 8,
+            'estimate': 346500,
+            'answers': {'building': 'apartment', 'layout': 'two_rooms', 'bathrooms': 1},
+          },
+        },
+      );
+
+  testWidgets('the quote card shows every row from the message body', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    await pumpUntilFound(tester, find.text(koT.quoteArrived));
+
+    expect(find.text('${dateLabel(DateTime(2026, 11, 19), 'ko')} ${koT.morning}'), findsOneWidget, reason: 'visit date + AM');
+    expect(find.text(koT.service('move_out')), findsWidgets, reason: 'type');
+    expect(find.text('${koT.building_apartment} · ${koT.layout_two_rooms}'), findsOneWidget, reason: 'structure');
+    expect(find.text(formatWon(346500, 'ko')), findsOneWidget, reason: 'estimate');
+    expect(find.text(formatWon(350000, 'ko')), findsOneWidget, reason: 'confirmed total');
+    expect(find.text(formatWon(315000, 'ko')), findsOneWidget, reason: 'balance');
+    expect(find.text(koT.quotePayAmount(formatWon(35000, 'ko'))), findsOneWidget, reason: 'deposit button');
+    await unmount(tester);
+  });
+
+  testWidgets('a legacy quote body without the booking rows still renders and pays', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote(finalPrice: 120000, deposit: 12000, structured: false)]);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_in'));
+    await pumpUntilFound(tester, find.text(koT.quoteArrived));
+
+    expect(find.text(formatWon(120000, 'ko')), findsOneWidget);
+    expect(find.text(koT.quoteVisit), findsNothing);
+    expect(find.text(koT.layoutTitle), findsNothing);
+    expect(find.text(koT.quotePayAmount(formatWon(12000, 'ko'))), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('paying the deposit posts once with an idempotency key and flips the card to paid', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    fake.onPost('/bookings/bk-9/deposit', (_) => bookingJson(id: 'bk-9', status: 1));
+    final env = await TestEnv.create(fake: fake);
+    final app = await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    unawaited(app.loadMethods());
+    final pay = find.text(koT.quotePayAmount(formatWon(35000, 'ko')));
+    await pumpUntilFound(tester, pay);
+
+    await tester.tap(pay);
+    await settle(tester);
+    await tester.tap(find.text('신한 1234'));
+    await settle(tester);
+
+    final calls = fake.callsTo('POST', '/bookings/bk-9/deposit');
+    expect(calls, hasLength(1));
+    expect(
+      calls.single.json,
+      {'payment_method_id': 'pm-1', 'expected_deposit': 35000, 'expected_final_price': 350000, 'expected_quote_message_id': 'q1'},
+      reason: 'binds to the card the customer saw',
+    );
+    expect(calls.single.headers.keys.map((k) => k.toLowerCase()), contains('idempotency-key'));
+    expect(find.text(koT.quotePaid), findsOneWidget);
+    expect(pay, findsNothing);
+    await unmount(tester);
+  });
+
+  Future<FakeApi> openAndPay(WidgetTester tester, FakeApi fake) async {
+    final env = await TestEnv.create(fake: fake);
+    final app = await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    unawaited(app.loadMethods());
+    await pumpUntilFound(tester, find.text(koT.quotePayAmount(formatWon(35000, 'ko'))));
+    return fake;
+  }
+
+  Future<void> tapPay(WidgetTester tester) async {
+    await tester.tap(find.text(koT.quotePayAmount(formatWon(35000, 'ko'))));
+    await settle(tester);
+    await tester.tap(find.text('신한 1234'));
+    await settle(tester);
+  }
+
+  testWidgets('a quote changed since the card was shown: the room reloads and says so', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    fake.onPost('/bookings/bk-9/deposit', (_) => const ApiReply(409, {'error': {'code': 'price_changed', 'current': 50000}}));
+    await openAndPay(tester, fake);
+    final loadsBefore = fake.callsTo('GET', '/chat/threads/th-1/messages').length;
+
+    await tapPay(tester);
+
+    expect(find.text(koT.error(const ApiException(409, 'price_changed'))), findsOneWidget, reason: 'toast');
+    expect(fake.callsTo('GET', '/chat/threads/th-1/messages').length, greaterThan(loadsBefore), reason: 'messages reloaded');
+    expect(find.text(koT.quotePaid), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('a retry after a lost reply reuses the idempotency key; a refusal gets a fresh one', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote()]);
+    final replies = [const ApiReply(503, {'error': {'code': 'unavailable'}}), const ApiReply(409, {'error': {'code': 'booking_changed'}})];
+    fake.onPost('/bookings/bk-9/deposit', (_) => replies.isEmpty ? bookingJson(id: 'bk-9', status: 1) : replies.removeAt(0));
+    await openAndPay(tester, fake);
+
+    String key(ApiCall c) => c.headers.entries.firstWhere((h) => h.key.toLowerCase() == 'idempotency-key').value;
+    await tapPay(tester);
+    await tapPay(tester);
+    await tapPay(tester);
+
+    final calls = fake.callsTo('POST', '/bookings/bk-9/deposit');
+    expect(calls, hasLength(3));
+    expect(key(calls[1]), key(calls[0]), reason: '5xx: same attempt');
+    expect(key(calls[2]), isNot(key(calls[1])), reason: '4xx ended that attempt');
+    expect(find.text(koT.quotePaid), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('a card without a numeric deposit is never paid: error and reload instead', (tester) async {
+    setViewport(tester, phoneSize);
+    final broken = quote();
+    (broken['body'] as Json)['deposit'] = null;
+    final fake = await _chatApi([broken]);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    await pumpUntilFound(tester, find.text(koT.quoteArrived));
+    final loadsBefore = fake.callsTo('GET', '/chat/threads/th-1/messages').length;
+
+    await tester.tap(find.byWidgetPredicate((w) => w is FilledButton && w.onPressed != null));
+    await settle(tester);
+
+    expect(find.text(koT.errorGeneric), findsOneWidget);
+    expect(fake.callsTo('GET', '/chat/threads/th-1/messages').length, greaterThan(loadsBefore));
+    expect(fake.callsTo('POST', '/bookings/bk-9/deposit'), isEmpty);
+    expect(find.text(koT.apPayAllTitle), findsNothing, reason: 'no method picker');
+    await unmount(tester);
+  });
+
+  testWidgets('only the newest quote can be paid', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = await _chatApi([quote(id: 'q-old', finalPrice: 300000, deposit: 30000), quote(id: 'q-new')]);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
+    await pumpUntilFound(tester, find.text(koT.quoteSuperseded));
+
+    expect(find.text(koT.quoteSuperseded), findsOneWidget);
+    expect(find.text(koT.quotePayAmount(formatWon(35000, 'ko'))), findsOneWidget);
+    expect(find.text(koT.quotePayAmount(formatWon(30000, 'ko'))), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('chat list shows the team, the console operating hours and the reply-time line', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = FakeApi()..reply('GET', '/brand', {'support_hours': '평일 10:00-19:00 (예시)'});
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatListTab());
+    await pumpUntilFound(tester, find.text('${koT.chatHoursTitle} · 평일 10:00-19:00 (예시)'));
+
+    expect(find.text(koT.chatReplyFast), findsWidgets);
+    expect(find.text(koT.chatNew), findsOneWidget, reason: '+ new consultation');
+    expect(find.text(koT.chatHours), findsNothing, reason: 'the setting replaces the built-in hours');
+    await unmount(tester);
+  });
+
+  testWidgets('chat list falls back to the built-in hours when the setting is missing', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = FakeApi();
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatListTab());
+    await pumpUntilFound(tester, find.text('${koT.chatHoursTitle} · ${koT.chatHours}'));
     await unmount(tester);
   });
 }

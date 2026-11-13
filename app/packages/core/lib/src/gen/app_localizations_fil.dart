@@ -1868,6 +1868,44 @@ class TFil extends T {
   String get bkViewMonth => 'Buwanang view';
 
   @override
+  String get chatHoursTitle => 'Oras ng chat';
+
+  @override
+  String get chatReplyFast => 'Karaniwang sumasagot sa loob ng 10 minuto';
+
+  @override
+  String get quoteVisit => 'Pagbisita';
+
+  @override
+  String get quoteKind => 'Uri';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Bayaran ang deposito $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Pinalitan ng mas bagong quote';
+
+  @override
+  String get quick_quote => 'Tungkol sa quote';
+
+  @override
+  String get cQuoteOverride => 'Ipadala ang quote na malayo sa tantya';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Quote $price · tantya $estimate · $ratio×. Ipadala pa rin?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Malayo ang presyo sa tantya: kailangan ng admin na mag-apruba';
+
+  @override
+  String get quick_reschedule => 'Palitan ang iskedyul';
+
+  @override
   String get dfScopeDusting => 'Pag-alis ng alikabok sa muwebles';
 
   @override

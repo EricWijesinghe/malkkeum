@@ -1810,6 +1810,43 @@ class TZh extends T {
   String get bkViewMonth => '月视图';
 
   @override
+  String get chatHoursTitle => '咨询时间';
+
+  @override
+  String get chatReplyFast => '通常10分钟内回复';
+
+  @override
+  String get quoteVisit => '上门时间';
+
+  @override
+  String get quoteKind => '类型';
+
+  @override
+  String quotePayAmount(String amount) {
+    return '支付定金 $amount';
+  }
+
+  @override
+  String get quoteSuperseded => '已被新报价取代';
+
+  @override
+  String get quick_quote => '想了解报价';
+
+  @override
+  String get cQuoteOverride => '发送与预估差距很大的报价';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return '报价 $price · 预估 $estimate · $ratio倍。仍要发送吗？';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin => '与预估差距过大，需要管理员批准';
+
+  @override
+  String get quick_reschedule => '想改时间';
+
+  @override
   String get dfScopeDusting => '家具表面除尘';
 
   @override

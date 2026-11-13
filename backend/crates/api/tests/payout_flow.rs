@@ -12,7 +12,7 @@ use axum::{
     body::Body,
     http::{Request, StatusCode, header},
 };
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use common::{SECRET, app, call, seed_catalog, test_config};
 use serde_json::json;
 use sqlx::PgPool;
@@ -227,7 +227,7 @@ async fn run_refuses_future_dates_and_skips_pros_already_in_a_batch(pool: PgPool
     let (_settlement, pro) = seed(&pool).await;
     let app = app(pool.clone());
     let token = admin_token();
-    let future = (Utc::now() + Duration::days(2)).date_naive().to_string();
+    let future = (api::util::today_kst() + Duration::days(2)).to_string();
     let (code, _) = call(&app, "POST", "/v1/admin/settlements/run-payouts", Some(&token), Some(json!({ "date": future }))).await;
     assert_eq!(code, StatusCode::BAD_REQUEST, "future payout dates are refused");
 

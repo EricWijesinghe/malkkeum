@@ -5,8 +5,8 @@
 use super::checkout_policy::{Action, Recovery, decide, refund_reason};
 use super::{
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
-        take_balance, take_deposit,
+        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_seen_quote, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
+        SeenQuote, take_balance, take_deposit,
     },
     bookings::{BookingRow, load_booking, owned},
     catalog::load_service,
@@ -55,7 +55,14 @@ pub fn admin_routes() -> Router<AppState> {
 #[serde(tag = "kind", rename_all = "snake_case")]
 enum CheckoutRequest {
     Booking { booking: BookingBody, method: String },
-    Deposit { booking_id: Uuid, method: String },
+    /// `expected_*`: the quote card the customer tapped (see `check_seen_quote`).
+    Deposit {
+        booking_id: Uuid,
+        method: String,
+        expected_deposit: Option<i64>,
+        expected_final_price: Option<i64>,
+        expected_quote_message_id: Option<Uuid>,
+    },
     Balance { booking_id: Uuid, method: String },
 }
 
@@ -162,6 +169,14 @@ pub fn amount_matches(expected: i64, info: &PaymentInfo) -> bool {
     info.status == "PAID" && info.currency == "KRW" && info.total == expected
 }
 
+/// The quote card stored with a deposit checkout at create (none for checkouts made before v1.4).
+fn seen_on(ck: &CheckoutRow) -> ApiResult<SeenQuote> {
+    match ck.draft.as_ref().and_then(|d| d.get("seen")) {
+        Some(v) => serde_json::from_value(v.clone()).map_err(|e| ApiError::Internal(e.to_string())),
+        None => Ok(SeenQuote::default()),
+    }
+}
+
 /// Checkouts that may still be fulfilled. A late payment on an expired intent is honoured if the slot still exists.
 pub fn can_settle(status: &str) -> bool {
     matches!(status, "pending" | "awaiting_deposit" | "expired")
@@ -172,13 +187,28 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Js
     ensure_enabled(&s.db, req.method()).await?;
     let intent = match &req {
         CheckoutRequest::Booking { booking, .. } => booking_intent(&s, a.id, booking).await?,
-        CheckoutRequest::Deposit { booking_id, .. } => {
+        CheckoutRequest::Deposit {
+            booking_id,
+            expected_deposit,
+            expected_final_price,
+            expected_quote_message_id,
+            ..
+        } => {
+            let seen = SeenQuote {
+                expected_deposit: *expected_deposit,
+                expected_final_price: *expected_final_price,
+                expected_quote_message_id: *expected_quote_message_id,
+            };
+            seen.validate()?;
             let b = owned(&s, a.id, *booking_id).await?;
+            let amount = deposit_due(&b)?;
+            // Early answer for the app; settlement re-checks the stored card under lock.
+            check_seen_quote(&mut *s.db.acquire().await?, b.id, &seen).await?;
             Intent {
                 kind: "deposit",
                 booking_id: Some(b.id),
-                draft: None,
-                amount: deposit_due(&b)?,
+                draft: Some(json!({ "seen": seen })),
+                amount,
             }
         }
         CheckoutRequest::Balance { booking_id, .. } => {
@@ -305,6 +335,11 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
             Ok(booking_id) => Ok(ConfirmResult::paid(Some(booking_id))),
             Err(e) => {
                 refund_or_alert(s, "portone", payment_id, ck.charge()).await;
+                if ck.kind == "deposit" && matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed")) {
+                    // Re-quoted after the customer paid: the money went back, say so, and keep the reason.
+                    refund_late(s, ck, "price_changed").await?;
+                    return Err(e);
+                }
                 if action == Action::FulfilLate {
                     // Paid after expiry and the slot or coupon is gone: the money went back, say so.
                     refund_late(s, ck, &refund_reason(&e)).await?;
@@ -459,7 +494,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
             (id, "full", Some(number))
         }
         Plan::Deposit { booking, amount } => {
-            take_deposit(&mut tx, booking.id, amount).await?;
+            take_deposit(&mut tx, booking.id, amount, &seen_on(ck)?).await?;
             (booking.id, "deposit", None)
         }
         Plan::Balance { booking, amount } => {

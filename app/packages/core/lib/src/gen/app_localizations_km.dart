@@ -1856,6 +1856,44 @@ class TKm extends T {
   String get bkViewMonth => 'មើលប្រចាំខែ';
 
   @override
+  String get chatHoursTitle => 'ម៉ោងពិគ្រោះ';
+
+  @override
+  String get chatReplyFast => 'ជាធម្មតាឆ្លើយក្នុង 10 នាទី';
+
+  @override
+  String get quoteVisit => 'ការមកដល់';
+
+  @override
+  String get quoteKind => 'ប្រភេទ';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'បង់ប្រាក់កក់ $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'ត្រូវបានជំនួសដោយសម្រង់តម្លៃថ្មី';
+
+  @override
+  String get quick_quote => 'សួរអំពីសម្រង់តម្លៃ';
+
+  @override
+  String get cQuoteOverride => 'ផ្ញើសម្រង់តម្លៃដែលខុសឆ្ងាយពីការប៉ាន់ស្មាន';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'សម្រង់តម្លៃ $price · ប៉ាន់ស្មាន $estimate · $ratio×។ នៅតែផ្ញើ?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'តម្លៃខុសឆ្ងាយពីការប៉ាន់ស្មាន៖ ត្រូវការការអនុម័តពីអ្នកគ្រប់គ្រង';
+
+  @override
+  String get quick_reschedule => 'ប្តូរកាលវិភាគ';
+
+  @override
   String get dfScopeDusting => 'ជូតធូលីលើគ្រឿងសង្ហារិម';
 
   @override

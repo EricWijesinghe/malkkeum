@@ -4,7 +4,7 @@ use super::{
     audit,
     booking_core::{
         BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
-        price_for, record_payment, take_balance, take_deposit,
+        SeenQuote, price_for, record_payment, take_balance, take_deposit,
     },
     catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
@@ -525,12 +525,21 @@ struct PayRequest {
     payment_method_id: Uuid,
 }
 
+#[derive(Deserialize)]
+struct DepositRequest {
+    payment_method_id: Uuid,
+    /// The quote card the customer tapped; a re-quote since then is a 409 `price_changed`.
+    #[serde(flatten)]
+    seen: SeenQuote,
+}
+
 /// Quote booking: pay 10% deposit after the staff quote -> confirmed (or team assigned).
-async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<PayRequest>) -> ApiResult<Json<BookingRow>> {
+async fn pay_deposit(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(p): Json<DepositRequest>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;
     let deposit = deposit_due(&b)?;
+    p.seen.validate()?;
     let mut tx = s.db.begin().await?;
-    take_deposit(&mut tx, id, deposit).await?;
+    take_deposit(&mut tx, id, deposit, &p.seen).await?;
     // Charge last: after this only the commit can fail, and that path refunds.
     let tx_id = charge(&s, &mut tx, a.id, p.payment_method_id, id, Won(deposit), "deposit").await?;
     if let Err(e) = tx.commit().await {
@@ -564,7 +573,7 @@ struct Notes {
     other: Option<String>,
 }
 
-const MAX_NOTE: usize = 300;
+pub(crate) const MAX_NOTE: usize = 300;
 
 async fn update_notes(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(n): Json<Notes>) -> ApiResult<Json<BookingRow>> {
     let b = owned(&s, a.id, id).await?;

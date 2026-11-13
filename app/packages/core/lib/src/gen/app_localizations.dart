@@ -3565,6 +3565,72 @@ abstract class T {
   /// **'월간 보기'**
   String get bkViewMonth;
 
+  /// No description provided for @chatHoursTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담 운영시간'**
+  String get chatHoursTitle;
+
+  /// No description provided for @chatReplyFast.
+  ///
+  /// In ko, this message translates to:
+  /// **'보통 10분 내 답변'**
+  String get chatReplyFast;
+
+  /// No description provided for @quoteVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 일정'**
+  String get quoteVisit;
+
+  /// No description provided for @quoteKind.
+  ///
+  /// In ko, this message translates to:
+  /// **'유형'**
+  String get quoteKind;
+
+  /// No description provided for @quotePayAmount.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금 결제 {amount}'**
+  String quotePayAmount(String amount);
+
+  /// No description provided for @quoteSuperseded.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 견적으로 바뀌었어요'**
+  String get quoteSuperseded;
+
+  /// No description provided for @quick_quote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적이 궁금해요'**
+  String get quick_quote;
+
+  /// No description provided for @cQuoteOverride.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액과 크게 다른 견적 보내기'**
+  String get cQuoteOverride;
+
+  /// No description provided for @cQuoteOverrideBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 {price} · 예상 금액 {estimate} · {ratio}배. 그래도 보낼까요?'**
+  String cQuoteOverrideBody(String price, String estimate, String ratio);
+
+  /// No description provided for @cQuoteNeedsAdmin.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액과 차이가 커서 관리자 승인이 필요해요'**
+  String get cQuoteNeedsAdmin;
+
+  /// No description provided for @quick_reschedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 변경할래요'**
+  String get quick_reschedule;
+
   /// No description provided for @dfScopeDusting.
   ///
   /// In ko, this message translates to:

@@ -3,7 +3,7 @@
 mod common;
 
 use axum::http::StatusCode;
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use common::{app, book, call, customer, seed_catalog, verified_pro};
 use serde_json::json;
 use sqlx::PgPool;
@@ -23,7 +23,7 @@ async fn join_is_refused_while_the_slot_has_room(pool: PgPool) {
     one_seat_at_nine(&pool).await;
     let app = app(pool.clone());
     let c = customer(&app, &pool, "010-5400-0001").await;
-    let visit = (Utc::now() + Duration::days(20)).date_naive();
+    let visit = api::util::today_kst() + Duration::days(20);
     let body = json!({ "service_code": "studio", "address_id": c.address, "visit_date": visit, "start_hour": 9, "visit_notes": {} });
     let (st, _) = call(&app, "POST", "/v1/waitlist", Some(c.token.as_str()), Some(body)).await;
     assert_eq!(st, StatusCode::CONFLICT, "an open seat is booked directly, not queued");
@@ -38,7 +38,7 @@ async fn cancelled_seat_is_offered_then_accepted_into_a_booking(pool: PgPool) {
     let (first_booking, _) = book(&app, &first, 20, None).await;
 
     let second = customer(&app, &pool, "010-5400-0003").await;
-    let visit = (Utc::now() + Duration::days(20)).date_naive();
+    let visit = api::util::today_kst() + Duration::days(20);
     let body = json!({ "service_code": "studio", "address_id": second.address, "visit_date": visit, "start_hour": 9, "visit_notes": {}, "payment_method_id": second.card });
     let (st, joined) = call(&app, "POST", "/v1/waitlist", Some(second.token.as_str()), Some(body)).await;
     assert_eq!(st, StatusCode::OK, "full slot takes a waitlist entry: {joined}");

@@ -1867,6 +1867,45 @@ class TUz extends T {
   String get bkViewMonth => 'Oylik ko\'rinish';
 
   @override
+  String get chatHoursTitle => 'Maslahat vaqti';
+
+  @override
+  String get chatReplyFast => 'Odatda 10 daqiqada javob beramiz';
+
+  @override
+  String get quoteVisit => 'Tashrif';
+
+  @override
+  String get quoteKind => 'Turi';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'Oldindan toʻlov $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'Yangi narx taklifi bilan almashtirildi';
+
+  @override
+  String get quick_quote => 'Narx taklifi haqida';
+
+  @override
+  String get cQuoteOverride =>
+      'Taxmindan ancha farq qiladigan narx taklifini yuborish';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'Narx taklifi $price · taxmin $estimate · $ratio×. Baribir yuborilsinmi?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'Narx taxmindan ancha farq qiladi: admin tasdiqlashi kerak';
+
+  @override
+  String get quick_reschedule => 'Jadvalni oʻzgartirish';
+
+  @override
   String get dfScopeDusting => 'Mebel ustidagi changni artish';
 
   @override

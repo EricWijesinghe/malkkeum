@@ -1860,6 +1860,44 @@ class TSi extends T {
   String get bkViewMonth => 'මාසික දසුන';
 
   @override
+  String get chatHoursTitle => 'උපදේශන වේලාව';
+
+  @override
+  String get chatReplyFast => 'සාමාන්‍යයෙන් මිනිත්තු 10ක් ඇතුළත පිළිතුරු';
+
+  @override
+  String get quoteVisit => 'පැමිණීම';
+
+  @override
+  String get quoteKind => 'වර්ගය';
+
+  @override
+  String quotePayAmount(String amount) {
+    return 'අත්තිකාරම ගෙවන්න $amount';
+  }
+
+  @override
+  String get quoteSuperseded => 'නව මිල ගණනකින් ප්‍රතිස්ථාපනය විය';
+
+  @override
+  String get quick_quote => 'මිල ගණන ගැන';
+
+  @override
+  String get cQuoteOverride => 'ඇස්තමේන්තුවෙන් බොහෝ වෙනස් මිල ගණනක් යවන්න';
+
+  @override
+  String cQuoteOverrideBody(String price, String estimate, String ratio) {
+    return 'මිල ගණන $price · ඇස්තමේන්තුව $estimate · $ratio×. තවමත් යවන්නද?';
+  }
+
+  @override
+  String get cQuoteNeedsAdmin =>
+      'මිල ඇස්තමේන්තුවෙන් බොහෝ වෙනස්: පරිපාලක අනුමැතිය අවශ්‍යයි';
+
+  @override
+  String get quick_reschedule => 'කාලසටහන වෙනස් කරන්න';
+
+  @override
   String get dfScopeDusting => 'ගෘහ භාණ්ඩ මත දූවිලි ඉවත් කිරීම';
 
   @override
