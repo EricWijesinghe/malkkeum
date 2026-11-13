@@ -8,6 +8,8 @@
 # Only the write-enabled deploy key is used (ssh-agent or GIT_SSH_COMMAND, see .github/workflows/release.yml).
 #   Env: DIST_REPO (owner/repo), VER (git tag, e.g. v1.0.0), IMAGE_REPO (ghcr.io/owner),
 #        SIGNER_REPO (owner/repo whose release.yml signs the images)
+#   Release only (SIGN_RELEASE=1): SHA256SUMS gets a cosign bundle, installer_manifest.json an ed25519
+#        signature (MANIFEST_KEY_FILE, private PEM); the signed files and the install page are copied to ASSET_DIR.
 set -euo pipefail
 
 : "${DIST_REPO:?set DIST_REPO}" "${VER:?set VER}" "${IMAGE_REPO:?set IMAGE_REPO}" "${SIGNER_REPO:?set SIGNER_REPO}"
@@ -49,7 +51,13 @@ publish() { # publish 브랜치 채널
   grep -q "^SIGNER_REPO_DEFAULT=$SIGNER_REPO\$" install.sh
   grep -q "^DEFAULT_CHANNEL=$channel\$" install.sh
   bash -n install.sh
-  sha256sum install.sh > SHA256SUMS
+  files=(install.sh)
+  if [ -f "$src/deploy/agent.sh" ]; then cp "$src/deploy/agent.sh" agent.sh; files+=(agent.sh); fi
+  sha256sum "${files[@]}" > SHA256SUMS
+  if [ "${SIGN_RELEASE:-0}" = 1 ]; then
+    bash "$src/scripts/release/make-manifest.sh" "$VER" . "${MANIFEST_KEY_FILE:?set MANIFEST_KEY_FILE}"
+    bash "$src/scripts/release/sign-blob.sh" SHA256SUMS
+  fi
 
   cp -r "$src/docs/guide" "$src/docs/store" .
   rm -f "guide/$DEV_ONLY_GUIDE"
@@ -91,4 +99,13 @@ else
   git "${GIT_ID[@]}" tag -a "$VER" -m "다해 $VER ($tag_branch)" "$commit"
   git push -q origin "refs/tags/$VER"
   echo "tag $VER: $commit, install.sh sha256 $(cut -d' ' -f1 SHA256SUMS)"
+fi
+
+if [ "${SIGN_RELEASE:-0}" = 1 ]; then # the release assets: the tagged installer, its signed files and the install page
+  : "${ASSET_DIR:?set ASSET_DIR for the release assets}"
+  mkdir -p "$ASSET_DIR"
+  cp install.sh SHA256SUMS SHA256SUMS.bundle installer_manifest.json installer_manifest.json.sig "$ASSET_DIR/"
+  bash "$src/scripts/release/build-install-page.sh" install.sh "$RAW/$VER/install.sh" "$work/page"
+  cp "$work/page/index.html" "$ASSET_DIR/dahae-install-page.html"
+  bash "$src/scripts/release/sign-blob.sh" "$ASSET_DIR/dahae-install-page.html"
 fi
