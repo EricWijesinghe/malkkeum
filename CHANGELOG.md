@@ -8,6 +8,11 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Changed
+- Release hardening: release tags must point into master, the image and delivery jobs run in protected
+  environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
+  ed25519-signed installer manifest and a cloud-init install page are published with each release.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
