@@ -562,6 +562,33 @@ struct SettlementRow {
     created_day: NaiveDate,
 }
 
+fn settlement_header() -> Vec<Cell> {
+    ["정산ID", "정산일", "예약번호", "서비스", "방문일", "파트너", "팀명", "총액", "수수료", "지급액", "지급예정일", "지급일", "상태"]
+        .into_iter()
+        .map(text)
+        .collect()
+}
+
+fn settlement_cells(r: SettlementRow) -> Vec<Cell> {
+    let opt = |d: Option<NaiveDate>| text(d.map(|d| d.to_string()).unwrap_or_default());
+    vec![
+        text(r.id.to_string()),
+        text(r.created_day.to_string()),
+        text(r.number),
+        text(r.service_code),
+        text(r.visit_date.to_string()),
+        text(r.pro_name),
+        text(r.team_name),
+        Cell::Number(r.gross),
+        Cell::Number(r.fee),
+        Cell::Number(r.net),
+        opt(r.payout_date),
+        opt(r.paid_day),
+        text(r.state),
+    ]
+}
+
+/// Settlements in the KST range, one row each, then a 합계 row summing gross, fee and net of those rows.
 async fn export_settlements(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
     let (from, to) = resolve(&q)?;
     let rows: Vec<SettlementRow> = sqlx::query_as(
@@ -575,39 +602,12 @@ async fn export_settlements(State(s): State<AppState>, Admin(a): Admin, Query(q)
     .bind(to)
     .fetch_all(&s.db)
     .await?;
-    let opt = |d: Option<NaiveDate>| text(d.map(|d| d.to_string()).unwrap_or_default());
-    let mut doc = vec![vec![
-        text("정산ID"),
-        text("정산일"),
-        text("예약번호"),
-        text("서비스"),
-        text("방문일"),
-        text("파트너"),
-        text("팀명"),
-        text("총액"),
-        text("수수료"),
-        text("지급액"),
-        text("지급예정일"),
-        text("지급일"),
-        text("상태"),
-    ]];
-    doc.extend(rows.into_iter().map(|r| {
-        vec![
-            text(r.id.to_string()),
-            text(r.created_day.to_string()),
-            text(r.number),
-            text(r.service_code),
-            text(r.visit_date.to_string()),
-            text(r.pro_name),
-            text(r.team_name),
-            Cell::Number(r.gross),
-            Cell::Number(r.fee),
-            Cell::Number(r.net),
-            opt(r.payout_date),
-            opt(r.paid_day),
-            text(r.state),
-        ]
-    }));
+    let (gross, fee, net) = rows.iter().fold((0i64, 0i64, 0i64), |(g, f, n), r| (g + r.gross, f + r.fee, n + r.net));
+    let mut doc = vec![settlement_header()];
+    doc.extend(rows.into_iter().map(settlement_cells));
+    let mut total = vec![text("합계"), text(""), text(""), text(""), text(""), text(""), text("")];
+    total.extend([Cell::Number(gross), Cell::Number(fee), Cell::Number(net), text(""), text(""), text("")]);
+    doc.push(total);
     audit(&s.db, "staff", Some(a.id), "finance.export", "settlements", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("settlements", from, to), finance::csv_document(&doc))
 }
