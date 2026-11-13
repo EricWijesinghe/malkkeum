@@ -31,9 +31,14 @@ String topicLabel(T t, String topic) =>
 
 bool _isQuoteTopic(String topic) => topic == 'move_in' || topic == 'move_out';
 
+bool _isServiceTopic(T t, String topic) => t.service(topic) != topic;
+
 /// Thread title as the design writes it: "이사 청소 상담" for quote threads, "에어컨 청소 문의" otherwise.
 String _threadTitle(T t, String topic) => topic == 'other'
     ? t.topicOther
+    : !_isServiceTopic(t, topic)
+    // A topic the team typed ("쿠폰 사용 문의") is already a title.
+    ? topic
     : _isQuoteTopic(topic)
     ? t.chatThreadConsult(t.service(topic))
     : t.chatThreadAsk(t.service(topic));
@@ -343,7 +348,7 @@ class _ThreadTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 24,
         backgroundColor: c.primaryTint,
-        child: thread.topic == 'other'
+        child: !_isServiceTopic(t, thread.topic)
             ? Icon(Icons.chat_bubble_outline_rounded, color: c.inkSoft)
             : ServiceGlyph(thread.topic, size: 30),
       ),
