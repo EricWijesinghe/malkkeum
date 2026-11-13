@@ -7,7 +7,7 @@ store accounts. Source stays in the private repo.
 | Piece | Built by | Client receives |
 |---|---|---|
 | API image, web image (website + console at `/admin/`) | `release.yml` → GHCR | `docker pull` via install.sh |
-| install.sh + `guide/` + `store/` | `release.yml` → `DIST_REPO` (branches `main` = stable, `beta`) | one `curl … \| sudo bash` line |
+| install.sh + `SHA256SUMS` + `guide/` + `store/` | `release.yml` → `DIST_REPO` (branches `main` = stable, `beta`; annotated tag `v<VER>` on the release's channel commit) | one `curl … \| sudo bash` line |
 | Customer / partner apps | Codemagic on the private repo | TestFlight / Play internal test, then stores |
 
 ## 0. Release gate
@@ -39,7 +39,38 @@ unless that passes. The same job runs on every push and PR via `ci.yml`.
    `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
 
 Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
-(`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`).
+(`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`, the stable channel's
+latest). In the delivery repo the copies on the release's own branch carry the pinned line instead,
+`…/malkkeum-install/v<VER>/install.sh`: `publish-delivery.sh` commits `install.sh` + `SHA256SUMS` and
+pushes an annotated tag `v<VER>` with the same deploy key (no token). Tags are never moved: a re-run on
+the same commit is a no-op, anything else fails the job. Branches keep moving as the channels.
+
+### Image signatures
+
+`release.yml` signs both images by digest with cosign keyless signing (GitHub OIDC, `id-token: write`),
+and `pull-check` verifies them anonymously with the installer's own code before anything is delivered.
+The installer downloads a pinned cosign (`COSIGN_VERSION`, SHA-256 per CPU type in `install.sh`) to
+`/opt/malkkeum/bin/cosign`. Every install and `dahae update` verifies `<repo>/malkkeum-*:<tag>` against
+`--certificate-identity-regexp ^https://github.com/<SIGNER_REPO>/.github/workflows/release.yml@refs/tags/v`
+and `--certificate-oidc-issuer https://token.actions.githubusercontent.com`, then pulls and runs the
+verified digest. No valid signature = no switch, with a Korean error; the running version stays.
+`SIGNER_REPO` defaults to this repo (`publish-delivery.sh` writes `$GITHUB_REPOSITORY` into
+`SIGNER_REPO_DEFAULT`, like `IMAGE_REPO_DEFAULT`); `MALKKEUM_SIGNER` overrides it. Images loaded from a
+tar (`MALKKEUM_IMAGES_TAR`, `dahae load`) are not signature-checked (the installer says so).
+`MALKKEUM_SKIP_SIGNATURE=1` turns the check off for unsigned test registries only (e2e); re-running
+the installer without it turns it back on. The signing certificate in the public transparency log
+(Rekor) names this repo, the workflow and the commit: the private repo's name is not secret.
+Servers installed before this change keep their old `dahae` until the installer is run once more.
+
+### Database roles
+
+Postgres keeps `app` as the superuser (backups, admin). The API connects as `dahae_api`: it owns the
+`cleaning` database and every object in it, and has no SUPERUSER / CREATEDB / CREATEROLE, so a
+compromised API or a tampered backup cannot `COPY … PROGRAM`. `dahae` creates the role and moves
+ownership before every install, update and restore (idempotent; an older install is converted on its
+first re-run, with `API_DB_PASSWORD` added to `.env`). `pgcrypto` and `pg_trgm` are created by the
+superuser first. Restores run as `dahae_api` in a throwaway postgres container without volumes;
+owner and extension lines of older dumps are dropped on the way in.
 
 The owner never edits a file on the server. Everything after the install line is either the console
 wizard or a `dahae` command (`guide/07-운영-명령어.md`); `/opt/malkkeum/.env` is only copied somewhere
@@ -265,4 +296,5 @@ The server cannot report its own outage, so watch it from outside.
 - `sudo dahae uninstall --purge` (asks for the domain): also deletes the Docker volumes (database,
   uploads, certificates) and `/opt/malkkeum` with its backups and keys. Not reversible. Offsite backups
   are untouched but need the old `DATA_KEY` to decrypt. Docker itself is left installed.
-- `--yes` skips the prompt for scripts.
+- `--yes` (or `DAHAE_YES=1`) skips the `yes` prompt for scripts, but never the `--purge` one: a script
+  must pass the domain itself, `sudo dahae uninstall --purge --confirm <domain>`.

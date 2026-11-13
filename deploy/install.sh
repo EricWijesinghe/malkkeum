@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # 다해 서버 설치 프로그램 (Ubuntu 22.04 / 24.04, Debian 12)
 #
-#   curl -fsSL https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/main/install.sh | sudo bash
-#   (베타 채널: .../beta/install.sh)
+#   curl -fsSL https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/v1.2.3/install.sh | sudo bash
+#   (버전 태그 v… 는 바뀌지 않고, 같은 태그에 지문 파일 SHA256SUMS 가 있어요. 채널 최신: .../main/install.sh, 베타 .../beta/install.sh)
 #
 # 질문 두 개(도메인, 이메일)에 답하면 서버 점검, Docker 설치, 보안 키 생성, HTTPS 자동 설정, 매일 백업,
 # `dahae` 관리 명령 설치까지 끝냅니다. 다시 실행하면 안전하게 업데이트해요: 먼저 백업하고, 새 버전이
@@ -18,6 +18,8 @@
 #   MALKKEUM_SKIP_DNS_CHECK=1         도메인 IP 확인 생략
 #   MALKKEUM_HEALTH_WAIT=300          기동 확인 대기 시간(초)
 #   MALKKEUM_HEARTBEAT_URL=<핑 주소>    외부 가동 확인(healthchecks.io 등). 나중에 `dahae heartbeat <주소>` 로도 돼요
+#   MALKKEUM_SIGNER=<owner/repo>      이미지 서명자 GitHub 저장소 (기본: 릴리스 저장소)
+#   MALKKEUM_SKIP_SIGNATURE=1         이미지 서명 확인 끄기 (서명 없는 테스트 저장소 전용. 다시 실행하면 다시 켜져요)
 set -euo pipefail
 
 IMAGE_REPO_DEFAULT=ghcr.io/ericwijesinghe
@@ -33,6 +35,12 @@ COMPOSE_MIN=2.20
 APT_LOCK_WAIT=600
 DNS_MAX_TRIES=30
 HB_URL_RE='^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~%/:@+=?-]*)?$'
+# 서버 이미지는 이 저장소의 .github/workflows/release.yml 이 v 태그에서 cosign(키 없는 서명)으로 서명해요.
+SIGNER_REPO_DEFAULT=EricWijesinghe/malkkeum
+# 서명 확인 도구. 버전을 고정하고, 받은 파일의 SHA-256 이 아래와 같을 때만 써요 (cosign_checksums.txt 기준).
+COSIGN_VERSION=v3.1.4
+COSIGN_SHA256_AMD64=424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa
+COSIGN_SHA256_ARM64=ade83b7aac62e131cacfe96d958948b2150cc9efec46a570a2649b8e27dedad2
 
 say()  { printf '\n\033[1;34m▶ %s\033[0m\n' "$*"; }
 ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }
@@ -90,6 +98,9 @@ port_holders() { # `ss -ltnpH` 출력(표준 입력)에서 Docker 가 아닌 프
 ip_in_list() { [ -n "$1" ] && printf '%s\n' "$2" | grep -Fxq "$1"; }
 only_ipv4() { grep -E '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' || true; }
 only_ipv6() { grep -E '^[0-9A-Fa-f:]+$' | grep ':' || true; }
+sha256_is() { [ "$(sha256sum "$1" | cut -d' ' -f1)" = "$2" ]; } # sha256_is 파일 지문
+cosign_sha256() { case "$1" in x86_64|amd64) echo "$COSIGN_SHA256_AMD64" ;; aarch64|arm64) echo "$COSIGN_SHA256_ARM64" ;; *) return 1 ;; esac; }
+lock_env() { chmod 600 .env; } # .env 에는 모든 비밀 키가 있어요: 실행할 때마다 root 만 읽게 맞춰요
 
 rand_hex() { openssl rand -hex "$1"; }
 setup_code() { # 0/O/1/I/L 을 뺀 12자리. 화면을 보고 손으로 입력하는 코드예요.
@@ -127,6 +138,22 @@ apt_retry() { # 새 서버는 자동 업데이트가 apt 를 잠그고 있어요
     [ "$i" -lt 3 ] && { warn "패키지 설치가 잠시 막혔어요. 30초 뒤 다시 시도해요 ($i/3)"; sleep 30; }
   done
   return 1
+}
+
+install_cosign() { # 서명 확인 도구를 $DIR/bin/cosign 에 둬요. 지문(SHA-256)이 다르면 설치를 멈춰요
+  local arch sum tmp dest="$DIR/bin/cosign"
+  arch=$(uname -m)
+  sum=$(cosign_sha256 "$arch") || die "이 서버($arch)용 서명 확인 도구가 없어요."
+  if [ -x "$dest" ] && sha256_is "$dest" "$sum"; then return 0; fi
+  case "$arch" in x86_64|amd64) arch=amd64 ;; *) arch=arm64 ;; esac
+  mkdir -p "$DIR/bin"; tmp=$(mktemp "$DIR/bin/.cosign.XXXXXX")
+  if ! curl -fsSL --retry 3 --max-time 180 -o "$tmp" "https://github.com/sigstore/cosign/releases/download/$COSIGN_VERSION/cosign-linux-$arch"; then
+    rm -f "$tmp"; die "이미지 서명 확인 도구(cosign)를 내려받지 못했어요. 인터넷 연결을 확인하고 다시 실행하세요."
+  fi
+  if ! sha256_is "$tmp" "$sum"; then
+    rm -f "$tmp"; die "내려받은 서명 확인 도구(cosign)의 지문이 예상과 달라요. 안전을 위해 멈췄어요. 잠시 뒤 다시 실행하고, 계속되면 개발자에게 알려 주세요."
+  fi
+  chmod 755 "$tmp"; mv -f "$tmp" "$dest"
 }
 
 # ---- 서버 점검 ----
@@ -224,7 +251,8 @@ services:
     logging: *log
     depends_on: { db: { condition: service_healthy } }
     environment:
-      DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
+      # 앱 전용 계정(슈퍼유저 아님). app 은 DB 관리·백업용 슈퍼유저예요. 계정은 dahae 명령이 만들어요.
+      DATABASE_URL: postgres://dahae_api:${API_DB_PASSWORD:?set by install.sh}@db:5432/cleaning
       DB_MAX_CONNECTIONS: "20"
       JWT_SECRET: "${JWT_SECRET}"
       DATA_KEY: "${DATA_KEY}"
@@ -264,6 +292,9 @@ BACKUP_KEEP_DAYS=14
 UPDATE_WAIT_SECS=${DAHAE_HEALTH_WAIT:-${MALKKEUM_HEALTH_WAIT:-180}}
 HB_URL_RE='^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~%/:@+=?-]*)?$'
 BIN=/usr/local/bin
+API_DB_USER=dahae_api # 앱이 쓰는 DB 계정: 슈퍼유저가 아니에요. app 은 관리·백업용 슈퍼유저예요
+SIGN_ISSUER=https://token.actions.githubusercontent.com
+BACKUP_NAME_RE='^db-[0-9]{8}-[0-9]{6}\.sql\.gz(\.enc)?$'
 USAGE='사용법: dahae <명령>
   status                      서비스 상태
   update [태그]               백업 → 새 버전 → 응답 없으면 자동으로 되돌리기
@@ -279,7 +310,8 @@ USAGE='사용법: dahae <명령>
   demo load [--force] | demo clear   체험용 데이터
   logs [api|web|db]           로그 보기
   setup-code                  사장님 계정 설치 코드
-  uninstall [--purge] [--yes] 서비스 제거 (--purge: 데이터와 백업까지 삭제)'
+  uninstall [--yes]           서비스 끄기 (데이터와 백업은 남겨요)
+  uninstall --purge [--confirm 도메인]  데이터와 백업까지 삭제 (도메인을 입력해 확인. --yes 로는 넘어가지 않아요)'
 
 dc() { docker compose --env-file .env "$@"; }
 ok()   { printf '\033[1;32m✔ %s\033[0m\n' "$*"; }
@@ -307,6 +339,129 @@ confirm() { # confirm "질문" 기대값 : 터미널에서 기대값을 입력�
 uploads_for() { local b; b=$(basename "$1"); b=${b#db-}; printf '%s/uploads-%s.tar.gz' "$(dirname "$1")" "${b%.sql.gz}"; }
 valid_fingerprints() { printf '%s' "$1" | grep -Eq '^([0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){31})(,[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){31})*$'; }
 valid_team_id() { printf '%s' "$1" | grep -Eq '^[A-Za-z0-9]{10}$'; }
+valid_backup_name() { printf '%s' "$1" | grep -Eq "$BACKUP_NAME_RE"; }
+valid_signer() { printf '%s' "$1" | grep -Eq '^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$'; }
+# 서명 인증서는 이 저장소의 release.yml 이 v 태그에서 실행됐을 때만 맞아요 (GitHub 이름은 대소문자 구분 없음).
+signer_re() { printf '(?i)^https://github\\.com/%s/\\.github/workflows/release\\.yml@refs/tags/v[0-9]' "$(printf '%s' "$1" | sed 's/\./\\./g')"; }
+
+purge_ok() { # purge_ok [입력한 도메인] : 데이터 삭제는 --yes 나 DAHAE_YES 로 넘어가지 않아요. 도메인을 직접 맞혀야 해요
+  local d YES=0; d=$(env_get DOMAIN)
+  [ -n "$d" ] || die "설정 파일에 도메인이 없어 삭제를 확인할 수 없어요."
+  if [ -n "${1:-}" ]; then [ "$1" = "$d" ] || die "도메인이 달라서 취소했어요."; return 0; fi
+  confirm "모든 고객·예약 데이터와 백업을 지울까요? 되돌릴 수 없어요. 확인을 위해 도메인을" "$d"
+}
+
+# 사진 백업은 uploads/ 아래 평범한 파일과 폴더만 담아야 해요: 절대 경로, .., 링크, 장치 파일이 있으면 거부해요.
+# uploads/ 항목이 없으면(빈 tar, 손상) 거부해요: 그대로 바꾸면 사진이 모두 사라져요.
+uploads_tar_ok() {
+  gzip -t "$1" 2>/dev/null || return 1
+  tar tzvf "$1" 2>/dev/null | awk '{ t = substr($1, 1, 1) } t != "-" && t != "d" { bad = 1 } END { exit bad }' || return 1
+  tar tzf "$1" 2>/dev/null | awk '$0 == "uploads/" { top = 1; next }
+    $0 !~ /^uploads\// || $0 ~ /(^|\/)\.\.(\/|$)/ { bad = 1 } END { exit bad || !top }'
+}
+# 검사를 통과한 tar 를 옆 폴더에 다 풀고 나서야 기존 사진과 바꿔요. 풀다가 실패하면 기존 사진은 그대로예요.
+UPLOADS_SWAP='set -e; cd /data/uploads; rm -rf .restore-new; mkdir .restore-new
+tar xzf - -C .restore-new --strip-components=1 --no-same-owner --no-same-permissions || { rm -rf .restore-new; exit 1; }
+find . -mindepth 1 -maxdepth 1 ! -name .restore-new -exec rm -rf {} +
+find .restore-new -mindepth 1 -maxdepth 1 -exec mv -t . {} +
+rmdir .restore-new'
+
+# 예전 백업(소유자 app, 확장 포함)도 앱 계정으로 복원되게 소유자·확장 줄을 빼요. 확장은 db_roles 가 미리 만들어요.
+restore_filter() { sed -E '/^ALTER .* OWNER TO [^;]+;$/d; /^(DROP|CREATE) EXTENSION /d; /^COMMENT ON EXTENSION /d'; }
+# 복원 SQL 은 앱 계정(슈퍼유저 아님)으로, 볼륨 없는 일회용 컨테이너에서 실행해요: 백업 파일에
+# COPY ... PROGRAM 이나 psql 의 \! 같은 명령이 섞여 있어도 서버와 데이터 폴더에 닿지 못해요.
+psql_api() {
+  local cid net img
+  cid=$(dc ps -q db 2>/dev/null | head -n1); [ -n "$cid" ] || return 1
+  net=$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}' "$cid" | head -n1)
+  img=$(docker inspect -f '{{.Config.Image}}' "$cid")
+  PGPASSWORD=$(env_get API_DB_PASSWORD) docker run --rm -i --network "$net" -e PGPASSWORD --user postgres \
+    --read-only --cap-drop ALL --security-opt no-new-privileges "$img" psql -X -h db -U "$API_DB_USER" -d cleaning "$@"
+}
+
+db_roles_sql() { # db_roles_sql 비밀번호 : 앱 계정을 만들고 앱 DB 와 그 안 객체의 소유권을 넘겨요. 몇 번 실행해도 같아요
+  sed -e "s/__ROLE__/$API_DB_USER/g" -e "s/__PW__/$1/" <<'SQL'
+SET client_min_messages = warning;
+SELECT 'CREATE ROLE __ROLE__' WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '__ROLE__')
+\gexec
+ALTER ROLE __ROLE__ WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '__PW__';
+-- 마이그레이션이 쓰는 확장: 앱 계정은 만들 수 없어서 슈퍼유저가 먼저 만들어 둬요
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+SELECT format('ALTER DATABASE %I OWNER TO __ROLE__', current_database())
+\gexec
+DO $$
+DECLARE r record;
+BEGIN
+  IF (SELECT pg_get_userbyid(nspowner) FROM pg_namespace WHERE nspname = 'public') = current_user THEN
+    ALTER SCHEMA public OWNER TO __ROLE__;
+  END IF;
+  -- 표·시퀀스·뷰 (열에 딸린 시퀀스와 확장 소속 객체는 표·확장을 따라가요)
+  FOR r IN SELECT c.oid::regclass AS obj, CASE c.relkind WHEN 'S' THEN 'SEQUENCE' WHEN 'v' THEN 'VIEW'
+      WHEN 'm' THEN 'MATERIALIZED VIEW' WHEN 'f' THEN 'FOREIGN TABLE' WHEN 'c' THEN 'TYPE' ELSE 'TABLE' END AS kind
+    FROM pg_class c
+    WHERE c.relnamespace = 'public'::regnamespace AND pg_get_userbyid(c.relowner) = current_user
+      AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f', 'c')
+      AND NOT EXISTS (SELECT FROM pg_depend d WHERE d.classid = 'pg_class'::regclass AND d.objid = c.oid AND d.deptype IN ('a', 'i', 'e'))
+  LOOP
+    EXECUTE format('ALTER %s %s OWNER TO __ROLE__', r.kind, r.obj);
+  END LOOP;
+  FOR r IN SELECT p.oid::regprocedure AS obj FROM pg_proc p
+    WHERE p.pronamespace = 'public'::regnamespace AND pg_get_userbyid(p.proowner) = current_user
+      AND NOT EXISTS (SELECT FROM pg_depend d WHERE d.classid = 'pg_proc'::regclass AND d.objid = p.oid AND d.deptype = 'e')
+  LOOP
+    EXECUTE format('ALTER ROUTINE %s OWNER TO __ROLE__', r.obj);
+  END LOOP;
+  FOR r IN SELECT t.oid::regtype AS obj, CASE t.typtype WHEN 'd' THEN 'DOMAIN' ELSE 'TYPE' END AS kind FROM pg_type t
+    WHERE t.typnamespace = 'public'::regnamespace AND pg_get_userbyid(t.typowner) = current_user AND t.typtype IN ('e', 'd', 'r')
+      AND NOT EXISTS (SELECT FROM pg_depend d WHERE d.classid = 'pg_type'::regclass AND d.objid = t.oid AND d.deptype = 'e')
+  LOOP
+    EXECUTE format('ALTER %s %s OWNER TO __ROLE__', r.kind, r.obj);
+  END LOOP;
+END $$;
+SQL
+}
+db_roles() { # 앱 DB 계정 준비. 설치·업데이트·복원 전에 매번 실행해요 (이미 돼 있으면 바뀌는 게 없어요)
+  local pw; pw=$(env_get API_DB_PASSWORD)
+  printf '%s' "$pw" | grep -Eq '^[0-9a-f]{32,}$' || die "설정 파일에 API_DB_PASSWORD 가 없어요. 설치 프로그램을 다시 실행하세요."
+  db_roles_sql "$pw" | dc exec -T db psql -X -v ON_ERROR_STOP=1 -q -U app -d cleaning >/dev/null \
+    || die "앱 DB 계정을 준비하지 못했어요. 'dahae logs db' 로 확인하세요. 지금 서비스는 그대로예요."
+}
+
+verify_image() { # verify_image 저장소/이름:태그 -> 서명이 확인된 저장소/이름@sha256:… (확인 못 하면 멈춰요)
+  local ref="$1" signer out digest cosign="$DIR/bin/cosign"
+  signer=$(env_get SIGNER_REPO)
+  valid_signer "$signer" || die "이미지 서명자 설정(SIGNER_REPO)이 없거나 이상해요: '$signer'. 설치 프로그램을 다시 실행하세요."
+  [ -x "$cosign" ] || die "이미지 서명 확인 도구($cosign)가 없어요. 설치 프로그램을 다시 실행하세요. 지금 서비스는 그대로예요."
+  if ! out=$(TUF_ROOT="$DIR/.sigstore" "$cosign" verify --certificate-identity-regexp "$(signer_re "$signer")" \
+      --certificate-oidc-issuer "$SIGN_ISSUER" -o json "$ref" 2>&1); then
+    printf '%s\n' "$out" | tail -n 3 >&2
+    die "이미지 서명을 확인하지 못해서 새 버전을 적용하지 않았어요: $ref
+  정식 릴리스($signer)가 서명한 이미지가 아니거나 서명 확인 서버(sigstore)에 닿지 못했어요. 지금 서비스는 그대로예요."
+  fi
+  digest=$(printf '%s' "$out" | grep -o '"docker-manifest-digest":"sha256:[0-9a-f]\{64\}"' | head -n1 | cut -d'"' -f4)
+  [ -n "$digest" ] || die "서명 확인 결과에서 이미지 지문을 찾지 못했어요: $ref. 지금 서비스는 그대로예요."
+  printf '%s@%s' "${ref%:*}" "$digest"
+}
+pull_images() { # pull_images 저장소 태그 : 띄울 이미지를 NEW_API / NEW_WEB 에 정해요 (서명 확인 → 그 다이제스트로 내려받기)
+  local repo="$1" ver="$2"
+  if [ "$(env_get IMAGE_SOURCE)" = local ]; then
+    docker image inspect "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver" >/dev/null 2>&1 \
+      || die "이미지 $ver 이 없어요. 먼저 'dahae load 파일.tar' 를 실행하세요."
+    warn "직접 불러온 이미지 파일(.tar)이라 서명 확인 없이 써요."
+    NEW_API=$repo/malkkeum-api:$ver; NEW_WEB=$repo/malkkeum-web:$ver
+    return 0
+  fi
+  if [ "$(env_get IMAGE_VERIFY)" = off ]; then
+    warn "이미지 서명 확인이 꺼져 있어요 (서명 없는 테스트 저장소 전용). 실제 서버라면 설치 프로그램을 다시 실행하세요."
+    NEW_API=$repo/malkkeum-api:$ver; NEW_WEB=$repo/malkkeum-web:$ver
+  else
+    NEW_API=$(verify_image "$repo/malkkeum-api:$ver") || exit 1
+    NEW_WEB=$(verify_image "$repo/malkkeum-web:$ver") || exit 1
+  fi
+  { docker pull -q "$NEW_API" >/dev/null && docker pull -q "$NEW_WEB" >/dev/null; } \
+    || die "새 버전을 내려받지 못했어요. 지금 서비스는 그대로 돌고 있어요."
+}
 
 # 앱이 DB 까지 정상인지(컨테이너 안 /ready)와 웹 서버가 돌고 있는지를 봐요. HTTPS 인증서와는 무관해요.
 health_ok() { dc exec -T api api --ready >/dev/null 2>&1 && [ -n "$(dc ps -q --status running web 2>/dev/null)" ]; }
@@ -379,23 +534,18 @@ cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터�
 cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔요 (로컬 이미지면 먼저 dahae load)
   local repo ver cur_api cur_web new_api
   printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
+  db_roles # 백업의 외부 업로드도 앱 계정으로 접속해요: 예전 설치를 처음 올릴 때 계정부터 만들어요
   cmd_backup
   repo=$(env_get IMAGE_REPO); ver=${1:-$(env_get VERSION)}
-  if [ "$(env_get IMAGE_SOURCE)" = local ]; then
-    docker image inspect "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver" >/dev/null 2>&1 \
-      || die "이미지 $ver 이 없어요. 먼저 'dahae load 파일.tar' 를 실행하세요."
-  else
-    { docker pull -q "$repo/malkkeum-api:$ver" >/dev/null && docker pull -q "$repo/malkkeum-web:$ver" >/dev/null; } \
-      || die "새 버전을 내려받지 못했어요. 지금 서비스는 그대로 돌고 있어요."
-  fi
+  pull_images "$repo" "$ver"
   cur_api=$(digest_ref "$(running_image api "$(env_get API_IMAGE)")" "$repo/malkkeum-api")
   cur_web=$(digest_ref "$(running_image web "$(env_get WEB_IMAGE)")" "$repo/malkkeum-web")
-  new_api=$(docker image inspect -f '{{.Id}}' "$repo/malkkeum-api:$ver")
+  new_api=$(docker image inspect -f '{{.Id}}' "$NEW_API")
   # 같은 이미지로 다시 맞추는 경우(설치 프로그램 재실행 등)에는 되돌리기 기록을 덮어쓰지 않아요.
   if [ "$new_api" != "$(docker image inspect -f '{{.Id}}' "$cur_api" 2>/dev/null || true)" ]; then
     env_set PREV_API_IMAGE "$cur_api"; env_set PREV_WEB_IMAGE "$cur_web"
   fi
-  set_images "$repo/malkkeum-api:$ver" "$repo/malkkeum-web:$ver"
+  set_images "$NEW_API" "$NEW_WEB"
   if wait_healthy; then
     env_set VERSION "$ver"
     prune_keep_tags
@@ -408,6 +558,14 @@ cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔
     die "업데이트에 실패해서 이전 버전으로 되돌렸어요. 'dahae logs' 로 원인을 확인해 주세요."
   fi
   die "이전 버전으로도 응답하지 않아요. 'dahae logs' 화면을 개발자에게 전달해 주세요."
+}
+
+cmd_prepare() { # 설치 프로그램이 처음 띄우기 전에 불러요: 이미지 확인·내려받기 → DB 시작 → 앱 DB 계정
+  local repo ver="${1:?사용법: dahae prepare 태그}"; repo=$(env_get IMAGE_REPO)
+  pull_images "$repo" "$ver"
+  env_set API_IMAGE "$NEW_API"; env_set WEB_IMAGE "$NEW_WEB"
+  dc up -d --wait db >/dev/null || die "DB 를 시작하지 못했어요. 'dahae logs db' 로 확인하세요."
+  db_roles
 }
 
 cmd_rollback() {
@@ -462,20 +620,23 @@ cmd_restore() { # dahae restore 파일 [--yes]
   [ -f "$f" ] || die "백업 파일을 찾을 수 없어요: $f"
   gzip -t "$f" 2>/dev/null || die "백업 파일이 손상됐어요: $f"
   up=$(uploads_for "$f")
+  if [ -f "$up" ] && ! uploads_tar_ok "$up"; then
+    die "사진 파일 백업이 손상됐거나 허용되지 않는 항목(절대 경로, .., 링크)이 있어서 복원을 멈췄어요. 아무것도 바뀌지 않았어요: $up"
+  fi
   confirm "현재 데이터를 $f 로 되돌릴까요? 지금 데이터는 먼저 따로 백업해 둬요." yes
   printf '\n▶ 복원 전에 지금 상태를 백업해요\n'
   cmd_backup noprune
+  db_roles
   dc stop api >/dev/null
   # 한 트랜잭션으로 적용해요: 오류가 하나라도 나면 아무것도 바뀌지 않아요.
-  if ! gunzip -c "$f" | dc exec -T db psql -v ON_ERROR_STOP=1 --single-transaction -q -U app -d cleaning >/dev/null; then
+  if ! gunzip -c "$f" | restore_filter | psql_api -v ON_ERROR_STOP=1 --single-transaction -q >/dev/null; then
     dc start api >/dev/null || true
     die "DB 복원에 실패했어요. 데이터는 복원 전 그대로예요. 위 오류를 개발자에게 전달해 주세요."
   fi
   local files=복원됨 rc=0
   if [ ! -f "$up" ]; then
     files="백업 없음"; warn "같은 시각의 사진 파일 백업($up)이 없어 DB 만 복원했어요."
-  elif ! gzip -t "$up" 2>/dev/null \
-      || ! dc run --rm --no-deps -T --entrypoint sh api -c 'find /data/uploads -mindepth 1 -delete && tar xzf - -C /data' < "$up"; then
+  elif ! dc run --rm --no-deps -T --entrypoint sh api -c "$UPLOADS_SWAP" < "$up"; then
     files=실패; rc=1; warn "사진 파일 복원에 실패했어요 (DB 는 복원됐어요): $up"
   fi
   dc start api >/dev/null
@@ -488,6 +649,7 @@ cmd_restore_offsite() { # dahae restore-offsite [이름] [--yes]
   local name="" a up_name
   for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) name="$a" ;; esac; done
   if [ -z "$name" ]; then dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-list; return 0; fi
+  valid_backup_name "$name" || die "외부 백업 이름이 아니에요 (예: db-20261110-033000.sql.gz.enc): $name"
   dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-fetch "$name" "/backups/${name%.enc}" || die "외부 백업을 내려받지 못했어요"
   up_name=$(basename "$(uploads_for "${name%.enc}")")
   dc run --rm --no-deps -T -v "$DIR/backups:/backups" api api backup-fetch "$up_name.enc" "/backups/$up_name" >/dev/null 2>&1 \
@@ -532,11 +694,19 @@ cmd_applinks() { # dahae applinks --android-sha256 지문[,지문] --apple-team-
   ok "앱 링크를 설정했어요: https://$(env_get DOMAIN)/.well-known/assetlinks.json"
 }
 
-cmd_uninstall() { # dahae uninstall [--purge] [--yes]
-  local a purge=0
-  for a in "$@"; do case "$a" in --purge) purge=1 ;; --yes|-y) YES=1 ;; *) die "$USAGE" ;; esac; done
+cmd_uninstall() { # dahae uninstall [--yes] | dahae uninstall --purge [--confirm 도메인]
+  local purge=0 given=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --purge) purge=1 ;;
+      --yes|-y) YES=1 ;;
+      --confirm) given="${2:-}"; [ -n "$given" ] || die "--confirm 다음에 도메인을 쓰세요"; shift ;;
+      *) die "$USAGE" ;;
+    esac
+    shift
+  done
   if [ "$purge" = 1 ]; then
-    confirm "모든 고객·예약 데이터와 백업을 지울까요? 되돌릴 수 없어요. 확인을 위해 도메인을" "$(env_get DOMAIN)"
+    purge_ok "$given"
   else
     confirm "다해 서비스를 끌까요? 데이터와 백업은 $DIR 와 Docker 볼륨에 남겨 둬요." yes
   fi
@@ -555,11 +725,13 @@ main() {
   # Backups hold every customer's data: only root may read them.
   umask 077
   chmod 700 backups 2>/dev/null || true
+  chmod 600 .env 2>/dev/null || true
   YES=${DAHAE_YES:-0}
   case "${1:-status}" in
     status) cmd_status ;;
     update) shift; cmd_update "$@" ;;
     load) shift; cmd_load "$@" ;;
+    prepare) shift; cmd_prepare "$@" ;; # 설치 프로그램 전용
     rollback) cmd_rollback ;;
     channel) shift; cmd_channel "$@" ;;
     version) cmd_version ;;
@@ -662,7 +834,7 @@ final_banner() { # final_banner https정상(1/0)
 
 main() {
   local k a m
-  for k in DOMAIN EMAIL IMAGES IMAGES_TAR CHANNEL VERSION TLS SKIP_DNS_CHECK HEALTH_WAIT HEARTBEAT_URL; do
+  for k in DOMAIN EMAIL IMAGES IMAGES_TAR CHANNEL VERSION TLS SKIP_DNS_CHECK HEALTH_WAIT HEARTBEAT_URL SIGNER SKIP_SIGNATURE; do
     a=DAHAE_$k; m=MALKKEUM_$k
     if [ -n "${!a:-}" ] && [ -z "${!m:-}" ]; then export "$m=${!a}"; fi
   done
@@ -695,7 +867,10 @@ main() {
   else
     IMAGE_SOURCE=$(env_get IMAGE_SOURCE); IMAGE_SOURCE=${IMAGE_SOURCE:-remote} # 한번 local 로 설치했으면 계속 local
   fi
+  SIGNER_REPO=${MALKKEUM_SIGNER:-$(env_get SIGNER_REPO)}; SIGNER_REPO=${SIGNER_REPO:-$SIGNER_REPO_DEFAULT}
+  IMAGE_VERIFY=on; [ -z "${MALKKEUM_SKIP_SIGNATURE:-}" ] || IMAGE_VERIFY=off
   case "$CHANNEL" in stable|beta) ;; *) die "채널은 stable 또는 beta 중 하나예요." ;; esac
+  printf '%s' "$SIGNER_REPO" | grep -Eq '^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$' || die "MALKKEUM_SIGNER 는 owner/repo 형식이에요: $SIGNER_REPO"
   case "$TLS_MODE" in ""|internal) ;; *) die "MALKKEUM_TLS 는 internal 만 쓸 수 있어요." ;; esac
 
   DOMAIN=${MALKKEUM_DOMAIN:-$(env_get DOMAIN)}
@@ -744,12 +919,17 @@ EOF
     umask 022
     ok "보안 키를 새로 만들었어요"
   fi
+  lock_env
+  # 앱 전용 DB 계정 비밀번호. 예전 설치에는 없어서 처음 다시 실행할 때 만들어요 (계정은 dahae update 가 만들어요).
+  [ -n "$(env_get API_DB_PASSWORD)" ] || env_set API_DB_PASSWORD "$(rand_hex 24)"
   env_set DOMAIN "$DOMAIN"
   env_set ACME_EMAIL "$ACME_EMAIL"
   env_set IMAGE_REPO "$IMAGE_REPO"
   env_set TLS_MODE "$TLS_MODE"
   env_set CHANNEL "$CHANNEL"
   env_set IMAGE_SOURCE "$IMAGE_SOURCE"
+  env_set SIGNER_REPO "$SIGNER_REPO"
+  env_set IMAGE_VERIFY "$IMAGE_VERIFY"
   if [ -n "${MALKKEUM_HEARTBEAT_URL:-}" ]; then env_set HEARTBEAT_URL "$MALKKEUM_HEARTBEAT_URL"; fi
 
   write_compose
@@ -763,6 +943,15 @@ EOF
     ufw allow 22/tcp >/dev/null; ufw allow 80/tcp >/dev/null; ufw allow 443 >/dev/null
   fi
 
+  if [ "$IMAGE_SOURCE" = local ]; then
+    :
+  elif [ "$IMAGE_VERIFY" = on ]; then
+    install_cosign
+    ok "이미지 서명 확인 도구 준비 완료 (cosign $COSIGN_VERSION)"
+  else
+    warn "이미지 서명 확인을 껐어요 (MALKKEUM_SKIP_SIGNATURE). 서명 없는 테스트 저장소에서만 쓰세요."
+  fi
+
   if [ -n "$IMAGES_TAR" ]; then
     say "미리 받아 둔 이미지를 불러와요 (인터넷에서 받지 않아요)"
     load_images "$IMAGES_TAR" "$IMAGE_REPO/malkkeum-api:$VERSION" "$IMAGE_REPO/malkkeum-web:$VERSION"
@@ -774,12 +963,9 @@ EOF
     DAHAE_HEALTH_WAIT=$HEALTH_WAIT_SECS "$BIN/dahae" update "$VERSION" || die "업데이트하지 못했어요. 위 안내를 확인해 주세요."
   else
     env_set VERSION "$VERSION"
-    env_set API_IMAGE "$IMAGE_REPO/malkkeum-api:$VERSION"
-    env_set WEB_IMAGE "$IMAGE_REPO/malkkeum-web:$VERSION"
     say "서비스 시작 (처음에는 몇 분 걸릴 수 있어요)"
-    if [ "$IMAGE_SOURCE" != local ]; then
-      dc pull -q api web || die "새 버전을 내려받지 못했어요. 인터넷 연결을 확인하고 다시 실행하세요."
-    fi
+    # 이미지 서명 확인 → 확인된 다이제스트로 내려받기 → DB 와 앱 전용 계정 준비. 실패하면 아무것도 띄우지 않아요.
+    "$BIN/dahae" prepare "$VERSION" || die "서비스를 준비하지 못했어요. 위 안내를 확인해 주세요. (다시 실행해도 안전해요)"
     dc up -d --remove-orphans
     wait_for "$HEALTH_WAIT_SECS" app_ready \
       || die "서비스가 시작되지 않았어요. 'dahae logs' 화면을 개발자에게 전달해 주세요. (다시 실행해도 안전해요)"
