@@ -26,7 +26,7 @@ const COPY = {
     q4: '청소 도구는 따로 준비해야 하나요?', a4: '전문가가 전용 장비와 세제를 가져와요.',
     band_title: '지금 앱을 내려받고 첫 예약 쿠폰을 받으세요', band_sub: '가입하면 바로 쓸 수 있는 쿠폰을 드려요.',
     partner_title: '청소 전문가로 함께해요', partner_sub: '원하는 지역과 시간에 일하고, 매주 수요일 정산받으세요.', partner_cta: '파트너 앱 받기',
-    f_privacy: '개인정보처리방침', f_terms: '이용약관', f_delete: '계정 삭제 안내', f_support: '고객센터',
+    f_privacy: '개인정보처리방침', f_terms: '이용약관', f_delete: '계정 삭제 안내', f_support: '고객센터', c_bizcheck: '사업자정보확인',
     store_soon: '곧 출시',
   },
   en: {
@@ -49,7 +49,7 @@ const COPY = {
     q4: 'Do I need to prepare supplies?', a4: 'No. Pros bring their own equipment and detergents.',
     band_title: 'Get the app and your first-booking coupons', band_sub: 'Coupons are ready the moment you sign up.',
     partner_title: 'Work with us as a cleaning pro', partner_sub: 'Choose your areas and hours; get paid every Wednesday.', partner_cta: 'Get the partner app',
-    f_privacy: 'Privacy policy', f_terms: 'Terms of service', f_delete: 'Delete your account', f_support: 'Support',
+    f_privacy: 'Privacy policy', f_terms: 'Terms of service', f_delete: 'Delete your account', f_support: 'Support', c_bizcheck: 'Verify business registration',
     store_soon: 'Coming soon',
   },
 };

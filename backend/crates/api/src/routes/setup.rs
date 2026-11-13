@@ -426,6 +426,7 @@ async fn put_business(State(s): State<AppState>, Admin(a): Admin, Json(input): J
         .execute(&s.db)
         .await?;
     super::config::invalidate();
+    super::seller::invalidate_business();
     audit(&s.db, a.role.as_str(), Some(a.id), "setup.business", BUSINESS_KEY, json!({})).await?;
     Ok(Json(value))
 }

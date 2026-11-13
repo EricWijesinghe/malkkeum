@@ -99,7 +99,7 @@ SUPPORT_PHONE = seller("support_phone")
 SUPPORT_EMAIL = seller("support_email")
 CONTACT = SUPPORT_EMAIL + " · " + SUPPORT_PHONE
 # 공정거래위원회 통신판매사업자 조회.
-BIZCHECK = '<a href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener">사업자정보확인</a>'
+BIZCHECK = seller("bizcheck")
 
 PRIVACY = f"""
     <h1>개인정보처리방침</h1>
@@ -267,6 +267,7 @@ def self_test():
     for field in ("legal_name", "ceo", "registration_no", "mail_order_no", "address", "hosting_provider", "support_phone", "support_email"):
         assert 'httpInclude "/v1/public/seller-info?field=' + field + '"' in page, field
     assert '{{httpInclude "/v1/public/seller-info"}}' in page, "footer block"
+    assert 'httpInclude "/v1/public/seller-info?field=bizcheck"' in page, "FTC lookup link comes from the API"
     assert "data-fill" not in page and "data-bizcheck" not in page, "no JavaScript placeholders"
     out = absolute('<link rel="canonical" href="/terms.html"><meta property="og:image" content="/assets/og-image.png">', "https://example.com")
     assert out == '<link rel="canonical" href="https://example.com/terms.html"><meta property="og:image" content="https://example.com/assets/og-image.png">', out

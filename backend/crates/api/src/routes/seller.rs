@@ -16,10 +16,20 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::Value;
+use sqlx::PgPool;
+use std::{
+    sync::Mutex,
+    time::{Duration, Instant},
+};
 
 /// Short cache: the owner changes these rarely, and the fragment is cheap to rebuild.
 const CACHE_CONTROL: &str = "public, max-age=300";
+/// Every website page includes several fragments, so the business setting is read from memory for this long.
+const BUSINESS_TTL: Duration = Duration::from_secs(60);
+const BIZ_NO_DIGITS: usize = 10;
 const FTC_LOOKUP: &str = "https://www.ftc.go.kr/bizCommPop.do";
+
+static BUSINESS: Mutex<Option<(Instant, Value)>> = Mutex::new(None);
 
 /// Single fields the legal pages put inline, with the text shown until the owner fills them in.
 const FIELDS: [(&str, &str); 9] = [
@@ -57,9 +67,37 @@ struct SellerQuery {
 }
 
 async fn seller_info(State(s): State<AppState>, Query(q): Query<SellerQuery>) -> ApiResult<Response> {
-    let business = business_value(&s.db).await?;
+    let business = cached_business(&s.db).await?;
     let body = fragment(&business, q.field.as_deref()).ok_or(ApiError::NotFound)?;
-    Ok(([(header::CONTENT_TYPE, "text/html; charset=utf-8"), (header::CACHE_CONTROL, CACHE_CONTROL)], body).into_response())
+    Ok((
+        [(header::CONTENT_TYPE, "text/html; charset=utf-8"), (header::CACHE_CONTROL, CACHE_CONTROL)],
+        body,
+    )
+        .into_response())
+}
+
+/// Forget the cached business setting; called when the owner saves it.
+pub(crate) fn invalidate_business() {
+    if let Ok(mut c) = BUSINESS.lock() {
+        *c = None;
+    }
+}
+
+/// The business setting from the cache when fresh, otherwise from the database (and cached).
+async fn cached_business(db: &PgPool) -> ApiResult<Value> {
+    if let Some(v) = fresh_business() {
+        return Ok(v);
+    }
+    let v = business_value(db).await?;
+    if let Ok(mut c) = BUSINESS.lock() {
+        *c = Some((Instant::now(), v.clone()));
+    }
+    Ok(v)
+}
+
+fn fresh_business() -> Option<Value> {
+    let c = BUSINESS.lock().ok()?;
+    c.as_ref().filter(|(t, _)| t.elapsed() < BUSINESS_TTL).map(|(_, v)| v.clone())
 }
 
 /// Stored value of a field, trimmed; blank or missing counts as not configured.
@@ -75,6 +113,7 @@ fn value_of(business: &Value, field: &str) -> Option<String> {
 pub fn fragment(business: &Value, field: Option<&str>) -> Option<String> {
     match field {
         None => Some(footer_block(business)),
+        Some("bizcheck") => Some(ftc_link(business)),
         Some(f) => {
             let (_, placeholder) = FIELDS.iter().find(|(k, _)| *k == f)?;
             Some(field_html(f, value_of(business, f).as_deref(), placeholder))
@@ -112,8 +151,26 @@ fn footer_block(business: &Value) -> String {
         };
         out.push_str(&format!("<span>{text}</span>"));
     }
-    out.push_str(&format!("<a href=\"{FTC_LOOKUP}\" target=\"_blank\" rel=\"noopener\">사업자정보확인</a>"));
+    out.push_str(&ftc_link(business));
     out
+}
+
+/// The 사업자정보확인 link (FTC lookup). With a 10-digit registration number it opens that seller's record.
+fn ftc_link(business: &Value) -> String {
+    let digits: String = value_of(business, "registration_no")
+        .unwrap_or_default()
+        .chars()
+        .filter(char::is_ascii_digit)
+        .collect();
+    let href = if digits.len() == BIZ_NO_DIGITS {
+        format!("{FTC_LOOKUP}?wrkr_no={digits}")
+    } else {
+        FTC_LOOKUP.to_string()
+    };
+    format!(
+        "<a href=\"{}\" target=\"_blank\" rel=\"noopener\" data-t=\"c_bizcheck\">사업자정보확인</a>",
+        escape_html(&href)
+    )
 }
 
 #[cfg(test)]
@@ -173,5 +230,34 @@ mod tests {
     fn unknown_field_is_none() {
         assert!(fragment(&configured(), Some("password")).is_none());
         assert!(fragment(&configured(), Some("company.ceo")).is_none());
+    }
+
+    #[test]
+    fn bizcheck_link_opens_the_sellers_record() {
+        let html = fragment(&configured(), Some("bizcheck")).unwrap();
+        assert_eq!(
+            html,
+            "<a href=\"https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1234567890\" target=\"_blank\" rel=\"noopener\" data-t=\"c_bizcheck\">사업자정보확인</a>"
+        );
+    }
+
+    #[test]
+    fn bizcheck_link_without_a_full_registration_number_is_the_bare_lookup() {
+        let html = fragment(&json!({"company": {"registration_no": "123-45"}}), Some("bizcheck")).unwrap();
+        assert!(html.starts_with("<a href=\"https://www.ftc.go.kr/bizCommPop.do\" "), "{html}");
+    }
+
+    #[test]
+    fn footer_lookup_link_carries_the_registration_number() {
+        let html = fragment(&configured(), None).unwrap();
+        assert!(html.contains("bizCommPop.do?wrkr_no=1234567890"), "{html}");
+    }
+
+    #[test]
+    fn business_cache_serves_until_invalidated() {
+        *BUSINESS.lock().unwrap() = Some((Instant::now(), json!({"name": "다해"})));
+        assert_eq!(fresh_business(), Some(json!({"name": "다해"})));
+        invalidate_business();
+        assert_eq!(fresh_business(), None);
     }
 }
