@@ -18,6 +18,7 @@ pub mod error;
 pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
+pub mod keys_bundle;
 pub mod jobs;
 pub mod lifecycle;
 pub mod image_meta;
