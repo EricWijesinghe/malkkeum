@@ -13,8 +13,8 @@ import 'support/customer_routes.dart';
 
 /// From the home grid, open a service's detail screen.
 Future<void> _openFromHome(WidgetTester tester, String code) async {
-  await pumpUntilFound(tester, find.text(koT.serviceShort(code)));
-  await tester.tap(find.text(koT.serviceShort(code)));
+  await pumpUntilFound(tester, find.text(koT.service(code)));
+  await tester.tap(find.text(koT.service(code)));
   await settle(tester);
 }
 

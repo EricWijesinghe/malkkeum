@@ -40,7 +40,7 @@ void main() {
       stockCustomerApi(fake, name: '지민');
       final env = await TestEnv.create(fake: fake, themeMode: mode);
       await pumpCustomerApp(tester, env);
-      await pumpUntilFound(tester, find.text(koT.homeServices));
+      await pumpUntilFound(tester, find.text(koT.service('studio')));
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);
       await unmount(tester);

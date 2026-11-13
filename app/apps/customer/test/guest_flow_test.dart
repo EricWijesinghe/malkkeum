@@ -52,7 +52,7 @@ void main() {
       await pumpCustomerApp(tester, env);
       await settle(tester, duration: const Duration(milliseconds: 500));
 
-      await tester.tap(find.text(koT.serviceShort('studio')).first);
+      await tester.tap(find.text(koT.service('studio')).first);
       await settle(tester);
       expect(find.text(koT.dfBookNow), findsOneWidget);
 
@@ -83,7 +83,7 @@ void main() {
       final env = await TestEnv.create(fake: fake, signedIn: false);
       await pumpCustomerApp(tester, env);
       await settle(tester, duration: const Duration(milliseconds: 500));
-      await tester.tap(find.text(koT.serviceShort('studio')).first);
+      await tester.tap(find.text(koT.service('studio')).first);
       await settle(tester);
       await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);
@@ -109,7 +109,7 @@ void main() {
       final env = await TestEnv.create(fake: fake, signedIn: false);
       await pumpCustomerApp(tester, env);
       await settle(tester, duration: const Duration(milliseconds: 500));
-      await tester.tap(find.text(koT.serviceShort('studio')).first);
+      await tester.tap(find.text(koT.service('studio')).first);
       await settle(tester);
       await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);

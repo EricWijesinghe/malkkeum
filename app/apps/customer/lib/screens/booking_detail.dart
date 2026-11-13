@@ -596,12 +596,12 @@ class _Timeline extends StatelessWidget {
                           current: b.status == steps[i].$1,
                         ),
                         if (i < steps.length - 1)
+                          // The connector fills once its step is behind the booking.
                           Expanded(
-                            child: Container(
-                              width: 2,
-                              color: b.status > steps[i].$1
-                                  ? context.colors.fresh
-                                  : context.colors.line,
+                            child: ProgressLine(
+                              axis: Axis.vertical,
+                              thickness: 2,
+                              fraction: b.status > steps[i].$1 ? 1 : 0,
                             ),
                           ),
                       ],

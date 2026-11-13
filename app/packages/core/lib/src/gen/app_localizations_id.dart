@@ -2405,13 +2405,26 @@ class TId extends T {
   String get dhHomeNews => 'Kabar Dahae';
 
   @override
-  String get dhSvcMove => 'Pembersihan pindahan (masuk / keluar)';
+  String get dhHomeAll => 'Semua';
 
   @override
-  String get dhSvcMoveShort => 'Pindahan';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Pembersihan pindahan mana yang Anda butuhkan?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Pengumuman';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Kabar';

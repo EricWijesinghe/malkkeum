@@ -55,8 +55,8 @@ void main() {
     }
 
     await pumpUntilFound(tester, find.text(t.tabHome), timeout: const Duration(seconds: 15));
-    await pumpUntilFound(tester, find.text(t.serviceShort('studio')), timeout: const Duration(seconds: 15));
-    await tester.tap(find.text(t.serviceShort('studio')));
+    await pumpUntilFound(tester, find.text(t.service('studio')), timeout: const Duration(seconds: 15));
+    await tester.tap(find.text(t.service('studio')));
     await settle(tester);
     expect(find.text(t.service('studio')), findsWidgets);
     expect(find.text(t.dfBookNow), findsOneWidget);

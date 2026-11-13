@@ -2399,13 +2399,26 @@ class TNe extends T {
   String get dhHomeNews => 'Dahae समाचार';
 
   @override
-  String get dhSvcMove => 'सर्दा गरिने सरसफाइ (भित्र / बाहिर)';
+  String get dhHomeAll => 'सबै';
 
   @override
-  String get dhSvcMoveShort => 'घर सराइ';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'तपाईंलाई कुन सरसफाइ चाहिन्छ?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'सूचना';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'समाचार';

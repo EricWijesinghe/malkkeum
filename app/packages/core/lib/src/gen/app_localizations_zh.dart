@@ -2345,13 +2345,26 @@ class TZh extends T {
   String get dhHomeNews => 'Dahae 动态';
 
   @override
-  String get dhSvcMove => '入住·搬出清洁';
+  String get dhHomeAll => '全部';
 
   @override
-  String get dhSvcMoveShort => '搬家';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => '您需要哪种搬家清洁？';
+  String get dhBadgeNew => '新';
+
+  @override
+  String get dhBadgeHot => '热';
+
+  @override
+  String get dhNoticeTag => '公告';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => '动态';

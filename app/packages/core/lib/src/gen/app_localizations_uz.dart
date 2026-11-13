@@ -2416,13 +2416,26 @@ class TUz extends T {
   String get dhHomeNews => 'Dahae yangiliklari';
 
   @override
-  String get dhSvcMove => 'Ko‘chib kirish / chiqish tozalashi';
+  String get dhHomeAll => 'Hammasi';
 
   @override
-  String get dhSvcMoveShort => 'Ko‘chish';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Sizga qaysi tozalash kerak?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'E‘lon';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Yangiliklar';

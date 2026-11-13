@@ -4,23 +4,77 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
-import 'booking_detail.dart';
+import 'booking_card.dart';
 import 'pending_deposits_banner.dart';
 
-/// Week strip (default) or month calendar with service-colored dots + the day's bookings; or a plain list.
+export 'booking_card.dart';
+
+/// One calendar week row; tall enough to be a touch target on its own.
+const _rowHeight = 52.0;
+const _daySize = 44.0;
+const _dayRadius = 10.0;
+const _dotSize = 5.0;
+const _handleTarget = 48.0;
+
+/// Finger travel that takes the month grid from open to a single week.
+const _dragExtent = 220.0;
+
+/// A flick faster than this (dp/s) decides open or closed whatever the position.
+const _flingVelocity = 300.0;
+
+/// Calendar chrome stops growing here; the bookings under it follow the system text size in full.
+const _headerMaxTextScale = 1.3;
+
+/// Days of the neighbouring months are shown greyed.
+const _outsideAlpha = 0.4;
+
+/// Languages that write the year before the month, where "26년 11월" reads naturally.
+const _shortYearLangs = {'ko', 'ja', 'zh'};
+
+DateTime _monthOf(DateTime d) => DateTime(d.year, d.month);
+
+String _monthTitle(DateTime month, String lang) {
+  final full = DateFormat.yMMMM(lang).format(month);
+  return _shortYearLangs.contains(lang)
+      ? full.replaceFirst('${month.year}', '${month.year % 100}')
+      : full;
+}
+
+/// Month calendar (a drag handle folds it to one week) over the selected day's bookings.
 class BookingsTab extends StatefulWidget {
   const BookingsTab({super.key});
   @override
   State<BookingsTab> createState() => _BookingsTabState();
 }
 
-class _BookingsTabState extends State<BookingsTab> {
+class _BookingsTabState extends State<BookingsTab>
+    with SingleTickerProviderStateMixin {
   final _view = GlobalKey<AsyncViewState<List<Booking>>>();
-  DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime _month = _monthOf(DateTime.now());
   DateTime _day = DateUtils.dateOnly(DateTime.now());
-  bool _calendar = true;
-  bool _monthView = false;
+
+  /// +1 when the last month change went forward, -1 back: the grid slides that way.
+  int _slide = 1;
   int _seen = -1;
+
+  /// 1 = month grid open (the default), 0 = folded to the selected week.
+  late final AnimationController _open = AnimationController(
+    vsync: this,
+    duration: Motion.route,
+    value: 1,
+  )
+    ..addListener(_onFold)
+    ..addStatusListener((_) => _onFold());
+
+  /// What the last build showed: (month grid, week strip, the fold a tap would make).
+  (bool, bool, bool) _shown = (true, false, true);
+
+  /// Rebuilds only when that changes, not on every frame of the fold. Value and status are both
+  /// watched: a fold with no duration (reduced motion) moves the value without a status report.
+  void _onFold() {
+    final now = (_monthOpen, _weekOpen, _willFold);
+    if (now != _shown) setState(() => _shown = now);
+  }
 
   Future<List<Booking>> _load() async =>
       (await context.api.get('/bookings') as List)
@@ -36,204 +90,259 @@ class _BookingsTabState extends State<BookingsTab> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(t.bookingsTitle),
-        actions: [
-          IconButton(
-            tooltip: _calendar ? t.viewAll : t.bookingsTitle,
-            icon: Icon(
-              _calendar
-                  ? Icons.view_agenda_outlined
-                  : Icons.calendar_month_outlined,
-            ),
-            onPressed: () => setState(() => _calendar = !_calendar),
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const PendingDepositsBanner(),
-          Expanded(
-            child: AsyncView<List<Booking>>(
-              key: _view,
-              load: _load,
-              builder: (context, all, reload) {
-                if (all.isEmpty) {
-                  return EmptyState(
-                    icon: Icons.event_note_rounded,
-                    title: t.bookingsEmpty,
-                    body: t.bookingsEmptyBody,
-                    hue: ServiceHues.studio,
-                  );
-                }
-                return RefreshIndicator(
-                  onRefresh: reload,
-                  child: _calendar ? _calendarView(all) : _listView(all),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+  void dispose() {
+    _open.dispose();
+    super.dispose();
   }
+
+  // Both are built while the fold is under way (animating, or held part-way by a drag).
+  bool get _monthOpen => _open.value > 0 || _open.isAnimating;
+  bool get _weekOpen => _open.value < 1 || _open.isAnimating;
+
+  /// Where a tap on the title or the handle goes next.
+  bool get _willFold => _open.value > 0.5;
 
   void _pickDay(DateTime d) => setState(() {
+    _slide = d.isBefore(_month) ? -1 : 1;
     _day = d;
-    _month = DateTime(d.year, d.month);
+    _month = _monthOf(d);
   });
 
-  Widget _calendarView(List<Booking> all) {
-    final dayItems = all
-        .where((b) => DateUtils.isSameDay(b.visitDate, _day))
-        .toList();
-    return ListView(
-      padding: const EdgeInsets.all(Space.gutter),
-      children: [
-        AppCard(
-          padding: const EdgeInsets.all(Space.sm),
-          child: _monthView
-              ? _MonthGrid(
-                  month: _month,
-                  selected: _day,
-                  bookings: all,
-                  onMonth: (m) => setState(() => _month = m),
-                  onDay: _pickDay,
-                  onToggle: () => setState(() => _monthView = false),
-                )
-              : _WeekStrip(
-                  selected: _day,
-                  bookings: all,
-                  onDay: _pickDay,
-                  onToggle: () => setState(() => _monthView = true),
-                ),
-        ),
-        const SizedBox(height: Space.lg),
-        SectionTitle(dateLabel(_day, context.lang)),
-        if (dayItems.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(Space.lg),
-            child: Center(
-              child: Text(
-                context.t.bookingsEmpty,
-                style: context.text.bodySmall,
-              ),
-            ),
-          ),
-        for (final b in dayItems) BookingCard(booking: b),
-      ],
-    );
+  /// Chevrons: a month while the grid is open, a week once it is folded.
+  void _step(int by) {
+    if (!_monthOpen) {
+      _pickDay(DateTime(_day.year, _day.month, _day.day + by * 7));
+    } else {
+      setState(() {
+        _slide = by;
+        _month = DateTime(_month.year, _month.month + by);
+      });
+    }
   }
 
-  Widget _listView(List<Booking> all) {
-    final upcoming = all.where((b) => b.isActive).toList()
-      ..sort((a, b) => a.visitStart.compareTo(b.visitStart));
-    final past = all.where((b) => !b.isActive).toList();
-    return ListView(
-      padding: const EdgeInsets.all(Space.gutter),
-      children: [
-        if (upcoming.isNotEmpty) ...[
-          SectionTitle(context.t.bookingsUpcoming),
-          for (final b in upcoming) BookingCard(booking: b),
-        ],
-        if (past.isNotEmpty) ...[
-          const SizedBox(height: Space.lg),
-          SectionTitle(context.t.bookingsPast),
-          for (final b in past) BookingCard(booking: b),
-        ],
-      ],
-    );
+  void _settle(bool open) {
+    // The week strip shows the selected day's week, so the title follows it home.
+    if (!open && _month != _monthOf(_day)) {
+      setState(() {
+        _slide = _day.isBefore(_month) ? -1 : 1;
+        _month = _monthOf(_day);
+      });
+    }
+    final duration = motionFor(context, Motion.route);
+    // animateBack, not animateTo(0): the controller then ends dismissed, as a closed grid should.
+    if (open) {
+      _open.animateTo(1, duration: duration, curve: Motion.emphasized);
+    } else {
+      _open.animateBack(0, duration: duration, curve: Motion.emphasized);
+    }
   }
-}
 
-class _MonthGrid extends StatelessWidget {
-  const _MonthGrid({
-    required this.month,
-    required this.selected,
-    required this.bookings,
-    required this.onMonth,
-    required this.onDay,
-    required this.onToggle,
-  });
-  final DateTime month;
-  final DateTime selected;
-  final List<Booking> bookings;
-  final ValueChanged<DateTime> onMonth;
-  final ValueChanged<DateTime> onDay;
-  final VoidCallback onToggle;
+  void _dragEnd(DragEndDetails d) {
+    final v = d.primaryVelocity ?? 0;
+    _settle(v.abs() > _flingVelocity ? v > 0 : _open.value > 0.5);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final t = context.t;
+    return Scaffold(
+      backgroundColor: context.colors.surface,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const PendingDepositsBanner(),
+            Expanded(
+              child: AsyncView<List<Booking>>(
+                key: _view,
+                load: _load,
+                builder: (context, all, reload) {
+                  if (all.isEmpty) {
+                    return EmptyState(
+                      icon: Icons.event_note_rounded,
+                      title: t.bookingsEmpty,
+                      body: t.bookingsEmptyBody,
+                      hue: ServiceHues.studio,
+                    );
+                  }
+                  return RefreshIndicator(
+                    onRefresh: reload,
+                    child: _calendarView(all),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _calendarView(List<Booking> all) {
+    final t = context.t;
+    final c = context.colors;
     final loc = MaterialLocalizations.of(context);
-    final first = DateTime(month.year, month.month);
-    final lead = first.weekday % 7;
-    final days = DateUtils.getDaysInMonth(month.year, month.month);
-    final byDay = <int, List<Booking>>{};
-    for (final b in bookings) {
-      if (b.visitDate.year == month.year &&
-          b.visitDate.month == month.month &&
-          b.status >= 0) {
-        (byDay[b.visitDate.day] ??= []).add(b);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final counts = <DateTime, int>{};
+    for (final b in all) {
+      if (b.status >= 0) {
+        counts.update(
+          DateUtils.dateOnly(b.visitDate),
+          (n) => n + 1,
+          ifAbsent: () => 1,
+        );
       }
     }
-    final today = DateUtils.dateOnly(DateTime.now());
-    return Column(
+    final toggleLabel = _willFold ? t.bkViewWeek : t.bkViewMonth;
+    final dayItems =
+        all.where((b) => DateUtils.isSameDay(b.visitDate, _day)).toList()
+          ..sort((a, b) => a.startHour.compareTo(b.startHour));
+    return ListView(
+      padding: const EdgeInsets.only(bottom: Space.xxxl),
       children: [
-        _CalendarHeader(
-          month: month,
-          monthView: true,
-          prevTooltip: loc.previousMonthTooltip,
-          nextTooltip: loc.nextMonthTooltip,
-          onPrev: () => onMonth(DateTime(month.year, month.month - 1)),
-          onNext: () => onMonth(DateTime(month.year, month.month + 1)),
-          onToday: () => onDay(today),
-          onToggle: onToggle,
-        ),
-        Row(
-          children: [
-            for (final w in loc.narrowWeekdays)
-              Expanded(
-                child: Center(child: Text(w, style: context.text.labelSmall)),
-              ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 7,
-          childAspectRatio: 0.92,
-          children: [
-            for (var i = 0; i < lead; i++) const SizedBox(),
-            for (var d = 1; d <= days; d++)
-              _DayCell(
-                date: DateTime(month.year, month.month, d),
-                selected: DateUtils.isSameDay(
-                  selected,
-                  DateTime(month.year, month.month, d),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(Space.sm, Space.xs, Space.sm, 0),
+          child: Column(
+            children: [
+              MediaQuery.withClampedTextScaling(
+                maxScaleFactor: _headerMaxTextScale,
+                child: Column(
+                  children: [
+                    _CalendarHeader(
+                      title: _monthTitle(_month, context.lang),
+                      folded: !_willFold,
+                      toggleLabel: toggleLabel,
+                      prevTooltip: _monthOpen
+                          ? loc.previousMonthTooltip
+                          : loc.previousPageTooltip,
+                      nextTooltip: _monthOpen
+                          ? loc.nextMonthTooltip
+                          : loc.nextPageTooltip,
+                      onPrev: () => _step(-1),
+                      onNext: () => _step(1),
+                      onToday: () => _pickDay(today),
+                      onToggle: () => _settle(!_willFold),
+                    ),
+                    Row(
+                      children: [
+                        for (final w in loc.narrowWeekdays)
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                w,
+                                style: context.text.labelSmall?.copyWith(
+                                  color: c.inkMuted,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-                today: DateUtils.isSameDay(
-                  today,
-                  DateTime(month.year, month.month, d),
-                ),
-                items: byDay[d] ?? const [],
-                onTap: () => onDay(DateTime(month.year, month.month, d)),
               ),
-          ],
+              const SizedBox(height: Space.xxs),
+              if (_weekOpen)
+                SizeTransition(
+                  sizeFactor: ReverseAnimation(_open),
+                  alignment: Alignment.topCenter,
+                  child: FadeTransition(
+                    opacity: ReverseAnimation(_open),
+                    child: _WeekStrip(
+                      selected: _day,
+                      today: today,
+                      counts: counts,
+                      onDay: _pickDay,
+                    ),
+                  ),
+                ),
+              if (_monthOpen)
+                SizeTransition(
+                  sizeFactor: _open,
+                  alignment: Alignment.topCenter,
+                  child: FadeTransition(
+                    opacity: _open,
+                    child: _MonthPager(
+                      key: const ValueKey('month-grid'),
+                      month: _month,
+                      slide: _slide,
+                      selected: _day,
+                      today: today,
+                      counts: counts,
+                      onDay: _pickDay,
+                      onStep: _step,
+                    ),
+                  ),
+                ),
+              Semantics(
+                button: true,
+                label: toggleLabel,
+                child: GestureDetector(
+                  key: const ValueKey('calendar-handle'),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _settle(!_willFold),
+                  onVerticalDragUpdate: (d) =>
+                      _open.value += (d.primaryDelta ?? 0) / _dragExtent,
+                  onVerticalDragEnd: _dragEnd,
+                  child: SizedBox(
+                    height: _handleTarget,
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: c.line,
+                          borderRadius: BorderRadius.circular(Radii.pill),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Divider(height: 1, thickness: 1, color: c.line),
+        // The day's list fades and rises in as the selection moves.
+        AnimatedSwitcher(
+          duration: motionFor(context, Motion.standard),
+          switchInCurve: Motion.ease,
+          layoutBuilder: (current, previous) => Stack(
+            alignment: Alignment.topCenter,
+            children: [...previous, ?current],
+          ),
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: AnimatedBuilder(
+              animation: animation,
+              builder: (_, child) => Transform.translate(
+                offset: Offset(0, Space.xs * (1 - animation.value)),
+                child: child,
+              ),
+              child: child,
+            ),
+          ),
+          child: _DayList(
+            key: ValueKey(_day),
+            items: dayItems,
+            upcoming: dayItems.isNotEmpty
+                ? const []
+                : (all.where((b) => b.isActive).toList()
+                    ..sort((a, b) => a.visitStart.compareTo(b.visitStart))),
+          ),
         ),
       ],
     );
   }
 }
 
+/// "26년 11월 ▾" on the left (tap folds or opens the grid), then previous, next and "today".
 class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
-    required this.month,
-    required this.monthView,
+    required this.title,
+    required this.folded,
+    required this.toggleLabel,
     required this.prevTooltip,
     required this.nextTooltip,
     required this.onPrev,
@@ -241,8 +350,9 @@ class _CalendarHeader extends StatelessWidget {
     required this.onToday,
     required this.onToggle,
   });
-  final DateTime month;
-  final bool monthView;
+  final String title;
+  final bool folded;
+  final String toggleLabel;
   final String prevTooltip;
   final String nextTooltip;
   final VoidCallback onPrev;
@@ -251,86 +361,224 @@ class _CalendarHeader extends StatelessWidget {
   final VoidCallback onToggle;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      IconButton(
-        tooltip: prevTooltip,
-        icon: const Icon(Icons.chevron_left_rounded),
-        onPressed: onPrev,
-      ),
-      Expanded(
-        // The month title is the week/month switch; the label names the view a tap opens.
-        child: Semantics(
-          button: true,
-          label: monthView ? context.t.bkViewWeek : context.t.bkViewMonth,
-          child: InkWell(
-            key: const ValueKey('calendar-toggle'),
-            borderRadius: BorderRadius.circular(Radii.chip),
-            onTap: onToggle,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48),
-              // Scales down instead of overflowing between the buttons on a 320dp phone.
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const ExcludeSemantics(
-                      child: Icon3D('ui_calendar', size: 20),
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Row(
+      children: [
+        const SizedBox(width: Space.xs),
+        Expanded(
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            // The month title is the week/month switch; the label names the view a tap opens.
+            child: Semantics(
+              button: true,
+              label: toggleLabel,
+              child: InkWell(
+                key: const ValueKey('calendar-toggle'),
+                borderRadius: BorderRadius.circular(Radii.chip),
+                onTap: onToggle,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  // Scales down instead of overflowing beside the buttons on a 320dp phone.
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(title, style: context.text.headlineSmall),
+                        AnimatedRotation(
+                          turns: folded ? -0.25 : 0,
+                          duration: motionFor(context, Motion.standard),
+                          curve: Motion.ease,
+                          child: Icon(
+                            Icons.arrow_drop_down_rounded,
+                            color: c.ink,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      DateFormat.yMMMM(context.lang).format(month),
-                      style: context.text.titleMedium,
-                    ),
-                    Icon(
-                      monthView
-                          ? Icons.expand_less_rounded
-                          : Icons.expand_more_rounded,
-                      size: 20,
-                      color: context.colors.inkMuted,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-      // An icon, not the word: long translations at large fonts would squeeze out the month title.
-      IconButton(
-        tooltip: context.t.today,
-        icon: const Icon(Icons.today_rounded),
-        onPressed: onToday,
-      ),
-      IconButton(
-        tooltip: nextTooltip,
-        icon: const Icon(Icons.chevron_right_rounded),
-        onPressed: onNext,
-      ),
-    ],
+        IconButton(
+          tooltip: prevTooltip,
+          icon: const Icon(Icons.chevron_left_rounded),
+          onPressed: onPrev,
+        ),
+        IconButton(
+          tooltip: nextTooltip,
+          icon: const Icon(Icons.chevron_right_rounded),
+          onPressed: onNext,
+        ),
+        OutlinedButton(
+          key: const ValueKey('calendar-today'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: c.ink,
+            minimumSize: const Size(48, 36),
+            padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+            side: BorderSide(color: c.ink, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Radii.chip),
+            ),
+            textStyle: context.text.labelMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          onPressed: onToday,
+          child: Text(context.t.today),
+        ),
+        const SizedBox(width: Space.xs),
+      ],
+    );
+  }
+}
+
+/// Seven day cells from [start], each a full-height tap target.
+class _WeekRow extends StatelessWidget {
+  const _WeekRow({
+    required this.start,
+    required this.selected,
+    required this.today,
+    required this.counts,
+    required this.onDay,
+    this.month,
+  });
+  final DateTime start;
+  final DateTime selected;
+  final DateTime today;
+  final Map<DateTime, int> counts;
+  final ValueChanged<DateTime> onDay;
+
+  /// Days outside this month are greyed; null (the week strip) greys none.
+  final DateTime? month;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: _rowHeight,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < DateTime.daysPerWeek; i++)
+          Expanded(child: _cell(DateTime(start.year, start.month, start.day + i))),
+      ],
+    ),
+  );
+
+  Widget _cell(DateTime date) => _DayCell(
+    date: date,
+    selected: DateUtils.isSameDay(selected, date),
+    today: DateUtils.isSameDay(today, date),
+    outside: month != null && date.month != month!.month,
+    count: counts[date] ?? 0,
+    onTap: () => onDay(date),
   );
 }
 
-/// One week per page; a swipe (or the chevrons) moves a week and keeps the weekday selected.
+/// The month grid. A change of month slides the old page out and the new one in; a sideways
+/// flick turns the page too.
+class _MonthPager extends StatelessWidget {
+  const _MonthPager({
+    super.key,
+    required this.month,
+    required this.slide,
+    required this.selected,
+    required this.today,
+    required this.counts,
+    required this.onDay,
+    required this.onStep,
+  });
+  final DateTime month;
+  final int slide;
+  final DateTime selected;
+  final DateTime today;
+  final Map<DateTime, int> counts;
+  final ValueChanged<DateTime> onDay;
+  final ValueChanged<int> onStep;
+
+  @override
+  Widget build(BuildContext context) {
+    final lead = month.weekday % 7; // weeks start on Sunday
+    final days = DateUtils.getDaysInMonth(month.year, month.month);
+    final weeks = ((lead + days) / DateTime.daysPerWeek).ceil();
+    final duration = motionFor(context, Motion.route);
+    return GestureDetector(
+      onHorizontalDragEnd: (d) {
+        final v = d.primaryVelocity ?? 0;
+        if (v.abs() > _flingVelocity) onStep(v < 0 ? 1 : -1);
+      },
+      child: ClipRect(
+        // Months have four to six weeks: the height eases instead of jumping.
+        child: AnimatedSize(
+          duration: duration,
+          curve: Motion.emphasized,
+          alignment: Alignment.topCenter,
+          child: AnimatedSwitcher(
+            duration: duration,
+            switchInCurve: Motion.emphasized,
+            switchOutCurve: Motion.emphasized.flipped,
+            layoutBuilder: (current, previous) => Stack(
+              alignment: Alignment.topCenter,
+              children: [...previous, ?current],
+            ),
+            transitionBuilder: (child, animation) {
+              // The incoming month enters from the side it lies on; the old one leaves opposite.
+              final from = child.key == ValueKey(month) ? slide : -slide;
+              return SlideTransition(
+                position: Tween(
+                  begin: Offset(from.toDouble(), 0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: FadeTransition(opacity: animation, child: child),
+              );
+            },
+            child: Column(
+              key: ValueKey(month),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var w = 0; w < weeks; w++)
+                  _WeekRow(
+                    start: DateTime(
+                      month.year,
+                      month.month,
+                      1 - lead + w * DateTime.daysPerWeek,
+                    ),
+                    month: month,
+                    selected: selected,
+                    today: today,
+                    counts: counts,
+                    onDay: onDay,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One week per page; a swipe moves a week and keeps the weekday selected.
 class _WeekStrip extends StatefulWidget {
   const _WeekStrip({
     required this.selected,
-    required this.bookings,
+    required this.today,
+    required this.counts,
     required this.onDay,
-    required this.onToggle,
   });
   final DateTime selected;
-  final List<Booking> bookings;
+  final DateTime today;
+  final Map<DateTime, int> counts;
   final ValueChanged<DateTime> onDay;
-  final VoidCallback onToggle;
 
   @override
   State<_WeekStrip> createState() => _WeekStripState();
 }
 
 class _WeekStripState extends State<_WeekStrip> {
-  static const _height = 72.0;
   // Page 0 starts on Sunday 2 Jan 2000: weeks start on Sunday, like the month grid.
   static const _epochDay = 2;
   static final _epoch = DateTime.utc(2000, 1, _epochDay);
@@ -349,7 +597,17 @@ class _WeekStripState extends State<_WeekStrip> {
     super.didUpdateWidget(old);
     final page = _pageOf(widget.selected);
     if (_pages.hasClients && _pages.page?.round() != page) {
-      _pages.jumpToPage(page);
+      // Chevrons and "today" slide the strip; a far jump would spin through every week between.
+      if ((page - (_pages.page ?? page)).abs() <= 1 &&
+          !MediaQuery.disableAnimationsOf(context)) {
+        _pages.animateToPage(
+          page,
+          duration: Motion.route,
+          curve: Motion.emphasized,
+        );
+      } else {
+        _pages.jumpToPage(page);
+      }
     }
   }
 
@@ -359,312 +617,179 @@ class _WeekStripState extends State<_WeekStrip> {
     super.dispose();
   }
 
-  void _shift(int weeks) => widget.onDay(
-    DateTime(
-      widget.selected.year,
-      widget.selected.month,
-      widget.selected.day + DateTime.daysPerWeek * weeks,
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: _rowHeight,
+    child: PageView.builder(
+      key: const ValueKey('week-strip'),
+      controller: _pages,
+      onPageChanged: (page) {
+        // Already there when the parent moved the day (chevrons, today, month grid).
+        if (page == _pageOf(widget.selected)) return;
+        widget.onDay(_dayAt(page, widget.selected.weekday % 7));
+      },
+      itemBuilder: (context, page) => _WeekRow(
+        start: _dayAt(page, 0),
+        selected: widget.selected,
+        today: widget.today,
+        counts: widget.counts,
+        onDay: widget.onDay,
+      ),
     ),
   );
-
-  @override
-  Widget build(BuildContext context) {
-    final loc = MaterialLocalizations.of(context);
-    final today = DateUtils.dateOnly(DateTime.now());
-    return Column(
-      children: [
-        _CalendarHeader(
-          month: widget.selected,
-          monthView: false,
-          prevTooltip: loc.previousPageTooltip,
-          nextTooltip: loc.nextPageTooltip,
-          onPrev: () => _shift(-1),
-          onNext: () => _shift(1),
-          onToday: () => widget.onDay(today),
-          onToggle: widget.onToggle,
-        ),
-        SizedBox(
-          height: _height,
-          child: PageView.builder(
-            key: const ValueKey('week-strip'),
-            controller: _pages,
-            onPageChanged: (page) {
-              // Already there when the parent moved the day (chevrons, today, month grid).
-              if (page == _pageOf(widget.selected)) return;
-              widget.onDay(_dayAt(page, widget.selected.weekday % 7));
-            },
-            // Stretch: each day is a full-height (72dp) column, so the whole strip is tappable per day.
-            itemBuilder: (context, page) => Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var i = 0; i < DateTime.daysPerWeek; i++)
-                  Expanded(child: _cell(_dayAt(page, i), loc, today)),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _cell(DateTime date, MaterialLocalizations loc, DateTime today) =>
-      _DayCell(
-        date: date,
-        weekday: loc.narrowWeekdays[date.weekday % 7],
-        selected: DateUtils.isSameDay(widget.selected, date),
-        today: DateUtils.isSameDay(today, date),
-        items: [
-          for (final b in widget.bookings)
-            if (b.status >= 0 && DateUtils.isSameDay(b.visitDate, date)) b,
-        ],
-        onTap: () => widget.onDay(date),
-      );
 }
 
+/// A day: the numeral ("today" in words), one dot when it has bookings. The selected day sits
+/// on an ink square that morphs in from a circle.
 class _DayCell extends StatelessWidget {
   const _DayCell({
     required this.date,
     required this.selected,
     required this.today,
-    required this.items,
+    required this.outside,
+    required this.count,
     required this.onTap,
-    this.weekday,
   });
   final DateTime date;
   final bool selected;
   final bool today;
-  final List<Booking> items;
+  final bool outside;
+  final int count;
   final VoidCallback onTap;
-  final String? weekday;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    selected: selected,
-    label:
-        '${dateLabel(date, context.lang)} ${items.isEmpty ? '' : '· ${items.length}'}',
-    button: true,
-    child: InkWell(
-      customBorder: const CircleBorder(),
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final ink = selected
+        ? c.surface
+        : today
+        ? context.primary
+        : outside
+        ? c.inkMuted.withValues(alpha: _outsideAlpha)
+        : c.ink;
+    return Semantics(
+      selected: selected,
+      label: '${dateLabel(date, context.lang)}${count == 0 ? '' : ' · $count'}',
+      button: true,
       onTap: onTap,
-      // Large system fonts scale the day cell down instead of overflowing the strip.
-      // Center: the ink fills the whole cell, not just the digits.
-      child: Center(
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (weekday != null) ...[
-                Text(weekday!, style: context.text.labelSmall),
-                const SizedBox(height: 4),
-              ],
-              Container(
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selected ? context.primary : null,
-                  border: today && !selected
-                      ? Border.all(color: context.primary, width: 1.5)
-                      : null,
-                ),
-                child: Text(
-                  '${date.day}',
-                  style: context.text.labelLarge?.copyWith(
-                    color: selected ? Colors.white : context.colors.ink,
-                    fontWeight: today || selected
-                        ? FontWeight.w700
-                        : FontWeight.w500,
-                  ),
-                ),
+      excludeSemantics: true,
+      child: InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_dayRadius),
+        ),
+        onTap: onTap,
+        // Center: the ink fills the whole cell, not just the square.
+        child: Center(
+          child: AnimatedContainer(
+            duration: motionFor(context, Motion.standard),
+            curve: Motion.ease,
+            width: _daySize,
+            height: _daySize,
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: selected ? c.ink : c.ink.withValues(alpha: 0),
+              borderRadius: BorderRadius.circular(
+                selected ? _dayRadius : _daySize / 2,
               ),
-              const SizedBox(height: 3),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            // "Today" is a word and long in some languages: it scales down inside the square.
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final b in items.take(3))
+                  Text(
+                    today ? context.t.today : '${date.day}',
+                    style: context.text.titleMedium?.copyWith(
+                      color: ink,
+                      fontWeight: FontWeight.w700,
+                      fontSize: today ? 14 : null,
+                    ),
+                  ),
+                  if (count > 0)
                     Container(
-                      width: 6,
-                      height: 6,
-                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      width: _dotSize,
+                      height: _dotSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: ServiceHues.of(b.serviceCode).tone,
+                        // On the ink square of dark mode (a light fill) the bright teal would vanish.
+                        color: selected && c.isDark ? c.primaryTint : c.fresh,
                       ),
                     ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class BookingCard extends StatelessWidget {
-  const BookingCard({super.key, required this.booking});
-  final Booking booking;
-
-  @override
-  Widget build(BuildContext context) {
-    final b = booking;
-    final t = context.t;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: Space.xs),
-      child: AppCard(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => BookingDetailScreen(id: b.id),
-          ),
-        ),
-        child: Row(
-          children: [
-            ServiceGlyph(b.serviceCode, size: 48),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          t.service(b.serviceCode),
-                          style: context.text.titleSmall,
-                        ),
-                      ),
-                      const SizedBox(width: Space.xs),
-                      Flexible(child: BookingStatusChip(status: b.status)),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      ExcludeSemantics(
-                        child: Icon3D(bookingTimeIcon(b), size: 16),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          bookingWhen(context, b),
-                          style: context.text.bodySmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    b.address['label'] as String? ?? '',
-                    style: context.text.bodySmall,
-                  ),
-                  if (b.status >= 0) ...[
-                    const SizedBox(height: 6),
-                    _MiniSteps(booking: b),
-                  ],
-                ],
-              ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Wording of the brief for chips and the timeline: 상담요청 → 예약확정 → 매칭 완료 → 서비스 완료.
-String bookingStepLabel(T t, int status) => switch (status) {
-  0 => t.bkStepConsult,
-  1 => t.bkStepConfirmed,
-  2 => t.bkStepMatched,
-  3 => t.bkStepCompleted,
-  _ => t.statusCancelled,
-};
-
-String bookingStepIcon(int status) => switch (status) {
-  0 => 'step_consult',
-  1 => 'step_confirmed',
-  2 => 'step_matched',
-  3 => 'step_completed',
-  _ => 'status_cancelled',
-};
-
-bool _isMorning(Booking b) => b.startHour < 12;
-
-String bookingTimeIcon(Booking b) => !b.isQuote
-    ? 'ui_clock'
-    : _isMorning(b)
-    ? 'slot_am'
-    : 'slot_pm';
-
-/// Quotes are booked by half-day (오전/오후); fixed-price visits by the hour slot ("09:00~10:00").
-String bookingWhen(BuildContext context, Booking b) {
-  final t = context.t;
-  final time = b.isQuote
-      ? (_isMorning(b) ? t.morning : t.afternoon)
-      : slotRangeLabel(b.startHour, context.lang);
-  return '${dateLabel(b.visitDate, context.lang)} $time';
-}
-
-/// Status pill in the [StatusHues] colours with the step's 3D icon.
-class BookingStatusChip extends StatelessWidget {
-  const BookingStatusChip({super.key, required this.status});
-  final int status;
+/// The selected day's bookings grouped by address ("우리집 2"). An empty day says so and offers
+/// the upcoming bookings instead, so nothing active is ever more than a glance away.
+class _DayList extends StatelessWidget {
+  const _DayList({super.key, required this.items, required this.upcoming});
+  final List<Booking> items;
+  final List<Booking> upcoming;
 
   @override
   Widget build(BuildContext context) {
-    final hue = StatusHues.of(status);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: context.colors.tintOf(hue),
-        borderRadius: BorderRadius.circular(Radii.pill),
+    final t = context.t;
+    final c = context.colors;
+    final groups = <String, List<Booking>>{};
+    for (final b in items) {
+      (groups[b.address['label'] as String? ?? ''] ??= []).add(b);
+    }
+    var row = 0;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        Space.lg,
+        Space.gutter,
+        0,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ExcludeSemantics(
-            child: Icon3D(bookingStepIcon(status), size: 16),
-          ),
-          const SizedBox(width: 4),
-          // Flexible: a long translation wraps inside its pill instead of overflowing the row.
-          Flexible(
-            child: Text(
-              bookingStepLabel(context.t, status),
-              style: context.text.labelMedium?.copyWith(
-                color: context.colors.isDark ? hue.tint : hue.tone,
-                fontSize: 12,
+          if (items.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.lg),
+              child: Center(
+                child: Text(t.bookingsEmpty, style: context.text.bodySmall),
               ),
             ),
-          ),
+          for (final MapEntry(key: label, value: list) in groups.entries) ...[
+            Text.rich(
+              TextSpan(
+                text: label,
+                children: [
+                  TextSpan(
+                    text: ' ${list.length}',
+                    style: TextStyle(
+                      color: context.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              style: context.text.bodyMedium?.copyWith(color: c.inkSoft),
+            ),
+            const SizedBox(height: Space.xxs),
+            for (final b in list)
+              StaggerIn(index: row++, child: BookingCard(booking: b)),
+            const SizedBox(height: Space.sm),
+          ],
+          if (upcoming.isNotEmpty) ...[
+            SectionTitle(t.bookingsUpcoming),
+            for (final b in upcoming)
+              StaggerIn(
+                index: row++,
+                child: BookingCard(booking: b, showDate: true),
+              ),
+          ],
         ],
       ),
     );
   }
-}
-
-/// Card-sized progress: one bar per step (4 for quotes, 3 for fixed-price), filled up to the current one.
-class _MiniSteps extends StatelessWidget {
-  const _MiniSteps({required this.booking});
-  final Booking booking;
-
-  @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-    child: Row(
-      children: [
-        for (var step = booking.isQuote ? 0 : 1; step <= 3; step++)
-          Container(
-            width: 20,
-            height: 4,
-            margin: const EdgeInsets.only(right: 4),
-            decoration: BoxDecoration(
-              color: booking.status >= step
-                  ? context.colors.fresh
-                  : context.colors.line,
-              borderRadius: BorderRadius.circular(Radii.pill),
-            ),
-          ),
-      ],
-    ),
-  );
 }

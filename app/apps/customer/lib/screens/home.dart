@@ -7,21 +7,29 @@ import 'package:ui/ui.dart';
 import '../guest.dart';
 import '../state.dart';
 import 'addresses.dart';
-import 'booking_detail.dart';
-import 'bookings.dart' show bookingStepLabel;
+import 'bookings.dart' show BookingCard;
 import 'content_rail.dart';
 import 'feed.dart';
 import 'growth.dart';
-import 'more.dart';
 import 'notifications.dart';
-import 'quote_flow.dart';
 import 'service.dart';
 
-/// Rail length on home; "see all" opens the full list.
-const _railItems = 8;
+/// The header holds a 48dp segmented toggle.
+const _toolbarHeight = 64.0;
+const _logoSize = 28.0;
+const _toggleMaxWidth = 220.0;
 
-/// Text on the yellow banner: the fill is the same in light and dark, so the ink is fixed too.
-const _onSun = Neutral.c900;
+/// Header chrome stops growing here; the page content follows the system text size in full.
+const _headerMaxTextScale = 1.3;
+const _bellDot = 7.0;
+
+const _gridColumns = 4;
+const _plate = 64.0;
+const _tileArt = 44.0;
+const _tileStep = Duration(milliseconds: 30);
+const _badgeSize = 22.0;
+
+enum _HomeView { all, pick }
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key, required this.onOpenTab});
@@ -33,13 +41,13 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   List<Booking> _bookings = const [];
   List<ContentItem> _banners = const [];
-  List<ContentItem> _notices = const [];
-  List<ContentItem> _news = const [];
-  List<ContentItem> _tips = const [];
+  ContentItem? _notice;
+  List<ContentItem> _articles = const [];
   List<Json> _feed = const [];
   bool _loaded = false;
   int _unread = 0;
   int _seenVersion = -1;
+  _HomeView _view = _HomeView.all;
 
   /// The feed from the last session paints first; the network answer then replaces it.
   @override
@@ -76,27 +84,28 @@ class _HomeTabState extends State<HomeTab> {
       api.get('/content', query: {'kind': 'tip'}),
     ]);
     if (!mounted) return;
-    List<ContentItem> rail(Object? rows) => (rows as List)
-        .map((e) => ContentItem(e as Json))
-        .take(_railItems)
-        .toList();
+    List<ContentItem> items(Object? rows) =>
+        (rows as List).map((e) => ContentItem(e as Json)).toList();
     final feed = ((results[3] as Json)['cards'] as List).cast<Json>();
     unawaited(context.appRead.cache.write(_feedKey, feed));
+    final news = items(results[4]);
+    final tips = items(results[5]);
     setState(() {
       _loaded = true;
       _bookings = (results[0] as List)
           .map((e) => Booking.fromJson(e as Json))
           .toList();
-      _banners = (results[1] as List)
-          .map((e) => ContentItem(e as Json))
-          .toList();
-      _notices = (results[2] as List)
-          .map((e) => ContentItem(e as Json))
-          .take(3)
-          .toList();
+      _banners = items(results[1]);
+      _notice = items(results[2]).firstOrNull;
+      // shortcut: the API sends no date, so news and tips alternate (each newest first);
+      // sort by date once /content returns created_at.
+      _articles = [
+        for (var i = 0; i < news.length || i < tips.length; i++) ...[
+          if (i < news.length) news[i],
+          if (i < tips.length) tips[i],
+        ],
+      ].take(newsListMax).toList();
       _feed = feed;
-      _news = rail(results[4]);
-      _tips = rail(results[5]);
     });
   }
 
@@ -119,145 +128,186 @@ class _HomeTabState extends State<HomeTab> {
   Booking? get _lastDone =>
       _bookings.where((b) => b.status == 3 && !b.isQuote).firstOrNull;
 
+  Future<void> _openAlerts() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const NotificationsScreen()),
+    );
+    if (mounted) setState(() => _unread = 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
-    final next = _next;
-    final last = _lastDone;
-    final usableCoupons = app.coupons.where((c) => c.usable).length;
-    final signedIn = Deps.of(context).session.signedIn;
-    // Banner content linking to a service is a recommendation; the first other banner is the hero.
+    final c = context.colors;
+    // Banner content linking to a service is a recommendation; the others page in the carousel.
     final picks = _banners.where((b) => pickServiceCode(b) != null).toList();
-    final hero = _banners.where((b) => pickServiceCode(b) == null).firstOrNull;
     return RefreshIndicator(
       color: context.primary,
-      backgroundColor: context.colors.surface,
+      backgroundColor: c.surface,
       onRefresh: () async {
         await Future.wait([_load(), app.loadCoupons(), app.loadAddresses()]);
       },
       child: CustomScrollView(
+        // The PICK view can be shorter than the screen and must still pull to refresh.
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverAppBar(
             floating: true,
+            backgroundColor: c.surface,
+            toolbarHeight: _toolbarHeight,
             titleSpacing: Space.gutter,
             centerTitle: false,
-            title: _AddressChip(addresses: app.addresses),
+            title: _HeaderTitle(
+              view: _view,
+              onView: (v) => setState(() => _view = v),
+            ),
             actions: [
               IconButton(
                 tooltip: _unread > 0 ? t.nUnread('$_unread') : t.nAlerts,
+                // A dot, not a count: the list behind the bell has the detail.
                 icon: Badge(
                   isLabelVisible: _unread > 0,
-                  label: Text('$_unread'),
-                  child: const Icon3D('ui_bell', size: 28),
+                  smallSize: _bellDot,
+                  backgroundColor: Semantic.danger,
+                  child: Icon3D('ui_bell', size: 28, attention: _unread),
                 ),
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const NotificationsScreen(),
-                    ),
-                  );
-                  if (mounted) setState(() => _unread = 0);
-                },
+                onPressed: _openAlerts,
               ),
               const SizedBox(width: Space.xs),
             ],
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              Space.gutter,
-              Space.xs,
-              Space.gutter,
-              Space.xxxl,
-            ),
-            sliver: SliverList.list(
-              children: [
-                StaggerIn(
-                  index: 0,
-                  child: _GreetingHeader(
-                    text: app.name.isEmpty
-                        ? timeGreeting(t, DateTime.now())
-                        : t.homeGreeting(app.name),
-                  ),
-                ),
-                const SizedBox(height: Space.lg),
-                if (next != null) ...[
-                  StaggerIn(index: 1, child: _UpcomingCard(booking: next)),
-                  const SizedBox(height: Space.md),
-                ],
-                // Brief order: banner, 7 categories, recommended, news, tips.
-                if (usableCoupons > 0 || hero != null) ...[
-                  StaggerIn(
-                    index: 2,
-                    child: _HeroBanner(count: usableCoupons, banner: hero),
-                  ),
-                  const SizedBox(height: Space.md),
-                ],
-                if (signedIn &&
-                    app.addresses.isEmpty &&
-                    app.services.isNotEmpty) ...[
-                  _AddAddressCard(),
-                  const SizedBox(height: Space.md),
-                ],
-                StaggerIn(
-                  index: 3,
-                  child: _ServiceGrid(services: app.services),
-                ),
-                const SizedBox(height: Space.lg),
-                FeedSection(cards: _feed, picks: picks, loading: !_loaded),
-                const SizedBox(height: Space.md),
-                ContentRail(
-                  title: t.dhHomeNews,
-                  kind: 'news',
-                  items: _news,
-                  art: 'news_megaphone',
-                ),
-                if (_news.isNotEmpty) const SizedBox(height: Space.lg),
-                ContentRail(
-                  title: t.moreTips,
-                  kind: 'tip',
-                  items: _tips,
-                  art: 'tip_bulb',
-                ),
-                if (last != null && next == null) ...[
-                  const SizedBox(height: Space.md),
-                  _RebookCard(booking: last),
-                ],
-                const SizedBox(height: Space.lg),
-                const SocialProofCard(),
-                const SizedBox(height: Space.md),
-                if (signedIn)
-                  const ReferralCard()
-                else
-                  _GuestReferralGate(onSignedIn: _load),
-                const SizedBox(height: Space.lg),
-                const StaggerIn(index: 4, child: _TrustRow()),
-                if (_notices.isNotEmpty) ...[
-                  const SizedBox(height: Space.xl),
-                  SectionTitle(t.homeNotices),
-                  for (final n in _notices)
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        n.title(context.lang),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => ContentDetailScreen(item: n),
-                        ),
-                      ),
-                    ),
-                ],
-              ],
+          SliverToBoxAdapter(
+            child: FadeThroughSwitcher(
+              child: _view == _HomeView.pick ? _pickView(picks) : _allView(picks),
             ),
           ),
         ],
       ),
     );
   }
+
+  /// Design order: grid, recommended, banner, news. What the design does not show comes last.
+  Widget _allView(List<ContentItem> picks) {
+    final app = context.app;
+    final t = context.t;
+    final c = context.colors;
+    final next = _next;
+    final last = _lastDone;
+    final usableCoupons = app.coupons.where((c) => c.usable).length;
+    final signedIn = Deps.of(context).session.signedIn;
+    final heroes = _banners.where((b) => pickServiceCode(b) == null).toList();
+    return Column(
+      key: const ValueKey(_HomeView.all),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ColoredBox(
+          color: c.surface,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Space.gutter,
+              0,
+              Space.gutter,
+              Space.xl,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _Intro(
+                  greeting: app.name.isEmpty
+                      ? timeGreeting(t, DateTime.now())
+                      : t.homeGreeting(app.name),
+                  addresses: app.addresses,
+                ),
+                const SizedBox(height: Space.xs),
+                _ServiceGrid(services: app.services),
+                const SizedBox(height: Space.md),
+                Divider(height: 1, thickness: 1, color: c.line),
+                if (next != null) ...[
+                  const SizedBox(height: Space.md),
+                  _UpcomingCard(booking: next),
+                ],
+                if (signedIn &&
+                    app.addresses.isEmpty &&
+                    app.services.isNotEmpty) ...[
+                  const SizedBox(height: Space.md),
+                  _AddAddressCard(),
+                ],
+                const SizedBox(height: Space.xl),
+                FeedSection(
+                  cards: _feed,
+                  picks: picks,
+                  loading: !_loaded,
+                  limit: 1,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            Space.xl,
+            Space.gutter,
+            Space.xxxl,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (usableCoupons > 0 || heroes.isNotEmpty) ...[
+                BannerCarousel(items: heroes, coupons: usableCoupons),
+                const SizedBox(height: Space.xl),
+              ],
+              NewsList(notice: _notice, articles: _articles),
+              if (last != null && next == null) ...[
+                const SizedBox(height: Space.lg),
+                _RebookCard(booking: last),
+              ],
+              const SizedBox(height: Space.lg),
+              const SocialProofCard(),
+              const SizedBox(height: Space.md),
+              if (signedIn)
+                const ReferralCard()
+              else
+                _GuestReferralGate(onSignedIn: _load),
+              const SizedBox(height: Space.lg),
+              const _TrustRow(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// PICK: every console recommendation and personal card, nothing else.
+  Widget _pickView(List<ContentItem> picks) => ColoredBox(
+    key: const ValueKey(_HomeView.pick),
+    color: context.colors.surface,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        Space.md,
+        Space.gutter,
+        Space.xxxl,
+      ),
+      child: FeedSection(
+        cards: _feed,
+        picks: picks,
+        loading: !_loaded,
+        empty: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Space.xxxl),
+          child: Center(
+            child: Text(
+              context.t.noContent,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.inkMuted,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Greeting by local time of day; the name replaces it once the account has one.
@@ -268,33 +318,74 @@ String timeGreeting(T t, DateTime now) {
   return t.greetEvening;
 }
 
-/// Greeting over a wash that shifts with the time of day (sunrise, afternoon, dusk).
-class _GreetingHeader extends StatelessWidget {
-  const _GreetingHeader({required this.text});
-  final String text;
+/// Logo lockup on the left, the all / PICK toggle centred in what is left.
+class _HeaderTitle extends StatelessWidget {
+  const _HeaderTitle({required this.view, required this.onView});
+  final _HomeView view;
+  final ValueChanged<_HomeView> onView;
 
   @override
   Widget build(BuildContext context) {
-    final h = DateTime.now().hour;
-    final c = context.colors;
-    final top = h < 12
-        ? c.sunTint
-        : (h < 18 ? c.primaryTint : c.tintOf(ServiceHues.of('studio')));
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Radii.card),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [top, c.canvas],
+    final t = context.t;
+    return Row(
+      children: [
+        // The lockup is an image: it keeps its size at every system text size.
+        MediaQuery.withNoTextScaling(
+          // Plays once per cold start: the home tab stays mounted behind the others.
+          child: const DahaeLogo(
+            variant: DahaeLogoVariant.threeD,
+            wordmark: true,
+            size: _logoSize,
+            animate: true,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(Space.md),
-        child: Text(text, style: context.text.headlineSmall),
-      ),
+        const SizedBox(width: Space.sm),
+        Expanded(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: _toggleMaxWidth),
+              child: MediaQuery.withClampedTextScaling(
+                maxScaleFactor: _headerMaxTextScale,
+                child: SegmentedControl<_HomeView>(
+                  segments: [
+                    (_HomeView.all, t.dhHomeAll),
+                    (
+                      _HomeView.pick,
+                      t.dhHomePick(BrandConfig.placeholder.name),
+                    ),
+                  ],
+                  selected: view,
+                  onChanged: onView,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
+}
+
+/// One quiet greeting line with the address chip under it (not in the design; kept small).
+class _Intro extends StatelessWidget {
+  const _Intro({required this.greeting, required this.addresses});
+  final String greeting;
+  final List<Address> addresses;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // The greeting strings break after the name; here it is one quiet line.
+      Text(
+        greeting.replaceAll('\n', ' '),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: context.text.bodySmall?.copyWith(color: context.colors.inkSoft),
+      ),
+      _AddressChip(addresses: addresses),
+    ],
+  );
 }
 
 /// Referral needs an account. Tapping asks for sign-in, then shows the real card in place.
@@ -305,6 +396,7 @@ class _GuestReferralGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AppCard(
     color: context.colors.primaryTint,
+    level: Level.flat,
     onTap: () async {
       if (!await requireSignIn(context) || !context.mounted) return;
       await onSignedIn();
@@ -328,6 +420,7 @@ class _AddressChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
     final a = addresses.firstOrNull;
     final label = a == null
         ? context.t.homeAddAddressCta
@@ -343,16 +436,16 @@ class _AddressChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const ExcludeSemantics(child: Icon3D('ui_pin', size: 24)),
-            const SizedBox(width: 6),
+            const ExcludeSemantics(child: Icon3D('ui_pin', size: 18)),
+            const SizedBox(width: Space.xxs),
             Flexible(
               child: Text(
                 label,
-                style: context.text.titleMedium,
+                style: context.text.bodySmall?.copyWith(color: c.inkSoft),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const Icon(Icons.expand_more_rounded),
+            Icon(Icons.expand_more_rounded, size: 18, color: c.inkMuted),
           ],
         ),
       ),
@@ -360,7 +453,7 @@ class _AddressChip extends StatelessWidget {
   }
 }
 
-/// Hero card: aurora mesh over the deep brand blue, tilts on hover, springs on press.
+/// The next visit as one flat card: when it is, then the same row as on the bookings tab.
 class _UpcomingCard extends StatelessWidget {
   const _UpcomingCard({required this.booking});
   final Booking booking;
@@ -368,329 +461,188 @@ class _UpcomingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final b = booking;
-    final days = DateUtils.dateOnly(b.visitDate)
+    final days = DateUtils.dateOnly(booking.visitDate)
         .difference(DateUtils.dateOnly(DateTime.now()))
         .inDays;
-    final steps = b.isQuote ? 4 : 3;
-    final done = b.isQuote ? b.status + 1 : b.status;
-    final radius = BorderRadius.circular(Radii.card);
-    final deep = BrandConfig.placeholder.primaryDeep;
-    final statusGlow = StatusHues.of(b.status).tone;
-    return Tilt3D(
-      radius: radius,
-      child: Pressable(
-        radius: radius,
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => BookingDetailScreen(id: b.id),
-          ),
-        ),
-        shadows: Depth.of(
-          context.colors,
-          Level.raised,
-          glow: context.colors.isDark ? statusGlow : deep,
-        ),
-        child: ClipRRect(
-          borderRadius: radius,
-          child: ColoredBox(
-            color: deep,
-            child: AuroraBackground(
-              colors: const [
-                Color(0xFF5B7BFF),
-                Color(0xFF12B48F),
-                Color(0xFFFFB400),
-              ],
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: -24,
-                    top: -24,
-                    child: Icon(
-                      serviceIcon(b.serviceCode),
-                      size: 140,
-                      color: Colors.white.withValues(alpha: 0.10),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(Space.lg),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '${t.homeUpcoming} · ${days <= 0 ? t.today : t.dDay('$days')}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: context.text.labelMedium?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: Space.xs),
-                            Flexible(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.18),
-                                  borderRadius: BorderRadius.circular(
-                                    Radii.pill,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const _LiveDot(),
-                                    const SizedBox(width: 6),
-                                    Flexible(
-                                      child: Text(
-                                        bookingStepLabel(t, b.status),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: context.text.labelMedium
-                                            ?.copyWith(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: Space.sm),
-                        Text(
-                          '${dateLabel(b.visitDate, context.lang)} ${hourLabel(b.startHour, context.lang)}',
-                          style: context.text.titleLarge?.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          [
-                            t.service(b.serviceCode),
-                            if (b.teamName != null) b.teamName!,
-                          ].join(' · '),
-                          style: context.text.bodyMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.92),
-                          ),
-                        ),
-                        const SizedBox(height: Space.md),
-                        StepProgress(
-                          current: done,
-                          total: steps,
-                          color: BrandConfig.placeholder.sun,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+    return AppCard(
+      level: Level.flat,
+      border: context.colors.line,
+      padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${t.homeUpcoming} · ${days <= 0 ? t.today : t.dDay('$days')}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text.labelMedium?.copyWith(
+              color: context.colors.inkSoft,
             ),
           ),
-        ),
+          BookingCard(booking: booking, showDate: true),
+        ],
       ),
     );
   }
 }
 
-const _moveCodes = {'move_in', 'move_out'};
-
+/// Eight tiles, four to a row, in the catalogue's own order.
 class _ServiceGrid extends StatelessWidget {
   const _ServiceGrid({required this.services});
   final List<Service> services;
 
-  static String _tag(BuildContext context, Service s) => s.isQuote
-      ? context.t.quoteBadge
-      : context.t.fromPrice(context.won(s.fromPrice ?? 0));
-
-  static void _open(BuildContext context, Service s) => Navigator.of(context)
-      .push(MaterialPageRoute<void>(builder: (_) => ServiceScreen(service: s)));
-
-  /// The merged move tile asks which clean it is, then goes straight into that quote.
-  static Future<void> _pickMove(
-    BuildContext context,
-    List<Service> moves,
-  ) async {
-    final t = context.t;
-    final picked = await showAppSheet<Service>(
-      context,
-      title: t.dhMovePickTitle,
-      builder: (ctx) => ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(
-          Space.gutter,
-          0,
-          Space.gutter,
-          Space.gutter,
-        ),
-        children: [
-          for (final s in moves)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.xs),
-              child: OptionCard(
-                leading: ExcludeSemantics(
-                  child: Icon3D('svc_${s.code}', size: 44),
-                ),
-                title: t.service(s.code),
-                subtitle: t.serviceDesc(s.code),
-                selected: false,
-                onTap: () => Navigator.of(ctx).pop(s),
-              ),
-            ),
-        ],
-      ),
-    );
-    if (picked == null || !context.mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => picked.isQuote
-            ? QuoteFlowScreen(service: picked)
-            : ServiceScreen(service: picked),
-      ),
-    );
-  }
-
-  /// Move-in and move-out share one tile (7 categories); a catalogue with only one keeps its own tile.
-  List<Widget> _tiles(BuildContext context) {
-    final t = context.t;
-    final moves = services.where((s) => _moveCodes.contains(s.code)).toList();
-    final merge = moves.length == _moveCodes.length;
-    final shown = merge
-        ? services.where(
-            (s) => !_moveCodes.contains(s.code) || s == moves.first,
-          )
-        : services;
-    return [
-      for (final s in shown)
-        if (merge && s == moves.first)
-          _ServiceTile(
-            art: 'svc_move',
-            name: t.dhSvcMove,
-            short: t.dhSvcMoveShort,
-            tag: _tag(context, s),
-            hue: ServiceHues.of(s.code),
-            onTap: () => _pickMove(context, moves),
-          )
-        else
-          _ServiceTile(
-            art: 'svc_${s.code}',
-            heroTag: 'svc-${s.code}',
-            name: t.service(s.code),
-            short: t.serviceShort(s.code),
-            tag: _tag(context, s),
-            hue: ServiceHues.of(s.code),
-            onTap: () => _open(context, s),
-          ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
-    final t = context.t;
-    return AppCard(
-      padding: const EdgeInsets.fromLTRB(
-        Space.sm,
-        Space.lg,
-        Space.sm,
-        Space.md,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Space.xs),
-            child: SectionTitle(t.homeServices),
+    if (services.isEmpty) return const Skeleton(height: 200);
+    return Column(
+      children: [
+        for (var row = 0; row < services.length; row += _gridColumns)
+          // Rows, not a fixed-ratio grid: a label that wraps makes its row taller instead of clipping.
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = row; i < row + _gridColumns; i++)
+                Expanded(
+                  child: i < services.length
+                      ? _ServiceTile(service: services[i], index: i)
+                      : const SizedBox.shrink(),
+                ),
+            ],
           ),
-          if (services.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(Space.xs),
-              child: Skeleton(height: 180),
-            )
-          else
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              childAspectRatio: 0.70,
-              mainAxisSpacing: Space.xs,
-              children: _tiles(context),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
 
 class _ServiceTile extends StatelessWidget {
-  const _ServiceTile({
-    required this.art,
-    required this.name,
-    required this.short,
-    required this.tag,
-    required this.hue,
-    required this.onTap,
-    this.heroTag,
-  });
-  final String art;
-  final String name;
-  final String short;
-  final String tag;
-  final ServiceHue hue;
-  final VoidCallback onTap;
-
-  /// Flies the art into the service screen; the merged tile has no single destination.
-  final String? heroTag;
+  const _ServiceTile({required this.service, required this.index});
+  final Service service;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    final icon = Icon3D(art, size: 58);
-    return Semantics(
-      label: name,
-      child: Tilt3D(
-        maxAngle: 0.10,
-        radius: BorderRadius.circular(Radii.tile),
+    final t = context.t;
+    final c = context.colors;
+    final code = service.code;
+    final name = t.service(code);
+    final badge = switch (service.content['badge']) {
+      'new' => t.dhBadgeNew,
+      'hot' => t.dhBadgeHot,
+      _ => null,
+    };
+    void open() => Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => ServiceScreen(service: service)),
+    );
+    return StaggerIn(
+      index: index,
+      step: _tileStep,
+      child: Semantics(
+        button: true,
+        label: badge == null ? name : '$name, $badge',
+        onTap: open,
+        excludeSemantics: true,
         child: Pressable(
           radius: BorderRadius.circular(Radii.tile),
-          onTap: onTap,
-          // Large system fonts scale the tile down instead of overflowing it. The fixed
-          // width keeps every tile the same size; only height can trigger the scaling.
-          child: LayoutBuilder(
-            builder: (context, box) => FittedBox(
-              fit: BoxFit.scaleDown,
-              child: SizedBox(
-                width: box.maxWidth,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+          onTap: open,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 2,
+              vertical: Space.xs,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    if (heroTag == null)
-                      icon
-                    else
-                      Hero(tag: heroTag!, child: icon),
-                    const SizedBox(height: 6),
-                    Text(
-                      short,
-                      style: context.text.labelMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    // Price is visible on the tile itself, in the service hue.
-                    // Scale the tag down rather than let neighbours collide on narrow phones.
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Tag(label: tag, hue: hue),
+                    Container(
+                      width: _plate,
+                      height: _plate,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: c.surfaceHigh,
+                        borderRadius: BorderRadius.circular(Radii.tile),
+                      ),
+                      // Flies the art into the service screen.
+                      child: Hero(
+                        tag: 'svc-$code',
+                        child: Icon3D(
+                          'svc_$code',
+                          size: _tileArt,
+                          idle: Icon3DIdle.float,
+                        ),
                       ),
                     ),
+                    if (badge != null)
+                      PositionedDirectional(
+                        top: -6,
+                        end: -8,
+                        child: _TileBadge(label: badge, after: _tileStep * index),
+                      ),
                   ],
+                ),
+                const SizedBox(height: Space.xs),
+                Text(
+                  name,
+                  style: context.text.labelMedium,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Red N / HOT pill on a tile's corner. Pops in once, after its tile has arrived.
+class _TileBadge extends StatelessWidget {
+  const _TileBadge({required this.label, required this.after});
+  final String label;
+  final Duration after;
+
+  @override
+  Widget build(BuildContext context) {
+    final wait = after + Motion.route;
+    final total = wait + Motion.iconPop;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: motionFor(context, total),
+      curve: Interval(
+        wait.inMilliseconds / total.inMilliseconds,
+        1,
+        curve: Curves.easeOutBack,
+      ),
+      builder: (_, scale, child) => Transform.scale(scale: scale, child: child),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Semantic.danger,
+          borderRadius: BorderRadius.circular(Radii.pill),
+          border: Border.all(color: context.colors.surface, width: 1.5),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: _badgeSize,
+            minHeight: _badgeSize,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Center(
+              widthFactor: 1,
+              heightFactor: 1,
+              // The pill is a fixed-size mark on the art, like the art itself.
+              child: MediaQuery.withNoTextScaling(
+                child: Text(
+                  label,
+                  style: context.text.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11,
+                    height: 1.1,
+                  ),
                 ),
               ),
             ),
@@ -705,6 +657,7 @@ class _AddAddressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AppCard(
     color: context.colors.primaryTint,
+    level: Level.flat,
     onTap: () => Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => const AddressFormScreen())),
@@ -721,46 +674,6 @@ class _AddAddressCard extends StatelessWidget {
   );
 }
 
-/// Full-width hero above the grid: yellow fill, ink text, coupon art. The headline is the console's
-/// banner content (e.g. the welcome coupon); with no banner it names the customer's usable coupons.
-class _HeroBanner extends StatelessWidget {
-  const _HeroBanner({required this.count, this.banner});
-  final int count;
-  final ContentItem? banner;
-
-  @override
-  Widget build(BuildContext context) => AppCard(
-    color: context.colors.sun,
-    glow: context.colors.sun,
-    onTap: () => Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (_) => const CouponsScreen())),
-    child: Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                banner?.title(context.lang) ?? context.t.moreCoupons,
-                style: context.text.titleLarge?.copyWith(color: _onSun),
-              ),
-              if (count > 0) ...[
-                const SizedBox(height: Space.xs),
-                Text(
-                  context.t.couponAvailable('$count'),
-                  style: context.text.bodySmall?.copyWith(color: _onSun),
-                ),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(width: Space.md),
-        const ExcludeSemantics(child: Icon3D('banner_coupon', size: 64)),
-      ],
-    ),
-  );
-}
-
 class _RebookCard extends StatelessWidget {
   const _RebookCard({required this.booking});
   final Booking booking;
@@ -769,6 +682,8 @@ class _RebookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.app.service(booking.serviceCode);
     return AppCard(
+      level: Level.flat,
+      border: context.colors.line,
       onTap: s == null
           ? null
           : () => Navigator.of(context).push(
@@ -843,69 +758,6 @@ class _TrustRow extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Pulsing dot that says "this booking is live". Frozen under reduced motion.
-class _LiveDot extends StatefulWidget {
-  const _LiveDot();
-
-  @override
-  State<_LiveDot> createState() => _LiveDotState();
-}
-
-class _LiveDotState extends State<_LiveDot>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1400),
-  );
-  bool _started = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_started) return;
-    _started = true;
-    if (!MediaQuery.disableAnimationsOf(context)) _c.repeat();
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _c,
-    builder: (_, _) {
-      final pulse = Curves.easeOut.transform(_c.value);
-      return SizedBox.square(
-        dimension: 10,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 6 + 8 * pulse,
-              height: 6 + 8 * pulse,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF5EEAD4)
-                    .withValues(alpha: 0.6 * (1 - pulse)),
-              ),
-            ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF5EEAD4),
-              ),
-              child: SizedBox(width: 6, height: 6),
-            ),
-          ],
-        ),
-      );
-    },
-  );
 }
 
 /// Clay badge for trust rows: gradient tile in the hue, inner highlight, glow.

@@ -2418,14 +2418,26 @@ class TFil extends T {
   String get dhHomeNews => 'Balita ng Dahae';
 
   @override
-  String get dhSvcMove => 'Paglilinis sa paglipat (papasok / paalis)';
+  String get dhHomeAll => 'Lahat';
 
   @override
-  String get dhSvcMoveShort => 'Paglipat';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle =>
-      'Aling paglilinis sa paglipat ang kailangan mo?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Abiso';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Balita';

@@ -2353,13 +2353,26 @@ class TKo extends T {
   String get dhHomeNews => '다해 소식';
 
   @override
-  String get dhSvcMove => '이사·입주 청소';
+  String get dhHomeAll => '전체';
 
   @override
-  String get dhSvcMoveShort => '이사·입주';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => '어떤 이사 청소가 필요하세요?';
+  String get dhBadgeNew => 'N';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => '공지';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => '소식';

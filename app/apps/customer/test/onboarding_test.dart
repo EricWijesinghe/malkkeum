@@ -9,7 +9,7 @@ import 'support/customer_routes.dart';
 
 /// Guests browse freely; the phone sign-in opens from the first protected action (booking).
 Future<void> openSignInFromBooking(WidgetTester tester) async {
-  await tester.tap(find.text(koT.serviceShort('studio')).first);
+  await tester.tap(find.text(koT.service('studio')).first);
   await settle(tester);
   await tester.tap(find.text(koT.dfBookNow));
   await settle(tester);

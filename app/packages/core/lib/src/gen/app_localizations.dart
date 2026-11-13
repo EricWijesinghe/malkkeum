@@ -4555,23 +4555,41 @@ abstract class T {
   /// **'다해 소식'**
   String get dhHomeNews;
 
-  /// No description provided for @dhSvcMove.
+  /// No description provided for @dhHomeAll.
   ///
   /// In ko, this message translates to:
-  /// **'이사·입주 청소'**
-  String get dhSvcMove;
+  /// **'전체'**
+  String get dhHomeAll;
 
-  /// No description provided for @dhSvcMoveShort.
+  /// No description provided for @dhHomePick.
   ///
   /// In ko, this message translates to:
-  /// **'이사·입주'**
-  String get dhSvcMoveShort;
+  /// **'{brand} PICK'**
+  String dhHomePick(String brand);
 
-  /// No description provided for @dhMovePickTitle.
+  /// No description provided for @dhBadgeNew.
   ///
   /// In ko, this message translates to:
-  /// **'어떤 이사 청소가 필요하세요?'**
-  String get dhMovePickTitle;
+  /// **'N'**
+  String get dhBadgeNew;
+
+  /// No description provided for @dhBadgeHot.
+  ///
+  /// In ko, this message translates to:
+  /// **'HOT'**
+  String get dhBadgeHot;
+
+  /// No description provided for @dhNoticeTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'공지'**
+  String get dhNoticeTag;
+
+  /// No description provided for @dhBannerPage.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}/{total}'**
+  String dhBannerPage(String n, String total);
 
   /// No description provided for @cKind_news.
   ///
