@@ -1926,6 +1926,38 @@ class TFil extends T {
   String get quick_reschedule => 'Palitan ang iskedyul';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'Konsultasyon sa $service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'Tanong tungkol sa $service';
+  }
+
+  @override
+  String get chatYesterday => 'Kahapon';
+
+  @override
+  String get chatDayReceived => 'Natanggap ang kahilingan';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'Kahilingan sa booking: $service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Pinal na quote';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Bayaran ang $pct% na deposito ($amount) para makumpirma ang booking.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Bayaran ang deposito';
+
+  @override
   String get dfScopeDusting => 'Pag-alis ng alikabok sa muwebles';
 
   @override
@@ -2428,7 +2460,7 @@ class TFil extends T {
   }
 
   @override
-  String get moreContact => 'Makipag-ugnayan';
+  String get moreContact => 'Kumonsulta';
 
   @override
   String get moreVersionInfo => 'Bersyon';
@@ -2447,6 +2479,52 @@ class TFil extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Magagamit na kupon';
+
+  @override
+  String get couponsUsedTitle => 'Nagamit na kupon';
+
+  @override
+  String get couponsNote => '※ Isang kupon lang bawat booking.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Hindi itinatago ng $brand ang numero ng card; ligtas itong iniingatan ng payment provider.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'Sumali $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Kailangan ang laki. Ang studio cleaning ay para sa bahay na hanggang $max pyeong.';
+  }
+
+  @override
+  String get faqAll => 'Lahat';
+
+  @override
+  String get faqCat_booking => 'Booking at pagbabago';
+
+  @override
+  String get faqCat_payment => 'Bayad at kupon';
+
+  @override
+  String get faqCat_move => 'Paglipat';
 
   @override
   String get themeTitle => 'Tema';

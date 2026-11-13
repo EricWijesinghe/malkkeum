@@ -1868,7 +1868,7 @@ class TEn extends T {
   String get chatHoursTitle => 'Chat hours';
 
   @override
-  String get chatReplyFast => 'Usually replies within 10 min';
+  String get chatReplyFast => 'Usually replies within 10 minutes';
 
   @override
   String get quoteVisit => 'Visit';
@@ -1901,6 +1901,38 @@ class TEn extends T {
 
   @override
   String get quick_reschedule => 'Change the schedule';
+
+  @override
+  String chatThreadConsult(String service) {
+    return '$service consultation';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service question';
+  }
+
+  @override
+  String get chatYesterday => 'Yesterday';
+
+  @override
+  String get chatDayReceived => 'Request received';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service booking request';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Final quote';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Pay the $pct% deposit ($amount) to confirm your booking.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Pay deposit';
 
   @override
   String get dfScopeDusting => 'Dusting furniture surfaces';
@@ -2394,7 +2426,7 @@ class TEn extends T {
 
   @override
   String moreGreeting(String brand) {
-    return 'Leave today\'s chores to $brand';
+    return 'Leave today\'s chores to $brand.';
   }
 
   @override
@@ -2403,7 +2435,7 @@ class TEn extends T {
   }
 
   @override
-  String get moreContact => 'Contact us';
+  String get moreContact => 'Chat with us';
 
   @override
   String get moreVersionInfo => 'Version';
@@ -2422,6 +2454,52 @@ class TEn extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Available coupons';
+
+  @override
+  String get couponsUsedTitle => 'Used coupons';
+
+  @override
+  String get couponsNote => '※ One coupon per booking.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Card numbers are never stored by $brand; the payment provider keeps them securely.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Size is required. Studio cleaning is for homes up to $max pyeong.';
+  }
+
+  @override
+  String get faqAll => 'All';
+
+  @override
+  String get faqCat_booking => 'Booking & changes';
+
+  @override
+  String get faqCat_payment => 'Payment & coupons';
+
+  @override
+  String get faqCat_move => 'Move-in & move-out';
 
   @override
   String get themeTitle => 'Theme';

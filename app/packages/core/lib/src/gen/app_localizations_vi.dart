@@ -1900,6 +1900,38 @@ class TVi extends T {
   String get quick_reschedule => 'Muốn đổi lịch';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'Tư vấn $service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'Hỏi về $service';
+  }
+
+  @override
+  String get chatYesterday => 'Hôm qua';
+
+  @override
+  String get chatDayReceived => 'Đã nhận yêu cầu tư vấn';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'Yêu cầu đặt $service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Báo giá chốt';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Thanh toán tiền cọc $pct% · $amount để xác nhận đặt lịch.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Thanh toán tiền cọc';
+
+  @override
   String get dfScopeDusting => 'Lau bụi trên đồ nội thất';
 
   @override
@@ -2396,7 +2428,7 @@ class TVi extends T {
   }
 
   @override
-  String get moreContact => 'Liên hệ';
+  String get moreContact => 'Tư vấn';
 
   @override
   String get moreVersionInfo => 'Thông tin phiên bản';
@@ -2415,6 +2447,52 @@ class TVi extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Phiếu có thể dùng';
+
+  @override
+  String get couponsUsedTitle => 'Phiếu đã dùng';
+
+  @override
+  String get couponsNote => '※ Mỗi lượt đặt chỉ dùng được 1 phiếu.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Số thẻ không được lưu tại $brand; đơn vị thanh toán lưu giữ an toàn.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'Tham gia $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Bắt buộc nhập diện tích. Dọn phòng studio chỉ áp dụng cho nhà tối đa $max pyeong.';
+  }
+
+  @override
+  String get faqAll => 'Tất cả';
+
+  @override
+  String get faqCat_booking => 'Đặt lịch · Thay đổi';
+
+  @override
+  String get faqCat_payment => 'Thanh toán · Phiếu';
+
+  @override
+  String get faqCat_move => 'Chuyển nhà';
 
   @override
   String get themeTitle => 'Giao diện';

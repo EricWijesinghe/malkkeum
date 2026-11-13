@@ -34,6 +34,9 @@ class AppState extends ChangeNotifier {
   /// Social providers linked to this account (`kakao`, `naver`, `apple`, `google`), read-only.
   List<String> logins = const [];
 
+  /// Sign-up day (`/me` created_at), local time; null when the server does not send it.
+  DateTime? joinedAt;
+
   /// Points balance for the More counter. Null until it loads, or when the wallet is unreachable.
   int? points;
   List<Service> services = const [];
@@ -80,6 +83,7 @@ class AppState extends ChangeNotifier {
     phone = p['phone'] as String? ?? '';
     email = p['email'] as String?;
     logins = ((p['logins'] as List?) ?? const []).cast<String>();
+    joinedAt = DateTime.tryParse(p['created_at'] as String? ?? '')?.toLocal();
     notifyListeners();
   }
 

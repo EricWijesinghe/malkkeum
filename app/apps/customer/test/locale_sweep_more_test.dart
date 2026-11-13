@@ -1,9 +1,11 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/addresses.dart';
 import 'package:customer/screens/more.dart';
 import 'package:customer/screens/payments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
+import 'package:ui/ui.dart';
 
 import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
@@ -25,8 +27,20 @@ FakeApi _api() {
       for (final code in ['card', 'kakaopay', 'naverpay', 'tosspay', 'samsungpay', 'transfer'])
         {'code': code, 'flow': 'billing'},
     ])
-    ..reply('GET', '/me/payment-methods/setup', {'enabled': true, 'store_id': 'store-1', 'channels': {'card': 'ch-card', 'kakaopay': 'ch-kp'}, 'issue_id': 'iss-1'});
-  stockCustomerApi(fake, coupons: [couponJson(id: 'c1', name: 'welcome', amount: 15000)]);
+    ..reply('GET', '/me/payment-methods/setup', {'enabled': true, 'store_id': 'store-1', 'channels': {'card': 'ch-card', 'kakaopay': 'ch-kp'}, 'issue_id': 'iss-1'})
+    ..reply('GET', '/content', [
+      for (final (i, cat) in ['booking', 'payment', 'move'].indexed)
+        {
+          'id': 'faq-$i',
+          'kind': 'faq',
+          'title': {'ko': '예약은 언제까지 변경할 수 있나요? 아주 긴 질문으로 줄바꿈을 확인해요'},
+          'body': {'category': cat, 'text': {'ko': '방문 하루 전까지 변경할 수 있어요.'}},
+        },
+    ]);
+  stockCustomerApi(fake, coupons: [
+    couponJson(id: 'c1', name: 'welcome', amount: 15000),
+    couponJson(id: 'c2', name: 'welcome', amount: 10000, serviceCode: 'move_in', usedBookingId: 'b1'),
+  ]);
   return fake;
 }
 
@@ -44,7 +58,7 @@ void main() {
         final more = await pumpCustomerScreen(tester, env, const MoreTab());
         await more.loadAll();
         await settle(tester, duration: const Duration(milliseconds: 400));
-        await tester.scrollUntilVisible(find.text(t.deleteAccount), 300, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(find.text(t.moreLicenses), 300, scrollable: find.byType(Scrollable).first);
         await tester.pump(const Duration(milliseconds: 200));
         expect(tester.takeException(), isNull, reason: 'more');
         await unmount(tester);
@@ -53,8 +67,8 @@ void main() {
         await pay.loadMethods();
         await settle(tester, duration: const Duration(milliseconds: 400));
         // Lazily built: with long hints at 2.0 the channel list starts below the cache extent.
-        await tester.scrollUntilVisible(find.text(t.payAvailableTitle), 300, scrollable: find.byType(Scrollable).first);
         await tester.scrollUntilVisible(find.text(t.apPayManageTitle), 300, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(find.text(t.payCardNote(BrandConfig.placeholder.name)), 300, scrollable: find.byType(Scrollable).first);
         await tester.pump(const Duration(milliseconds: 200));
         expect(tester.takeException(), isNull, reason: 'payment methods');
         await unmount(tester);
@@ -62,7 +76,28 @@ void main() {
         final account = await pumpCustomerScreen(tester, env, const AccountScreen());
         await account.loadProfile();
         await settle(tester, duration: const Duration(milliseconds: 400));
+        await tester.scrollUntilVisible(find.text(t.deleteAccount), 300, scrollable: find.byType(Scrollable).first);
         expect(tester.takeException(), isNull, reason: 'account');
+        await unmount(tester);
+
+        final coupons = await pumpCustomerScreen(tester, env, const CouponsScreen());
+        await coupons.loadCoupons();
+        await settle(tester, duration: const Duration(milliseconds: 400));
+        await tester.scrollUntilVisible(find.text(t.couponsNote), 300, scrollable: find.byType(Scrollable).first);
+        expect(tester.takeException(), isNull, reason: 'coupons');
+        await unmount(tester);
+
+        await pumpCustomerScreen(tester, env, const FaqScreen());
+        await pumpUntilFound(tester, find.text(t.faqCat_booking));
+        await tester.tap(find.text('Q').first);
+        await settle(tester, duration: const Duration(milliseconds: 400));
+        expect(tester.takeException(), isNull, reason: 'faq');
+        await unmount(tester);
+
+        final addresses = await pumpCustomerScreen(tester, env, const AddressesScreen());
+        await addresses.loadAddresses();
+        await settle(tester, duration: const Duration(milliseconds: 400));
+        expect(tester.takeException(), isNull, reason: 'addresses');
         await unmount(tester);
       });
     }

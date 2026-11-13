@@ -1918,6 +1918,38 @@ class TSi extends T {
   String get quick_reschedule => 'කාලසටහන වෙනස් කරන්න';
 
   @override
+  String chatThreadConsult(String service) {
+    return '$service උපදේශනය';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service විමසීම';
+  }
+
+  @override
+  String get chatYesterday => 'ඊයේ';
+
+  @override
+  String get chatDayReceived => 'ඉල්ලීම ලැබිණි';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service වෙන්කිරීමේ ඉල්ලීම';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'අවසාන මිල ගණන';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'වෙන්කිරීම තහවුරු කිරීමට $pct% අත්තිකාරම ($amount) ගෙවන්න.';
+  }
+
+  @override
+  String get quotePayDeposit => 'අත්තිකාරම ගෙවන්න';
+
+  @override
   String get dfScopeDusting => 'ගෘහ භාණ්ඩ මත දූවිලි ඉවත් කිරීම';
 
   @override
@@ -2413,7 +2445,7 @@ class TSi extends T {
   }
 
   @override
-  String get moreContact => 'අප අමතන්න';
+  String get moreContact => 'උපදෙස් ලබා ගන්න';
 
   @override
   String get moreVersionInfo => 'අනුවාද තොරතුරු';
@@ -2432,6 +2464,52 @@ class TSi extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'භාවිත කළ හැකි කූපන්';
+
+  @override
+  String get couponsUsedTitle => 'භාවිත කළ කූපන්';
+
+  @override
+  String get couponsNote => '※ එක් වෙන්කිරීමකට එක් කූපනයක් පමණි.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ කාඩ්පත් අංක $brand හි ගබඩා නොකෙරේ; ගෙවීම් සේවා සපයන්නා ආරක්ෂිතව තබා ගනී.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date සම්බන්ධ විය';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'ප්‍රමාණය අනිවාර්යයි. ස්ටුඩියෝ පිරිසිදු කිරීම $max pyeong දක්වා නිවෙස් සඳහා පමණි.';
+  }
+
+  @override
+  String get faqAll => 'සියල්ල';
+
+  @override
+  String get faqCat_booking => 'වෙන්කිරීම් සහ වෙනස්කම්';
+
+  @override
+  String get faqCat_payment => 'ගෙවීම් සහ කූපන්';
+
+  @override
+  String get faqCat_move => 'නිවාස මාරුව';
 
   @override
   String get themeTitle => 'තේමාව';

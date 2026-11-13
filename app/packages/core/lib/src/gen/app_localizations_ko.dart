@@ -1833,10 +1833,10 @@ class TKo extends T {
   String get bkViewMonth => '월간 보기';
 
   @override
-  String get chatHoursTitle => '상담 운영시간';
+  String get chatHoursTitle => '상담 가능 시간';
 
   @override
-  String get chatReplyFast => '보통 10분 내 답변';
+  String get chatReplyFast => '보통 10분 안에 답변해요';
 
   @override
   String get quoteVisit => '방문 일정';
@@ -1868,6 +1868,38 @@ class TKo extends T {
 
   @override
   String get quick_reschedule => '일정 변경할래요';
+
+  @override
+  String chatThreadConsult(String service) {
+    return '$service 상담';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service 문의';
+  }
+
+  @override
+  String get chatYesterday => '어제';
+
+  @override
+  String get chatDayReceived => '상담이 접수됐어요';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service 예약 요청';
+  }
+
+  @override
+  String get quoteConfirmedTitle => '확정 견적';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return '예약금 $pct% · $amount을 결제하면 예약이 확정돼요.';
+  }
+
+  @override
+  String get quotePayDeposit => '예약금 결제하기';
 
   @override
   String get dfScopeDusting => '가구 위 먼지 제거';
@@ -2352,7 +2384,7 @@ class TKo extends T {
 
   @override
   String moreGreeting(String brand) {
-    return '오늘도 집안일은 $brand에게 맡기세요';
+    return '오늘도 집안일은 $brand에 맡기세요.';
   }
 
   @override
@@ -2361,7 +2393,7 @@ class TKo extends T {
   }
 
   @override
-  String get moreContact => '문의하기';
+  String get moreContact => '상담하기';
 
   @override
   String get moreVersionInfo => '버전 정보';
@@ -2380,6 +2412,52 @@ class TKo extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name님';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n장';
+  }
+
+  @override
+  String get couponsAvailableTitle => '사용 가능한 쿠폰';
+
+  @override
+  String get couponsUsedTitle => '사용한 쿠폰';
+
+  @override
+  String get couponsNote => '※ 예약 1건에 쿠폰 1장만 쓸 수 있어요.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ 카드 번호는 $brand에 저장되지 않고 결제대행사가 안전하게 보관해요.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date 가입';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return '평수는 꼭 입력해 주세요. 원룸 청소는 $max평 이하만 예약할 수 있어요.';
+  }
+
+  @override
+  String get faqAll => '전체';
+
+  @override
+  String get faqCat_booking => '예약·변경';
+
+  @override
+  String get faqCat_payment => '결제·쿠폰';
+
+  @override
+  String get faqCat_move => '이사·입주';
 
   @override
   String get themeTitle => '테마';

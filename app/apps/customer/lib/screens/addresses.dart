@@ -8,15 +8,47 @@ import '../location.dart';
 import '../state.dart';
 import 'household_editor.dart';
 
-class AddressesScreen extends StatelessWidget {
+/// Saved addresses (p25): 집 / 사무실 tabs over one list; a tab switch cross-fades it.
+class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key});
+
+  @override
+  State<AddressesScreen> createState() => _AddressesScreenState();
+}
+
+class _AddressesScreenState extends State<AddressesScreen>
+    with SingleTickerProviderStateMixin {
+  static const _kinds = ['home', 'office'];
+  late final _tabs = TabController(length: _kinds.length, vsync: this)
+    ..addListener(() => setState(() {}));
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
+    final c = context.colors;
+    final kind = _kinds[_tabs.index];
+    final shown = app.addresses.where((a) => a.kind == kind).toList();
     return Scaffold(
-      appBar: AppBar(title: Text(t.moreAddresses)),
+      backgroundColor: c.surface,
+      appBar: AppBar(
+        title: Text(t.moreAddresses),
+        bottom: app.addresses.isEmpty
+            ? null
+            : TabBar(
+                controller: _tabs,
+                tabs: [
+                  Tab(text: t.addressHome),
+                  Tab(text: t.addressOffice),
+                ],
+              ),
+      ),
       body: app.addresses.isEmpty
           ? EmptyState(
               icon: Icons.home_work_rounded,
@@ -27,49 +59,29 @@ class AddressesScreen extends StatelessWidget {
               onRefresh: () => app.loadAddresses().catchError((Object e) {
                 if (context.mounted) showToast(context, t.error(e));
               }),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(Space.gutter),
-                children: [
-                  for (final a in app.addresses)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: Space.xs),
-                      child: AppCard(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => AddressFormScreen(existing: a),
+              child: FadeThroughSwitcher(
+                child: ListView(
+                  key: ValueKey(kind),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    if (shown.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(Space.gutter),
+                        child: Text(
+                          t.addressEmpty,
+                          style: context.text.bodyMedium?.copyWith(
+                            color: c.inkSoft,
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              a.kind == 'office'
-                                  ? Icons.business_rounded
-                                  : Icons.home_rounded,
-                              color: context.primary,
-                            ),
-                            const SizedBox(width: Space.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
-                                    style: context.text.titleSmall,
-                                  ),
-                                  Text(
-                                    '${a.roadAddress} ${a.detail}',
-                                    style: context.text.bodySmall,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right_rounded),
-                          ],
-                        ),
                       ),
-                    ),
-                ],
+                    for (final (i, a) in shown.indexed)
+                      StaggerIn(
+                        key: ValueKey(a.id),
+                        index: i,
+                        child: _AddressRow(address: a),
+                      ),
+                  ],
+                ),
               ),
             ),
       bottomNavigationBar: BottomActionBar(
@@ -78,6 +90,57 @@ class AddressesScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const AddressFormScreen()),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bold label, then "address · N평" (p25). Opens the edit form.
+class _AddressRow extends StatelessWidget {
+  const _AddressRow({required this.address});
+  final Address address;
+
+  @override
+  Widget build(BuildContext context) {
+    final a = address;
+    final t = context.t;
+    return InkWell(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => AddressFormScreen(existing: a)),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.gutter,
+          vertical: Space.md,
+        ),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: context.colors.line)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    a.label,
+                    style: context.text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${a.roadAddress} ${a.detail} · ${t.pyeong('${a.sizePyeong}')}',
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.colors.inkSoft,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: context.colors.inkMuted),
+          ],
         ),
       ),
     );
@@ -317,17 +380,18 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
         children: [
           SegmentedButton<String>(
             showSelectedIcon: false,
+            style: SegmentedButton.styleFrom(
+              selectedBackgroundColor: context.colors.primaryTint,
+              selectedForegroundColor: context.colors.ink,
+              side: BorderSide(color: context.colors.line),
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Radii.chip),
+              ),
+            ),
             segments: [
-              ButtonSegment(
-                value: 'home',
-                label: Text(t.addressHome),
-                icon: const Icon(Icons.home_rounded),
-              ),
-              ButtonSegment(
-                value: 'office',
-                label: Text(t.addressOffice),
-                icon: const Icon(Icons.business_rounded),
-              ),
+              ButtonSegment(value: 'home', label: Text(t.addressHome)),
+              ButtonSegment(value: 'office', label: Text(t.addressOffice)),
             ],
             selected: {_kind},
             onSelectionChanged: (s) => setState(() => _kind = s.first),
@@ -413,8 +477,16 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                   ),
                 ),
                 const SizedBox(width: Space.xs),
-                IconButton.filledTonal(
+                IconButton.filled(
                   tooltip: t.addressSearchButton,
+                  style: IconButton.styleFrom(
+                    backgroundColor: context.colors.ink,
+                    foregroundColor: context.colors.surface,
+                    minimumSize: const Size.square(48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Radii.chip),
+                    ),
+                  ),
                   icon: const Icon(Icons.search_rounded),
                   onPressed: _searching ? null : _search,
                 ),
@@ -473,21 +545,44 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: Space.md),
-          TextField(
-            controller: _detail,
-            maxLength: 200,
-            decoration: deco(t.addressDetail).copyWith(counterText: ''),
-          ),
-          const SizedBox(height: Space.md),
-          TextField(
-            controller: _size,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(3),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _detail,
+                  maxLength: 200,
+                  decoration: deco(t.addressDetail).copyWith(counterText: ''),
+                ),
+              ),
+              const SizedBox(width: Space.sm),
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: _size,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(3),
+                  ],
+                  decoration: deco(
+                    t.addressSize,
+                  ).copyWith(suffixText: t.pyeong('').trim()),
+                  onChanged: (_) => setState(() {}),
+                ),
+              ),
             ],
-            decoration: deco(t.addressSize, null, t.addressSizeHelp),
-            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: Space.xs),
+          Text(
+            switch (context.app.service('studio')?.maxPyeong) {
+              final max? => t.addressPyeongNote('$max'),
+              null => t.addressSizeHelp,
+            },
+            style: context.text.bodySmall?.copyWith(
+              color: context.colors.inkSoft,
+            ),
           ),
           const SizedBox(height: Space.lg),
           HouseholdEditor(

@@ -4,12 +4,15 @@ import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
 import 'pay_flow.dart';
+
+part 'chat_bubbles.dart';
 
 const _topics = [
   'studio',
@@ -25,6 +28,27 @@ const _topics = [
 
 String topicLabel(T t, String topic) =>
     topic == 'other' ? t.topicOther : t.service(topic);
+
+bool _isQuoteTopic(String topic) => topic == 'move_in' || topic == 'move_out';
+
+/// Thread title as the design writes it: "이사 청소 상담" for quote threads, "에어컨 청소 문의" otherwise.
+String _threadTitle(T t, String topic) => topic == 'other'
+    ? t.topicOther
+    : _isQuoteTopic(topic)
+    ? t.chatThreadConsult(t.service(topic))
+    : t.chatThreadAsk(t.service(topic));
+
+/// Today: the time; yesterday: "어제"; older: a short date (11.03).
+String _threadTime(T t, DateTime at, String lang) {
+  final l = at.toLocal();
+  final now = DateTime.now();
+  final day = DateTime(l.year, l.month, l.day);
+  if (day == DateTime(now.year, now.month, now.day)) return timeLabel(l, lang);
+  if (day == DateTime(now.year, now.month, now.day - 1)) return t.chatYesterday;
+  return lang == 'ko'
+      ? DateFormat('MM.dd').format(l)
+      : DateFormat.Md(lang).format(l);
+}
 
 /// Operating hours from the console's business profile (`/brand`); null when unset or offline.
 Future<String?> _supportHours(ApiClient api) async {
@@ -42,8 +66,13 @@ const _priceChanged = 'price_changed';
 /// Room for the empty-state art under the header; it scrolls inside when text is large.
 const _emptyHeight = 360.0;
 
-/// Below this title width the app-bar avatar is dropped so the team name keeps its room.
-const _avatarMinTitleWidth = 180.0;
+/// Below this logical width (after text scaling) a header pill collapses to its icon so the title keeps its room.
+const _pillMinWidth = 360.0;
+
+bool _roomy(BuildContext context) =>
+    MediaQuery.sizeOf(context).width /
+        MediaQuery.textScalerOf(context).scale(1) >=
+    _pillMinWidth;
 
 String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
 
@@ -63,6 +92,12 @@ String _layoutLabel(T t, String code) => switch (code) {
   _ => t.layout_four_plus,
 };
 
+/// Tab-root title: large, bold and left-aligned (design p03, p05).
+Widget tabRootTitle(BuildContext context, String title) => Text(
+  title,
+  style: context.text.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+);
+
 class ChatListTab extends StatefulWidget {
   const ChatListTab({super.key});
   @override
@@ -74,12 +109,18 @@ class _ChatListTabState extends State<ChatListTab> {
   StreamSubscription<Json>? _sub;
   late final Future<String?> _hours = _supportHours(context.api);
 
+  /// Bumped once after the first frame: the new-chat glyph gives one nudge when the tab opens.
+  int _nudge = 0;
+
   @override
   void initState() {
     super.initState();
     _sub = context.appRead.realtime
         .on('chat.message')
         .listen((_) => _view.currentState?.reload());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _nudge = 1);
+    });
   }
 
   @override
@@ -109,26 +150,29 @@ class _ChatListTabState extends State<ChatListTab> {
         ),
         childAspectRatio: 1.05,
         children: [
-          for (final code in _topics)
-            InkWell(
-              borderRadius: BorderRadius.circular(Radii.tile),
-              onTap: () => Navigator.of(ctx).pop(code),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  code == 'other'
-                      ? const CircleAvatar(
-                          radius: 26,
-                          child: Icon(Icons.more_horiz_rounded),
-                        )
-                      : ServiceGlyph(code, size: 52),
-                  const SizedBox(height: 6),
-                  Text(
-                    code == 'other' ? t.topicOther : t.serviceShort(code),
-                    style: ctx.text.labelMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+          for (final (i, code) in _topics.indexed)
+            StaggerIn(
+              index: i,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(Radii.tile),
+                onTap: () => Navigator.of(ctx).pop(code),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    code == 'other'
+                        ? const CircleAvatar(
+                            radius: 26,
+                            child: Icon(Icons.more_horiz_rounded),
+                          )
+                        : ServiceGlyph(code, size: 52),
+                    const SizedBox(height: 6),
+                    Text(
+                      code == 'other' ? t.topicOther : t.serviceShort(code),
+                      style: ctx.text.labelMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
         ],
@@ -144,11 +188,34 @@ class _ChatListTabState extends State<ChatListTab> {
   Widget build(BuildContext context) {
     final t = context.t;
     return Scaffold(
-      appBar: AppBar(title: Text(t.chatTitle)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _newChat,
-        icon: const Icon3D('chat_new', size: 28),
-        label: Text(t.chatNew),
+      backgroundColor: context.colors.surface,
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: context.colors.surface,
+        title: tabRootTitle(context, t.chatTitle),
+        actions: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: Space.md),
+            // Small phones and large text: the glyph alone, so the title keeps its room.
+            child: _roomy(context)
+                ? OutlinedButton.icon(
+                    onPressed: _newChat,
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      side: BorderSide(color: context.colors.line),
+                      foregroundColor: context.colors.ink,
+                      padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                    ),
+                    icon: Icon3D('chat_new', size: 20, attention: _nudge),
+                    label: Text(t.chatNew),
+                  )
+                : IconButton(
+                    tooltip: t.chatNew,
+                    onPressed: _newChat,
+                    icon: Icon3D('chat_new', size: 24, attention: _nudge),
+                  ),
+          ),
+        ],
       ),
       body: AsyncView<List<ChatThread>>(
         key: _view,
@@ -157,12 +224,12 @@ class _ChatListTabState extends State<ChatListTab> {
         builder: (context, threads, reload) => RefreshIndicator(
           onRefresh: reload,
           child: ListView(
-            padding: const EdgeInsets.only(bottom: 96),
+            padding: const EdgeInsets.only(bottom: Space.xl),
             children: [
               FutureBuilder<String?>(
                 future: _hours,
                 builder: (context, snap) =>
-                    _TeamHeader(hours: snap.data ?? t.chatHours),
+                    _HoursBar(hours: snap.data ?? t.chatHours),
               ),
               if (threads.isEmpty)
                 SizedBox(
@@ -174,10 +241,17 @@ class _ChatListTabState extends State<ChatListTab> {
                     hue: ServiceHues.aircon,
                   ),
                 ),
-              for (final (i, th) in threads.indexed) ...[
-                if (i > 0) const Divider(indent: 84),
-                _ThreadTile(thread: th, onReturn: reload),
-              ],
+              for (final (i, th) in threads.indexed)
+                StaggerIn(
+                  key: ValueKey(th.id),
+                  index: i,
+                  child: Column(
+                    children: [
+                      _ThreadTile(thread: th, onReturn: reload),
+                      const Divider(height: 1),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
@@ -186,47 +260,53 @@ class _ChatListTabState extends State<ChatListTab> {
   }
 }
 
-/// Team profile, operating hours and the usual reply time above the thread list.
-class _TeamHeader extends StatelessWidget {
-  const _TeamHeader({required this.hours});
+/// One grey bar: operating hours and the usual reply time (design p03).
+class _HoursBar extends StatelessWidget {
+  const _HoursBar({required this.hours});
   final String hours;
 
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Space.gutter,
-        Space.xs,
-        Space.gutter,
+    final c = context.colors;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        Space.md,
+        Space.xxs,
+        Space.md,
         Space.xs,
       ),
-      child: AppCard(
-        padding: const EdgeInsets.all(Space.md),
-        child: Row(
-          children: [
-            const Icon3D('chat_team_avatar', size: 48),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Space.md,
+        vertical: Space.sm,
+      ),
+      decoration: BoxDecoration(
+        color: c.surfaceHigh,
+        borderRadius: BorderRadius.circular(Radii.chip),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(Icons.schedule_rounded, size: 16, color: c.accent),
+          ),
+          const SizedBox(width: Space.xs),
+          Expanded(
+            child: Text.rich(
+              TextSpan(
                 children: [
-                  Text(_teamName(t), style: context.text.titleSmall),
-                  Text(
-                    '${t.chatHoursTitle} · $hours',
-                    style: context.text.bodySmall,
+                  TextSpan(
+                    text: '${t.chatHoursTitle} · $hours',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  Text(
-                    t.chatReplyFast,
-                    style: context.text.labelSmall?.copyWith(
-                      color: context.colors.accent,
-                    ),
-                  ),
+                  TextSpan(text: ' · ${t.chatReplyFast}'),
                 ],
               ),
+              style: context.text.bodySmall?.copyWith(color: c.inkSoft),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -240,6 +320,7 @@ class _ThreadTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final c = context.colors;
     final last = thread.lastMessage;
     final preview = switch (last?['kind']) {
       'text' => (last!['body'] as Json)['text'] as String? ?? '',
@@ -253,30 +334,50 @@ class _ThreadTile extends StatelessWidget {
       ),
       _ => '',
     };
+    final unread = thread.unreadMember;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: Space.gutter,
+        horizontal: Space.md,
         vertical: 6,
       ),
-      leading: thread.topic == 'other'
-          ? const CircleAvatar(
-              radius: 26,
-              child: Icon(Icons.support_agent_rounded),
-            )
-          : ServiceGlyph(thread.topic, size: 52),
-      title: Text(topicLabel(t, thread.topic), style: context.text.titleSmall),
-      subtitle: Text(preview, maxLines: 1, overflow: TextOverflow.ellipsis),
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundColor: c.primaryTint,
+        child: thread.topic == 'other'
+            ? Icon(Icons.chat_bubble_outline_rounded, color: c.inkSoft)
+            : ServiceGlyph(thread.topic, size: 30),
+      ),
+      title: Text(
+        _threadTitle(t, thread.topic),
+        style: context.text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        preview,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: context.text.bodySmall?.copyWith(color: c.inkSoft),
+      ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            timeLabel(thread.lastMessageAt, context.lang),
-            style: context.text.labelSmall,
+            _threadTime(t, thread.lastMessageAt, context.lang),
+            style: context.text.labelSmall?.copyWith(color: c.inkMuted),
           ),
           const SizedBox(height: 4),
-          if (thread.unreadMember > 0)
-            Badge(label: Text('${thread.unreadMember}')),
+          if (unread > 0)
+            // A new count pops in once: keyed so a rising count replays it.
+            TweenAnimationBuilder<double>(
+              key: ValueKey(unread),
+              tween: Tween(begin: 0, end: 1),
+              duration: motionFor(context, Motion.iconPop),
+              curve: Curves.easeOutBack,
+              builder: (_, s, child) => Transform.scale(scale: s, child: child),
+              child: Badge(label: Text('$unread')),
+            ),
         ],
       ),
       onTap: () async {
@@ -322,8 +423,12 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   bool _paidHere = false;
   late final Future<String?> _hours = _supportHours(context.api);
 
-  bool get _isQuoteThread =>
-      widget.topic == 'move_in' || widget.topic == 'move_out';
+  /// Messages that arrived while the room is open (live, not history): only these animate in.
+  final _arrivedAt = <String, DateTime>{};
+
+  bool get _isQuoteThread => _isQuoteTopic(widget.topic);
+
+  void _arrived(String id) => _arrivedAt[id] = DateTime.now();
 
   @override
   void initState() {
@@ -338,6 +443,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       if (m == null || m['thread_id'] != widget.threadId) return;
       final msg = ChatMessage.fromJson(m);
       if (_messages.any((x) => x.id == msg.id)) return;
+      _arrived(msg.id);
       setState(() => _messages = [..._messages, msg]);
       _markRead();
     });
@@ -381,6 +487,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             as Json,
       );
       if (!mounted) return;
+      if (!_messages.any((x) => x.id == m.id)) _arrived(m.id);
       setState(() => _messages = [..._messages.where((x) => x.id != m.id), m]);
       _input.clear();
     } catch (e) {
@@ -494,9 +601,71 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     super.dispose();
   }
 
+  void _openBooking() => Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => BookingDetailScreen(id: widget.bookingId!),
+    ),
+  );
+
+  PreferredSizeWidget _appBar(T t) {
+    final roomy = _roomy(context);
+    return AppBar(
+      centerTitle: false,
+      titleSpacing: 0,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _teamName(t),
+            style: context.text.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          FutureBuilder<String?>(
+            future: _hours,
+            builder: (context, snap) => Text(
+              '${snap.data ?? t.chatHours} · ${t.chatReplyFast}',
+              style: context.text.labelSmall?.copyWith(
+                color: context.colors.inkSoft,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        if (widget.bookingId != null)
+          roomy
+              ? Padding(
+                  padding: const EdgeInsetsDirectional.only(end: Space.sm),
+                  child: OutlinedButton(
+                    onPressed: _openBooking,
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      side: BorderSide(color: context.colors.line),
+                      foregroundColor: context.colors.ink,
+                      padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+                    ),
+                    child: Text(t.viewBooking),
+                  ),
+                )
+              // Small phones and large text: an icon keeps the team name readable.
+              : IconButton(
+                  tooltip: t.viewBooking,
+                  icon: const Icon(Icons.receipt_long_rounded),
+                  onPressed: _openBooking,
+                ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final c = context.colors;
     final depositPaid =
         _paidHere ||
         _messages.any(
@@ -511,55 +680,17 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         ? [t.quick_confirm, t.quick_quote, t.quick_reschedule]
         : [t.quick_hello, t.quick_price, t.quick_duration, t.quick_date];
     final reversed = _messages.reversed.toList();
+    // "상담이 접수됐어요" joins its day's date pill instead of a pill of its own.
+    final receivedDays = {
+      for (final m in _messages)
+        if (_isReceived(m)) _dayOf(m.createdAt),
+    };
+    final now = DateTime.now();
+    bool live(String id) =>
+        now.difference(_arrivedAt[id] ?? DateTime(0)) < Motion.celebrate;
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: LayoutBuilder(
-          builder: (context, c) => Row(
-            children: [
-              if (c.maxWidth >= _avatarMinTitleWidth) ...[
-                const Icon3D('chat_team_avatar', size: 36),
-                const SizedBox(width: Space.xs),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _teamName(t),
-                      style: context.text.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    FutureBuilder<String?>(
-                      future: _hours,
-                      builder: (context, snap) => Text(
-                        '${topicLabel(t, widget.topic)} · ${snap.data ?? t.chatHours}',
-                        style: context.text.labelSmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          // An icon, not a text button: a long label squeezes the title out on small phones.
-          if (widget.bookingId != null)
-            IconButton(
-              tooltip: t.viewBooking,
-              icon: const Icon(Icons.receipt_long_rounded),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => BookingDetailScreen(id: widget.bookingId!),
-                ),
-              ),
-            ),
-        ],
-      ),
+      backgroundColor: c.surface,
+      appBar: _appBar(t),
       body: Column(
         children: [
           Expanded(
@@ -570,28 +701,72 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     reverse: true,
                     padding: const EdgeInsets.all(Space.md),
                     itemCount: reversed.length,
-                    itemBuilder: (_, i) => _Bubble(
-                      message: reversed[i],
-                      depositPaid: depositPaid,
-                      latestQuote: latestQuote,
-                      onPay: _paying ? null : _payDeposit,
-                    ),
+                    // Keyed so a new message at the bottom never hands its state to an older one.
+                    findChildIndexCallback: (key) {
+                      final i = reversed.indexWhere(
+                        (m) => ValueKey(m.id) == key,
+                      );
+                      return i < 0 ? null : i;
+                    },
+                    itemBuilder: (_, i) {
+                      final m = reversed[i];
+                      final day = _dayOf(m.createdAt);
+                      final firstOfDay =
+                          i == reversed.length - 1 ||
+                          _dayOf(reversed[i + 1].createdAt) != day;
+                      return Column(
+                        key: ValueKey(m.id),
+                        children: [
+                          if (firstOfDay)
+                            _DayDivider(
+                              day: day,
+                              received: receivedDays.contains(day),
+                            ),
+                          if (!_isReceived(m))
+                            _Bubble(
+                              message: m,
+                              depositPaid: depositPaid,
+                              latestQuote: latestQuote,
+                              live: live(m.id),
+                              onPay: _paying ? null : _payDeposit,
+                            ),
+                        ],
+                      );
+                    },
                   ),
           ),
           SizedBox(
-            height: 48,
+            height: 52,
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: Space.md),
               children: [
-                for (final q in quick)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: ActionChip(
-                      label: Text(q),
-                      onPressed: _sending
-                          ? null
-                          : () => _send({'kind': 'text', 'text': q}),
+                for (final (i, q) in quick.indexed)
+                  _Entrance(
+                    from: const Offset(24, 0),
+                    delay: Duration(milliseconds: 40 * i),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ActionChip(
+                        label: Text(q),
+                        shape: const StadiumBorder(),
+                        visualDensity: VisualDensity.compact,
+                        labelPadding: const EdgeInsets.symmetric(
+                          horizontal: Space.xxs,
+                        ),
+                        // The first reply is the suggested one (design p04).
+                        side: BorderSide(
+                          color: i == 0 ? context.colors.accent : c.line,
+                        ),
+                        backgroundColor: i == 0 ? c.primaryTint : c.surface,
+                        labelStyle: context.text.labelLarge?.copyWith(
+                          color: i == 0 ? context.colors.accent : c.ink,
+                          fontWeight: i == 0 ? FontWeight.w700 : null,
+                        ),
+                        onPressed: _sending
+                            ? null
+                            : () => _send({'kind': 'text', 'text': q}),
+                      ),
                     ),
                   ),
               ],
@@ -603,7 +778,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               padding: const EdgeInsets.fromLTRB(
                 Space.xs,
                 Space.xs,
-                Space.xs,
+                Space.sm,
                 Space.xs,
               ),
               child: Row(
@@ -624,6 +799,24 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         hintText: t.chatHint,
                         counterText: '',
                         isDense: true,
+                        filled: true,
+                        fillColor: c.surfaceHigh,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: Space.md,
+                          vertical: Space.sm,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(Radii.pill),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(Radii.pill),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(Radii.pill),
+                          borderSide: BorderSide(color: context.colors.accent),
+                        ),
                       ),
                       onSubmitted: (v) => v.trim().isEmpty
                           ? null
@@ -633,6 +826,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   const SizedBox(width: Space.xs),
                   IconButton.filled(
                     tooltip: t.chatSend,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size.square(44),
+                    ),
                     onPressed: _sending
                         ? null
                         : () => _input.text.trim().isEmpty
@@ -642,325 +838,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  const _Bubble({
-    required this.message,
-    required this.depositPaid,
-    required this.latestQuote,
-    required this.onPay,
-  });
-  final ChatMessage message;
-  final bool depositPaid;
-  final String? latestQuote;
-
-  /// Null while a payment is in flight.
-  final void Function(ChatMessage quote)? onPay;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = message;
-    final t = context.t;
-    final mine = m.sender == 'customer';
-    if (m.kind == 'system') {
-      return Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: Space.xs),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: context.colors.line,
-            borderRadius: BorderRadius.circular(Radii.pill),
-          ),
-          child: Text(
-            t.system(
-              m.body['code'] as String? ?? '',
-              (m.body['params'] as Json?) ?? const {},
-              context.lang,
-            ),
-            style: context.text.labelSmall,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-    final Widget content = switch (m.kind) {
-      'photo' => ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: Image.network(
-          m.body['url'] as String,
-          width: 200,
-          cacheWidth: 400,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => const SizedBox(width: 200, height: 120),
-        ),
-      ),
-      'card' => _RequestCard(body: m.body),
-      'quote' => _QuoteCard(
-        body: m.body,
-        paid: depositPaid,
-        superseded: m.id != latestQuote,
-        onPay: onPay == null ? null : () => onPay!(m),
-      ),
-      _ => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: mine ? context.primary : context.colors.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(mine ? 18 : 6),
-            bottomRight: Radius.circular(mine ? 6 : 18),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (m.isAi)
-              Text(
-                t.aiLabel,
-                style: context.text.labelSmall?.copyWith(
-                  color: mine
-                      ? Colors.white70
-                      : context.colors.ink.withValues(alpha: 0.6),
-                ),
-              ),
-            Text(
-              m.body['text'] as String? ?? '',
-              style: context.text.bodyMedium?.copyWith(
-                color: mine ? Colors.white : context.colors.ink,
-              ),
-            ),
-          ],
-        ),
-      ),
-    };
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: mine
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!mine) ...[
-            const Icon3D('chat_team_avatar', size: 32),
-            const SizedBox(width: 6),
-          ],
-          if (mine)
-            Text(
-              timeLabel(m.createdAt, context.lang),
-              style: context.text.labelSmall?.copyWith(fontSize: 10),
-            ),
-          if (mine) const SizedBox(width: 4),
-          Flexible(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 300),
-              child: content,
-            ),
-          ),
-          if (!mine) const SizedBox(width: 4),
-          if (!mine)
-            Text(
-              timeLabel(m.createdAt, context.lang),
-              style: context.text.labelSmall?.copyWith(fontSize: 10),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RequestCard extends StatelessWidget {
-  const _RequestCard({required this.body});
-  final Json body;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    final code = body['service_code'] as String? ?? 'move_in';
-    final hue = ServiceHues.of(code);
-    return AppCard(
-      border: context.colors.line,
-      padding: const EdgeInsets.all(Space.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Tag(label: t.requestCard, hue: hue),
-          const SizedBox(height: Space.xs),
-          Text(t.service(code), style: context.text.titleSmall),
-          if (body['visit_date'] != null)
-            Text(
-              dateLabel(
-                DateTime.parse(body['visit_date'] as String),
-                context.lang,
-              ),
-              style: context.text.bodySmall,
-            ),
-          const Divider(height: Space.lg),
-          Row(
-            children: [
-              Text(t.estimate, style: context.text.bodySmall),
-              const Spacer(),
-              Text(
-                context.won((body['estimate'] as num? ?? 0).toInt()),
-                style: context.text.titleSmall,
-              ),
-            ],
-          ),
-          const SizedBox(height: Space.xs),
-          TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) =>
-                    BookingDetailScreen(id: body['booking_id'] as String),
-              ),
-            ),
-            child: Text(t.viewBooking),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Staff quote: booking rows, confirmed total and the deposit button. Every amount is read
-/// from the message body the server wrote; nothing is computed here.
-class _QuoteCard extends StatelessWidget {
-  const _QuoteCard({
-    required this.body,
-    required this.paid,
-    required this.superseded,
-    required this.onPay,
-  });
-  final Json body;
-  final bool paid;
-  final bool superseded;
-  final VoidCallback? onPay;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    final lang = context.lang;
-    int n(String k) => (body[k] as num? ?? 0).toInt();
-    final visit = DateTime.tryParse(body['visit_date'] as String? ?? '');
-    final hour = (body['start_hour'] as num?)?.toInt();
-    final code = body['service_code'] as String?;
-    final answers = body['answers'] is Json
-        ? body['answers'] as Json
-        : const <String, dynamic>{};
-    final structure = [
-      if (answers['building'] case final String b) _buildingLabel(t, b),
-      if (answers['layout'] case final String l) _layoutLabel(t, l),
-    ].join(' · ');
-    final estimate = body['estimate'] as num?;
-    final rows = [
-      if (visit != null)
-        (
-          t.quoteVisit,
-          [
-            dateLabel(visit, lang),
-            if (hour != null) hour < 12 ? t.morning : t.afternoon,
-          ].join(' '),
-        ),
-      if (code != null) (t.quoteKind, t.service(code)),
-      if (structure.isNotEmpty) (t.layoutTitle, structure),
-      if (estimate != null) (t.estimate, context.won(estimate.toInt())),
-    ];
-    Widget line(String label, String value, {TextStyle? style}) => Padding(
-      padding: const EdgeInsets.only(top: Space.xxs),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: Text(label, style: context.text.bodySmall)),
-          const SizedBox(width: Space.xs),
-          Flexible(
-            flex: 2,
-            child: Text(
-              value,
-              style: style ?? context.text.bodyMedium,
-              textAlign: TextAlign.end,
-            ),
-          ),
-        ],
-      ),
-    );
-    final payable = !paid && !superseded;
-    return Container(
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: BorderRadius.circular(Radii.card),
-        boxShadow: Elevation.raised,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(Space.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon3D('chat_quote', size: 28),
-                    const SizedBox(width: Space.xs),
-                    Expanded(
-                      child: Text(
-                        t.quoteArrived,
-                        style: context.text.labelMedium?.copyWith(
-                          color: context.colors.accent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                for (final (label, value) in rows) line(label, value),
-                const Divider(height: Space.lg),
-                Text(t.finalPrice, style: context.text.bodySmall),
-                Text(
-                  context.won(n('final_price')),
-                  style: context.text.headlineMedium,
-                ),
-                line(
-                  t.quoteDepositNow,
-                  context.won(n('deposit')),
-                  style: context.text.titleSmall,
-                ),
-                line(
-                  t.quoteBalanceLater,
-                  context.won(n('balance')),
-                  style: context.text.bodySmall,
-                ),
-                if ((body['note'] as String?)?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: Space.xs),
-                  Text(body['note'] as String, style: context.text.bodySmall),
-                ],
-              ],
-            ),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              shape: const RoundedRectangleBorder(),
-              minimumSize: const Size.fromHeight(52),
-              // Accent CTA: check yellow with ink label (never white on yellow).
-              backgroundColor: paid ? context.colors.fresh : context.colors.sun,
-              foregroundColor: Neutral.c900,
-            ),
-            onPressed: payable ? onPay : null,
-            child: Text(
-              paid
-                  ? t.quotePaid
-                  : superseded
-                  ? t.quoteSuperseded
-                  : t.quotePayAmount(context.won(n('deposit'))),
             ),
           ),
         ],

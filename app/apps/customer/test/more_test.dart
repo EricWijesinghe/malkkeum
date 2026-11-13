@@ -17,7 +17,7 @@ const _tall = Size(390, 2400);
 FakeApi _api() {
   final fake = FakeApi()
     // First match wins: these override the stock profile.
-    ..reply('GET', '/me', {'name': '지민', 'phone': '01012345678', 'email': 'jimin@example.com', 'logins': ['kakao']})
+    ..reply('GET', '/me', {'name': '지민', 'phone': '01012345678', 'email': 'jimin@example.com', 'logins': ['kakao'], 'created_at': '2026-11-09T03:00:00Z'})
     ..reply('GET', '/me/points', {'balance': 1200, 'entries': const <Json>[]})
     ..reply('GET', '/payments/methods', [
       {'code': 'card', 'flow': 'billing'},
@@ -55,11 +55,11 @@ void main() {
     await app.loadAll();
     await settle(tester);
 
-    expect(find.text('지민'), findsOneWidget);
+    expect(find.text(koT.moreNameSuffix('지민')), findsOneWidget);
     expect(find.text(koT.moreGreeting(brand)), findsOneWidget);
-    final coupons = find.ancestor(of: find.text(koT.moreCoupons), matching: find.byType(InkWell)).first;
-    expect(find.descendant(of: coupons, matching: find.text('2')), findsOneWidget, reason: 'only usable coupons count');
+    expect(find.text(koT.moreCouponCount('2')), findsOneWidget, reason: 'only usable coupons count');
     expect(find.text(koT.walletPoints('1200')), findsOneWidget);
+    expect(find.byType(CircleAvatar), findsNothing, reason: 'no avatar on the More header');
     await unmount(tester);
   });
 
@@ -77,7 +77,7 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('menu rows follow the brief order and the version row shows the build version', (tester) async {
+  testWidgets('menu rows follow the design groups and the version card shows the build version', (tester) async {
     setViewport(tester, _tall);
     final env = await TestEnv.create(fake: _api());
     final app = await pumpCustomerScreen(tester, env, const MoreTab());
@@ -87,22 +87,26 @@ void main() {
     final rows = [
       koT.moreScope,
       koT.morePayments,
-      koT.moreAddresses,
+      koT.moreCoupons,
+      koT.morePoints,
       koT.moreAccount,
+      koT.moreAddresses,
       koT.moreNotices,
       koT.moreBrandTips(brand),
       koT.moreFaq,
       koT.moreContact,
+      koT.morePartner,
       koT.moreVersionInfo,
     ];
-    final tops = [for (final r in rows) tester.getTopLeft(find.widgetWithText(ListTile, r)).dy];
-    expect(tops, [...tops]..sort(), reason: 'rows are in the brief order');
-    final others = tester.getTopLeft(find.widgetWithText(ListTile, koT.moreLanguage)).dy;
-    expect(tops.last, lessThan(others), reason: 'the brief rows come before the second group');
+    // Coupons and points also label the header strip: the menu row is the last match.
+    final tops = [for (final r in rows) tester.getTopLeft(find.text(r).last).dy];
+    expect(tops, [...tops]..sort(), reason: 'rows are in the design order');
+    final others = tester.getTopLeft(find.text(koT.moreLanguage)).dy;
+    expect(tops.last, lessThan(others), reason: 'the design rows come before the extra group');
 
-    final version = find.widgetWithText(ListTile, koT.moreVersionInfo);
-    expect(find.descendant(of: version, matching: find.text('1.4.2')), findsOneWidget);
-    expect(find.text(koT.deleteAccount), findsOneWidget);
+    expect(find.text('v1.4.2'), findsOneWidget);
+    expect(find.text(koT.deleteAccount), findsNothing, reason: 'sign-out and delete live on the account page');
+    expect(find.text(koT.logout), findsNothing);
     await unmount(tester);
   });
 
@@ -111,7 +115,9 @@ void main() {
     final env = await TestEnv.create(fake: _api());
     final app = await pumpCustomerScreen(tester, env, const PaymentMethodsScreen());
     await app.loadMethods();
-    await pumpUntilFound(tester, find.text(koT.payAvailableTitle));
+    await pumpUntilFound(tester, find.byKey(const ValueKey('channel-kakaopay')));
+    expect(find.text(koT.payCardNote(BrandConfig.placeholder.name)), findsOneWidget);
+    expect(find.text(koT.addressHome), findsNothing, reason: 'no home/office tabs on payment methods');
 
     for (final (code, wordmark) in [('kakaopay', 'kakaopay'), ('naverpay', 'NAVER pay'), ('tosspay', 'toss pay')]) {
       final row = find.byKey(ValueKey('channel-$code'));
@@ -130,14 +136,19 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('account shows the linked Kakao login, phone and email', (tester) async {
+  testWidgets('account shows the joined date, the Kakao login, phone, email, sign-out and delete', (tester) async {
     setViewport(tester, phoneSize);
     final env = await TestEnv.create(fake: _api());
     final app = await pumpCustomerScreen(tester, env, const AccountScreen());
     await app.loadProfile();
     await settle(tester);
 
-    expect(find.text('${koT.accountLoginKakao} · ${koT.accountLoginPhone}'), findsOneWidget);
+    expect(find.text(koT.accountJoined('2026.11.09')), findsOneWidget);
+    expect(find.text(koT.accountLoginKakao), findsOneWidget);
+    expect(find.text(koT.accountLoginPhone), findsOneWidget);
+    expect(find.text(koT.change), findsOneWidget, reason: 'phone change link');
+    await tester.scrollUntilVisible(find.text(koT.deleteAccount), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.text(koT.logout), findsOneWidget);
     expect(find.text('01012345678'), findsOneWidget);
     expect(find.text('jimin@example.com'), findsOneWidget);
     await unmount(tester);

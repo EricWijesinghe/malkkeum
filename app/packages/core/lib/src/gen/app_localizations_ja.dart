@@ -1834,7 +1834,7 @@ class TJa extends T {
   String get bkViewMonth => '月表示';
 
   @override
-  String get chatHoursTitle => '相談受付時間';
+  String get chatHoursTitle => '相談可能時間';
 
   @override
   String get chatReplyFast => '通常10分以内に返信';
@@ -1869,6 +1869,38 @@ class TJa extends T {
 
   @override
   String get quick_reschedule => '日程を変更したい';
+
+  @override
+  String chatThreadConsult(String service) {
+    return '$serviceのご相談';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$serviceのお問い合わせ';
+  }
+
+  @override
+  String get chatYesterday => '昨日';
+
+  @override
+  String get chatDayReceived => '相談を受け付けました';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$serviceの予約リクエスト';
+  }
+
+  @override
+  String get quoteConfirmedTitle => '確定見積';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return '予約金$pct%・$amountを支払うと予約が確定します。';
+  }
+
+  @override
+  String get quotePayDeposit => '予約金を支払う';
 
   @override
   String get dfScopeDusting => '家具の上のほこり取り';
@@ -2361,7 +2393,7 @@ class TJa extends T {
   }
 
   @override
-  String get moreContact => 'お問い合わせ';
+  String get moreContact => '相談する';
 
   @override
   String get moreVersionInfo => 'バージョン情報';
@@ -2380,6 +2412,52 @@ class TJa extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name様';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n枚';
+  }
+
+  @override
+  String get couponsAvailableTitle => '使えるクーポン';
+
+  @override
+  String get couponsUsedTitle => '使用済みクーポン';
+
+  @override
+  String get couponsNote => '※ 予約1件につきクーポンは1枚まで使えます。';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ カード番号は$brandに保存されず、決済代行会社が安全に保管します。';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date 登録';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return '広さは必ず入力してください。ワンルーム清掃は$max坪以下のみ予約できます。';
+  }
+
+  @override
+  String get faqAll => 'すべて';
+
+  @override
+  String get faqCat_booking => '予約・変更';
+
+  @override
+  String get faqCat_payment => '支払い・クーポン';
+
+  @override
+  String get faqCat_move => '引越し・入居';
 
   @override
   String get themeTitle => 'テーマ';

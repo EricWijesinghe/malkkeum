@@ -877,8 +877,8 @@
  "bkStepCompleted": "서비스 완료",
  "bkViewWeek": "주간 보기",
  "bkViewMonth": "월간 보기",
- "chatHoursTitle": "상담 운영시간",
- "chatReplyFast": "보통 10분 내 답변",
+ "chatHoursTitle": "상담 가능 시간",
+ "chatReplyFast": "보통 10분 안에 답변해요",
  "quoteVisit": "방문 일정",
  "quoteKind": "유형",
  "quotePayAmount": "예약금 결제 {amount}",
@@ -908,6 +908,45 @@
  },
  "cQuoteNeedsAdmin": "예상 금액과 차이가 커서 관리자 승인이 필요해요",
  "quick_reschedule": "일정 변경할래요",
+ "chatThreadConsult": "{service} 상담",
+ "@chatThreadConsult": {
+  "placeholders": {
+   "service": {
+    "type": "String"
+   }
+  }
+ },
+ "chatThreadAsk": "{service} 문의",
+ "@chatThreadAsk": {
+  "placeholders": {
+   "service": {
+    "type": "String"
+   }
+  }
+ },
+ "chatYesterday": "어제",
+ "chatDayReceived": "상담이 접수됐어요",
+ "chatRequestTitle": "{service} 예약 요청",
+ "@chatRequestTitle": {
+  "placeholders": {
+   "service": {
+    "type": "String"
+   }
+  }
+ },
+ "quoteConfirmedTitle": "확정 견적",
+ "quoteDepositLine": "예약금 {pct}% · {amount}을 결제하면 예약이 확정돼요.",
+ "@quoteDepositLine": {
+  "placeholders": {
+   "pct": {
+    "type": "String"
+   },
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "quotePayDeposit": "예약금 결제하기",
  "dfScopeDusting": "가구 위 먼지 제거",
  "dfScopeVacuum": "청소기 및 막대걸레로 바닥 청소",
  "dfScopeDishes": "식기 설거지 및 싱크볼 세척",
@@ -1165,7 +1204,7 @@
  "welcomePackAmount": "쿠폰 금액 (원)",
  "welcomePackAdd": "쿠폰 추가",
  "welcomePackRemove": "쿠폰 삭제",
- "moreGreeting": "오늘도 집안일은 {brand}에게 맡기세요",
+ "moreGreeting": "오늘도 집안일은 {brand}에 맡기세요.",
  "@moreGreeting": {
   "placeholders": {
    "brand": {
@@ -1181,13 +1220,60 @@
    }
   }
  },
- "moreContact": "문의하기",
+ "moreContact": "상담하기",
  "moreVersionInfo": "버전 정보",
  "payAvailableTitle": "사용할 수 있는 결제수단",
  "accountLoginKakao": "카카오",
  "accountLoginNaver": "네이버",
  "accountLoginApple": "Apple",
  "accountLoginGoogle": "Google",
+ "moreNameSuffix": "{name}님",
+ "@moreNameSuffix": {
+  "placeholders": {
+   "name": {
+    "type": "String"
+   }
+  }
+ },
+ "moreCouponCount": "{n}장",
+ "@moreCouponCount": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   }
+  }
+ },
+ "couponsAvailableTitle": "사용 가능한 쿠폰",
+ "couponsUsedTitle": "사용한 쿠폰",
+ "couponsNote": "※ 예약 1건에 쿠폰 1장만 쓸 수 있어요.",
+ "payCardNote": "※ 카드 번호는 {brand}에 저장되지 않고 결제대행사가 안전하게 보관해요.",
+ "@payCardNote": {
+  "placeholders": {
+   "brand": {
+    "type": "String"
+   }
+  }
+ },
+ "accountJoined": "{date} 가입",
+ "@accountJoined": {
+  "placeholders": {
+   "date": {
+    "type": "String"
+   }
+  }
+ },
+ "addressPyeongNote": "평수는 꼭 입력해 주세요. 원룸 청소는 {max}평 이하만 예약할 수 있어요.",
+ "@addressPyeongNote": {
+  "placeholders": {
+   "max": {
+    "type": "String"
+   }
+  }
+ },
+ "faqAll": "전체",
+ "faqCat_booking": "예약·변경",
+ "faqCat_payment": "결제·쿠폰",
+ "faqCat_move": "이사·입주",
  "themeTitle": "테마",
  "themeDark": "다크",
  "themeLight": "라이트",

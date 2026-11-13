@@ -3604,13 +3604,13 @@ abstract class T {
   /// No description provided for @chatHoursTitle.
   ///
   /// In ko, this message translates to:
-  /// **'상담 운영시간'**
+  /// **'상담 가능 시간'**
   String get chatHoursTitle;
 
   /// No description provided for @chatReplyFast.
   ///
   /// In ko, this message translates to:
-  /// **'보통 10분 내 답변'**
+  /// **'보통 10분 안에 답변해요'**
   String get chatReplyFast;
 
   /// No description provided for @quoteVisit.
@@ -3666,6 +3666,54 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'일정 변경할래요'**
   String get quick_reschedule;
+
+  /// No description provided for @chatThreadConsult.
+  ///
+  /// In ko, this message translates to:
+  /// **'{service} 상담'**
+  String chatThreadConsult(String service);
+
+  /// No description provided for @chatThreadAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'{service} 문의'**
+  String chatThreadAsk(String service);
+
+  /// No description provided for @chatYesterday.
+  ///
+  /// In ko, this message translates to:
+  /// **'어제'**
+  String get chatYesterday;
+
+  /// No description provided for @chatDayReceived.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담이 접수됐어요'**
+  String get chatDayReceived;
+
+  /// No description provided for @chatRequestTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'{service} 예약 요청'**
+  String chatRequestTitle(String service);
+
+  /// No description provided for @quoteConfirmedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'확정 견적'**
+  String get quoteConfirmedTitle;
+
+  /// No description provided for @quoteDepositLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금 {pct}% · {amount}을 결제하면 예약이 확정돼요.'**
+  String quoteDepositLine(String pct, String amount);
+
+  /// No description provided for @quotePayDeposit.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약금 결제하기'**
+  String get quotePayDeposit;
 
   /// No description provided for @dfScopeDusting.
   ///
@@ -4570,7 +4618,7 @@ abstract class T {
   /// No description provided for @moreGreeting.
   ///
   /// In ko, this message translates to:
-  /// **'오늘도 집안일은 {brand}에게 맡기세요'**
+  /// **'오늘도 집안일은 {brand}에 맡기세요.'**
   String moreGreeting(String brand);
 
   /// No description provided for @moreBrandTips.
@@ -4582,7 +4630,7 @@ abstract class T {
   /// No description provided for @moreContact.
   ///
   /// In ko, this message translates to:
-  /// **'문의하기'**
+  /// **'상담하기'**
   String get moreContact;
 
   /// No description provided for @moreVersionInfo.
@@ -4620,6 +4668,78 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'Google'**
   String get accountLoginGoogle;
+
+  /// No description provided for @moreNameSuffix.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님'**
+  String moreNameSuffix(String name);
+
+  /// No description provided for @moreCouponCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}장'**
+  String moreCouponCount(String n);
+
+  /// No description provided for @couponsAvailableTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 쿠폰'**
+  String get couponsAvailableTitle;
+
+  /// No description provided for @couponsUsedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용한 쿠폰'**
+  String get couponsUsedTitle;
+
+  /// No description provided for @couponsNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ 예약 1건에 쿠폰 1장만 쓸 수 있어요.'**
+  String get couponsNote;
+
+  /// No description provided for @payCardNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'※ 카드 번호는 {brand}에 저장되지 않고 결제대행사가 안전하게 보관해요.'**
+  String payCardNote(String brand);
+
+  /// No description provided for @accountJoined.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date} 가입'**
+  String accountJoined(String date);
+
+  /// No description provided for @addressPyeongNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'평수는 꼭 입력해 주세요. 원룸 청소는 {max}평 이하만 예약할 수 있어요.'**
+  String addressPyeongNote(String max);
+
+  /// No description provided for @faqAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get faqAll;
+
+  /// No description provided for @faqCat_booking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약·변경'**
+  String get faqCat_booking;
+
+  /// No description provided for @faqCat_payment.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제·쿠폰'**
+  String get faqCat_payment;
+
+  /// No description provided for @faqCat_move.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사·입주'**
+  String get faqCat_move;
 
   /// No description provided for @themeTitle.
   ///

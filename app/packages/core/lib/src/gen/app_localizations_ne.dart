@@ -1914,6 +1914,38 @@ class TNe extends T {
   String get quick_reschedule => 'समय परिवर्तन गर्न चाहन्छु';
 
   @override
+  String chatThreadConsult(String service) {
+    return '$service परामर्श';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service सम्बन्धी प्रश्न';
+  }
+
+  @override
+  String get chatYesterday => 'हिजो';
+
+  @override
+  String get chatDayReceived => 'अनुरोध प्राप्त भयो';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service बुकिङ अनुरोध';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'अन्तिम उद्धरण';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'बुकिङ पक्का गर्न $pct% अग्रिम ($amount) तिर्नुहोस्।';
+  }
+
+  @override
+  String get quotePayDeposit => 'अग्रिम तिर्नुहोस्';
+
+  @override
   String get dfScopeDusting => 'फर्निचरमाथिको धुलो सफा';
 
   @override
@@ -2408,7 +2440,7 @@ class TNe extends T {
   }
 
   @override
-  String get moreContact => 'सम्पर्क गर्नुहोस्';
+  String get moreContact => 'परामर्श लिनुहोस्';
 
   @override
   String get moreVersionInfo => 'संस्करण जानकारी';
@@ -2427,6 +2459,52 @@ class TNe extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'प्रयोग गर्न मिल्ने कुपन';
+
+  @override
+  String get couponsUsedTitle => 'प्रयोग गरिएका कुपन';
+
+  @override
+  String get couponsNote => '※ एउटा बुकिङमा एउटा कुपन मात्र।';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ कार्ड नम्बर $brand मा सुरक्षित गरिँदैन; भुक्तानी सेवा प्रदायकले सुरक्षित राख्छ।';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date मा सामेल';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'आकार अनिवार्य छ। स्टुडियो सफाई $max प्योङसम्मका घरका लागि मात्र।';
+  }
+
+  @override
+  String get faqAll => 'सबै';
+
+  @override
+  String get faqCat_booking => 'बुकिङ र परिवर्तन';
+
+  @override
+  String get faqCat_payment => 'भुक्तानी र कुपन';
+
+  @override
+  String get faqCat_move => 'सर्ने र बस्ने';
 
   @override
   String get themeTitle => 'थिम';
