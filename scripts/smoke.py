@@ -55,13 +55,38 @@ def login(audience):
     return call("POST", "/v1/auth/verify", {"phone": p, "code": code, "audience": audience})["access_token"]
 
 
+def add_card(token, auth_key, name):
+    # Cards need an open billing-issue ticket; /v1/me/payment-methods/setup only opens one when PortOne is configured.
+    me = call("GET", "/v1/me", token=token)
+    if auth_key == "fake_decline":  # the dev decline key is one live billing key DB-wide: free it so reruns work
+        sql("UPDATE payment_methods SET deleted_at = now() WHERE billing_key = 'fake_decline' AND deleted_at IS NULL")
+    sql(f"INSERT INTO billing_issues (id, user_id, expires_at) VALUES (gen_random_uuid(), '{me['id']}', now() + interval '30 minutes')")
+    return call("POST", "/v1/me/payment-methods", {"provider": "card", "auth_key": auth_key, "display_name": name}, token)
+
+
+def upload_photo(token):
+    # Completion photos must be uploads the pro's team owns (routes/partner_jobs.rs complete).
+    body = (b'--e2e\r\nContent-Disposition: form-data; name="file"; filename="p.jpg"\r\nContent-Type: image/jpeg\r\n\r\n'
+            + b"\xff\xd8\xff\xe0smoke\r\n--e2e--\r\n")
+    req = urllib.request.Request(BASE + "/v1/uploads", data=body, method="POST")
+    req.add_header("Content-Type", "multipart/form-data; boundary=e2e")
+    req.add_header("Authorization", f"Bearer {token}")
+    with urllib.request.urlopen(req) as r:
+        return json.loads(r.read())["url"]
+
+
 def step(name):
     print(f"  ok  {name}")
 
 
 def main():
     # A fresh date per run so repeated runs never fill the same slots.
-    visit = (date.today() + timedelta(days=random.randint(5, 55))).isoformat()
+    # Weekday, not a fixed-date public holiday: quote estimates carry a peak surcharge on those (domain::peak).
+    # shortcut: lunar holidays (Seollal, Chuseok) are not skipped; a run landing on one fails the estimate check.
+    visit = date.today() + timedelta(days=random.randint(5, 55))
+    while visit.weekday() >= 5 or (visit.month, visit.day) in {(1, 1), (3, 1), (5, 5), (6, 6), (8, 15), (10, 3), (10, 9), (12, 25)}:
+        visit += timedelta(days=1)
+    visit = visit.isoformat()
     staff = call("POST", "/v1/auth/staff/login", {"email": ADMIN[0], "password": ADMIN[1]})["access_token"]
     call("POST", "/v1/auth/staff/login", {"email": ADMIN[0], "password": "wrong"}, expect=401)
     step("staff login, wrong password rejected")
@@ -70,14 +95,15 @@ def main():
     call("PATCH", "/v1/me", {"name": "김지은", "locale": "ko"}, cust)
     call("PATCH", "/v1/me", {"name": "김지은"}, cust)
     coupons = call("GET", "/v1/me/coupons", token=cust)
-    assert len(coupons) == 2, coupons
+    assert len(coupons) == 1, coupons  # default welcome_pack: one coupon for any service (console-editable)
     any_coupon = next(c for c in coupons if c["service_code"] is None)
+    off = any_coupon["amount"]
     step("sign-up issues welcome pack exactly once")
 
     big = call("POST", "/v1/me/addresses", {"kind": "home", "label": "우리집", "road_address": "서울 강남구 테헤란로 1", "detail": "101동", "district_code": DISTRICT, "size_pyeong": 24}, cust)
     small = call("POST", "/v1/me/addresses", {"kind": "home", "label": "원룸", "road_address": "서울 강남구 역삼로 2", "detail": "3층", "district_code": DISTRICT, "size_pyeong": 9}, cust)
-    card = call("POST", "/v1/me/payment-methods", {"provider": "card", "auth_key": "ok", "display_name": "신한 •• 12"}, cust)
-    bad_card = call("POST", "/v1/me/payment-methods", {"provider": "card", "auth_key": "fake_decline", "display_name": "거절카드"}, cust)
+    card = add_card(cust, "ok", "신한 •• 12")
+    bad_card = add_card(cust, "fake_decline", "거절카드")
 
     err = call("POST", "/v1/bookings", {"service_code": "studio", "address_id": big["id"], "visit_date": visit, "start_hour": 9, "payment_method_id": card["id"]}, cust, expect=422)
     assert err["error"]["code"] == "studio_too_large"
@@ -88,10 +114,10 @@ def main():
     step("declined card creates no booking")
 
     b = call("POST", "/v1/bookings", {"service_code": "bathroom", "unit_index": 1, "address_id": big["id"], "visit_date": visit, "start_hour": 9, "coupon_id": any_coupon["id"], "payment_method_id": card["id"]}, cust)
-    assert (b["status"], b["list_price"], b["discount"], b["paid_amount"]) == (1, 52000, 5000, 47000), b
+    assert (b["status"], b["list_price"], b["discount"], b["paid_amount"]) == (1, 52000, off, 52000 - off), b
     err = call("POST", "/v1/bookings", {"service_code": "kitchen", "address_id": big["id"], "visit_date": visit, "start_hour": 14, "coupon_id": any_coupon["id"], "payment_method_id": card["id"]}, cust, expect=409)
     assert err["error"]["code"] == "coupon_used"
-    step("bathroom x2 = 52,000 - 5,000 coupon = 47,000 paid; coupon single-use")
+    step(f"bathroom x2 = 52,000 - {off:,} coupon = {52000 - off:,} paid; coupon single-use")
 
     pros = [login("partner") for _ in range(2)]
     pro_list = call("GET", "/v1/admin/pros", token=staff)
@@ -113,7 +139,7 @@ def main():
     assert call("GET", f"/v1/bookings/{b['id']}", token=cust)["status"] == 2
     step("first pro wins, second gets already_taken; address + masked name revealed; customer sees team assigned")
 
-    photo = f"{BASE}/files/{'ab' * 16}.jpg"
+    photo = upload_photo(pros[0])
     call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [], "after_photos": [photo], "checklist": [True] * 4}, pros[0], expect=400)
     early = call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0], expect=409)
     assert early["error"]["code"] == "job_not_started"
@@ -148,7 +174,7 @@ def main():
     step("chat unread counts and read receipts")
 
     c = call("POST", "/v1/bookings", {"service_code": "kitchen", "address_id": big["id"], "visit_date": visit, "start_hour": 14, "payment_method_id": card["id"]}, cust)
-    cancelled = call("POST", f"/v1/bookings/{c['id']}/cancel", token=cust)
+    cancelled = call("POST", f"/v1/bookings/{c['id']}/cancel", {}, cust)
     assert cancelled["status"] == -1
     detail = call("GET", f"/v1/admin/bookings/{c['id']}", token=staff)
     assert detail["payments"][0]["status"] == "refunded", detail["payments"]

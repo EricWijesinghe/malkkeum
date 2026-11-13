@@ -83,7 +83,7 @@ csp_tight() { # CSP on the site: PortOne-only connect-src, no unsafe-eval, nothi
   local csp; csp="$(curl_d -D - -o /dev/null "https://$DOMAIN/" | grep -i '^content-security-policy:')"
   echo "$csp" | grep -q "connect-src 'self' https://\*\.portone\.io" \
     && echo "$csp" | grep -q "frame-ancestors 'none'" \
-    && ! echo "$csp" | grep -qi 'unsafe-eval'
+    && ! echo "$csp" | grep -qi "'unsafe-eval'" # 'wasm-unsafe-eval' (Flutter --wasm) is fine
 }
 needs_owner() { get /v1/setup | grep -q '"needs_admin":true'; }
 owner_is_set_up() { get /v1/setup | grep -q '"needs_admin":false'; }
