@@ -577,6 +577,12 @@ class TKo extends T {
   String get cBodyField => '본문';
 
   @override
+  String get cCardLabel => '배너 카드 문구';
+
+  @override
+  String get cCardValue => '배너 카드 강조 값';
+
+  @override
   String get cSlug => '식별자 (약관: privacy / terms)';
 
   @override

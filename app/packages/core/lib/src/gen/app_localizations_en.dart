@@ -590,6 +590,12 @@ class TEn extends T {
   String get cBodyField => 'Body';
 
   @override
+  String get cCardLabel => 'Banner card label';
+
+  @override
+  String get cCardValue => 'Banner card value';
+
+  @override
   String get cSlug => 'Slug (legal: privacy / terms)';
 
   @override

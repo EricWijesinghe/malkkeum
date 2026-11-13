@@ -1213,6 +1213,18 @@ abstract class T {
   /// **'본문'**
   String get cBodyField;
 
+  /// No description provided for @cCardLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'배너 카드 문구'**
+  String get cCardLabel;
+
+  /// No description provided for @cCardValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'배너 카드 강조 값'**
+  String get cCardValue;
+
   /// No description provided for @cSlug.
   ///
   /// In ko, this message translates to:

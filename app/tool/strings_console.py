@@ -104,6 +104,8 @@ S = {
   "cNewContent": ["새 콘텐츠", "New content"],
   "cTitleField": ["제목", "Title"],
   "cBodyField": ["본문", "Body"],
+  "cCardLabel": ["배너 카드 문구", "Banner card label"],
+  "cCardValue": ["배너 카드 강조 값", "Banner card value"],
   "cSlug": ["식별자 (약관: privacy / terms)", "Slug (legal: privacy / terms)"],
   "cVerify": ["승인", "Approve"],
   "cSuspend": ["중지", "Suspend"],

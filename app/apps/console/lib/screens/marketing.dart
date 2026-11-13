@@ -183,6 +183,24 @@ class _CouponsState extends State<_Coupons> {
   }
 }
 
+/// The banner card from the form, keeping archived languages; null once every field is cleared.
+Json? _cardBody(
+  Json? old,
+  Map<String, TextEditingController> labels,
+  Map<String, TextEditingController> values,
+) {
+  Json part(String key, Map<String, TextEditingController> fields) => {
+    ..._archived(old?[key]),
+    for (final e in fields.entries)
+      if (e.value.text.trim().isNotEmpty) e.key: e.value.text.trim(),
+  };
+  final label = part('label', labels);
+  final value = part('value', values);
+  return label.isEmpty && value.isEmpty
+      ? null
+      : {'label': label, 'value': value};
+}
+
 class _Content extends StatefulWidget {
   const _Content();
   @override
@@ -213,6 +231,13 @@ class _ContentState extends State<_Content> {
               '',
         ),
     };
+    // Banner art card ("웰컴 혜택" over "15,000원"), read by the customer home hero.
+    final card = (item?['body'] as Json?)?['card'] as Json?;
+    TextEditingController cardField(String part, String l) => TextEditingController(
+      text: ((card?[part] as Json?)?[l] as String?) ?? '',
+    );
+    final cardLabels = {for (final l in _langs) l: cardField('label', l)};
+    final cardValues = {for (final l in _langs) l: cardField('value', l)};
     final save = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
@@ -284,6 +309,32 @@ class _ContentState extends State<_Content> {
                         isDense: true,
                       ),
                     ),
+                    if (kind == 'banner') ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: cardLabels[l],
+                              decoration: InputDecoration(
+                                labelText: '${t.cCardLabel} ($l)',
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: Space.sm),
+                          Expanded(
+                            child: TextField(
+                              controller: cardValues[l],
+                              decoration: InputDecoration(
+                                labelText: '${t.cCardValue} ($l)',
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ],
               ),
@@ -312,12 +363,15 @@ class _ContentState extends State<_Content> {
             if (titles[l]!.text.isNotEmpty) l: titles[l]!.text,
         },
         'body': {
+          // Keys this form does not edit (theme, service, ...) stay as they were.
+          ...?(item?['body'] as Json?),
           'text': {
             ..._archived((item?['body'] as Json?)?['text']),
             for (final l in _langs)
               if (bodies[l]!.text.isNotEmpty) l: bodies[l]!.text,
           },
-        },
+          'card': kind == 'banner' ? _cardBody(card, cardLabels, cardValues) : null,
+        }..removeWhere((k, v) => k == 'card' && v == null),
         'image_url': item?['image_url'],
         'link': link.text.trim().isEmpty ? null : link.text.trim(),
         'sort_order': item?['sort_order'] ?? 0,
@@ -337,7 +391,14 @@ class _ContentState extends State<_Content> {
         if (mounted) showToast(context, t.error(e));
       }
     }
-    disposeAfterClose([slug, link, ...titles.values, ...bodies.values]);
+    disposeAfterClose([
+      slug,
+      link,
+      ...titles.values,
+      ...bodies.values,
+      ...cardLabels.values,
+      ...cardValues.values,
+    ]);
   }
 
   @override

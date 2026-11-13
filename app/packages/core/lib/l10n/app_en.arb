@@ -186,6 +186,8 @@
  "cNewContent": "New content",
  "cTitleField": "Title",
  "cBodyField": "Body",
+ "cCardLabel": "Banner card label",
+ "cCardValue": "Banner card value",
  "cSlug": "Slug (legal: privacy / terms)",
  "cVerify": "Approve",
  "cSuspend": "Suspend",

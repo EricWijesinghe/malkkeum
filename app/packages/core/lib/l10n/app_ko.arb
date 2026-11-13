@@ -224,6 +224,8 @@
  "cNewContent": "새 콘텐츠",
  "cTitleField": "제목",
  "cBodyField": "본문",
+ "cCardLabel": "배너 카드 문구",
+ "cCardValue": "배너 카드 강조 값",
  "cSlug": "식별자 (약관: privacy / terms)",
  "cVerify": "승인",
  "cSuspend": "중지",
