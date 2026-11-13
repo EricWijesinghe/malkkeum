@@ -87,10 +87,16 @@ workflows:
     environment:
       <<: *env
       ios_signing: { distribution_type: app_store, bundle_identifier: com.malkkeum.customer }
+      vars:
+        # geolocator_apple would request Always location (needs NSLocationAlwaysAndWhenInUseUsageDescription, ITMS-90683).
+        # The app only needs While Using. Read by the plugin's Package.swift (SwiftPM builds, no Podfile).
+        BYPASS_PERMISSION_LOCATION_ALWAYS: "1"
     scripts:
       - *prepare
       - name: Signing profiles
-        script: xcode-project use-profiles
+        # Only this app's project: the repo holds three Runner.xcodeproj, and the default glob would try all of them.
+        working_directory: app/apps/customer
+        script: xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Build ipa
         working_directory: app/apps/customer
         script: |
@@ -98,6 +104,8 @@ workflows:
           ../../../scripts/ci/native-keys.sh customer
           build_number=$(python3 -I ../../../scripts/ci/build-number.py)
           flutter build ipa --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+          # The signed .ipa: placeholders expanded, profile has push / Sign in with Apple / associated domains, privacy manifest bundled.
+          python3 -I ../../../scripts/ci/check-native.py --ipa "$(ls build/ios/ipa/*.ipa | head -1)"
     artifacts:
       - app/apps/customer/build/ios/ipa/*.ipa
       - app/apps/customer/build/ios/archive/**/*.dSYM
@@ -144,7 +152,9 @@ workflows:
     scripts:
       - *prepare
       - name: Signing profiles
-        script: xcode-project use-profiles
+        # Only this app's project: the repo holds three Runner.xcodeproj, and the default glob would try all of them.
+        working_directory: app/apps/partner
+        script: xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Build ipa
         working_directory: app/apps/partner
         script: |
@@ -152,6 +162,8 @@ workflows:
           ../../../scripts/ci/native-keys.sh partner
           build_number=$(python3 -I ../../../scripts/ci/build-number.py)
           flutter build ipa --release --build-number=$build_number ${FCI_TAG:+--build-name=${FCI_TAG#v}} --obfuscate --split-debug-info=build/symbols --dart-define-from-file=keys.json --export-options-plist=/Users/builder/export_options.plist
+          # The signed .ipa: placeholders expanded, profile has push / Sign in with Apple / associated domains, privacy manifest bundled.
+          python3 -I ../../../scripts/ci/check-native.py --ipa "$(ls build/ios/ipa/*.ipa | head -1)"
     artifacts:
       - app/apps/partner/build/ios/ipa/*.ipa
       - app/apps/partner/build/ios/archive/**/*.dSYM

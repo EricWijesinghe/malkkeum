@@ -2,6 +2,7 @@
 
   python -I scripts/ci/check-native.py     # exit 1 on any failed check
   python -I scripts/ci/check-native.py --aab <app.aab|app.apk> --manifest <merged AndroidManifest.xml>
+  python -I scripts/ci/check-native.py --ipa <Runner.ipa>      # after flutter build ipa (Codemagic)
 
 Console ships only as web (website image), so it has no native store build to check.
 """
@@ -123,6 +124,14 @@ def check_info_plist(app, ios):
     queries = set(info.get("LSApplicationQueriesSchemes", []))
     for want in ["kakaokompassauth", "kakaolink", "kakaoplus", "naversearchapp", "naversearchthirdlogin"]:
         check(want in queries, f"{app} Info.plist: LSApplicationQueriesSchemes lacks {want}")
+    for want in PAY_SCHEMES:
+        check(want in queries, f"{app} Info.plist: LSApplicationQueriesSchemes lacks card/wallet app scheme {want} (PortOne WebView)")
+    check(len(info.get("LSApplicationQueriesSchemes", [])) <= 50, f"{app} Info.plist: iOS honours at most 50 LSApplicationQueriesSchemes")
+    for key in ["CFBundleDisplayName", "CFBundleName"]:
+        value = str(info.get(key, "")).strip()
+        check(value != "" and value != app, f"{app} Info.plist: {key} must be the store name, not the folder name")
+    check(not any(k.startswith("NSLocationAlways") for k in info),
+          f"{app} Info.plist: no Always-location text; geolocator_apple is built with BYPASS_PERMISSION_LOCATION_ALWAYS=1")
     check(info.get("GIDClientID") == "$(GOOGLE_IOS_CLIENT_ID)", f"{app} Info.plist: GIDClientID")
     check("remote-notification" in info.get("UIBackgroundModes", []), f"{app} Info.plist: UIBackgroundModes lacks remote-notification")
     check(info.get("ITSAppUsesNonExemptEncryption") is False, f"{app} Info.plist: ITSAppUsesNonExemptEncryption must be false")
@@ -170,6 +179,9 @@ def check_entitlements_and_privacy(app, ios):
           f"{app} Runner.entitlements: Sign in with Apple entitlement missing")
     check("applinks:$(APP_LINK_HOST)" in ent.get("com.apple.developer.associated-domains", []),
           f"{app} Runner.entitlements: associated-domains applinks:$(APP_LINK_HOST) missing (Naver Universal Link)")
+    # ASWebAuthenticationSession.Callback.https (iOS 17.4+) is verified through the webcredentials service, not applinks.
+    check("webcredentials:$(APP_LINK_HOST)" in ent.get("com.apple.developer.associated-domains", []),
+          f"{app} Runner.entitlements: associated-domains webcredentials:$(APP_LINK_HOST) missing (Naver https callback)")
     priv = plist(ios / "Runner" / "PrivacyInfo.xcprivacy")
     check(priv.get("NSPrivacyTracking") is False, f"{app} PrivacyInfo: NSPrivacyTracking must be false")
     apis = {a.get("NSPrivacyAccessedAPIType"): a.get("NSPrivacyAccessedAPITypeReasons", [])
@@ -191,6 +203,14 @@ def check_pbxproj(app, ios):
         check(s.get("CODE_SIGN_ENTITLEMENTS") == "Runner/Runner.entitlements",
               f"{app} pbxproj: {c['name']} lacks CODE_SIGN_ENTITLEMENTS")
         check(s.get("INFOPLIST_FILE") == "Runner/Info.plist", f"{app} pbxproj: {c['name']} INFOPLIST_FILE")
+    for c in configs:
+        check(c["buildSettings"].get("PRODUCT_BUNDLE_IDENTIFIER") == f"com.malkkeum.{app}",
+              f"{app} pbxproj: {c['name']} PRODUCT_BUNDLE_IDENTIFIER must be com.malkkeum.{app}")
+    # firebase_core/messaging 5/17, google_sign_in_ios and image_picker_ios need iOS 15; SwiftPM plugins follow this value.
+    targets = [o["buildSettings"]["IPHONEOS_DEPLOYMENT_TARGET"] for o in objs.values()
+               if o.get("isa") == "XCBuildConfiguration" and "IPHONEOS_DEPLOYMENT_TARGET" in o.get("buildSettings", {})]
+    check(bool(targets) and all(float(v) >= IOS_MIN for v in targets),
+          f"{app} pbxproj: IPHONEOS_DEPLOYMENT_TARGET must be >= {IOS_MIN} in every configuration, found {sorted(set(targets))}")
     # Project-level settings are inherited by the target: every value that is set must be iPhone-only.
     families = {o["buildSettings"]["TARGETED_DEVICE_FAMILY"] for o in objs.values()
                 if o.get("isa") == "XCBuildConfiguration" and "TARGETED_DEVICE_FAMILY" in o.get("buildSettings", {})}
@@ -277,6 +297,13 @@ def check_android_platform(app, android, root, gradle):
 
 # --- Store submission rules: localized permission text, icons, collected data, Play extras ---
 
+IOS_MIN = 15.0
+# Card, wallet and identity apps the PortOne page hands to the OS (portone_webview.dart). iOS only needs these for
+# canOpenURL; PortOne's iOS guide lists them, so a later canLaunchUrl check does not silently fail.
+PAY_SCHEMES = ["ispmobile", "kftc-bankpay", "kakaotalk", "supertoss", "payco", "shinhan-sr-ansimclick", "smhyundaiansimclick",
+               "hdcardappcardansimclick", "lottesmartpay", "lotteappcard", "mpocket.online.ios", "kb-acp", "nhappcardansimclick",
+               "nonghyupcardansimclick", "hanawalletmembers", "cloudpay", "newsmartpib", "citimobileapp",
+               "tauthlink", "ktauthexternalcall", "upluscorporation"]
 IOS_LANGS = ["en", "ko", "ja", "zh-Hans", "vi", "fil", "id", "km", "mn", "ne", "ru", "si", "th", "uz"]
 USAGE_KEYS = ["NSCameraUsageDescription", "NSPhotoLibraryUsageDescription"]
 BANNED_PERMS = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO",
@@ -457,6 +484,7 @@ def check_web():
     for want in ["/.well-known/assetlinks.json", "/.well-known/apple-app-site-association"]:
         check(want in api_paths, f"deploy/Caddyfile: {want} must be proxied to the API")
     api = (REPO / "backend" / "crates" / "api" / "src" / "app_links.rs").read_text(encoding="utf-8")
+    check('"webcredentials"' in api, "backend app_links.rs: AASA needs a webcredentials section (ASWebAuthenticationSession https callback)")
     check('"/.well-known/assetlinks.json"' in api and '"/.well-known/apple-app-site-association"' in api,
           "backend app_links.rs: both well-known routes must exist")
     # Web builds self-host CanvasKit/skwasm, so the site CSP can stay free of Google hosts.
@@ -475,10 +503,29 @@ def check_web():
           "deploy/docker-compose.yml: API needs ANDROID_CERT_SHA256 and APPLE_TEAM_ID")
 
 
+def check_codemagic_ios(cm):
+    """Each iOS workflow signs and builds only its own app (the repo holds three Runner.xcodeproj)."""
+    check(re.search(r"^\s+xcode: \d+\.\d+", cm, re.M) is not None, "codemagic.yaml: pin an Xcode version")
+    for app in NATIVE_APPS:
+        m = re.search(rf"^  {app}-ios:\n(.*?)(?=^  [\w-]+:\s*$|\Z)", cm, re.S | re.M)
+        check(m is not None, f"codemagic.yaml: {app}-ios workflow missing")
+        wf = m.group(1) if m else ""
+        check(f"bundle_identifier: com.malkkeum.{app}" in wf, f"codemagic.yaml {app}-ios: ios_signing bundle_identifier")
+        check("app_store_connect: malkkeum_asc" in wf, f"codemagic.yaml {app}-ios: App Store Connect integration malkkeum_asc")
+        check(f"working_directory: app/apps/{app}\n        script: xcode-project use-profiles --project ios/Runner.xcodeproj" in wf,
+              f"codemagic.yaml {app}-ios: use-profiles must target ios/Runner.xcodeproj of this app")
+        check("--export-options-plist=/Users/builder/export_options.plist" in wf, f"codemagic.yaml {app}-ios: export options plist")
+        check("check-native.py --ipa" in wf.split("flutter build ipa")[-1], f"codemagic.yaml {app}-ios: check the built ipa")
+        check(("BYPASS_PERMISSION_LOCATION_ALWAYS" in wf) == (app in LOCATION_APPS),
+              f"codemagic.yaml {app}-ios: BYPASS_PERMISSION_LOCATION_ALWAYS belongs to the geolocator app only")
+        check("submit_to_app_store: false" in wf, f"codemagic.yaml {app}-ios: nothing goes to App Review automatically")
+
+
 def check_ci():
     cm = (REPO / "codemagic.yaml").read_text(encoding="utf-8")
     first_build = cm.find("flutter build")
     check(0 <= cm.find("check-native.py") < first_build, "codemagic.yaml: check-native.py must run before flutter build")
+    check_codemagic_ios(cm)
     ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     m = re.search(r"^  native:\n(.*?)(?=^  [\w-]+:\s*$|\Z)", ci, re.S | re.M)
     check(m is not None, "ci.yml: native job missing")
@@ -486,6 +533,37 @@ def check_ci():
     check("check-native.py" in job, "ci.yml: native job must run check-native.py")
     uses = re.findall(r"uses:\s*(\S+)", job)
     check(bool(uses) and all(re.search(r"@[0-9a-f]{40}$", u) for u in uses), "ci.yml: native job actions must be SHA-pinned")
+
+
+def check_ipa(path):
+    """The built .ipa: placeholders expanded, signing profile carries the capabilities, privacy manifest bundled."""
+    with zipfile.ZipFile(path) as z:
+        names = z.namelist()
+        app = next((n for n in names if re.fullmatch(r"Payload/[^/]+\.app/Info\.plist", n)), None)
+        check(app is not None, f"{path}: no Payload/*.app/Info.plist")
+        if app is None:
+            return
+        root = app[: -len("Info.plist")]
+        info = plistlib.loads(z.read(app))
+        bid = info.get("CFBundleIdentifier", "")
+        check(bid in {f"com.malkkeum.{a}" for a in NATIVE_APPS}, f"{path}: CFBundleIdentifier {bid!r}")
+        check(float(str(info.get("MinimumOSVersion", "0")).split(".")[0]) >= IOS_MIN, f"{path}: MinimumOSVersion below {IOS_MIN}")
+        check(re.fullmatch(r"\d+", str(info.get("CFBundleVersion", ""))) is not None, f"{path}: CFBundleVersion must be the rising integer build number")
+        check(re.fullmatch(r"\d+\.\d+\.\d+", str(info.get("CFBundleShortVersionString", ""))) is not None, f"{path}: CFBundleShortVersionString must look like 1.2.3")
+        check("$(" not in repr(info), f"{path}: Info.plist still holds an unexpanded $(VARIABLE)")
+        check(not any(k.startswith("NSLocationAlways") for k in info), f"{path}: Always-location text present")
+        check(root + "PrivacyInfo.xcprivacy" in names, f"{path}: PrivacyInfo.xcprivacy not bundled")
+        prof = root + "embedded.mobileprovision"
+        check(prof in names, f"{path}: embedded.mobileprovision missing (unsigned build?)")
+        if prof in names:
+            raw = z.read(prof)  # CMS-wrapped; the XML plist sits inside in the clear
+            ent = plistlib.loads(raw[raw.index(b"<?xml"): raw.index(b"</plist>") + 8]).get("Entitlements", {})
+            check(ent.get("aps-environment") == "production", f"{path}: profile lacks push (aps-environment=production): enable Push Notifications on the App ID")
+            check("Default" in ent.get("com.apple.developer.applesignin", []), f"{path}: profile lacks Sign in with Apple: enable it on the App ID")
+            check(bool(ent.get("com.apple.developer.associated-domains")), f"{path}: profile lacks Associated Domains: enable it on the App ID")
+            check(ent.get("get-task-allow") is False, f"{path}: profile is a development profile (get-task-allow)")
+        if root + "GoogleService-Info.plist" not in names:
+            print(f"NOTE {path}: no GoogleService-Info.plist, so this build has push off")
 
 
 def main():
@@ -515,6 +593,11 @@ def main():
             try:
                 check_aab(sys.argv[i + 1])
             except (OSError, zipfile.BadZipFile) as e:
+                failures_before.append(f"{sys.argv[i + 1]}: {type(e).__name__}: {e}")
+        if arg == "--ipa" and i + 1 < len(sys.argv):
+            try:
+                check_ipa(sys.argv[i + 1])
+            except (OSError, ValueError, KeyError, zipfile.BadZipFile, plistlib.InvalidFileException) as e:
                 failures_before.append(f"{sys.argv[i + 1]}: {type(e).__name__}: {e}")
         if arg == "--manifest" and i + 1 < len(sys.argv):
             try:

@@ -8,10 +8,12 @@
 	<array>
 		<string>Default</string>
 	</array>
-	<!-- Naver login callback (https://DOMAIN/auth/naver/callback). APP_LINK_HOST comes from Keys.xcconfig (APP_LINK_DOMAIN). -->
+	<!-- Naver login callback (https://DOMAIN/auth/naver/callback). APP_LINK_HOST comes from Keys.xcconfig (APP_LINK_DOMAIN).
+	     iOS 17.4+ ASWebAuthenticationSession verifies an https callback through webcredentials; applinks opens the same URL as a Universal Link. -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:$(APP_LINK_HOST)</string>
+		<string>webcredentials:$(APP_LINK_HOST)</string>
 	</array>
 </dict>
 </plist>

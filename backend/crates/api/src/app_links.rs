@@ -55,10 +55,13 @@ pub fn assetlinks_document(certs: &[String]) -> Value {
 /// Apple App Site Association: https://developer.apple.com/documentation/bundleresources/applinks
 pub fn aasa_document(team: &str) -> Value {
     let app_ids: Vec<String> = APP_IDS.iter().map(|id| format!("{team}.{id}")).collect();
+    // webcredentials: ASWebAuthenticationSession (iOS 17.4+) only accepts an https callback for a domain the app
+    // is associated with through this service, applinks alone is not enough.
     json!({
         "applinks": {
             "details": [{ "appIDs": app_ids, "components": [{ "/": NAVER_CALLBACK_PATH, "comment": "Naver login" }] }]
-        }
+        },
+        "webcredentials": { "apps": app_ids }
     })
 }
 
@@ -84,5 +87,6 @@ mod tests {
         let detail = &doc["applinks"]["details"][0];
         assert_eq!(detail["appIDs"], json!(["ABCDE12345.com.malkkeum.customer", "ABCDE12345.com.malkkeum.partner"]));
         assert_eq!(detail["components"][0]["/"], NAVER_CALLBACK_PATH);
+        assert_eq!(doc["webcredentials"]["apps"], detail["appIDs"]);
     }
 }

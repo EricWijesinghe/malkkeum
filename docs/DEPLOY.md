@@ -91,8 +91,8 @@ and the Firebase files. All optional except `API_BASE`; a missing key hides that
 
 **Naver App Link (M3).** Naver returns the login code to `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
 Android verifies an `android:autoVerify` intent filter (`https`, host, path) against
-`/.well-known/assetlinks.json`; iOS 17.4+ uses ASWebAuthenticationSession with the `applinks:` entitlement
-against `/.well-known/apple-app-site-association`. Only the app can take that URL. Setup:
+`/.well-known/assetlinks.json`; iOS 17.4+ uses ASWebAuthenticationSession with the `webcredentials:` (and `applinks:`) entitlement
+against `/.well-known/apple-app-site-association` (both sections are served). iOS steps: `docs/store/ios-release.md`. Only the app can take that URL. Setup:
 1. Server `.env` (the API serves both files from these; empty = 404, so the link does not verify):
    `ANDROID_CERT_SHA256=AA:BB:…` (comma list: Play Console → Release → App integrity → *App signing key certificate* SHA-256,
    plus the upload key if you sideload) and `APPLE_TEAM_ID=ABCDE12345`. Then
