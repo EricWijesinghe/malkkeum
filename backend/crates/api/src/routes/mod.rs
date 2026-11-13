@@ -12,7 +12,7 @@ mod cash_receipts;
 mod checkout_policy;
 mod tax_invoices;
 pub(crate) mod config;
-pub(crate) mod checkouts;
+pub mod checkouts;
 mod finance;
 pub(crate) mod growth;
 pub(crate) mod me;
