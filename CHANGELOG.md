@@ -10,6 +10,9 @@ from the release branches; no tags existed for them.
 
 ### Changed
 - API JWT library upgraded from jsonwebtoken 10.3 to 11.1; token formats, verification rules and the Apple client secret are unchanged.
+- Customer bookings, notifications, wallet points history and payment history, and partner quotes
+  page through their lists on scroll (with a bottom loader and retry on error) instead of showing
+  only the first 50 rows; the points ledger has a paged `GET /me/points/ledger` endpoint.
 ### Security
 - Live-event sockets open with a 30-second, single-use ticket from `POST /v1/realtime/ticket` instead of the access token in the URL, so the long-lived token no longer reaches proxy and access logs. The old `?token=` form still works for one release. Silent sockets are pinged every 25 s and closed after 60 s without an answer.
 
