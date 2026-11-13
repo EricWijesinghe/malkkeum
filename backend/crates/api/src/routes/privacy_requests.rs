@@ -70,16 +70,19 @@ async fn live_phone(db: &PgPool, id: Uuid) -> ApiResult<String> {
 }
 
 /// Records the outcome of a request. The row holds ids and the result only, never the customer's details.
-async fn record<T>(db: &PgPool, kind: &str, customer: Uuid, staff: Uuid, result: &ApiResult<T>) -> ApiResult<()> {
+/// Runs after the work has committed, so a failed insert is logged, not returned: the caller's answer stands.
+async fn record<T>(db: &PgPool, kind: &str, customer: Uuid, staff: Uuid, result: &ApiResult<T>) {
     let status = if result.is_ok() { "done" } else { "failed" };
-    sqlx::query("INSERT INTO privacy_requests (kind, customer_id, staff_id, status) VALUES ($1,$2,$3,$4)")
+    let inserted = sqlx::query("INSERT INTO privacy_requests (kind, customer_id, staff_id, status) VALUES ($1,$2,$3,$4)")
         .bind(kind)
         .bind(customer)
         .bind(staff)
         .bind(status)
         .execute(db)
-        .await?;
-    Ok(())
+        .await;
+    if let Err(e) = inserted {
+        tracing::error!(error = %e, kind, %customer, "privacy request outcome not recorded");
+    }
 }
 
 #[derive(Deserialize)]
@@ -115,7 +118,7 @@ async fn export(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
     live_phone(&s.db, id).await?;
     audit(&s.db, "staff", Some(st.id), "customer.export", &id.to_string(), json!({ "format": format })).await?;
     let result = privacy::export_doc(&s.db, id).await;
-    record(&s.db, "export", id, st.id, &result).await?;
+    record(&s.db, "export", id, st.id, &result).await;
     let doc = result?;
     if format == "csv" {
         return csv_response(&format!("malkkeum-customer-{id}"), csv_document(&csv_rows(&doc)));
@@ -137,7 +140,7 @@ async fn delete(State(s): State<AppState>, Admin(st): Admin, Path(id): Path<Uuid
     }
     audit(&s.db, "staff", Some(st.id), "customer.delete", &id.to_string(), json!({})).await?;
     let result = privacy::delete_account(&s, id).await;
-    record(&s.db, "delete", id, st.id, &result).await?;
+    record(&s.db, "delete", id, st.id, &result).await;
     result?;
     Ok(Json(json!({ "ok": true })))
 }
