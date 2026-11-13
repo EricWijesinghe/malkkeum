@@ -13,7 +13,9 @@ name: release
 #   release-cosign   images job: GHCR push and keyless cosign signing (OIDC).
 #   release-delivery delivery job: DIST_DEPLOY_KEY (push to DIST_REPO), DAHAE_MANIFEST_KEY (ed25519 PEM,
 #                    signs installer_manifest.json), and the cosign OIDC identity for SHA256SUMS and the page.
-#   Android signing has its own environment (android-signing) in the store build (scripts/release/build-all.ps1).
+#   Not in this workflow yet: the Android store build is still signed locally by scripts/release/build-all.ps1
+#   (planned: a dispatch-driven job in an android-signing environment; docs/DEPLOY.md, Release environments).
+#   GitHub creates a missing environment without protection rules, so set up the three above before the first tag.
 #
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
@@ -57,6 +59,7 @@ jobs:
     permissions: { contents: read }
 
   e2e:
+    needs: guard
     uses: ./.github/workflows/e2e.yml
     permissions: { contents: read }
 
