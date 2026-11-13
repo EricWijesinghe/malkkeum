@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/auth_pay.dart' show PendingPayment;
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
@@ -51,6 +52,8 @@ class AppState extends ChangeNotifier {
     unreadChats = 0;
     bookingsVersion++;
     analytics.setConsent(false);
+    // A payment still waiting for its confirm belongs to the account that paid (the server settles it).
+    PendingPayment().clear().ignore();
     notifyListeners();
   }
 

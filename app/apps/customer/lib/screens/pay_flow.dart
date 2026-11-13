@@ -87,7 +87,7 @@ Future<CheckoutResult> untilConfirmed(
 Future<void> resumePendingPayment(BuildContext context) async {
   final app = context.appRead;
   final service = checkoutServiceFor(app.api);
-  final pending = await service.pending.load();
+  final pending = await service.pending.load(user: app.api.session.subject);
   if (pending == null || !context.mounted) return;
   final result = await untilConfirmed(context, service, pending);
   if (!context.mounted) return;

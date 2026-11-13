@@ -49,7 +49,8 @@ final class CheckoutFailed extends CheckoutResult {
 }
 
 /// The approved payment whose confirm is still unanswered, kept across restarts so the app
-/// resumes asking the server. Storage failures never block a payment.
+/// resumes asking the server. Tied to the account that paid: another sign-in never sees it.
+/// Storage failures never block a payment.
 class PendingPayment {
   PendingPayment({FlutterSecureStorage? storage})
     : _storage = storage ?? const FlutterSecureStorage();
@@ -57,22 +58,29 @@ class PendingPayment {
   final FlutterSecureStorage _storage;
   static const _key = 'pay.pending';
 
-  Future<void> save(CheckoutPending p) async {
+  Future<void> save(CheckoutPending p, {required String? user}) async {
+    if (user == null) return;
     try {
       await _storage.write(
         key: _key,
-        value: jsonEncode({'checkout': p.checkoutId, 'payment': p.paymentId}),
+        value: jsonEncode({
+          'checkout': p.checkoutId,
+          'payment': p.paymentId,
+          'user': user,
+        }),
       );
     } on Exception {
       // Kept in memory only: the server's reconciler still settles the payment.
     }
   }
 
-  Future<CheckoutPending?> load() async {
+  /// The saved payment if [user] made it; null for anyone else (or an entry saved before accounts were kept).
+  Future<CheckoutPending?> load({required String? user}) async {
     try {
       final raw = await _storage.read(key: _key);
-      if (raw == null) return null;
+      if (raw == null || user == null) return null;
       final j = jsonDecode(raw) as Json;
+      if (j['user'] != user) return null;
       return CheckoutPending(j['checkout'] as String, j['payment'] as String);
     } on Object {
       return null;
@@ -147,7 +155,9 @@ class CheckoutService {
   /// stay lost the result is [CheckoutPending] (saved, so the next start resumes it).
   Future<CheckoutResult> confirm(String checkoutId, String paymentId) async {
     final result = await _confirm(checkoutId, paymentId);
-    await (result is CheckoutPending ? pending.save(result) : pending.clear());
+    await (result is CheckoutPending
+        ? pending.save(result, user: api.session.subject)
+        : pending.clear());
     return result;
   }
 

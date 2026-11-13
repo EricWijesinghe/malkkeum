@@ -336,6 +336,7 @@ void main() {
         return _json(200, {'status': 'paid', 'booking_id': 'b1'});
       });
       final storage = _MemStorage();
+      await tester.runAsync(() => api.session.save({'access_token': 'a1', 'refresh_token': 'r1', 'role': 'customer', 'subject': 'u1'}));
       final ctx = await _context(tester);
       final result = await tester.runAsync(() => service(api, _FakeLauncher(const PaymentApproved('co1')), storage: storage).run(ctx, body));
       expect(result, isA<CheckoutPending>());
@@ -344,11 +345,12 @@ void main() {
       // Next start: a new service over the same storage finds it and confirms it.
       online = true;
       final later = service(api, _FakeLauncher(null), storage: storage);
-      final saved = await tester.runAsync(() => later.pending.load());
+      expect(await tester.runAsync(() => later.pending.load(user: 'u2')), isNull, reason: 'another account never sees it');
+      final saved = await tester.runAsync(() => later.pending.load(user: 'u1'));
       expect(saved?.paymentId, 'co1');
       final resumed = await tester.runAsync(() => later.confirm(saved!.checkoutId, saved.paymentId));
       expect(resumed, isA<CheckoutPaid>());
-      expect(await tester.runAsync(() => later.pending.load()), isNull, reason: 'a final answer clears it');
+      expect(await tester.runAsync(() => later.pending.load(user: 'u1')), isNull, reason: 'a final answer clears it');
     });
 
     testWidgets('a malformed response is a failure, never an exception', (tester) async {
