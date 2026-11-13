@@ -3,7 +3,7 @@
 Living log. Update at the end of every work session. Newest first in "Log".
 
 ## Product
-Korean home-cleaning platform (working name 말끔, swappable brand). Specs: `NTD/`.
+Korean home-cleaning platform (working name 말끔, swappable brand). Specs: `docs/specs/`.
 Three apps + one backend, all from this repo:
 
 | Surface | Tech | Targets |
