@@ -217,6 +217,246 @@ abstract class T {
   /// **'숫자만 입력해요. 비워두면 기본값을 써요.'**
   String get aiCapHint;
 
+  /// No description provided for @cAudit.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 기록'**
+  String get cAudit;
+
+  /// No description provided for @audIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'누가 언제 무엇을 했는지 최신순으로 보여요. 기록은 지울 수 없어요.'**
+  String get audIntro;
+
+  /// No description provided for @audPeriodToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘'**
+  String get audPeriodToday;
+
+  /// No description provided for @audPeriod7.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 7일'**
+  String get audPeriod7;
+
+  /// No description provided for @audPeriod30.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 30일'**
+  String get audPeriod30;
+
+  /// No description provided for @audPeriodAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 기간'**
+  String get audPeriodAll;
+
+  /// No description provided for @audFilterWho.
+  ///
+  /// In ko, this message translates to:
+  /// **'누가'**
+  String get audFilterWho;
+
+  /// No description provided for @audFilterWhat.
+  ///
+  /// In ko, this message translates to:
+  /// **'무엇을'**
+  String get audFilterWhat;
+
+  /// No description provided for @audWhoAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두'**
+  String get audWhoAll;
+
+  /// No description provided for @audWhatAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 작업'**
+  String get audWhatAll;
+
+  /// No description provided for @audRoleStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원'**
+  String get audRoleStaff;
+
+  /// No description provided for @audRoleCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get audRoleCustomer;
+
+  /// No description provided for @audRolePro.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너'**
+  String get audRolePro;
+
+  /// No description provided for @audRoleSystem.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 처리'**
+  String get audRoleSystem;
+
+  /// No description provided for @audCatCase.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건·환불'**
+  String get audCatCase;
+
+  /// No description provided for @audCatBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get audCatBooking;
+
+  /// No description provided for @audCatCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 정보'**
+  String get audCatCustomer;
+
+  /// No description provided for @audCatStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 관리'**
+  String get audCatStaff;
+
+  /// No description provided for @audCatSettlement.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get audCatSettlement;
+
+  /// No description provided for @audCatPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트'**
+  String get audCatPoints;
+
+  /// No description provided for @audCatService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스·가격'**
+  String get audCatService;
+
+  /// No description provided for @audActCaseRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 환불'**
+  String get audActCaseRefund;
+
+  /// No description provided for @audActCaseUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 처리 변경'**
+  String get audActCaseUpdate;
+
+  /// No description provided for @audActPointsAdjust.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 조정'**
+  String get audActPointsAdjust;
+
+  /// No description provided for @audActPiiView.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 연락처 조회'**
+  String get audActPiiView;
+
+  /// No description provided for @audActPiiList.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 검색'**
+  String get audActPiiList;
+
+  /// No description provided for @audActStaffCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 추가'**
+  String get audActStaffCreate;
+
+  /// No description provided for @audActStaffActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 사용 여부 변경'**
+  String get audActStaffActive;
+
+  /// No description provided for @audActSettlementHold.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 보류 변경'**
+  String get audActSettlementHold;
+
+  /// No description provided for @audActServiceUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 수정'**
+  String get audActServiceUpdate;
+
+  /// No description provided for @audUnknownActor.
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없음'**
+  String get audUnknownActor;
+
+  /// No description provided for @audOtherAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 작업'**
+  String get audOtherAction;
+
+  /// No description provided for @audTarget.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상'**
+  String get audTarget;
+
+  /// No description provided for @audDetailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'상세 내용'**
+  String get audDetailTitle;
+
+  /// No description provided for @audActionCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 코드'**
+  String get audActionCode;
+
+  /// No description provided for @audNoDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록된 내용이 없어요'**
+  String get audNoDetail;
+
+  /// No description provided for @audEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'조건에 맞는 기록이 없어요'**
+  String get audEmpty;
+
+  /// No description provided for @audLoadMore.
+  ///
+  /// In ko, this message translates to:
+  /// **'더 보기'**
+  String get audLoadMore;
+
+  /// No description provided for @audClose.
+  ///
+  /// In ko, this message translates to:
+  /// **'닫기'**
+  String get audClose;
+
+  /// No description provided for @audRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간 선택'**
+  String get audRange;
+
   /// No description provided for @apSocialOr.
   ///
   /// In ko, this message translates to:

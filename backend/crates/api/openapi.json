@@ -3398,6 +3398,100 @@
         }
       }
     },
+    "/v1/admin/audit": {
+      "get": {
+        "operationId": "adminListAudit",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Staff activity log, newest first (owner only, cursor-paginated; filters are exact unless noted)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "actor_role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "staff",
+                "customer",
+                "pro",
+                "member",
+                "system"
+              ]
+            }
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[a-z_.]+$"
+            },
+            "description": "Exact action code, or a prefix such as case. Anything else is 400 invalid_action."
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "First Seoul day included (YYYY-MM-DD)."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Last Seoul day included (YYYY-MM-DD). Earlier than from is 400 invalid_range."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Each row's data_text is the recorded JSON as plain text, cut at 4000 characters.",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/ops/status": {
       "get": {
         "operationId": "adminOpsStatus",

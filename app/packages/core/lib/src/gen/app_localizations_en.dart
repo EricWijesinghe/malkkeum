@@ -72,6 +72,127 @@ class TEn extends T {
   String get aiCapHint => 'Numbers only. Leave empty for the default.';
 
   @override
+  String get cAudit => 'Activity log';
+
+  @override
+  String get audIntro =>
+      'Who did what and when, newest first. Records cannot be deleted.';
+
+  @override
+  String get audPeriodToday => 'Today';
+
+  @override
+  String get audPeriod7 => 'Last 7 days';
+
+  @override
+  String get audPeriod30 => 'Last 30 days';
+
+  @override
+  String get audPeriodAll => 'All time';
+
+  @override
+  String get audFilterWho => 'Who';
+
+  @override
+  String get audFilterWhat => 'What';
+
+  @override
+  String get audWhoAll => 'Everyone';
+
+  @override
+  String get audWhatAll => 'All actions';
+
+  @override
+  String get audRoleStaff => 'Staff';
+
+  @override
+  String get audRoleCustomer => 'Customer';
+
+  @override
+  String get audRolePro => 'Partner';
+
+  @override
+  String get audRoleSystem => 'Automatic';
+
+  @override
+  String get audCatCase => 'Cases and refunds';
+
+  @override
+  String get audCatBooking => 'Bookings';
+
+  @override
+  String get audCatCustomer => 'Customer data';
+
+  @override
+  String get audCatStaff => 'Staff';
+
+  @override
+  String get audCatSettlement => 'Settlements';
+
+  @override
+  String get audCatPoints => 'Points';
+
+  @override
+  String get audCatService => 'Services and prices';
+
+  @override
+  String get audActCaseRefund => 'Case refund';
+
+  @override
+  String get audActCaseUpdate => 'Case updated';
+
+  @override
+  String get audActPointsAdjust => 'Points adjusted';
+
+  @override
+  String get audActPiiView => 'Customer contact viewed';
+
+  @override
+  String get audActPiiList => 'Customer search';
+
+  @override
+  String get audActStaffCreate => 'Staff added';
+
+  @override
+  String get audActStaffActive => 'Staff access changed';
+
+  @override
+  String get audActSettlementHold => 'Settlement hold changed';
+
+  @override
+  String get audActServiceUpdate => 'Service updated';
+
+  @override
+  String get audUnknownActor => 'Unknown';
+
+  @override
+  String get audOtherAction => 'Other action';
+
+  @override
+  String get audTarget => 'Target';
+
+  @override
+  String get audDetailTitle => 'Details';
+
+  @override
+  String get audActionCode => 'Action code';
+
+  @override
+  String get audNoDetail => 'No details recorded';
+
+  @override
+  String get audEmpty => 'No records match these filters';
+
+  @override
+  String get audLoadMore => 'Load more';
+
+  @override
+  String get audClose => 'Close';
+
+  @override
+  String get audRange => 'Period';
+
+  @override
   String get apSocialOr => 'or';
 
   @override
