@@ -182,6 +182,9 @@ against `/.well-known/apple-app-site-association` (both sections are served). iO
    The fingerprint list is Play Console → Release → App integrity → *App signing key certificate* SHA-256,
    plus the upload key if you sideload. The command validates both values, stores them and restarts
    the API; either flag can be given alone. Send the owner this exact line; no file is edited.
+   The owner can also save these values in the console under 설정 > 앱 링크 (check, then save). Saved values
+   win over the server settings as a set, so after a console save a later `dahae applinks` changes nothing
+   until the console values are cleared. The card says which source is in use.
 2. Naver Developers app: add the callback URL `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
 3. Apple Developer portal: enable **Associated Domains** on both bundle ids (`com.malkkeum.customer`,
    `com.malkkeum.partner`) so the entitlement can be signed. Codemagic signing fails without it.

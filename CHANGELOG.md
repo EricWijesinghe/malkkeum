@@ -13,6 +13,7 @@ from the release branches; no tags existed for them.
 - Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
   it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
 - Owner settings registry: business limits, marketing cap, points cap, quality window and ops alert thresholds are read from the database (env is the seed), validated, and audited on every change.
+- Owner console: app link values (Android signing fingerprints, Apple Team ID) can be saved and checked under the setup screen's "앱 링크" card. Saved values override the `ANDROID_CERT_SHA256` and `APPLE_TEAM_ID` server settings, which remain the fallback.
 
 ### Changed
 - Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.

@@ -3611,6 +3611,55 @@
         }
       }
     },
+    "/v1/admin/app-links": {
+      "get": {
+        "operationId": "adminGetAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Android and iOS app link values, with the files they produce",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminPutAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Owner saves the app link values (overrides the env values)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/app-links/verify": {
+      "post": {
+        "operationId": "adminVerifyAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Checks app link values and shows the files without saving",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/settlements/partners/{pro_id}/tax-type": {
       "post": {
         "operationId": "adminSetPartnerTaxType",
