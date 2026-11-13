@@ -18,6 +18,7 @@ pub mod checkouts;
 mod finance;
 pub(crate) mod growth;
 pub(crate) mod me;
+mod keys;
 mod member;
 mod ops;
 pub(crate) mod partner;
@@ -110,6 +111,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
+                .merge(keys::admin_routes())
                 .merge(config::admin_routes())
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
