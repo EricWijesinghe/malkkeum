@@ -3336,6 +3336,69 @@ class TKo extends T {
   }
 
   @override
+  String get ntNavLabel => '알림 문구';
+
+  @override
+  String get ntIntro =>
+      '고객과 청소팀이 앱 알림과 알림함에서 보는 문구를 바꿀 수 있어요. 비워 두면 기본 문구를 써요.';
+
+  @override
+  String get ntLangKo => '한국어';
+
+  @override
+  String get ntLangEn => '영어';
+
+  @override
+  String get ntBuiltIn => '기본 문구';
+
+  @override
+  String get ntUsingCustom => '직접 고친 문구를 쓰고 있어요';
+
+  @override
+  String get ntUsingBuiltIn => '기본 문구를 쓰고 있어요';
+
+  @override
+  String ntVars(String names) {
+    return '넣을 수 있는 값: $names';
+  }
+
+  @override
+  String get ntTitleField => '제목';
+
+  @override
+  String get ntBodyField => '내용';
+
+  @override
+  String get ntPreview => '미리 보기';
+
+  @override
+  String get ntPreviewResult => '이렇게 보여요';
+
+  @override
+  String get ntSave => '저장';
+
+  @override
+  String get ntRestore => '기본 문구로 되돌리기';
+
+  @override
+  String get ntRestored => '기본 문구로 되돌렸어요';
+
+  @override
+  String get ntErrVar => '허용되지 않은 값이 들어 있어요. 중괄호 안에는 위에 적힌 값만 넣어 주세요.';
+
+  @override
+  String get ntErrBraces => '중괄호가 짝이 맞지 않아요.';
+
+  @override
+  String get ntErrEmpty => '제목과 내용을 모두 입력해 주세요.';
+
+  @override
+  String get ntErrLong => '글자 수가 너무 많아요. 제목은 40자, 내용은 120자까지예요.';
+
+  @override
+  String get ntErrChars => '줄바꿈이나 조절 문자는 넣을 수 없어요.';
+
+  @override
   String get cOps => '시스템 상태';
 
   @override

@@ -2642,6 +2642,101 @@
         }
       }
     },
+    "/v1/admin/notify-templates": {
+      "get": {
+        "operationId": "adminNotifyTemplates",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Notification text per event: built-in text and the owner's override, per language",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/notify-templates/preview": {
+      "post": {
+        "operationId": "adminPreviewNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fill a notification text with sample values; nothing is saved",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/notify-templates/{kind}/{locale}": {
+      "parameters": [
+        {
+          "name": "kind",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        {
+          "name": "locale",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ko",
+              "en"
+            ]
+          }
+        }
+      ],
+      "put": {
+        "operationId": "adminSaveNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Save the owner's title and message for one event and language",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "adminResetNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Restore the built-in text for one event and language",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/customers": {
       "get": {
         "operationId": "adminCustomers",

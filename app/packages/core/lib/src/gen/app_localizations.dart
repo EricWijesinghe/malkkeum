@@ -6355,6 +6355,126 @@ abstract class T {
   /// **'{n}주 후 예약'**
   String anWeekAfter(String n);
 
+  /// No description provided for @ntNavLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 문구'**
+  String get ntNavLabel;
+
+  /// No description provided for @ntIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객과 청소팀이 앱 알림과 알림함에서 보는 문구를 바꿀 수 있어요. 비워 두면 기본 문구를 써요.'**
+  String get ntIntro;
+
+  /// No description provided for @ntLangKo.
+  ///
+  /// In ko, this message translates to:
+  /// **'한국어'**
+  String get ntLangKo;
+
+  /// No description provided for @ntLangEn.
+  ///
+  /// In ko, this message translates to:
+  /// **'영어'**
+  String get ntLangEn;
+
+  /// No description provided for @ntBuiltIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구'**
+  String get ntBuiltIn;
+
+  /// No description provided for @ntUsingCustom.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 고친 문구를 쓰고 있어요'**
+  String get ntUsingCustom;
+
+  /// No description provided for @ntUsingBuiltIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구를 쓰고 있어요'**
+  String get ntUsingBuiltIn;
+
+  /// No description provided for @ntVars.
+  ///
+  /// In ko, this message translates to:
+  /// **'넣을 수 있는 값: {names}'**
+  String ntVars(String names);
+
+  /// No description provided for @ntTitleField.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get ntTitleField;
+
+  /// No description provided for @ntBodyField.
+  ///
+  /// In ko, this message translates to:
+  /// **'내용'**
+  String get ntBodyField;
+
+  /// No description provided for @ntPreview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리 보기'**
+  String get ntPreview;
+
+  /// No description provided for @ntPreviewResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'이렇게 보여요'**
+  String get ntPreviewResult;
+
+  /// No description provided for @ntSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get ntSave;
+
+  /// No description provided for @ntRestore.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구로 되돌리기'**
+  String get ntRestore;
+
+  /// No description provided for @ntRestored.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구로 되돌렸어요'**
+  String get ntRestored;
+
+  /// No description provided for @ntErrVar.
+  ///
+  /// In ko, this message translates to:
+  /// **'허용되지 않은 값이 들어 있어요. 중괄호 안에는 위에 적힌 값만 넣어 주세요.'**
+  String get ntErrVar;
+
+  /// No description provided for @ntErrBraces.
+  ///
+  /// In ko, this message translates to:
+  /// **'중괄호가 짝이 맞지 않아요.'**
+  String get ntErrBraces;
+
+  /// No description provided for @ntErrEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목과 내용을 모두 입력해 주세요.'**
+  String get ntErrEmpty;
+
+  /// No description provided for @ntErrLong.
+  ///
+  /// In ko, this message translates to:
+  /// **'글자 수가 너무 많아요. 제목은 40자, 내용은 120자까지예요.'**
+  String get ntErrLong;
+
+  /// No description provided for @ntErrChars.
+  ///
+  /// In ko, this message translates to:
+  /// **'줄바꿈이나 조절 문자는 넣을 수 없어요.'**
+  String get ntErrChars;
+
   /// No description provided for @cOps.
   ///
   /// In ko, this message translates to:

@@ -19,6 +19,7 @@ pub(crate) mod growth;
 pub(crate) mod me;
 mod keys;
 mod member;
+mod notify_templates;
 mod ops;
 pub(crate) mod partner;
 pub(crate) mod partner_jobs;
@@ -111,6 +112,7 @@ pub fn router(state: AppState) -> Router {
             admin::routes()
                 .merge(staff_password::admin_routes())
                 .merge(admin_content::routes())
+                .merge(notify_templates::routes())
                 .merge(growth::admin_routes())
                 .merge(crate::points::admin_routes())
                 .merge(crate::acquisition::admin_routes())

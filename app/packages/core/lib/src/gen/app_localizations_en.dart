@@ -3413,6 +3413,72 @@ class TEn extends T {
   }
 
   @override
+  String get ntNavLabel => 'Notification text';
+
+  @override
+  String get ntIntro =>
+      'Change the text customers and cleaning teams see in app alerts and the inbox. Without a change, the built-in text is used.';
+
+  @override
+  String get ntLangKo => 'Korean';
+
+  @override
+  String get ntLangEn => 'English';
+
+  @override
+  String get ntBuiltIn => 'Built-in text';
+
+  @override
+  String get ntUsingCustom => 'Using your text';
+
+  @override
+  String get ntUsingBuiltIn => 'Using the built-in text';
+
+  @override
+  String ntVars(String names) {
+    return 'Values you can use: $names';
+  }
+
+  @override
+  String get ntTitleField => 'Title';
+
+  @override
+  String get ntBodyField => 'Message';
+
+  @override
+  String get ntPreview => 'Preview';
+
+  @override
+  String get ntPreviewResult => 'This is how it looks';
+
+  @override
+  String get ntSave => 'Save';
+
+  @override
+  String get ntRestore => 'Restore built-in text';
+
+  @override
+  String get ntRestored => 'Restored to the built-in text';
+
+  @override
+  String get ntErrVar =>
+      'A value that is not allowed is in the text. Only use the values listed above inside braces.';
+
+  @override
+  String get ntErrBraces => 'The curly brackets do not match.';
+
+  @override
+  String get ntErrEmpty => 'Enter both a title and a message.';
+
+  @override
+  String get ntErrLong =>
+      'Too long. Titles allow 40 characters and messages 120.';
+
+  @override
+  String get ntErrChars =>
+      'Line breaks and control characters are not allowed.';
+
+  @override
   String get cOps => 'System status';
 
   @override
