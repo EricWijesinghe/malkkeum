@@ -279,7 +279,7 @@ pub() { # pub 태그 : the release job's delivery step, pushing to $SB/dist.git 
 }
 g() { git -C "$SB/dist.git" "$@"; }
 has() { grep -qF -- "$2" <<< "$(g show "$1")"; } # has 태그:파일 문자열 (no pipe: grep -q + pipefail = SIGPIPE)
-sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | cut -d' ' -f1)" ]; }
+sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | awk '{ sub(/^\*/, "", $2) } $2 == "install.sh" { print $1 }')" ]; }
 t  "publish stable"        pub v1.0.0
 t  "tag is annotated"      eq "$(g cat-file -t v1.0.0)" tag
 t  "tag = main commit"     eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
