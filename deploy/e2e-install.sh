@@ -55,11 +55,15 @@ create_owner() {
     -d "{\"code\":\"$CODE\",\"email\":\"owner@example.com\",\"name\":\"Owner\",\"password\":\"e2e-owner-password\"}" \
     | grep -q '"ok":true'
 }
+no_old_brand() { ! grep -q '말끔' "$LOG/install1.txt"; }
 rolled_back_to_digest() { sudo grep -q '^API_IMAGE=.*@sha256:' /opt/malkkeum/.env; }
 
 step "1. first install with the real installer"
 install_once 2>&1 | tee "$LOG/install1.txt"
 expect "installer finished" grep -q '설치가 끝났어요' "$LOG/install1.txt"
+expect "installer text says 다해" grep -q '다해' "$LOG/install1.txt"
+expect "no old brand in installer text" no_old_brand
+expect "dahae command installed" test -x /usr/local/bin/dahae
 CODE=$(malkkeum setup-code)
 expect "setup code printed by installer" grep -q "$CODE" "$LOG/install1.txt"
 
