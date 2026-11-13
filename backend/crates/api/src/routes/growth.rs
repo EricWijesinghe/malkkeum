@@ -12,6 +12,8 @@ use crate::{
 use axum::{
     Json, Router,
     extract::{Path, State},
+    http::header,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
 };
 use chrono::{DateTime, Duration, Utc};
@@ -38,7 +40,7 @@ const REVIEW_LIST_LIMIT: i64 = 200;
 const PROOF_BODY_CHARS: i32 = 120;
 
 pub fn public_routes() -> Router<AppState> {
-    Router::new().route("/public/proof", get(proof))
+    Router::new().route("/public/proof", get(proof)).route("/public/offers", get(offers))
 }
 
 pub fn customer_routes() -> Router<AppState> {
@@ -269,6 +271,21 @@ async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
         "review_count": proof_count(rated),
         "reviews": reviews,
     })))
+}
+
+/// Public offer terms for guests: welcome offer, sign-up coupons and the referral amount. Reads
+/// owner settings only, never a user, so the answer is the same for everyone and cacheable.
+async fn offers(State(s): State<AppState>) -> ApiResult<Response> {
+    let welcome: WelcomeOffer = load_setting(&s.db, WELCOME_KEY).await?;
+    let pack: WelcomePack = load_setting(&s.db, WELCOME_PACK_KEY).await?;
+    let referral = load_referral(&s.db).await?;
+    let body = json!({
+        "welcome": { "enabled": welcome.enabled, "kind": welcome.kind, "value": welcome.value },
+        "welcome_pack": pack.0.iter().map(|c| json!({ "amount": c.amount, "service_code": c.service_code })).collect::<Vec<_>>(),
+        "referral": { "enabled": referral.enabled, "amount": referral.amount },
+        "coupon_days": COUPON_LIFETIME_DAYS,
+    });
+    Ok(([(header::CACHE_CONTROL, "public, max-age=300")], Json(body)).into_response())
 }
 
 pub(crate) struct DashboardFigures {
