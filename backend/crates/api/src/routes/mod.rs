@@ -154,8 +154,9 @@ pub fn router(state: AppState) -> Router {
         }))
         .layer(axum::middleware::from_fn_with_state(state.clone(), crate::ops::count_5xx))
         .layer(axum::middleware::from_fn(metrics::track))
-        // Idempotency replay reads the pool from an extension (route layers cannot take state).
+        // Idempotency replay reads the pool and the JWT keys from extensions (route layers cannot take state).
         .layer(axum::Extension(state.db.clone()))
+        .layer(axum::Extension(state.config.clone()))
         .layer(axum::middleware::from_fn(contract::error_envelope))
         // Outermost: every request (and every error body) gets its id before anything else runs.
         .layer(axum::middleware::from_fn(telemetry::request_id))
