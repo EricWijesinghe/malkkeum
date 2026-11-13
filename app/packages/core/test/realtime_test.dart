@@ -148,7 +148,7 @@ void main() {
     expect(opened.last.uri.queryParameters['token'], 'b1');
   });
 
-  testWidgets('a socket that comes back after failed tries asks screens to refetch again', (tester) async {
+  test('a socket that comes back after failed tries asks screens to refetch again', () async {
     var offline = true;
     final sockets = <_FakeChannel>[];
     final types = <String>[];
@@ -158,17 +158,17 @@ void main() {
     );
     final sub = live.events.listen((e) => types.add(e['type'] as String));
     live.connect();
-    await tester.pump();
+    await pumpEventQueue();
     expect(types, ['resync'], reason: 'the drop asks for a refetch (it fails while offline)');
 
     offline = false;
-    await tester.pump(const Duration(seconds: 3)); // first backoff is 1-2 s
-    await tester.pump();
+    await Future<void>.delayed(const Duration(milliseconds: 2200)); // first backoff is 1-2 s
+    await pumpEventQueue();
     expect(sockets, hasLength(2));
     expect(types, ['resync', 'resync'], reason: 'connected again: refetch now that it can work');
 
     live.reconnect();
-    await tester.pump();
+    await pumpEventQueue();
     expect(types, ['resync', 'resync', 'resync'], reason: 'a resume asks once, not twice');
     await sub.cancel();
     live.dispose();

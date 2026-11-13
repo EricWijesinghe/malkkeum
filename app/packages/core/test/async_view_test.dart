@@ -97,9 +97,15 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
 
+    Future<void> toastLeaves() async {
+      for (var i = 0; i < 60; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+
     await failedReload();
     expect(find.text(_t.errorNetwork), findsOneWidget);
-    await tester.pump(const Duration(seconds: 5)); // the toast leaves
+    await toastLeaves();
     expect(find.text(_t.errorNetwork), findsNothing);
 
     await failedReload();
@@ -110,6 +116,6 @@ void main() {
     await tester.pump(const Duration(seconds: 30));
     await failedReload();
     expect(find.text(_t.errorNetwork), findsOneWidget, reason: 'a later failure is reported again');
-    await tester.pump(const Duration(seconds: 5));
+    await toastLeaves();
   });
 }
