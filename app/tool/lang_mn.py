@@ -453,7 +453,7 @@ T = {
     "moreNotices": "Мэдэгдэл",
     "moreTips": "Цэвэрлэгээний зөвлөмж",
     "moreFaq": "Түгээмэл асуулт",
-    "morePartner": "Хамтрагч болох",
+    "morePartner": "Хамтын ажиллагаа",
     "moreLanguage": "Хэл",
     "langSystem": "Төхөөрөмжийн тохиргоог дагах",
     "moreVersion": "Хувилбар {v}",

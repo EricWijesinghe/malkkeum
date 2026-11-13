@@ -1574,7 +1574,10 @@ class TEn extends T {
   String get moreFaq => 'FAQ';
 
   @override
-  String get morePartner => 'Partner with us';
+  String get morePartner => 'Partnerships';
+
+  @override
+  String get brandTagline => 'We take care of your chores';
 
   @override
   String get moreLanguage => 'Language';

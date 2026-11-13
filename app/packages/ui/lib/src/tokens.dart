@@ -218,6 +218,28 @@ abstract final class Motion {
   static const iconTiltMax = 0.14;
   static const activeScale = 1.12;
   static const pressScale = 0.92;
+
+  /// Idle loop for hero/grid 3D icons (`Icon3D(idle:)`): one full float or sway cycle.
+  static const idlePeriod = Duration(milliseconds: 3200);
+
+  /// Idle float height as a fraction of the icon size.
+  static const idleLift = 0.035;
+
+  /// Idle sway angle, radians (~2 degrees).
+  static const idleSway = 0.035;
+
+  /// Spring velocity of one `Icon3D(attention:)` kick: peaks near 1.08x, settles in ~350 ms.
+  static const attentionKick = 3.0;
+
+  /// Material fade-through: outgoing fades for [fadeOut], incoming for [fadeIn] after it.
+  static const fadeOut = Duration(milliseconds: 90);
+  static const fadeIn = Duration(milliseconds: 210);
+
+  /// Progress fills ([ProgressLine]) and the success halo.
+  static const progress = Duration(milliseconds: 600);
+
+  /// One play of the 24-frame 3D logo (`DahaeLogo(animate: true)`).
+  static const logoPlay = Duration(milliseconds: 720);
 }
 
 abstract final class Elevation {

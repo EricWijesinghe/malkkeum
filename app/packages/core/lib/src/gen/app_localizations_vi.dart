@@ -1574,6 +1574,9 @@ class TVi extends T {
   String get morePartner => 'Hợp tác';
 
   @override
+  String get brandTagline => 'Việc nhà, cứ để chúng tôi lo';
+
+  @override
   String get moreLanguage => 'Ngôn ngữ';
 
   @override

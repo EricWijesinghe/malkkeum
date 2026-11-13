@@ -1784,7 +1784,7 @@
 "en": "Points"
 },
 "moreAccount": {
-"ko": "계정 정보",
+"ko": "계정정보",
 "en": "Account"
 },
 "moreAddresses": {
@@ -1804,8 +1804,8 @@
 "en": "FAQ"
 },
 "morePartner": {
-"ko": "파트너 제휴 문의",
-"en": "Partner with us"
+"ko": "제휴 문의",
+"en": "Partnerships"
 },
 "moreLanguage": {
 "ko": "언어",

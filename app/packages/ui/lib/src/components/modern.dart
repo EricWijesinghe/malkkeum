@@ -45,7 +45,9 @@ class EnterMotion extends StatelessWidget {
   }
 }
 
-/// Pill segmented control. Each segment is at least 48dp tall.
+//// Pill segmented control. Each segment is at least 48dp tall; the white
+/// thumb slides to the selected segment (transform only, instant under
+/// reduced motion).
 class SegmentedControl<T> extends StatelessWidget {
   const SegmentedControl({
     super.key,
@@ -61,22 +63,53 @@ class SegmentedControl<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final index = segments.indexWhere((s) => s.$1 == selected);
+    final rtl = Directionality.of(context) == TextDirection.rtl;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: c.surfaceHigh,
         borderRadius: BorderRadius.circular(Radii.pill),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          for (final (value, label) in segments)
-            Expanded(
-              child: _Segment(
-                label: label,
-                selected: value == selected,
-                onTap: () => onChanged(value),
+          if (index >= 0)
+            Positioned.fill(
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FractionallySizedBox(
+                  widthFactor: 1 / segments.length,
+                  heightFactor: 1,
+                  child: AnimatedSlide(
+                    offset: Offset(
+                      rtl ? -index.toDouble() : index.toDouble(),
+                      0,
+                    ),
+                    duration: motionFor(context, Motion.route),
+                    curve: Motion.emphasized,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: c.surface,
+                        borderRadius: BorderRadius.circular(Radii.pill),
+                        boxShadow: Elevation.card,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
+          Row(
+            children: [
+              for (final (value, label) in segments)
+                Expanded(
+                  child: _Segment(
+                    label: label,
+                    selected: value == selected,
+                    onTap: () => onChanged(value),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -107,25 +140,18 @@ class _Segment extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(Radii.pill),
           onTap: onTap,
-          child: AnimatedContainer(
-            duration: motionFor(context, Motion.standard),
-            curve: Motion.ease,
+          child: Container(
             constraints: const BoxConstraints(minHeight: 48),
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-            decoration: BoxDecoration(
-              color: selected ? c.surface : Colors.transparent,
-              borderRadius: BorderRadius.circular(Radii.pill),
-              boxShadow: selected ? Elevation.card : const [],
-            ),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.labelLarge?.copyWith(
+            child: AnimatedDefaultTextStyle(
+              duration: motionFor(context, Motion.standard),
+              curve: Motion.ease,
+              style: context.text.labelLarge!.copyWith(
                 color: selected ? c.ink : c.inkMuted,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
+              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
             ),
           ),
         ),
@@ -134,7 +160,74 @@ class _Segment extends StatelessWidget {
   }
 }
 
-/// Read-only star rating; half stars for .5 values. [label] is the spoken value.
+/// Progress track whose fill grows to [fraction] (0..1) on first build and
+/// glides on every change ([Motion.progress], emphasized). Paint-only: the fill
+/// scales, nothing relayouts. Horizontal fills from the start edge, vertical
+/// from the top. Reduced motion shows the value at once.
+class ProgressLine extends StatelessWidget {
+  const ProgressLine({
+    super.key,
+    required this.fraction,
+    this.color,
+    this.trackColor,
+    this.thickness = 4,
+    this.axis = Axis.horizontal,
+  });
+
+  final double fraction;
+
+  /// Fill; defaults to the theme's fresh teal.
+  final Color? color;
+
+  /// Track behind the fill; defaults to the theme line colour.
+  final Color? trackColor;
+  final double thickness;
+  final Axis axis;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final horizontal = axis == Axis.horizontal;
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    final radius = BorderRadius.circular(thickness / 2);
+    final f = fraction.clamp(0.0, 1.0);
+    return SizedBox(
+      width: horizontal ? double.infinity : thickness,
+      height: horizontal ? thickness : double.infinity,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: trackColor ?? c.line,
+          borderRadius: radius,
+        ),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: f),
+          duration: motionFor(context, Motion.progress),
+          curve: Motion.emphasized,
+          builder: (_, v, child) => Transform(
+            alignment: horizontal
+                ? (rtl ? Alignment.centerRight : Alignment.centerLeft)
+                : Alignment.topCenter,
+            transform: Matrix4.diagonal3Values(
+              horizontal ? v : 1,
+              horizontal ? 1 : v,
+              1,
+            ),
+            child: child,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: color ?? c.fresh,
+              borderRadius: radius,
+            ),
+            child: const SizedBox.expand(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Read-only star rating; half stars for .5 values. [label] is the spoken value.
 class RatingStars extends StatelessWidget {
   const RatingStars({
     super.key,

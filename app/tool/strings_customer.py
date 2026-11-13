@@ -277,12 +277,13 @@ S = {
   "morePayments": ["결제수단 관리", "Payment methods", "支払い方法", "付款方式", "Phương thức thanh toán"],
   "moreCoupons": ["쿠폰", "Coupons", "クーポン", "优惠券", "Phiếu giảm giá"],
   "morePoints": ["청소 포인트", "Points", "ポイント", "积分", "Điểm"],
-  "moreAccount": ["계정 정보", "Account", "アカウント", "账户信息", "Tài khoản"],
+  "moreAccount": ["계정정보", "Account", "アカウント", "账户信息", "Tài khoản"],
   "moreAddresses": ["주소 관리", "Addresses", "住所管理", "地址管理", "Địa chỉ"],
   "moreNotices": ["공지사항", "Notices", "お知らせ", "公告", "Thông báo"],
   "moreTips": ["청소 팁", "Cleaning tips", "お掃除のコツ", "清洁小贴士", "Mẹo dọn dẹp"],
   "moreFaq": ["자주 묻는 질문", "FAQ", "よくある質問", "常见问题", "Câu hỏi thường gặp"],
-  "morePartner": ["파트너 제휴 문의", "Partner with us", "パートナー提携", "合作咨询", "Hợp tác"],
+  "morePartner": ["제휴 문의", "Partnerships", "提携のお問い合わせ", "合作咨询", "Hợp tác"],
+  "brandTagline": ["집안일, 다 해드려요", "We take care of your chores", "家事、ぜんぶお任せ", "家务，全都交给我们", "Việc nhà, cứ để chúng tôi lo"],
   "moreLanguage": ["언어", "Language", "言語", "语言", "Ngôn ngữ"],
   "langSystem": ["기기 설정 따르기", "Use device setting", "端末の設定に従う", "跟随系统", "Theo thiết bị"],
   "moreVersion": ["버전 {v}", "Version {v}", "バージョン {v}", "版本 {v}", "Phiên bản {v}"],
@@ -370,6 +371,7 @@ S = {
 
 X = {
     "fil": {
+        "brandTagline": "Kami na ang bahala sa gawaing-bahay",
         "err_cancellation_window_closed": "Hindi na puwedeng magkansela sa app para sa booking na ito. Makipag-ugnayan po sa aming team",
         "cancelFeeNow": "Kung kakanselahin mo ngayon, may bayad na {fee} at ibabalik ang {refund}.",
         "cancelFeeAccept": "Tanggapin ang bayad na {fee} at kanselahin",
@@ -388,6 +390,7 @@ X = {
         "hhHint": "Naka-save sa address na ito at puwedeng baguhin sa bawat booking.",
     },
     "id": {
+        "brandTagline": "Urusan rumah, serahkan pada kami",
         "err_cancellation_window_closed": "Pemesanan ini tidak bisa dibatalkan lagi lewat aplikasi. Silakan hubungi tim kami",
         "cancelFeeNow": "Jika dibatalkan sekarang, biaya {fee} berlaku dan {refund} akan dikembalikan.",
         "cancelFeeAccept": "Setujui biaya {fee} dan batalkan",
@@ -406,6 +409,7 @@ X = {
         "hhHint": "Disimpan di alamat ini dan bisa diubah per pemesanan.",
     },
     "km": {
+        "brandTagline": "ការងារផ្ទះ ទុកឱ្យយើងធ្វើ",
         "err_cancellation_window_closed": "ការកក់នេះមិនអាចបោះបង់នៅក្នុងកម្មវិធីទៀតទេ។ សូមទាក់ទងក្រុមការងារយើង",
         "cancelFeeNow": "ប្រសិនបើបោះបង់ឥឡូវនេះ គិតថ្លៃ {fee} ហើយនឹងបង្វិលប្រាក់ {refund} វិញ។",
         "cancelFeeAccept": "ទទួលយកថ្លៃ {fee} ហើយបោះបង់",
@@ -424,6 +428,7 @@ X = {
         "hhHint": "រក្សាទុកជាមួយអាសយដ្ឋាននេះ និងអាចផ្លាស់ប្តូរក្នុងការកក់នីមួយៗ។",
     },
     "mn": {
+        "brandTagline": "Гэрийн ажлыг бидэнд даатга",
         "err_cancellation_window_closed": "Энэ захиалгыг аппликейшнээр цуцлах боломжгүй. Манай багтай холбогдоно уу",
         "cancelFeeNow": "Одоо цуцлавал {fee} шимтгэл төлөгдөж, {refund} буцаан олгогдоно.",
         "cancelFeeAccept": "{fee} шимтгэлийг зөвшөөрч цуцлах",
@@ -442,6 +447,7 @@ X = {
         "hhHint": "Энэ хаягт хадгалагдах бөгөөд захиалга бүрт өөрчлөх боломжтой.",
     },
     "ne": {
+        "brandTagline": "घरको काम, हामीलाई छोड्नुहोस्",
         "err_cancellation_window_closed": "यो बुकिङ अब एपबाट रद्द गर्न सकिँदैन। कृपया हाम्रो टोलीसँग सम्पर्क गर्नुहोस्",
         "cancelFeeNow": "अहिले रद्द गर्दा {fee} शुल्क लाग्छ र {refund} फिर्ता हुनेछ।",
         "cancelFeeAccept": "{fee} शुल्क स्वीकार गरी रद्द गर्नुहोस्",
@@ -460,6 +466,7 @@ X = {
         "hhHint": "यो ठेगानामा सुरक्षित हुन्छ र प्रत्येक बुकिङमा परिवर्तन गर्न सकिन्छ।",
     },
     "ru": {
+        "brandTagline": "Домашние дела берём на себя",
         "err_cancellation_window_closed": "Эту бронь уже нельзя отменить в приложении. Свяжитесь с нашей командой",
         "cancelFeeNow": "Если отменить сейчас, будет удержано {fee}, а {refund} вернётся вам.",
         "cancelFeeAccept": "Принять комиссию {fee} и отменить",
@@ -478,6 +485,7 @@ X = {
         "hhHint": "Сохраняется за этим адресом и меняется в каждой брони.",
     },
     "si": {
+        "brandTagline": "ගෙදර වැඩ, අපට භාර දෙන්න",
         "err_cancellation_window_closed": "මෙම වෙන්කිරීම දැන් යෙදුම හරහා අවලංගු කළ නොහැක. කරුණාකර අපේ කණ්ඩායම අමතන්න",
         "cancelFeeNow": "දැන් අවලංගු කළහොත් {fee} ගාස්තුවක් අය කරන අතර {refund} ආපසු ලැබේ.",
         "cancelFeeAccept": "{fee} ගාස්තුව පිළිගෙන අවලංගු කරන්න",
@@ -496,6 +504,7 @@ X = {
         "hhHint": "මෙම ලිපිනයට සුරැකෙන අතර සෑම වෙන්කිරීමකම වෙනස් කළ හැක.",
     },
     "th": {
+        "brandTagline": "งานบ้าน ให้เราจัดการ",
         "err_cancellation_window_closed": "ไม่สามารถยกเลิกการจองนี้ในแอปได้แล้ว กรุณาติดต่อทีมงานของเรา",
         "cancelFeeNow": "หากยกเลิกตอนนี้ จะมีค่าธรรมเนียม {fee} และคืนเงิน {refund}",
         "cancelFeeAccept": "ยอมรับค่าธรรมเนียม {fee} และยกเลิก",
@@ -514,6 +523,7 @@ X = {
         "hhHint": "บันทึกไว้กับที่อยู่นี้ และแก้ไขได้ในแต่ละการจอง",
     },
     "uz": {
+        "brandTagline": "Uy yumushlarini bizga topshiring",
         "err_cancellation_window_closed": "Bu bronni ilovada bekor qilib bo‘lmaydi. Iltimos, jamoamizga murojaat qiling",
         "cancelFeeNow": "Hozir bekor qilsangiz {fee} to‘lov olinadi va {refund} qaytariladi.",
         "cancelFeeAccept": "{fee} to‘lovga rozi bo‘lib bekor qilish",

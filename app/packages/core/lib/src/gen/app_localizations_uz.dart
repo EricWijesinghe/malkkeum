@@ -1594,7 +1594,10 @@ class TUz extends T {
   String get moreFaq => 'Ko\'p so\'raladigan savollar';
 
   @override
-  String get morePartner => 'Hamkor bo\'lish';
+  String get morePartner => 'Hamkorlik';
+
+  @override
+  String get brandTagline => 'Uy yumushlarini bizga topshiring';
 
   @override
   String get moreLanguage => 'Til';

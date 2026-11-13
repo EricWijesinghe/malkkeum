@@ -231,13 +231,34 @@ const prepTools = [
 String hourLabel(int hour, String lang) =>
     DateFormat.j(lang).format(DateTime(2000, 1, 1, hour));
 
-/// Arrival window "09:00~10:00" (24h, zero-padded in every language, as on
-/// the booking card). [hours] is the window length; 24 wraps to 00:00.
-String slotRangeLabel(int startHour, String lang, {int hours = 1}) {
-  final f = DateFormat.Hm(lang);
-  String at(int h) => f.format(DateTime(2000, 1, 1, h % 24));
-  return '${at(startHour)}~${at(startHour + hours)}';
+/// Arrival window. ko/ja/zh read hours the way the design writes them:
+/// "오전 9시~10시" (the period is not repeated), "오전 11시~오후 12시" across
+/// noon; [withPeriod] false drops the period ("8시~9시 도착"). Other languages
+/// use 24h "09:00~10:00". [hours] is the window length; 24 wraps to midnight.
+String slotRangeLabel(
+  int startHour,
+  String lang, {
+  int hours = 1,
+  bool withPeriod = true,
+}) {
+  DateTime at(int h) => DateTime(2000, 1, 1, h % 24);
+  if (!_hourLangs.contains(lang)) {
+    final f = DateFormat.Hm(lang);
+    return '${f.format(at(startHour))}~${f.format(at(startHour + hours))}';
+  }
+  final f = DateFormat.j(lang);
+  final start = f.format(at(startHour));
+  final end = f.format(at(startHour + hours));
+  // The period ("오전", "上午") is whatever precedes the first digit.
+  String period(String s) => s.substring(0, s.indexOf(RegExp(r'\d')));
+  final p1 = period(start), p2 = period(end);
+  if (!withPeriod) {
+    return '${start.substring(p1.length)}~${end.substring(p2.length)}';
+  }
+  return p1 == p2 ? '$start~${end.substring(p2.length)}' : '$start~$end';
 }
+
+const _hourLangs = {'ko', 'ja', 'zh'};
 
 /// "11월 13일 (금)" / "Fri, Nov 13".
 String dateLabel(DateTime d, String lang) => DateFormat.MMMEd(lang).format(d);
