@@ -272,3 +272,55 @@ async fn only_staff_issue_codes_and_consultants_cannot_reset(db: PgPool) {
     let (st, _) = call(&app, "POST", &format!("/v1/admin/staff/{target}/password-reset"), Some(&token), Some(json!({}))).await;
     assert_eq!(st, StatusCode::FORBIDDEN);
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn expired_invite_is_reissued_and_redeemed(db: PgPool) {
+    let admin = insert(&db, "admin-reissue@test.local", "admin", None).await;
+    let app = common::app(db.clone());
+    let tok = admin_token(admin);
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/admin/staff/invite",
+        Some(&tok),
+        Some(json!({
+            "email": "lost-invite@test.local", "name": "분실", "phone": PHONE, "role": "consultant", "channel": "copy"
+        })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let id: Uuid = b["id"].as_str().expect("id").parse().expect("uuid");
+    sqlx::query("UPDATE staff_sms_codes SET expires_at = now() - interval '1 minute', created_at = now() - interval '2 hours' WHERE staff_id = $1")
+        .bind(id)
+        .execute(&db)
+        .await
+        .expect("expire invite code");
+
+    let (st, b) = reset_code(&app, &tok, id).await;
+    assert_eq!(st, StatusCode::OK, "a pending invite gets a fresh code: {b}");
+    let code = code_of(&b);
+    let purpose: String = sqlx::query_scalar("SELECT purpose FROM staff_sms_codes WHERE staff_id = $1 AND expires_at > now()")
+        .bind(id)
+        .fetch_one(&db)
+        .await
+        .expect("live code");
+    assert_eq!(purpose, "invite", "the fresh code activates the account, it is not a reset");
+
+    let (st, b) = redeem(&app, PHONE, &code, NEW).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    assert_eq!(login(&app, "lost-invite@test.local", NEW).await.0, StatusCode::OK, "reissued invite signs in");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn deactivated_staff_cannot_be_reset(db: PgPool) {
+    let target = insert(&db, "consultant-off@test.local", "consultant", Some(PHONE)).await;
+    sqlx::query("UPDATE staff SET active = FALSE WHERE id = $1")
+        .bind(target)
+        .execute(&db)
+        .await
+        .expect("deactivate");
+    let admin = insert(&db, "admin-off@test.local", "admin", None).await;
+    let app = common::app(db);
+    let (st, b) = reset_code(&app, &admin_token(admin), target).await;
+    assert_eq!(st, StatusCode::NOT_FOUND, "a deactivated account is not revived by a reset: {b}");
+}

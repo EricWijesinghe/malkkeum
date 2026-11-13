@@ -119,22 +119,26 @@ struct ResetInput {
     phone: Option<String>,
 }
 
-/// Admin sends a reset code to an active staff member. Revokes nothing until the code is redeemed.
+/// Admin sends a reset code to an active staff member, or a fresh invite code to one who has not redeemed
+/// the first (an expired or lost invite). Revokes nothing until the code is redeemed.
 async fn issue_reset(State(s): State<AppState>, Admin(me): Admin, Path(id): Path<Uuid>, Json(req): Json<ResetInput>) -> ApiResult<Json<Value>> {
     let mut tx = s.db.begin().await?;
-    let stored: Option<Option<String>> = sqlx::query_scalar("SELECT phone FROM staff WHERE id = $1 AND active FOR UPDATE")
-        .bind(id)
-        .fetch_optional(&mut *tx)
-        .await?;
-    let stored = stored.ok_or(ApiError::NotFound)?;
+    let row: Option<(Option<String>, bool)> =
+        sqlx::query_as("SELECT phone, password_hash = '' FROM staff WHERE id = $1 AND (active OR password_hash = '') FOR UPDATE")
+            .bind(id)
+            .fetch_optional(&mut *tx)
+            .await?;
+    let (stored, pending) = row.ok_or(ApiError::NotFound)?;
     let phone = resolve_phone(&mut tx, id, stored, req.phone.as_deref()).await?;
-    let shown = issue_and_deliver(&s, &mut tx, id, &phone, "reset", req.channel).await?;
+    let purpose = if pending { "invite" } else { "reset" };
+    let shown = issue_and_deliver(&s, &mut tx, id, &phone, purpose, req.channel).await?;
     tx.commit().await?;
+    let action = if pending { "staff.invite_resent" } else { "staff.password_reset_issued" };
     audit(
         &s.db,
         "staff",
         Some(me.id),
-        "staff.password_reset_issued",
+        action,
         &id.to_string(),
         json!({ "channel": channel_name(req.channel) }),
     )
@@ -181,17 +185,22 @@ async fn issue_and_deliver(
         .bind(Utc::now() + Duration::seconds(CODE_TTL_SECS))
         .execute(&mut **tx)
         .await?;
-    match channel {
-        Channel::Copy => Ok(Some(code)),
-        Channel::Sms => {
-            let text = if purpose == "invite" {
-                format!("[다해] 직원 초대 인증번호는 {code}예요. 24시간 안에 입력해 주세요.")
-            } else {
-                format!("[다해] 비밀번호 재설정 인증번호는 {code}예요. 24시간 안에 입력해 주세요.")
-            };
-            s.providers.send_sms(phone, &text).await.map_err(|_| ApiError::Unavailable("sms"))?;
-            Ok(None)
-        }
+    let text = sms_text(purpose == "invite", channel, &code);
+    s.providers.send_sms(phone, &text).await.map_err(|_| ApiError::Unavailable("sms"))?;
+    Ok(match channel {
+        Channel::Copy => Some(code),
+        Channel::Sms => None,
+    })
+}
+
+/// The text the staff member receives. A copy-channel code is never texted; they get a notice instead, so an
+/// unexpected reset or invite is visible to the person whose account it touches.
+fn sms_text(invite: bool, channel: Channel, code: &str) -> String {
+    match (invite, channel) {
+        (true, Channel::Sms) => format!("[다해] 직원 초대 인증번호는 {code}예요. 24시간 안에 입력해 주세요."),
+        (false, Channel::Sms) => format!("[다해] 비밀번호 재설정 인증번호는 {code}예요. 24시간 안에 입력해 주세요."),
+        (true, Channel::Copy) => "[다해] 직원 초대 절차가 시작됐어요. 본인이 아니면 관리자에게 알려 주세요.".into(),
+        (false, Channel::Copy) => "[다해] 관리자가 회원님의 비밀번호 재설정을 요청했어요. 본인이 아니면 관리자에게 알려 주세요.".into(),
     }
 }
 
@@ -309,6 +318,13 @@ mod tests {
     fn consultant_cannot_grant_admin() {
         assert!(matches!(validate_invite(&invite("admin"), Role::StaffConsultant), Err(ApiError::Forbidden)));
         assert_eq!(validate_invite(&invite("consultant"), Role::StaffConsultant).ok(), Some("consultant"));
+    }
+
+    #[test]
+    fn copy_channel_notice_never_carries_the_code() {
+        assert!(!sms_text(false, Channel::Copy, "123456").contains("123456"));
+        assert!(!sms_text(true, Channel::Copy, "123456").contains("123456"));
+        assert!(sms_text(true, Channel::Sms, "123456").contains("123456"));
     }
 
     #[test]
