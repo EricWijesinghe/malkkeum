@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Helpers for the store screenshot suites (tag `store_screenshots`, excluded from normal runs).
-/// Renders real screens at exact store pixel sizes with the bundled Pretendard font.
+/// Renders real screens at exact store pixel sizes with the bundled Dahae Sans (Pretendard subset) font.
 
 /// One store capture size. Logical size = pixels / dpr, so every layout is a real device layout.
 class ShotDevice {
@@ -33,7 +33,7 @@ final shotDeviceSlugs = const String.fromEnvironment('SHOT_DEVICES', defaultValu
 /// Where PNGs go (relative to the app package). The framing step reads from here.
 final shotOutRoot = const String.fromEnvironment('SHOT_OUT', defaultValue: 'build/store_shots/raw');
 
-/// Loads Pretendard (the app font) plus CJK fallbacks, and the Material icon font.
+/// Loads Dahae Sans (the app font) plus CJK fallbacks, and the Material icon font.
 /// Flutter's test engine otherwise draws Ahem boxes for every glyph.
 /// CJK fallbacks come from the Windows font folder (Yu Gothic, Microsoft YaHei), registered under the
 /// family names the theme already falls back to ('Noto Sans JP' / 'Noto Sans SC').
@@ -43,11 +43,17 @@ Future<void> loadShotFonts() async {
   // The theme names the font with `package: 'ui'`, so the engine looks it up as
   // 'packages/ui/<family>'; register both spellings.
   final otfs = fontDir.listSync().whereType<File>().where((f) => f.path.endsWith('.otf')).toList();
-  for (final family in const ['Pretendard', 'packages/ui/Pretendard']) {
+  for (final family in const ['Dahae Sans', 'packages/ui/Dahae Sans']) {
     final loader = FontLoader(family);
     for (final f in otfs) {
       loader.addFont(Future.value(f.readAsBytesSync().buffer.asByteData()));
     }
+    await loader.load();
+  }
+  // The theme's first fallback face (rare Hangul syllables), bundled in a subfolder.
+  final fullFace = File('${fontDir.path}/full/DahaeSansFull-Regular.otf');
+  for (final family in const ['Dahae Sans Full', 'packages/ui/Dahae Sans Full']) {
+    final loader = FontLoader(family)..addFont(Future.value(fullFace.readAsBytesSync().buffer.asByteData()));
     await loader.load();
   }
 

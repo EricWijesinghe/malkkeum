@@ -1,11 +1,12 @@
-"""Pretendard subsetting for the ui package (all 5 apps bundle it).
+"""Dahae Sans = Pretendard (Kil Hyung-jin, SIL OFL 1.1) subset for the ui package (all 5 apps bundle it).
+The OFL reserves the name "Pretendard", so the modified fonts are renamed: family "Dahae Sans" / "Dahae Sans Full".
 
-  python -I app/tool/font_subset.py build <dir-with-full-Pretendard-*.otf>   # needs fonttools
+  python -I app/tool/font_subset.py build <dir-with-original-Pretendard-*.otf>   # needs fonttools
   python -I app/tool/font_subset.py check                                    # needs fonttools
 
 build: the 5 weights keep KS X 1001 Hangul (2,350) + Latin/punctuation + every char used by the ko/en ARBs and
 Dart sources; Regular is also written to assets/fonts/full/ with the remaining syllables (all 11,172 are covered together), registered as the
-family `PretendardFull` and used as the first fallback, so rare user-typed syllables still render.
+family `Dahae Sans Full` and used as the first fallback, so rare user-typed syllables still render.
 check: asserts every char in the ARBs (ko, en) and Dart string literals is in the shipped fonts.
 """
 import re, sys, json, pathlib
@@ -46,7 +47,33 @@ def project_chars() -> set[str]:
     return {c for c in chars if ord(c) > 0x7F and not c.isspace()}
 
 
-def run(src: pathlib.Path, dst: pathlib.Path, text: str, base: bool = True) -> None:
+def rename(font: TTFont, family: str, style: str) -> None:
+    """Replace every name that carries the reserved name; copyright (0), description (9) and license (13, 14) stay."""
+    ribbi = style in ("Regular", "Bold")
+    ps = f"{family.replace(' ', '')}-{style}"
+    names = {
+        1: family if ribbi else f"{family} {style}",
+        2: style if ribbi else "Regular",
+        3: f"{ps};subset-of-Pretendard-1.309",
+        4: f"{family} {style}",
+        6: ps,
+        16: family,
+        17: style,
+    }
+    table = font["name"]
+    for rec in list(table.names):
+        carries = "Pretendard" in str(rec) and rec.nameID not in (0, 9, 13, 14)
+        if rec.nameID in names or rec.nameID == 7 or carries:
+            table.removeNames(nameID=rec.nameID)
+    for nid, val in names.items():
+        table.setName(val, nid, 3, 1, 0x409)
+    cff = font["CFF "].cff
+    cff.fontNames = [ps]
+    top = cff.topDictIndex[0]
+    top.FullName, top.FamilyName = f"{family} {style}", family
+
+
+def run(src: pathlib.Path, dst: pathlib.Path, text: str, family: str, style: str, base: bool = True) -> None:
     opts = subset.Options()
     opts.layout_features = FEATURES
     opts.name_IDs = ["*"]
@@ -55,6 +82,7 @@ def run(src: pathlib.Path, dst: pathlib.Path, text: str, base: bool = True) -> N
     s = subset.Subsetter(opts)
     s.populate(unicodes=(subset.parse_unicodes(STATIC) if base else []) + [ord(c) for c in text])
     s.subset(font)
+    rename(font, family, style)
     dst.parent.mkdir(parents=True, exist_ok=True)
     font.save(dst)
 
@@ -62,10 +90,10 @@ def run(src: pathlib.Path, dst: pathlib.Path, text: str, base: bool = True) -> N
 def build(srcdir: pathlib.Path) -> None:
     text = ksx1001_hangul() + "".join(sorted(project_chars()))
     for w in WEIGHTS:
-        run(srcdir / f"Pretendard-{w}.otf", FONTS / f"Pretendard-{w}.otf", text)
+        run(srcdir / f"Pretendard-{w}.otf", FONTS / f"DahaeSans-{w}.otf", text, "Dahae Sans", w)
     # Fallback face only needs what the 5 main faces lack (it is consulted per missing glyph).
     rest = "".join(chr(c) for c in range(0xAC00, 0xD7A4) if chr(c) not in text)
-    run(srcdir / "Pretendard-Regular.otf", FONTS / "full/PretendardFull-Regular.otf", rest, base=False)
+    run(srcdir / "Pretendard-Regular.otf", FONTS / "full/DahaeSansFull-Regular.otf", rest, "Dahae Sans Full", "Regular", base=False)
 
 
 def covered_by_pretendard(c: str) -> bool:
@@ -77,18 +105,18 @@ def check() -> int:
     # Scripts Pretendard lacks (CJK ideographs, Thai, emoji ...) always come from system fallback fonts.
     need = {c for c in project_chars() if covered_by_pretendard(c)}
     bad = 0
-    for p in sorted(FONTS.glob("Pretendard-*.otf")):
+    for p in sorted(FONTS.glob("DahaeSans-*.otf")):
         cmap = TTFont(p).getBestCmap()
         missing = sorted(c for c in need if ord(c) not in cmap)
         if missing:
             bad += 1
             print(f"{p.name}: missing {len(missing)}: {''.join(missing)[:80]}")
-    full = TTFont(FONTS / "full/PretendardFull-Regular.otf").getBestCmap()
-    main = TTFont(FONTS / "Pretendard-Regular.otf").getBestCmap()
+    full = TTFont(FONTS / "full/DahaeSansFull-Regular.otf").getBestCmap()
+    main = TTFont(FONTS / "DahaeSans-Regular.otf").getBestCmap()
     gaps = [c for c in range(0xAC00, 0xD7A4) if c not in full and c not in main]
     if gaps:
         bad += 1
-        print(f"PretendardFull-Regular missing {len(gaps)} syllables")
+        print(f"DahaeSansFull-Regular missing {len(gaps)} syllables")
     print("OK" if not bad else "FAIL", f"({len(need)} project chars checked)")
     return 1 if bad else 0
 

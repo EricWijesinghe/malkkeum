@@ -27,10 +27,10 @@ const LANG_TAG = { ko: 'ko', en: 'en', ja: 'ja', zh: 'zh-Hans', vi: 'vi' };
 const CAPTIONS = JSON.parse(fs.readFileSync(path.join(SHOTS, 'captions.json'), 'utf8'));
 
 const fontFaces = [400, 500, 600, 700, 800]
-  .map((w) => `@font-face{font-family:'Pretendard';font-weight:${w};src:url('${pathToFileURL(path.join(FONTS, `Pretendard-${{ 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold' }[w]}.otf`)).href}') format('opentype');}`)
+  .map((w) => `@font-face{font-family:'Dahae Sans';font-weight:${w};src:url('${pathToFileURL(path.join(FONTS, `DahaeSans-${{ 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold' }[w]}.otf`)).href}') format('opentype');}`)
   .join('\n');
 
-const STACK = "'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Noto Sans JP','Noto Sans SC','Hiragino Sans','Yu Gothic','Microsoft YaHei','Malgun Gothic',sans-serif";
+const STACK = "'Dahae Sans','Apple SD Gothic Neo','Noto Sans KR','Noto Sans JP','Noto Sans SC','Hiragino Sans','Yu Gothic','Microsoft YaHei','Malgun Gothic',sans-serif";
 
 /** One HTML document: gradient canvas, two headline lines, device frame cropped by the bottom edge. */
 function framePage({ w, h, colors, lang, lines, imgUrl, imgRatio, phoneWidth = 0.78, phoneTop = 0.3 }) {

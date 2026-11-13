@@ -12,7 +12,7 @@ bool goldensEnabled(String baseline) =>
     Platform.environment['CI'] == 'true' &&
     (autoUpdateGoldenFiles || File(baseline).existsSync());
 
-/// Real fonts (Pretendard + CJK fallbacks + Material icons) instead of Ahem boxes.
+/// Real fonts (Dahae Sans + CJK fallbacks + Material icons) instead of Ahem boxes.
 Future<void> loadGoldenFonts(WidgetTester tester) async {
   await tester.runAsync(loadShotFonts);
 }
