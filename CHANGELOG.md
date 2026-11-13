@@ -8,6 +8,13 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Changed
+- Release hardening: release tags must point into master, the image and delivery jobs run in protected
+  environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
+  ed25519-signed installer manifest and a cloud-init install page are published with each release.
+  Not done yet: a dispatch-driven release that replaces `scripts/release/build-all.ps1` and its
+  `PASSWORD.txt`, and an Android-signing environment. Both still run locally.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
