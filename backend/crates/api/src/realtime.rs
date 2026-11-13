@@ -6,7 +6,7 @@
 //! After a listener outage the node broadcasts `resync`, because events sent in the gap were missed.
 
 use crate::{
-    auth::{Role, verify_access},
+    auth::{Auth, Role, staff_epoch, token_epoch, verify_access_live},
     error::ApiResult,
     lifecycle::drained,
     state::AppState,
@@ -39,6 +39,8 @@ use uuid::Uuid;
 const HUB_CAPACITY: usize = 1024;
 const PUBLISH_QUEUE: usize = 1024;
 const PING_EVERY: Duration = Duration::from_secs(25);
+/// How often a staff socket re-checks its session epoch, so a sign-out everywhere closes it within this time.
+const EPOCH_RECHECK: Duration = Duration::from_secs(60);
 const CHANNEL: &str = "malkkeum_events";
 /// Postgres rejects NOTIFY payloads of 8000 bytes or more; keep a margin.
 const NOTIFY_INLINE_MAX: usize = 7000;
@@ -154,7 +156,13 @@ impl Hub {
 
     /// Subscribes this node to the events of every other node. Reconnects with backoff.
     pub fn spawn_listener(&self) -> JoinHandle<()> {
-        tokio::spawn(listen_loop(self.db.clone(), self.node, self.tx.clone(), self.listening.clone(), self.drain_signal()))
+        tokio::spawn(listen_loop(
+            self.db.clone(),
+            self.node,
+            self.tx.clone(),
+            self.listening.clone(),
+            self.drain_signal(),
+        ))
     }
 
     /// True while this node holds its LISTEN connection.
@@ -191,7 +199,12 @@ async fn publish_loop(db: PgPool, node: Uuid, mut queue: mpsc::Receiver<Event>) 
 }
 
 async fn publish(db: &PgPool, node: Uuid, event: &Event) -> Result<(), sqlx::Error> {
-    let wire = Wire::Inline { origin: node, to: event.to, kind: event.kind.to_string(), data: event.data.clone() };
+    let wire = Wire::Inline {
+        origin: node,
+        to: event.to,
+        kind: event.kind.to_string(),
+        data: event.data.clone(),
+    };
     let mut text = serde_json::to_string(&wire).map_err(|e| sqlx::Error::Encode(Box::new(e)))?;
     if text.len() > NOTIFY_INLINE_MAX {
         let stored = Uuid::now_v7();
@@ -291,7 +304,11 @@ async fn relay(db: &PgPool, node: Uuid, tx: &broadcast::Sender<Frame>, payload: 
         inline => inline,
     };
     if let Wire::Inline { to, kind, data, .. } = wire {
-        let _ = tx.send(Frame::Event(Event { to, kind: Cow::Owned(kind), data }));
+        let _ = tx.send(Frame::Event(Event {
+            to,
+            kind: Cow::Owned(kind),
+            data,
+        }));
     }
 }
 
@@ -305,7 +322,10 @@ async fn fetch_stored(db: &PgPool, id: Uuid) -> Result<Option<Wire>, sqlx::Error
 
 /// Deletes stored payloads older than a few minutes; listeners read them within moments.
 pub async fn prune_stored(db: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'").execute(db).await.map(|_| ())
+    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'")
+        .execute(db)
+        .await
+        .map(|_| ())
 }
 
 fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
@@ -327,23 +347,44 @@ pub struct WsQuery {
 const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MIN as u64 * 60);
 
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
-    let auth = verify_access(&state.config.jwt_keys(), &q.token)?;
+    let auth = verify_access_live(&state.db, &state.config.jwt_keys(), &q.token).await?;
     let rx = state.hub.subscribe();
     let presence = auth.role.is_staff().then(|| state.hub.staff_join());
     let draining = state.hub.drain_signal();
-    Ok(ws.on_upgrade(move |socket| pump(socket, rx, draining, auth.id, auth.role, presence)))
+    let epoch = token_epoch(&state.config.jwt_keys(), &q.token)?;
+    let session = LiveSession { auth, epoch, db: state.db.clone() };
+    Ok(ws.on_upgrade(move |socket| pump(socket, rx, draining, session, presence)))
+}
+
+/// The authenticated socket owner and the session epoch its token was issued at.
+struct LiveSession {
+    auth: Auth,
+    epoch: i32,
+    db: PgPool,
+}
+
+impl LiveSession {
+    /// False once a staff session has ended (epoch moved on). Customers have no epoch and stay live.
+    /// A failed lookup counts as ended: the socket fails closed.
+    async fn still_current(&self) -> ApiResult<bool> {
+        if !self.auth.role.is_staff() {
+            return Ok(true);
+        }
+        Ok(staff_epoch(&self.db, self.auth.id).await?.is_none_or(|cur| cur == self.epoch))
+    }
 }
 
 async fn pump(
     socket: WebSocket,
     mut rx: broadcast::Receiver<Frame>,
     mut draining: watch::Receiver<bool>,
-    id: Uuid,
-    role: Role,
+    session: LiveSession,
     _presence: Option<StaffPresence>,
 ) {
+    let (id, role) = (session.auth.id, session.auth.role);
     let (mut sink, mut stream) = socket.split();
     let mut ping = tokio::time::interval(PING_EVERY);
+    let mut recheck = tokio::time::interval(EPOCH_RECHECK);
     let expiry = tokio::time::sleep(SOCKET_LIFETIME);
     tokio::pin!(expiry);
     loop {
@@ -375,6 +416,12 @@ async fn pump(
             },
             _ = ping.tick() => {
                 if sink.send(Message::Ping(Vec::new().into())).await.is_err() { break; }
+            }
+            _ = recheck.tick() => {
+                if !session.still_current().await.unwrap_or(false) {
+                    let _ = sink.send(Message::Close(Some(CloseFrame { code: close_code::POLICY, reason: "session ended".into() }))).await;
+                    break;
+                }
             }
         }
     }

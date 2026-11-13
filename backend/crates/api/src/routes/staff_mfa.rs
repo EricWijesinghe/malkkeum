@@ -2,6 +2,7 @@
 //! Every step after the password runs on a short-lived MFA challenge token, never on an access token.
 
 use super::auth::issue_tokens;
+use crate::owner::{RECOVERY_CODE_COUNT, new_code as recovery_code, normalize_code as normalize};
 use crate::{
     auth::{self, Role},
     crypto,
@@ -16,16 +17,12 @@ use axum::{
     http::HeaderMap,
     routing::post,
 };
-use std::net::SocketAddr;
 use chrono::Utc;
-use data_encoding::BASE32_NOPAD;
-use rand::{RngCore, rngs::OsRng};
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::net::SocketAddr;
 use uuid::Uuid;
 
-const RECOVERY_CODE_COUNT: usize = 10;
-const RECOVERY_CODE_BYTES: usize = 10;
 const MAX_MFA_FAILURES: i32 = 5;
 const LOCK_MINUTES: i32 = 15;
 
@@ -99,8 +96,7 @@ async fn enrol_confirm(State(s): State<AppState>, Json(req): Json<MfaInput>) -> 
         .and_then(|enc| crypto::decrypt(&s.config.data_key, &enc))
         .and_then(|b32| totp::decode_secret(&b32))
         .ok_or(ApiError::BadRequest("mfa_not_started"))?;
-    let step = totp::verify(&secret, req.code.unwrap_or_default().trim(), Utc::now().timestamp(), None)
-        .ok_or(ApiError::BadRequest("mfa_invalid_code"))?;
+    let step = totp::verify(&secret, req.code.unwrap_or_default().trim(), Utc::now().timestamp(), None).ok_or(ApiError::BadRequest("mfa_invalid_code"))?;
 
     let codes: Vec<String> = (0..RECOVERY_CODE_COUNT).map(|_| recovery_code()).collect();
     let mut tx = s.db.begin().await?;
@@ -113,7 +109,10 @@ async fn enrol_confirm(State(s): State<AppState>, Json(req): Json<MfaInput>) -> 
     if flipped.rows_affected() == 0 {
         return Err(ApiError::Conflict("mfa_already_enabled"));
     }
-    sqlx::query("DELETE FROM staff_recovery_codes WHERE staff_id = $1").bind(id).execute(&mut *tx).await?;
+    sqlx::query("DELETE FROM staff_recovery_codes WHERE staff_id = $1")
+        .bind(id)
+        .execute(&mut *tx)
+        .await?;
     for c in &codes {
         sqlx::query("INSERT INTO staff_recovery_codes (staff_id, code_hash) VALUES ($1, $2)")
             .bind(id)
@@ -148,26 +147,32 @@ async fn verify(
     s.lockout.check(&keys).await?;
     let accepted = match (req.code, req.recovery_code) {
         (Some(code), _) => {
-            let secret = secret.and_then(|enc| crypto::decrypt(&s.config.data_key, &enc)).and_then(|b32| totp::decode_secret(&b32));
+            let secret = secret
+                .and_then(|enc| crypto::decrypt(&s.config.data_key, &enc))
+                .and_then(|b32| totp::decode_secret(&b32));
             match secret.and_then(|k| totp::verify(&k, code.trim(), Utc::now().timestamp(), last_step)) {
                 // The step is burnt atomically: parallel submissions of one code cannot both pass.
-                Some(step) => sqlx::query("UPDATE staff SET totp_last_step = $2 WHERE id = $1 AND (totp_last_step IS NULL OR totp_last_step < $2)")
-                    .bind(id)
-                    .bind(step)
-                    .execute(&s.db)
-                    .await?
-                    .rows_affected()
-                    == 1,
+                Some(step) => {
+                    sqlx::query("UPDATE staff SET totp_last_step = $2 WHERE id = $1 AND (totp_last_step IS NULL OR totp_last_step < $2)")
+                        .bind(id)
+                        .bind(step)
+                        .execute(&s.db)
+                        .await?
+                        .rows_affected()
+                        == 1
+                }
                 None => false,
             }
         }
-        (None, Some(rc)) => sqlx::query("UPDATE staff_recovery_codes SET used_at = now() WHERE staff_id = $1 AND code_hash = $2 AND used_at IS NULL")
-            .bind(id)
-            .bind(auth::sha256_hex(normalize(&rc).as_bytes()))
-            .execute(&s.db)
-            .await?
-            .rows_affected()
-            == 1,
+        (None, Some(rc)) => {
+            sqlx::query("UPDATE staff_recovery_codes SET used_at = now() WHERE staff_id = $1 AND code_hash = $2 AND used_at IS NULL")
+                .bind(id)
+                .bind(auth::sha256_hex(normalize(&rc).as_bytes()))
+                .execute(&s.db)
+                .await?
+                .rows_affected()
+                == 1
+        }
         (None, None) => return Err(ApiError::BadRequest("mfa_invalid_code")),
     };
     if !accepted {
@@ -177,7 +182,10 @@ async fn verify(
         record_failure(&s, id).await?;
         return Err(ApiError::BadRequest("mfa_invalid_code"));
     }
-    sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
+    sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1")
+        .bind(id)
+        .execute(&s.db)
+        .await?;
     s.lockout.success(&keys).await?;
     Ok(Json(session_tokens(&s, id, &role).await?))
 }
@@ -202,36 +210,4 @@ async fn session_tokens(s: &AppState, id: Uuid, role: &str) -> ApiResult<Value> 
     let role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
     let tokens = issue_tokens(s, id, role, false, None).await?;
     serde_json::to_value(tokens).map_err(|e| ApiError::Internal(e.to_string()))
-}
-
-/// Random recovery code shown once, grouped for reading: XXXX-XXXX-XXXX-XXXX.
-fn recovery_code() -> String {
-    let mut bytes = [0u8; RECOVERY_CODE_BYTES];
-    OsRng.fill_bytes(&mut bytes);
-    let raw = BASE32_NOPAD.encode(&bytes);
-    raw.as_bytes().chunks(4).map(|c| std::str::from_utf8(c).unwrap_or_default()).collect::<Vec<_>>().join("-")
-}
-
-/// Input form does not matter: case, spaces and dashes are ignored.
-fn normalize(code: &str) -> String {
-    code.chars().filter(|c| c.is_ascii_alphanumeric()).map(|c| c.to_ascii_uppercase()).collect()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn recovery_codes_are_grouped_and_normalise_back() {
-        let code = recovery_code();
-        assert_eq!(code.len(), 19, "{code}");
-        assert_eq!(code.matches('-').count(), 3);
-        assert_eq!(normalize(&code.to_lowercase()), normalize(&code));
-        assert!(normalize(&code).chars().all(|c| c.is_ascii_uppercase() || c.is_ascii_digit()));
-    }
-
-    #[test]
-    fn codes_differ() {
-        assert_ne!(recovery_code(), recovery_code());
-    }
 }

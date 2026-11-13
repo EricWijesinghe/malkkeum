@@ -5,16 +5,19 @@ use super::audit;
 use crate::{
     auth::{self, Admin},
     error::{ApiError, ApiResult},
+    owner,
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{ConnectInfo, Path, State},
+    http::HeaderMap,
     routing::post,
 };
 use rand::{RngCore, rngs::OsRng};
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::net::SocketAddr;
 use uuid::Uuid;
 
 const RESET_TTL_MIN: i64 = 30;
@@ -28,10 +31,23 @@ pub fn admin_routes() -> Router<AppState> {
 }
 
 /// Admin issues a reset token for an active staff member. The token is shown once; only its hash is kept.
-async fn issue(State(s): State<AppState>, Admin(me): Admin, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    let exists: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM staff WHERE id = $1 AND active)").bind(id).fetch_one(&s.db).await?;
-    if !exists {
+/// The owner's own password is reset only with the owner's code: a reset token would otherwise be a way in.
+async fn issue(
+    State(s): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Admin(me): Admin,
+    Path(id): Path<Uuid>,
+) -> ApiResult<Json<Value>> {
+    let target: Option<bool> = sqlx::query_scalar("SELECT is_owner FROM staff WHERE id = $1 AND active")
+        .bind(id)
+        .fetch_optional(&s.db)
+        .await?;
+    let Some(target_is_owner) = target else {
         return Err(ApiError::NotFound);
+    };
+    if target_is_owner {
+        owner::verify_owner(&s, me, &headers, Some(peer.ip()), true).await?;
     }
     let mut bytes = [0u8; 32];
     OsRng.fill_bytes(&mut bytes);

@@ -3,7 +3,7 @@
 //! Only final answers are stored: a 5xx or an auth/rate refusal releases the key so the client can retry.
 
 use crate::{
-    auth::verify_access,
+    auth::verify_access_live,
     config::Config,
     contract::JSON_BODY_LIMIT,
     error::{ApiError, ApiResult},
@@ -39,7 +39,11 @@ fn hex(bytes: &[u8]) -> String {
 fn valid_key(raw: &axum::http::HeaderValue) -> ApiResult<String> {
     let s = raw.to_str().map_err(|_| ApiError::BadRequest("invalid_idempotency_key"))?;
     let ok = !s.is_empty() && s.chars().count() <= KEY_MAX_CHARS && s.bytes().all(|b| b.is_ascii_graphic());
-    if ok { Ok(s.to_owned()) } else { Err(ApiError::BadRequest("invalid_idempotency_key")) }
+    if ok {
+        Ok(s.to_owned())
+    } else {
+        Err(ApiError::BadRequest("invalid_idempotency_key"))
+    }
 }
 
 /// What the key slot says about this request.
@@ -52,14 +56,14 @@ enum Slot {
 
 /// Who owns a key: the user a valid bearer names, so a retry after the app refreshed its access token
 /// (15 min TTL) still replays instead of booking or charging again. Any other header falls back to its
-/// hash; such a request is refused as 401 by the handler, which releases the key.
-fn caller(config: &Config, auth: Option<&HeaderValue>) -> String {
+/// hash; so does a staff token whose session ended (its epoch moved on). Such a request is refused as 401 by
+/// the handler, which releases the key.
+async fn caller(db: &PgPool, config: &Config, auth: Option<&HeaderValue>) -> String {
     let Some(v) = auth else { return "anon".to_owned() };
-    let user = v
-        .to_str()
-        .ok()
-        .and_then(|s| s.strip_prefix("Bearer "))
-        .and_then(|t| verify_access(&config.jwt_keys(), t).ok());
+    let user = match v.to_str().ok().and_then(|s| s.strip_prefix("Bearer ")) {
+        Some(t) => verify_access_live(db, &config.jwt_keys(), t).await.ok(),
+        None => None,
+    };
     user.map_or_else(|| hex(&Sha256::digest(v.as_bytes())), |a| format!("user:{}", a.id))
 }
 
@@ -76,7 +80,7 @@ pub async fn replay(Extension(db): Extension<PgPool>, Extension(config): Extensi
         Ok(b) => b,
         Err(_) => return Ok(StatusCode::PAYLOAD_TOO_LARGE.into_response()),
     };
-    let scope = format!("{}:{}", caller(&config, parts.headers.get(header::AUTHORIZATION)), parts.uri.path());
+    let scope = format!("{}:{}", caller(&db, &config, parts.headers.get(header::AUTHORIZATION)).await, parts.uri.path());
     let body_hash = hex(&Sha256::digest(&bytes));
     match claim(&db, &scope, &key, &body_hash).await? {
         Slot::Done(status, text) => Ok(replayed(status, text)),
@@ -117,7 +121,10 @@ async fn claim(db: &PgPool, scope: &str, key: &str, body_hash: &str) -> ApiResul
     match row {
         Some((hash, _, _)) if hash != body_hash => Err(ApiError::BadRequest("idempotency_key_reused")),
         Some((_, Some(status), Some(body))) => {
-            let code = u16::try_from(status).ok().and_then(|c| StatusCode::from_u16(c).ok()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+            let code = u16::try_from(status)
+                .ok()
+                .and_then(|c| StatusCode::from_u16(c).ok())
+                .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
             Ok(Slot::Done(code, body))
         }
         // Still running (or released mid-read): the client should retry shortly.
@@ -128,7 +135,8 @@ async fn claim(db: &PgPool, scope: &str, key: &str, body_hash: &str) -> ApiResul
 /// Stores a final answer, or releases the key when the outcome is not safe to replay.
 async fn finish(db: &PgPool, scope: &str, key: &str, res: Response) -> ApiResult<Response> {
     let status = res.status();
-    let replayable = status.is_success() || (status.is_client_error() && ![StatusCode::UNAUTHORIZED, StatusCode::FORBIDDEN, StatusCode::TOO_MANY_REQUESTS].contains(&status));
+    let replayable = status.is_success()
+        || (status.is_client_error() && ![StatusCode::UNAUTHORIZED, StatusCode::FORBIDDEN, StatusCode::TOO_MANY_REQUESTS].contains(&status));
     let (parts, body) = res.into_parts();
     let bytes = match to_bytes(body, RESPONSE_LIMIT).await {
         Ok(b) if replayable => b,
@@ -148,19 +156,28 @@ async fn finish(db: &PgPool, scope: &str, key: &str, res: Response) -> ApiResult
 }
 
 async fn release(db: &PgPool, scope: &str, key: &str) -> ApiResult<()> {
-    sqlx::query("DELETE FROM idempotency_keys WHERE scope = $1 AND key = $2").bind(scope).bind(key).execute(db).await?;
+    sqlx::query("DELETE FROM idempotency_keys WHERE scope = $1 AND key = $2")
+        .bind(scope)
+        .bind(key)
+        .execute(db)
+        .await?;
     Ok(())
 }
 
 fn replayed(status: StatusCode, text: String) -> Response {
     let mut res = text.into_response();
     *res.status_mut() = status;
-    res.headers_mut().insert(header::CONTENT_TYPE, axum::http::HeaderValue::from_static("application/json"));
-    res.headers_mut().insert(HeaderName::from_static("idempotent-replayed"), axum::http::HeaderValue::from_static("true"));
+    res.headers_mut()
+        .insert(header::CONTENT_TYPE, axum::http::HeaderValue::from_static("application/json"));
+    res.headers_mut()
+        .insert(HeaderName::from_static("idempotent-replayed"), axum::http::HeaderValue::from_static("true"));
     res
 }
 
 /// Retention: keys older than 24h can never be replayed.
 pub async fn purge(db: &PgPool) -> Result<u64, sqlx::Error> {
-    Ok(sqlx::query("DELETE FROM idempotency_keys WHERE created_at < now() - interval '24 hours'").execute(db).await?.rows_affected())
+    Ok(sqlx::query("DELETE FROM idempotency_keys WHERE created_at < now() - interval '24 hours'")
+        .execute(db)
+        .await?
+        .rows_affected())
 }
