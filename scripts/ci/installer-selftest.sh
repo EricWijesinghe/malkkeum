@@ -99,6 +99,105 @@ t  "env_set replace"       eq "$(env_get DOMAIN)" other.co.kr
 t  "env_set add"           eq "$(env_get NEWKEY)" v=1
 export YES=1 # read by confirm() in the sourced CLI
 t  "confirm --yes"         confirm "q" yes
+sub() { ( "$@" ) >/dev/null 2>&1; } # die exits: run it in a subshell
+
+# ---- restore-offsite only takes real backup names (no ../ paths) ----
+t  "backup name"           valid_backup_name db-20261110-033000.sql.gz
+t  "backup name .enc"      valid_backup_name db-20261110-033000.sql.gz.enc
+nt "backup name traversal" valid_backup_name ../../etc/db-20261110-033000.sql.gz
+nt "backup name dir"       valid_backup_name x/db-20261110-033000.sql.gz.enc
+nt "backup name uploads"   valid_backup_name uploads-20261110-033000.tar.gz.enc
+nt "backup name suffix"    valid_backup_name 'db-20261110-033000.sql.gz.enc;id'
+
+# ---- uploads tar: checked first, then extracted beside the old files and swapped ----
+mk_tar() { # mk_tar 이름 명령 : $SB/tsrc 에서 명령을 실행해 $SB/tar/<이름>.tar.gz 를 만들어요
+  rm -rf "$SB/tsrc"; mkdir -p "$SB/tsrc/uploads/sub" "$SB/tar"
+  (cd "$SB/tsrc" && sh -c "$2") || echo "mk_tar $1 failed"
+}
+export T="$SB/tar"
+# shellcheck disable=SC2016 # $T and $PWD expand inside mk_tar's sh
+{
+  mk_tar good 'echo a > uploads/a.jpg; echo b > uploads/sub/b.jpg; tar czf "$T/good.tar.gz" uploads'
+  mk_tar link 'ln -s /etc/passwd uploads/p; tar czf "$T/link.tar.gz" uploads'
+  mk_tar hard 'echo a > uploads/a; ln uploads/a uploads/h; tar czf "$T/hard.tar.gz" uploads'
+  mk_tar dotdot 'echo x > x; tar czPf "$T/dotdot.tar.gz" uploads uploads/../x'
+  mk_tar abs 'echo x > uploads/a; tar czPf "$T/abs.tar.gz" uploads "$PWD/uploads/a"'
+  mk_tar other 'mkdir etc; echo x > etc/x; tar czf "$T/other.tar.gz" uploads etc'
+  mk_tar empty 'tar czf "$T/empty.tar.gz" -T /dev/null'
+}
+printf 'not a tar' | gzip > "$T/junk.tar.gz"
+head -c 4096 /dev/urandom | gzip > "$T/noise.tar.gz"
+nt "uploads tar empty"     uploads_tar_ok "$T/empty.tar.gz"
+nt "uploads tar noise"     uploads_tar_ok "$T/noise.tar.gz"
+t  "uploads tar ok"        uploads_tar_ok "$T/good.tar.gz"
+nt "uploads tar symlink"   uploads_tar_ok "$T/link.tar.gz"
+nt "uploads tar hardlink"  uploads_tar_ok "$T/hard.tar.gz"
+nt "uploads tar .."        uploads_tar_ok "$T/dotdot.tar.gz"
+nt "uploads tar absolute"  uploads_tar_ok "$T/abs.tar.gz"
+nt "uploads tar outside uploads/" uploads_tar_ok "$T/other.tar.gz"
+nt "uploads tar not a tar" uploads_tar_ok "$T/junk.tar.gz"
+nt "uploads tar missing"   uploads_tar_ok "$T/none.tar.gz"
+swap() { sh -c "${UPLOADS_SWAP//\/data\/uploads/$SB/vol}" < "$1" 2>/dev/null; } # the api container's script, on a sandbox dir
+mkdir -p "$SB/vol"; echo old > "$SB/vol/old.jpg"
+nt "swap: broken tar fails" swap "$T/noise.tar.gz"
+t  "swap: old files kept when extract fails" test -f "$SB/vol/old.jpg"
+t  "swap: no temp dir left after failure" test ! -e "$SB/vol/.restore-new"
+t  "swap: good tar"        swap "$T/good.tar.gz"
+t  "swap: new files in place" eq "$(cat "$SB/vol/a.jpg" "$SB/vol/sub/b.jpg" | tr '\n' ' ')" "a b "
+t  "swap: old files gone"  test ! -e "$SB/vol/old.jpg"
+t  "swap: temp dir gone"   test ! -e "$SB/vol/.restore-new"
+
+# ---- uninstall --purge ignores --yes / DAHAE_YES: the domain must be typed or passed with --confirm ----
+has_tty() { return 1; } # as under cron or CI: nobody to ask
+nt "purge: --yes alone refused"  sub purge_ok ""
+nt "purge: wrong domain refused" sub purge_ok wrong.co.kr
+t  "purge: --confirm domain"     sub purge_ok other.co.kr
+t  "plain uninstall still takes --yes" sub confirm "q" yes
+
+# ---- image signatures: verified by digest, no silent skip ----
+t  "signer ok"             valid_signer EricWijesinghe/malkkeum
+nt "signer regex chars"    valid_signer 'a/b|.*'
+nt "signer no repo"        valid_signer EricWijesinghe
+t  "signer identity regex" eq "$(signer_re Eric.W/mal.keum)" '(?i)^https://github\.com/Eric\.W/mal\.keum/\.github/workflows/release\.yml@refs/tags/v[0-9]'
+printf 'abc' > "$SB/sum"
+t  "sha256_is match"       sha256_is "$SB/sum" ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+nt "sha256_is mismatch"    sha256_is "$SB/sum" 0000000000000000000000000000000000000000000000000000000000000000
+t  "cosign sha amd64"      eq "$(cosign_sha256 x86_64)" "$COSIGN_SHA256_AMD64"
+t  "cosign sha arm64"      eq "$(cosign_sha256 aarch64)" "$COSIGN_SHA256_ARM64"
+nt "cosign sha other arch" cosign_sha256 armv7l
+mkdir -p "$SB/bin"
+cat > "$SB/bin/cosign" <<'COS'
+#!/usr/bin/env bash
+printf '%s\n' "$*" > "$(dirname "$0")/args"
+[ "${FAKE_COSIGN:-}" = ok ] || { echo "Error: no matching signatures" >&2; exit 1; }
+echo 'Verification for x --' >&2
+echo '[{"critical":{"image":{"docker-manifest-digest":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}}]'
+COS
+chmod 755 "$SB/bin/cosign"
+env_set SIGNER_REPO EricWijesinghe/malkkeum
+export FAKE_COSIGN=ok
+t  "verify -> pinned digest" eq "$(verify_image ghcr.io/o/malkkeum-api:stable)" ghcr.io/o/malkkeum-api@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+t  "verify pins the OIDC issuer" grep -q -- "--certificate-oidc-issuer https://token.actions.githubusercontent.com" "$SB/bin/args"
+t  "verify pins release.yml on tags" grep -qF 'EricWijesinghe/malkkeum/\.github/workflows/release\.yml@refs/tags/v' "$SB/bin/args"
+FAKE_COSIGN=bad
+nt "unsigned image refused" sub verify_image ghcr.io/o/malkkeum-api:stable
+FAKE_COSIGN=ok; env_set SIGNER_REPO 'bad repo'
+nt "bad signer refused"    sub verify_image ghcr.io/o/malkkeum-api:stable
+env_set SIGNER_REPO EricWijesinghe/malkkeum; rm -f "$SB/bin/cosign"
+nt "missing cosign refused (no silent skip)" sub verify_image ghcr.io/o/malkkeum-api:stable
+
+# ---- app DB role: not a superuser; restores drop owner/extension lines ----
+SQL=$(db_roles_sql 0123456789abcdef0123456789abcdef)
+t  "role is not superuser" grep -q 'NOSUPERUSER NOCREATEDB NOCREATEROLE' <<< "$SQL"
+t  "role password set"     grep -q "PASSWORD '0123456789abcdef0123456789abcdef'" <<< "$SQL"
+nt "no placeholders left"  grep -q '__ROLE__\|__PW__' <<< "$SQL"
+t  "extensions made by the superuser" grep -q 'CREATE EXTENSION IF NOT EXISTS pg_trgm' <<< "$SQL"
+DUMP="ALTER TABLE public.x OWNER TO app;
+DROP EXTENSION IF EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+COMMENT ON EXTENSION pgcrypto IS 'x';
+CREATE TABLE public.x (a int);"
+t  "restore filter drops owner and extension lines" eq "$(restore_filter <<< "$DUMP")" 'CREATE TABLE public.x (a int);'
 
 # digest_ref with a fake docker: loaded (tar) images have no RepoDigests, so they get a keep- tag
 ID=sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
@@ -120,6 +219,11 @@ FAKE_DIGEST=
 t  "digest_ref remote, no digest -> keep tag" eq "$(digest_ref r/malkkeum-api:stable r/malkkeum-api)" r/malkkeum-api:keep-0123456789ab
 t  "digest_ref unknown image -> as given" eq "$(digest_ref gone:tag r/x)" gone:tag
 unset -f docker
+
+# ---- .env is set to root-only on every installer run, even if it was loosened ----
+chmod 644 .env
+lock_env
+t  ".env locked to 600"    eq "$(stat -c %a .env)" 600
 
 echo "installer self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

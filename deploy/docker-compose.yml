@@ -26,7 +26,9 @@ services:
     logging: *log
     depends_on: { db: { condition: service_healthy } }
     environment:
-      DATABASE_URL: postgres://app:${DB_PASSWORD}@db:5432/cleaning
+      # Non-superuser app role (owner of the cleaning DB); `app` stays the admin/backup superuser.
+      # `dahae` (install.sh) creates the role and moves ownership before every install, update and restore.
+      DATABASE_URL: postgres://dahae_api:${API_DB_PASSWORD:?set API_DB_PASSWORD}@db:5432/cleaning
       DB_MAX_CONNECTIONS: "20"
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}

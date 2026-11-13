@@ -15,7 +15,11 @@
 ```
 curl -fsSL INSTALL_URL | sudo bash
 ```
-베타 버전을 먼저 써 보려면 `https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/beta/install.sh` 를 쓰세요.
+설치 파일은 이 저장소의 [릴리스](https://github.com/EricWijesinghe/malkkeum-install/releases)에 버전별로 올라가요. 받은 파일을 먼저 확인하려면:
+```
+curl -fsSLO INSTALL_URL && curl -fsSLO SUMS_URL && sha256sum -c SHA256SUMS && sudo bash install.sh
+```
+베타 버전을 먼저 써 보려면 릴리스 목록에서 가장 최근 베타(`-beta`) 릴리스의 `install.sh` 를 쓰세요.
 (설치 후에도 `sudo dahae channel beta` 로 바꿀 수 있어요.)
 
 ## 릴리스 확인

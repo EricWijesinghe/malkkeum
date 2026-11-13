@@ -7,6 +7,10 @@ name: release
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
 # Secret DIST_DEPLOY_KEY: SSH private key with write access to DIST_REPO (deploy key).
+# Secret DIST_TOKEN: fine-grained token, Contents read/write on DIST_REPO only: creates the release there
+# whose assets (install.sh + SHA256SUMS) the install line downloads.
+# Images are signed by digest with cosign keyless (this workflow's OIDC identity on refs/tags/v*);
+# install.sh and `dahae update` refuse images without that signature (docs/DEPLOY.md, Image signatures).
 on:
   push:
     tags: ["v*"]
@@ -24,6 +28,10 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: [self-hosted, malkkeum]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # keyless signing: Fulcio certificate for release.yml on this tag
     strategy:
       matrix:
         include:
@@ -46,7 +54,10 @@ jobs:
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        id: build
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
@@ -56,6 +67,10 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
           tags: ${{ steps.meta.outputs.tags }}
+      # Signs the multi-arch index digest (what every tag points at), never a movable tag.
+      - name: Sign by digest
+        env: { NAME: "${{ matrix.name }}", DIGEST: "${{ steps.build.outputs.digest }}" }
+        run: cosign sign --yes "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/$NAME@$DIGEST"
 
   # The installer pulls without a login, so both packages must be public and carry both CPU types.
   # Runs before delivery: an installer that cannot pull its images is never published.
@@ -63,7 +78,11 @@ jobs:
     needs: images
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: [self-hosted, malkkeum]
+    permissions: { contents: read }
     steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh
       - name: Anonymous pull check (amd64 + arm64)
         run: |
           # Empty docker config = no stored login and no credential helper; the runner's own config is untouched.
@@ -90,12 +109,33 @@ jobs:
           done
           rm -rf "$DOCKER_CONFIG"
           exit "$bad"
+      # The exact check a server runs (the dahae CLI that install.sh writes), anonymously, on this tag.
+      - name: Signature check with the installer's own code
+        run: |
+          export DOCKER_CONFIG="$RUNNER_TEMP/docker-anon-sig"
+          rm -rf "$DOCKER_CONFIG" && mkdir -p "$DOCKER_CONFIG"
+          w="$RUNNER_TEMP/sigcheck"; rm -rf "$w"; mkdir -p "$w/bin"
+          ln -s "$(command -v cosign)" "$w/bin/cosign"
+          # shellcheck source=/dev/null
+          DAHAE_SELFTEST=1 . deploy/install.sh
+          export DIR=$w; write_cli "$w/dahae"; cd "$w" || exit 1
+          printf 'SIGNER_REPO=%s\n' "$GITHUB_REPOSITORY" > .env
+          # shellcheck source=/dev/null
+          DAHAE_SELFTEST=1 . ./dahae
+          for name in malkkeum-api malkkeum-web; do
+            echo "ok: signed $(verify_image "ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/$name:${GITHUB_REF_NAME#v}")"
+          done
+          rm -rf "$DOCKER_CONFIG" "$w"
 
   delivery:
     needs: [images, pull-check]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: [self-hosted, malkkeum]
     steps:
+      - name: Release token for the delivery repo
+        env: { DIST_TOKEN: "${{ secrets.DIST_TOKEN }}" }
+        run: |
+          [ -n "$DIST_TOKEN" ] || { echo "::error title=DIST_TOKEN missing::Add secret DIST_TOKEN (fine-grained token, Contents read/write on DIST_REPO). Nothing was published."; exit 1; }
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       # Self-hosted runner: key and known_hosts live in the job's temp dir, never in the runner user's ~/.ssh.
       - name: Deploy key and GitHub host key (fingerprint checked)
@@ -110,7 +150,27 @@ jobs:
         env:
           DIST_REPO: ${{ vars.DIST_REPO }}
           VER: ${{ github.ref_name }}
-        run: IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" bash deploy/publish-delivery.sh
+        run: |
+          rm -rf "$RUNNER_TEMP/assets"
+          IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" SIGNER_REPO="$GITHUB_REPOSITORY" ASSET_DIR="$RUNNER_TEMP/assets" \
+            bash deploy/publish-delivery.sh
+      # The install line downloads these assets (releases/latest/download = newest stable; betas by tag).
+      - name: Installer release in the delivery repo (install.sh + SHA256SUMS)
+        env:
+          GH_TOKEN: ${{ secrets.DIST_TOKEN }}
+          DIST_REPO: ${{ vars.DIST_REPO }}
+          VER: ${{ github.ref_name }}
+        run: |
+          a="$RUNNER_TEMP/assets"; flags=(); target=main
+          case "$VER" in *-*) flags+=(--prerelease); target=beta ;; esac
+          if gh release view "$VER" -R "$DIST_REPO" >/dev/null 2>&1; then
+            gh release upload "$VER" -R "$DIST_REPO" --clobber "$a/install.sh" "$a/SHA256SUMS"
+          else
+            gh release create "$VER" -R "$DIST_REPO" --target "$target" --title "다해 $VER" "${flags[@]}" \
+              --notes "설치: curl -fsSL https://github.com/$DIST_REPO/releases/download/$VER/install.sh | sudo bash (파일 지문: SHA256SUMS)" \
+              "$a/install.sh" "$a/SHA256SUMS"
+          fi
+          rm -rf "$a"
       - name: Release notes in this (private) repo
         env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}" }
         run: |

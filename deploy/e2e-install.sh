@@ -27,7 +27,7 @@ if [ -n "$TAR" ]; then
   ENVS=("MALKKEUM_IMAGES_TAR=$TAR")
 else
   REG=localhost:5000
-  ENVS=("MALKKEUM_IMAGES=$REG")
+  ENVS=("MALKKEUM_IMAGES=$REG" "MALKKEUM_SKIP_SIGNATURE=1") # locally built images carry no release signature
 fi
 ENVS+=("MALKKEUM_DOMAIN=$DOMAIN" "MALKKEUM_EMAIL=ci@example.com" "MALKKEUM_VERSION=$TAG" "MALKKEUM_TLS=internal"
   "MALKKEUM_HEALTH_WAIT=240")
@@ -90,6 +90,10 @@ owner_is_set_up() { get /v1/setup | grep -q '"needs_admin":false'; }
 staff_count_is() { [ "$(dbq 'select count(*) from staff')" = "$1" ]; }
 setting_count_is() { [ "$(dbq "select count(*) from settings where key = '$1'")" = "$2" ]; }
 setup_code_is() { [ "$(dahae setup-code)" = "$1" ]; }
+app_role_ok() { # the API signs in as dahae_api, which is not a superuser
+  [ "$(dbq "select rolsuper from pg_roles where rolname = 'dahae_api'")" = f ]     && [ "$(dbq "select count(*) > 0 from pg_stat_activity where usename = 'dahae_api'")" = t ]     && [ "$(dbq "select pg_get_userbyid(datdba) from pg_database where datname = 'cleaning'")" = dahae_api ]
+}
+purge_needs_domain() { ! $SUDO setsid -w env DAHAE_YES=1 /usr/local/bin/dahae uninstall --purge --yes </dev/null >/dev/null 2>&1; } # no terminal
 mode_is() { [ "$($SUDO stat -c %a "$1")" = "$2" ]; }
 version_shown() { dahae version | grep -q "$TAG"; }
 backups_count() { $SUDO sh -c 'ls /opt/malkkeum/backups/db-*.sql.gz 2>/dev/null | wc -l'; }
@@ -131,6 +135,7 @@ expect ".env readable by root only" mode_is /opt/malkkeum/.env 600
 expect "backups readable by root only" mode_is /opt/malkkeum/backups 700
 expect "cron jobs installed" $SUDO test -f /etc/cron.d/malkkeum
 expect "log rotation installed" $SUDO test -f /etc/logrotate.d/dahae
+expect "API uses the non-superuser DB role" app_role_ok
 memcap; dc up -d >/dev/null 2>&1
 expect "healthy with 2 GB VPS memory limits" wait_until 180 api_healthy
 
@@ -171,6 +176,7 @@ expect "row written after the backup is gone" setting_count_is e2e_after 0
 expect "uploads restored" upload_marker
 expect "owner kept" staff_count_is 1
 expect "API healthy after restore" api_healthy
+expect "restore kept the DB owned by the app role" app_role_ok
 
 step "5. re-running install.sh is a safe upgrade"
 before=$(backups_count)
@@ -234,7 +240,9 @@ expect "API healthy in production mode" wait_until 180 api_healthy
 expect "no dev login codes in production mode" no_dev_code
 
 step "10. uninstall"
-dahae uninstall --purge --yes 2>&1 | tee "$LOG/uninstall.txt"
+expect "--purge is not skipped by --yes or DAHAE_YES" purge_needs_domain
+expect "still installed after the refused purge" $SUDO test -f /opt/malkkeum/.env
+dahae uninstall --purge --confirm "$DOMAIN" 2>&1 | tee "$LOG/uninstall.txt"
 [ "${PIPESTATUS[0]}" = 0 ] || fail "dahae uninstall failed"
 expect "containers, volumes, cron, CLI and /opt/malkkeum removed" nothing_left
 
