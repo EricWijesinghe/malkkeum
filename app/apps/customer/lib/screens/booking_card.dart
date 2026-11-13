@@ -31,6 +31,9 @@ class BookingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final b = booking;
     final c = context.colors;
+    final title = context.text.titleMedium?.copyWith(
+      fontWeight: FontWeight.w700,
+    );
     return InkWell(
       borderRadius: BorderRadius.circular(Radii.tile),
       onTap: () => openBooking(context, b),
@@ -53,11 +56,17 @@ class BookingCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    showDate ? bookingWhen(context, b) : bookingTime(context, b),
-                    style: context.text.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  // Date and time wrap as whole pieces: "오전 8시~9시" never splits mid-hour.
+                  Wrap(
+                    spacing: Space.xxs,
+                    children: [
+                      if (showDate)
+                        Text(
+                          dateLabel(b.visitDate, context.lang),
+                          style: title,
+                        ),
+                      Text(bookingTime(context, b), style: title),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Row(

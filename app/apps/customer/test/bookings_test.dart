@@ -218,6 +218,8 @@ void main() {
     expect(find.text(t.bookingsEmpty), findsOneWidget);
     expect(find.text(t.bookingsUpcoming), findsOneWidget);
     expect(find.textContaining(dateLabel(_today, 'ko')), findsNWidgets(2));
+    // Date and hour are separate pieces, so a narrow row never splits "오전 9시~10시" mid-hour.
+    expect(find.text(dateLabel(_today, 'ko')), findsNWidgets(2));
 
     await tester.tap(find.byKey(const ValueKey('calendar-today')));
     await settle(tester, duration: _calendarSettle);
