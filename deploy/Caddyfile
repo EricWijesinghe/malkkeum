@@ -47,17 +47,17 @@
 	#   bootstrap (no hashes: Flutter rewrites its bootstrap per build). cdn.portone.io = PortOne V2 browser SDK
 	#   (website/pay/index.html). No 'unsafe-eval': both web builds are compiled with --wasm (skwasm).
 	# wasm-unsafe-eval: WebAssembly compile for skwasm/CanvasKit (self-hosted, --no-web-resources-cdn).
-	# style-src / font-src: cdn.jsdelivr.net serves the website's Pretendard CSS and font files. No Google Fonts:
+	# style-src / font-src: same origin only (the website self-hosts its Dahae Sans subset). No Google Fonts:
 	#   the Flutter apps load their fallback fonts from /webfonts/ (same origin).
 	# connect-src: *.portone.io = PortOne API (api.portone.io) and SDK calls. Social sign-in (Kakao, Naver,
 	#   Google, Apple) runs in the native apps only; the web build offers no social SDK, so no hosts here.
 	# frame-src / form-action: PG payment windows (card, KakaoPay, NaverPay...) are hosted by many PGs whose
 	#   hosts PortOne does not publish as a fixed list; keep https: or checkout breaks.
 	# frame-ancestors none: nothing may embed us.
-	header @app_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://*.portone.io; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
+	header @app_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.portone.io; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.portone.io; frame-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none'"
 	# Static website: no inline script except the theme snippet in its pages' <head>, allowed by hash
 	# (scripts/ci/check-native.py fails when a page's inline script has no hash here). No PG, no frames.
-	header @site_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-BAOxqSXTXY0xct7XpdRWh4Q+kVwbxikbI09LZ/Tqsqg=' 'sha256-UtC0U60paHl4CC9DOzN7OY+bZaNnUQ9p4kyLhFax6ts='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+	header @site_csp Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-BAOxqSXTXY0xct7XpdRWh4Q+kVwbxikbI09LZ/Tqsqg=' 'sha256-UtC0U60paHl4CC9DOzN7OY+bZaNnUQ9p4kyLhFax6ts='; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 	# Probes and metrics are for the container runtime and the scraper on the server, never the internet.
 	@internal path /ready /metrics
