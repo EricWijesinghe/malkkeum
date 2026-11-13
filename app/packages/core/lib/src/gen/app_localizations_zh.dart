@@ -671,6 +671,21 @@ class TZh extends T {
   String get cConfirmAsk => '确定要继续吗？';
 
   @override
+  String get cServerTitle => '输入服务器地址';
+
+  @override
+  String get cServerBody => '请输入安装时获得的以 https:// 开头的服务器地址。只需输入一次。';
+
+  @override
+  String get cServerSave => '保存并继续';
+
+  @override
+  String get cServerInvalid => '地址无效。请输入以 https:// 开头的服务器地址。';
+
+  @override
+  String get cServerChange => '更改服务器地址';
+
+  @override
   String get ok => '确定';
 
   @override

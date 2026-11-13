@@ -689,6 +689,23 @@ class TMn extends T {
   String get cConfirmAsk => 'Итгэлтэй байна уу?';
 
   @override
+  String get cServerTitle => 'Серверийн хаяг оруулах';
+
+  @override
+  String get cServerBody =>
+      'Суулгалтын тэмдэглэлд өгсөн https:// гэж эхэлсэн серверийн хаягийг оруулна уу. Зөвхөн нэг удаа оруулна.';
+
+  @override
+  String get cServerSave => 'Хадгалаад үргэлжлүүлэх';
+
+  @override
+  String get cServerInvalid =>
+      'Хаяг буруу байна. https:// гэж эхэлсэн серверийн хаяг оруулна уу.';
+
+  @override
+  String get cServerChange => 'Серверийн хаяг солих';
+
+  @override
   String get ok => 'ОК';
 
   @override

@@ -684,6 +684,23 @@ class TEn extends T {
   String get cConfirmAsk => 'Are you sure?';
 
   @override
+  String get cServerTitle => 'Enter your server address';
+
+  @override
+  String get cServerBody =>
+      'Enter the server address that starts with https:// from your setup notes. You only need to do this once.';
+
+  @override
+  String get cServerSave => 'Save and continue';
+
+  @override
+  String get cServerInvalid =>
+      'That is not a valid address. Enter a server address that starts with https://.';
+
+  @override
+  String get cServerChange => 'Change server address';
+
+  @override
   String get ok => 'OK';
 
   @override

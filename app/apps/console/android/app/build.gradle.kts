@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -6,7 +8,7 @@ plugins {
 
 // Release signing: CI secrets (Codemagic CM_KEYSTORE_*) or android/key.properties.
 // Without either, release builds fall back to debug keys so `flutter run --release` still works.
-val keyProps = java.util.Properties().apply {
+val keyProps = Properties().apply {
     val f = rootProject.file("key.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
@@ -20,6 +22,8 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // flutter_local_notifications (via core) needs java.time on older Android versions.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -29,7 +33,8 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // Google Play requires API 36 for updates from 2026-08-31; same pin as the customer and partner apps.
+        targetSdk = 36
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
         // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
@@ -52,6 +57,8 @@ android {
     buildTypes {
         release {
             signingConfig = if (releaseStore != null) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            // Sideloaded owner app: no Play bundle, but a CI build must still never ship debug-signed.
+            check(releaseStore != null || System.getenv("CM_BUILD_ID") == null) { "CM_KEYSTORE_PATH is unset on Codemagic" }
         }
     }
 }
@@ -64,4 +71,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

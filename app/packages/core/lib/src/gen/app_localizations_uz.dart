@@ -692,6 +692,23 @@ class TUz extends T {
   String get cConfirmAsk => 'Ishonchingiz komilmi?';
 
   @override
+  String get cServerTitle => 'Server manzilini kiriting';
+
+  @override
+  String get cServerBody =>
+      'O\'rnatish eslatmasidagi https:// bilan boshlanadigan server manzilini kiriting. Buni faqat bir marta kiritish kerak.';
+
+  @override
+  String get cServerSave => 'Saqlash va davom etish';
+
+  @override
+  String get cServerInvalid =>
+      'Manzil noto\'g\'ri. https:// bilan boshlanadigan server manzilini kiriting.';
+
+  @override
+  String get cServerChange => 'Server manzilini o\'zgartirish';
+
+  @override
   String get ok => 'Tayyor';
 
   @override

@@ -682,6 +682,23 @@ class TTh extends T {
   String get cConfirmAsk => 'แน่ใจหรือไม่?';
 
   @override
+  String get cServerTitle => 'ใส่ที่อยู่เซิร์ฟเวอร์';
+
+  @override
+  String get cServerBody =>
+      'ใส่ที่อยู่เซิร์ฟเวอร์ที่ขึ้นต้นด้วย https:// จากบันทึกการติดตั้ง ต้องใส่เพียงครั้งเดียว';
+
+  @override
+  String get cServerSave => 'บันทึกและดำเนินการต่อ';
+
+  @override
+  String get cServerInvalid =>
+      'ที่อยู่ไม่ถูกต้อง โปรดใส่ที่อยู่เซิร์ฟเวอร์ที่ขึ้นต้นด้วย https://';
+
+  @override
+  String get cServerChange => 'เปลี่ยนที่อยู่เซิร์ฟเวอร์';
+
+  @override
   String get ok => 'ตกลง';
 
   @override

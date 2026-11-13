@@ -32,6 +32,7 @@
   pwsh -File scripts/release/build-all.ps1 -DryRun                          # show the plan, change nothing
   pwsh -File scripts/release/build-all.ps1                                  # everything, stops on first failure
   pwsh -File scripts/release/build-all.ps1 -Only api,console,apk-demo-customer
+  pwsh -File scripts/release/build-all.ps1 -Only apk-console               # 7-Console-Android: sideload APK for the owner phone
   pwsh -File scripts/release/build-all.ps1 -Only verify
   pwsh -File scripts/release/build-all.ps1 -Only publish -Publish          # after verify passed
 
@@ -79,6 +80,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 $env:PATH = "F:\tools\flutter\bin;$Jdk\bin;$env:PATH"
 $Demo = "$Stage\1-Demo"; $Install = "$Stage\2-Install-Server"; $Android = "$Stage\3-Store-Android"
 $Msix = "$Stage\4-Store-Microsoft"; $Apple = "$Stage\5-Store-Apple"; $DocsOut = "$Stage\6-Docs"
+$ConsoleOut = "$Stage\7-Console-Android"
 
 function Log([string]$Msg) {
   $line = "[$(Get-Date -Format 'HH:mm:ss')] $Msg"
@@ -280,7 +282,7 @@ function Step-Preflight {
     if ($api -eq $PlaceholderApiBase) { Log '   WARNING: -AllowPlaceholder: store binaries cannot reach a server. Do not upload them.' }
   }
   Act "create the staging folders under $Stage, $Work, $KeyDir; remove the old .verified marker" {
-    foreach ($d in $Demo, $Install, $Android, $Msix, $Apple, $DocsOut, $Work, $KeyDir) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
+    foreach ($d in $Demo, $Install, $Android, $Msix, $Apple, $DocsOut, $ConsoleOut, $Work, $KeyDir) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
     Remove-Item -LiteralPath "$Stage\.verified" -Force -EA SilentlyContinue
   }
 }
@@ -377,6 +379,25 @@ function Step-AndroidBuild([string]$App, [string]$Kind) {
   $built = if ($isBundle) { "$outputs\bundle\release\app-release.aab" } else { "$outputs\flutter-apk\app-release.apk" }
   Assert-BakedBase $built $api
   Copy-Output $built $(if ($isBundle) { "$Android\$App-release.aab" } else { "$Android\$App-universal.apk" })
+}
+
+# Owner console as a sideloaded APK (not on any store). No API_BASE: the owner types the server address on first launch.
+# Signed with the upload key when it exists (run -Only keystore once), otherwise with the debug key: fine for sideloading.
+function Step-ConsoleApk {
+  Prep-Flutter
+  Push-Location (Join-Path $root 'app\apps\console')
+  $n = Get-BuildNumber
+  $flags = "--build-number=$n", '--obfuscate', "--split-debug-info=$SymbolsDir/console-apk-$n"
+  $build = { Slot (@('flutter', 'build', 'apk', '--release') + $flags) }
+  try {
+    if ($DryRun -or (Test-Path -LiteralPath (Join-Path $KeyDir 'malkkeum-upload.p12'))) { With-UploadKey $build }
+    else { Log '   WARNING: no upload key yet (-Only keystore): the console APK is debug-signed'; & $build }
+  } finally { Pop-Location }
+  Act "copy console APK and README into $ConsoleOut" {
+    Copy-Item -LiteralPath (Join-Path $root 'app\apps\console\build\app\outputs\flutter-apk\app-release.apk') -Destination "$ConsoleOut\Dahae-Console.apk" -Force
+    Copy-Item -LiteralPath (Join-Path $root 'scripts\release\kit\console-android-README.txt') -Destination "$ConsoleOut\README.txt" -Force
+    Log "   copied Dahae-Console.apk and README.txt -> $ConsoleOut"
+  }
 }
 
 function Step-MsixBuild([string]$App) {
@@ -530,6 +551,16 @@ function Step-Verify {
       Log "   apksigner ok: $(Split-Path $f -Leaf)"
     }
   }
+  $consoleApk = "$ConsoleOut\Dahae-Console.apk"
+  if ($DryRun -or (Test-Path -LiteralPath $consoleApk)) {
+    Act "aapt2 + apksigner on $consoleApk" {
+      $badging = (& "$bt\aapt2.exe" dump badging $consoleApk 2>&1 | Select-String '^package:' | Select-Object -First 1)
+      if ($LASTEXITCODE -ne 0 -or -not $badging -or "$badging" -notmatch "name='com\.malkkeum\.console'") { throw "Console APK is not com.malkkeum.console: $badging" }
+      & "$bt\apksigner.bat" verify $consoleApk 2>&1 | Out-Null
+      if ($LASTEXITCODE -ne 0) { throw "apksigner verify failed: $consoleApk" }
+      Log "   console APK ok: $badging"
+    }
+  }
   foreach ($f in $msixFiles) {
     Act "check AppxManifest.xml is in $f" {
       Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -626,6 +657,7 @@ $Steps = [ordered]@{
   'aab-partner' = { Step-AndroidBuild 'partner' 'aab' }
   'apk-store-customer' = { Step-AndroidBuild 'customer' 'apk' }
   'apk-store-partner' = { Step-AndroidBuild 'partner' 'apk' }
+  'apk-console' = { Step-ConsoleApk }
   'msix-build-customer' = { Step-MsixBuild 'customer' }
   'msix-build-partner' = { Step-MsixBuild 'partner' }
   'msix-pack' = { Step-MsixPack }

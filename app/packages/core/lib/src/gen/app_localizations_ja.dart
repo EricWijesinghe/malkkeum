@@ -671,6 +671,23 @@ class TJa extends T {
   String get cConfirmAsk => 'よろしいですか？';
 
   @override
+  String get cServerTitle => 'サーバーのアドレスを入力';
+
+  @override
+  String get cServerBody =>
+      'セットアップ時に案内された https:// で始まるサーバーのアドレスを入力してください。入力は一度だけです。';
+
+  @override
+  String get cServerSave => '保存して続ける';
+
+  @override
+  String get cServerInvalid =>
+      '正しいアドレスではありません。https:// で始まるサーバーのアドレスを入力してください。';
+
+  @override
+  String get cServerChange => 'サーバーのアドレスを変更';
+
+  @override
   String get ok => '確認';
 
   @override

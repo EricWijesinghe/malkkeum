@@ -1417,6 +1417,36 @@ abstract class T {
   /// **'정말 진행할까요?'**
   String get cConfirmAsk;
 
+  /// No description provided for @cServerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 주소 입력'**
+  String get cServerTitle;
+
+  /// No description provided for @cServerBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치할 때 안내받은 https:// 로 시작하는 서버 주소를 입력하세요. 한 번만 입력하면 돼요.'**
+  String get cServerBody;
+
+  /// No description provided for @cServerSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하고 계속'**
+  String get cServerSave;
+
+  /// No description provided for @cServerInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'올바른 주소가 아니에요. https:// 로 시작하는 서버 주소를 입력하세요.'**
+  String get cServerInvalid;
+
+  /// No description provided for @cServerChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 주소 변경'**
+  String get cServerChange;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:

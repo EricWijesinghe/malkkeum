@@ -689,6 +689,23 @@ class TSi extends T {
   String get cConfirmAsk => 'ඔබට විශ්වාසද?';
 
   @override
+  String get cServerTitle => 'සේවාදායකයේ ලිපිනය ඇතුළත් කරන්න';
+
+  @override
+  String get cServerBody =>
+      'ස්ථාපන සටහන්වල ඇති https:// වලින් ආරම්භ වන සේවාදායකයේ ලිපිනය ඇතුළත් කරන්න. මෙය එක් වරක් පමණක් කළ යුතුය.';
+
+  @override
+  String get cServerSave => 'සුරකින්න සහ ඉදිරියට යන්න';
+
+  @override
+  String get cServerInvalid =>
+      'ලිපිනය වලංගු නැත. https:// වලින් ආරම්භ වන සේවාදායකයේ ලිපිනයක් ඇතුළත් කරන්න.';
+
+  @override
+  String get cServerChange => 'සේවාදායකයේ ලිපිනය වෙනස් කරන්න';
+
+  @override
   String get ok => 'හරි';
 
   @override

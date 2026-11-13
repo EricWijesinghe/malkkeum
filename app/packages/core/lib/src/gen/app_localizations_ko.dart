@@ -671,6 +671,22 @@ class TKo extends T {
   String get cConfirmAsk => '정말 진행할까요?';
 
   @override
+  String get cServerTitle => '서버 주소 입력';
+
+  @override
+  String get cServerBody =>
+      '설치할 때 안내받은 https:// 로 시작하는 서버 주소를 입력하세요. 한 번만 입력하면 돼요.';
+
+  @override
+  String get cServerSave => '저장하고 계속';
+
+  @override
+  String get cServerInvalid => '올바른 주소가 아니에요. https:// 로 시작하는 서버 주소를 입력하세요.';
+
+  @override
+  String get cServerChange => '서버 주소 변경';
+
+  @override
   String get ok => '확인';
 
   @override

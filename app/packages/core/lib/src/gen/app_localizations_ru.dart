@@ -688,6 +688,23 @@ class TRu extends T {
   String get cConfirmAsk => 'Вы уверены?';
 
   @override
+  String get cServerTitle => 'Введите адрес сервера';
+
+  @override
+  String get cServerBody =>
+      'Введите адрес сервера, начинающийся с https://, из инструкции по установке. Это нужно сделать только один раз.';
+
+  @override
+  String get cServerSave => 'Сохранить и продолжить';
+
+  @override
+  String get cServerInvalid =>
+      'Неверный адрес. Введите адрес сервера, начинающийся с https://.';
+
+  @override
+  String get cServerChange => 'Изменить адрес сервера';
+
+  @override
   String get ok => 'ОК';
 
   @override
