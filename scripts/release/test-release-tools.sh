@@ -71,6 +71,17 @@ nt "page: branch URL refused" bash "$R/build-install-page.sh" "$SB/rel/install.s
 nt "page: non-raw host refused" bash "$R/build-install-page.sh" "$SB/rel/install.sh" "https://evil.example/v1.2.3/install.sh" "$SB/page/out3"
 nt "page: missing installer refused" bash "$R/build-install-page.sh" "$SB/none.sh" "$url" "$SB/page/out4"
 
+# ---- install page -> installer: cloud-init sets only variables install.sh reads, no answers file ----
+page="$ROOT/website/install/index.html"
+inst="$ROOT/deploy/install.sh"
+page_vars=$(grep -o 'MALKKEUM_[A-Z_]*=' "$page" | sort -u)
+t  "page: cloud-init sets installer variables" test -n "$page_vars"
+for v in $page_vars; do
+  n=${v%=}
+  t "page: installer reads $n" grep -qF "{$n:-" "$inst"
+done
+nt "page: no answers file or page-made setup code" grep -qE 'dahae-answers|MALKKEUM_ANSWERS|SETUP_CODE' "$page"
+
 # ---- syntax ----
 for s in make-manifest.sh verify-manifest.sh sign-blob.sh verify-blob.sh build-install-page.sh test-release-tools.sh; do
   t "syntax: $s" bash -n "$R/$s"

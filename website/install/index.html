@@ -67,7 +67,7 @@
 
   <h2>4. 다음 단계</h2>
   <ol>
-    <li>서버가 켜지면 10~20분 정도 기다리세요. 설치가 끝나면 설치 인증 코드가 화면에 나와요.</li>
+    <li>서버가 켜지면 10~20분 정도 기다리세요. 설치가 끝나면 서버 화면(또는 설치 기록)에 설치 인증 코드가 나와요.</li>
     <li>다해 서버 도우미 앱 또는 관리 콘솔에서 그 코드를 입력하세요.</li>
   </ol>
 </main>
@@ -100,27 +100,14 @@ function validate() {
   return { domain, email, ok: domainOk && emailOk };
 }
 
-// 16 random bytes from the browser's CSPRNG, as 32 hex characters.
-function newSetupCode() {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function buildCloudInit(domain, email, code) {
+// Only the variables install.sh reads (MALKKEUM_DOMAIN, MALKKEUM_EMAIL). The installer makes its own setup
+// code and prints it at the end; no answers file, no prompts (cloud-init has no terminal).
+function buildCloudInit(domain, email) {
   const fetchCmd = "set -e; curl -fsSL -o /root/dahae-install.sh " + INSTALL_URL
     + "; echo '" + INSTALL_SH_SHA256 + "  /root/dahae-install.sh' | sha256sum -c -"
-    + "; MALKKEUM_ANSWERS=/root/.dahae-answers bash /root/dahae-install.sh";
+    + "; MALKKEUM_DOMAIN=" + domain + " MALKKEUM_EMAIL=" + email + " bash /root/dahae-install.sh";
   return [
     "#cloud-config",
-    "write_files:",
-    "  - path: /root/.dahae-answers",
-    "    permissions: '0600'",
-    "    owner: root:root",
-    "    content: |",
-    "      DOMAIN=" + domain,
-    "      ACME_EMAIL=" + email,
-    "      SETUP_CODE=" + code,
     "runcmd:",
     "  - [bash, -c, \"" + fetchCmd + "\"]",
     "",
@@ -130,11 +117,11 @@ function buildCloudInit(domain, email, code) {
 function generate() {
   const { domain, email, ok } = validate();
   if (!ok) return;
-  const text = buildCloudInit(domain, email, newSetupCode());
+  const text = buildCloudInit(domain, email);
   els.out.value = text;
   els.copy.disabled = false;
   els.save.disabled = false;
-  els.status.textContent = "만들었어요. 2시간 안에 서버를 만들어 주세요.";
+  els.status.textContent = "만들었어요. 아래 내용을 서버 만들기 화면에 붙여넣으세요.";
 }
 
 async function copyText() {
