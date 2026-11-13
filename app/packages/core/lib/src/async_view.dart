@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 import 'i18n.dart';
 
 /// Loads once, shows skeletons, a friendly error with retry, then content.
+/// Once content is on screen a failed reload keeps it and shows a toast (needs a Scaffold above).
 /// Call [AsyncViewState.reload] (via GlobalKey or `onRefresh`) to refetch.
 class AsyncView<V> extends StatefulWidget {
   const AsyncView({
@@ -39,8 +40,9 @@ class AsyncViewState<V> extends State<AsyncView<V>> {
     });
     try {
       await f;
-    } catch (_) {
-      // The error state renders below; nothing else to do here.
+    } catch (e) {
+      // With nothing loaded yet the error state renders below. With data on screen it stays, so say why.
+      if (mounted && _last != null) showToast(context, context.t.error(e));
     }
   }
 
@@ -52,10 +54,9 @@ class AsyncViewState<V> extends State<AsyncView<V>> {
         _last = snap.data;
         return widget.builder(context, snap.data as V, reload);
       }
-      // Keep showing the previous data while refreshing (no flash of skeletons).
-      if (snap.connectionState != ConnectionState.done && _last != null) {
-        return widget.builder(context, _last as V, reload);
-      }
+      // Keep the previous data while refreshing (no flash of skeletons) and when a refresh fails
+      // (pull-to-refresh with no signal must not swap a full list for an error page).
+      if (_last != null) return widget.builder(context, _last as V, reload);
       if (snap.hasError) {
         return ErrorRetry(
           message: context.t.error(snap.error!),
