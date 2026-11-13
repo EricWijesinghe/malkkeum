@@ -33,7 +33,7 @@ class IntroScreen extends StatelessWidget {
                         StaggerIn(
                           index: 0,
                           child: Text(
-                            BrandConfig.placeholder.name,
+                            BrandScope.of(context).name,
                             style: context.text.titleLarge?.copyWith(
                               color: context.primary,
                               fontWeight: FontWeight.w800,
@@ -289,43 +289,73 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(),
-        body: SafeArea(
-          child: Column(children: [
-            Expanded(
-              child: ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, padding: const EdgeInsets.all(Space.gutter), children: [
-          Text(context.t.loginPhoneTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.xl),
-          TextField(
-            controller: _ctrl,
-            autofocus: true,
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.send,
-            autofillHints: const [AutofillHints.telephoneNumber],
-            style: context.text.headlineSmall,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(11),
-              TextInputFormatter.withFunction((_, v) => TextEditingValue(text: _pretty(v.text), selection: TextSelection.collapsed(offset: _pretty(v.text).length))),
-            ],
-            decoration: InputDecoration(hintText: context.t.loginPhoneHint),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) => _valid && !_busy ? _send() : null,
-          ),
-          const SizedBox(height: Space.xl),
-          SocialSignInRow(
-            providers: defaultSocialSignIns(Deps.read(context).session.api.baseUrl),
-            busyProvider: _busyProvider,
-            devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
-            onSelected: _socialSignIn,
-              ),
-            ]),
+    appBar: AppBar(),
+    body: SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.all(Space.gutter),
+              children: [
+                Text(
+                  context.t.loginPhoneTitle,
+                  style: context.text.headlineSmall,
+                ),
+                const SizedBox(height: Space.xl),
+                TextField(
+                  controller: _ctrl,
+                  autofocus: true,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.send,
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                  style: context.text.headlineSmall,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(11),
+                    TextInputFormatter.withFunction(
+                      (_, v) => TextEditingValue(
+                        text: _pretty(v.text),
+                        selection: TextSelection.collapsed(
+                          offset: _pretty(v.text).length,
+                        ),
+                      ),
+                    ),
+                  ],
+                  decoration: InputDecoration(
+                    hintText: context.t.loginPhoneHint,
+                  ),
+                  onChanged: (_) => setState(() {}),
+                  onSubmitted: (_) => _valid && !_busy ? _send() : null,
+                ),
+                const SizedBox(height: Space.xl),
+                SocialSignInRow(
+                  providers: defaultSocialSignIns(
+                    Deps.read(context).session.api.baseUrl,
+                  ),
+                  busyProvider: _busyProvider,
+                  devMode: isDevApiBase(Deps.read(context).session.api.baseUrl),
+                  onSelected: _socialSignIn,
+                ),
+              ],
             ),
-            if (_error != null) _InlineError(message: _error!, onRetry: _valid && !_busy ? _send : null),
-            BottomActionBar(child: PrimaryButton(label: context.t.loginSendCode, busy: _busy, onPressed: _valid ? _send : null)),
-          ]),
-        ),
-      );
+          ),
+          if (_error != null)
+            _InlineError(
+              message: _error!,
+              onRetry: _valid && !_busy ? _send : null,
+            ),
+          BottomActionBar(
+            child: PrimaryButton(
+              label: context.t.loginSendCode,
+              busy: _busy,
+              onPressed: _valid ? _send : null,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class CodeScreen extends StatefulWidget {
@@ -415,42 +445,75 @@ class _CodeScreenState extends State<CodeScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(),
-        body: SafeArea(
-          child: Column(children: [
-            Expanded(
-              child: ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, padding: const EdgeInsets.all(Space.gutter), children: [
-          Text(context.t.loginCodeTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.xs),
-          Text(context.t.loginCodeSentTo(_pretty(widget.phone)), style: context.text.bodyMedium?.copyWith(color: context.colors.inkMuted)),
-          const SizedBox(height: Space.xl),
-          TextField(
-            controller: _ctrl,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _ctrl.text.length == 6 ? _verify() : null,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            textAlign: TextAlign.center,
-            style: context.text.headlineMedium?.copyWith(letterSpacing: 12),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
-            onChanged: (v) => v.length == 6 ? _verify() : setState(() {}),
-            decoration: const InputDecoration(hintText: '••••••'),
-          ),
-          const SizedBox(height: Space.md),
-          if (_error != null) _InlineError(message: _error!, onRetry: _ctrl.text.length == 6 && !_busy ? _verify : null),
-          Center(
-            child: TextButton(
-              onPressed: _left == 0 ? _resend : null,
-              child: Text(_left == 0 ? context.t.loginResend : '${context.t.loginResend} ($_left)'),
+    appBar: AppBar(),
+    body: SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.all(Space.gutter),
+              children: [
+                Text(
+                  context.t.loginCodeTitle,
+                  style: context.text.headlineSmall,
+                ),
+                const SizedBox(height: Space.xs),
+                Text(
+                  context.t.loginCodeSentTo(_pretty(widget.phone)),
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.colors.inkMuted,
+                  ),
+                ),
+                const SizedBox(height: Space.xl),
+                TextField(
+                  controller: _ctrl,
+                  autofocus: true,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _ctrl.text.length == 6 ? _verify() : null,
+                  autofillHints: const [AutofillHints.oneTimeCode],
+                  textAlign: TextAlign.center,
+                  style: context.text.headlineMedium?.copyWith(
+                    letterSpacing: 12,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(6),
+                  ],
+                  onChanged: (v) => v.length == 6 ? _verify() : setState(() {}),
+                  decoration: const InputDecoration(hintText: '••••••'),
+                ),
+                const SizedBox(height: Space.md),
+                if (_error != null)
+                  _InlineError(
+                    message: _error!,
+                    onRetry: _ctrl.text.length == 6 && !_busy ? _verify : null,
+                  ),
+                Center(
+                  child: TextButton(
+                    onPressed: _left == 0 ? _resend : null,
+                    child: Text(
+                      _left == 0
+                          ? context.t.loginResend
+                          : '${context.t.loginResend} ($_left)',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-              ]),
+          BottomActionBar(
+            child: PrimaryButton(
+              label: context.t.loginVerify,
+              busy: _busy,
+              onPressed: _ctrl.text.length == 6 ? _verify : null,
             ),
-            BottomActionBar(child: PrimaryButton(label: context.t.loginVerify, busy: _busy, onPressed: _ctrl.text.length == 6 ? _verify : null)),
-          ]),
-        ),
-      );
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -494,11 +557,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(automaticallyImplyLeading: false),
-        body: SafeArea(
-          child: Column(children: [
-            Expanded(
-              child: ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, padding: const EdgeInsets.all(Space.gutter), children: [
+    appBar: AppBar(automaticallyImplyLeading: false),
+    body: SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.all(Space.gutter),
+              children: [
                 Text(context.t.profileTitle, style: context.text.headlineSmall),
                 const SizedBox(height: Space.xl),
                 TextField(
@@ -507,17 +574,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   maxLength: 40,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.name],
-                  decoration: InputDecoration(hintText: context.t.profileNameHint, counterText: ''),
+                  decoration: InputDecoration(
+                    hintText: context.t.profileNameHint,
+                    counterText: '',
+                  ),
                   onChanged: (_) => setState(() {}),
-                  onSubmitted: (_) => _ctrl.text.trim().isEmpty || _busy ? null : _save(),
+                  onSubmitted: (_) =>
+                      _ctrl.text.trim().isEmpty || _busy ? null : _save(),
                 ),
-              ]),
+              ],
             ),
-            if (_error != null) _InlineError(message: _error!, onRetry: _ctrl.text.trim().isEmpty || _busy ? null : _save),
-            BottomActionBar(child: PrimaryButton(label: context.t.profileDone, busy: _busy, onPressed: _ctrl.text.trim().isEmpty ? null : _save)),
-          ]),
-        ),
-      );
+          ),
+          if (_error != null)
+            _InlineError(
+              message: _error!,
+              onRetry: _ctrl.text.trim().isEmpty || _busy ? null : _save,
+            ),
+          BottomActionBar(
+            child: PrimaryButton(
+              label: context.t.profileDone,
+              busy: _busy,
+              onPressed: _ctrl.text.trim().isEmpty ? null : _save,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 /// Failure copy that stays on screen with a retry, so a tap is never a silent no-op.
@@ -528,15 +611,22 @@ class _InlineError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(Space.gutter, Space.sm, Space.gutter, 0),
-        child: Row(children: [
-          Expanded(
-            child: Semantics(
-              liveRegion: true,
-              child: Text(message, style: context.text.bodyMedium?.copyWith(color: context.colors.danger)),
+    padding: const EdgeInsets.fromLTRB(Space.gutter, Space.sm, Space.gutter, 0),
+    child: Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            liveRegion: true,
+            child: Text(
+              message,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.danger,
+              ),
             ),
           ),
-          TextButton(onPressed: onRetry, child: Text(context.t.retry)),
-        ]),
-      );
+        ),
+        TextButton(onPressed: onRetry, child: Text(context.t.retry)),
+      ],
+    ),
+  );
 }

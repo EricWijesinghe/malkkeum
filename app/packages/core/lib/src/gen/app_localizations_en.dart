@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4267,6 +4268,10 @@ class TEn extends T {
   @override
   String get pvExportFailed =>
       'Could not load your data. Please try again later.';
+
+  @override
+  String get cSetupColorContrast =>
+      'White text on this colour is hard to read, so the apps will not use it. Choose a darker colour.';
 
   @override
   String get safetyEmergency => 'Emergency contacts';
