@@ -3,12 +3,9 @@
 
 mod common;
 
-use api::{
-    auth::{self, Role},
-    crypto,
-};
+use api::{auth::Role, crypto};
 use axum::http::StatusCode;
-use common::{SECRET, app, call, seed_catalog};
+use common::{app, call, seed_catalog};
 use serde_json::json;
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -16,8 +13,8 @@ use uuid::Uuid;
 const DATE: &str = "2026-03-12";
 const KEY: [u8; 32] = [7u8; 32];
 
-fn admin_token() -> String {
-    auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffAdmin).expect("token")
+async fn admin_token(db: &PgPool) -> String {
+    common::staff_token(db, Role::StaffAdmin).await.0
 }
 
 /// One verified pro with a verified bank account and one pending settlement due by `DATE`.
@@ -70,7 +67,7 @@ async fn request_payouts(app: &axum::Router, token: &str) -> (StatusCode, serde_
 async fn manual_payout_is_requested_then_confirmed_exactly_once(pool: PgPool) {
     let (settlement, _pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
 
     let (code, rows) = request_payouts(&app, &token).await;
     assert_eq!(code, StatusCode::OK);
@@ -110,7 +107,7 @@ async fn manual_payout_is_requested_then_confirmed_exactly_once(pool: PgPool) {
 async fn failed_payout_needs_a_reason_and_retries_without_a_second_row(pool: PgPool) {
     let (settlement, _pro) = seed(&pool).await;
     let app = app(pool.clone());
-    let token = admin_token();
+    let token = admin_token(&pool).await;
     let (_, rows) = request_payouts(&app, &token).await;
     let id = rows[0]["id"].as_str().expect("id").to_string();
 

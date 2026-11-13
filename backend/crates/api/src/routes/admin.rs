@@ -245,7 +245,10 @@ struct CancelRequest {
     refund_amount: Option<i64>,
 }
 
+/// Staff cancel with a refund. Live role, not the token: a deactivated account's token lives on for its TTL.
+/// Consultants may refund too: the refund never exceeds what the customer paid on a booking that is still open.
 async fn cancel(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>, Json(c): Json<CancelRequest>) -> ApiResult<Json<BookingRow>> {
+    live_staff_role(&s.db, st.id).await?;
     let b = load_booking(&s.db, id).await?;
     b.status()?.transition(BookingStatus::Cancelled)?;
     if c.refund_amount.is_some_and(|a| a < 0) {

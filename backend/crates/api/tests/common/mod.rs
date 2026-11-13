@@ -3,8 +3,10 @@
 //! and setup steps (sign-in, verified pro, customer with card and address, paid booking).
 
 use api::{
+    auth::{self, Role},
     build_state,
     config::{Config, PortOne},
+    providers::Providers,
     routes, seed,
 };
 use axum::{
@@ -16,7 +18,7 @@ use axum::{
 use chrono::Duration;
 use serde_json::{Value, json};
 use sqlx::PgPool;
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 use tower::ServiceExt;
 use uuid::Uuid;
 
@@ -75,6 +77,37 @@ pub fn test_config() -> Config {
 pub fn app(db: PgPool) -> Router {
     let state = build_state(db, test_config()).expect("http client");
     routes::router(state)
+}
+
+/// The API router configured like production (`DEV_MODE` off): PortOne calls go to `portone_api` (a mock).
+/// Sign-in still needs the dev router (OTP codes are only echoed in dev mode); tokens work on both.
+pub fn prod_app(db: PgPool, portone_api: &str) -> Router {
+    let mut cfg = test_config();
+    cfg.dev_mode = false;
+    cfg.portone = PortOne {
+        api_secret: Some(PORTONE_SECRET.into()),
+        ..PortOne::default()
+    };
+    let mut state = build_state(db.clone(), cfg.clone()).expect("http client");
+    state.providers = Arc::new(Providers::new(cfg, db).expect("http client").with_portone_api(portone_api));
+    routes::router(state)
+}
+
+/// API secret `prod_app` sends to the PortOne mock.
+pub const PORTONE_SECRET: &str = "test-portone-secret";
+
+/// A live staff row plus a token for it. Returns (token, staff id).
+pub async fn staff_token(db: &PgPool, role: Role) -> (String, Uuid) {
+    let id = Uuid::now_v7();
+    let db_role = if role == Role::StaffAdmin { "admin" } else { "consultant" };
+    sqlx::query("INSERT INTO staff (id, email, name, password_hash, role) VALUES ($1, $2, 'tester', 'x', $3)")
+        .bind(id)
+        .bind(format!("{id}@test.local"))
+        .bind(db_role)
+        .execute(db)
+        .await
+        .expect("staff row");
+    (auth::issue_access(SECRET, id, role).expect("token"), id)
 }
 
 /// Catalogue, quote formula, slot capacity and starter content (what first boot inserts).

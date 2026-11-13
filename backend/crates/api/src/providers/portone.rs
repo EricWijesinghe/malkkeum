@@ -11,7 +11,7 @@ use sha2::Sha256;
 use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
-const API: &str = "https://api.portone.io";
+pub(crate) const API: &str = "https://api.portone.io";
 const WEBHOOK_TOLERANCE_SECS: i64 = 300;
 
 fn auth(p: &Providers) -> Result<String, ProviderError> {
@@ -58,7 +58,7 @@ async fn read_json(resp: reqwest::Response) -> Result<Value, ProviderError> {
 async fn get_json(p: &Providers, path: &str) -> Result<Value, ProviderError> {
     let resp = p
         .http()
-        .get(format!("{API}{path}"))
+        .get(format!("{}{path}", p.portone_api()))
         .header(AUTHORIZATION, auth(p)?)
         .send()
         .await
@@ -78,18 +78,45 @@ pub async fn payment(p: &Providers, id: &str) -> Result<PaymentInfo, ProviderErr
     })
 }
 
-/// Full or partial cancellation of a PAID payment (used for refunds).
-pub async fn cancel(p: &Providers, id: &str, amount: i64) -> Result<(), ProviderError> {
+/// Full or partial cancellation of a PAID payment (used for refunds). With `cancellable`, PortOne only
+/// cancels while the payment's cancellable balance equals it (`currentCancellableAmount`).
+/// PortOne V2 has no idempotency key on cancel, so this balance check is what makes a cancel happen once.
+/// Source: https://developers.portone.io/api/rest-v2/payment (CancelPaymentBody, 409 CancellableAmountConsistencyBrokenError).
+pub async fn cancel(p: &Providers, id: &str, amount: i64, cancellable: Option<i64>) -> Result<(), ProviderError> {
     check_id(id)?;
+    let mut body = json!({ "amount": amount, "reason": "booking refund" });
+    if let Some(c) = cancellable {
+        body["currentCancellableAmount"] = json!(c);
+    }
     let resp = p
         .http()
-        .post(format!("{API}/payments/{id}/cancel"))
+        .post(format!("{}/payments/{id}/cancel", p.portone_api()))
         .header(AUTHORIZATION, auth(p)?)
-        .json(&json!({ "amount": amount, "reason": "booking refund" }))
+        .json(&body)
         .send()
         .await
         .map_err(upstream)?;
-    read_json(resp).await.map(|_| ())
+    if resp.status() != StatusCode::CONFLICT {
+        return read_json(resp).await.map(|_| ());
+    }
+    let refusal: Value = resp.json().await.unwrap_or(Value::Null);
+    match (refusal["type"].as_str(), cancellable) {
+        (Some("CancellableAmountConsistencyBrokenError"), Some(before)) => landed_before(p, id, before - amount).await,
+        (code, _) => Err(ProviderError::Declined(code.unwrap_or("cancel_refused").to_string())),
+    }
+}
+
+/// The balance moved since our books were written. It is our own earlier attempt (its commit was lost)
+/// exactly when the balance left is what this cancel would leave; anything else is refused.
+async fn landed_before(p: &Providers, id: &str, expected_left: i64) -> Result<(), ProviderError> {
+    let v = get_json(p, &format!("/payments/{id}")).await?;
+    let left = v["amount"]["total"].as_i64().zip(v["amount"]["cancelled"].as_i64()).map(|(t, c)| t - c);
+    if left == Some(expected_left) {
+        tracing::warn!(payment = id, "cancel already applied at PortOne; recording it");
+        Ok(())
+    } else {
+        Err(ProviderError::Declined("cancellable_amount_changed".into()))
+    }
 }
 
 pub async fn identity(p: &Providers, id: &str) -> Result<IdentityInfo, ProviderError> {
@@ -143,7 +170,7 @@ pub async fn verify_billing_key(p: &Providers, key: &str, customer: &str, issue:
     if check_id(key).is_err() {
         return Err(ProviderError::Declined("invalid_billing_key".into()));
     }
-    let info = billing_key_at(p.http(), API, secret, key).await?;
+    let info = billing_key_at(p.http(), p.portone_api(), secret, key).await?;
     bound(&info, customer, issue)
 }
 
@@ -177,7 +204,7 @@ pub async fn delete_billing_key(p: &Providers, key: &str) -> Result<(), Provider
     check_id(key)?;
     let resp = p
         .http()
-        .delete(format!("{API}/billing-keys/{key}"))
+        .delete(format!("{}/billing-keys/{key}", p.portone_api()))
         .header(AUTHORIZATION, auth(p)?)
         .send()
         .await
@@ -190,9 +217,10 @@ pub async fn delete_billing_key(p: &Providers, key: &str) -> Result<(), Provider
 }
 
 /// `POST /payments/{paymentId}/billing-key`: charges a saved billing key once. `payment_id` must be unique per charge.
-/// Returns the PortOne transaction id. A 4xx is `Declined`; a 5xx, transport error or unconfirmed (non-PAID) answer is `Upstream`.
-/// Source: https://developers.portone.io/api/rest-v2/payment.billingKey (verify both answer shapes in a PortOne test store).
-/// shortcut: success is read as `payment.status == "PAID"` plus `payment.transactionId`, decline as any 4xx body. Confirm before live billing.
+/// Returns `payment_id`, the id PortOne's cancel and lookup paths take. A 4xx is `Declined`; a 5xx, transport
+/// error or a 200 without `payment.paidAt` is `Upstream` (outcome unknown: the caller looks the payment up).
+/// Source: https://developers.portone.io/api/rest-v2/payment (PayWithBillingKeyResponse = `{ payment: { pgTxId, paidAt } }`).
+/// shortcut: a decline is read as any 4xx body. Confirm the decline shapes in a PortOne test store before live billing.
 pub async fn charge_billing(p: &Providers, key: &str, payment_id: &str, amount: i64, order: &str, customer: Uuid) -> Result<String, ProviderError> {
     check_id(key)?;
     check_id(payment_id)?;
@@ -205,7 +233,7 @@ pub async fn charge_billing(p: &Providers, key: &str, payment_id: &str, amount: 
     });
     let resp = p
         .http()
-        .post(format!("{API}/payments/{payment_id}/billing-key"))
+        .post(format!("{}/payments/{payment_id}/billing-key", p.portone_api()))
         .header(AUTHORIZATION, auth(p)?)
         .json(&body)
         .send()
@@ -220,10 +248,11 @@ pub async fn charge_billing(p: &Providers, key: &str, payment_id: &str, amount: 
         let code = v["type"].as_str().unwrap_or("charge_declined");
         return Err(ProviderError::Declined(code.to_string()));
     }
-    match (v["payment"]["status"].as_str(), v["payment"]["transactionId"].as_str()) {
-        (Some("PAID"), Some(tx)) => Ok(tx.to_string()),
+    if v["payment"]["paidAt"].is_string() {
+        Ok(payment_id.to_string())
+    } else {
         // Not confirmed as paid: the caller looks the payment up instead of charging again.
-        _ => Err(ProviderError::Upstream("charge_unconfirmed".into())),
+        Err(ProviderError::Upstream("charge_unconfirmed".into()))
     }
 }
 

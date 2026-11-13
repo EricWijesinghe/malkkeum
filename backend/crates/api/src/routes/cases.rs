@@ -257,7 +257,8 @@ struct CaseUpdate {
 async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>, Json(u): Json<CaseUpdate>) -> ApiResult<Json<Value>> {
     let case = load_case(&s.db, id).await?;
     let money = u.refund_amount.is_some() || u.hold_settlement.is_some();
-    if money && st.role != Role::StaffAdmin {
+    // Money moves on the role stored now, not the token claim (a demoted account's token lives on).
+    if money && (st.role != Role::StaffAdmin || crate::auth::live_staff_role(&s.db, st.id).await? != Role::StaffAdmin) {
         return Err(ApiError::Forbidden);
     }
     if u.status.as_ref().is_some_and(|to| to != &case.status && !safety::can_move(&case.status, to)) {
