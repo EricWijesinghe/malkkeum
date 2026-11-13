@@ -8,6 +8,9 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Owner account (내 계정) for the console: one owner per server, claimed or handed over with both authenticator codes; owner-only actions need a fresh code each time; recovery codes re-issue, SMS alert number, password change, sign out everywhere; server-issued one-time reset (`api owner-reset`) after a lost second factor.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
