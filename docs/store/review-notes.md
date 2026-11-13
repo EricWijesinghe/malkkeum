@@ -34,7 +34,7 @@ Dahae signs users in with a phone number and a one-time code sent by SMS. Review
 - 법으로 보관해야 하는 예약·결제 기록(5년)은 남고, 그 사실은 개인정보처리방침과 위 웹 페이지에 적혀 있어요.
 - In-app: More → Account → Delete account (customer and partner apps). Deletion completes inside the app. Web fallback: `https://<domain>/delete-account.html`. Saved-card billing keys are deleted at the payment gateway first, so no further charge can occur. Booking and payment records are kept for five years as Korean e-commerce law requires; this is stated in the privacy policy. Partners with an assigned job are refused by the server until the job is closed.
 
-> **병합 대기 (pending merge, WP-A) — 아직 출시 전이에요.** Apple 로그인 토큰 해지(Sign in with Apple REST API `auth/revoke`), Apple 서버 알림 수신 주소(`POST /v1/auth/apple/notifications`, 한국 개발자는 Services ID 등록 때 필수), 고객 탈퇴 시 소셜 연결 삭제는 다른 작업에서 만들고 있어요. 합쳐진 것을 확인한 뒤에만 아래 문장을 심사 메모에 넣으세요. 합쳐지기 전에는 넣지 마세요.
+> Apple 로그인 토큰 해지(Sign in with Apple REST API `auth/revoke`), Apple 서버 알림 수신 주소(`POST /v1/auth/apple/notifications`, 한국 개발자는 Services ID 등록 때 필수), 고객 탈퇴 시 소셜 연결 삭제가 v1.4.0 빌드에 들어 있어요. 아래 문장을 심사 메모에 넣으세요.
 > "Deleting an account that used Sign in with Apple also revokes the Apple tokens through the Sign in with Apple REST API, and we process Apple server-to-server notifications (consent-revoked, account-delete)."
 
 ## 4. 결제 (Payments)
@@ -46,7 +46,7 @@ Dahae signs users in with a phone number and a one-time code sent by SMS. Review
 | 1회 청소 예약 | 방문 청소 요금 | `apps/customer/lib/screens/booking_flow.dart` |
 | **정기 청소 (구독)** | 매주·2주·4주마다 같은 요일에 방문하는 청소 일정. 방문 **전날** 그 방문 1회분을 저장된 카드로 결제해요. 앱에서 일시정지, 재개, 해지, 방문 건너뛰기·날짜 변경을 할 수 있어요. 구독으로 열리는 앱 기능은 없어요 | `subscribe.dart`, `subscriptions.dart`, `backend/migrations/0066_subscriptions.sql` |
 | 팁 (선택) | 청소가 끝난 뒤 고객이 원하면 주는 팁. 전액 청소 파트너에게 가요 | `backend/migrations/0076_tips.sql` |
-| 쿠폰 · 포인트 | 청소 요금을 깎아 주는 혜택. **팔지 않아요.** 예약·가입·친구 초대로만 생기고, 현금으로 바꿀 수 없어요 (포인트는 병합 대기, money 브랜치 `00f107b`) | `coupons`, `points_ledger` |
+| 쿠폰 · 포인트 | 청소 요금을 깎아 주는 혜택. **팔지 않아요.** 예약·가입·친구 초대로만 생기고, 현금으로 바꿀 수 없어요 | `coupons`, `points_ledger` |
 
 - 결제는 국내 결제대행사 PortOne(연동 PG: 토스페이먼츠 등)의 결제 화면에서 해요. 카드 번호는 앱과 서버가 받지 않아요.
 - **Apple**: 심사 지침 3.1.3(e) 는 "앱 밖에서 소비되는 실물 상품·서비스"는 인앱 결제가 **아닌** 결제 수단(카드 등)을 써야 한다고 정해요. 그래서 인앱 결제(IAP)를 쓰지 않아요. 3.1.1(인앱 결제 의무)은 앱 안의 기능·콘텐츠를 여는 경우에 적용되는데, 다해에는 그런 상품이 없어요. 3.1.2 의 "자동 갱신 구독"도 인앱 결제 상품에 관한 규정이라 정기 청소에는 해당하지 않아요.

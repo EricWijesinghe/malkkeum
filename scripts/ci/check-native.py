@@ -199,6 +199,12 @@ def check_entitlements_and_privacy(app, ios):
             for a in priv.get("NSPrivacyAccessedAPITypes", [])}
     check("CA92.1" in apis.get("NSPrivacyAccessedAPICategoryUserDefaults", []), f"{app} PrivacyInfo: UserDefaults CA92.1")
     check("C617.1" in apis.get("NSPrivacyAccessedAPICategoryFileTimestamp", []), f"{app} PrivacyInfo: FileTimestamp C617.1")
+    # ErrorReporter sends crash reports to /v1/client-errors (no user id): declared, not linked, app functionality.
+    crash = next((d for d in priv.get("NSPrivacyCollectedDataTypes", [])
+                  if d.get("NSPrivacyCollectedDataType") == "NSPrivacyCollectedDataTypeCrashData"), None)
+    check(crash is not None and crash.get("NSPrivacyCollectedDataTypeLinked") is False
+          and crash.get("NSPrivacyCollectedDataTypeTracking") is False,
+          f"{app} PrivacyInfo: CrashData must be declared (not linked, no tracking) for client error reports")
 
 
 def check_pbxproj(app, ios):

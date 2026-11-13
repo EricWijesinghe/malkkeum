@@ -1,7 +1,7 @@
 # App Store 답안: 개인정보 라벨 · 연령 등급 · 수출 규정
 
 App Store Connect 에 입력할 답을 한곳에 모았어요. 고객 앱(다해)과 파트너 앱(다해 파트너)은 **따로** 입력해요.
-Google Play 쪽 같은 내용은 `data-safety.md` 예요. 한쪽을 고치면 다른 쪽도 고치세요. 아직 합쳐지지 않은 작업은 `data-safety.md` 맨 위 **병합 대기** 표를 보세요. 이 문서에서는 해당 줄에 "(병합 대기)"라고 적었어요.
+Google Play 쪽 같은 내용은 `data-safety.md` 예요. 한쪽을 고치면 다른 쪽도 고치세요. 두 문서 모두 v1.4.0 출시 빌드 기준이에요.
 
 근거: 서버 `backend/migrations/`, `backend/crates/api/src/`, 앱 `app/packages/core/lib/src/`, iOS `app/apps/*/ios/Runner/PrivacyInfo.xcprivacy`, `Info.plist`.
 
@@ -30,7 +30,7 @@ Apple 의 기준 (2026-11 확인, https://developer.apple.com/app-store/app-priv
 | 연락처 정보 · 전화번호 | 휴대폰 번호 | `users.phone` | 예 | 아니요 | 앱 기능, **개발자의 광고 또는 마케팅** (마케팅 수신 동의 시 광고 문자, `marketing.rs`) |
 | 연락처 정보 · 실제 주소 | 도로명·상세 주소, 평수, 집 정보 | `addresses` | 예 | 아니요 | 앱 기능 |
 | 금융 정보 · 결제 정보 | 자동결제 키(빌링키), 카드 표시명, 현금영수증 번호(암호화) | `payment_methods`, `cash_receipts` | 예 | 아니요 | 앱 기능 |
-| 구입 항목 · 구입 내역 | 예약, 결제, 환불, 정기 청소, 팁, 쿠폰, 포인트(병합 대기) | `bookings`, `payments`, `checkouts`, `subscriptions`, `booking_tips`, `points_ledger` | 예 | 아니요 | 앱 기능 |
+| 구입 항목 · 구입 내역 | 예약, 결제, 환불, 정기 청소, 팁, 쿠폰, 포인트 | `bookings`, `payments`, `checkouts`, `subscriptions`, `booking_tips`, `points_ledger` | 예 | 아니요 | 앱 기능 |
 | 식별자 · 사용자 ID | 내부 ID, 소셜 제공자 ID, 본인확인 CI 해시 | `users.id`, `user_identities.provider_user_id`, `users.ci_hash` | 예 | 아니요 | 앱 기능 |
 | 식별자 · 기기 ID | 푸시 토큰 | `push_tokens` | 예 | 아니요 | 앱 기능, **개발자의 광고 또는 마케팅** (마케팅 수신 동의 시 광고 푸시) |
 | 식별자 · 기기 ID | 분석용 설치 ID (임의 값) | `analytics_events.anon_id` | **아니요** | 아니요 | **분석** |
@@ -38,7 +38,7 @@ Apple 의 기준 (2026-11 확인, https://developer.apple.com/app-store/app-priv
 | 사용자 콘텐츠 · 사진 또는 비디오 | 상담·후기·사고 접수 사진 | `uploads`, `reviews.photos`, `cases.photos` | 예 | 아니요 | 앱 기능 |
 | 사용자 콘텐츠 · 고객 지원 | 운영팀·AI 상담 채팅 | `chat_messages` | 예 | 아니요 | 앱 기능 |
 | 사용자 콘텐츠 · 기타 사용자 콘텐츠 | 후기, 방문 메모·출입 방법, 사고 접수 내용 | `reviews`, `bookings.visit_notes`, `bookings.access_code_enc`, `cases` | 예 | 아니요 | 앱 기능 |
-| 진단 · 충돌 데이터 | (병합 대기, WP-F) 오류 메시지·스택·앱 버전 | `client_errors` | **아니요** | 아니요 | 앱 기능 |
+| 진단 · 충돌 데이터 | 앱이 직접 보내는 오류 보고(외부 SDK 없음): 오류 메시지·스택·앱 버전, 14일 뒤 삭제 | `client_errors` | **아니요** | 아니요 | 앱 기능 |
 
 기기 ID 는 App Store Connect 에서 한 줄이에요. "연결됨"을 **예**(푸시 토큰이 계정에 연결되므로)로 하고, 목적에 **앱 기능 · 분석 · 개발자의 광고 또는 마케팅** 세 가지를 모두 고르세요.
 
@@ -65,19 +65,10 @@ Apple 의 기준 (2026-11 확인, https://developer.apple.com/app-store/app-priv
 | 사용자 콘텐츠 · 사진 또는 비디오 | 작업 전후 사진 | `completion_reports`, `uploads` | 예 | 아니요 | 앱 기능 |
 | 사용자 콘텐츠 · 고객 지원 | 운영팀 채팅 | `chat_messages` | 예 | 아니요 | 앱 기능 |
 | 사용자 콘텐츠 · 기타 사용자 콘텐츠 | 견적, 완료 보고 메모 | `quotes`, `completion_reports` | 예 | 아니요 | 앱 기능 |
-| 진단 · 충돌 데이터 | (병합 대기, WP-F) 오류 메시지·스택·앱 버전 | `client_errors` | **아니요** | 아니요 | 앱 기능 |
+| 진단 · 충돌 데이터 | 앱이 직접 보내는 오류 보고(외부 SDK 없음): 오류 메시지·스택·앱 버전, 14일 뒤 삭제 | `client_errors` | **아니요** | 아니요 | 앱 기능 |
 
 ### 앱 안의 개인정보 매니페스트와 맞추기 (개발자용)
-Apple 은 `PrivacyInfo.xcprivacy` 와 위 라벨이 같기를 기대해요. 기준 커밋 `a365e37` 의 매니페스트에는 아래가 **빠져 있어요** (네이티브 파일 담당 작업 WP-C 에서 고칠 것):
-
-| 앱 | 빠진 항목 |
-|---|---|
-| 고객 | `NSPrivacyCollectedDataTypeProductInteraction` (연결 false, 목적 Analytics) |
-| 고객 | `DeviceID` 목적에 `Analytics`, `DeveloperAdvertising` 추가 |
-| 고객 | `PhoneNumber` 목적에 `DeveloperAdvertising` 추가 |
-| 고객 | `NSPrivacyCollectedDataTypeCustomerSupport` (채팅) |
-| 파트너 | `NSPrivacyCollectedDataTypeEmailAddress` (소셜 로그인), `NSPrivacyCollectedDataTypeCustomerSupport` |
-| 둘 다 | WP-F 가 들어가면 `NSPrivacyCollectedDataTypeCrashData` (연결 false, 목적 AppFunctionality) |
+Apple 은 `PrivacyInfo.xcprivacy` 와 위 라벨이 같기를 기대해요. 고객·파트너 앱 매니페스트(`app/apps/*/ios/Runner/PrivacyInfo.xcprivacy`)는 위 표와 같아요. 충돌 데이터는 `NSPrivacyCollectedDataTypeCrashData` (연결 false, 추적 false, 목적 AppFunctionality) 로 적혀 있고, `scripts/ci/check-native.py` 가 빠지지 않았는지 검사해요.
 
 외부 SDK(Firebase, Google Sign-In, Kakao 등)의 매니페스트는 실제 iOS 빌드의 Xcode "Generate Privacy Report" 로만 확인할 수 있어요. 빌드 뒤 한 번 확인하세요.
 
