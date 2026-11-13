@@ -199,6 +199,16 @@ String _pretty(String digits) {
   return '${digits.substring(0, 3)}-${digits.substring(3, mid)}-${digits.substring(mid)}';
 }
 
+/// After a session exists: save the chosen language to the account and load the profile.
+/// Resolves true when the account still has no name, so the caller can open the name step.
+Future<bool> completeSignIn(BuildContext context) async {
+  final deps = Deps.read(context);
+  // The language picked before sign-in (or the device one) becomes the account language.
+  deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
+  await deps.app.loadProfile();
+  return deps.app.name.isEmpty;
+}
+
 class PhoneScreen extends StatefulWidget {
   const PhoneScreen({super.key});
   @override
@@ -238,11 +248,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
         );
         if (!mounted) return;
       }
-      // The language picked before sign-in (or the device one) becomes the account language.
-      deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
-      await deps.app.loadProfile();
+      final nameless = await completeSignIn(context);
       if (!mounted) return;
-      if (result.isNew || deps.app.name.isEmpty) {
+      if (result.isNew || nameless) {
         await nav.pushReplacement(
           MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
         );
@@ -402,12 +410,10 @@ class _CodeScreenState extends State<CodeScreen> {
         audience: 'customer',
       );
       if (!mounted) return;
-      // The language picked before sign-in (or the device one) becomes the account language.
-      deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
-      await deps.app.loadProfile();
+      final nameless = await completeSignIn(context);
       if (!mounted) return;
       final nav = Navigator.of(context);
-      if (isNew || deps.app.name.isEmpty) {
+      if (isNew || nameless) {
         await nav.pushReplacement(
           MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
         );

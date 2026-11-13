@@ -24,6 +24,13 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    if (!Deps.of(context).session.signedIn) {
+      // Alerts belong to an account: a guest sees only the public notices.
+      return Scaffold(
+        appBar: AppBar(title: Text(t.moreNotices)),
+        body: const ContentListBody(kind: 'notice'),
+      );
+    }
     return DefaultTabController(
       length: 2,
       child: Scaffold(

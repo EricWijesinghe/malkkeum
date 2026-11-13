@@ -18,6 +18,7 @@ from the release branches; no tags existed for them.
 - Console: 탈퇴·개인정보 요청 screen. Staff find a customer by phone, download the customer's data as CSV, and see every request's outcome. Deletion is admin-only and needs the phone typed again; each request is recorded (migration 0157).
 
 ### Changed
+- Customer app: guests get the sign-in sheet with a reason for each protected action (chat, account, booking), member-only menu rows show a sign-in hint, the notifications screen shows only notices, and a nameless new account opens the name step after signing in from the sheet.
 - Release hardening: release tags must point into master, the image and delivery jobs run in protected
   environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
   ed25519-signed installer manifest and a cloud-init install page are published with each release.

@@ -77,6 +77,39 @@ void main() {
       await unmount(tester);
     });
 
+    testWidgets('a new account that signs in from the sheet lands on the name step', (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake, name: '');
+      _stockVerify(fake);
+      fake.reply('POST', '/auth/verify', {
+        'access_token': 'access-new',
+        'refresh_token': 'refresh-new',
+        'role': 'customer',
+        'subject': 'user-new',
+        'is_new': true,
+      });
+      final env = await TestEnv.create(fake: fake, signedIn: false);
+      await pumpCustomerApp(tester, env);
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      await tester.tap(find.text(koT.service('studio')).first);
+      await settle(tester);
+      await tester.tap(find.text(koT.dfBookNow));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '01012345678');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginSendCode));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '123456');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginVerify));
+      await settle(tester);
+
+      expect(fake.callsTo('PATCH', '/me'), isNotEmpty, reason: 'the chosen language is saved to the account');
+      expect(find.text(koT.profileTitle), findsOneWidget, reason: 'a nameless account is asked for its name');
+      await unmount(tester);
+    });
+
     testWidgets('a network failure on send code shows a localized message with retry', (tester) async {
       setViewport(tester, phoneSize);
       final fake = FakeApi()..on('POST', '/auth/otp', (_) => throw Exception('offline'));
