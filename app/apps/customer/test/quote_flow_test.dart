@@ -76,22 +76,80 @@ Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
   return fake;
 }
 
+Future<FakeApi> _pumpGuestMoveOut(WidgetTester tester) async {
+  setViewport(tester, phoneSize);
+  final fake = FakeApi()
+    ..reply('POST', '/quote/estimate', _estimate)
+    ..reply('GET', '/slots', [slotJson(8), slotJson(13)]);
+  stockCustomerApi(fake);
+  final env = await TestEnv.create(fake: fake, signedIn: false);
+  final app = AppState(env.api, FakeRealtime(env.api));
+  await app.loadServices();
+  await tester.pumpWidget(
+    CustomerTestHost(
+      env: env,
+      app: app,
+      home: QuoteFlowScreen(service: app.service('move_out')!),
+    ),
+  );
+  await settle(tester);
+  return fake;
+}
+
 String _chip(int n) => '${koT.service('move_out')} · $n/7';
 
 void main() {
-  test('every cleaning type shows its own 3D art, never the fallback plate', () {
-    const types = [
-      'standard',
-      'same_day_move',
-      'some_luggage_left',
-      'normal_move_in',
-      'after_interior',
-      'lived_in_deep_clean',
-    ];
-    for (final c in types) {
-      expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
-    }
-  });
+  testWidgets(
+    'guest sees the quote price at the address step with no address, and booking asks for sign-in',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _tap(tester, find.text(koT.type_standard));
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.building_commercial));
+      await _tap(tester, find.text(koT.dfLayoutTwo));
+      await _tap(tester, find.text(koT.dfHas).last);
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.dfNone).last);
+      await _tap(tester, _next());
+
+      // 4/7 (address) for a guest: the price, no address list, and the only button is the sign-in one.
+      expect(find.text(_chip(3)), findsOneWidget);
+      expect(
+        find.text(koT.guestPriceLine(formatWon(401100, 'ko'))),
+        findsOneWidget,
+      );
+      expect(find.byType(AddressRadioList), findsNothing);
+      expect(find.text(koT.next), findsNothing);
+      final preview = fake.lastCall('POST', '/quote/estimate')!.json;
+      expect(
+        preview.containsKey('visit_date'),
+        isFalse,
+        reason: 'no slot, no peak surcharge',
+      );
+      expect(preview.containsKey('start_hour'), isFalse);
+
+      await _tap(tester, find.text(koT.guestBookWithQuote));
+      expect(find.text(koT.guestReasonQuote), findsOneWidget);
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+    },
+  );
+
+  test(
+    'every cleaning type shows its own 3D art, never the fallback plate',
+    () {
+      const types = [
+        'standard',
+        'same_day_move',
+        'some_luggage_left',
+        'normal_move_in',
+        'after_interior',
+        'lived_in_deep_clean',
+      ];
+      for (final c in types) {
+        expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
+      }
+    },
+  );
 
   testWidgets(
     'move-out quote: seven steps, AC add-on, Safe booking, review, then the request status opens',
@@ -415,7 +473,11 @@ void main() {
     expect(find.text(formatWon(346500, 'ko')), findsOneWidget);
     expect(find.text(koT.dfAwaitingPay), findsOneWidget);
     expect(find.text(koT.dfPayInfoBody('10')), findsOneWidget);
-    await tester.scrollUntilVisible(find.text(koT.cancelBooking), 200, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(
+      find.text(koT.cancelBooking),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await _tap(tester, find.text(koT.cancelBooking));
     await _tap(tester, find.widgetWithText(FilledButton, koT.cancelBooking));
     expect(

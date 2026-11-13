@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'booking_flow.dart';
+import 'quote_price_hint.dart';
 import 'quote_review.dart';
 import 'request_status.dart';
 import 'service.dart' show ScopeLink;
@@ -101,6 +103,9 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   int _step = 0;
   bool _busy = false;
   Future<Json>? _estimate;
+
+  /// Price shown from the address step on, before any visit time is chosen.
+  Future<Json>? _preview;
   Map<int, (bool, int?)> _slots = {};
   final _askKeys = {for (final q in _Ask.values) q: GlobalKey()};
   final _nudges = <_Ask, int>{};
@@ -161,6 +166,8 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   void _go(int step) {
     // The estimate depends on every answer before it: ask again after a change.
     if (step <= _stepDate) _estimate = null;
+    if (step < _stepAddress) _preview = null;
+    if (step >= _stepAddress) _preview ??= _fetchEstimate(withSlot: false);
     if (step >= _stepMethod) _estimate ??= _fetchEstimate();
     setState(() {
       _step = step;
@@ -196,17 +203,29 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     );
   }
 
-  /// With the chosen slot, so the preview carries the same peak surcharge the booking stores.
-  Future<Json> _fetchEstimate() async =>
+  /// With the chosen slot, so the estimate carries the same peak surcharge the booking stores.
+  /// Without it (the early preview) the server adds no peak surcharge.
+  Future<Json> _fetchEstimate({bool withSlot = true}) async =>
       await context.api.post('/quote/estimate', {
-            ...a.toJson(),
-            if (d.date case final day?) 'visit_date': isoDate(day),
-            'start_hour': ?d.hour,
-          })
-          as Json;
+        ...a.toJson(),
+        if (withSlot && d.date case final day?) 'visit_date': isoDate(day),
+        if (withSlot) 'start_hour': ?d.hour,
+      }) as Json;
+
+  /// Guests answer the questions first; signing in is asked only when they book.
+  Future<void> _bookAsGuest() async {
+    if (!await requireSignIn(context, reason: SignInReason.quote) || !mounted) {
+      return;
+    }
+    // Signed in: the address list replaces the button.
+    setState(() {});
+  }
 
   Future<void> _submit() async {
     if (_busy) return;
+    if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) {
+      return;
+    }
     setState(() => _busy = true);
     final app = context.appRead;
     app.analytics.track('booking_start', screen: 'quote');
@@ -269,13 +288,18 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             _basicStep(t),
             _spaceStep(t),
             _page(t, 3, t.dfAddressTitle, [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                child: AddressRadioList(
-                  draft: d,
-                  onChanged: () => setState(() {}),
+              QuotePriceHint(estimate: _preview),
+              // A guest never types an address before signing in (PIPA).
+              if (_guest)
+                _guestBookButton(t)
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                  child: AddressRadioList(
+                    draft: d,
+                    onChanged: () => setState(() {}),
+                  ),
                 ),
-              ),
             ]),
             _dateStep(t),
             QuoteMethodPage(chip: _chip(t, 5), estimate: _estimate),
@@ -287,18 +311,28 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomActionBar(
-          child: PrimaryButton(
-            label: _step == _stepReview ? t.dfSubmitRequest : t.next,
-            busy: _busy,
-            onPressed: !_canNext
-                ? null
-                : (_step == _stepReview ? _submit : _next),
-          ),
-        ),
+        // A guest's address step has its own button in the page, not a disabled "다음".
+        bottomNavigationBar: _guest && _step == _stepAddress
+            ? null
+            : BottomActionBar(
+                child: PrimaryButton(
+                  label: _step == _stepReview ? t.dfSubmitRequest : t.next,
+                  busy: _busy,
+                  onPressed: !_canNext
+                      ? null
+                      : (_step == _stepReview ? _submit : _next),
+                ),
+              ),
       ),
     );
   }
+
+  bool get _guest => !Deps.of(context).session.signedIn;
+
+  Widget _guestBookButton(T t) => Padding(
+    padding: const EdgeInsets.all(Space.gutter),
+    child: PrimaryButton(label: t.guestBookWithQuote, onPressed: _bookAsGuest),
+  );
 
   String _chip(T t, int i) =>
       '${t.service(widget.service.code)} · ${i + 1}/$quoteSteps';
@@ -551,6 +585,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             ),
           );
     return _page(t, 4, t.dfDateTitle, body: t.dfDateNote, footer: offer, [
+      QuotePriceHint(estimate: _preview),
       FlowSection(
         children: [
           VisitDateRow(

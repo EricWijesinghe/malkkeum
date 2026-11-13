@@ -37,7 +37,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   /// The detail is free to browse; booking asks for sign-in first and keeps the draft in place.
   Future<void> _continue() async {
-    if (!await requireSignIn(context) || !mounted) return;
+    if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) {
+      return;
+    }
     final d = _draft.draft;
     final addresses = context.appRead.addresses;
     final only = addresses.length == 1 ? addresses.first : null;
@@ -75,6 +77,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 : t.service(s.code),
             body: t.serviceDesc(s.code),
           ),
+          if (!Deps.of(context).session.signedIn)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+              child: Text(
+                t.guestSeePrices,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.inkMuted,
+                ),
+              ),
+            ),
           if (s.type == PricingType.fixed)
             ..._fixed(context, t)
           else
