@@ -1,7 +1,7 @@
 """Writes docs/sample-data.md: every table, its columns, and one real example row.
 
 Run after `api demo load` against a scratch database, so the examples are realistic but fake:
-    PSQL=F:/tools/pgsql/bin/psql.exe PGPASSWORD=localdev python -I scripts/sample_data_doc.py cleaning_demo
+    PSQL="$PG_BIN/psql" PGPASSWORD=localdev python -I scripts/sample_data_doc.py cleaning_demo
 Secrets (password hashes, encrypted keys, tokens) are masked, never printed.
 """
 
@@ -82,8 +82,8 @@ def main() -> None:
     tables = psql("SELECT table_name FROM information_schema.tables WHERE table_schema='public' "
                   "AND table_type='BASE TABLE' AND table_name NOT LIKE '_sqlx%' ORDER BY 1").splitlines()
     lines = ["# Sample data · 데이터베이스 예시", "",
-             "Every table in the Malkkeum database with one example row from the demo data",
-             "(`malkkeum demo load`). All names, phones and amounts are fake. Secret columns are hidden.",
+             "Every table in the Dahae database with one example row from the demo data",
+             "(`dahae demo load`). All names, phones and amounts are fake. Secret columns are hidden.",
              "모든 표와 예시 한 줄이에요. 이름·전화번호·금액은 모두 가짜이고, 비밀 값은 가렸어요.", ""]
     for t in tables:
         cols = psql(f"SELECT column_name || ':' || data_type FROM information_schema.columns "

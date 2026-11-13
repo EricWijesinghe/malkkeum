@@ -20,13 +20,15 @@ GitHub 에서 이미지를 내려받지 않고, 미리 만들어 둔 **이미지
 
 ## A. 개발 PC 에서 이미지 파일 만들기 (집에서 미리)
 
-Docker Desktop 이 켜져 있어야 해요. 저장소 최상위 폴더(`F:\EC`)에서 실행하세요.
+Docker Desktop 이 켜져 있어야 해요. 저장소 최상위 폴더에서 Git Bash 로 실행하세요. `IMAGE_REPO` 는 설치 프로그램의
+기본 이미지 저장소(`deploy/install.sh` 의 `IMAGE_REPO_DEFAULT`, `ghcr.io/<GitHub 계정>`)와 같아야 해요.
 
 ```
-docker build -f backend/Dockerfile --build-arg APP_VERSION=demo -t ghcr.io/ericwijesinghe/malkkeum-api:demo backend
-docker build -f deploy/web.Dockerfile --build-arg APP_VERSION=demo -t ghcr.io/ericwijesinghe/malkkeum-web:demo .
+IMAGE_REPO=$(sed -n 's/^IMAGE_REPO_DEFAULT=//p' deploy/install.sh)
+docker build -f backend/Dockerfile --build-arg APP_VERSION=demo -t $IMAGE_REPO/malkkeum-api:demo backend
+docker build -f deploy/web.Dockerfile --build-arg APP_VERSION=demo -t $IMAGE_REPO/malkkeum-web:demo .
 docker pull postgres:17
-docker save -o malkkeum-demo.tar ghcr.io/ericwijesinghe/malkkeum-api:demo ghcr.io/ericwijesinghe/malkkeum-web:demo postgres:17
+docker save -o malkkeum-demo.tar $IMAGE_REPO/malkkeum-api:demo $IMAGE_REPO/malkkeum-web:demo postgres:17
 ```
 
 - 처음 빌드는 40분 이상 걸릴 수 있어요. 메모리가 부족하면 `--build-arg CARGO_BUILD_JOBS=2` 를 API 빌드 줄에 붙이세요 (동시 컴파일 수를 줄여요).
@@ -88,7 +90,7 @@ sudo dahae demo clear     # 샘플 데이터 지우기
 
 ## 실제 시험 기록 (발췌)
 
-깨끗한 Ubuntu 24.04 VM(systemd, Docker 미설치)에서 위 순서대로 설치하고 확인한 기록이에요. 전체 로그는 개발 PC 의 `F:/EC/targets/demo-install/` 에 있어요.
+깨끗한 Ubuntu 24.04 VM(systemd, Docker 미설치)에서 위 순서대로 설치하고 확인한 기록이에요.
 
 ```
 ✔ 이미지를 불러왔어요: /media/usb/malkkeum-demo.tar
@@ -122,4 +124,4 @@ HTTP 200                                    ← 예약 목록 (GET /v1/admin/boo
 
 - `deploy/install.sh` 의 `MALKKEUM_IMAGES_TAR` 가 설치 때 `docker load` 를 하고, 기본 경로(GHCR 에서 내려받기)는 그대로예요.
 - 이미지 파일로 설치하면 서버가 로컬 모드(`IMAGE_SOURCE=local`)로 기록돼서 `dahae update` 가 저장소에서 내려받지 않아요. 한 번 로컬로 설치하면 계속 로컬 모드예요.
-- 이미지 이름은 `ghcr.io/ericwijesinghe/malkkeum-api:<태그>` 형식이어야 해요 (installer 와 `dahae` 명령이 이 이름으로 찾아요). 저장소 주소를 바꿨다면 `MALKKEUM_IMAGES` 도 같이 지정하세요.
+- 이미지 이름은 `<IMAGE_REPO>/malkkeum-api:<태그>` 형식이어야 해요 (installer 와 `dahae` 명령이 이 이름으로 찾아요). 저장소 주소를 바꿨다면 `MALKKEUM_IMAGES` 도 같이 지정하세요.

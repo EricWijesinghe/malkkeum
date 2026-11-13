@@ -51,7 +51,7 @@ Future<void> loadShotFonts() async {
     await loader.load();
   }
 
-  final winFonts = Platform.environment['SHOT_WIN_FONTS'] ?? r'C:\Windows\Fonts';
+  final winFonts = Platform.environment['SHOT_WIN_FONTS'] ?? '${Platform.environment['WINDIR'] ?? r'C:\Windows'}\\Fonts';
   Future<void> cjk(String family, String file) async {
     final f = File('$winFonts${Platform.pathSeparator}$file');
     if (!f.existsSync()) return;

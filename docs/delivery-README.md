@@ -20,7 +20,7 @@ curl -fsSL INSTALL_URL | sudo bash
 curl -fsSLO INSTALL_URL && curl -fsSLO SUMS_URL && sha256sum -c SHA256SUMS && sudo bash install.sh
 ```
 이 채널의 최신 버전은 언제나 `BRANCH_URL` 이에요 (안정 버전은 `main`, 베타는 `beta` 브랜치).
-베타 버전을 먼저 써 보려면 `https://raw.githubusercontent.com/EricWijesinghe/malkkeum-install/beta/install.sh` 를 쓰세요.
+베타 버전을 먼저 써 보려면 이 저장소 `beta` 브랜치의 README 에 있는 설치 명령을 쓰세요.
 (설치 후에도 `sudo dahae channel beta` 로 바꿀 수 있어요.)
 
 ## 릴리스 확인

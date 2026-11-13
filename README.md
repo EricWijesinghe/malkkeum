@@ -19,7 +19,7 @@ Home-services platform for the Korean market: on-demand and quoted cleaning (stu
 - **Authentication** — phone OTP, Kakao / Naver / Google / Apple sign-in, PASS identity check, staff accounts with MFA and lockout, account deletion with provider unlink/revoke.
 - **Messaging** — real-time chat (WebSocket) with quote cards, push (FCM/APNs), Kakao AlimTalk, in-app notification inbox; optional AI-assisted support replies.
 - **Operations** — console dashboard, quote desk, inbox, catalog and pricing editor, partner approval, settlements, finance exports, audit log, setup wizard with encrypted integration keys.
-- **Internationalisation** — 14 languages, server-side messages in the recipient's language.
+- **Languages** — Korean and English, including server-side messages in the recipient's language.
 - **Delivery** — one-command installer (`curl | bash`) with signed images, automatic HTTPS, backups, safe updates with rollback and the `dahae` CLI.
 
 ## Repository layout
@@ -39,13 +39,14 @@ backend/             Rust workspace
 deploy/              installer, docker-compose, Caddy configuration
 website/             marketing site, legal pages, payment pages
 design/              3D icon pipeline and exported assets
-docs/                deployment, store, operator guides, specs
+docs/                deployment, store, operator guides, specs, status (PROGRESS.md)
 scripts/             CI checks, release and demo tooling
 ```
 
 ## Getting started
 
-Requirements: Rust (stable), Flutter (stable), PostgreSQL 17.
+Requirements: Rust (stable), Flutter (stable), PostgreSQL 17, Python 3.11+.
+Machine-specific tool locations go in `scripts/local.env` (copy `scripts/local.env.example`); `scripts/dev-api.sh` starts Postgres and the API with every external service faked.
 
 ```bash
 # backend — create backend/.env with DATABASE_URL, JWT_SECRET, DATA_KEY,
@@ -56,6 +57,7 @@ cargo run -p api                    # applies migrations, serves on :8080
 # apps
 cd app
 flutter pub get
+python3 -I tool/gen_arb.py && (cd packages/core && flutter gen-l10n)   # strings -> generated l10n
 cd apps/customer && flutter run --dart-define=API_BASE=http://localhost:8080
 ```
 
@@ -65,8 +67,9 @@ cd apps/customer && flutter run --dart-define=API_BASE=http://localhost:8080
 cd backend && cargo clippy --all-targets -- -D warnings && cargo test
 cd app && dart analyze --fatal-infos
 cd app/apps/customer && flutter test        # likewise for partner, console, packages/*
-python scripts/ci/check-native.py           # store/native configuration checks
-python scripts/ci/check-migrations.py
+python -I scripts/ci/check-native.py        # store/native configuration checks
+python -I scripts/ci/check-migrations.py
+python -I scripts/build_legal.py website --check   # legal pages match their generator
 ```
 
 CI (`.github/workflows/ci.yml`) runs formatting, lints, unit and integration tests, an end-to-end smoke test and the installer self-test.
@@ -74,6 +77,12 @@ CI (`.github/workflows/ci.yml`) runs formatting, lints, unit and integration tes
 ## Deployment
 
 See [`docs/DEPLOY.md`](docs/DEPLOY.md) and the operator guides in [`docs/guide/`](docs/guide/). Store submission material lives in [`docs/store/`](docs/store/).
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branch and commit conventions, and the checks to run.
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Release history:
+[CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

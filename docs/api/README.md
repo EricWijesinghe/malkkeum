@@ -1,4 +1,4 @@
-# Malkkeum API
+# Dahae API
 
 Base: `https://<host>/v1` (health and app-links at the root). Spec: `GET /v1/openapi.json` (staff admins only).
 Source of truth: `backend/crates/api/openapi.json` (kept inside the crate so the Docker build context includes it).

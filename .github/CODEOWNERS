@@ -1,0 +1,15 @@
+# Default owner for everything; the paths below are listed so reviews on them are always requested.
+*                                   @EricWijesinghe
+
+# Database schema, deployment, CI and release automation
+/backend/migrations/                @EricWijesinghe
+/deploy/                            @EricWijesinghe
+/.github/                           @EricWijesinghe
+/codemagic.yaml                     @EricWijesinghe
+
+# Legal pages and their generator (전자상거래법, 개인정보 보호법 text)
+/scripts/build_legal.py             @EricWijesinghe
+/website/privacy.html               @EricWijesinghe
+/website/terms.html                 @EricWijesinghe
+/website/location-terms.html        @EricWijesinghe
+/website/delete-account.html        @EricWijesinghe

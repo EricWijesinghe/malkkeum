@@ -115,6 +115,18 @@ process holds port 80 or 443.
   binary against the already-migrated schema. So a release may add tables, columns and indexes, but
   must not drop, rename or tighten anything the previous release still reads or writes. Remove the
   old shape one release later, once no rollback target uses it.
+- **Backups, RPO and RTO.** Every server takes a `pg_dump` daily at 03:30 KST and before every
+  update, kept 14 days on the server's own disk; the optional offsite copy (setup wizard, S3-compatible)
+  is AES-256-GCM encrypted. There is no WAL archiving, so the recovery point objective is **24 hours**
+  (up to one day of bookings can be lost). Recovery time on a fresh VPS is about **1 hour**: run the
+  installer, put the old `.env` back, `sudo dahae restore-offsite <name>`. Without offsite backups a
+  lost disk is a total loss: configure them before launch.
+- **`DATA_KEY` and `.env` are not in any backup.** `/opt/malkkeum/.env` holds `DATA_KEY` (it encrypts
+  integration keys, payout accounts and the offsite backups), `JWT_SECRET` and the database passwords.
+  Offsite backups cannot be decrypted without the same `DATA_KEY`. Right after install, copy `.env` to
+  a password manager or an encrypted USB stick kept away from the server, and copy it again after any
+  key rotation. Rotating `DATA_KEY` makes older offsite backups unreadable with the new key, so keep the
+  old value until those backups expire.
 - Re-running the installer on an installed server is the same safe update (backup → new images →
   health check → rollback on failure); settings and data are kept.
 - Apps bake in the API version floor: set `min_app_version` / `latest_app_version` per app in the
@@ -229,10 +241,14 @@ To wire each provider:
 
 After wiring a provider, add it to `SOCIAL_PROVIDERS` in the release build command. Keep the dev stubs out of release builds: they only appear on dev hosts, but the release API base must never be local.
 
-## 5. Local development (this PC)
+## 5. Local development
+
+Machine-specific tool locations (Flutter, cargo and pub caches, JDK, Postgres binaries and data
+directory, Playwright) go in `scripts/local.env`, copied from `scripts/local.env.example` (gitignored).
+Without it the tools on `PATH` are used.
 
 ```bash
-source scripts/env.sh          # all tools and caches live on F:
+source scripts/env.sh          # loads scripts/local.env and points SDK caches at DAHAE_TOOLS
 scripts/dev-api.sh             # Postgres on :5433 + API on :8080 (DEV_MODE fakes)
 python -I scripts/smoke.py     # 13 end-to-end business checks
 cd app/apps/customer && flutter run -d windows   # or chrome / an Android device

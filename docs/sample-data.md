@@ -1,7 +1,7 @@
 # Sample data · 데이터베이스 예시
 
-Every table in the Malkkeum database with one example row from the demo data
-(`malkkeum demo load`). All names, phones and amounts are fake. Secret columns are hidden.
+Every table in the Dahae database with one example row from the demo data
+(`dahae demo load`). All names, phones and amounts are fake. Secret columns are hidden.
 모든 표와 예시 한 줄이에요. 이름·전화번호·금액은 모두 가짜이고, 비밀 값은 가렸어요.
 
 ## `addresses` — Customers' saved addresses · 고객 주소

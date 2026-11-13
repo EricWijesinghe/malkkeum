@@ -1,4 +1,4 @@
-# 말끔 피치 (10장) / Malkkeum pitch (10 slides)
+# 다해 피치 (10장) / Dahae pitch (10 slides)
 
 Korean first, English second. 각 슬라이드: 화면에 넣을 내용 + 발표자 노트.
 Rule for the speaker: say only what exists. Items marked **(준비 중 / planned)** are not built yet.
@@ -14,7 +14,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - 한 번 온 고객이 다시 오게 만드는 장치가 없음 (쿠폰·후기·재예약)
 
 **발표자 노트**
-"사장님들 하루 시간 대부분이 상담 전화와 일정 맞추기, 정산 엑셀에 들어갑니다. 그리고 한 번 청소한 고객에게 다시 연락할 방법이 마땅치 않습니다. 말끔은 이 세 가지를 하나의 시스템으로 묶습니다."
+"사장님들 하루 시간 대부분이 상담 전화와 일정 맞추기, 정산 엑셀에 들어갑니다. 그리고 한 번 청소한 고객에게 다시 연락할 방법이 마땅치 않습니다. 다해는 이 세 가지를 하나의 시스템으로 묶습니다."
 
 ### 2. 해결: 앱 3개 + 서버 1개
 **화면**
@@ -89,7 +89,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 **발표자 노트**
 "앱 빌드와 업로드는 개발자가 합니다. 사장님은 사업자 명의로 계정을 만들고 개발자를 초대하시면 됩니다. 심사는 보통 애플 1~3일, 구글 1~7일입니다. 현재 남은 기술 작업은 실제 결제 키로 테스트하는 것과, 깃허브 자동 빌드가 대기 중인 문제(결제 한도 확인)를 푸는 것입니다."
 
-### 9. 왜 지금, 왜 말끔
+### 9. 왜 지금, 왜 다해
 **화면**
 - 이미 동작하는 전체 흐름: 예약 → 결제 → 배정 → 완료 → 후기 → 정산 → 세무 자료
 - 사장님 소유 서버와 데이터, 업체 이름·로고 교체 가능
@@ -118,7 +118,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - Nothing brings a one-time customer back (coupons, reviews, rebooking)
 
 **Speaker notes**
-"Owners spend their day on calls, scheduling and payout spreadsheets, and have no easy way to reach a past customer again. Malkkeum puts all three into one system."
+"Owners spend their day on calls, scheduling and payout spreadsheets, and have no easy way to reach a past customer again. Dahae puts all three into one system."
 
 ### 2. Solution: three apps, one server
 **Slide**
@@ -193,7 +193,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 **Speaker notes**
 "The developer builds and uploads the apps; the owner creates the accounts in the business's name and invites the developer. Review usually takes 1–3 days at Apple and 1–7 at Google. Remaining technical work: a test run with real payment keys, and unblocking the queued GitHub builds (billing limit)."
 
-### 9. Why now, why Malkkeum
+### 9. Why now, why Dahae
 **Slide**
 - The whole loop works today: book → pay → assign → complete → review → payout → tax exports
 - Owner-owned server and data; brand name and logo are swappable

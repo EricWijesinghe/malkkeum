@@ -9,7 +9,7 @@ $name = 'malkkeum_avd'
 if (-not ((& "$sdk\emulator\emulator.exe" -list-avds) -contains $name)) {
   Write-Host "Creating the Malkkeum emulator ($name) ..."
   if (-not $env:JAVA_HOME) {
-    $jdk = Get-ChildItem 'C:\Program Files\Java' -Directory -Filter 'jdk*' -EA SilentlyContinue | Select-Object -Last 1
+    $jdk = Get-ChildItem "$env:ProgramFiles\Java" -Directory -Filter 'jdk*' -EA SilentlyContinue | Select-Object -Last 1
     if ($jdk) { $env:JAVA_HOME = $jdk.FullName }
   }
   'no' | & "$sdk\cmdline-tools\latest\bin\avdmanager.bat" create avd -n $name -k 'system-images;android-34;default;x86_64' -d pixel_6 | Out-Null

@@ -1,7 +1,7 @@
-# 말끔 릴리스 패키지 · Malkkeum release package
+# 다해 릴리스 패키지 · Dahae release package
 
-이 폴더는 말끔(한국 가정 청소 플랫폼)의 **인계용 전체 패키지**입니다. 빌드 날짜와 커밋은 아래 "버전 정보" 를 보세요.
-This folder is the **complete hand-over package** for Malkkeum (Korean home-cleaning platform). Build date and commit are listed under "Build info".
+이 폴더는 다해(한국 가정 청소 플랫폼)의 **인계용 전체 패키지**입니다. 빌드 날짜와 커밋은 아래 "버전 정보" 를 보세요.
+This folder is the **complete hand-over package** for Dahae (Korean home-cleaning platform). Build date and commit are listed under "Build info".
 
 ## 폴더 구성 · Folder layout
 

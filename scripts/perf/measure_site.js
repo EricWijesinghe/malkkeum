@@ -1,9 +1,9 @@
 // Headless Chromium measurement of the public website against a Lighthouse-style budget.
 // Usage: node scripts/perf/measure_site.js http://127.0.0.1:8099/ [out.json]
-// Playwright comes from SHOT_PLAYWRIGHT (default: the F:/tools/shot install, as scripts/store/frame.js does).
+// Playwright comes from SHOT_PLAYWRIGHT (default: the `playwright` package, as scripts/store/frame.js does).
 // External CDN requests (fonts, portone) are aborted so numbers reflect our own files; API calls are stubbed 404.
 const fs = require('fs');
-const { chromium } = require(process.env.SHOT_PLAYWRIGHT || 'F:/tools/shot/node_modules/playwright');
+const { chromium } = require(process.env.SHOT_PLAYWRIGHT || 'playwright');
 
 const BUDGET = { lcpMs: 2500, fcpMs: 1800, cls: 0.1, jsKb: 300, totalKb: 1200 };
 
@@ -39,7 +39,7 @@ async function measure(url, device) {
       domContentLoadedMs: Math.round(nav.domContentLoadedEventEnd),
       jsKb: Math.round(sizeOf((r) => r.name.endsWith('.js') || r.initiatorType === 'script') / 1024),
       totalKb: Math.round(sizeOf(() => true) / 1024 + (nav.encodedBodySize || 0) / 1024),
-      threeLoaded: res.some((r) => r.name.includes('three.module')),
+      threeLoaded: res.some((r) => r.name.includes('/vendor/three')),
       requests: res.length,
     };
   });
