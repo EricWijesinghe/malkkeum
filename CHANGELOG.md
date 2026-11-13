@@ -8,6 +8,10 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
+  it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
