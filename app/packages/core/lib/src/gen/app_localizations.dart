@@ -6595,6 +6595,342 @@ abstract class T {
   /// **'알림 발송함'**
   String get oJob_notify_outbox;
 
+  /// No description provided for @err_owner_exists.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 소유자가 있어요'**
+  String get err_owner_exists;
+
+  /// No description provided for @err_second_factor_required.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증과 복구 코드 저장을 먼저 마쳐 주세요'**
+  String get err_second_factor_required;
+
+  /// No description provided for @err_owner_transfer_self.
+  ///
+  /// In ko, this message translates to:
+  /// **'자기 자신에게는 소유자를 넘길 수 없어요'**
+  String get err_owner_transfer_self;
+
+  /// No description provided for @err_owner_target_invalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'넘겨받을 사람은 사용 중인 관리자여야 해요'**
+  String get err_owner_target_invalid;
+
+  /// No description provided for @err_wrong_password.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 비밀번호가 맞지 않아요'**
+  String get err_wrong_password;
+
+  /// No description provided for @err_mfa_not_enabled.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증을 먼저 설정해 주세요'**
+  String get err_mfa_not_enabled;
+
+  /// No description provided for @err_reset_code_invalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'초기화 코드가 맞지 않거나 만료됐어요'**
+  String get err_reset_code_invalid;
+
+  /// No description provided for @err_sms_failed.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자를 보내지 못해 번호를 바꾸지 않았어요. 잠시 후 다시 해 주세요'**
+  String get err_sms_failed;
+
+  /// No description provided for @oaTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 계정'**
+  String get oaTitle;
+
+  /// No description provided for @oaOwnerBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자'**
+  String get oaOwnerBadge;
+
+  /// No description provided for @oaNotOwner.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자만 계정 보안과 서버 설정을 바꿀 수 있어요.'**
+  String get oaNotOwner;
+
+  /// No description provided for @oaClaimTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자 지정'**
+  String get oaClaimTitle;
+
+  /// No description provided for @oaClaimBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 소유자가 없어요. 본인이 소유자가 되면 계정 보안과 서버 설정을 관리할 수 있어요.'**
+  String get oaClaimBody;
+
+  /// No description provided for @oaClaim.
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 소유자 되기'**
+  String get oaClaim;
+
+  /// No description provided for @oaClaimDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'이제 소유자예요'**
+  String get oaClaimDone;
+
+  /// No description provided for @oaTwoFactorHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'2단계 인증 설정과 복구 코드 저장을 마쳐야 소유자 기능을 쓸 수 있어요.'**
+  String get oaTwoFactorHint;
+
+  /// No description provided for @oaConfirmCodes.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드를 종이에 적어 보관했어요'**
+  String get oaConfirmCodes;
+
+  /// No description provided for @oaCodesConfirmed.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드 저장을 확인했어요'**
+  String get oaCodesConfirmed;
+
+  /// No description provided for @oaAlertPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 받을 휴대폰'**
+  String get oaAlertPhone;
+
+  /// No description provided for @oaAlertPhoneNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 없어요. 등록하면 중요한 알림을 문자로 받아요.'**
+  String get oaAlertPhoneNone;
+
+  /// No description provided for @oaChangePhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'번호 바꾸기'**
+  String get oaChangePhone;
+
+  /// No description provided for @oaPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'010으로 시작하는 휴대폰 번호'**
+  String get oaPhoneHint;
+
+  /// No description provided for @oaPhoneNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'바꾸면 지금 번호로 변경 안내 문자가 가요.'**
+  String get oaPhoneNote;
+
+  /// No description provided for @oaPhoneSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 번호를 바꿨어요'**
+  String get oaPhoneSaved;
+
+  /// No description provided for @oaPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호 바꾸기'**
+  String get oaPassword;
+
+  /// No description provided for @oaPasswordNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'바꾸면 모든 기기에서 로그아웃돼요. 새 비밀번호로 다시 로그인해 주세요.'**
+  String get oaPasswordNote;
+
+  /// No description provided for @oaCurrentPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 비밀번호'**
+  String get oaCurrentPassword;
+
+  /// No description provided for @oaNewPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 비밀번호'**
+  String get oaNewPassword;
+
+  /// No description provided for @oaPasswordChanged.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호를 바꿨어요. 다시 로그인해 주세요.'**
+  String get oaPasswordChanged;
+
+  /// No description provided for @oaSignOutAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 기기에서 로그아웃'**
+  String get oaSignOutAll;
+
+  /// No description provided for @oaSignOutAllBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기를 포함해 모든 기기에서 로그아웃돼요. 되돌릴 수 없어요.'**
+  String get oaSignOutAllBody;
+
+  /// No description provided for @oaSessions.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인된 기기 수'**
+  String get oaSessions;
+
+  /// No description provided for @oaRecoveryCodes.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드 다시 만들기'**
+  String get oaRecoveryCodes;
+
+  /// No description provided for @oaRecoveryBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'기존 복구 코드는 모두 쓸 수 없게 돼요. 새 코드를 종이에 적어 안전한 곳에 보관하세요.'**
+  String get oaRecoveryBody;
+
+  /// No description provided for @oaRecoveryShown.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 복구 코드'**
+  String get oaRecoveryShown;
+
+  /// No description provided for @oaTransfer.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자 넘기기'**
+  String get oaTransfer;
+
+  /// No description provided for @oaTransferBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'넘겨받을 관리자가 본인 인증 번호도 입력해야 해요. 넘기면 이 계정은 소유자 기능을 잃어요.'**
+  String get oaTransferBody;
+
+  /// No description provided for @oaTransferTarget.
+  ///
+  /// In ko, this message translates to:
+  /// **'넘겨받을 관리자'**
+  String get oaTransferTarget;
+
+  /// No description provided for @oaTransferCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'넘겨받을 사람의 인증 번호'**
+  String get oaTransferCode;
+
+  /// No description provided for @oaTransferNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'넘겨받을 수 있는 다른 관리자가 없어요'**
+  String get oaTransferNone;
+
+  /// No description provided for @oaTransferDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자를 넘겼어요. 이 계정은 더 이상 소유자 기능을 쓸 수 없어요.'**
+  String get oaTransferDone;
+
+  /// No description provided for @oaTotpTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 번호 입력'**
+  String get oaTotpTitle;
+
+  /// No description provided for @oaTotpBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱에 보이는 6자리 번호를 입력하세요. 번호는 한 번만 쓸 수 있어요.'**
+  String get oaTotpBody;
+
+  /// No description provided for @oaTotpLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 번호 6자리'**
+  String get oaTotpLabel;
+
+  /// No description provided for @oaTotpInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'숫자 6자리를 입력해 주세요'**
+  String get oaTotpInvalid;
+
+  /// No description provided for @oaContinue.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속'**
+  String get oaContinue;
+
+  /// No description provided for @oaCancel.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get oaCancel;
+
+  /// No description provided for @oaSignInAgain.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 로그인해 주세요'**
+  String get oaSignInAgain;
+
+  /// No description provided for @oaRecoveryTypeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장 확인'**
+  String get oaRecoveryTypeTitle;
+
+  /// No description provided for @oaRecoveryTypeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장을 확인하려고 방금 보신 복구 코드 한 개를 입력해 주세요.'**
+  String get oaRecoveryTypeBody;
+
+  /// No description provided for @oaRecoveryTypeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'복구 코드 한 개'**
+  String get oaRecoveryTypeLabel;
+
+  /// No description provided for @err_recovery_code_invalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력한 코드가 방금 받은 복구 코드와 맞지 않아요'**
+  String get err_recovery_code_invalid;
+
+  /// No description provided for @err_totp_invalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 번호가 맞지 않아요. 앱에 보이는 6자리 번호를 입력해 주세요'**
+  String get err_totp_invalid;
+
+  /// No description provided for @err_totp_required.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 번호를 입력해 주세요'**
+  String get err_totp_required;
+
+  /// No description provided for @err_totp_reused.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 인증 번호는 이미 썼어요. 30초쯤 뒤 새로 나온 번호를 입력해 주세요'**
+  String get err_totp_reused;
+
+  /// No description provided for @err_owner_cannot_deactivate.
+  ///
+  /// In ko, this message translates to:
+  /// **'소유자 계정은 끌 수 없어요. 먼저 소유자를 다른 관리자에게 넘겨 주세요'**
+  String get err_owner_cannot_deactivate;
+
   /// No description provided for @pTabJobs.
   ///
   /// In ko, this message translates to:

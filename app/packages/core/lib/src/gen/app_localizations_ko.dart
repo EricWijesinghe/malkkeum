@@ -3486,6 +3486,178 @@ class TKo extends T {
   String get oJob_notify_outbox => '알림 발송함';
 
   @override
+  String get err_owner_exists => '이미 소유자가 있어요';
+
+  @override
+  String get err_second_factor_required => '2단계 인증과 복구 코드 저장을 먼저 마쳐 주세요';
+
+  @override
+  String get err_owner_transfer_self => '자기 자신에게는 소유자를 넘길 수 없어요';
+
+  @override
+  String get err_owner_target_invalid => '넘겨받을 사람은 사용 중인 관리자여야 해요';
+
+  @override
+  String get err_wrong_password => '현재 비밀번호가 맞지 않아요';
+
+  @override
+  String get err_mfa_not_enabled => '2단계 인증을 먼저 설정해 주세요';
+
+  @override
+  String get err_reset_code_invalid => '초기화 코드가 맞지 않거나 만료됐어요';
+
+  @override
+  String get err_sms_failed => '문자를 보내지 못해 번호를 바꾸지 않았어요. 잠시 후 다시 해 주세요';
+
+  @override
+  String get oaTitle => '내 계정';
+
+  @override
+  String get oaOwnerBadge => '소유자';
+
+  @override
+  String get oaNotOwner => '소유자만 계정 보안과 서버 설정을 바꿀 수 있어요.';
+
+  @override
+  String get oaClaimTitle => '소유자 지정';
+
+  @override
+  String get oaClaimBody =>
+      '지금은 소유자가 없어요. 본인이 소유자가 되면 계정 보안과 서버 설정을 관리할 수 있어요.';
+
+  @override
+  String get oaClaim => '내가 소유자 되기';
+
+  @override
+  String get oaClaimDone => '이제 소유자예요';
+
+  @override
+  String get oaTwoFactorHint => '2단계 인증 설정과 복구 코드 저장을 마쳐야 소유자 기능을 쓸 수 있어요.';
+
+  @override
+  String get oaConfirmCodes => '복구 코드를 종이에 적어 보관했어요';
+
+  @override
+  String get oaCodesConfirmed => '복구 코드 저장을 확인했어요';
+
+  @override
+  String get oaAlertPhone => '알림 받을 휴대폰';
+
+  @override
+  String get oaAlertPhoneNone => '아직 없어요. 등록하면 중요한 알림을 문자로 받아요.';
+
+  @override
+  String get oaChangePhone => '번호 바꾸기';
+
+  @override
+  String get oaPhoneHint => '010으로 시작하는 휴대폰 번호';
+
+  @override
+  String get oaPhoneNote => '바꾸면 지금 번호로 변경 안내 문자가 가요.';
+
+  @override
+  String get oaPhoneSaved => '알림 번호를 바꿨어요';
+
+  @override
+  String get oaPassword => '비밀번호 바꾸기';
+
+  @override
+  String get oaPasswordNote => '바꾸면 모든 기기에서 로그아웃돼요. 새 비밀번호로 다시 로그인해 주세요.';
+
+  @override
+  String get oaCurrentPassword => '현재 비밀번호';
+
+  @override
+  String get oaNewPassword => '새 비밀번호';
+
+  @override
+  String get oaPasswordChanged => '비밀번호를 바꿨어요. 다시 로그인해 주세요.';
+
+  @override
+  String get oaSignOutAll => '모든 기기에서 로그아웃';
+
+  @override
+  String get oaSignOutAllBody => '이 기기를 포함해 모든 기기에서 로그아웃돼요. 되돌릴 수 없어요.';
+
+  @override
+  String get oaSessions => '로그인된 기기 수';
+
+  @override
+  String get oaRecoveryCodes => '복구 코드 다시 만들기';
+
+  @override
+  String get oaRecoveryBody =>
+      '기존 복구 코드는 모두 쓸 수 없게 돼요. 새 코드를 종이에 적어 안전한 곳에 보관하세요.';
+
+  @override
+  String get oaRecoveryShown => '새 복구 코드';
+
+  @override
+  String get oaTransfer => '소유자 넘기기';
+
+  @override
+  String get oaTransferBody =>
+      '넘겨받을 관리자가 본인 인증 번호도 입력해야 해요. 넘기면 이 계정은 소유자 기능을 잃어요.';
+
+  @override
+  String get oaTransferTarget => '넘겨받을 관리자';
+
+  @override
+  String get oaTransferCode => '넘겨받을 사람의 인증 번호';
+
+  @override
+  String get oaTransferNone => '넘겨받을 수 있는 다른 관리자가 없어요';
+
+  @override
+  String get oaTransferDone => '소유자를 넘겼어요. 이 계정은 더 이상 소유자 기능을 쓸 수 없어요.';
+
+  @override
+  String get oaTotpTitle => '인증 번호 입력';
+
+  @override
+  String get oaTotpBody => '인증 앱에 보이는 6자리 번호를 입력하세요. 번호는 한 번만 쓸 수 있어요.';
+
+  @override
+  String get oaTotpLabel => '인증 번호 6자리';
+
+  @override
+  String get oaTotpInvalid => '숫자 6자리를 입력해 주세요';
+
+  @override
+  String get oaContinue => '계속';
+
+  @override
+  String get oaCancel => '취소';
+
+  @override
+  String get oaSignInAgain => '다시 로그인해 주세요';
+
+  @override
+  String get oaRecoveryTypeTitle => '저장 확인';
+
+  @override
+  String get oaRecoveryTypeBody => '저장을 확인하려고 방금 보신 복구 코드 한 개를 입력해 주세요.';
+
+  @override
+  String get oaRecoveryTypeLabel => '복구 코드 한 개';
+
+  @override
+  String get err_recovery_code_invalid => '입력한 코드가 방금 받은 복구 코드와 맞지 않아요';
+
+  @override
+  String get err_totp_invalid => '인증 번호가 맞지 않아요. 앱에 보이는 6자리 번호를 입력해 주세요';
+
+  @override
+  String get err_totp_required => '인증 번호를 입력해 주세요';
+
+  @override
+  String get err_totp_reused => '이 인증 번호는 이미 썼어요. 30초쯤 뒤 새로 나온 번호를 입력해 주세요';
+
+  @override
+  String get err_owner_cannot_deactivate =>
+      '소유자 계정은 끌 수 없어요. 먼저 소유자를 다른 관리자에게 넘겨 주세요';
+
+  @override
   String get pTabJobs => '일감';
 
   @override

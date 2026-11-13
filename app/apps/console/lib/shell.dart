@@ -10,6 +10,7 @@ import 'screens/finance.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
 import 'screens/ops.dart';
+import 'screens/owner_account.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
@@ -105,6 +106,13 @@ final _sections = <_Section>[
     Icons.badge_rounded,
     (t) => t.cStaff,
     () => const StaffScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    'c_owner_account',
+    Icons.manage_accounts_rounded,
+    (t) => t.oaTitle,
+    () => const OwnerAccountScreen(),
     adminOnly: true,
   ),
   _Section(
