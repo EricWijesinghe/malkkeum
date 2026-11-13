@@ -12,8 +12,8 @@ use crate::{
     providers::sms::TPL_REMINDER,
     realtime::{Recipient, notify},
     routes::audit,
-    sms_outbox::Message,
     settings_registry,
+    sms_outbox::Message,
     state::AppState,
 };
 use axum::{
@@ -470,7 +470,12 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
         let title = crate::i18n::tr(&locale, "내일 청소 예정이에요");
         let queued = if locale == "ko" {
             let brand = crate::routes::setup::brand_name(&s.db).await;
-            let msg = Message::Alimtalk { template: TPL_REMINDER, brand: &brand, title: "내일 청소 예정이에요", body: &number };
+            let msg = Message::Alimtalk {
+                template: TPL_REMINDER,
+                brand: &brand,
+                title: "내일 청소 예정이에요",
+                body: &number,
+            };
             crate::sms_outbox::send(s, Some(user), &phone, "booking.reminder", msg).await
         } else {
             let text = format!("{title}\n{number}");

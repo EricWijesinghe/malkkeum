@@ -185,12 +185,37 @@ async fn destructive_limits_hold_their_floors(pool: PgPool) {
     let app = common::app(pool.clone());
     let cfg = test_config();
     let (token, _) = staff_token(&pool, Role::StaffAdmin).await;
-    let (st, _) = call(&app, "PUT", "/v1/admin/settings/business", Some(&token), Some(json!({ "values": { "ai_chat_retention_days": 29 } }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/settings/business",
+        Some(&token),
+        Some(json!({ "values": { "ai_chat_retention_days": 29 } })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "chat history cannot be purged inside 30 days");
-    let (st, _) = call(&app, "PUT", "/v1/admin/settings/business", Some(&token), Some(json!({ "values": { "ai_chat_retention_days": 30 } }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/settings/business",
+        Some(&token),
+        Some(json!({ "values": { "ai_chat_retention_days": 30 } })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK);
-    assert_eq!(settings_registry::get(&pool, &cfg, "ai_chat_retention_days").await.expect("get"), 30, "the purge reads the stored value");
-    let (st, _) = call(&app, "PUT", "/v1/admin/settings/business", Some(&token), Some(json!({ "values": { "review_report_threshold": 1 } }))).await;
+    assert_eq!(
+        settings_registry::get(&pool, &cfg, "ai_chat_retention_days").await.expect("get"),
+        30,
+        "the purge reads the stored value"
+    );
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/settings/business",
+        Some(&token),
+        Some(json!({ "values": { "review_report_threshold": 1 } })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "one report must not hide a review");
 }
 
@@ -205,6 +230,13 @@ async fn maintenance_flag_and_message_round_trip(pool: PgPool) {
     assert_eq!(item(&doc, "maintenance_on")["type"], "bool");
     assert_eq!(item(&doc, "maintenance_message")["value"], "잠시 쉬어요");
     assert!(settings_registry::get_flag(&pool, &cfg, "maintenance_on").await.expect("flag"));
-    let (st, _) = call(&app, "PUT", "/v1/admin/settings/ops", Some(&token), Some(json!({ "values": { "maintenance_on": "yes" } }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/settings/ops",
+        Some(&token),
+        Some(json!({ "values": { "maintenance_on": "yes" } })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "a flag takes only true or false");
 }

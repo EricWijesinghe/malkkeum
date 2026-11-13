@@ -73,18 +73,30 @@ async fn insert_settlement(db: &PgPool, pro: Uuid, booking: Uuid, gross: i64, fe
 /// Three March bookings plus one out-of-period booking, with payments, settlements and checkouts.
 async fn seed_march(db: &PgPool) -> Uuid {
     seed_catalog(db).await;
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000001', 'fin') RETURNING id").fetch_one(db).await.expect("user");
-    let pro: Uuid = sqlx::query_scalar(
-        "INSERT INTO pros (phone, name, team_name, status) VALUES ('01070000101', 'pro', 'team', 'verified') RETURNING id",
-    )
-    .fetch_one(db)
-    .await
-    .expect("pro");
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000001', 'fin') RETURNING id")
+        .fetch_one(db)
+        .await
+        .expect("user");
+    let pro: Uuid = sqlx::query_scalar("INSERT INTO pros (phone, name, team_name, status) VALUES ('01070000101', 'pro', 'team', 'verified') RETURNING id")
+        .fetch_one(db)
+        .await
+        .expect("pro");
 
     // Completed and paid out on 2026-03-11.
     let b1 = insert_booking(db, user, "BKF-1", 100_000, 10_000, 3, "2026-03-05T10:00:00+09").await;
     insert_payment(db, b1, 90_000, 0, "paid", "fin-1", "2026-03-05T10:00:00+09").await;
-    insert_settlement(db, pro, b1, 100_000, 20_000, "paid", "2026-03-11", Some("2026-03-11T12:00:00+09"), "2026-03-06T09:00:00+09").await;
+    insert_settlement(
+        db,
+        pro,
+        b1,
+        100_000,
+        20_000,
+        "paid",
+        "2026-03-11",
+        Some("2026-03-11T12:00:00+09"),
+        "2026-03-06T09:00:00+09",
+    )
+    .await;
 
     // Cancelled after payment: full refund on the cancel day (2026-03-09).
     let b2 = insert_booking(db, user, "BKF-2", 50_000, 0, -1, "2026-03-08T10:00:00+09").await;
@@ -99,7 +111,11 @@ async fn seed_march(db: &PgPool) -> Uuid {
     let old = insert_booking(db, user, "BKF-0", 999_000, 0, 3, "2026-02-27T10:00:00+09").await;
     insert_payment(db, old, 999_000, 0, "paid", "fin-0", "2026-02-27T10:00:00+09").await;
 
-    for (key, method, amount, status) in [("ck-1", "card", 90_000, "paid"), ("ck-2", "kakaopay", 200_000, "paid"), ("ck-3", "card", 50_000, "failed")] {
+    for (key, method, amount, status) in [
+        ("ck-1", "card", 90_000, "paid"),
+        ("ck-2", "kakaopay", 200_000, "paid"),
+        ("ck-3", "card", 50_000, "failed"),
+    ] {
         sqlx::query(
             "INSERT INTO checkouts (user_id, kind, method, amount, status, expires_at, created_at, provider_payment_id)
              VALUES ($1, 'booking', $2, $3, $4, now() + interval '1 day', '2026-03-10T10:00:00+09', $5)",
@@ -153,7 +169,14 @@ async fn partner_table_and_service_table_agree_with_the_summary(pool: PgPool) {
     seed_march(&pool).await;
     let app = common::app(pool.clone());
     let token = admin_token().await;
-    let (_, partners) = call(&app, "GET", "/v1/admin/finance/partners?period=custom&from=2026-03-01&to=2026-03-31", Some(&token), None).await;
+    let (_, partners) = call(
+        &app,
+        "GET",
+        "/v1/admin/finance/partners?period=custom&from=2026-03-01&to=2026-03-31",
+        Some(&token),
+        None,
+    )
+    .await;
     let p = &partners[0];
     assert_eq!(p["name"], "pro");
     assert_eq!(p["jobs"], 2);
@@ -163,7 +186,14 @@ async fn partner_table_and_service_table_agree_with_the_summary(pool: PgPool) {
     assert_eq!(p["paid"], 80_000);
     assert_eq!(p["pending"], 160_000);
 
-    let (_, services) = call(&app, "GET", "/v1/admin/finance/services?period=custom&from=2026-03-01&to=2026-03-31", Some(&token), None).await;
+    let (_, services) = call(
+        &app,
+        "GET",
+        "/v1/admin/finance/services?period=custom&from=2026-03-01&to=2026-03-31",
+        Some(&token),
+        None,
+    )
+    .await;
     assert_eq!(services[0]["service_code"], "studio");
     assert_eq!(services[0]["gross"], 340_000);
     assert_eq!(services[0]["net_revenue"], 290_000);
@@ -251,7 +281,10 @@ async fn fetch_csv(app: &axum::Router, uri: &str, token: &str) -> String {
 #[sqlx::test(migrations = "../../migrations")]
 async fn settlements_export_uses_kst_month_bounds_and_totals_match_rows(pool: PgPool) {
     seed_catalog(&pool).await;
-    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000002', 'kst') RETURNING id").fetch_one(&pool).await.expect("user");
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000002', 'kst') RETURNING id")
+        .fetch_one(&pool)
+        .await
+        .expect("user");
     // A name starting with "=" must reach the sheet as a guarded text cell, not a formula.
     let pro: Uuid = sqlx::query_scalar("INSERT INTO pros (phone, name, team_name, status) VALUES ('01070000202', '=1+1', 'team', 'verified') RETURNING id")
         .fetch_one(&pool)

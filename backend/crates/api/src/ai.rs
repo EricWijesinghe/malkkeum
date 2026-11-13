@@ -413,7 +413,9 @@ async fn business_hours(db: &PgPool) -> Result<Value, sqlx::Error> {
 
 /// True while every count is under its cap. Pure so the limits can be tested without a database.
 pub fn under_caps(per_thread: i64, per_member: i64, per_day: i64, caps: Caps) -> bool {
-    within_quota(per_thread, i64::from(caps.thread_hourly)) && within_quota(per_member, i64::from(caps.member_daily)) && within_quota(per_day, i64::from(caps.daily))
+    within_quota(per_thread, i64::from(caps.thread_hourly))
+        && within_quota(per_member, i64::from(caps.member_daily))
+        && within_quota(per_day, i64::from(caps.daily))
 }
 
 async fn within_caps(db: &PgPool, thread: Uuid, caps: Caps) -> Result<bool, sqlx::Error> {

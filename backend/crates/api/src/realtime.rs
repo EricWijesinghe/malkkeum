@@ -155,7 +155,13 @@ impl Hub {
 
     /// Subscribes this node to the events of every other node. Reconnects with backoff.
     pub fn spawn_listener(&self) -> JoinHandle<()> {
-        tokio::spawn(listen_loop(self.db.clone(), self.node, self.tx.clone(), self.listening.clone(), self.drain_signal()))
+        tokio::spawn(listen_loop(
+            self.db.clone(),
+            self.node,
+            self.tx.clone(),
+            self.listening.clone(),
+            self.drain_signal(),
+        ))
     }
 
     /// True while this node holds its LISTEN connection.
@@ -192,7 +198,12 @@ async fn publish_loop(db: PgPool, node: Uuid, mut queue: mpsc::Receiver<Event>) 
 }
 
 async fn publish(db: &PgPool, node: Uuid, event: &Event) -> Result<(), sqlx::Error> {
-    let wire = Wire::Inline { origin: node, to: event.to, kind: event.kind.to_string(), data: event.data.clone() };
+    let wire = Wire::Inline {
+        origin: node,
+        to: event.to,
+        kind: event.kind.to_string(),
+        data: event.data.clone(),
+    };
     let mut text = serde_json::to_string(&wire).map_err(|e| sqlx::Error::Encode(Box::new(e)))?;
     if text.len() > NOTIFY_INLINE_MAX {
         let stored = Uuid::now_v7();
@@ -292,7 +303,11 @@ async fn relay(db: &PgPool, node: Uuid, tx: &broadcast::Sender<Frame>, payload: 
         inline => inline,
     };
     if let Wire::Inline { to, kind, data, .. } = wire {
-        let _ = tx.send(Frame::Event(Event { to, kind: Cow::Owned(kind), data }));
+        let _ = tx.send(Frame::Event(Event {
+            to,
+            kind: Cow::Owned(kind),
+            data,
+        }));
     }
 }
 
@@ -306,8 +321,13 @@ async fn fetch_stored(db: &PgPool, id: Uuid) -> Result<Option<Wire>, sqlx::Error
 
 /// Deletes stored payloads older than a few minutes (listeners read them within moments) and tickets never spent.
 pub async fn prune_stored(db: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'").execute(db).await?;
-    sqlx::query("DELETE FROM realtime_tickets WHERE expires_at < now()").execute(db).await.map(|_| ())
+    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'")
+        .execute(db)
+        .await?;
+    sqlx::query("DELETE FROM realtime_tickets WHERE expires_at < now()")
+        .execute(db)
+        .await
+        .map(|_| ())
 }
 
 fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
@@ -726,7 +746,12 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &str, locale: &str, ko:
         };
         let sent = if korean {
             let brand = crate::routes::setup::brand_name(&state.db).await;
-            let msg = crate::sms_outbox::Message::Alimtalk { template: key, brand: &brand, title: &ko_title, body: &ko_body };
+            let msg = crate::sms_outbox::Message::Alimtalk {
+                template: key,
+                brand: &brand,
+                title: &ko_title,
+                body: &ko_body,
+            };
             crate::sms_outbox::send(&state, Some(user), &phone, &kind, msg).await
         } else {
             let text = format!("{title}\n{body}");

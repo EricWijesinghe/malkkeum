@@ -51,7 +51,11 @@ async fn scheduled_push(db: &PgPool, at: DateTime<Utc>) -> Uuid {
 }
 
 async fn campaign_status(db: &PgPool, id: Uuid) -> String {
-    sqlx::query_scalar("SELECT status FROM campaigns WHERE id = $1").bind(id).fetch_one(db).await.expect("status")
+    sqlx::query_scalar("SELECT status FROM campaigns WHERE id = $1")
+        .bind(id)
+        .fetch_one(db)
+        .await
+        .expect("status")
 }
 
 async fn send_status(db: &PgPool, user: Uuid) -> Option<String> {
@@ -92,7 +96,10 @@ async fn campaign_reaches_consented_customers_and_logs_the_rest(pool: PgPool) {
         .fetch_one(&pool)
         .await
         .expect("push inbox row");
-    assert!(inbox["title"].as_str().is_some_and(|t| t.starts_with("(광고)")), "advertising push is marked: {inbox}");
+    assert!(
+        inbox["title"].as_str().is_some_and(|t| t.starts_with("(광고)")),
+        "advertising push is marked: {inbox}"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -122,7 +129,11 @@ async fn english_segment_also_reaches_accounts_on_an_archived_language(pool: PgP
 
     assert_eq!(send_status(&pool, ko.user).await, None);
     assert_eq!(send_status(&pool, en.user).await.as_deref(), Some("sent"));
-    assert_eq!(send_status(&pool, vi.user).await.as_deref(), Some("sent"), "a stored archived language reads English");
+    assert_eq!(
+        send_status(&pool, vi.user).await.as_deref(),
+        Some("sent"),
+        "a stored archived language reads English"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -157,7 +168,11 @@ async fn quiet_hours_defer_the_campaign_to_eight_kst(pool: PgPool) {
     marketing::dispatch_at(&state(&pool), night()).await.expect("dispatch");
 
     assert_eq!(campaign_status(&pool, campaign).await, "scheduled", "reopened, not sent");
-    let resume: Option<DateTime<Utc>> = sqlx::query_scalar("SELECT scheduled_at FROM campaigns WHERE id = $1").bind(campaign).fetch_one(&pool).await.expect("resume");
+    let resume: Option<DateTime<Utc>> = sqlx::query_scalar("SELECT scheduled_at FROM campaigns WHERE id = $1")
+        .bind(campaign)
+        .fetch_one(&pool)
+        .await
+        .expect("resume");
     // 2026-11-12 08:00 KST is 2026-11-11 23:00 UTC.
     assert_eq!(resume, Some(Utc.with_ymd_and_hms(2026, 11, 11, 23, 0, 0).single().expect("valid instant")));
     assert_eq!(send_status(&pool, c.user).await, None, "nothing recorded during quiet hours");
@@ -178,7 +193,11 @@ async fn weekly_cap_skips_capped_customers_without_recording_them(pool: PgPool) 
 
     marketing::dispatch_at(&state(&pool), daytime()).await.expect("dispatch");
 
-    assert_eq!(send_status(&pool, capped.user).await, None, "capped: no row, so a later pass can still reach them");
+    assert_eq!(
+        send_status(&pool, capped.user).await,
+        None,
+        "capped: no row, so a later pass can still reach them"
+    );
     assert_eq!(send_status(&pool, open.user).await.as_deref(), Some("sent"), "one send left under the cap");
 }
 
@@ -197,11 +216,19 @@ async fn rebook_nudge_is_held_during_quiet_hours(pool: PgPool) {
     let key = format!("nudge:rebook:{booking}:{}:push", c.user);
 
     assert_eq!(marketing::run_nudges_at(&state(&pool), night()).await.expect("nudges"), 0);
-    let held: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&pool).await.expect("row");
+    let held: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1")
+        .bind(&key)
+        .fetch_optional(&pool)
+        .await
+        .expect("row");
     assert_eq!(held, None);
 
     assert_eq!(marketing::run_nudges_at(&state(&pool), daytime()).await.expect("nudges"), 1);
-    let sent: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&pool).await.expect("row");
+    let sent: Option<String> = sqlx::query_scalar("SELECT status FROM marketing_sends WHERE dedupe_key = $1")
+        .bind(&key)
+        .fetch_optional(&pool)
+        .await
+        .expect("row");
     assert_eq!(sent.as_deref(), Some("sent"));
 }
 
@@ -212,9 +239,23 @@ async fn funnel_and_cohorts_count_installs_signups_and_bookings(pool: PgPool) {
     let buyer = customer(&app, &pool, "010-5400-0007").await;
     let _browser = login(&app, "010-5400-0008", "customer").await;
     let (opened, quoted) = (Uuid::now_v7(), Uuid::now_v7());
-    let (st, _) = call(&app, "POST", "/v1/events", None, Some(json!({ "anon_id": opened, "events": [{ "name": "app_open", "platform": "android" }] }))).await;
+    let (st, _) = call(
+        &app,
+        "POST",
+        "/v1/events",
+        None,
+        Some(json!({ "anon_id": opened, "events": [{ "name": "app_open", "platform": "android" }] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK);
-    let (st, _) = call(&app, "POST", "/v1/events", None, Some(json!({ "anon_id": quoted, "events": [{ "name": "quote_view", "screen": "quote" }] }))).await;
+    let (st, _) = call(
+        &app,
+        "POST",
+        "/v1/events",
+        None,
+        Some(json!({ "anon_id": quoted, "events": [{ "name": "quote_view", "screen": "quote" }] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK);
     book(&app, &buyer, 3, None).await;
     let token = staff_token();
@@ -244,10 +285,17 @@ async fn desktop_platforms_are_stored_and_unknown_ones_rejected_by_the_db(pool: 
     let events = json!([{ "name": "app_open", "platform": "windows" }, { "name": "app_open", "platform": "macos" }]);
     let (st, body) = call(&app, "POST", "/v1/events", None, Some(json!({ "anon_id": anon, "events": events }))).await;
     assert_eq!(st, StatusCode::OK, "{body}");
-    let stored: Vec<String> = sqlx::query_scalar("SELECT platform FROM analytics_events WHERE anon_id = $1 ORDER BY platform").bind(anon).fetch_all(&pool).await.expect("rows");
+    let stored: Vec<String> = sqlx::query_scalar("SELECT platform FROM analytics_events WHERE anon_id = $1 ORDER BY platform")
+        .bind(anon)
+        .fetch_all(&pool)
+        .await
+        .expect("rows");
     assert_eq!(stored, ["macos", "windows"]);
 
     // The CHECK (0110) still guards writes that bypass the API allowlist.
-    let bad = sqlx::query("INSERT INTO analytics_events (anon_id, name, platform) VALUES ($1, 'app_open', 'linux')").bind(anon).execute(&pool).await;
+    let bad = sqlx::query("INSERT INTO analytics_events (anon_id, name, platform) VALUES ($1, 'app_open', 'linux')")
+        .bind(anon)
+        .execute(&pool)
+        .await;
     assert!(bad.is_err(), "the DB must reject a platform outside the allowlist");
 }

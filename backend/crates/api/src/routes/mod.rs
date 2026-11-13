@@ -16,32 +16,32 @@ pub(crate) mod config;
 mod feed;
 mod finance;
 pub(crate) mod growth;
-pub(crate) mod me;
 mod keys;
+pub(crate) mod me;
 mod member;
 mod notify_templates;
-mod privacy_requests;
 mod ops;
 pub(crate) mod partner;
 pub(crate) mod partner_jobs;
-pub(crate) mod tips;
-pub(crate) mod waitlist;
-pub mod subscription_engine;
-pub(crate) mod subscriptions;
-pub(crate) mod seller;
-pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
+mod privacy_requests;
+pub(crate) mod seller;
 mod settings;
 pub mod setup;
+pub mod site;
 pub mod site;
 mod staff_mfa;
 mod staff_password;
 pub mod subscription_engine;
+pub mod subscription_engine;
+pub(crate) mod subscriptions;
 pub(crate) mod subscriptions;
 mod tax_invoices;
 pub(crate) mod tips;
+pub(crate) mod tips;
 pub mod uploads;
+pub(crate) mod waitlist;
 pub(crate) mod waitlist;
 mod webhooks;
 
@@ -135,7 +135,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::app_links::admin_routes())
                 .merge(crate::analytics::admin_routes())
                 .merge(subscriptions::admin_routes())
-                .merge(audit::admin_routes()),
+                .merge(audit::admin_routes())
                 .merge(privacy_requests::admin_routes()),
         )
         .nest(

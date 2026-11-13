@@ -18,7 +18,13 @@ use uuid::Uuid;
 pub const CONSENT_VERSION: &str = "2026-11-19";
 
 /// Kind and whether the service cannot run without it. Marketing and location are optional and withdrawable.
-pub const CONSENTS: [(&str, bool); 5] = [("terms", true), ("privacy", true), ("overseas_transfer", true), ("marketing", false), (LOCATION, false)];
+pub const CONSENTS: [(&str, bool); 5] = [
+    ("terms", true),
+    ("privacy", true),
+    ("overseas_transfer", true),
+    ("marketing", false),
+    (LOCATION, false),
+];
 
 /// 위치기반서비스 이용약관 (위치정보법): asked in the app before the first "use my current location".
 pub const LOCATION: &str = "location";
@@ -266,18 +272,20 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
     .bind(user)
     .execute(&mut *tx)
     .await?;
-    let offered: Vec<(chrono::NaiveDate, i16)> = sqlx::query_as(
-        "UPDATE waitlist_entries SET status = 'cancelled' WHERE user_id = $1 AND status = 'offered' RETURNING visit_date, start_hour",
-    )
-    .bind(user)
-    .fetch_all(&mut *tx)
-    .await?;
+    let offered: Vec<(chrono::NaiveDate, i16)> =
+        sqlx::query_as("UPDATE waitlist_entries SET status = 'cancelled' WHERE user_id = $1 AND status = 'offered' RETURNING visit_date, start_hour")
+            .bind(user)
+            .fetch_all(&mut *tx)
+            .await?;
     sqlx::query("UPDATE waitlist_entries SET status = 'cancelled' WHERE user_id = $1 AND status = 'waiting'")
         .bind(user)
         .execute(&mut *tx)
         .await?;
     // The booking request snapshot holds the address and notes.
-    sqlx::query("UPDATE waitlist_entries SET body = '{}'::jsonb WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE waitlist_entries SET body = '{}'::jsonb WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     // Unsettled checkouts may still be paid (late deposit), so their draft stays until retention clears it.
     sqlx::query(
         "UPDATE checkouts SET draft = NULL, virtual_account = NULL
@@ -287,7 +295,10 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
     .execute(&mut *tx)
     .await?;
     // Ratings stay for the partner's score; the customer's words and photos go.
-    sqlx::query("UPDATE reviews SET body = '', photos = '[]'::jsonb WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
+    sqlx::query("UPDATE reviews SET body = '', photos = '[]'::jsonb WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     // A subscription references its address, so that row is emptied instead of deleted.
     sqlx::query("UPDATE addresses SET label = '', road_address = '', detail = '', deleted_at = COALESCE(deleted_at, now()) WHERE user_id = $1")
         .bind(user)
@@ -301,8 +312,14 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .bind(user)
         .execute(&mut *tx)
         .await?;
-    sqlx::query("DELETE FROM identity_sessions WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
-    sqlx::query("DELETE FROM billing_issues WHERE user_id = $1").bind(user).execute(&mut *tx).await?;
+    sqlx::query("DELETE FROM identity_sessions WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
+    sqlx::query("DELETE FROM billing_issues WHERE user_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     sqlx::query("DELETE FROM push_tokens WHERE owner_role = 'customer' AND owner_id = $1")
         .bind(user)
         .execute(&mut *tx)
@@ -331,7 +348,11 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
     delete_uploads(s, user).await?;
     // An offered waitlist seat was being held for this customer: offer it to the next waiter.
     for (date, hour) in offered {
-        crate::util::best_effort("waitlist offer on account deletion", crate::routes::waitlist::offer_for_slot(s, date, hour as u8)).await;
+        crate::util::best_effort(
+            "waitlist offer on account deletion",
+            crate::routes::waitlist::offer_for_slot(s, date, hour as u8),
+        )
+        .await;
     }
     Ok(())
 }
@@ -399,7 +420,10 @@ pub async fn apple_notification(s: &AppState, n: &crate::providers::apple::Notif
     }
     let handled = handle_apple_event(s, n).await;
     if handled.is_err() {
-        sqlx::query("DELETE FROM apple_notifications WHERE jti = $1").bind(&n.jti).execute(&s.db).await?;
+        sqlx::query("DELETE FROM apple_notifications WHERE jti = $1")
+            .bind(&n.jti)
+            .execute(&s.db)
+            .await?;
     }
     handled
 }
@@ -425,7 +449,10 @@ async fn handle_apple_event(s: &AppState, n: &crate::providers::apple::Notificat
                 Err(e) => return Err(e),
             },
             ("consent-revoked", _) => {
-                sqlx::query("DELETE FROM social_tokens WHERE identity_id = $1").bind(identity).execute(&s.db).await?;
+                sqlx::query("DELETE FROM social_tokens WHERE identity_id = $1")
+                    .bind(identity)
+                    .execute(&s.db)
+                    .await?;
                 end_sessions(&s.db, subject).await?;
             }
             _ => {}

@@ -3,8 +3,8 @@
 use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Pro, normalize_phone},
-    crypto,
     contract::{PageQuery, json_row_cursor, page_limit, paged, ts_id_cursor},
+    crypto,
     error::{ApiError, ApiResult},
     state::AppState,
 };
@@ -84,10 +84,7 @@ pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
         .bind(id)
         .execute(&mut *tx)
         .await?;
-    sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1")
-        .bind(id)
-        .execute(&mut *tx)
-        .await?;
+    sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1").bind(id).execute(&mut *tx).await?;
     sqlx::query("DELETE FROM user_identities WHERE role = 'pro' AND subject_id = $1")
         .bind(id)
         .execute(&mut *tx)
