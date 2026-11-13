@@ -20,7 +20,15 @@ cat > "$DAHAE_CLI" <<EOF
 printf '%s YES=%s\n' "\$*" "\${DAHAE_YES:-}" >> "$SB/argv.log"
 EOF
 chmod +x "$DAHAE_CLI"
-export DAHAE_JOB_UID="$(id -u)"
+export DAHAE_JOB_UID="$(id -u)" DAHAE_OWNER_UID="$(id -u)"
+# fake docker: records the working folder and argv of every compose call
+mkdir -p "$SB/bin"
+cat > "$SB/bin/docker" <<EOF
+#!/usr/bin/env bash
+printf '%s %s\n' "\$PWD" "\$*" >> "$SB/docker.log"
+EOF
+chmod +x "$SB/bin/docker"
+export PATH="$SB/bin:$PATH"
 
 # shellcheck source=deploy/agent.sh
 DAHAE_SELFTEST=1 . "$ROOT/deploy/agent.sh"
@@ -49,7 +57,7 @@ id=$(uuid7)
 t  "fresh id passes"           id_fresh "$id"
 nt "old id (16 min) refused"   id_fresh "$(uuid7 $(( $(now_ms) - 960000 )))"
 nt "future id refused"         id_fresh "$(uuid7 $(( $(now_ms) + 60000 )))"
-nt "v4 id refused"             id_fresh "$(printf '%s' "$id" | sed 's/-7/-4/')"
+nt "v4 id refused"             id_fresh "$(printf '%s' "$id" | sed 's/^\(.\{14\}\)7/\14/')"  # 14번째 글자가 버전
 
 # ---- happy path: the fixed argv, step lines only, state ok ----
 id=$(uuid7)
@@ -65,6 +73,12 @@ id=$(uuid7); submit "$id" "id=$id\nkind=update-skip\n"
 t  "update-skip writes marker"     test -e "$DAHAE_HOST_DIR/skip-next-update"
 id=$(uuid7); submit "$id" "id=$id\nkind=status-refresh\n"
 t  "status-refresh writes host.json" grep -q '"checked"' "$DAHAE_HOST_DIR/host.json"
+id=$(uuid7); submit "$id" "id=$id\nkind=update\n"
+t  "update runs dahae update"       argv_has "update YES=1"
+id=$(uuid7); submit "$id" "id=$id\nkind=restart\narg=api\n"
+t  "restart api runs compose argv" grep -q ' compose --env-file .env restart api$' "$SB/docker.log"
+id=$(uuid7); submit "$id" "id=$id\nkind=restart\narg=all\n"
+t  "restart all runs compose argv" grep -q ' compose --env-file .env restart$' "$SB/docker.log"
 
 # ---- replay: the same id is never run twice, and the old ok state stays ----
 before=$(argv_lines)
@@ -111,6 +125,48 @@ t  "a good job is copied"          job_copy "$src" "$cp"
 t  "the copy passes the checks"    intake_check "$cp" "$id"
 printf 'id=%s\nkind=restore\n' "$id" > "$cp"
 nt "a copy with a bad kind is refused" intake_check "$cp" "$id"
+
+# a writer that still holds the moved file changes only the original, never the checked copy
+held="$SB/held.job"; moved="$SB/held-moved.job"; cp=$(mktemp "$SB/copy.XXXXXX")
+id=$(uuid7); printf 'id=%s\nkind=backup-now\n' "$id" > "$held"
+exec 7>>"$held"; mv "$held" "$moved"
+t  "held copy is taken"            job_copy "$moved" "$cp"
+printf 'id=%s\nkind=restore\n' "$id" >&7; exec 7>&-
+t  "copy unaffected by held handle" intake_check "$cp" "$id"
+t  "copy still runs backup-now"    eq "$JOB_KIND" backup-now
+
+# ---- status files: a planted link is never followed ----
+victim="$SB/victim"; echo keep > "$victim"
+id=$(uuid7)
+if ln -s "$victim" "$DAHAE_JOBS/status/$id.log" 2>/dev/null; then
+  before=$(argv_lines); submit "$id" "id=$id\nkind=backup-now\n"
+  t  "planted log link not followed" eq "$(cat "$victim")" keep
+  t  "job runs despite planted log"  eq "$(argv_lines)" "$((before + 1))"
+  t  "state written past planted log" eq "$(state "$id")" ok
+else echo "skip: symlink cannot be created here"; fi
+victim2="$SB/victim2"; id=$(uuid7)
+if ln -s "$victim2" "$DAHAE_JOBS/status/$id.json" 2>/dev/null; then
+  submit "$id" "id=$id\nkind=restore\n"
+  t  "dangling link not followed on reject" test ! -e "$victim2"
+else echo "skip: symlink cannot be created here"; fi
+
+# ---- root folders: owner and write bits are checked ----
+t  "status dir owned by the root owner" dir_ok "$DAHAE_JOBS/status"
+OWNER_UID=$((OWNER_UID + 1))
+nt "status dir with another owner refused" dir_ok "$DAHAE_JOBS/status"
+OWNER_UID=$((OWNER_UID - 1))
+chmod 777 "$DAHAE_JOBS/status"
+if [ "$(stat -c %a "$DAHAE_JOBS/status")" = 777 ]; then
+  nt "group/other writable dir refused" dir_ok "$DAHAE_JOBS/status"
+else echo "skip: mode bits cannot be set here"; fi
+chmod 755 "$DAHAE_JOBS/status"
+t  "all root folders pass" dirs_ok
+
+# ---- a job left in work/ by an earlier run is swept, never run ----
+id=$(uuid7); printf 'id=%s\nkind=backup-now\n' "$id" > "$DAHAE_JOBS/work/$id.job"
+before=$(argv_lines); sweep_work
+t  "stale work job swept"        test ! -e "$DAHAE_JOBS/work/$id.job"
+t  "stale work job not run"      eq "$(argv_lines)" "$before"
 
 echo "agent self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]
