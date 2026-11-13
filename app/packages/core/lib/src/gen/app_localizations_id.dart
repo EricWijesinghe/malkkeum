@@ -1603,7 +1603,10 @@ class TId extends T {
   String get moreFaq => 'Pertanyaan umum';
 
   @override
-  String get morePartner => 'Jadi mitra';
+  String get morePartner => 'Kerja sama';
+
+  @override
+  String get brandTagline => 'Urusan rumah, serahkan pada kami';
 
   @override
   String get moreLanguage => 'Bahasa';

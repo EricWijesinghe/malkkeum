@@ -22,22 +22,38 @@ class PartnerIntro extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: Space.xl),
-            Row(
+            // Wrap: at large text the PARTNER pill drops below instead of overflowing.
+            Wrap(
+              spacing: Space.xs,
+              runSpacing: Space.xs,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(
-                  partnerBrand.name,
-                  style: context.text.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+                // The 3D mark plays once; white wordmark on ink (design p06).
+                const DahaeLogo(
+                  variant: DahaeLogoVariant.threeD,
+                  size: 36,
+                  wordmark: true,
+                  onDark: true,
+                  animate: true,
+                  brand: partnerBrand,
                 ),
-                const SizedBox(width: Space.xs),
-                const Tag(
-                  label: 'PARTNER',
-                  hue: ServiceHue(
-                    Color(0xFF1E3B3A),
-                    Color(0xFF8FE0D6),
-                    Color(0xFF1E3B3A),
+                // Teal tint on ink (6.5:1) in both theme modes; this screen is always ink.
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF123642),
+                    borderRadius: BorderRadius.circular(Radii.pill),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      'PARTNER',
+                      style: context.text.labelMedium?.copyWith(
+                        color: const Color(0xFF5CC8DE),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -71,7 +87,8 @@ class PartnerIntro extends StatelessWidget {
             const SizedBox(height: Space.xxl),
             PrimaryButton(
               label: context.t.introStart,
-              color: partnerBrand.fresh,
+              // Check yellow with an ink label (11.67:1); white on teal failed AA.
+              color: partnerBrand.sun,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const _PhoneScreen()),
               ),
@@ -141,7 +158,10 @@ class _PhoneScreenState extends State<_PhoneScreen> {
   }
 
   Future<void> _send() => _run(() async {
-    final dev = await Deps.read(context).session.requestOtp(_digits, locale: Deps.read(context).locale.effectiveCode);
+    final dev = await Deps.read(context).session.requestOtp(
+      _digits,
+      locale: Deps.read(context).locale.effectiveCode,
+    );
     setState(() {
       _sent = true;
       if (dev != null) _code.text = dev;
@@ -153,7 +173,9 @@ class _PhoneScreenState extends State<_PhoneScreen> {
     await deps.session.verifyOtp(_digits, _code.text, audience: 'partner');
     if (deps.session.role != 'member') {
       // The language picked before sign-in becomes the account language.
-      deps.session.api.patch('/partner/me', {'locale': deps.locale.effectiveCode}).ignore();
+      deps.session.api.patch('/partner/me', {
+        'locale': deps.locale.effectiveCode,
+      }).ignore();
     }
     if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
   });

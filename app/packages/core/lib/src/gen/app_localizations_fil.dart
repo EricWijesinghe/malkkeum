@@ -1610,7 +1610,10 @@ class TFil extends T {
   String get moreFaq => 'Mga madalas itanong';
 
   @override
-  String get morePartner => 'Maging partner';
+  String get morePartner => 'Pakikipag-partner';
+
+  @override
+  String get brandTagline => 'Kami na ang bahala sa gawaing-bahay';
 
   @override
   String get moreLanguage => 'Wika';

@@ -17,6 +17,12 @@ import 'interactive.dart' show Tilt3D;
 /// - Reduced motion (MediaQuery.disableAnimations): no tilt, bounce or lift; the
 ///   final state renders at once and active is shown by the art only.
 /// - Missing art: a clay plate with the registry's Material glyph, same size.
+/// - [idle]: slow float or sway loop for hero, primary and grid icons only
+///   (never list rows; keep it to ~12 on screen). Off while [enabled] is false,
+///   under reduced motion, in a muted [TickerMode] and when [idleMotion] is false.
+/// - [attention]: change the value to kick the scale spring once (badges,
+///   counters, CTAs). [highlight]: hold the press spring from outside (feed it
+///   `InkWell.onHighlightChanged` for list rows).
 class Icon3D extends StatefulWidget {
   const Icon3D(
     this.id, {
@@ -27,7 +33,14 @@ class Icon3D extends StatefulWidget {
     this.enabled = true,
     this.onTap,
     this.tilt,
+    this.idle = Icon3DIdle.none,
+    this.attention = 0,
+    this.highlight = false,
   });
+
+  /// Global switch for [idle] loops. `flutter_test_config.dart` sets it false so
+  /// `pumpAndSettle` never waits on a looping icon.
+  static bool idleMotion = true;
 
   final String id;
   final bool active;
@@ -40,23 +53,64 @@ class Icon3D extends StatefulWidget {
   final bool enabled;
   final VoidCallback? onTap;
   final bool? tilt;
+  final Icon3DIdle idle;
+
+  /// Any change of this value plays one spring kick (peaks near 1.08x).
+  final int attention;
+
+  /// Pressed look driven by the caller (scales to [Motion.pressScale]).
+  final bool highlight;
 
   @override
   State<Icon3D> createState() => _Icon3DState();
 }
 
-class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
+/// Idle loop for [Icon3D.idle].
+enum Icon3DIdle {
+  none,
+
+  /// Rises by [Motion.idleLift] of the size and back, every [Motion.idlePeriod].
+  float,
+
+  /// Rocks by +/-[Motion.idleSway] radians, every [Motion.idlePeriod].
+  sway,
+}
+
+class _Icon3DState extends State<Icon3D> with TickerProviderStateMixin {
   /// Current scale. Unbounded so the spring can overshoot (the bounce).
   late final AnimationController _scale = AnimationController.unbounded(
     vsync: this,
     value: 1,
   );
+
+  /// Idle loop, created on first need so plain icons cost no ticker.
+  AnimationController? _idle;
   bool _pressed = false;
   bool _started = false;
 
   bool get _still => MediaQuery.disableAnimationsOf(context);
 
-  double get _target => _pressed
+  bool get _wantsIdle =>
+      widget.idle != Icon3DIdle.none &&
+      widget.enabled &&
+      Icon3D.idleMotion &&
+      !_still;
+
+  void _syncIdle() {
+    if (!_wantsIdle) {
+      _idle?.stop();
+      return;
+    }
+    final c = _idle ??= AnimationController(
+      vsync: this,
+      duration: Motion.idlePeriod ~/ 2,
+      // Phase from the id so a grid of icons never bobs in sync.
+      value: (widget.id.hashCode % 1000) / 1000,
+    );
+    if (!c.isAnimating) c.repeat(reverse: true);
+  }
+
+  double get _target => _pressed || widget.highlight
       ? Motion.pressScale
       : widget.active
       ? Motion.activeScale
@@ -84,12 +138,26 @@ class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
     // First build pops an already-active icon in; later a reduced-motion switch snaps flat.
     if (!_started || _still) _settle();
     _started = true;
+    _syncIdle();
   }
 
   @override
   void didUpdateWidget(Icon3D old) {
     super.didUpdateWidget(old);
-    if (old.active != widget.active) _settle();
+    if (old.active != widget.active || old.highlight != widget.highlight) {
+      _settle();
+    }
+    if (old.attention != widget.attention && !_still) {
+      _scale.animateWith(
+        SpringSimulation(
+          Motion.iconBounce,
+          _scale.value,
+          _target,
+          Motion.attentionKick,
+        ),
+      );
+    }
+    if (old.idle != widget.idle || old.enabled != widget.enabled) _syncIdle();
   }
 
   void _press(bool down) {
@@ -100,6 +168,7 @@ class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    _idle?.dispose();
     _scale.dispose();
     super.dispose();
   }
@@ -139,6 +208,15 @@ class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
           );
         },
       );
+      final idle = _idle;
+      if (idle != null && _wantsIdle) {
+        icon = _IdleMotion(
+          controller: idle,
+          kind: widget.idle,
+          size: size,
+          child: icon,
+        );
+      }
       if (widget.tilt ?? widget.onTap != null) {
         icon = Tilt3D(
           maxAngle: Motion.iconTiltMax,
@@ -180,6 +258,41 @@ class _Icon3DState extends State<Icon3D> with SingleTickerProviderStateMixin {
       child: icon,
     );
   }
+}
+
+/// Slow float/sway around the art. Paint-only: the art sits in its own
+/// [RepaintBoundary] so each tick re-composites one transform layer.
+class _IdleMotion extends StatelessWidget {
+  const _IdleMotion({
+    required this.controller,
+    required this.kind,
+    required this.size,
+    required this.child,
+  });
+  final AnimationController controller;
+  final Icon3DIdle kind;
+  final double size;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: AnimatedBuilder(
+      animation: controller,
+      child: RepaintBoundary(child: child),
+      builder: (_, child) {
+        final t = Curves.easeInOutSine.transform(controller.value);
+        return kind == Icon3DIdle.sway
+            ? Transform.rotate(
+                angle: Motion.idleSway * (t * 2 - 1),
+                child: child,
+              )
+            : Transform.translate(
+                offset: Offset(0, -size * Motion.idleLift * t),
+                child: child,
+              );
+      },
+    ),
+  );
 }
 
 /// The art (or its fallback plate), without motion.

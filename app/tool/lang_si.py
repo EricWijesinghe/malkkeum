@@ -453,7 +453,7 @@ T = {
     "moreNotices": "නිවේදන",
     "moreTips": "පිරිසිදු කිරීමේ ඉඟි",
     "moreFaq": "නිතර ඇසෙන ප්‍රශ්න",
-    "morePartner": "හවුල්කරුවෙකු වන්න",
+    "morePartner": "හවුල්කාරිත්ව විමසීම්",
     "moreLanguage": "භාෂාව",
     "langSystem": "උපාංග සැකසුම් අනුගමනය කරන්න",
     "moreVersion": "අනුවාදය {v}",

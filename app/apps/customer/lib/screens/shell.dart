@@ -23,8 +23,20 @@ class Shell extends StatefulWidget {
   State<Shell> createState() => _ShellState();
 }
 
-class _ShellState extends State<Shell> {
+class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   int _tab = 0;
+
+  /// Fade-through-in of the newly selected tab (the old one is already hidden).
+  late final AnimationController _enter = AnimationController(
+    vsync: this,
+    duration: Motion.fadeIn,
+    value: 1,
+  );
+  late final _enterFade = CurvedAnimation(parent: _enter, curve: Motion.ease);
+  late final _enterScale = Tween(
+    begin: 0.985,
+    end: 1.0,
+  ).animate(CurvedAnimation(parent: _enter, curve: Motion.emphasized));
   bool _started = false;
   bool _memberStarted = false;
   Session? _session;
@@ -76,6 +88,7 @@ class _ShellState extends State<Shell> {
   void dispose() {
     _session?.removeListener(_onSession);
     _pushTaps?.cancel();
+    _enter.dispose();
     super.dispose();
   }
 
@@ -113,7 +126,12 @@ class _ShellState extends State<Shell> {
     }
   }
 
-  void go(int tab) => setState(() => _tab = tab);
+  void go(int tab) {
+    if (tab == _tab) return;
+    setState(() => _tab = tab);
+    if (MediaQuery.disableAnimationsOf(context)) return;
+    _enter.forward(from: 0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +139,14 @@ class _ShellState extends State<Shell> {
     final unread = context.app.unreadChats;
     // 3D tab icons: the selected one pops and bounces (static under reduced motion).
     Widget icon(int i) {
-      final art = Icon3D(_navIcons[i], active: _tab == i, size: 30, tilt: true);
+      final art = Icon3D(
+        _navIcons[i],
+        active: _tab == i,
+        size: 30,
+        tilt: true,
+        // A new unread chat nudges the chat tab once.
+        attention: i == 2 ? unread : 0,
+      );
       if (i != 2) return art;
       return Badge(
         isLabelVisible: unread > 0,
@@ -138,7 +163,20 @@ class _ShellState extends State<Shell> {
       signedIn ? const ChatListTab() : const GuestGate(),
       const MoreTab(),
     ];
-    final body = IndexedStack(index: _tab, children: pages);
+    // Hidden tabs stay alive but their tickers (idle icons, staggers) pause.
+    final body = FadeTransition(
+      opacity: _enterFade,
+      child: ScaleTransition(
+        scale: _enterScale,
+        child: IndexedStack(
+          index: _tab,
+          children: [
+            for (var i = 0; i < pages.length; i++)
+              TickerMode(enabled: i == _tab, child: pages[i]),
+          ],
+        ),
+      ),
+    );
 
     if (context.isWide) {
       return Scaffold(

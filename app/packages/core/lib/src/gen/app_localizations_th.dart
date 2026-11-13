@@ -1594,7 +1594,10 @@ class TTh extends T {
   String get moreFaq => 'คำถามที่พบบ่อย';
 
   @override
-  String get morePartner => 'ร่วมเป็นพาร์ทเนอร์';
+  String get morePartner => 'ติดต่อความร่วมมือ';
+
+  @override
+  String get brandTagline => 'งานบ้าน ให้เราจัดการ';
 
   @override
   String get moreLanguage => 'ภาษา';

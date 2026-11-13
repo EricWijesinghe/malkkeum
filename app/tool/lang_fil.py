@@ -453,7 +453,7 @@ T = {
     "moreNotices": "Mga anunsyo",
     "moreTips": "Mga tip sa paglilinis",
     "moreFaq": "Mga madalas itanong",
-    "morePartner": "Maging partner",
+    "morePartner": "Pakikipag-partner",
     "moreLanguage": "Wika",
     "langSystem": "Sundin ang device setting",
     "moreVersion": "Bersyon {v}",

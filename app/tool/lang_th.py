@@ -453,7 +453,7 @@ T = {
     "moreNotices": "ประกาศ",
     "moreTips": "เคล็ดลับการทำความสะอาด",
     "moreFaq": "คำถามที่พบบ่อย",
-    "morePartner": "ร่วมเป็นพาร์ทเนอร์",
+    "morePartner": "ติดต่อความร่วมมือ",
     "moreLanguage": "ภาษา",
     "langSystem": "ตามการตั้งค่าเครื่อง",
     "moreVersion": "เวอร์ชัน {v}",

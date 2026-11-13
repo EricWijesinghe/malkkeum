@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
@@ -45,6 +46,9 @@ void main() {
     expect(tester.hasRunningAnimations, isTrue);
     await settle(tester);
     expect(_active(tester), [false, true, false, false]);
+    // Hidden tabs keep their state but their tickers pause (idle icons, staggers).
+    final home = find.byType(HomeTab, skipOffstage: false);
+    expect(TickerMode.valuesOf(tester.element(home)).enabled, isFalse);
 
     await tester.tap(find.text(koT.tabMore).last);
     await settle(tester);
@@ -95,10 +99,10 @@ void main() {
     await unmount(tester);
   });
 
-  test('slotRangeLabel shows the arrival window in 24h', () {
-    expect(slotRangeLabel(9, 'ko'), '09:00~10:00');
+  test('slotRangeLabel: period-hour in ko (design), 24h elsewhere', () {
+    expect(slotRangeLabel(9, 'ko'), '오전 9시~10시');
+    expect(slotRangeLabel(11, 'ko'), '오전 11시~오후 12시');
     expect(slotRangeLabel(8, 'en'), '08:00~09:00');
     expect(slotRangeLabel(13, 'vi', hours: 2), '13:00~15:00');
-    expect(slotRangeLabel(23, 'ko'), '23:00~00:00');
   });
 }

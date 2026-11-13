@@ -3046,7 +3046,7 @@ abstract class T {
   /// No description provided for @moreAccount.
   ///
   /// In ko, this message translates to:
-  /// **'계정 정보'**
+  /// **'계정정보'**
   String get moreAccount;
 
   /// No description provided for @moreAddresses.
@@ -3076,8 +3076,14 @@ abstract class T {
   /// No description provided for @morePartner.
   ///
   /// In ko, this message translates to:
-  /// **'파트너 제휴 문의'**
+  /// **'제휴 문의'**
   String get morePartner;
+
+  /// No description provided for @brandTagline.
+  ///
+  /// In ko, this message translates to:
+  /// **'집안일, 다 해드려요'**
+  String get brandTagline;
 
   /// No description provided for @moreLanguage.
   ///

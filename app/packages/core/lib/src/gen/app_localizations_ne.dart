@@ -1601,7 +1601,10 @@ class TNe extends T {
   String get moreFaq => 'बारम्बार सोधिने प्रश्न';
 
   @override
-  String get morePartner => 'पार्टनरसँग सम्पर्क';
+  String get morePartner => 'साझेदारी सोधपुछ';
+
+  @override
+  String get brandTagline => 'घरको काम, हामीलाई छोड्नुहोस्';
 
   @override
   String get moreLanguage => 'भाषा';

@@ -453,7 +453,7 @@ T = {
     "moreNotices": "सूचना",
     "moreTips": "सफाइका सुझाव",
     "moreFaq": "बारम्बार सोधिने प्रश्न",
-    "morePartner": "पार्टनरसँग सम्पर्क",
+    "morePartner": "साझेदारी सोधपुछ",
     "moreLanguage": "भाषा",
     "langSystem": "यन्त्रको सेटिङ अनुसार",
     "moreVersion": "संस्करण {v}",

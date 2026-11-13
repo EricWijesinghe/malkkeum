@@ -60,8 +60,8 @@ void main() {
 
     expect(find.byKey(const ValueKey('week-strip')), findsOneWidget);
     expect(find.byType(GridView), findsNothing);
-    expect(find.textContaining('09:00~10:00'), findsOneWidget);
-    expect(find.textContaining(t.morning), findsOneWidget);
+    expect(find.textContaining(slotRangeLabel(9, 'ko')), findsOneWidget);
+    expect(find.textContaining(RegExp('${t.morning}\$')), findsOneWidget);
     expect(find.text('예약확정'), findsOneWidget);
     expect(find.text('상담요청'), findsOneWidget);
     await unmount(tester);
@@ -176,7 +176,7 @@ void main() {
     expect(_steps(tester), hasLength(3));
     expect(find.text('상담요청'), findsNothing);
     expect(find.text('매칭 완료'), findsNWidgets(2));
-    expect(find.textContaining('09:00~10:00'), findsOneWidget);
+    expect(find.textContaining(slotRangeLabel(9, 'ko')), findsOneWidget);
     await settle(tester);
     await unmount(tester);
   });
