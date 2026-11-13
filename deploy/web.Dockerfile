@@ -2,6 +2,9 @@
 # Build context: repository root.
 # Flutter web output is the same for every CPU, so this stage always runs natively on the build machine
 # (no QEMU for the linux/arm64 image); only the Caddy stage below is per-platform.
+# BuildKit fills BUILDPLATFORM itself; the classic builder (no buildx) needs --build-arg BUILDPLATFORM=linux/amd64.
+# No default here: a default would override BuildKit's automatic value.
+ARG BUILDPLATFORM
 FROM --platform=$BUILDPLATFORM ghcr.io/cirruslabs/flutter:stable AS console
 # The :stable image can lag the Flutter/Dart SDK that app/pubspec.lock needs (Dart >= 3.13), so pin the SDK here.
 ARG FLUTTER_VERSION=3.47.9
