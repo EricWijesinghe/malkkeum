@@ -121,8 +121,9 @@ async fn customer_thread(c: &mut Ctx<'_>, world: &World, b: &BookingRec, closed:
         });
         msgs.push(Msg { sender: "staff", sender_id: Some(world.consultant), kind: "quote", body, at });
         at += Duration::minutes(30);
-        msgs.push(text("customer", Some(user), "견적 확인했어요. 보증금 결제할게요.", at));
-        msgs.push(system("deposit_paid", json!({}), at + Duration::minutes(2)));
+        msgs.push(text("customer", Some(user), "견적 확인했어요. 예약금 결제할게요.", at));
+        // Same params as the live deposit message (booking_core.rs), so the app shows the amount.
+        msgs.push(system("deposit_paid", json!({ "amount": deposit }), at + Duration::minutes(2)));
     }
     for n in 0..c.range(1, 2) as usize {
         at += Duration::minutes(40);
