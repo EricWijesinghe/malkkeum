@@ -494,7 +494,9 @@ class _LabelValueRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Space.md),
+          // Two shares for the value side: a phone number and its 변경 link stay on one line.
           Expanded(
+            flex: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
