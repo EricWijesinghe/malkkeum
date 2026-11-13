@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "Coba unggah lagi",
  "pPhotoWaiting": "Foto yang belum terunggah akan dikirim otomatis saat online.",
  "pUploadedCount": "{done} dari {total} terunggah",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "Pilih metode pembayaran",
  "apPgConfirmTitle": "Tinjau pembayaran Anda",
  "apPgConfirmBtn": "Konfirmasi pembayaran",

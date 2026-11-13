@@ -44,17 +44,31 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Future<Booking> _load() async =>
       Booking.fromJson(await context.api.get('/bookings/${widget.id}') as Json);
 
-  Future<void> _act(Future<void> Function() fn, [String? success]) async {
+  /// One money or cancel action at a time: a second tap while one runs is ignored.
+  bool _busy = false;
+
+  Future<void> _once(Future<void> Function() fn) async {
+    if (_busy) return;
+    _busy = true;
     try {
       await fn();
-      if (!mounted) return;
-      context.appRead.bookingsChanged();
-      await _view.currentState?.reload();
-      if (mounted && success != null) showToast(context, success);
-    } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+    } finally {
+      _busy = false;
     }
   }
+
+  Future<void> _act(Future<void> Function() fn, [String? success]) =>
+      _once(() async {
+        try {
+          await fn();
+          if (!mounted) return;
+          context.appRead.bookingsChanged();
+          await _view.currentState?.reload();
+          if (mounted && success != null) showToast(context, success);
+        } catch (e) {
+          if (mounted) showToast(context, context.t.error(e));
+        }
+      });
 
   /// kind = 'deposit' | 'balance'. Saved method: one-tap. Channel: PG window per payment.
   Future<void> _pay(Booking b, String kind) async {
@@ -63,29 +77,41 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     switch (choice) {
       case SavedChoice(:final methodId):
         await _act(
-          () => context.api.post('/bookings/${b.id}/$kind', {
+          () => context.api.postAction('/bookings/${b.id}/$kind', {
             'payment_method_id': methodId,
           }),
         );
       case ChannelChoice(:final channel):
-        final result = await payWithChannel(context, channel, {
-          'kind': kind,
-          'booking_id': b.id,
-        });
-        if (!mounted) return;
-        switch (result) {
-          case CheckoutPaid():
-            context.appRead.bookingsChanged();
-            await _view.currentState?.reload();
-          case CheckoutAwaitingDeposit(:final account):
-            context.appRead.bookingsChanged();
-            await showVirtualAccount(context, account);
-            if (mounted) await _view.currentState?.reload();
-          case CheckoutFailed(:final code):
-            showToast(context, context.t.checkoutFailure(code));
-          case CheckoutCancelled():
-            break;
-        }
+        await _once(() => _payWithChannel(b, kind, channel));
+    }
+  }
+
+  Future<void> _payWithChannel(
+    Booking b,
+    String kind,
+    PayChannel channel,
+  ) async {
+    final result = await payWithChannel(context, channel, {
+      'kind': kind,
+      'booking_id': b.id,
+    });
+    if (!mounted) return;
+    switch (result) {
+      case CheckoutPaid():
+        context.appRead.bookingsChanged();
+        await _view.currentState?.reload();
+      case CheckoutAwaitingDeposit(:final account):
+        context.appRead.bookingsChanged();
+        await showVirtualAccount(context, account);
+        if (mounted) await _view.currentState?.reload();
+      case CheckoutPending():
+        // Possibly charged: leave so the pay button is not offered again until the server answers.
+        context.appRead.bookingsChanged();
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      case CheckoutFailed(:final code):
+        showToast(context, context.t.checkoutFailure(code));
+      case CheckoutCancelled():
+        break;
     }
   }
 
@@ -493,9 +519,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   /// Shows the server's fee preview before confirming; the accepted fee is sent back so a changed policy is refused.
   Future<void> _cancel(Booking b) async {
     final t = context.t;
-    final preview = (await context.api.get(
-      '/bookings/${b.id}/cancel-preview',
-    )) as Map<String, dynamic>;
+    final preview =
+        (await context.api.get('/bookings/${b.id}/cancel-preview'))
+            as Map<String, dynamic>;
     if (!mounted) return;
     final canCancel = preview['can_cancel'] == true;
     final fee = (preview['fee'] as num? ?? 0).toInt();
@@ -555,9 +581,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
     if (ok == true) {
       await _act(
-        () => context.api.post('/bookings/${b.id}/cancel', {
+        () => context.api.postAction('/bookings/${b.id}/cancel', {
           'accepted_fee': fee,
-        }, ApiClient.newIdempotencyKey()),
+        }),
         t.cancelled,
       );
     }

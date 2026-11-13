@@ -31,3 +31,5 @@ flutter:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Fake WebView platform for the payment page tests (already resolved through webview_flutter).
+  webview_flutter_platform_interface: ^2.15.1

@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "නැවත උඩුගත කරන්න",
  "pPhotoWaiting": "උඩුගත නොවූ ඡායාරූප සම්බන්ධ වූ විට ස්වයංක්‍රීයව යවනු ඇත.",
  "pUploadedCount": "{total} න් {done} උඩුගත කර ඇත",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "ගෙවීම් ක්‍රමය තෝරන්න",
  "apPgConfirmTitle": "ගෙවීම පරීක්ෂා කරන්න",
  "apPgConfirmBtn": "ගෙවීම තහවුරු කරන්න",

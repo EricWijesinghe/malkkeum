@@ -1205,6 +1205,8 @@
  "pPhotoRetry": "ផ្ទុកឡើងម្តងទៀត",
  "pPhotoWaiting": "រូបថតដែលមិនបានផ្ទុកឡើង នឹងផ្ញើដោយស្វ័យប្រវត្តិនៅពេលមានអ៊ីនធឺណិត។",
  "pUploadedCount": "បានផ្ទុកឡើង {done}/{total}",
+ "payConfirmingTitle": "Checking your payment",
+ "payConfirmingBody": "Your payment went through to the card company and we're confirming it. Don't pay again. You can leave this screen; the booking shows up in your bookings once it's confirmed.",
  "apPgPickMethod": "សូមជ្រើសរើសវិធីបង់ប្រាក់",
  "apPgConfirmTitle": "ពិនិត្យការបង់ប្រាក់",
  "apPgConfirmBtn": "បញ្ជាក់ការបង់ប្រាក់",

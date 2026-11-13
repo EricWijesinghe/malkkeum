@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'booking_detail.dart';
 import 'booking_flow.dart';
 import 'cancel_policy_card.dart';
 import 'more.dart' show LegalScreen;
@@ -63,9 +64,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Json _bookingBody() => d.toJson()..remove('payment_method_id');
 
   /// Saved method -> POST /bookings (one-tap). Checkout channel -> PG window, then confirm.
+  /// Both reuse one Idempotency-Key per draft, so a retry after a lost reply never charges twice.
   Future<void> _pay(int total, int points) async {
     final choice = _choice;
-    if (choice == null) return;
+    if (choice == null || _busy) return;
     setState(() => _busy = true);
     final app = context.appRead;
     try {
@@ -77,30 +79,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           if (points > 0) 'points': points,
         });
       } else {
-        result = CheckoutPaid(
-          Booking.fromJson(
-            await app.api.post(
-                  '/bookings',
-                  d.toJson(),
-                  ApiClient.newIdempotencyKey(),
-                )
-                as Json,
-          ),
+        final b = Booking.fromJson(
+          await app.api.postAction('/bookings', d.toJson()) as Json,
         );
+        result = CheckoutPaid(b.id, b);
       }
       if (!mounted) return;
       switch (result) {
-        case CheckoutPaid(:final booking):
+        case CheckoutPaid(:final booking, :final bookingId):
           app.bookingsChanged();
           app.analytics.track('payment_done', screen: 'checkout');
           await app.loadCoupons();
           if (!mounted) return;
           await Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<void>(
-              builder: (_) => DoneScreen(booking: booking),
+              builder: (_) => booking == null
+                  ? BookingDetailScreen(id: bookingId)
+                  : DoneScreen(booking: booking),
             ),
             (r) => r.isFirst,
           );
+        case CheckoutPending():
+          // Possibly charged: leave the checkout for good so Pay is never offered again.
+          app.bookingsChanged();
+          Navigator.of(context).popUntil((r) => r.isFirst);
         case CheckoutAwaitingDeposit(:final account):
           app.bookingsChanged();
           await Navigator.of(context).pushAndRemoveUntil(

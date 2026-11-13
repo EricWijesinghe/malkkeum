@@ -3862,6 +3862,13 @@ class TKo extends T {
   }
 
   @override
+  String get payConfirmingTitle => '결제 확인 중';
+
+  @override
+  String get payConfirmingBody =>
+      '결제가 카드사에 접수되어 확인하고 있어요. 다시 결제하지 마세요. 이 화면을 나가도 확인이 끝나면 예약 내역에 표시돼요.';
+
+  @override
   String get apPgPickMethod => '결제 수단을 골라 주세요';
 
   @override

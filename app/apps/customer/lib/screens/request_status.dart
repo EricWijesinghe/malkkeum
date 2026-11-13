@@ -189,9 +189,7 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
     final app = context.appRead;
     try {
       // A consultation has no payment yet, so no cancellation fee applies.
-      await app.api.post('/bookings/${b.id}/cancel', {
-        'accepted_fee': 0,
-      }, ApiClient.newIdempotencyKey());
+      await app.api.postAction('/bookings/${b.id}/cancel', {'accepted_fee': 0});
       app.bookingsChanged();
       if (!mounted) return;
       showToast(context, t.cancelled);

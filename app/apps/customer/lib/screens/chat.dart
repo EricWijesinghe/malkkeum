@@ -568,6 +568,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               return;
             case CheckoutPaid():
               _paidHere = true;
+            case CheckoutPending():
+              // Possibly charged: leave so the quote card's pay button is not offered again.
+              context.appRead.bookingsChanged();
+              Navigator.of(context).popUntil((r) => r.isFirst);
+              return;
             case CheckoutCancelled():
               break;
           }

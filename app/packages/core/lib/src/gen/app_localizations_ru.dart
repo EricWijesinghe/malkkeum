@@ -3963,6 +3963,13 @@ class TRu extends T {
   }
 
   @override
+  String get payConfirmingTitle => 'Checking your payment';
+
+  @override
+  String get payConfirmingBody =>
+      'Your payment went through to the card company and we\'re confirming it. Don\'t pay again. You can leave this screen; the booking shows up in your bookings once it\'s confirmed.';
+
+  @override
   String get apPgPickMethod => 'Выберите способ оплаты';
 
   @override
