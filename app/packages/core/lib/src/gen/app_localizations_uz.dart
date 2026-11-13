@@ -1906,6 +1906,38 @@ class TUz extends T {
   String get quick_reschedule => 'Jadvalni oʻzgartirish';
 
   @override
+  String chatThreadConsult(String service) {
+    return '$service boʻyicha maslahat';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service boʻyicha savol';
+  }
+
+  @override
+  String get chatYesterday => 'Kecha';
+
+  @override
+  String get chatDayReceived => 'Soʻrov qabul qilindi';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service buyurtma soʻrovi';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Yakuniy narx';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Buyurtmani tasdiqlash uchun $pct% oldindan toʻlov ($amount) qiling.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Oldindan toʻlash';
+
+  @override
   String get dfScopeDusting => 'Mebel ustidagi changni artish';
 
   @override
@@ -2405,7 +2437,7 @@ class TUz extends T {
   }
 
   @override
-  String get moreContact => 'Biz bilan bogʻlanish';
+  String get moreContact => 'Maslahat olish';
 
   @override
   String get moreVersionInfo => 'Versiya haqida';
@@ -2424,6 +2456,52 @@ class TUz extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Mavjud kuponlar';
+
+  @override
+  String get couponsUsedTitle => 'Ishlatilgan kuponlar';
+
+  @override
+  String get couponsNote => '※ Har bir buyurtmaga bitta kupon.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Karta raqami ${brand}da saqlanmaydi; toʻlov provayderi uni xavfsiz saqlaydi.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date roʻyxatdan oʻtgan';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Maydonni kiritish shart. Studiya tozalash faqat $max pxyongacha boʻlgan uylar uchun.';
+  }
+
+  @override
+  String get faqAll => 'Hammasi';
+
+  @override
+  String get faqCat_booking => 'Buyurtma va oʻzgartirish';
+
+  @override
+  String get faqCat_payment => 'Toʻlov va kuponlar';
+
+  @override
+  String get faqCat_move => 'Koʻchish';
 
   @override
   String get themeTitle => 'Mavzu';

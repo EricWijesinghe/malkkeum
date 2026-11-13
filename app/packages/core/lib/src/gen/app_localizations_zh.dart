@@ -1847,6 +1847,38 @@ class TZh extends T {
   String get quick_reschedule => '想改时间';
 
   @override
+  String chatThreadConsult(String service) {
+    return '$service咨询';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '关于$service的问题';
+  }
+
+  @override
+  String get chatYesterday => '昨天';
+
+  @override
+  String get chatDayReceived => '已收到咨询';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service预约请求';
+  }
+
+  @override
+  String get quoteConfirmedTitle => '确定报价';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return '支付$pct%定金（$amount）即可确认预约。';
+  }
+
+  @override
+  String get quotePayDeposit => '支付定金';
+
+  @override
   String get dfScopeDusting => '家具表面除尘';
 
   @override
@@ -2335,7 +2367,7 @@ class TZh extends T {
   }
 
   @override
-  String get moreContact => '联系我们';
+  String get moreContact => '在线咨询';
 
   @override
   String get moreVersionInfo => '版本信息';
@@ -2354,6 +2386,52 @@ class TZh extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n张';
+  }
+
+  @override
+  String get couponsAvailableTitle => '可用优惠券';
+
+  @override
+  String get couponsUsedTitle => '已用优惠券';
+
+  @override
+  String get couponsNote => '※ 每笔预约仅可使用一张优惠券。';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ 卡号不会保存在$brand，由支付服务商安全保管。';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date 注册';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return '请务必填写面积。单间清洁仅限$max坪以下。';
+  }
+
+  @override
+  String get faqAll => '全部';
+
+  @override
+  String get faqCat_booking => '预约·变更';
+
+  @override
+  String get faqCat_payment => '支付·优惠券';
+
+  @override
+  String get faqCat_move => '搬家·入住';
 
   @override
   String get themeTitle => '主题';

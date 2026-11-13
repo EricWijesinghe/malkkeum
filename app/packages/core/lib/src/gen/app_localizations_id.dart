@@ -1897,6 +1897,38 @@ class TId extends T {
   String get quick_reschedule => 'Ubah jadwal';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'Konsultasi $service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'Pertanyaan $service';
+  }
+
+  @override
+  String get chatYesterday => 'Kemarin';
+
+  @override
+  String get chatDayReceived => 'Permintaan diterima';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'Permintaan pesanan $service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Penawaran final';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Bayar DP $pct% ($amount) untuk mengonfirmasi pesanan.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Bayar DP';
+
+  @override
   String get dfScopeDusting => 'Membersihkan debu di atas perabot';
 
   @override
@@ -2394,7 +2426,7 @@ class TId extends T {
   }
 
   @override
-  String get moreContact => 'Hubungi kami';
+  String get moreContact => 'Konsultasi';
 
   @override
   String get moreVersionInfo => 'Info versi';
@@ -2413,6 +2445,52 @@ class TId extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Kupon tersedia';
+
+  @override
+  String get couponsUsedTitle => 'Kupon terpakai';
+
+  @override
+  String get couponsNote => '※ Satu kupon per pesanan.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Nomor kartu tidak disimpan oleh $brand; penyedia pembayaran menyimpannya dengan aman.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'Bergabung $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Ukuran wajib diisi. Pembersihan studio hanya untuk hunian hingga $max pyeong.';
+  }
+
+  @override
+  String get faqAll => 'Semua';
+
+  @override
+  String get faqCat_booking => 'Pemesanan & perubahan';
+
+  @override
+  String get faqCat_payment => 'Pembayaran & kupon';
+
+  @override
+  String get faqCat_move => 'Pindahan';
 
   @override
   String get themeTitle => 'Tema';

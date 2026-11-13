@@ -1894,6 +1894,38 @@ class TKm extends T {
   String get quick_reschedule => 'ប្តូរកាលវិភាគ';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'ការពិគ្រោះ $service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'សំណួរអំពី $service';
+  }
+
+  @override
+  String get chatYesterday => 'ម្សិលមិញ';
+
+  @override
+  String get chatDayReceived => 'បានទទួលសំណើ';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'សំណើកក់ $service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'តម្លៃចុងក្រោយ';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'បង់ប្រាក់កក់ $pct% ($amount) ដើម្បីបញ្ជាក់ការកក់។';
+  }
+
+  @override
+  String get quotePayDeposit => 'បង់ប្រាក់កក់';
+
+  @override
   String get dfScopeDusting => 'ជូតធូលីលើគ្រឿងសង្ហារិម';
 
   @override
@@ -2390,7 +2422,7 @@ class TKm extends T {
   }
 
   @override
-  String get moreContact => 'ទាក់ទងយើង';
+  String get moreContact => 'ពិគ្រោះយោបល់';
 
   @override
   String get moreVersionInfo => 'ព័ត៌មានកំណែ';
@@ -2409,6 +2441,52 @@ class TKm extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'គូប៉ុងដែលអាចប្រើបាន';
+
+  @override
+  String get couponsUsedTitle => 'គូប៉ុងដែលបានប្រើ';
+
+  @override
+  String get couponsNote => '※ គូប៉ុងមួយសម្រាប់ការកក់មួយ។';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ លេខកាតមិនត្រូវបានរក្សាទុកដោយ $brand ទេ អ្នកផ្តល់សេវាបង់ប្រាក់រក្សាទុកដោយសុវត្ថិភាព។';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'ចូលរួម $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'ត្រូវបញ្ចូលទំហំ។ ការសម្អាតបន្ទប់ស្ទូឌីយោសម្រាប់ផ្ទះមិនលើស $max pyeong។';
+  }
+
+  @override
+  String get faqAll => 'ទាំងអស់';
+
+  @override
+  String get faqCat_booking => 'ការកក់ និងការផ្លាស់ប្តូរ';
+
+  @override
+  String get faqCat_payment => 'ការបង់ប្រាក់ និងគូប៉ុង';
+
+  @override
+  String get faqCat_move => 'ការផ្លាស់ទីលំនៅ';
 
   @override
   String get themeTitle => 'ធីម';

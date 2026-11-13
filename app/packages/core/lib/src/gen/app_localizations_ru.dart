@@ -1896,6 +1896,38 @@ class TRu extends T {
   String get quick_reschedule => 'Изменить время';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'Консультация: $service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'Вопрос: $service';
+  }
+
+  @override
+  String get chatYesterday => 'Вчера';
+
+  @override
+  String get chatDayReceived => 'Заявка получена';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'Заявка: $service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Итоговая смета';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Внесите предоплату $pct% ($amount), чтобы подтвердить заказ.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Внести предоплату';
+
+  @override
   String get dfScopeDusting => 'Удаление пыли с мебели';
 
   @override
@@ -2392,7 +2424,7 @@ class TRu extends T {
   }
 
   @override
-  String get moreContact => 'Связаться с нами';
+  String get moreContact => 'Консультация';
 
   @override
   String get moreVersionInfo => 'Версия';
@@ -2411,6 +2443,52 @@ class TRu extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Доступные купоны';
+
+  @override
+  String get couponsUsedTitle => 'Использованные купоны';
+
+  @override
+  String get couponsNote => '※ Один купон на заказ.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ $brand не хранит номера карт: их надёжно хранит платёжный провайдер.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'С нами с $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Укажите площадь. Уборка студии — только для жилья до $max пхён.';
+  }
+
+  @override
+  String get faqAll => 'Все';
+
+  @override
+  String get faqCat_booking => 'Заказ и изменения';
+
+  @override
+  String get faqCat_payment => 'Оплата и купоны';
+
+  @override
+  String get faqCat_move => 'Переезд и заселение';
 
   @override
   String get themeTitle => 'Тема';

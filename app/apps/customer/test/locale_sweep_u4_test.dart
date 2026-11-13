@@ -7,13 +7,24 @@ import 'package:test_support/test_support.dart';
 import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
 
-/// Chat list header and the structured quote card on the smallest phone at large text, every locale.
+/// Chat list header, the request card and the quote card on the smallest phone at large text, every locale.
 const _smallPhone = Size(320, 568);
+
+const Json _request = {
+  'booking_id': 'bk-9',
+  'service_code': 'move_out',
+  'visit_date': '2026-11-19',
+  'start_hour': 8,
+  'estimate': 346500,
+  'answers': {'building': 'officetel', 'layout': 'one_and_half'},
+};
 
 FakeApi _api() {
   final fake = FakeApi()
     ..reply('GET', '/brand', {'support_hours': 'Mon–Fri 09:00–18:00, Sat 10:00–14:00'})
     ..reply('GET', '/chat/threads/th-1/messages', [
+      chatMessageJson(id: 's0', sender: 'system', kind: 'system', body: {'code': 'consultation_received'}),
+      chatMessageJson(id: 'c1', sender: 'system', kind: 'card', body: _request),
       chatMessageJson(
         id: 'q1',
         kind: 'quote',
@@ -48,12 +59,13 @@ void main() {
         final env = await TestEnv.create(fake: _api(), localeCode: code);
 
         await pumpCustomerScreen(tester, env, const ChatListTab());
-        await pumpUntilFound(tester, find.text(t.chatReplyFast));
+        await pumpUntilFound(tester, find.textContaining(t.chatReplyFast));
         expect(tester.takeException(), isNull, reason: 'list');
         await unmount(tester);
 
         await pumpCustomerScreen(tester, env, const ChatRoomScreen(threadId: 'th-1', topic: 'move_out', bookingId: 'bk-9'));
-        await pumpUntilFound(tester, find.text(t.quoteArrived));
+        await pumpUntilFound(tester, find.text(t.quoteConfirmedTitle));
+        expect(find.text(t.quotePayDeposit), findsOneWidget);
         expect(tester.takeException(), isNull, reason: 'quote card');
         await unmount(tester);
       });

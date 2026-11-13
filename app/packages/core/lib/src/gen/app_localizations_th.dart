@@ -1886,6 +1886,38 @@ class TTh extends T {
   String get quick_reschedule => 'ขอเปลี่ยนนัด';
 
   @override
+  String chatThreadConsult(String service) {
+    return 'ปรึกษา$service';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return 'สอบถาม$service';
+  }
+
+  @override
+  String get chatYesterday => 'เมื่อวาน';
+
+  @override
+  String get chatDayReceived => 'ได้รับคำขอแล้ว';
+
+  @override
+  String chatRequestTitle(String service) {
+    return 'คำขอจอง$service';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'ใบเสนอราคาสุดท้าย';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'ชำระมัดจำ $pct% ($amount) เพื่อยืนยันการจอง';
+  }
+
+  @override
+  String get quotePayDeposit => 'ชำระมัดจำ';
+
+  @override
   String get dfScopeDusting => 'ปัดฝุ่นบนเฟอร์นิเจอร์';
 
   @override
@@ -2380,7 +2412,7 @@ class TTh extends T {
   }
 
   @override
-  String get moreContact => 'ติดต่อเรา';
+  String get moreContact => 'ปรึกษา';
 
   @override
   String get moreVersionInfo => 'ข้อมูลเวอร์ชัน';
@@ -2399,6 +2431,52 @@ class TTh extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'คูปองที่ใช้ได้';
+
+  @override
+  String get couponsUsedTitle => 'คูปองที่ใช้แล้ว';
+
+  @override
+  String get couponsNote => '※ ใช้คูปองได้ 1 ใบต่อการจอง 1 ครั้ง';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ $brand ไม่เก็บหมายเลขบัตร ผู้ให้บริการชำระเงินเก็บรักษาอย่างปลอดภัย';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return 'สมัครเมื่อ $date';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'ต้องกรอกขนาดพื้นที่ ทำความสะอาดห้องสตูดิโอได้เฉพาะไม่เกิน $max พยอง';
+  }
+
+  @override
+  String get faqAll => 'ทั้งหมด';
+
+  @override
+  String get faqCat_booking => 'การจองและการเปลี่ยนแปลง';
+
+  @override
+  String get faqCat_payment => 'การชำระเงินและคูปอง';
+
+  @override
+  String get faqCat_move => 'ย้ายเข้า·ย้ายออก';
 
   @override
   String get themeTitle => 'ธีม';

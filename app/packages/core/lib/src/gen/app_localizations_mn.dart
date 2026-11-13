@@ -1898,6 +1898,38 @@ class TMn extends T {
   String get quick_reschedule => 'Хуваарь өөрчлөх';
 
   @override
+  String chatThreadConsult(String service) {
+    return '$service зөвлөгөө';
+  }
+
+  @override
+  String chatThreadAsk(String service) {
+    return '$service асуулт';
+  }
+
+  @override
+  String get chatYesterday => 'Өчигдөр';
+
+  @override
+  String get chatDayReceived => 'Хүсэлт хүлээн авлаа';
+
+  @override
+  String chatRequestTitle(String service) {
+    return '$service захиалгын хүсэлт';
+  }
+
+  @override
+  String get quoteConfirmedTitle => 'Эцсийн үнийн санал';
+
+  @override
+  String quoteDepositLine(String pct, String amount) {
+    return 'Захиалгаа баталгаажуулахын тулд $pct% урьдчилгаа ($amount) төлнө үү.';
+  }
+
+  @override
+  String get quotePayDeposit => 'Урьдчилгаа төлөх';
+
+  @override
   String get dfScopeDusting => 'Тавилгын тоос арчих';
 
   @override
@@ -2396,7 +2428,7 @@ class TMn extends T {
   }
 
   @override
-  String get moreContact => 'Холбоо барих';
+  String get moreContact => 'Зөвлөгөө авах';
 
   @override
   String get moreVersionInfo => 'Хувилбарын мэдээлэл';
@@ -2415,6 +2447,52 @@ class TMn extends T {
 
   @override
   String get accountLoginGoogle => 'Google';
+
+  @override
+  String moreNameSuffix(String name) {
+    return '$name';
+  }
+
+  @override
+  String moreCouponCount(String n) {
+    return '$n';
+  }
+
+  @override
+  String get couponsAvailableTitle => 'Ашиглах боломжтой купон';
+
+  @override
+  String get couponsUsedTitle => 'Ашигласан купон';
+
+  @override
+  String get couponsNote => '※ Нэг захиалгад нэг купон.';
+
+  @override
+  String payCardNote(String brand) {
+    return '※ Картын дугаарыг $brand хадгалдаггүй; төлбөрийн үйлчилгээ үзүүлэгч аюулгүй хадгална.';
+  }
+
+  @override
+  String accountJoined(String date) {
+    return '$date бүртгүүлсэн';
+  }
+
+  @override
+  String addressPyeongNote(String max) {
+    return 'Талбайг заавал оруулна уу. Студи цэвэрлэгээ $max пёнгоос ихгүй байранд.';
+  }
+
+  @override
+  String get faqAll => 'Бүгд';
+
+  @override
+  String get faqCat_booking => 'Захиалга, өөрчлөлт';
+
+  @override
+  String get faqCat_payment => 'Төлбөр, купон';
+
+  @override
+  String get faqCat_move => 'Нүүлт, орох';
 
   @override
   String get themeTitle => 'Загвар';
