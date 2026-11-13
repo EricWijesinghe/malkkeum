@@ -8,6 +8,9 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Console: 탈퇴·개인정보 요청 screen. Staff find a customer by phone, download the customer's data as CSV, and see every request's outcome. Deletion is admin-only and needs the phone typed again; each request is recorded (migration 0157).
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
