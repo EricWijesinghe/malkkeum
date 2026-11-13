@@ -1,21 +1,28 @@
 name: release
 
-# Tag vX.Y.Z or vX.Y.Z-beta.N -> full CI (ci.yml) + install e2e with image scan (e2e.yml) -> server images
-# on GHCR (SBOM + provenance, cosign-signed by digest) -> installer + guides into the PUBLIC delivery repo
-# (repo variable DIST_REPO, e.g. owner/malkkeum-install) -> GitHub Release notes in this repo.
-# Nothing is published unless both ci.yml and e2e.yml pass on the tagged commit. workflow_dispatch on a
-# branch is a dry run: tests and install e2e only.
+# Tag vX.Y.Z or vX.Y.Z-beta.N on master -> full CI (ci.yml) + install e2e with image scan (e2e.yml) + store
+# listing check -> server images on GHCR (SBOM + provenance, cosign-signed by digest) -> installer, signed
+# SHA256SUMS and manifest, and the install page into the PUBLIC delivery repo (repo variable DIST_REPO, e.g.
+# owner/malkkeum-install) -> GitHub Release with the same files as assets.
+# Nothing is published unless ci.yml and e2e.yml pass on the tagged commit, and a tag must point into master.
+# workflow_dispatch on a branch is a dry run: tests, install e2e and the listing check only.
 # GitHub-hosted runners only (signing identity, deploy key and package write access never touch a
 # machine anyone else uses).
 #
+# Environments (set in GitHub: required reviewer, deployment branches and tags = v*):
+#   release-cosign   images job: GHCR push and keyless cosign signing (OIDC).
+#   release-delivery delivery job: DIST_DEPLOY_KEY (push to DIST_REPO), DAHAE_MANIFEST_KEY (ed25519 PEM,
+#                    signs installer_manifest.json), and the cosign OIDC identity for SHA256SUMS and the page.
+#   Android signing has its own environment (android-signing) in the store build (scripts/release/build-all.ps1).
+#
 # Channels: image tags `<version>` and `beta` on every release; `stable` and `latest` only without a
 # prerelease suffix. Delivery branches: `beta` gets every release, `main` (stable) only stable ones.
-# Secret DIST_DEPLOY_KEY: SSH private key with write access to DIST_REPO (deploy key).
-# The same key pushes an annotated tag v<VER> in DIST_REPO on the release's channel commit (install.sh +
-# SHA256SUMS): the pinned install line raw.githubusercontent.com/<DIST_REPO>/v<VER>/install.sh. No token.
+# The same deploy key pushes an annotated tag v<VER> in DIST_REPO on the release's channel commit: the pinned
+# install line raw.githubusercontent.com/<DIST_REPO>/v<VER>/install.sh. No token.
 # Images are signed by digest with cosign keyless (this workflow's OIDC identity on refs/tags/v*);
 # install.sh and `dahae update` refuse images without that signature (docs/DEPLOY.md, Image signatures).
 # The signed digest is the multi-arch index, which also lists the SBOM and provenance attestations.
+# scripts/release/check_workflows.py (run by release-tools.yml) keeps every action pinned to a commit SHA.
 on:
   push:
     tags: ["v*"]
@@ -28,7 +35,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false, fetch-depth: 0 }
+      # Release tags are cut from master only; a tag on a feature branch never reaches a server.
+      - name: Tag is on master
+        run: |
+          case "$GITHUB_REF" in
+            refs/tags/v*)
+              git merge-base --is-ancestor "$GITHUB_SHA" origin/master \
+                || { echo "::error::release tags must point at a commit on master"; exit 1; } ;;
+          esac
+
   test:
+    needs: guard
     uses: ./.github/workflows/ci.yml
     permissions: { contents: read }
 
@@ -36,11 +60,33 @@ jobs:
     uses: ./.github/workflows/e2e.yml
     permissions: { contents: read }
 
+  # Listing length limits (docs/store/check_listings.py) and the store screenshots, when generated.
+  store:
+    needs: guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with: { persist-credentials: false }
+      - name: Store listing lengths
+        run: python3 -I docs/store/check_listings.py
+      - name: Store screenshots and release notes (artifacts)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: store-material
+          path: |
+            docs/store/screenshots
+            docs/store/release-notes
+          if-no-files-found: warn
+          retention-days: 90
+
   images:
     needs: [test, e2e]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    environment: release-cosign
     permissions:
       contents: read
       packages: write
@@ -146,14 +192,27 @@ jobs:
           rm -rf "$DOCKER_CONFIG" "$w"
 
   delivery:
-    needs: [images, pull-check]
+    needs: [images, pull-check, store]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    permissions: { contents: write } # gh release create
+    environment: release-delivery
+    permissions:
+      contents: write # gh release create
+      id-token: write # cosign keyless signature on SHA256SUMS and the install page
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with: { persist-credentials: false }
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with: { cosign-release: v3.1.4 } # same version as COSIGN_VERSION in deploy/install.sh
+      # The ed25519 key only signs; it stays in a temp file that is removed at the end.
+      - name: Installer manifest key
+        env: { MANIFEST_KEY: "${{ secrets.DAHAE_MANIFEST_KEY }}" }
+        run: |
+          test -n "$MANIFEST_KEY" || { echo "::error::DAHAE_MANIFEST_KEY is not set in the release-delivery environment"; exit 1; }
+          d="$RUNNER_TEMP/sign"; mkdir -p "$d" && chmod 700 "$d"
+          (umask 077; printf '%s\n' "$MANIFEST_KEY" > "$d/manifest.pem")
+          echo "MANIFEST_KEY_FILE=$d/manifest.pem" >> "$GITHUB_ENV"
       # Key and known_hosts live in the job's temp dir only, never in ~/.ssh.
       - name: Deploy key and GitHub host key (fingerprint checked)
         env: { DIST_DEPLOY_KEY: "${{ secrets.DIST_DEPLOY_KEY }}" }
@@ -163,18 +222,20 @@ jobs:
           test "$(ssh-keygen -lf "$d/known_hosts" | awk '{print $2}')" = "SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU"
           (umask 077; printf '%s\n' "$DIST_DEPLOY_KEY" > "$d/key")
           echo "GIT_SSH_COMMAND=ssh -i $d/key -o IdentitiesOnly=yes -o UserKnownHostsFile=$d/known_hosts -o StrictHostKeyChecking=yes" >> "$GITHUB_ENV"
-      - name: Publish installer and guides
+      - name: Publish installer, signed files and install page
         env:
           DIST_REPO: ${{ vars.DIST_REPO }}
           VER: ${{ github.ref_name }}
-        # Branches beta/main + annotated tag v<VER> with install.sh and SHA256SUMS (deploy key only).
+          ASSET_DIR: ${{ runner.temp }}/assets
+          SIGN_RELEASE: "1"
+        # Branches beta/main + annotated tag v<VER> with install.sh, SHA256SUMS and manifest (deploy key only).
         run: IMAGE_REPO="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" SIGNER_REPO="$GITHUB_REPOSITORY" bash deploy/publish-delivery.sh
-      - name: Release notes in this repo
-        env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}" }
+      - name: Release notes and assets in this repo
+        env: { GH_TOKEN: "${{ github.token }}", VER: "${{ github.ref_name }}", ASSET_DIR: "${{ runner.temp }}/assets" }
         run: |
           flags=()
           case "$VER" in *-*) flags+=(--prerelease) ;; esac
-          gh release create "$VER" --repo "$GITHUB_REPOSITORY" --title "$VER" --generate-notes "${flags[@]}"
-      - name: Remove deploy key
+          gh release create "$VER" --repo "$GITHUB_REPOSITORY" --title "$VER" --generate-notes "${flags[@]}" "$ASSET_DIR"/*
+      - name: Remove deploy and manifest keys
         if: always()
-        run: rm -rf "$RUNNER_TEMP/ssh"
+        run: rm -rf "$RUNNER_TEMP/ssh" "$RUNNER_TEMP/sign"
