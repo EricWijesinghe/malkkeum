@@ -4,6 +4,7 @@ description = "HTTP + WebSocket API for customer, partner and console apps"
 edition.workspace = true
 version.workspace = true
 license.workspace = true
+publish = false
 
 [dependencies]
 domain = { path = "../domain" }

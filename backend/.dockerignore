@@ -1,3 +1,9 @@
-target
-data
+# Build context of backend/Dockerfile: sources, manifests and migrations only.
+target/
+data/
+**/*.rs.bk
 .env
+.env.*
+# The image pins Rust with FROM rust:<version>; the toolchain file would make rustup fetch clippy and
+# rustfmt during the image build.
+rust-toolchain.toml

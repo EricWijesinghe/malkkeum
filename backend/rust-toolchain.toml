@@ -1,0 +1,6 @@
+# One Rust for CI, the API image (backend/Dockerfile: FROM rust:<same version>) and local builds.
+# Raise it on purpose: every release adds clippy lints. scripts/ci/check-pins.sh keeps the two in sync.
+[toolchain]
+channel = "1.99.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"
