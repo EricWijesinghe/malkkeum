@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3447,6 +3448,11 @@ class TKo extends T {
   @override
   String oJobErrors(String count) {
     return '오류 $count회';
+  }
+
+  @override
+  String oJobDeadLetters(String count) {
+    return '발송 실패 $count건 (재시도 끝)';
   }
 
   @override

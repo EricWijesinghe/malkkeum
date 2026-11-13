@@ -30,6 +30,7 @@ const PUSH_FAILURES: i64 = 5;
 const PAYMENT_WINDOW_MIN: i64 = 15;
 const PAYMENT_FAILURES: i64 = 3;
 const STUCK_WINDOW_MIN: i64 = 60;
+const DEAD_LETTER_WINDOW_MIN: i64 = 60;
 const SOCIAL_WINDOW_MIN: i64 = 30;
 const SOCIAL_FAILURES: i64 = 5;
 const SOCIAL_PROVIDERS: [&str; 4] = ["kakao", "naver", "google", "apple"];
@@ -158,6 +159,13 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
             rule: "payment_stuck",
             title: "결제는 됐지만 자동 처리가 안 됐어요",
             body: "PortOne 관리자 화면에서 해당 결제를 찾아 예약 생성 또는 환불 여부를 직접 확인하세요.",
+        });
+    }
+    if count(db, &["sms_dead_letter"], DEAD_LETTER_WINDOW_MIN).await? >= 1 {
+        out.push(Finding {
+            rule: "sms_dead_letter",
+            title: "문자 발송이 끝내 실패했어요",
+            body: "고객에게 가지 못한 문자가 있어요. 설정 > 문자(Solapi)에서 키와 발신번호를 확인하고 연결 테스트를 해 주세요.",
         });
     }
     if count(db, &SOCIAL_PROVIDERS, SOCIAL_WINDOW_MIN).await? >= SOCIAL_FAILURES {

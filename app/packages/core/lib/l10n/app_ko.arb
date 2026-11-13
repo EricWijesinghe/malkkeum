@@ -1871,6 +1871,14 @@
    }
   }
  },
+ "oJobDeadLetters": "발송 실패 {count}건 (재시도 끝)",
+ "@oJobDeadLetters": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
  "oJob_settings_refresh": "설정 새로고침",
  "oJob_reconciler": "결제 대사",
  "oJob_ops_alerts": "운영 알림",

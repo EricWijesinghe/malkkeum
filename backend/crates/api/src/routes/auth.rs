@@ -98,8 +98,9 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
         .execute(&s.db)
         .await?;
     if review.is_none() {
-        s.providers
-            .send_sms(&phone, &format!("[{}] {code}", crate::i18n::tr(req.locale.as_deref().unwrap_or("ko"), "인증번호")))
+        // Inline, not queued: the user is waiting on this code. One quick retry covers a blip (see sms_outbox).
+        let text = format!("[{}] {code}", crate::i18n::tr(req.locale.as_deref().unwrap_or("ko"), "인증번호"));
+        crate::sms_outbox::retry_once(|| s.providers.send_sms(&phone, &text))
             .await
             .map_err(|e| ApiError::Internal(e.to_string()))?;
     }

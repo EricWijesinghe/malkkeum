@@ -45,12 +45,12 @@ const NOTIFY_INLINE_MAX: usize = 7000;
 /// How long the `notify_outbox` job leaves a new row to the attempt its own request makes.
 const OUTBOX_GRACE_SECS: f64 = 60.0;
 /// The job's retries start at this delay and double each time.
-const OUTBOX_BACKOFF_SECS: f64 = 60.0;
+pub(crate) const OUTBOX_BACKOFF_SECS: f64 = 60.0;
 /// Six retries span about an hour. After that a push is no longer worth sending.
 const OUTBOX_MAX_ATTEMPTS: i32 = 6;
 /// Rows retried at once; kept under the pool size, since each retry runs a few queries.
-const OUTBOX_BATCH: usize = 10;
-const OUTBOX_MAX_BATCHES: usize = 100;
+pub(crate) const OUTBOX_BATCH: usize = 10;
+pub(crate) const OUTBOX_MAX_BATCHES: usize = 100;
 const OUTBOX_EVERY: Duration = Duration::from_secs(30);
 /// Pushes started straight from requests. A bulk send past this is drained by the job in batches.
 static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
@@ -605,15 +605,21 @@ async fn settle(state: &AppState, q: &Queued, outcome: Result<(), &'static str>)
 /// id, owner_role, owner_id, kind, title, body, data, stored, attempts.
 type OutboxRow = (i64, String, Uuid, String, String, String, Value, bool, i32);
 
-/// One pass of the `notify_outbox` job: retries what a request could not deliver. Rows are claimed with
-/// `FOR UPDATE SKIP LOCKED` and the next-attempt stamp is the lease, so the job runs on every replica
-/// and no two work the same row. Returns how many rows were tried.
+/// One pass of the `notify_outbox` job: retries what a request could not deliver, pushes and texts alike.
+/// Rows are claimed with `FOR UPDATE SKIP LOCKED` and the next-attempt stamp is the lease, so the job runs
+/// on every replica and no two work the same row. Returns how many rows were tried.
 pub async fn outbox_pass(state: &AppState) -> ApiResult<usize> {
+    let pushes = push_pass(state).await?;
+    let texts = crate::sms_outbox::pass(state).await?;
+    Ok(pushes + texts)
+}
+
+async fn push_pass(state: &AppState) -> ApiResult<usize> {
     let mut tried = 0;
     for _ in 0..OUTBOX_MAX_BATCHES {
         let rows: Vec<OutboxRow> = sqlx::query_as(
             "UPDATE notification_outbox SET attempts = attempts + 1, next_attempt_at = now() + make_interval(secs => $1 * power(2, attempts))
-             WHERE id IN (SELECT id FROM notification_outbox WHERE next_attempt_at <= now() ORDER BY next_attempt_at LIMIT $2 FOR UPDATE SKIP LOCKED)
+             WHERE id IN (SELECT id FROM notification_outbox WHERE channel = 'push' AND next_attempt_at <= now() ORDER BY next_attempt_at LIMIT $2 FOR UPDATE SKIP LOCKED)
              RETURNING id, owner_role, owner_id, kind, title, body, data, stored, attempts",
         )
         .bind(OUTBOX_BACKOFF_SECS)
@@ -717,12 +723,14 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &str, locale: &str, ko:
         };
         let sent = if korean {
             let brand = crate::routes::setup::brand_name(&state.db).await;
-            state.providers.send_customer_message(&phone, key, &brand, &ko_title, &ko_body).await
+            let msg = crate::sms_outbox::Message::Alimtalk { template: key, brand: &brand, title: &ko_title, body: &ko_body };
+            crate::sms_outbox::send(&state, Some(user), &phone, &kind, msg).await
         } else {
-            state.providers.send_sms(&phone, &format!("{title}\n{body}")).await
+            let text = format!("{title}\n{body}");
+            crate::sms_outbox::send(&state, Some(user), &phone, &kind, crate::sms_outbox::Message::Sms(&text)).await
         };
         if let Err(e) = sent {
-            tracing::warn!(error = %e, %kind, "customer message failed");
+            tracing::warn!(error = %e, %kind, "customer message not queued");
         }
     });
 }

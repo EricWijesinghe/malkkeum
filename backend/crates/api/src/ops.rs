@@ -263,6 +263,7 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
     let health: Vec<HealthRow> = sqlx::query_as("SELECT integration, last_ok_at, last_fail_at, last_error FROM ops_health").fetch_all(&s.db).await?;
     let signatures = count_failures(&s.db, "portone_webhook", 24).await?;
     let stuck = count_failures(&s.db, "payment_stuck", 24).await?;
+    let sms_dead = crate::sms_outbox::dead_count(&s.db).await?;
     let disk = disk_usage(s.config.upload_dir.clone()).await;
 
     let integ = s.providers.integ();
@@ -311,6 +312,7 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
         "checks": checks,
         "integrations": integrations,
         "jobs": jobs,
+        "sms_dead_letters": sms_dead,
     }))
 }
 
