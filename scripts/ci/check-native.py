@@ -529,7 +529,8 @@ def check_web():
     for value in csp:
         check(GOOGLE_HOSTS.search(value) is None, "deploy/Caddyfile: CSP must not allow Google hosts (web builds are self-contained)")
     check_site_csp(caddy)
-    compose = (REPO / "deploy" / "docker-compose.yml").read_text(encoding="utf-8")
+    check_seller_include(caddy)
+    compose =(REPO / "deploy" / "docker-compose.yml").read_text(encoding="utf-8")
     check("ANDROID_CERT_SHA256" in compose and "APPLE_TEAM_ID" in compose,
           "deploy/docker-compose.yml: API needs ANDROID_CERT_SHA256 and APPLE_TEAM_ID")
 
@@ -553,6 +554,19 @@ def check_site_csp(caddy):
             digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode()
             check(f"'sha256-{digest}'" in policy,
                   f"{rel}: inline script not allowed by the website CSP; add 'sha256-{digest}' to @site_csp in deploy/Caddyfile")
+
+
+def check_seller_include(caddy):
+    """Seller details (전자상거래법) are written into every website page by Caddy: the templates directive must
+    cover the website (not pay/, auth/ or assets), and each page must carry the seller-info include."""
+    check('@site_templated not path /assets/* /vendor/* /pay/* /auth/*' in caddy and 'templates @site_templated' in caddy,
+          "deploy/Caddyfile: templates must cover the website pages only (not assets, pay or auth)")
+    for page in sorted((REPO / "website").rglob("*.html")):
+        rel = page.relative_to(REPO).as_posix()
+        if rel.startswith(("website/pay/", "website/auth/")):
+            continue
+        check('httpInclude "/v1/public/seller-info' in page.read_text(encoding="utf-8"),
+              f"{rel}: seller details must be included server-side ({{{{httpInclude \"/v1/public/seller-info\"}}}})")
 
 
 def check_codemagic_ios(cm):

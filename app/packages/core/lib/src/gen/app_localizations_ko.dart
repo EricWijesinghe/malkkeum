@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -69,6 +70,169 @@ class TKo extends T {
 
   @override
   String get aiCapHint => '숫자만 입력해요. 비워두면 기본값을 써요.';
+
+  @override
+  String get cAppLinkTitle => '앱 링크';
+
+  @override
+  String get cAppLinkHint =>
+      '네이버 로그인 후 앱으로 돌아오게 하는 연결 정보예요. 저장하면 바로 적용돼요. 잘 모르면 개발자에게 맡기세요.';
+
+  @override
+  String get cAppLinkAndroidLabel => '안드로이드 서명 지문 (SHA-256)';
+
+  @override
+  String get cAppLinkAndroidHint => '한 줄에 하나씩, 콜론(:)으로 나눈 32쌍의 값이에요. 최대 8개.';
+
+  @override
+  String get cAppLinkTeamLabel => '애플 팀 ID (10자리)';
+
+  @override
+  String get cAppLinkSourceDb => '콘솔에서 저장한 값을 쓰고 있어요';
+
+  @override
+  String get cAppLinkSourceEnv => '서버 설정 값을 쓰고 있어요';
+
+  @override
+  String get cAppLinkAndroidOn => '안드로이드 앱 링크: 켜짐';
+
+  @override
+  String get cAppLinkAndroidOff => '안드로이드 앱 링크: 꺼짐';
+
+  @override
+  String get cAppLinkIosOn => '아이폰 앱 링크: 켜짐';
+
+  @override
+  String get cAppLinkIosOff => '아이폰 앱 링크: 꺼짐';
+
+  @override
+  String get cAppLinkNone => '값이 없으면 두 연결이 꺼져요. 네이버 로그인 후 앱으로 돌아오지 않을 수 있어요.';
+
+  @override
+  String get cAppLinkChecked => '확인했어요. 아직 저장하지 않았어요.';
+
+  @override
+  String get cAppLinkCheck => '확인';
+
+  @override
+  String get cAudit => '활동 기록';
+
+  @override
+  String get audIntro => '누가 언제 무엇을 했는지 최신순으로 보여요. 기록은 지울 수 없어요.';
+
+  @override
+  String get audPeriodToday => '오늘';
+
+  @override
+  String get audPeriod7 => '최근 7일';
+
+  @override
+  String get audPeriod30 => '최근 30일';
+
+  @override
+  String get audPeriodAll => '전체 기간';
+
+  @override
+  String get audFilterWho => '누가';
+
+  @override
+  String get audFilterWhat => '무엇을';
+
+  @override
+  String get audWhoAll => '모두';
+
+  @override
+  String get audWhatAll => '모든 작업';
+
+  @override
+  String get audRoleStaff => '직원';
+
+  @override
+  String get audRoleCustomer => '고객';
+
+  @override
+  String get audRolePro => '파트너';
+
+  @override
+  String get audRoleSystem => '자동 처리';
+
+  @override
+  String get audCatCase => '사건·환불';
+
+  @override
+  String get audCatBooking => '예약';
+
+  @override
+  String get audCatCustomer => '고객 정보';
+
+  @override
+  String get audCatStaff => '직원 관리';
+
+  @override
+  String get audCatSettlement => '정산';
+
+  @override
+  String get audCatPoints => '포인트';
+
+  @override
+  String get audCatService => '서비스·가격';
+
+  @override
+  String get audActCaseRefund => '사건 환불';
+
+  @override
+  String get audActCaseUpdate => '사건 처리 변경';
+
+  @override
+  String get audActPointsAdjust => '포인트 조정';
+
+  @override
+  String get audActPiiView => '고객 연락처 조회';
+
+  @override
+  String get audActPiiList => '고객 검색';
+
+  @override
+  String get audActStaffCreate => '직원 추가';
+
+  @override
+  String get audActStaffActive => '직원 사용 여부 변경';
+
+  @override
+  String get audActSettlementHold => '정산 보류 변경';
+
+  @override
+  String get audActServiceUpdate => '서비스 수정';
+
+  @override
+  String get audUnknownActor => '알 수 없음';
+
+  @override
+  String get audOtherAction => '기타 작업';
+
+  @override
+  String get audTarget => '대상';
+
+  @override
+  String get audDetailTitle => '상세 내용';
+
+  @override
+  String get audActionCode => '작업 코드';
+
+  @override
+  String get audNoDetail => '기록된 내용이 없어요';
+
+  @override
+  String get audEmpty => '조건에 맞는 기록이 없어요';
+
+  @override
+  String get audLoadMore => '더 보기';
+
+  @override
+  String get audClose => '닫기';
+
+  @override
+  String get audRange => '기간 선택';
 
   @override
   String get apSocialOr => '또는';
@@ -264,6 +428,158 @@ class TKo extends T {
 
   @override
   String get cSetupHostingProvider => '호스팅 서비스 제공자';
+
+  @override
+  String get cgTabPeak => '피크 요금';
+
+  @override
+  String get cgTabQuality => '품질 기준';
+
+  @override
+  String get cgTabDemo => '샘플 데이터';
+
+  @override
+  String get cgNewService => '새 상품';
+
+  @override
+  String get cgNewServiceTitle => '새 상품 만들기';
+
+  @override
+  String get cgServiceCode => '상품 코드 (영문 소문자)';
+
+  @override
+  String get cgServiceCodeHint => '영문 소문자, 숫자, _ 만 쓸 수 있어요. 만든 뒤에는 바꿀 수 없어요';
+
+  @override
+  String get cgServiceName => '화면에 보이는 이름';
+
+  @override
+  String get cgPriceFixed => '정해진 가격';
+
+  @override
+  String get cgPriceQuote => '방문 후 견적';
+
+  @override
+  String get cgServiceCreated => '상품을 만들었어요';
+
+  @override
+  String get cgArchiveHint => '끄면 보관돼요. 고객 화면에서 사라져요';
+
+  @override
+  String get cgArchived => '보관됨';
+
+  @override
+  String get cgCodeTaken => '같은 코드의 상품이 이미 있어요';
+
+  @override
+  String get cgServiceInvalid => '상품 코드나 가격을 다시 확인해 주세요';
+
+  @override
+  String get cgCodeInvalid => '숫자를 다시 확인해 주세요';
+
+  @override
+  String get cgPeakWeekend => '주말 할증 (%)';
+
+  @override
+  String get cgPeakHoliday => '공휴일 할증 (%)';
+
+  @override
+  String get cgPeakLunar => '명절 할증 (%)';
+
+  @override
+  String get cgPeakEvening => '저녁 할증 (%)';
+
+  @override
+  String get cgPeakEveningFrom => '저녁 시작 시각 (0~23시)';
+
+  @override
+  String get cgPeakEveningTo => '저녁 끝 시각 (1~24시)';
+
+  @override
+  String get cgPeakMax => '할증 합계 상한 (%)';
+
+  @override
+  String get cgPeakHint => '새 견적과 새 예약부터 적용돼요';
+
+  @override
+  String get cgQualityWarning => '주의 기준 (이 점수보다 낮으면 경고)';
+
+  @override
+  String get cgQualityPause => '자동 중지 기준 (이 점수보다 낮으면 파트너 일시 중지)';
+
+  @override
+  String get cgQualityHint => '바꾸면 다음 점수 계산부터 적용돼요';
+
+  @override
+  String get cgSubEdit => '일정 수정';
+
+  @override
+  String get cgSubCadence => '주기';
+
+  @override
+  String get cgSubWeekday => '요일';
+
+  @override
+  String get cgSubStartHour => '시작 시각';
+
+  @override
+  String get cgSubEditHint => '내일 방문은 그대로 두고, 그 뒤 예정된 방문을 새 일정으로 다시 잡아요';
+
+  @override
+  String get cgWeekdayMon => '월';
+
+  @override
+  String get cgWeekdayTue => '화';
+
+  @override
+  String get cgWeekdayWed => '수';
+
+  @override
+  String get cgWeekdayThu => '목';
+
+  @override
+  String get cgWeekdayFri => '금';
+
+  @override
+  String get cgWeekdaySat => '토';
+
+  @override
+  String get cgWeekdaySun => '일';
+
+  @override
+  String get cgDemoTitle => '데모용 샘플 데이터';
+
+  @override
+  String get cgDemoBody =>
+      '시연이나 교육용으로 가짜 고객, 파트너, 예약을 넣어요. 실제 예약이 있으면 넣을 수 없어요.';
+
+  @override
+  String get cgDemoLoad => '샘플 데이터 넣기';
+
+  @override
+  String get cgDemoClear => '샘플 데이터 지우기';
+
+  @override
+  String get cgDemoClearBody =>
+      '샘플 데이터만 지워요. 실제 기록은 그대로 남아요. 인증 앱에 보이는 6자리 코드를 입력하세요.';
+
+  @override
+  String get cgDemoOwnerCode => '인증 앱 6자리 코드';
+
+  @override
+  String get cgDemoLoaded => '샘플 데이터를 넣었어요';
+
+  @override
+  String get cgDemoCleared => '샘플 데이터를 지웠어요';
+
+  @override
+  String get cgDemoRealData => '실제 예약이 있어서 샘플 데이터를 넣을 수 없어요';
+
+  @override
+  String get cgDemoAlready => '샘플 데이터가 이미 들어 있어요';
+
+  @override
+  String get cgCodeWrong => '코드가 맞지 않아요. 새 코드를 입력하세요';
 
   @override
   String get cTitle => '운영 콘솔';
@@ -3057,6 +3373,21 @@ class TKo extends T {
   }
 
   @override
+  String get guestReasonQuote => '견적을 저장하고 예약하려면 로그인하세요';
+
+  @override
+  String get guestReasonBook => '예약을 확정하려면 로그인하세요';
+
+  @override
+  String get guestReasonChat => '상담원과 대화하려면 로그인하세요';
+
+  @override
+  String get guestReasonAccount => '내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요';
+
+  @override
+  String get guestAccountHint => '로그인하면 확인할 수 있어요';
+
+  @override
   String get locUseCurrent => '현재 위치로 찾기';
 
   @override
@@ -3213,6 +3544,69 @@ class TKo extends T {
   String anWeekAfter(String n) {
     return '$n주 후 예약';
   }
+
+  @override
+  String get ntNavLabel => '알림 문구';
+
+  @override
+  String get ntIntro =>
+      '고객과 청소팀이 앱 알림과 알림함에서 보는 문구를 바꿀 수 있어요. 비워 두면 기본 문구를 써요.';
+
+  @override
+  String get ntLangKo => '한국어';
+
+  @override
+  String get ntLangEn => '영어';
+
+  @override
+  String get ntBuiltIn => '기본 문구';
+
+  @override
+  String get ntUsingCustom => '직접 고친 문구를 쓰고 있어요';
+
+  @override
+  String get ntUsingBuiltIn => '기본 문구를 쓰고 있어요';
+
+  @override
+  String ntVars(String names) {
+    return '넣을 수 있는 값: $names';
+  }
+
+  @override
+  String get ntTitleField => '제목';
+
+  @override
+  String get ntBodyField => '내용';
+
+  @override
+  String get ntPreview => '미리 보기';
+
+  @override
+  String get ntPreviewResult => '이렇게 보여요';
+
+  @override
+  String get ntSave => '저장';
+
+  @override
+  String get ntRestore => '기본 문구로 되돌리기';
+
+  @override
+  String get ntRestored => '기본 문구로 되돌렸어요';
+
+  @override
+  String get ntErrVar => '허용되지 않은 값이 들어 있어요. 중괄호 안에는 위에 적힌 값만 넣어 주세요.';
+
+  @override
+  String get ntErrBraces => '중괄호가 짝이 맞지 않아요.';
+
+  @override
+  String get ntErrEmpty => '제목과 내용을 모두 입력해 주세요.';
+
+  @override
+  String get ntErrLong => '글자 수가 너무 많아요. 제목은 40자, 내용은 120자까지예요.';
+
+  @override
+  String get ntErrChars => '줄바꿈이나 조절 문자는 넣을 수 없어요.';
 
   @override
   String get cOps => '시스템 상태';
@@ -3447,6 +3841,11 @@ class TKo extends T {
   @override
   String oJobErrors(String count) {
     return '오류 $count회';
+  }
+
+  @override
+  String oJobDeadLetters(String count) {
+    return '발송 실패 $count건 (재시도 끝)';
   }
 
   @override
@@ -4175,6 +4574,78 @@ class TKo extends T {
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
 
   @override
+  String get prqTitle => '탈퇴·개인정보 요청';
+
+  @override
+  String get prqIntro =>
+      '고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.';
+
+  @override
+  String get prqPhone => '고객 전화번호';
+
+  @override
+  String get prqFind => '찾기';
+
+  @override
+  String get prqNotFound => '이 번호로 등록된 고객이 없어요.';
+
+  @override
+  String get prqBookings => '예약 수';
+
+  @override
+  String get prqExport => '자료 사본 받기 (CSV)';
+
+  @override
+  String get prqExported => '자료 사본을 저장했어요.';
+
+  @override
+  String get prqDelete => '탈퇴 처리';
+
+  @override
+  String get prqDeleteAdminOnly => '탈퇴 처리는 관리자만 할 수 있어요.';
+
+  @override
+  String get prqDeleteAsk =>
+      '고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.';
+
+  @override
+  String get prqPhoneAgain => '고객 전화번호 다시 입력';
+
+  @override
+  String get prqPhoneMismatch => '전화번호가 맞지 않아요.';
+
+  @override
+  String get prqDeleteDone => '탈퇴 처리가 끝났어요.';
+
+  @override
+  String get prqFailed => '처리하지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get prqLog => '처리 기록';
+
+  @override
+  String get prqLogEmpty => '아직 처리한 요청이 없어요.';
+
+  @override
+  String get prqKindExport => '자료 사본';
+
+  @override
+  String get prqKindDelete => '탈퇴';
+
+  @override
+  String get prqStatusDone => '완료';
+
+  @override
+  String get prqStatusFailed => '실패';
+
+  @override
+  String get prqBy => '처리한 직원';
+
+  @override
+  String get cSetupColorContrast =>
+      '이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.';
+
+  @override
   String get safetyEmergency => '긴급 연락처';
 
   @override
@@ -4288,6 +4759,153 @@ class TKo extends T {
 
   @override
   String get caseSave => '저장';
+
+  @override
+  String get rulesTab => '운영 규칙';
+
+  @override
+  String get rulesIntro =>
+      '여기서 바꾼 값은 바로 적용되거나 서버를 다시 시작할 때 적용돼요. 값을 비워 두면 처음 설정값으로 돌아가요.';
+
+  @override
+  String get rulesGroupBusiness => '사업장 한도';
+
+  @override
+  String get rulesGroupMarketing => '광고 발송';
+
+  @override
+  String get rulesGroupPoints => '포인트';
+
+  @override
+  String get rulesGroupQuality => '파트너 품질';
+
+  @override
+  String get rulesGroupOps => '서버·알림 기준';
+
+  @override
+  String get rulesRange => '입력 가능 범위';
+
+  @override
+  String get rulesSource => '현재 값 출처';
+
+  @override
+  String get rulesSourceDb => '직접 바꾼 값';
+
+  @override
+  String get rulesSourceEnv => '설치 시 설정값';
+
+  @override
+  String get rulesSourceDefault => '기본값';
+
+  @override
+  String get rulesTightenDown => '기본값보다 낮게만 바꿀 수 있어요';
+
+  @override
+  String get rulesTightenUp => '기본값보다 높게만 바꿀 수 있어요';
+
+  @override
+  String get rulesApplyInstant => '바로 적용';
+
+  @override
+  String get rulesApplyRebuild => '서버를 다시 시작해야 적용돼요';
+
+  @override
+  String get rulesReadOnly => '여기서는 바꿀 수 없어요 (개발자에게 문의)';
+
+  @override
+  String get rulesReset => '기본값으로';
+
+  @override
+  String get rulesSave => '저장';
+
+  @override
+  String get rulesSaved => '저장했어요';
+
+  @override
+  String get rulesNoChanges => '바뀐 값이 없어요';
+
+  @override
+  String get rulesInvalid => '입력한 값을 확인해 주세요';
+
+  @override
+  String get rulePointsAdjustMax => '포인트 한 번에 지급·차감할 최대 점수';
+
+  @override
+  String get ruleUploadDailyQuota => '하루 사진 업로드 한도 (장)';
+
+  @override
+  String get ruleMaxOpenQuoteRequests => '동시에 열 수 있는 견적 요청 수';
+
+  @override
+  String get ruleMaxThreadsPerDay => '하루 고객 대화방 개설 한도';
+
+  @override
+  String get ruleReviewReportThreshold => '후기 신고 몇 명이면 숨길지';
+
+  @override
+  String get ruleNoshowGraceMinutes => '노쇼 판정 대기 시간 (분)';
+
+  @override
+  String get ruleAiChatRetentionDays => 'AI 상담 기록 보관 기간 (일)';
+
+  @override
+  String get ruleUploadOrphanDays => '연결 없는 사진 삭제 기간 (일)';
+
+  @override
+  String get ruleReconcileIntervalSecs => '결제 대사 주기 (초)';
+
+  @override
+  String get ruleFreqCapPerWeek => '고객 한 명에게 일주일 최대 광고 수';
+
+  @override
+  String get ruleNudgeRebookDays => '재예약 안내 발송 (방문 후 일수)';
+
+  @override
+  String get ruleQualityWindowDays => '품질 점수 집계 기간 (일)';
+
+  @override
+  String get ruleQualityOnTimeGraceMin => '정시 도착 허용 시간 (분)';
+
+  @override
+  String get ruleBackupStaleHours => '백업이 이 시간 넘게 없으면 빨간불 (시간)';
+
+  @override
+  String get ruleBackupLateHours => '백업이 이 시간 넘게 없으면 노란불 (시간)';
+
+  @override
+  String get ruleDiskLowPct => '디스크 여유가 이 비율 아래면 빨간불 (%)';
+
+  @override
+  String get ruleDiskWarnPct => '디스크 여유가 이 비율 아래면 노란불 (%)';
+
+  @override
+  String get ruleMaintenanceOn => '점검 모드 (새 예약 막기)';
+
+  @override
+  String get ruleMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get rulesApplyStoreManual => '앱스토어에서 직접 수정해요';
+
+  @override
+  String get rulesMaxLength => '최대 글자 수';
+
+  @override
+  String get rulesDeleteWarning =>
+      '기간을 줄이면 기준보다 오래된 기록이 다음 정리 때 바로 삭제돼요. 삭제한 기록은 되돌릴 수 없어요.';
+
+  @override
+  String get rulesNoshowWarning => '노쇼 판정 대기 시간을 바꾸면 노쇼로 판정되는 기준이 바뀌어요.';
+
+  @override
+  String get err_tighten_only => '기본값을 넘는 값은 저장할 수 없어요. 기본값 쪽으로만 바꿀 수 있어요.';
+
+  @override
+  String get err_threshold_order =>
+      '노란불 기준과 빨간불 기준의 순서가 맞지 않아요. 두 값을 다시 확인해 주세요.';
+
+  @override
+  String get err_read_only_setting => '이 값은 여기서 바꿀 수 없어요. 개발자에게 문의해 주세요.';
 
   @override
   String get cSetup => '설정';
