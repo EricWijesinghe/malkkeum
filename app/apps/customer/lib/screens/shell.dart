@@ -61,7 +61,11 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
 
   void _onSession() {
     if (!mounted) return;
-    if (_session!.signedIn) _startMember();
+    if (_session!.signedIn && !_memberStarted) {
+      _startMember();
+      // The tabs loaded as a guest: reload them with the account's bookings and feed.
+      context.appRead.bookingsChanged();
+    }
     setState(() {});
   }
 

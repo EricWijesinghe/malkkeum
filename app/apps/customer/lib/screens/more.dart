@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'account_identity.dart';
 import 'addresses.dart';
@@ -12,7 +13,7 @@ import 'business_info.dart';
 import 'chat.dart' show tabRootTitle;
 import 'payments.dart';
 import 'privacy.dart';
-import 'service.dart';
+import 'service_scope.dart';
 import 'wallet.dart';
 import 'subscriptions.dart';
 
@@ -62,7 +63,7 @@ class MoreTab extends StatelessWidget {
         row(
           'menu_scope',
           t.moreScope,
-          () => _push(context, const ScopeScreen()),
+          () => _push(context, const ServiceScopeScreen()),
         ),
         row(
           'menu_payments',
@@ -224,9 +225,13 @@ class _ProfileCard extends StatelessWidget {
     final t = context.t;
     final c = context.colors;
     final brand = BrandConfig.placeholder.name;
+    final guest = !Deps.of(context).session.signedIn;
     return AppCard(
       padding: EdgeInsets.zero,
-      onTap: () => _push(context, const AccountScreen()),
+      // A guest has no account to show yet: the card starts sign-in instead.
+      onTap: guest
+          ? () => requireSignIn(context)
+          : () => _push(context, const AccountScreen()),
       child: Column(
         children: [
           Padding(
@@ -243,7 +248,11 @@ class _ProfileCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name.isEmpty ? '' : t.moreNameSuffix(name),
+                        guest
+                            ? t.introStart
+                            : name.isEmpty
+                            ? ''
+                            : t.moreNameSuffix(name),
                         style: context.text.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
@@ -340,6 +349,8 @@ class _Counter extends StatelessWidget {
           vertical: Space.sm,
         ),
         child: Row(
+          // The value sits at the cell's end ("쿠폰    2장"), not right after the label.
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Text(
@@ -470,6 +481,9 @@ class _LabelValueRow extends StatelessWidget {
         vertical: Space.xs,
       ),
       child: Row(
+        // A short label leaves part of its flex share unused: that space goes before the value,
+        // so the value ends at the row's edge as in the design.
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
             child: Text(
@@ -480,19 +494,28 @@ class _LabelValueRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Space.md),
+          // Two shares for the value side: a phone number and its 변경 link stay on one line.
           Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+            flex: 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.end,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                // Flexible: a long translated link wraps instead of pushing the row off screen.
+                if (extra case final e?) Flexible(child: e),
+              ],
             ),
           ),
-          // Flexible: a long translated link wraps instead of pushing the row off screen.
-          if (extra case final e?) Flexible(child: e),
         ],
       ),
     ),
@@ -556,60 +579,6 @@ class _RowValue extends StatelessWidget {
       textAlign: TextAlign.end,
     ),
   );
-}
-
-/// "What's included": every service with its description and limits.
-class ScopeScreen extends StatelessWidget {
-  const ScopeScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    final services = context.app.services;
-    return DefaultTabController(
-      length: services.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(t.moreScope),
-          bottom: TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: [for (final s in services) Tab(text: t.serviceShort(s.code))],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            for (final s in services)
-              ListView(
-                padding: const EdgeInsets.all(Space.gutter),
-                children: [
-                  Center(child: ServiceGlyph(s.code, size: 96)),
-                  const SizedBox(height: Space.lg),
-                  Text(t.service(s.code), style: context.text.headlineSmall),
-                  const SizedBox(height: Space.xs),
-                  Text(t.serviceDesc(s.code), style: context.text.bodyLarge),
-                  const SizedBox(height: Space.lg),
-                  for (final n in t.serviceNotes(s.code))
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.info_outline_rounded),
-                      title: Text(n, style: context.text.bodyMedium),
-                    ),
-                  const SizedBox(height: Space.lg),
-                  FilledButton(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => ServiceScreen(service: s),
-                      ),
-                    ),
-                    child: Text(t.bookNow),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class ContentListScreen extends StatelessWidget {

@@ -598,10 +598,17 @@ class _Timeline extends StatelessWidget {
                         if (i < steps.length - 1)
                           // The connector fills once its step is behind the booking.
                           Expanded(
-                            child: ProgressLine(
-                              axis: Axis.vertical,
-                              thickness: 2,
-                              fraction: b.status > steps[i].$1 ? 1 : 0,
+                            // A one-line step is shorter than its disc: the floor keeps the
+                            // discs (and the current one's pulse) apart with a visible line.
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: Space.md,
+                              ),
+                              child: ProgressLine(
+                                axis: Axis.vertical,
+                                thickness: 2,
+                                fraction: b.status > steps[i].$1 ? 1 : 0,
+                              ),
                             ),
                           ),
                       ],

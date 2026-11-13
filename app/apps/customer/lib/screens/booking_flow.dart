@@ -61,6 +61,8 @@ class AddressRadioList extends StatelessWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          // With an action a SnackBar would stay up forever by default.
+          persist: false,
           content: Text(
             t.dfStudioToast(
               t.service(draft.service.code),
@@ -162,29 +164,35 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
     d.address ??= context.app.addresses
         .where((a) => max == null || a.sizePyeong <= max)
         .firstOrNull;
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListView(
-        children: [
-          FlowTitle(t.dfAddressTitle),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-            child: AddressRadioList(draft: d, onChanged: () => setState(() {})),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomActionBar(
-        child: PrimaryButton(
-          label: t.next,
-          onPressed: d.address == null
-              ? null
-              : () => widget.onPicked != null
-                    ? widget.onPicked!(context)
-                    : Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => ScheduleScreen(draft: d),
+    // Own messenger: the size toast leaves with this screen instead of following the user back.
+    return ScaffoldMessenger(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: ListView(
+          children: [
+            FlowTitle(t.dfAddressTitle),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+              child: AddressRadioList(
+                draft: d,
+                onChanged: () => setState(() {}),
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: BottomActionBar(
+          child: PrimaryButton(
+            label: t.next,
+            onPressed: d.address == null
+                ? null
+                : () => widget.onPicked != null
+                      ? widget.onPicked!(context)
+                      : Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ScheduleScreen(draft: d),
+                          ),
                         ),
-                      ),
+          ),
         ),
       ),
     );

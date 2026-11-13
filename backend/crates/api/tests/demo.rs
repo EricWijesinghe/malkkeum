@@ -118,3 +118,18 @@ async fn load_adds_a_fake_business_profile_and_clear_removes_only_that(pool: PgP
     demo::clear(&pool, &config).await.expect("demo clear");
     assert_eq!(business(&pool).await.expect("owner profile kept")["name"], "우리집청소");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn demo_deposit_messages_carry_the_paid_amount(pool: PgPool) {
+    seed_catalog(&pool).await;
+    demo::load(&pool, &config(), false).await.expect("demo load");
+    let amounts: Vec<Option<i64>> = sqlx::query_scalar(
+        "SELECT (body->'params'->>'amount')::bigint FROM chat_messages WHERE kind = 'system' AND body->>'code' = 'deposit_paid'",
+    )
+    .fetch_all(&pool)
+    .await
+    .expect("deposit messages");
+    assert!(!amounts.is_empty(), "the demo has paid quote deposits");
+    // The app prints "예약금 {amount}원이 결제됐어요": a missing amount would read 0원.
+    assert!(amounts.iter().all(|a| a.is_some_and(|n| n > 0)), "{amounts:?}");
+}

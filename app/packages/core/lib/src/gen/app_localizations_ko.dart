@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1508,7 +1509,7 @@ class TKo extends T {
 
   @override
   String sys_deposit_paid(String amount) {
-    return '예약금 $amount이(가) 결제됐어요. 예약이 확정됐어요.';
+    return '예약금 $amount이 결제됐어요. 예약이 확정됐어요.';
   }
 
   @override

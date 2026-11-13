@@ -718,7 +718,7 @@
  "quotePaid": "결제 완료",
  "requestCard": "견적 요청",
  "sys_consultation_received": "상담이 접수됐어요",
- "sys_deposit_paid": "예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.",
+ "sys_deposit_paid": "예약금 {amount}이 결제됐어요. 예약이 확정됐어요.",
  "@sys_deposit_paid": {
   "placeholders": {
    "amount": {

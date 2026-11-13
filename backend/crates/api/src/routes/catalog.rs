@@ -137,10 +137,25 @@ async fn slots(State(s): State<AppState>, Query(q): Query<SlotQuery>) -> ApiResu
     ))
 }
 
-async fn estimate(State(s): State<AppState>, Json(a): Json<QuoteAnswers>) -> ApiResult<Json<Estimate>> {
+/// The answers, plus the visit slot once the customer has picked one.
+#[derive(Deserialize)]
+struct EstimateRequest {
+    #[serde(flatten)]
+    answers: QuoteAnswers,
+    visit_date: Option<NaiveDate>,
+    start_hour: Option<u8>,
+}
+
+/// With a slot the preview carries its peak surcharge, so it equals the estimate the booking stores.
+async fn estimate(State(s): State<AppState>, Json(r): Json<EstimateRequest>) -> ApiResult<Json<Estimate>> {
     let formula = load_formula(&s.db).await?;
-    let lines = addon_lines(&s.db, &a).await?;
-    Ok(Json(formula.estimate_with_addons(&a, 0, &lines)?))
+    let lines = addon_lines(&s.db, &r.answers).await?;
+    let start = r.visit_date.zip(r.start_hour).and_then(|(d, h)| domain::peak::kst_to_utc(d, u32::from(h)));
+    let bps = match start {
+        Some(start) => domain::peak::peak_surcharge(&load_peak_config(&s.db).await?, start).bps,
+        None => 0,
+    };
+    Ok(Json(formula.estimate_with_addons(&r.answers, bps, &lines)?))
 }
 
 /// Catalog prices for the answers' aircon add-ons (empty without any), so every estimate

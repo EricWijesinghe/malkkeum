@@ -15,7 +15,7 @@ Future<void> main() async {
   final session = Session(namespace: 'customer');
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
   final locale = LocaleController();
-  final theme = ThemeController();
+  final theme = ThemeController(initial: ThemeMode.system);
   await Future.wait([session.restore(), locale.restore(), theme.restore()]);
   final restored = boot.elapsedMilliseconds;
   final analytics = Analytics(

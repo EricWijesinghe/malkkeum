@@ -1740,7 +1740,7 @@
 "en": "Your request was received"
 },
 "sys_deposit_paid": {
-"ko": "예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.",
+"ko": "예약금 {amount}이 결제됐어요. 예약이 확정됐어요.",
 "en": "Deposit of {amount} paid. You're confirmed."
 },
 "sys_booking_cancelled": {
