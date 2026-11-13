@@ -39,6 +39,11 @@ const TABLE: &[(&str, &str)] = &[
     ("예약 상태가 바뀌었어요", "Your booking status changed"),
     ("결제가 자동으로 취소됐어요", "Your payment was cancelled automatically"),
     ("예약 조건이 바뀌어 결제 금액을 환불했어요", "The booking changed, so we refunded your payment"),
+    ("결제 취소를 진행하고 있어요", "We're cancelling your payment"),
+    (
+        "예약 조건이 바뀌어 결제 금액을 환불하고 있어요. 환불이 끝나면 알려드릴게요",
+        "The booking changed, so we're refunding your payment. We'll let you know once it's done",
+    ),
     ("청소팀이 배정됐어요", "Your cleaning team is assigned"),
     ("새 작업이 배정됐어요", "You have a new job"),
     ("앱에서 일정과 주소를 확인하세요", "Check the time and address in the app"),
@@ -53,6 +58,24 @@ const TABLE: &[(&str, &str)] = &[
     ("지난번과 같은 조건으로 빠르게 예약할 수 있어요", "Rebook with the same settings in a few taps"),
     ("견적 요청이 아직 남아 있어요", "Your quote request is still open"),
     ("원하는 시간에 청소팀을 바로 받아 보세요", "Get a cleaning team quote for your time slot"),
+    ("도착 확인 없음", "No arrival check-in"),
+    ("배정이 변경됐어요", "Your assignment changed"),
+    ("새 현장이 배정됐어요", "You have a new job site"),
+    ("청소팀이 변경됐어요", "Your cleaning team changed"),
+    (
+        "불편을 드려 죄송합니다. 다른 청소팀이 배정됐어요.",
+        "Sorry for the trouble. A different cleaning team is assigned.",
+    ),
+    ("품질 점수가 낮아졌어요", "Your quality score dropped"),
+    ("품질 점수를 확인하고 개선해 주세요.", "Check your quality score and how to improve it."),
+    ("정기 청소가 일시 정지됐어요", "Your regular cleaning is paused"),
+    ("결제 수단을 확인한 뒤 재개해 주세요", "Check your payment method, then resume it"),
+    ("정기 청소 결제가 실패했어요", "Your regular cleaning payment failed"),
+    ("카드 정보를 확인해 주세요", "Please check your card details"),
+    ("이번 정기 청소를 잡지 못했어요", "We couldn't book this regular cleaning"),
+    ("고객센터로 문의해 주세요", "Please contact customer support"),
+    ("빈 자리가 생겼어요", "A slot opened up"),
+    ("15분 안에 예약을 확정해 주세요.", "Confirm your booking within 15 minutes."),
 ];
 
 /// Korean text for status-code keys, which aren't Korean themselves.
@@ -113,6 +136,7 @@ mod tests {
         assert_eq!(tr("en", "청소가 끝났어요"), "Cleaning is done");
         assert_eq!(tr("ko", "청소가 끝났어요"), "청소가 끝났어요");
         assert_eq!(tr("en", "B-20261111-0042"), "B-20261111-0042");
+        assert_eq!(tr("en", "결제 취소를 진행하고 있어요"), "We're cancelling your payment");
         assert_eq!(tr("ko", "verified"), "계정이 승인됐어요");
         assert_eq!(tr("en", "verified"), "Your account is approved");
     }
