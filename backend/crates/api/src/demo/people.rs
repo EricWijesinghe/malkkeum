@@ -12,6 +12,8 @@ use uuid::Uuid;
 pub const CUSTOMER_COUNT: usize = 40;
 const IDENTITY_COUNT: usize = 15;
 const OTP_COUNT: usize = 12;
+/// How long the demo sign-in customer's coupon stays valid after a load.
+const DEMO_COUPON_DAYS: i64 = 30;
 
 const SURNAMES: [&str; 20] = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍"];
 const GIVEN: [&str; 24] = [
@@ -140,7 +142,7 @@ async fn customers(c: &mut Ctx<'_>) -> Result<Vec<Customer>, DemoError> {
 
         let addresses = addresses(c, id, created).await?;
         card(c, id, created).await?;
-        let coupons = coupons(c, id, created).await?;
+        let coupons = coupons(c, id, created, i == 0).await?;
         out.push(Customer { id, created, addresses, coupons });
     }
     identities(c, &out).await?;
@@ -206,7 +208,9 @@ async fn card(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<(),
 }
 
 /// Welcome coupon issued at sign-up (the default `welcome_pack`), plus an autumn campaign coupon for some customers.
-async fn coupons(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<Vec<Coupon>, DemoError> {
+/// `demo_login` is the customer the demo signs in as (010-0000-0001): they also get a coupon valid for
+/// `DEMO_COUPON_DAYS` from load time, so checkout's coupon step always has one to show.
+async fn coupons(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>, demo_login: bool) -> Result<Vec<Coupon>, DemoError> {
     let mut out = vec![
         (Coupon { id: c.id(), amount: 15_000, service: None, issued: created, expires: created + Duration::days(14), used: false }, "첫 청소 15,000원 웰컴쿠폰", "welcome"),
     ];
@@ -214,6 +218,11 @@ async fn coupons(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<
         let expires = if c.chance(0.5) { c.now + Duration::days(10) } else { c.now - Duration::days(2) };
         let issued = expires - Duration::days(30);
         out.push((Coupon { id: c.id(), amount: 3_000, service: None, issued, expires, used: false }, "가을 감사 쿠폰 3천원", "autumn-2026"));
+    }
+    if demo_login {
+        // `used: true` only stops the booking generator from spending it; the stored coupon is unused.
+        let expires = c.now + Duration::days(DEMO_COUPON_DAYS);
+        out.push((Coupon { id: c.id(), amount: 10_000, service: None, issued: c.now, expires, used: true }, "웰컴 쿠폰 · 전 서비스", "welcome"));
     }
     let mut rows = Vec::with_capacity(out.len());
     for (coupon, name, campaign) in out {

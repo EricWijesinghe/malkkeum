@@ -56,6 +56,11 @@ class QuoteMethodPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    // Design p18 prints the brand name in teal: the label leads with it in every language.
+    final label = t.dfSafeBooking;
+    final space = label.indexOf(' ');
+    final brandWord = space < 0 ? '' : label.substring(0, space);
+    final afterBrand = label.substring(space < 0 ? 0 : space);
     return ListView(
       children: [
         FlowTitle(t.dfQuoteMethodTitle, chip: chip),
@@ -83,8 +88,18 @@ class QuoteMethodPage extends StatelessWidget {
                               spacing: Space.xs,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
-                                Text(
-                                  t.dfSafeBooking,
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: brandWord,
+                                        style: TextStyle(
+                                          color: context.primary,
+                                        ),
+                                      ),
+                                      TextSpan(text: afterBrand),
+                                    ],
+                                  ),
                                   style: context.text.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),

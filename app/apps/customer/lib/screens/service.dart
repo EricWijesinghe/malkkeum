@@ -61,7 +61,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
     final d = _draft.draft;
     final notes = t.serviceNotes(s.code);
     return Scaffold(
-      appBar: AppBar(actions: [ScopeLink(code: s.code)]),
+      backgroundColor: context.colors.surface,
+      appBar: AppBar(
+        backgroundColor: context.colors.surface,
+        actions: [ScopeLink(code: s.code)],
+      ),
       body: ListView(
         controller: _scroll,
         children: [

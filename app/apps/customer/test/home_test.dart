@@ -14,6 +14,8 @@ import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
 
 const _hero = '첫 청소 웰컴 쿠폰팩 즉시 지급';
+const _cardLabel = '웰컴 혜택';
+const _cardValue = '15,000원';
 const _hero2 = '에어컨 2in1 청소 예약 오픈';
 const _pick = '이사 전 퇴거 청소까지';
 const _pickLine = '이사 청소 · 상담 후 견적';
@@ -32,7 +34,15 @@ void _stockContent(FakeApi fake) => fake.onGet('/content', _content);
 
 Object? _content(ApiCall call) => switch (call.query['kind']) {
   'banner' => [
-    contentJson(id: 'b-1', kind: 'banner', title: const {'ko': _hero}, link: 'coupons'),
+    {
+      ...contentJson(id: 'b-1', kind: 'banner', title: const {'ko': _hero}, link: 'coupons'),
+      'body': {
+        'card': {
+          'label': {'ko': _cardLabel},
+          'value': {'ko': _cardValue},
+        },
+      },
+    },
     {
       ...contentJson(id: 'b-2', kind: 'banner', title: const {'ko': _pick}, link: 'service/move_out'),
       'body': {
@@ -163,6 +173,9 @@ void main() {
     expect(find.text(_pick), findsOneWidget);
     expect(find.text(_pickLine), findsOneWidget);
     expect(find.text(koT.dhBannerPage('1', '2')), findsOneWidget);
+    // The banner's art card prints the console content's label and value (design p01).
+    expect(find.text(_cardLabel), findsOneWidget);
+    expect(find.text(_cardValue), findsOneWidget);
     // The banner has no line of its own, so it names the customer's usable coupons.
     expect(find.text(koT.couponAvailable('1')), findsOneWidget);
     // One notice with its tag; the article names its service, the tip its kind.

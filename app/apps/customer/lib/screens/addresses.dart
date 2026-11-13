@@ -87,9 +87,7 @@ class _AddressesScreenState extends State<AddressesScreen>
       bottomNavigationBar: BottomActionBar(
         child: PrimaryButton(
           label: t.addressAdd,
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const AddressFormScreen()),
-          ),
+          onPressed: () => showAddressForm(context),
         ),
       ),
     );
@@ -106,9 +104,7 @@ class _AddressRow extends StatelessWidget {
     final a = address;
     final t = context.t;
     return InkWell(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => AddressFormScreen(existing: a)),
-      ),
+      onTap: () => showAddressForm(context, existing: a),
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: Space.gutter,
@@ -147,6 +143,27 @@ class _AddressRow extends StatelessWidget {
   }
 }
 
+/// As tall as the address field beside it.
+const _searchButtonSize = Size(64, 56);
+
+/// Share of the screen the form sheet covers: the page behind stays visible above it (p25).
+const _formSheetHeight = 0.92;
+
+/// Opens the add / edit form as a sheet over the caller (design p25). Completes with the
+/// saved address, or null when it was closed or the address deleted.
+Future<Address?> showAddressForm(BuildContext context, {Address? existing}) =>
+    showModalBottomSheet<Address>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: false,
+      clipBehavior: Clip.antiAlias,
+      builder: (_) => FractionallySizedBox(
+        heightFactor: _formSheetHeight,
+        child: AddressFormScreen(existing: existing),
+      ),
+    );
+
 /// Add / edit. District comes from the service-area list; size is required (studio rule).
 class AddressFormScreen extends StatefulWidget {
   const AddressFormScreen({
@@ -175,11 +192,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   );
   late String _kind = widget.existing?.kind ?? 'home';
   late String? _district = widget.existing?.districtCode;
-  final _query = TextEditingController();
   bool _busy = false;
-  // Road search: null while the server's feature check is pending (typed entry shows meanwhile).
+  // Road search: null while the server's feature check is pending (the field takes typed entry either way).
   bool? _searchOn;
-  bool _manual = false;
   bool _searching = false;
   bool _searched = false;
   // Localized server message for the last failed search (shown inline; typed entry stays below).
@@ -201,8 +216,9 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     });
   }
 
+  /// Looks up the words typed in the address field; a picked result replaces them.
   Future<void> _search() async {
-    final q = _query.text.trim();
+    final q = _road.text.trim();
     if (q.length < 2) {
       showToast(context, context.t.addressSearchMinChars);
       return;
@@ -351,7 +367,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   @override
   void dispose() {
-    for (final c in [_label, _road, _detail, _size, _query]) {
+    for (final c in [_label, _road, _detail, _size]) {
       c.dispose();
     }
     super.dispose();
@@ -363,8 +379,13 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     final lang = context.lang;
     InputDecoration deco(String label, [String? hint, String? helper]) =>
         InputDecoration(labelText: label, hintText: hint, helperText: helper);
+    final searchOn = _searchOn == true;
     return Scaffold(
+      backgroundColor: context.colors.surface,
       appBar: AppBar(
+        backgroundColor: context.colors.surface,
+        // A sheet (design p25): the title, then close on the right.
+        automaticallyImplyLeading: false,
         title: Text(widget.existing == null ? t.addressAdd : t.edit),
         actions: [
           if (widget.existing != null)
@@ -373,6 +394,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               icon: const Icon(Icons.delete_outline_rounded),
               onPressed: _delete,
             ),
+          const CloseButton(),
         ],
       ),
       body: ListView(
@@ -465,33 +487,42 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
                 ),
               ),
           ],
-          if (_searchOn == true && !_manual) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _query,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _search(),
-                    decoration: deco(t.addressSearch, t.addressSearchHint),
-                  ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _road,
+                  maxLength: 200,
+                  textInputAction: searchOn ? TextInputAction.search : null,
+                  onSubmitted: searchOn ? (_) => _search() : null,
+                  decoration: deco(
+                    t.addressRoad,
+                    searchOn ? t.addressSearchHint : null,
+                  ).copyWith(counterText: ''),
+                  onChanged: (_) => setState(() {}),
                 ),
+              ),
+              // Design p25: the ink "검색" button, there only when the server can search.
+              if (searchOn) ...[
                 const SizedBox(width: Space.xs),
-                IconButton.filled(
-                  tooltip: t.addressSearchButton,
-                  style: IconButton.styleFrom(
+                FilledButton(
+                  style: FilledButton.styleFrom(
                     backgroundColor: context.colors.ink,
                     foregroundColor: context.colors.surface,
-                    minimumSize: const Size.square(48),
+                    minimumSize: _searchButtonSize,
+                    padding: const EdgeInsets.symmetric(horizontal: Space.md),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(Radii.chip),
                     ),
                   ),
-                  icon: const Icon(Icons.search_rounded),
                   onPressed: _searching ? null : _search,
+                  child: Text(t.addressSearchButton),
                 ),
               ],
-            ),
+            ],
+          ),
+          if (searchOn) ...[
             for (final h in _hits)
               Padding(
                 padding: const EdgeInsets.only(top: Space.xs),
@@ -530,20 +561,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               ),
             if (_searched && _hits.isEmpty && _searchError == null)
               Text(t.addressNoResults, style: context.text.bodySmall),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton(
-                onPressed: () => setState(() => _manual = true),
-                child: Text(t.addressManualEntry),
-              ),
-            ),
           ],
-          TextField(
-            controller: _road,
-            maxLength: 200,
-            decoration: deco(t.addressRoad).copyWith(counterText: ''),
-            onChanged: (_) => setState(() {}),
-          ),
           const SizedBox(height: Space.md),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

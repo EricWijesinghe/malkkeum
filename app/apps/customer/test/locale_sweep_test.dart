@@ -88,16 +88,17 @@ void main() {
 
       await pumpCustomerScreen(tester, env, const AddressFormScreen());
       await settle(tester, duration: const Duration(milliseconds: 400));
-      await tester.enterText(find.widgetWithText(TextField, t.addressSearch), '상암동 1');
-      await tester.tap(find.byTooltip(t.addressSearchButton));
+      await tester.enterText(find.widgetWithText(TextField, t.addressRoad), '상암동 1');
+      await tester.tap(find.widgetWithText(FilledButton, t.addressSearchButton));
       await pumpUntilFound(tester, find.text('서울특별시 마포구 월드컵북로 111'));
       await settle(tester, duration: const Duration(milliseconds: 400));
       expect(tester.takeException(), isNull, reason: 'address results');
-      // The form is a lazily built ListView: scroll until the fallback link is built, then tap it.
-      await tester.scrollUntilVisible(find.text(t.addressManualEntry), 200, scrollable: find.byType(Scrollable).first);
-      await tester.tap(find.text(t.addressManualEntry));
+      // Picking a result fills the address field.
+      await tester.ensureVisible(find.text('서울특별시 마포구 월드컵북로 111'));
+      await tester.pump();
+      await tester.tap(find.text('서울특별시 마포구 월드컵북로 111'));
       await settle(tester, duration: const Duration(milliseconds: 400));
-      expect(tester.takeException(), isNull, reason: 'typed address fallback');
+      expect(tester.takeException(), isNull, reason: 'picked address');
       await unmount(tester);
 
       final picker = await pumpCustomerScreen(

@@ -20,10 +20,10 @@ FakeApi _api(FutureOr<Object?> Function(ApiCall call) search) {
   return fake;
 }
 
-/// Types [query] into the road-search box and presses the search button.
+/// Types [query] into the address field and presses 검색.
 Future<void> _search(WidgetTester tester, String query) async {
-  await tester.enterText(find.widgetWithText(TextField, koT.addressSearch), query);
-  await tester.tap(find.byTooltip(koT.addressSearchButton));
+  await tester.enterText(find.widgetWithText(TextField, koT.addressRoad), query);
+  await tester.tap(find.widgetWithText(FilledButton, koT.addressSearchButton));
   await tester.pump();
 }
 
@@ -48,7 +48,7 @@ void main() {
 
     await _search(tester, '없는주소');
     await pumpUntilFound(tester, find.text(koT.addressNoResults));
-    expect(find.text(koT.addressManualEntry), findsOneWidget);
+    expect(find.text('없는주소'), findsOneWidget, reason: 'the typed words stay in the address field');
     await unmount(tester);
   });
 
@@ -76,7 +76,7 @@ void main() {
     await _search(tester, '상암동');
     await settle(tester, duration: const Duration(milliseconds: 300));
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
-    final button = tester.widget<IconButton>(find.ancestor(of: find.byTooltip(koT.addressSearchButton), matching: find.byType(IconButton)));
+    final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, koT.addressSearchButton));
     expect(button.onPressed, isNull, reason: 'search button is disabled while searching');
 
     pending.complete({'results': const <Json>[], 'page': 1});

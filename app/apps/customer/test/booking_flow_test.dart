@@ -94,7 +94,8 @@ void main() {
       expect(
         find.text(formatWon(unit.price, 'ko')),
         findsNWidgets(3),
-        reason: 'the tile, the bar and the breakdown all show the catalog price',
+        reason:
+            'the tile, the bar and the breakdown all show the catalog price',
       );
       expect(find.text(koT.vatIncluded), findsOneWidget);
       await unmount(tester);
@@ -301,6 +302,46 @@ void main() {
       await unmount(tester);
     },
   );
+
+  for (final withTip in [true, false]) {
+    testWidgets(
+      '"어떤 교육을 받나요?" opens ${withTip ? 'the console training tip' : 'the service scope when there is no tip'}',
+      (tester) async {
+        setViewport(tester, phoneSize);
+        final fake = FakeApi();
+        if (withTip) {
+          fake.reply('GET', '/content', [
+            {
+              ...contentJson(kind: 'tip', title: const {'ko': '매니저 교육 안내'}),
+              'slug': trainingTipSlug,
+            },
+          ]);
+        }
+        stockCustomerApi(fake, addresses: [addressJson(sizePyeong: 8)]);
+        _openSlots(fake);
+        final env = await TestEnv.create(fake: fake);
+        final app = await _loaded(env);
+        final d = BookingDraft(app.service('studio')!)
+          ..address = app.addresses.first;
+        await tester.pumpWidget(
+          CustomerTestHost(
+            env: env,
+            app: app,
+            home: ScheduleScreen(draft: d),
+          ),
+        );
+        await settle(tester);
+
+        await _tap(tester, find.text(koT.dfTrainingLink));
+        expect(find.text('매니저 교육 안내'), withTip ? findsOneWidget : findsNothing);
+        expect(
+          find.byType(ServiceScopeScreen),
+          withTip ? findsNothing : findsOneWidget,
+        );
+        await unmount(tester);
+      },
+    );
+  }
 
   testWidgets('prep tools lists the 7 tools and "도구가 없으신가요?" opens the chat', (
     tester,
@@ -519,6 +560,11 @@ void main() {
       expect(find.text(formatWon(35000, 'ko')), findsOneWidget);
       expect(find.text(koT.goHome), findsOneWidget);
       expect(find.text(koT.viewBooking), findsOneWidget);
+      expect(
+        find.text(koT.doneConfirmedTitle),
+        findsOneWidget,
+        reason: 'a confirmed booking says 확정, not 완료',
+      );
       expect(tester.hasRunningAnimations, isFalse);
       await unmount(tester);
     },

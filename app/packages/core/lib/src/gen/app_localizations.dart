@@ -97,12 +97,6 @@ abstract class T {
     Locale('ko'),
   ];
 
-  /// No description provided for @addressSearch.
-  ///
-  /// In ko, this message translates to:
-  /// **'주소 검색'**
-  String get addressSearch;
-
   /// No description provided for @addressSearchHint.
   ///
   /// In ko, this message translates to:
@@ -126,12 +120,6 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'검색 결과가 없어요. 다른 단어로 검색해 보세요.'**
   String get addressNoResults;
-
-  /// No description provided for @addressManualEntry.
-  ///
-  /// In ko, this message translates to:
-  /// **'직접 입력'**
-  String get addressManualEntry;
 
   /// No description provided for @cardRegisterTitle.
   ///
@@ -1912,7 +1900,7 @@ abstract class T {
   /// No description provided for @unitTitle_aircon.
   ///
   /// In ko, this message translates to:
-  /// **'에어컨 종류'**
+  /// **'에어컨 종류를\n선택해 주세요.'**
   String get unitTitle_aircon;
 
   /// No description provided for @unitTitle_sofa.
@@ -2164,7 +2152,7 @@ abstract class T {
   /// No description provided for @addressAdd.
   ///
   /// In ko, this message translates to:
-  /// **'새 주소 추가'**
+  /// **'주소 추가'**
   String get addressAdd;
 
   /// No description provided for @addressLabel.
@@ -2478,6 +2466,12 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'예약이 완료됐어요'**
   String get doneTitle;
+
+  /// No description provided for @doneConfirmedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약이 확정됐어요'**
+  String get doneConfirmedTitle;
 
   /// No description provided for @doneBody.
   ///
@@ -3936,6 +3930,12 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'교육받은 매니저님이 방문합니다.'**
   String get dfManagerIntro;
+
+  /// No description provided for @dfTrainingLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 교육을 받나요?'**
+  String get dfTrainingLink;
 
   /// No description provided for @dfServiceTime.
   ///

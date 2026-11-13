@@ -75,8 +75,8 @@ void main() {
       final env = await TestEnv.create(fake: fake, themeMode: mode);
       await pumpCustomerScreen(tester, env, const AddressFormScreen());
       await settle(tester);
-      await tester.enterText(find.widgetWithText(TextField, koT.addressSearch), '상암동');
-      await tester.tap(find.byTooltip(koT.addressSearchButton));
+      await tester.enterText(find.widgetWithText(TextField, koT.addressRoad), '상암동');
+      await tester.tap(find.widgetWithText(FilledButton, koT.addressSearchButton));
       await pumpUntilFound(tester, find.text('서울특별시 마포구 월드컵북로 400'));
       await settle(tester, duration: const Duration(milliseconds: 800));
       await _expectAccessible(tester);

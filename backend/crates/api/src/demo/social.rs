@@ -326,7 +326,15 @@ async fn audit(c: &mut Ctx<'_>, world: &World, booked: &[BookingRec]) -> Result<
 async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
     // The first banner without a service link is the home hero; `service/<code>` makes a recommendation.
     let banners = [
-        (json!({"ko": "첫 청소 15,000원 웰컴쿠폰", "en": "₩15,000 welcome coupon for your first clean"}), json!({"theme": "sun"}), Some("coupons")),
+        // Design p01: headline, sub-line and the tilted art card ("웰컴 혜택 / 15,000원", from `card`).
+        (
+            json!({"ko": "첫 청소 15,000원 쿠폰 즉시 지급", "en": "₩15,000 coupon for your first clean"}),
+            json!({
+                "text": {"ko": "신규 고객 웰컴 쿠폰", "en": "Welcome coupon for new customers"},
+                "card": {"label": {"ko": "웰컴 혜택", "en": "Welcome gift"}, "value": {"ko": "15,000원", "en": "₩15,000"}},
+            }),
+            Some("coupons"),
+        ),
         (
             json!({"ko": "입주 청소, 이사 전 청소까지 한 번에", "en": "Move-in cleaning, including the pre-move-out clean"}),
             json!({"text": {"ko": "나가는 집과 들어가는 집을 함께 맡기면 일정을 한 번에 맞춰 드려요.", "en": "Book both homes together and we line up the two visits for you."}}),
@@ -358,9 +366,17 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
         (json!({"ko": "욕실 물때 없애는 법", "en": "Removing bathroom limescale"}), "식초 물을 뿌리고 10분 뒤 헹구면 대부분 지워져요."),
         (json!({"ko": "이사 전 체크리스트", "en": "Move-out checklist"}), "보관 상자, 가전 분리, 가스·전기 정산일을 미리 적어 두세요."),
     ];
+    let after_tips = tips.len() as i32;
     for (i, (title, text)) in tips.into_iter().enumerate() {
         insert_content(c, "tip", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
     }
+    // The schedule step's "어떤 교육을 받나요?" link opens the tip with this slug (app: `trainingTipSlug`).
+    let training = json!({ "text": {
+        "ko": "모든 매니저님은 첫 방문 전에 서비스별 청소 순서, 세제와 도구 사용법, 고객 응대와 안전 수칙 교육을 마쳐요. 그 뒤에도 후기와 점검 결과로 정기 평가를 받아요.",
+        "en": "Before a first visit every manager completes training on each service's cleaning steps, detergents and tools, customer care and safety. After that, reviews and spot checks feed a regular evaluation.",
+    } });
+    let title = json!({"ko": "(샘플) 매니저님은 어떤 교육을 받나요?", "en": "(sample) How are managers trained?"});
+    insert_content(c, "tip", Some("manager-training"), title, training, None, after_tips).await?;
     let faqs = [
         (json!({"ko": "(샘플) 취소는 언제까지 무료인가요?", "en": "(sample) Until when can I cancel for free?"}), "방문 2일 전까지 무료로 취소할 수 있어요."),
         (json!({"ko": "(샘플) 견적은 어떻게 정해지나요?", "en": "(sample) How is a quote decided?"}), "평수와 짐 상태를 반영해 먼저 예상 금액을 드리고, 방문 전 파트너가 최종 견적을 보내요."),

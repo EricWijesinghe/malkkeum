@@ -253,12 +253,12 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       child: Scaffold(
         backgroundColor: _step == _stepMethod
             ? context.colors.surfaceHigh
-            : null,
+            : context.colors.surface,
         appBar: AppBar(
           leading: BackButton(onPressed: _back),
           backgroundColor: _step == _stepMethod
               ? context.colors.surfaceHigh
-              : null,
+              : context.colors.surface,
           actions: [if (_step == 0) ScopeLink(code: widget.service.code)],
         ),
         body: PageView(
@@ -309,16 +309,32 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     String title,
     List<Widget> children, {
     String? body,
-  }) => SingleChildScrollView(
-    // Not a lazy list: a blocked "다음" must find a question that is scrolled far away.
-    child: Column(
+    Widget? footer,
+  }) {
+    final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FlowTitle(title, chip: _chip(t, i), body: body),
         ...children,
       ],
-    ),
-  );
+    );
+    // Not a lazy list: a blocked "다음" must find a question that is scrolled far away.
+    if (footer == null) return SingleChildScrollView(child: content);
+    // The footer rests at the foot of the screen; on a page taller than the screen
+    // (large text) it scrolls with the rest.
+    return LayoutBuilder(
+      builder: (context, box) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: box.maxHeight),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [content, footer],
+          ),
+        ),
+      ),
+    );
+  }
 
   /// A required question: nudged by a blocked "다음", marked "선택해 주세요" while unanswered
   /// ([marked]: from the start, as the design does for 복층 and 엘리베이터).
@@ -516,7 +532,25 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   Widget _dateStep(T t) {
     final lang = context.lang;
     final aircon = context.app.service('aircon');
-    return _page(t, 4, t.dfDateTitle, body: t.dfDateNote, [
+    // Design p17: the aircon offer rests at the foot of the step, just above "다음".
+    final offer = aircon == null
+        ? null
+        : Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Space.gutter,
+              Space.lg,
+              Space.gutter,
+              Space.sm,
+            ),
+            child: EnterMotion(
+              child: AcAddonBanner(
+                aircon: aircon,
+                answers: a,
+                onChanged: () => setState(() {}),
+              ),
+            ),
+          );
+    return _page(t, 4, t.dfDateTitle, body: t.dfDateNote, footer: offer, [
       FlowSection(
         children: [
           VisitDateRow(
@@ -547,14 +581,6 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
                 onTap: () => setState(() => d.hour = h),
               ),
           ]),
-          if (aircon != null) ...[
-            const SizedBox(height: Space.xl),
-            AcAddonBanner(
-              aircon: aircon,
-              answers: a,
-              onChanged: () => setState(() {}),
-            ),
-          ],
         ],
       ),
     ]);
