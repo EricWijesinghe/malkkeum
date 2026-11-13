@@ -1,13 +1,29 @@
 # Production stack on one server: Postgres + API + web (Caddy: website, console, automatic HTTPS).
 # Installed and managed by deploy/install.sh — nobody needs to edit this file.
 # Images are prebuilt by .github/workflows/release.yml; `dahae update` pulls new ones.
-# install.sh writes an equivalent copy to /opt/malkkeum (keep the two in sync).
+# install.sh writes the same file to /opt/malkkeum (write_compose; only the api/web image lines and the
+# build lines differ). scripts/ci/installer-selftest.sh fails when the two drift apart.
 x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+# Every container: no privilege gain through setuid binaries or file capabilities, no Linux capability
+# unless listed under cap_add, a read-only root filesystem (writes go to volumes and tmpfs only), and
+# memory and process caps sized for a 2 GB VPS. No CPU caps: `cpus` above the host's core count stops
+# `docker compose up` on a 1-vCPU server.
+x-hardened: &hardened
+  restart: unless-stopped
+  logging: *log
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
+  read_only: true
 services:
   db:
+    <<: *hardened
     image: postgres:17
-    restart: unless-stopped
-    logging: *log
+    # The entrypoint starts as root, fixes ownership of the data and socket dirs, then drops to postgres.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    tmpfs: [/tmp, /var/run/postgresql]
+    mem_limit: 768m
+    pids_limit: 200
+    stop_grace_period: 60s # a clean shutdown instead of crash recovery on the next start
     environment:
       POSTGRES_DB: cleaning
       POSTGRES_USER: app
@@ -20,10 +36,15 @@ services:
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U app -d cleaning"], interval: 5s, retries: 20 }
 
   api:
+    <<: *hardened
     image: ${API_IMAGE:-${IMAGE_REPO:-ghcr.io/ericwijesinghe}/malkkeum-api:${VERSION:-stable}}
     build: { context: ../backend }
-    restart: unless-stopped
-    logging: *log
+    # Runs as uid 10001 (backend/Dockerfile) and needs no capability. Backup commands write their temp
+    # files to the backups folder (TMPDIR), so /tmp stays small.
+    tmpfs: ["/tmp:size=64m"]
+    init: true
+    mem_limit: 512m
+    pids_limit: 256
     depends_on: { db: { condition: service_healthy } }
     environment:
       # Non-superuser app role (owner of the cleaning DB); `app` stays the admin/backup superuser.
@@ -47,10 +68,17 @@ services:
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
+    <<: *hardened
     image: ${WEB_IMAGE:-${IMAGE_REPO:-ghcr.io/ericwijesinghe}/malkkeum-web:${VERSION:-stable}}
     build: { context: .., dockerfile: deploy/web.Dockerfile }
-    restart: unless-stopped
-    logging: *log
+    # Caddy's image runs it as root; with every other capability dropped it can only bind 80/443.
+    # Certificates and config live in the caddydata/caddyconfig volumes.
+    cap_add: [NET_BIND_SERVICE]
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    pids_limit: 256
+    # Plain start order, not service_healthy: an API that never gets healthy would make `docker compose up`
+    # fail before `dahae update` can roll back to the previous version.
     depends_on: [api]
     ports: ["80:80", "443:443", "443:443/udp"]
     environment:
