@@ -30,3 +30,7 @@ flutter:
           weight: 700
         - asset: assets/fonts/Pretendard-ExtraBold.otf
           weight: 800
+    # Rare Hangul syllables the 5 subset faces above lack (see app/tool/font_subset.py).
+    - family: PretendardFull
+      fonts:
+        - asset: assets/fonts/full/PretendardFull-Regular.otf

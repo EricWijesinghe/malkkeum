@@ -426,7 +426,26 @@ class _Message extends StatelessWidget {
         child: Image.network(
           m.body['url'] as String,
           width: 220,
+          cacheWidth: 440,
           fit: BoxFit.cover,
+          loadingBuilder: (_, child, progress) => progress == null
+              ? child
+              : SizedBox(
+                  width: 220,
+                  height: 140,
+                  child: ColoredBox(color: context.colors.surfaceHigh),
+                ),
+          errorBuilder: (_, _, _) => SizedBox(
+            width: 220,
+            height: 140,
+            child: ColoredBox(
+              color: context.colors.surfaceHigh,
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: context.colors.inkSoft,
+              ),
+            ),
+          ),
         ),
       ),
       'card' => Text(

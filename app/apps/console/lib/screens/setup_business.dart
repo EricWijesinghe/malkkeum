@@ -362,7 +362,17 @@ class _Preview extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: logo == null
                     ? Icon(Icons.add_photo_alternate_rounded, color: onColor)
-                    : Image.network(logo!, fit: BoxFit.cover),
+                    : Image.network(
+                        logo!,
+                        fit: BoxFit.cover,
+                        // 64dp box, 3x screens.
+                        cacheWidth: 192,
+                        cacheHeight: 192,
+                        errorBuilder: (_, _, _) => Icon(
+                          Icons.broken_image_outlined,
+                          color: onColor,
+                        ),
+                      ),
               ),
             ),
           ),

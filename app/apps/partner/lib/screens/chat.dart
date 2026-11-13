@@ -340,7 +340,29 @@ class _OpsRoomState extends State<OpsRoom> {
                         child: Image.network(
                           m.body['url'] as String,
                           width: 200,
+                          // Decode at 2x the 200dp bubble: a 2048px photo would otherwise sit in the image cache whole.
+                          cacheWidth: 400,
                           fit: BoxFit.cover,
+                          loadingBuilder: (_, child, progress) => progress == null
+                              ? child
+                              : SizedBox(
+                                  width: 200,
+                                  height: 120,
+                                  child: ColoredBox(
+                                    color: context.colors.surfaceHigh,
+                                  ),
+                                ),
+                          errorBuilder: (_, _, _) => SizedBox(
+                            width: 200,
+                            height: 120,
+                            child: ColoredBox(
+                              color: context.colors.surfaceHigh,
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                color: context.colors.inkSoft,
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     : Container(

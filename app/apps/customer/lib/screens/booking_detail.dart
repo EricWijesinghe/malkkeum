@@ -695,7 +695,16 @@ class _Photos extends StatelessWidget {
               onTap: () => showDialog<void>(
                 context: context,
                 builder: (_) => Dialog(
-                  child: InteractiveViewer(child: Image.network(urls[i])),
+                  child: InteractiveViewer(
+                    child: Image.network(
+                      urls[i],
+                      cacheWidth: 1440,
+                      errorBuilder: (_, _, _) => const Padding(
+                        padding: EdgeInsets.all(Space.xl),
+                        child: Icon(Icons.broken_image_outlined),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               child: Semantics(

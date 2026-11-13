@@ -92,6 +92,7 @@ extension AppColorsX on BuildContext {
 
 const _font = 'Pretendard';
 const _fallback = [
+  'PretendardFull', // rare Hangul syllables missing from the subset faces
   'Apple SD Gothic Neo',
   'Noto Sans KR',
   'Noto Sans JP',
