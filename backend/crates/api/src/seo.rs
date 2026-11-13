@@ -401,7 +401,7 @@ fn base_url(s: &AppState) -> String {
     s.config.public_base_url.trim_end_matches('/').to_string()
 }
 
-async fn business_value(db: &PgPool) -> ApiResult<Value> {
+pub(crate) async fn business_value(db: &PgPool) -> ApiResult<Value> {
     let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(BUSINESS_KEY).fetch_optional(db).await?;
     Ok(v.unwrap_or_else(|| json!({})))
 }
