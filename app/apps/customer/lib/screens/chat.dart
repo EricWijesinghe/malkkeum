@@ -104,12 +104,18 @@ class _ChatListTabState extends State<ChatListTab> {
   StreamSubscription<Json>? _sub;
   late final Future<String?> _hours = _supportHours(context.api);
 
+  /// Bumped once after the first frame: the new-chat glyph gives one nudge when the tab opens.
+  int _nudge = 0;
+
   @override
   void initState() {
     super.initState();
     _sub = context.appRead.realtime
         .on('chat.message')
         .listen((_) => _view.currentState?.reload());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _nudge = 1);
+    });
   }
 
   @override
@@ -193,7 +199,7 @@ class _ChatListTabState extends State<ChatListTab> {
                 foregroundColor: context.colors.ink,
                 padding: const EdgeInsets.symmetric(horizontal: Space.sm),
               ),
-              icon: const Icon3D('chat_new', size: 20),
+              icon: Icon3D('chat_new', size: 20, attention: _nudge),
               label: Text(t.chatNew),
             ),
           ),

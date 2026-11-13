@@ -46,12 +46,14 @@ class MoreTab extends StatelessWidget {
       VoidCallback? onTap, {
       String? trailing,
       bool accent = false,
+      int attention = 0,
     }) => _MoreRow(
       icon: icon,
       label: label,
       onTap: onTap,
       trailing: trailing,
       accent: accent,
+      attention: attention,
     );
     // The design's groups, in its order (p05); rows the design leaves out follow below the version.
     final groups = <Widget>[
@@ -73,6 +75,7 @@ class MoreTab extends StatelessWidget {
           () => _push(context, const CouponsScreen()),
           trailing: '$coupons',
           accent: true,
+          attention: coupons,
         ),
         row(
           'ui_points',
@@ -378,6 +381,7 @@ class _MoreRow extends StatefulWidget {
     required this.onTap,
     this.trailing,
     this.accent = false,
+    this.attention = 0,
   });
   final String icon;
   final String label;
@@ -387,16 +391,22 @@ class _MoreRow extends StatefulWidget {
   /// Trailing value in the accent colour (coupon count).
   final bool accent;
 
+  /// A change kicks the glyph once (the coupon count going up).
+  final int attention;
+
   @override
   State<_MoreRow> createState() => _MoreRowState();
 }
 
 class _MoreRowState extends State<_MoreRow> {
+  bool _pressed = false;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return InkWell(
       onTap: widget.onTap,
+      onHighlightChanged: (v) => setState(() => _pressed = v),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 52),
         child: Padding(
@@ -406,7 +416,12 @@ class _MoreRowState extends State<_MoreRow> {
           ),
           child: Row(
             children: [
-              Icon3D(widget.icon, size: 28),
+              Icon3D(
+                widget.icon,
+                size: 28,
+                highlight: _pressed,
+                attention: widget.attention,
+              ),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Text(widget.label, style: context.text.bodyLarge),

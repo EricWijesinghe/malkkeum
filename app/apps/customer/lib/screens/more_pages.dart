@@ -140,7 +140,11 @@ class _CouponTicket extends StatelessWidget {
                     ? CircleAvatar(
                         radius: 22,
                         backgroundColor: colors.primaryTint,
-                        child: const Icon3D('ui_coupon', size: 28),
+                        child: const Icon3D(
+                          'ui_coupon',
+                          size: 28,
+                          idle: Icon3DIdle.sway,
+                        ),
                       )
                     : Padding(
                         padding: const EdgeInsets.all(Space.xs),
@@ -482,8 +486,7 @@ class _FaqScreenState extends State<FaqScreen> {
           children: [
             if (cats.isNotEmpty) _chips(cats),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: motionFor(context, Motion.standard),
+              child: FadeThroughSwitcher(
                 child: ListView(
                   key: ValueKey(_category),
                   padding: const EdgeInsets.only(bottom: Space.gutter),

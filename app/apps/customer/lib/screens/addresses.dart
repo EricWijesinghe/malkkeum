@@ -59,8 +59,7 @@ class _AddressesScreenState extends State<AddressesScreen>
               onRefresh: () => app.loadAddresses().catchError((Object e) {
                 if (context.mounted) showToast(context, t.error(e));
               }),
-              child: AnimatedSwitcher(
-                duration: motionFor(context, Motion.standard),
+              child: FadeThroughSwitcher(
                 child: ListView(
                   key: ValueKey(kind),
                   physics: const AlwaysScrollableScrollPhysics(),
