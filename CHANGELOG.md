@@ -17,6 +17,11 @@ from the release branches; no tags existed for them.
 - Console "알림 문구" screen: edit the push and inbox text of each customer and cleaning-team notification in Korean and English, with a preview and restore to the built-in text. Only the placeholders listed for each notification (booking number, business name) can be used.
 
 ### Changed
+- Release hardening: release tags must point into master, the image and delivery jobs run in protected
+  environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
+  ed25519-signed installer manifest and a cloud-init install page are published with each release.
+  Not done yet: a dispatch-driven release that replaces `scripts/release/build-all.ps1` and its
+  `PASSWORD.txt`, and an Android-signing environment. Both still run locally.
 - Customer and partner apps take the business colour and logo from the business profile, keep the last good copy for offline start, and the console warns when white button text would be hard to read on the chosen colour.
 - Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.
   A root job runner (`deploy/agent.sh`) checks queued server jobs before running a fixed command; it is not

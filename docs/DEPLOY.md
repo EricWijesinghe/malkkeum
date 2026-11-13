@@ -40,6 +40,14 @@ requests that touch the installer or the server build; `ci.yml` runs on every pu
    Images contain compiled binaries and minified web assets only.
 6. Check from a logged-out machine (`docker logout ghcr.io` first):
    `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
+7. **Release environments (private repo, before the first tag; GitHub makes a missing environment with no
+   rules, so a release would run unprotected).** Settings → Environments, create each one with
+   *Required reviewers* (the owner) and *Deployment branches and tags* → *Selected* → tag `v*`:
+   - `release-cosign`: the image push and signing job. No secrets.
+   - `release-delivery`: the publish job. Move `DIST_DEPLOY_KEY` and `DAHAE_MANIFEST_KEY` here (remove the
+     repo-level copies). Keep `DIST_REPO` as a repository variable.
+   Check: a `v*` tag run waits at both jobs for approval. The Android store build has no such environment yet
+   (`scripts/release/build-all.ps1`, deferred).
 
 Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
 (`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`, the stable channel's
