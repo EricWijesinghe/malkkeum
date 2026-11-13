@@ -56,8 +56,9 @@ Future<PartnerState> pumpPartnerScreen(WidgetTester tester, TestEnv env, Widget 
 }
 
 /// Pumps the real [PartnerApp] root (sign-in gate, onboarding/pending/shell routing).
+/// The saved profile lives in [TestEnv.storage], so a second pump on the same env is a restart.
 Future<PartnerState> pumpPartnerApp(WidgetTester tester, TestEnv env) async {
-  final app = PartnerState(env.api, FakeRealtime(env.api), outbox: testOutbox());
+  final app = PartnerState(env.api, FakeRealtime(env.api), outbox: testOutbox(), cache: JsonCache(storage: env.storage));
   await tester.pumpWidget(PartnerApp(session: env.session, app: app, locale: env.locale, theme: env.theme));
   return app;
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -103,6 +105,85 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('no signal at start: retry runs the boot again and never signs the pro out', (tester) async {
+    setViewport(tester, phoneSize);
+    var online = false;
+    final env = await TestEnv.create(fake: _flakyApi(() => online), role: 'partner');
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.byType(ErrorRetry));
+    expect(find.text(koT.errorNetwork), findsOneWidget);
+    expect(find.text(koT.logout), findsOneWidget, reason: 'signing out is a separate, quieter button');
+
+    await tester.tap(find.text(koT.retry));
+    await settle(tester, duration: const Duration(seconds: 1));
+    expect(env.session.signedIn, isTrue, reason: 'retry is not sign-out');
+    expect(env.fake.callsTo('GET', '/partner/me'), hasLength(2), reason: 'the boot ran again');
+    expect(find.byType(ErrorRetry), findsOneWidget);
+
+    online = true;
+    await tester.tap(find.text(koT.retry));
+    await pumpUntilFound(tester, find.text(koT.pTabJobs));
+    expect(env.session.signedIn, isTrue);
+    await unmount(tester);
+  });
+
+  testWidgets('no signal at start: a pro verified last time still opens the app from the saved profile', (tester) async {
+    setViewport(tester, phoneSize);
+    var online = true;
+    final env = await TestEnv.create(fake: _flakyApi(() => online), role: 'partner');
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.text(koT.pTabJobs));
+    await unmount(tester);
+
+    online = false;
+    final app = await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.text(koT.pTabJobs));
+    expect(app.status, 'verified');
+    expect(app.name, '말끔팀');
+    expect(env.session.signedIn, isTrue);
+
+    // Signal returns: the app catches up by itself (real profile, then the queued completions).
+    final asked = env.fake.callsTo('GET', '/partner/me').length;
+    online = true;
+    await settle(tester, duration: const Duration(seconds: 21));
+    expect(env.fake.callsTo('GET', '/partner/me'), hasLength(asked + 1));
+    await unmount(tester);
+  });
+
+  testWidgets('signing out forgets the saved profile, so the next start without signal asks to retry', (tester) async {
+    setViewport(tester, phoneSize);
+    var online = true;
+    final env = await TestEnv.create(fake: _flakyApi(() => online), role: 'partner');
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.text(koT.pTabJobs));
+    await env.session.logout();
+    await unmount(tester);
+
+    online = false;
+    await env.session.save({'access_token': 'a-2', 'refresh_token': 'r-2', 'role': 'partner', 'subject': 'user-1'});
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.byType(ErrorRetry));
+    expect(find.text(koT.pTabJobs), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('a server refusal at start is never papered over with the saved profile', (tester) async {
+    setViewport(tester, phoneSize);
+    var refuse = false;
+    final fake = FakeApi()..onGet('/partner/me', (_) => refuse ? const ApiReply(500, {'error': {'code': 'internal'}}) : verifiedProfile());
+    stockPartnerApi(fake);
+    final env = await TestEnv.create(fake: fake, role: 'partner');
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.text(koT.pTabJobs));
+    await unmount(tester);
+
+    refuse = true;
+    await pumpPartnerApp(tester, env);
+    await pumpUntilFound(tester, find.byType(ErrorRetry));
+    expect(find.text(koT.pTabJobs), findsNothing);
+    await unmount(tester);
+  });
+
   testWidgets('a suspended pro is blocked with the suspension notice', (tester) async {
     setViewport(tester, phoneSize);
     final fake = FakeApi();
@@ -112,4 +193,19 @@ void main() {
     await pumpUntilFound(tester, find.text(koT.pSuspended));
     await unmount(tester);
   });
+}
+
+/// The start-up endpoints of a verified pro; every call fails like a dead connection while [online] is false.
+FakeApi _flakyApi(bool Function() online) {
+  Object? up(Object? body) {
+    if (!online()) throw const SocketException('no signal');
+    return body;
+  }
+
+  return FakeApi()
+    ..onGet('/partner/me', (_) => up(verifiedProfile()))
+    ..onGet('/partner/prefs', (_) => up({'services': ['studio'], 'districts': ['11680']}))
+    ..onGet('/partner/threads', (_) => up(const <Json>[]))
+    ..onGet('/partner/quotes', (_) => up(const <Json>[]))
+    ..onGet('/partner/jobs', (_) => up(const <Json>[]));
 }
