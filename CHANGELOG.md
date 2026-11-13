@@ -8,6 +8,11 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Changed
+- Customer bookings, notifications, wallet points history and payment history, and partner quotes
+  page through their lists on scroll (with a bottom loader and retry on error) instead of showing
+  only the first 50 rows; the points ledger has a paged `GET /me/points/ledger` endpoint.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
