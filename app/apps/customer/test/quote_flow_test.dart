@@ -79,6 +79,20 @@ Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
 String _chip(int n) => '${koT.service('move_out')} · $n/7';
 
 void main() {
+  test('every cleaning type shows its own 3D art, never the fallback plate', () {
+    const types = [
+      'standard',
+      'same_day_move',
+      'some_luggage_left',
+      'normal_move_in',
+      'after_interior',
+      'lived_in_deep_clean',
+    ];
+    for (final c in types) {
+      expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
+    }
+  });
+
   testWidgets(
     'move-out quote: seven steps, AC add-on, Safe booking, review, then the request status opens',
     (tester) async {

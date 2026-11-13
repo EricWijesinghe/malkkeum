@@ -75,6 +75,14 @@ String cleaningTypeLabel(T t, String? c) => switch (c) {
   _ => t.type_lived_in_deep_clean,
 };
 
+/// 3D art for a cleaning type: the art set names three of them shorter than the API codes.
+String cleaningTypeIcon(String c) => switch (c) {
+  'same_day_move' => 'type_same_day',
+  'some_luggage_left' => 'type_some_luggage',
+  'lived_in_deep_clean' => 'type_lived_in',
+  _ => 'type_$c',
+};
+
 /// "오전 방문" / "오후 방문".
 String visitHalf(T t, int hour) => hour < 12 ? t.dfAmVisit : t.dfPmVisit;
 
@@ -362,7 +370,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
           child: circleRow(width: 96, [
             for (final c in types)
               CircleChoice(
-                icon: 'type_$c',
+                icon: cleaningTypeIcon(c),
                 label: cleaningTypeLabel(t, c),
                 size: 84,
                 selected: a.cleaningType == c,
