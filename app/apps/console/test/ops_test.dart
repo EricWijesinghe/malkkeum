@@ -35,6 +35,10 @@ Json _status({required String level}) => {
         {'code': 'portone', 'configured': false, 'level': 'yellow', 'last_ok_at': null, 'last_fail_at': null, 'last_error': null},
         {'code': 'backup', 'configured': false, 'level': 'yellow', 'last_ok_at': null, 'last_fail_at': null, 'last_error': null},
       ],
+      'jobs': [
+        {'job': 'reconciler', 'last_run_unix': 1794500000.0, 'last_ok_unix': 1794500000.0, 'errors': 0, 'stalled': false},
+        {'job': 'notify_outbox', 'last_run_unix': 1794500000.0, 'last_ok_unix': 0.0, 'errors': 3, 'stalled': true},
+      ],
     };
 
 const _alerts = <String, Object?>{
@@ -120,6 +124,28 @@ void main() {
 
     expect(find.widgetWithText(PrimaryButton, koT.oSave), findsNothing);
     expect(find.text(koT.oCheckDisk), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('background jobs show each last success, and a stalled one says so', (tester) async {
+    setViewport(tester, wideSize);
+    final fake = FakeApi()
+      ..reply('GET', '/admin/ops/status', _status(level: 'red'))
+      ..reply('GET', '/admin/ops/alerts', _alerts)
+      ..reply('GET', '/admin/config', _config)
+      ..reply('GET', '/admin/client-errors', _errors);
+    final env = await TestEnv.create(fake: fake, role: 'staff_admin');
+    await pumpConsoleScreen(tester, env, const OpsScreen());
+    await settle(tester);
+
+    final outbox = find.text(koT.oJob_notify_outbox);
+    await tester.scrollUntilVisible(outbox, 200, scrollable: find.byType(Scrollable).first);
+    expect(find.text(koT.oJobs), findsOneWidget);
+    expect(find.text(koT.oJob_reconciler), findsOneWidget);
+    expect(find.textContaining(koT.oJobLastOk('').trim()), findsOneWidget, reason: 'the reconciler ran');
+    expect(find.text(koT.oJobNever), findsOneWidget);
+    expect(find.text(koT.oJobStalled), findsOneWidget);
+    expect(find.text(koT.oJobErrors('3')), findsOneWidget);
     await unmount(tester);
   });
 }

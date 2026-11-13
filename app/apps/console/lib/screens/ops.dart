@@ -57,6 +57,10 @@ class _OpsScreenState extends State<OpsScreen> {
               const SizedBox(height: Space.sm),
               _Checks(status: status),
               const SizedBox(height: Space.lg),
+              SectionTitle(t.oJobs),
+              const SizedBox(height: Space.sm),
+              _Jobs(jobs: (status['jobs'] as List? ?? const []).cast<Json>()),
+              const SizedBox(height: Space.lg),
               SectionTitle(t.oIntegrations),
               const SizedBox(height: Space.sm),
               for (final i in (status['integrations'] as List).cast<Json>())
@@ -245,6 +249,90 @@ class _Checks extends StatelessWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+}
+
+String _jobName(T t, String job) => switch (job) {
+  'settings_refresh' => t.oJob_settings_refresh,
+  'reconciler' => t.oJob_reconciler,
+  'ops_alerts' => t.oJob_ops_alerts,
+  'payout_sync' => t.oJob_payout_sync,
+  'retention' => t.oJob_retention,
+  'noshow' => t.oJob_noshow,
+  'points' => t.oJob_points,
+  'marketing' => t.oJob_marketing,
+  'quality' => t.oJob_quality,
+  'waitlist' => t.oJob_waitlist,
+  'subscription_engine' => t.oJob_subscription_engine,
+  'notify_outbox' => t.oJob_notify_outbox,
+  _ => job,
+};
+
+/// Each background job's last success in the API process (stalled = no success for several intervals).
+class _Jobs extends StatelessWidget {
+  const _Jobs({required this.jobs});
+  final List<Json> jobs;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    if (jobs.isEmpty) return Text(t.oNoData, style: context.text.bodyMedium);
+    return Wrap(
+      spacing: Space.sm,
+      runSpacing: Space.sm,
+      children: [
+        for (final j in jobs)
+          SizedBox(
+            width: 300,
+            child: AppCard(child: _job(context, t, j)),
+          ),
+      ],
+    );
+  }
+
+  Widget _job(BuildContext context, T t, Json j) {
+    final stalled = j['stalled'] == true;
+    final errors = (j['errors'] as num? ?? 0).toInt();
+    final ok = (j['last_ok_unix'] as num? ?? 0).toDouble();
+    final when = ok > 0
+        ? t.oJobLastOk(
+            _when(
+              DateTime.fromMillisecondsSinceEpoch(
+                (ok * 1000).round(),
+                isUtc: true,
+              ).toIso8601String(),
+            ),
+          )
+        : t.oJobNever;
+    final level = stalled ? 'red' : (errors > 0 ? 'yellow' : 'green');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _Dot(level),
+            const SizedBox(width: Space.xs),
+            Expanded(
+              child: Text(
+                _jobName(t, j['job'] as String),
+                style: context.text.titleSmall,
+              ),
+            ),
+            if (stalled)
+              Text(
+                t.oJobStalled,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.danger,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: Space.xs),
+        Text(when, style: context.text.bodyMedium),
+        if (errors > 0)
+          Text(t.oJobErrors('$errors'), style: context.text.bodySmall),
       ],
     );
   }

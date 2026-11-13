@@ -3505,6 +3505,61 @@ class TEn extends T {
   String get cIntBackup => 'Offsite backup (S3-compatible)';
 
   @override
+  String get oJobs => 'Background jobs';
+
+  @override
+  String oJobLastOk(String time) {
+    return 'Last success $time';
+  }
+
+  @override
+  String get oJobNever => 'No successful run yet';
+
+  @override
+  String get oJobStalled => 'Stalled';
+
+  @override
+  String oJobErrors(String count) {
+    return '$count errors';
+  }
+
+  @override
+  String get oJob_settings_refresh => 'Settings refresh';
+
+  @override
+  String get oJob_reconciler => 'Payment reconciliation';
+
+  @override
+  String get oJob_ops_alerts => 'Owner alerts';
+
+  @override
+  String get oJob_payout_sync => 'Payout sync';
+
+  @override
+  String get oJob_retention => 'Data retention cleanup';
+
+  @override
+  String get oJob_noshow => 'No-show check';
+
+  @override
+  String get oJob_points => 'Points expiry';
+
+  @override
+  String get oJob_marketing => 'Marketing sends';
+
+  @override
+  String get oJob_quality => 'Quality scores';
+
+  @override
+  String get oJob_waitlist => 'Waitlist';
+
+  @override
+  String get oJob_subscription_engine => 'Regular cleaning';
+
+  @override
+  String get oJob_notify_outbox => 'Notification outbox';
+
+  @override
   String get pTabJobs => 'Jobs';
 
   @override

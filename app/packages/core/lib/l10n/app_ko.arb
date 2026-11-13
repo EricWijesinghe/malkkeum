@@ -1850,6 +1850,37 @@
  "oDiskFree": "여유 공간",
  "oNoData": "아직 데이터가 없어요",
  "cIntBackup": "외부 백업 (S3 호환)",
+ "oJobs": "백그라운드 작업",
+ "oJobLastOk": "마지막 성공 {time}",
+ "@oJobLastOk": {
+  "placeholders": {
+   "time": {
+    "type": "String"
+   }
+  }
+ },
+ "oJobNever": "아직 성공한 적 없음",
+ "oJobStalled": "멈춤",
+ "oJobErrors": "오류 {count}회",
+ "@oJobErrors": {
+  "placeholders": {
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "oJob_settings_refresh": "설정 새로고침",
+ "oJob_reconciler": "결제 대사",
+ "oJob_ops_alerts": "운영 알림",
+ "oJob_payout_sync": "지급 상태 동기화",
+ "oJob_retention": "보관 기간 정리",
+ "oJob_noshow": "미도착 확인",
+ "oJob_points": "포인트 만료",
+ "oJob_marketing": "마케팅 발송",
+ "oJob_quality": "품질 점수",
+ "oJob_waitlist": "대기 예약",
+ "oJob_subscription_engine": "정기 청소",
+ "oJob_notify_outbox": "알림 발송함",
  "pTabJobs": "일감",
  "pTabQuotes": "내 견적",
  "pTabSchedule": "일정",

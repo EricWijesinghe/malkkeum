@@ -3425,6 +3425,61 @@ class TKo extends T {
   String get cIntBackup => '외부 백업 (S3 호환)';
 
   @override
+  String get oJobs => '백그라운드 작업';
+
+  @override
+  String oJobLastOk(String time) {
+    return '마지막 성공 $time';
+  }
+
+  @override
+  String get oJobNever => '아직 성공한 적 없음';
+
+  @override
+  String get oJobStalled => '멈춤';
+
+  @override
+  String oJobErrors(String count) {
+    return '오류 $count회';
+  }
+
+  @override
+  String get oJob_settings_refresh => '설정 새로고침';
+
+  @override
+  String get oJob_reconciler => '결제 대사';
+
+  @override
+  String get oJob_ops_alerts => '운영 알림';
+
+  @override
+  String get oJob_payout_sync => '지급 상태 동기화';
+
+  @override
+  String get oJob_retention => '보관 기간 정리';
+
+  @override
+  String get oJob_noshow => '미도착 확인';
+
+  @override
+  String get oJob_points => '포인트 만료';
+
+  @override
+  String get oJob_marketing => '마케팅 발송';
+
+  @override
+  String get oJob_quality => '품질 점수';
+
+  @override
+  String get oJob_waitlist => '대기 예약';
+
+  @override
+  String get oJob_subscription_engine => '정기 청소';
+
+  @override
+  String get oJob_notify_outbox => '알림 발송함';
+
+  @override
   String get pTabJobs => '일감';
 
   @override

@@ -6481,6 +6481,108 @@ abstract class T {
   /// **'외부 백업 (S3 호환)'**
   String get cIntBackup;
 
+  /// No description provided for @oJobs.
+  ///
+  /// In ko, this message translates to:
+  /// **'백그라운드 작업'**
+  String get oJobs;
+
+  /// No description provided for @oJobLastOk.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 성공 {time}'**
+  String oJobLastOk(String time);
+
+  /// No description provided for @oJobNever.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 성공한 적 없음'**
+  String get oJobNever;
+
+  /// No description provided for @oJobStalled.
+  ///
+  /// In ko, this message translates to:
+  /// **'멈춤'**
+  String get oJobStalled;
+
+  /// No description provided for @oJobErrors.
+  ///
+  /// In ko, this message translates to:
+  /// **'오류 {count}회'**
+  String oJobErrors(String count);
+
+  /// No description provided for @oJob_settings_refresh.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정 새로고침'**
+  String get oJob_settings_refresh;
+
+  /// No description provided for @oJob_reconciler.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 대사'**
+  String get oJob_reconciler;
+
+  /// No description provided for @oJob_ops_alerts.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영 알림'**
+  String get oJob_ops_alerts;
+
+  /// No description provided for @oJob_payout_sync.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 상태 동기화'**
+  String get oJob_payout_sync;
+
+  /// No description provided for @oJob_retention.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관 기간 정리'**
+  String get oJob_retention;
+
+  /// No description provided for @oJob_noshow.
+  ///
+  /// In ko, this message translates to:
+  /// **'미도착 확인'**
+  String get oJob_noshow;
+
+  /// No description provided for @oJob_points.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 만료'**
+  String get oJob_points;
+
+  /// No description provided for @oJob_marketing.
+  ///
+  /// In ko, this message translates to:
+  /// **'마케팅 발송'**
+  String get oJob_marketing;
+
+  /// No description provided for @oJob_quality.
+  ///
+  /// In ko, this message translates to:
+  /// **'품질 점수'**
+  String get oJob_quality;
+
+  /// No description provided for @oJob_waitlist.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 예약'**
+  String get oJob_waitlist;
+
+  /// No description provided for @oJob_subscription_engine.
+  ///
+  /// In ko, this message translates to:
+  /// **'정기 청소'**
+  String get oJob_subscription_engine;
+
+  /// No description provided for @oJob_notify_outbox.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 발송함'**
+  String get oJob_notify_outbox;
+
   /// No description provided for @pTabJobs.
   ///
   /// In ko, this message translates to:
