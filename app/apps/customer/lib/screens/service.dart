@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../public_offers.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_flow.dart';
@@ -75,6 +76,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 : t.service(s.code),
             body: t.serviceDesc(s.code),
           ),
+          if (!Deps.of(context).session.signedIn)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: Space.gutter),
+              child: WelcomeOfferLine(),
+            ),
           if (s.type == PricingType.fixed)
             ..._fixed(context, t)
           else
