@@ -1,10 +1,10 @@
 //! Small helpers shared by route modules.
 
-use crate::{error::ApiResult, state::AppState};
+use crate::{error::ApiResult, providers::ProviderError, state::AppState};
 use chrono::{NaiveDate, Utc};
 use serde_json::Value;
 use sqlx::PgConnection;
-use std::future::Future;
+use std::{collections::BTreeMap, future::Future, sync::Mutex};
 use uuid::Uuid;
 
 /// Business dates are Korean dates, whatever timezone the server or DB runs in.
@@ -23,12 +23,155 @@ pub async fn best_effort(what: &'static str, f: impl Future<Output = ApiResult<(
     }
 }
 
+/// Where a compensating refund stands. `Pending`: the provider has not confirmed it; it waits in
+/// `refund_queue` and `checkout_recon::drain_refunds` retries it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Refund {
+    Done,
+    Pending,
+}
+
+/// Failed tries after which a stuck refund alerts the owner (ops rule `payment_stuck`), on every further failure.
+pub const REFUND_ALERT_AFTER: i32 = 3;
+/// A claimed refund is left alone this long, so a slow provider call is never sent twice.
+pub const REFUND_LEASE_MINS: i32 = 5;
+const REFUND_BACKOFF_MAX_MINS: i32 = 360;
+
+/// Minutes to the next try after `attempts` tries: 2, 4, 8, ... capped at six hours.
+pub fn refund_backoff_mins(attempts: i32) -> i32 {
+    (1i32 << attempts.clamp(1, 9)).min(REFUND_BACKOFF_MAX_MINS)
+}
+
+/// One `refund_queue` row.
+#[derive(sqlx::FromRow)]
+pub struct QueuedRefund {
+    pub id: Uuid,
+    pub provider: String,
+    pub tx_id: String,
+    pub amount: i64,
+    pub attempts: i32,
+    pub checkout_id: Option<Uuid>,
+}
+
+pub const REFUND_COLS: &str = "id, provider, tx_id, amount, attempts, checkout_id";
+
 /// Compensating refund when a charge succeeded but saving it did not.
-pub async fn refund_or_alert(s: &AppState, provider: &str, tx_id: &str, amount: i64) {
-    if let Err(e) = s.providers.refund(provider, tx_id, amount).await {
-        // Money is out of sync with the DB: this must reach a human.
-        tracing::error!(error = %e, provider, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
-        crate::ops::record(&s.db, "payment_stuck", Err("refund_failed")).await;
+pub async fn refund_or_alert(s: &AppState, provider: &str, tx_id: &str, amount: i64) -> Refund {
+    refund_durably(s, provider, tx_id, amount, None).await
+}
+
+/// Compensating refund, recorded in `refund_queue` before the provider is called: a failure is retried
+/// with backoff, and one (provider, tx, amount) is refunded at most once however often a settle replays.
+pub async fn refund_durably(s: &AppState, provider: &str, tx_id: &str, amount: i64, checkout: Option<Uuid>) -> Refund {
+    let queued = sqlx::query_as::<_, QueuedRefund>(&format!(
+        "INSERT INTO refund_queue (provider, tx_id, amount, checkout_id, next_at) VALUES ($1, $2, $3, $4, now() + make_interval(mins => $5))
+         ON CONFLICT (provider, tx_id, amount) DO NOTHING RETURNING {REFUND_COLS}"
+    ))
+    .bind(provider)
+    .bind(tx_id)
+    .bind(amount)
+    .bind(checkout)
+    .bind(REFUND_LEASE_MINS)
+    .fetch_optional(&s.db)
+    .await;
+    match queued {
+        Ok(Some(row)) => retry_refund(s, &row).await,
+        // Already asked for: never call the provider twice; report where the first one stands.
+        Ok(None) => match sqlx::query_scalar("SELECT done_at IS NOT NULL FROM refund_queue WHERE provider = $1 AND tx_id = $2 AND amount = $3")
+            .bind(provider)
+            .bind(tx_id)
+            .bind(amount)
+            .fetch_one(&s.db)
+            .await
+        {
+            Ok(true) => Refund::Done,
+            Ok(false) => Refund::Pending,
+            Err(e) => {
+                tracing::error!(error = %e, provider, tx_id, "refund queue read failed");
+                Refund::Pending
+            }
+        },
+        Err(e) => {
+            // No retry record possible: refund now, and a failure must reach a human.
+            tracing::error!(error = %e, provider, tx_id, amount, "refund queue unavailable");
+            let row = QueuedRefund { id: Uuid::nil(), provider: provider.into(), tx_id: tx_id.into(), amount, attempts: 0, checkout_id: checkout };
+            match attempt_refund(s, &row).await {
+                Ok(()) => Refund::Done,
+                Err(e) => {
+                    tracing::error!(error = %e, provider, tx_id, amount, "COMPENSATING REFUND FAILED - reconcile manually");
+                    crate::ops::record(&s.db, "payment_stuck", Err("refund_failed")).await;
+                    Refund::Pending
+                }
+            }
+        }
+    }
+}
+
+/// One try at a queued refund, saved on its row. A DB error leaves the row leased for a later pass.
+pub async fn retry_refund(s: &AppState, r: &QueuedRefund) -> Refund {
+    let result = attempt_refund(s, r).await;
+    let attempts = r.attempts + 1;
+    let state = if result.is_ok() { Refund::Done } else { Refund::Pending };
+    let error = result.err().map(|e| e.to_string());
+    let saved = sqlx::query(
+        "UPDATE refund_queue SET attempts = $2, done_at = CASE WHEN $3 THEN now() END, last_error = $4,
+            next_at = now() + make_interval(mins => $5) WHERE id = $1",
+    )
+    .bind(r.id)
+    .bind(attempts)
+    .bind(state == Refund::Done)
+    .bind(&error)
+    .bind(refund_backoff_mins(attempts))
+    .execute(&s.db)
+    .await;
+    if let Err(e) = saved {
+        tracing::error!(error = %e, refund = %r.id, "refund outcome not saved");
+    }
+    if let Some(error) = error {
+        let (provider, tx_id, amount) = (r.provider.as_str(), r.tx_id.as_str(), r.amount);
+        if attempts >= REFUND_ALERT_AFTER {
+            tracing::error!(error, provider, tx_id, amount, attempts, "COMPENSATING REFUND STILL FAILING - check the PG console");
+            crate::ops::record(&s.db, "payment_stuck", Err("refund_failed")).await;
+        } else {
+            tracing::warn!(error, provider, tx_id, amount, attempts, "compensating refund failed; queued for retry");
+        }
+    }
+    state
+}
+
+async fn attempt_refund(s: &AppState, r: &QueuedRefund) -> Result<(), ProviderError> {
+    if s.config.dev_mode && dev_refund_fails(&r.tx_id) {
+        return Err(ProviderError::Upstream("dev refund failure".into()));
+    }
+    // After an ambiguous failure PortOne may have cancelled it already. Queued refunds are full refunds.
+    if r.attempts > 0 && r.provider == "portone" {
+        match s.providers.payment(&r.tx_id, r.amount).await {
+            Ok(info) if info.status == "CANCELLED" => return Ok(()),
+            Ok(_) | Err(ProviderError::NotFound) => {}
+            Err(e) => return Err(e),
+        }
+    }
+    s.providers.refund(&r.provider, &r.tx_id, r.amount).await
+}
+
+static DEV_REFUND_FAILURES: Mutex<BTreeMap<String, u32>> = Mutex::new(BTreeMap::new());
+
+/// Dev fakes only: the next `times` refunds of `tx_id` fail like a provider outage. For tests.
+#[doc(hidden)]
+pub fn fail_dev_refunds(tx_id: &str, times: u32) {
+    if let Ok(mut failing) = DEV_REFUND_FAILURES.lock() {
+        failing.insert(tx_id.to_string(), times);
+    }
+}
+
+fn dev_refund_fails(tx_id: &str) -> bool {
+    let Ok(mut failing) = DEV_REFUND_FAILURES.lock() else { return false };
+    match failing.get_mut(tx_id) {
+        Some(left) if *left > 0 => {
+            *left -= 1;
+            true
+        }
+        _ => false,
     }
 }
 
@@ -104,6 +247,21 @@ pub fn own_uploads(base: &str, urls: &[String]) -> Option<Vec<String>> {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn refund_retries_back_off_to_six_hours() {
+        assert_eq!([0, 1, 2, 3].map(refund_backoff_mins), [2, 2, 4, 8]);
+        assert_eq!(refund_backoff_mins(9), 360);
+        assert_eq!(refund_backoff_mins(i32::MAX), 360);
+    }
+
+    #[test]
+    fn dev_refund_failures_count_down_per_payment() {
+        fail_dev_refunds("tx-a", 1);
+        assert!(!dev_refund_fails("tx-b"));
+        assert!(dev_refund_fails("tx-a"));
+        assert!(!dev_refund_fails("tx-a"));
+    }
 
     #[test]
     fn notes_are_bounded() {

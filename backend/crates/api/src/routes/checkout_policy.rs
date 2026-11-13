@@ -2,6 +2,7 @@
 //! No I/O here; `checkouts` carries the decision out.
 
 use crate::error::ApiError;
+use uuid::Uuid;
 
 /// What the provider and the checkout say, reduced to the facts the decision needs.
 /// `provider_status` is `None` when the provider has no such payment.
@@ -70,6 +71,40 @@ pub fn refund_reason(e: &ApiError) -> String {
         ApiError::Domain(d) => d.code().to_string(),
         ApiError::PriceChanged(_) => "price_changed".to_string(),
         _ => "fulfil_failed".to_string(),
+    }
+}
+
+/// How a payment id relates to a checkout. One PortOne payment backs exactly one checkout: the app
+/// pays with the checkout id as the paymentId. Dev fakes (`dev:<kind>`) have no payer, so they are
+/// bound to the checkout that settles them (`dev:<kind>:<checkout>`).
+#[derive(Debug, PartialEq, Eq)]
+pub enum Binding {
+    /// This checkout's payment, stored and refunded under this id.
+    Bound(String),
+    /// Another checkout's payment: refused, and never refunded from here.
+    Foreign,
+    /// Any other id: only the `checkoutId` in the provider's `customData` can bind it.
+    AskProvider,
+}
+
+pub fn bind(checkout: Uuid, payment_id: &str) -> Binding {
+    let own = checkout.to_string();
+    if payment_id == own {
+        return Binding::Bound(own);
+    }
+    match payment_id.strip_prefix("dev:").map(|rest| rest.split_once(':')) {
+        Some(None) => Binding::Bound(format!("{payment_id}:{own}")),
+        Some(Some((_, owner))) if owner == own => Binding::Bound(payment_id.to_string()),
+        Some(Some(_)) => Binding::Foreign,
+        None => Binding::AskProvider,
+    }
+}
+
+/// The id the dev fakes answer for a bound dev id (`dev:<kind>:<checkout>` -> `dev:<kind>`).
+pub fn dev_lookup(payment_id: &str) -> &str {
+    match payment_id.rsplit_once(':') {
+        Some((head, _)) if head.starts_with("dev:") => head,
+        _ => payment_id,
     }
 }
 
@@ -204,6 +239,27 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn a_payment_binds_only_to_its_own_checkout() {
+        let (ck, other) = (Uuid::now_v7(), Uuid::now_v7());
+        assert_eq!(bind(ck, &ck.to_string()), Binding::Bound(ck.to_string()));
+        assert_eq!(bind(ck, &other.to_string()), Binding::AskProvider, "only customData can bind a foreign id");
+        assert_eq!(bind(ck, &ck.simple().to_string()), Binding::AskProvider, "exact id only");
+        assert_eq!(bind(ck, "pay-123"), Binding::AskProvider);
+        assert_eq!(bind(ck, "dev:paid"), Binding::Bound(format!("dev:paid:{ck}")));
+        assert_eq!(bind(ck, &format!("dev:paid:{ck}")), Binding::Bound(format!("dev:paid:{ck}")));
+        assert_eq!(bind(ck, &format!("dev:paid:{other}")), Binding::Foreign);
+        assert_eq!(bind(ck, "dev:paid:junk"), Binding::Foreign);
+    }
+
+    #[test]
+    fn bound_dev_ids_look_up_as_the_plain_fake() {
+        let ck = Uuid::now_v7();
+        assert_eq!(dev_lookup(&format!("dev:kakaopay:{ck}")), "dev:kakaopay");
+        assert_eq!(dev_lookup("dev:paid"), "dev:paid");
+        assert_eq!(dev_lookup(&ck.to_string()), ck.to_string());
     }
 
     #[test]

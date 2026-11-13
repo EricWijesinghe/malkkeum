@@ -1,9 +1,9 @@
 //! Background recovery for checkouts whose confirm or webhook never arrived (money taken,
-//! booking missing). Runs on every replica: each pass claims checkouts with
-//! `FOR UPDATE SKIP LOCKED` and stamps them with a cooldown, and settlement itself is
-//! idempotent (`fulfil` re-locks the checkout row).
+//! booking missing), and for compensating refunds that failed (`refund_queue`). Runs on every
+//! replica: each pass claims rows with `FOR UPDATE SKIP LOCKED` and stamps them with a lease, and
+//! settlement itself is idempotent (`fulfil` re-locks the checkout row).
 
-use crate::{lifecycle::next_tick, metrics::job_pass, routes::checkouts, state::AppState};
+use crate::{lifecycle::next_tick, metrics::job_pass, routes::checkout_recon, state::AppState};
 use std::time::Duration;
 use tokio::task::JoinHandle;
 
@@ -26,7 +26,7 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
                 job_pass("reconciler", true);
                 continue;
             }
-            let ok = match checkouts::reconcile_pass(&state).await {
+            let ok = match checkout_recon::reconcile_pass(&state).await {
                 Ok(0) => true,
                 Ok(checked) => {
                     tracing::info!(checked, "checkout reconcile pass");
