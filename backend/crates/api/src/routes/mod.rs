@@ -25,6 +25,7 @@ pub(crate) mod tips;
 pub(crate) mod waitlist;
 pub mod subscription_engine;
 pub(crate) mod subscriptions;
+pub(crate) mod seller;
 pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
@@ -85,6 +86,7 @@ pub fn router(state: AppState) -> Router {
         .merge(cash_receipts::routes())
         .merge(tax_invoices::routes())
         .merge(growth::public_routes())
+        .merge(seller::public_routes())
         .merge(growth::customer_routes())
         .merge(crate::points::customer_routes())
         .merge(payments::routes())
