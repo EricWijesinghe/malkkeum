@@ -13,6 +13,7 @@ nt() { if "${@:2}"; then FAIL=$((FAIL + 1)); echo "FAIL (should fail): $1"; else
 eq() { [ "$1" = "$2" ] || { echo "   got [$1] want [$2]"; return 1; }; }
 
 bash -n "$ROOT/deploy/install.sh"
+bash -n "$ROOT/deploy/agent.sh"
 # shellcheck source=deploy/install.sh
 DAHAE_SELFTEST=1 . "$ROOT/deploy/install.sh"
 set +e # the sourced installer turned on -e; failures are counted below, not fatal
@@ -300,6 +301,8 @@ t  "beta tag SHA256SUMS matches" sums_ok v1.1.0-beta.1
 t  "stable tag unchanged by beta" eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
 g -c user.name=t -c user.email=t@t tag -f -a v1.0.0 -m moved beta >/dev/null
 nt "moved tag is refused"  pub v1.0.0
+
+bash "$ROOT/scripts/ci/agent-selftest.sh" >/dev/null || { FAIL=$((FAIL + 1)); echo "FAIL: agent self-test (run scripts/ci/agent-selftest.sh)"; }
 
 echo "installer self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]
