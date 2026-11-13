@@ -21,6 +21,7 @@ S = {
   "payHistoryEmpty": ["결제 내역이 없어요", "No payments yet"],
   "payStatusPaid": ["결제 완료", "Paid"],
   "payStatusRefunded": ["환불 완료", "Refunded"],
+  "payStatusRefundPending": ["환불 진행 중", "Refund in progress"],
   "payStatusPending": ["결제·입금 대기", "Awaiting payment"],
   "payStatusClosed": ["결제되지 않음", "Not paid"],
   "receiptTitle": ["전자 영수증", "Receipt"],

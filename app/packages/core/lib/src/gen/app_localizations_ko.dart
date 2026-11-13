@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2518,6 +2517,13 @@ class TKo extends T {
   String get err_checkout_refunded => '이 결제는 취소되어 환불됐어요.';
 
   @override
+  String get err_checkout_refund_pending =>
+      '결제를 취소하고 환불을 진행하고 있어요. 환불이 끝나면 알려드릴게요.';
+
+  @override
+  String get err_payment_not_for_checkout => '이 결제는 지금 주문과 맞지 않아요. 다시 결제해 주세요.';
+
+  @override
   String get err_already_paid => '이미 결제가 끝났어요.';
 
   @override
@@ -4948,6 +4954,9 @@ class TKo extends T {
 
   @override
   String get payStatusRefunded => '환불 완료';
+
+  @override
+  String get payStatusRefundPending => '환불 진행 중';
 
   @override
   String get payStatusPending => '결제·입금 대기';

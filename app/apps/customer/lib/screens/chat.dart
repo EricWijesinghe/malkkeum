@@ -67,6 +67,7 @@ Future<String?> _supportHours(ApiClient api) async {
 }
 
 const _priceChanged = 'price_changed';
+const _refundPending = 'checkout_refund_pending';
 
 /// Room for the empty-state art under the header; it scrolls inside when text is large.
 const _emptyHeight = 360.0;
@@ -429,6 +430,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   /// Set when this screen's own payment succeeded, before the `deposit_paid` message arrives.
   bool _paidHere = false;
+
+  /// The quote whose deposit was charged and is being given back (the push says when it lands).
+  String? _refundingQuote;
   late final Future<String?> _hours = _supportHours(context.api);
 
   /// Messages that arrived while the room is open (live, not history): only these animate in.
@@ -582,6 +586,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               await showVirtualAccount(context, account);
             case CheckoutFailed(:final code):
               showToast(context, context.t.checkoutFailure(code));
+              if (code == _refundPending) {
+                setState(() => _refundingQuote = quote.id);
+              }
               if (code == _priceChanged) unawaited(_load());
               return;
             case CheckoutPaid():
@@ -602,6 +609,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       // A definite answer ends this attempt; only a lost or failed-server reply keeps the key.
       if (!e.isNetwork && e.status < 500) _depositKeys.remove(quote.id);
       if (!mounted) return;
+      if (e.code == _refundPending) setState(() => _refundingQuote = quote.id);
       if (e.code == _priceChanged) {
         // The quote changed after this card was shown: reload so the newest card is the one to pay.
         showToast(context, context.t.error(e));
@@ -756,6 +764,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                               message: m,
                               depositPaid: depositPaid,
                               latestQuote: latestQuote,
+                              refundingQuote: _refundingQuote,
                               live: live(m.id),
                               onPay: _paying ? null : _payDeposit,
                             ),

@@ -4819,6 +4819,18 @@ abstract class T {
   /// **'이 결제는 취소되어 환불됐어요.'**
   String get err_checkout_refunded;
 
+  /// No description provided for @err_checkout_refund_pending.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제를 취소하고 환불을 진행하고 있어요. 환불이 끝나면 알려드릴게요.'**
+  String get err_checkout_refund_pending;
+
+  /// No description provided for @err_payment_not_for_checkout.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 결제는 지금 주문과 맞지 않아요. 다시 결제해 주세요.'**
+  String get err_payment_not_for_checkout;
+
   /// No description provided for @err_already_paid.
   ///
   /// In ko, this message translates to:
@@ -9407,6 +9419,12 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'환불 완료'**
   String get payStatusRefunded;
+
+  /// No description provided for @payStatusRefundPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 진행 중'**
+  String get payStatusRefundPending;
 
   /// No description provided for @payStatusPending.
   ///

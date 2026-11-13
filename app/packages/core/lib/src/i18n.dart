@@ -54,6 +54,8 @@ extension Labels on T {
     'price_changed' => err_price_changed,
     'checkout_closed' => err_checkout_closed,
     'checkout_refunded' => err_checkout_refunded,
+    'checkout_refund_pending' => err_checkout_refund_pending,
+    'payment_not_for_checkout' => err_payment_not_for_checkout,
     'already_paid' => err_already_paid,
     'quote_not_payable' => err_quote_not_payable,
     'payment_method_disabled' => err_payment_method_disabled,

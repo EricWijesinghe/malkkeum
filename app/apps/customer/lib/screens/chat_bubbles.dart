@@ -112,10 +112,14 @@ class _Bubble extends StatelessWidget {
     required this.latestQuote,
     required this.live,
     required this.onPay,
+    this.refundingQuote,
   });
   final ChatMessage message;
   final bool depositPaid;
   final String? latestQuote;
+
+  /// The quote whose payment the server is giving back (`checkout_refund_pending`).
+  final String? refundingQuote;
 
   /// Arrived while the room is open: slides in from its sender's side.
   final bool live;
@@ -169,6 +173,7 @@ class _Bubble extends StatelessWidget {
         body: m.body,
         paid: depositPaid,
         superseded: m.id != latestQuote,
+        refunding: m.id == refundingQuote,
         arrive: live,
         onPay: onPay == null ? null : () => onPay!(m),
       ),
@@ -364,10 +369,14 @@ class _QuoteCard extends StatefulWidget {
     required this.superseded,
     required this.arrive,
     required this.onPay,
+    this.refunding = false,
   });
   final Json body;
   final bool paid;
   final bool superseded;
+
+  /// Paid, then refunded because the booking changed; the refund has not landed yet.
+  final bool refunding;
 
   /// Arrived while the room is open: settles in with one glow.
   final bool arrive;
@@ -419,7 +428,7 @@ class _QuoteCardState extends State<_QuoteCard>
     final finalPrice = n('final_price');
     final deposit = n('deposit');
     final paid = widget.paid;
-    final payable = !paid && !widget.superseded;
+    final payable = !paid && !widget.superseded && !widget.refunding;
     final note = body['note'] as String?;
     final teal = c.fresh;
     final label = paid
@@ -435,8 +444,12 @@ class _QuoteCardState extends State<_QuoteCard>
             ],
           )
         : Text(
-            widget.superseded ? t.quoteSuperseded : t.quotePayDeposit,
-            key: ValueKey(widget.superseded),
+            widget.refunding
+                ? t.payStatusRefundPending
+                : widget.superseded
+                ? t.quoteSuperseded
+                : t.quotePayDeposit,
+            key: ValueKey((widget.superseded, widget.refunding)),
           );
     final card = Container(
       padding: const EdgeInsets.all(Space.md),

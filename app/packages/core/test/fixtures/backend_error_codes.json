@@ -78,7 +78,9 @@
     "toss_unverified",
     "unsupported_bank",
     "unsupported_image",
-    "upload_quota"
+    "upload_quota",
+    "checkout_refund_pending",
+    "payment_not_for_checkout"
   ],
   "fallback": [
     "already_confirmed",

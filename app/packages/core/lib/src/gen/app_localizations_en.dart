@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2564,6 +2563,14 @@ class TEn extends T {
       'This payment was cancelled and refunded.';
 
   @override
+  String get err_checkout_refund_pending =>
+      'We cancelled this payment and the refund is on its way. We\'ll let you know once it\'s done.';
+
+  @override
+  String get err_payment_not_for_checkout =>
+      'This payment doesn\'t match this order. Please pay again.';
+
+  @override
   String get err_already_paid => 'This is already paid.';
 
   @override
@@ -5064,6 +5071,9 @@ class TEn extends T {
 
   @override
   String get payStatusRefunded => 'Refunded';
+
+  @override
+  String get payStatusRefundPending => 'Refund in progress';
 
   @override
   String get payStatusPending => 'Awaiting payment';

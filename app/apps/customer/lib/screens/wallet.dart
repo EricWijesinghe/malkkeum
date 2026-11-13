@@ -143,6 +143,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     return switch (s) {
       'paid' => t.payStatusPaid,
       'refunded' => t.payStatusRefunded,
+      'refund_pending' => t.payStatusRefundPending,
       'pending' || 'awaiting_deposit' => t.payStatusPending,
       _ => t.payStatusClosed,
     };

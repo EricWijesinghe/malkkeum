@@ -9,6 +9,8 @@ S = {
   "err_price_changed": ["가격이 바뀌었어요. 새 견적을 확인하고 다시 시도해 주세요.", "The price changed. Review the new quote and try again."],
   "err_checkout_closed": ["이 결제는 이미 종료됐어요. 다시 시작해 주세요.", "This payment is no longer open. Start again."],
   "err_checkout_refunded": ["이 결제는 취소되어 환불됐어요.", "This payment was cancelled and refunded."],
+  "err_checkout_refund_pending": ["결제를 취소하고 환불을 진행하고 있어요. 환불이 끝나면 알려드릴게요.", "We cancelled this payment and the refund is on its way. We'll let you know once it's done."],
+  "err_payment_not_for_checkout": ["이 결제는 지금 주문과 맞지 않아요. 다시 결제해 주세요.", "This payment doesn't match this order. Please pay again."],
   "err_already_paid": ["이미 결제가 끝났어요.", "This is already paid."],
   "err_quote_not_payable": ["아직 결제할 수 없는 견적이에요. 상담팀에 확인해 주세요.", "This quote can't be paid yet. Check with our team."],
   "err_payment_method_disabled": ["지금은 이 결제수단을 쓸 수 없어요.", "This payment method isn't available right now."],
