@@ -7,7 +7,11 @@ use crate::{
     auth::{Admin, Customer},
     contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
-    routes::{audit, growth::{load_setting, save_setting}},
+    routes::{
+        audit,
+        growth::{load_setting, save_setting},
+    },
+    settings_registry,
     state::AppState,
 };
 use axum::{
@@ -28,7 +32,6 @@ use sqlx::{PgConnection, PgPool};
 use uuid::Uuid;
 
 pub const POLICY_KEY: &str = "points_policy";
-const MAX_ADJUST: i64 = 100_000;
 const LEDGER_PAGE: i64 = 50;
 
 pub fn customer_routes() -> Router<AppState> {
@@ -62,7 +65,17 @@ struct Entry {
 
 impl Entry {
     fn new(user: Uuid, kind: &'static str, amount: i64, key: String) -> Self {
-        Self { user, kind, amount, lot: None, expires_at: None, key, booking: None, actor: None, reason: None }
+        Self {
+            user,
+            kind,
+            amount,
+            lot: None,
+            expires_at: None,
+            key,
+            booking: None,
+            actor: None,
+            reason: None,
+        }
     }
 }
 
@@ -88,7 +101,10 @@ async fn append(conn: &mut PgConnection, e: Entry) -> ApiResult<bool> {
 }
 
 async fn lock_user(conn: &mut PgConnection, user: Uuid) -> ApiResult<()> {
-    sqlx::query("SELECT id FROM users WHERE id = $1 FOR UPDATE").bind(user).execute(&mut *conn).await?;
+    sqlx::query("SELECT id FROM users WHERE id = $1 FOR UPDATE")
+        .bind(user)
+        .execute(&mut *conn)
+        .await?;
     Ok(())
 }
 
@@ -104,7 +120,15 @@ async fn lots(conn: &mut PgConnection, user: Uuid) -> ApiResult<Vec<Lot<Uuid>>> 
     .bind(user)
     .fetch_all(&mut *conn)
     .await?;
-    Ok(rows.into_iter().map(|(id, issued, expires_at, consumed)| Lot { id, issued, consumed, expires_at }).collect())
+    Ok(rows
+        .into_iter()
+        .map(|(id, issued, expires_at, consumed)| Lot {
+            id,
+            issued,
+            consumed,
+            expires_at,
+        })
+        .collect())
 }
 
 fn points_err(e: PointsError) -> ApiError {
@@ -121,7 +145,15 @@ pub async fn grant(conn: &mut PgConnection, user: Uuid, kind: &'static str, amou
     }
     let policy = load_policy(&mut *conn).await?;
     let expires_at = Some(policy.expires_at(Utc::now()));
-    append(conn, Entry { lot: None, expires_at, ..Entry::new(user, kind, amount, key) }).await?;
+    append(
+        conn,
+        Entry {
+            lot: None,
+            expires_at,
+            ..Entry::new(user, kind, amount, key)
+        },
+    )
+    .await?;
     Ok(())
 }
 
@@ -145,7 +177,12 @@ pub async fn on_completed(conn: &mut PgConnection, booking: Uuid) -> ApiResult<(
     let earned = cashback(Won((paid - spent).max(0)), policy.earn_bps);
     let expires_at = Some(policy.expires_at(Utc::now()));
     if earned > 0 {
-        let e = Entry { lot: None, expires_at, booking: Some(booking), ..Entry::new(user, "earn", earned, format!("earn:{booking}")) };
+        let e = Entry {
+            lot: None,
+            expires_at,
+            booking: Some(booking),
+            ..Entry::new(user, "earn", earned, format!("earn:{booking}"))
+        };
         append(conn, e).await?;
     }
     grant(conn, user, "welcome", policy.welcome_points, format!("welcome:{user}")).await
@@ -177,10 +214,12 @@ pub async fn quote(conn: &mut PgConnection, user: Uuid, booking: Option<Uuid>, t
 
 /// Points a booking has paid with and not got back. Zero for most bookings.
 pub async fn net_spent(conn: &mut PgConnection, booking: Uuid) -> ApiResult<i64> {
-    Ok(sqlx::query_scalar("SELECT COALESCE(-SUM(amount), 0)::bigint FROM points_ledger WHERE booking_id = $1 AND kind IN ('spend','refund')")
-        .bind(booking)
-        .fetch_one(&mut *conn)
-        .await?)
+    Ok(
+        sqlx::query_scalar("SELECT COALESCE(-SUM(amount), 0)::bigint FROM points_ledger WHERE booking_id = $1 AND kind IN ('spend','refund')")
+            .bind(booking)
+            .fetch_one(&mut *conn)
+            .await?,
+    )
 }
 
 /// Pays part of a booking total with points, inside the caller's transaction. Returns the
@@ -192,7 +231,11 @@ pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Wo
         return Ok(split);
     }
     for (lot, take) in allocate(&owned, split.points, Utc::now()).map_err(points_err)? {
-        let e = Entry { lot: Some(lot), booking: Some(booking), ..Entry::new(user, "spend", -take, format!("spend:{booking}:{lot}")) };
+        let e = Entry {
+            lot: Some(lot),
+            booking: Some(booking),
+            ..Entry::new(user, "spend", -take, format!("spend:{booking}:{lot}"))
+        };
         append(conn, e).await?;
     }
     Ok(split)
@@ -202,12 +245,11 @@ pub async fn spend(conn: &mut PgConnection, user: Uuid, booking: Uuid, total: Wo
 /// refunded so far (`refunded` of `paid`), as fresh lots with a new expiry. Cumulative: a repeat
 /// call with the same refunded share writes nothing. Returns the points restored by this call.
 pub async fn reverse_spend(conn: &mut PgConnection, booking: Uuid, refunded: i64, paid: i64) -> ApiResult<i64> {
-    let spent: Option<(Uuid, i64)> = sqlx::query_as(
-        "SELECT user_id, (-SUM(amount))::bigint FROM points_ledger WHERE booking_id = $1 AND kind = 'spend' GROUP BY user_id",
-    )
-    .bind(booking)
-    .fetch_optional(&mut *conn)
-    .await?;
+    let spent: Option<(Uuid, i64)> =
+        sqlx::query_as("SELECT user_id, (-SUM(amount))::bigint FROM points_ledger WHERE booking_id = $1 AND kind = 'spend' GROUP BY user_id")
+            .bind(booking)
+            .fetch_optional(&mut *conn)
+            .await?;
     let Some((user, spent)) = spent else {
         return Ok(0);
     };
@@ -248,7 +290,10 @@ pub async fn expire_lapsed(db: &PgPool) -> ApiResult<u64> {
         let mut tx = db.begin().await?;
         lock_user(&mut tx, user).await?;
         for (lot, left) in lapsed(&lots(&mut tx, user).await?, now) {
-            let e = Entry { lot: Some(lot), ..Entry::new(user, "expire", -left, format!("expire:{lot}")) };
+            let e = Entry {
+                lot: Some(lot),
+                ..Entry::new(user, "expire", -left, format!("expire:{lot}"))
+            };
             if append(&mut tx, e).await? {
                 written += 1;
             }
@@ -363,7 +408,8 @@ async fn adjust(State(s): State<AppState>, Admin(a): Admin, Json(input): Json<Ad
         return Err(ApiError::Forbidden);
     }
     let reason = input.reason.trim().to_string();
-    if input.amount == 0 || input.amount.abs() > MAX_ADJUST {
+    let max_adjust = settings_registry::get(&s.db, &s.config, "points_adjust_max").await?;
+    if input.amount == 0 || input.amount.abs() > max_adjust {
         return Err(ApiError::BadRequest("points_adjust_amount"));
     }
     if reason.is_empty() || reason.chars().count() > 200 {

@@ -4416,6 +4416,153 @@ class TKo extends T {
   String get caseSave => '저장';
 
   @override
+  String get rulesTab => '운영 규칙';
+
+  @override
+  String get rulesIntro =>
+      '여기서 바꾼 값은 바로 적용되거나 서버를 다시 시작할 때 적용돼요. 값을 비워 두면 처음 설정값으로 돌아가요.';
+
+  @override
+  String get rulesGroupBusiness => '사업장 한도';
+
+  @override
+  String get rulesGroupMarketing => '광고 발송';
+
+  @override
+  String get rulesGroupPoints => '포인트';
+
+  @override
+  String get rulesGroupQuality => '파트너 품질';
+
+  @override
+  String get rulesGroupOps => '서버·알림 기준';
+
+  @override
+  String get rulesRange => '입력 가능 범위';
+
+  @override
+  String get rulesSource => '현재 값 출처';
+
+  @override
+  String get rulesSourceDb => '직접 바꾼 값';
+
+  @override
+  String get rulesSourceEnv => '설치 시 설정값';
+
+  @override
+  String get rulesSourceDefault => '기본값';
+
+  @override
+  String get rulesTightenDown => '기본값보다 낮게만 바꿀 수 있어요';
+
+  @override
+  String get rulesTightenUp => '기본값보다 높게만 바꿀 수 있어요';
+
+  @override
+  String get rulesApplyInstant => '바로 적용';
+
+  @override
+  String get rulesApplyRebuild => '서버를 다시 시작해야 적용돼요';
+
+  @override
+  String get rulesReadOnly => '여기서는 바꿀 수 없어요 (개발자에게 문의)';
+
+  @override
+  String get rulesReset => '기본값으로';
+
+  @override
+  String get rulesSave => '저장';
+
+  @override
+  String get rulesSaved => '저장했어요';
+
+  @override
+  String get rulesNoChanges => '바뀐 값이 없어요';
+
+  @override
+  String get rulesInvalid => '입력한 값을 확인해 주세요';
+
+  @override
+  String get rulePointsAdjustMax => '포인트 한 번에 지급·차감할 최대 점수';
+
+  @override
+  String get ruleUploadDailyQuota => '하루 사진 업로드 한도 (장)';
+
+  @override
+  String get ruleMaxOpenQuoteRequests => '동시에 열 수 있는 견적 요청 수';
+
+  @override
+  String get ruleMaxThreadsPerDay => '하루 고객 대화방 개설 한도';
+
+  @override
+  String get ruleReviewReportThreshold => '후기 신고 몇 명이면 숨길지';
+
+  @override
+  String get ruleNoshowGraceMinutes => '노쇼 판정 대기 시간 (분)';
+
+  @override
+  String get ruleAiChatRetentionDays => 'AI 상담 기록 보관 기간 (일)';
+
+  @override
+  String get ruleUploadOrphanDays => '연결 없는 사진 삭제 기간 (일)';
+
+  @override
+  String get ruleReconcileIntervalSecs => '결제 대사 주기 (초)';
+
+  @override
+  String get ruleFreqCapPerWeek => '고객 한 명에게 일주일 최대 광고 수';
+
+  @override
+  String get ruleNudgeRebookDays => '재예약 안내 발송 (방문 후 일수)';
+
+  @override
+  String get ruleQualityWindowDays => '품질 점수 집계 기간 (일)';
+
+  @override
+  String get ruleQualityOnTimeGraceMin => '정시 도착 허용 시간 (분)';
+
+  @override
+  String get ruleBackupStaleHours => '백업이 이 시간 넘게 없으면 빨간불 (시간)';
+
+  @override
+  String get ruleBackupLateHours => '백업이 이 시간 넘게 없으면 노란불 (시간)';
+
+  @override
+  String get ruleDiskLowPct => '디스크 여유가 이 비율 아래면 빨간불 (%)';
+
+  @override
+  String get ruleDiskWarnPct => '디스크 여유가 이 비율 아래면 노란불 (%)';
+
+  @override
+  String get ruleMaintenanceOn => '점검 모드 (새 예약 막기)';
+
+  @override
+  String get ruleMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get rulesApplyStoreManual => '앱스토어에서 직접 수정해요';
+
+  @override
+  String get rulesMaxLength => '최대 글자 수';
+
+  @override
+  String get rulesDeleteWarning =>
+      '기간을 줄이면 기준보다 오래된 기록이 다음 정리 때 바로 삭제돼요. 삭제한 기록은 되돌릴 수 없어요.';
+
+  @override
+  String get rulesNoshowWarning => '노쇼 판정 대기 시간을 바꾸면 노쇼로 판정되는 기준이 바뀌어요.';
+
+  @override
+  String get err_tighten_only => '기본값을 넘는 값은 저장할 수 없어요. 기본값 쪽으로만 바꿀 수 있어요.';
+
+  @override
+  String get err_threshold_order =>
+      '노란불 기준과 빨간불 기준의 순서가 맞지 않아요. 두 값을 다시 확인해 주세요.';
+
+  @override
+  String get err_read_only_setting => '이 값은 여기서 바꿀 수 없어요. 개발자에게 문의해 주세요.';
+
+  @override
   String get cSetup => '설정';
 
   @override

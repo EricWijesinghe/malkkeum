@@ -12,6 +12,7 @@ from the release branches; no tags existed for them.
 - Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
 - Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
   it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
+- Owner settings registry: business limits, marketing cap, points cap, quality window and ops alert thresholds are read from the database (env is the seed), validated, and audited on every change.
 
 ### Changed
 - Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.

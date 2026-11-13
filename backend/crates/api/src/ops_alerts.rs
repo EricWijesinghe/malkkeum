@@ -15,10 +15,22 @@ use chrono::{DateTime, Duration, FixedOffset, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::PgPool;
+use std::{
+    collections::{BTreeMap, HashMap},
+    time::Duration as StdDuration,
+};
 use tokio::task::JoinHandle;
-use std::{collections::{BTreeMap, HashMap}, time::Duration as StdDuration};
 
-pub const RULES: [&str; 8] = ["sms_failing", "push_failing", "payment_failing", "payment_stuck", "social_failing", "auth_suspicious", "backup_stale", "disk_low"];
+pub const RULES: [&str; 8] = [
+    "sms_failing",
+    "push_failing",
+    "payment_failing",
+    "payment_stuck",
+    "social_failing",
+    "auth_suspicious",
+    "backup_stale",
+    "disk_low",
+];
 pub const COOLDOWN_HOURS: i64 = 6;
 const PREFS_KEY: &str = "ops_alerts";
 const BUSINESS_KEY: &str = "business";
@@ -53,7 +65,12 @@ pub struct Prefs {
 
 impl Default for Prefs {
     fn default() -> Self {
-        Self { rules: BTreeMap::new(), quiet_start: 22, quiet_end: 7, alert_phone: None }
+        Self {
+            rules: BTreeMap::new(),
+            quiet_start: 22,
+            quiet_end: 7,
+            alert_phone: None,
+        }
     }
 }
 
@@ -186,18 +203,19 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
     out.extend(job_finding());
     let backup = ops::backup_status(db).await?;
     let age = ops::backup_age_hours(backup.as_ref(), Utc::now());
-    if ops::backup_level(age) == Level::Red {
+    let t = ops::thresholds(s).await?;
+    if ops::backup_level(age, &t) == Level::Red {
         out.push(Finding {
             rule: "backup_stale",
-            title: "자동 백업이 36시간 넘게 없어요",
+            title: "자동 백업이 기준 시간보다 오래 없어요",
             body: "서버에서 malkkeum backup 을 실행하고, backups 폴더의 backup.log 를 확인하세요.",
         });
     }
     let disk = ops::disk_usage(s.config.upload_dir.clone()).await;
-    if disk.is_some_and(|d| ops::disk_level(d.free_pct()) == Level::Red) {
+    if disk.is_some_and(|d| ops::disk_level(d.free_pct(), &t) == Level::Red) {
         out.push(Finding {
             rule: "disk_low",
-            title: "서버 디스크 여유 공간이 10% 아래예요",
+            title: "서버 디스크 여유 공간이 기준보다 적어요",
             body: "오래된 백업 파일을 정리하거나 서버 디스크를 늘려 주세요.",
         });
     }
@@ -240,7 +258,10 @@ fn job_finding() -> Option<Finding> {
 }
 
 pub async fn load_prefs(db: &PgPool) -> Result<Prefs, sqlx::Error> {
-    let raw: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(PREFS_KEY).fetch_optional(db).await?;
+    let raw: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(PREFS_KEY)
+        .fetch_optional(db)
+        .await?;
     Ok(raw.and_then(|v| serde_json::from_value(v).ok()).unwrap_or_default())
 }
 
@@ -258,8 +279,13 @@ pub async fn save_prefs(db: &PgPool, prefs: &Prefs) -> Result<(), sqlx::Error> {
 
 /// Business support phone, the default alert number.
 pub async fn business_phone(db: &PgPool) -> Result<Option<String>, sqlx::Error> {
-    let raw: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(BUSINESS_KEY).fetch_optional(db).await?;
-    Ok(raw.and_then(|v| v["support_phone"].as_str().map(|p| p.chars().filter(char::is_ascii_digit).collect())).filter(|p: &String| !p.is_empty()))
+    let raw: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(BUSINESS_KEY)
+        .fetch_optional(db)
+        .await?;
+    Ok(raw
+        .and_then(|v| v["support_phone"].as_str().map(|p| p.chars().filter(char::is_ascii_digit).collect()))
+        .filter(|p: &String| !p.is_empty()))
 }
 
 async fn last_sent(db: &PgPool) -> Result<HashMap<String, DateTime<Utc>>, sqlx::Error> {
@@ -291,10 +317,16 @@ async fn deliver(s: &AppState, phone: Option<&str>, f: &Finding) {
             tracing::warn!(error = %e, rule = f.rule, "ops alert sms failed");
         }
     }
-    let tokens: Result<Vec<String>, sqlx::Error> = sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'").fetch_all(&s.db).await;
+    let tokens: Result<Vec<String>, sqlx::Error> = sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'")
+        .fetch_all(&s.db)
+        .await;
     match tokens {
         Ok(t) if !t.is_empty() => {
-            if let Err(e) = s.providers.push(&t, &format!("{brand} 운영 알림"), f.title, &json!({ "kind": "ops_alert", "rule": f.rule })).await {
+            if let Err(e) = s
+                .providers
+                .push(&t, &format!("{brand} 운영 알림"), f.title, &json!({ "kind": "ops_alert", "rule": f.rule }))
+                .await
+            {
                 tracing::warn!(error = %e, rule = f.rule, "ops alert push failed");
             }
         }
@@ -419,7 +451,10 @@ mod tests {
         assert!(ok.enabled("backup_stale"));
         assert_eq!(ok.alert_phone.as_deref(), Some("01012345678"));
         assert_eq!(parse_input(&json!({"quiet_start": 24, "quiet_end": 6})), Err("invalid_quiet_hours"));
-        assert_eq!(parse_input(&json!({"quiet_start": 22, "quiet_end": 7, "alert_phone": "12"})), Err("invalid_phone"));
+        assert_eq!(
+            parse_input(&json!({"quiet_start": 22, "quiet_end": 7, "alert_phone": "12"})),
+            Err("invalid_phone")
+        );
         let none = parse_input(&json!({"quiet_start": 22, "quiet_end": 7, "alert_phone": " "})).expect("blank phone ok");
         assert_eq!(none.alert_phone, None);
     }
