@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3055,6 +3056,21 @@ class TKo extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded/$invited명';
   }
+
+  @override
+  String get guestReasonQuote => '견적을 저장하고 예약하려면 로그인하세요';
+
+  @override
+  String get guestReasonBook => '예약을 확정하려면 로그인하세요';
+
+  @override
+  String get guestReasonChat => '상담원과 대화하려면 로그인하세요';
+
+  @override
+  String get guestReasonAccount => '내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요';
+
+  @override
+  String get guestAccountHint => '로그인하면 확인할 수 있어요';
 
   @override
   String get locUseCurrent => '현재 위치로 찾기';

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3126,6 +3127,22 @@ class TEn extends T {
   String growthReferralValue(String rewarded, String invited) {
     return '$rewarded of $invited';
   }
+
+  @override
+  String get guestReasonQuote => 'Sign in to save this quote and book';
+
+  @override
+  String get guestReasonBook => 'Sign in to confirm your booking';
+
+  @override
+  String get guestReasonChat => 'Sign in to chat with our team';
+
+  @override
+  String get guestReasonAccount =>
+      'Sign in to see your coupons, points and bookings';
+
+  @override
+  String get guestAccountHint => 'Sign in to view';
 
   @override
   String get locUseCurrent => 'Use my current location';
