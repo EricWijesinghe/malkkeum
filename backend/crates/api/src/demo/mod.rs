@@ -277,7 +277,7 @@ pub async fn cli(args: &[String]) -> i32 {
         Ok(db) => db,
         Err(e) => return fail(&format!("database: {e}")),
     };
-    if let Err(e) = sqlx::migrate!("../../migrations").run(&db).await {
+    if let Err(e) = crate::migrate(&db).await {
         return fail(&format!("migrate: {e}"));
     }
     // Same idempotent first-run data the server writes on start (catalogue, settings), so a load
