@@ -1,14 +1,16 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/content_rail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
+import 'package:ui/ui.dart';
 
 import 'support/customer_host.dart';
 import 'support/customer_routes.dart';
 
-/// Dahae home (U2) on the smallest phone we support at large and largest system text, in every
-/// language: banner, 7 tiles, recommended, news and tips rails, and the move sheet. Any RenderFlex
-/// overflow or exception fails the test, named with the widget that caused it.
+/// Dahae home on the smallest phone we support at large and largest system text, in every
+/// language: header toggle, 8 tiles with badges, upcoming booking, recommended, banner pager and the
+/// news list. Any RenderFlex overflow or exception fails the test, named with the widget that caused it.
 const _smallPhone = Size(320, 568);
 const _scales = [1.3, 2.0];
 const _scrollSteps = 20;
@@ -24,6 +26,7 @@ FakeApi _homeApi() {
       'banner' => [
         _item('b-1', 'banner', 'First cleaning 15,000 KRW welcome coupon for every new customer', link: 'coupons'),
         _item('b-2', 'banner', 'Move-in cleaning including the pre-move-out cleaning', link: 'service/move_in'),
+        _item('b-3', 'banner', 'Two-in-one air conditioner cleaning is now open for booking in every district'),
       ],
       'news' => [
         _item('n-1', 'news', 'Studio cleaning service area expansion: Seongnam and Hanam'),
@@ -35,6 +38,16 @@ FakeApi _homeApi() {
       ],
       _ => [_item('c-1', 'notice', 'Maintenance')],
     });
+  fake.reply('GET', '/services', [
+    for (final code in catalogCodes)
+      {
+        ...serviceJson(code),
+        'content': {
+          if (code == 'mattress') 'badge': 'new',
+          if (code == 'aircon') 'badge': 'hot',
+        },
+      },
+  ]);
   stockCustomerApi(
     fake,
     name: 'Nguyễn Thị Phương Thảo',
@@ -52,7 +65,7 @@ void main() {
   for (final locale in LocaleController.supported) {
     final code = locale.languageCode;
     for (final scale in _scales) {
-      testWidgets('[$code x$scale] home fits a small phone from banner to tips', (tester) async {
+      testWidgets('[$code x$scale] home fits a small phone from header to news', (tester) async {
         setViewport(tester, _smallPhone);
         tester.platformDispatcher.textScaleFactorTestValue = scale;
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -69,25 +82,21 @@ void main() {
         await pumpUntilFound(tester, find.text(t.tabHome));
         await settle(tester, duration: const Duration(milliseconds: 600));
 
-        // On this screen the grid starts below the fold: centre the move tile, clear of the bottom bar.
-        final list = find.byType(CustomScrollView).first;
-        final scrollable = find.descendant(of: list, matching: find.byType(Scrollable)).first;
-        final tile = find.text(t.dhSvcMoveShort);
-        await tester.scrollUntilVisible(tile, 120, scrollable: scrollable);
-        await Scrollable.ensureVisible(tester.element(tile), alignment: 0.5);
-        await settle(tester, duration: const Duration(milliseconds: 400));
-        await tester.tap(tile);
+        // The toggle swaps the page for the recommendations and back.
+        await tester.tap(find.text(t.dhHomePick(BrandConfig.placeholder.name)));
         await settle(tester, duration: const Duration(milliseconds: 600));
-        expect(find.text(t.dhMovePickTitle), findsOneWidget);
-        Navigator.of(tester.element(find.text(t.dhMovePickTitle))).pop();
+        expect(find.text(t.dhHomeRecommended), findsOneWidget);
+        expect(find.text(t.service('sofa')), findsNothing);
+        await tester.tap(find.text(t.dhHomeAll));
         await settle(tester, duration: const Duration(milliseconds: 600));
+        expect(find.text(t.service('sofa')), findsOneWidget);
 
-        var sawNews = false, sawTips = false;
+        var sawBanner = false, sawNews = false;
         for (var i = 0; i < _scrollSteps; i++) {
-          await tester.dragFrom(_gutter, const Offset(0, -260)); // start beside the cards, on no tile
+          await tester.dragFrom(_gutter, const Offset(0, -260)); // start in the gutter, on no tile
           await settle(tester, duration: const Duration(milliseconds: 300));
+          sawBanner |= find.byType(BannerCarousel).evaluate().isNotEmpty;
           sawNews |= find.text(t.dhHomeNews).evaluate().isNotEmpty;
-          sawTips |= find.text(t.moreTips).evaluate().isNotEmpty;
         }
         FlutterError.onError = saved;
         final where = RegExp(r'file:///[^\s)]+/(?:customer/lib|ui/lib)/[^\s)]+');
@@ -97,7 +106,7 @@ void main() {
                 '${where.allMatches(d.toString()).map((m) => m.group(0)).take(3).join(' ')}',
         };
         expect(failures, isEmpty, reason: failures.join('\n'));
-        expect((sawNews, sawTips), (true, true), reason: 'both rails were built while scrolling');
+        expect((sawBanner, sawNews), (true, true), reason: 'the banner and the news list were built');
         await unmount(tester);
       });
     }

@@ -2342,13 +2342,26 @@ class TTh extends T {
   String get dhHomeNews => 'ข่าวสาร Dahae';
 
   @override
-  String get dhSvcMove => 'ทำความสะอาดย้ายเข้า / ย้ายออก';
+  String get dhHomeAll => 'ทั้งหมด';
 
   @override
-  String get dhSvcMoveShort => 'ย้ายบ้าน';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'คุณต้องการทำความสะอาดแบบไหน?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'ประกาศ';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'ข่าวสาร';

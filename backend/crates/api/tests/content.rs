@@ -90,3 +90,16 @@ async fn seed_fixes_only_the_untouched_old_two_coupon_banner(pool: PgPool) {
     assert_eq!(titles[0]["ko"], "첫 청소 15,000원 웰컴쿠폰");
     assert_eq!(titles[1], edited, "an owner-edited banner is left alone");
 }
+#[sqlx::test(migrations = "../../migrations")]
+async fn seed_badges_mattress_new_and_aircon_hot_once(pool: PgPool) {
+    common::seed_catalog(&pool).await;
+    let badges: Vec<(String, String)> =
+        sqlx::query_as("SELECT code, content->>'badge' FROM services WHERE content ? 'badge' ORDER BY code").fetch_all(&pool).await.expect("badges");
+    let expected: Vec<(String, String)> = vec![("aircon".into(), "hot".into()), ("mattress".into(), "new".into())];
+    assert_eq!(badges, expected);
+
+    sqlx::query("UPDATE services SET content = '{}'::jsonb WHERE code = 'aircon'").execute(&pool).await.expect("owner removes the badge");
+    common::seed_catalog(&pool).await;
+    let left: Vec<String> = sqlx::query_scalar("SELECT code FROM services WHERE content ? 'badge'").fetch_all(&pool).await.expect("badges");
+    assert_eq!(left, ["mattress"], "a re-seed never brings back a removed badge");
+}

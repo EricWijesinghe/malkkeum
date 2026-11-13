@@ -2358,13 +2358,26 @@ class TMn extends T {
   String get dhHomeNews => 'Dahae мэдээ';
 
   @override
-  String get dhSvcMove => 'Нүүж орох / гарах цэвэрлэгээ';
+  String get dhHomeAll => 'Бүгд';
 
   @override
-  String get dhSvcMoveShort => 'Нүүлт';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Танд аль цэвэрлэгээ хэрэгтэй вэ?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Мэдэгдэл';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Мэдээ';

@@ -12,6 +12,10 @@ const DEFAULT_SLOT_CAPACITY: i32 = 6;
 /// Only the first insert uses it, so an order the owner set in the console is never overwritten.
 pub const SEED_ORDER: [&str; 8] = ["studio", "move_out", "move_in", "bathroom", "kitchen", "mattress", "aircon", "sofa"];
 
+/// Home tile badges of the owner design: N on mattress, HOT on aircon (`content.badge`, read by the app).
+/// Like the order, only the first insert writes them, so a badge the owner removes stays removed.
+pub const SEED_BADGES: [(&str, &str); 2] = [("mattress", "new"), ("aircon", "hot")];
+
 /// The banner the seed wrote before the single 15,000 welcome coupon (two coupons, now wrong).
 fn old_welcome_title() -> serde_json::Value {
     json!({ "ko": "첫 예약 쿠폰 2장 받기", "en": "2 welcome coupons for your first booking", "ja": "初回予約クーポン2枚", "zh": "首单优惠券2张", "vi": "2 phiếu giảm giá cho lần đặt đầu" })
@@ -25,12 +29,14 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
     for s in default_catalog() {
         // Unlisted codes go after the brief's eight, in catalogue order.
         let order = SEED_ORDER.iter().position(|c| *c == s.code).unwrap_or(SEED_ORDER.len());
-        sqlx::query("INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (code) DO NOTHING")
+        let content = SEED_BADGES.iter().find(|(code, _)| *code == s.code).map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
+        sqlx::query("INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING")
             .bind(&s.code)
             .bind(sqlx::types::Json(&s.pricing))
             .bind(s.needs_preparation)
             .bind(s.max_pyeong.map(|p| p as i16))
             .bind(order as i32)
+            .bind(content)
             .execute(db)
             .await?;
     }

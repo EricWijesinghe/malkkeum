@@ -2345,13 +2345,26 @@ class TEn extends T {
   String get dhHomeNews => 'Dahae News';
 
   @override
-  String get dhSvcMove => 'Move-in / move-out cleaning';
+  String get dhHomeAll => 'All';
 
   @override
-  String get dhSvcMoveShort => 'Moving';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Which moving clean do you need?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Notice';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'News';

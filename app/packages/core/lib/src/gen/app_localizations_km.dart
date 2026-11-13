@@ -2352,13 +2352,26 @@ class TKm extends T {
   String get dhHomeNews => 'ព័ត៌មាន Dahae';
 
   @override
-  String get dhSvcMove => 'សម្អាតពេលផ្លាស់ចូល / ផ្លាស់ចេញ';
+  String get dhHomeAll => 'ទាំងអស់';
 
   @override
-  String get dhSvcMoveShort => 'ផ្លាស់ផ្ទះ';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'តើអ្នកត្រូវការការសម្អាតប្រភេទណា?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'ប្រកាស';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'ព័ត៌មាន';

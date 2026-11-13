@@ -32,8 +32,8 @@ Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<J
   stockCustomerApi(fake, addresses: [addressJson(sizePyeong: 8)], methods: methods ?? const <Json>[]);
   final env = await TestEnv.create(fake: fake);
   await pumpCustomerApp(tester, env);
-  await pumpUntilFound(tester, find.text(koT.serviceShort('studio')));
-  await tester.tap(find.text(koT.serviceShort('studio')));
+  await pumpUntilFound(tester, find.text(koT.service('studio')));
+  await tester.tap(find.text(koT.service('studio')));
   await settle(tester);
   await tester.tap(find.text(koT.dfBookNow));
   await settle(tester);

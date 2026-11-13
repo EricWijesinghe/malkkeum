@@ -25,7 +25,7 @@ void main() {
     for (final scale in [1.3, 2.0]) {
       final code = locale.languageCode;
 
-      testWidgets('[$code x$scale] bookings week, month and timeline fit a small phone', (tester) async {
+      testWidgets('[$code x$scale] bookings month, week and timeline fit a small phone', (tester) async {
         setViewport(tester, _smallPhone);
         tester.platformDispatcher.textScaleFactorTestValue = scale;
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -36,7 +36,7 @@ void main() {
         await pumpCustomerScreen(tester, env, const BookingsTab());
         await pumpUntilFound(tester, find.byType(BookingCard));
         await settle(tester, duration: const Duration(milliseconds: 400));
-        await tester.tap(find.byKey(const ValueKey('calendar-toggle')));
+        await tester.tap(find.byKey(const ValueKey('calendar-handle')));
         await settle(tester, duration: const Duration(milliseconds: 400));
         expect(tester.takeException(), isNull);
 

@@ -2355,13 +2355,26 @@ class TSi extends T {
   String get dhHomeNews => 'Dahae පුවත්';
 
   @override
-  String get dhSvcMove => 'පදිංචියට ඒමේ / යාමේ පිරිසිදු කිරීම';
+  String get dhHomeAll => 'සියල්ල';
 
   @override
-  String get dhSvcMoveShort => 'නිවාස මාරුව';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'ඔබට අවශ්‍ය පිරිසිදු කිරීම කුමක්ද?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'දැන්වීම';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'පුවත්';

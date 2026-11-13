@@ -2354,13 +2354,26 @@ class TRu extends T {
   String get dhHomeNews => 'Новости Dahae';
 
   @override
-  String get dhSvcMove => 'Уборка при въезде / выезде';
+  String get dhHomeAll => 'Все';
 
   @override
-  String get dhSvcMoveShort => 'Переезд';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Какая уборка вам нужна?';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Объявление';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Новости';

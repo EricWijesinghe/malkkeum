@@ -1150,9 +1150,29 @@
  "dfViewChat": "상담 채팅 보기",
  "dhHomeRecommended": "추천 서비스",
  "dhHomeNews": "다해 소식",
- "dhSvcMove": "이사·입주 청소",
- "dhSvcMoveShort": "이사·입주",
- "dhMovePickTitle": "어떤 이사 청소가 필요하세요?",
+ "dhHomeAll": "전체",
+ "dhHomePick": "{brand} PICK",
+ "@dhHomePick": {
+  "placeholders": {
+   "brand": {
+    "type": "String"
+   }
+  }
+ },
+ "dhBadgeNew": "N",
+ "dhBadgeHot": "HOT",
+ "dhNoticeTag": "공지",
+ "dhBannerPage": "{n}/{total}",
+ "@dhBannerPage": {
+  "placeholders": {
+   "n": {
+    "type": "String"
+   },
+   "total": {
+    "type": "String"
+   }
+  }
+ },
  "cKind_news": "소식",
  "cLink": "링크 (coupons, service/move_in, https://…)",
  "welcomePackTitle": "가입 웰컴쿠폰",

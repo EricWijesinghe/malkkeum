@@ -2338,13 +2338,26 @@ class TVi extends T {
   String get dhHomeNews => 'Tin Dahae';
 
   @override
-  String get dhSvcMove => 'Dọn nhà khi chuyển đến / chuyển đi';
+  String get dhHomeAll => 'Tất cả';
 
   @override
-  String get dhSvcMoveShort => 'Chuyển nhà';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'Bạn cần dọn nhà loại nào?';
+  String get dhBadgeNew => 'MỚI';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'Thông báo';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'Tin tức';

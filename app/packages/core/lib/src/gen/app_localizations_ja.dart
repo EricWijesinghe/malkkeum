@@ -2304,13 +2304,26 @@ class TJa extends T {
   String get dhHomeNews => 'ダヘのお知らせ';
 
   @override
-  String get dhSvcMove => '入居・退去清掃';
+  String get dhHomeAll => 'すべて';
 
   @override
-  String get dhSvcMoveShort => '引越し';
+  String dhHomePick(String brand) {
+    return '$brand PICK';
+  }
 
   @override
-  String get dhMovePickTitle => 'どちらの清掃が必要ですか？';
+  String get dhBadgeNew => 'NEW';
+
+  @override
+  String get dhBadgeHot => 'HOT';
+
+  @override
+  String get dhNoticeTag => 'お知らせ';
+
+  @override
+  String dhBannerPage(String n, String total) {
+    return '$n/$total';
+  }
 
   @override
   String get cKind_news => 'ニュース';
