@@ -133,3 +133,31 @@ async fn demo_deposit_messages_carry_the_paid_amount(pool: PgPool) {
     // The app prints "예약금 {amount}원이 결제됐어요": a missing amount would read 0원.
     assert!(amounts.iter().all(|a| a.is_some_and(|n| n > 0)), "{amounts:?}");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn demo_sign_in_customer_has_a_usable_coupon_and_home_content(pool: PgPool) {
+    seed_catalog(&pool).await;
+    demo::load(&pool, &config(), false).await.expect("demo load");
+    // Checkout's coupon step needs one that is unused and has not expired.
+    let usable: i64 = sqlx::query_scalar(
+        "SELECT count(*) FROM coupons k JOIN users u ON u.id = k.user_id
+         WHERE u.phone = '01000000001' AND k.used_booking_id IS NULL AND k.service_code IS NULL
+           AND k.issued_at <= now() AND k.expires_at > now() + interval '7 days'",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("usable coupons");
+    assert!(usable >= 1, "the demo sign-in customer holds a valid coupon");
+    // The home banner's art card and the schedule step's training link read these.
+    let card: Option<String> = sqlx::query_scalar("SELECT body->'card'->'value'->>'ko' FROM content_items WHERE kind = 'banner' AND link = 'coupons' AND body ? 'card'")
+        .fetch_optional(&pool)
+        .await
+        .expect("banner card")
+        .flatten();
+    assert_eq!(card.as_deref(), Some("15,000원"));
+    let training: i64 = sqlx::query_scalar("SELECT count(*) FROM content_items WHERE kind = 'tip' AND slug = 'manager-training' AND active")
+        .fetch_one(&pool)
+        .await
+        .expect("training tip");
+    assert_eq!(training, 1);
+}
