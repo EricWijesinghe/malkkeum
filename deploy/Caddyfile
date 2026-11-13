@@ -79,6 +79,16 @@
 		reverse_proxy api:8080
 	}
 
+	# Live progress of a server job: the root agent writes /srv/ops-progress/<token>.json (state only) and removes it
+	# 10 minutes after the job ends. The 128-bit token is the only key; no listing, never cached.
+	@ops_progress path_regexp ops_progress ^/ops-progress/([0-9a-f]{32})$
+	handle @ops_progress {
+		rewrite * /{re.ops_progress.1}.json
+		root * /srv/ops-progress
+		header Cache-Control "no-store"
+		file_server
+	}
+
 	# Fallback fonts for both Flutter apps (Roboto + Noto, mirrored at image build; deploy/flutter_bootstrap.js
 	# points the engine here). Paths carry Google's version and hash, so they never change: cache forever.
 	# No try_files: a missing font must be a 404, not index.html.

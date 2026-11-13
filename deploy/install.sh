@@ -20,6 +20,8 @@
 #   MALKKEUM_HEARTBEAT_URL=<핑 주소>    외부 가동 확인(healthchecks.io 등). 나중에 `dahae heartbeat <주소>` 로도 돼요
 #   MALKKEUM_SIGNER=<owner/repo>      이미지 서명자 GitHub 저장소 (기본: 릴리스 저장소)
 #   MALKKEUM_SKIP_SIGNATURE=1         이미지 서명 확인 끄기 (서명 없는 테스트 저장소 전용. 다시 실행하면 다시 켜져요)
+#   MALKKEUM_ANSWERS=<파일>           질문 없이 설치: DOMAIN=도메인, EMAIL=이메일 줄이 든 파일
+#   MALKKEUM_AGENT_FILE=<agent.sh>    작업 실행기를 이 로컬 파일로 설치 (개발·테스트용. 배포본은 같은 릴리스에서 받아 SHA256SUMS 로 확인해요)
 set -euo pipefail
 
 IMAGE_REPO_DEFAULT=ghcr.io/ericwijesinghe
@@ -37,6 +39,8 @@ DNS_MAX_TRIES=30
 HB_URL_RE='^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~%/:@+=?-]*)?$'
 # 서버 이미지는 이 저장소의 .github/workflows/release.yml 이 v 태그에서 cosign(키 없는 서명)으로 서명해요.
 SIGNER_REPO_DEFAULT=EricWijesinghe/malkkeum
+# 이 버전의 배포 주소(agent.sh·SHA256SUMS 가 있는 곳). publish-delivery.sh 가 채워 넣어요. 비어 있으면 MALKKEUM_AGENT_FILE 이 필요해요.
+RELEASE_RAW=
 # 서명 확인 도구. 버전을 고정하고, 받은 파일의 SHA-256 이 아래와 같을 때만 써요 (cosign_checksums.txt 기준).
 COSIGN_VERSION=v3.1.4
 COSIGN_SHA256_AMD64=424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa
@@ -296,7 +300,8 @@ services:
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
       LOG_FORMAT: json
-    volumes: [uploads:/data/uploads]
+    # Job spool for the root agent (install.sh install_agent): the API writes jobs to inbox, reads status and out.
+    volumes: [uploads:/data/uploads, /opt/malkkeum/jobs/inbox:/jobs/inbox, /opt/malkkeum/jobs/status:/jobs/status:ro, /opt/malkkeum/jobs/out:/jobs/out:ro]
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
@@ -316,7 +321,7 @@ services:
       DOMAIN: ${DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:-}
       TLS_MODE: ${TLS_MODE:-}
-    volumes: [caddydata:/data, caddyconfig:/config]
+    volumes: [caddydata:/data, caddyconfig:/config, /opt/malkkeum/jobs/public:/srv/ops-progress:ro]
     healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
 
 volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
@@ -351,7 +356,8 @@ USAGE='사용법: dahae <명령>
   applinks --android-sha256 지문[,지문] --apple-team-id 팀ID   앱 링크 설정
   demo load [--force] | demo clear   체험용 데이터
   logs [api|web|db]           로그 보기
-  setup-code                  사장님 계정 설치 코드
+  setup-code [--renew]        사장님 계정 설치 코드 (2시간 동안 보여요. --renew 로 새 코드를 받아요)
+  update-schedule mon@04:00|off  자동 업데이트 요일·시각 (off: 자동 업데이트 끄기)
   uninstall [--yes]           서비스 끄기 (데이터와 백업은 남겨요)
   uninstall --purge [--confirm 도메인]  데이터와 백업까지 삭제 (도메인을 입력해 확인. --yes 로는 넘어가지 않아요)
   keys-backup                 비밀 키 사본을 비밀번호로 잠가 만들기 (서버 밖에 보관: 외부 백업을 풀 때 필요)
@@ -586,6 +592,8 @@ cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터�
   ok "이미지를 불러왔어요. 적용하려면: dahae update <태그>  (위 Loaded image 의 태그)"
 }
 
+die_rolled_back() { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 3; } # 종료 코드 3: 이전 버전으로 되돌렸어요 (작업 실행기가 rolled_back 으로 남겨요)
+
 cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔요 (로컬 이미지면 먼저 dahae load)
   local repo ver cur_api cur_web new_api
   printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
@@ -610,7 +618,7 @@ cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔
   warn "새 버전이 응답하지 않아요. 이전 버전으로 되돌릴게요."
   set_images "$cur_api" "$cur_web"
   if wait_healthy; then
-    die "업데이트에 실패해서 이전 버전으로 되돌렸어요. 'dahae logs' 로 원인을 확인해 주세요."
+    die_rolled_back "업데이트에 실패해서 이전 버전으로 되돌렸어요. 'dahae logs' 로 원인을 확인해 주세요."
   fi
   die "이전 버전으로도 응답하지 않아요. 'dahae logs' 화면을 개발자에게 전달해 주세요."
 }
@@ -829,6 +837,71 @@ cmd_uninstall() { # dahae uninstall [--yes] | dahae uninstall --purge [--confirm
   fi
 }
 
+cmd_write_cron() { # 예약 작업표(/etc/cron.d/malkkeum)를 다시 써요: 백업, 자동 업데이트(요일·시각), 가동 확인
+  local spec dow="" hh mm tmp="$DIR/.cron.new"
+  spec=$(cat "$DIR/update-schedule" 2>/dev/null || echo mon@04:00)
+  hh=${spec#*@}; hh=${hh%:*}; mm=${spec##*:}
+  case "${spec%@*}" in mon) dow=1 ;; tue) dow=2 ;; wed) dow=3 ;; thu) dow=4 ;; fri) dow=5 ;; sat) dow=6 ;; sun) dow=0 ;; esac
+  # 잠금(flock)을 같이 써요: 작업이 도는 중이면 백업은 기다리고, 자동 업데이트는 이번 차례를 건너뛰어요 (실패로 알리지 않아요)
+  {
+    echo "30 3 * * * root flock -w 3600 /run/dahae.lock $BIN/dahae backup >> $DIR/backups/backup.log 2>&1 || $BIN/dahae alert backup >> $DIR/backups/backup.log 2>&1"
+    if [ "$spec" != off ]; then
+      echo "$((10#$mm)) $((10#$hh)) * * $dow root flock -n -E 0 /run/dahae.lock $BIN/dahae auto-update >> $DIR/backups/update.log 2>&1 || $BIN/dahae alert update >> $DIR/backups/update.log 2>&1"
+    fi
+    echo "*/5 * * * * root $BIN/malkkeum-heartbeat >> $DIR/backups/heartbeat.log 2>&1"
+  } > "$tmp"
+  chmod 644 "$tmp"
+  mv -f "$tmp" /etc/cron.d/malkkeum   # cron 은 점(.)이 든 파일 이름을 무시하므로 임시 파일은 설치 폴더에 둬요
+}
+
+cmd_update_schedule() { # dahae update-schedule mon@04:00 | off : 자동 업데이트 요일·시각을 바꾸고 예약표를 다시 써요
+  local spec="${1:-}"
+  printf '%s' "$spec" | grep -Eq '^(off|(mon|tue|wed|thu|fri|sat|sun)@([01][0-9]|2[0-3]):[0-5][0-9])$' \
+    || die "사용법: dahae update-schedule mon@04:00 | off  (요일: mon, tue, wed, thu, fri, sat, sun)"
+  printf '%s\n' "$spec" > "$DIR/update-schedule"
+  cmd_write_cron
+  ok "자동 업데이트 예약: $spec"
+}
+
+stable_seasoned() { # 안정 채널의 새 버전은 처음 본 뒤 24시간이 지나야 자동으로 받아요 (처음 본 시각과 지문은 host/first-seen)
+  local m key now seen_key="" seen_at=0 f="$DIR/host/first-seen"
+  # shortcut: 이미지 지문을 docker manifest 로 읽어요. 못 읽으면 이번 자동 업데이트를 건너뛰어요 (다음 예약 때 다시 봐요)
+  m=$(DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect "$(env_get IMAGE_REPO)/malkkeum-api:stable" 2>/dev/null) || return 1
+  key=$(printf '%s' "$m" | sha256sum | cut -c1-64)
+  now=$(date +%s)
+  if [ -f "$f" ]; then read -r seen_key seen_at < "$f" || true; fi
+  case "$seen_at" in ''|*[!0-9]*) seen_at=0 ;; esac
+  if [ "$seen_key" != "$key" ]; then printf '%s %s\n' "$key" "$now" > "$f"; seen_at=$now; fi
+  [ $((now - seen_at)) -ge 86400 ]
+}
+
+cmd_auto_update() { # dahae auto-update : 예약 업데이트. 건너뛰기 표시, 기다리는 작업, 안정 채널 24시간 대기를 먼저 확인해요
+  local queued
+  if [ -e "$DIR/host/skip-next-update" ]; then
+    rm -f "$DIR/host/skip-next-update"; echo "건너뛰기 표시가 있어 이번 자동 업데이트를 건너뛰었어요"; return 0
+  fi
+  queued=$(find "$DIR/jobs/inbox" -maxdepth 1 -name '*.job' 2>/dev/null | head -n1 || true)
+  if [ -n "$queued" ]; then echo "기다리는 작업이 있어 자동 업데이트를 미뤘어요"; return 0; fi
+  if [ "$(env_get CHANNEL)" = stable ] && ! stable_seasoned; then
+    echo "새 안정 버전을 막 확인했어요. 24시간 뒤에 받을게요"; return 0
+  fi
+  cmd_update
+}
+
+cmd_setup_code() { # dahae setup-code [--renew] : 사장님 계정 설치 코드. 처음 보인 뒤 2시간 동안만 쓸 수 있어요
+  local at now code
+  if [ "${1:-}" = --renew ]; then
+    code=$(head -c 1024 /dev/urandom | tr -dc '23456789ABCDEFGHJKMNPQRSTUVWXYZ' | cut -c1-12)
+    env_set SETUP_CODE "$code"; env_set SETUP_CODE_AT "$(date +%s)"
+    dc up -d --no-deps api >/dev/null || die "새 코드를 적용하지 못했어요. 'dahae status' 를 확인하세요."
+    ok "새 설치 코드를 만들었어요"
+  fi
+  at=$(env_get SETUP_CODE_AT); now=$(date +%s)
+  if [ -z "$at" ]; then env_set SETUP_CODE_AT "$now"; at=$now; fi
+  if [ $((now - at)) -gt 7200 ]; then die "설치 코드 기간(2시간)이 지났어요. 새로 받으려면: dahae setup-code --renew"; fi
+  env_get SETUP_CODE | sed -E 's/(....)(....)(....)/\1-\2-\3/'
+}
+
 main() {
   cd "$DIR"
   # Backups hold every customer's data: only root may read them.
@@ -864,7 +937,10 @@ main() {
         *) die "사용법: dahae demo [load [--force] | clear]" ;;
       esac ;;
     logs) dc logs --tail 200 -f "${2:-api}" ;;
-    setup-code) env_get SETUP_CODE | sed -E 's/(....)(....)(....)/\1-\2-\3/' ;;
+    setup-code) shift; cmd_setup_code "$@" ;;
+    update-schedule) shift; cmd_update_schedule "$@" ;;
+    auto-update) cmd_auto_update ;;             # 예약 업데이트 전용 (cron)
+    write-cron) cmd_write_cron ;;               # 설치 프로그램 전용: 예약 작업표를 다시 써요
     help|-h|--help) echo "$USAGE" ;;
     *) echo "$USAGE"; exit 1 ;;
   esac
@@ -894,13 +970,9 @@ HB
   chmod 755 "$1"
 }
 
-write_schedules() { # 매일 03:30 백업, 매주 월요일 04:00 자동 업데이트 (업데이트 전에도 백업하고, 실패하면 자동으로 되돌려요).
+write_schedules() { # 매일 03:30 백업, 기본은 매주 월요일 04:00 자동 업데이트 (업데이트 전에도 백업하고, 실패하면 자동으로 되돌려요).
   timedatectl set-timezone Asia/Seoul 2>/dev/null || true
-  cat > /etc/cron.d/malkkeum <<EOF
-30 3 * * * root $BIN/dahae backup >> $DIR/backups/backup.log 2>&1 || $BIN/dahae alert backup >> $DIR/backups/backup.log 2>&1
-0 4 * * 1 root $BIN/dahae update >> $DIR/backups/update.log 2>&1 || $BIN/dahae alert update >> $DIR/backups/update.log 2>&1
-*/5 * * * * root $BIN/malkkeum-heartbeat >> $DIR/backups/heartbeat.log 2>&1
-EOF
+  "$BIN/dahae" write-cron   # 예약표는 관리 명령이 써요 (업데이트 요일·시각은 dahae update-schedule 로 바꿔요)
   cat > /etc/logrotate.d/dahae <<EOF
 $DIR/backups/*.log {
   weekly
@@ -912,6 +984,96 @@ $DIR/backups/*.log {
 }
 EOF
   ok "매일 새벽 3시 30분 자동 백업, 매주 월요일 자동 업데이트를 예약했어요"
+}
+
+load_answers() { # load_answers 파일 : MALKKEUM_ANSWERS 파일의 DOMAIN=·EMAIL= 줄로 질문에 미리 답해요 (source 하지 않아요). 이미 정한 환경 변수는 그대로 둬요
+  local f="$1" k v m
+  [ -f "$f" ] && [ ! -L "$f" ] || die "MALKKEUM_ANSWERS 파일을 읽을 수 없어요: $f"
+  while IFS='=' read -r k v || [ -n "$k" ]; do
+    case "$k" in DOMAIN|EMAIL) ;; *) continue ;; esac
+    case "$v" in *[[:space:]]*|*\\*|*=*) die "MALKKEUM_ANSWERS 의 $k 값에 쓸 수 없는 문자가 있어요" ;; esac
+    m="MALKKEUM_$k"; [ -n "${!m:-}" ] || printf -v "$m" '%s' "$v"
+    export "$m"
+  done < "$f"
+}
+
+agent_sum_ok() { # agent_sum_ok 파일 SHA256SUMS : 파일의 지문이 SHA256SUMS 의 agent.sh 줄과 같아야 해요
+  local want sum
+  want=$(awk '$2 == "agent.sh" { print $1 }' "$2" 2>/dev/null)
+  sum=$(sha256sum "$1" 2>/dev/null | cut -d' ' -f1)
+  [ -n "$want" ] && [ "$want" = "$sum" ]
+}
+
+fetch_agent() { # 같은 릴리스의 agent.sh 를 받아 SHA256SUMS 와 맞을 때만 $DIR/agent.sh 로 둬요 (MALKKEUM_AGENT_FILE 은 개발·테스트용 로컬 파일)
+  local tmp
+  tmp=$(mktemp "$DIR/.agent.XXXXXX") || die "작업 실행기 파일을 만들지 못했어요."
+  if [ -n "${MALKKEUM_AGENT_FILE:-}" ]; then
+    cp -- "$MALKKEUM_AGENT_FILE" "$tmp" || { rm -f "$tmp"; die "작업 실행기 파일을 읽지 못했어요: $MALKKEUM_AGENT_FILE"; }
+  else
+    [ -n "$RELEASE_RAW" ] || { rm -f "$tmp"; die "이 설치 프로그램에는 작업 실행기 주소가 없어요. 배포본의 install.sh 를 쓰세요."; }
+    curl -fsSL --max-time 60 "$RELEASE_RAW/agent.sh" -o "$tmp" \
+      && curl -fsSL --max-time 60 "$RELEASE_RAW/SHA256SUMS" -o "$tmp.sums" \
+      || { rm -f "$tmp" "$tmp.sums"; die "작업 실행기를 내려받지 못했어요. 인터넷 연결을 확인하고 다시 실행하세요."; }
+    agent_sum_ok "$tmp" "$tmp.sums" || { rm -f "$tmp" "$tmp.sums"; die "작업 실행기의 지문이 SHA256SUMS 와 달라요. 설치를 멈췄어요."; }
+    rm -f "$tmp.sums"
+  fi
+  bash -n "$tmp" || { rm -f "$tmp"; die "작업 실행기 파일이 손상됐어요."; }
+  chmod 0755 "$tmp"; mv -f "$tmp" "$DIR/agent.sh"
+}
+
+write_units() { # write_units [폴더]: systemd 단위 세 개. 작업 파일이 생기면(.path) 실행기를 돌리고, 1분마다도 한 번 봐요(.timer)
+  local d="${1:-/etc/systemd/system}"
+  cat > "$d/dahae-agent.path" <<EOF
+[Unit]
+Description=다해 서버 작업 대기 (작업 파일 도착)
+
+[Path]
+PathExistsGlob=$DIR/jobs/inbox/*.job
+Unit=dahae-agent.service
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  cat > "$d/dahae-agent.service" <<EOF
+[Unit]
+Description=다해 서버 작업 실행기 (root)
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/bin/bash $DIR/agent.sh run
+TimeoutStartSec=3h
+ProtectSystem=full
+ReadWritePaths=$DIR /etc/cron.d /etc/logrotate.d /run
+PrivateTmp=true
+ProtectHome=true
+EOF
+  cat > "$d/dahae-agent.timer" <<EOF
+[Unit]
+Description=다해 서버 작업 확인 (1분마다)
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+Persistent=true
+Unit=dahae-agent.service
+
+[Install]
+WantedBy=timers.target
+EOF
+}
+
+install_agent() { # 작업 실행기와 systemd 단위를 설치하고 켜요. 새 설치와 업데이트 모두 실행해요 (compose 가 이 폴더를 붙여요)
+  mkdir -p "$DIR/jobs/inbox" "$DIR/jobs/work/done" "$DIR/jobs/status" "$DIR/jobs/out" "$DIR/jobs/public" "$DIR/host"
+  chown root:root "$DIR/jobs" "$DIR/jobs/work" "$DIR/jobs/work/done" "$DIR/jobs/status" "$DIR/jobs/out" "$DIR/jobs/public" "$DIR/host"
+  chmod 0755 "$DIR/jobs" "$DIR/jobs/status" "$DIR/jobs/out" "$DIR/jobs/public"
+  chmod 0700 "$DIR/jobs/work" "$DIR/jobs/work/done" "$DIR/host"
+  chown 10001:10001 "$DIR/jobs/inbox"; chmod 0700 "$DIR/jobs/inbox"   # API 컨테이너(사용자 10001)만 작업을 넣어요
+  fetch_agent
+  write_units
+  systemctl daemon-reload || die "systemd 를 다시 읽지 못했어요."
+  systemctl enable --now dahae-agent.path dahae-agent.timer >/dev/null 2>&1 \
+    || die "서버 작업 실행기를 켜지 못했어요. 'systemctl status dahae-agent.path' 를 확인하세요."
+  ok "서버 작업 실행기를 설치하고 켰어요"
 }
 
 wait_for() { # wait_for 초 명령... : 명령이 성공할 때까지 기다려요
@@ -927,11 +1089,12 @@ https_up() { curl -fsSk --max-time 5 --resolve "$DOMAIN:443:127.0.0.1" "https://
 owner_exists() { [ "$(dc exec -T db psql -U app -d cleaning -tAc 'SELECT EXISTS (SELECT 1 FROM staff)' 2>/dev/null | tr -d '[:space:]')" = t ]; }
 
 final_banner() { # final_banner https정상(1/0)
-  local code ch line='────────────────────────────────────────────────────────────'
+  local code ch line='────────────────────────────────────────────────────────────' sc
   ch=$(env_get CHANNEL)
+  sc=$("$BIN/dahae" setup-code 2>/dev/null) || sc="(기간이 지났어요. 새로 받으려면: sudo dahae setup-code --renew)"
   code="  2) 설치 코드를 입력하고 사장님 계정을 만드세요:
 
-         설치 코드:  $("$BIN/dahae" setup-code)
+         설치 코드:  $sc
 "
   owner_exists && code="  2) 사장님 계정으로 로그인하세요 (계정은 이미 만들어져 있어요).
 "
@@ -954,6 +1117,7 @@ main() {
     if [ -n "${!a:-}" ] && [ -z "${!m:-}" ]; then export "$m=${!a}"; fi
   done
   HEALTH_WAIT_SECS=${MALKKEUM_HEALTH_WAIT:-300}
+  if [ -n "${MALKKEUM_ANSWERS:-}" ]; then load_answers "$MALKKEUM_ANSWERS"; fi   # 질문 없이 설치: DOMAIN=·EMAIL= 줄 파일
 
   [ "$(id -u)" -eq 0 ] || die "관리자 권한이 필요해요. 명령 앞에 sudo 를 붙여 다시 실행해 주세요."
   command -v apt-get >/dev/null || die "Ubuntu 또는 Debian 서버에서 실행해 주세요."
@@ -1053,6 +1217,7 @@ EOF
   write_heartbeat "$BIN/malkkeum-heartbeat"
   ok "관리 명령 dahae 를 설치했어요 (예전 이름 malkkeum 도 그대로 돼요)"
   write_schedules
+  install_agent   # 새 설치와 업데이트 모두: 작업 실행기는 dahae update 가 쓰는 작업 폴더를 쓰므로 compose 를 띄우기 전에 둬요
 
   if command -v ufw >/dev/null && ufw status | grep -q active; then
     ufw allow 22/tcp >/dev/null; ufw allow 80/tcp >/dev/null; ufw allow 443 >/dev/null

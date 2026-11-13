@@ -9,6 +9,7 @@ from the release branches; no tags existed for them.
 ## [Unreleased]
 
 ### Added
+- Server job runner (`deploy/agent.sh`, root) is installed and started by the installer on new installs and updates (systemd path, service and timer units). It runs schedule, update, update-skip, channel, restart and status jobs; a stable update waits 24 hours after a new digest is first seen; live progress is served read-only at `/ops-progress/<token>` for 10 minutes after a job ends; `dahae setup-code` expires after 2 hours (`--renew` gives a new code); `MALKKEUM_ANSWERS` installs without questions.
 - Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
 - Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
   it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
@@ -26,8 +27,7 @@ from the release branches; no tags existed for them.
   `PASSWORD.txt`, and an Android-signing environment. Both still run locally.
 - Customer and partner apps take the business colour and logo from the business profile, keep the last good copy for offline start, and the console warns when white button text would be hard to read on the chosen colour.
 - Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.
-  A root job runner (`deploy/agent.sh`) checks queued server jobs before running a fixed command; it is not
-  installed on servers yet.
+  A root job runner (`deploy/agent.sh`) checks queued server jobs before running a fixed command.
 - API JWT library upgraded from jsonwebtoken 10.3 to 11.1; token formats, verification rules and the Apple client secret are unchanged.
 - Customer bookings, notifications, wallet points history and payment history, and partner quotes
   page through their lists on scroll (with a bottom loader and retry on error) instead of showing

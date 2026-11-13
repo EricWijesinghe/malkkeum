@@ -65,7 +65,9 @@ publish() { # publish 브랜치 채널
   cp "$src/deploy/install.sh" install.sh
   sed -i -e "s|^IMAGE_REPO_DEFAULT=.*|IMAGE_REPO_DEFAULT=$IMAGE_REPO|" \
          -e "s|^SIGNER_REPO_DEFAULT=.*|SIGNER_REPO_DEFAULT=$SIGNER_REPO|" \
-         -e "s|^DEFAULT_CHANNEL=stable\$|DEFAULT_CHANNEL=$channel|" install.sh
+         -e "s|^DEFAULT_CHANNEL=stable\$|DEFAULT_CHANNEL=$channel|" \
+         -e "s|^RELEASE_RAW=\$|RELEASE_RAW=$RAW/$ref|" install.sh
+  grep -qF "RELEASE_RAW=$RAW/$ref" install.sh   # agent.sh and SHA256SUMS of this same ref
   grep -q "^IMAGE_REPO_DEFAULT=$IMAGE_REPO\$" install.sh
   grep -q "^SIGNER_REPO_DEFAULT=$SIGNER_REPO\$" install.sh
   grep -q "^DEFAULT_CHANNEL=$channel\$" install.sh
