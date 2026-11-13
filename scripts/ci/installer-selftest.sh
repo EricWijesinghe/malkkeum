@@ -24,6 +24,12 @@ t  "norm_domain"           eq "$(norm_domain 'https://MyShop.co.kr/x')" myshop.c
 nt "domain empty"          valid_domain ""
 nt "domain no dot"         valid_domain localhost
 nt "domain shell chars"    valid_domain 'a.com;rm -rf /'
+nt "domain IP literal"     valid_domain 1.2.3.4
+nt "domain double dot"     valid_domain a..b
+nt "domain .local"         valid_domain x.local
+nt "domain too long label" valid_domain "$(printf 'a%.0s' $(seq 64)).co.kr"
+t  "domain punycode tld"   valid_domain shop.xn--3e0b707e
+nt "email percent local"   valid_email 'a%b@shop.co.kr'
 t  "email empty ok"        valid_email ""
 t  "email ok"              valid_email owner@myshop.co.kr
 nt "email bad"             valid_email 'owner@shop'
@@ -100,6 +106,11 @@ t  "env_set add"           eq "$(env_get NEWKEY)" v=1
 export YES=1 # read by confirm() in the sourced CLI
 t  "confirm --yes"         confirm "q" yes
 sub() { ( "$@" ) >/dev/null 2>&1; } # die exits: run it in a subshell
+env_set ESC 'a\nB=c'                  # a literal backslash-n stays two characters on one line
+t  "env_set keeps backslash-n"     eq "$(env_get ESC)" 'a\nB=c'
+t  "env_set writes one line"       eq "$(grep -c '^B=' .env || true)" 0
+nt "env_set refuses a newline"     sub env_set BAD "$(printf 'a\nB=c')"
+nt "env_set refuses a CR"          sub env_set BAD "$(printf 'a\rB=c')"
 
 # ---- restore-offsite only takes real backup names (no ../ paths) ----
 t  "backup name"           valid_backup_name db-20261110-033000.sql.gz

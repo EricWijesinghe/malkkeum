@@ -74,11 +74,13 @@ ask_until() { # ask_until 검사함수 "질문" "잘못됐을 때 안내" -> 답
 # ---- 순수 함수 (scripts/ci/installer-selftest.sh 가 검사해요) ----
 norm_domain() { local d="$1"; d=${d#http://}; d=${d#https://}; d=${d%%/*}; printf '%s' "$d" | tr '[:upper:]' '[:lower:]'; }
 # .env 는 compose 와 관리 명령이 읽어요: 평범한 호스트 이름과 이메일만 들어가요.
+#   라벨마다 글자 규칙, 마지막은 글자만(IP 주소 1.2.3.4 거부), 한글 도메인은 xn-- 형식만 받아요. localhost·.local 은 거부해요.
+DOMAIN_RE='^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+([a-z]{2,63}|xn--[a-z0-9-]{1,59})$'
 valid_domain() {
   local d; d=$(norm_domain "$1")
-  [ -n "$d" ] && printf '%s' "$d" | grep -Eq '^[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?$' && case "$d" in *.*) ;; *) return 1 ;; esac
+  [ "${#d}" -le 253 ] && printf '%s' "$d" | grep -Eq "$DOMAIN_RE" && case "$d" in *.local) return 1 ;; esac
 }
-valid_email() { [ -z "$1" ] || printf '%s' "$1" | grep -Eq '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'; }
+valid_email() { [ -z "$1" ] || printf '%s' "$1" | grep -Eq '^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'; }
 valid_hb_url() { printf '%s' "$1" | grep -Eq "$HB_URL_RE"; }
 ver_ge() { [ "$(printf '%s\n%s\n' "${2#v}" "${1#v}" | sort -V | head -n1)" = "${2#v}" ]; } # ver_ge 2.29.1 2.20
 mem_kb() { awk -v k="$1:" '$1 == k { print $2; f=1 } END { if (!f) print 0 }' "${2:-/proc/meminfo}"; }
@@ -114,8 +116,9 @@ setup_code() { # 0/O/1/I/L 을 뺀 12자리. 화면을 보고 손으로 입력�
 
 env_set() { # env_set 키 값 : .env 에 키가 있으면 바꾸고, 없으면 추가해요 (inode 와 권한은 그대로)
   local k="$1" v="$2" tmp; tmp=$(mktemp)
-  if grep -q "^$k=" .env; then
-    awk -v k="$k" -v v="$v" 'index($0, k "=") == 1 { print k "=" v; next } { print }' .env > "$tmp"
+  case "$v" in *$'\n'*|*$'\r'*) die "설정 값에 줄바꿈을 넣을 수 없어요" ;; esac
+  if grep -q "^$k=" .env; then # 값은 -v 가 아니라 환경 변수로 넘겨요: awk 가 \n 같은 이스케이프를 바꾸지 않아요
+    K="$k" V="$v" awk 'index($0, ENVIRON["K"] "=") == 1 { print ENVIRON["K"] "=" ENVIRON["V"]; next } { print }' .env > "$tmp"
   else
     { cat .env; printf '%s=%s\n' "$k" "$v"; } > "$tmp"
   fi
@@ -363,8 +366,9 @@ has_tty() { (: </dev/tty) 2>/dev/null; }
 env_get() { { grep -E "^$1=" .env 2>/dev/null || true; } | tail -n1 | cut -d= -f2-; }
 env_set() { # 키 값 : .env 에 기록 (있으면 바꾸고 없으면 추가)
   local k="$1" v="$2" tmp; tmp=$(mktemp)
+  case "$v" in *$'\n'*|*$'\r'*) die "설정 값에 줄바꿈을 넣을 수 없어요" ;; esac
   if grep -q "^$k=" .env; then
-    awk -v k="$k" -v v="$v" 'index($0, k "=") == 1 { print k "=" v; next } { print }' .env > "$tmp"
+    K="$k" V="$v" awk 'index($0, ENVIRON["K"] "=") == 1 { print ENVIRON["K"] "=" ENVIRON["V"]; next } { print }' .env > "$tmp"
   else
     { cat .env; printf '%s=%s\n' "$k" "$v"; } > "$tmp"
   fi
