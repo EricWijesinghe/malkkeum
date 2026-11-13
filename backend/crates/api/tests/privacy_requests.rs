@@ -4,13 +4,16 @@
 
 mod common;
 
-use api::auth::{self, Role};
+use api::{
+    auth::{self, Role},
+    privacy,
+};
 use axum::{
     body::Body,
     extract::ConnectInfo,
     http::{Request, StatusCode, header},
 };
-use common::{SECRET, app, call, customer};
+use common::{SECRET, app, call, customer, test_config};
 use serde_json::json;
 use sqlx::PgPool;
 use std::net::SocketAddr;
@@ -179,4 +182,20 @@ async fn each_request_is_recorded_and_listed_without_personal_details(pool: PgPo
     assert_eq!(rows[1]["kind"], "export");
     assert!(rows.iter().all(|r| r["status"] == "done" && r["staff_name"] == "처리 직원"));
     assert!(!list.to_string().contains("01082000005"), "no phone number in the request log");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn two_concurrent_deletions_both_succeed_and_anonymise_once(pool: PgPool) {
+    let app = app(pool.clone());
+    let c = customer(&app, &pool, "010-8200-0005").await;
+    let state = api::build_state(pool.clone(), test_config()).expect("app state");
+    let (a, b) = tokio::join!(privacy::delete_account(&state, c.user), privacy::delete_account(&state, c.user));
+    a.expect("first deletion");
+    b.expect("second deletion is a no-op, not an error");
+    let phone: String = sqlx::query_scalar("SELECT phone FROM users WHERE id = $1")
+        .bind(c.user)
+        .fetch_one(&pool)
+        .await
+        .expect("phone");
+    assert_eq!(phone, format!("deleted:{}", c.user), "anonymised exactly as a single deletion would");
 }

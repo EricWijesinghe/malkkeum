@@ -223,13 +223,18 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .bind(user)
         .execute(&mut *tx)
         .await?;
-    sqlx::query(
+    let anonymised = sqlx::query(
         "UPDATE users SET deleted_at = now(), name = '', email = NULL, phone = 'deleted:' || id::text, ci_hash = NULL,
          identity_verified_at = NULL, referral_code = NULL, acquisition = NULL WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(user)
     .execute(&mut *tx)
     .await?;
+    // Already anonymised (a replayed Apple notification, or a concurrent deletion that committed first): nothing
+    // left to do, so roll back instead of repeating the cascade. Replays must succeed, so this is Ok, not an error.
+    if anonymised.rows_affected() == 0 {
+        return Ok(());
+    }
     let referral_phone: Option<String> =
         sqlx::query_scalar("SELECT referred_phone FROM referrals WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'hmac:%' FOR UPDATE")
             .bind(user)
