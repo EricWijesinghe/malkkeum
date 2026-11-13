@@ -234,3 +234,60 @@ async fn partner_earnings_show_the_next_payout_and_hide_from_members(pool: PgPoo
     let (s, _) = call(&app, "GET", "/v1/partner/earnings", Some(&token), None).await;
     assert_eq!(s, StatusCode::OK);
 }
+
+async fn fetch_csv(app: &axum::Router, uri: &str, token: &str) -> String {
+    let req = Request::builder()
+        .method("GET")
+        .uri(uri)
+        .header(header::AUTHORIZATION, format!("Bearer {token}"))
+        .body(Body::empty())
+        .expect("request");
+    let resp = app.clone().oneshot(req).await.expect("router");
+    assert_eq!(resp.status(), StatusCode::OK);
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX).await.expect("body");
+    String::from_utf8(bytes.to_vec()).expect("utf8")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn settlements_export_uses_kst_month_bounds_and_totals_match_rows(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let user: Uuid = sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ('01070000002', 'kst') RETURNING id").fetch_one(&pool).await.expect("user");
+    // A name starting with "=" must reach the sheet as a guarded text cell, not a formula.
+    let pro: Uuid = sqlx::query_scalar("INSERT INTO pros (phone, name, team_name, status) VALUES ('01070000202', '=1+1', 'team', 'verified') RETURNING id")
+        .fetch_one(&pool)
+        .await
+        .expect("pro");
+    // (number, created_at, gross, fee): the March KST edges are in; the instants just outside are out.
+    let cases = [
+        ("BKB-1", "2026-02-28T23:59:59+09", 1_000, 100),
+        ("BKB-2", "2026-03-01T00:00:00+09", 10_000, 2_000),
+        ("BKB-4", "2026-03-31T14:59:58Z", 30_000, 6_000),
+        ("BKB-3", "2026-03-31T23:59:59+09", 20_000, 4_000),
+        ("BKB-5", "2026-03-31T15:00:00Z", 1_000, 100),
+        ("BKB-6", "2026-04-01T00:00:00+09", 1_000, 100),
+    ];
+    for (number, created, gross, fee) in cases {
+        let booking = insert_booking(&pool, user, number, gross, 0, 3, created).await;
+        insert_settlement(&pool, pro, booking, gross, fee, "pending", "2026-03-25", None, created).await;
+    }
+    let token = admin_token().await;
+    let app = common::app(pool.clone());
+    let csv = fetch_csv(&app, "/v1/admin/finance/export/settlements?period=custom&from=2026-03-01&to=2026-03-31", &token).await;
+    let lines: Vec<&str> = csv.trim_start_matches('\u{feff}').lines().collect();
+    assert_eq!(lines.len(), 5, "header, three March rows, total");
+    assert!(lines[1].contains("BKB-2"), "earliest March row first");
+    assert!(lines[3].contains("BKB-3"), "23:59:59 KST row is still March");
+    assert!(lines[1].contains(",'=1+1,team,"), "formula text is guarded");
+    for outside in ["BKB-1,", "BKB-5,", "BKB-6,"] {
+        assert!(!csv.contains(outside), "{outside} is outside March KST");
+    }
+    assert_eq!(lines[4], "합계,,,,,,,60000,12000,48000,,,");
+    let (gross, fee): (i64, i64) = sqlx::query_as(
+        "SELECT SUM(st.gross)::bigint, SUM(st.fee)::bigint FROM settlements st
+         WHERE (st.created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN '2026-03-01' AND '2026-03-31'",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("sums");
+    assert_eq!((gross, fee), (60_000, 12_000), "database sums agree with the sheet total");
+}
