@@ -7,7 +7,7 @@ on:
   pull_request:
     paths:
       - scripts/release/**
-      - website/install/**
+      - deploy/install-page/**
       - docs/store/**
       - deploy/publish-delivery.sh
       - .github/workflows/**

@@ -72,7 +72,7 @@ nt "page: non-raw host refused" bash "$R/build-install-page.sh" "$SB/rel/install
 nt "page: missing installer refused" bash "$R/build-install-page.sh" "$SB/none.sh" "$url" "$SB/page/out4"
 
 # ---- install page -> installer: cloud-init sets only variables install.sh reads, no answers file ----
-page="$ROOT/website/install/index.html"
+page="$ROOT/deploy/install-page/index.html"
 inst="$ROOT/deploy/install.sh"
 page_vars=$(grep -o 'MALKKEUM_[A-Z_]*=' "$page" | sort -u)
 t  "page: cloud-init sets installer variables" test -n "$page_vars"
