@@ -161,7 +161,8 @@ pub async fn put_consents(
 }
 
 /// 열람 요구: everything the service holds about the customer, without credentials or gateway keys.
-pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer) -> ApiResult<Json<Value>> {
+/// Shared by the customer's own download and by staff handling a request for that customer.
+pub async fn export_doc(db: &PgPool, user: Uuid) -> ApiResult<Value> {
     let doc: Value = sqlx::query_scalar(
         "SELECT jsonb_build_object(
           'exported_at', now(),
@@ -174,10 +175,14 @@ pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::
           'notifications', (SELECT COALESCE(jsonb_agg(jsonb_build_object('kind', kind, 'data', data, 'created_at', created_at) ORDER BY created_at DESC), '[]'::jsonb) FROM (SELECT kind, data, created_at FROM notifications WHERE owner_role = 'customer' AND owner_id = $1 ORDER BY created_at DESC LIMIT 500) n)
         )",
     )
-    .bind(a.id)
-    .fetch_one(&s.db)
+    .bind(user)
+    .fetch_one(db)
     .await?;
-    Ok(Json(doc))
+    Ok(doc)
+}
+
+pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer) -> ApiResult<Json<Value>> {
+    Ok(Json(export_doc(&s.db, a.id).await?))
 }
 
 /// Deletes the customer's gateway keys (saved cards) before personal data is removed. Fails closed:
