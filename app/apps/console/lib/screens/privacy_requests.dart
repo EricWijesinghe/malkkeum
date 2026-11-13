@@ -226,8 +226,9 @@ class _PrivacyRequestsState extends State<PrivacyRequestsScreen> {
     final t = context.t;
     final rows = _log;
     if (rows == null) return const [CircularProgressIndicator()];
-    if (rows.isEmpty)
+    if (rows.isEmpty) {
       return [Text(t.prqLogEmpty, style: context.text.bodySmall)];
+    }
     return [
       for (final r in rows)
         ListTile(
