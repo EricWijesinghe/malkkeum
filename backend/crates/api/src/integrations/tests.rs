@@ -65,7 +65,7 @@ fn google_accepts_comma_list_or_array() {
 
 #[test]
 fn apple_key_fields_go_together_and_must_parse() {
-    let pem = include_str!("providers/testdata/test_only_ec.p8");
+    let pem = include_str!("../providers/testdata/test_only_ec.p8");
     let full = json!({"client_ids": "com.x", "team_id": "TEAM123456", "key_id": "KEY1234567", "private_key": pem});
     let out = apply(&Integrations::default(), Section::Apple, &obj(full.clone())).unwrap();
     assert_eq!(out.apple_signin.as_ref().map(|k| k.key_id.as_str()), Some("KEY1234567"));
