@@ -685,6 +685,23 @@ class TVi extends T {
   String get cConfirmAsk => 'Bạn có chắc chắn không?';
 
   @override
+  String get cServerTitle => 'Nhập địa chỉ máy chủ';
+
+  @override
+  String get cServerBody =>
+      'Nhập địa chỉ máy chủ bắt đầu bằng https:// trong hướng dẫn cài đặt. Chỉ cần nhập một lần.';
+
+  @override
+  String get cServerSave => 'Lưu và tiếp tục';
+
+  @override
+  String get cServerInvalid =>
+      'Địa chỉ không hợp lệ. Hãy nhập địa chỉ máy chủ bắt đầu bằng https://.';
+
+  @override
+  String get cServerChange => 'Đổi địa chỉ máy chủ';
+
+  @override
   String get ok => 'Xác nhận';
 
   @override

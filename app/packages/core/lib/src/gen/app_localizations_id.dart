@@ -687,6 +687,23 @@ class TId extends T {
   String get cConfirmAsk => 'Yakin ingin melanjutkan?';
 
   @override
+  String get cServerTitle => 'Masukkan alamat server';
+
+  @override
+  String get cServerBody =>
+      'Masukkan alamat server yang diawali https:// dari catatan penyiapan. Cukup diisi sekali.';
+
+  @override
+  String get cServerSave => 'Simpan dan lanjutkan';
+
+  @override
+  String get cServerInvalid =>
+      'Alamat tidak valid. Masukkan alamat server yang diawali https://.';
+
+  @override
+  String get cServerChange => 'Ubah alamat server';
+
+  @override
   String get ok => 'Oke';
 
   @override

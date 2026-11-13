@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../server_address.dart';
 import '../state.dart';
 import 'staff_mfa.dart';
 
@@ -24,8 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final challenge = await Deps.read(context).session
-          .staffLogin(_email.text.trim(), _password.text);
+      final challenge = await Deps.read(
+        context,
+      ).session.staffLogin(_email.text.trim(), _password.text);
       if (mounted && challenge != null) setState(() => _challenge = challenge);
     } on ApiException catch (e) {
       if (mounted) {
@@ -109,6 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           busy: _busy,
                           onPressed: _login,
                         ),
+                        if (ServerChange.of(context) case final change?)
+                          TextButton(
+                            onPressed: change,
+                            child: Text(t.cServerChange),
+                          ),
                       ],
                     ),
                   ),

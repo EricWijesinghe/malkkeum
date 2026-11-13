@@ -689,6 +689,23 @@ class TNe extends T {
   String get cConfirmAsk => 'के तपाईं निश्चित हुनुहुन्छ?';
 
   @override
+  String get cServerTitle => 'सर्भरको ठेगाना हाल्नुहोस्';
+
+  @override
+  String get cServerBody =>
+      'सेटअप नोटमा दिइएको https:// बाट सुरु हुने सर्भरको ठेगाना हाल्नुहोस्। यो एक पटक मात्र गर्नुपर्छ।';
+
+  @override
+  String get cServerSave => 'सुरक्षित गरेर जारी राख्नुहोस्';
+
+  @override
+  String get cServerInvalid =>
+      'ठेगाना मान्य छैन। https:// बाट सुरु हुने सर्भरको ठेगाना हाल्नुहोस्।';
+
+  @override
+  String get cServerChange => 'सर्भरको ठेगाना बदल्नुहोस्';
+
+  @override
   String get ok => 'ठिक छ';
 
   @override

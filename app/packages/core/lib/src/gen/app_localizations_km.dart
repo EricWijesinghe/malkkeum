@@ -683,6 +683,23 @@ class TKm extends T {
   String get cConfirmAsk => 'តើអ្នកច្បាស់ទេ?';
 
   @override
+  String get cServerTitle => 'បញ្ចូលអាសយដ្ឋានម៉ាស៊ីនមេ';
+
+  @override
+  String get cServerBody =>
+      'បញ្ចូលអាសយដ្ឋានម៉ាស៊ីនមេដែលចាប់ផ្តើមដោយ https:// ពីកំណត់ចំណាំតម្លើង។ ត្រូវការបញ្ចូលតែម្តងប៉ុណ្ណោះ។';
+
+  @override
+  String get cServerSave => 'រក្សាទុក ហើយបន្ត';
+
+  @override
+  String get cServerInvalid =>
+      'អាសយដ្ឋានមិនត្រឹមត្រូវទេ។ សូមបញ្ចូលអាសយដ្ឋានម៉ាស៊ីនមេដែលចាប់ផ្តើមដោយ https://។';
+
+  @override
+  String get cServerChange => 'ប្តូរអាសយដ្ឋានម៉ាស៊ីនមេ';
+
+  @override
   String get ok => 'យល់ព្រម';
 
   @override

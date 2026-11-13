@@ -689,6 +689,23 @@ class TFil extends T {
   String get cConfirmAsk => 'Sigurado ka ba?';
 
   @override
+  String get cServerTitle => 'Ilagay ang address ng server';
+
+  @override
+  String get cServerBody =>
+      'Ilagay ang address ng server na nagsisimula sa https:// mula sa mga tala ng setup. Isang beses lang ito kailangan.';
+
+  @override
+  String get cServerSave => 'I-save at magpatuloy';
+
+  @override
+  String get cServerInvalid =>
+      'Hindi valid ang address. Maglagay ng address ng server na nagsisimula sa https://.';
+
+  @override
+  String get cServerChange => 'Palitan ang address ng server';
+
+  @override
   String get ok => 'Sige';
 
   @override
