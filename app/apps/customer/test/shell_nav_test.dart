@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
@@ -45,6 +46,9 @@ void main() {
     expect(tester.hasRunningAnimations, isTrue);
     await settle(tester);
     expect(_active(tester), [false, true, false, false]);
+    // Hidden tabs keep their state but their tickers pause (idle icons, staggers).
+    final home = find.byType(HomeTab, skipOffstage: false);
+    expect(TickerMode.valuesOf(tester.element(home)).enabled, isFalse);
 
     await tester.tap(find.text(koT.tabMore).last);
     await settle(tester);

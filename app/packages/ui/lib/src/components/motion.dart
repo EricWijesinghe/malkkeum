@@ -164,13 +164,13 @@ class FadeThroughSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final still = MediaQuery.disableAnimationsOf(context);
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final total = Motion.fadeOut + Motion.fadeIn;
     // The incoming child waits out the fade-out share of the total duration.
     final wait = Motion.fadeOut.inMicroseconds / total.inMicroseconds;
     return AnimatedSwitcher(
-      duration: still ? Duration.zero : total,
-      reverseDuration: still ? Duration.zero : Motion.fadeOut,
+      duration: total,
+      reverseDuration: Motion.fadeOut,
       switchInCurve: Interval(wait, 1, curve: Motion.ease),
       switchOutCurve: Curves.linear,
       layoutBuilder: (current, previous) =>
