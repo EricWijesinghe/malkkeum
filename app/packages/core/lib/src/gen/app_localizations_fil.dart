@@ -1868,6 +1868,460 @@ class TFil extends T {
   String get bkViewMonth => 'Buwanang view';
 
   @override
+  String get dfScopeDusting => 'Pag-alis ng alikabok sa muwebles';
+
+  @override
+  String get dfScopeVacuum => 'Pag-vacuum at pag-mop ng sahig';
+
+  @override
+  String get dfScopeDishes => 'Paghuhugas ng pinggan at lababo';
+
+  @override
+  String get dfScopeBathroom => 'Gripo, lababo at inidoro sa loob at labas';
+
+  @override
+  String get dfScopeTrash => 'Pagbubukod at pagtapon ng basura';
+
+  @override
+  String get dfScopeBedding => 'Pag-aayos ng kama';
+
+  @override
+  String get dfScopeTidy => 'Pagbabalik ng gamit sa lugar';
+
+  @override
+  String get dfScopeStove => 'Pagpupunas ng kalan at counter';
+
+  @override
+  String get dfScopeFridge => 'Pagpupunas ng labas ng ref';
+
+  @override
+  String get dfScopeTiles => 'Tiles ng sahig at pader ng banyo';
+
+  @override
+  String get dfScopeMold => 'Pag-alis ng amag at kalawang ng tubig';
+
+  @override
+  String get dfScopeHood => 'Pag-alis ng mantika sa hood at kalan';
+
+  @override
+  String get dfScopeCabinets => 'Loob ng aparador at kabinet';
+
+  @override
+  String get dfScopeWindows => 'Alikabok sa hamba ng bintana';
+
+  @override
+  String get dfScopeShoes => 'Loob ng lagayan ng sapatos';
+
+  @override
+  String get dfScopeEntrance => 'Sahig ng pasukan';
+
+  @override
+  String get dfBasicService => 'Kasama';
+
+  @override
+  String get dfNotProvided => 'Hindi kasama';
+
+  @override
+  String get dfNp1 => 'Paglalaba at pagtitiklop';
+
+  @override
+  String get dfNp2 => 'Mga lugar na hindi maabot';
+
+  @override
+  String get dfNp3 => 'Espesyal na paglilinis';
+
+  @override
+  String get dfNp4 => 'Gawaing bahay maliban sa paglilinis';
+
+  @override
+  String get dfRoom => 'Kuwarto';
+
+  @override
+  String get dfKitchen => 'Kusina';
+
+  @override
+  String get dfBath => 'Banyo';
+
+  @override
+  String get dfEntrance => 'Pasukan';
+
+  @override
+  String get dfEntranceTrash => 'Pasukan / basura';
+
+  @override
+  String get dfScopeMove => 'Lipat-bahay';
+
+  @override
+  String get dfScopeBathKitchen => 'Banyo at kusina';
+
+  @override
+  String get dfDuration => 'Tagal';
+
+  @override
+  String get dfPriceVat => 'Presyo (kasama ang VAT)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ Hindi puwedeng mag-book ng studio cleaning ang bahay na lampas $max pyeong. Magmumungkahi kami sa chat.';
+  }
+
+  @override
+  String get dfBookNow => 'Mag-book';
+
+  @override
+  String get dfMustCheck => 'Pakitingnan';
+
+  @override
+  String get dfAddressTitle => 'Piliin ang address na ibu-book.';
+
+  @override
+  String get dfEdit => 'I-edit';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return 'Ang $service ay para sa bahay hanggang $max pyeong. Tutulungan ka namin sa $label ($size pyeong) sa chat.';
+  }
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Bahay na hanggang $max pyeong lang';
+  }
+
+  @override
+  String get dfDateTitle => 'Pumili ng petsa at oras.';
+
+  @override
+  String get dfManagerIntro => 'Isang sinanay na manager ang bibisita.';
+
+  @override
+  String get dfServiceTime => 'Oras ng serbisyo';
+
+  @override
+  String get dfChange => 'Palitan';
+
+  @override
+  String get dfVisitDay => 'Petsa ng bisita';
+
+  @override
+  String get dfVisitTime => 'Oras ng bisita';
+
+  @override
+  String get dfSelect => 'Pumili';
+
+  @override
+  String get dfSlotClosed => 'Puno';
+
+  @override
+  String get dfSelectDone => 'Tapos';
+
+  @override
+  String get dfDateNote => 'May dagdag-singil sa ilang petsa at oras.';
+
+  @override
+  String get dfAmVisit => 'Bisita sa umaga';
+
+  @override
+  String get dfPmVisit => 'Bisita sa hapon';
+
+  @override
+  String dfArrive(String range) {
+    return 'Darating $range';
+  }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name,\npakihanda ang mga ito!';
+  }
+
+  @override
+  String get dfPrepTools => 'Mga gamit na ihahanda';
+
+  @override
+  String get dfNoTools => 'Kulang ang gamit?';
+
+  @override
+  String get dfNoToolsBody => 'Tanungin ang team kung ano ang ihahanda';
+
+  @override
+  String get dfPayTitle => 'Pumili ng diskwento at bayad.';
+
+  @override
+  String get dfPoints => 'Puntos';
+
+  @override
+  String get dfPointsFirst => 'Gamitin muna ang puntos';
+
+  @override
+  String get dfPointsOff => 'Hindi ginamit';
+
+  @override
+  String get dfPointsNone => 'Walang puntos na magagamit';
+
+  @override
+  String get dfPayMethod => 'Paraan ng bayad';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Batayang presyo ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Diskwento ng kupon';
+
+  @override
+  String get dfDue => 'Babayaran';
+
+  @override
+  String get dfPgNotice =>
+      'Ang bayad ay pinoproseso ng payment gateway (PG). Sa pagbabayad, sumasang-ayon ka sa mga tuntunin ng serbisyo at sa patakaran sa pagkansela at refund.';
+
+  @override
+  String get dfRefundPolicy => 'Patakaran sa pagkansela at refund';
+
+  @override
+  String get dfSummaryService => 'Serbisyo';
+
+  @override
+  String get dfSummaryWhen => 'Bisita';
+
+  @override
+  String get dfSummaryAddress => 'Address';
+
+  @override
+  String get dfSummaryPaid => 'Binayaran';
+
+  @override
+  String get luggage_not_unpacked => 'Hindi pa nabubuksan ang mga kahon';
+
+  @override
+  String get dfReviewsTitle => 'Tingnan ang mga review.';
+
+  @override
+  String get dfBasicBody =>
+      'Kailangan ang mga ito at maaaring makaapekto sa presyo.';
+
+  @override
+  String get building_commercial => 'Komersiyal na espasyo';
+
+  @override
+  String get dfBldVillaHouse => 'Villa / bahay';
+
+  @override
+  String get dfLayoutOneHalf => '1.5 kuwarto (hiwalay na studio / sala + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Sala + 2 kuwarto';
+
+  @override
+  String get dfLayoutThree => 'Sala + 3 kuwarto';
+
+  @override
+  String get dfLayoutFour => 'Sala + 4 o higit pa';
+
+  @override
+  String get dfDuplexTitle => 'Duplex';
+
+  @override
+  String get dfNone => 'Wala';
+
+  @override
+  String get dfHas => 'Mayroon';
+
+  @override
+  String get dfPleaseSelect => 'Pakipili';
+
+  @override
+  String get dfBathCount => 'Bilang ng banyo';
+
+  @override
+  String get dfBalconyCount => 'Bilang ng balkonahe / utility';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
+  }
+
+  @override
+  String get dfElevatorTitle => 'Elevator';
+
+  @override
+  String get dfFloor3 => 'Nasa ika-3 palapag o mas mataas';
+
+  @override
+  String get dfAcAddonBanner => 'May diskwento kapag isinama ang AC cleaning';
+
+  @override
+  String get dfAcAddonBody => 'Lumipat nang malinis pati ang AC.';
+
+  @override
+  String get dfAcAddonAdd => 'Idagdag';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count AC ang naidagdag';
+  }
+
+  @override
+  String get dfAcAddonNote =>
+      'Makikita mo ang may diskwentong presyo sa iyong quote';
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Dagdag na AC cleaning ($pct% diskwento)';
+  }
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count unit';
+  }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Diskwento sa dagdag na AC (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle =>
+      'Tingnan kung paano ang quote\nat magpatuloy.';
+
+  @override
+  String get dfSafeBooking => 'Dahae Safe Booking';
+
+  @override
+  String get dfRecommended => 'Inirerekomenda';
+
+  @override
+  String get dfEstimateVat => 'Tantiya (kasama ang VAT) · maaaring magbago';
+
+  @override
+  String get dfBenefit1 => 'Gagawin ng sinanay at sertipikadong team';
+
+  @override
+  String get dfBenefit2 => '7 araw na libreng ayos pagkatapos';
+
+  @override
+  String get dfBenefit3 => 'Live na progreso sa chat';
+
+  @override
+  String get dfBenefit4 => 'Eco-friendly na panlinis';
+
+  @override
+  String get dfBenefit5 => 'Puntos kapag nag-review';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Walang singil ngayon. Kapag napagkasunduan ang presyo, $pct% na deposito ang magkukumpirma.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nTapusin ang booking.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Oras ng bisita: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ Magbubukas ang chat pagkatapos ng request. Pagkasunduan ang quote at iskedyul, saka magbayad ng deposito.';
+
+  @override
+  String get dfHomeInfo => 'Bahay';
+
+  @override
+  String get dfName => 'Pangalan';
+
+  @override
+  String get dfBasicInfo => 'Pangunahing impormasyon';
+
+  @override
+  String get dfCleanType => 'Uri ng paglilinis';
+
+  @override
+  String get dfBuilding => 'Gusali';
+
+  @override
+  String get dfSpaceInfo => 'Espasyo';
+
+  @override
+  String get dfPayInfo => 'Bayad';
+
+  @override
+  String get dfEstAmount => 'Tantiyang presyo';
+
+  @override
+  String get dfDepositOnConfirm => 'Deposito (babayaran sa kumpirmasyon)';
+
+  @override
+  String get dfNotes => 'Paalala';
+
+  @override
+  String get dfNote1 =>
+      'Libreng pagkansela habang nasa konsultasyon o hanggang 2 araw bago.';
+
+  @override
+  String get dfNote2 =>
+      'Ang huling presyo ay sa chat; ang balanse pagkatapos ng serbisyo.';
+
+  @override
+  String get dfNote3 =>
+      'Kung hindi ka makontak para makapasok, aalis ang team pagkalipas ng 30 minuto. Pakisuri ang pagpasok.';
+
+  @override
+  String get dfNoteWarn =>
+      'Kung humingi ng direktang bayad ang manager, ipaalam agad sa support.';
+
+  @override
+  String get dfSubmitRequest => 'Ipadala ang booking request';
+
+  @override
+  String get dfRequested => 'Humiling ng konsultasyon.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Ipapadala ng team ang huling quote sa chat. Ang deposito ang magkukumpirma.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Maaaring magbago ang presyo. Ang deposito ay $pct% ng napagkasunduang presyo.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Uri ng quote';
+
+  @override
+  String get dfDeposit => 'Deposito';
+
+  @override
+  String get dfAwaitingPay => 'Naghihintay ng bayad';
+
+  @override
+  String get dfServiceInfo => 'Serbisyo';
+
+  @override
+  String get dfSpace => 'Espasyo';
+
+  @override
+  String get dfChat => 'Chat ng konsultasyon';
+
+  @override
+  String get dfRequestDone => 'Naipadala ang request';
+
+  @override
+  String get dfRequestDoneBody =>
+      'Bukas na ang chat.\nIpapadala ng team ang huling quote.';
+
+  @override
+  String get dfAcUpsell => 'Linisin din ang AC pagkatapos lumipat?';
+
+  @override
+  String get dfAcUpsellCta => 'Mag-book ng AC cleaning';
+
+  @override
+  String get dfViewChat => 'Buksan ang chat';
+
+  @override
   String get dhHomeRecommended => 'Inirerekomenda';
 
   @override

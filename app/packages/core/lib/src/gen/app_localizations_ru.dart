@@ -1858,6 +1858,455 @@ class TRu extends T {
   String get bkViewMonth => 'По месяцам';
 
   @override
+  String get dfScopeDusting => 'Удаление пыли с мебели';
+
+  @override
+  String get dfScopeVacuum => 'Пылесос и мытьё полов';
+
+  @override
+  String get dfScopeDishes => 'Мытьё посуды и мойки';
+
+  @override
+  String get dfScopeBathroom => 'Краны, раковина и унитаз внутри и снаружи';
+
+  @override
+  String get dfScopeTrash => 'Сортировка и вынос мусора';
+
+  @override
+  String get dfScopeBedding => 'Заправка постели';
+
+  @override
+  String get dfScopeTidy => 'Раскладка вещей по местам';
+
+  @override
+  String get dfScopeStove => 'Протирка плиты и столешницы';
+
+  @override
+  String get dfScopeFridge => 'Протирка холодильника снаружи';
+
+  @override
+  String get dfScopeTiles => 'Плитка пола и стен в ванной';
+
+  @override
+  String get dfScopeMold => 'Удаление плесени и налёта';
+
+  @override
+  String get dfScopeHood => 'Удаление жира с вытяжки и плиты';
+
+  @override
+  String get dfScopeCabinets => 'Внутри встроенных шкафов';
+
+  @override
+  String get dfScopeWindows => 'Пыль с оконных рам';
+
+  @override
+  String get dfScopeShoes => 'Внутри обувного шкафа';
+
+  @override
+  String get dfScopeEntrance => 'Пол в прихожей';
+
+  @override
+  String get dfBasicService => 'Что входит';
+
+  @override
+  String get dfNotProvided => 'Не входит';
+
+  @override
+  String get dfNp1 => 'Стирка и складывание белья';
+
+  @override
+  String get dfNp2 => 'Труднодоступные места';
+
+  @override
+  String get dfNp3 => 'Спецуборка';
+
+  @override
+  String get dfNp4 => 'Домашние дела кроме уборки';
+
+  @override
+  String get dfRoom => 'Комната';
+
+  @override
+  String get dfKitchen => 'Кухня';
+
+  @override
+  String get dfBath => 'Санузел';
+
+  @override
+  String get dfEntrance => 'Прихожая';
+
+  @override
+  String get dfEntranceTrash => 'Прихожая / мусор';
+
+  @override
+  String get dfScopeMove => 'Уборка при переезде';
+
+  @override
+  String get dfScopeBathKitchen => 'Санузел и кухня';
+
+  @override
+  String get dfDuration => 'Длительность';
+
+  @override
+  String get dfPriceVat => 'Цена (с НДС)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ Жильё больше $max пхён не подходит для уборки студии. Подберём услугу в чате.';
+  }
+
+  @override
+  String get dfBookNow => 'Забронировать';
+
+  @override
+  String get dfMustCheck => 'Обратите внимание';
+
+  @override
+  String get dfAddressTitle => 'Выберите адрес.';
+
+  @override
+  String get dfEdit => 'Изменить';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service — только до $max пхён. С $label ($size пхён) поможем в чате.';
+  }
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Только жильё до $max пхён';
+  }
+
+  @override
+  String get dfDateTitle => 'Выберите дату и время.';
+
+  @override
+  String get dfManagerIntro => 'Приедет обученный специалист.';
+
+  @override
+  String get dfServiceTime => 'Время услуги';
+
+  @override
+  String get dfChange => 'Изменить';
+
+  @override
+  String get dfVisitDay => 'Дата визита';
+
+  @override
+  String get dfVisitTime => 'Время визита';
+
+  @override
+  String get dfSelect => 'Выбрать';
+
+  @override
+  String get dfSlotClosed => 'Занято';
+
+  @override
+  String get dfSelectDone => 'Готово';
+
+  @override
+  String get dfDateNote => 'В некоторые дни и часы цена выше.';
+
+  @override
+  String get dfAmVisit => 'Утром';
+
+  @override
+  String get dfPmVisit => 'Днём';
+
+  @override
+  String dfArrive(String range) {
+    return 'Приезд $range';
+  }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name,\nподготовьте, пожалуйста!';
+  }
+
+  @override
+  String get dfPrepTools => 'Что подготовить';
+
+  @override
+  String get dfNoTools => 'Нет инструментов?';
+
+  @override
+  String get dfNoToolsBody => 'Спросите команду, что подготовить';
+
+  @override
+  String get dfPayTitle => 'Выберите скидки и оплату.';
+
+  @override
+  String get dfPoints => 'Баллы';
+
+  @override
+  String get dfPointsFirst => 'Сначала баллы';
+
+  @override
+  String get dfPointsOff => 'Не применены';
+
+  @override
+  String get dfPointsNone => 'Нет доступных баллов';
+
+  @override
+  String get dfPayMethod => 'Способ оплаты';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Базовая цена ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Скидка по купону';
+
+  @override
+  String get dfDue => 'К оплате';
+
+  @override
+  String get dfPgNotice =>
+      'Платёж обрабатывает платёжный агрегатор (PG). Оплачивая, вы соглашаетесь с условиями сервиса и правилами отмены и возврата.';
+
+  @override
+  String get dfRefundPolicy => 'Правила отмены и возврата';
+
+  @override
+  String get dfSummaryService => 'Услуга';
+
+  @override
+  String get dfSummaryWhen => 'Визит';
+
+  @override
+  String get dfSummaryAddress => 'Адрес';
+
+  @override
+  String get dfSummaryPaid => 'Оплачено';
+
+  @override
+  String get luggage_not_unpacked => 'Вещи ещё в коробках';
+
+  @override
+  String get dfReviewsTitle => 'Отзывы клиентов.';
+
+  @override
+  String get dfBasicBody => 'Обязательные данные, влияют на цену.';
+
+  @override
+  String get building_commercial => 'Коммерческое помещение';
+
+  @override
+  String get dfBldVillaHouse => 'Малоэтажный дом';
+
+  @override
+  String get dfLayoutOneHalf =>
+      '1,5 комнаты (раздельная студия / гостиная + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Гостиная + 2 комнаты';
+
+  @override
+  String get dfLayoutThree => 'Гостиная + 3 комнаты';
+
+  @override
+  String get dfLayoutFour => 'Гостиная + 4 и более';
+
+  @override
+  String get dfDuplexTitle => 'Двухуровневая';
+
+  @override
+  String get dfNone => 'Нет';
+
+  @override
+  String get dfHas => 'Есть';
+
+  @override
+  String get dfPleaseSelect => 'Выберите';
+
+  @override
+  String get dfBathCount => 'Санузлы';
+
+  @override
+  String get dfBalconyCount => 'Балконы / подсобки';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
+  }
+
+  @override
+  String get dfElevatorTitle => 'Лифт';
+
+  @override
+  String get dfFloor3 => 'Квартира на 3-м этаже или выше';
+
+  @override
+  String get dfAcAddonBanner => 'Чистка кондиционера со скидкой';
+
+  @override
+  String get dfAcAddonBody => 'Въезжайте с чистыми кондиционерами.';
+
+  @override
+  String get dfAcAddonAdd => 'Добавить';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'Добавлено кондиционеров: $count';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Цену со скидкой вы увидите в смете';
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Чистка кондиционера ($pct% скидка)';
+  }
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count шт.';
+  }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Скидка на кондиционер (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'Проверьте способ расчёта\nи продолжайте.';
+
+  @override
+  String get dfSafeBooking => 'Надёжное бронирование Dahae';
+
+  @override
+  String get dfRecommended => 'Рекомендуем';
+
+  @override
+  String get dfEstimateVat => 'Оценка (с НДС) · может измениться';
+
+  @override
+  String get dfBenefit1 => 'Обученная сертифицированная команда';
+
+  @override
+  String get dfBenefit2 => '7 дней бесплатных доработок';
+
+  @override
+  String get dfBenefit3 => 'Ход работ в чате в реальном времени';
+
+  @override
+  String get dfBenefit4 => 'Экологичные средства';
+
+  @override
+  String get dfBenefit5 => 'Баллы за отзыв';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Сейчас ничего не списывается. После согласования цены в чате бронь подтверждает предоплата $pct%.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nЗавершите бронирование.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Время визита: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ После заявки откроется чат. Согласуйте цену и график, затем внесите предоплату.';
+
+  @override
+  String get dfHomeInfo => 'Жильё';
+
+  @override
+  String get dfName => 'Название';
+
+  @override
+  String get dfBasicInfo => 'Основное';
+
+  @override
+  String get dfCleanType => 'Тип уборки';
+
+  @override
+  String get dfBuilding => 'Здание';
+
+  @override
+  String get dfSpaceInfo => 'Помещение';
+
+  @override
+  String get dfPayInfo => 'Оплата';
+
+  @override
+  String get dfEstAmount => 'Ориентировочная цена';
+
+  @override
+  String get dfDepositOnConfirm => 'Предоплата (при подтверждении)';
+
+  @override
+  String get dfNotes => 'Важно знать';
+
+  @override
+  String get dfNote1 => 'Бесплатная отмена во время консультации или за 2 дня.';
+
+  @override
+  String get dfNote2 => 'Итоговая цена — в чате, остаток после услуги.';
+
+  @override
+  String get dfNote3 =>
+      'Если не сможем связаться, команда уедет через 30 минут. Уточните доступ заранее.';
+
+  @override
+  String get dfNoteWarn =>
+      'Если специалист просит оплату напрямую, сразу сообщите в поддержку.';
+
+  @override
+  String get dfSubmitRequest => 'Отправить заявку';
+
+  @override
+  String get dfRequested => 'Консультация запрошена.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Команда пришлёт итоговую цену в чат. Предоплата подтверждает бронь.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Цена может измениться. Предоплата — $pct% от итоговой.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Тип расчёта';
+
+  @override
+  String get dfDeposit => 'Предоплата';
+
+  @override
+  String get dfAwaitingPay => 'Ожидает оплаты';
+
+  @override
+  String get dfServiceInfo => 'Услуга';
+
+  @override
+  String get dfSpace => 'Помещение';
+
+  @override
+  String get dfChat => 'Чат консультации';
+
+  @override
+  String get dfRequestDone => 'Заявка отправлена';
+
+  @override
+  String get dfRequestDoneBody => 'Чат открыт.\nКоманда пришлёт итоговую цену.';
+
+  @override
+  String get dfAcUpsell => 'Почистить и кондиционеры после переезда?';
+
+  @override
+  String get dfAcUpsellCta => 'Заказать чистку кондиционера';
+
+  @override
+  String get dfViewChat => 'Открыть чат';
+
+  @override
   String get dhHomeRecommended => 'Рекомендуем';
 
   @override

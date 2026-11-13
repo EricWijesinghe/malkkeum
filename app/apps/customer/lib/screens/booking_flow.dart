@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-
-import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
@@ -8,40 +5,145 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
-import 'cancel_policy_card.dart';
 import 'chat.dart';
-import 'pay_flow.dart';
-import 'pay_method_picker.dart';
-import 'virtual_account.dart';
+import 'checkout.dart';
+import 'flow_widgets.dart';
+
+export 'checkout.dart';
+export 'flow_widgets.dart';
 
 const _maxDaysAhead = 60;
 const _standardSlots = [8, 9, 13, 14];
 const _quoteSlots = [8, 13];
 const _freeCancelDays = 2;
+const _confirmSize = 160.0;
+const _minConfirmSize = 112.0; // SuccessMark's own default
 
 /// Last free-cancel day for a visit on [visit], or null when that day is already past
 /// (a booking inside the window), so checkout never promises a deadline that has gone.
 DateTime? freeCancelDeadline(DateTime visit, DateTime now) {
-  final day = DateTime(visit.year, visit.month, visit.day).subtract(const Duration(days: _freeCancelDays));
+  final day = DateTime(
+    visit.year,
+    visit.month,
+    visit.day,
+  ).subtract(const Duration(days: _freeCancelDays));
   return day.isBefore(DateTime(now.year, now.month, now.day)) ? null : day;
 }
 
 String isoDate(DateTime d) =>
     '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-/// Step 2 (fixed/unit) — pick a saved address, or add one. Enforces the studio size rule.
-class AddressPickScreen extends StatefulWidget {
-  const AddressPickScreen({
+DateTime get _firstDay =>
+    DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 1));
+
+/// Saved addresses as radio rows ("우리집 · 8평 수정") plus "+ 주소 추가" (design p09).
+/// An address over the service's size limit is not selectable: a toast offers a consultation.
+class AddressRadioList extends StatelessWidget {
+  const AddressRadioList({
     super.key,
     required this.draft,
-    this.onPicked,
-    this.step = 2,
-    this.total = 4,
+    required this.onChanged,
   });
   final BookingDraft draft;
+  final VoidCallback onChanged;
+
+  bool _fits(Address a) =>
+      draft.service.maxPyeong == null ||
+      a.sizePyeong <= draft.service.maxPyeong!;
+
+  void _tooBig(BuildContext context, Address a) {
+    final t = context.t;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            t.dfStudioToast(
+              t.service(draft.service.code),
+              '${draft.service.maxPyeong}',
+              a.label,
+              '${a.sizePyeong}',
+            ),
+          ),
+          action: SnackBarAction(
+            label: t.consultCta,
+            onPressed: () => openTopicChat(context, draft.service.code),
+          ),
+        ),
+      );
+  }
+
+  Future<void> _edit(BuildContext context, Address a) async {
+    final app = context.appRead;
+    await Navigator.of(context).push<Address>(
+      MaterialPageRoute(builder: (_) => AddressFormScreen(existing: a)),
+    );
+    await app.loadAddresses();
+    onChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final app = context.app;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final a in app.addresses)
+          RadioRow(
+            title: a.label,
+            subtitle:
+                '${a.roadAddress} ${a.detail} · ${t.pyeong('${a.sizePyeong}')}',
+            subtitleTrailing: InkWell(
+              onTap: () => _edit(context, a),
+              child: Text(
+                t.dfEdit,
+                style: context.text.bodyMedium?.copyWith(
+                  color: context.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            selected: draft.address?.id == a.id,
+            onTap: () {
+              if (!_fits(a)) return _tooBig(context, a);
+              draft.address = a;
+              onChanged();
+            },
+          ),
+        const SizedBox(height: Space.lg),
+        Center(
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.add_rounded),
+            label: Text(t.addressAdd),
+            style: OutlinedButton.styleFrom(
+              shape: const StadiumBorder(),
+              minimumSize: const Size(0, 48),
+            ),
+            onPressed: () async {
+              final added = await Navigator.of(context).push<Address>(
+                MaterialPageRoute(builder: (_) => const AddressFormScreen()),
+              );
+              if (added == null || !context.mounted) return;
+              if (_fits(added)) {
+                draft.address = added;
+              } else {
+                _tooBig(context, added);
+              }
+              onChanged();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Pick a saved address, or add one (design p09). Enforces the studio size rule.
+class AddressPickScreen extends StatefulWidget {
+  const AddressPickScreen({super.key, required this.draft, this.onPicked});
+  final BookingDraft draft;
   final void Function(BuildContext context)? onPicked;
-  final int step;
-  final int total;
   @override
   State<AddressPickScreen> createState() => _AddressPickScreenState();
 }
@@ -49,103 +151,36 @@ class AddressPickScreen extends StatefulWidget {
 class _AddressPickScreenState extends State<AddressPickScreen> {
   BookingDraft get d => widget.draft;
 
-  Future<void> _next() async {
-    final a = d.address!;
-    final max = d.service.maxPyeong;
-    if (max != null && a.sizePyeong > max) {
-      await _studioBlocked(a);
-      return;
-    }
-    if (!mounted) return;
-    if (widget.onPicked != null) return widget.onPicked!(context);
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => ScheduleScreen(draft: d)));
-  }
-
-  Future<void> _studioBlocked(Address a) => showAppSheet<void>(
-    context,
-    title: context.t.studioBlockedTitle('${a.sizePyeong}'),
-    builder: (ctx) => Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Space.gutter,
-        0,
-        Space.gutter,
-        Space.gutter,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(ctx.t.studioBlockedBody, style: ctx.text.bodyMedium),
-          const SizedBox(height: Space.xl),
-          PrimaryButton(
-            label: ctx.t.consultCta,
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              openTopicChat(context, d.service.code);
-            },
-          ),
-        ],
-      ),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
-    final app = context.app;
     final t = context.t;
-    d.address ??= app.addresses.firstOrNull;
+    final max = d.service.maxPyeong;
+    d.address ??= context.app.addresses
+        .where((a) => max == null || a.sizePyeong <= max)
+        .firstOrNull;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.stepOf('${widget.step}', '${widget.total}')),
-      ),
+      appBar: AppBar(),
       body: ListView(
-        padding: const EdgeInsets.all(Space.gutter),
         children: [
-          StepProgress(
-            current: widget.step,
-            total: widget.total,
-            color: ServiceHues.of(d.service.code).tone,
-          ),
-          const SizedBox(height: Space.xl),
-          Text(t.addressTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.lg),
-          for (final (i, a) in app.addresses.indexed)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.xs),
-              child: EnterMotion(
-                delay: Duration(milliseconds: 60 * i),
-                child: OptionCard(
-                  leading: Icon(
-                    a.kind == 'office'
-                        ? Icons.business_rounded
-                        : Icons.home_rounded,
-                    color: context.colors.inkMuted,
-                  ),
-                  title: '${a.label} · ${t.pyeong('${a.sizePyeong}')}',
-                  subtitle: '${a.roadAddress} ${a.detail}',
-                  selected: d.address?.id == a.id,
-                  onTap: () => setState(() => d.address = a),
-                ),
-              ),
-            ),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.add_rounded),
-            label: Text(t.addressAdd),
-            onPressed: () async {
-              final added = await Navigator.of(context).push<Address>(
-                MaterialPageRoute(builder: (_) => const AddressFormScreen()),
-              );
-              if (added != null) setState(() => d.address = added);
-            },
+          FlowTitle(t.dfAddressTitle),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+            child: AddressRadioList(draft: d, onChanged: () => setState(() {})),
           ),
         ],
       ),
       bottomNavigationBar: BottomActionBar(
         child: PrimaryButton(
           label: t.next,
-          onPressed: d.address == null ? null : _next,
+          onPressed: d.address == null
+              ? null
+              : () => widget.onPicked != null
+                    ? widget.onPicked!(context)
+                    : Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => ScheduleScreen(draft: d),
+                        ),
+                      ),
         ),
       ),
     );
@@ -177,70 +212,107 @@ Future<void> openTopicChat(
   }
 }
 
-/// Date strip + arrival slots with live availability.
+/// "11월 19일 (목)" with a "변경" pill opening the date picker (design p10, p17).
+class VisitDateRow extends StatelessWidget {
+  const VisitDateRow({super.key, required this.date, required this.onChanged});
+  final DateTime date;
+  final ValueChanged<DateTime> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                t.dfVisitDay,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.inkMuted,
+                ),
+              ),
+              Text(
+                dateLabel(date, context.lang),
+                style: context.text.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            shape: const StadiumBorder(),
+            minimumSize: const Size(64, 48),
+          ),
+          onPressed: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: date,
+              firstDate: _firstDay,
+              lastDate: _firstDay.add(const Duration(days: _maxDaysAhead - 1)),
+            );
+            if (picked != null) onChanged(picked);
+          },
+          child: Text(t.dfChange),
+        ),
+      ],
+    );
+  }
+}
+
+/// GET /slots for [date]: start hour -> (available, seats left when nearly full).
+Future<Map<int, (bool, int?)>> loadSlots(
+  ApiClient api,
+  DateTime date, {
+  required bool quote,
+}) async {
+  final r =
+      await api.get('/slots', query: {'date': isoDate(date), 'quote': '$quote'})
+          as List;
+  return {
+    for (final s in r.cast<Json>())
+      (s['start_hour'] as num).toInt(): (
+        s['available'] as bool,
+        (s['seats_left'] as num?)?.toInt(),
+      ),
+  };
+}
+
+/// Date and arrival hour (design p10): service time, the date row, and the slot sheet.
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({
-    super.key,
-    required this.draft,
-    this.onDone,
-    this.step = 3,
-    this.total = 4,
-  });
+  const ScheduleScreen({super.key, required this.draft, this.onDone});
   final BookingDraft draft;
   final void Function(BuildContext context)? onDone;
-  final int step;
-  final int total;
   @override
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   BookingDraft get d => widget.draft;
-  Map<int, bool> _available = {};
-  // Server-sent only when a slot is genuinely almost full (1-2 seats left).
-  Map<int, int> _seatsLeft = {};
+  Map<int, (bool, int?)> _slots = {};
   bool _loading = false;
 
-  List<DateTime> get _days {
-    final today = DateUtils.dateOnly(DateTime.now());
-    return [
-      for (var i = 1; i <= _maxDaysAhead; i++) today.add(Duration(days: i)),
-    ];
-  }
-
-  List<int> get _slots => d.service.isQuote ? _quoteSlots : _standardSlots;
+  List<int> get _hours => d.service.isQuote ? _quoteSlots : _standardSlots;
+  bool _open(int h) => _slots[h]?.$1 ?? true;
 
   @override
   void initState() {
     super.initState();
-    d.date ??= _days.first;
-    _loadSlots();
+    d.date ??= _firstDay;
+    _load();
   }
 
-  Future<void> _loadSlots() async {
+  Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final r =
-          await context.api.get(
-                '/slots',
-                query: {
-                  'date': isoDate(d.date!),
-                  'quote': '${d.service.isQuote}',
-                },
-              )
-              as List;
+      final s = await loadSlots(context.api, d.date!, quote: d.service.isQuote);
       if (!mounted) return;
-      _available = {
-        for (final s in r.cast<Json>())
-          (s['start_hour'] as num).toInt(): s['available'] as bool,
-      };
-      _seatsLeft = {
-        for (final s in r.cast<Json>())
-          if (s['seats_left'] != null)
-            (s['start_hour'] as num).toInt(): (s['seats_left'] as num).toInt(),
-      };
-      if (d.hour != null && _available[d.hour] == false) d.hour = null;
-      d.hour ??= _slots.where((h) => _available[h] ?? true).firstOrNull;
+      _slots = s;
+      if (d.hour != null && !_open(d.hour!)) d.hour = null;
+      d.hour ??= _hours.where(_open).firstOrNull;
     } catch (e) {
       if (mounted) showToast(context, context.t.error(e));
     } finally {
@@ -248,252 +320,249 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  Future<void> _pickSlot() async {
+    final t = context.t;
+    var chosen = d.hour;
+    final ok = await showAppSheet<bool>(
+      context,
+      title: t.dfVisitTime,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            0,
+            Space.gutter,
+            Space.gutter,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                dateLabel(d.date!, ctx.lang),
+                style: ctx.text.bodySmall,
+                textAlign: TextAlign.end,
+              ),
+              const SizedBox(height: Space.sm),
+              tileRows([
+                for (final h in _hours)
+                  _SlotTile(
+                    label: slotRangeLabel(h, ctx.lang),
+                    note: !_open(h)
+                        ? t.dfSlotClosed
+                        : _slots[h]?.$2 != null
+                        ? t.seatsLeft('${_slots[h]!.$2}')
+                        : null,
+                    enabled: _open(h),
+                    selected: chosen == h,
+                    onTap: () => setSheet(() => chosen = h),
+                  ),
+              ]),
+              const SizedBox(height: Space.md),
+              PrimaryButton(
+                label: t.dfSelectDone,
+                onPressed: chosen == null
+                    ? null
+                    : () => Navigator.of(ctx).pop(true),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (ok == true) setState(() => d.hour = chosen);
+  }
+
+  void _next() {
+    if (widget.onDone != null) return widget.onDone!(context);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => d.service.needsPreparation
+            ? PrepToolsScreen(draft: d)
+            : CheckoutScreen(draft: d),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.t;
     final lang = context.lang;
-    final hue = ServiceHues.of(d.service.code);
-    final endHour = d.hour == null
-        ? null
-        : d.hour! + 1 + (d.minutes / 60).ceil();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(t.stepOf('${widget.step}', '${widget.total}')),
-      ),
+      appBar: AppBar(),
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: Space.gutter),
         children: [
+          FlowTitle(t.dfDateTitle),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.fromLTRB(
+              Space.gutter,
+              0,
+              Space.gutter,
+              Space.lg,
+            ),
+            child: Row(
               children: [
-                StepProgress(
-                  current: widget.step,
-                  total: widget.total,
-                  color: hue.tone,
+                Expanded(
+                  child: Text(t.dfManagerIntro, style: context.text.bodyMedium),
                 ),
-                const SizedBox(height: Space.xl),
-                Text(t.scheduleTitle, style: context.text.headlineSmall),
-                const SizedBox(height: Space.xs),
-                Text(t.scheduleRange, style: context.text.bodySmall),
-                if (d.address != null) ...[
-                  const SizedBox(height: Space.md),
-                  AppCard(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Space.md,
-                      vertical: Space.sm,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.place_rounded, color: hue.tone, size: 20),
-                        const SizedBox(width: Space.xs),
-                        Expanded(
-                          child: Text(
-                            '${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}',
-                            style: context.text.titleSmall,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => AddressPickScreen(
-                                draft: d,
-                                step: widget.step,
-                                total: widget.total,
-                                onPicked: (ctx) {
-                                  Navigator.of(ctx).pop();
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                          ),
-                          child: Text(t.change),
-                        ),
-                      ],
-                    ),
+                const ExcludeSemantics(child: Icon3D('step_consult', size: 64)),
+              ],
+            ),
+          ),
+          const FlowBand(),
+          FlowSection(
+            children: [
+              if (d.minutes > 0) ...[
+                Text(
+                  t.duration(d.minutes),
+                  style: context.text.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
-                ],
+                ),
+                Text(
+                  t.dfServiceTime,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.inkMuted,
+                  ),
+                ),
                 const SizedBox(height: Space.lg),
               ],
-            ),
-          ),
-          SizedBox(
-            height: 84,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-              itemCount: _days.length,
-              separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
-              itemBuilder: (_, i) => _DayChip(
-                day: _days[i],
-                selected: DateUtils.isSameDay(_days[i], d.date),
-                accent: hue.tone,
-                onTap: () {
-                  setState(() => d.date = _days[i]);
-                  _loadSlots();
+              VisitDateRow(
+                date: d.date!,
+                onChanged: (v) {
+                  setState(() => d.date = v);
+                  _load();
                 },
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(Space.gutter),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SectionTitle(
-                  t.scheduleArrival,
-                  trailing: _loading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : null,
-                ),
-                // Two per row, each row as tall as its tallest card: long translations and large
-                // system fonts wrap instead of clipping (a fixed grid aspect ratio clipped them).
-                for (var i = 0; i < _slots.length; i += 2)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: Space.xs),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final h in _slots.skip(i).take(2)) ...[
-                            if (h != _slots[i]) const SizedBox(width: Space.xs),
-                            Expanded(
-                              child: EnterMotion(
-                                delay: Duration(milliseconds: 50 * (i ~/ 2)),
-                                child: OptionCard(
-                                  title: d.service.isQuote
-                                      ? (h < 12 ? t.morning : t.afternoon)
-                                      : hourLabel(h, lang),
-                                  subtitle: !(_available[h] ?? true)
-                                      ? t.scheduleFull
-                                      : _seatsLeft[h] != null
-                                      ? t.seatsLeft('${_seatsLeft[h]}')
-                                      : t.scheduleWindow(
-                                          hourLabel(h, lang),
-                                          hourLabel(h + 1, lang),
-                                        ),
-                                  selected: d.hour == h,
-                                  enabled: _available[h] ?? true,
-                                  accent: hue.tone,
-                                  onTap: () => setState(() => d.hour = h),
-                                ),
-                              ),
-                            ),
-                          ],
-                          if (i + 1 >= _slots.length) ...[
-                            const SizedBox(width: Space.xs),
-                            const Spacer(),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: Space.md),
-                if (d.service.isQuote)
-                  Text(t.scheduleQuoteNote, style: context.text.bodySmall)
-                else if (endHour != null)
-                  AppCard(
-                    color: context.colors.tintOf(hue),
-                    padding: const EdgeInsets.all(Space.md),
-                    child: Row(
+              const SizedBox(height: Space.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.schedule_rounded, color: hue.tone),
-                        const SizedBox(width: Space.xs),
-                        Expanded(
-                          child: Text(
-                            t.scheduleEnds(
-                              t.duration(d.minutes),
-                              hourLabel(endHour, lang),
-                            ),
-                            style: context.text.bodyMedium,
+                        Text(
+                          t.dfVisitTime,
+                          style: context.text.bodySmall?.copyWith(
+                            color: context.colors.inkMuted,
+                          ),
+                        ),
+                        Text(
+                          d.hour == null ? '—' : slotRangeLabel(d.hour!, lang),
+                          style: context.text.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
                     ),
                   ),
+                  if (_loading)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: const StadiumBorder(),
+                        minimumSize: const Size(64, 48),
+                      ),
+                      onPressed: _pickSlot,
+                      child: Text(t.dfSelect),
+                    ),
+                ],
+              ),
+              if (_hours.every((h) => !_open(h))) ...[
+                const SizedBox(height: Space.sm),
+                Text(
+                  t.scheduleFull,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.danger,
+                  ),
+                ),
               ],
-            ),
+            ],
           ),
         ],
       ),
       bottomNavigationBar: BottomActionBar(
         child: PrimaryButton(
-          label: d.service.isQuote ? t.next : t.goToPayment,
-          color: hue.tone,
-          onPressed: d.hour == null
-              ? null
-              : () => widget.onDone != null
-                    ? widget.onDone!(context)
-                    : Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => CheckoutScreen(draft: d),
-                        ),
-                      ),
+          label: t.next,
+          onPressed: d.hour == null ? null : _next,
         ),
       ),
     );
   }
 }
 
-class _DayChip extends StatelessWidget {
-  const _DayChip({
-    required this.day,
+class _SlotTile extends StatelessWidget {
+  const _SlotTile({
+    required this.label,
+    required this.enabled,
     required this.selected,
     required this.onTap,
-    required this.accent,
+    this.note,
   });
-  final DateTime day;
+  final String label;
+  final String? note;
+  final bool enabled;
   final bool selected;
   final VoidCallback onTap;
-  final Color accent;
 
   @override
   Widget build(BuildContext context) {
-    final weekend = day.weekday >= DateTime.saturday;
-    final dow = MaterialLocalizations.of(
-      context,
-    ).narrowWeekdays[day.weekday % 7];
-    final dowColor = selected
-        ? Colors.white
-        : (day.weekday == DateTime.sunday
-              ? Semantic.sunday
-              : weekend
-              ? Semantic.saturday
-              : context.colors.inkMuted);
+    final c = context.colors;
     return Semantics(
-      selected: selected,
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      enabled: enabled,
       button: true,
-      label: dateLabel(day, context.lang),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(Radii.tile),
         child: AnimatedContainer(
-          duration: Motion.standard,
-          width: 56,
-          decoration: BoxDecoration(
-            color: selected ? accent : context.colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: selected ? accent : context.colors.line),
+          duration: Motion.micro,
+          constraints: const BoxConstraints(minHeight: 56),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.sm,
+            vertical: Space.sm,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          decoration: BoxDecoration(
+            color: !enabled
+                ? c.surfaceHigh
+                : (selected ? c.primaryTint : c.surface),
+            borderRadius: BorderRadius.circular(Radii.tile),
+            border: Border.all(
+              color: selected ? context.primary : c.line,
+              width: selected ? 2 : 1.2,
+            ),
+          ),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: Space.xs,
             children: [
               Text(
-                day.day == 1 || selected ? '${day.month}/${day.day}' : dow,
-                style: context.text.labelSmall?.copyWith(color: dowColor),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${day.day}',
-                style: context.text.titleLarge?.copyWith(
-                  color: selected ? Colors.white : context.colors.ink,
+                label,
+                textAlign: TextAlign.center,
+                style: context.text.titleSmall?.copyWith(
+                  color: !enabled
+                      ? c.inkMuted
+                      : (selected ? context.primary : c.ink),
                 ),
               ),
+              if (note != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: c.line,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(note!, style: context.text.labelSmall),
+                ),
             ],
           ),
         ),
@@ -502,446 +571,200 @@ class _DayChip extends StatelessWidget {
   }
 }
 
-/// Step 4 — coupon, method, breakdown, pay.
-class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key, required this.draft});
+/// "{name}님 서비스 전 꼭 준비해 주세요!" (design p11): the tools to have ready, then checkout.
+class PrepToolsScreen extends StatelessWidget {
+  const PrepToolsScreen({super.key, required this.draft});
   final BookingDraft draft;
+
   @override
-  State<CheckoutScreen> createState() => _CheckoutScreenState();
+  Widget build(BuildContext context) {
+    final t = context.t;
+    final name = context.app.name;
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        children: [
+          FlowTitle(name.isEmpty ? t.prepTitle : t.dfPrepHeader(name)),
+          FlowSection(
+            title: t.dfPrepTools,
+            children: [
+              Text(
+                t.prepBody,
+                style: context.text.bodySmall?.copyWith(
+                  color: context.colors.inkMuted,
+                ),
+              ),
+              const SizedBox(height: Space.lg),
+              tileRows(cols: 4, [
+                for (final tool in prepTools)
+                  Column(
+                    children: [
+                      ExcludeSemantics(
+                        child: Tilt3D(child: Icon3D('tool_$tool', size: 52)),
+                      ),
+                      const SizedBox(height: Space.xs),
+                      Text(
+                        t.tool(tool),
+                        style: context.text.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+              ]),
+            ],
+          ),
+          const FlowBand(),
+          Padding(
+            padding: const EdgeInsets.all(Space.gutter),
+            child: AppCard(
+              color: context.colors.surfaceHigh,
+              onTap: () => openTopicChat(context, draft.service.code),
+              padding: const EdgeInsets.all(Space.md),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: context.colors.surface,
+                    child: Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      color: context.primary,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t.dfNoTools, style: context.text.titleSmall),
+                        Text(t.dfNoToolsBody, style: context.text.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: PriceBar(
+        amount: draft.listPrice,
+        label: t.next,
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => CheckoutScreen(draft: draft)),
+        ),
+      ),
+    );
+  }
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
-  BookingDraft get d => widget.draft;
-  bool _busy = false;
-  bool _autoPicked = false;
-  PayChoice? _choice;
+/// Move-in/out: add aircon units at the catalog price; the discount is applied by the
+/// server's estimate (formula `ac_addon_discount_bps`) and shown on the review step.
+class AcAddonBanner extends StatelessWidget {
+  const AcAddonBanner({
+    super.key,
+    required this.aircon,
+    required this.answers,
+    required this.onChanged,
+  });
+  final Service aircon;
+  final QuoteAnswers answers;
+  final VoidCallback onChanged;
 
-  /// GET /me/points. Null until loaded, and when the call fails: the points card then stays hidden.
-  Json? _wallet;
+  int get _count => answers.acAddons.values.fold(0, (a, b) => a + b);
 
-  /// Points the customer chose to apply. The server re-checks balance and cap.
-  int _points = 0;
-
-  Future<void> _loadWallet() async {
-    try {
-      final w = await context.appRead.api.get('/me/points') as Json;
-      if (mounted) setState(() => _wallet = w);
-    } on Exception {
-      // Paying without points still works; the card is simply not offered.
-    }
-  }
-
-  int get _balance => (_wallet?['balance'] as num? ?? 0).toInt();
-
-  /// Most points this payment accepts: balance, the programme cap, and at least 1 won left for the PG.
-  int _maxPoints(int total) {
-    final w = _wallet;
-    if (w == null || w['enabled'] != true) return 0;
-    final cap = total * (w['max_use_bps'] as num? ?? 0).toInt() ~/ 10000;
-    return math.max(0, math.min(_balance, math.min(cap, total - 1)));
-  }
-
-  int _discount(List<Coupon> coupons) {
-    final c = coupons.where((c) => c.id == d.couponId).firstOrNull;
-    return c == null ? 0 : (c.amount < d.listPrice ? c.amount : d.listPrice);
-  }
-
-  /// Booking body for checkout channels: the draft without the saved-method id.
-  Json _bookingBody() => d.toJson()..remove('payment_method_id');
-
-  /// Saved method -> POST /bookings (one-tap). Checkout channel -> PG window, then confirm.
-  Future<void> _pay(int total, int points) async {
-    final choice = _choice;
-    if (choice == null) return;
-    setState(() => _busy = true);
-    final app = context.appRead;
-    try {
-      final CheckoutResult result;
-      if (choice case ChannelChoice(:final channel)) {
-        result = await payWithChannel(context, channel, {
-          'kind': 'booking',
-          'booking': _bookingBody(),
-          if (points > 0) 'points': points,
-        });
-      } else {
-        result = CheckoutPaid(
-          Booking.fromJson(
-            await app.api.post(
-                  '/bookings',
-                  d.toJson(),
-                  ApiClient.newIdempotencyKey(),
-                )
-                as Json,
+  Future<void> _open(BuildContext context) async {
+    await showAppSheet<void>(
+      context,
+      title: context.t.service('aircon'),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            0,
+            Space.gutter,
+            Space.gutter,
           ),
-        );
-      }
-      if (!mounted) return;
-      switch (result) {
-        case CheckoutPaid(:final booking):
-          app.bookingsChanged();
-          app.analytics.track('payment_done', screen: 'checkout');
-          await app.loadCoupons();
-          if (!mounted) return;
-          await Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute<void>(
-              builder: (_) => DoneScreen(booking: booking),
-            ),
-            (r) => r.isFirst,
-          );
-        case CheckoutAwaitingDeposit(:final account):
-          app.bookingsChanged();
-          await Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute<void>(
-              builder: (_) =>
-                  VirtualAccountScreen(account: account, amount: total),
-            ),
-            (r) => r.isFirst,
-          );
-        case CheckoutFailed(:final code):
-          showToast(context, context.t.checkoutFailure(code));
-        case CheckoutCancelled():
-          break;
-      }
-    } catch (e) {
-      if (mounted) showToast(context, context.t.payError(e));
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+          children: [
+            for (final u in aircon.units)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.sm),
+                child: Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon3D('ac_${u.labelKey}', size: 40),
+                    ),
+                    const SizedBox(width: Space.sm),
+                    Expanded(
+                      child: CountStepper(
+                        label:
+                            '${ctx.t.unit(u.labelKey)} · ${ctx.won(u.price)}',
+                        value: answers.acAddons[u.labelKey] ?? 0,
+                        onChanged: (v) {
+                          setSheet(() => answers.acAddons[u.labelKey] = v);
+                          onChanged();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Text(ctx.t.dfAcAddonNote, style: ctx.text.bodySmall),
+          ],
+        ),
+      ),
+    );
+    onChanged();
   }
 
   @override
   Widget build(BuildContext context) {
-    final app = context.app;
     final t = context.t;
-    final usable =
-        app.coupons.where((c) => c.appliesTo(d.service.code)).toList()
-          ..sort((a, b) => b.amount.compareTo(a.amount));
-    if (!_autoPicked) {
-      // Best coupon pre-applied: customers shouldn't have to hunt for savings.
-      d.couponId ??= usable.firstOrNull?.id;
-      d.methodId ??= app.methods.firstOrNull?.id;
-      _choice = d.methodId == null ? null : SavedChoice(d.methodId!);
-      _autoPicked = true;
-      _loadWallet();
-    }
-    final savedId = switch (_choice) {
-      SavedChoice(:final methodId) => methodId,
-      _ => null,
-    };
-    final channelCode = switch (_choice) {
-      ChannelChoice(:final channel) => channel.code,
-      _ => null,
-    };
-    final discount = _discount(app.coupons);
-    final total = d.listPrice - discount;
-    // Points go through the payment window only; a saved card charges the full total in one tap.
-    final viaWindow = _choice is ChannelChoice;
-    final maxPoints = _maxPoints(total);
-    final points = viaWindow ? math.min(_points, maxPoints) : 0;
-    final due = total - points;
-    final freeUntil = freeCancelDeadline(d.date!, DateTime.now());
-    final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(t.stepOf('${d.totalSteps}', '${d.totalSteps}')),
+    final count = _count;
+    return Container(
+      padding: const EdgeInsets.all(Space.md),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceHigh,
+        borderRadius: BorderRadius.circular(Radii.tile),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(Space.gutter),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          StepProgress(
-            current: d.totalSteps,
-            total: d.totalSteps,
-            color: ServiceHues.of(d.service.code).tone,
-          ),
-          const SizedBox(height: Space.xl),
-          AppCard(
-            child: Row(
-              children: [
-                ServiceGlyph(d.service.code, size: 52),
-                const SizedBox(width: Space.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        [
-                          t.service(d.service.code),
-                          if (d.unitIndex != null)
-                            t.unit(d.service.units[d.unitIndex!].labelKey),
-                        ].join(' · '),
-                        style: context.text.titleSmall,
-                      ),
-                      Text(
-                        '${dateLabel(d.date!, context.lang)} ${hourLabel(d.hour!, context.lang)} · ${t.about(t.duration(d.minutes))}',
-                        style: context.text.bodySmall,
-                      ),
-                      Text(
-                        '${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}',
-                        style: context.text.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: Space.sm),
-          AppCard(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.confirmation_number_rounded,
-                    color: context.colors.sun,
-                  ),
-                  title: Text(t.coupon),
-                  subtitle: Text(
-                    coupon == null
-                        ? (usable.isEmpty
-                              ? t.couponNone
-                              : t.couponAvailable('${usable.length}'))
-                        : t.couponName(coupon.name),
-                  ),
-                  trailing: coupon == null
-                      ? const Icon(Icons.chevron_right_rounded)
-                      : Text(
-                          '−${context.won(discount)}',
-                          style: context.text.titleSmall?.copyWith(
-                            color: context.colors.fresh,
-                          ),
-                        ),
-                  onTap: usable.isEmpty ? null : () => _pickCoupon(usable),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: Space.sm),
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(t.apPayAllTitle, style: context.text.titleSmall),
-                const SizedBox(height: Space.xs),
-                PayMethodPicker(
-                  selectedSavedId: savedId,
-                  selectedChannel: channelCode,
-                  onChoose: (c) => setState(() {
-                    _choice = c;
-                    d.methodId = switch (c) {
-                      SavedChoice(:final methodId) => methodId,
-                      ChannelChoice() => null,
-                    };
-                  }),
-                ),
-              ],
-            ),
-          ),
-          if (maxPoints > 0) ...[
-            const SizedBox(height: Space.sm),
-            AppCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    secondary: Icon(
-                      Icons.account_balance_wallet_rounded,
-                      color: context.colors.sun,
-                    ),
-                    title: Text(t.checkoutPointsUse),
-                    subtitle: Text(
-                      viaWindow
-                          ? t.checkoutPointsAvail('$_balance', '$maxPoints')
-                          : t.checkoutPointsNeedsWindow,
-                    ),
-                    value: points > 0,
-                    onChanged: viaWindow
-                        ? (on) => setState(() => _points = on ? maxPoints : 0)
-                        : null,
-                  ),
-                  if (points > 0)
-                    Slider(
-                      value: points.toDouble(),
-                      max: maxPoints.toDouble(),
-                      label: t.walletPoints('$points'),
-                      semanticFormatterCallback: (v) =>
-                          t.walletPoints('${v.round()}'),
-                      // Steps of 100 P, with the maximum itself always reachable.
-                      onChanged: (v) => setState(
-                        () => _points = v >= maxPoints
-                            ? maxPoints
-                            : (v ~/ 100) * 100,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: Space.sm),
-          AppCard(
-            child: Column(
-              children: [
-                _Line(t.listPrice, context.won(d.listPrice)),
-                const SizedBox(height: Space.xs),
-                _Line(
-                  t.discount,
-                  discount == 0 ? context.won(0) : '−${context.won(discount)}',
-                  color: discount == 0 ? null : context.colors.fresh,
-                ),
-                if (points > 0) ...[
-                  const SizedBox(height: Space.xs),
-                  _Line(
-                    t.checkoutPointsUse,
-                    '−${t.walletPoints('$points')}',
-                    color: context.colors.fresh,
-                  ),
-                ],
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: Space.sm),
-                  child: Divider(),
-                ),
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ExcludeSemantics(child: Icon3D('promo_ac_addon', size: 44)),
+              const SizedBox(width: Space.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(t.total, style: context.text.titleMedium),
-                    const Spacer(),
-                    RollingAmount(
-                      value: due,
-                      format: context.won,
-                      style: context.text.headlineSmall,
+                    Text(t.dfAcAddonBanner, style: context.text.titleSmall),
+                    Text(
+                      count == 0 ? t.dfAcAddonBody : t.dfAcAddonAdded('$count'),
+                      style: context.text.bodySmall,
                     ),
                   ],
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(t.vatIncluded, style: context.text.labelSmall),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: Space.sm),
-          CancelPolicyCard(total: total),
-          if (d.service.needsPreparation) ...[
-            const SizedBox(height: Space.sm),
-            AppCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(t.prepTitle, style: context.text.titleSmall),
-                  const SizedBox(height: Space.xs),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      for (final tool in prepTools)
-                        Chip(
-                          label: Text(t.tool(tool)),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                    ],
-                  ),
-                  TextButton.icon(
-                    icon: const Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      size: 18,
-                    ),
-                    label: Text(t.prepAsk),
-                    onPressed: () => openTopicChat(context, d.service.code),
-                  ),
-                ],
-              ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              icon: const Icon(Icons.download_rounded, size: 18),
+              label: Text(t.dfAcAddonAdd),
+              onPressed: () => _open(context),
             ),
-          ],
-        ],
-      ),
-      bottomNavigationBar: BottomActionBar(
-        summary: Row(
-          children: [
-            Expanded(
-              child: freeUntil == null
-                  ? const SizedBox.shrink()
-                  : Text(
-                      t.freeCancelUntil(dateLabel(freeUntil, context.lang)),
-                      style: context.text.labelSmall,
-                    ),
-            ),
-            PriceTag(amount: total, locale: context.lang),
-          ],
-        ),
-        child: PrimaryButton(
-          label: _choice == null
-              ? t.needMethod
-              : t.payAmount(context.won(due)),
-          busy: _busy,
-          onPressed: _choice == null ? null : () => _pay(due, points),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickCoupon(List<Coupon> usable) async {
-    final t = context.t;
-    final picked = await showAppSheet<String>(
-      context,
-      title: t.coupon,
-      builder: (ctx) => ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(
-          Space.gutter,
-          0,
-          Space.gutter,
-          Space.gutter,
-        ),
-        children: [
-          for (final c in usable)
-            Padding(
-              padding: const EdgeInsets.only(bottom: Space.xs),
-              child: OptionCard(
-                title: t.couponName(c.name),
-                subtitle: t.couponUntil(dateLabel(c.expiresAt, ctx.lang)),
-                trailing: ctx.won(c.amount),
-                selected: c.id == d.couponId,
-                onTap: () => Navigator.of(ctx).pop(c.id),
-              ),
-            ),
-          OptionCard(
-            title: t.couponNone,
-            selected: d.couponId == null,
-            onTap: () => Navigator.of(ctx).pop(''),
           ),
         ],
       ),
     );
-    if (picked != null) {
-      setState(() => d.couponId = picked.isEmpty ? null : picked);
-    }
   }
 }
 
-class _Line extends StatelessWidget {
-  const _Line(this.label, this.value, {this.color});
-  final String label;
-  final String value;
-  final Color? color;
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Text(
-        label,
-        style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft),
-      ),
-      const Spacer(),
-      Text(
-        value,
-        style: context.text.bodyMedium?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ],
-  );
-}
-
-/// Celebration + summary.
+/// Booking confirmed (design p13): big check, summary card, 홈으로 / 예약 보기.
 class DoneScreen extends StatelessWidget {
   const DoneScreen({super.key, required this.booking});
   final Booking booking;
@@ -950,91 +773,104 @@ class DoneScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     final b = booking;
+    final minutes = b.minutes;
+    final road = b.j['address'] is Json
+        ? (b.address['road_address'] as String? ?? '')
+        : '';
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.all(Space.gutter),
-          child: Column(
-            children: [
-              const Spacer(),
-              FlipIn(
+          children: [
+            const SizedBox(height: Space.xl),
+            Center(
+              // Big confirm check (U1 renders it as the 3D confirm_check), scaled down on short screens.
+              child: FlipIn(
                 child: SuccessMark(
+                  size: (MediaQuery.sizeOf(context).height * 0.2).clamp(
+                    _minConfirmSize,
+                    _confirmSize,
+                  ),
                   semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle,
                 ),
               ),
-              StaggerIn(
-                index: 1,
-                child: Text(
-                  b.isQuote ? t.doneQuoteTitle : t.doneTitle,
-                  style: context.text.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: Space.xs),
-              Text(
-                b.isQuote ? t.doneQuoteBody : t.doneBody,
-                style: context.text.bodyMedium?.copyWith(
-                  color: context.colors.inkSoft,
+            ),
+            StaggerIn(
+              index: 1,
+              child: Text(
+                b.isQuote ? t.doneQuoteTitle : t.doneTitle,
+                style: context.text.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: Space.xl),
-              StaggerIn(
-                index: 2,
-                child: AppCard(
-                  child: Row(
-                    children: [
-                      ServiceGlyph(b.serviceCode, size: 48),
-                      const SizedBox(width: Space.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              t.service(b.serviceCode),
-                              style: context.text.titleSmall,
-                            ),
-                            Text(
-                              '${dateLabel(b.visitDate, context.lang)} ${hourLabel(b.startHour, context.lang)}',
-                              style: context.text.bodySmall,
-                            ),
-                          ],
+            ),
+            const SizedBox(height: Space.xs),
+            Text(
+              b.isQuote ? t.doneQuoteBody : t.doneBody,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.inkSoft,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: Space.xl),
+            StaggerIn(
+              index: 2,
+              child: AppCard(
+                color: context.colors.surfaceHigh,
+                child: Column(
+                  children: [
+                    InfoRow(
+                      t.dfSummaryService,
+                      minutes == null
+                          ? t.service(b.serviceCode)
+                          : '${t.service(b.serviceCode)} (${t.duration(minutes)})',
+                    ),
+                    InfoRow(
+                      t.dfSummaryWhen,
+                      '${dateLabel(b.visitDate, context.lang)} ${slotRangeLabel(b.startHour, context.lang)}',
+                    ),
+                    if (road.isNotEmpty) InfoRow(t.dfSummaryAddress, road),
+                    if (!b.isQuote) ...[
+                      const Divider(height: Space.lg),
+                      InfoRow(
+                        t.dfSummaryPaid,
+                        context.won(b.paidAmount),
+                        valueStyle: context.text.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                      if (!b.isQuote)
-                        RollingAmount(
-                          value: b.paidAmount,
-                          format: context.won,
-                          style: context.text.titleSmall,
-                        ),
                     ],
-                  ),
+                  ],
                 ),
               ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(t.goHome),
-                    ),
-                  ),
-                  const SizedBox(width: Space.xs),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute<void>(
-                          builder: (_) => BookingDetailScreen(id: b.id),
-                        ),
-                      ),
-                      child: Text(t.viewBooking),
-                    ),
-                  ),
-                ],
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomActionBar(
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(0, 52)),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(t.goHome),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: Space.xs),
+            Expanded(
+              child: FilledButton(
+                style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
+                onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute<void>(
+                    builder: (_) => BookingDetailScreen(id: b.id),
+                  ),
+                ),
+                child: Text(t.viewBooking),
+              ),
+            ),
+          ],
         ),
       ),
     );

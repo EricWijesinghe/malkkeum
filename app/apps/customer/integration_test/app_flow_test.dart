@@ -59,7 +59,7 @@ void main() {
     await tester.tap(find.text(t.serviceShort('studio')));
     await settle(tester);
     expect(find.text(t.service('studio')), findsWidgets);
-    expect(find.text(t.chooseDate), findsOneWidget);
+    expect(find.text(t.dfBookNow), findsOneWidget);
 
     await session.logout();
   });

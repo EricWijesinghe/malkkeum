@@ -138,7 +138,19 @@ async fn slots(State(s): State<AppState>, Query(q): Query<SlotQuery>) -> ApiResu
 }
 
 async fn estimate(State(s): State<AppState>, Json(a): Json<QuoteAnswers>) -> ApiResult<Json<Estimate>> {
-    Ok(Json(load_formula(&s.db).await?.estimate(&a)?))
+    let formula = load_formula(&s.db).await?;
+    let lines = addon_lines(&s.db, &a).await?;
+    Ok(Json(formula.estimate_with_addons(&a, 0, &lines)?))
+}
+
+/// Catalog prices for the answers' aircon add-ons (empty without any), so every estimate
+/// prices them the same way. Read before any transaction: it uses its own pool connection.
+pub async fn addon_lines(db: &sqlx::PgPool, a: &QuoteAnswers) -> ApiResult<Vec<(domain::Won, u8)>> {
+    if a.ac_addons.is_empty() {
+        return Ok(Vec::new());
+    }
+    let aircon = load_service(db, "aircon").await.map_err(|_| domain::DomainError::InvalidUnit)?;
+    Ok(domain::quote::resolve_ac_addons(&aircon, &a.ac_addons)?)
 }
 
 #[derive(Deserialize)]

@@ -156,7 +156,10 @@ async fn booking_detail(State(s): State<AppState>, Staff(st): Staff, Path(id): P
         .clone()
         .and_then(|a| serde_json::from_value::<domain::quote::QuoteAnswers>(a).ok());
     let estimate_breakdown = match answers {
-        Some(a) => Some(serde_json::to_value(load_formula(&s.db).await?.estimate(&a)?).unwrap_or(Value::Null)),
+        Some(a) => {
+            let lines = super::catalog::addon_lines(&s.db, &a).await?;
+            Some(serde_json::to_value(load_formula(&s.db).await?.estimate_with_addons(&a, 0, &lines)?).unwrap_or(Value::Null))
+        }
         None => None,
     };
     Ok(Json(BookingDetail {

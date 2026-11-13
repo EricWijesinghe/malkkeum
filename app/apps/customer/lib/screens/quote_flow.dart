@@ -4,10 +4,76 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_flow.dart';
+import 'quote_review.dart';
+import 'request_status.dart';
+import 'service.dart' show ScopeLink;
 
-const _total = 6;
+export 'quote_review.dart';
 
-/// Move-in / move-out: 3 question steps here, then address, date, estimate + confirm.
+/// Pages of the move-in / move-out flow (owner design p14-p19).
+const quoteSteps = 7;
+const _stepAddress = 3;
+const _stepDate = 4;
+const _stepMethod = 5;
+const _stepReview = 6;
+const _quoteSlots = [8, 13];
+
+const _luggage = [
+  'empty',
+  'not_unpacked',
+  'partly_unpacked',
+  'fully_lived_in',
+  'unknown',
+];
+const _buildings = ['apartment', 'officetel', 'villa', 'commercial'];
+const _layouts = [
+  'studio',
+  'one_and_half',
+  'two_rooms',
+  'three_rooms',
+  'four_plus',
+];
+const _maxCount = 5;
+
+String buildingLabel(T t, String? c) => switch (c) {
+  'apartment' => t.building_apartment,
+  'officetel' => t.building_officetel,
+  'villa' => t.dfBldVillaHouse,
+  'commercial' => t.building_commercial,
+  'house' => t.building_house,
+  _ => t.building_other,
+};
+
+String layoutLabel(T t, String? c) => switch (c) {
+  'studio' => t.layout_studio,
+  'one_and_half' => t.dfLayoutOneHalf,
+  'two_rooms' => t.dfLayoutTwo,
+  'three_rooms' => t.dfLayoutThree,
+  _ => t.dfLayoutFour,
+};
+
+String luggageLabel(T t, String c) => switch (c) {
+  'empty' => t.luggage_empty,
+  'not_unpacked' => t.luggage_not_unpacked,
+  'partly_unpacked' => t.luggage_partly_unpacked,
+  'fully_lived_in' => t.luggage_fully_lived_in,
+  _ => t.luggage_unknown,
+};
+
+String cleaningTypeLabel(T t, String? c) => switch (c) {
+  'standard' => t.type_standard,
+  'same_day_move' => t.type_same_day_move,
+  'some_luggage_left' => t.type_some_luggage_left,
+  'normal_move_in' => t.type_normal_move_in,
+  'after_interior' => t.type_after_interior,
+  _ => t.type_lived_in_deep_clean,
+};
+
+/// "오전 방문" / "오후 방문".
+String visitHalf(T t, int hour) => hour < 12 ? t.dfAmVisit : t.dfPmVisit;
+
+/// Move-in / move-out in 7 steps: cleaning, basics, space, address, date (+AC add-on),
+/// Safe booking, review. "변경" on the review jumps back to a step.
 class QuoteFlowScreen extends StatefulWidget {
   const QuoteFlowScreen({super.key, required this.service});
   final Service service;
@@ -19,264 +85,58 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   late final BookingDraft d = BookingDraft(widget.service);
   final _pages = PageController();
   int _step = 0;
+  bool _busy = false;
+  Future<Json>? _estimate;
+  Map<int, (bool, int?)> _slots = {};
 
   QuoteAnswers get a => d.answers;
   bool get _moveIn => widget.service.code == 'move_in';
-  ServiceHue get _hue => ServiceHues.of(widget.service.code);
 
   @override
   void initState() {
     super.initState();
-    // After the first frame: the app is only reachable through the context once mounted.
+    d.date = DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 1));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.appRead.analytics.track('quote_view', screen: 'quote');
+      if (!mounted) return;
+      context.appRead.analytics.track('quote_view', screen: 'quote');
+      d.address ??= context.appRead.addresses.firstOrNull;
+      _loadSlots();
     });
+  }
+
+  Future<void> _loadSlots() async {
+    try {
+      final s = await loadSlots(context.api, d.date!, quote: true);
+      if (!mounted) return;
+      setState(() {
+        _slots = s;
+        if (d.hour != null && !(_slots[d.hour]?.$1 ?? true)) d.hour = null;
+        d.hour ??= _quoteSlots.where((h) => _slots[h]?.$1 ?? true).firstOrNull;
+      });
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+    }
   }
 
   bool get _canNext => switch (_step) {
     0 => a.cleaningType != null,
     1 => a.stepBasicDone,
-    _ => a.stepSpaceDone,
+    2 => a.stepSpaceDone,
+    _stepAddress => d.address != null,
+    _stepDate => d.date != null && d.hour != null,
+    _ => true,
   };
 
-  void _next() {
-    if (_step < 2) {
-      setState(() => _step++);
-      _pages.nextPage(duration: Motion.route, curve: Motion.ease);
-      return;
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => AddressPickScreen(
-          draft: d,
-          step: 4,
-          total: _total,
-          onPicked: (ctx) => Navigator.of(ctx).push(
-            MaterialPageRoute<void>(
-              builder: (_) => ScheduleScreen(
-                draft: d,
-                step: 5,
-                total: _total,
-                onDone: (ctx2) => Navigator.of(ctx2).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => QuoteConfirmScreen(draft: d),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  void _go(int step) {
+    // The estimate depends on every answer before it: ask again after a change.
+    if (step <= _stepDate) _estimate = null;
+    if (step >= _stepMethod) _estimate ??= _fetchEstimate();
+    setState(() => _step = step);
+    _pages.animateToPage(step, duration: Motion.route, curve: Motion.ease);
   }
 
-  void _back() {
-    if (_step == 0) return Navigator.of(context).pop();
-    setState(() => _step--);
-    _pages.previousPage(duration: Motion.route, curve: Motion.ease);
-  }
-
-  @override
-  void dispose() {
-    _pages.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    return PopScope(
-      canPop: _step == 0,
-      onPopInvokedWithResult: (didPop, _) => didPop ? null : _back(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(t.stepOf('${_step + 1}', '$_total')),
-          leading: BackButton(onPressed: _back),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-              child: StepProgress(
-                current: _step + 1,
-                total: _total,
-                color: _hue.tone,
-              ),
-            ),
-            Expanded(
-              child: PageView(
-                controller: _pages,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [_typeStep(t), _basicStep(t), _spaceStep(t)],
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomActionBar(
-          child: PrimaryButton(
-            label: t.next,
-            color: _hue.tone,
-            onPressed: _canNext ? _next : null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _page(List<Widget> children) =>
-      ListView(padding: const EdgeInsets.all(Space.gutter), children: children);
-
-  Widget _typeStep(T t) {
-    final types = _moveIn
-        ? [
-            ('normal_move_in', t.type_normal_move_in, Icons.home_rounded),
-            (
-              'after_interior',
-              t.type_after_interior,
-              Icons.format_paint_rounded,
-            ),
-            (
-              'lived_in_deep_clean',
-              t.type_lived_in_deep_clean,
-              Icons.cleaning_services_rounded,
-            ),
-          ]
-        : [
-            ('standard', t.type_standard, Icons.inventory_2_rounded),
-            (
-              'same_day_move',
-              t.type_same_day_move,
-              Icons.local_shipping_rounded,
-            ),
-            (
-              'some_luggage_left',
-              t.type_some_luggage_left,
-              Icons.chair_rounded,
-            ),
-          ];
-    final luggage = [
-      ('empty', t.luggage_empty),
-      ('partly_unpacked', t.luggage_partly_unpacked),
-      ('fully_lived_in', t.luggage_fully_lived_in),
-      ('unknown', t.luggage_unknown),
-    ];
-    return _page([
-      Text(t.quoteTypeTitle, style: context.text.headlineSmall),
-      const SizedBox(height: Space.lg),
-      for (final (code, label, icon) in types)
-        Padding(
-          padding: const EdgeInsets.only(bottom: Space.xs),
-          child: OptionCard(
-            leading: Icon(icon, color: _hue.tone),
-            title: label,
-            selected: a.cleaningType == code,
-            accent: _hue.tone,
-            onTap: () => setState(() => a.cleaningType = code),
-          ),
-        ),
-      const SizedBox(height: Space.xl),
-      SectionTitle(t.luggageTitle),
-      ChoiceRow<String>(
-        options: luggage,
-        value: a.luggage,
-        onChanged: (v) => setState(() => a.luggage = v),
-      ),
-    ]);
-  }
-
-  Widget _basicStep(T t) => _page([
-    Text(t.quoteBasicTitle, style: context.text.headlineSmall),
-    const SizedBox(height: Space.xl),
-    SectionTitle(t.buildingType),
-    ChoiceRow<String>(
-      options: [
-        ('apartment', t.building_apartment),
-        ('villa', t.building_villa),
-        ('officetel', t.building_officetel),
-        ('house', t.building_house),
-        ('other', t.building_other),
-      ],
-      value: a.building,
-      onChanged: (v) => setState(() => a.building = v),
-    ),
-    const SizedBox(height: Space.xl),
-    SectionTitle(t.layoutTitle),
-    ChoiceRow<String>(
-      options: [
-        ('studio', t.layout_studio),
-        ('one_and_half', t.layout_one_and_half),
-        ('two_rooms', t.layout_two_rooms),
-        ('three_rooms', t.layout_three_rooms),
-        ('four_plus', t.layout_four_plus),
-      ],
-      value: a.layout,
-      onChanged: (v) => setState(() => a.layout = v),
-    ),
-    const SizedBox(height: Space.xl),
-    YesNo(
-      label: '${t.duplexTitle} *',
-      value: a.duplex,
-      yes: t.yes,
-      no: t.no,
-      onChanged: (v) => setState(() => a.duplex = v),
-    ),
-  ]);
-
-  Widget _spaceStep(T t) => _page([
-    Text(t.quoteSpaceTitle, style: context.text.headlineSmall),
-    const SizedBox(height: Space.xl),
-    AppCard(
-      child: Column(
-        children: [
-          CountStepper(
-            label: t.bathroomsLabel,
-            value: a.bathrooms,
-            onChanged: (v) => setState(() => a.bathrooms = v),
-          ),
-          const Divider(height: Space.xl),
-          CountStepper(
-            label: t.balconiesLabel,
-            value: a.balconies,
-            onChanged: (v) => setState(() => a.balconies = v),
-          ),
-        ],
-      ),
-    ),
-    const SizedBox(height: Space.xl),
-    YesNo(
-      label: '${t.elevatorTitle} *',
-      value: a.elevator,
-      yes: t.yes,
-      no: t.no,
-      onChanged: (v) => setState(() => a.elevator = v),
-    ),
-    const SizedBox(height: Space.md),
-    SwitchListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(t.floor3Label),
-      value: a.floor3OrHigher,
-      onChanged: (v) => setState(() => a.floor3OrHigher = v),
-    ),
-  ]);
-}
-
-/// Estimate + summary. No payment now: staff send the final quote in chat.
-class QuoteConfirmScreen extends StatefulWidget {
-  const QuoteConfirmScreen({super.key, required this.draft});
-  final BookingDraft draft;
-  @override
-  State<QuoteConfirmScreen> createState() => _QuoteConfirmScreenState();
-}
-
-class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
-  BookingDraft get d => widget.draft;
-  bool _busy = false;
-
-  Future<int> _estimate() async =>
-      ((await context.api.post('/quote/estimate', d.answers.toJson())
-                  as Json)['total']
-              as num)
-          .toInt();
+  Future<Json> _fetchEstimate() async =>
+      await context.api.post('/quote/estimate', a.toJson()) as Json;
 
   Future<void> _submit() async {
     setState(() => _busy = true);
@@ -294,9 +154,16 @@ class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
       app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();
       app.loadUnread().ignore();
+      final estimate = await _estimate;
       if (!mounted) return;
       await Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute<void>(builder: (_) => DoneScreen(booking: b)),
+        MaterialPageRoute<void>(
+          builder: (_) => RequestStatusScreen(
+            booking: b,
+            estimate: estimate,
+            showDoneSheet: true,
+          ),
+        ),
         (r) => r.isFirst,
       );
     } catch (e) {
@@ -306,111 +173,364 @@ class _QuoteConfirmScreenState extends State<QuoteConfirmScreen> {
     }
   }
 
+  void _back() => _step == 0 ? Navigator.of(context).pop() : _go(_step - 1);
+
+  @override
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final a = d.answers;
-    final hue = ServiceHues.of(d.service.code);
-    String typeLabel(String? c) => switch (c) {
-      'standard' => t.type_standard,
-      'same_day_move' => t.type_same_day_move,
-      'some_luggage_left' => t.type_some_luggage_left,
-      'normal_move_in' => t.type_normal_move_in,
-      'after_interior' => t.type_after_interior,
-      _ => t.type_lived_in_deep_clean,
-    };
-    String layoutLabel(String? c) => switch (c) {
-      'studio' => t.layout_studio,
-      'one_and_half' => t.layout_one_and_half,
-      'two_rooms' => t.layout_two_rooms,
-      'three_rooms' => t.layout_three_rooms,
-      _ => t.layout_four_plus,
-    };
-    return Scaffold(
-      appBar: AppBar(title: Text(t.stepOf('6', '6'))),
-      body: ListView(
-        padding: const EdgeInsets.all(Space.gutter),
-        children: [
-          StepProgress(current: 6, total: 6, color: hue.tone),
-          const SizedBox(height: Space.xl),
-          Text(t.quoteEstimateTitle, style: context.text.headlineSmall),
-          const SizedBox(height: Space.lg),
-          AsyncView<int>(
-            load: _estimate,
-            skeletons: 1,
-            skeletonHeight: 150,
-            builder: (context, total, _) => AppCard(
-              color: context.colors.tintOf(hue),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    t.estimate,
-                    style: context.text.labelMedium?.copyWith(color: hue.tone),
-                  ),
-                  RollingAmount(
-                    value: total,
-                    format: context.won,
-                    style: context.text.displaySmall,
-                  ),
-                  const SizedBox(height: Space.xs),
-                  Text(t.quoteEstimateBody, style: context.text.bodySmall),
-                  const SizedBox(height: Space.md),
-                  for (final g in [t.quoteG1, t.quoteG2, t.quoteG3])
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        children: [
-                          Icon(Icons.check_rounded, size: 18, color: hue.tone),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(g, style: context.text.bodySmall),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
+    return PopScope(
+      canPop: _step == 0,
+      onPopInvokedWithResult: (didPop, _) => didPop ? null : _back(),
+      child: Scaffold(
+        backgroundColor: _step == _stepMethod
+            ? context.colors.surfaceHigh
+            : null,
+        appBar: AppBar(
+          leading: BackButton(onPressed: _back),
+          backgroundColor: _step == _stepMethod
+              ? context.colors.surfaceHigh
+              : null,
+          actions: [if (_step == 0) ScopeLink(code: widget.service.code)],
+        ),
+        body: PageView(
+          controller: _pages,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            _typeStep(t),
+            _basicStep(t),
+            _spaceStep(t),
+            _page(t, 3, t.dfAddressTitle, [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                child: AddressRadioList(
+                  draft: d,
+                  onChanged: () => setState(() {}),
+                ),
               ),
+            ]),
+            _dateStep(t),
+            QuoteMethodPage(chip: _chip(t, 5), estimate: _estimate),
+            QuoteReviewPage(
+              chip: _chip(t, 6),
+              draft: d,
+              estimate: _estimate,
+              onEdit: _go,
             ),
+          ],
+        ),
+        bottomNavigationBar: BottomActionBar(
+          child: PrimaryButton(
+            label: _step == _stepReview ? t.dfSubmitRequest : t.next,
+            busy: _busy,
+            onPressed: !_canNext
+                ? null
+                : (_step == _stepReview ? _submit : () => _go(_step + 1)),
           ),
-          const SizedBox(height: Space.lg),
-          SectionTitle(t.quoteConfirmTitle),
-          AppCard(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(t.summaryType),
-                  subtitle: Text(
-                    '${t.service(d.service.code)} · ${typeLabel(a.cleaningType)}',
-                  ),
-                ),
-                ListTile(
-                  title: Text(t.summaryHome),
-                  subtitle: Text(
-                    '${layoutLabel(a.layout)} · ${t.bathroomsLabel} ${a.bathrooms} · ${t.balconiesLabel} ${a.balconies}\n${d.address!.label} · ${t.pyeong('${d.address!.sizePyeong}')}',
-                  ),
-                ),
-                ListTile(
-                  title: Text(t.summaryDate),
-                  subtitle: Text(
-                    '${dateLabel(d.date!, context.lang)} · ${d.hour! < 12 ? t.morning : t.afternoon}',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomActionBar(
-        summary: Text(t.quoteNoPayNow, style: context.text.labelSmall),
-        child: PrimaryButton(
-          label: t.quoteRequest,
-          busy: _busy,
-          color: hue.tone,
-          onPressed: _submit,
         ),
       ),
     );
   }
+
+  String _chip(T t, int i) =>
+      '${t.service(widget.service.code)} · ${i + 1}/$quoteSteps';
+
+  Widget _page(
+    T t,
+    int i,
+    String title,
+    List<Widget> children, {
+    String? body,
+  }) => ListView(
+    children: [
+      FlowTitle(title, chip: _chip(t, i), body: body),
+      ...children,
+    ],
+  );
+
+  Widget _typeStep(T t) {
+    final types = _moveIn
+        ? ['normal_move_in', 'after_interior', 'lived_in_deep_clean']
+        : ['standard', 'same_day_move', 'some_luggage_left'];
+    return _page(
+      t,
+      0,
+      t.quoteTypeTitle,
+      body: t.serviceDesc(widget.service.code),
+      [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Space.gutter,
+            0,
+            Space.gutter,
+            Space.lg,
+          ),
+          child: circleRow(width: 96, [
+            for (final c in types)
+              CircleChoice(
+                icon: 'type_$c',
+                label: cleaningTypeLabel(t, c),
+                size: 84,
+                selected: a.cleaningType == c,
+                onTap: () => setState(() => a.cleaningType = c),
+              ),
+          ]),
+        ),
+        const FlowBand(),
+        FlowSection(
+          title: t.luggageTitle,
+          children: [
+            for (final l in _luggage)
+              RadioRow(
+                title: luggageLabel(t, l),
+                selected: a.luggage == l,
+                onTap: () => setState(() => a.luggage = l),
+              ),
+          ],
+        ),
+        const ReviewCarousel(),
+      ],
+    );
+  }
+
+  Widget _basicStep(T t) =>
+      _page(t, 1, t.quoteBasicTitle, body: t.dfBasicBody, [
+        FlowSection(
+          title: t.buildingType,
+          children: [
+            circleRow([
+              for (final b in _buildings)
+                CircleChoice(
+                  icon: 'bld_$b',
+                  label: buildingLabel(t, b),
+                  selected: a.building == b,
+                  onTap: () => setState(() => a.building = b),
+                ),
+            ]),
+          ],
+        ),
+        const FlowBand(),
+        FlowSection(
+          title: t.layoutTitle,
+          children: [
+            for (final l in _layouts)
+              RadioRow(
+                title: layoutLabel(t, l),
+                selected: a.layout == l,
+                onTap: () => setState(() => a.layout = l),
+              ),
+          ],
+        ),
+        const FlowBand(),
+        FlowSection(
+          title: t.dfDuplexTitle,
+          trailing: a.duplex == null
+              ? Text(
+                  t.dfPleaseSelect,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.danger,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : null,
+          children: [
+            circleRow([
+              CircleChoice(
+                icon: 'room_studio',
+                label: t.dfNone,
+                selected: a.duplex == false,
+                onTap: () => setState(() => a.duplex = false),
+              ),
+              CircleChoice(
+                icon: 'duplex_stairs',
+                label: t.dfHas,
+                selected: a.duplex == true,
+                onTap: () => setState(() => a.duplex = true),
+              ),
+            ]),
+          ],
+        ),
+      ]);
+
+  Widget _counter(T t, String title, int value, ValueChanged<int> set) =>
+      FlowSection(
+        title: title,
+        children: [
+          circleRow(width: 44, [
+            for (var n = 0; n <= _maxCount; n++)
+              CircleChoice(
+                text: '$n',
+                label: t.dfCountN('$n'),
+                size: 44,
+                selected: value == n,
+                onTap: () => setState(() => set(n)),
+              ),
+          ]),
+        ],
+      );
+
+  Widget _spaceStep(T t) => _page(t, 2, t.quoteSpaceTitle, [
+    _counter(t, t.dfBathCount, a.bathrooms, (v) => a.bathrooms = v),
+    const FlowBand(),
+    _counter(t, t.dfBalconyCount, a.balconies, (v) => a.balconies = v),
+    const FlowBand(),
+    FlowSection(
+      title: t.dfElevatorTitle,
+      trailing: a.elevator == null
+          ? Text(
+              t.dfPleaseSelect,
+              style: context.text.bodySmall?.copyWith(
+                color: context.colors.danger,
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          : null,
+      children: [
+        circleRow([
+          CircleChoice(
+            icon: 'elev_yes',
+            label: t.dfHas,
+            selected: a.elevator == true,
+            onTap: () => setState(() => a.elevator = true),
+          ),
+          CircleChoice(
+            icon: 'elev_no',
+            label: t.dfNone,
+            selected: a.elevator == false,
+            onTap: () => setState(() => a.elevator = false),
+          ),
+        ]),
+        const Divider(height: Space.xl),
+        // Needed by the formula when there is no elevator.
+        CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(t.dfFloor3),
+          value: a.floor3OrHigher,
+          checkboxShape: const CircleBorder(),
+          onChanged: (v) => setState(() => a.floor3OrHigher = v ?? false),
+        ),
+      ],
+    ),
+  ]);
+
+  Widget _dateStep(T t) {
+    final lang = context.lang;
+    final aircon = context.app.service('aircon');
+    return _page(t, 4, t.dfDateTitle, body: t.dfDateNote, [
+      FlowSection(
+        children: [
+          VisitDateRow(
+            date: d.date!,
+            onChanged: (v) {
+              setState(() => d.date = v);
+              _loadSlots();
+            },
+          ),
+          const SizedBox(height: Space.lg),
+          Text(
+            t.dfVisitTime,
+            style: context.text.bodySmall?.copyWith(
+              color: context.colors.inkMuted,
+            ),
+          ),
+          const SizedBox(height: Space.xs),
+          tileRows([
+            for (final h in _quoteSlots)
+              OptionCard(
+                title: visitHalf(t, h),
+                subtitle: !(_slots[h]?.$1 ?? true)
+                    ? t.scheduleFull
+                    : t.dfArrive(slotRangeLabel(h, lang)),
+                selected: d.hour == h,
+                enabled: _slots[h]?.$1 ?? true,
+                onTap: () => setState(() => d.hour = h),
+              ),
+          ]),
+          if (aircon != null) ...[
+            const SizedBox(height: Space.xl),
+            AcAddonBanner(
+              aircon: aircon,
+              answers: a,
+              onChanged: () => setState(() {}),
+            ),
+          ],
+        ],
+      ),
+    ]);
+  }
+}
+
+/// "생생한 이용 후기" (design p14): recent public reviews; hidden when there are none.
+class ReviewCarousel extends StatefulWidget {
+  const ReviewCarousel({super.key});
+  @override
+  State<ReviewCarousel> createState() => _ReviewCarouselState();
+}
+
+class _ReviewCarouselState extends State<ReviewCarousel> {
+  // Fetched once; a failure only hides the section (social proof is optional).
+  late final Future<Object?> _proof = context.api
+      .get('/public/proof')
+      .then<Object?>((v) => v, onError: (_) => null);
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<Object?>(
+    future: _proof,
+    builder: (context, snap) {
+      final reviews = ((snap.data as Json?)?['reviews'] as List? ?? const [])
+          .cast<Json>();
+      if (reviews.isEmpty) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const FlowBand(),
+          FlowSection(
+            title: context.t.dfReviewsTitle,
+            children: [
+              SizedBox(
+                height: 132,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: reviews.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
+                  itemBuilder: (context, i) => SizedBox(
+                    width: 240,
+                    child: AppCard(
+                      padding: const EdgeInsets.all(Space.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${'★' * ((reviews[i]['rating'] as num?)?.toInt() ?? 5)} · ${reviews[i]['name'] ?? ''}',
+                            style: context.text.labelMedium?.copyWith(
+                              color: context.colors.inkMuted,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: Space.xs),
+                          Expanded(
+                            child: Text(
+                              reviews[i]['body'] as String? ?? '',
+                              style: context.text.bodySmall,
+                              overflow: TextOverflow.fade,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
 }

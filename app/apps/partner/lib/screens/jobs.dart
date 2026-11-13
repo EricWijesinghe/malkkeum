@@ -647,9 +647,15 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       'villa' => t.building_villa,
       'officetel' => t.building_officetel,
       'house' => t.building_house,
+      'commercial' => t.building_commercial,
       _ => t.building_other,
     };
-    return '$building · $layout · ${t.bathroomsLabel} ${a['bathrooms']} · ${t.balconiesLabel} ${a['balconies']}${a['duplex'] == true ? ' · ${t.duplexTitle}' : ''}';
+    final ac = [
+      for (final u in (a['ac_addons'] as List? ?? const []).cast<Json>())
+        '${t.unit(u['unit'] as String)} ${t.dfCountUnits('${u['count']}')}',
+    ];
+    return '$building · $layout · ${t.bathroomsLabel} ${a['bathrooms']} · ${t.balconiesLabel} ${a['balconies']}${a['duplex'] == true ? ' · ${t.duplexTitle}' : ''}'
+        '${ac.isEmpty ? '' : '\n${t.service('aircon')}: ${ac.join(', ')}'}';
   }
 
   /// Household profile as display lines; empty fields are skipped.

@@ -1860,6 +1860,454 @@ class TSi extends T {
   String get bkViewMonth => 'මාසික දසුන';
 
   @override
+  String get dfScopeDusting => 'ගෘහ භාණ්ඩ මත දූවිලි ඉවත් කිරීම';
+
+  @override
+  String get dfScopeVacuum => 'වැකුම් සහ මොප් කර බිම පිරිසිදු කිරීම';
+
+  @override
+  String get dfScopeDishes => 'පිඟන් සහ සින්ක් සේදීම';
+
+  @override
+  String get dfScopeBathroom => 'කරාම, බේසම සහ වැසිකිළිය ඇතුළත පිටත';
+
+  @override
+  String get dfScopeTrash => 'කුණු වෙන් කර ඉවත් කිරීම';
+
+  @override
+  String get dfScopeBedding => 'ඇඳ ඇතිරිලි පිළිවෙළ කිරීම';
+
+  @override
+  String get dfScopeTidy => 'බඩු නියමිත තැනට තැබීම';
+
+  @override
+  String get dfScopeStove => 'ලිප සහ කවුන්ටරය පිසීම';
+
+  @override
+  String get dfScopeFridge => 'ශීතකරණය පිටතින් පිසීම';
+
+  @override
+  String get dfScopeTiles => 'නාන කාමර බිම සහ බිත්ති ටයිල්';
+
+  @override
+  String get dfScopeMold => 'පුස් සහ ජල කැට ඉවත් කිරීම';
+
+  @override
+  String get dfScopeHood => 'හුඩ් සහ ලිපේ තෙල් ඉවත් කිරීම';
+
+  @override
+  String get dfScopeCabinets => 'සවි කළ අල්මාරි ඇතුළත';
+
+  @override
+  String get dfScopeWindows => 'ජනෙල් රාමු දූවිලි ඉවත් කිරීම';
+
+  @override
+  String get dfScopeShoes => 'සපත්තු රාක්කය ඇතුළත';
+
+  @override
+  String get dfScopeEntrance => 'ඇතුල්වීමේ බිම';
+
+  @override
+  String get dfBasicService => 'මූලික සේවාව';
+
+  @override
+  String get dfNotProvided => 'ඇතුළත් නොවේ';
+
+  @override
+  String get dfNp1 => 'රෙදි සේදීම සහ නැවීම';
+
+  @override
+  String get dfNp2 => 'අතට නොපෙනෙන තැන්';
+
+  @override
+  String get dfNp3 => 'විශේෂ පිරිසිදු කිරීම';
+
+  @override
+  String get dfNp4 => 'පිරිසිදු කිරීම හැර වෙනත් ගෘහ කටයුතු';
+
+  @override
+  String get dfRoom => 'කාමරය';
+
+  @override
+  String get dfKitchen => 'කුස්සිය';
+
+  @override
+  String get dfBath => 'නාන කාමරය';
+
+  @override
+  String get dfEntrance => 'ඇතුල්වීම';
+
+  @override
+  String get dfEntranceTrash => 'ඇතුල්වීම / කුණු';
+
+  @override
+  String get dfScopeMove => 'නිවස මාරු පිරිසිදු කිරීම';
+
+  @override
+  String get dfScopeBathKitchen => 'නාන කාමරය සහ කුස්සිය';
+
+  @override
+  String get dfDuration => 'කාලය';
+
+  @override
+  String get dfPriceVat => 'මිල (VAT ඇතුළුව)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ $max pyeong ට වැඩි නිවසට ස්ටුඩියෝ පිරිසිදු කිරීම වෙන් කළ නොහැක. චැට් හරහා සුදුසු සේවාව යෝජනා කරමු.';
+  }
+
+  @override
+  String get dfBookNow => 'වෙන් කරන්න';
+
+  @override
+  String get dfMustCheck => 'කරුණාකර පරීක්ෂා කරන්න';
+
+  @override
+  String get dfAddressTitle => 'වෙන් කිරීමට ලිපිනය තෝරන්න.';
+
+  @override
+  String get dfEdit => 'සංස්කරණය';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service $max pyeong දක්වා නිවාස සඳහා පමණි. $label ($size pyeong) සඳහා චැට් හරහා උදව් කරමු.';
+  }
+
+  @override
+  String dfOverPyeong(String max) {
+    return '$max pyeong දක්වා නිවාස පමණි';
+  }
+
+  @override
+  String get dfDateTitle => 'දිනය සහ වේලාව තෝරන්න.';
+
+  @override
+  String get dfManagerIntro => 'පුහුණු කළමනාකරුවෙක් පැමිණේ.';
+
+  @override
+  String get dfServiceTime => 'සේවා කාලය';
+
+  @override
+  String get dfChange => 'වෙනස් කරන්න';
+
+  @override
+  String get dfVisitDay => 'පැමිණෙන දිනය';
+
+  @override
+  String get dfVisitTime => 'පැමිණෙන වේලාව';
+
+  @override
+  String get dfSelect => 'තෝරන්න';
+
+  @override
+  String get dfSlotClosed => 'පිරී ඇත';
+
+  @override
+  String get dfSelectDone => 'අවසන්';
+
+  @override
+  String get dfDateNote => 'සමහර දින සහ වේලාවන්ට අමතර ගාස්තුවක් ඇත.';
+
+  @override
+  String get dfAmVisit => 'උදෑසන පැමිණීම';
+
+  @override
+  String get dfPmVisit => 'සවස පැමිණීම';
+
+  @override
+  String dfArrive(String range) {
+    return '$range පැමිණේ';
+  }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name\nසේවාවට පෙර මේවා සූදානම් කරන්න!';
+  }
+
+  @override
+  String get dfPrepTools => 'සූදානම් කළ යුතු උපකරණ';
+
+  @override
+  String get dfNoTools => 'උපකරණ නැද්ද?';
+
+  @override
+  String get dfNoToolsBody => 'සූදානම් කළ යුතු දේ කණ්ඩායමෙන් අසන්න';
+
+  @override
+  String get dfPayTitle => 'වට්ටම් සහ ගෙවීම තෝරන්න.';
+
+  @override
+  String get dfPoints => 'ලකුණු';
+
+  @override
+  String get dfPointsFirst => 'පළමුව ලකුණු භාවිතය';
+
+  @override
+  String get dfPointsOff => 'යොදා නැත';
+
+  @override
+  String get dfPointsNone => 'භාවිතයට ලකුණු නැත';
+
+  @override
+  String get dfPayMethod => 'ගෙවීම් ක්‍රමය';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'මූලික මිල ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'කූපන් වට්ටම';
+
+  @override
+  String get dfDue => 'ගෙවිය යුතු මුදල';
+
+  @override
+  String get dfPgNotice =>
+      'ගෙවීම් ගෙවීම් සේවා සපයන්නෙකු (PG) හරහා සකසනු ලැබේ. ගෙවීමෙන් ඔබ සේවා කොන්දේසි සහ අවලංගු කිරීමේ සහ මුදල් ආපසු දීමේ ප්‍රතිපත්තියට එකඟ වේ.';
+
+  @override
+  String get dfRefundPolicy => 'අවලංගු කිරීම සහ මුදල් ආපසු දීමේ ප්‍රතිපත්තිය';
+
+  @override
+  String get dfSummaryService => 'සේවාව';
+
+  @override
+  String get dfSummaryWhen => 'පැමිණීම';
+
+  @override
+  String get dfSummaryAddress => 'ලිපිනය';
+
+  @override
+  String get dfSummaryPaid => 'ගෙවූ මුදල';
+
+  @override
+  String get luggage_not_unpacked => 'බඩු තවම ලිහා නැත';
+
+  @override
+  String get dfReviewsTitle => 'පාරිභෝගික සමාලෝචන බලන්න.';
+
+  @override
+  String get dfBasicBody => 'මෙය අවශ්‍ය තොරතුරු වන අතර මිලට බලපෑ හැක.';
+
+  @override
+  String get building_commercial => 'වාණිජ ස්ථානය';
+
+  @override
+  String get dfBldVillaHouse => 'විලා / නිවස';
+
+  @override
+  String get dfLayoutOneHalf => 'කාමර 1.5 (වෙන් කළ ස්ටුඩියෝ / සාලය + 1)';
+
+  @override
+  String get dfLayoutTwo => 'සාලය + කාමර 2';
+
+  @override
+  String get dfLayoutThree => 'සාලය + කාමර 3';
+
+  @override
+  String get dfLayoutFour => 'සාලය + කාමර 4ක් හෝ වැඩි';
+
+  @override
+  String get dfDuplexTitle => 'දෙමහල්';
+
+  @override
+  String get dfNone => 'නැත';
+
+  @override
+  String get dfHas => 'ඇත';
+
+  @override
+  String get dfPleaseSelect => 'කරුණාකර තෝරන්න';
+
+  @override
+  String get dfBathCount => 'නාන කාමර ගණන';
+
+  @override
+  String get dfBalconyCount => 'බැල්කනි / උපයෝගිතා කාමර';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
+  }
+
+  @override
+  String get dfElevatorTitle => 'සෝපානය';
+
+  @override
+  String get dfFloor3 => 'ස්ථානය 3 වන මහල හෝ ඉහළ';
+
+  @override
+  String get dfAcAddonBanner => 'AC පිරිසිදු කිරීම එක් කළොත් වට්ටම්';
+
+  @override
+  String get dfAcAddonBody => 'පිරිසිදු AC සමඟ නව නිවසට යන්න.';
+
+  @override
+  String get dfAcAddonAdd => 'එක් කරන්න';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'AC $count ක් එක් කළා';
+  }
+
+  @override
+  String get dfAcAddonNote => 'වට්ටම් මිල ඇස්තමේන්තුවේ පෙනේ';
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'AC පිරිසිදු කිරීම එකතු ($pct% වට්ටම්)';
+  }
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count ක්';
+  }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'AC එකතු කිරීමේ වට්ටම (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'මිල ගණන් ක්‍රමය බලා\nඉදිරියට යන්න.';
+
+  @override
+  String get dfSafeBooking => 'Dahae ආරක්ෂිත වෙන්කිරීම';
+
+  @override
+  String get dfRecommended => 'නිර්දේශිත';
+
+  @override
+  String get dfEstimateVat => 'ඇස්තමේන්තුව (VAT ඇතුළුව) · වෙනස් විය හැක';
+
+  @override
+  String get dfBenefit1 => 'පුහුණු සහතික ලත් කණ්ඩායම';
+
+  @override
+  String get dfBenefit2 => 'සේවාවෙන් පසු දින 7ක නොමිලේ නිවැරදි කිරීම';
+
+  @override
+  String get dfBenefit3 => 'චැට් හරහා සජීවී ප්‍රගතිය';
+
+  @override
+  String get dfBenefit4 => 'පරිසර හිතකාමී සබන්';
+
+  @override
+  String get dfBenefit5 => 'සමාලෝචනයක් ලිවීමට ලකුණු';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ දැන් ගාස්තු නැත. චැට් හි මිල එකඟ වූ පසු $pct% තැන්පතුවෙන් තහවුරු වේ.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nවෙන්කිරීම අවසන් කරන්න.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'පැමිණෙන වේලාව: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ ඉල්ලීමෙන් පසු චැට් එක විවෘත වේ. මිල සහ කාලසටහන එකඟ වී තැන්පතුව ගෙවන්න.';
+
+  @override
+  String get dfHomeInfo => 'නිවසේ තොරතුරු';
+
+  @override
+  String get dfName => 'නම';
+
+  @override
+  String get dfBasicInfo => 'මූලික තොරතුරු';
+
+  @override
+  String get dfCleanType => 'පිරිසිදු කිරීමේ වර්ගය';
+
+  @override
+  String get dfBuilding => 'ගොඩනැගිල්ල';
+
+  @override
+  String get dfSpaceInfo => 'අවකාශ තොරතුරු';
+
+  @override
+  String get dfPayInfo => 'ගෙවීම් තොරතුරු';
+
+  @override
+  String get dfEstAmount => 'ඇස්තමේන්තු මිල';
+
+  @override
+  String get dfDepositOnConfirm => 'තැන්පතුව (තහවුරු කිරීමේදී)';
+
+  @override
+  String get dfNotes => 'සැලකිය යුතුයි';
+
+  @override
+  String get dfNote1 => 'උපදේශනයේදී හෝ දින 2කට පෙර නොමිලේ අවලංගු කළ හැක.';
+
+  @override
+  String get dfNote2 => 'අවසන් මිල චැට් හිදී, ඉතිරිය සේවාවෙන් පසු.';
+
+  @override
+  String get dfNote3 =>
+      'සම්බන්ධ විය නොහැකි නම් කණ්ඩායම මිනිත්තු 30කට පසු පිටත් වේ. ඇතුළුවීමේ ක්‍රමය කලින් පරීක්ෂා කරන්න.';
+
+  @override
+  String get dfNoteWarn =>
+      'කළමනාකරු සෘජු ගෙවීමක් ඉල්ලුවහොත් වහාම සහාය කණ්ඩායමට දන්වන්න.';
+
+  @override
+  String get dfSubmitRequest => 'වෙන්කිරීමේ ඉල්ලීම යවන්න';
+
+  @override
+  String get dfRequested => 'උපදේශනය ඉල්ලා ඇත.';
+
+  @override
+  String get dfStatusNote =>
+      '※ කණ්ඩායම අවසන් මිල චැට් හරහා එවයි. තැන්පතුවෙන් තහවුරු වේ.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'මිල වෙනස් විය හැක. තැන්පතුව එකඟ මිලෙන් $pct% කි.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'මිල ගණන් වර්ගය';
+
+  @override
+  String get dfDeposit => 'තැන්පතුව';
+
+  @override
+  String get dfAwaitingPay => 'ගෙවීම බලාපොරොත්තුවෙන්';
+
+  @override
+  String get dfServiceInfo => 'සේවා තොරතුරු';
+
+  @override
+  String get dfSpace => 'අවකාශය';
+
+  @override
+  String get dfChat => 'උපදේශන චැට්';
+
+  @override
+  String get dfRequestDone => 'ඉල්ලීම යවා ඇත';
+
+  @override
+  String get dfRequestDoneBody => 'චැට් විවෘතයි.\nකණ්ඩායම අවසන් මිල එවයි.';
+
+  @override
+  String get dfAcUpsell => 'නිවස මාරුවෙන් පසු AC ද පිරිසිදු කරමුද?';
+
+  @override
+  String get dfAcUpsellCta => 'AC පිරිසිදු කිරීම වෙන් කරන්න';
+
+  @override
+  String get dfViewChat => 'චැට් විවෘත කරන්න';
+
+  @override
   String get dhHomeRecommended => 'නිර්දේශිත සේවා';
 
   @override

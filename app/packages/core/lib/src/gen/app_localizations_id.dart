@@ -1859,6 +1859,456 @@ class TId extends T {
   String get bkViewMonth => 'Tampilan bulan';
 
   @override
+  String get dfScopeDusting => 'Membersihkan debu di atas perabot';
+
+  @override
+  String get dfScopeVacuum => 'Menyedot debu dan mengepel lantai';
+
+  @override
+  String get dfScopeDishes => 'Mencuci piring dan bak cuci';
+
+  @override
+  String get dfScopeBathroom => 'Keran, wastafel dan kloset luar dalam';
+
+  @override
+  String get dfScopeTrash => 'Memilah dan membuang sampah';
+
+  @override
+  String get dfScopeBedding => 'Merapikan tempat tidur';
+
+  @override
+  String get dfScopeTidy => 'Merapikan barang ke tempatnya';
+
+  @override
+  String get dfScopeStove => 'Mengelap kompor dan meja dapur';
+
+  @override
+  String get dfScopeFridge => 'Mengelap bagian luar kulkas';
+
+  @override
+  String get dfScopeTiles => 'Ubin lantai dan dinding kamar mandi';
+
+  @override
+  String get dfScopeMold => 'Menghilangkan jamur dan kerak air';
+
+  @override
+  String get dfScopeHood => 'Menghilangkan minyak di kap dan kompor';
+
+  @override
+  String get dfScopeCabinets => 'Bagian dalam lemari tanam dan kabinet';
+
+  @override
+  String get dfScopeWindows => 'Debu kusen dan rel jendela';
+
+  @override
+  String get dfScopeShoes => 'Bagian dalam rak sepatu';
+
+  @override
+  String get dfScopeEntrance => 'Lantai pintu masuk';
+
+  @override
+  String get dfBasicService => 'Layanan dasar';
+
+  @override
+  String get dfNotProvided => 'Tidak termasuk';
+
+  @override
+  String get dfNp1 => 'Mencuci dan melipat pakaian';
+
+  @override
+  String get dfNp2 => 'Tempat yang tak terjangkau';
+
+  @override
+  String get dfNp3 => 'Pembersihan khusus';
+
+  @override
+  String get dfNp4 => 'Pekerjaan rumah selain bersih-bersih';
+
+  @override
+  String get dfRoom => 'Kamar';
+
+  @override
+  String get dfKitchen => 'Dapur';
+
+  @override
+  String get dfBath => 'Kamar mandi';
+
+  @override
+  String get dfEntrance => 'Pintu masuk';
+
+  @override
+  String get dfEntranceTrash => 'Pintu masuk / sampah';
+
+  @override
+  String get dfScopeMove => 'Pindahan';
+
+  @override
+  String get dfScopeBathKitchen => 'Kamar mandi & dapur';
+
+  @override
+  String get dfDuration => 'Durasi';
+
+  @override
+  String get dfPriceVat => 'Harga (termasuk PPN)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ Rumah di atas $max pyeong tidak bisa memesan pembersihan studio. Kami sarankan layanan yang cocok lewat chat.';
+  }
+
+  @override
+  String get dfBookNow => 'Pesan';
+
+  @override
+  String get dfMustCheck => 'Harap diperhatikan';
+
+  @override
+  String get dfAddressTitle => 'Pilih alamat pemesanan.';
+
+  @override
+  String get dfEdit => 'Ubah';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service hanya untuk rumah hingga $max pyeong. $label ($size pyeong) kami bantu lewat chat.';
+  }
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Hanya rumah hingga $max pyeong';
+  }
+
+  @override
+  String get dfDateTitle => 'Pilih tanggal dan waktu.';
+
+  @override
+  String get dfManagerIntro => 'Manajer terlatih akan berkunjung.';
+
+  @override
+  String get dfServiceTime => 'Waktu layanan';
+
+  @override
+  String get dfChange => 'Ubah';
+
+  @override
+  String get dfVisitDay => 'Tanggal kunjungan';
+
+  @override
+  String get dfVisitTime => 'Waktu kunjungan';
+
+  @override
+  String get dfSelect => 'Pilih';
+
+  @override
+  String get dfSlotClosed => 'Penuh';
+
+  @override
+  String get dfSelectDone => 'Selesai';
+
+  @override
+  String get dfDateNote =>
+      'Tanggal dan waktu tertentu bisa dikenai biaya tambahan.';
+
+  @override
+  String get dfAmVisit => 'Kunjungan pagi';
+
+  @override
+  String get dfPmVisit => 'Kunjungan siang';
+
+  @override
+  String dfArrive(String range) {
+    return 'Tiba $range';
+  }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name,\nmohon siapkan ini!';
+  }
+
+  @override
+  String get dfPrepTools => 'Alat kebersihan yang disiapkan';
+
+  @override
+  String get dfNoTools => 'Tidak punya alatnya?';
+
+  @override
+  String get dfNoToolsBody => 'Tanyakan tim kami apa yang perlu disiapkan';
+
+  @override
+  String get dfPayTitle => 'Pilih diskon dan pembayaran.';
+
+  @override
+  String get dfPoints => 'Poin';
+
+  @override
+  String get dfPointsFirst => 'Gunakan poin dulu';
+
+  @override
+  String get dfPointsOff => 'Tidak dipakai';
+
+  @override
+  String get dfPointsNone => 'Tidak ada poin';
+
+  @override
+  String get dfPayMethod => 'Metode pembayaran';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Harga dasar ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Diskon kupon';
+
+  @override
+  String get dfDue => 'Jumlah dibayar';
+
+  @override
+  String get dfPgNotice =>
+      'Pembayaran diproses oleh payment gateway (PG). Dengan membayar, Anda menyetujui ketentuan layanan serta kebijakan pembatalan dan pengembalian dana.';
+
+  @override
+  String get dfRefundPolicy => 'Kebijakan pembatalan dan pengembalian dana';
+
+  @override
+  String get dfSummaryService => 'Layanan';
+
+  @override
+  String get dfSummaryWhen => 'Kunjungan';
+
+  @override
+  String get dfSummaryAddress => 'Alamat';
+
+  @override
+  String get dfSummaryPaid => 'Dibayar';
+
+  @override
+  String get luggage_not_unpacked => 'Barang pindahan belum dibuka';
+
+  @override
+  String get dfReviewsTitle => 'Lihat ulasan pelanggan.';
+
+  @override
+  String get dfBasicBody => 'Informasi wajib ini bisa memengaruhi harga.';
+
+  @override
+  String get building_commercial => 'Ruang komersial';
+
+  @override
+  String get dfBldVillaHouse => 'Vila / rumah';
+
+  @override
+  String get dfLayoutOneHalf => '1,5 kamar (studio terpisah / ruang tamu + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Ruang tamu + 2 kamar';
+
+  @override
+  String get dfLayoutThree => 'Ruang tamu + 3 kamar';
+
+  @override
+  String get dfLayoutFour => 'Ruang tamu + 4 kamar atau lebih';
+
+  @override
+  String get dfDuplexTitle => 'Rumah bertingkat';
+
+  @override
+  String get dfNone => 'Tidak';
+
+  @override
+  String get dfHas => 'Ada';
+
+  @override
+  String get dfPleaseSelect => 'Silakan pilih';
+
+  @override
+  String get dfBathCount => 'Jumlah kamar mandi';
+
+  @override
+  String get dfBalconyCount => 'Jumlah balkon / ruang cuci';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
+  }
+
+  @override
+  String get dfElevatorTitle => 'Lift';
+
+  @override
+  String get dfFloor3 => 'Lokasi di lantai 3 atau lebih';
+
+  @override
+  String get dfAcAddonBanner => 'Tambah cuci AC dapat diskon';
+
+  @override
+  String get dfAcAddonBody => 'Pindah dengan AC yang bersih juga.';
+
+  @override
+  String get dfAcAddonAdd => 'Tambah';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return '$count AC ditambahkan';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Harga setelah diskon terlihat di penawaran Anda';
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Tambahan cuci AC (diskon $pct%)';
+  }
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count unit';
+  }
+
+  @override
+  String get f_ac_addon_discount_bps => 'Diskon tambahan AC (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'Periksa cara penawaran\nlalu lanjutkan.';
+
+  @override
+  String get dfSafeBooking => 'Pemesanan Aman Dahae';
+
+  @override
+  String get dfRecommended => 'Rekomendasi';
+
+  @override
+  String get dfEstimateVat => 'Perkiraan (termasuk PPN) · bisa berubah';
+
+  @override
+  String get dfBenefit1 => 'Dikerjakan tim terlatih bersertifikat';
+
+  @override
+  String get dfBenefit2 => '7 hari perbaikan gratis setelah layanan';
+
+  @override
+  String get dfBenefit3 => 'Pantau progres langsung di chat';
+
+  @override
+  String get dfBenefit4 => 'Deterjen ramah lingkungan';
+
+  @override
+  String get dfBenefit5 => 'Poin untuk menulis ulasan';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Belum ada tagihan. Setelah harga disepakati, deposit $pct% mengonfirmasi pemesanan.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nSelesaikan pemesanan.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Waktu kunjungan: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ Chat konsultasi terbuka setelah permintaan dikirim. Sepakati harga dan jadwal, lalu bayar deposit.';
+
+  @override
+  String get dfHomeInfo => 'Info rumah';
+
+  @override
+  String get dfName => 'Nama';
+
+  @override
+  String get dfBasicInfo => 'Info dasar';
+
+  @override
+  String get dfCleanType => 'Jenis pembersihan';
+
+  @override
+  String get dfBuilding => 'Bangunan';
+
+  @override
+  String get dfSpaceInfo => 'Info ruang';
+
+  @override
+  String get dfPayInfo => 'Info pembayaran';
+
+  @override
+  String get dfEstAmount => 'Perkiraan harga';
+
+  @override
+  String get dfDepositOnConfirm => 'Deposit (dibayar saat konfirmasi)';
+
+  @override
+  String get dfNotes => 'Catatan';
+
+  @override
+  String get dfNote1 =>
+      'Batal gratis selama konsultasi atau hingga 2 hari sebelumnya.';
+
+  @override
+  String get dfNote2 => 'Harga akhir di chat; sisa dibayar setelah layanan.';
+
+  @override
+  String get dfNote3 =>
+      'Jika tidak bisa dihubungi untuk masuk, tim pergi setelah 30 menit. Mohon pastikan cara masuk.';
+
+  @override
+  String get dfNoteWarn =>
+      'Jika manajer meminta transaksi langsung, segera beri tahu layanan pelanggan.';
+
+  @override
+  String get dfSubmitRequest => 'Kirim permintaan';
+
+  @override
+  String get dfRequested => 'Konsultasi diminta.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Tim mengirim penawaran akhir di chat. Bayar deposit untuk konfirmasi.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Harga bisa berubah. Deposit $pct% dari harga final.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Jenis penawaran';
+
+  @override
+  String get dfDeposit => 'Deposit';
+
+  @override
+  String get dfAwaitingPay => 'Menunggu pembayaran';
+
+  @override
+  String get dfServiceInfo => 'Info layanan';
+
+  @override
+  String get dfSpace => 'Ruang';
+
+  @override
+  String get dfChat => 'Chat konsultasi';
+
+  @override
+  String get dfRequestDone => 'Permintaan terkirim';
+
+  @override
+  String get dfRequestDoneBody =>
+      'Chat konsultasi sudah terbuka.\nTim akan mengirim penawaran akhir.';
+
+  @override
+  String get dfAcUpsell => 'Bersihkan AC juga setelah pindah?';
+
+  @override
+  String get dfAcUpsellCta => 'Pesan cuci AC';
+
+  @override
+  String get dfViewChat => 'Buka chat konsultasi';
+
+  @override
   String get dhHomeRecommended => 'Rekomendasi';
 
   @override

@@ -646,7 +646,11 @@ class _QuoteDeskState extends State<_QuoteDesk> {
             children: [
               for (final entry in a.entries)
                 Chip(
-                  label: Text('${entry.key}: ${entry.value}'),
+                  label: Text(
+                    entry.key == 'ac_addons'
+                        ? '${t.service('aircon')}: ${(entry.value as List).cast<Json>().map((u) => '${t.unit(u['unit'] as String)} ${t.dfCountUnits('${u['count']}')}').join(', ')}'
+                        : '${entry.key}: ${entry.value}',
+                  ),
                   visualDensity: VisualDensity.compact,
                 ),
             ],
@@ -655,7 +659,7 @@ class _QuoteDeskState extends State<_QuoteDesk> {
             const SizedBox(height: Space.md),
             Text(t.cEstimateCalc, style: context.text.labelSmall),
             Text(
-              '${t.cBase} ${context.won(n('base'))} + ${t.cExtras} ${context.won(n('extras'))} · ${t.cSurcharge} +${n('surcharge_bps') / 100}% → ${t.cBeforeVat} ${context.won(n('before_vat'))} → ${context.won(n('total'))}',
+              '${t.cBase} ${context.won(n('base'))} + ${t.cExtras} ${context.won(n('extras'))} · ${t.cSurcharge} +${n('surcharge_bps') / 100}% → ${t.cBeforeVat} ${context.won(n('before_vat'))}${n('addons') > 0 ? ' + ${t.dfEstAddons('${n('addon_discount_bps') / 100}')} ${context.won(n('addons'))}' : ''} → ${context.won(n('total'))}',
               style: context.text.bodyMedium,
             ),
           ],

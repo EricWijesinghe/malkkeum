@@ -320,6 +320,7 @@ class _FormulaState extends State<_Formula> {
     'per_balcony',
     'duplex',
     'no_elevator_high_floor',
+    'ac_addon_discount_bps',
   ];
   final _ctrls = <String, TextEditingController>{};
   Json _formula = const {};
@@ -333,6 +334,7 @@ class _FormulaState extends State<_Formula> {
     'per_extra_bathroom' => t.f_per_extra_bathroom,
     'per_balcony' => t.f_per_balcony,
     'duplex' => t.f_duplex,
+    'ac_addon_discount_bps' => t.f_ac_addon_discount_bps,
     _ => t.f_no_elevator_high_floor,
   };
 

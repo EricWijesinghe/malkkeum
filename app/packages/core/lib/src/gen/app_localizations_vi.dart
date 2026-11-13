@@ -1842,6 +1842,455 @@ class TVi extends T {
   String get bkViewMonth => 'Xem theo tháng';
 
   @override
+  String get dfScopeDusting => 'Lau bụi trên đồ nội thất';
+
+  @override
+  String get dfScopeVacuum => 'Hút bụi và lau sàn';
+
+  @override
+  String get dfScopeDishes => 'Rửa bát và bồn rửa';
+
+  @override
+  String get dfScopeBathroom => 'Vòi, bồn rửa mặt và bồn cầu trong ngoài';
+
+  @override
+  String get dfScopeTrash => 'Phân loại và đổ rác';
+
+  @override
+  String get dfScopeBedding => 'Gấp xếp chăn gối';
+
+  @override
+  String get dfScopeTidy => 'Sắp xếp đồ về chỗ cũ';
+
+  @override
+  String get dfScopeStove => 'Lau bếp và mặt bàn';
+
+  @override
+  String get dfScopeFridge => 'Lau mặt ngoài tủ lạnh';
+
+  @override
+  String get dfScopeTiles => 'Gạch sàn và tường phòng tắm';
+
+  @override
+  String get dfScopeMold => 'Tẩy nấm mốc và cặn nước';
+
+  @override
+  String get dfScopeHood => 'Tẩy dầu mỡ máy hút mùi và bếp';
+
+  @override
+  String get dfScopeCabinets => 'Bên trong tủ âm tường và tủ đựng';
+
+  @override
+  String get dfScopeWindows => 'Lau bụi khung và ray cửa sổ';
+
+  @override
+  String get dfScopeShoes => 'Bên trong tủ giày';
+
+  @override
+  String get dfScopeEntrance => 'Sàn lối vào';
+
+  @override
+  String get dfBasicService => 'Dịch vụ cơ bản';
+
+  @override
+  String get dfNotProvided => 'Không bao gồm';
+
+  @override
+  String get dfNp1 => 'Giặt và gấp quần áo';
+
+  @override
+  String get dfNp2 => 'Nơi không với tới';
+
+  @override
+  String get dfNp3 => 'Vệ sinh chuyên biệt';
+
+  @override
+  String get dfNp4 => 'Việc nhà ngoài dọn dẹp';
+
+  @override
+  String get dfRoom => 'Phòng';
+
+  @override
+  String get dfKitchen => 'Bếp';
+
+  @override
+  String get dfBath => 'Phòng tắm';
+
+  @override
+  String get dfEntrance => 'Lối vào';
+
+  @override
+  String get dfEntranceTrash => 'Lối vào / rác';
+
+  @override
+  String get dfScopeMove => 'Dọn chuyển nhà';
+
+  @override
+  String get dfScopeBathKitchen => 'Phòng tắm & bếp';
+
+  @override
+  String get dfDuration => 'Thời lượng';
+
+  @override
+  String get dfPriceVat => 'Giá (gồm VAT)';
+
+  @override
+  String dfStudioNote(String max) {
+    return '※ Nhà trên $max pyeong không đặt được dọn studio. Chúng tôi sẽ tư vấn dịch vụ phù hợp.';
+  }
+
+  @override
+  String get dfBookNow => 'Đặt lịch';
+
+  @override
+  String get dfMustCheck => 'Vui lòng lưu ý';
+
+  @override
+  String get dfAddressTitle => 'Chọn địa chỉ đặt lịch.';
+
+  @override
+  String get dfEdit => 'Sửa';
+
+  @override
+  String dfStudioToast(String service, String max, String label, String size) {
+    return '$service chỉ cho nhà tối đa $max pyeong. $label ($size pyeong) sẽ được tư vấn qua chat.';
+  }
+
+  @override
+  String dfOverPyeong(String max) {
+    return 'Chỉ nhận nhà tối đa $max pyeong';
+  }
+
+  @override
+  String get dfDateTitle => 'Chọn ngày và giờ.';
+
+  @override
+  String get dfManagerIntro => 'Quản lý đã được đào tạo sẽ đến.';
+
+  @override
+  String get dfServiceTime => 'Thời gian dịch vụ';
+
+  @override
+  String get dfChange => 'Đổi';
+
+  @override
+  String get dfVisitDay => 'Ngày đến';
+
+  @override
+  String get dfVisitTime => 'Giờ đến';
+
+  @override
+  String get dfSelect => 'Chọn';
+
+  @override
+  String get dfSlotClosed => 'Hết chỗ';
+
+  @override
+  String get dfSelectDone => 'Xong';
+
+  @override
+  String get dfDateNote => 'Một số ngày giờ có thể tính thêm phí.';
+
+  @override
+  String get dfAmVisit => 'Đến buổi sáng';
+
+  @override
+  String get dfPmVisit => 'Đến buổi chiều';
+
+  @override
+  String dfArrive(String range) {
+    return 'Đến lúc $range';
+  }
+
+  @override
+  String dfPrepHeader(String name) {
+    return '$name ơi,\nhãy chuẩn bị trước nhé!';
+  }
+
+  @override
+  String get dfPrepTools => 'Dụng cụ cần chuẩn bị';
+
+  @override
+  String get dfNoTools => 'Thiếu dụng cụ?';
+
+  @override
+  String get dfNoToolsBody => 'Hỏi đội tư vấn cần chuẩn bị gì';
+
+  @override
+  String get dfPayTitle => 'Chọn ưu đãi và thanh toán.';
+
+  @override
+  String get dfPoints => 'Điểm';
+
+  @override
+  String get dfPointsFirst => 'Dùng điểm trước';
+
+  @override
+  String get dfPointsOff => 'Chưa áp dụng';
+
+  @override
+  String get dfPointsNone => 'Không có điểm để dùng';
+
+  @override
+  String get dfPayMethod => 'Phương thức thanh toán';
+
+  @override
+  String dfBaseAmount(String duration) {
+    return 'Giá cơ bản ($duration)';
+  }
+
+  @override
+  String get dfCouponDiscount => 'Giảm giá phiếu';
+
+  @override
+  String get dfDue => 'Số tiền thanh toán';
+
+  @override
+  String get dfPgNotice =>
+      'Thanh toán được xử lý qua cổng thanh toán (PG). Khi thanh toán, bạn đồng ý với điều khoản dịch vụ và chính sách hủy và hoàn tiền.';
+
+  @override
+  String get dfRefundPolicy => 'Chính sách hủy và hoàn tiền';
+
+  @override
+  String get dfSummaryService => 'Dịch vụ';
+
+  @override
+  String get dfSummaryWhen => 'Thời gian đến';
+
+  @override
+  String get dfSummaryAddress => 'Địa chỉ';
+
+  @override
+  String get dfSummaryPaid => 'Đã thanh toán';
+
+  @override
+  String get luggage_not_unpacked => 'Chưa mở đồ chuyển nhà';
+
+  @override
+  String get dfReviewsTitle => 'Xem đánh giá thực tế.';
+
+  @override
+  String get dfBasicBody => 'Thông tin bắt buộc, có thể ảnh hưởng đến giá.';
+
+  @override
+  String get building_commercial => 'Mặt bằng kinh doanh';
+
+  @override
+  String get dfBldVillaHouse => 'Nhà thấp tầng / nhà riêng';
+
+  @override
+  String get dfLayoutOneHalf => '1,5 phòng (studio tách / khách + 1)';
+
+  @override
+  String get dfLayoutTwo => 'Phòng khách + 2 phòng';
+
+  @override
+  String get dfLayoutThree => 'Phòng khách + 3 phòng';
+
+  @override
+  String get dfLayoutFour => 'Phòng khách + 4 phòng trở lên';
+
+  @override
+  String get dfDuplexTitle => 'Nhà có gác';
+
+  @override
+  String get dfNone => 'Không';
+
+  @override
+  String get dfHas => 'Có';
+
+  @override
+  String get dfPleaseSelect => 'Vui lòng chọn';
+
+  @override
+  String get dfBathCount => 'Số phòng tắm';
+
+  @override
+  String get dfBalconyCount => 'Số ban công / phòng giặt';
+
+  @override
+  String dfCountN(String n) {
+    return '$n';
+  }
+
+  @override
+  String get dfElevatorTitle => 'Thang máy';
+
+  @override
+  String get dfFloor3 => 'Nơi dọn ở tầng 3 trở lên';
+
+  @override
+  String get dfAcAddonBanner => 'Thêm vệ sinh máy lạnh được giảm giá';
+
+  @override
+  String get dfAcAddonBody => 'Đón nhà mới với máy lạnh sạch.';
+
+  @override
+  String get dfAcAddonAdd => 'Thêm';
+
+  @override
+  String dfAcAddonAdded(String count) {
+    return 'Đã thêm $count máy lạnh';
+  }
+
+  @override
+  String get dfAcAddonNote => 'Giá đã giảm sẽ hiện trong báo giá';
+
+  @override
+  String dfEstAddons(String pct) {
+    return 'Thêm vệ sinh máy lạnh (giảm $pct%)';
+  }
+
+  @override
+  String dfCountUnits(String count) {
+    return '$count máy';
+  }
+
+  @override
+  String get f_ac_addon_discount_bps =>
+      'Giảm giá thêm máy lạnh (bps, 1000 = 10%)';
+
+  @override
+  String get dfQuoteMethodTitle => 'Xem cách báo giá\nrồi tiếp tục.';
+
+  @override
+  String get dfSafeBooking => 'Đặt lịch an tâm Dahae';
+
+  @override
+  String get dfRecommended => 'Đề xuất';
+
+  @override
+  String get dfEstimateVat => 'Ước tính (gồm VAT) · có thể đổi sau tư vấn';
+
+  @override
+  String get dfBenefit1 => 'Đội chuyên nghiệp được đào tạo, chứng nhận';
+
+  @override
+  String get dfBenefit2 => '7 ngày chỉnh sửa miễn phí sau dịch vụ';
+
+  @override
+  String get dfBenefit3 => 'Theo dõi tiến độ trực tiếp qua chat';
+
+  @override
+  String get dfBenefit4 => 'Dùng chất tẩy rửa thân thiện môi trường';
+
+  @override
+  String get dfBenefit5 => 'Tặng điểm khi viết đánh giá';
+
+  @override
+  String dfDepositNote(String pct) {
+    return '※ Chưa thanh toán bây giờ. Sau khi chốt giá qua chat, đặt cọc $pct% để xác nhận.';
+  }
+
+  @override
+  String dfReviewHeader(String date) {
+    return '$date\nHoàn tất đặt lịch.';
+  }
+
+  @override
+  String dfVisitTimeLine(String slot) {
+    return 'Giờ đến: $slot';
+  }
+
+  @override
+  String get dfReviewNote =>
+      '※ Sau khi gửi, phòng chat tư vấn sẽ mở. Chốt giá và lịch rồi đặt cọc để xác nhận.';
+
+  @override
+  String get dfHomeInfo => 'Thông tin nhà';
+
+  @override
+  String get dfName => 'Tên';
+
+  @override
+  String get dfBasicInfo => 'Thông tin cơ bản';
+
+  @override
+  String get dfCleanType => 'Loại dọn';
+
+  @override
+  String get dfBuilding => 'Tòa nhà';
+
+  @override
+  String get dfSpaceInfo => 'Không gian';
+
+  @override
+  String get dfPayInfo => 'Thanh toán';
+
+  @override
+  String get dfEstAmount => 'Giá ước tính';
+
+  @override
+  String get dfDepositOnConfirm => 'Tiền cọc (trả khi xác nhận)';
+
+  @override
+  String get dfNotes => 'Lưu ý';
+
+  @override
+  String get dfNote1 => 'Hủy miễn phí khi đang tư vấn hoặc trước 2 ngày.';
+
+  @override
+  String get dfNote2 => 'Giá cuối chốt qua chat, phần còn lại trả sau dịch vụ.';
+
+  @override
+  String get dfNote3 =>
+      'Nếu không liên lạc được để vào nhà, đội sẽ rời đi sau 30 phút. Vui lòng xác nhận cách vào trước.';
+
+  @override
+  String get dfNoteWarn =>
+      'Nếu quản lý đòi giao dịch trực tiếp, hãy báo ngay cho bộ phận hỗ trợ.';
+
+  @override
+  String get dfSubmitRequest => 'Gửi yêu cầu đặt lịch';
+
+  @override
+  String get dfRequested => 'Đã gửi yêu cầu tư vấn.';
+
+  @override
+  String get dfStatusNote =>
+      '※ Đội tư vấn sẽ gửi báo giá cuối qua chat. Đặt cọc để xác nhận.';
+
+  @override
+  String dfPayInfoBody(String pct) {
+    return 'Giá có thể đổi sau tư vấn. Tiền cọc là $pct% giá đã chốt.';
+  }
+
+  @override
+  String get dfQuoteMethod => 'Hình thức báo giá';
+
+  @override
+  String get dfDeposit => 'Tiền cọc';
+
+  @override
+  String get dfAwaitingPay => 'Chờ thanh toán';
+
+  @override
+  String get dfServiceInfo => 'Thông tin dịch vụ';
+
+  @override
+  String get dfSpace => 'Không gian';
+
+  @override
+  String get dfChat => 'Chat tư vấn';
+
+  @override
+  String get dfRequestDone => 'Đã gửi yêu cầu';
+
+  @override
+  String get dfRequestDoneBody =>
+      'Phòng chat tư vấn đã mở.\nĐội sẽ gửi báo giá cuối.';
+
+  @override
+  String get dfAcUpsell => 'Vệ sinh máy lạnh sau khi chuyển nhà?';
+
+  @override
+  String get dfAcUpsellCta => 'Đặt vệ sinh máy lạnh';
+
+  @override
+  String get dfViewChat => 'Mở chat tư vấn';
+
+  @override
   String get dhHomeRecommended => 'Dịch vụ gợi ý';
 
   @override

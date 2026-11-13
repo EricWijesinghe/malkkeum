@@ -257,6 +257,9 @@ class QuoteAnswers {
   bool? elevator;
   bool floor3OrHigher = false;
 
+  /// Aircon unit `label_key` -> count added to the move clean; the server prices them from the catalog.
+  Map<String, int> acAddons = {};
+
   bool get stepBasicDone =>
       building != null && layout != null && duplex != null;
   bool get stepSpaceDone => elevator != null;
@@ -271,6 +274,10 @@ class QuoteAnswers {
     'balconies': balconies,
     'elevator': elevator,
     'floor_3_or_higher': floor3OrHigher,
+    'ac_addons': [
+      for (final e in acAddons.entries)
+        if (e.value > 0) {'unit': e.key, 'count': e.value},
+    ],
   };
 }
 

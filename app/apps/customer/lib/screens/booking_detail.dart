@@ -474,8 +474,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       MaterialPageRoute<void>(
         builder: (_) => ScheduleScreen(
           draft: draft,
-          step: 1,
-          total: 1,
           onDone: (ctx) async {
             final nav = Navigator.of(ctx);
             await _act(
