@@ -124,7 +124,7 @@ class _DahaeLogoState extends State<DahaeLogo>
     final words = Text(
       w.brand.name,
       style: TextStyle(
-        fontFamily: 'Pretendard',
+        fontFamily: 'Dahae Sans',
         package: 'ui',
         fontWeight: FontWeight.w800,
         letterSpacing: -0.8,
@@ -155,7 +155,7 @@ class _DahaeLogoState extends State<DahaeLogo>
                     Text(
                       tagline,
                       style: TextStyle(
-                        fontFamily: 'Pretendard',
+                        fontFamily: 'Dahae Sans',
                         package: 'ui',
                         fontWeight: FontWeight.w500,
                         fontSize: size * 0.2,

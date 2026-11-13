@@ -252,7 +252,10 @@ class ServiceHero extends StatelessWidget {
               ? Image.network(
                   url,
                   fit: BoxFit.cover,
+                  // Hero box is at most ~full width; 1080 covers a 3x phone without decoding the original.
+                  cacheWidth: 1080,
                   semanticLabel: context.t.service(service.code),
+                  errorBuilder: (_, _, _) => Center(child: _art(context)),
                 )
               : Center(child: _art(context)),
         ),

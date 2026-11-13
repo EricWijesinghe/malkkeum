@@ -90,8 +90,9 @@ extension AppColorsX on BuildContext {
   Color get primary => Theme.of(this).colorScheme.primary;
 }
 
-const _font = 'Pretendard';
+const _font = 'Dahae Sans';
 const _fallback = [
+  'Dahae Sans Full', // rare Hangul syllables missing from the subset faces
   'Apple SD Gothic Neo',
   'Noto Sans KR',
   'Noto Sans JP',
