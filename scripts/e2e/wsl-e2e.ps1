@@ -4,7 +4,8 @@
 #        docker build --build-arg APP_VERSION=e2e -f deploy/web.Dockerfile -t ghcr.io/ericwijesinghe/malkkeum-web:e2e .
 #        docker pull postgres:17
 #        docker save -o /mnt/d/WSL/dahae-e2e/images.tar ghcr.io/ericwijesinghe/malkkeum-{api,web}:e2e postgres:17
-#   2. powershell -File scripts/e2e/wsl-e2e.ps1 [-LogDir D:\WSL\dahae-e2e\logs] [-Keep]
+#   2. powershell -File scripts/e2e/wsl-e2e.ps1 [-LogDir D:\WSL\dahae-e2e\logs] [-Keep] [-UpgradeFrom <git rev>]
+#      -UpgradeFrom: install with that revision's deploy/install.sh first, then upgrade with this checkout's.
 # Downloads the official Ubuntu 24.04 WSL rootfs (checked against SHA256SUMS), imports it as `dahae-e2e`, runs
 # scripts/e2e/wsl-e2e.sh as root and unregisters the distro after a pass (kept after a failure for debugging).
 param(
@@ -12,7 +13,8 @@ param(
   [string]$ImagesTar = 'D:\WSL\dahae-e2e\images.tar',
   [string]$LogDir = 'D:\WSL\dahae-e2e\logs',
   [string]$Distro = 'dahae-e2e',
-  [switch]$Keep
+  [switch]$Keep,
+  [string]$UpgradeFrom = ''
 )
 $ErrorActionPreference = 'Stop'
 $Repo = (Resolve-Path "$PSScriptRoot\..\..").Path
@@ -44,7 +46,13 @@ wsl.exe --terminate $Distro
 $src = (wsl.exe -d $Distro -u root --exec wslpath -a $Repo).Trim()
 $tar = (wsl.exe -d $Distro -u root --exec wslpath -a $ImagesTar).Trim()
 $logs = (wsl.exe -d $Distro -u root --exec wslpath -a $LogDir).Trim()
-wsl.exe -d $Distro -u root --exec bash -c "rm -rf /root/src && mkdir -p /root/src && tar -C '$src' -cf - deploy scripts | tar -C /root/src -xf - && bash /root/src/scripts/e2e/wsl-e2e.sh '$tar' '$logs' 2>&1 | tee '$logs/run.log'; exit `${PIPESTATUS[0]}"
+$old = ''
+if ($UpgradeFrom) { # git archive writes the file itself (a PowerShell redirect would re-encode it)
+  git -C $Repo archive -o "$LogDir\old-installer.tar" $UpgradeFrom deploy/install.sh
+  if ($LASTEXITCODE) { throw "no deploy/install.sh at $UpgradeFrom" }
+  $old = '/root/old/deploy/install.sh'
+}
+wsl.exe -d $Distro -u root --exec bash -c "rm -rf /root/src /root/old && mkdir -p /root/src /root/old && tar -C '$src' -cf - deploy scripts | tar -C /root/src -xf - && { [ -z '$old' ] || tar -C /root/old -xf '$logs/old-installer.tar'; } && bash /root/src/scripts/e2e/wsl-e2e.sh '$tar' '$logs' $old 2>&1 | tee '$logs/run.log'; exit `${PIPESTATUS[0]}"
 $rc = $LASTEXITCODE
 wsl.exe --terminate $Distro
 if ($rc -eq 0 -and -not $Keep) { wsl.exe --unregister $Distro; Remove-Item -Recurse -Force "$Root\disk" -ErrorAction SilentlyContinue }
