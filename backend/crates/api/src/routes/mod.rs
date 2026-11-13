@@ -5,15 +5,14 @@ mod auth;
 mod booking_core;
 pub(crate) mod bookings;
 pub mod cases;
-pub(crate) mod catalog;
-mod feed;
-pub(crate) mod chat;
 mod cash_receipts;
+pub(crate) mod catalog;
+pub(crate) mod chat;
 mod checkout_policy;
-mod tax_invoices;
-pub(crate) mod config;
 pub mod checkout_recon;
 pub mod checkouts;
+pub(crate) mod config;
+mod feed;
 mod finance;
 pub(crate) mod growth;
 pub(crate) mod me;
@@ -21,17 +20,19 @@ mod member;
 mod ops;
 pub(crate) mod partner;
 pub(crate) mod partner_jobs;
-pub(crate) mod tips;
-pub(crate) mod waitlist;
-pub mod subscription_engine;
-pub(crate) mod subscriptions;
-pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
+mod settings;
 pub mod setup;
-pub mod uploads;
+pub mod site;
 mod staff_mfa;
 mod staff_password;
+pub mod subscription_engine;
+pub(crate) mod subscriptions;
+mod tax_invoices;
+pub(crate) mod tips;
+pub mod uploads;
+pub(crate) mod waitlist;
 mod webhooks;
 
 use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
@@ -108,6 +109,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
                 .merge(config::admin_routes())
+                .merge(settings::admin_routes())
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())

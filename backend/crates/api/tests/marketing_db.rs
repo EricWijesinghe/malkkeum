@@ -4,7 +4,7 @@
 
 mod common;
 
-use api::{auth, marketing, privacy::CONSENT_VERSION, state::AppState};
+use api::{auth, marketing, privacy::CONSENT_VERSION, settings_registry, state::AppState};
 use axum::http::StatusCode;
 use chrono::{DateTime, Duration, TimeZone, Utc};
 use common::{SECRET, app, book, call, customer, login, seed_catalog};
@@ -168,11 +168,12 @@ async fn weekly_cap_skips_capped_customers_without_recording_them(pool: PgPool) 
     let app = app(pool.clone());
     let capped = customer(&app, &pool, "010-5400-0004").await;
     let open = customer(&app, &pool, "010-5400-0005").await;
+    let cap = settings_registry::get(&pool, &common::test_config(), "freq_cap_per_week").await.expect("cap") as usize;
     for user in [capped.user, open.user] {
         grant_marketing(&pool, user, true).await;
     }
-    seed_sent(&pool, capped.user, marketing::FREQ_CAP_PER_WEEK as usize).await;
-    seed_sent(&pool, open.user, marketing::FREQ_CAP_PER_WEEK as usize - 1).await;
+    seed_sent(&pool, capped.user, cap).await;
+    seed_sent(&pool, open.user, cap - 1).await;
     scheduled_push(&pool, Utc::now() - Duration::minutes(1)).await;
 
     marketing::dispatch_at(&state(&pool), daytime()).await.expect("dispatch");

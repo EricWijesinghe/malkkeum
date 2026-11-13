@@ -8142,6 +8142,294 @@ abstract class T {
   /// **'저장'**
   String get caseSave;
 
+  /// No description provided for @rulesTab.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영 규칙'**
+  String get rulesTab;
+
+  /// No description provided for @rulesIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'여기서 바꾼 값은 바로 적용되거나 서버를 다시 시작할 때 적용돼요. 값을 비워 두면 처음 설정값으로 돌아가요.'**
+  String get rulesIntro;
+
+  /// No description provided for @rulesGroupBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업장 한도'**
+  String get rulesGroupBusiness;
+
+  /// No description provided for @rulesGroupMarketing.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 발송'**
+  String get rulesGroupMarketing;
+
+  /// No description provided for @rulesGroupPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트'**
+  String get rulesGroupPoints;
+
+  /// No description provided for @rulesGroupQuality.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 품질'**
+  String get rulesGroupQuality;
+
+  /// No description provided for @rulesGroupOps.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버·알림 기준'**
+  String get rulesGroupOps;
+
+  /// No description provided for @rulesRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력 가능 범위'**
+  String get rulesRange;
+
+  /// No description provided for @rulesSource.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 값 출처'**
+  String get rulesSource;
+
+  /// No description provided for @rulesSourceDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 바꾼 값'**
+  String get rulesSourceDb;
+
+  /// No description provided for @rulesSourceEnv.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치 시 설정값'**
+  String get rulesSourceEnv;
+
+  /// No description provided for @rulesSourceDefault.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값'**
+  String get rulesSourceDefault;
+
+  /// No description provided for @rulesTightenDown.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값보다 낮게만 바꿀 수 있어요'**
+  String get rulesTightenDown;
+
+  /// No description provided for @rulesTightenUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값보다 높게만 바꿀 수 있어요'**
+  String get rulesTightenUp;
+
+  /// No description provided for @rulesApplyInstant.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 적용'**
+  String get rulesApplyInstant;
+
+  /// No description provided for @rulesApplyRebuild.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버를 다시 시작해야 적용돼요'**
+  String get rulesApplyRebuild;
+
+  /// No description provided for @rulesReadOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'여기서는 바꿀 수 없어요 (개발자에게 문의)'**
+  String get rulesReadOnly;
+
+  /// No description provided for @rulesReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값으로'**
+  String get rulesReset;
+
+  /// No description provided for @rulesSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get rulesSave;
+
+  /// No description provided for @rulesSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get rulesSaved;
+
+  /// No description provided for @rulesNoChanges.
+  ///
+  /// In ko, this message translates to:
+  /// **'바뀐 값이 없어요'**
+  String get rulesNoChanges;
+
+  /// No description provided for @rulesInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력한 값을 확인해 주세요'**
+  String get rulesInvalid;
+
+  /// No description provided for @rulePointsAdjustMax.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 한 번에 지급·차감할 최대 점수'**
+  String get rulePointsAdjustMax;
+
+  /// No description provided for @ruleUploadDailyQuota.
+  ///
+  /// In ko, this message translates to:
+  /// **'하루 사진 업로드 한도 (장)'**
+  String get ruleUploadDailyQuota;
+
+  /// No description provided for @ruleMaxOpenQuoteRequests.
+  ///
+  /// In ko, this message translates to:
+  /// **'동시에 열 수 있는 견적 요청 수'**
+  String get ruleMaxOpenQuoteRequests;
+
+  /// No description provided for @ruleMaxThreadsPerDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'하루 고객 대화방 개설 한도'**
+  String get ruleMaxThreadsPerDay;
+
+  /// No description provided for @ruleReviewReportThreshold.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 신고 몇 명이면 숨길지'**
+  String get ruleReviewReportThreshold;
+
+  /// No description provided for @ruleNoshowGraceMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'노쇼 판정 대기 시간 (분)'**
+  String get ruleNoshowGraceMinutes;
+
+  /// No description provided for @ruleAiChatRetentionDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담 기록 보관 기간 (일)'**
+  String get ruleAiChatRetentionDays;
+
+  /// No description provided for @ruleUploadOrphanDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 없는 사진 삭제 기간 (일)'**
+  String get ruleUploadOrphanDays;
+
+  /// No description provided for @ruleReconcileIntervalSecs.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 대사 주기 (초)'**
+  String get ruleReconcileIntervalSecs;
+
+  /// No description provided for @ruleFreqCapPerWeek.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 한 명에게 일주일 최대 광고 수'**
+  String get ruleFreqCapPerWeek;
+
+  /// No description provided for @ruleNudgeRebookDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'재예약 안내 발송 (방문 후 일수)'**
+  String get ruleNudgeRebookDays;
+
+  /// No description provided for @ruleQualityWindowDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'품질 점수 집계 기간 (일)'**
+  String get ruleQualityWindowDays;
+
+  /// No description provided for @ruleQualityOnTimeGraceMin.
+  ///
+  /// In ko, this message translates to:
+  /// **'정시 도착 허용 시간 (분)'**
+  String get ruleQualityOnTimeGraceMin;
+
+  /// No description provided for @ruleBackupStaleHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'백업이 이 시간 넘게 없으면 빨간불 (시간)'**
+  String get ruleBackupStaleHours;
+
+  /// No description provided for @ruleBackupLateHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'백업이 이 시간 넘게 없으면 노란불 (시간)'**
+  String get ruleBackupLateHours;
+
+  /// No description provided for @ruleDiskLowPct.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 여유가 이 비율 아래면 빨간불 (%)'**
+  String get ruleDiskLowPct;
+
+  /// No description provided for @ruleDiskWarnPct.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 여유가 이 비율 아래면 노란불 (%)'**
+  String get ruleDiskWarnPct;
+
+  /// No description provided for @ruleMaintenanceOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 모드 (새 예약 막기)'**
+  String get ruleMaintenanceOn;
+
+  /// No description provided for @ruleMaintenanceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 안내 문구'**
+  String get ruleMaintenanceMessage;
+
+  /// No description provided for @rulesApplyStoreManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱스토어에서 직접 수정해요'**
+  String get rulesApplyStoreManual;
+
+  /// No description provided for @rulesMaxLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'최대 글자 수'**
+  String get rulesMaxLength;
+
+  /// No description provided for @rulesDeleteWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간을 줄이면 기준보다 오래된 기록이 다음 정리 때 바로 삭제돼요. 삭제한 기록은 되돌릴 수 없어요.'**
+  String get rulesDeleteWarning;
+
+  /// No description provided for @rulesNoshowWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'노쇼 판정 대기 시간을 바꾸면 노쇼로 판정되는 기준이 바뀌어요.'**
+  String get rulesNoshowWarning;
+
+  /// No description provided for @err_tighten_only.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값을 넘는 값은 저장할 수 없어요. 기본값 쪽으로만 바꿀 수 있어요.'**
+  String get err_tighten_only;
+
+  /// No description provided for @err_threshold_order.
+  ///
+  /// In ko, this message translates to:
+  /// **'노란불 기준과 빨간불 기준의 순서가 맞지 않아요. 두 값을 다시 확인해 주세요.'**
+  String get err_threshold_order;
+
+  /// No description provided for @err_read_only_setting.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 값은 여기서 바꿀 수 없어요. 개발자에게 문의해 주세요.'**
+  String get err_read_only_setting;
+
   /// No description provided for @cSetup.
   ///
   /// In ko, this message translates to:

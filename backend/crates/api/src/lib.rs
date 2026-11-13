@@ -3,9 +3,9 @@
 
 pub mod acquisition;
 pub mod address;
+pub mod ai;
 pub mod analytics;
 pub mod app_links;
-pub mod ai;
 pub mod auth;
 pub mod backup;
 pub mod client_errors;
@@ -17,31 +17,32 @@ pub mod demo;
 pub mod error;
 pub mod i18n;
 pub mod idempotency;
+pub mod image_meta;
 pub mod integrations;
 pub mod jobs;
 pub mod lifecycle;
-pub mod image_meta;
 pub mod lockout;
 pub mod marketing;
 pub mod metrics;
-pub mod openapi;
 pub mod noshow;
+pub mod openapi;
 pub mod ops;
 pub mod ops_alerts;
 pub mod payout;
 pub mod payout_sync;
 pub mod points;
 pub mod privacy;
-pub mod quality;
-pub mod retention;
-pub mod safety;
 pub mod providers;
+pub mod quality;
 pub mod ratelimit;
 pub mod realtime;
 pub mod reconciler;
+pub mod retention;
 pub mod routes;
+pub mod safety;
 pub mod seed;
 pub mod seo;
+pub mod settings_registry;
 pub mod state;
 pub mod telemetry;
 pub mod totp;
@@ -135,7 +136,10 @@ fn spawn_settings_refresh(state: AppState) -> JoinHandle<()> {
         let mut tick = tokio::time::interval(SETTINGS_REFRESH);
         tick.tick().await;
         while lifecycle::next_tick(&mut tick, &mut stop).await {
-            let ok = routes::setup::reload(&state).await.inspect_err(|e| tracing::warn!(error = %e, "settings refresh failed")).is_ok();
+            let ok = routes::setup::reload(&state)
+                .await
+                .inspect_err(|e| tracing::warn!(error = %e, "settings refresh failed"))
+                .is_ok();
             metrics::job_pass("settings_refresh", ok);
         }
     })

@@ -10,6 +10,7 @@ import 'screens/finance.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
 import 'screens/ops.dart';
+import 'screens/rules.dart';
 import 'screens/people.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
@@ -112,6 +113,13 @@ final _sections = <_Section>[
     Icons.tune_rounded,
     (t) => t.cSetup,
     () => const SetupScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    'c_rules',
+    Icons.rule_rounded,
+    (t) => t.rulesTab,
+    () => const RulesScreen(),
     adminOnly: true,
   ),
   _Section(
