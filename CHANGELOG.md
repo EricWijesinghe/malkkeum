@@ -13,6 +13,8 @@ from the release branches; no tags existed for them.
 - Customer bookings, notifications, wallet points history and payment history, and partner quotes
   page through their lists on scroll (with a bottom loader and retry on error) instead of showing
   only the first 50 rows; the points ledger has a paged `GET /me/points/ledger` endpoint.
+- SMS and AlimTalk to customers, partners and reminders now go through the notification outbox: a provider outage is retried with backoff, and a text that fails 8 times is dead-lettered, counted on the console's outbox card and raised as an owner alert. OTP codes stay inline with one quick retry.
+
 ### Security
 - Live-event sockets open with a 30-second, single-use ticket from `POST /v1/realtime/ticket` instead of the access token in the URL, so the long-lived token no longer reaches proxy and access logs. The old `?token=` form still works for one release. Silent sockets are pinged every 25 s and closed after 60 s without an answer.
 

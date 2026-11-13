@@ -1071,6 +1071,7 @@
  "oJobNever": "No successful run yet",
  "oJobStalled": "Stalled",
  "oJobErrors": "{count} errors",
+ "oJobDeadLetters": "{count} texts dead-lettered",
  "oJob_settings_refresh": "Settings refresh",
  "oJob_reconciler": "Payment reconciliation",
  "oJob_ops_alerts": "Owner alerts",
