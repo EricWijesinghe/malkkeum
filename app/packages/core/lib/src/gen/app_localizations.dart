@@ -217,6 +217,90 @@ abstract class T {
   /// **'숫자만 입력해요. 비워두면 기본값을 써요.'**
   String get aiCapHint;
 
+  /// No description provided for @cAppLinkTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 링크'**
+  String get cAppLinkTitle;
+
+  /// No description provided for @cAppLinkHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버 로그인 후 앱으로 돌아오게 하는 연결 정보예요. 저장하면 바로 적용돼요. 잘 모르면 개발자에게 맡기세요.'**
+  String get cAppLinkHint;
+
+  /// No description provided for @cAppLinkAndroidLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 서명 지문 (SHA-256)'**
+  String get cAppLinkAndroidLabel;
+
+  /// No description provided for @cAppLinkAndroidHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 줄에 하나씩, 콜론(:)으로 나눈 32쌍의 값이에요. 최대 8개.'**
+  String get cAppLinkAndroidHint;
+
+  /// No description provided for @cAppLinkTeamLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'애플 팀 ID (10자리)'**
+  String get cAppLinkTeamLabel;
+
+  /// No description provided for @cAppLinkSourceDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'콘솔에서 저장한 값을 쓰고 있어요'**
+  String get cAppLinkSourceDb;
+
+  /// No description provided for @cAppLinkSourceEnv.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 설정 값을 쓰고 있어요'**
+  String get cAppLinkSourceEnv;
+
+  /// No description provided for @cAppLinkAndroidOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 앱 링크: 켜짐'**
+  String get cAppLinkAndroidOn;
+
+  /// No description provided for @cAppLinkAndroidOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 앱 링크: 꺼짐'**
+  String get cAppLinkAndroidOff;
+
+  /// No description provided for @cAppLinkIosOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'아이폰 앱 링크: 켜짐'**
+  String get cAppLinkIosOn;
+
+  /// No description provided for @cAppLinkIosOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'아이폰 앱 링크: 꺼짐'**
+  String get cAppLinkIosOff;
+
+  /// No description provided for @cAppLinkNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'값이 없으면 두 연결이 꺼져요. 네이버 로그인 후 앱으로 돌아오지 않을 수 있어요.'**
+  String get cAppLinkNone;
+
+  /// No description provided for @cAppLinkChecked.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인했어요. 아직 저장하지 않았어요.'**
+  String get cAppLinkChecked;
+
+  /// No description provided for @cAppLinkCheck.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get cAppLinkCheck;
+
   /// No description provided for @cAudit.
   ///
   /// In ko, this message translates to:
@@ -8285,6 +8369,138 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
+
+  /// No description provided for @prqTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴·개인정보 요청'**
+  String get prqTitle;
+
+  /// No description provided for @prqIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.'**
+  String get prqIntro;
+
+  /// No description provided for @prqPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호'**
+  String get prqPhone;
+
+  /// No description provided for @prqFind.
+  ///
+  /// In ko, this message translates to:
+  /// **'찾기'**
+  String get prqFind;
+
+  /// No description provided for @prqNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 번호로 등록된 고객이 없어요.'**
+  String get prqNotFound;
+
+  /// No description provided for @prqBookings.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 수'**
+  String get prqBookings;
+
+  /// No description provided for @prqExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본 받기 (CSV)'**
+  String get prqExport;
+
+  /// No description provided for @prqExported.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본을 저장했어요.'**
+  String get prqExported;
+
+  /// No description provided for @prqDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리'**
+  String get prqDelete;
+
+  /// No description provided for @prqDeleteAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리는 관리자만 할 수 있어요.'**
+  String get prqDeleteAdminOnly;
+
+  /// No description provided for @prqDeleteAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.'**
+  String get prqDeleteAsk;
+
+  /// No description provided for @prqPhoneAgain.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호 다시 입력'**
+  String get prqPhoneAgain;
+
+  /// No description provided for @prqPhoneMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호가 맞지 않아요.'**
+  String get prqPhoneMismatch;
+
+  /// No description provided for @prqDeleteDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리가 끝났어요.'**
+  String get prqDeleteDone;
+
+  /// No description provided for @prqFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 잠시 후 다시 시도해 주세요.'**
+  String get prqFailed;
+
+  /// No description provided for @prqLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 기록'**
+  String get prqLog;
+
+  /// No description provided for @prqLogEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 처리한 요청이 없어요.'**
+  String get prqLogEmpty;
+
+  /// No description provided for @prqKindExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본'**
+  String get prqKindExport;
+
+  /// No description provided for @prqKindDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴'**
+  String get prqKindDelete;
+
+  /// No description provided for @prqStatusDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get prqStatusDone;
+
+  /// No description provided for @prqStatusFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get prqStatusFailed;
+
+  /// No description provided for @prqBy.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리한 직원'**
+  String get prqBy;
 
   /// No description provided for @cSetupColorContrast.
   ///

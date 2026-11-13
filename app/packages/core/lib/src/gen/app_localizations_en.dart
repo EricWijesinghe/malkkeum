@@ -73,6 +73,51 @@ class TEn extends T {
   String get aiCapHint => 'Numbers only. Leave empty for the default.';
 
   @override
+  String get cAppLinkTitle => 'App links';
+
+  @override
+  String get cAppLinkHint =>
+      'These links let Naver sign-in return to the app. Saving applies them right away. If unsure, ask your developer.';
+
+  @override
+  String get cAppLinkAndroidLabel => 'Android signing fingerprint (SHA-256)';
+
+  @override
+  String get cAppLinkAndroidHint =>
+      'One per line: 32 hex pairs separated by colons. Up to 8.';
+
+  @override
+  String get cAppLinkTeamLabel => 'Apple Team ID (10 characters)';
+
+  @override
+  String get cAppLinkSourceDb => 'Using the values saved in the console';
+
+  @override
+  String get cAppLinkSourceEnv => 'Using the server configuration values';
+
+  @override
+  String get cAppLinkAndroidOn => 'Android app links: on';
+
+  @override
+  String get cAppLinkAndroidOff => 'Android app links: off';
+
+  @override
+  String get cAppLinkIosOn => 'iPhone app links: on';
+
+  @override
+  String get cAppLinkIosOff => 'iPhone app links: off';
+
+  @override
+  String get cAppLinkNone =>
+      'With no values both links are off, and Naver sign-in may not return to the app.';
+
+  @override
+  String get cAppLinkChecked => 'Checked. Not saved yet.';
+
+  @override
+  String get cAppLinkCheck => 'Check';
+
+  @override
   String get cAudit => 'Activity log';
 
   @override
@@ -4460,6 +4505,75 @@ class TEn extends T {
   @override
   String get pvExportFailed =>
       'Could not load your data. Please try again later.';
+
+  @override
+  String get prqTitle => 'Account deletion and data requests';
+
+  @override
+  String get prqIntro =>
+      'When a customer asks for a copy of their data or to delete their account, find them by phone number and handle it here. Every step is logged. Deletion cannot be undone.';
+
+  @override
+  String get prqPhone => 'Customer phone number';
+
+  @override
+  String get prqFind => 'Find';
+
+  @override
+  String get prqNotFound => 'No customer is registered with this number.';
+
+  @override
+  String get prqBookings => 'Bookings';
+
+  @override
+  String get prqExport => 'Download a copy of the data (CSV)';
+
+  @override
+  String get prqExported => 'The copy of the data was saved.';
+
+  @override
+  String get prqDelete => 'Delete account';
+
+  @override
+  String get prqDeleteAdminOnly => 'Only an admin can delete an account.';
+
+  @override
+  String get prqDeleteAsk =>
+      'Type the customer\'s phone number again to confirm. Their name and contact details are erased and this cannot be undone. Bookings and payment records stay, as the law requires.';
+
+  @override
+  String get prqPhoneAgain => 'Type the phone number again';
+
+  @override
+  String get prqPhoneMismatch => 'The phone number does not match.';
+
+  @override
+  String get prqDeleteDone => 'The account was deleted.';
+
+  @override
+  String get prqFailed =>
+      'This could not be completed. Please try again shortly.';
+
+  @override
+  String get prqLog => 'Request log';
+
+  @override
+  String get prqLogEmpty => 'No requests have been handled yet.';
+
+  @override
+  String get prqKindExport => 'Data copy';
+
+  @override
+  String get prqKindDelete => 'Deletion';
+
+  @override
+  String get prqStatusDone => 'Done';
+
+  @override
+  String get prqStatusFailed => 'Failed';
+
+  @override
+  String get prqBy => 'Handled by';
 
   @override
   String get cSetupColorContrast =>

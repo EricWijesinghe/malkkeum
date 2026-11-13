@@ -14,6 +14,7 @@ import 'screens/notify_templates.dart';
 import 'screens/ops.dart';
 import 'screens/rules.dart';
 import 'screens/people.dart';
+import 'screens/privacy_requests.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
 import 'state.dart';
@@ -143,6 +144,12 @@ final _sections = <_Section>[
     (t) => t.cAudit,
     () => const AuditScreen(),
     adminOnly: true,
+  ),
+  _Section(
+    'c_privacy',
+    Icons.privacy_tip_rounded,
+    (t) => t.prqTitle,
+    () => const PrivacyRequestsScreen(),
   ),
 ];
 

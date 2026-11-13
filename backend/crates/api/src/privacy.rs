@@ -161,7 +161,8 @@ pub async fn put_consents(
 }
 
 /// 열람 요구: everything the service holds about the customer, without credentials or gateway keys.
-pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer) -> ApiResult<Json<Value>> {
+/// Shared by the customer's own download and by staff handling a request for that customer.
+pub async fn export_doc(db: &PgPool, user: Uuid) -> ApiResult<Value> {
     let doc: Value = sqlx::query_scalar(
         "SELECT jsonb_build_object(
           'exported_at', now(),
@@ -174,10 +175,14 @@ pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::
           'notifications', (SELECT COALESCE(jsonb_agg(jsonb_build_object('kind', kind, 'data', data, 'created_at', created_at) ORDER BY created_at DESC), '[]'::jsonb) FROM (SELECT kind, data, created_at FROM notifications WHERE owner_role = 'customer' AND owner_id = $1 ORDER BY created_at DESC LIMIT 500) n)
         )",
     )
-    .bind(a.id)
-    .fetch_one(&s.db)
+    .bind(user)
+    .fetch_one(db)
     .await?;
-    Ok(Json(doc))
+    Ok(doc)
+}
+
+pub async fn export(State(s): State<AppState>, crate::auth::Customer(a): crate::auth::Customer) -> ApiResult<Json<Value>> {
+    Ok(Json(export_doc(&s.db, a.id).await?))
 }
 
 /// Deletes the customer's gateway keys (saved cards) before personal data is removed. Fails closed:
@@ -218,13 +223,18 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .bind(user)
         .execute(&mut *tx)
         .await?;
-    sqlx::query(
+    let anonymised = sqlx::query(
         "UPDATE users SET deleted_at = now(), name = '', email = NULL, phone = 'deleted:' || id::text, ci_hash = NULL,
          identity_verified_at = NULL, referral_code = NULL, acquisition = NULL WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(user)
     .execute(&mut *tx)
     .await?;
+    // Already anonymised (a replayed Apple notification, or a concurrent deletion that committed first): nothing
+    // left to do, so roll back instead of repeating the cascade. Replays must succeed, so this is Ok, not an error.
+    if anonymised.rows_affected() == 0 {
+        return Ok(());
+    }
     let referral_phone: Option<String> =
         sqlx::query_scalar("SELECT referred_phone FROM referrals WHERE referred_user_id = $1 AND referred_phone NOT LIKE 'hmac:%' FOR UPDATE")
             .bind(user)

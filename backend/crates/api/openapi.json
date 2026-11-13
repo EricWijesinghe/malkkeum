@@ -4828,6 +4828,109 @@
         }
       }
     },
+    "/v1/admin/privacy/customers": {
+      "get": {
+        "operationId": "adminPrivacyLookup",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Live customers with a phone number (customer rights request lookup)",
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/customers/{id}/export": {
+      "get": {
+        "operationId": "adminPrivacyExport",
+        "tags": [
+          "admin"
+        ],
+        "summary": "One customer's data as JSON, or as CSV with format=csv (logged as a privacy request)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/customers/{id}/delete": {
+      "post": {
+        "operationId": "adminPrivacyDelete",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete a customer's account; admin only, the phone must be typed back (logged as a privacy request)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/requests": {
+      "get": {
+        "operationId": "adminPrivacyRequests",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Log of customer rights requests, newest first (the last 200)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/subscriptions": {
       "get": {
         "operationId": "adminListSubscriptions",

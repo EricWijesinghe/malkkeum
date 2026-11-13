@@ -20,6 +20,7 @@ pub(crate) mod me;
 mod keys;
 mod member;
 mod notify_templates;
+mod privacy_requests;
 mod ops;
 pub(crate) mod partner;
 pub(crate) mod partner_jobs;
@@ -135,6 +136,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::analytics::admin_routes())
                 .merge(subscriptions::admin_routes())
                 .merge(audit::admin_routes()),
+                .merge(privacy_requests::admin_routes()),
         )
         .nest(
             "/partner",
