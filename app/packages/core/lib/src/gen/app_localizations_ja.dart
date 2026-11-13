@@ -1545,7 +1545,10 @@ class TJa extends T {
   String get moreFaq => 'よくある質問';
 
   @override
-  String get morePartner => 'パートナー提携';
+  String get morePartner => '提携のお問い合わせ';
+
+  @override
+  String get brandTagline => '家事、ぜんぶお任せ';
 
   @override
   String get moreLanguage => '言語';

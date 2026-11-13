@@ -163,6 +163,9 @@ AppColors appColorsFor(BrandConfig brand, bool dark) => AppColors(
   isDark: dark,
 );
 
+/// Snackbar action: light teal, >= 4.5:1 on both snackbar fills (theme_contrast_test).
+const _snackAction = Color(0xFF5CC8DE);
+
 ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
   final dark = brightness == Brightness.dark;
   final colors = appColorsFor(brand, dark);
@@ -200,7 +203,8 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
       foregroundColor: colors.ink,
       elevation: 0,
       scrolledUnderElevation: 0,
-      centerTitle: true,
+      // Left-aligned titles, as in the design (back arrow + title, big title on tab roots).
+      centerTitle: false,
       titleTextStyle: text.titleMedium,
       systemOverlayStyle: dark
           ? SystemUiOverlayStyle.light
@@ -263,7 +267,8 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
       // Transparent so the GlassBar wrapping it shows through.
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: colors.primaryTint,
+      // No pill: the active tab is the bolder label plus the Icon3D pop.
+      indicatorColor: Colors.transparent,
       height: 68,
       labelTextStyle: WidgetStateProperty.resolveWith(
         (s) => text.labelSmall?.copyWith(
@@ -282,7 +287,23 @@ ThemeData buildTheme(BrandConfig brand, Brightness brightness) {
       contentTextStyle: text.bodyMedium?.copyWith(
         color: dark ? colors.ink : Colors.white,
       ),
+      // Light teal reads on both snackbar fills (ink, dark surfaceHigh); dark teal does not.
+      actionTextColor: _snackAction,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    ),
+    // Safety net: without it M3 paints FABs in the seed's off-palette primaryContainer.
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: colors.surface,
+      foregroundColor: colors.ink,
+      elevation: 1,
+      focusElevation: 1,
+      hoverElevation: 2,
+      highlightElevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.pill),
+        side: BorderSide(color: colors.line),
+      ),
+      extendedTextStyle: text.labelLarge,
     ),
     dividerTheme: DividerThemeData(color: colors.line, thickness: 1, space: 1),
     chipTheme: ChipThemeData(

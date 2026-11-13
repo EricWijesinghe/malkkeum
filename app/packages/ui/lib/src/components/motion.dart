@@ -142,3 +142,47 @@ class _StaggerInState extends State<StaggerIn>
     );
   }
 }
+
+/// Material fade-through for content that swaps in place (segment, tab or
+/// filter results): the old child fades out over [Motion.fadeOut], then the
+/// new one fades in over [Motion.fadeIn] while scaling 0.98 -> 1. Key each
+/// child by what it shows (e.g. `KeyedSubtree(key: ValueKey(filter), ...)`),
+/// or the swap is not detected. Reduced motion swaps at once.
+class FadeThroughSwitcher extends StatelessWidget {
+  const FadeThroughSwitcher({
+    super.key,
+    required this.child,
+    this.alignment = Alignment.topCenter,
+  });
+
+  final Widget child;
+
+  /// Where old and new content line up during the swap.
+  final AlignmentGeometry alignment;
+
+  static const _scaleIn = 0.98;
+
+  @override
+  Widget build(BuildContext context) {
+    final still = MediaQuery.disableAnimationsOf(context);
+    final total = Motion.fadeOut + Motion.fadeIn;
+    // The incoming child waits out the fade-out share of the total duration.
+    final wait = Motion.fadeOut.inMicroseconds / total.inMicroseconds;
+    return AnimatedSwitcher(
+      duration: still ? Duration.zero : total,
+      reverseDuration: still ? Duration.zero : Motion.fadeOut,
+      switchInCurve: Interval(wait, 1, curve: Motion.ease),
+      switchOutCurve: Curves.linear,
+      layoutBuilder: (current, previous) =>
+          Stack(alignment: alignment, children: [...previous, ?current]),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: ScaleTransition(
+          scale: Tween(begin: _scaleIn, end: 1.0).animate(animation),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
+  }
+}

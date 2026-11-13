@@ -42,6 +42,25 @@ void main() {
         expect(_ratio(fg, bg), greaterThanOrEqualTo(4.5), reason: '$fg on $bg');
       }
     });
+
+    test('$name snackbar action, FAB and nav bar follow the design', () {
+      final theme = buildTheme(
+        BrandConfig.placeholder,
+        dark ? Brightness.dark : Brightness.light,
+      );
+      final snack = theme.snackBarTheme;
+      expect(
+        _ratio(snack.actionTextColor!, snack.backgroundColor!),
+        greaterThanOrEqualTo(4.5),
+      );
+      final fab = theme.floatingActionButtonTheme;
+      expect(
+        _ratio(fab.foregroundColor!, fab.backgroundColor!),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(theme.navigationBarTheme.indicatorColor, Colors.transparent);
+      expect(theme.appBarTheme.centerTitle, isFalse);
+    });
   }
 
   // DAHAE-PLAN §1.1: brand pairs. Text >= 4.5:1, non-text (icons, borders, large text) >= 3:1.

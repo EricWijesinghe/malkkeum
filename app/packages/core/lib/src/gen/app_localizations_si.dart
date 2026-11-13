@@ -1588,7 +1588,10 @@ class TSi extends T {
   String get moreFaq => 'නිතර ඇසෙන ප්‍රශ්න';
 
   @override
-  String get morePartner => 'හවුල්කරුවෙකු වන්න';
+  String get morePartner => 'හවුල්කාරිත්ව විමසීම්';
+
+  @override
+  String get brandTagline => 'ගෙදර වැඩ, අපට භාර දෙන්න';
 
   @override
   String get moreLanguage => 'භාෂාව';

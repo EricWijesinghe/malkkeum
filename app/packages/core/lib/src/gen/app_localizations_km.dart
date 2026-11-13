@@ -1583,7 +1583,10 @@ class TKm extends T {
   String get moreFaq => 'សំណួរដែលសួរញឹកញាប់';
 
   @override
-  String get morePartner => 'ទំនាក់ទំនងសហការជាមួយយើង';
+  String get morePartner => 'ទំនាក់ទំនងសហការ';
+
+  @override
+  String get brandTagline => 'ការងារផ្ទះ ទុកឱ្យយើងធ្វើ';
 
   @override
   String get moreLanguage => 'ភាសា';

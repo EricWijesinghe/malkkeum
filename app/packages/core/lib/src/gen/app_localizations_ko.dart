@@ -1530,7 +1530,7 @@ class TKo extends T {
   String get morePoints => '청소 포인트';
 
   @override
-  String get moreAccount => '계정 정보';
+  String get moreAccount => '계정정보';
 
   @override
   String get moreAddresses => '주소 관리';
@@ -1545,7 +1545,10 @@ class TKo extends T {
   String get moreFaq => '자주 묻는 질문';
 
   @override
-  String get morePartner => '파트너 제휴 문의';
+  String get morePartner => '제휴 문의';
+
+  @override
+  String get brandTagline => '집안일, 다 해드려요';
 
   @override
   String get moreLanguage => '언어';

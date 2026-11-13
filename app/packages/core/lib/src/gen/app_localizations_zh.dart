@@ -1544,6 +1544,9 @@ class TZh extends T {
   String get morePartner => '合作咨询';
 
   @override
+  String get brandTagline => '家务，全都交给我们';
+
+  @override
   String get moreLanguage => '语言';
 
   @override

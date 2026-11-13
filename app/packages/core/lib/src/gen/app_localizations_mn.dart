@@ -1587,7 +1587,10 @@ class TMn extends T {
   String get moreFaq => 'Түгээмэл асуулт';
 
   @override
-  String get morePartner => 'Хамтрагч болох';
+  String get morePartner => 'Хамтын ажиллагаа';
+
+  @override
+  String get brandTagline => 'Гэрийн ажлыг бидэнд даатга';
 
   @override
   String get moreLanguage => 'Хэл';

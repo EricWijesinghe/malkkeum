@@ -7,9 +7,9 @@ import '../theme.dart';
 import '../tokens.dart';
 
 /// Success moment: the 3D `confirm_check` (teal disc, yellow check, sparkle)
-/// pops in as a 24-frame sequence. Without the art, the painter draws the
-/// ring, the check and a confetti burst instead. Reduced motion shows the
-/// final frame at once.
+/// pops in as a 24-frame sequence behind one expanding halo ring, with one
+/// medium haptic. Without the art, the painter draws the ring, the check and a
+/// confetti burst instead. Reduced motion shows the final frame at once.
 class SuccessMark extends StatefulWidget {
   const SuccessMark({super.key, this.size = 112, this.semanticLabel});
   final double size;
@@ -78,20 +78,28 @@ class _SuccessMarkState extends State<SuccessMark>
         animation: _c,
         builder: (_, _) {
           final frame = (_c.value * (SuccessMark.frameCount - 1)).round();
-          return Center(
-            child: Image.asset(
-              SuccessMark.frameAsset(frame),
-              package: 'ui',
-              width: widget.size * 1.5,
-              height: widget.size * 1.5,
-              gaplessPlayback: true,
-              excludeFromSemantics: true,
-              errorBuilder: (_, _, _) => CustomPaint(
-                size: Size.square(widget.size * 1.8),
-                painter: _MarkPainter(
-                  _c.value,
-                  context.colors.fresh,
-                  widget.size,
+          return CustomPaint(
+            // One ring, 600 ms of the 800 ms clock, starting as the disc lands.
+            painter: _HaloPainter(
+              const Interval(0.2, 0.95).transform(_c.value),
+              context.colors.fresh,
+              widget.size,
+            ),
+            child: Center(
+              child: Image.asset(
+                SuccessMark.frameAsset(frame),
+                package: 'ui',
+                width: widget.size * 1.5,
+                height: widget.size * 1.5,
+                gaplessPlayback: true,
+                excludeFromSemantics: true,
+                errorBuilder: (_, _, _) => CustomPaint(
+                  size: Size.square(widget.size * 1.8),
+                  painter: _MarkPainter(
+                    _c.value,
+                    context.colors.fresh,
+                    widget.size,
+                  ),
                 ),
               ),
             ),
@@ -100,6 +108,31 @@ class _SuccessMarkState extends State<SuccessMark>
       ),
     ),
   );
+}
+
+/// Expanding ring (fresh at 25% fading out) behind the success mark.
+class _HaloPainter extends CustomPainter {
+  _HaloPainter(this.t, this.color, this.size);
+  final double t;
+  final Color color;
+  final double size;
+
+  @override
+  void paint(Canvas canvas, Size s) {
+    if (t <= 0 || t >= 1) return;
+    final e = Curves.easeOutCubic.transform(t);
+    canvas.drawCircle(
+      s.center(Offset.zero),
+      size * (0.5 + 0.4 * e),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size * 0.06 * (1 - e) + 1
+        ..color = color.withValues(alpha: 0.25 * (1 - t)),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_HaloPainter old) => old.t != t || old.color != color;
 }
 
 class _MarkPainter extends CustomPainter {
@@ -201,5 +234,48 @@ class RollingAmount extends StatelessWidget {
         : Motion.standard,
     curve: Motion.ease,
     builder: (_, v, _) => Text(format(v.round()), style: style),
+  );
+}
+
+/// Amount that changes by sliding the new value up into place while the old
+/// one fades (price bars, totals, counters). Whole-text swap, so it stays
+/// correct at 200% text scale. Reduced motion swaps at once.
+class AmountSwitcher extends StatelessWidget {
+  const AmountSwitcher({
+    super.key,
+    required this.value,
+    required this.format,
+    this.style,
+    this.alignment = AlignmentDirectional.centerStart,
+  });
+  final int value;
+  final String Function(int) format;
+  final TextStyle? style;
+
+  /// Where old and new text line up while both are on screen.
+  final AlignmentGeometry alignment;
+
+  @override
+  Widget build(BuildContext context) => ClipRect(
+    child: AnimatedSwitcher(
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : Motion.standard,
+      switchInCurve: Motion.emphasized,
+      switchOutCurve: Motion.ease,
+      layoutBuilder: (current, previous) =>
+          Stack(alignment: alignment, children: [...previous, ?current]),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.35),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+      ),
+      child: Text(format(value), key: ValueKey(value), style: style),
+    ),
   );
 }

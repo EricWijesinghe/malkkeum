@@ -453,7 +453,7 @@ T = {
     "moreNotices": "E'lonlar",
     "moreTips": "Tozalash maslahatlari",
     "moreFaq": "Ko'p so'raladigan savollar",
-    "morePartner": "Hamkor bo'lish",
+    "morePartner": "Hamkorlik",
     "moreLanguage": "Til",
     "langSystem": "Qurilma sozlamasiga ko'ra",
     "moreVersion": "Versiya {v}",

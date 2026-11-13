@@ -165,6 +165,10 @@ class SectionTitle extends StatelessWidget {
   );
 }
 
+/// Ink label on light fills (check yellow: 11.67:1), white on dark ones.
+Color _labelOn(Color fill) =>
+    fill.computeLuminance() > 0.4 ? Neutral.c900 : Colors.white;
+
 /// Primary CTA with built-in busy state so double taps can't double charge.
 /// Presses spring down and the brand glow tightens.
 class PrimaryButton extends StatelessWidget {
@@ -221,19 +225,22 @@ class PrimaryButton extends StatelessWidget {
                 )
               : color == null
               ? null
-              : FilledButton.styleFrom(backgroundColor: color),
+              : FilledButton.styleFrom(
+                  backgroundColor: color,
+                  foregroundColor: _labelOn(color!),
+                ),
           // Haptic on tap; busy/disabled never fire.
           onPressed: busy || onPressed == null ? null : _tap,
           child: AnimatedSwitcher(
             duration: Motion.micro,
             child: busy
-                ? const SizedBox(
-                    key: ValueKey('busy'),
+                ? SizedBox(
+                    key: const ValueKey('busy'),
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.4,
-                      color: Colors.white,
+                      color: color == null ? Colors.white : _labelOn(color!),
                     ),
                   )
                 : Text(label, key: const ValueKey('label')),

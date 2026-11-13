@@ -95,10 +95,10 @@ void main() {
     await unmount(tester);
   });
 
-  test('slotRangeLabel shows the arrival window in 24h', () {
-    expect(slotRangeLabel(9, 'ko'), '09:00~10:00');
+  test('slotRangeLabel: period-hour in ko (design), 24h elsewhere', () {
+    expect(slotRangeLabel(9, 'ko'), '오전 9시~10시');
+    expect(slotRangeLabel(11, 'ko'), '오전 11시~오후 12시');
     expect(slotRangeLabel(8, 'en'), '08:00~09:00');
     expect(slotRangeLabel(13, 'vi', hours: 2), '13:00~15:00');
-    expect(slotRangeLabel(23, 'ko'), '23:00~00:00');
   });
 }

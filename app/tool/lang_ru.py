@@ -453,7 +453,7 @@ T = {
     "moreNotices": "Объявления",
     "moreTips": "Советы по уборке",
     "moreFaq": "Частые вопросы",
-    "morePartner": "Стать партнёром",
+    "morePartner": "Сотрудничество",
     "moreLanguage": "Язык",
     "langSystem": "Как в настройках устройства",
     "moreVersion": "Версия {v}",

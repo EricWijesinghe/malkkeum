@@ -453,7 +453,7 @@ T = {
     "moreNotices": "Pengumuman",
     "moreTips": "Tips membersihkan",
     "moreFaq": "Pertanyaan umum",
-    "morePartner": "Jadi mitra",
+    "morePartner": "Kerja sama",
     "moreLanguage": "Bahasa",
     "langSystem": "Ikuti pengaturan perangkat",
     "moreVersion": "Versi {v}",

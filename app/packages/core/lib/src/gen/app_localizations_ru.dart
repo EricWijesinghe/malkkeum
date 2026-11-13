@@ -1586,7 +1586,10 @@ class TRu extends T {
   String get moreFaq => 'Частые вопросы';
 
   @override
-  String get morePartner => 'Стать партнёром';
+  String get morePartner => 'Сотрудничество';
+
+  @override
+  String get brandTagline => 'Домашние дела берём на себя';
 
   @override
   String get moreLanguage => 'Язык';
