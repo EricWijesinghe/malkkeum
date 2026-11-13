@@ -177,6 +177,8 @@ class IntegrationCard extends StatefulWidget {
 class _IntegrationCardState extends State<IntegrationCard> {
   final _text = <String, TextEditingController>{};
   final _map = <String, Map<String, TextEditingController>>{};
+  // Null until the owner touches a switch or it is saved; an untouched switch is not sent (env default stays).
+  final _toggles = <String, bool?>{};
   bool _busy = false;
   Json? _result;
 
@@ -204,6 +206,8 @@ class _IntegrationCardState extends State<IntegrationCard> {
           for (final k in keys)
             k: TextEditingController(text: saved[k] as String? ?? ''),
         };
+      } else if (kind == 'toggle') {
+        _toggles[name] = f['set'] == true ? preview == true : null;
       } else {
         final show = kind == 'text' || kind == 'list';
         final text = preview is List
@@ -230,6 +234,8 @@ class _IntegrationCardState extends State<IntegrationCard> {
   Json _body() => {
     for (final e in _text.entries)
       if (e.value.text.trim().isNotEmpty) e.key: e.value.text.trim(),
+    for (final e in _toggles.entries)
+      if (e.value != null) e.key: e.value,
     for (final e in _map.entries)
       e.key: {
         for (final m in e.value.entries)
@@ -387,8 +393,16 @@ class _IntegrationCardState extends State<IntegrationCard> {
         ),
       );
     }
-    final hidden = kind == 'secret' || kind == 'file';
     final preview = f['preview'];
+    if (kind == 'toggle') {
+      return SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label),
+        value: _toggles[name] ?? preview == true,
+        onChanged: (on) => setState(() => _toggles[name] = on),
+      );
+    }
+    final hidden = kind == 'secret' || kind == 'file';
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.sm),
       child: TextField(
@@ -435,6 +449,16 @@ class _Steps extends StatelessWidget {
             ),
           ],
         ),
+        if (guide.devHelp)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.xs),
+            child: Chip(
+              avatar: const Icon(Icons.engineering_rounded, size: 18),
+              label: Text(
+                const Tr('개발자 첫 도움 필요', 'Needs a developer the first time').of(context.lang),
+              ),
+            ),
+          ),
         for (final (i, step) in guide.steps.indexed)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.xs),
@@ -454,6 +478,17 @@ class _Steps extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        for (final shot in guide.screenshots)
+          Container(
+            height: 120,
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(bottom: Space.sm),
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).dividerColor),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(shot.of(context.lang), style: context.text.bodySmall),
           ),
       ],
     );
