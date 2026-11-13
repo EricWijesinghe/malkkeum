@@ -111,21 +111,48 @@
         "tags": [
           "realtime"
         ],
-        "summary": "WebSocket: booking, chat and notification events. Browsers pass the token as ?token=",
+        "summary": "WebSocket: booking, chat and notification events. Authenticate with a ticket from POST /v1/realtime/ticket",
         "parameters": [
           {
-            "name": "token",
+            "name": "ticket",
             "in": "query",
             "required": false,
             "schema": {
               "type": "string"
             },
-            "description": "Access token for clients that cannot set headers"
+            "description": "Single-use ticket from POST /v1/realtime/ticket, valid 30 seconds"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "deprecated": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Deprecated: access token in the URL. Accepted for apps installed before tickets; use ticket"
           }
         ],
         "responses": {
           "101": {
             "description": "Switching protocols"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/realtime/ticket": {
+      "post": {
+        "operationId": "realtimeTicket",
+        "tags": [
+          "realtime"
+        ],
+        "summary": "Single-use WebSocket ticket, valid 30 seconds, bound to the caller",
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "default": {
             "$ref": "#/components/responses/Error"
