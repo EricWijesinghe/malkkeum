@@ -2,7 +2,7 @@
 //! alert windows, an hourly 5xx counter, disk and database figures, and the status summary the
 //! console's status page shows. Only short error codes are stored, never provider messages.
 
-use crate::{error::ApiResult, integrations::Section, state::AppState};
+use crate::{error::ApiResult, integrations::Section, settings_registry, state::AppState};
 use axum::{
     extract::{Request, State},
     middleware::Next,
@@ -20,6 +20,36 @@ pub const BACKUP_STALE_HOURS: f64 = 36.0;
 pub const BACKUP_LATE_HOURS: f64 = 26.0;
 pub const DISK_LOW_PCT: f64 = 10.0;
 pub const DISK_WARN_PCT: f64 = 20.0;
+/// Alert thresholds the owner may tighten in 설정 > 운영. Defaults are the constants above.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Thresholds {
+    pub backup_stale_hours: f64,
+    pub backup_late_hours: f64,
+    pub disk_low_pct: f64,
+    pub disk_warn_pct: f64,
+}
+
+impl Default for Thresholds {
+    fn default() -> Self {
+        Self {
+            backup_stale_hours: BACKUP_STALE_HOURS,
+            backup_late_hours: BACKUP_LATE_HOURS,
+            disk_low_pct: DISK_LOW_PCT,
+            disk_warn_pct: DISK_WARN_PCT,
+        }
+    }
+}
+
+/// The thresholds in effect now: the stored setting, else the env seed or default.
+pub async fn thresholds(s: &AppState) -> ApiResult<Thresholds> {
+    Ok(Thresholds {
+        backup_stale_hours: settings_registry::get(&s.db, &s.config, "backup_stale_hours").await? as f64,
+        backup_late_hours: settings_registry::get(&s.db, &s.config, "backup_late_hours").await? as f64,
+        disk_low_pct: settings_registry::get(&s.db, &s.config, "disk_low_pct").await? as f64,
+        disk_warn_pct: settings_registry::get(&s.db, &s.config, "disk_warn_pct").await? as f64,
+    })
+}
+
 const ERRORS_WARN: i64 = 20;
 const ERRORS_BAD: i64 = 100;
 const SIGNATURE_BAD: i64 = 3;
@@ -156,21 +186,21 @@ pub async fn disk_usage(path: PathBuf) -> Option<Disk> {
     .flatten()
 }
 
-pub fn disk_level(pct: f64) -> Level {
-    if pct < DISK_LOW_PCT {
+pub fn disk_level(pct: f64, t: &Thresholds) -> Level {
+    if pct < t.disk_low_pct {
         Level::Red
-    } else if pct < DISK_WARN_PCT {
+    } else if pct < t.disk_warn_pct {
         Level::Yellow
     } else {
         Level::Green
     }
 }
 
-pub fn backup_level(age_hours: Option<f64>) -> Level {
+pub fn backup_level(age_hours: Option<f64>, t: &Thresholds) -> Level {
     match age_hours {
         None => Level::Red,
-        Some(h) if h > BACKUP_STALE_HOURS => Level::Red,
-        Some(h) if h > BACKUP_LATE_HOURS => Level::Yellow,
+        Some(h) if h > t.backup_stale_hours => Level::Red,
+        Some(h) if h > t.backup_late_hours => Level::Yellow,
         Some(_) => Level::Green,
     }
 }
@@ -203,7 +233,11 @@ pub fn integration_level(configured: bool, last_ok: Option<DateTime<Utc>>, last_
     }
     match last_fail {
         Some(f) if now - f < Duration::hours(24) => {
-            if last_ok.is_none_or(|ok| ok < f) { Level::Red } else { Level::Yellow }
+            if last_ok.is_none_or(|ok| ok < f) {
+                Level::Red
+            } else {
+                Level::Yellow
+            }
         }
         _ => Level::Green,
     }
@@ -217,7 +251,11 @@ struct Check {
 }
 
 fn check(key: &'static str, level: Level, value: impl Serialize) -> Check {
-    Check { key, level, value: json!(value) }
+    Check {
+        key,
+        level,
+        value: json!(value),
+    }
 }
 
 #[derive(sqlx::FromRow)]
@@ -245,10 +283,14 @@ pub fn backup_age_hours(status: Option<&Value>, now: DateTime<Utc>) -> Option<f6
 /// Everything the status page shows, in one call. Database errors are reported in the payload, not as a failure.
 pub async fn status(s: &AppState) -> ApiResult<Value> {
     let now = Utc::now();
+    let t = thresholds(s).await?;
     let started = Instant::now();
     let ping = sqlx::query_scalar::<_, i32>("SELECT 1").fetch_one(&s.db).await.is_ok();
     let latency_ms = started.elapsed().as_millis() as u64;
-    let db_size: i64 = sqlx::query_scalar("SELECT pg_database_size(current_database())").fetch_one(&s.db).await.unwrap_or(0);
+    let db_size: i64 = sqlx::query_scalar("SELECT pg_database_size(current_database())")
+        .fetch_one(&s.db)
+        .await
+        .unwrap_or(0);
     let sessions: i64 = sqlx::query_scalar("SELECT count(*) FROM pg_stat_activity WHERE datname = current_database()")
         .fetch_one(&s.db)
         .await
@@ -260,7 +302,9 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
         .bind(BACKUP_STATUS_KEY)
         .fetch_optional(&s.db)
         .await?;
-    let health: Vec<HealthRow> = sqlx::query_as("SELECT integration, last_ok_at, last_fail_at, last_error FROM ops_health").fetch_all(&s.db).await?;
+    let health: Vec<HealthRow> = sqlx::query_as("SELECT integration, last_ok_at, last_fail_at, last_error FROM ops_health")
+        .fetch_all(&s.db)
+        .await?;
     let signatures = count_failures(&s.db, "portone_webhook", 24).await?;
     let stuck = count_failures(&s.db, "payment_stuck", 24).await?;
     let disk = disk_usage(s.config.upload_dir.clone()).await;
@@ -279,8 +323,12 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
     let backup_age = backup_age_hours(backup.as_ref(), now);
     let checks = vec![
         check("db", if ping { Level::Green } else { Level::Red }, latency_ms),
-        check("disk", disk.map_or(Level::Green, |d| disk_level(d.free_pct())), disk.map(|d| d.free_pct().round())),
-        check("backup", backup_level(backup_age), backup_age.map(|h| h.round())),
+        check(
+            "disk",
+            disk.map_or(Level::Green, |d| disk_level(d.free_pct(), &t)),
+            disk.map(|d| d.free_pct().round()),
+        ),
+        check("backup", backup_level(backup_age, &t), backup_age.map(|h| h.round())),
         check("errors", errors_level(errors), errors),
         check("payments", if stuck > 0 { Level::Red } else { Level::Green }, stuck),
         check("webhook", signature_level(signatures), signatures),
@@ -324,15 +372,19 @@ fn level_of(s: &str) -> Level {
 
 /// Reads the last backup status the backup command stored (for the alert rules).
 pub async fn backup_status(db: &PgPool) -> Result<Option<Value>, sqlx::Error> {
-    sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(BACKUP_STATUS_KEY).fetch_optional(db).await
+    sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(BACKUP_STATUS_KEY)
+        .fetch_optional(db)
+        .await
 }
 
 /// Keeps the failure log small: the longest alert window is a day.
 pub async fn prune(db: &PgPool) -> Result<(), sqlx::Error> {
     sqlx::query("DELETE FROM ops_failures WHERE at < now() - interval '3 days'").execute(db).await?;
-    sqlx::query("DELETE FROM ops_http_errors WHERE hour < now() - interval '3 days'").execute(db).await?;
+    sqlx::query("DELETE FROM ops_http_errors WHERE hour < now() - interval '3 days'")
+        .execute(db)
+        .await?;
     crate::realtime::prune_stored(db).await
-    
 }
 
 /// Used by the alert rules: failures of one integration in the last `minutes`.
@@ -356,24 +408,30 @@ mod tests {
     #[test]
     fn df_parsing_reads_kilobyte_columns() {
         let text = "Filesystem     1024-blocks      Used Available Capacity Mounted on\n/dev/sda1        1000    600     400      60% /data\n";
-        assert_eq!(parse_df(text), Some(Disk { total: 1000 * 1024, free: 400 * 1024 }));
+        assert_eq!(
+            parse_df(text),
+            Some(Disk {
+                total: 1000 * 1024,
+                free: 400 * 1024
+            })
+        );
         assert_eq!(parse_df("garbage"), None);
         assert!((Disk { total: 1000, free: 95 }.free_pct() - 9.5).abs() < 1e-9);
     }
 
     #[test]
     fn disk_below_ten_percent_is_red() {
-        assert_eq!(disk_level(9.9), Level::Red);
-        assert_eq!(disk_level(15.0), Level::Yellow);
-        assert_eq!(disk_level(42.0), Level::Green);
+        assert_eq!(disk_level(9.9, &Thresholds::default()), Level::Red);
+        assert_eq!(disk_level(15.0, &Thresholds::default()), Level::Yellow);
+        assert_eq!(disk_level(42.0, &Thresholds::default()), Level::Green);
     }
 
     #[test]
     fn backup_thresholds_follow_the_nightly_schedule() {
-        assert_eq!(backup_level(None), Level::Red);
-        assert_eq!(backup_level(Some(12.0)), Level::Green);
-        assert_eq!(backup_level(Some(30.0)), Level::Yellow);
-        assert_eq!(backup_level(Some(37.0)), Level::Red);
+        assert_eq!(backup_level(None, &Thresholds::default()), Level::Red);
+        assert_eq!(backup_level(Some(12.0), &Thresholds::default()), Level::Green);
+        assert_eq!(backup_level(Some(30.0), &Thresholds::default()), Level::Yellow);
+        assert_eq!(backup_level(Some(37.0), &Thresholds::default()), Level::Red);
     }
 
     #[test]
