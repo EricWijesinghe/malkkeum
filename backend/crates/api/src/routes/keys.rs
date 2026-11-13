@@ -49,7 +49,7 @@ async fn status(State(s): State<AppState>, Admin(_): Admin) -> ApiResult<Json<Va
 }
 
 /// Live admin role plus this request's TOTP code. A wrong code counts against the account like a failed sign-in.
-async fn owner_gate(s: &AppState, peer: SocketAddr, headers: &HeaderMap, id: Uuid) -> ApiResult<()> {
+pub(crate) async fn owner_gate(s: &AppState, peer: SocketAddr, headers: &HeaderMap, id: Uuid) -> ApiResult<()> {
     if auth::live_staff_role(&s.db, id).await? != Role::StaffAdmin {
         return Err(ApiError::Forbidden);
     }
