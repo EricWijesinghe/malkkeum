@@ -4,10 +4,10 @@
 use super::audit;
 use super::uploads;
 use crate::{
+    address,
     auth::{Admin, hash_password},
     backup,
     error::{ApiError, ApiResult},
-    address,
     integrations::{self, Invalid, Kind, Section},
     providers::{fcm, portone, sms},
     state::AppState,
@@ -18,13 +18,13 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::Utc;
-use uuid::Uuid;
 use rand::{Rng, rngs::OsRng};
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::{Map, Value, json};
 use sqlx::PgPool;
 use subtle::ConstantTimeEq;
+use uuid::Uuid;
 
 const MAX_FIELD_CHARS: usize = 200;
 const SETUP_CODE_LEN: usize = 12;
@@ -50,7 +50,8 @@ pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/setup", get(overview))
         .route("/setup/business", put(put_business))
-        .route("/setup/review", put(put_review).delete(clear_review))        .route("/setup/{section}", put(put_section).delete(clear_section))
+        .route("/setup/review", put(put_review).delete(clear_review))
+        .route("/setup/{section}", put(put_section).delete(clear_section))
         .route("/setup/{section}/test", post(test_section))
 }
 
@@ -173,13 +174,15 @@ pub async fn review_code_hash(db: &PgPool, phone: &str) -> Result<Option<String>
 /// (one upcoming, one completed), written only while the account has none. Returns rows written.
 async fn seed_review_samples(db: &PgPool, phone: &str) -> ApiResult<usize> {
     let mut tx = db.begin().await?;
-    let user: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (phone, name) VALUES ($1, '리뷰 계정') ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id",
-    )
-    .bind(phone)
-    .fetch_one(&mut *tx)
-    .await?;
-    let has: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM bookings WHERE user_id = $1)").bind(user).fetch_one(&mut *tx).await?;
+    let user: Uuid =
+        sqlx::query_scalar("INSERT INTO users (phone, name) VALUES ($1, '리뷰 계정') ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id")
+            .bind(phone)
+            .fetch_one(&mut *tx)
+            .await?;
+    let has: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM bookings WHERE user_id = $1)")
+        .bind(user)
+        .fetch_one(&mut *tx)
+        .await?;
     let service: Option<String> = sqlx::query_scalar("SELECT code FROM services WHERE active ORDER BY sort_order LIMIT 1")
         .fetch_optional(&mut *tx)
         .await?;
@@ -246,7 +249,15 @@ async fn put_review(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<Re
         .bind(&value)
         .execute(&s.db)
         .await?;
-    audit(&s.db, a.role.as_str(), Some(a.id), "setup.review_account", &phone, json!({ "days": days, "samples": samples })).await?;
+    audit(
+        &s.db,
+        a.role.as_str(),
+        Some(a.id),
+        "setup.review_account",
+        &phone,
+        json!({ "days": days, "samples": samples }),
+    )
+    .await?;
     Ok(Json(json!({ "phone": phone, "expires_at": expires_at, "samples": samples })))
 }
 
@@ -292,7 +303,14 @@ async fn brand(State(s): State<AppState>) -> ApiResult<Json<Value>> {
 const BUSINESS_TEXT: [&str; 4] = ["name", "support_phone", "support_email", "support_hours"];
 /// Store pages the website's download buttons point to.
 /// https links: store pages, the Kakao channel and Naver Talk Talk (website chat buttons).
-const STORE_LINKS: [&str; 6] = ["app_store_url", "play_store_url", "partner_app_store_url", "partner_play_store_url", "kakao_channel_url", "naver_talk_url"];
+const STORE_LINKS: [&str; 6] = [
+    "app_store_url",
+    "play_store_url",
+    "partner_app_store_url",
+    "partner_play_store_url",
+    "kakao_channel_url",
+    "naver_talk_url",
+];
 /// Search Console / Search Advisor verification tokens, served as meta tags and verification files.
 const VERIFY_KEYS: [&str; 2] = ["google_site_verification", "naver_site_verification"];
 const COMPANY_TEXT: [&str; 8] = [
@@ -426,6 +444,7 @@ async fn put_business(State(s): State<AppState>, Admin(a): Admin, Json(input): J
         .execute(&s.db)
         .await?;
     super::config::invalidate();
+    super::seller::invalidate_business();
     audit(&s.db, a.role.as_str(), Some(a.id), "setup.business", BUSINESS_KEY, json!({})).await?;
     Ok(Json(value))
 }

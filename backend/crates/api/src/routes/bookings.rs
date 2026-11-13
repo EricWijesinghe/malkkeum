@@ -3,8 +3,8 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
-        SeenQuote, price_for, record_payment, take_balance, take_deposit,
+        BookingBody, Prepared, SeenQuote, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot,
+        next_number, prepare, price_for, record_payment, take_balance, take_deposit,
     },
     catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
@@ -17,7 +17,7 @@ use crate::{
     providers::ProviderError,
     ratelimit::within_quota,
     realtime::{Recipient, notify},
-    safety,
+    safety, settings_registry,
     state::AppState,
     util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -210,7 +210,8 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
         .bind(user)
         .fetch_one(&mut *tx)
         .await?;
-    if !within_quota(open, s.config.max_open_quote_requests) {
+    let limit = settings_registry::get(&s.db, &s.config, "max_open_quote_requests").await?;
+    if !within_quota(open, limit) {
         return Err(ApiError::Conflict("too_many_open_requests"));
     }
     // Serialize bookings per slot so capacity can't be oversold.
@@ -299,7 +300,11 @@ async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepa
 async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<PageQuery>) -> ApiResult<Response> {
     let limit = page_limit(q.limit)?;
     let (date, hour, id) = match decode_cursor(q.cursor.as_deref(), 3)? {
-        Some(p) => (Some(cursor_part::<NaiveDate>(&p[0])?), Some(cursor_part::<i16>(&p[1])?), Some(cursor_part::<Uuid>(&p[2])?)),
+        Some(p) => (
+            Some(cursor_part::<NaiveDate>(&p[0])?),
+            Some(cursor_part::<i16>(&p[1])?),
+            Some(cursor_part::<Uuid>(&p[2])?),
+        ),
         None => (None, None, None),
     };
     let rows: Vec<BookingRow> = sqlx::query_as(&format!(
@@ -314,7 +319,9 @@ async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<
     .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(paged(rows, limit, |r| encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])))
+    Ok(paged(rows, limit, |r| {
+        encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])
+    }))
 }
 
 async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
@@ -409,7 +416,15 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
         return Err(ApiError::Conflict("settlement_in_transfer"));
     }
     // The intent commits on its own before the provider call, so a refund that lands just before a crash leaves a trace.
-    audit(&s.db, actor, None, "booking.cancel_intent", &b.id.to_string(), json!({ "status": b.status, "refund_cap": refund_cap })).await?;
+    audit(
+        &s.db,
+        actor,
+        None,
+        "booking.cancel_intent",
+        &b.id.to_string(),
+        json!({ "status": b.status, "refund_cap": refund_cap }),
+    )
+    .await?;
     let refunds = refund_locked(s, &mut tx, b.id, refund_cap).await?;
     sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1")
         .bind(b.id)
@@ -423,10 +438,12 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
             .await?;
     }
     // Points spent come back in proportion to the cash refunded so far (all of it on a full cancel).
-    let (paid, refunded): (i64, i64) = sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1 AND kind <> 'tip'")
-        .bind(b.id)
-        .fetch_one(&mut *tx)
-        .await?;
+    let (paid, refunded): (i64, i64) = sqlx::query_as(
+        "SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1 AND kind <> 'tip'",
+    )
+    .bind(b.id)
+    .fetch_one(&mut *tx)
+    .await?;
     crate::points::reverse_spend(&mut tx, b.id, refunded, paid).await?;
     sqlx::query("UPDATE quotes SET state = 'closed', updated_at = now() WHERE booking_id = $1 AND state = 'waiting'")
         .bind(b.id)

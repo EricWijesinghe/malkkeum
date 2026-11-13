@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:ui/ui.dart';
 
+import '../guest_draft.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_review.dart';
@@ -97,6 +100,7 @@ class QuoteFlowScreen extends StatefulWidget {
 
 class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   late final BookingDraft d = BookingDraft(widget.service);
+  late final GuestDraft _guest = GuestDraft(context.appRead.cache);
   final _pages = PageController();
   int _step = 0;
   bool _busy = false;
@@ -120,7 +124,14 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       context.appRead.analytics.track('quote_view', screen: 'quote');
       d.address ??= context.appRead.addresses.firstOrNull;
       _loadSlots();
+      _restoreAnswers();
     });
+  }
+
+  /// Answers saved on this device (a restart mid-flow) come back; the steps then carry on as before.
+  Future<void> _restoreAnswers() async {
+    await _guest.restore(d);
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadSlots() async {
@@ -162,6 +173,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     // The estimate depends on every answer before it: ask again after a change.
     if (step <= _stepDate) _estimate = null;
     if (step >= _stepMethod) _estimate ??= _fetchEstimate();
+    unawaited(_guest.save(d));
     setState(() {
       _step = step;
       _asked = false;
@@ -217,6 +229,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();
       app.loadUnread().ignore();
+      unawaited(_guest.clear());
       final estimate = await _estimate;
       if (!mounted) return;
       await Navigator.of(context).pushAndRemoveUntil(

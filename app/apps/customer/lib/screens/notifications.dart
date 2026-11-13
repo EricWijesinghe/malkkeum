@@ -24,6 +24,13 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    if (!Deps.of(context).session.signedIn) {
+      // Alerts belong to an account: a guest sees only the public notices.
+      return Scaffold(
+        appBar: AppBar(title: Text(t.moreNotices)),
+        body: const ContentListBody(kind: 'notice'),
+      );
+    }
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -54,12 +61,13 @@ class _Alerts extends StatefulWidget {
 }
 
 class _AlertsState extends State<_Alerts> {
+  late final _pager = Pager<Json>(context.api, '/me/notifications', (r) => r);
+
   Future<List<Json>> _load() async {
-    final api = context.api;
-    final rows = (await api.get('/me/notifications') as List).cast<Json>();
+    final rows = await _pager.first();
     // Opening the inbox reads everything; the list still shows which ones were new.
     if (rows.any((r) => r['read_at'] == null)) {
-      api.post('/me/notifications/read').ignore();
+      context.api.post('/me/notifications/read').ignore();
     }
     return rows;
   }
@@ -78,20 +86,23 @@ class _AlertsState extends State<_Alerts> {
     final t = context.t;
     return AsyncView<List<Json>>(
       load: _load,
-      builder: (context, rows, reload) => rows.isEmpty
-          ? EmptyState(icon: Icons.notifications_off_rounded, title: t.nEmpty)
-          : RefreshIndicator(
-              onRefresh: reload,
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: Space.sm),
-                itemCount: rows.length,
-                separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, i) => _AlertTile(
-                  row: rows[i],
-                  icon: _icon(rows[i]['kind'] as String? ?? ''),
+      builder: (context, _, reload) => LoadMore<Json>(
+        pager: _pager,
+        builder: (context, rows) => rows.isEmpty
+            ? EmptyState(icon: Icons.notifications_off_rounded, title: t.nEmpty)
+            : RefreshIndicator(
+                onRefresh: reload,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: Space.sm),
+                  itemCount: rows.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (context, i) => _AlertTile(
+                    row: rows[i],
+                    icon: _icon(rows[i]['kind'] as String? ?? ''),
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }
