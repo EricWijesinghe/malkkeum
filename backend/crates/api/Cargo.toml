@@ -14,7 +14,7 @@ axum = { version = "0.8", features = ["ws", "multipart", "macros"] }
 base64 = "0.22"
 chrono.workspace = true
 futures-util = "0.3"
-hmac = "0.12"
+hmac = "0.13"
 sha1 = "0.10"
 data-encoding = "2"
 hex = "0.4"
