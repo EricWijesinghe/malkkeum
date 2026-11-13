@@ -12,10 +12,13 @@ store accounts. Source stays in the private repo.
 
 ## 0. Release gate
 
-`release.yml` runs `e2e.yml` first: it builds both images on the runner, runs the real
-`deploy/install.sh` against them (HTTPS with an internal CA, console, website, setup code, re-run
-keeps data, broken image → automatic rollback, good image → update). Nothing is pushed or published
-unless that passes. The same job runs on every push and PR via `ci.yml`.
+A `v<VER>` tag runs `release.yml`, which first calls `ci.yml` (lint, tests, analyzers, goldens,
+migrations, native and supply-chain checks) and `e2e.yml` on the tagged commit. `e2e.yml` builds and
+scans both server images on a GitHub-hosted VM and runs the real `deploy/install.sh` against them as
+root (`deploy/e2e-install.sh`: install, backup and restore, re-run upgrade, broken release → automatic
+rollback, update, uninstall). Images are pushed and signed, and the installer is published, only after
+both pass (`images: needs: [test, e2e]`). `e2e.yml` also runs on every push to `master` and on pull
+requests that touch the installer or the server build; `ci.yml` runs on every push and pull request.
 
 ## 1. One-time setup (developer)
 
