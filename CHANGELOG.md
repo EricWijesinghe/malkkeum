@@ -8,6 +8,9 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
+
 ### Changed
 - API JWT library upgraded from jsonwebtoken 10.3 to 11.1; token formats, verification rules and the Apple client secret are unchanged.
 - Customer bookings, notifications, wallet points history and payment history, and partner quotes

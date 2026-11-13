@@ -1,6 +1,7 @@
 pub(crate) mod address;
 mod admin;
 mod admin_content;
+mod audit;
 mod auth;
 mod booking_core;
 pub(crate) mod bookings;
@@ -120,7 +121,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(site::admin_routes())
                 .merge(crate::marketing::admin_routes())
                 .merge(crate::analytics::admin_routes())
-                .merge(subscriptions::admin_routes()),
+                .merge(subscriptions::admin_routes())
+                .merge(audit::admin_routes()),
         )
         .nest(
             "/partner",

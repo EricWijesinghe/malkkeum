@@ -72,6 +72,126 @@ class TKo extends T {
   String get aiCapHint => '숫자만 입력해요. 비워두면 기본값을 써요.';
 
   @override
+  String get cAudit => '활동 기록';
+
+  @override
+  String get audIntro => '누가 언제 무엇을 했는지 최신순으로 보여요. 기록은 지울 수 없어요.';
+
+  @override
+  String get audPeriodToday => '오늘';
+
+  @override
+  String get audPeriod7 => '최근 7일';
+
+  @override
+  String get audPeriod30 => '최근 30일';
+
+  @override
+  String get audPeriodAll => '전체 기간';
+
+  @override
+  String get audFilterWho => '누가';
+
+  @override
+  String get audFilterWhat => '무엇을';
+
+  @override
+  String get audWhoAll => '모두';
+
+  @override
+  String get audWhatAll => '모든 작업';
+
+  @override
+  String get audRoleStaff => '직원';
+
+  @override
+  String get audRoleCustomer => '고객';
+
+  @override
+  String get audRolePro => '파트너';
+
+  @override
+  String get audRoleSystem => '자동 처리';
+
+  @override
+  String get audCatCase => '사건·환불';
+
+  @override
+  String get audCatBooking => '예약';
+
+  @override
+  String get audCatCustomer => '고객 정보';
+
+  @override
+  String get audCatStaff => '직원 관리';
+
+  @override
+  String get audCatSettlement => '정산';
+
+  @override
+  String get audCatPoints => '포인트';
+
+  @override
+  String get audCatService => '서비스·가격';
+
+  @override
+  String get audActCaseRefund => '사건 환불';
+
+  @override
+  String get audActCaseUpdate => '사건 처리 변경';
+
+  @override
+  String get audActPointsAdjust => '포인트 조정';
+
+  @override
+  String get audActPiiView => '고객 연락처 조회';
+
+  @override
+  String get audActPiiList => '고객 검색';
+
+  @override
+  String get audActStaffCreate => '직원 추가';
+
+  @override
+  String get audActStaffActive => '직원 사용 여부 변경';
+
+  @override
+  String get audActSettlementHold => '정산 보류 변경';
+
+  @override
+  String get audActServiceUpdate => '서비스 수정';
+
+  @override
+  String get audUnknownActor => '알 수 없음';
+
+  @override
+  String get audOtherAction => '기타 작업';
+
+  @override
+  String get audTarget => '대상';
+
+  @override
+  String get audDetailTitle => '상세 내용';
+
+  @override
+  String get audActionCode => '작업 코드';
+
+  @override
+  String get audNoDetail => '기록된 내용이 없어요';
+
+  @override
+  String get audEmpty => '조건에 맞는 기록이 없어요';
+
+  @override
+  String get audLoadMore => '더 보기';
+
+  @override
+  String get audClose => '닫기';
+
+  @override
+  String get audRange => '기간 선택';
+
+  @override
   String get apSocialOr => '또는';
 
   @override

@@ -212,6 +212,7 @@ abstract final class Icon3DRegistry {
     'c_staff': const Icon3DSpec(Icons.badge_rounded),
     'c_settings': const Icon3DSpec(Icons.settings_rounded),
     'c_monitor': const Icon3DSpec(Icons.monitor_heart_rounded),
+    'c_audit': const Icon3DSpec(Icons.history_rounded),
   };
 
   static Icon3DSpec of(String id) => specs[id] ?? unknown;

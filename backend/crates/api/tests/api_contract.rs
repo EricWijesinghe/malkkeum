@@ -24,7 +24,7 @@ const IDEMPOTENT_OPS: [&str; 9] = [
     "adminPayoutAction",
 ];
 /// Operations that page with `limit`/`cursor` and advertise `X-Next-Cursor`.
-const PAGED_OPS: [&str; 11] = [
+const PAGED_OPS: [&str; 12] = [
     "listBookings",
     "listNotifications",
     "listCheckouts",
@@ -36,6 +36,7 @@ const PAGED_OPS: [&str; 11] = [
     "listMyThreads",
     "partnerThreads",
     "adminPayouts",
+    "adminListAudit",
 ];
 
 fn manifest() -> &'static Path {
