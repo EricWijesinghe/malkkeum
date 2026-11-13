@@ -238,9 +238,7 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(OFFER_PASS_EVERY);
         while next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = expire_pass(&state).await {
-                tracing::warn!(error = %e, "waitlist expiry pass failed");
-            }
+            crate::jobs::run(&state, "waitlist", expire_pass(&state)).await;
         }
     })
 }

@@ -145,9 +145,7 @@ pub fn spawn(state: AppState) -> JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(RECOMPUTE_EVERY);
         while next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = recompute_pass(&state, Utc::now()).await {
-                tracing::warn!(error = %e, "quality recompute failed");
-            }
+            crate::jobs::run(&state, "quality", recompute_pass(&state, Utc::now())).await;
         }
     })
 }

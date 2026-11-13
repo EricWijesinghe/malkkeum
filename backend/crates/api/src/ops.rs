@@ -285,10 +285,19 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
         check("payments", if stuck > 0 { Level::Red } else { Level::Green }, stuck),
         check("webhook", signature_level(signatures), signatures),
     ];
+    // Background jobs of this process. Listed beside the checks (the console has no card for them
+    // yet); a stalled job still turns the page red, and the `job_stalled` owner alert says why.
+    let jobs = crate::jobs::health(now.timestamp() as f64);
+    let jobs_level = if jobs.iter().any(|j| j["stalled"] == true) {
+        Level::Red
+    } else {
+        Level::Green
+    };
     let level = checks
         .iter()
         .map(|c| c.level)
         .chain(integrations.iter().filter_map(|i| i["level"].as_str().map(level_of)))
+        .chain([jobs_level])
         .max()
         .unwrap_or(Level::Green);
     Ok(json!({
@@ -301,6 +310,7 @@ pub async fn status(s: &AppState) -> ApiResult<Value> {
         "backup": backup.map(|b| json!({ "status": b, "age_hours": backup_age })),
         "checks": checks,
         "integrations": integrations,
+        "jobs": jobs,
     }))
 }
 

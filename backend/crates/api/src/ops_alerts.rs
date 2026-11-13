@@ -175,6 +175,7 @@ pub async fn evaluate(s: &AppState) -> ApiResult<Vec<Finding>> {
         });
     }
     out.extend(payout_findings(db).await?);
+    out.extend(job_finding());
     let backup = ops::backup_status(db).await?;
     let age = ops::backup_age_hours(backup.as_ref(), Utc::now());
     if ops::backup_level(age) == Level::Red {
@@ -214,6 +215,20 @@ async fn payout_findings(db: &PgPool) -> Result<Vec<Finding>, sqlx::Error> {
         });
     }
     Ok(out)
+}
+
+/// Background job alert. Not owner-toggleable: a stalled job means bookings, charges or notifications stop silently.
+fn job_finding() -> Option<Finding> {
+    let stalled = crate::jobs::stalled(Utc::now().timestamp() as f64);
+    if stalled.is_empty() {
+        return None;
+    }
+    tracing::error!(jobs = ?stalled, "background jobs stalled");
+    Some(Finding {
+        rule: "job_stalled",
+        title: "자동 작업이 멈췄어요",
+        body: "정기 결제, 알림, 노쇼 확인 같은 자동 작업이 한동안 성공하지 못했어요. 서버 로그를 확인한 뒤 서버를 다시 시작해 주세요.",
+    })
 }
 
 pub async fn load_prefs(db: &PgPool) -> Result<Prefs, sqlx::Error> {

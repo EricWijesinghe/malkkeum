@@ -301,6 +301,11 @@ pub async fn delete_account(s: &AppState, user: Uuid) -> ApiResult<()> {
         .bind(user)
         .execute(&mut *tx)
         .await?;
+    // Undelivered notifications go too, or a retry would write a new inbox row after the deletion.
+    sqlx::query("DELETE FROM notification_outbox WHERE owner_role = 'customer' AND owner_id = $1")
+        .bind(user)
+        .execute(&mut *tx)
+        .await?;
     sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE subject = $1 AND revoked_at IS NULL")
         .bind(user)
         .execute(&mut *tx)

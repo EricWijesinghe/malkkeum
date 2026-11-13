@@ -18,6 +18,7 @@ pub mod error;
 pub mod i18n;
 pub mod idempotency;
 pub mod integrations;
+pub mod jobs;
 pub mod lifecycle;
 pub mod image_meta;
 pub mod lockout;
@@ -105,6 +106,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         quality::spawn(state.clone()),
         routes::waitlist::spawn(state.clone()),
         routes::subscription_engine::spawn(state.clone()),
+        realtime::spawn_outbox(state.clone()),
         state.hub.spawn_listener(),
     ];
     let listener = tokio::net::TcpListener::bind(bind).await?;

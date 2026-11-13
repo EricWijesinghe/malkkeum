@@ -262,9 +262,7 @@ pub fn spawn(state: AppState) -> tokio::task::JoinHandle<()> {
     tokio::spawn(async move {
         let mut tick = tokio::time::interval(std::time::Duration::from_secs(60 * 60));
         while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
-            if let Err(e) = expire_lapsed(&state.db).await {
-                tracing::warn!(error = %e, "points expiry sweep failed");
-            }
+            crate::jobs::run(&state, "points", expire_lapsed(&state.db)).await;
         }
     })
 }

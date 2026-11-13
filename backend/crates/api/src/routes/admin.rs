@@ -224,7 +224,8 @@ async fn change_status(State(s): State<AppState>, Staff(st): Staff, Path(id): Pa
     )
     .await?;
     if let Some(t) = b.thread_id {
-        chat::post_system(&s, t, "status_changed", json!({ "status": c.status })).await?;
+        // The status is committed: a chat hiccup must not turn it into a 5xx.
+        crate::util::best_effort("chat", chat::post_system(&s, t, "status_changed", json!({ "status": c.status }))).await;
     }
     notify(
         &s,
