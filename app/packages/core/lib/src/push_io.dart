@@ -35,8 +35,13 @@ class PushService {
     return target;
   }
 
-  /// Call once before runApp.
-  static Future<void> init() async {
+  static Future<void>? _initDone;
+
+  /// Firebase and local notifications. Runs once; later calls (and [start]) share the first run, so
+  /// the apps can call it after the first frame without racing a sign-in that happens before it.
+  static Future<void> init() => _initDone ??= _init();
+
+  static Future<void> _init() async {
     // Windows has no FCM here: push stays off and the in-app inbox still works.
     if (Platform.isWindows) return;
     await _initLocal();
@@ -58,6 +63,12 @@ class PushService {
   /// After sign-in: asks for notification permission, then registers this device's token and keeps it fresh.
   /// Also makes sign-out remove the token (Session.beforeLogout).
   static Future<void> start(ApiClient api) async {
+    try {
+      await init();
+    } catch (e) {
+      debugPrint('push off: $e');
+      return;
+    }
     if (!_firebaseReady) return;
     final registrar = PushRegistrar(
       api: api,

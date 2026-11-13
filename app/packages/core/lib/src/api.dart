@@ -63,6 +63,14 @@ class ApiClient {
         .replace(queryParameters: q.isEmpty ? null : q);
   }
 
+  /// Cold start: only the refresh token is restored, so get an access token once, before the first
+  /// screens fire their calls. Calls made meanwhile wait for it instead of each failing with a 401.
+  /// Never throws; offline, the first real call retries.
+  Future<void> warmUp() async {
+    if (session.accessToken != null || session.refreshToken == null) return;
+    await _refresh();
+  }
+
   Future<dynamic> get(String path, {Map<String, String?>? query}) =>
       _send('GET', path, query: query);
 
@@ -118,6 +126,8 @@ class ApiClient {
     bool retried = false,
     bool raw = false,
   }) async {
+    final pending = _refreshing;
+    if (pending != null && !retried && !path.startsWith('/auth/')) await pending;
     final req = build();
     final token = session.accessToken;
     if (token != null) req.headers['Authorization'] = 'Bearer $token';

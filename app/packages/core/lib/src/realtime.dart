@@ -10,11 +10,13 @@ import 'api.dart';
 /// Follows the session: signing out closes the socket, so one person's events can
 /// never reach the next person who signs in on the same device.
 class Realtime {
-  Realtime(this.api) {
+  Realtime(this.api, {WebSocketChannel Function(Uri uri)? connector})
+    : _connect = connector ?? WebSocketChannel.connect {
     api.session.addListener(_onSession);
   }
 
   final ApiClient api;
+  final WebSocketChannel Function(Uri uri) _connect;
 
   final _events = StreamController<Map<String, dynamic>>.broadcast();
   WebSocketChannel? _ch;
@@ -38,6 +40,17 @@ class Realtime {
     _open();
   }
 
+  /// Closes and reopens the socket, and tells listeners to refetch. For app resume: after a long
+  /// background or a network switch the socket can be half-open (looks connected, delivers nothing),
+  /// and the client cannot see the server's pings. Does nothing while not connected on purpose.
+  void reconnect() {
+    if (!_wanted) return;
+    _close();
+    _attempt = 0;
+    _events.add({'type': 'resync'});
+    _open();
+  }
+
   void _onSession() {
     if (!api.session.signedIn) {
       disconnect();
@@ -52,7 +65,7 @@ class Realtime {
     if (!_wanted || _ch != null) return;
     if (api.session.accessToken == null) return _schedule();
     try {
-      final ch = WebSocketChannel.connect(api.wsUri());
+      final ch = _connect(api.wsUri());
       _ch = ch;
       ch.ready.then((_) => _attempt = 0, onError: (Object _) {});
       _sub = ch.stream.listen(

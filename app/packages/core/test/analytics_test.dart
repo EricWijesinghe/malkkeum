@@ -1,6 +1,35 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// A keystore that fails every call, as after a backup restore or OS reset.
+class _BrokenStorage extends FlutterSecureStorage {
+  const _BrokenStorage();
+
+  @override
+  Future<String?> read({
+    required String key,
+    AppleOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    AppleOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) => Future.error(PlatformException(code: 'keystore', message: 'wiped'));
+
+  @override
+  Future<void> write({
+    required String key,
+    required String? value,
+    AppleOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    AppleOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) => Future.error(PlatformException(code: 'keystore', message: 'wiped'));
+}
 
 void main() {
   late List<Map<String, Object>> sent;
@@ -104,5 +133,10 @@ void main() {
     expect(analyticsPlatform(web: false, target: TargetPlatform.windows), 'windows');
     expect(analyticsPlatform(web: false, target: TargetPlatform.macOS), 'macos');
     expect(analyticsPlatform(web: false, target: TargetPlatform.linux), '');
+  });
+
+  test('a broken keystore still gives an anonymous id instead of failing startup', () async {
+    final id = await Analytics.loadOrCreateAnonId(storage: const _BrokenStorage());
+    expect(RegExp(r'^[0-9a-f]{32}$').hasMatch(id), isTrue);
   });
 }

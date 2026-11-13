@@ -97,12 +97,21 @@ class Analytics {
     return List.generate(16, (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
   }
 
-  /// The install's id, kept in secure storage so it survives restarts. Storage errors propagate.
+  /// The install's id, kept in secure storage so it survives restarts. Never throws: a wiped or broken
+  /// keystore (backup restore, OS reset) gives a fresh in-memory id so startup still reaches the first frame.
   static Future<String> loadOrCreateAnonId({FlutterSecureStorage storage = const FlutterSecureStorage()}) async {
-    final saved = await storage.read(key: _anonKey);
-    if (saved != null && _anonPattern.hasMatch(saved)) return saved;
+    try {
+      final saved = await storage.read(key: _anonKey);
+      if (saved != null && _anonPattern.hasMatch(saved)) return saved;
+    } on Object {
+      return newAnonId();
+    }
     final id = newAnonId();
-    await storage.write(key: _anonKey, value: id);
+    try {
+      await storage.write(key: _anonKey, value: id);
+    } on Object {
+      // Not persisted: the next launch makes another id, which only splits this install's events.
+    }
     return id;
   }
 }

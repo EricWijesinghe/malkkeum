@@ -51,6 +51,31 @@ void main() {
     expect(session.refreshToken, 'new-refresh');
   });
 
+  test('cold start: warmUp gets the access token once and member calls are not doubled by 401s', () async {
+    final hits = <String>[];
+    final (api, session, _) = await signedIn((req) async {
+      hits.add(req.url.path);
+      if (req.url.path == '/v1/auth/refresh') return json(200, tokens);
+      return req.headers['Authorization'] == 'Bearer new-access' ? json(200, {'ok': true}) : json(401, {'error': {'code': 'unauthorized'}});
+    });
+    session.accessToken = null; // restore() brings back only the refresh token
+    final warm = api.warmUp();
+    await Future.wait([api.get('/me'), api.get('/me/coupons'), api.get('/me/addresses'), warm]);
+    expect(hits, ['/v1/auth/refresh', '/v1/me', '/v1/me/coupons', '/v1/me/addresses']);
+  });
+
+  test('warmUp does nothing for a guest or when the access token is already there', () async {
+    final hits = <String>[];
+    final (api, session, _) = await signedIn((req) async {
+      hits.add(req.url.path);
+      return json(200, tokens);
+    });
+    await api.warmUp();
+    await session.clear();
+    await api.warmUp();
+    expect(hits, isEmpty);
+  });
+
   test('a network failure during refresh keeps the user signed in', () async {
     final (api, session, _) = await signedIn((req) async {
       if (req.url.path == '/v1/auth/refresh') throw http.ClientException('offline');

@@ -10,6 +10,8 @@ export 'src/app_update.dart';
 export 'src/async_view.dart';
 export 'src/desktop.dart';
 export 'src/districts.dart';
+export 'src/error_reporter.dart';
+export 'src/foreground.dart';
 export 'src/gen/app_localizations.dart';
 export 'src/i18n.dart';
 export 'src/identity.dart';
