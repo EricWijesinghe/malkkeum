@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs one heavy command (cargo / flutter build or test) in the single shared build slot (builds queue one at a time), so parallel
-# Malkkeum work never overloads this PC (another project shares it). Waits while free commit
+# builds never overload a shared development machine. Waits while free commit
 # charge is under 6 GB. Usage:  scripts/build-slot.sh cargo test -p api
 set -uo pipefail
 LOCKS=D:/Temp/malkkeum-locks
@@ -29,7 +29,7 @@ free_commit_kb() {
 
 # Fair queue: each waiter holds a ticket named <start-ns>-<pid> (CI in WSL: <start-ns>-ci, kept fresh by touch);
 # only the oldest live ticket may try for a slot, so a long-waiting build is never overtaken. Every waiter touches its
-# ticket each loop; a ticket untouched for 3 minutes (or whose Windows pid is gone) is stale. CI: scripts/ci/runner.
+# ticket each loop; a ticket untouched for 3 minutes (or whose Windows pid is gone) is stale. CI jobs may hold a ticket too.
 Q="$LOCKS/queue"; mkdir -p "$Q"
 ticket="$Q/$(date +%s%N)-$$"; : > "$ticket"
 slot=""
