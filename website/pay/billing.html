@@ -43,6 +43,9 @@
         redirectUrl: location.origin + '/pay/billing-done.html',
       };
       if (easy[method]) req.easyPay = { easyPayProvider: easy[method] };
+      // In-app WebView: the app's URL scheme, so ISP / app-card apps can send the customer back (appScheme).
+      var app = q.get('app');
+      if (app && /^[a-z][a-z0-9+.-]*:\/\/$/.test(app)) req.appScheme = app;
       PortOne.requestIssueBillingKey(req)
         .then(function (r) { done(r && r.billingKey ? { billingKey: r.billingKey } : { code: (r && r.code) || 'NO_KEY', message: (r && r.message) || '' }); })
         .catch(function (e) { done({ code: 'SDK_ERROR', message: String(e && e.message || e) }); });

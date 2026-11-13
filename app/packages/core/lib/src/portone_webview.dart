@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'checkout.dart';
 import 'i18n.dart';
 import 'payment_launcher.dart';
 
+/// PortOne `appScheme` for the in-app WebView: ISP and app-card apps open it to bring the
+/// customer back after authenticating. Registered in the customer iOS Info.plist (check-native.py).
+const payAppScheme = 'malkkeumpay://';
+
 /// URL of our hosted PortOne page for [intent] (website/pay/index.html, same domain as the API).
 /// `paymentId` is the checkout id there: the webhook and the recovery pass depend on it.
+/// [app] is the app's return scheme; only the WebView passes it.
 Uri portOnePageUri(
   String apiBase,
   CheckoutIntent intent, {
   String? phone,
   String? back,
+  String? app,
 }) => Uri.parse('$apiBase/pay/').replace(
   queryParameters: {
     'checkout': intent.id,
@@ -23,6 +31,7 @@ Uri portOnePageUri(
     'name': intent.orderName,
     'phone': ?phone,
     'back': ?back,
+    'app': ?app,
   },
 );
 
@@ -37,20 +46,32 @@ const _cancelCodes = {
 };
 
 /// Reads the redirect to /pay/done.html. Null when the customer cancelled.
+/// Approved only means "ask the server": the payment id is always the checkout id (never the
+/// redirect's), and the server's confirm asks PortOne for the real status and amount.
 PaymentOutcome? outcomeFromRedirect(Uri uri, String checkoutId) {
   final code = uri.queryParameters['code'];
-  if (code == null || code.isEmpty) {
-    return PaymentApproved(uri.queryParameters['paymentId'] ?? checkoutId);
-  }
+  if (code == null || code.isEmpty) return PaymentApproved(checkoutId);
   if (_cancelCodes.contains(code)) return null;
   return const PaymentRejected('payment_failed');
 }
 
-/// Android card and wallet apps arrive as `intent://…#Intent;scheme=x;package=y;end`.
-/// Returns the app link and the Play Store fallback.
-({Uri? app, Uri? store}) parseAndroidIntent(String url) {
+final _androidPackage = RegExp(
+  r'^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$',
+);
+
+final _scheme = RegExp(r'^[A-Za-z][A-Za-z0-9+.-]*:');
+
+/// What to open for a non-web navigation in the payment WebView, in order; the first one that
+/// opens wins. App links (`ispmobile://TID=…`, `kakaotalk://…`) are tried as they are: kept as
+/// text, because Uri would lowercase the host and some card apps read it. Android `intent:` links
+/// (`intent://pay#Intent;scheme=x;package=y;S.browser_fallback_url=z;end`, or Toss's
+/// `intent:x://pay#Intent;…;end`) become the app link, then the https fallback page, then the
+/// app's Play Store page. Empty when nothing can be opened.
+List<String> appLinkTargets(String url) {
   final hash = url.indexOf('#Intent;');
-  if (!url.startsWith('intent://') || hash < 0) return (app: null, store: null);
+  if (!url.startsWith('intent:') || hash < 0) {
+    return _scheme.hasMatch(url) ? [url] : const [];
+  }
   final params = <String, String>{
     for (final part in url.substring(hash + 8).split(';'))
       if (part.contains('='))
@@ -58,13 +79,30 @@ PaymentOutcome? outcomeFromRedirect(Uri uri, String checkoutId) {
           part.indexOf('=') + 1,
         ),
   };
+  final body = url.substring('intent:'.length, hash);
   final scheme = params['scheme'];
+  final app = scheme != null ? '$scheme:$body' : body;
+  final fallback = _fallbackOf(params['S.browser_fallback_url']);
   final pkg = params['package'];
-  final app = scheme == null
-      ? null
-      : Uri.tryParse('$scheme://${url.substring(9, hash)}');
-  final store = pkg == null ? null : Uri.parse('market://details?id=$pkg');
-  return (app: app, store: store);
+  return [
+    if (_scheme.hasMatch(app) && !app.startsWith('intent:')) app,
+    ?fallback,
+    if (pkg != null && _androidPackage.hasMatch(pkg))
+      'market://details?id=$pkg',
+  ];
+}
+
+/// The intent's percent-encoded `S.browser_fallback_url`, kept only when it is https or market.
+String? _fallbackOf(String? raw) {
+  if (raw == null) return null;
+  try {
+    final url = Uri.decodeComponent(raw);
+    return url.startsWith('https://') || url.startsWith('market://')
+        ? url
+        : null;
+  } on ArgumentError {
+    return null; // malformed percent-encoding
+  }
 }
 
 /// Web: the hosted PortOne page replaces this tab. The page sends the customer back to
@@ -112,7 +150,7 @@ class PortOneWebViewLauncher extends PaymentLauncher {
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (_) => HostedPage<PaymentOutcome?>(
-          uri: portOnePageUri(apiBase, intent, phone: phone),
+          uri: portOnePageUri(apiBase, intent, phone: phone, app: payAppScheme),
           donePath: '/pay/done.html',
           title: context.t.apPgTitle,
           onDone: (done) => outcomeFromRedirect(done, intent.id),
@@ -161,30 +199,41 @@ class _HostedPageState<T> extends State<HostedPage<T>> {
   }
 
   Future<NavigationDecision> _route(NavigationRequest req) async {
+    // Some intent: links are not valid URIs; appLinkTargets reads them as text.
     final uri = Uri.tryParse(req.url);
-    if (uri == null) return NavigationDecision.prevent;
-    if (uri.path.endsWith(widget.donePath) && uri.host == widget.uri.host) {
-      _finish(widget.onDone(uri));
-      return NavigationDecision.prevent;
-    }
-    if (uri.scheme == 'http' ||
-        uri.scheme == 'https' ||
-        uri.scheme == 'about') {
-      return NavigationDecision.navigate;
-    }
-    // Card / wallet apps (ISP, KakaoTalk, Toss, bank apps): hand them to the OS.
-    if (uri.scheme == 'intent') {
-      final target = parseAndroidIntent(req.url);
-      final opened =
-          target.app != null &&
-          await launchUrl(target.app!, mode: LaunchMode.externalApplication);
-      if (!opened && target.store != null) {
-        await launchUrl(target.store!, mode: LaunchMode.externalApplication);
+    if (uri != null) {
+      if (uri.path.endsWith(widget.donePath) && uri.host == widget.uri.host) {
+        _finish(widget.onDone(uri));
+        return NavigationDecision.prevent;
       }
-    } else {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (uri.scheme == 'http' ||
+          uri.scheme == 'https' ||
+          uri.scheme == 'about') {
+        return NavigationDecision.navigate;
+      }
+    }
+    // Card / wallet apps (ISP, KakaoTalk, Toss, bank apps): hand them to the OS. The page keeps
+    // waiting here; the app returns by finishing (Android) or through payAppScheme (iOS).
+    for (final target in appLinkTargets(req.url)) {
+      if (target.startsWith('https://')) {
+        await _web.loadRequest(Uri.parse(target));
+        break;
+      }
+      if (await _open(target)) break;
     }
     return NavigationDecision.prevent;
+  }
+
+  /// False when no installed app takes [target] (url_launcher reports that, or throws on some).
+  Future<bool> _open(String target) async {
+    try {
+      return await launchUrlString(
+        target,
+        mode: LaunchMode.externalApplication,
+      );
+    } on PlatformException {
+      return false;
+    }
   }
 
   @override

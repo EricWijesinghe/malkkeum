@@ -12,8 +12,9 @@ export 'src/portone_webview.dart'
     show
         PortOneRedirectLauncher,
         PortOneWebViewLauncher,
+        appLinkTargets,
         outcomeFromRedirect,
-        parseAndroidIntent,
+        payAppScheme,
         portOnePageUri,
         webPayReturnPath;
 export 'src/phone_attach.dart';

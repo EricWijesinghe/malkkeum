@@ -70,14 +70,96 @@ void main() {
   });
 
   test(
-    'android intent links become the app scheme plus a Play Store fallback',
+    'the WebView page carries the app return scheme; the web page does not',
     () {
-      final t = parseAndroidIntent(
-        'intent://pay?srCode=123#Intent;scheme=kakaotalk;package=com.kakao.talk;end',
+      expect(payAppScheme, 'malkkeumpay://');
+      expect(
+        portOnePageUri(
+          'https://x',
+          _intent,
+          app: payAppScheme,
+        ).queryParameters['app'],
+        'malkkeumpay://',
       );
-      expect(t.app.toString(), 'kakaotalk://pay?srCode=123');
-      expect(t.store.toString(), 'market://details?id=com.kakao.talk');
-      expect(parseAndroidIntent('https://example.com').app, isNull);
+      expect(
+        portOnePageUri('https://x', _intent).queryParameters.containsKey('app'),
+        isFalse,
+      );
     },
   );
+
+  test('approval always names the checkout, never the redirect paymentId', () {
+    final ok = outcomeFromRedirect(
+      Uri.parse('https://x/pay/done.html?paymentId=someone-elses'),
+      'ck-1',
+    );
+    expect(
+      ok,
+      isA<PaymentApproved>().having((p) => p.paymentId, 'paymentId', 'ck-1'),
+    );
+  });
+
+  group('appLinkTargets', () {
+    List<String> targets(String url) => appLinkTargets(url);
+
+    test('intent:// becomes the app scheme, then the Play Store page', () {
+      expect(
+        targets(
+          'intent://pay?srCode=123#Intent;scheme=kakaotalk;package=com.kakao.talk;end',
+        ),
+        ['kakaotalk://pay?srCode=123', 'market://details?id=com.kakao.talk'],
+      );
+    });
+
+    test('Toss style intent:<app link> keeps the app link', () {
+      expect(
+        targets(
+          'intent:supertoss://pay?x=1#Intent;package=viva.republica.toss;end',
+        ),
+        ['supertoss://pay?x=1', 'market://details?id=viva.republica.toss'],
+      );
+    });
+
+    test('browser_fallback_url comes before the store and must be https', () {
+      expect(
+        targets(
+          'intent://p#Intent;scheme=ispmobile;package=kvp.jjy.MispAndroid320;'
+          'S.browser_fallback_url=https%3A%2F%2Fpg.example%2Fisp%3Fa%3D1;end',
+        ),
+        [
+          'ispmobile://p',
+          'https://pg.example/isp?a=1',
+          'market://details?id=kvp.jjy.MispAndroid320',
+        ],
+      );
+      expect(
+        targets(
+          'intent://p#Intent;scheme=x;S.browser_fallback_url=javascript%3Aalert(1);end',
+        ),
+        ['x://p'],
+      );
+      expect(
+        targets(
+          'intent://p#Intent;scheme=x;S.browser_fallback_url=%E0%A4%A;end',
+        ),
+        ['x://p'],
+      );
+    });
+
+    test(
+      'a package that is not a package name is not put in the store link',
+      () {
+        expect(targets('intent://p#Intent;package=a&id=evil;end'), isEmpty);
+      },
+    );
+
+    test('plain app schemes pass through; junk opens nothing', () {
+      expect(targets('ispmobile://TID=1'), ['ispmobile://TID=1']);
+      expect(targets('kftc-bankpay://eftpay?x=1'), [
+        'kftc-bankpay://eftpay?x=1',
+      ]);
+      expect(targets('not a url'), isEmpty);
+      expect(targets('intent:#Intent;end'), isEmpty);
+    });
+  });
 }
