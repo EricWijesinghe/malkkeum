@@ -8,6 +8,9 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Owner console: app link values (Android signing fingerprints, Apple Team ID) can be saved and checked under the setup screen's "앱 링크" card. Saved values override the `ANDROID_CERT_SHA256` and `APPLE_TEAM_ID` server settings, which remain the fallback.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
