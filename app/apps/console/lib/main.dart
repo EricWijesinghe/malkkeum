@@ -8,7 +8,12 @@ import 'server_address.dart';
 import 'shell.dart';
 import 'state.dart';
 
-Future<void> main() async {
+/// Kept for the app's lifetime; sends to whichever server the console is connected to.
+final _errors = ErrorReporter(app: 'console');
+
+void main() => ErrorReporter.run(_errors, _start);
+
+Future<void> _start() async {
   WidgetsFlutterBinding.ensureInitialized();
   final locale = LocaleController();
   final theme = ThemeController();
@@ -40,14 +45,22 @@ class ServerGate extends StatefulWidget {
 class _ServerGateState extends State<ServerGate> {
   late String? _base = widget.initial;
   ConsoleApp? _app;
+  Foreground? _foreground;
 
   Future<ConsoleApp> _build(String base) async {
     final session = Session(namespace: 'console');
     final api = ApiClient(baseUrl: base, session: session);
+    _errors.send = (body) async => api.post('/client-errors', body);
     await session.restore();
+    // One refresh now instead of a 401 on every first screen call.
+    api.warmUp().ignore();
+    final state = ConsoleState(api, Realtime(api), session);
+    // Back to the tab or window: a fresh socket; its resync makes screens refetch.
+    _foreground?.dispose();
+    _foreground = Foreground(onResume: state.realtime.reconnect);
     return ConsoleApp(
       session: session,
-      state: ConsoleState(api, Realtime(api), session),
+      state: state,
       locale: widget.locale,
       theme: widget.theme,
       onChangeServer: needsServerAddress ? _change : null,
@@ -73,6 +86,12 @@ class _ServerGateState extends State<ServerGate> {
         _app = null;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _foreground?.dispose();
+    super.dispose();
   }
 
   @override

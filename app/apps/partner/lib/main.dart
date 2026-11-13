@@ -19,26 +19,39 @@ const partnerBrand = BrandConfig(
   sun: Color(0xFFFFD95A),
 );
 
-Future<void> main() async {
+/// Kept for the app's lifetime (client_errors.rs APPS: partner_android, partner_ios).
+final _errors = ErrorReporter(app: 'partner_${analyticsPlatform()}');
+
+void main() => ErrorReporter.run(_errors, _start);
+
+Future<void> _start() async {
   WidgetsFlutterBinding.ensureInitialized();
   final session = Session(namespace: 'partner');
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
+  _errors.send = (body) async => api.post('/client-errors', body);
   final locale = LocaleController();
   final theme = ThemeController();
   await Future.wait([session.restore(), locale.restore(), theme.restore()]);
-  await PushService.init();
+  // One refresh now instead of a 401 on every first screen call.
+  api.warmUp().ignore();
+  final app = PartnerState(
+    api,
+    Realtime(api),
+    outbox: await CompletionOutbox.open(),
+  );
   runApp(
     PartnerApp(
       session: session,
-      app: PartnerState(
-        api,
-        Realtime(api),
-        outbox: await CompletionOutbox.open(),
-      ),
+      app: app,
       locale: locale,
       theme: theme,
     ),
   );
+  // Back from the background: a fresh socket; its resync reloads jobs and drains the outbox.
+  Foreground(onResume: app.realtime.reconnect);
+  // Push (Firebase, launch tap) after the first frame, as in the customer app: keeps cold start fast.
+  // A launch tap that arrives before the shell listens is kept by PushService until taken.
+  WidgetsBinding.instance.addPostFrameCallback((_) => PushService.init().ignore());
 }
 
 class PartnerApp extends StatelessWidget {

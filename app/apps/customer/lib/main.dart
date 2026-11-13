@@ -9,14 +9,22 @@ import 'package:ui/ui.dart';
 import 'screens/shell.dart';
 import 'state.dart';
 
-Future<void> main() async {
+/// Kept for the app's lifetime. Customer surfaces are labelled by platform (client_errors.rs APPS).
+final _errors = ErrorReporter(app: analyticsPlatform());
+
+void main() => ErrorReporter.run(_errors, _start);
+
+Future<void> _start() async {
   final boot = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
   final session = Session(namespace: 'customer');
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
+  _errors.send = (body) async => api.post('/client-errors', body);
   final locale = LocaleController();
   final theme = ThemeController();
   await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  // One refresh now instead of a 401 on every first screen call.
+  api.warmUp().ignore();
   final restored = boot.elapsedMilliseconds;
   final analytics = Analytics(
     send: (body) async => api.post('/events', body),
@@ -33,6 +41,8 @@ Future<void> main() async {
     ),
   );
   analytics.start();
+  // Back from the background: a fresh socket (its resync makes screens refetch). Leaving: send queued events.
+  Foreground(onResume: app.realtime.reconnect, onHide: () => analytics.flush().ignore());
   // Consent is read from the server; app_open is sent only once it is known.
   unawaited(app.syncAnalyticsConsent().then((_) => analytics.track('app_open')));
   // Push (Firebase, local notifications) after the first frame: keeps cold start fast.

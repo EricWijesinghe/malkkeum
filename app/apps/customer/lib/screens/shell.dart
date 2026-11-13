@@ -39,6 +39,7 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
   ).animate(CurvedAnimation(parent: _enter, curve: Motion.emphasized));
   bool _started = false;
   bool _memberStarted = false;
+  String? _memberSubject;
   Session? _session;
   StreamSubscription<PushTarget>? _pushTaps;
 
@@ -61,20 +62,28 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
 
   void _onSession() {
     if (!mounted) return;
-    if (_session!.signedIn) _startMember();
+    final s = _session!;
+    if (_memberStarted && (!s.signedIn || s.subject != _memberSubject)) _stopMember();
+    if (s.signedIn && !_memberStarted) {
+      _startMember();
+      // Launch reads consent in main(); a sign-in brings this account's own choice.
+      context.appRead.syncAnalyticsConsent().ignore();
+    }
     setState(() {});
   }
 
-  /// Account data, live updates and push: once per signed-in session.
+  /// Account data, live updates and push: once per signed-in account.
   void _startMember() {
     if (_memberStarted) return;
     _memberStarted = true;
+    _memberSubject = _session!.subject;
     final app = context.appRead;
-    app.loadAll().catchError((Object e) {
+    app.loadAll().catchError((Object e, StackTrace st) {
+      reportError(e, st);
       if (mounted) showToast(context, context.t.error(e));
     });
     app.realtime.connect();
-    PushService.start(app.api).ignore();
+    app.startPush(app.api).ignore();
     _pushTaps = PushService.taps.listen(_openPush);
     final launch = PushService.takePending();
     if (launch != null) {
@@ -82,6 +91,17 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
         if (mounted) _openPush(launch);
       });
     }
+  }
+
+  /// Sign-out or another account: the last account's data, taps and tab position go.
+  /// Realtime closes its own socket on sign-out; [_startMember] opens it again for the next account.
+  void _stopMember() {
+    _memberStarted = false;
+    _memberSubject = null;
+    _pushTaps?.cancel();
+    _pushTaps = null;
+    context.appRead.reset();
+    _tab = 0;
   }
 
   @override
@@ -121,7 +141,8 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
             ),
           );
       }
-    } catch (e) {
+    } catch (e, st) {
+      reportError(e, st);
       if (mounted) showToast(context, context.t.error(e));
     }
   }
@@ -169,6 +190,8 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
       child: ScaleTransition(
         scale: _enterScale,
         child: IndexedStack(
+          // Each account gets fresh tab state: nothing the last one loaded survives a switch.
+          key: ValueKey(_memberSubject),
           index: _tab,
           children: [
             for (var i = 0; i < pages.length; i++)
@@ -178,8 +201,17 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
       ),
     );
 
+    // Android back on another tab goes Home first (Toss, Linear); back on Home leaves the app.
+    Widget backToHome(Widget child) => PopScope(
+      canPop: _tab == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) go(0);
+      },
+      child: child,
+    );
+
     if (context.isWide) {
-      return Scaffold(
+      return backToHome(Scaffold(
         body: Row(
           children: [
             NavigationRail(
@@ -206,9 +238,9 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-      );
+      ));
     }
-    return Scaffold(
+    return backToHome(Scaffold(
       body: body,
       bottomNavigationBar: GlassBar(
         child: NavigationBar(
@@ -220,6 +252,6 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
-    );
+    ));
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
-  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics})
+  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics, this.startPush = PushService.start})
     : cache = cache ?? JsonCache(),
       analytics = analytics ?? Analytics.off() {
     realtime.events.listen(_onEvent);
@@ -16,15 +16,42 @@ class AppState extends ChangeNotifier {
   final JsonCache cache;
   final Analytics analytics;
 
+  /// Registers this device for push under the signed-in account (tests pass a fake).
+  final Future<void> Function(ApiClient api) startPush;
+
   /// Analytics follow the server's marketing consent. Any failure leaves analytics off.
   Future<void> syncAnalyticsConsent() async {
+    final epoch = _epoch;
     try {
       final s = await api.get('/me/consents') as Json;
+      if (epoch != _epoch) return;
       final items = (s['items'] as List).cast<Json>();
       analytics.setConsent(items.any((i) => i['kind'] == 'marketing' && i['granted'] == true));
     } on Object {
       analytics.setConsent(false);
     }
+  }
+
+  /// Bumped by [reset]: a response that started under the previous account is dropped.
+  int _epoch = 0;
+
+  /// Sign-out or account switch: forgets everything of the last account (the public catalogue stays)
+  /// and turns analytics off until the next account's consent is read.
+  void reset() {
+    _epoch++;
+    name = '';
+    phone = '';
+    email = null;
+    logins = const [];
+    joinedAt = null;
+    points = null;
+    addresses = const [];
+    coupons = const [];
+    methods = const [];
+    unreadChats = 0;
+    bookingsVersion++;
+    analytics.setConsent(false);
+    notifyListeners();
   }
 
   String name = '';
@@ -67,18 +94,23 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadPoints() async {
+    final epoch = _epoch;
     try {
       final p = await api.get('/me/points') as Json;
+      if (epoch != _epoch) return;
       points = (p['balance'] as num? ?? 0).toInt();
     } on Exception {
       // Shown as a dash; the wallet screen reports the actual error.
+      if (epoch != _epoch) return;
       points = null;
     }
     notifyListeners();
   }
 
   Future<void> loadProfile() async {
+    final epoch = _epoch;
     final p = await api.get('/me') as Json;
+    if (epoch != _epoch) return;
     name = p['name'] as String? ?? '';
     phone = p['phone'] as String? ?? '';
     email = p['email'] as String?;
@@ -109,30 +141,34 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> loadAddresses() async {
-    addresses = (await api.get('/me/addresses') as List)
-        .map((e) => Address.fromJson(e as Json))
-        .toList();
+    final epoch = _epoch;
+    final raw = await api.get('/me/addresses') as List;
+    if (epoch != _epoch) return;
+    addresses = raw.map((e) => Address.fromJson(e as Json)).toList();
     notifyListeners();
   }
 
   Future<void> loadCoupons() async {
-    coupons = (await api.get('/me/coupons') as List)
-        .map((e) => Coupon.fromJson(e as Json))
-        .toList();
+    final epoch = _epoch;
+    final raw = await api.get('/me/coupons') as List;
+    if (epoch != _epoch) return;
+    coupons = raw.map((e) => Coupon.fromJson(e as Json)).toList();
     notifyListeners();
   }
 
   Future<void> loadMethods() async {
-    methods = (await api.get('/me/payment-methods') as List)
-        .map((e) => PaymentMethod.fromJson(e as Json))
-        .toList();
+    final epoch = _epoch;
+    final raw = await api.get('/me/payment-methods') as List;
+    if (epoch != _epoch) return;
+    methods = raw.map((e) => PaymentMethod.fromJson(e as Json)).toList();
     notifyListeners();
   }
 
   Future<void> loadUnread() async {
-    final threads = (await api.get('/chat/threads') as List).map(
-      (e) => ChatThread.fromJson(e as Json),
-    );
+    final epoch = _epoch;
+    final raw = await api.get('/chat/threads') as List;
+    if (epoch != _epoch) return;
+    final threads = raw.map((e) => ChatThread.fromJson(e as Json));
     unreadChats = threads.fold(0, (sum, t) => sum + t.unreadMember);
     notifyListeners();
   }

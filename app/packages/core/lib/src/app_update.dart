@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'api.dart';
+import 'foreground.dart';
 import 'i18n.dart';
 import 'models.dart';
 
@@ -101,6 +102,16 @@ class _UpdateGateState extends State<UpdateGate> {
   void initState() {
     super.initState();
     _load();
+    // A forced update or a maintenance switch must not wait for a cold start.
+    _resume = Foreground(onResume: _load, every: gateRecheckEvery);
+  }
+
+  late final Foreground _resume;
+
+  @override
+  void dispose() {
+    _resume.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
