@@ -20,6 +20,11 @@ ANDROID_NS = "{http://schemas.android.com/apk/res/android}"
 KAKAO_AUTH_ACTIVITY = "com.kakao.sdk.flutter.auth.AuthCodeHandlerActivity"
 NAVER_SCHEME = "malkkeumnaver"  # legacy iOS < 17.4 only
 NAVER_PATH = "/auth/naver/callback"
+# PortOne appScheme: ISP / app-card apps reopen the customer app with it after authenticating (iOS only;
+# on Android they return by finishing, and a singleTop MainActivity would start a second copy instead).
+PAY_APP_SCHEME = "malkkeumpay"
+PAY_APPS = {"customer"}
+CORE_WEBVIEW = APPS.parent / "packages" / "core" / "lib" / "src" / "portone_webview.dart"
 PASSED = [0]
 FAILED = []
 
@@ -126,6 +131,10 @@ def check_info_plist(app, ios):
         check(want in queries, f"{app} Info.plist: LSApplicationQueriesSchemes lacks {want}")
     for want in PAY_SCHEMES:
         check(want in queries, f"{app} Info.plist: LSApplicationQueriesSchemes lacks card/wallet app scheme {want} (PortOne WebView)")
+    if app in PAY_APPS:
+        check(PAY_APP_SCHEME in schemes, f"{app} Info.plist: CFBundleURLSchemes lacks the PortOne appScheme {PAY_APP_SCHEME}")
+        check(info.get("FlutterDeepLinkingEnabled") is False,
+              f"{app} Info.plist: FlutterDeepLinkingEnabled must be false, or the {PAY_APP_SCHEME}:// return pushes a route over the payment")
     check(len(info.get("LSApplicationQueriesSchemes", [])) <= 50, f"{app} Info.plist: iOS honours at most 50 LSApplicationQueriesSchemes")
     for key in ["CFBundleDisplayName", "CFBundleName"]:
         value = str(info.get(key, "")).strip()
@@ -258,6 +267,8 @@ def check_android(app):
           f"{app} AndroidManifest: CallbackActivity needs an autoVerify https App Link ${{appLinkHost}}{NAVER_PATH}")
     check(not any(d.get(ANDROID_NS + "scheme") == NAVER_SCHEME for _, d in naver),
           f"{app} AndroidManifest: the malkkeumnaver custom scheme must not be registered on Android")
+    check(not any(d.get(ANDROID_NS + "scheme") == PAY_APP_SCHEME for d in root.iter("data")),
+          f"{app} AndroidManifest: {PAY_APP_SCHEME} must not be registered on Android (card apps return by finishing)")
     check('manifestPlaceholders["kakaoNativeKey"]' in gradle, f"{app} build.gradle.kts: kakaoNativeKey placeholder")
     check('file("google-services.json").exists()' in gradle and 'apply(plugin = "com.google.gms.google-services")' in gradle,
           f"{app} build.gradle.kts: google-services plugin must be conditional")
@@ -386,6 +397,15 @@ def check_camera_and_analytics():
           "review-notes.md: must explain NSCameraUsageDescription while no screen opens the camera")
     main = (APPS / "customer" / "lib" / "main.dart").read_text(encoding="utf-8")
     check(re.search(r"\?\s*'ios'\s*:\s*'android'", main) is None, "customer main.dart: analytics must not label every non-iOS platform as android")
+
+
+def check_pay_scheme():
+    """The app passes the scheme Info.plist registers, and both hosted PortOne pages forward it."""
+    dart = CORE_WEBVIEW.read_text(encoding="utf-8")
+    check(f"const payAppScheme = '{PAY_APP_SCHEME}://';" in dart, f"core portone_webview.dart: payAppScheme must be {PAY_APP_SCHEME}://")
+    for page in ["index.html", "billing.html"]:
+        html = (REPO / "website" / "pay" / page).read_text(encoding="utf-8")
+        check("req.appScheme = app" in html, f"website/pay/{page}: requestPayment/requestIssueBillingKey must pass appScheme")
 
 
 def check_android_extras(app, android, root=None):
@@ -584,6 +604,7 @@ def main():
         check_ci()
         check_store_docs()
         check_camera_and_analytics()
+        check_pay_scheme()
     except (OSError, ValueError) as e:
         failures_before.append(f"ci: {type(e).__name__}: {e}")
     # Built outputs are checked when given: --aab app-release.aab (or an .apk) for 16 KB alignment,

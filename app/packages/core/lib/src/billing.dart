@@ -71,6 +71,7 @@ Future<String?> issueBillingKey({
       'issue': setup.issueId,
       'customer': setup.customerId,
       'method': provider,
+      'app': payAppScheme,
     },
   );
   return Navigator.of(context).push<String?>(

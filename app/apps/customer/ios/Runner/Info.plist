@@ -104,7 +104,21 @@
 				<string>$(GOOGLE_REVERSED_CLIENT_ID)</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>portone</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>malkkeumpay</string>
+			</array>
+		</dict>
 	</array>
+	<!-- Card apps reopen the app with malkkeumpay:// (PortOne appScheme, the payment WebView stays open underneath) and the
+	     Naver https callback can arrive as a Universal Link. Neither is a screen: Flutter must not push them as routes. -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
