@@ -1,18 +1,20 @@
 ﻿<#
 .SYNOPSIS
-  Builds the complete Malkkeum hand-over package into F:\EC\targets\release-stage (one folder per audience).
+  Builds the complete Dahae hand-over package into <targets>\release-stage (one folder per audience).
 
 .DESCRIPTION
   Each step builds its own output and copies it into the staging folder. Re-running is safe: a step
   replaces only its own folder, the upload key is reused, and heavy builds are incremental. Every
-  step logs to F:\EC\targets\release-logs\build-all-<time>.log and the run stops at the first failure.
+  step logs to <targets>\release-logs\build-all-<time>.log and the run stops at the first failure.
+  <targets> is DAHAE_TARGETS (env or scripts/local.env), default <repo>\targets. Tool locations come from
+  the same place: DAHAE_TOOLS (flutter), JAVA_HOME (else the newest JDK under Program Files\Java), PG_BIN.
 
   Server addresses are checked before they are baked into a build, and read back out of the built
   file afterwards: demo builds need a private LAN IPv4, store builds need https://<domain>.
 
   Store builds (AAB, APK, MSIX) all take their build number from scripts/ci/build-number.py, the same
   source Codemagic uses: it only rises, so a second upload is never rejected for a reused number.
-  Android store builds are obfuscated; their Dart symbol files go to F:\EC\targets\release-symbols
+  Android store builds are obfuscated; their Dart symbol files go to <targets>\release-symbols
   (kept on this PC to read crash reports with "flutter symbolize", never staged or shipped).
   The console is web-only: MSIX packages are built for the customer and partner apps.
 
@@ -36,7 +38,7 @@
   pwsh -File scripts/release/build-all.ps1 -Only verify
   pwsh -File scripts/release/build-all.ps1 -Only publish -Publish          # after verify passed
 
-  Heavy builds (cargo, flutter, docker) go through bash /f/EC/scripts/build-slot.sh in the foreground.
+  Heavy builds (cargo, flutter, docker) go through bash scripts/build-slot.sh in the foreground.
 #>
 [CmdletBinding()]
 param(
@@ -51,15 +53,21 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$Stage = 'F:\EC\targets\release-stage'
-$Work = 'F:\EC\targets\release-work'
-$KeyDir = 'F:\EC\targets\release-keys'
-$LogDir = 'F:\EC\targets\release-logs'
-$CargoDir = 'F:/EC/targets/release-cargo'
-$SymbolsDir = 'F:/EC/targets/release-symbols'
-$GitBash = 'C:\Program Files\Git\bin\bash.exe'
-$BuildSlot = '/f/EC/scripts/build-slot.sh'
-$Jdk = 'C:\Program Files\Java\jdk-21.0.12'
+. (Join-Path $root 'scripts\local-env.ps1')
+$Targets = if ($env:DAHAE_TARGETS) { $env:DAHAE_TARGETS } else { Join-Path $root 'targets' }
+$Stage = Join-Path $Targets 'release-stage'
+$Work = Join-Path $Targets 'release-work'
+$KeyDir = Join-Path $Targets 'release-keys'
+$LogDir = Join-Path $Targets 'release-logs'
+$CargoDir = (Join-Path $Targets 'release-cargo').Replace('\', '/')
+$SymbolsDir = (Join-Path $Targets 'release-symbols').Replace('\', '/')
+$GitBash = Join-Path $env:ProgramFiles 'Git\bin\bash.exe'
+$BuildSlotFile = Join-Path $root 'scripts\build-slot.sh'
+# Git Bash path form (/f/repo/...) of the build slot script.
+$BuildSlot = '/' + $BuildSlotFile.Substring(0, 1).ToLower() + $BuildSlotFile.Substring(2).Replace('\', '/')
+$Jdk = if ($env:JAVA_HOME -and (Test-Path -LiteralPath $env:JAVA_HOME)) { $env:JAVA_HOME } else { (Get-ChildItem (Join-Path $env:ProgramFiles 'Java') -Directory -Filter 'jdk*' -EA SilentlyContinue | Sort-Object Name | Select-Object -Last 1).FullName }
+$FlutterBin = if ($env:DAHAE_TOOLS) { Join-Path $env:DAHAE_TOOLS 'flutter\bin' } else { $c = Get-Command flutter.bat -EA SilentlyContinue; if ($c) { Split-Path -Parent $c.Source } else { '' } }
+$PgBin = if ($env:PG_BIN) { $env:PG_BIN } else { $c = Get-Command dropdb.exe -EA SilentlyContinue; if ($c) { Split-Path -Parent $c.Source } else { '' } }
 $BuildTools = "$env:LOCALAPPDATA\Android\Sdk\build-tools\36.0.0"
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $script:LogFile = Join-Path $LogDir "build-all-$Stamp.log"
@@ -77,7 +85,7 @@ $StoreSteps = 'aab-customer', 'aab-partner', 'apk-store-customer', 'apk-store-pa
 # Toolchain for every step, so a single -Only run works the same as a full run.
 $env:JAVA_HOME = $Jdk
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
-$env:PATH = "F:\tools\flutter\bin;$Jdk\bin;$env:PATH"
+$env:PATH = "$FlutterBin;$Jdk\bin;$env:PATH"
 $Demo = "$Stage\1-Demo"; $Install = "$Stage\2-Install-Server"; $Android = "$Stage\3-Store-Android"
 $Msix = "$Stage\4-Store-Microsoft"; $Apple = "$Stage\5-Store-Apple"; $DocsOut = "$Stage\6-Docs"
 $ConsoleOut = "$Stage\7-Console-Android"
@@ -266,11 +274,12 @@ function Build-Info {
 # ---------------------------------------------------------------- steps
 
 function Step-Preflight {
-  $free = (Get-PSDrive F).Free / 1GB
-  Log ('   free space on F: {0:N1} GB' -f $free)
-  if ($free -lt 15) { throw 'Less than 15 GB free on F:. Free space, then re-run.' }
+  $drive = (Split-Path -Qualifier ([IO.Path]::GetFullPath($Targets))).TrimEnd(':')
+  $free = (Get-PSDrive $drive).Free / 1GB
+  Log ('   free space on {0}: {1:N1} GB' -f $drive, $free)
+  if ($free -lt 15) { throw "Less than 15 GB free on ${drive}:. Free space, then re-run." }
   if (-not $env:LOCALAPPDATA) { throw 'LOCALAPPDATA is not set; the Android SDK path cannot be resolved.' }
-  foreach ($p in $GitBash, "$Jdk\bin\keytool.exe", "$Jdk\bin\jarsigner.exe", "$BuildTools\aapt2.exe", "$BuildTools\apksigner.bat", 'F:\tools\flutter\bin\flutter.bat', "$env:USERPROFILE\.cargo\bin\cargo.exe", $BuildSlot.Replace('/f/', 'F:\').Replace('/', '\')) {
+  foreach ($p in $GitBash, "$Jdk\bin\keytool.exe", "$Jdk\bin\jarsigner.exe", "$BuildTools\aapt2.exe", "$BuildTools\apksigner.bat", "$FlutterBin\flutter.bat", "$env:USERPROFILE\.cargo\bin\cargo.exe", $BuildSlotFile) {
     if (-not (Test-Path -LiteralPath $p)) { throw "Missing tool: $p" }
   }
   # Fail now, not twenty minutes into the builds.
@@ -607,7 +616,7 @@ function Verify-DemoServer {
     foreach ($p in $apiProc) { Stop-Process -Id $p.ProcessId -Force; Log "   stopped staged api PID $($p.ProcessId)" }
   }
   $env:PGPASSWORD = 'localdev'
-  & 'F:\tools\pgsql\bin\dropdb.exe' -h localhost -p 5433 -U postgres $checkDb *> $null
+  & "$PgBin\dropdb.exe" -h localhost -p 5433 -U postgres $checkDb *> $null
 }
 
 # Swaps the staged kit in as Desktop\"Malkkeum Demo". Copies first and renames second, so a failed

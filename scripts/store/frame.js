@@ -9,11 +9,11 @@
 //          docs/store/screenshots/captions.json
 // Outputs: docs/store/screenshots/<app>/<device>/<lang>/<NN-name>.png
 //          docs/store/graphics/<app>-feature-<lang>.png, docs/store/graphics/customer-poster-<lang>.png
-// Playwright is loaded from SHOT_PLAYWRIGHT (default: the F:/tools/shot install).
+// Playwright is loaded from SHOT_PLAYWRIGHT (env or scripts/local.env via env.sh; default: the `playwright` package).
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
-const { chromium } = require(process.env.SHOT_PLAYWRIGHT || 'F:/tools/shot/node_modules/playwright');
+const { chromium } = require(process.env.SHOT_PLAYWRIGHT || 'playwright');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const RAW = path.join(ROOT, 'app', 'build', 'store_shots', 'raw');

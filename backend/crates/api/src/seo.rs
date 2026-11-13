@@ -506,9 +506,19 @@ async fn with_reviews(db: &PgPool, mut page: ServicePage) -> ApiResult<ServicePa
     Ok(page)
 }
 
+/// Static website pages (website/*.html) listed next to the generated /c/ pages.
+const STATIC_PAGES: [&str; 6] = [
+    "/",
+    "/partners.html",
+    "/privacy.html",
+    "/terms.html",
+    "/location-terms.html",
+    "/delete-account.html",
+];
+
 async fn sitemap(State(s): State<AppState>) -> ApiResult<Response> {
     let base = base_url(&s);
-    let mut paths: Vec<String> = ["/", "/partners.html", "/privacy.html", "/terms.html"].iter().map(|p| (*p).to_string()).collect();
+    let mut paths: Vec<String> = STATIC_PAGES.iter().map(|p| (*p).to_string()).collect();
     let active: Vec<(String,)> = sqlx::query_as("SELECT code FROM services WHERE active").fetch_all(&s.db).await?;
     for (svc, dst) in covered_pairs(&s.db).await? {
         let known = keyword(&svc).is_some() && seoul_district(&dst).is_some();

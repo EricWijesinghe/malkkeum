@@ -1,0 +1,38 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Security issues go to private vulnerability reporting (see SECURITY.md), not here.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where
+      options: [Customer app, Partner app, Owner console, API / server, Installer / dahae CLI, Website]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: App version, or `dahae version` on the server
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Remove phone numbers, addresses and keys first.
+      render: text

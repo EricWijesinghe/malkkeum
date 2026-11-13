@@ -2,15 +2,38 @@
 # Run from the repo root:  python -I scripts/build_legal.py website
 # Check only (exit 1 when a page differs from the generator):  python -I scripts/build_legal.py website --check
 # Never edit the generated .html by hand: change the text here and regenerate.
-# Business details (상호, 대표, 사업자번호 ...) are filled in the browser from /v1/brand,
-# i.e. from what the owner typed in the console setup wizard. No editing needed here.
+#
+# Business details (상호, 대표, 사업자번호 ...) come from what the owner typed in the console setup wizard and
+# are served at /v1/brand. The committed pages carry placeholders that site.js fills in the browser. For the
+# 전자상거래법 seller details to be in the HTML itself (no JavaScript needed: crawlers, store reviewers), bake
+# them in at deploy time on a COPY of website/ (the result is not committed, so --check would fail on it):
+#   curl -fsS https://DOMAIN/v1/brand > brand.json
+#   python -I scripts/build_legal.py <copy-of-website> --brand brand.json --base-url https://DOMAIN
+# --base-url also makes canonical, og:url, og:image and JSON-LD URLs absolute in every page, index.html too.
+import html
 import json
 import os
 import pathlib
+import re
 import sys
 
-OUT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else pathlib.Path(__file__).parent)
+ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+OUT = pathlib.Path(ARGS[0] if ARGS else pathlib.Path(__file__).parent)
 EFFECTIVE = "2026년 11월 17일"
+# Revision history shown on the policy pages, newest first: (시행일, 내용, link to the archived previous text or "").
+# On every change: add a row, copy the old page to e.g. website/archive/terms-20261117.html and link it here.
+REVISIONS = [(EFFECTIVE, "제정", "")]
+
+
+def revision_table():
+    rows = ""
+    for day, what, link in REVISIONS:
+        prev = f'<a href="{link}">이전 버전</a>' if link else "-"
+        rows += f"<tr><td>{day}</td><td>{what}</td><td>{prev}</td></tr>"
+    return f"    <h2>개정 이력</h2>\n    <table><tr><th>시행일</th><th>내용</th><th>이전 버전</th></tr>{rows}</table>\n"
+
+
+REVISION_TABLE = revision_table()
 # Retention windows shown in the policy; keep equal to the server defaults (AI_CHAT_RETENTION_DAYS, UPLOAD_ORPHAN_DAYS).
 AI_DAYS = os.environ.get("AI_CHAT_RETENTION_DAYS", "180")
 ORPHAN_DAYS = os.environ.get("UPLOAD_ORPHAN_DAYS", "30")
@@ -21,41 +44,56 @@ HEAD = """<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>다해 · {title}</title>
+  <meta name="description" content="{description}">
   <meta name="theme-color" content="#0B1217">
+  <link rel="canonical" href="/{page}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="다해">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:url" content="/{page}">
+  <meta property="og:title" content="다해 · {title}">
+  <meta property="og:description" content="{description}">
+  <meta property="og:image" content="/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="preload" href="assets/fonts/DahaeSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/site.css">
+  <noscript><style>.reveal {{ opacity: 1; transform: none; }}</style></noscript>
   <script>try {{ const t = localStorage.getItem('site.theme'); if (t) document.documentElement.dataset.theme = t; }} catch (e) {{}}</script>
   <script defer src="assets/site.js"></script>
 </head>
 <body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
   <header class="nav"><div class="wrap">
     <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span><span data-brand-name>다해</span></a>
-    <div class="tools"><select id="lang" class="lang" aria-label="Language"></select><button id="theme" class="icon-btn" type="button" aria-label="Light mode">☀️</button></div>
+    <div class="tools"><select id="lang" class="lang" aria-label="언어 선택 (Language)"></select><button id="theme" class="icon-btn" type="button" aria-label="밝은 화면으로 보기" title="밝은 화면으로 보기"><span aria-hidden="true">☀️</span></button></div>
   </div></header>
-  <main class="wrap doc">
+  <main id="main" class="wrap doc">
 """
+
+# Without JavaScript the footer cannot show the owner-entered seller details unless they were baked in (--brand).
+NOSCRIPT_COMPANY = '<noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript>'
 
 FOOT = """  </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
-    <div><b data-t="f_support">고객센터</b><br><a data-support-phone href="#"></a><br><a data-support-email href="#"></a></div>
+    <div><p class="company" id="company"></p>{NOSCRIPT_COMPANY}<p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
+    <div><b data-t="f_support">고객센터</b><br><a data-support-phone hidden></a><br><a data-support-email hidden></a></div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>
 </body>
 </html>
-"""
+""".replace("{NOSCRIPT_COMPANY}", NOSCRIPT_COMPANY)
 
 CO = '<span data-fill="company.legal_name">[상호]</span>'
 SVC = '<span data-brand-name>다해</span>'
 # 공정거래위원회 통신판매사업자 조회. site.js adds the registration number and unhides the link.
 BIZCHECK = '<a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener">사업자정보확인</a>'
 OFFICER = '<span data-fill="company.privacy_officer">[개인정보 보호책임자]</span>'
-CONTACT = '<a data-support-email href="#"></a> · <a data-support-phone href="#"></a>'
+CONTACT = '<a data-support-email hidden></a> · <a data-support-phone hidden></a>'
 
 PRIVACY = f"""
     <h1>개인정보처리방침</h1>
@@ -118,7 +156,7 @@ PRIVACY = f"""
     <p>개인정보침해신고센터(privacy.kisa.or.kr, 118), 개인정보분쟁조정위원회(www.kopico.go.kr, 1833-6972)에 문의할 수도 있습니다.</p>
     <h2>11. 변경 고지</h2>
     <p>이 방침이 바뀌면 시행 7일 전부터 앱과 웹사이트에 공지합니다. 국외 이전 항목이나 필수 동의 내용이 바뀌면 다시 동의를 받습니다.</p>
-"""
+{REVISION_TABLE}"""
 
 # Cancellation tiers come from the Rust default, so the terms match what the server enforces by default.
 # Owner edits in the console are NOT reflected here: regenerate after changing the default, or render
@@ -154,9 +192,9 @@ TERMS = f"""
     <h2>제8조 (서비스 변경·중단)</h2><p>설비 점검 등 부득이한 경우 서비스를 일시 중단할 수 있으며 미리 공지합니다.</p>
     <h2>제9조 (이용자 생성 콘텐츠 · 후기)</h2><p>후기 등 이용자가 올린 콘텐츠는 다른 이용자에게 공개될 수 있습니다. 욕설·차별·혐오 표현, 음란물, 개인정보나 연락처, 허위 내용, 광고나 타인의 권리를 침해하는 내용은 금지하며, 이를 발견하면 회사는 사전 통지 없이 숨김 또는 삭제하고 해당 이용자의 후기 작성을 제한할 수 있습니다. 이용자는 앱에서 후기를 신고할 수 있으며, 회사는 신고된 후기를 검토해 조치 결과를 처리합니다. 무관용 원칙을 적용합니다.</p>
     <h2>제10조 (분쟁 해결)</h2><p>분쟁은 고객센터를 통해 먼저 협의하며, 협의가 안 되면 관할 법원은 민사소송법에 따릅니다.</p>
-    <h2>사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span> · 호스팅 제공자 <span data-fill="company.hosting_provider">[호스팅 제공자]</span></p>
-    <p>고객센터 전화 <a data-support-phone href="#"></a> · 이메일 <a data-support-email href="#"></a> {BIZCHECK}</p>
-"""
+    <h2 id="business">사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span> · 호스팅 제공자 <span data-fill="company.hosting_provider">[호스팅 제공자]</span></p>
+    <p>고객센터 전화 <a data-support-phone hidden></a> · 이메일 <a data-support-email hidden></a> {BIZCHECK}</p>
+{REVISION_TABLE}"""
 
 DELETE = f"""
     <h1>계정 삭제 안내 · Delete your account</h1>
@@ -181,8 +219,8 @@ PARTNERS = f"""
     <h2>지원 방법</h2>
     <ol><li>파트너 앱을 내려받아 휴대전화로 가입합니다.</li><li>팀 이름, 활동 지역, 가능 시간을 입력합니다.</li><li>심사가 끝나면 바로 작업을 받을 수 있어요.</li></ol>
     <div class="store-badges" style="margin-top:24px">
-      <a class="store" data-link="partner_app_store_url" href="#" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
-      <a class="store" data-link="partner_play_store_url" href="#" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
+      <a class="store" data-link="partner_app_store_url" role="link" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>App Store</b></span></a>
+      <a class="store" data-link="partner_play_store_url" role="link" aria-disabled="true"><span><small data-t="store_soon">곧 출시</small><b>Google Play</b></span></a>
     </div>
 """
 
@@ -198,21 +236,91 @@ LOCATION = f"""
     <h2>제7조 (손해배상과 분쟁 조정)</h2><p>회사가 관련 법령을 위반해 이용자에게 손해가 생기면 이용자는 배상을 청구할 수 있고, 회사는 고의나 과실이 없음을 입증하지 못하면 책임을 집니다. 위치정보와 관련한 분쟁은 방송통신위원회에 재정을, 개인정보 분쟁조정위원회에 조정을 신청할 수 있습니다.</p>
     <h2>제8조 (위치정보관리책임자)</h2><p>{OFFICER} · {CONTACT}</p>
     <h2>사업자 정보</h2><p>상호 {CO} · 대표 <span data-fill="company.ceo">[대표자]</span> · 주소 <span data-fill="company.address">[주소]</span></p>
-"""
+{REVISION_TABLE}"""
 
 PAGES = {
-    "privacy.html": ("개인정보처리방침", PRIVACY),
-    "terms.html": ("이용약관", TERMS),
-    "location-terms.html": ("위치기반서비스 이용약관", LOCATION),
-    "delete-account.html": ("계정 삭제 안내", DELETE),
-    "partners.html": ("파트너 지원", PARTNERS),
+    "privacy.html": ("개인정보처리방침", "다해 개인정보처리방침: 수집 항목, 이용 목적, 보유 기간, 처리 위탁과 국외 이전, 이용자의 권리.", PRIVACY),
+    "terms.html": ("이용약관", "다해 서비스 이용약관: 예약과 결제, 취소와 환불, 이용자의 의무, 분쟁 해결, 사업자 정보.", TERMS),
+    "location-terms.html": ("위치기반서비스 이용약관", "다해 위치기반서비스 이용약관: 현재 위치로 주소 찾기 기능의 위치정보 처리 기준.", LOCATION),
+    "delete-account.html": ("계정 삭제 안내", "다해 계정 삭제 방법과 삭제·보관되는 정보 안내. How to delete your Dahae account.", DELETE),
+    "partners.html": ("파트너 지원", "다해 청소 파트너 모집: 원하는 지역과 시간에 일하고 매주 수요일 정산받으세요.", PARTNERS),
 }
+
+# Footer rows in the same order and wording as site.js applyBrand (Korean labels).
+COMPANY_ROWS = [("legal_name", ""), ("ceo", "대표"), ("registration_no", "사업자등록번호"), ("mail_order_no", "통신판매업 신고"),
+                ("address", "주소"), ("privacy_officer", "개인정보 보호책임자"), ("hosting_provider", "호스팅 제공자")]
+FTC_LOOKUP = "https://www.ftc.go.kr/bizCommPop.do"
+BIZ_NO_DIGITS = 10
+
+
+def bake(page, brand, base):
+    """Writes the owner's seller details (the /v1/brand JSON) and absolute URLs into one page's HTML."""
+    esc = html.escape
+    co = brand.get("company") or {}
+    if brand:
+        page = re.sub(r'<span data-fill="company\.(\w+)">[^<]*</span>',
+                      lambda m: f'<span data-fill="company.{m[1]}">{esc(str(co[m[1]]))}</span>' if co.get(m[1]) else m[0], page)
+        if brand.get("name"):
+            page = page.replace("<span data-brand-name>다해</span>", f"<span data-brand-name>{esc(brand['name'])}</span>")
+        seen, spans = set(), []
+        for value, label in [(brand.get("name") or co.get("legal_name"), "")] + [(co.get(k), lbl) for k, lbl in COMPANY_ROWS]:
+            if value and value not in seen:
+                seen.add(value)
+                spans.append(f"<span>{esc(f'{label} {value}' if label else str(value))}</span>")
+        page = page.replace('<p class="company" id="company"></p>', f'<p class="company" id="company">{"".join(spans)}</p>')
+        page = page.replace(NOSCRIPT_COMPANY, "")
+        if brand.get("support_phone"):
+            tel = re.sub(r"[^0-9+]", "", brand["support_phone"])
+            page = page.replace('<a data-support-phone hidden></a>', f'<a data-support-phone href="tel:{tel}">{esc(brand["support_phone"])}</a>')
+        if brand.get("support_email"):
+            mail = esc(brand["support_email"])
+            page = page.replace('<a data-support-email hidden></a>', f'<a data-support-email href="mailto:{mail}">{mail}</a>')
+        reg = re.sub(r"\D", "", str(co.get("registration_no") or ""))
+        if len(reg) == BIZ_NO_DIGITS:
+            page = page.replace(f'data-bizcheck hidden href="{FTC_LOOKUP}"', f'data-bizcheck href="{FTC_LOOKUP}?wrkr_no={reg}"')
+        page = re.sub(r'(<script type="application/ld\+json"[^>]*>)(.*?)(</script>)', lambda m: m[1] + ld_business(m[2], brand) + m[3], page, flags=re.S)
+    if base:
+        page = re.sub(r'((?:rel="canonical" href|property="og:(?:url|image)" content|name="twitter:image" content)=")/', rf"\1{base}/", page)
+        page = re.sub(r'(<script type="application/ld\+json"[^>]*>)(.*?)(</script>)',
+                      lambda m: m[1] + re.sub(r'("(?:@id|url|image)": ")/', rf"\1{base}/", m[2]) + m[3], page, flags=re.S)
+    return page
+
+
+def ld_business(block, brand):
+    data = json.loads(block)
+    co = brand.get("company") or {}
+    for node in data.get("@graph", []):
+        if node.get("@type") != "LocalBusiness":
+            continue
+        if brand.get("name"):
+            node["name"] = brand["name"]
+        for key, value in (("legalName", co.get("legal_name")), ("telephone", brand.get("support_phone")), ("email", brand.get("support_email"))):
+            if value:
+                node[key] = value
+        if co.get("address"):
+            node["address"] = {"@type": "PostalAddress", "streetAddress": co["address"], "addressCountry": "KR"}
+    return "\n  " + json.dumps(data, ensure_ascii=False) + "\n  "
+
+
+def self_test():
+    brand = {"name": "다해", "support_phone": "02-123-4567", "support_email": "help@example.com",
+             "company": {"legal_name": "주식회사 <다해>", "ceo": "홍길동", "registration_no": "123-45-67890", "address": "서울시"}}
+    page = bake(HEAD.format(title="t", description="d", page="terms.html") + TERMS + FOOT, brand, "https://example.com")
+    assert '<span data-fill="company.ceo">홍길동</span>' in page and "&lt;다해&gt;" in page, "seller details baked and escaped"
+    assert 'href="tel:021234567">02-123-4567</a>' in page and "wrkr_no=1234567890" in page and "data-unbaked" not in page
+    assert 'rel="canonical" href="https://example.com/terms.html"' in page and "[대표자]" not in page
+    assert "[번호]" in page, "fields the owner left empty keep their placeholder"
+
 
 if __name__ == "__main__":
     check = "--check" in sys.argv
+    brand_file = sys.argv[sys.argv.index("--brand") + 1] if "--brand" in sys.argv else None
+    base = sys.argv[sys.argv.index("--base-url") + 1].rstrip("/") if "--base-url" in sys.argv else ""
+    self_test()
+    brand = json.loads(pathlib.Path(brand_file).read_text(encoding="utf-8")) if brand_file else {}
     stale = []
-    for name, (title, body) in PAGES.items():
-        page = HEAD.format(title=title) + body + FOOT
+    for name, (title, description, body) in PAGES.items():
+        page = HEAD.format(title=title, description=description, page=name) + body + FOOT
         if not check:
             (OUT / name).write_text(page, encoding="utf-8", newline="\n")
             print("wrote", name)
@@ -220,3 +328,7 @@ if __name__ == "__main__":
             stale.append(name)
     if stale:
         sys.exit(f"out of date (edit scripts/build_legal.py, then regenerate): {', '.join(stale)}")
+    if (brand or base) and not check:
+        for f in sorted(OUT.glob("*.html")):
+            f.write_text(bake(f.read_text(encoding="utf-8"), brand, base), encoding="utf-8", newline="\n")
+            print("baked", f.name)

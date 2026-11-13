@@ -29,3 +29,8 @@ __pycache__/
 PASSWORD.txt
 key.properties
 signing/
+
+# Machine-specific tool locations (see scripts/local.env.example).
+scripts/local.env
+# Local design drafts kept outside version control.
+NTD/

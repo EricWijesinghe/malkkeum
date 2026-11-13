@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Checks the public SEO pages of a running site: sitemap -> every /c/ page renders with valid JSON-LD.
+"""Checks the public SEO pages of a running site: sitemap -> every /c/ page renders with valid JSON-LD,
+and every static page (home, legal, partners) has a title, description, canonical and og:image.
 
 Stdlib only. Usage: python scripts/seo_check.py https://DOMAIN [--limit 20]
 Exit 0 when every checked page passes, 1 otherwise.
@@ -45,6 +46,17 @@ def check_page(url, html):
     return problems
 
 
+def check_static(html):
+    """Static website pages: metadata only (their JSON-LD, if any, is checked for parsing)."""
+    problems = [f"missing {n}" for n in ("<title>", 'rel="canonical"', 'name="description"', 'property="og:image"', "<h1") if n not in html]
+    for block in LD_RE.findall(html):
+        try:
+            json.loads(block)
+        except ValueError as e:
+            problems.append(f"JSON-LD does not parse: {e}")
+    return problems
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("base")
@@ -54,13 +66,14 @@ def main():
     _, xml_text = fetch(f"{base}/sitemap.xml")
     locs = [el.text for el in ET.fromstring(xml_text).findall("s:url/s:loc", SITEMAP_NS)]
     pages = [u for u in locs if "/c/" in u][: args.limit]
+    static = [u for u in locs if "/c/" not in u]
     failed = 0
-    for url in pages:
+    for url in pages + static:
         status, html = fetch(url)
-        problems = [f"HTTP {status}"] if status != 200 else check_page(url, html)
+        problems = [f"HTTP {status}"] if status != 200 else check_page(url, html) if url in pages else check_static(html)
         print(("FAIL " if problems else "ok   ") + url + ("" if not problems else " :: " + "; ".join(problems)))
         failed += bool(problems)
-    print(f"{len(pages) - failed}/{len(pages)} pages passed")
+    print(f"{len(pages) + len(static) - failed}/{len(pages) + len(static)} pages passed")
     return 1 if failed or not pages else 0
 
 

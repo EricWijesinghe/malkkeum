@@ -1,9 +1,17 @@
-# Every change needs the owner's review (branch protection: "Require review from Code Owners").
-# Highest risk, listed so the reason is visible: migrations, CI and release, installer, legal pages.
-*                     @EricWijesinghe
-/backend/migrations/  @EricWijesinghe
-/.github/             @EricWijesinghe
-/deploy/              @EricWijesinghe
-/scripts/ci/          @EricWijesinghe
-/scripts/build_legal.py @EricWijesinghe
-/website/*.html       @EricWijesinghe
+# Default owner for everything; the paths below are listed so reviews on them are always requested
+# (branch protection: "Require review from Code Owners").
+*                                   @EricWijesinghe
+
+# Database schema, deployment, CI and release automation
+/backend/migrations/                @EricWijesinghe
+/deploy/                            @EricWijesinghe
+/.github/                           @EricWijesinghe
+/scripts/ci/                        @EricWijesinghe
+/codemagic.yaml                     @EricWijesinghe
+
+# Legal pages and their generator (전자상거래법, 개인정보 보호법 text)
+/scripts/build_legal.py             @EricWijesinghe
+/website/privacy.html               @EricWijesinghe
+/website/terms.html                 @EricWijesinghe
+/website/location-terms.html        @EricWijesinghe
+/website/delete-account.html        @EricWijesinghe

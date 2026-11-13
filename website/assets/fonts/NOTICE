@@ -1,0 +1,4 @@
+Dahae Sans is a subset of Pretendard by Kil Hyung-jin, licensed under SIL OFL 1.1 (see OFL.txt).
+It is renamed because "Pretendard" is a Reserved Font Name. Built by scripts/build_fonts.py from
+app/packages/ui/assets/fonts/Pretendard-*.otf: Regular (400), Bold (700) and ExtraBold (800), limited to
+Latin, punctuation, Hangul jamo and the Hangul syllables listed in charset.txt.

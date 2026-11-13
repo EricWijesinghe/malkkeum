@@ -7,8 +7,8 @@ import 'package:ui/ui.dart';
 import 'support/partner_host.dart';
 
 // Photo upload goes through ImagePicker, which has no seam yet. These tests cover the
-// enabled-state rules that do not need a picked photo. Photo-required paths are listed in
-// docs/verify/flutter-tests.md as a gap until a picker seam exists.
+// enabled-state rules that do not need a picked photo. Photo-required paths stay untested
+// until a picker seam exists.
 void main() {
   testWidgets('completion stays locked with no photos, even when every checklist item is ticked', (tester) async {
     setViewport(tester, phoneSize);

@@ -1,3 +1,4 @@
+# Security issues: private vulnerability reporting on the repository (see SECURITY.md), never a public issue.
 blank_issues_enabled: false
 contact_links:
   - name: Report a security problem

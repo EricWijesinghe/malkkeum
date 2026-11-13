@@ -93,6 +93,7 @@ function applyCopy() {
   renderServices();
   renderProof();
   applyWebCopy();
+  setTheme(document.documentElement.dataset.theme || 'dark'); // theme button label in the new language
 }
 
 // Real numbers from /v1/public/proof. The API nulls any count that is too small to persuade; a null hides its line.
@@ -163,7 +164,13 @@ function setTheme(t) {
   document.documentElement.dataset.theme = t;
   store.set('site.theme', t);
   const b = document.getElementById('theme');
-  if (b) { b.textContent = t === 'light' ? '🌙' : '☀️'; b.setAttribute('aria-label', t === 'light' ? 'Dark mode' : 'Light mode'); }
+  if (!b) return;
+  // The emoji is decoration; the accessible name follows the page language (the button's lang is not English).
+  const ko = (document.documentElement.lang || 'ko').startsWith('ko');
+  const next = t === 'light' ? (ko ? '어두운 화면으로 보기' : 'Switch to dark theme') : (ko ? '밝은 화면으로 보기' : 'Switch to light theme');
+  b.innerHTML = `<span aria-hidden="true">${t === 'light' ? '🌙' : '☀️'}</span>`;
+  b.setAttribute('aria-label', next);
+  b.title = next;
 }
 
 async function getJson(path) {
@@ -180,10 +187,10 @@ function applyBrand(b) {
     document.title = document.title.replace(/^[^·|]+/, `${b.name} `);
   }
   if (b.logo_url) document.querySelectorAll('.logo-mark').forEach((el) => { el.innerHTML = ''; el.style.background = 'none'; const img = new Image(); img.alt = ''; img.src = b.logo_url; el.append(img); });
-  if (b.support_phone) document.querySelectorAll('[data-support-phone]').forEach((el) => { el.textContent = b.support_phone; el.href = `tel:${b.support_phone.replace(/[^0-9+]/g, '')}`; });
-  if (b.support_email) document.querySelectorAll('[data-support-email]').forEach((el) => { el.textContent = b.support_email; el.href = `mailto:${b.support_email}`; });
+  if (b.support_phone) document.querySelectorAll('[data-support-phone]').forEach((el) => { el.hidden = false; el.textContent = b.support_phone; el.href = `tel:${b.support_phone.replace(/[^0-9+]/g, '')}`; });
+  if (b.support_email) document.querySelectorAll('[data-support-email]').forEach((el) => { el.hidden = false; el.textContent = b.support_email; el.href = `mailto:${b.support_email}`; });
   for (const key of ['app_store_url', 'play_store_url', 'partner_play_store_url', 'partner_app_store_url']) {
-    if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.removeAttribute('aria-disabled'); a.querySelector('[data-t="store_soon"]')?.remove(); });
+    if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.removeAttribute('aria-disabled'); a.removeAttribute('role'); a.querySelector('[data-t="store_soon"]')?.remove(); });
   }
   // Chat buttons (Kakao channel, Naver Talk Talk) appear only once the owner has configured them.
   for (const key of ['kakao_channel_url', 'naver_talk_url']) {
@@ -241,10 +248,13 @@ function langPicker() {
 }
 
 // The 3D hero (three.js) loads only where it is cheap enough and motion is welcome; everywhere else the CSS illustration stays.
+// It starts after the page has loaded and the browser is idle, so it never delays first paint or the price grid.
 function loadHeroIfCapable() {
   if (!document.getElementById('hero-3d') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if ((navigator.hardwareConcurrency || 4) < 4 || (navigator.deviceMemory || 4) < 4 || navigator.connection?.saveData) return;
-  import('./hero3d.js').catch(() => { /* CSS illustration remains */ });
+  const go = () => import('./hero3d.js').catch(() => { /* CSS illustration remains */ });
+  const idle = () => (window.requestIdleCallback ? requestIdleCallback(go, { timeout: 3000 }) : setTimeout(go, 1));
+  if (document.readyState === 'complete') idle(); else addEventListener('load', idle, { once: true });
 }
 
 // First-touch campaign params, kept for this tab only (sessionStorage: no cookie, nothing shared).

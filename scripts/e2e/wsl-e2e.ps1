@@ -3,21 +3,26 @@
 #        docker build --build-arg APP_VERSION=e2e --build-arg CARGO_BUILD_JOBS=4 -t ghcr.io/ericwijesinghe/malkkeum-api:e2e backend
 #        docker build --build-arg APP_VERSION=e2e -f deploy/web.Dockerfile -t ghcr.io/ericwijesinghe/malkkeum-web:e2e .
 #        docker pull postgres:17
-#        docker save -o /mnt/d/WSL/dahae-e2e/images.tar ghcr.io/ericwijesinghe/malkkeum-{api,web}:e2e postgres:17
-#   2. powershell -File scripts/e2e/wsl-e2e.ps1 [-LogDir D:\WSL\dahae-e2e\logs] [-Keep] [-UpgradeFrom <git rev>]
+#        docker save -o <Root>/images.tar ghcr.io/ericwijesinghe/malkkeum-{api,web}:e2e postgres:17
+#   2. powershell -File scripts/e2e/wsl-e2e.ps1 [-Root <dir>] [-LogDir <dir>] [-Keep] [-UpgradeFrom <git rev>]
+#      -Root defaults to DAHAE_E2E_ROOT (env or scripts/local.env), else %LOCALAPPDATA%\dahae-e2e.
 #      -UpgradeFrom: install with that revision's deploy/install.sh first, then upgrade with this checkout's.
 # Downloads the official Ubuntu 24.04 WSL rootfs (checked against SHA256SUMS), imports it as `dahae-e2e`, runs
 # scripts/e2e/wsl-e2e.sh as root and unregisters the distro after a pass (kept after a failure for debugging).
 param(
-  [string]$Root = 'D:\WSL\dahae-e2e',
-  [string]$ImagesTar = 'D:\WSL\dahae-e2e\images.tar',
-  [string]$LogDir = 'D:\WSL\dahae-e2e\logs',
+  [string]$Root = '',
+  [string]$ImagesTar = '',
+  [string]$LogDir = '',
   [string]$Distro = 'dahae-e2e',
   [switch]$Keep,
   [string]$UpgradeFrom = ''
 )
 $ErrorActionPreference = 'Stop'
 $Repo = (Resolve-Path "$PSScriptRoot\..\..").Path
+. (Join-Path $Repo 'scripts\local-env.ps1')
+if (-not $Root) { $Root = if ($env:DAHAE_E2E_ROOT) { $env:DAHAE_E2E_ROOT } else { Join-Path $env:LOCALAPPDATA 'dahae-e2e' } }
+if (-not $ImagesTar) { $ImagesTar = Join-Path $Root 'images.tar' }
+if (-not $LogDir) { $LogDir = Join-Path $Root 'logs' }
 $Base = 'https://cloud-images.ubuntu.com/wsl/releases/24.04/current'
 $Rootfs = 'ubuntu-noble-wsl-amd64-24.04lts.rootfs.tar.gz'
 $Dl = Join-Path $Root 'dl'

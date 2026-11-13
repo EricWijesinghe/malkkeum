@@ -3,12 +3,18 @@
 $ErrorActionPreference = 'Stop'
 $Host.UI.RawUI.WindowTitle = 'Malkkeum Server (keep this open during the demo)'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$pg = 'F:\tools\pgsql\bin'
+# PostgreSQL 17: bin folder from PG_BIN or PATH; data directory from PGDATA (only needed when it is not running yet).
+$pg = $env:PG_BIN
+if (-not $pg) { $c = Get-Command pg_ctl.exe -EA SilentlyContinue; if ($c) { $pg = Split-Path -Parent $c.Source } }
+if (-not $pg) { throw 'PostgreSQL 17 not found: put its bin folder on PATH or set PG_BIN.' }
 $db = 'malkkeum_demo_v12'  # the backup kit (older server) keeps 'malkkeum_demo'
 $env:PGPASSWORD = 'localdev'
 
 & "$pg\pg_isready.exe" -h localhost -p 5433 *> $null
-if ($LASTEXITCODE -ne 0) { & "$pg\pg_ctl.exe" -D 'F:\tools\pgdata' -l 'F:\tools\pgdata\server.log' -o '-p 5433' start | Out-Null; Start-Sleep 3 }
+if ($LASTEXITCODE -ne 0) {
+  if (-not $env:PGDATA) { throw 'PostgreSQL is not running on port 5433; set PGDATA so it can be started.' }
+  & "$pg\pg_ctl.exe" -D $env:PGDATA -l "$env:PGDATA\server.log" -o '-p 5433' start | Out-Null; Start-Sleep 3
+}
 $exists = & "$pg\psql.exe" -h localhost -p 5433 -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$db'"
 $created = $exists -ne '1'
 if ($created) {

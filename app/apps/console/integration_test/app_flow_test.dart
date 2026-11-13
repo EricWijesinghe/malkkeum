@@ -44,7 +44,7 @@ void main() {
     await tester.tap(find.widgetWithText(PrimaryButton, t.cLogin));
     await settle(tester, duration: const Duration(seconds: 2));
 
-    // The shell only appears after a fresh launch (see docs/verify/flutter-tests.md, known risks).
+    // MaterialApp.home only sets the initial route, so the shell may only appear after a fresh launch.
     // Relaunch the app for the rest of the journey.
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(ConsoleApp(session: session, state: state, locale: locale, theme: theme));
