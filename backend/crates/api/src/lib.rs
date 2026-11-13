@@ -35,6 +35,7 @@ pub mod privacy;
 pub mod quality;
 pub mod retention;
 pub mod safety;
+pub mod sms_outbox;
 pub mod providers;
 pub mod ratelimit;
 pub mod realtime;

@@ -12,6 +12,7 @@ use crate::{
     providers::sms::TPL_REMINDER,
     realtime::{Recipient, notify},
     routes::audit,
+    sms_outbox::Message,
     state::AppState,
 };
 use axum::{
@@ -394,8 +395,8 @@ async fn run_nudges_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult
 /// Day-before reminder for confirmed or assigned bookings. Transactional, so no marketing gate.
 /// Claimed once per booking through alert_sends. Korean customers get AlimTalk (SMS fallback); others get SMS.
 pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
-    let rows: Vec<(Uuid, String, String, String)> = sqlx::query_as(
-        "SELECT b.id, b.number, u.phone, u.locale FROM bookings b JOIN users u ON u.id = b.user_id
+    let rows: Vec<(Uuid, String, String, String, Uuid)> = sqlx::query_as(
+        "SELECT b.id, b.number, u.phone, u.locale, b.user_id FROM bookings b JOIN users u ON u.id = b.user_id
          WHERE b.status IN (1, 2) AND b.visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date + 1
            AND u.deleted_at IS NULL AND u.phone NOT LIKE 'deleted:%'
          LIMIT $1",
@@ -404,7 +405,7 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
     .fetch_all(&s.db)
     .await?;
     let mut sent = 0;
-    for (id, number, phone, locale) in rows {
+    for (id, number, phone, locale, user) in rows {
         let claimed = sqlx::query("INSERT INTO alert_sends (dedupe_key) VALUES ($1) ON CONFLICT DO NOTHING")
             .bind(format!("reminder:{id}"))
             .execute(&s.db)
@@ -414,15 +415,17 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
             continue;
         }
         let title = crate::i18n::tr(&locale, "내일 청소 예정이에요");
-        let sent_result = if locale == "ko" {
+        let queued = if locale == "ko" {
             let brand = crate::routes::setup::brand_name(&s.db).await;
-            s.providers.send_customer_message(&phone, TPL_REMINDER, &brand, "내일 청소 예정이에요", &number).await
+            let msg = Message::Alimtalk { template: TPL_REMINDER, brand: &brand, title: "내일 청소 예정이에요", body: &number };
+            crate::sms_outbox::send(s, Some(user), &phone, "booking.reminder", msg).await
         } else {
-            s.providers.send_sms(&phone, &format!("{title}\n{number}")).await
+            let text = format!("{title}\n{number}");
+            crate::sms_outbox::send(s, Some(user), &phone, "booking.reminder", Message::Sms(&text)).await
         };
-        match sent_result {
+        match queued {
             Ok(()) => sent += 1,
-            Err(e) => tracing::warn!(error = %e, "reminder failed"),
+            Err(e) => tracing::warn!(error = %e, "reminder not queued"),
         }
     }
     Ok(sent)
