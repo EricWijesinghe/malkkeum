@@ -296,6 +296,24 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('a thread the team titled itself reads as typed, without a service suffix', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = FakeApi()
+      ..reply('GET', '/chat/threads', [
+        threadJson(id: 'th-1', topic: '쿠폰 사용 문의'),
+        threadJson(id: 'th-2', topic: 'aircon'),
+      ]);
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    await pumpCustomerScreen(tester, env, const ChatListTab());
+    await pumpUntilFound(tester, find.text('쿠폰 사용 문의'));
+
+    expect(find.text(koT.chatThreadAsk('쿠폰 사용 문의')), findsNothing, reason: 'no "문의 문의"');
+    expect(find.text(koT.chatThreadAsk(koT.service('aircon'))), findsOneWidget);
+    expect(find.byIcon(Icons.chat_bubble_outline_rounded), findsOneWidget, reason: 'no service art for a free topic');
+    await unmount(tester);
+  });
+
   testWidgets('chat list falls back to the built-in hours when the setting is missing', (tester) async {
     setViewport(tester, phoneSize);
     final fake = FakeApi();

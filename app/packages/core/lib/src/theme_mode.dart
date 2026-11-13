@@ -3,20 +3,24 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'gen/app_localizations.dart';
 
-/// App-wide light / dark / system choice. Dark is the default: the brand is
-/// designed dark-first and the system setting is opt-in.
+/// App-wide light / dark / system choice. [initial] applies until the user picks one: dark for
+/// the staff apps, the phone's setting for the customer app (its design is drawn light).
 class ThemeController extends ChangeNotifier {
-  ThemeController({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage();
+  ThemeController({
+    FlutterSecureStorage? storage,
+    this.initial = ThemeMode.dark,
+  }) : _storage = storage ?? const FlutterSecureStorage(),
+       mode = initial;
 
   final FlutterSecureStorage _storage;
-  ThemeMode mode = ThemeMode.dark;
+  final ThemeMode initial;
+  ThemeMode mode;
 
   static const _key = 'app.theme';
 
   Future<void> restore() async {
     final code = await _storage.read(key: _key).catchError((_) => null);
-    mode = _parse(code);
+    mode = _parse(code) ?? initial;
     notifyListeners();
   }
 
@@ -34,10 +38,11 @@ class ThemeController extends ChangeNotifier {
     ThemeMode.system => ThemeMode.dark,
   });
 
-  static ThemeMode _parse(String? code) => switch (code) {
+  static ThemeMode? _parse(String? code) => switch (code) {
     'light' => ThemeMode.light,
     'system' => ThemeMode.system,
-    _ => ThemeMode.dark,
+    'dark' => ThemeMode.dark,
+    _ => null,
   };
 
   static String _code(ThemeMode m) => switch (m) {

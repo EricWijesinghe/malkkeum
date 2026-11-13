@@ -73,6 +73,7 @@ void main() {
       expect(fake.lastCall('POST', '/auth/verify'), isNotNull);
       expect(find.text(koT.guestSheetTitle), findsNothing, reason: 'sheet closes on success');
       expect(fake.callsTo('GET', '/me'), isNotEmpty, reason: 'account data loads after sign-in');
+      expect(fake.callsTo('GET', '/bookings'), isNotEmpty, reason: 'the tabs reload with the account bookings');
       await unmount(tester);
     });
 

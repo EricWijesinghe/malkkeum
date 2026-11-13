@@ -21,7 +21,7 @@ Future<void> _start() async {
   final api = ApiClient(baseUrl: defaultApiBase(), session: session);
   _errors.send = (body) async => api.post('/client-errors', body);
   final locale = LocaleController();
-  final theme = ThemeController();
+  final theme = ThemeController(initial: ThemeMode.system);
   await Future.wait([session.restore(), locale.restore(), theme.restore()]);
   // One refresh now instead of a 401 on every first screen call.
   api.warmUp().ignore();

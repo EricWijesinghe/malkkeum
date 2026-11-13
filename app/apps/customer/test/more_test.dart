@@ -2,6 +2,7 @@ import 'package:core/auth_pay.dart';
 import 'package:core/core.dart';
 import 'package:customer/screens/more.dart';
 import 'package:customer/screens/payments.dart';
+import 'package:customer/screens/service_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -151,6 +152,54 @@ void main() {
     expect(find.text(koT.logout), findsOneWidget);
     expect(find.text('01012345678'), findsOneWidget);
     expect(find.text('jimin@example.com'), findsOneWidget);
+    // Values sit at the row's end like the design, not right after a short label.
+    final screenRight = tester.getSize(find.byType(AccountScreen)).width;
+    final email = tester.getRect(find.text('jimin@example.com'));
+    final kakao = tester.getRect(find.text(koT.accountLoginPhone));
+    expect(screenRight - email.right, lessThan(40), reason: 'email at the end: $email');
+    expect(screenRight - kakao.right, lessThan(40), reason: 'login badges at the end: $kakao');
+    await unmount(tester);
+  });
+
+  testWidgets('header counters and the version end at the right edge of their cells', (tester) async {
+    setViewport(tester, _tall);
+    final env = await TestEnv.create(fake: _api());
+    final app = await pumpCustomerScreen(tester, env, const MoreTab());
+    await app.loadAll();
+    await settle(tester);
+
+    final width = tester.getSize(find.byType(MoreTab)).width;
+    final version = tester.getRect(find.text('v1.4.2'));
+    expect(width - version.right, lessThan(48), reason: 'version value at the card end: $version');
+    final points = tester.getRect(find.text(koT.walletPoints('1200')));
+    expect(width - points.right, lessThan(56), reason: 'points value at the strip end: $points');
+    final coupons = tester.getRect(find.text(koT.moreCouponCount('2')));
+    expect(coupons.right, greaterThan(width / 2 - 56), reason: 'coupon value at the end of its half: $coupons');
+    await unmount(tester);
+  });
+
+  testWidgets('service scope opens the design scope page (floor plan), not the old per-service tabs', (tester) async {
+    setViewport(tester, _tall);
+    final env = await TestEnv.create(fake: _api());
+    await pumpCustomerScreen(tester, env, const MoreTab());
+    await settle(tester);
+
+    await tester.tap(find.text(koT.moreScope));
+    await settle(tester);
+    expect(find.byType(ServiceScopeScreen), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('a guest sees a sign-in prompt in the profile card, not an empty name', (tester) async {
+    setViewport(tester, _tall);
+    final env = await TestEnv.create(fake: _api(), signedIn: false);
+    await pumpCustomerScreen(tester, env, const MoreTab());
+    await settle(tester);
+
+    expect(find.text(koT.introStart), findsOneWidget);
+    await tester.tap(find.text(koT.introStart));
+    await settle(tester);
+    expect(find.text(koT.guestSheetTitle), findsOneWidget, reason: 'the card opens sign-in');
     await unmount(tester);
   });
 }

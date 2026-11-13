@@ -247,7 +247,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             title: t.dfPayMethod,
             children: [
               _IconRow(
-                icon: 'ui_card',
+                icon: 'pay_card',
                 title: _methodLabel(t, app),
                 action: (t.dfChange, _pickMethod),
               ),

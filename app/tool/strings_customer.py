@@ -266,7 +266,7 @@ S = {
   "quotePaid": ["결제 완료", "Paid"],
   "requestCard": ["견적 요청", "Quote request"],
   "sys_consultation_received": ["상담이 접수됐어요", "Your request was received"],
-  "sys_deposit_paid": ["예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.", "Deposit of {amount} paid. You're confirmed."],
+  "sys_deposit_paid": ["예약금 {amount}이 결제됐어요. 예약이 확정됐어요.", "Deposit of {amount} paid. You're confirmed."],
   "sys_booking_cancelled": ["예약이 취소됐어요", "The booking was cancelled"],
   "sys_status_changed": ["예약 상태가 '{status}'(으)로 바뀌었어요", "Status changed to {status}"],
   "sys_job_completed": ["청소가 끝났어요. 전후 사진을 확인해 보세요.", "All done! Check the before & after photos."],

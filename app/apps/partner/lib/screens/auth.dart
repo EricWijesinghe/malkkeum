@@ -59,20 +59,26 @@ class PartnerIntro extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Wrap(
-              spacing: Space.sm,
-              runSpacing: Space.sm,
-              children: [
-                for (final c in const [
-                  'bathroom',
-                  'kitchen',
-                  'aircon',
-                  'sofa',
-                  'move_in',
-                  'mattress',
-                ])
-                  ServiceGlyph(c, size: 64),
-              ],
+            // One row on every width: it scales down instead of orphaning the last icon.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Row(
+                children: [
+                  for (final c in const [
+                    'bathroom',
+                    'kitchen',
+                    'aircon',
+                    'sofa',
+                    'move_in',
+                    'mattress',
+                  ])
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(end: Space.sm),
+                      child: ServiceGlyph(c, size: 64),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(height: Space.xxl),
             Text(

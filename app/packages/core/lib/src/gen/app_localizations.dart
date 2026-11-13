@@ -2956,7 +2956,7 @@ abstract class T {
   /// No description provided for @sys_deposit_paid.
   ///
   /// In ko, this message translates to:
-  /// **'예약금 {amount}이(가) 결제됐어요. 예약이 확정됐어요.'**
+  /// **'예약금 {amount}이 결제됐어요. 예약이 확정됐어요.'**
   String sys_deposit_paid(String amount);
 
   /// No description provided for @sys_booking_cancelled.

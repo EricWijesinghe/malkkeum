@@ -68,6 +68,8 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
       _startMember();
       // Launch reads consent in main(); a sign-in brings this account's own choice.
       context.appRead.syncAnalyticsConsent().ignore();
+      // The tabs loaded as a guest: reload them with the account's bookings and feed.
+      context.appRead.bookingsChanged();
     }
     setState(() {});
   }
