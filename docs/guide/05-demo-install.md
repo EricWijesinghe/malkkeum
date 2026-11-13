@@ -6,13 +6,13 @@ GitHub 에서 이미지를 내려받지 않고, 미리 만들어 둔 **이미지
 > English summary: build the two images on your own PC, `docker save` them into one `.tar`,
 > copy it (with `install.sh`) to an Ubuntu machine, and run
 > `sudo MALKKEUM_IMAGES_TAR=/path/malkkeum-demo.tar MALKKEUM_DOMAIN=malkkeum.localhost MALKKEUM_TLS=internal bash install.sh`.
-> Later updates use `malkkeum load <tar>` then `malkkeum update <tag>`. Details below.
+> Later updates use `dahae load <tar>` then `dahae update <tag>`. Details below.
 
 ## 준비물
 | 준비물 | 어디서 |
 |---|---|
 | 이미지 파일 `malkkeum-demo.tar` (아래 A 에서 만들어요) | 개발 PC |
-| Ubuntu 24.04 또는 Debian 12 (메모리 4GB 이상) | 노트북의 VM, 체험용 미니 PC, 또는 클라우드 서버 |
+| Ubuntu 24.04 또는 Debian 12 (메모리 2GB 이상) | 노트북의 VM, 체험용 미니 PC, 또는 클라우드 서버 |
 | `install.sh` (저장소의 `deploy/install.sh`) | 같이 USB 에 복사 |
 
 > 설치 과정에서 Docker 와 기본 패키지(apt)를 받으니, **설치하는 순간에는 인터넷이 필요해요.**
@@ -49,9 +49,10 @@ docker save -o malkkeum-demo.tar ghcr.io/ericwijesinghe/malkkeum-api:demo ghcr.i
    - 인터넷에 나갈 수 없는 상태라면 apt 단계에서 멈춰요. 그때는 인터넷 되는 곳에서 설치하세요.
 3. 끝나면 이런 화면이 나와요. **설치 코드**(12자리)를 꼭 적어 두세요.
    ```
-   ✔ 설치가 끝났어요!
+   ✔ 설치가 끝났어요!   (채널: stable)
    1) 브라우저에서 이 주소를 여세요:   https://malkkeum.localhost/admin/
-   2) 설치 코드:  ABCD-2345-EFGH
+   2) 설치 코드를 입력하고 사장님 계정을 만드세요:
+          설치 코드:  ABCD-2345-EFGH
    ```
 4. 같은 컴퓨터의 브라우저에서 `https://malkkeum.localhost/admin/` 을 열어요.
    설치 코드를 입력하고 사장님 계정을 만들면 설정 마법사가 시작돼요.
@@ -60,8 +61,8 @@ docker save -o malkkeum-demo.tar ghcr.io/ericwijesinghe/malkkeum-api:demo ghcr.i
 ## C. 체험 데이터 넣기 · 지우기
 
 ```
-sudo malkkeum demo load      # 예약·손님·파트너 샘플을 넣어요 (실제 데이터가 있으면 넣지 않아요)
-sudo malkkeum demo clear     # 샘플만 지워요. 실제 고객·예약·정산은 건드리지 않아요. "yes" 를 입력해야 해요.
+sudo dahae demo load      # 예약·손님·파트너 샘플을 넣어요 (실제 데이터가 있으면 넣지 않아요)
+sudo dahae demo clear     # 샘플만 지워요. 실제 고객·예약·정산은 건드리지 않아요. "yes" 를 입력해야 해요.
 ```
 
 ## D. 업데이트 · 되돌리기 (인터넷 없이)
@@ -69,21 +70,21 @@ sudo malkkeum demo clear     # 샘플만 지워요. 실제 고객·예약·정�
 새 버전 파일을 만들어 USB 로 옮긴 뒤 (A 와 같은 방법, 태그만 `demo2` 로):
 
 ```
-sudo malkkeum load /media/usb/malkkeum-demo2.tar     # 파일을 불러와요. 화면에 Loaded image 태그가 나와요
-sudo malkkeum update demo2                            # 백업 → demo2 로 바꾸기 → 응답 확인
+sudo dahae load /media/usb/malkkeum-demo2.tar     # 파일을 불러와요. 화면에 Loaded image 태그가 나와요
+sudo dahae update demo2                            # 백업 → demo2 로 바꾸기 → 응답 확인
 ```
 
 - 새 버전이 응답하지 않으면 자동으로 이전 버전으로 되돌려요.
-- 직접 되돌리려면 `sudo malkkeum rollback` 을 써요 (바로 전 버전으로 돌아가요).
-- 자주 쓰는 명령: `malkkeum status`, `malkkeum version`, `malkkeum logs`, `malkkeum backup`.
+- 직접 되돌리려면 `sudo dahae rollback` 을 써요 (바로 전 버전으로 돌아가요).
+- 자주 쓰는 명령: `dahae status`, `dahae version`, `dahae logs`, `dahae backup`.
 
 ## E. 체험이 끝나면
 
 ```
-sudo malkkeum demo clear     # 샘플 데이터 지우기
+sudo dahae demo clear     # 샘플 데이터 지우기
 ```
 
-서버를 통째로 버리려면 VM 을 지우면 끝이에요. 이 설치가 만든 것은 `/opt/malkkeum` 폴더, `malkkeum` 명령, `/etc/cron.d/malkkeum` 이에요.
+서버를 통째로 버리려면 VM 을 지우면 끝이에요. VM 은 두고 다해만 지우려면 `sudo dahae uninstall --purge` 를 써요 (도메인을 입력해 확인해요. 데이터와 백업까지 지우고 Docker 는 남겨요).
 
 ## 실제 시험 기록 (발췌)
 
@@ -95,14 +96,14 @@ sudo malkkeum demo clear     # 샘플 데이터 지우기
 GET /admin/ -> 200                          ← 설정 마법사 화면
 {"dev_mode":false,"needs_admin":true}       ← 사장님 계정을 기다리는 상태
 {"ok":true}                                 ← 설치 코드로 사장님 계정 생성
-ok: 3707 rows in 26 tables                  ← malkkeum demo load
+ok: 3707 rows in 26 tables                  ← dahae demo load
 {"ok":true,"version":"demo"}                ← /health
 HTTP 200                                    ← 예약 목록 (GET /v1/admin/bookings)
 ✘ 업데이트에 실패해서 이전 버전으로 되돌렸어요.   ← 고장난 버전(bad)은 자동으로 되돌려요
 ✔ 최신 버전(demo2)으로 업데이트했어요
-✔ 이전 버전으로 되돌렸어요                    ← malkkeum rollback
+✔ 이전 버전으로 되돌렸어요                    ← dahae rollback
 184                                          ← 업데이트·되돌리기 후에도 예약 데이터 그대로
-✔ 체험용 데이터를 지웠어요                    ← malkkeum demo clear (예약 0건, 사장님 계정 1명 남음)
+✔ 체험용 데이터를 지웠어요                    ← dahae demo clear (예약 0건, 사장님 계정 1명 남음)
 ```
 
 > 개발 PC 의 메모리가 부족하면 웹 이미지의 Flutter 빌드(`deploy/web.Dockerfile` 첫 단계)가 멈출 수 있어요. 그때는 Flutter 를 PC 에서 먼저 빌드하고 결과물을 이미지에 복사해도 같은 이미지가 돼요.
@@ -113,12 +114,12 @@ HTTP 200                                    ← 예약 목록 (GET /v1/admin/boo
 | `이미지 파일을 찾을 수 없어요` | USB 경로가 맞는지 확인 (`ls /media/usb`). |
 | `이미지 파일에 ... 이 없어요` | 파일 안의 태그가 `MALKKEUM_VERSION` 과 다른 경우예요. 만들 때 쓴 태그(`demo`)를 `MALKKEUM_VERSION=demo` 로 같이 넣으세요. 안 넣으면 기본값 `local` 을 찾아요. |
 | 브라우저 경고 | `MALKKEUM_TLS=internal` 이라서 정상이에요. 고급 → 계속. |
-| 응답이 없어요 | `sudo malkkeum logs` 로 원인을 확인하세요. `docker` 가 실행 중인지 `systemctl status docker` 도 확인. |
+| 응답이 없어요 | `sudo dahae logs` 로 원인을 확인하세요. `docker` 가 실행 중인지 `systemctl status docker` 도 확인. |
 
 ---
 
 ## 개발자 메모 (설치 테스트)
 
 - `deploy/install.sh` 의 `MALKKEUM_IMAGES_TAR` 가 설치 때 `docker load` 를 하고, 기본 경로(GHCR 에서 내려받기)는 그대로예요.
-- `.env` 의 `IMAGE_SOURCE=local` 이면 `malkkeum update` 가 저장소에서 내려받지 않아요. 한 번 로컬로 설치하면 계속 로컬 모드예요.
-- 이미지 이름은 `ghcr.io/ericwijesinghe/malkkeum-api:<태그>` 형식이어야 해요 (installer 와 `malkkeum` 명령이 이 이름으로 찾아요). 저장소 주소를 바꿨다면 `MALKKEUM_IMAGES` 도 같이 지정하세요.
+- 이미지 파일로 설치하면 서버가 로컬 모드(`IMAGE_SOURCE=local`)로 기록돼서 `dahae update` 가 저장소에서 내려받지 않아요. 한 번 로컬로 설치하면 계속 로컬 모드예요.
+- 이미지 이름은 `ghcr.io/ericwijesinghe/malkkeum-api:<태그>` 형식이어야 해요 (installer 와 `dahae` 명령이 이 이름으로 찾아요). 저장소 주소를 바꿨다면 `MALKKEUM_IMAGES` 도 같이 지정하세요.
