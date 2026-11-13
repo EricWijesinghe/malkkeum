@@ -4462,6 +4462,10 @@ class TEn extends T {
       'Could not load your data. Please try again later.';
 
   @override
+  String get cSetupColorContrast =>
+      'White text on this colour is hard to read, so the apps will not use it. Choose a darker colour.';
+
+  @override
   String get safetyEmergency => 'Emergency contacts';
 
   @override

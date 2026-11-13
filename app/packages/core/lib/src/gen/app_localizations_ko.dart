@@ -4364,6 +4364,10 @@ class TKo extends T {
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
 
   @override
+  String get cSetupColorContrast =>
+      '이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.';
+
+  @override
   String get safetyEmergency => '긴급 연락처';
 
   @override

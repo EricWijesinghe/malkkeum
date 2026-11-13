@@ -8286,6 +8286,12 @@ abstract class T {
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
 
+  /// No description provided for @cSetupColorContrast.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.'**
+  String get cSetupColorContrast;
+
   /// No description provided for @safetyEmergency.
   ///
   /// In ko, this message translates to:
