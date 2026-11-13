@@ -256,26 +256,28 @@ class AmountSwitcher extends StatelessWidget {
   final AlignmentGeometry alignment;
 
   @override
-  Widget build(BuildContext context) => ClipRect(
-    child: AnimatedSwitcher(
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : Motion.standard,
-      switchInCurve: Motion.emphasized,
-      switchOutCurve: Motion.ease,
-      layoutBuilder: (current, previous) =>
-          Stack(alignment: alignment, children: [...previous, ?current]),
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween(
-            begin: const Offset(0, 0.35),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
+  Widget build(BuildContext context) {
+    final text = Text(format(value), key: ValueKey(value), style: style);
+    if (MediaQuery.disableAnimationsOf(context)) return text;
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: Motion.standard,
+        switchInCurve: Motion.emphasized,
+        switchOutCurve: Motion.ease,
+        layoutBuilder: (current, previous) =>
+            Stack(alignment: alignment, children: [...previous, ?current]),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween(
+              begin: const Offset(0, 0.35),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         ),
+        child: text,
       ),
-      child: Text(format(value), key: ValueKey(value), style: style),
-    ),
-  );
+    );
+  }
 }

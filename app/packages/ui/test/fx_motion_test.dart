@@ -32,7 +32,8 @@ Finder _icon(String id) =>
 double _scale(WidgetTester tester, String id) {
   final t = find.descendant(of: _icon(id), matching: find.byType(Transform));
   if (t.evaluate().isEmpty) return 1;
-  return tester.widget<Transform>(t.last).transform.getMaxScaleOnAxis();
+  // x scale (getMaxScaleOnAxis would report the untouched z axis, 1, for a shrink).
+  return tester.widget<Transform>(t.last).transform.entry(0, 0);
 }
 
 void main() {
