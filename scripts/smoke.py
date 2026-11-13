@@ -39,10 +39,10 @@ def call(method, path, body=None, token=None, expect=200):
 
 def sql(statement):
     # Test-only shortcut to move a booking to its visit day (local dev DB).
-    # PSQL overrides; otherwise PG_BIN/psql, otherwise psql on PATH.
+    # PSQL overrides; otherwise PG_BIN/psql, otherwise psql on PATH. PGDATABASE: the API's database (default cleaning).
     psql = os.environ.get("PSQL") or (os.path.join(os.environ["PG_BIN"], "psql") if os.environ.get("PG_BIN") else "psql")
     env = {**os.environ, "PGPASSWORD": os.environ.get("PGPASSWORD", "localdev")}
-    subprocess.run([psql, "-h", "localhost", "-p", os.environ.get("PGPORT", "5433"), "-U", "postgres", "-d", "cleaning", "-qc", statement], check=True, env=env)
+    subprocess.run([psql, "-h", "localhost", "-p", os.environ.get("PGPORT", "5433"), "-U", "postgres", "-d", os.environ.get("PGDATABASE", "cleaning"), "-qc", statement], check=True, env=env)
 
 
 def phone():

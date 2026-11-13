@@ -29,4 +29,6 @@ set -a; source "$ENV"; set +a
 if [ "${1:-}" = demo ]; then cd "$ROOT/backend" && exec cargo run -q -p api -- "$@"; fi
 # Smoke runs ~25 sign-ins from one IP: lift the auth limit for local runs (production keeps 20/min).
 export RATE_LIMIT_AUTH_PER_MIN="${RATE_LIMIT_AUTH_PER_MIN:-1000}"
+# The seeded local admin signs in with its password (smoke, console dev); production keeps TOTP enrolment on.
+export STAFF_MFA_REQUIRED="${STAFF_MFA_REQUIRED:-0}"
 cd "$ROOT/backend" && exec cargo run -q -p api

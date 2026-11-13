@@ -79,6 +79,8 @@ jobs:
           JWT_SECRET: ci-only-secret-ci-only-secret-0123456789
           DEV_MODE: "1"
           RATE_LIMIT_AUTH_PER_MIN: "1000"
+          # The seeded admin signs in with a password only; production keeps TOTP enrolment on.
+          STAFF_MFA_REQUIRED: "0"
           SEED_ADMIN_EMAIL: admin@local.test
           SEED_ADMIN_PASSWORD: change-me-now-please
           PSQL: psql
