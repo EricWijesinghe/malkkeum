@@ -196,8 +196,14 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     );
   }
 
+  /// With the chosen slot, so the preview carries the same peak surcharge the booking stores.
   Future<Json> _fetchEstimate() async =>
-      await context.api.post('/quote/estimate', a.toJson()) as Json;
+      await context.api.post('/quote/estimate', {
+            ...a.toJson(),
+            if (d.date case final day?) 'visit_date': isoDate(day),
+            'start_hour': ?d.hour,
+          })
+          as Json;
 
   Future<void> _submit() async {
     setState(() => _busy = true);

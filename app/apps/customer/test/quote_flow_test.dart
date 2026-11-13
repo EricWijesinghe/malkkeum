@@ -216,6 +216,9 @@ void main() {
       await _tap(tester, find.text(koT.dfSubmitRequest));
 
       final body = fake.lastCall('POST', '/bookings')!.json;
+      // The preview is priced for the same slot the booking takes (peak surcharge included).
+      expect(estimateCall['visit_date'], body['visit_date']);
+      expect(estimateCall['start_hour'], body['start_hour']);
       expect(body['service_code'], 'move_out');
       expect(body['start_hour'], 13);
       final answers = body['answers'] as Map<String, dynamic>;

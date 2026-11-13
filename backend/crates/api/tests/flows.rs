@@ -5,7 +5,7 @@ mod common;
 
 use api::auth::{self, Role};
 use axum::http::StatusCode;
-use chrono::Duration;
+use chrono::{Datelike, Duration, Weekday};
 use common::{PHOTO, SECRET, book, call, customer, login, seed_catalog, verified_pro};
 use serde_json::json;
 use sqlx::PgPool;
@@ -272,6 +272,33 @@ async fn quote_booking_stores_the_addon_estimate_and_rejects_hourly_slots(pool: 
     assert!(est >= preview, "booking {est} vs preview {preview}");
     assert_eq!(b["answers"]["ac_addons"][0]["unit"], "stand");
     assert!(b["thread_id"].is_string(), "the app opens this chat after submit: {b}");
+
+    // Given the slot, the preview already carries its surcharge: the customer sees what is stored.
+    let mut with_slot = answers.clone();
+    with_slot["visit_date"] = json!(visit);
+    with_slot["start_hour"] = json!(8);
+    let (st, e) = call(&app, "POST", "/v1/quote/estimate", None, Some(with_slot)).await;
+    assert_eq!(st, StatusCode::OK, "{e}");
+    assert_eq!(e["total"].as_i64(), Some(est), "{e}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn estimate_preview_adds_the_weekend_surcharge_of_the_chosen_slot(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let answers = move_answers(json!([]));
+    let (_, plain) = call(&app, "POST", "/v1/quote/estimate", None, Some(answers.clone())).await;
+    let mut saturday = api::util::today_kst() + Duration::days(10);
+    while saturday.weekday() != Weekday::Sat {
+        saturday += Duration::days(1);
+    }
+    let mut with_slot = answers;
+    with_slot["visit_date"] = json!(saturday);
+    with_slot["start_hour"] = json!(8);
+    let (st, peak) = call(&app, "POST", "/v1/quote/estimate", None, Some(with_slot)).await;
+    assert_eq!(st, StatusCode::OK, "{peak}");
+    assert!(peak["peak"].as_i64().unwrap() > 0, "default weekend surcharge applies: {peak}");
+    assert!(peak["total"].as_i64() > plain["total"].as_i64(), "{peak} vs {plain}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
