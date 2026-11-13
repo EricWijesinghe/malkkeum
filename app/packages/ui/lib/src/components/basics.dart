@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -446,23 +448,129 @@ class _GlyphCluster extends StatelessWidget {
   }
 }
 
-class ErrorRetry extends StatelessWidget {
+/// The one error / offline state for every app: localized copy (never a raw exception) and a
+/// retry that shows it is working. Full size fills a screen or pane; [compact] is an inline card
+/// for one failed section, or a "showing older data" banner above content that stays on screen.
+class ErrorRetry extends StatefulWidget {
   const ErrorRetry({
     super.key,
     required this.message,
     required this.retryLabel,
     required this.onRetry,
+    this.compact = false,
+    this.secondary,
   });
   final String message;
   final String retryLabel;
-  final VoidCallback onRetry;
+
+  /// When this returns a Future, the button shows progress and ignores taps until it settles.
+  final FutureOr<void> Function() onRetry;
+  final bool compact;
+
+  /// A quieter action under retry (e.g. sign out). Full size only.
+  final Widget? secondary;
 
   @override
-  Widget build(BuildContext context) => EmptyState(
+  State<ErrorRetry> createState() => _ErrorRetryState();
+}
+
+class _ErrorRetryState extends State<ErrorRetry> {
+  static const _spinner = 18.0;
+  static const _rise = 12.0;
+  bool _busy = false;
+
+  Future<void> _retry() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await widget.onRetry();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  static const _hue = StatusHues.cancelled;
+
+  /// The label stays while retrying (screen readers, stable width); only the icon turns into progress.
+  Widget get _retryIcon => _busy
+      ? const SizedBox.square(
+          dimension: _spinner,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        )
+      : const Icon(Icons.refresh_rounded, size: _spinner);
+
+  Widget _card(BuildContext context) {
+    final c = context.colors;
+    return AppCard(
+      level: Level.flat,
+      border: c.line,
+      padding: const EdgeInsets.fromLTRB(
+        Space.md,
+        Space.xs,
+        Space.xs,
+        Space.xs,
+      ),
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              Icons.wifi_off_rounded,
+              size: 20,
+              color: c.isDark ? _hue.tint : _hue.tone,
+            ),
+          ),
+          const SizedBox(width: Space.sm),
+          Expanded(child: Text(widget.message, style: context.text.bodyMedium)),
+          TextButton.icon(
+            onPressed: _busy ? null : _retry,
+            icon: _retryIcon,
+            label: Text(widget.retryLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _page() => EmptyState(
     icon: Icons.wifi_off_rounded,
-    title: message,
-    hue: StatusHues.cancelled,
-    action: OutlinedButton(onPressed: onRetry, child: Text(retryLabel)),
+    title: widget.message,
+    hue: _hue,
+    action: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        OutlinedButton.icon(
+          onPressed: _busy ? null : _retry,
+          icon: _retryIcon,
+          label: Text(widget.retryLabel),
+        ),
+        if (widget.secondary case final more?) ...[
+          const SizedBox(height: Space.xs),
+          more,
+        ],
+      ],
+    ),
+  );
+
+  // Announced when it appears; fades and rises in once (at once under reduced motion).
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    liveRegion: true,
+    child: TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : Motion.route,
+      curve: Motion.emphasized,
+      builder: (_, v, child) => Opacity(
+        opacity: v,
+        child: Transform.translate(
+          offset: Offset(0, _rise * (1 - v)),
+          child: child,
+        ),
+      ),
+      child: widget.compact ? _card(context) : _page(),
+    ),
   );
 }
 
