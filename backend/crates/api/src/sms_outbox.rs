@@ -75,9 +75,7 @@ where
 
 /// Queues one text to `phone` and starts its first attempt in the background. Returns at once.
 pub async fn send(state: &AppState, owner: Option<Uuid>, phone: &str, kind: &str, msg: Message<'_>) -> ApiResult<()> {
-    let Some(id) = enqueue(state, owner, phone, kind, msg).await? else {
-        return Ok(());
-    };
+    let id = enqueue(state, owner, phone, kind, msg).await?;
     let state = state.clone();
     tokio::spawn(async move {
         if let Err(e) = run(&state, Some(id)).await {
@@ -87,16 +85,14 @@ pub async fn send(state: &AppState, owner: Option<Uuid>, phone: &str, kind: &str
     Ok(())
 }
 
-/// Stores one text as a due row and returns its id. None when Solapi is not configured, as the callers
-/// did before: there is no channel to send on. Nothing is sent here.
-pub async fn enqueue(state: &AppState, owner: Option<Uuid>, phone: &str, kind: &str, msg: Message<'_>) -> ApiResult<Option<i64>> {
+/// Stores one text as a due row and returns its id. Nothing is sent here. Without Solapi a live server
+/// refuses the text, so nothing is queued or counted as sent. Dev mode queues it: the attempt logs it.
+pub async fn enqueue(state: &AppState, owner: Option<Uuid>, phone: &str, kind: &str, msg: Message<'_>) -> ApiResult<i64> {
     let integ = state.providers.integ();
-    let Some(cfg) = integ.solapi.as_ref() else {
-        return Ok(None);
-    };
-    let template_ready = match &msg {
-        Message::Alimtalk { template, .. } => cfg.templates.contains_key(*template) && cfg.pf_id.is_some(),
-        Message::Sms(_) => false,
+    let template_ready = match (integ.solapi.as_ref(), &msg) {
+        (None, _) if !state.config.dev_mode => return Err(ProviderError::NotConfigured("sms").into()),
+        (Some(cfg), Message::Alimtalk { template, .. }) => cfg.templates.contains_key(*template) && cfg.pf_id.is_some(),
+        _ => false,
     };
     let (channel, title, body, data) = stored(msg, template_ready);
     let id: i64 = sqlx::query_scalar(
@@ -113,7 +109,7 @@ pub async fn enqueue(state: &AppState, owner: Option<Uuid>, phone: &str, kind: &
     .bind(phone)
     .fetch_one(&state.db)
     .await?;
-    Ok(Some(id))
+    Ok(id)
 }
 
 /// One pass of the `notify_outbox` job over texts: due rows are attempted, old dead rows are removed.

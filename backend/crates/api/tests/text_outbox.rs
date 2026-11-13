@@ -102,11 +102,11 @@ async fn alimtalk_is_queued_only_when_its_template_and_channel_are_configured(po
     let s = unconfigured(&pool);
     let msg = || Message::Alimtalk { template: "booking.status", brand: "brand", title: "title", body: "body" };
 
-    // Nothing configured: no row at all.
-    assert_eq!(sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.expect("enqueue"), None);
+    // Nothing configured in live mode: refused, no row at all.
+    assert!(sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.is_err());
 
     s.providers.set_integrations(Integrations { solapi: Some(solapi(&[])), ..Default::default() });
-    let plain = sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.expect("enqueue").expect("row");
+    let plain = sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.expect("enqueue");
     let (channel, body): (String, String) = sqlx::query_as("SELECT channel, body FROM notification_outbox WHERE id = $1")
         .bind(plain)
         .fetch_one(&pool)
@@ -115,7 +115,7 @@ async fn alimtalk_is_queued_only_when_its_template_and_channel_are_configured(po
     assert_eq!((channel.as_str(), body.as_str()), ("sms", "title\nbody"), "no template: SMS with both lines");
 
     s.providers.set_integrations(Integrations { solapi: Some(solapi(&[("booking.status", "TPL1")])), ..Default::default() });
-    let alimtalk = sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.expect("enqueue").expect("row");
+    let alimtalk = sms_outbox::enqueue(&s, None, "01012345678", "booking.status", msg()).await.expect("enqueue");
     let (channel, data): (String, serde_json::Value) = sqlx::query_as("SELECT channel, data FROM notification_outbox WHERE id = $1")
         .bind(alimtalk)
         .fetch_one(&pool)
@@ -123,6 +123,29 @@ async fn alimtalk_is_queued_only_when_its_template_and_channel_are_configured(po
         .expect("row");
     assert_eq!(channel, "alimtalk");
     assert_eq!(data, json!({ "template": "booking.status", "brand": "brand" }));
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn live_without_solapi_refuses_a_plain_text_and_queues_nothing(pool: PgPool) {
+    let s = unconfigured(&pool);
+    assert!(sms_outbox::send(&s, None, "01012345678", "team.invite", Message::Sms("hi")).await.is_err());
+    let queued: i64 = sqlx::query_scalar("SELECT count(*) FROM notification_outbox").fetch_one(&pool).await.expect("count");
+    assert_eq!(queued, 0, "a text that was never sent is not queued or counted");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn dev_without_solapi_queues_a_plain_text_so_the_fake_log_gets_it(pool: PgPool) {
+    let s = build_state(pool.clone(), test_config()).expect("app state");
+    let id = sms_outbox::enqueue(&s, None, "01012345678", "team.invite", Message::Sms("hi")).await.expect("enqueue");
+    let (channel, body): (String, String) = sqlx::query_as("SELECT channel, body FROM notification_outbox WHERE id = $1")
+        .bind(id)
+        .fetch_one(&pool)
+        .await
+        .expect("row");
+    assert_eq!((channel.as_str(), body.as_str()), ("sms", "hi"));
+    assert_eq!(sms_outbox::pass(&s).await.expect("pass"), 1, "the attempt runs and logs the text");
+    let left: i64 = sqlx::query_scalar("SELECT count(*) FROM notification_outbox").fetch_one(&pool).await.expect("count");
+    assert_eq!(left, 0, "delivered in dev: the row is removed");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
