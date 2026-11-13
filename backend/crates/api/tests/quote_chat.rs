@@ -396,15 +396,20 @@ async fn a_partial_card_binding_is_a_bad_request(pool: PgPool) {
 
 /// A checkout made for one card, then a re-quote, then the payment settles (confirm runs the
 /// same `apply` as the PortOne webhook and the reconciler).
-async fn settle_after_requote(pool: PgPool, phone: &str, requote_price: i64) {
+/// `bound: false` is an app that sends no card: the server snapshot taken at create binds it instead.
+async fn settle_after_requote(pool: PgPool, phone: &str, requote_price: i64, bound: bool) {
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
     let c = customer(&app, &pool, phone).await;
     let (id, _) = quote_booking(&app, &c, 10).await;
     let desk = consultant(&pool).await;
     let (_, card) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await;
-    let ck = json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": 35_000,
-                     "expected_final_price": 350_000, "expected_quote_message_id": card["id"] });
+    let ck = if bound {
+        json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": 35_000,
+                "expected_final_price": 350_000, "expected_quote_message_id": card["id"] })
+    } else {
+        json!({ "kind": "deposit", "method": "card", "booking_id": id })
+    };
     let (st, intent) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck)).await;
     assert_eq!(st, StatusCode::OK, "{intent}");
     let checkout = intent["id"].as_str().expect("checkout id").to_string();
@@ -428,11 +433,103 @@ async fn settle_after_requote(pool: PgPool, phone: &str, requote_price: i64) {
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn a_checkout_settled_after_a_re_quote_is_refunded(pool: PgPool) {
-    settle_after_requote(pool, "010-5400-0011", 500_000).await;
+    settle_after_requote(pool, "010-5400-0011", 500_000, true).await;
 }
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn a_checkout_settled_after_a_same_deposit_re_quote_is_refunded(pool: PgPool) {
     // Same 35,000 deposit, so the amount check passes; the stored card binding catches it under lock.
-    settle_after_requote(pool, "010-5400-0012", 350_400).await;
+    settle_after_requote(pool, "010-5400-0012", 350_400, true).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn an_unbound_checkout_settled_after_a_same_deposit_re_quote_is_refunded(pool: PgPool) {
+    settle_after_requote(pool, "010-5400-0013", 350_400, false).await;
+}
+
+/// A deposit checkout bound to the current card. Returns (customer, booking id, checkout id).
+async fn deposit_checkout(app: &Router, pool: &PgPool, phone: &str) -> (Customer, String, String) {
+    seed_catalog(pool).await;
+    let c = customer(app, pool, phone).await;
+    let (id, _) = quote_booking(app, &c, 10).await;
+    let desk = consultant(pool).await;
+    let (_, card) = send_quote(app, &desk, &id, json!({ "final_price": 350_000 })).await;
+    let ck = json!({ "kind": "deposit", "method": "card", "booking_id": id, "expected_deposit": 35_000,
+                     "expected_final_price": 350_000, "expected_quote_message_id": card["id"] });
+    let (st, intent) = call(app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(ck)).await;
+    assert_eq!(st, StatusCode::OK, "{intent}");
+    let checkout = intent["id"].as_str().expect("checkout id").to_string();
+    (c, id, checkout)
+}
+
+async fn assert_paid_once(pool: &PgPool, id: &str, checkout: &str) {
+    let status: String = sqlx::query_scalar("SELECT status FROM checkouts WHERE id = $1::uuid")
+        .bind(checkout)
+        .fetch_one(pool)
+        .await
+        .expect("checkout");
+    assert_eq!(status, "paid", "never refunded");
+    let booking: i16 = sqlx::query_scalar("SELECT status FROM bookings WHERE id = $1::uuid")
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .expect("status");
+    assert!(booking >= 1, "confirmed");
+    assert_eq!(charged(pool, id).await, (35_000, 0), "one deposit, nothing refunded");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_settle_read_before_the_payment_landed_returns_the_same_booking_and_never_refunds(pool: PgPool) {
+    let app = common::app(pool.clone());
+    let (c, id, checkout) = deposit_checkout(&app, &pool, "010-5400-0014").await;
+    // The webhook reads the checkout while it is still pending...
+    let ck_id: Uuid = checkout.parse().expect("uuid");
+    let stale = api::routes::checkouts::find_by_id(&pool, ck_id).await.expect("read").expect("row");
+    assert_eq!(stale.status, "pending");
+    // ...the client's confirm fulfils it...
+    let confirm = format!("/v1/checkouts/{checkout}/confirm");
+    let (st, b) = call(&app, "POST", &confirm, Some(c.token.as_str()), Some(json!({ "payment_id": "dev:paid" }))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    // ...and the webhook settles the same payment from its stale read: same result, no refund.
+    let state = api::build_state(pool.clone(), common::test_config()).expect("state");
+    let late = api::routes::checkouts::settle(&state, &stale, "dev:paid")
+        .await
+        .expect("same payment, same result");
+    let late = serde_json::to_value(late).expect("json");
+    assert_eq!((&late["status"], &late["booking_id"]), (&b["status"], &b["booking_id"]), "{late}");
+    assert_paid_once(&pool, &id, &checkout).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn two_concurrent_confirms_of_one_payment_fulfil_once_and_never_refund(pool: PgPool) {
+    let app = common::app(pool.clone());
+    let (c, id, checkout) = deposit_checkout(&app, &pool, "010-5400-0015").await;
+    let confirm = format!("/v1/checkouts/{checkout}/confirm");
+    let body = json!({ "payment_id": "dev:paid" });
+    let ((s1, b1), (s2, b2)) = tokio::join!(
+        call(&app, "POST", &confirm, Some(c.token.as_str()), Some(body.clone())),
+        call(&app, "POST", &confirm, Some(c.token.as_str()), Some(body.clone())),
+    );
+    assert_eq!((s1, s2), (StatusCode::OK, StatusCode::OK), "{b1} {b2}");
+    assert_eq!(b1["booking_id"], b2["booking_id"]);
+    assert_paid_once(&pool, &id, &checkout).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_quote_card_is_stamped_when_written_not_when_its_transaction_began(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5400-0016").await;
+    let (id, _) = quote_booking(&app, &c, 10).await;
+    let desk = consultant(&pool).await;
+    let (_, card) = send_quote(&app, &desk, &id, json!({ "final_price": 350_000 })).await;
+    // `bookings.updated_at` is the send-quote transaction's now(); the card must be later than it,
+    // so a send-quote that waited on the booking lock still sorts after the one it waited for.
+    let later: bool = sqlx::query_scalar("SELECT m.created_at > b.updated_at FROM chat_messages m, bookings b WHERE m.id = $1::uuid AND b.id = $2::uuid")
+        .bind(card["id"].as_str().expect("message id"))
+        .bind(&id)
+        .fetch_one(&pool)
+        .await
+        .expect("stamps");
+    assert!(later, "quote message stamped with clock_timestamp()");
 }

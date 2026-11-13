@@ -222,7 +222,7 @@ pub async fn record_payment(conn: &mut PgConnection, booking: Uuid, amount: i64,
 }
 
 /// The quote card the customer tapped to pay its deposit: all three fields, or none (apps before v1.4).
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SeenQuote {
     pub expected_deposit: Option<i64>,
     pub expected_final_price: Option<i64>,
@@ -239,18 +239,13 @@ impl SeenQuote {
 
 /// Locks the booking row and checks the card the customer tapped is still the current quote: same
 /// deposit, same price, and no newer quote message (e.g. another pro at the same price). A mismatch
-/// is 409 `price_changed` with the current values. Returns the locked final price. Outside a
+/// is 409 `price_changed` with the current values. Returns the locked current card. Outside a
 /// transaction (checkout create) the lock ends with the statement; the settle path re-runs it in one.
-pub async fn check_seen_quote(conn: &mut PgConnection, id: Uuid, seen: &SeenQuote) -> ApiResult<Option<i64>> {
+pub async fn check_seen_quote(conn: &mut PgConnection, id: Uuid, seen: &SeenQuote) -> ApiResult<SeenQuote> {
     let (deposit, final_price): (Option<i64>, Option<i64>) = sqlx::query_as("SELECT deposit, final_price FROM bookings WHERE id = $1 FOR UPDATE")
         .bind(id)
         .fetch_one(&mut *conn)
         .await?;
-    let Some(expected) = seen.expected_deposit else {
-        // TODO(2027-03-01): require the card binding once app versions before v1.4 are retired.
-        tracing::warn!(booking_id = %id, "deposit without expected_deposit");
-        return Ok(final_price);
-    };
     let latest: Option<Uuid> = sqlx::query_scalar(
         "SELECT m.id FROM chat_messages m JOIN chat_threads t ON t.id = m.thread_id
          WHERE t.booking_id = $1 AND t.audience = 'customer' AND m.kind = 'quote' ORDER BY m.created_at DESC, m.id DESC LIMIT 1",
@@ -258,10 +253,21 @@ pub async fn check_seen_quote(conn: &mut PgConnection, id: Uuid, seen: &SeenQuot
     .bind(id)
     .fetch_optional(&mut *conn)
     .await?;
-    if Some(expected) != deposit || seen.expected_final_price != final_price || seen.expected_quote_message_id != latest {
-        return Err(ApiError::PriceChanged(json!({ "current": deposit, "final_price": final_price, "quote_message_id": latest })));
+    let current = SeenQuote {
+        expected_deposit: deposit,
+        expected_final_price: final_price,
+        expected_quote_message_id: latest,
+    };
+    if seen.expected_deposit.is_none() {
+        // Only the one-step deposit route of apps before v1.4 and checkouts created before the server
+        // snapshot get here. TODO(2027-03-01): require the card once those app versions are retired.
+        tracing::warn!(booking_id = %id, "deposit without expected_deposit");
+    } else if *seen != current {
+        return Err(ApiError::PriceChanged(
+            json!({ "current": deposit, "final_price": final_price, "quote_message_id": latest }),
+        ));
     }
-    Ok(final_price)
+    Ok(current)
 }
 
 /// Deposit due on a quoted booking (10%), while the quote is still awaiting payment.
@@ -279,7 +285,7 @@ pub fn deposit_due(b: &BookingRow) -> ApiResult<i64> {
 /// `seen` is re-checked under the booking row lock, so a re-quote racing the payment never confirms.
 pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64, seen: &SeenQuote) -> ApiResult<()> {
     // Booking row first, then quotes: the same order as send_quote, so the two never deadlock.
-    let final_price = check_seen_quote(conn, id, seen).await?;
+    let final_price = check_seen_quote(conn, id, seen).await?.expected_final_price;
     // Read the chosen quote under lock so a concurrent staff change can't attach the wrong pro.
     let selected: Option<(Uuid, Uuid)> = sqlx::query_as("SELECT id, pro_id FROM quotes WHERE booking_id = $1 AND state = 'selected' FOR UPDATE")
         .bind(id)

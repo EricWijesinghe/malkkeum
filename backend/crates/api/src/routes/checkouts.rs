@@ -201,13 +201,15 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Js
             };
             seen.validate()?;
             let b = owned(&s, a.id, *booking_id).await?;
-            let amount = deposit_due(&b)?;
-            // Early answer for the app; settlement re-checks the stored card under lock.
-            check_seen_quote(&mut *s.db.acquire().await?, b.id, &seen).await?;
+            deposit_due(&b)?;
+            // Early answer for the app. The card stored is the server's locked read (equal to the
+            // client's when it sent one), so settlement binds create->settle for every client.
+            let card = check_seen_quote(&mut *s.db.acquire().await?, b.id, &seen).await?;
+            let amount = card.expected_deposit.ok_or(ApiError::Conflict("quote_not_sent"))?;
             Intent {
                 kind: "deposit",
                 booking_id: Some(b.id),
-                draft: Some(json!({ "seen": seen })),
+                draft: Some(json!({ "seen": card })),
                 amount,
             }
         }
@@ -334,10 +336,19 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
         Action::Fulfil | Action::FulfilLate => match fulfil(s, ck, payment_id).await {
             Ok(booking_id) => Ok(ConfirmResult::paid(Some(booking_id))),
             Err(e) => {
+                // A racing settle (or a read after commit) may have fulfilled this very payment: never refund it.
+                match find_by_id(&s.db, ck.id).await {
+                    Ok(Some(now)) if now.status == "paid" && now.provider_payment_id.as_deref() == Some(payment_id) => {
+                        return Ok(ConfirmResult::paid(now.result_booking_id));
+                    }
+                    Ok(_) => {}
+                    // Unknown state: refunding an unfulfilled charge is the safe default.
+                    Err(re) => tracing::error!(error = %re, checkout = %ck.id, "re-reading checkout before refund failed"),
+                }
                 refund_or_alert(s, "portone", payment_id, ck.charge()).await;
-                if ck.kind == "deposit" && matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed")) {
-                    // Re-quoted after the customer paid: the money went back, say so, and keep the reason.
-                    refund_late(s, ck, "price_changed").await?;
+                if ck.kind == "deposit" && deposit_changed(&e) {
+                    // Re-quoted or changed after the customer paid: the money went back, say so, and keep the reason.
+                    refund_late(s, ck, &refund_reason(&e)).await?;
                     return Err(e);
                 }
                 if action == Action::FulfilLate {
@@ -388,6 +399,11 @@ async fn apply(s: &AppState, ck: &CheckoutRow, payment_id: &str, info: Option<&P
             Err(ApiError::Conflict("checkout_expired"))
         }
     }
+}
+
+/// The booking moved between the customer's tap and settlement (re-quote, or changed under lock).
+fn deposit_changed(e: &ApiError) -> bool {
+    matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed" | "booking_changed"))
 }
 
 /// The refusal for a checkout that stays as it is: closed checkouts say so, open ones report the provider state.
@@ -471,7 +487,9 @@ async fn checkout_booking(s: &AppState, ck: &CheckoutRow) -> ApiResult<BookingRo
 /// Books or applies the payment and marks the checkout paid, in one transaction.
 /// Idempotent: a checkout already paid by this payment returns its booking.
 async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<Uuid> {
-    let plan = plan(s, ck).await?;
+    // Read outside the transaction, but its error waits for the paid check below: a racing settle
+    // makes `plan` fail (already_confirmed / balance_not_due) for a payment that is already fulfilled.
+    let plan = plan(s, ck).await;
     let mut tx = s.db.begin().await?;
     let (status, paid_by, result): (String, Option<String>, Option<Uuid>) =
         sqlx::query_as("SELECT status, provider_payment_id, result_booking_id FROM checkouts WHERE id = $1 FOR UPDATE")
@@ -488,7 +506,7 @@ async fn fulfil(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResult<U
     if !can_settle(&status) {
         return Err(ApiError::Conflict("checkout_closed"));
     }
-    let (booking_id, db_kind, number) = match plan {
+    let (booking_id, db_kind, number) = match plan? {
         Plan::Booking { prep, body } => {
             let (id, number) = book(&mut tx, &s.config.data_key, ck.user_id, &prep, &body, ck.amount).await?;
             (id, "full", Some(number))
@@ -790,5 +808,14 @@ mod tests {
         for status in ["paid", "failed", "cancelled"] {
             assert!(!can_settle(status), "{status} must not settle");
         }
+    }
+
+    #[test]
+    fn a_booking_changed_under_lock_is_a_refund_with_notice() {
+        assert!(deposit_changed(&ApiError::Conflict("booking_changed")));
+        assert!(deposit_changed(&ApiError::Conflict("price_changed")));
+        assert!(deposit_changed(&ApiError::PriceChanged(json!({}))));
+        assert!(!deposit_changed(&ApiError::Conflict("already_confirmed")));
+        assert_eq!(refund_reason(&ApiError::Conflict("booking_changed")), "booking_changed");
     }
 }
