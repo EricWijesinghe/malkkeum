@@ -7920,6 +7920,138 @@ abstract class T {
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
 
+  /// No description provided for @prqTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴·개인정보 요청'**
+  String get prqTitle;
+
+  /// No description provided for @prqIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.'**
+  String get prqIntro;
+
+  /// No description provided for @prqPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호'**
+  String get prqPhone;
+
+  /// No description provided for @prqFind.
+  ///
+  /// In ko, this message translates to:
+  /// **'찾기'**
+  String get prqFind;
+
+  /// No description provided for @prqNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 번호로 등록된 고객이 없어요.'**
+  String get prqNotFound;
+
+  /// No description provided for @prqBookings.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 수'**
+  String get prqBookings;
+
+  /// No description provided for @prqExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본 받기 (CSV)'**
+  String get prqExport;
+
+  /// No description provided for @prqExported.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본을 저장했어요.'**
+  String get prqExported;
+
+  /// No description provided for @prqDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리'**
+  String get prqDelete;
+
+  /// No description provided for @prqDeleteAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리는 관리자만 할 수 있어요.'**
+  String get prqDeleteAdminOnly;
+
+  /// No description provided for @prqDeleteAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.'**
+  String get prqDeleteAsk;
+
+  /// No description provided for @prqPhoneAgain.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호 다시 입력'**
+  String get prqPhoneAgain;
+
+  /// No description provided for @prqPhoneMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호가 맞지 않아요.'**
+  String get prqPhoneMismatch;
+
+  /// No description provided for @prqDeleteDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리가 끝났어요.'**
+  String get prqDeleteDone;
+
+  /// No description provided for @prqFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 잠시 후 다시 시도해 주세요.'**
+  String get prqFailed;
+
+  /// No description provided for @prqLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 기록'**
+  String get prqLog;
+
+  /// No description provided for @prqLogEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 처리한 요청이 없어요.'**
+  String get prqLogEmpty;
+
+  /// No description provided for @prqKindExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본'**
+  String get prqKindExport;
+
+  /// No description provided for @prqKindDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴'**
+  String get prqKindDelete;
+
+  /// No description provided for @prqStatusDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get prqStatusDone;
+
+  /// No description provided for @prqStatusFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get prqStatusFailed;
+
+  /// No description provided for @prqBy.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리한 직원'**
+  String get prqBy;
+
   /// No description provided for @safetyEmergency.
   ///
   /// In ko, this message translates to:

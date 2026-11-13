@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4267,6 +4268,75 @@ class TEn extends T {
   @override
   String get pvExportFailed =>
       'Could not load your data. Please try again later.';
+
+  @override
+  String get prqTitle => 'Account deletion and data requests';
+
+  @override
+  String get prqIntro =>
+      'When a customer asks for a copy of their data or to delete their account, find them by phone number and handle it here. Every step is logged. Deletion cannot be undone.';
+
+  @override
+  String get prqPhone => 'Customer phone number';
+
+  @override
+  String get prqFind => 'Find';
+
+  @override
+  String get prqNotFound => 'No customer is registered with this number.';
+
+  @override
+  String get prqBookings => 'Bookings';
+
+  @override
+  String get prqExport => 'Download a copy of the data (CSV)';
+
+  @override
+  String get prqExported => 'The copy of the data was saved.';
+
+  @override
+  String get prqDelete => 'Delete account';
+
+  @override
+  String get prqDeleteAdminOnly => 'Only an admin can delete an account.';
+
+  @override
+  String get prqDeleteAsk =>
+      'Type the customer\'s phone number again to confirm. Their name and contact details are erased and this cannot be undone. Bookings and payment records stay, as the law requires.';
+
+  @override
+  String get prqPhoneAgain => 'Type the phone number again';
+
+  @override
+  String get prqPhoneMismatch => 'The phone number does not match.';
+
+  @override
+  String get prqDeleteDone => 'The account was deleted.';
+
+  @override
+  String get prqFailed =>
+      'This could not be completed. Please try again shortly.';
+
+  @override
+  String get prqLog => 'Request log';
+
+  @override
+  String get prqLogEmpty => 'No requests have been handled yet.';
+
+  @override
+  String get prqKindExport => 'Data copy';
+
+  @override
+  String get prqKindDelete => 'Deletion';
+
+  @override
+  String get prqStatusDone => 'Done';
+
+  @override
+  String get prqStatusFailed => 'Failed';
+
+  @override
+  String get prqBy => 'Handled by';
 
   @override
   String get safetyEmergency => 'Emergency contacts';

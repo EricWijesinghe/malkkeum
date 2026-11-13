@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4173,6 +4174,74 @@ class TKo extends T {
 
   @override
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get prqTitle => '탈퇴·개인정보 요청';
+
+  @override
+  String get prqIntro =>
+      '고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.';
+
+  @override
+  String get prqPhone => '고객 전화번호';
+
+  @override
+  String get prqFind => '찾기';
+
+  @override
+  String get prqNotFound => '이 번호로 등록된 고객이 없어요.';
+
+  @override
+  String get prqBookings => '예약 수';
+
+  @override
+  String get prqExport => '자료 사본 받기 (CSV)';
+
+  @override
+  String get prqExported => '자료 사본을 저장했어요.';
+
+  @override
+  String get prqDelete => '탈퇴 처리';
+
+  @override
+  String get prqDeleteAdminOnly => '탈퇴 처리는 관리자만 할 수 있어요.';
+
+  @override
+  String get prqDeleteAsk =>
+      '고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.';
+
+  @override
+  String get prqPhoneAgain => '고객 전화번호 다시 입력';
+
+  @override
+  String get prqPhoneMismatch => '전화번호가 맞지 않아요.';
+
+  @override
+  String get prqDeleteDone => '탈퇴 처리가 끝났어요.';
+
+  @override
+  String get prqFailed => '처리하지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get prqLog => '처리 기록';
+
+  @override
+  String get prqLogEmpty => '아직 처리한 요청이 없어요.';
+
+  @override
+  String get prqKindExport => '자료 사본';
+
+  @override
+  String get prqKindDelete => '탈퇴';
+
+  @override
+  String get prqStatusDone => '완료';
+
+  @override
+  String get prqStatusFailed => '실패';
+
+  @override
+  String get prqBy => '처리한 직원';
 
   @override
   String get safetyEmergency => '긴급 연락처';

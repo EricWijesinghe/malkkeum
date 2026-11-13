@@ -11,6 +11,7 @@ import 'screens/inbox.dart';
 import 'screens/marketing.dart';
 import 'screens/ops.dart';
 import 'screens/people.dart';
+import 'screens/privacy_requests.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
 import 'state.dart';
@@ -119,6 +120,12 @@ final _sections = <_Section>[
     Icons.monitor_heart_rounded,
     (t) => t.cOps,
     () => const OpsScreen(),
+  ),
+  _Section(
+    'c_privacy',
+    Icons.privacy_tip_rounded,
+    (t) => t.prqTitle,
+    () => const PrivacyRequestsScreen(),
   ),
 ];
 
