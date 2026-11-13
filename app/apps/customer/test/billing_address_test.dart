@@ -55,7 +55,7 @@ void main() {
     await pumpCustomerScreen(tester, env, const AddressFormScreen());
     await settle(tester);
 
-    expect(find.text(koT.addressSearch), findsNothing);
+    expect(find.text(koT.addressSearchButton), findsNothing);
     expect(find.text(koT.addressRoad), findsOneWidget, reason: 'typed road address stays as the fallback');
     await unmount(tester);
   });
@@ -66,8 +66,7 @@ void main() {
     await pumpCustomerScreen(tester, env, const AddressFormScreen());
     await settle(tester);
 
-    expect(find.text(koT.addressSearch), findsOneWidget);
-    expect(find.text(koT.addressManualEntry), findsOneWidget);
+    expect(find.text(koT.addressSearchButton), findsOneWidget);
     await unmount(tester);
   });
 

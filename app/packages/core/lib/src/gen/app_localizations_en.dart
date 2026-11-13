@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -8,9 +7,6 @@ import 'app_localizations.dart';
 /// The translations for English (`en`).
 class TEn extends T {
   TEn([String locale = 'en']) : super(locale);
-
-  @override
-  String get addressSearch => 'Search address';
 
   @override
   String get addressSearchHint => 'Road name, building or lot number';
@@ -23,9 +19,6 @@ class TEn extends T {
 
   @override
   String get addressNoResults => 'No results. Try different words.';
-
-  @override
-  String get addressManualEntry => 'Enter manually';
 
   @override
   String get cardRegisterTitle => 'Register card';
@@ -964,7 +957,7 @@ class TEn extends T {
   String get unitTitle_mattress => 'Number of mattresses';
 
   @override
-  String get unitTitle_aircon => 'Unit type';
+  String get unitTitle_aircon => 'Choose your\nAC type.';
 
   @override
   String get unitTitle_sofa => 'Sofa size';
@@ -1113,7 +1106,7 @@ class TEn extends T {
   String get addressTitle => 'Where should we go?';
 
   @override
-  String get addressAdd => 'Add a new address';
+  String get addressAdd => 'Add address';
 
   @override
   String get addressLabel => 'Label';
@@ -1282,6 +1275,9 @@ class TEn extends T {
 
   @override
   String get doneTitle => 'You\'re booked!';
+
+  @override
+  String get doneConfirmedTitle => 'Your booking is confirmed';
 
   @override
   String get doneBody => 'We\'ll let you know as soon as a team is assigned';
@@ -2063,6 +2059,9 @@ class TEn extends T {
 
   @override
   String get dfManagerIntro => 'A trained manager visits you.';
+
+  @override
+  String get dfTrainingLink => 'What training do they get?';
 
   @override
   String get dfServiceTime => 'Service time';

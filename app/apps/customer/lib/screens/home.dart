@@ -658,9 +658,7 @@ class _AddAddressCard extends StatelessWidget {
   Widget build(BuildContext context) => AppCard(
     color: context.colors.primaryTint,
     level: Level.flat,
-    onTap: () => Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const AddressFormScreen())),
+    onTap: () => showAddressForm(context),
     child: Row(
       children: [
         Icon(Icons.add_location_alt_rounded, color: context.primary, size: 32),

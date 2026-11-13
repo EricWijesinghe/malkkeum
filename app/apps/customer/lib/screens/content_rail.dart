@@ -18,6 +18,7 @@ const _tagMaxShare = 0.3;
 const _bannerInterval = Duration(seconds: 5);
 const _bannerArt = 84.0;
 const _bannerMinHeight = 132.0;
+const _bannerCard = Size(104, 68);
 
 /// The coupon art rests tilted and straightens halfway while its page slides (radians: -6° → -3°).
 const _artTilt = -0.105;
@@ -349,6 +350,7 @@ class BannerCarouselState extends State<BannerCarousel> {
               itemBuilder: (context, i) {
                 final item = widget.items.elementAtOrNull(i);
                 final body = item?.text(context.lang) ?? '';
+                final cardValue = item?.cardValue(context.lang) ?? '';
                 return _BannerPage(
                   title: item?.title(context.lang) ?? t.moreCoupons,
                   body: body.isNotEmpty ? body : coupons,
@@ -370,11 +372,17 @@ class BannerCarouselState extends State<BannerCarousel> {
                         ),
                       );
                     },
-                    child: const Icon3D(
-                      'banner_coupon',
-                      size: _bannerArt,
-                      idle: Icon3DIdle.sway,
-                    ),
+                    // Console content with a `card` draws it; any other banner keeps the coupon art.
+                    child: cardValue.isEmpty
+                        ? const Icon3D(
+                            'banner_coupon',
+                            size: _bannerArt,
+                            idle: Icon3DIdle.sway,
+                          )
+                        : _BannerCard(
+                            label: item!.cardLabel(context.lang),
+                            value: cardValue,
+                          ),
                   ),
                 );
               },
@@ -405,6 +413,49 @@ class BannerCarouselState extends State<BannerCarousel> {
                   ),
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A banner's art card (design p01): a small label over a big value, on the brand colour.
+class _BannerCard extends StatelessWidget {
+  const _BannerCard({required this.label, required this.value});
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final on = Theme.of(context).colorScheme.onPrimary;
+    return Container(
+      width: _bannerCard.width,
+      height: _bannerCard.height,
+      padding: const EdgeInsets.all(Space.sm),
+      decoration: BoxDecoration(
+        color: context.primary,
+        borderRadius: BorderRadius.circular(Radii.chip),
+      ),
+      // Art, not copy: the card keeps its size and shrinks long or large text to fit.
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: AlignmentDirectional.centerStart,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (label.isNotEmpty)
+              Text(
+                label,
+                style: context.text.labelSmall?.copyWith(color: on),
+              ),
+            Text(
+              value,
+              style: context.text.titleLarge?.copyWith(
+                color: on,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ],
         ),
       ),

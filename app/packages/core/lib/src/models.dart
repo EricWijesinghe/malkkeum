@@ -194,6 +194,9 @@ class Booking {
   DateTime get visitStart =>
       DateTime(visitDate.year, visitDate.month, visitDate.day, startHour);
   bool get isActive => status >= 0 && status < 3;
+
+  /// Paid and confirmed, no team assigned yet (backend `BookingStatus::Confirmed`).
+  bool get isConfirmed => status == 1;
   bool get balanceDue =>
       isQuote && status == 3 && !balancePaid && finalPrice != null;
 
@@ -293,6 +296,12 @@ class ContentItem {
   /// Content is stored per language; fall back to Korean.
   String title(String lang) => _pick(j['title'], lang);
   String text(String lang) => _pick(body['text'], lang);
+
+  /// Banner art card: a small label over a big value ("웰컴 혜택" / "15,000원"). Empty without one.
+  String cardLabel(String lang) => _pick(_card?['label'], lang);
+  String cardValue(String lang) => _pick(_card?['value'], lang);
+  Map<dynamic, dynamic>? get _card =>
+      body['card'] is Map ? body['card'] as Map : null;
   // Missing language: English is the better bridge for foreign residents; Korean last.
   static String _pick(Object? v, String lang) => v is Map
       ? (v[lang] ?? v['en'] ?? v['ko'] ?? '') as String

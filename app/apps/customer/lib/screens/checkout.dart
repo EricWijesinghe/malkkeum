@@ -194,7 +194,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final coupon = app.coupons.where((c) => c.id == d.couponId).firstOrNull;
     final freeUntil = freeCancelDeadline(d.date!, DateTime.now());
     return Scaffold(
-      appBar: AppBar(leading: const CloseButton()),
+      backgroundColor: context.colors.surface,
+      appBar: AppBar(
+        backgroundColor: context.colors.surface,
+        leading: const CloseButton(),
+      ),
       body: ListView(
         children: [
           FlowTitle(t.dfPayTitle),

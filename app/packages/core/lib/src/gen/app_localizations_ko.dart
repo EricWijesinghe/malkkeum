@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -8,9 +7,6 @@ import 'app_localizations.dart';
 /// The translations for Korean (`ko`).
 class TKo extends T {
   TKo([String locale = 'ko']) : super(locale);
-
-  @override
-  String get addressSearch => '주소 검색';
 
   @override
   String get addressSearchHint => '도로명, 건물명, 지번으로 검색';
@@ -23,9 +19,6 @@ class TKo extends T {
 
   @override
   String get addressNoResults => '검색 결과가 없어요. 다른 단어로 검색해 보세요.';
-
-  @override
-  String get addressManualEntry => '직접 입력';
 
   @override
   String get cardRegisterTitle => '카드 등록';
@@ -938,7 +931,7 @@ class TKo extends T {
   String get unitTitle_mattress => '매트리스 개수';
 
   @override
-  String get unitTitle_aircon => '에어컨 종류';
+  String get unitTitle_aircon => '에어컨 종류를\n선택해 주세요.';
 
   @override
   String get unitTitle_sofa => '소파 크기';
@@ -1086,7 +1079,7 @@ class TKo extends T {
   String get addressTitle => '어디로 방문할까요?';
 
   @override
-  String get addressAdd => '새 주소 추가';
+  String get addressAdd => '주소 추가';
 
   @override
   String get addressLabel => '이름';
@@ -1255,6 +1248,9 @@ class TKo extends T {
 
   @override
   String get doneTitle => '예약이 완료됐어요';
+
+  @override
+  String get doneConfirmedTitle => '예약이 확정됐어요';
 
   @override
   String get doneBody => '청소팀이 배정되면 바로 알려드릴게요';
@@ -2030,6 +2026,9 @@ class TKo extends T {
 
   @override
   String get dfManagerIntro => '교육받은 매니저님이 방문합니다.';
+
+  @override
+  String get dfTrainingLink => '어떤 교육을 받나요?';
 
   @override
   String get dfServiceTime => '서비스 시간';

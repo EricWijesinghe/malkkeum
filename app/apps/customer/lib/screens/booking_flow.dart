@@ -8,6 +8,8 @@ import 'booking_detail.dart';
 import 'chat.dart';
 import 'checkout.dart';
 import 'flow_widgets.dart';
+import 'more.dart';
+import 'service_scope.dart';
 
 export 'ac_addon_banner.dart';
 export 'checkout.dart';
@@ -22,6 +24,10 @@ const _minConfirmSize = 112.0; // SuccessMark's own default
 const _toolStagger = Duration(milliseconds: 30);
 const _pillShare = 0.4;
 const _glyphKickDelay = Duration(milliseconds: 700);
+const _managerAvatar = 72.0;
+
+/// Slug of the console tip behind the schedule step's "어떤 교육을 받나요?" link.
+const trainingTipSlug = 'manager-training';
 
 /// Last free-cancel day for a visit on [visit], or null when that day is already past
 /// (a booking inside the window), so checkout never promises a deadline that has gone.
@@ -81,9 +87,7 @@ class AddressRadioList extends StatelessWidget {
 
   Future<void> _edit(BuildContext context, Address a) async {
     final app = context.appRead;
-    await Navigator.of(context).push<Address>(
-      MaterialPageRoute(builder: (_) => AddressFormScreen(existing: a)),
-    );
+    await showAddressForm(context, existing: a);
     await app.loadAddresses();
     onChanged();
   }
@@ -127,9 +131,7 @@ class AddressRadioList extends StatelessWidget {
               minimumSize: const Size(0, 48),
             ),
             onPressed: () async {
-              final added = await Navigator.of(context).push<Address>(
-                MaterialPageRoute(builder: (_) => const AddressFormScreen()),
-              );
+              final added = await showAddressForm(context);
               if (added == null || !context.mounted) return;
               if (_fits(added)) {
                 draft.address = added;
@@ -167,7 +169,8 @@ class _AddressPickScreenState extends State<AddressPickScreen> {
     // Own messenger: the size toast leaves with this screen instead of following the user back.
     return ScaffoldMessenger(
       child: Scaffold(
-        appBar: AppBar(),
+        backgroundColor: context.colors.surface,
+        appBar: AppBar(backgroundColor: context.colors.surface),
         body: ListView(
           children: [
             FlowTitle(t.dfAddressTitle),
@@ -405,6 +408,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     if (ok == true) setState(() => d.hour = chosen);
   }
 
+  /// "어떤 교육을 받나요?" (design p10): the console tip with [trainingTipSlug]. Without one,
+  /// what the service covers.
+  Future<void> _openTraining() async {
+    final ContentItem? tip;
+    try {
+      tip = (await context.api.get('/content', query: {'kind': 'tip'}) as List)
+          .map((e) => ContentItem(e as Json))
+          .where((c) => c.j['slug'] == trainingTipSlug)
+          .firstOrNull;
+    } catch (e) {
+      if (mounted) showToast(context, context.t.error(e));
+      return;
+    }
+    if (!mounted) return;
+    final page = tip != null
+        ? ContentDetailScreen(item: tip)
+        : ServiceScopeScreen(initialGroup: scopeGroupFor(d.service.code));
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => page));
+  }
+
   void _next() {
     if (widget.onDone != null) return widget.onDone!(context);
     Navigator.of(context).push(
@@ -421,7 +446,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final t = context.t;
     final lang = context.lang;
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: context.colors.surface,
+      appBar: AppBar(backgroundColor: context.colors.surface),
       body: ListView(
         children: [
           FlowTitle(t.dfDateTitle),
@@ -435,13 +461,36 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(t.dfManagerIntro, style: context.text.bodyMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t.dfManagerIntro, style: context.text.bodyMedium),
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 48),
+                          foregroundColor: context.colors.inkSoft,
+                          textStyle: context.text.bodyMedium,
+                        ),
+                        iconAlignment: IconAlignment.end,
+                        icon: const Icon(Icons.chevron_right_rounded, size: 18),
+                        label: Text(t.dfTrainingLink),
+                        onPressed: _openTraining,
+                      ),
+                    ],
+                  ),
                 ),
-                const ExcludeSemantics(
-                  child: Icon3D(
-                    'step_consult',
-                    size: 64,
-                    idle: Icon3DIdle.float,
+                const SizedBox(width: Space.sm),
+                // The manager on a round grey plate (design p10).
+                ExcludeSemantics(
+                  child: CircleAvatar(
+                    radius: _managerAvatar / 2,
+                    backgroundColor: context.colors.surfaceHigh,
+                    child: const Icon3D(
+                      'c_staff',
+                      size: _managerAvatar * 0.75,
+                      idle: Icon3DIdle.float,
+                    ),
                   ),
                 ),
               ],
@@ -613,7 +662,8 @@ class PrepToolsScreen extends StatelessWidget {
     final t = context.t;
     final name = context.app.name;
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: context.colors.surface,
+      appBar: AppBar(backgroundColor: context.colors.surface),
       body: ListView(
         children: [
           FlowTitle(name.isEmpty ? t.prepTitle : t.dfPrepHeader(name)),
@@ -721,7 +771,14 @@ class DoneScreen extends StatelessWidget {
     final road = b.j['address'] is Json
         ? (b.address['road_address'] as String? ?? '')
         : '';
+    // 확정 only for a booking that is confirmed (paid, awaiting a team); any other state keeps 완료.
+    final title = b.isQuote
+        ? t.doneQuoteTitle
+        : b.isConfirmed
+        ? t.doneConfirmedTitle
+        : t.doneTitle;
     return Scaffold(
+      backgroundColor: context.colors.surface,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(Space.gutter),
@@ -735,14 +792,14 @@ class DoneScreen extends StatelessWidget {
                     _minConfirmSize,
                     _confirmSize,
                   ),
-                  semanticLabel: b.isQuote ? t.doneQuoteTitle : t.doneTitle,
+                  semanticLabel: title,
                 ),
               ),
             ),
             StaggerIn(
               index: 1,
               child: Text(
-                b.isQuote ? t.doneQuoteTitle : t.doneTitle,
+                title,
                 style: context.text.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),

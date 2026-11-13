@@ -49,6 +49,7 @@ ROWS = {
   # Date / time (p10, p17)
   "dfDateTitle": ["날짜/시간을 선택해 주세요.", "Choose a date and time."],
   "dfManagerIntro": ["교육받은 매니저님이 방문합니다.", "A trained manager visits you."],
+  "dfTrainingLink": ["어떤 교육을 받나요?", "What training do they get?"],
   "dfServiceTime": ["서비스 시간", "Service time"],
   "dfChange": ["변경", "Change"],
   "dfVisitDay": ["방문 일", "Visit date"],
