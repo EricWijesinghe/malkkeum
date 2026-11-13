@@ -17,6 +17,7 @@ export 'src/gen/app_localizations.dart';
 export 'src/i18n.dart';
 export 'src/identity.dart';
 export 'src/models.dart';
+export 'src/pager.dart';
 export 'src/push.dart';
 export 'src/realtime.dart';
 export 'src/case_report.dart';

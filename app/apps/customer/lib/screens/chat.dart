@@ -135,10 +135,11 @@ class _ChatListTabState extends State<ChatListTab> {
     super.dispose();
   }
 
-  Future<List<ChatThread>> _load() async =>
-      (await context.api.get('/chat/threads') as List)
-          .map((e) => ChatThread.fromJson(e as Json))
-          .toList();
+  late final _pager = Pager<ChatThread>(
+    context.api,
+    '/chat/threads',
+    ChatThread.fromJson,
+  );
 
   Future<void> _newChat() async {
     final t = context.t;
@@ -225,40 +226,43 @@ class _ChatListTabState extends State<ChatListTab> {
       ),
       body: AsyncView<List<ChatThread>>(
         key: _view,
-        load: _load,
+        load: _pager.first,
         // The header scrolls with the threads so large text never overflows a short screen.
-        builder: (context, threads, reload) => RefreshIndicator(
-          onRefresh: reload,
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: Space.xl),
-            children: [
-              FutureBuilder<String?>(
-                future: _hours,
-                builder: (context, snap) =>
-                    _HoursBar(hours: snap.data ?? t.chatHours),
-              ),
-              if (threads.isEmpty)
-                SizedBox(
-                  height: _emptyHeight,
-                  child: EmptyState(
-                    icon: Icons.forum_rounded,
-                    title: t.chatEmpty,
-                    body: t.chatReplyFast,
-                    hue: ServiceHues.aircon,
-                  ),
+        builder: (context, _, reload) => LoadMore<ChatThread>(
+          pager: _pager,
+          builder: (context, threads) => RefreshIndicator(
+            onRefresh: reload,
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: Space.xl),
+              children: [
+                FutureBuilder<String?>(
+                  future: _hours,
+                  builder: (context, snap) =>
+                      _HoursBar(hours: snap.data ?? t.chatHours),
                 ),
-              for (final (i, th) in threads.indexed)
-                StaggerIn(
-                  key: ValueKey(th.id),
-                  index: i,
-                  child: Column(
-                    children: [
-                      _ThreadTile(thread: th, onReturn: reload),
-                      const Divider(height: 1),
-                    ],
+                if (threads.isEmpty)
+                  SizedBox(
+                    height: _emptyHeight,
+                    child: EmptyState(
+                      icon: Icons.forum_rounded,
+                      title: t.chatEmpty,
+                      body: t.chatReplyFast,
+                      hue: ServiceHues.aircon,
+                    ),
                   ),
-                ),
-            ],
+                for (final (i, th) in threads.indexed)
+                  StaggerIn(
+                    key: ValueKey(th.id),
+                    index: i,
+                    child: Column(
+                      children: [
+                        _ThreadTile(thread: th, onReturn: reload),
+                        const Divider(height: 1),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

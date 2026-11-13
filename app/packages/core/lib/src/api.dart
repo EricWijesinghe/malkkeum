@@ -74,6 +74,21 @@ class ApiClient {
   Future<dynamic> get(String path, {Map<String, String?>? query}) =>
       _send('GET', path, query: query);
 
+  /// One page of a cursor list. The server sends `X-Next-Cursor` while more rows follow.
+  Future<({List<dynamic> items, String? next})> getPage(
+    String path, {
+    Map<String, String?>? query,
+    String? cursor,
+  }) async {
+    String? next;
+    final body = await _exec(
+      path,
+      () => http.Request('GET', _uri(path, {...?query, 'cursor': cursor})),
+      onHeaders: (h) => next = h['x-next-cursor'],
+    );
+    return (items: (body as List?) ?? const <dynamic>[], next: next);
+  }
+
   /// [idempotencyKey]: send the same key on every retry of one user action (server replays the first answer for 24h).
   Future<dynamic> post(String path, [Object? body, String? idempotencyKey]) =>
       _send('POST', path, body: body, idempotencyKey: idempotencyKey);
@@ -125,6 +140,7 @@ class ApiClient {
     Duration timeout = _timeout,
     bool retried = false,
     bool raw = false,
+    void Function(Map<String, String> headers)? onHeaders,
   }) async {
     final pending = _refreshing;
     if (pending != null && !retried && !path.startsWith('/auth/')) await pending;
@@ -146,11 +162,14 @@ class ApiClient {
         session.refreshToken != null &&
         !path.startsWith('/auth/')) {
       if (await _refresh()) {
-        return _exec(path, build, timeout: timeout, retried: true, raw: raw);
+        return _exec(path, build, timeout: timeout, retried: true, raw: raw, onHeaders: onHeaders);
       }
     }
     final decoded = raw ? res.bodyBytes : _decode(res);
-    if (res.statusCode >= 200 && res.statusCode < 300) return decoded;
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      onHeaders?.call(res.headers);
+      return decoded;
+    }
     final code = decoded is Map
         ? ((decoded['error'] as Map?)?['code'] as String?)
         : null;

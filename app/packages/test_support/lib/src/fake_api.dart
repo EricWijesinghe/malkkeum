@@ -27,9 +27,12 @@ class ApiCall {
 
 /// Return this from a route handler to choose the HTTP status (default 200).
 class ApiReply {
-  const ApiReply(this.status, [this.body]);
+  const ApiReply(this.status, [this.body, this.headers = const {}]);
   final int status;
   final Object? body;
+
+  /// Extra response headers, e.g. `x-next-cursor` for a cursor list.
+  final Map<String, String> headers;
 }
 
 /// A route handler gets the call and returns a JSON-able body (200), or an [ApiReply].
@@ -91,7 +94,7 @@ class FakeApi {
     for (final r in _routes) {
       if (r.method != req.method || !r.pattern.hasMatch(path)) continue;
       final out = await r.handler(call);
-      if (out is ApiReply) return _respond(out.status, out.body);
+      if (out is ApiReply) return _respond(out.status, out.body, out.headers);
       return _respond(200, out);
     }
     return _respond(404, {
@@ -109,9 +112,9 @@ class FakeApi {
     }
   }
 
-  static http.Response _respond(int status, Object? body) => http.Response(
+  static http.Response _respond(int status, Object? body, [Map<String, String> headers = const {}]) => http.Response(
         body == null ? '' : jsonEncode(body),
         status,
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', ...headers},
       );
 }

@@ -130,6 +130,11 @@ class _SettlementsState extends State<SettlementsScreen> {
   String? _state;
   late bool _payouts = widget.initialPayouts;
   final _payoutsView = GlobalKey<AsyncViewState<List<Json>>>();
+  late final _payoutPager = Pager<Json>(
+    context.api,
+    '/admin/settlements/payouts',
+    (row) => row,
+  );
 
   Future<void> _run() async {
     final t = context.t;
@@ -161,21 +166,22 @@ class _SettlementsState extends State<SettlementsScreen> {
     final t = context.t;
     return AsyncView<List<Json>>(
       key: _payoutsView,
-      load: () async =>
-          (await context.api.get('/admin/settlements/payouts') as List)
-              .cast<Json>(),
-      builder: (context, rows, reload) => rows.isEmpty
-          ? EmptyState(
-              icon: Icons.payments_rounded,
-              title: t.poNoPayouts,
-              hue: StatusHues.consultation,
-            )
-          : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-              children: [
-                for (final p in rows) _payoutCard(context, p, admin, reload),
-              ],
-            ),
+      load: _payoutPager.first,
+      builder: (context, _, reload) => LoadMore<Json>(
+        pager: _payoutPager,
+        builder: (context, rows) => rows.isEmpty
+            ? EmptyState(
+                icon: Icons.payments_rounded,
+                title: t.poNoPayouts,
+                hue: StatusHues.consultation,
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+                children: [
+                  for (final p in rows) _payoutCard(context, p, admin, reload),
+                ],
+              ),
+      ),
     );
   }
 

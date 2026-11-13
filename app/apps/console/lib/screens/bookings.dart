@@ -24,17 +24,16 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
   @override
   void onLive() => _list.currentState?.reload();
 
-  Future<List<Booking>> _load() async {
-    final q = {
+  late final _pager = Pager<Booking>(
+    context.api,
+    '/admin/bookings',
+    Booking.fromJson,
+    query: () => {
       'status': widget.quoteDesk ? '0' : _status?.toString(),
       'service': _service,
       'q': _search.text.trim().isEmpty ? null : _search.text.trim(),
-    };
-    final rows = (await context.api.get('/admin/bookings', query: q) as List)
-        .map((e) => Booking.fromJson(e as Json))
-        .toList();
-    return widget.quoteDesk ? rows.where((b) => b.isQuote).toList() : rows;
-  }
+    },
+  );
 
   void _open(Booking b) {
     if (context.isWide) {
@@ -145,21 +144,30 @@ class _BookingsScreenState extends State<BookingsScreen> with LiveReload {
         Expanded(
           child: AsyncView<List<Booking>>(
             key: _list,
-            load: _load,
-            builder: (context, rows, reload) => rows.isEmpty
-                ? EmptyState(icon: Icons.inbox_rounded, title: t.cNoResults)
-                : RefreshIndicator(
-                    onRefresh: reload,
-                    child: ListView.separated(
-                      itemCount: rows.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
-                      itemBuilder: (_, i) => _Row(
-                        booking: rows[i],
-                        selected: rows[i].id == _selected,
-                        onTap: () => _open(rows[i]),
-                      ),
-                    ),
-                  ),
+            load: _pager.first,
+            builder: (context, _, reload) => LoadMore<Booking>(
+              pager: _pager,
+              builder: (context, all) {
+                final rows = widget.quoteDesk
+                    ? all.where((b) => b.isQuote).toList()
+                    : all;
+                // Quote desk filters here: an empty filtered page keeps a list so the next page still loads.
+                return rows.isEmpty && !_pager.hasMore
+                    ? EmptyState(icon: Icons.inbox_rounded, title: t.cNoResults)
+                    : RefreshIndicator(
+                        onRefresh: reload,
+                        child: ListView.separated(
+                          itemCount: rows.length,
+                          separatorBuilder: (_, _) => const Divider(height: 1),
+                          itemBuilder: (_, i) => _Row(
+                            booking: rows[i],
+                            selected: rows[i].id == _selected,
+                            onTap: () => _open(rows[i]),
+                          ),
+                        ),
+                      );
+              },
+            ),
           ),
         ),
       ],

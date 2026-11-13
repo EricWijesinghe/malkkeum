@@ -133,7 +133,9 @@ class MoreTab extends StatelessWidget {
                       await deps.locale.set(c == null ? null : Locale(c));
                       // Server-side messages (push, SMS) follow the account language too.
                       if (deps.session.role != 'member') {
-                        deps.app.api.patch('/partner/me', {'locale': deps.locale.effectiveCode}).ignore();
+                        deps.app.api.patch('/partner/me', {
+                          'locale': deps.locale.effectiveCode,
+                        }).ignore();
                       }
                     },
                   ),
@@ -228,10 +230,10 @@ class SettlementsScreen extends StatelessWidget {
     final t = context.t;
     return Scaffold(
       appBar: AppBar(title: Text(t.pSettlements)),
-      body: AsyncView<List<Json>>(
-        load: () async =>
-            (await context.api.get('/partner/settlements') as List)
-                .cast<Json>(),
+      body: PagedView<Json>(
+        api: context.api,
+        path: '/partner/settlements',
+        parse: (row) => row,
         builder: (context, rows, _) => rows.isEmpty
             ? EmptyState(
                 icon: Icons.payments_rounded,
@@ -311,9 +313,10 @@ class ReviewsScreen extends StatelessWidget {
     final t = context.t;
     return Scaffold(
       appBar: AppBar(title: Text(t.pReviews)),
-      body: AsyncView<List<Json>>(
-        load: () async =>
-            (await context.api.get('/partner/reviews') as List).cast<Json>(),
+      body: PagedView<Json>(
+        api: context.api,
+        path: '/partner/reviews',
+        parse: (row) => row,
         builder: (context, rows, _) => rows.isEmpty
             ? EmptyState(
                 icon: Icons.star_rounded,
@@ -352,7 +355,10 @@ class ReviewsScreen extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: Space.xs),
                                 child: Text(r['body'] as String),
                               ),
-                            ReviewReportButton(api: context.api, bookingId: r['booking_id'] as String),
+                            ReviewReportButton(
+                              api: context.api,
+                              bookingId: r['booking_id'] as String,
+                            ),
                             TextButton(
                               onPressed: () =>
                                   showToast(context, t.pReplyLater),

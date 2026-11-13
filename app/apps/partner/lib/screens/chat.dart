@@ -51,6 +51,11 @@ class OpsChatTab extends StatefulWidget {
 
 class _OpsChatTabState extends State<OpsChatTab> {
   final _view = GlobalKey<AsyncViewState<List<ChatThread>>>();
+  late final _pager = Pager<ChatThread>(
+    context.api,
+    '/partner/threads',
+    ChatThread.fromJson,
+  );
   StreamSubscription<Json>? _sub;
 
   @override
@@ -116,62 +121,63 @@ class _OpsChatTabState extends State<OpsChatTab> {
       ),
       body: AsyncView<List<ChatThread>>(
         key: _view,
-        load: () async => (await context.api.get('/partner/threads') as List)
-            .map((e) => ChatThread.fromJson(e as Json))
-            .toList(),
-        builder: (context, threads, reload) => threads.isEmpty
-            ? EmptyState(
-                icon: Icons.forum_rounded,
-                title: t.chatEmpty,
-                hue: ServiceHues.aircon,
-              )
-            : RefreshIndicator(
-                onRefresh: reload,
-                child: ListView.separated(
-                  itemCount: threads.length,
-                  separatorBuilder: (_, _) => const Divider(indent: 76),
-                  itemBuilder: (_, i) {
-                    final th = threads[i];
-                    final last = th.lastMessage;
-                    final preview = last == null
-                        ? ''
-                        : ((last['body'] as Json)['text'] as String? ??
-                              (last['kind'] == 'photo' ? t.chatPhoto : ''));
-                    return ListTile(
-                      leading: th.bookingId != null
-                          ? ServiceGlyph(th.topic, size: 44)
-                          : const CircleAvatar(
-                              radius: 22,
-                              child: Icon(Icons.support_agent_rounded),
+        load: _pager.first,
+        builder: (context, _, reload) => LoadMore<ChatThread>(
+          pager: _pager,
+          builder: (context, threads) => threads.isEmpty
+              ? EmptyState(
+                  icon: Icons.forum_rounded,
+                  title: t.chatEmpty,
+                  hue: ServiceHues.aircon,
+                )
+              : RefreshIndicator(
+                  onRefresh: reload,
+                  child: ListView.separated(
+                    itemCount: threads.length,
+                    separatorBuilder: (_, _) => const Divider(indent: 76),
+                    itemBuilder: (_, i) {
+                      final th = threads[i];
+                      final last = th.lastMessage;
+                      final preview = last == null
+                          ? ''
+                          : ((last['body'] as Json)['text'] as String? ??
+                                (last['kind'] == 'photo' ? t.chatPhoto : ''));
+                      return ListTile(
+                        leading: th.bookingId != null
+                            ? ServiceGlyph(th.topic, size: 44)
+                            : const CircleAvatar(
+                                radius: 22,
+                                child: Icon(Icons.support_agent_rounded),
+                              ),
+                        title: Text(opsTopicLabel(t, th.topic)),
+                        subtitle: Text(
+                          preview,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: th.unreadMember > 0
+                            ? Badge(label: Text('${th.unreadMember}'))
+                            : Text(
+                                timeLabel(th.lastMessageAt, context.lang),
+                                style: context.text.labelSmall,
+                              ),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => OpsRoom(
+                                threadId: th.id,
+                                topic: th.topic,
+                                bookingId: th.bookingId,
+                              ),
                             ),
-                      title: Text(opsTopicLabel(t, th.topic)),
-                      subtitle: Text(
-                        preview,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: th.unreadMember > 0
-                          ? Badge(label: Text('${th.unreadMember}'))
-                          : Text(
-                              timeLabel(th.lastMessageAt, context.lang),
-                              style: context.text.labelSmall,
-                            ),
-                      onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => OpsRoom(
-                              threadId: th.id,
-                              topic: th.topic,
-                              bookingId: th.bookingId,
-                            ),
-                          ),
-                        );
-                        await reload();
-                      },
-                    );
-                  },
+                          );
+                          await reload();
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -343,7 +349,8 @@ class _OpsRoomState extends State<OpsRoom> {
                           // Decode at 2x the 200dp bubble: a 2048px photo would otherwise sit in the image cache whole.
                           cacheWidth: 400,
                           fit: BoxFit.cover,
-                          loadingBuilder: (_, child, progress) => progress == null
+                          loadingBuilder: (_, child, progress) =>
+                              progress == null
                               ? child
                               : SizedBox(
                                   width: 200,
@@ -386,7 +393,9 @@ class _OpsRoomState extends State<OpsRoom> {
                                 style: context.text.labelSmall?.copyWith(
                                   color: mine
                                       ? context.colors.surface
-                                      : context.colors.ink.withValues(alpha: 0.6),
+                                      : context.colors.ink.withValues(
+                                          alpha: 0.6,
+                                        ),
                                 ),
                               ),
                             Text(
