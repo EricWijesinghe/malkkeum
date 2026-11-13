@@ -1,0 +1,88 @@
+{
+  "_note": "Headline captions for scripts/store/frame.js. Each entry: [line 1, line 2]. Keys match the raw file names (NN-name). Languages: ko en ja zh vi.",
+  "brand": {
+    "customer": { "a": "#3B5BFD", "b": "#19C39A" },
+    "partner": { "a": "#FF7A59", "b": "#FFB547" }
+  },
+  "customer": {
+    "01-home": {
+      "ko": ["집안일은 맡기고", "반짝이는 하루를"],
+      "en": ["Hand off the chores", "Enjoy a sparkling day"],
+      "ja": ["家事はおまかせ", "ピカピカの一日を"],
+      "zh": ["家务交给我们", "享受焕然一新的一天"],
+      "vi": ["Giao việc nhà cho chúng tôi", "Tận hưởng ngày sạch sẽ"]
+    },
+    "02-service": {
+      "ko": ["필요한 청소만 골라요", "가격은 바로 확인"],
+      "en": ["Pick only what you need", "See the price instantly"],
+      "ja": ["必要な掃除だけ選べる", "料金はその場で確認"],
+      "zh": ["只选需要的清洁项目", "价格一目了然"],
+      "vi": ["Chọn đúng dịch vụ cần", "Xem giá ngay lập tức"]
+    },
+    "03-schedule": {
+      "ko": ["원하는 날, 원하는 시간", "1분이면 예약 완료"],
+      "en": ["Your day, your time", "Booked in a minute"],
+      "ja": ["好きな日時を選ぶだけ", "1分で予約完了"],
+      "zh": ["想要的日期和时间", "1分钟完成预约"],
+      "vi": ["Chọn ngày và giờ bạn muốn", "Đặt lịch trong 1 phút"]
+    },
+    "04-checkout": {
+      "ko": ["카드·간편결제·계좌이체", "안전하게 결제"],
+      "en": ["Cards, Kakao Pay, bank transfer", "Pay securely"],
+      "ja": ["カード・カカオペイ・口座振替", "安全に決済"],
+      "zh": ["银行卡、Kakao Pay、转账", "安全支付"],
+      "vi": ["Thẻ, Kakao Pay, chuyển khoản", "Thanh toán an toàn"]
+    },
+    "05-tracking": {
+      "ko": ["예약 진행 상황을 한눈에", "배정부터 완료까지"],
+      "en": ["Track every step", "From assignment to completion"],
+      "ja": ["予約の進捗をひと目で", "担当決定から完了まで"],
+      "zh": ["预约进度一目了然", "从指派到完成"],
+      "vi": ["Theo dõi mọi bước", "Từ phân công đến hoàn thành"]
+    },
+    "06-chat": {
+      "ko": ["궁금한 건 바로 채팅으로", "견적도 앱 안에서"],
+      "en": ["Chat with your cleaner", "Quotes right in the app"],
+      "ja": ["チャットで気軽に相談", "見積もりもアプリ内で"],
+      "zh": ["随时与我们聊天", "报价也在应用内完成"],
+      "vi": ["Trò chuyện ngay trong app", "Báo giá ngay trong ứng dụng"]
+    }
+  },
+  "partner": {
+    "01-jobs": {
+      "ko": ["오늘의 작업을 받아요", "지역과 시간에 맞춰서"],
+      "en": ["Today's jobs, matched to you", "By area and time"],
+      "ja": ["今日の仕事をすぐ受けられる", "エリアと時間で絞り込み"],
+      "zh": ["今日工作一键接单", "按区域和时间筛选"],
+      "vi": ["Việc hôm nay, phù hợp với bạn", "Lọc theo khu vực và giờ"]
+    },
+    "02-job-detail": {
+      "ko": ["방문 정보와 메모를 한 화면에", "전후 사진도 바로"],
+      "en": ["Visit details on one screen", "Before and after photos too"],
+      "ja": ["訪問情報とメモを一画面に", "作業前後の写真もすぐ"],
+      "zh": ["上门信息与备注一屏查看", "前后照片随时上传"],
+      "vi": ["Thông tin và ghi chú trên một màn hình", "Ảnh trước và sau ngay"]
+    },
+    "03-quote": {
+      "ko": ["이사·입주 견적, 직접 제안", "받을 금액을 실시간으로"],
+      "en": ["Send your own quote", "Your payout updates live"],
+      "ja": ["引越し・入居の見積もりを直接提案", "手数料差引後の受取額をリアルタイム表示"],
+      "zh": ["直接提交搬家·入住报价", "实时显示扣除手续费后的收入"],
+      "vi": ["Tự gửi báo giá chuyển nhà", "Thu nhập cập nhật theo thời gian thực"]
+    },
+    "04-earnings": {
+      "ko": ["정산은 매주 수요일", "완료한 작업을 투명하게"],
+      "en": ["Paid out every Wednesday", "Clear settlements for every job"],
+      "ja": ["精算は毎週水曜日", "完了した作業を透明に精算"],
+      "zh": ["每周三结算", "每单结算清晰透明"],
+      "vi": ["Thanh toán mỗi thứ Tư", "Quyết toán rõ ràng cho từng việc"]
+    }
+  },
+  "feature": {
+    "ko": { "title": "다해", "tagline": "검증된 청소 전문가, 투명한 가격" },
+    "en": { "title": "Dahae", "tagline": "Verified cleaners, clear prices" },
+    "ja": { "title": "다해", "tagline": "認証済みのプロ、わかりやすい料金" },
+    "zh": { "title": "다해", "tagline": "认证清洁专家，价格透明" },
+    "vi": { "title": "Dahae", "tagline": "Chuyên gia vệ sinh được xác minh, giá minh bạch" }
+  }
+}

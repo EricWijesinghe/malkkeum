@@ -182,41 +182,24 @@ class LocaleController extends ChangeNotifier {
   Locale? locale;
 
   /// Every app language, named in its own language (one list for all pickers).
-  static const names = {
-    'ko': '한국어',
-    'en': 'English',
-    'zh': '中文',
-    'vi': 'Tiếng Việt',
-    'ja': '日本語',
-    'ru': 'Русский',
-    'ne': 'नेपाली',
-    'si': 'සිංහල',
-    'th': 'ไทย',
-    'id': 'Bahasa Indonesia',
-    'mn': 'Монгол',
-    'uz': 'Oʻzbekcha',
-    'fil': 'Filipino',
-    'km': 'ខ្មែរ',
-  };
+  // i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+  static const names = {'ko': '한국어', 'en': 'English'};
   static final supported = [for (final c in names.keys) Locale(c)];
 
-  /// True on the very first launch, before anyone signed in or registered: show the picker.
-  bool firstRun = false;
-
-  /// Stored value meaning "follow the device", so a deliberate choice is never mistaken for a first run.
+  /// Stored value meaning "follow the device".
   static const _system = 'system';
 
+  /// No choice yet follows the device (English stays English, every other device language reads Korean).
+  /// A language archived after it was chosen reads English, and the stored choice is rewritten.
   Future<void> restore() async {
     final code = await _storage.read(key: 'app.locale').catchError((_) => null);
-    if (code == null) {
-      // First launch: save the device language right away, even if the user never registers.
-      firstRun = true;
-      locale = Locale(effectiveCode);
-      await _storage
-          .write(key: 'app.locale', value: locale!.languageCode)
-          .catchError((_) {});
+    if (code == null || code == _system) {
+      locale = null;
+    } else if (names.containsKey(code)) {
+      locale = Locale(code);
     } else {
-      locale = code == _system ? null : Locale(code);
+      locale = const Locale('en');
+      await _storage.write(key: 'app.locale', value: 'en').catchError((_) {});
     }
     notifyListeners();
   }
@@ -227,11 +210,6 @@ class LocaleController extends ChangeNotifier {
       key: 'app.locale',
       value: value?.languageCode ?? _system,
     );
-    notifyListeners();
-  }
-
-  void finishFirstRun() {
-    firstRun = false;
     notifyListeners();
   }
 

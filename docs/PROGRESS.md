@@ -13,13 +13,14 @@ Three apps + one backend, all from this repo:
 | Ops console (admin) | Flutter | Windows desktop, Android/iOS phone, web |
 | Backend | Rust (axum, sqlx, Postgres) | Docker, self-hosted; cloud-portable |
 
-Languages: ko (default), en, ja, zh-Hans, vi.
+Languages: ko (default), en. The other 12 are archived in `archive/i18n-extra-languages` (owner decision 2026-11-13).
 
 ## Decisions
 - 2026-11-10 Admin console moved from React to Flutter: owner wants it on phone **and** Windows; one stack shares design system + translations.
 - 2026-11-10 Every SDK, cache and build lives on F: (`scripts/env.sh`).
 - 2026-11-10 External services behind Rust traits with local fakes: payments (Toss/PortOne), SMS OTP, push (FCM/APNs), address search (Kakao/juso), masked 050 numbers, AlimTalk, object storage.
 - 2026-11-10 Scope = spec "In" items, polished; extras go on `docs/PITCH.md` for the owner to approve.
+- 2026-11-13 Korean customers only: ship Korean (default) + English. zh, vi, ja, ru, ne, si, th, id, mn, uz, fil, km are archived in `archive/i18n-extra-languages` (outside every build; README there has the restore steps). No first-launch language picker: the app follows an English device, otherwise Korean; Korean/English/system in settings. Accounts with an archived language get English.
 - Visual: colorful-professional. Ink text, white surfaces, one hue per service, trust blue + fresh mint brand.
 
 ## Roadmap
@@ -32,7 +33,7 @@ Languages: ko (default), en, ja, zh-Hans, vi.
 - [ ] Team-member logins (members currently get SMS only)
 - [ ] Deploy: Dockerfile, docker-compose, TLS reverse proxy, backups
 - [x] Flutter workspace (pub workspace `app/`): `packages/ui` (tokens, service hues, theme light/dark, components, Pretendard), `packages/core` (API client w/ refresh, secure session, realtime, models, i18n helpers, Seoul districts)
-- [x] Strings: `app/tool/strings_*.py` -> `python -I app/tool/gen_arb.py` -> 5 ARB files (ko/en/ja/zh/vi), checked for missing/placeholder drift
+- [x] Strings: `app/tool/strings_*.py` -> `python -I app/tool/gen_arb.py` -> 2 ARB files (ko/en), checked for missing/placeholder drift
 - [x] Customer app: intro/OTP/profile, home, service, address, schedule, checkout, done, quote flow (6 steps), bookings calendar/list, detail (timeline, deposit/balance, photos, review, notes, reschedule, cancel), chat list/room (quote card, photos, quick replies), more (coupons, points, account, addresses, payments, scope, notices, tips, FAQ, language, legal, licenses, delete account). Web + Android debug builds OK.
 - [ ] Customer: real PG registration SDK, Kakao address search, push (FCM), move-in cross-sell coupon claim, before/after review carousel on quote type step
 - [x] Partner app: intro/OTP, onboarding (name, team, services, districts), pending/suspended gates, jobs feed (direct/quote, sort, closed), job detail (masked before accept, accept sheet, quote sheet w/ live payout, assignee, memo, reschedule reply, cancelled banner, payout breakdown), my quotes (filters, edit/withdraw), schedule month view, completion (photos + checklist + success), ops chat, settlements, reviews, areas, work schedule, payout account, team, notifications, language

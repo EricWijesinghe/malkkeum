@@ -21,10 +21,10 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - 고객 앱 (안드로이드·아이폰·웹): 1분 예약, 결제, 진행 상황, 채팅, 후기
 - 파트너 앱: 우리 동네 일감 받기, 견적, 일정, 완료 사진, 수입
 - 사장님 콘솔 (PC·휴대폰·웹): 예약, 견적, 상담, 파트너, 정산, 재무, 마케팅, 설정
-- 사장님 소유 서버 (서울 리전 클라우드), 14개 언어
+- 사장님 소유 서버 (서울 리전 클라우드), 한국어·영어
 
 **발표자 노트**
-"세 개의 앱이 같은 서버를 씁니다. 서버는 사장님 명의로 빌리는 클라우드 서버라 데이터도 사장님 것입니다. 한국어가 기본이고 영어·중국어·베트남어·일본어 등 14개 언어를 지원합니다. 몽골어·싱할라어·네팔어·우즈베크어·크메르어·필리핀어는 원어민 검수가 남아 있습니다."
+"세 개의 앱이 같은 서버를 씁니다. 서버는 사장님 명의로 빌리는 클라우드 서버라 데이터도 사장님 것입니다. 한국어가 기본이고 영어도 지원합니다. 다른 12개 언어는 보관해 두어 필요하면 다시 켤 수 있습니다."
 
 ### 3. 시연 하이라이트
 **화면**
@@ -41,7 +41,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - 홈에 다가오는 예약, 쓸 수 있는 쿠폰, 지난 서비스 "다시 예약하기" 카드
 - 가입 축하 쿠폰 2장, 첫 예약 할인, 친구 초대 쿠폰
 - 전후 사진 리포트와 후기, 앱 채팅 상담, 방문 2일 전까지 무료 취소
-- 전체 고객 쿠폰 발급, 홈 배너·공지 (14개 언어 편집)
+- 전체 고객 쿠폰 발급, 홈 배너·공지 (한국어·영어 편집)
 - **(준비 중)** 청소 포인트 적립 (화면만 있음), 정기 청소 구독, 알림톡 재예약 알림
 
 **발표자 노트**
@@ -93,7 +93,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 **화면**
 - 이미 동작하는 전체 흐름: 예약 → 결제 → 배정 → 완료 → 후기 → 정산 → 세무 자료
 - 사장님 소유 서버와 데이터, 업체 이름·로고 교체 가능
-- 테스트: 서버 177개 이상, 앱 200개 이상, 14개 언어 × 작은 화면 검사
+- 테스트: 서버 177개 이상, 앱 200개 이상, 한국어·영어 × 작은 화면 검사
 
 **발표자 노트**
 "아이디어 단계가 아니라 오늘 보신 것처럼 돌아가는 시스템입니다. 남은 것은 계약과 등록입니다."
@@ -125,10 +125,10 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - Customer app (Android, iPhone, web): book in a minute, pay, track, chat, review
 - Partner app: local jobs, quotes, schedule, completion photos, earnings
 - Owner console (PC, phone, web): bookings, quotes, inbox, partners, payouts, finance, marketing, setup
-- Owner-owned server (Seoul-region cloud), 14 languages
+- Owner-owned server (Seoul-region cloud), Korean and English
 
 **Speaker notes**
-"All three apps share one server that the owner rents in their own name, so the data is theirs. Korean is the default; 14 languages in total. Mongolian, Sinhala, Nepali, Uzbek, Khmer and Filipino still need native-speaker review."
+"All three apps share one server that the owner rents in their own name, so the data is theirs. Korean is the default, English is the second language; twelve more are archived and can be switched back on."
 
 ### 3. Demo highlights
 **Slide**
@@ -145,7 +145,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - Home shows the next visit, usable coupons, and a "book again" card for the last service
 - 2 welcome coupons, first-booking offer, invite-a-friend coupon
 - Before/after photo report, reviews, in-app chat, free cancellation up to 2 days before
-- Coupons to all customers at once, home banners and notices (edited in 14 languages)
+- Coupons to all customers at once, home banners and notices (edited in Korean and English)
 - **(Planned)** points earning (screen exists, no logic), recurring subscriptions, AlimTalk rebooking reminders
 
 **Speaker notes**
@@ -188,7 +188,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 - Step 1: business registration and mail-order sales report → server (₩15–30k/month) and domain → one-line install
 - Step 2: PortOne sign-up and PG review (3–10 days), Solapi sender-number registration, Kakao business channel (AlimTalk, optional)
 - Step 3: Google Play (organisation account, $25, internal testing) · App Store ($99/year, D-U-N-S, TestFlight) · Microsoft Store (Partner Center, 3 apps)
-- Store text in 5 languages, screenshots and privacy answers are ready
+- Store text in Korean and English, screenshots and privacy answers are ready
 
 **Speaker notes**
 "The developer builds and uploads the apps; the owner creates the accounts in the business's name and invites the developer. Review usually takes 1–3 days at Apple and 1–7 at Google. Remaining technical work: a test run with real payment keys, and unblocking the queued GitHub builds (billing limit)."
@@ -197,7 +197,7 @@ Rule for the speaker: say only what exists. Items marked **(준비 중 / planned
 **Slide**
 - The whole loop works today: book → pay → assign → complete → review → payout → tax exports
 - Owner-owned server and data; brand name and logo are swappable
-- Tests: 177+ server, 200+ app, 14 languages × small-screen sweeps
+- Tests: 177+ server, 200+ app, Korean and English × small-screen sweeps
 
 **Speaker notes**
 "This is not an idea deck; you just saw it run. What's left is contracts and registrations."

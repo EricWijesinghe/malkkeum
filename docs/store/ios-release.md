@@ -33,7 +33,7 @@ Codemagic 변수 그룹 `malkkeum` 에 넣는 값은 모두 **secure** 로 표�
 
 - 최소 iOS 15.0 (Firebase, 구글 로그인, image_picker 가 15 이상 필요). 아이폰 전용.
 - Apple 로 로그인 (지침 4.8), 앱 안 계정 삭제 (5.1.1(v)), 후기 신고 (1.2), 개인정보 매니페스트 `PrivacyInfo.xcprivacy`, `ITSAppUsesNonExemptEncryption = false`.
-- 권한 문구는 14개 언어. 위치는 "사용 중에만"이고 고객 앱만 (geolocator 는 `BYPASS_PERMISSION_LOCATION_ALWAYS=1` 로 빌드해 항상 허용 요청을 뺐어요). 카메라 문구는 image_picker 가 카메라 API 를 링크하므로 남겨 둔 것이에요 (`review-notes.md` §5).
+- 권한 문구는 한국어·영어 2개 언어 (나머지 12개는 `archive/i18n-extra-languages`에 보관). 위치는 "사용 중에만"이고 고객 앱만 (geolocator 는 `BYPASS_PERMISSION_LOCATION_ALWAYS=1` 로 빌드해 항상 허용 요청을 뺐어요). 카메라 문구는 image_picker 가 카메라 API 를 링크하므로 남겨 둔 것이에요 (`review-notes.md` §5).
 - 결제는 PortOne 웹 화면이고 인앱 결제(IAP)가 아니에요: 방문 청소는 앱 밖에서 쓰는 실물 서비스 (지침 3.1.3(e)).
 - 키는 저장소에 없어요. `scripts/ci/native-keys.sh` 가 빌드 때 `keys.json`, `Keys.xcconfig`, `GoogleService-Info.plist` 를 만들고 모두 `.gitignore` 예요.
 

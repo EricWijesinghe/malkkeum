@@ -116,9 +116,9 @@ async fn customers(c: &mut Ctx<'_>) -> Result<Vec<Customer>, DemoError> {
         let name = format!("{}{}", c.pick(&SURNAMES), c.pick(&GIVEN));
         // 120-170 days back: older than every visit we generate, so bookings never precede sign-up.
         let created = c.ago_days(120, 170);
+        // i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
         let locale = match i % 10 {
-            7 => "en",
-            9 => "ja",
+            7 | 9 => "en",
             _ => "ko",
         };
         let email = c.chance(0.7).then(|| format!("user{:03}@demo.invalid", i + 1));

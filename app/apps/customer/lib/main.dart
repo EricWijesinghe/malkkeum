@@ -94,7 +94,7 @@ class CustomerApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         // Guests land straight in the app; sign-in is asked only when a protected action needs it.
-        home: LanguageWelcome(locale: locale, child: const Shell()),
+        home: const Shell(),
       ),
     ),
   );

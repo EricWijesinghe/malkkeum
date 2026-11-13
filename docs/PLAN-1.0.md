@@ -26,7 +26,7 @@ industry-grade product (installer → web setup wizard → status page).
 4. **Installer + hosting** — one-click deploy (Render blueprint / Railway template) with managed Postgres + backups, and a
    single-command VPS installer (`install.sh`: Docker, compose, HTTPS via Caddy, generated secrets, auto-update, daily
    backup). Both end at the wizard URL.
-5. **Website** — `website/` static site, three.js 3D hero, services, reviews, FAQ, partner recruiting, 14 languages,
+5. **Website** — `website/` static site, three.js 3D hero, services, reviews, FAQ, partner recruiting, Korean and English,
    legal pages (개인정보처리방침, 이용약관, 위치기반서비스 약관, account deletion). Served by Caddy.
 6. **Store readiness** — icons/splash, release signing, Codemagic (iOS without a Mac + Android), privacy manifest, Data
    Safety answers, in-app account deletion, store listings + generated screenshots, v1.0.0.

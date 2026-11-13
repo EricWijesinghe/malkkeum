@@ -23,7 +23,8 @@ const GRAPHICS = path.join(STORE, 'graphics');
 const FONTS = path.join(ROOT, 'app', 'packages', 'ui', 'assets', 'fonts');
 const HTML_DIR = path.join(ROOT, 'app', 'build', 'store_shots', 'html');
 
-const LANG_TAG = { ko: 'ko', en: 'en', ja: 'ja', zh: 'zh-Hans', vi: 'vi' };
+// i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+const LANG_TAG = { ko: 'ko', en: 'en' };
 const CAPTIONS = JSON.parse(fs.readFileSync(path.join(SHOTS, 'captions.json'), 'utf8'));
 
 const fontFaces = [400, 500, 600, 700, 800]

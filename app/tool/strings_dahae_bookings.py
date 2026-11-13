@@ -1,85 +1,11 @@
 # Dahae U3: My Bookings status chips / progress timeline wording and the week/month calendar toggle.
-# Columns: ko (source), en, ja, zh (Simplified), vi. Extra languages in X (9 codes).
+# Columns: ko (source), en.
+# i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
 S = {
-  "bkStepConsult": ["상담요청", "Consultation requested", "相談依頼", "咨询申请", "Yêu cầu tư vấn"],
-  "bkStepConfirmed": ["예약확정", "Booking confirmed", "予約確定", "预约确认", "Đã xác nhận đặt lịch"],
-  "bkStepMatched": ["매칭 완료", "Matched", "マッチング完了", "匹配完成", "Đã ghép đội"],
-  "bkStepCompleted": ["서비스 완료", "Service completed", "サービス完了", "服务完成", "Hoàn tất dịch vụ"],
-  "bkViewWeek": ["주간 보기", "Week view", "週表示", "周视图", "Xem theo tuần"],
-  "bkViewMonth": ["월간 보기", "Month view", "月表示", "月视图", "Xem theo tháng"],
-}
-
-X = {
-  "fil": {
-    "bkStepConsult": "Humiling ng konsultasyon",
-    "bkStepConfirmed": "Kumpirmado ang booking",
-    "bkStepMatched": "Naitugma na",
-    "bkStepCompleted": "Tapos na ang serbisyo",
-    "bkViewWeek": "Lingguhang view",
-    "bkViewMonth": "Buwanang view",
-  },
-  "id": {
-    "bkStepConsult": "Konsultasi diminta",
-    "bkStepConfirmed": "Pemesanan dikonfirmasi",
-    "bkStepMatched": "Tim ditetapkan",
-    "bkStepCompleted": "Layanan selesai",
-    "bkViewWeek": "Tampilan minggu",
-    "bkViewMonth": "Tampilan bulan",
-  },
-  "km": {
-    "bkStepConsult": "បានស្នើសុំពិគ្រោះ",
-    "bkStepConfirmed": "បានបញ្ជាក់ការកក់",
-    "bkStepMatched": "បានផ្គូផ្គងរួច",
-    "bkStepCompleted": "សេវាបានបញ្ចប់",
-    "bkViewWeek": "មើលប្រចាំសប្តាហ៍",
-    "bkViewMonth": "មើលប្រចាំខែ",
-  },
-  "mn": {
-    "bkStepConsult": "Зөвлөгөө хүссэн",
-    "bkStepConfirmed": "Захиалга баталгаажсан",
-    "bkStepMatched": "Баг томилогдсон",
-    "bkStepCompleted": "Үйлчилгээ дууссан",
-    "bkViewWeek": "Долоо хоногоор харах",
-    "bkViewMonth": "Сараар харах",
-  },
-  "ne": {
-    "bkStepConsult": "परामर्श अनुरोध",
-    "bkStepConfirmed": "बुकिङ पक्का",
-    "bkStepMatched": "टोली मिलान भयो",
-    "bkStepCompleted": "सेवा सम्पन्न",
-    "bkViewWeek": "साप्ताहिक दृश्य",
-    "bkViewMonth": "मासिक दृश्य",
-  },
-  "ru": {
-    "bkStepConsult": "Запрос консультации",
-    "bkStepConfirmed": "Бронь подтверждена",
-    "bkStepMatched": "Команда назначена",
-    "bkStepCompleted": "Услуга выполнена",
-    "bkViewWeek": "По неделям",
-    "bkViewMonth": "По месяцам",
-  },
-  "si": {
-    "bkStepConsult": "උපදේශන ඉල්ලීම",
-    "bkStepConfirmed": "වෙන්කිරීම තහවුරුයි",
-    "bkStepMatched": "කණ්ඩායම ගැළපුණා",
-    "bkStepCompleted": "සේවාව අවසන්",
-    "bkViewWeek": "සතිපතා දසුන",
-    "bkViewMonth": "මාසික දසුන",
-  },
-  "th": {
-    "bkStepConsult": "ขอคำปรึกษาแล้ว",
-    "bkStepConfirmed": "ยืนยันการจองแล้ว",
-    "bkStepMatched": "จับคู่ทีมแล้ว",
-    "bkStepCompleted": "บริการเสร็จสิ้น",
-    "bkViewWeek": "มุมมองรายสัปดาห์",
-    "bkViewMonth": "มุมมองรายเดือน",
-  },
-  "uz": {
-    "bkStepConsult": "Maslahat so'raldi",
-    "bkStepConfirmed": "Bron tasdiqlandi",
-    "bkStepMatched": "Jamoa biriktirildi",
-    "bkStepCompleted": "Xizmat yakunlandi",
-    "bkViewWeek": "Haftalik ko'rinish",
-    "bkViewMonth": "Oylik ko'rinish",
-  },
+  "bkStepConsult": ["상담요청", "Consultation requested"],
+  "bkStepConfirmed": ["예약확정", "Booking confirmed"],
+  "bkStepMatched": ["매칭 완료", "Matched"],
+  "bkStepCompleted": ["서비스 완료", "Service completed"],
+  "bkViewWeek": ["주간 보기", "Week view"],
+  "bkViewMonth": ["월간 보기", "Month view"],
 }

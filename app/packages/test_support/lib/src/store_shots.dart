@@ -27,7 +27,8 @@ const shotDevices = [
 ];
 
 /// Comma lists from `--dart-define`, e.g. `--dart-define=SHOT_LANGS=ko,en`.
-final shotLangs = const String.fromEnvironment('SHOT_LANGS', defaultValue: 'ko,en,ja,zh,vi').split(',');
+// i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
+final shotLangs = const String.fromEnvironment('SHOT_LANGS', defaultValue: 'ko,en').split(',');
 final shotDeviceSlugs = const String.fromEnvironment('SHOT_DEVICES', defaultValue: 'ios-6.9,ios-6.5,ipad-13,android').split(',');
 
 /// Where PNGs go (relative to the app package). The framing step reads from here.

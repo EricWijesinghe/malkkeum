@@ -6,8 +6,8 @@ Two apps (customer, partner). Each is a **separate app** in Partner Center.
 **사장님용 관리 화면(콘솔)은 스토어 앱이 아니에요.** 웹 브라우저에서 `https://도메인/admin/` 으로 접속해요. Microsoft Store 에 올리지 않고, 이름 예약도 하지 않아요.
 **The owner console is web-only** at `https://DOMAIN/admin/`. It is not submitted to the Microsoft Store and needs no name reservation.
 
-설명 문구는 `docs/store/listing-ko.md`, `listing-en.md` 등을 그대로 써요. 글자 수는 `python -I docs/store/check_listings.py`로 확인해요.
-Listing text: copy from `listing-ko.md`, `listing-en.md` and the others. Check lengths with `python -I docs/store/check_listings.py`.
+설명 문구는 `docs/store/listing-ko.md`, `listing-en.md`를 그대로 써요 (한국어·영어만 출시, 나머지 언어는 `archive/i18n-extra-languages`에 보관). 글자 수는 `python -I docs/store/check_listings.py`로 확인해요.
+Listing text: copy from `listing-ko.md` and `listing-en.md` (Korean and English only; other languages are archived in `archive/i18n-extra-languages`). Check lengths with `python -I docs/store/check_listings.py`.
 
 기준 정책: Microsoft Store Policies 7.20 (2026-09-14, https://learn.microsoft.com/en-us/windows/apps/publish/store-policies).
 
@@ -97,7 +97,7 @@ Account deletion: More > Account > Delete account.
 
 ## 8. 제출 · Submit
 
-1. **패키지** 메뉴 > 3번에서 만든 `.msix` 파일 업로드. 이 빌드는 지원 언어 14개(en-us, ko-kr, ja-jp, zh-cn, vi-vn, th-th, id-id, fil-ph, km-kh, mn-mn, ne-np, ru-ru, si-lk, uz-latn-uz)를 포함해요. / Upload the `.msix`. It lists 14 languages.
+1. **패키지** 메뉴 > 3번에서 만든 `.msix` 파일 업로드. 이 빌드는 지원 언어 2개(ko-kr, en-us)를 포함해요. / Upload the `.msix`. It lists 2 languages (Korean, English).
    - Partner Center가 `.msixupload`를 요구하면 `.msix` 하나를 같은 이름으로 묶어 올려요. 최신 흐름은 `.msix`를 바로 받아요. / If Partner Center asks for `.msixupload`, use the same package in that wrapper; the current flow accepts `.msix` directly.
 2. **스토어 목록** 에 `listing-ko.md` 문구와 스크린샷 입력. / Fill the store listing from the listing files and screenshots.
 3. **가격 및 공개 범위** → 무료, 대한민국 등 판매 국가 선택. / Pricing: free, choose countries.
@@ -129,7 +129,7 @@ Microsoft Store has no 80/30-char fields; use the first lines as the hook (searc
 · 취소 수수료와 환불액을 취소 전에 미리 안내, 방문 2일 전까지 무료 취소
 · 청소팀 배정부터 완료까지 실시간 진행 상황, 전후 사진과 후기
 · 앱 채팅 상담, 청소 포인트와 쿠폰
-· 14개 언어 지원
+· 한국어·영어 지원
 ```
 
 **Customer app · Dahae (en)**
@@ -142,7 +142,7 @@ Dahae connects you only with cleaning professionals who passed identity checks a
 · Cancellation fee and refund shown before you cancel; free cancellation up to 2 days before the visit
 · Live progress from team assigned to finished, with before and after photos and reviews
 · In-app chat, cleaning points and coupons
-· 14 languages
+· Korean and English
 ```
 
 **파트너 앱 · 다해 파트너 (ko)**
@@ -153,7 +153,7 @@ Dahae connects you only with cleaning professionals who passed identity checks a
 · 이사·입주청소는 직접 견적 내기
 · 길찾기, 일정, 방문 메모, 전후 사진 업로드
 · 팀원 초대, 운영팀과 앱 채팅
-· 14개 언어 지원
+· 한국어·영어 지원
 ```
 
 **Partner app · Dahae Partner (en)**

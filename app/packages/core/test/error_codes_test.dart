@@ -19,7 +19,7 @@ void main() {
   });
 
   test('every localized backend code has copy in all supported locales', () async {
-    expect(T.supportedLocales, hasLength(14));
+    expect(T.supportedLocales, hasLength(2));
     for (final locale in T.supportedLocales) {
       final t = await T.delegate.load(locale);
       for (final code in localized) {

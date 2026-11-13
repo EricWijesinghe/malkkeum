@@ -1,0 +1,75 @@
+Lines removed from app/apps/<app>/ios/Runner.xcodeproj/project.pbxproj (PBXFileReference, PBXVariantGroup child,
+knownRegions entry per language). Re-insert each next to its ko/en sibling to restore.
+
+customer: 3EEDFEB13F0291FE06F825EA /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: D4021490D0AFFEE39400D55A /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh-Hans; path = zh-Hans.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 8647F59D52F39B9C28CC6F27 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 8C200690D169C434F366AE92 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 79AF1F702CC0750A8BC1AAC2 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: D76E75FE1AC48E350C92A626 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = km; path = km.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 8DFFAFA3CA4F6A1D032DDEC9 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mn; path = mn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 32698E4170912BBF698FB381 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ne; path = ne.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 9DF6397E4AC26C7D4B3D58A5 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 3D0AB3CB8A13F8662434FDB4 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = si; path = si.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 84C31FFC37B9EBB1DE6C41C1 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: 282CE43B2828BAC5E1BC830F /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uz; path = uz.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+customer: ja,
+customer: zh-Hans,
+customer: vi,
+customer: fil,
+customer: id,
+customer: km,
+customer: mn,
+customer: ne,
+customer: ru,
+customer: si,
+customer: th,
+customer: uz,
+customer: 3EEDFEB13F0291FE06F825EA /* ja */,
+customer: D4021490D0AFFEE39400D55A /* zh-Hans */,
+customer: 8647F59D52F39B9C28CC6F27 /* vi */,
+customer: 8C200690D169C434F366AE92 /* fil */,
+customer: 79AF1F702CC0750A8BC1AAC2 /* id */,
+customer: D76E75FE1AC48E350C92A626 /* km */,
+customer: 8DFFAFA3CA4F6A1D032DDEC9 /* mn */,
+customer: 32698E4170912BBF698FB381 /* ne */,
+customer: 9DF6397E4AC26C7D4B3D58A5 /* ru */,
+customer: 3D0AB3CB8A13F8662434FDB4 /* si */,
+customer: 84C31FFC37B9EBB1DE6C41C1 /* th */,
+customer: 282CE43B2828BAC5E1BC830F /* uz */,
+partner: 04A395094388E69F9501643A /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: F87A4BFCADE42759528FC5E8 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh-Hans; path = zh-Hans.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: B757DCF10F9A71C17DF252EA /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: 00E3ACBEBD8B36FA1A02C1FE /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: B9F1CD11BF378C44D193D249 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: C234861D7CC1A49F39F42FB0 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = km; path = km.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: E7F89BD8A32D884317DA834C /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mn; path = mn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: F4E1907B1081F98CCA0D2A40 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ne; path = ne.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: B403D8FFFFD48A12680BE0CE /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: 38AB0560311228F9D3A439AD /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = si; path = si.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: 88B5025C75F242F6B07C8EC8 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: D0147D0D2A45732268D25C3E /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uz; path = uz.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+partner: ja,
+partner: zh-Hans,
+partner: vi,
+partner: fil,
+partner: id,
+partner: km,
+partner: mn,
+partner: ne,
+partner: ru,
+partner: si,
+partner: th,
+partner: uz,
+partner: 04A395094388E69F9501643A /* ja */,
+partner: F87A4BFCADE42759528FC5E8 /* zh-Hans */,
+partner: B757DCF10F9A71C17DF252EA /* vi */,
+partner: 00E3ACBEBD8B36FA1A02C1FE /* fil */,
+partner: B9F1CD11BF378C44D193D249 /* id */,
+partner: C234861D7CC1A49F39F42FB0 /* km */,
+partner: E7F89BD8A32D884317DA834C /* mn */,
+partner: F4E1907B1081F98CCA0D2A40 /* ne */,
+partner: B403D8FFFFD48A12680BE0CE /* ru */,
+partner: 38AB0560311228F9D3A439AD /* si */,
+partner: 88B5025C75F242F6B07C8EC8 /* th */,
+partner: D0147D0D2A45732268D25C3E /* uz */,

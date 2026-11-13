@@ -4,6 +4,7 @@ backend
 NTD
 design
 docs
+archive
 scripts
 **/build
 **/.dart_tool

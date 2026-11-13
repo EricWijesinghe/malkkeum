@@ -9,7 +9,14 @@ import 'confirm_action.dart';
 import 'growth.dart';
 
 // Content can be written in every app language; missing ones fall back to Korean.
+// i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
 final _langs = LocaleController.names.keys.toList();
+
+/// Texts stored for archived languages, kept as they are when an item is edited.
+Json _archived(Object? texts) => {
+  for (final e in ((texts as Json?) ?? const {}).entries)
+    if (!_langs.contains(e.key)) e.key: e.value,
+};
 const _kinds = ['notice', 'news', 'tip', 'faq', 'banner', 'legal'];
 
 String kindLabel(T t, String k) => switch (k) {
@@ -300,11 +307,13 @@ class _ContentState extends State<_Content> {
         'kind': kind,
         'slug': slug.text.trim().isEmpty ? null : slug.text.trim(),
         'title': {
+          ..._archived(item?['title']),
           for (final l in _langs)
             if (titles[l]!.text.isNotEmpty) l: titles[l]!.text,
         },
         'body': {
           'text': {
+            ..._archived((item?['body'] as Json?)?['text']),
             for (final l in _langs)
               if (bodies[l]!.text.isNotEmpty) l: bodies[l]!.text,
           },

@@ -19,7 +19,7 @@ Home-services platform for the Korean market: on-demand and quoted cleaning (stu
 - **Authentication** — phone OTP, Kakao / Naver / Google / Apple sign-in, PASS identity check, staff accounts with MFA and lockout, account deletion with provider unlink/revoke.
 - **Messaging** — real-time chat (WebSocket) with quote cards, push (FCM/APNs), Kakao AlimTalk, in-app notification inbox; optional AI-assisted support replies.
 - **Operations** — console dashboard, quote desk, inbox, catalog and pricing editor, partner approval, settlements, finance exports, audit log, setup wizard with encrypted integration keys.
-- **Internationalisation** — 14 languages, server-side messages in the recipient's language.
+- **Internationalisation** — Korean (default) and English, server-side messages in the recipient's language. Twelve more languages are archived in `archive/i18n-extra-languages` (restore steps in its README).
 - **Delivery** — one-command installer (`curl | bash`) with signed images, automatic HTTPS, backups, safe updates with rollback and the `dahae` CLI.
 
 ## Repository layout

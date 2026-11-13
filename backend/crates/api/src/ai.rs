@@ -300,13 +300,10 @@ pub fn parse_response(bytes: &[u8]) -> Attempt {
     Attempt { text, usage: resp.usage }
 }
 
-/// Fixed handoff line, in the customer's language where we have one.
+/// Fixed handoff line, in the customer's language ([`crate::i18n::shipped`]).
 pub fn handoff_text(locale: &str) -> &'static str {
-    match locale {
+    match crate::i18n::shipped(locale) {
         "ko" => "상담원이 확인 후 답변드릴게요.",
-        "ja" => "担当者が確認して、後ほどご返信いたします。",
-        "zh" => "工作人员确认后会尽快回复您。",
-        "vi" => "Nhân viên sẽ kiểm tra và phản hồi bạn sớm.",
         _ => "A staff member will check this and reply to you shortly.",
     }
 }
@@ -524,7 +521,11 @@ pub async fn answer(s: &AppState, thread: Uuid) -> ApiResult<()> {
         return Ok(());
     }
     let shop = shop_data(&s.db, &hours).await?;
-    let body = request_body(&cfg, system_blocks(&shop, &t.locale, &t.booking.unwrap_or(Value::Null)), turns);
+    let body = request_body(
+        &cfg,
+        system_blocks(&shop, crate::i18n::shipped(&t.locale), &t.booking.unwrap_or(Value::Null)),
+        turns,
+    );
     let attempt = call_model(s, &cfg, &body).await;
     let outcome = if attempt.text.is_some() { "answered" } else { "handoff" };
     if outcome == "handoff" {
