@@ -142,11 +142,17 @@ void main() {
     expect(app.name, '말끔팀');
     expect(env.session.signedIn, isTrue);
 
-    // Signal returns: the app catches up by itself (real profile, then the queued completions).
+    // No timer polls while offline: the realtime socket's reconnect (or an app resume) is the cue.
     final asked = env.fake.callsTo('GET', '/partner/me').length;
+    await settle(tester, duration: const Duration(seconds: 25));
+    expect(env.fake.callsTo('GET', '/partner/me'), hasLength(asked));
+
+    // Signal returns: the socket reconnects and sends resync; the app catches up (real profile, then the queue).
     online = true;
-    await settle(tester, duration: const Duration(seconds: 21));
+    (app.realtime as FakeRealtime).emit({'type': 'resync'});
+    await settle(tester, duration: const Duration(seconds: 1));
     expect(env.fake.callsTo('GET', '/partner/me'), hasLength(asked + 1));
+    expect(app.status, 'verified');
     await unmount(tester);
   });
 

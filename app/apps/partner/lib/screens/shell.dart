@@ -23,34 +23,16 @@ class Gate extends StatefulWidget {
 }
 
 class _GateState extends State<Gate> {
-  /// How often an app opened without signal asks the server again.
-  static const _offlineRetry = Duration(seconds: 20);
-
   late Future<void> _boot = _start();
-  Timer? _catchUp;
 
+  /// Opened from the saved profile (no signal), the real one and the queue follow on the socket's
+  /// resync once it reconnects (Realtime retries with backoff) or the app resumes.
   Future<void> _start() async {
     final pro = context.proRead;
     final fresh = await pro.boot();
     pro.realtime.connect();
-    if (fresh) {
-      pro.syncOutbox().ignore();
-    } else if (mounted) {
-      _catchUpLater();
-    }
+    if (fresh) pro.syncOutbox().ignore();
   }
-
-  /// Opened from the saved profile: keep asking until the real one loads, then send the queue.
-  void _catchUpLater() => _catchUp = Timer(_offlineRetry, () async {
-    final pro = context.proRead;
-    try {
-      await pro.loadAll();
-      pro.syncOutbox().ignore();
-    } catch (e) {
-      // Still no signal: ask again. Any other failure is left to the next realtime resync.
-      if (e is ApiException && e.isNetwork && mounted) _catchUpLater();
-    }
-  });
 
   /// Runs the boot again. The session is kept: no signal is no reason to make a pro sign in again.
   Future<void> _retry() async {
@@ -60,12 +42,6 @@ class _GateState extends State<Gate> {
     });
     // The FutureBuilder shows the outcome; this only tells the button when to stop spinning.
     await boot.then((_) {}, onError: (Object _) {});
-  }
-
-  @override
-  void dispose() {
-    _catchUp?.cancel();
-    super.dispose();
   }
 
   @override

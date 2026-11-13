@@ -67,7 +67,12 @@ class Realtime {
     try {
       final ch = _connect(api.wsUri());
       _ch = ch;
-      ch.ready.then((_) => _attempt = 0, onError: (Object _) {});
+      ch.ready.then((_) {
+        // Back after failed tries (no signal, server restart): the refetch sent when the socket
+        // dropped may itself have failed offline, so ask screens again now that the link works.
+        if (_attempt > 0 && identical(_ch, ch)) _events.add({'type': 'resync'});
+        _attempt = 0;
+      }, onError: (Object _) {});
       _sub = ch.stream.listen(
         _onFrame,
         onDone: _dropped,

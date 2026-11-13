@@ -26,17 +26,6 @@ Future<FakeApi> _chatApi(List<Json> history) async {
   return fake;
 }
 
-/// A realtime double whose events the test sends itself.
-class _LiveRealtime extends FakeRealtime {
-  _LiveRealtime(super.api);
-  final _sent = StreamController<Json>.broadcast();
-
-  @override
-  Stream<Json> get events => _sent.stream;
-
-  void emit(Json event) => _sent.add(event);
-}
-
 void main() {
   testWidgets('system, request-card and quote bubbles render their own layouts', (tester) async {
     setViewport(tester, phoneSize);
@@ -478,7 +467,7 @@ void main() {
       ..reply('POST', '/chat/threads/th-1/read', null);
     stockCustomerApi(fake);
     final env = await TestEnv.create(fake: fake);
-    final live = _LiveRealtime(env.api);
+    final live = FakeRealtime(env.api);
     await tester.pumpWidget(
       CustomerTestHost(env: env, app: AppState(env.api, live), home: const ChatRoomScreen(threadId: 'th-1', topic: 'studio')),
     );

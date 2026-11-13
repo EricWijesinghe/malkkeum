@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,8 +12,16 @@ import 'env.dart';
 class FakeRealtime extends Realtime {
   FakeRealtime(super.api);
 
+  final _live = StreamController<Map<String, dynamic>>.broadcast();
+
   @override
   void connect() {}
+
+  @override
+  Stream<Map<String, dynamic>> get events => _live.stream;
+
+  /// Delivers [event] as the socket would, e.g. `{'type': 'resync'}` after a reconnect or resume.
+  void emit(Map<String, dynamic> event) => _live.add(event);
 }
 
 /// Pumps frames for [duration] without `pumpAndSettle`, which never returns while

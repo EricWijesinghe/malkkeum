@@ -52,9 +52,13 @@ class _MemStorage extends FlutterSecureStorage {
 }
 
 /// A socket that stays open until closed; records its URL and whether it was closed.
+/// [offline]: the connection fails the way it does with no signal.
 class _FakeChannel implements WebSocketChannel {
-  _FakeChannel(this.uri);
+  _FakeChannel(this.uri, {this.offline = false}) {
+    if (offline) _in.addError(const SocketExceptionStub());
+  }
   final Uri uri;
+  final bool offline;
   final _in = StreamController<dynamic>();
   bool closed = false;
 
@@ -62,13 +66,17 @@ class _FakeChannel implements WebSocketChannel {
   Stream<dynamic> get stream => _in.stream;
 
   @override
-  Future<void> get ready => Future.value();
+  Future<void> get ready => offline ? Future.error(const SocketExceptionStub()) : Future.value();
 
   @override
   WebSocketSink get sink => _FakeSink(this);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class SocketExceptionStub implements Exception {
+  const SocketExceptionStub();
 }
 
 class _FakeSink implements WebSocketSink {
@@ -138,5 +146,31 @@ void main() {
     rt.connect();
     expect(opened, hasLength(2));
     expect(opened.last.uri.queryParameters['token'], 'b1');
+  });
+
+  testWidgets('a socket that comes back after failed tries asks screens to refetch again', (tester) async {
+    var offline = true;
+    final sockets = <_FakeChannel>[];
+    final types = <String>[];
+    final live = Realtime(
+      ApiClient(baseUrl: 'http://api.test', session: session, client: MockClient((_) async => http.Response('[]', 200))),
+      connector: (uri) => (sockets..add(_FakeChannel(uri, offline: offline))).last,
+    );
+    final sub = live.events.listen((e) => types.add(e['type'] as String));
+    live.connect();
+    await tester.pump();
+    expect(types, ['resync'], reason: 'the drop asks for a refetch (it fails while offline)');
+
+    offline = false;
+    await tester.pump(const Duration(seconds: 3)); // first backoff is 1-2 s
+    await tester.pump();
+    expect(sockets, hasLength(2));
+    expect(types, ['resync', 'resync'], reason: 'connected again: refetch now that it can work');
+
+    live.reconnect();
+    await tester.pump();
+    expect(types, ['resync', 'resync', 'resync'], reason: 'a resume asks once, not twice');
+    await sub.cancel();
+    live.dispose();
   });
 }
