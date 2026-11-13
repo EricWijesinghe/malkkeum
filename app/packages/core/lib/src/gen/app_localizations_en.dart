@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3527,6 +3528,11 @@ class TEn extends T {
   @override
   String oJobErrors(String count) {
     return '$count errors';
+  }
+
+  @override
+  String oJobDeadLetters(String count) {
+    return '$count texts dead-lettered';
   }
 
   @override

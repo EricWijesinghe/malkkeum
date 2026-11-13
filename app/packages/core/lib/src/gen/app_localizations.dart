@@ -6523,6 +6523,12 @@ abstract class T {
   /// **'오류 {count}회'**
   String oJobErrors(String count);
 
+  /// No description provided for @oJobDeadLetters.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 실패 {count}건 (재시도 끝)'**
+  String oJobDeadLetters(String count);
+
   /// No description provided for @oJob_settings_refresh.
   ///
   /// In ko, this message translates to:
