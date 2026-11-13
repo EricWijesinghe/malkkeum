@@ -365,7 +365,7 @@ const SHA256_BYTES: usize = 32;
 const TEAM_ID_LEN: usize = 10;
 
 /// Upper-cased `AA:BB:..` form, 32 hex pairs, as Android's assetlinks.json expects.
-fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
+pub(crate) fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
     values
         .into_iter()
         .map(|v| {
@@ -377,7 +377,7 @@ fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<Strin
         .collect()
 }
 
-fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
+pub(crate) fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
     match raw {
         Some(t) if t.len() == TEAM_ID_LEN && t.bytes().all(|b| b.is_ascii_alphanumeric()) => Ok(Some(t)),
         Some(t) => Err(ConfigError::Invalid("APPLE_TEAM_ID", format!("not a 10-character Team ID: {t}"))),
