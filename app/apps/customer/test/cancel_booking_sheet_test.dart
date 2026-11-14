@@ -102,7 +102,7 @@ void main() {
 
     expect(find.text(_t.err_cancellation_window_closed), findsOneWidget);
     final confirm = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, _t.cancelBooking),
+      find.widgetWithText(FilledButton, '취소하고 32,670원 환불받기'),
     );
     expect(confirm.onPressed, isNull);
   });
