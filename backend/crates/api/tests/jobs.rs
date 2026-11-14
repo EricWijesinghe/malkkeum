@@ -534,3 +534,75 @@ async fn every_job_reports_to_metrics_and_the_status_page(pool: PgPool) {
     assert!(listed.iter().all(|j| j["stalled"] == false), "a fresh process has no stalled job: {status}");
     assert!(jobs::stalled(Utc::now().timestamp() as f64).is_empty());
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_pro_cannot_accept_a_job_that_overlaps_one_already_accepted(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0401").await;
+    let (first, _) = book(&app, &c, 10, None).await;
+    let (second, _) = book(&app, &c, 10, None).await;
+    let (pro, _) = verified_pro(&app, &pool, "010-5000-0402").await;
+    accept(&app, first, &pro).await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{second}/accept"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::CONFLICT, "{b}");
+    assert_eq!(b["error"]["code"], "schedule_overlap");
+    let pro_of_second: Option<Uuid> = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1")
+        .bind(second)
+        .fetch_one(&pool)
+        .await
+        .expect("second booking");
+    assert!(pro_of_second.is_none(), "the rejected job stays open");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_pro_can_accept_jobs_at_different_hours_on_the_same_day(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0403").await;
+    let (first, _) = book(&app, &c, 10, None).await;
+    let (second, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET start_hour = 13 WHERE id = $1")
+        .bind(second)
+        .execute(&pool)
+        .await
+        .expect("afternoon");
+    let (pro, _) = verified_pro(&app, &pool, "010-5000-0404").await;
+    accept(&app, first, &pro).await;
+    accept(&app, second, &pro).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn team_assign_refuses_a_member_whose_job_overlaps(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0405").await;
+    let (first, _) = book(&app, &c, 10, None).await;
+    let (second, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET start_hour = 13 WHERE id = $1")
+        .bind(second)
+        .execute(&pool)
+        .await
+        .expect("afternoon");
+    let (pro, pro_id) = verified_pro(&app, &pool, "010-5000-0406").await;
+    accept(&app, first, &pro).await;
+    accept(&app, second, &pro).await;
+    let member: Uuid = sqlx::query_scalar(
+        "INSERT INTO team_members (pro_id, name, phone, role, invite_status) VALUES ($1, 'Member', '010-5000-0407', 'member', 'active') RETURNING id",
+    )
+    .bind(pro_id)
+    .fetch_one(&pool)
+    .await
+    .expect("team member");
+    let body = json!({ "member_id": member });
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{first}/assign"), Some(pro.as_str()), Some(body.clone())).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    sqlx::query("UPDATE bookings SET start_hour = 10 WHERE id = $1")
+        .bind(second)
+        .execute(&pool)
+        .await
+        .expect("move second into the first job's window");
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{second}/assign"), Some(pro.as_str()), Some(body)).await;
+    assert_eq!(st, StatusCode::CONFLICT, "{b}");
+    assert_eq!(b["error"]["code"], "schedule_overlap");
+}

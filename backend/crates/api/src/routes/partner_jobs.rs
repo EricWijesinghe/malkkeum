@@ -24,7 +24,7 @@ use domain::booking::BookingStatus;
 use domain::{Won, partner::payout};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::PgPool;
+use sqlx::{PgConnection, PgPool, Postgres, Transaction};
 use std::time::Duration;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -208,6 +208,37 @@ pub(crate) async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
     if has_phone { Ok(()) } else { Err(ApiError::Conflict("phone_required")) }
 }
 
+/// Minutes a booking holds its hour when no estimate is stored.
+const SLOT_MINUTES: u32 = 60;
+
+/// SQL: booking `o` clashes with the booking aliased `cand` (same visit date, live, windows overlap).
+/// A window runs from its start hour for its estimated minutes, one slot when there is no estimate.
+fn clash(cand: &str) -> String {
+    format!(
+        "o.id <> {cand}.id AND o.visit_date = {cand}.visit_date AND o.status >= 0
+           AND o.start_hour * 60 < {cand}.start_hour * 60 + COALESCE({cand}.minutes, {SLOT_MINUTES})
+           AND {cand}.start_hour * 60 < o.start_hour * 60 + COALESCE(o.minutes, {SLOT_MINUTES})"
+    )
+}
+
+/// Serializes schedule writes per pro, so two overlap checks cannot both pass before either commits.
+async fn lock_schedule(tx: &mut Transaction<'_, Postgres>, pro: Uuid) -> ApiResult<()> {
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))")
+        .bind(pro.to_string())
+        .execute(&mut **tx)
+        .await?;
+    Ok(())
+}
+
+/// Whether booking `job` clashes with a live booking whose `owner_col` (pro or assignee) is `owner`.
+async fn schedule_clash(conn: &mut PgConnection, job: Uuid, owner_col: &str, owner: Uuid) -> ApiResult<bool> {
+    let sql = format!(
+        "SELECT EXISTS (SELECT 1 FROM bookings c, bookings o WHERE c.id = $1 AND o.{owner_col} = $2 AND {})",
+        clash("c")
+    );
+    Ok(sqlx::query_scalar(&sql).bind(job).bind(owner).fetch_one(conn).await?)
+}
+
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
     crate::quality::check_offer_gate(&s.db, a.id).await?;
@@ -216,17 +247,24 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
     }
     // Claim and default assignee in one statement: no half-accepted jobs.
     let mut tx = s.db.begin().await?;
+    lock_schedule(&mut tx, a.id).await?;
     let (assigned, confirmed) = (BookingStatus::TeamAssigned.as_i16(), BookingStatus::Confirmed.as_i16());
+    let clash_sql = clash("bookings");
     let won: Option<(Uuid, String)> = sqlx::query_as(&format!(
         "UPDATE bookings SET pro_id = $2, status = {assigned}, accepted_at = now(), updated_at = now(),
            assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
-         WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = {confirmed} AND answers IS NULL RETURNING user_id, number"
+         WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = {confirmed} AND answers IS NULL
+           AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.pro_id = $2 AND {clash_sql})
+         RETURNING user_id, number"
     ))
     .bind(id)
     .bind(a.id)
     .fetch_optional(&mut *tx)
     .await?;
-    let (user, number) = won.ok_or(ApiError::Conflict("already_taken"))?;
+    let Some((user, number)) = won else {
+        let overlaps = schedule_clash(&mut *tx, id, "pro_id", a.id).await?;
+        return Err(ApiError::Conflict(if overlaps { "schedule_overlap" } else { "already_taken" }));
+    };
     // Queued with the claim. After the commit nothing can fail the request: a 5xx here would make the
     // app retry and get `already_taken` for a job it won.
     let notice = enqueue(
@@ -393,18 +431,26 @@ struct Assign {
 
 async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(x): Json<Assign>) -> ApiResult<Json<Value>> {
     let assigned = BookingStatus::TeamAssigned.as_i16();
+    let mut tx = s.db.begin().await?;
+    lock_schedule(&mut tx, a.id).await?;
+    let clash_sql = clash("bookings");
     let r = sqlx::query(&format!(
         "UPDATE bookings SET assignee_id = $3, updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = {assigned}
-           AND EXISTS (SELECT 1 FROM team_members m WHERE m.id = $3 AND m.pro_id = $2 AND m.invite_status <> 'removed')"
+           AND EXISTS (SELECT 1 FROM team_members m WHERE m.id = $3 AND m.pro_id = $2 AND m.invite_status <> 'removed')
+           AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.assignee_id = $3 AND {clash_sql})"
     ))
     .bind(id)
     .bind(a.id)
     .bind(x.member_id)
-    .execute(&s.db)
+    .execute(&mut *tx)
     .await?;
     if r.rows_affected() == 0 {
+        if schedule_clash(&mut *tx, id, "assignee_id", x.member_id).await? {
+            return Err(ApiError::Conflict("schedule_overlap"));
+        }
         return Err(ApiError::NotFound);
     }
+    tx.commit().await?;
     let phone: String = sqlx::query_scalar("SELECT phone FROM team_members WHERE id = $1")
         .bind(x.member_id)
         .fetch_one(&s.db)
