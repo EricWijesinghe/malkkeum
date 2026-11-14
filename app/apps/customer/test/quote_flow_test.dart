@@ -38,7 +38,20 @@ const _estimate = {
   'deposit_bps': 1000,
 };
 
-Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
+/// The quote screen, optionally under maintenance (new bookings paused).
+Widget _quoteScreen(AppState app, {bool maintenance = false}) {
+  final screen = QuoteFlowScreen(service: app.service('move_out')!);
+  if (!maintenance) return screen;
+  return RemoteConfigScope(
+    config: const RemoteConfig(maintenance: true),
+    child: screen,
+  );
+}
+
+Future<FakeApi> _pumpMoveOut(
+  WidgetTester tester, {
+  bool maintenance = false,
+}) async {
   setViewport(tester, phoneSize);
   final fake = FakeApi()
     ..reply('POST', '/quote/estimate', _estimate)
@@ -69,36 +82,209 @@ Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
     CustomerTestHost(
       env: env,
       app: app,
-      home: QuoteFlowScreen(service: app.service('move_out')!),
+      home: _quoteScreen(app, maintenance: maintenance),
     ),
   );
   await settle(tester);
   return fake;
 }
 
-String _chip(int n) => '${koT.service('move_out')} · $n/7';
+Future<FakeApi> _pumpGuestMoveOut(
+  WidgetTester tester, {
+  bool maintenance = false,
+}) async {
+  setViewport(tester, phoneSize);
+  final fake = FakeApi()
+    ..reply('POST', '/quote/estimate', _estimate)
+    ..reply('POST', '/auth/otp', {'dev_code': '123456'})
+    ..reply('POST', '/auth/verify', {
+      'access_token': 'access-guest',
+      'refresh_token': 'refresh-guest',
+      'role': 'customer',
+      'subject': 'user-guest',
+      'is_new': false,
+    })
+    ..reply('GET', '/slots', [slotJson(8), slotJson(13)]);
+  stockCustomerApi(fake);
+  final env = await TestEnv.create(fake: fake, signedIn: false);
+  final app = AppState(env.api, FakeRealtime(env.api));
+  await app.loadServices();
+  await tester.pumpWidget(
+    CustomerTestHost(
+      env: env,
+      app: app,
+      home: _quoteScreen(app, maintenance: maintenance),
+    ),
+  );
+  await settle(tester);
+  return fake;
+}
+
+String _chip(int n) => '${koT.service('move_out')} · $n/6';
+
+/// A guest answers steps 1-3 and lands on the address step (4/6).
+Future<void> _guestToAddress(WidgetTester tester) async {
+  await _tap(tester, find.text(koT.type_standard));
+  await _tap(tester, _next());
+  await _tap(tester, find.text(koT.building_commercial));
+  await _tap(tester, find.text(koT.dfLayoutTwo));
+  await _tap(tester, find.text(koT.dfHas).last);
+  await _tap(tester, _next());
+  await _tap(tester, find.text(koT.dfNone).last);
+  await _tap(tester, _next());
+  expect(find.text(_chip(4)), findsOneWidget);
+}
 
 void main() {
-  test('every cleaning type shows its own 3D art, never the fallback plate', () {
-    const types = [
-      'standard',
-      'same_day_move',
-      'some_luggage_left',
-      'normal_move_in',
-      'after_interior',
-      'lived_in_deep_clean',
-    ];
-    for (final c in types) {
-      expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
-    }
+  testWidgets(
+    'guest sees the quote price at the address step with no address, and booking asks for sign-in',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _tap(tester, find.text(koT.type_standard));
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.building_commercial));
+      await _tap(tester, find.text(koT.dfLayoutTwo));
+      await _tap(tester, find.text(koT.dfHas).last);
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.dfNone).last);
+      await _tap(tester, _next());
+
+      // 4/6 (address) for a guest: the price, no address list, and the only button is the sign-in one.
+      expect(find.text(_chip(4)), findsOneWidget);
+      expect(
+        find.text(koT.guestPriceLine(formatWon(401100, 'ko'))),
+        findsOneWidget,
+      );
+      expect(find.byType(AddressRadioList), findsNothing);
+      expect(find.text(koT.next), findsNothing);
+      final preview = fake.lastCall('POST', '/quote/estimate')!.json;
+      expect(
+        preview.containsKey('visit_date'),
+        isFalse,
+        reason: 'no slot, no peak surcharge',
+      );
+      expect(preview.containsKey('start_hour'), isFalse);
+
+      await _tap(tester, find.text(koT.guestBookWithQuote));
+      expect(find.text(koT.guestReasonQuote), findsOneWidget);
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+    },
+  );
+
+  testWidgets(
+    'a guest who changes an answer after the price shows gets a fresh estimate',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _guestToAddress(tester);
+      expect(fake.callsTo('POST', '/quote/estimate'), hasLength(1));
+
+      await tester.tap(find.byType(BackButton).first);
+      await settle(tester);
+      expect(find.text(_chip(3)), findsOneWidget);
+      await _tap(tester, find.text(koT.hgFloorHigh));
+      await _tap(tester, _next());
+
+      expect(find.text(_chip(4)), findsOneWidget);
+      expect(
+        fake.callsTo('POST', '/quote/estimate'),
+        hasLength(2),
+        reason:
+            'the price was stale: the answer changed before the address step',
+      );
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
+    'a guest who signs in from the address step keeps the answers and books nothing yet',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _guestToAddress(tester);
+      await _tap(tester, find.text(koT.guestBookWithQuote));
+      await tester.enterText(find.byType(TextField).last, '01012345678');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginSendCode));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '123456');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginVerify));
+      await settle(tester);
+
+      expect(find.byType(AddressRadioList), findsOneWidget);
+      expect(find.text(koT.guestBookWithQuote), findsNothing);
+      expect(
+        fake.callsTo('POST', '/quote/estimate'),
+        hasLength(1),
+        reason: 'answers kept, so the estimate is not asked again',
+      );
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+      await unmount(tester);
+    },
+  );
+
+  test(
+    'every cleaning type shows its own 3D art, never the fallback plate',
+    () {
+      const types = [
+        'standard',
+        'same_day_move',
+        'some_luggage_left',
+        'normal_move_in',
+        'after_interior',
+        'lived_in_deep_clean',
+      ];
+      for (final c in types) {
+        expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
+      }
+    },
+  );
+
+  testWidgets('maintenance holds the guest book-with-quote button', (
+    tester,
+  ) async {
+    final fake = await _pumpGuestMoveOut(tester, maintenance: true);
+    await _guestToAddress(tester);
+    final book = tester.widget<PrimaryButton>(
+      find.widgetWithText(PrimaryButton, koT.guestBookWithQuote),
+    );
+    expect(book.onPressed, isNull);
+    expect(fake.callsTo('POST', '/bookings'), isEmpty);
   });
 
   testWidgets(
-    'move-out quote: seven steps, AC add-on, Safe booking, review, then the request status opens',
+    'maintenance holds the review submit at 6/6 and sends no request',
+    (tester) async {
+      final fake = await _pumpMoveOut(tester, maintenance: true);
+      await _tap(tester, find.text(koT.type_standard));
+      await _tap(tester, find.text(koT.luggage_partly_unpacked));
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.building_commercial));
+      await _tap(tester, find.text(koT.dfLayoutTwo));
+      await _tap(tester, find.text(koT.dfHas).last);
+      await _tap(tester, _next());
+      await _tap(tester, find.bySemanticsLabel(koT.dfCountN('2')).first);
+      await _tap(tester, find.text(koT.dfNone).last);
+      await _tap(tester, find.text(koT.hgFloorHigh));
+      await _tap(tester, _next()); // 3/6 -> 4/6 address
+      await _tap(tester, _next()); // 4/6 -> 5/6 date
+      await _tap(tester, find.text(koT.dfPmVisit));
+      await _tap(tester, _next()); // 5/6 -> 6/6 review
+      expect(find.text(_chip(6)), findsOneWidget);
+      final submit = tester.widget<PrimaryButton>(
+        find.widgetWithText(PrimaryButton, koT.dfSubmitRequest),
+      );
+      expect(submit.onPressed, isNull);
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
+    'move-out quote: six steps, AC add-on, review, then the request status opens',
     (tester) async {
       final fake = await _pumpMoveOut(tester);
 
-      // 1/7: three cleaning circles, the 짐 상태 radio list (5), reviews from /public/proof.
+      // 1/6: three cleaning circles, the 짐 상태 radio list (5), reviews from /public/proof.
       expect(find.text(_chip(1)), findsOneWidget);
       expect(find.byType(CircleChoice), findsNWidgets(3));
       expect(find.text(koT.luggage_not_unpacked), findsOneWidget);
@@ -108,7 +294,7 @@ void main() {
       expect(find.text('정말 깨끗해졌어요'), findsOneWidget);
       await _tap(tester, _next());
 
-      // 2/7: four buildings, room structure, duplex marked until answered.
+      // 2/6: four buildings, room structure, duplex. Nothing is marked until "다음" is pressed (C-11).
       expect(find.text(_chip(2)), findsOneWidget);
       for (final b in [
         koT.building_apartment,
@@ -118,11 +304,7 @@ void main() {
       ]) {
         expect(find.text(b), findsOneWidget);
       }
-      expect(
-        find.text(koT.dfPleaseSelect),
-        findsOneWidget,
-        reason: 'only 복층 is marked from the start (design p15)',
-      );
+      expect(find.text(koT.dfPleaseSelect), findsNothing);
       // "다음" stays tappable but points at what is missing instead of advancing.
       await _tap(tester, _next());
       expect(find.text(_chip(2)), findsOneWidget);
@@ -137,19 +319,19 @@ void main() {
       expect(find.text(koT.dfPleaseSelect), findsNothing);
       await _tap(tester, _next());
 
-      // 3/7: counters 0-5, the elevator, the 3층 checkbox.
+      // 3/6: counters 0-5, the elevator, then the floor question (no elevator only).
       expect(find.text(_chip(3)), findsOneWidget);
       await _tap(tester, find.bySemanticsLabel(koT.dfCountN('2')).first);
       await _tap(tester, find.text(koT.dfNone).last);
-      await _tap(tester, find.text(koT.dfFloor3));
+      await _tap(tester, find.text(koT.hgFloorHigh));
       await _tap(tester, _next());
 
-      // 4/7: the address (preselected) as a radio list.
+      // 4/6: the address (preselected) as a radio list.
       expect(find.text(_chip(4)), findsOneWidget);
       expect(find.text(koT.dfAddressTitle), findsOneWidget);
       await _tap(tester, _next());
 
-      // 5/7: date, AM/PM arrival cards, AC add-on with catalog prices.
+      // 5/6: date, AM/PM arrival cards, AC add-on with catalog prices.
       expect(find.text(_chip(5)), findsOneWidget);
       expect(find.text(koT.dfAmVisit), findsOneWidget);
       expect(find.text(koT.dfPmVisit), findsOneWidget);
@@ -170,14 +352,8 @@ void main() {
       expect(find.text(koT.dfAcAddonAdded('1')), findsOneWidget);
       await _tap(tester, _next());
 
-      // 6/7: 다해 안심예약 with the server estimate and the deposit rate.
+      // 6/6: review sections with 변경, the server estimate with the deposit, notes.
       expect(find.text(_chip(6)), findsOneWidget);
-      expect(find.text(koT.dfSafeBooking), findsOneWidget);
-      expect(find.text(koT.dfDepositNote('10')), findsOneWidget);
-      await _tap(tester, _next());
-
-      // 7/7: review sections with 변경, payment info, notes.
-      expect(find.text(_chip(7)), findsOneWidget);
       expect(
         find.text(koT.dfChange, skipOffstage: false),
         findsNWidgets(3),
@@ -204,10 +380,10 @@ void main() {
       // 변경 on 공간 정보 goes back to step 3.
       await _tap(tester, find.text(koT.dfChange).last);
       expect(find.text(_chip(3)), findsOneWidget);
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < 3; i++) {
         await _tap(tester, _next());
       }
-      expect(find.text(_chip(7)), findsOneWidget);
+      expect(find.text(_chip(6)), findsOneWidget);
 
       final estimateCall = fake.lastCall('POST', '/quote/estimate')!.json;
       expect(estimateCall['ac_addons'], [
@@ -415,7 +591,11 @@ void main() {
     expect(find.text(formatWon(346500, 'ko')), findsOneWidget);
     expect(find.text(koT.dfAwaitingPay), findsOneWidget);
     expect(find.text(koT.dfPayInfoBody('10')), findsOneWidget);
-    await tester.scrollUntilVisible(find.text(koT.cancelBooking), 200, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(
+      find.text(koT.cancelBooking),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await _tap(tester, find.text(koT.cancelBooking));
     await _tap(tester, find.widgetWithText(FilledButton, koT.cancelBooking));
     expect(

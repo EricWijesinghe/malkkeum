@@ -1,8 +1,7 @@
-part of 'home.dart';
-
-/// Eight tiles, four to a row, in the catalogue's own order.
-class _ServiceGrid extends StatelessWidget {
-  const _ServiceGrid({required this.services});
+/// The group tiles in server order, four to a row (CR-2).
+class _GroupGrid extends StatelessWidget {
+  const _GroupGrid({required this.groups, required this.services});
+  final List<ServiceGroup> groups;
   final List<Service> services;
 
   @override
@@ -10,15 +9,19 @@ class _ServiceGrid extends StatelessWidget {
     if (services.isEmpty) return const Skeleton(height: 200);
     return Column(
       children: [
-        for (var row = 0; row < services.length; row += _gridColumns)
+        for (var row = 0; row < groups.length; row += _gridColumns)
           // Rows, not a fixed-ratio grid: a label that wraps makes its row taller instead of clipping.
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (var i = row; i < row + _gridColumns; i++)
                 Expanded(
-                  child: i < services.length
-                      ? _ServiceTile(service: services[i], index: i)
+                  child: i < groups.length
+                      ? _GroupTile(
+                          group: groups[i],
+                          index: i,
+                          services: services,
+                        )
                       : const SizedBox.shrink(),
                 ),
             ],
@@ -28,31 +31,46 @@ class _ServiceGrid extends StatelessWidget {
   }
 }
 
-class _ServiceTile extends StatelessWidget {
-  const _ServiceTile({required this.service, required this.index});
-  final Service service;
+/// N / HOT of a group: the server's badge, else the strongest badge among its member services.
+String? groupBadge(ServiceGroup group, List<Service> services) {
+  if (group.badge != null) return group.badge;
+  final badges = [
+    for (final s in services)
+      if (group.services.contains(s.code)) s.content['badge'],
+  ];
+  if (badges.contains('hot')) return 'HOT';
+  if (badges.contains('new')) return 'N';
+  return null;
+}
+
+class _GroupTile extends StatelessWidget {
+  const _GroupTile({
+    required this.group,
+    required this.index,
+    required this.services,
+  });
+  final ServiceGroup group;
   final int index;
+  final List<Service> services;
 
   @override
   Widget build(BuildContext context) {
     final t = context.t;
     final c = context.colors;
-    final code = service.code;
-    final name = t.service(code);
-    final badge = switch (service.content['badge']) {
-      'new' => t.dhBadgeNew,
-      'hot' => t.dhBadgeHot,
+    final name = group.titleFor(Localizations.localeOf(context).languageCode);
+    final badge = groupBadge(group, services);
+    final badgeLabel = switch (badge) {
+      'N' => t.dhBadgeNew,
+      'HOT' => t.dhBadgeHot,
       _ => null,
     };
-    void open() => Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => ServiceScreen(service: service)),
-    );
+    void open() => openServiceGroup(context, group, services);
     return StaggerIn(
       index: index,
       step: _tileStep,
       child: Semantics(
         button: true,
-        label: badge == null ? name : '$name, $badge',
+        label: badgeLabel == null ? name : '$name, $badgeLabel',
         onTap: open,
         excludeSemantics: true,
         child: Pressable(
@@ -77,22 +95,18 @@ class _ServiceTile extends StatelessWidget {
                         color: c.surfaceHigh,
                         borderRadius: BorderRadius.circular(Radii.tile),
                       ),
-                      // Flies the art into the service screen.
-                      child: Hero(
-                        tag: 'svc-$code',
-                        child: Icon3D(
-                          'svc_$code',
-                          size: _tileArt,
-                          idle: Icon3DIdle.float,
-                        ),
+                      child: Icon3D(
+                        group.icon,
+                        size: _tileArt,
+                        idle: Icon3DIdle.float,
                       ),
                     ),
-                    if (badge != null)
+                    if (badgeLabel != null)
                       PositionedDirectional(
                         top: -6,
                         end: -8,
                         child: _TileBadge(
-                          label: badge,
+                          label: badgeLabel,
                           after: _tileStep * index,
                         ),
                       ),

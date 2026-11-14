@@ -12,7 +12,12 @@ String pctOf(int bps) =>
 
 int _n(Json e, String k) => (e[k] as num? ?? 0).toInt();
 
-const _checkKickDelay = Duration(milliseconds: 260);
+/// District, road address and unit on one line (C-09).
+String _fullAddress(T t, Address address) => [
+  districtByCode(address.districtCode)?.name(t.lang),
+  address.roadAddress,
+  address.detail,
+].whereType<String>().where((s) => s.isNotEmpty).join(' ');
 
 /// Waits for the server estimate; shows a skeleton until it lands, then fades the figures in.
 class _EstimateView extends StatelessWidget {
@@ -41,143 +46,6 @@ class _EstimateView extends StatelessWidget {
       );
     },
   );
-}
-
-/// Step 6/7 (design p18): the "다해 안심예약" card with the server estimate and its benefits.
-class QuoteMethodPage extends StatelessWidget {
-  const QuoteMethodPage({
-    super.key,
-    required this.chip,
-    required this.estimate,
-  });
-  final String chip;
-  final Future<Json>? estimate;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    // Design p18 prints the brand name in teal: the label leads with it in every language.
-    final label = t.dfSafeBooking;
-    final space = label.indexOf(' ');
-    final brandWord = space < 0 ? '' : label.substring(0, space);
-    final afterBrand = label.substring(space < 0 ? 0 : space);
-    return ListView(
-      children: [
-        FlowTitle(t.dfQuoteMethodTitle, chip: chip),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-          child: _EstimateView(
-            estimate: estimate,
-            builder: (context, e) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(Space.lg),
-                  decoration: BoxDecoration(
-                    color: context.colors.surface,
-                    borderRadius: BorderRadius.circular(Radii.card),
-                    border: Border.all(color: context.colors.fresh, width: 2),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Wrap(
-                              spacing: Space.xs,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: brandWord,
-                                        style: TextStyle(
-                                          color: context.primary,
-                                        ),
-                                      ),
-                                      TextSpan(text: afterBrand),
-                                    ],
-                                  ),
-                                  style: context.text.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: Space.xs,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: context.colors.primaryTint,
-                                    borderRadius: BorderRadius.circular(
-                                      Radii.chip,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    t.dfRecommended,
-                                    style: context.text.labelSmall?.copyWith(
-                                      color: context.primary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // The chosen method's check answers with one kick.
-                          OneShot(
-                            onMount: true,
-                            delay: _checkKickDelay,
-                            builder: kick,
-                            child: Icon(
-                              Icons.check_circle_rounded,
-                              color: context.colors.fresh,
-                              size: 36,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: Space.sm),
-                      // Counts up from zero: the estimate was just worked out for these answers.
-                      CountIn(
-                        value: _n(e, 'total'),
-                        format: context.won,
-                        style: context.text.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        t.dfEstimateVat,
-                        style: context.text.bodySmall?.copyWith(
-                          color: context.colors.inkMuted,
-                        ),
-                      ),
-                      const SizedBox(height: Space.md),
-                      CheckList([
-                        t.dfBenefit1,
-                        t.dfBenefit2,
-                        t.dfBenefit3,
-                        t.dfBenefit4,
-                        t.dfBenefit5,
-                      ], filled: false),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: Space.md),
-                Text(
-                  t.dfDepositNote(pctOf(_n(e, 'deposit_bps'))),
-                  style: context.text.bodySmall?.copyWith(
-                    color: context.colors.inkMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 /// Step 7/7 (design p19): everything the customer chose, each section with "변경".
@@ -276,12 +144,8 @@ class QuoteReviewPage extends StatelessWidget {
             title: t.dfHomeInfo,
             trailing: _edit(context, 3),
             children: [
-              _field(
-                context,
-                t.dfSummaryAddress,
-                '${address.roadAddress} ${address.detail}',
-              ),
-              _field(context, t.dfName, address.label),
+              _field(context, t.dfSummaryAddress, _fullAddress(t, address)),
+              _field(context, t.hgAddressAlias, address.label),
             ],
           ),
         ),

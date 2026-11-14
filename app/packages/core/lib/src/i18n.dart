@@ -103,6 +103,9 @@ extension Labels on T {
     'toss_unverified' => err_toss_unverified,
     'invalid_cap' => err_invalid_cap,
     'invalid_capacity' => err_invalid_capacity,
+    'tighten_only' => err_tighten_only,
+    'threshold_order' => err_threshold_order,
+    'read_only_setting' => err_read_only_setting,
     _ => null,
   };
 

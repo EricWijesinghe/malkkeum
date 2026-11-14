@@ -55,6 +55,7 @@ services:
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
       HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
+      SETUP_CODE_AT: ${SETUP_CODE_AT:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}
       TRUSTED_PROXY: "1"
@@ -64,7 +65,8 @@ services:
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
       LOG_FORMAT: json
-    volumes: [uploads:/data/uploads]
+    # Job spool for the root agent (install.sh install_agent): the API writes jobs to inbox, reads status and out.
+    volumes: [uploads:/data/uploads, /opt/malkkeum/jobs/inbox:/jobs/inbox, /opt/malkkeum/jobs/status:/jobs/status:ro, /opt/malkkeum/jobs/out:/jobs/out:ro]
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
@@ -85,7 +87,7 @@ services:
       DOMAIN: ${DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:-}
       TLS_MODE: ${TLS_MODE:-}
-    volumes: [caddydata:/data, caddyconfig:/config]
+    volumes: [caddydata:/data, caddyconfig:/config, /opt/malkkeum/jobs/public:/srv/ops-progress:ro]
     healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
 
 volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }

@@ -212,6 +212,70 @@ abstract final class Icon3DRegistry {
     'c_staff': const Icon3DSpec(Icons.badge_rounded),
     'c_settings': const Icon3DSpec(Icons.settings_rounded),
     'c_monitor': const Icon3DSpec(Icons.monitor_heart_rounded),
+    // shortcut: no rendered art yet (Blender render pipeline), reuses the nearest existing art; render c_audit, c_privacy and c_renewals to replace
+    'c_audit': const Icon3DSpec(Icons.history_rounded, alias: 'c_monitor'),
+    'c_privacy': const Icon3DSpec(
+      Icons.privacy_tip_rounded,
+      alias: 'c_customers',
+    ),
+    'c_renewals': const Icon3DSpec(
+      Icons.event_repeat_rounded,
+      alias: 'c_bookings',
+    ),
+    // Icons cut from the client's design PDF (screenshots). Line icons are
+    // tintable white masks; colour art is full colour.
+    'circle_box': const Icon3DSpec(Icons.inventory_2_outlined),
+    'circle_truck': const Icon3DSpec(Icons.local_shipping_outlined),
+    'circle_truck_teal': const Icon3DSpec(Icons.local_shipping_outlined),
+    'circle_aircon': const Icon3DSpec(Icons.ac_unit_rounded),
+    'circle_chat': const Icon3DSpec(Icons.chat_bubble_outline_rounded),
+    'chat_back': const Icon3DSpec(Icons.arrow_back_rounded),
+    'chat_camera': const Icon3DSpec(Icons.photo_camera_outlined),
+    'chat_bubble': const Icon3DSpec(Icons.chat_bubble_outline_rounded),
+    'manager_avatar': const Icon3DSpec(Icons.person_rounded),
+    'account_avatar': const Icon3DSpec(Icons.person_outline_rounded),
+    'badge_kakao': const Icon3DSpec(Icons.chat_bubble_rounded, hue: _sun),
+    'coupon_percent': const Icon3DSpec(Icons.percent_rounded),
+    'coupon_ticket': const Icon3DSpec(Icons.confirmation_number_outlined),
+    'point_badge': const Icon3DSpec(Icons.paid_rounded),
+    'card_badge': const Icon3DSpec(Icons.credit_card_rounded),
+    'pay_kakao': const Icon3DSpec(Icons.payments_rounded, hue: _sun),
+    'pay_naver': const Icon3DSpec(Icons.payments_rounded, hue: _deep),
+    'pay_toss': const Icon3DSpec(Icons.payments_rounded, hue: _deep),
+    'news_box': const Icon3DSpec(Icons.inventory_2_outlined),
+    'news_aircon': const Icon3DSpec(Icons.ac_unit_rounded),
+    'news_bed': const Icon3DSpec(Icons.bed_outlined),
+    'news_truck': const Icon3DSpec(Icons.local_shipping_outlined),
+    'type_move_out': const Icon3DSpec(Icons.inventory_2_outlined),
+    'duplex_none': const Icon3DSpec(Icons.crop_portrait_rounded),
+    'menu_points': const Icon3DSpec(Icons.toll_rounded, hue: _sun),
+    'ui_check': const Icon3DSpec(Icons.check_rounded),
+    'ui_check_circle': const Icon3DSpec(Icons.check_circle_rounded),
+    'ui_close': const Icon3DSpec(Icons.close_rounded),
+    'ui_download': const Icon3DSpec(Icons.file_download_outlined),
+    'ui_image_placeholder': const Icon3DSpec(Icons.image_outlined, hue: _grey),
+    'ui_info': const Icon3DSpec(Icons.info_rounded, hue: _deep),
+    'ui_note': const Icon3DSpec(Icons.edit_note_rounded),
+    'ui_chevron_down': const Icon3DSpec(Icons.expand_more_rounded),
+    'brand_wordmark': const Icon3DSpec(Icons.home_rounded, hue: _deep),
+    'brand_confirm_check': const Icon3DSpec(Icons.check_rounded),
+    // Derived (not in the design PDF): drawn in the same colour language as the
+    // design art; the group tiles are composites of member art.
+    'svc_window': const Icon3DSpec(Icons.window_rounded),
+    'svc_whole_home': const Icon3DSpec(Icons.house_rounded),
+    'svc_disinfection': const Icon3DSpec(Icons.sanitizer_rounded),
+    // Home group tiles (CR-2): the group art is the member art of its own composite.
+    'svc_living': const Icon3DSpec(
+      Icons.cleaning_services_rounded,
+      alias: 'group_resident_clean',
+    ),
+    'svc_appliance': const Icon3DSpec(
+      Icons.ac_unit_rounded,
+      alias: 'group_appliance_clean',
+    ),
+    'group_resident_clean': const Icon3DSpec(Icons.cleaning_services_rounded),
+    'group_appliance_clean': const Icon3DSpec(Icons.ac_unit_rounded),
+    'group_disinfect_clean': const Icon3DSpec(Icons.sanitizer_rounded),
   };
 
   static Icon3DSpec of(String id) => specs[id] ?? unknown;

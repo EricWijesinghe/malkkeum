@@ -1,0 +1,24 @@
+# 작업 파일 검사표 (deploy/testdata/jobs). scripts/ci/agent-selftest.sh 가 읽어요.
+# 형식: 파일 기대결과. 기대결과는 "refuse" 또는 "run <실행된 명령 줄>" (dahae 에 넘어간 인자와 DAHAE_YES).
+# 자리표시자: @ID@ 지금 번호, @OLD@ 16분 전 번호, @FUTURE@ 1분 뒤 번호.
+ok-backup-now.job run backup YES=1
+ok-channel-beta.job run channel beta YES=1
+ok-schedule-mon.job run update-schedule mon@04:00 YES=1
+ok-progress-token.job run backup YES=1
+refuse-schedule-bad-time.job refuse
+refuse-stale-16min.job refuse
+refuse-future.job refuse
+refuse-unknown-key.job refuse
+refuse-unknown-kind.job refuse
+refuse-duplicate-key.job refuse
+refuse-short-token.job refuse
+refuse-equals-in-value.job refuse
+refuse-backslash.job refuse
+refuse-restart-service.job refuse
+refuse-skip-with-arg.job refuse
+ok-heartbeat-off.job run heartbeat off YES=1
+ok-offsite-list.job run restore-offsite YES=1
+refuse-logs-small.job refuse
+refuse-logs-no-token.job refuse
+refuse-update-tag-no-token.job refuse
+refuse-domain-localhost.job refuse

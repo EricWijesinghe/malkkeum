@@ -9,9 +9,11 @@ use crate::{
     error::{ApiError, ApiResult},
     image_meta,
     ratelimit::within_quota,
+    settings_registry,
     state::AppState,
     util::IMAGE_EXTS,
 };
+use axum::body::Bytes;
 use axum::{
     Json, Router,
     body::Body,
@@ -21,7 +23,6 @@ use axum::{
     response::{IntoResponse, Response},
     routing::{get, post},
 };
-use axum::body::Bytes;
 use chrono::Utc;
 use hmac::{Hmac, Mac};
 use rand::{RngCore, rngs::OsRng};
@@ -109,7 +110,17 @@ fn mime(name: &str) -> &'static str {
 
 /// JSON keys whose string values hold stored photo paths. Only these get signed, so free text that
 /// happens to contain a `/files/<name>` is never turned into a live link.
-const PHOTO_KEYS: [&str; 9] = ["url", "image_url", "logo_url", "photo", "photos", "before", "after", "before_photos", "after_photos"];
+const PHOTO_KEYS: [&str; 9] = [
+    "url",
+    "image_url",
+    "logo_url",
+    "photo",
+    "photos",
+    "before",
+    "after",
+    "before_photos",
+    "after_photos",
+];
 
 /// Replaces every stored `/files/<name>` (or base-prefixed legacy form) under a photo key with a signed URL.
 pub fn sign_urls(config: &Config, v: &mut Value) {
@@ -172,7 +183,10 @@ fn signed_for(config: &Config, stored: &str) -> Option<String> {
 /// Signs upload paths in every JSON response (runs after the handler, before the bytes leave).
 pub async fn sign_json(State(s): State<AppState>, req: Request, next: Next) -> Response {
     let res = next.run(req).await;
-    let is_json = res.headers().get(header::CONTENT_TYPE).is_some_and(|t| t.as_bytes().starts_with(b"application/json"));
+    let is_json = res
+        .headers()
+        .get(header::CONTENT_TYPE)
+        .is_some_and(|t| t.as_bytes().starts_with(b"application/json"));
     if !is_json {
         return res;
     }
@@ -256,7 +270,8 @@ async fn upload(State(s): State<AppState>, a: Auth, mut form: Multipart) -> ApiR
         .bind(a.id)
         .fetch_one(&mut *tx)
         .await?;
-    if !within_quota(used, s.config.upload_daily_quota) {
+    let quota = settings_registry::get(&s.db, &s.config, "upload_daily_quota").await?;
+    if !within_quota(used, quota) {
         return Err(ApiError::Quota("upload_quota"));
     }
     sqlx::query("INSERT INTO uploads (owner_role, owner_id, file, bytes) VALUES ($1, $2, $3, $4)")
