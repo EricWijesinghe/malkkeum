@@ -356,7 +356,7 @@ USAGE='사용법: dahae <명령>
   restore-offsite [이름] [--yes]  외부 백업 목록 / 내려받아 되돌리기
   load 파일.tar               미리 받아 둔 이미지 불러오기 (인터넷 없이 업데이트)
   heartbeat <https 주소>|off  외부 가동 확인 핑 주소 설정
-  host-approval enroll|status  서버 승인 코드 만들기 / 상태 (버전 올리기·되돌리기 승인에 써요)
+  host-approval enroll <번호>|status  서버 승인 코드 만들기 / 상태 (버전 올리기·되돌리기 승인에 써요)
   owner-reset                 서버 승인 코드 지우기 (확인 글자 입력 필요)
   applinks --android-sha256 지문[,지문] --apple-team-id 팀ID   앱 링크 설정
   demo load [--force] | demo clear   체험용 데이터
@@ -599,6 +599,21 @@ cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터�
 
 die_rolled_back() { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 3; } # 종료 코드 3: 이전 버전으로 되돌렸어요 (작업 실행기가 rolled_back 으로 남겨요)
 
+running_tag() { # running_tag : 방금 띄운 이미지의 버전 태그(vX.Y.Z[-접미사]). 이미지 표시를 읽어요 (모르면 빈 값)
+  local v
+  v=$(docker image inspect -f '{{index .Config.Labels "org.opencontainers.image.version"}}' "$NEW_API" 2>/dev/null || true)
+  case "$v" in v[0-9]*) ;; [0-9]*) v="v$v" ;; *) return 0 ;; esac
+  printf '%s' "$v" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]{1,40})?$' && printf '%s' "$v"
+  return 0
+}
+
+record_version() { # 실제로 띄운 버전을 설치 기록(host/version-history)에 남겨요. 서버 에이전트는 이 기록보다 낮은 버전 올리기를 막아요
+  local v
+  v=$(running_tag)
+  if [ -z "$v" ]; then warn "버전을 확인하지 못해서 설치 기록을 남기지 못했어요"; return 0; fi
+  grep -qxF "$v" host/version-history 2>/dev/null || printf '%s\n' "$v" >> host/version-history || warn "설치 기록을 남기지 못했어요"
+}
+
 cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔요 (로컬 이미지면 먼저 dahae load)
   local repo ver cur_api cur_web new_api
   printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
@@ -616,6 +631,7 @@ cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔
   set_images "$NEW_API" "$NEW_WEB"
   if wait_healthy; then
     env_set VERSION "$ver"
+    record_version
     prune_keep_tags
     ok "최신 버전($ver)으로 업데이트했어요"
     return 0
@@ -816,26 +832,31 @@ cmd_applinks() { # dahae applinks --android-sha256 지문[,지문] --apple-team-
   ok "앱 링크를 설정했어요: https://$(env_get DOMAIN)/.well-known/assetlinks.json"
 }
 
-cmd_host_approval() { # dahae host-approval enroll|status : 서버 승인 코드를 처음 만들어요 (버전 올리기·되돌리기를 승인할 때 인증 앱 코드를 써요)
-  local secret
+cmd_host_approval() { # dahae host-approval enroll <사장님 계정 번호> | status : 서버 승인 코드를 처음 만들어요 (버전 올리기·되돌리기를 승인할 때 인증 앱 코드를 써요)
+  local secret uri staff="${2:-}"
   case "${1:-status}" in
     enroll)
+      printf '%s' "$staff" | grep -Eq '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' \
+        || die "사장님 계정 번호(UUID)를 함께 주세요: dahae host-approval enroll <번호>"
       [ ! -e host/approval.key ] || die "이미 서버 승인 코드가 있어요. 다시 만들려면: dahae owner-reset"
       secret=$(head -c 20 /dev/urandom | base32 | tr -d '=\n')
+      printf '{"staff_id":"%s"}\n' "$staff" > host/owner.json || die "사장님 계정 번호를 저장하지 못했어요"
       (umask 077; printf '%s\n' "$secret" > host/approval.key) || die "서버 승인 코드를 저장하지 못했어요"
+      uri="otpauth://totp/Dahae:server?secret=$secret&issuer=Dahae&digits=6&period=30"
       ok "서버 승인 코드를 만들었어요. 인증 앱에 아래 주소나 키를 넣어 주세요 (6자리, 30초)."
-      printf '  키: %s\n  주소: otpauth://totp/Dahae:server?secret=%s&issuer=Dahae&digits=6&period=30\n' "$secret" "$secret" ;;
+      printf '  키: %s\n  주소: %s\n' "$secret" "$uri"
+      if command -v qrencode >/dev/null; then qrencode -t ANSIUTF8 "$uri"; fi ;;
     status)
-      if [ -f host/approval.key ]; then ok "서버 승인 코드가 있어요"; else warn "서버 승인 코드가 없어요 (dahae host-approval enroll)"; fi
+      if [ -f host/approval.key ]; then ok "서버 승인 코드가 있어요"; else warn "서버 승인 코드가 없어요 (dahae host-approval enroll <번호>)"; fi
       [ ! -e host/awaiting.job ] || warn "서버 승인을 기다리는 작업이 있어요" ;;
-    *) die "사용법: dahae host-approval enroll | status" ;;
+    *) die "사용법: dahae host-approval enroll <번호> | status" ;;
   esac
 }
 
-cmd_owner_reset() { # dahae owner-reset : 서버 승인 코드를 지워요. 기다리는 승인 작업도 취소돼요
+cmd_owner_reset() { # dahae owner-reset : 서버 승인 코드와 틀린 기록을 지워요. 기다리는 승인 작업도 취소돼요
   confirm "서버 승인 코드를 지울까요? 지운 뒤에는 새로 만들어 인증 앱에 다시 넣어야 해요. 기다리는 작업은 취소돼요." 초기화
-  rm -f -- host/approval.key host/approval.last-step host/awaiting.job host/awaiting.meta
-  ok "서버 승인 코드를 지웠어요. 새로 만들려면: dahae host-approval enroll"
+  rm -f -- host/approval.key host/approval.last-step host/approval.fails host/owner.json host/awaiting.job host/awaiting.meta
+  ok "서버 승인 코드를 지웠어요. 새로 만들려면: dahae host-approval enroll <번호>"
 }
 
 cmd_uninstall() { # dahae uninstall [--yes] | dahae uninstall --purge [--confirm 도메인]
