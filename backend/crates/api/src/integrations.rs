@@ -587,12 +587,12 @@ pub async fn load_section(db: &PgPool, key: &[u8; 32], section: Section) -> Resu
 }
 
 fn decode(key: &[u8; 32], enc: &str) -> Option<Map<String, Value>> {
-    let plain = crypto::decrypt(key, enc)?;
+    let plain = crypto::decrypt(key, crypto::aad::INTEGRATION, enc)?;
     serde_json::from_str::<Value>(&plain).ok()?.as_object().cloned()
 }
 
 pub async fn save_section(db: &PgPool, key: &[u8; 32], section: Section, values: &Map<String, Value>, by: uuid::Uuid) -> Result<(), sqlx::Error> {
-    let enc = crypto::encrypt(key, &Value::Object(values.clone()).to_string());
+    let enc = crypto::encrypt(key, crypto::aad::INTEGRATION, &Value::Object(values.clone()).to_string());
     sqlx::query(
         "INSERT INTO integration_settings (section, secret, updated_by) VALUES ($1, $2, $3)
          ON CONFLICT (section) DO UPDATE SET secret = EXCLUDED.secret, updated_by = EXCLUDED.updated_by, updated_at = now(), last_test = NULL",
