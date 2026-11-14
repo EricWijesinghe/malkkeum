@@ -42,4 +42,19 @@ void main() {
     expect(await unreadAlerts(env.api), 1);
     expect(await unreadAlerts((await TestEnv.create(fake: FakeApi())).api), 0, reason: '404 hides the dot');
   });
+
+  testWidgets('a guest sees only the public notices and never asks for alerts', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = FakeApi()
+      ..reply('GET', '/content', [
+        {'id': 'c1', 'kind': 'notice', 'title': {'ko': '추석 연휴 안내'}, 'body': {'text': {'ko': '...'}}},
+      ]);
+    final env = await TestEnv.create(fake: fake, signedIn: false);
+    await pumpCustomerScreen(tester, env, const NotificationsScreen());
+    await pumpUntilFound(tester, find.text('추석 연휴 안내'));
+
+    expect(find.text(koT.nAlerts), findsNothing, reason: 'no alerts tab for a guest');
+    expect(fake.callsTo('GET', '/me/notifications'), isEmpty);
+    await unmount(tester);
+  });
 }

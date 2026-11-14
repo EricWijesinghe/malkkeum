@@ -30,7 +30,7 @@ else
   ENVS=("MALKKEUM_IMAGES=$REG" "MALKKEUM_SKIP_SIGNATURE=1") # locally built images carry no release signature
 fi
 ENVS+=("MALKKEUM_DOMAIN=$DOMAIN" "MALKKEUM_EMAIL=ci@example.com" "MALKKEUM_VERSION=$TAG" "MALKKEUM_TLS=internal"
-  "MALKKEUM_HEALTH_WAIT=240")
+  "MALKKEUM_HEALTH_WAIT=240" "MALKKEUM_AGENT_FILE=$(pwd)/deploy/agent.sh")
 mkdir -p "$LOG"
 
 step() { printf '\n== %s  (%s)\n' "$*" "$(date +%T)"; }
@@ -150,7 +150,11 @@ expect "cron jobs installed" $SUDO test -f /etc/cron.d/malkkeum
 expect "log rotation installed" $SUDO test -f /etc/logrotate.d/dahae
 expect "API uses the non-superuser DB role" app_role_ok
 for s in db api web; do expect "$s container hardened (read-only, no capabilities)" hardened "$s"; done
-expect "cron reports a failed unattended update" $SUDO grep -q 'dahae update .*|| .*dahae alert update' /etc/cron.d/malkkeum
+expect "cron reports a failed unattended update" $SUDO grep -q 'dahae auto-update .*|| .*dahae alert update' /etc/cron.d/malkkeum
+expect "agent path unit is active" $SUDO systemctl is-active --quiet dahae-agent.path
+expect "agent timer is active" $SUDO systemctl is-active --quiet dahae-agent.timer
+expect "job status folder is root-owned" sh -c "[ \"\$($SUDO stat -c %u /opt/malkkeum/jobs/status)\" = 0 ]"
+expect "job inbox belongs to the API user" sh -c "[ \"\$($SUDO stat -c %u /opt/malkkeum/jobs/inbox)\" = 10001 ]"
 memcap; dc up -d >/dev/null 2>&1
 expect "healthy with 2 GB VPS memory limits" wait_until 180 api_healthy
 
@@ -212,6 +216,21 @@ expect "API still healthy" api_healthy
 expect "owner still set up" owner_is_set_up
 expect "banner does not show a dead setup code" sh -c "! grep -q '$CODE' '$LOG/install2.txt'"
 
+# a job file as the API writes it: owned by the API user (10001), UUIDv7 named by the current time
+queue_job() { # queue_job 종류 : 작업 파일을 inbox 에 넣고 번호를 돌려줘요
+  local ms id
+  ms=$(($(date +%s) * 1000)); id=$(printf '%012x' "$ms")
+  id="${id:0:8}-${id:8:4}-7000-8000-$(printf '%012d' "$RANDOM$RANDOM")"
+  printf 'id=%s\nkind=%s\n' "$id" "$1" > "$LOG/$id.job"
+  $SUDO install -o 10001 -g 10001 -m 600 "$LOG/$id.job" "/opt/malkkeum/jobs/inbox/$id.job" && echo "$id"
+}
+job_state_is() { $SUDO grep -q "\"state\":\"$2\"" "/opt/malkkeum/jobs/status/$1.json" 2>/dev/null; }
+
+step "5b. a queued job is run by the root agent"
+JOB=$(queue_job status-refresh)
+expect "agent runs the queued job" wait_until 90 job_state_is "$JOB" ok
+expect "agent wrote host.json" $SUDO test -s /opt/malkkeum/host/host.json
+
 step "6. a broken release rolls back by itself"
 docker tag "$REG/malkkeum-api:$TAG" "$REG/malkkeum-api:good"
 publish "$REG/malkkeum-api:good"
@@ -225,6 +244,9 @@ rc=${PIPESTATUS[0]}
 set -e
 expect "update exits non-zero" test "$rc" -ne 0
 expect "update says it rolled back" grep -q '이전 버전으로 되돌렸어요' "$LOG/update-broken.txt"
+expect "update exits 3 when it rolled back" test "$rc" -eq 3
+JOB=$(queue_job update)
+expect "a queued update that rolls back ends rolled_back" wait_until 900 job_state_is "$JOB" rolled_back
 expect "API healthy after rollback" api_healthy
 expect "running the pinned previous image" rolled_back_to_pinned
 expect "data survived the failed update" staff_count_is 1

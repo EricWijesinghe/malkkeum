@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
@@ -210,6 +211,8 @@ Future<void> openTopicChat(
   String topic, {
   String? bookingId,
 }) async {
+  if (!await requireSignIn(context, reason: SignInReason.chat)) return;
+  if (!context.mounted) return;
   try {
     final r =
         await context.api.post('/chat/threads', {

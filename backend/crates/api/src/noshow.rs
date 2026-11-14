@@ -2,7 +2,6 @@
 //! window starts opens a no-show case and alerts staff. Staff can move the job to another partner
 //! who matches the partner's prefs (same rule as the feed) and tell everyone.
 
-use tokio::task::JoinHandle;
 use crate::{
     error::{ApiError, ApiResult},
     realtime::{Recipient, notify},
@@ -11,6 +10,7 @@ use crate::{
         cases::{self, NewCase},
         partner_jobs::VISIBLE,
     },
+    settings_registry,
     state::AppState,
     util::{KST_TODAY, best_effort, today_kst},
 };
@@ -18,6 +18,7 @@ use domain::{booking::BookingStatus, coupon::COUPON_LIFETIME_DAYS};
 use serde_json::json;
 use sqlx::PgPool;
 use std::time::Duration;
+use tokio::task::JoinHandle;
 use uuid::Uuid;
 
 const PASS_EVERY: Duration = Duration::from_secs(5 * 60);
@@ -25,6 +26,7 @@ const PASS_EVERY: Duration = Duration::from_secs(5 * 60);
 /// Opens a no-show case for every assigned job past its grace period with no check-in.
 /// Returns how many cases were opened.
 pub async fn scan(s: &AppState) -> ApiResult<usize> {
+    let grace = settings_registry::get(&s.db, &s.config, "noshow_grace_minutes").await?;
     let due: Vec<(Uuid, String)> = sqlx::query_as(&format!(
         "SELECT b.id, b.number FROM bookings b
          WHERE b.status = 2 AND b.pro_id IS NOT NULL AND b.checked_in_at IS NULL AND b.visit_date <= {KST_TODAY}
@@ -32,7 +34,7 @@ pub async fn scan(s: &AppState) -> ApiResult<usize> {
                + make_interval(mins => $1) <= now()
            AND NOT EXISTS (SELECT 1 FROM cases c WHERE c.booking_id = b.id AND c.kind = 'no_show')"
     ))
-    .bind(s.config.noshow_grace_minutes as i32)
+    .bind(grace as i32)
     .fetch_all(&s.db)
     .await?;
     let mut opened = 0;
@@ -149,14 +151,41 @@ pub async fn reassign(s: &AppState, booking: Uuid, coupon: i64) -> ApiResult<Uui
         .await?;
     }
     if let Some(old) = b.pro_id {
-        best_effort("reassign: old partner", notify(s, Recipient::Pro(old), "job.updated", "배정이 변경됐어요", &b.number, json!({ "booking_id": booking })))
-            .await;
-    }
-    best_effort("reassign: new partner", notify(s, Recipient::Pro(next), "job.assigned", "새 현장이 배정됐어요", &b.number, json!({ "booking_id": booking })))
+        best_effort(
+            "reassign: old partner",
+            notify(
+                s,
+                Recipient::Pro(old),
+                "job.updated",
+                "배정이 변경됐어요",
+                &b.number,
+                json!({ "booking_id": booking }),
+            ),
+        )
         .await;
+    }
+    best_effort(
+        "reassign: new partner",
+        notify(
+            s,
+            Recipient::Pro(next),
+            "job.assigned",
+            "새 현장이 배정됐어요",
+            &b.number,
+            json!({ "booking_id": booking }),
+        ),
+    )
+    .await;
     best_effort(
         "reassign: customer",
-        notify(s, Recipient::User(b.user_id), "booking.status", "청소팀이 변경됐어요", "불편을 드려 죄송합니다. 다른 청소팀이 배정됐어요.", json!({ "booking_id": booking, "status": 2 })),
+        notify(
+            s,
+            Recipient::User(b.user_id),
+            "booking.status",
+            "청소팀이 변경됐어요",
+            "불편을 드려 죄송합니다. 다른 청소팀이 배정됐어요.",
+            json!({ "booking_id": booking, "status": 2 }),
+        ),
     )
     .await;
     s.hub.send(Recipient::Staff, "booking.updated", json!({ "booking_id": booking }));

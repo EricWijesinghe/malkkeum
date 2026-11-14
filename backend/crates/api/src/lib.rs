@@ -3,9 +3,9 @@
 
 pub mod acquisition;
 pub mod address;
+pub mod ai;
 pub mod analytics;
 pub mod app_links;
-pub mod ai;
 pub mod auth;
 pub mod backup;
 pub mod client_errors;
@@ -15,33 +15,40 @@ pub mod crypto;
 pub mod db;
 pub mod demo;
 pub mod error;
+pub mod host_jobs;
+pub mod host_status;
 pub mod i18n;
 pub mod idempotency;
+pub mod image_meta;
 pub mod integrations;
 pub mod jobs;
+pub mod keys_bundle;
 pub mod lifecycle;
-pub mod image_meta;
 pub mod lockout;
 pub mod marketing;
 pub mod metrics;
-pub mod openapi;
 pub mod noshow;
+pub mod openapi;
 pub mod ops;
 pub mod ops_alerts;
 pub mod payout;
 pub mod payout_sync;
 pub mod points;
 pub mod privacy;
-pub mod quality;
-pub mod retention;
-pub mod safety;
 pub mod providers;
+pub mod quality;
 pub mod ratelimit;
 pub mod realtime;
+mod realtime_heartbeat;
+pub mod realtime_ticket;
 pub mod reconciler;
+pub mod retention;
 pub mod routes;
+pub mod safety;
 pub mod seed;
 pub mod seo;
+pub mod settings_registry;
+pub mod sms_outbox;
 pub mod state;
 pub mod telemetry;
 pub mod totp;
@@ -86,7 +93,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     if moved > 0 {
         tracing::warn!(moved, "entry codes moved into encrypted storage");
     }
-    routes::setup::ensure_setup_code(&db, config.setup_code.as_deref()).await?;
+    routes::setup::ensure_setup_code(&db, config.setup_code.as_deref(), config.setup_code_at).await?;
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     if config.dev_mode {
         tracing::warn!("DEV_MODE on: fake SMS, payments and push");
@@ -135,7 +142,10 @@ fn spawn_settings_refresh(state: AppState) -> JoinHandle<()> {
         let mut tick = tokio::time::interval(SETTINGS_REFRESH);
         tick.tick().await;
         while lifecycle::next_tick(&mut tick, &mut stop).await {
-            let ok = routes::setup::reload(&state).await.inspect_err(|e| tracing::warn!(error = %e, "settings refresh failed")).is_ok();
+            let ok = routes::setup::reload(&state)
+                .await
+                .inspect_err(|e| tracing::warn!(error = %e, "settings refresh failed"))
+                .is_ok();
             metrics::job_pass("settings_refresh", ok);
         }
     })

@@ -33,6 +33,8 @@ void stockCustomerApi(
       ),
     ])
     ..reply('GET', '/me/notifications', const <Json>[])
+    ..reply('GET', '/me/points/ledger', const <Json>[])
+    ..reply('GET', '/checkouts', const <Json>[])
     ..reply('GET', '/feed', {'cards': feed ?? const <Json>[]})
     ..reply('GET', '/me/feed', {'cards': feed ?? const <Json>[]});
 }

@@ -294,6 +294,31 @@ async fn partner_lists_and_admin_payouts_page_by_cursor(db: PgPool) {
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn points_ledger_pages_newest_first_by_cursor(db: PgPool) {
+    let app = common::app(db.clone());
+    let c = customer(&app, &db, "010-5420-0001").await;
+    // Three earned lots, the newest last inserted; each lot is its own id, as `grant` writes them.
+    let mut ids = Vec::new();
+    for (i, minutes) in [30_i64, 20, 10].into_iter().enumerate() {
+        let id = Uuid::now_v7();
+        sqlx::query(
+            "INSERT INTO points_ledger (id, user_id, kind, amount, lot_id, expires_at, idempotency_key, created_at)
+             VALUES ($1, $2, 'earn', 100, $1, now() + interval '1 year', $3, now() - $4::interval)",
+        )
+        .bind(id)
+        .bind(c.user)
+        .bind(format!("test-earn-{i}"))
+        .bind(format!("{minutes} minutes"))
+        .execute(&db)
+        .await
+        .expect("ledger row");
+        ids.push(id.to_string());
+    }
+    ids.reverse();
+    assert_pages(&app, "/v1/me/points/ledger", &c.token, "id", &ids).await;
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn quotes_page_marks_only_the_rows_it_returned_as_seen(db: PgPool) {
     seed_catalog(&db).await;
     let app = common::app(db.clone());
