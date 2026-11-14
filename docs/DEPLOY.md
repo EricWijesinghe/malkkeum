@@ -127,8 +127,9 @@ process holds port 80 or 443.
   must not drop, rename or tighten anything the previous release still reads or writes. Remove the
   old shape one release later, once no rollback target uses it.
 - **Backups, RPO and RTO.** Every server takes a `pg_dump` daily at 03:30 KST and before every
-  update, kept 14 days on the server's own disk; the optional offsite copy (setup wizard, S3-compatible)
-  is AES-256-GCM encrypted. There is no WAL archiving, so the recovery point objective is **24 hours**
+  update, kept 14 days on the server's own disk. The disk copy is sealed in the same AES-256-GCM format
+  as the offsite copy (`*.sql.gz.enc`, opened again by `dahae restore`), so no plaintext dump stays on
+  the server. The optional offsite copy (setup wizard, S3-compatible) is sealed the same way. There is no WAL archiving, so the recovery point objective is **24 hours**
   (up to one day of bookings can be lost). Recovery time on a fresh VPS is about **1 hour**: run the
   installer, put the old `.env` back, `sudo dahae restore-offsite <name>`. Without offsite backups a
   lost disk is a total loss: configure them before launch.
@@ -136,7 +137,8 @@ process holds port 80 or 443.
   integration keys, payout accounts and the offsite backups), `JWT_SECRET` and the database passwords.
   Offsite backups cannot be decrypted without the same `DATA_KEY`. Right after install, copy `.env` to
   a password manager or an encrypted USB stick kept away from the server, and copy it again after any
-  key rotation. Rotating `DATA_KEY` makes older offsite backups unreadable with the new key, so keep the
+  key rotation. `sudo dahae keys-backup` makes a passphrase-locked copy and asks the owner to confirm it
+  is stored off the server; `dahae status` warns until that confirmation is recorded. Rotating `DATA_KEY` makes older offsite backups unreadable with the new key, so keep the
   old value until those backups expire.
 - Re-running the installer on an installed server is the same safe update (backup → new images →
   health check → rollback on failure); settings and data are kept.
