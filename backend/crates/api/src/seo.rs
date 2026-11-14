@@ -130,6 +130,11 @@ pub fn price_range(p: &Pricing) -> Option<(i64, i64)> {
             let hi = units.iter().map(|u| u.price.0).max()?;
             Some((lo, hi))
         }
+        Pricing::Counts { units, .. } => {
+            let lo = units.iter().map(|u| u.price.0).min()?;
+            let hi = units.iter().map(|u| u.price.0).max()?;
+            Some((lo, hi))
+        }
         Pricing::Quote => None,
     }
 }

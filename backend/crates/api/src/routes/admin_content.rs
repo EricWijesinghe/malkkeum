@@ -14,7 +14,11 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::{DateTime, Duration, Utc};
-use domain::{catalog::Pricing, coupon::COUPON_LIFETIME_DAYS, quote::QuoteFormula};
+use domain::{
+    catalog::{CountUnit, MAX_COUNT, Pricing},
+    coupon::COUPON_LIFETIME_DAYS,
+    quote::QuoteFormula,
+};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
@@ -79,8 +83,22 @@ fn valid_service(pricing: &Pricing, content: &Value) -> bool {
         Pricing::Fixed { price, minutes } => price.0 > 0 && *minutes > 0,
         Pricing::Unit { units } => !units.is_empty() && units.iter().all(|x| x.price.0 > 0 && x.minutes > 0),
         Pricing::Quote => true,
+        Pricing::Counts {
+            units,
+            max_each,
+            multi_discount_bps,
+        } => valid_counts(units, *max_each, *multi_discount_bps),
     };
     valid_prices && content.is_object()
+}
+
+/// Counted options: at least one, each priced and timed, a cap of 1..=20 per option and a discount of 0-50%.
+fn valid_counts(units: &[CountUnit], max_each: Option<u8>, multi_discount_bps: i64) -> bool {
+    let label_ok = |u: &CountUnit| (1..=40).contains(&u.label_key.len()) && u.label.as_deref().is_none_or(|l| l.chars().count() <= 40);
+    !units.is_empty()
+        && units.iter().all(|u| u.price.0 > 0 && u.minutes > 0 && label_ok(u))
+        && max_each.is_none_or(|m| (1..=MAX_COUNT).contains(&m))
+        && (0..=5000).contains(&multi_discount_bps)
 }
 
 /// Lowercase ASCII, starts with a letter, 2 to 40 characters: the code is the key bookings and prices refer to.
