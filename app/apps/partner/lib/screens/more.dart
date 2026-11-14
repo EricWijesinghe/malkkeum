@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
@@ -158,16 +159,14 @@ class MoreTab extends StatelessWidget {
                     onChanged: (m) => m == null ? null : deps.theme.set(m),
                   ),
                 ),
-                ListTile(
-                  title: Text(
-                    t.moreVersion('1.0.0'),
-                    style: context.text.bodySmall,
-                  ),
-                ),
+                const ListTile(title: _VersionLabel()),
               ],
             ),
           ),
-          TextButton(onPressed: deps.session.logout, child: Text(t.logout)),
+          TextButton(
+            onPressed: () => _confirmLogout(context),
+            child: Text(t.logout),
+          ),
           TextButton(
             onPressed: () => _deleteAccount(context),
             style: TextButton.styleFrom(foregroundColor: context.colors.danger),
@@ -176,6 +175,41 @@ class MoreTab extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Signs out only after a confirmation, so one stray tap does not end the session.
+  Future<void> _confirmLogout(BuildContext context) async {
+    final t = context.t;
+    final deps = Deps.read(context);
+    final ok = await showAppSheet<bool>(
+      context,
+      title: t.pLogoutConfirm,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          0,
+          Space.gutter,
+          Space.gutter,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(t.pLogoutBody, style: ctx.text.bodyMedium),
+            const SizedBox(height: Space.xl),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(t.logout),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(t.cancel),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok == true) await deps.session.logout();
   }
 
   /// Account deletion (App Store 5.1.1(v)). The server refuses while a job is assigned or a
@@ -308,6 +342,22 @@ class SettlementsScreen extends StatelessWidget {
   }
 }
 
+/// Installed build version from PackageInfo; blank if the platform does not answer.
+class _VersionLabel extends StatelessWidget {
+  const _VersionLabel();
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snap) => Text(
+        snap.hasData ? t.moreVersion(snap.data!.version) : '',
+        style: context.text.bodySmall,
+      ),
+    );
+  }
+}
+
 class ReviewsScreen extends StatelessWidget {
   const ReviewsScreen({super.key});
   @override
@@ -360,11 +410,6 @@ class ReviewsScreen extends StatelessWidget {
                             ReviewReportButton(
                               api: context.api,
                               bookingId: r['booking_id'] as String,
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  showToast(context, t.pReplyLater),
-                              child: Text(t.pReplyLater),
                             ),
                           ],
                         ),

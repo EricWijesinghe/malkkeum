@@ -7657,6 +7657,96 @@ abstract class T {
   /// **'고객 예상가'**
   String get pCustomerEstimate;
 
+  /// No description provided for @pHomeOneTwo.
+  ///
+  /// In ko, this message translates to:
+  /// **'원룸·투룸'**
+  String get pHomeOneTwo;
+
+  /// No description provided for @pHomeApartment.
+  ///
+  /// In ko, this message translates to:
+  /// **'아파트'**
+  String get pHomeApartment;
+
+  /// No description provided for @pHomeVillaHouse.
+  ///
+  /// In ko, this message translates to:
+  /// **'빌라·주택'**
+  String get pHomeVillaHouse;
+
+  /// No description provided for @pCountsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수량'**
+  String get pCountsTitle;
+
+  /// No description provided for @pUnitWall.
+  ///
+  /// In ko, this message translates to:
+  /// **'벽걸이'**
+  String get pUnitWall;
+
+  /// No description provided for @pUnitStand.
+  ///
+  /// In ko, this message translates to:
+  /// **'스탠드'**
+  String get pUnitStand;
+
+  /// No description provided for @pUnitTwoInOne.
+  ///
+  /// In ko, this message translates to:
+  /// **'2in1'**
+  String get pUnitTwoInOne;
+
+  /// No description provided for @pUnitCeiling.
+  ///
+  /// In ko, this message translates to:
+  /// **'천장형'**
+  String get pUnitCeiling;
+
+  /// No description provided for @pUnitSeat12.
+  ///
+  /// In ko, this message translates to:
+  /// **'1~2인용'**
+  String get pUnitSeat12;
+
+  /// No description provided for @pUnitSeat3.
+  ///
+  /// In ko, this message translates to:
+  /// **'3인용'**
+  String get pUnitSeat3;
+
+  /// No description provided for @pUnitSeat4Plus.
+  ///
+  /// In ko, this message translates to:
+  /// **'4인용 이상'**
+  String get pUnitSeat4Plus;
+
+  /// No description provided for @pUnitLShape.
+  ///
+  /// In ko, this message translates to:
+  /// **'L자'**
+  String get pUnitLShape;
+
+  /// No description provided for @pUnitMattress.
+  ///
+  /// In ko, this message translates to:
+  /// **'매트리스'**
+  String get pUnitMattress;
+
+  /// No description provided for @pLogoutConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그아웃할까요?'**
+  String get pLogoutConfirm;
+
+  /// No description provided for @pLogoutBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 로그인하면 일감과 일정을 그대로 볼 수 있어요.'**
+  String get pLogoutBody;
+
   /// No description provided for @pNew.
   ///
   /// In ko, this message translates to:

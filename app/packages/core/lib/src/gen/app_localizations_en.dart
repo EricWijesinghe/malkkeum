@@ -4129,6 +4129,51 @@ class TEn extends T {
   String get pCustomerEstimate => 'Customer estimate';
 
   @override
+  String get pHomeOneTwo => 'Studio / two-room';
+
+  @override
+  String get pHomeApartment => 'Apartment';
+
+  @override
+  String get pHomeVillaHouse => 'Villa / house';
+
+  @override
+  String get pCountsTitle => 'Quantities';
+
+  @override
+  String get pUnitWall => 'Wall-mounted';
+
+  @override
+  String get pUnitStand => 'Standing';
+
+  @override
+  String get pUnitTwoInOne => '2-in-1';
+
+  @override
+  String get pUnitCeiling => 'Ceiling';
+
+  @override
+  String get pUnitSeat12 => '1–2 seats';
+
+  @override
+  String get pUnitSeat3 => '3 seats';
+
+  @override
+  String get pUnitSeat4Plus => '4+ seats';
+
+  @override
+  String get pUnitLShape => 'L-shape';
+
+  @override
+  String get pUnitMattress => 'Mattress';
+
+  @override
+  String get pLogoutConfirm => 'Sign out?';
+
+  @override
+  String get pLogoutBody => 'Sign in again to see your jobs and schedule.';
+
+  @override
   String get pNew => 'NEW';
 
   @override
