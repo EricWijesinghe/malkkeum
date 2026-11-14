@@ -40,8 +40,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
     if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) {
       return;
     }
+    // Account data loads after sign-in: wait for the address list before picking the step.
+    final app = context.appRead;
+    await app.loadAddresses().catchError(reportError);
+    if (!mounted) return;
     final d = _draft.draft;
-    final addresses = context.appRead.addresses;
+    final addresses = app.addresses;
     final only = addresses.length == 1 ? addresses.first : null;
     final fits =
         only != null &&

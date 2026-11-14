@@ -1,4 +1,6 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/booking_flow.dart';
+import 'package:customer/screens/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
@@ -74,6 +76,32 @@ void main() {
       expect(find.text(koT.guestReasonBook), findsNothing, reason: 'sheet closes on success');
       expect(fake.callsTo('GET', '/me'), isNotEmpty, reason: 'account data loads after sign-in');
       expect(fake.callsTo('GET', '/bookings'), isNotEmpty, reason: 'the tabs reload with the account bookings');
+      await unmount(tester);
+    });
+
+    testWidgets('a guest who signs in on the service detail with one fitting address goes to the schedule', (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake, addresses: [addressJson(sizePyeong: 10)]);
+      _stockVerify(fake);
+      fake.reply('GET', '/slots', [slotJson(8)]);
+      final env = await TestEnv.create(fake: fake, signedIn: false);
+      // Addresses are not loaded yet: sign-in must fetch them before the step is chosen.
+      await pumpCustomerScreen(tester, env, ServiceScreen(service: Service.fromJson(serviceJson('studio'))));
+      await settle(tester);
+      await tester.tap(find.text(koT.dfBookNow));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '01012345678');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginSendCode));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '123456');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginVerify));
+      await settle(tester);
+
+      expect(find.byType(ScheduleScreen), findsOneWidget, reason: 'the one saved address is used');
+      expect(find.byType(AddressPickScreen), findsNothing);
       await unmount(tester);
     });
 
