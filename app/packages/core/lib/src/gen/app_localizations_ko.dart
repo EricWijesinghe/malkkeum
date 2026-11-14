@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -427,6 +428,56 @@ class TKo extends T {
 
   @override
   String get cSetupHostingProvider => '호스팅 서비스 제공자';
+
+  @override
+  String cancelRefundCta(String amount) {
+    return '취소하고 $amount 환불받기';
+  }
+
+  @override
+  String get cancelNoRefund => '환불되는 금액이 없어요';
+
+  @override
+  String cancelTierLine(String days, String percent) {
+    return '방문 $days일 전 취소 · 취소 수수료 $percent%';
+  }
+
+  @override
+  String cancelFeeLine(String fee) {
+    return '취소 수수료 $fee';
+  }
+
+  @override
+  String cancelRefundLine(String refund) {
+    return '환불 금액 $refund';
+  }
+
+  @override
+  String get cancelMethodLine => '결제하신 수단으로 돌려드려요';
+
+  @override
+  String get cancelPolicyLink => '취소·환불 기준 보기';
+
+  @override
+  String get cancelPolicyTitle => '취소·환불 기준';
+
+  @override
+  String get cancelReasonTitle => '취소 이유 (선택)';
+
+  @override
+  String get cancelReasonSchedule => '일정이 맞지 않아요';
+
+  @override
+  String get cancelReasonProvider => '다른 곳으로 정했어요';
+
+  @override
+  String get cancelReasonPrice => '가격이 부담돼요';
+
+  @override
+  String get cancelReasonOther => '기타';
+
+  @override
+  String get bookingsEmptyDay => '이 날은 예약이 없어요';
 
   @override
   String get cgTabPeak => '피크 요금';

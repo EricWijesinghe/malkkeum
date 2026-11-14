@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -441,6 +442,56 @@ class TEn extends T {
 
   @override
   String get cSetupHostingProvider => 'Hosting provider';
+
+  @override
+  String cancelRefundCta(String amount) {
+    return 'Cancel and get $amount back';
+  }
+
+  @override
+  String get cancelNoRefund => 'Nothing is refunded for this cancellation';
+
+  @override
+  String cancelTierLine(String days, String percent) {
+    return 'Cancelling $days days before the visit · $percent% fee';
+  }
+
+  @override
+  String cancelFeeLine(String fee) {
+    return 'Cancellation fee $fee';
+  }
+
+  @override
+  String cancelRefundLine(String refund) {
+    return 'Refund $refund';
+  }
+
+  @override
+  String get cancelMethodLine => 'Refunded to the payment method you used';
+
+  @override
+  String get cancelPolicyLink => 'View the cancellation and refund policy';
+
+  @override
+  String get cancelPolicyTitle => 'Cancellation and refund policy';
+
+  @override
+  String get cancelReasonTitle => 'Reason for cancelling (optional)';
+
+  @override
+  String get cancelReasonSchedule => 'The date does not work';
+
+  @override
+  String get cancelReasonProvider => 'I chose another provider';
+
+  @override
+  String get cancelReasonPrice => 'The price is too high';
+
+  @override
+  String get cancelReasonOther => 'Other';
+
+  @override
+  String get bookingsEmptyDay => 'No bookings on this day';
 
   @override
   String get cgTabPeak => 'Peak surcharges';

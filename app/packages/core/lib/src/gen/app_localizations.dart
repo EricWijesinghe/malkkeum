@@ -919,6 +919,90 @@ abstract class T {
   /// **'호스팅 서비스 제공자'**
   String get cSetupHostingProvider;
 
+  /// No description provided for @cancelRefundCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소하고 {amount} 환불받기'**
+  String cancelRefundCta(String amount);
+
+  /// No description provided for @cancelNoRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불되는 금액이 없어요'**
+  String get cancelNoRefund;
+
+  /// No description provided for @cancelTierLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 {days}일 전 취소 · 취소 수수료 {percent}%'**
+  String cancelTierLine(String days, String percent);
+
+  /// No description provided for @cancelFeeLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소 수수료 {fee}'**
+  String cancelFeeLine(String fee);
+
+  /// No description provided for @cancelRefundLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'환불 금액 {refund}'**
+  String cancelRefundLine(String refund);
+
+  /// No description provided for @cancelMethodLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제하신 수단으로 돌려드려요'**
+  String get cancelMethodLine;
+
+  /// No description provided for @cancelPolicyLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소·환불 기준 보기'**
+  String get cancelPolicyLink;
+
+  /// No description provided for @cancelPolicyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소·환불 기준'**
+  String get cancelPolicyTitle;
+
+  /// No description provided for @cancelReasonTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소 이유 (선택)'**
+  String get cancelReasonTitle;
+
+  /// No description provided for @cancelReasonSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정이 맞지 않아요'**
+  String get cancelReasonSchedule;
+
+  /// No description provided for @cancelReasonProvider.
+  ///
+  /// In ko, this message translates to:
+  /// **'다른 곳으로 정했어요'**
+  String get cancelReasonProvider;
+
+  /// No description provided for @cancelReasonPrice.
+  ///
+  /// In ko, this message translates to:
+  /// **'가격이 부담돼요'**
+  String get cancelReasonPrice;
+
+  /// No description provided for @cancelReasonOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타'**
+  String get cancelReasonOther;
+
+  /// No description provided for @bookingsEmptyDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 날은 예약이 없어요'**
+  String get bookingsEmptyDay;
+
   /// No description provided for @cgTabPeak.
   ///
   /// In ko, this message translates to:
