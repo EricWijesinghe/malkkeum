@@ -9,10 +9,11 @@ targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
 # An accepted advisory goes in `ignore` with its id and a reason, never silently.
 yanked = "deny"
 ignore = [
-  # Both come from jsonwebtoken 10 (feature rust_crypto). The fix is jsonwebtoken 11 (rsa 0.10,
-  # elliptic-curve 0.14), an API change in backend/crates/api: drop these two lines with that upgrade.
-  { id = "RUSTSEC-2023-0071", reason = "rsa 0.9 Marvin attack, no fixed 0.9.x: the API decrypts nothing with RSA; it only signs/verifies JWTs locally, no remote timing oracle" },
-  { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5 timing (p256/p384 via jsonwebtoken): ES256 client-secret signing runs server-side with no attacker-timed oracle" },
+  # Both come from jsonwebtoken 11.1 with its default-off rust_crypto backend (rsa 0.9.x, p256/p384 on crypto-bigint 0.5).
+  # jsonwebtoken 11.1 did not move off them, so the upgrade did not resolve these. Drop the lines only when the crate
+  # uses a backend without them (e.g. aws_lc_rs) or a jsonwebtoken release depends on rsa >=0.10 / crypto-bigint >=0.7.6.
+  { id = "RUSTSEC-2023-0071", reason = "rsa 0.9 Marvin attack, no fixed 0.9.x: still pulled by jsonwebtoken 11.1 (rust_crypto); the API decrypts nothing with RSA, it only verifies RS256 JWKs and signs FCM/Apple assertions locally, no attacker-timed oracle" },
+  { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5 timing (p256/p384 via jsonwebtoken 11.1 rust_crypto): ES256 client-secret signing runs server-side with no attacker-timed oracle" },
 ]
 
 [licenses]

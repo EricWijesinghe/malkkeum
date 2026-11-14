@@ -37,6 +37,7 @@ pub fn test_config() -> Config {
         bind: "127.0.0.1:0".parse().expect("bind addr"),
         jwt_secret: SECRET.to_vec(),
         jwt_previous_secret: None,
+        otp_pepper: None,
         data_key: [7u8; 32],
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
         public_base_url: BASE_URL.into(),
@@ -45,6 +46,7 @@ pub fn test_config() -> Config {
         allowed_origins: Vec::new(),
         seed_admin: None,
         setup_code: None,
+        setup_code_at: None,
         kakao_app_id: None,
         kakao_admin_key: None,
         google_client_ids: Vec::new(),
@@ -223,12 +225,13 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "address: {addr}");
-    let card: Uuid =
-        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id")
-            .bind(user)
-            .fetch_one(db)
-            .await
-            .expect("payment method");
+    let card: Uuid = sqlx::query_scalar(
+        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id",
+    )
+    .bind(user)
+    .fetch_one(db)
+    .await
+    .expect("payment method");
     Customer {
         token,
         user,

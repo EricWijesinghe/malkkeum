@@ -213,6 +213,8 @@ mod tests {
     const RSA_OTHER_PEM: &str = include_str!("testdata/test_only_rsa_other.pem");
     const RSA_N: &str = include_str!("testdata/test_only_rsa.n");
     const EC_P8: &str = include_str!("testdata/test_only_ec.p8");
+    const EC_PUB: &str = include_str!("testdata/test_only_ec.pub.pem");
+    const EC_OTHER_PUB: &str = include_str!("testdata/test_only_ec_other.pub.pem");
     const NOW: i64 = 1_800_000_000;
     const APP: &str = "com.example.customer";
 
@@ -323,6 +325,23 @@ mod tests {
             format!("{:?}", key()).contains("KEY1234567") && !format!("{:?}", key()).contains("PRIVATE"),
             "Debug hides the key"
         );
+    }
+
+    #[test]
+    fn client_secret_signature_verifies_only_with_its_public_key() {
+        let secret = client_secret(&key(), APP, NOW).expect("sign");
+        let mut v = Validation::new(Algorithm::ES256);
+        v.validate_exp = false;
+        v.validate_aud = false;
+        let public = DecodingKey::from_ec_pem(EC_PUB.as_bytes()).expect("ec public pem");
+        assert!(decode::<Value>(&secret, &public, &v).is_ok(), "ES256 client secret verifies");
+        let other = DecodingKey::from_ec_pem(EC_OTHER_PUB.as_bytes()).expect("other ec public pem");
+        assert!(decode::<Value>(&secret, &other, &v).is_err(), "wrong public key is refused");
+    }
+
+    #[test]
+    fn non_ec_private_key_is_refused_at_configuration() {
+        assert_eq!(AppleSignInKey::new("TEAM123456", "KEY1234567", RSA_PEM), Err("invalid_private_key"));
     }
 
     type Calls = Arc<Mutex<Vec<HashMap<String, String>>>>;

@@ -79,7 +79,10 @@ async fn request(State(s): State<AppState>, Customer(a): Customer, Path(checkout
     if ck.status != "pending" && ck.status != "awaiting_deposit" {
         return Err(ApiError::Conflict("checkout_not_open"));
     }
-    let method: String = sqlx::query_scalar("SELECT method FROM checkouts WHERE id = $1").bind(checkout).fetch_one(&s.db).await?;
+    let method: String = sqlx::query_scalar("SELECT method FROM checkouts WHERE id = $1")
+        .bind(checkout)
+        .fetch_one(&s.db)
+        .await?;
     if !cash_eligible(&method) {
         return Err(ApiError::BadRequest("cash_receipt_method"));
     }
@@ -88,10 +91,13 @@ async fn request(State(s): State<AppState>, Customer(a): Customer, Path(checkout
         "CORPORATE" => ("CORPORATE", "BUSINESS", rules::normalize_business_number(&b.identity)?),
         _ => return Err(ApiError::BadRequest("cash_receipt_purpose")),
     };
-    let enc = crypto::encrypt(&s.config.data_key, &identity);
+    let enc = crypto::encrypt(&s.config.data_key, crypto::aad::RECEIPT_IDENTITY, &identity);
     let last4 = &identity[identity.len() - 4..];
     let mut tx = s.db.begin().await?;
-    sqlx::query("DELETE FROM cash_receipts WHERE checkout_id = $1 AND state = 'pending'").bind(checkout).execute(&mut *tx).await?;
+    sqlx::query("DELETE FROM cash_receipts WHERE checkout_id = $1 AND state = 'pending'")
+        .bind(checkout)
+        .execute(&mut *tx)
+        .await?;
     let id: Uuid = sqlx::query_scalar(
         "INSERT INTO cash_receipts (checkout_id, purpose, identity_type, identity_enc, identity_last4, state)
          VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING id",
@@ -153,7 +159,7 @@ async fn issue_job(s: &AppState, id: Uuid) -> ApiResult<()> {
 async fn attempt(s: &AppState, p: &PortOne, job: &Job) -> Result<Issued, String> {
     let channel = p.channel_keys.get(&job.method).ok_or("no PortOne channel key for this payment method")?;
     let payment_id = job.provider_tx_id.as_deref().ok_or("payment has no provider transaction id")?;
-    let identity = crypto::decrypt(&s.config.data_key, &job.identity_enc).ok_or("cannot decrypt receipt identity")?;
+    let identity = crypto::decrypt(&s.config.data_key, crypto::aad::RECEIPT_IDENTITY, &job.identity_enc).ok_or("cannot decrypt receipt identity")?;
     let body = pcr::issue_body(p.store_id.clone(), payment_id, channel, job.purpose == "CORPORATE", &identity, job.amount);
     let secret = p.api_secret.as_deref().unwrap_or_default();
     pcr::issue(s.providers.http(), pcr::api_base(), secret, &body).await.map_err(|e| e.to_string())
@@ -187,7 +193,11 @@ pub async fn on_settled(s: &AppState, checkout: Uuid, provider_tx_id: &str) {
 /// the refund already happened and the owner resolves it from the console.
 pub async fn on_full_refund(s: &AppState, payment: Uuid, provider_tx_id: &str) {
     let Ok(p) = live(s) else { return };
-    let issued: Option<(Uuid,)> = match sqlx::query_as("SELECT id FROM cash_receipts WHERE payment_id = $1 AND state = 'issued'").bind(payment).fetch_optional(&s.db).await {
+    let issued: Option<(Uuid,)> = match sqlx::query_as("SELECT id FROM cash_receipts WHERE payment_id = $1 AND state = 'issued'")
+        .bind(payment)
+        .fetch_optional(&s.db)
+        .await
+    {
         Ok(v) => v,
         Err(e) => {
             tracing::error!(error = %e, payment = %payment, "cash receipt lookup failed");

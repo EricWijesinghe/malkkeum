@@ -8,6 +8,44 @@ from the release branches; no tags existed for them.
 
 ## [Unreleased]
 
+### Added
+- Server job runner (`deploy/agent.sh`, root) is installed and started by the installer on new installs and updates (systemd path, service and timer units). It runs schedule, update, update-skip, channel, restart and status jobs; a stable update waits 24 hours after a new digest is first seen; live progress is served read-only at `/ops-progress/<token>` for 10 minutes after a job ends; `dahae setup-code` expires after 2 hours (`--renew` gives a new code); `MALKKEUM_ANSWERS` installs without questions.
+- Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
+- Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
+  it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
+- Owner settings registry: business limits, marketing cap, points cap, quality window and ops alert thresholds are read from the database (env is the seed), validated, and audited on every change.
+- Owner console: app link values (Android signing fingerprints, Apple Team ID) can be saved and checked under the setup screen's "앱 링크" card. Saved values override the `ANDROID_CERT_SHA256` and `APPLE_TEAM_ID` server settings, which remain the fallback.
+- Console "알림 문구" screen: edit the push and inbox text of each customer and cleaning-team notification in Korean and English, with a preview and restore to the built-in text. Only the placeholders listed for each notification (booking number, business name) can be used.
+- Console: 탈퇴·개인정보 요청 screen. Staff find a customer by phone, download the customer's data as CSV, and see every request's outcome. Deletion is admin-only and needs the phone typed again; each request is recorded (migration 0157).
+- Console setup: a PortOne cash receipt switch (off by default, saved value beats the env default). Changing Toss payouts needs the owner's TOTP in the same request. Services that need a developer's first-time help are badged, and guide cards reserve screenshot slots.
+- Console catalogue: add a new service (code, name, fixed price or quote), archive one by switching it off, edit peak-hour surcharges and quality thresholds, edit a subscription's cadence, day and start time, and load or remove sample data (removal needs the owner's authenticator code).
+- Customer app: guests see how a booking works on the Bookings tab and the FAQ and terms on the Chat tab (chat still asks for sign-in). The welcome offer and the referral amount show before sign-in, and a quote in progress is kept on the device across restarts.
+- Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
+
+### Changed
+- Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
+- Customer app: guests see the quote price before the address step without signing up; sign-in is asked only when they book, and the service detail shows the price-first line.
+- Customer app: guests get the sign-in sheet with a reason for each protected action (chat, account, booking), member-only menu rows show a sign-in hint, the notifications screen shows only notices, and a nameless new account opens the name step after signing in from the sheet.
+- Release hardening: release tags must point into master, the image and delivery jobs run in protected
+  environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
+  ed25519-signed installer manifest and a cloud-init install page are published with each release.
+  Not done yet: a dispatch-driven release that replaces `scripts/release/build-all.ps1` and its
+  `PASSWORD.txt`, and an Android-signing environment. Both still run locally.
+- Customer and partner apps take the business colour and logo from the business profile, keep the last good copy for offline start, and the console warns when white button text would be hard to read on the chosen colour.
+- Server installer: stricter domain and email checks, and settings values can no longer split `.env` lines.
+  A root job runner (`deploy/agent.sh`) checks queued server jobs before running a fixed command.
+- API JWT library upgraded from jsonwebtoken 10.3 to 11.1; token formats, verification rules and the Apple client secret are unchanged.
+- Customer bookings, notifications, wallet points history and payment history, and partner quotes
+  page through their lists on scroll (with a bottom loader and retry on error) instead of showing
+  only the first 50 rows; the points ledger has a paged `GET /me/points/ledger` endpoint.
+- SMS and AlimTalk to customers, partners and reminders now go through the notification outbox: a provider outage is retried with backoff, and a text that fails 8 times is dead-lettered, counted on the console's outbox card and raised as an owner alert. OTP codes stay inline with one quick retry.
+- Website seller details (상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 연락처, 호스팅 제공자, 개인정보 보호책임자) are written into the HTML by the server (Caddy includes `/v1/public/seller-info`), so they are visible without JavaScript; the JavaScript fill and the `build_legal.py --brand` bake are removed.
+- 정산 내역 CSV (`/admin/finance/export/settlements`) ends with a 합계 row; KST month edges and totals covered by tests.
+- Hardening: new encrypted values carry a version prefix and are bound to their column (old values still read); login codes use `OTP_PEPPER` when set; no-show cases are unique per booking; reviews reaching the report threshold are queued for staff, not hidden; reading partner quotes no longer changes them (a timer closes stale ones); setup code kept out of the structured log.
+
+### Security
+- Live-event sockets open with a 30-second, single-use ticket from `POST /v1/realtime/ticket` instead of the access token in the URL, so the long-lived token no longer reaches proxy and access logs. The old `?token=` form still works for one release. Silent sockets are pinged every 25 s and closed after 60 s without an answer.
+
 ## [1.4.0] - 2026-11-13
 
 ### Added
