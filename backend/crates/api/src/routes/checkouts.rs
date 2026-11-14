@@ -7,8 +7,8 @@ use super::checkout_policy::{Action, Binding, Recovery, bind, decide, dev_lookup
 use super::checkout_recon::{admin_list, list};
 use super::{
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, check_seen_quote, deposit_due, insert_paid, lock_slot, prepare, price_for, record_payment,
-        SeenQuote, take_balance, take_deposit,
+        BookingBody, Prepared, SeenQuote, after_booking_created, after_deposit, balance_due, check_seen_quote, deposit_due, insert_paid, lock_slot, prepare,
+        price_for, record_payment, take_balance, take_deposit,
     },
     bookings::{BookingRow, load_booking, owned},
     catalog::load_service,
@@ -57,7 +57,10 @@ pub fn admin_routes() -> Router<AppState> {
 #[derive(Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 enum CheckoutRequest {
-    Booking { booking: BookingBody, method: String },
+    Booking {
+        booking: BookingBody,
+        method: String,
+    },
     /// `expected_*`: the quote card the customer tapped (see `check_seen_quote`).
     Deposit {
         booking_id: Uuid,
@@ -66,7 +69,10 @@ enum CheckoutRequest {
         expected_final_price: Option<i64>,
         expected_quote_message_id: Option<Uuid>,
     },
-    Balance { booking_id: Uuid, method: String },
+    Balance {
+        booking_id: Uuid,
+        method: String,
+    },
 }
 
 impl CheckoutRequest {
@@ -188,6 +194,9 @@ pub fn can_settle(status: &str) -> bool {
 async fn create(State(s): State<AppState>, Customer(a): Customer, Json(body): Json<CreateBody>) -> ApiResult<Json<CheckoutIntent>> {
     let CreateBody { req, points } = body;
     ensure_enabled(&s.db, req.method()).await?;
+    if matches!(req, CheckoutRequest::Booking { .. }) && super::config::maintenance_on(&s.db, &s.config).await? {
+        return Err(ApiError::Unavailable("maintenance"));
+    }
     let intent = match &req {
         CheckoutRequest::Booking { booking, .. } => booking_intent(&s, a.id, booking).await?,
         CheckoutRequest::Deposit {
@@ -303,6 +312,10 @@ struct ConfirmRequest {
 
 async fn confirm(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, Json(req): Json<ConfirmRequest>) -> ApiResult<Json<ConfirmResult>> {
     let ck = load_owned(&s.db, a.id, id).await?;
+    // A booking checkout with no booking yet would create one here, so it waits for maintenance to end.
+    if ck.kind == "booking" && ck.result_booking_id.is_none() && super::config::maintenance_on(&s.db, &s.config).await? {
+        return Err(ApiError::Unavailable("maintenance"));
+    }
     Ok(Json(settle(&s, &ck, &req.payment_id).await?))
 }
 
@@ -322,7 +335,11 @@ pub async fn settle(s: &AppState, ck: &CheckoutRow, payment_id: &str) -> ApiResu
     })?;
     // Dev window: the method the customer picked is the one the payment is stored under.
     if let (Some(code), "pending") = (dev_method(lookup), ck.status.as_str()) {
-        sqlx::query("UPDATE checkouts SET method = $2 WHERE id = $1 AND status = 'pending'").bind(ck.id).bind(code).execute(&s.db).await?;
+        sqlx::query("UPDATE checkouts SET method = $2 WHERE id = $1 AND status = 'pending'")
+            .bind(ck.id)
+            .bind(code)
+            .execute(&s.db)
+            .await?;
     }
     apply(s, ck, payment_id, Some(&info)).await
 }
@@ -446,7 +463,10 @@ async fn failed_or_pending(s: &AppState, ck: &CheckoutRow, reason: &str, refund:
 /// The booking moved between the customer's tap and settlement (re-quote, changed under lock, or
 /// another checkout confirmed it first): the charge was refunded and the customer must hear of it.
 fn deposit_changed(e: &ApiError) -> bool {
-    matches!(e, ApiError::PriceChanged(_) | ApiError::Conflict("price_changed" | "booking_changed" | "already_confirmed"))
+    matches!(
+        e,
+        ApiError::PriceChanged(_) | ApiError::Conflict("price_changed" | "booking_changed" | "already_confirmed")
+    )
 }
 
 /// The refusal for a checkout that stays as it is: closed checkouts say so, open ones report the provider state.
@@ -463,7 +483,12 @@ fn refused(ck: &CheckoutRow, provider_status: &str) -> ApiError {
 /// and is never told "refunded" before the money went back. `reason` None keeps the stored one.
 pub(super) async fn refund_late(s: &AppState, ck: &CheckoutRow, reason: Option<&str>, refund: Refund) -> ApiResult<()> {
     let (status, kind, title, body) = match refund {
-        Refund::Done => ("refunded", "payment.refunded", "결제가 자동으로 취소됐어요", "예약 조건이 바뀌어 결제 금액을 환불했어요"),
+        Refund::Done => (
+            "refunded",
+            "payment.refunded",
+            "결제가 자동으로 취소됐어요",
+            "예약 조건이 바뀌어 결제 금액을 환불했어요",
+        ),
         Refund::Pending => (
             "refund_pending",
             "payment.refund_pending",
@@ -484,7 +509,11 @@ pub(super) async fn refund_late(s: &AppState, ck: &CheckoutRow, reason: Option<&
         // Already in this state (retry or webhook replay): the customer was told the first time.
         return Ok(());
     }
-    best_effort("notify", notify(s, Recipient::User(ck.user_id), kind, title, body, json!({ "checkout_id": ck.id }))).await;
+    best_effort(
+        "notify",
+        notify(s, Recipient::User(ck.user_id), kind, title, body, json!({ "checkout_id": ck.id })),
+    )
+    .await;
     Ok(())
 }
 

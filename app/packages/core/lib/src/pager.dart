@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import 'api.dart';
@@ -7,13 +7,15 @@ import 'i18n.dart';
 import 'models.dart';
 
 /// Rows of a cursor list (`X-Next-Cursor`), a page at a time. [first] starts over (load / pull to
-/// refresh); [more] appends the next page. A failed [more] stops paging until the next [first].
+/// refresh); [more] appends the next page. A failed [more] stops auto-paging until it is retried
+/// or the list is started over with [first].
 class Pager<T> {
   Pager(this.api, this.path, this.parse, {this.query});
 
   final ApiClient api;
   final String path;
   final T Function(Json row) parse;
+
   /// Read on every [first], so a list with filters pages under the filters it was loaded with.
   final Map<String, String?> Function()? query;
   Map<String, String?>? _query;
@@ -22,9 +24,16 @@ class Pager<T> {
   String? _next;
   int _gen = 0;
   bool _busy = false;
-  bool _failed = false;
+  Object? _error;
 
-  bool get hasMore => _next != null && !_failed;
+  /// True while a [more] request is in flight.
+  bool get busy => _busy;
+
+  /// The error of the last [more] (null when it did not fail). Cleared by the next [more] or [first].
+  Object? get error => _error;
+
+  /// Auto-paging stops after a failure; [more] still retries the page explicitly.
+  bool get hasMore => _next != null && _error == null;
 
   Future<List<T>> first() async {
     final gen = ++_gen;
@@ -34,24 +43,26 @@ class Pager<T> {
       rows = _parse(page.items);
       _query = q;
       _next = page.next;
-      _failed = false;
+      _error = null;
     }
     return rows;
   }
 
   /// The next page; false when there is none, one is already loading, or a [first] overtook it.
+  /// A failure is kept in [error] and rethrown.
   Future<bool> more() async {
-    if (!hasMore || _busy) return false;
+    if (_next == null || _busy) return false;
     final gen = _gen;
     _busy = true;
+    _error = null;
     try {
       final page = await api.getPage(path, query: _query, cursor: _next);
       if (gen != _gen) return false;
       rows = [...rows, ..._parse(page.items)];
       _next = page.next;
       return true;
-    } catch (_) {
-      _failed = true;
+    } catch (e) {
+      if (gen == _gen) _error = e;
       rethrow;
     } finally {
       _busy = false;
@@ -64,7 +75,8 @@ class Pager<T> {
 }
 
 /// Wraps a list's scroll view: near its end the next page of [pager] loads and [builder] runs again
-/// with the longer list. Put it inside the `AsyncView` builder whose `load` is `pager.first`.
+/// with the longer list. Under the list: a loader while a page loads, and a retry row if it failed.
+/// Put it inside the `AsyncView` builder whose `load` is `pager.first`.
 class LoadMore<T> extends StatefulWidget {
   const LoadMore({super.key, required this.pager, required this.builder});
 
@@ -96,39 +108,61 @@ class _LoadMoreState<T> extends State<LoadMore<T>> {
   }
 
   Future<void> _more() async {
+    setState(() {});
     try {
-      if (await widget.pager.more() && mounted) setState(() {});
-    } catch (e) {
-      if (mounted) showToast(context, context.t.error(e));
+      await widget.pager.more();
+    } catch (_) {
+      // Kept on the pager and shown with its message and a retry in the footer.
     }
+    if (mounted) setState(() {});
+  }
+
+  Widget _footer(BuildContext context) {
+    final p = widget.pager;
+    if (p.busy) {
+      return const Padding(
+        padding: EdgeInsets.all(Space.md),
+        child: Center(
+          child: SizedBox.square(
+            dimension: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+    final e = p.error;
+    if (e == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.all(Space.sm),
+      child: ErrorRetry(
+        message: context.t.error(e),
+        retryLabel: context.t.retry,
+        compact: true,
+        onRetry: _more,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) => NotificationListener<Notification>(
     onNotification: _onScroll,
-    child: widget.builder(context, widget.pager.rows),
+    child: Column(
+      children: [
+        Expanded(child: widget.builder(context, widget.pager.rows)),
+        _footer(context),
+      ],
+    ),
   );
 }
 
 /// [AsyncView] over a cursor list that loads more rows on scroll; for screens with no state of their own.
 class PagedView<T> extends StatefulWidget {
-  const PagedView({
-    super.key,
-    required this.api,
-    required this.path,
-    required this.parse,
-    required this.builder,
-  });
+  const PagedView({super.key, required this.api, required this.path, required this.parse, required this.builder});
 
   final ApiClient api;
   final String path;
   final T Function(Json row) parse;
-  final Widget Function(
-    BuildContext context,
-    List<T> rows,
-    Future<void> Function() reload,
-  )
-  builder;
+  final Widget Function(BuildContext context, List<T> rows, Future<void> Function() reload) builder;
 
   @override
   State<PagedView<T>> createState() => _PagedViewState<T>();
@@ -140,9 +174,7 @@ class _PagedViewState<T> extends State<PagedView<T>> {
   @override
   Widget build(BuildContext context) => AsyncView<List<T>>(
     load: _pager.first,
-    builder: (context, _, reload) => LoadMore<T>(
-      pager: _pager,
-      builder: (context, rows) => widget.builder(context, rows, reload),
-    ),
+    builder: (context, _, reload) =>
+        LoadMore<T>(pager: _pager, builder: (context, rows) => widget.builder(context, rows, reload)),
   );
 }

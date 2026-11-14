@@ -156,7 +156,16 @@ pub(super) async fn list(State(s): State<AppState>, Customer(a): Customer, Query
 }
 
 /// Every status a checkout can hold; list filters outside this set are a client error.
-const STATUSES: [&str; 8] = ["pending", "awaiting_deposit", "paid", "refund_pending", "refunded", "expired", "failed", "cancelled"];
+const STATUSES: [&str; 8] = [
+    "pending",
+    "awaiting_deposit",
+    "paid",
+    "refund_pending",
+    "refunded",
+    "expired",
+    "failed",
+    "cancelled",
+];
 
 fn checked_status(status: Option<&str>) -> ApiResult<Option<String>> {
     match status {

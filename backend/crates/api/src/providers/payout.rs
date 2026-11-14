@@ -65,13 +65,26 @@ pub struct SellerDraft {
 /// Business info Toss needs: a sole individual, or a business (individual or corporate) with a registration number.
 #[derive(Clone, PartialEq, Eq)]
 pub enum Business {
-    Individual { name: String, email: String, phone: String },
-    Company { name: Option<String>, representative: String, registration_no: String, email: String, phone: String },
+    Individual {
+        name: String,
+        email: String,
+        phone: String,
+    },
+    Company {
+        name: Option<String>,
+        representative: String,
+        registration_no: String,
+        email: String,
+        phone: String,
+    },
 }
 
 impl std::fmt::Debug for SellerDraft {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SellerDraft").field("ref_id", &self.ref_id).field("account", &"<redacted>").finish()
+        f.debug_struct("SellerDraft")
+            .field("ref_id", &self.ref_id)
+            .field("account", &"<redacted>")
+            .finish()
     }
 }
 
@@ -107,7 +120,10 @@ pub fn bank_code(name: &str) -> Option<&'static str> {
         ("092", &["토스뱅크"]),
     ];
     let name = name.replace(' ', "");
-    BANKS.iter().find(|(_, aliases)| aliases.iter().any(|a| name.contains(a))).map(|(code, _)| *code)
+    BANKS
+        .iter()
+        .find(|(_, aliases)| aliases.iter().any(|a| name.contains(a)))
+        .map(|(code, _)| *code)
 }
 
 /// Seller body for `POST /v2/sellers`. Field names follow the reference; required fields per business type.
@@ -119,7 +135,13 @@ pub fn seller_body(d: &SellerDraft) -> Value {
             body["businessType"] = json!("INDIVIDUAL");
             body["individual"] = json!({ "name": name, "email": email, "phone": phone });
         }
-        Business::Company { name, representative, registration_no, email, phone } => {
+        Business::Company {
+            name,
+            representative,
+            registration_no,
+            email,
+            phone,
+        } => {
             body["businessType"] = json!("CORPORATE");
             let mut company = json!({
                 "representativeName": representative,
@@ -164,7 +186,10 @@ fn encrypted_post(http: &Client, secret: &str, key: &[u8; 32], path: &str, idemp
 }
 
 fn plain_get(http: &Client, secret: &str, path: &str) -> Result<Request, ProviderError> {
-    http.get(format!("{TOSS_API}{path}")).header(AUTHORIZATION, basic(secret)).build().map_err(|e| ProviderError::Upstream(e.to_string()))
+    http.get(format!("{TOSS_API}{path}"))
+        .header(AUTHORIZATION, basic(secret))
+        .build()
+        .map_err(|e| ProviderError::Upstream(e.to_string()))
 }
 
 /// Builds the seller registration request (encrypted).
@@ -178,7 +203,15 @@ pub fn seller_status_request(http: &Client, secret: &str, seller_id: &str) -> Re
 }
 
 /// Builds the payout create request (encrypted). `seller_id` is the Toss seller `id` (the destination).
-pub fn send_request(http: &Client, secret: &str, key: &[u8; 32], idempotency_key: &str, ref_id: &str, seller_id: &str, t: &Transfer) -> Result<Request, ProviderError> {
+pub fn send_request(
+    http: &Client,
+    secret: &str,
+    key: &[u8; 32],
+    idempotency_key: &str,
+    ref_id: &str,
+    seller_id: &str,
+    t: &Transfer,
+) -> Result<Request, ProviderError> {
     encrypted_post(http, secret, key, TOSS_PAYOUTS, Some(idempotency_key), &payout_body(ref_id, seller_id, t))
 }
 
@@ -216,23 +249,37 @@ pub fn read_body(text: &str, key: Option<&[u8; 32]>) -> Result<Value, ProviderEr
 pub fn classify(status: StatusCode, body: &Value) -> ProviderError {
     let message = body["message"].as_str().unwrap_or("transfer rejected").to_string();
     let definite = status.is_client_error() && !matches!(status, StatusCode::CONFLICT | StatusCode::TOO_MANY_REQUESTS | StatusCode::REQUEST_TIMEOUT);
-    if definite { ProviderError::Declined(message) } else { ProviderError::Upstream(format!("status {status}")) }
+    if definite {
+        ProviderError::Declined(message)
+    } else {
+        ProviderError::Upstream(format!("status {status}"))
+    }
 }
 
 /// Fingerprint of the account a seller is registered with. Equal fingerprints mean the same bank account.
 pub fn account_fingerprint(bank_code: &str, account: &str, holder: &str) -> String {
     use sha2::{Digest, Sha256};
-    Sha256::digest(format!("{bank_code}|{account}|{holder}").as_bytes()).iter().map(|b| format!("{b:02x}")).collect()
+    Sha256::digest(format!("{bank_code}|{account}|{holder}").as_bytes())
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
 }
 
 /// Reads Toss's payout id (`id` on the Payout object) of an accepted transfer.
 pub fn parse_sent(body: &Value) -> Result<String, ProviderError> {
-    body["id"].as_str().filter(|s| !s.is_empty()).map(String::from).ok_or_else(|| ProviderError::Upstream("missing payout id".into()))
+    body["id"]
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .map(String::from)
+        .ok_or_else(|| ProviderError::Upstream("missing payout id".into()))
 }
 
 /// Reads a seller's Toss id and status (`APPROVAL_REQUIRED`, `PARTIALLY_APPROVED`, `KYC_REQUIRED`, `APPROVED`).
 pub fn parse_seller(body: &Value) -> Result<(String, String), ProviderError> {
-    let id = body["id"].as_str().filter(|s| !s.is_empty()).ok_or_else(|| ProviderError::Upstream("missing seller id".into()))?;
+    let id = body["id"]
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .ok_or_else(|| ProviderError::Upstream("missing seller id".into()))?;
     let status = body["status"].as_str().unwrap_or("UNKNOWN");
     Ok((id.to_string(), status.to_string()))
 }
@@ -240,7 +287,13 @@ pub fn parse_seller(body: &Value) -> Result<(String, String), ProviderError> {
 /// Payout `status` enum from the guide: REQUESTED, IN_PROGRESS, COMPLETED, FAILED, CANCELED, DELETED, REJECTED.
 /// REJECTED is delivered as FAILED on webhooks, so both count as failed. `error` holds the reason.
 pub fn parse_status(body: &Value) -> TransferStatus {
-    let reason = || body["error"]["message"].as_str().or_else(|| body["error"].as_str()).unwrap_or("transfer failed").to_string();
+    let reason = || {
+        body["error"]["message"]
+            .as_str()
+            .or_else(|| body["error"].as_str())
+            .unwrap_or("transfer failed")
+            .to_string()
+    };
     match body["status"].as_str() {
         Some("COMPLETED") => TransferStatus::Paid,
         Some("FAILED" | "REJECTED") => TransferStatus::Failed(reason()),
@@ -261,7 +314,13 @@ mod tests {
     }
 
     fn transfer() -> Transfer {
-        Transfer { amount: 120_000, bank_code: "004", account: "12345678901".into(), holder: "홍길동".into(), memo: "다해 정산".into() }
+        Transfer {
+            amount: 120_000,
+            bank_code: "004",
+            account: "12345678901".into(),
+            holder: "홍길동".into(),
+            memo: "다해 정산".into(),
+        }
     }
 
     fn body_text(req: &Request) -> String {
@@ -314,7 +373,10 @@ mod tests {
         let sent = open(&key(), &body_text(&req)).unwrap();
         assert_eq!(sent["businessType"], "CORPORATE");
         assert_eq!(sent["refSellerId"], "pro0123456789abcdef");
-        assert_eq!(sent["account"], json!({"bankCode": "004", "accountNumber": "12345678901", "holderName": "홍길동"}));
+        assert_eq!(
+            sent["account"],
+            json!({"bankCode": "004", "accountNumber": "12345678901", "holderName": "홍길동"})
+        );
         assert_eq!(sent["company"]["businessRegistrationNumber"], "1234567890");
         assert!(sent.get("individual").is_none());
     }
@@ -323,7 +385,11 @@ mod tests {
     fn individual_seller_uses_individual_block() {
         let d = SellerDraft {
             ref_id: "pro-individual-1".into(),
-            business: Business::Individual { name: "홍길동".into(), email: "a@b.kr".into(), phone: "01000000000".into() },
+            business: Business::Individual {
+                name: "홍길동".into(),
+                email: "a@b.kr".into(),
+                phone: "01000000000".into(),
+            },
             bank_code: "090",
             account: "3333000000000".into(),
             holder: "홍길동".into(),
@@ -336,7 +402,17 @@ mod tests {
 
     #[test]
     fn seller_draft_debug_hides_account() {
-        let d = SellerDraft { ref_id: "pro-1234567".into(), business: Business::Individual { name: "x".into(), email: "x".into(), phone: "x".into() }, bank_code: "004", account: "12345678901".into(), holder: "홍길동".into() };
+        let d = SellerDraft {
+            ref_id: "pro-1234567".into(),
+            business: Business::Individual {
+                name: "x".into(),
+                email: "x".into(),
+                phone: "x".into(),
+            },
+            bank_code: "004",
+            account: "12345678901".into(),
+            holder: "홍길동".into(),
+        };
         assert!(!format!("{d:?}").contains("12345678901"));
     }
 
@@ -398,11 +474,20 @@ mod tests {
     fn parses_sent_seller_and_status_responses() {
         assert_eq!(parse_sent(&json!({"id": "tp_1"})).unwrap(), "tp_1");
         assert!(parse_sent(&json!({"payoutId": "tp_1"})).is_err());
-        assert_eq!(parse_seller(&json!({"id": "s_1", "status": "KYC_REQUIRED"})).unwrap(), ("s_1".into(), "KYC_REQUIRED".into()));
+        assert_eq!(
+            parse_seller(&json!({"id": "s_1", "status": "KYC_REQUIRED"})).unwrap(),
+            ("s_1".into(), "KYC_REQUIRED".into())
+        );
         assert!(parse_seller(&json!({"status": "APPROVED"})).is_err());
         assert_eq!(parse_status(&json!({"status": "COMPLETED"})), TransferStatus::Paid);
-        assert_eq!(parse_status(&json!({"status": "FAILED", "error": {"message": "잔액 부족"}})), TransferStatus::Failed("잔액 부족".into()));
-        assert_eq!(parse_status(&json!({"status": "REJECTED", "error": "계좌 오류"})), TransferStatus::Failed("계좌 오류".into()));
+        assert_eq!(
+            parse_status(&json!({"status": "FAILED", "error": {"message": "잔액 부족"}})),
+            TransferStatus::Failed("잔액 부족".into())
+        );
+        assert_eq!(
+            parse_status(&json!({"status": "REJECTED", "error": "계좌 오류"})),
+            TransferStatus::Failed("계좌 오류".into())
+        );
         assert_eq!(parse_status(&json!({"status": "CANCELED"})), TransferStatus::Failed("canceled".into()));
         assert_eq!(parse_status(&json!({"status": "IN_PROGRESS"})), TransferStatus::Pending);
         assert_eq!(parse_status(&json!({"status": "REQUESTED"})), TransferStatus::Pending);
