@@ -4,9 +4,9 @@
 # charge is under 6 GB. Usage:  scripts/build-slot.sh cargo test -p api
 set -uo pipefail
 LOCKS=D:/Temp/malkkeum-locks
-SLOTS=1
+SLOTS=2
 MIN_FREE_KB=$((6 * 1024 * 1024))
-export CARGO_BUILD_JOBS=2
+export CARGO_BUILD_JOBS=6
 # Each worktree gets its own cargo target: a shared one mixes up same-named path crates across worktrees (stale artifacts).
 top=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 case "$top" in
