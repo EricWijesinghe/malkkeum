@@ -38,6 +38,7 @@ pub fn test_config() -> Config {
         jwt_secret: SECRET.to_vec(),
         jwt_previous_secret: None,
         data_key: [7u8; 32],
+        host_jobs_dir: std::path::PathBuf::from("/nonexistent-host-jobs"),
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
         public_base_url: BASE_URL.into(),
         dev_mode: true,

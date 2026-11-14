@@ -17,6 +17,7 @@ mod demo_admin;
 mod feed;
 mod finance;
 pub(crate) mod growth;
+mod host_jobs;
 mod keys;
 pub(crate) mod me;
 mod member;
@@ -117,6 +118,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
                 .merge(keys::admin_routes())
+                .merge(host_jobs::admin_routes())
                 .merge(demo_admin::admin_routes())
                 .merge(config::admin_routes())
                 .merge(settings::admin_routes())

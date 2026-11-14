@@ -15,6 +15,8 @@ pub struct Config {
     /// Key for encrypting payout account numbers at rest (32 bytes, hex).
     pub data_key: [u8; 32],
     pub upload_dir: PathBuf,
+    /// Folder shared with the server agent: `inbox/` (API writes jobs) and `status/` (agent writes state).
+    pub host_jobs_dir: PathBuf,
     pub public_base_url: String,
     /// Dev mode: fake SMS/payment/push/social/identity providers, OTP code echoed in logs.
     pub dev_mode: bool,
@@ -312,6 +314,7 @@ impl Config {
             jwt_previous_secret,
             data_key,
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "./data/uploads".into()).into(),
+            host_jobs_dir: env::var("HOST_JOBS_DIR").unwrap_or_else(|_| "/jobs".into()).into(),
             public_base_url,
             dev_mode,
             staff_mfa_required: env::var("STAFF_MFA_REQUIRED").map(|v| v != "0" && v != "false").unwrap_or(true),
