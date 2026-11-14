@@ -47,6 +47,21 @@ void main() {
     );
   });
 
+  test('malformed sort_order, badge or config throw FormatException', () {
+    for (final bad in <Map<String, dynamic>>[
+      {..._row('x'), 'sort_order': '1'},
+      {..._row('x'), 'badge': 1},
+      {..._row('x'), 'config': 'nope'},
+    ]) {
+      expect(
+        () => parseServiceGroups({
+          'groups': [bad],
+        }),
+        throwsFormatException,
+      );
+    }
+  });
+
   test('home type codes round trip and unknown codes give null', () {
     expect(MoveHome.fromCode('apartment'), MoveHome.apartment);
     expect(MoveHome.fromCode('villa_house'), MoveHome.villaHouse);

@@ -61,20 +61,44 @@ class ServiceGroup {
     return ServiceGroup(
       code: code,
       title: {for (final e in title.entries) '${e.key}': '${e.value}'},
-      sortOrder: (j['sort_order'] as num?)?.toInt() ?? 0,
+      sortOrder: _sortOrder(j, code),
       active: j['active'] != false,
       chooser: _str(j, 'chooser'),
       icon: _str(j, 'icon'),
-      badge: j['badge'] as String?,
+      badge: _badge(j, code),
       services: [for (final s in services) '$s'],
-      config: (j['config'] as Json?) ?? const {},
+      config: _config(j, code),
     );
   }
 
   static String _str(Json j, String key) {
     final v = j[key];
-    if (v is! String || v.isEmpty)
+    if (v is! String || v.isEmpty) {
       throw FormatException('group field $key missing');
+    }
+    return v;
+  }
+
+  static int _sortOrder(Json j, String code) {
+    final v = j['sort_order'];
+    if (v == null) return 0;
+    if (v is! num) throw FormatException('group $code: sort_order not a number');
+    return v.toInt();
+  }
+
+  static String? _badge(Json j, String code) {
+    final v = j['badge'];
+    if (v == null) return null;
+    if (v is! String) throw FormatException('group $code: badge not a string');
+    return v;
+  }
+
+  static Json _config(Json j, String code) {
+    final v = j['config'];
+    if (v == null) return const {};
+    if (v is! Map<String, dynamic>) {
+      throw FormatException('group $code: config not an object');
+    }
     return v;
   }
 }
