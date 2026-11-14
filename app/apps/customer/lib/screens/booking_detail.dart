@@ -12,6 +12,7 @@ import 'bookings.dart';
 import 'cancel_booking_sheet.dart';
 import 'growth.dart';
 import 'pay_flow.dart';
+import 'reschedule_gate.dart';
 import 'service.dart';
 
 part 'booking_detail_sections.dart';
@@ -315,9 +316,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _reschedule(b),
-                  child: Text(t.reschedule),
+                child: RescheduleGate(
+                  bookingId: b.id,
+                  child: OutlinedButton(
+                    onPressed: () => _reschedule(b),
+                    child: Text(t.reschedule),
+                  ),
                 ),
               ),
               const SizedBox(width: Space.xs),

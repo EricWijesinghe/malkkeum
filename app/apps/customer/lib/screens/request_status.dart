@@ -11,6 +11,7 @@ import 'cancel_booking_sheet.dart';
 import 'chat.dart';
 import 'flow_widgets.dart';
 import 'quote_flow.dart';
+import 'reschedule_gate.dart';
 import 'service.dart';
 
 const _trackerSteps = 4;
@@ -332,13 +333,17 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
                   const SizedBox(height: Space.sm),
                   PrimaryButton(label: t.payDeposit, onPressed: _openDetail),
                 ],
-                if (b.isActive) ...[
-                  const SizedBox(height: Space.xs),
-                  OutlinedButton(
-                    onPressed: _openDetail,
-                    child: Text(t.reschedule),
+                if (b.isActive)
+                  RescheduleGate(
+                    bookingId: b.id,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: Space.xs),
+                      child: OutlinedButton(
+                        onPressed: _openDetail,
+                        child: Text(t.reschedule),
+                      ),
+                    ),
                   ),
-                ],
                 if (b.status == 0) ...[
                   const SizedBox(height: Space.sm),
                   TextButton(

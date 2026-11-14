@@ -175,3 +175,38 @@ async fn public_policy_reports_default_until_owner_saves(pool: PgPool) {
     let (_, p) = call(&app, "GET", "/v1/policy/cancellation", None, None).await;
     assert_eq!(p["is_default"], false);
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn cancel_reason_is_audited_and_unknown_reasons_are_refused(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-6000-0010").await;
+    set_policy(&pool, fee_after_two_days()).await;
+    let (id, _) = book_kst_days(&app, &c, 10).await;
+
+    let (st, body) = call(
+        &app,
+        "POST",
+        &format!("/v1/bookings/{id}/cancel"),
+        Some(c.token.as_str()),
+        Some(json!({ "reason": "not-a-reason" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "{body}");
+
+    let (st, body) = call(
+        &app,
+        "POST",
+        &format!("/v1/bookings/{id}/cancel"),
+        Some(c.token.as_str()),
+        Some(json!({ "reason": "price" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let stored: Value = sqlx::query_scalar("SELECT data FROM audit_log WHERE action = 'booking.cancel' AND target = $1")
+        .bind(id.to_string())
+        .fetch_one(&pool)
+        .await
+        .expect("audit row");
+    assert_eq!(stored["reason"], "price", "{stored}");
+}

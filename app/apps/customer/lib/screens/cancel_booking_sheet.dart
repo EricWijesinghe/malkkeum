@@ -14,6 +14,7 @@ class CancelPreview {
     required this.paid,
     required this.fee,
     required this.refund,
+    this.rescheduleAllowed = false,
   });
 
   factory CancelPreview.fromJson(Json j) => CancelPreview(
@@ -23,6 +24,7 @@ class CancelPreview {
     paid: (j['paid'] as num? ?? 0).toInt(),
     fee: (j['fee'] as num? ?? 0).toInt(),
     refund: (j['refund'] as num? ?? 0).toInt(),
+    rescheduleAllowed: j['reschedule_allowed'] == true,
   );
 
   final bool canCancel;
@@ -33,6 +35,9 @@ class CancelPreview {
   final int paid;
   final int fee;
   final int refund;
+
+  /// The server's answer to "can this be rescheduled now". The 일정 변경 entry shows only when true.
+  final bool rescheduleAllowed;
 }
 
 /// What the customer confirmed: the fee they saw (sent back so a changed policy is refused) and an optional reason.

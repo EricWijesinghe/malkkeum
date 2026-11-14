@@ -386,7 +386,7 @@ async fn skip(State(s): State<AppState>, Customer(a): Customer, Path((id, visit)
         "booked" => {
             let booking = v.booking_id.ok_or_else(|| ApiError::Internal("booked visit without booking".into()))?;
             let accepted = body.and_then(|Json(b)| b.accepted_fee);
-            cancel_owned(&s, a.id, booking, accepted).await?;
+            cancel_owned(&s, a.id, booking, accepted, None).await?;
             set_visit_state(&s.db, visit, "booked", "skipped").await?;
         }
         _ => return Err(ApiError::Conflict("visit_not_skippable")),
