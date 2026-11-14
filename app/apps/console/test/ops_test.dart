@@ -148,4 +148,22 @@ void main() {
     expect(find.text(koT.oJobErrors('3')), findsOneWidget);
     await unmount(tester);
   });
+
+  testWidgets('texts that used up their retries show on the outbox card', (tester) async {
+    setViewport(tester, wideSize);
+    final status = _status(level: 'red')..['sms_dead_letters'] = 2;
+    final fake = FakeApi()
+      ..reply('GET', '/admin/ops/status', status)
+      ..reply('GET', '/admin/ops/alerts', _alerts)
+      ..reply('GET', '/admin/config', _config)
+      ..reply('GET', '/admin/client-errors', _errors);
+    final env = await TestEnv.create(fake: fake, role: 'staff_admin');
+    await pumpConsoleScreen(tester, env, const OpsScreen());
+    await settle(tester);
+
+    final line = find.text(koT.oJobDeadLetters('2'));
+    await tester.scrollUntilVisible(line, 200, scrollable: find.byType(Scrollable).first);
+    expect(line, findsOneWidget, reason: 'the dead-letter count sits on the notification outbox card');
+    await unmount(tester);
+  });
 }

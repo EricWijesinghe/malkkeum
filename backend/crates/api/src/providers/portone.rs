@@ -278,9 +278,7 @@ pub fn dev_payment(id: &str, total: i64) -> Option<PaymentInfo> {
     let (status, method) = match id {
         "dev:paid" => ("PAID", json!({ "type": "PaymentMethodEasyPay" })),
         "dev:card" => ("PAID", json!({ "type": "PaymentMethodCard" })),
-        _ if dev_method(id).is_some() && id != "dev:virtual_account" => {
-            ("PAID", json!({ "type": "PaymentMethodEasyPay", "easyPayProvider": &id[4..] }))
-        }
+        _ if dev_method(id).is_some() && id != "dev:virtual_account" => ("PAID", json!({ "type": "PaymentMethodEasyPay", "easyPayProvider": &id[4..] })),
         "dev:va" | "dev:virtual_account" => (
             "VIRTUAL_ACCOUNT_ISSUED",
             json!({ "type": "PaymentMethodVirtualAccount", "bank": "KB", "accountNumber": "123-456-789012" }),
@@ -337,7 +335,12 @@ pub fn verify_webhook(secret: &str, msg_id: &str, timestamp: &str, signatures: &
 #[cfg(test)]
 mod tests {
     use super::*;
-    use axum::{Json, Router, extract::Path, http::{HeaderMap, StatusCode}, routing::get};
+    use axum::{
+        Json, Router,
+        extract::Path,
+        http::{HeaderMap, StatusCode},
+        routing::get,
+    };
 
     const NOW: i64 = 1_800_000_000;
 
@@ -427,7 +430,11 @@ mod tests {
 
     #[test]
     fn billing_needs_secret_store_and_card_channel() {
-        let mut p = PortOne { api_secret: Some("s".into()), store_id: Some("st".into()), ..Default::default() };
+        let mut p = PortOne {
+            api_secret: Some("s".into()),
+            store_id: Some("st".into()),
+            ..Default::default()
+        };
         assert!(!billing_ready(&p));
         p.channel_keys.insert("card".into(), "ch".into());
         assert!(billing_ready(&p));
@@ -463,7 +470,10 @@ mod tests {
         assert!(issued(&ok).is_ok());
         let gone = billing_key_at(&http, &base, "test-secret", "bk_gone").await.expect("deleted body");
         assert!(matches!(issued(&gone), Err(ProviderError::Declined(ref m)) if m == "billing_key_not_issued"));
-        assert!(matches!(billing_key_at(&http, &base, "test-secret", "bk_none").await, Err(ProviderError::NotFound)));
+        assert!(matches!(
+            billing_key_at(&http, &base, "test-secret", "bk_none").await,
+            Err(ProviderError::NotFound)
+        ));
         assert!(matches!(billing_key_at(&http, &base, "wrong", "bk_ok").await, Err(ProviderError::Upstream(_))));
     }
 

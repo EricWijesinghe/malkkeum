@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 
 /// Arrival windows a subscription can use (same as a standard booking).
@@ -30,6 +31,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
   String? _address;
   String? _method;
   int _cadence = 1;
+
   /// 0 = Monday, the server's convention.
   int _weekday = 0;
   int _hour = 9;
@@ -53,6 +55,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
   }
 
   Future<void> _submit() async {
+    if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) return;
     final t = context.t;
     final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
@@ -82,7 +85,9 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
     final services = app.services.where((s) => !s.isQuote).toList();
     final addresses = app.addresses;
     final methods = app.methods;
-    final ready = _service != null && _address != null && _method != null && !_saving;
+    // Maintenance pauses new bookings, and a subscription creates them: hold the submit until it is over.
+    final paused = RemoteConfigScope.of(context).maintenance;
+    final ready = _service != null && _address != null && _method != null && !_saving && !paused;
     final narrow = MaterialLocalizations.of(context).narrowWeekdays;
     return Scaffold(
       appBar: AppBar(title: Text(t.subNew)),
@@ -135,7 +140,10 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
           const SizedBox(height: Space.xs),
           SegmentedButton<int>(
             key: const Key('sub-hour'),
-            segments: [for (final h in subscriptionHours) ButtonSegment(value: h, label: Text('${h.toString().padLeft(2, '0')}:00'))],
+            segments: [
+              for (final h in subscriptionHours)
+                ButtonSegment(value: h, label: Text('${h.toString().padLeft(2, '0')}:00')),
+            ],
             selected: {_hour},
             onSelectionChanged: (s) => setState(() => _hour = s.first),
           ),
@@ -144,11 +152,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
           const SizedBox(height: Space.sm),
           Text(t.subChargeNote),
           const SizedBox(height: Space.xl),
-          FilledButton(
-            key: const Key('sub-submit'),
-            onPressed: ready ? _submit : null,
-            child: Text(t.subCreate),
-          ),
+          FilledButton(key: const Key('sub-submit'), onPressed: ready ? _submit : null, child: Text(t.subCreate)),
         ],
       ),
     );

@@ -17,7 +17,12 @@ Json _wallet({bool enabled = true}) => {
   'entries': const <Json>[],
 };
 
-Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<Json>? methods, void Function(FakeApi)? routes}) async {
+Future<FakeApi> _openCheckout(
+  WidgetTester tester, {
+  required Json wallet,
+  List<Json>? methods,
+  void Function(FakeApi)? routes,
+}) async {
   setViewport(tester, tallPhoneSize);
   final fake = FakeApi();
   routes?.call(fake);
@@ -26,7 +31,9 @@ Future<FakeApi> _openCheckout(WidgetTester tester, {required Json wallet, List<J
     ..reply('GET', '/payments/methods', [
       {'code': 'transfer', 'flow': 'checkout'},
     ])
-    ..reply('GET', '/slots', [for (final h in const [8, 9, 13, 14]) slotJson(h)])
+    ..reply('GET', '/slots', [
+      for (final h in const [8, 9, 13, 14]) slotJson(h),
+    ])
     // Refused on purpose: the test reads the request, the PG window is not part of it.
     ..reply('POST', '/checkouts', {
       'error': {'code': 'points_insufficient'},
@@ -103,7 +110,9 @@ void main() {
       routes: (f) => f.onPost('/bookings', (_) {
         // The first reply is lost (the server may have charged); the retry gets an answer.
         if (attempts++ == 0) throw StateError('connection dropped');
-        return const ApiReply(409, {'error': {'code': 'slot_full'}});
+        return const ApiReply(409, {
+          'error': {'code': 'slot_full'},
+        });
       }),
     );
     final pay = find.text(koT.payAmount(formatWon(45000, 'ko')));
@@ -115,6 +124,24 @@ void main() {
     expect(keys, hasLength(2));
     expect(keys.first, isNotNull);
     expect(keys.last, keys.first, reason: 'a retry of the same draft is the same action');
+    await unmount(tester);
+  });
+
+  testWidgets('maintenance holds the pay button and sends no checkout', (tester) async {
+    final fake = await _openCheckout(
+      tester,
+      wallet: _wallet(enabled: false),
+      methods: [paymentMethodJson()],
+      routes: (f) => f.reply('GET', '/config', {
+        'maintenance': {'on': true},
+      }),
+    );
+    final label = koT.payAmount(formatWon(45000, 'ko'));
+    final pay = tester.widget<PrimaryButton>(find.widgetWithText(PrimaryButton, label));
+    expect(pay.onPressed, isNull);
+    await tester.tap(find.text(label));
+    await settle(tester);
+    expect(fake.callsTo('POST', '/checkouts'), isEmpty);
     await unmount(tester);
   });
 

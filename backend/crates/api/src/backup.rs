@@ -224,18 +224,31 @@ struct Req<'a> {
 
 async fn send(http: &reqwest::Client, r: Req<'_>) -> Result<reqwest::Response, Fail> {
     let cfg = r.cfg;
-    let path = if r.name.is_empty() { format!("/{}", cfg.bucket) } else { format!("/{}/{}", cfg.bucket, r.name) };
+    let path = if r.name.is_empty() {
+        format!("/{}", cfg.bucket)
+    } else {
+        format!("/{}/{}", cfg.bucket, r.name)
+    };
     let canonical_uri = encode_path(&path);
     let amz_date = Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
     let host = host_of(&cfg.endpoint).to_string();
     let length = r.body.as_ref().map(|(_, n)| n.to_string());
-    let mut headers: Vec<(&str, &str)> = vec![("host", host.as_str()), ("x-amz-content-sha256", r.payload_hash), ("x-amz-date", amz_date.as_str())];
+    let mut headers: Vec<(&str, &str)> = vec![
+        ("host", host.as_str()),
+        ("x-amz-content-sha256", r.payload_hash),
+        ("x-amz-date", amz_date.as_str()),
+    ];
     if let Some(len) = &length {
         headers.push(("content-length", len.as_str()));
     }
     headers.sort_by(|a, b| a.0.cmp(b.0));
     let auth = authorization(
-        &Sigv4 { access: &cfg.access_key, secret: &cfg.secret_key, region: &cfg.region, service: "s3" },
+        &Sigv4 {
+            access: &cfg.access_key,
+            secret: &cfg.secret_key,
+            region: &cfg.region,
+            service: "s3",
+        },
         r.method,
         &canonical_uri,
         r.query,
@@ -243,7 +256,11 @@ async fn send(http: &reqwest::Client, r: Req<'_>) -> Result<reqwest::Response, F
         r.payload_hash,
         &amz_date,
     );
-    let url = if r.query.is_empty() { format!("{}{}", cfg.endpoint, canonical_uri) } else { format!("{}{}?{}", cfg.endpoint, canonical_uri, r.query) };
+    let url = if r.query.is_empty() {
+        format!("{}{}", cfg.endpoint, canonical_uri)
+    } else {
+        format!("{}{}?{}", cfg.endpoint, canonical_uri, r.query)
+    };
     let method = reqwest::Method::from_bytes(r.method.as_bytes()).map_err(|_| Fail::Corrupt)?;
     let mut req = http
         .request(method, url)
@@ -278,13 +295,35 @@ async fn hash_file(path: PathBuf) -> Result<(String, u64), Fail> {
 pub async fn put_file(http: &reqwest::Client, cfg: &S3Config, name: &str, path: &Path) -> Result<(), Fail> {
     let (hash, len) = hash_file(path.to_path_buf()).await?;
     let file = tokio::fs::File::open(path).await?;
-    send(http, Req { cfg, method: "PUT", name, query: "", payload_hash: &hash, body: Some((reqwest::Body::from(file), len)) }).await?;
+    send(
+        http,
+        Req {
+            cfg,
+            method: "PUT",
+            name,
+            query: "",
+            payload_hash: &hash,
+            body: Some((reqwest::Body::from(file), len)),
+        },
+    )
+    .await?;
     Ok(())
 }
 
 /// Downloads object `name` into the local file `out`.
 pub async fn get_file(http: &reqwest::Client, cfg: &S3Config, name: &str, out: &Path) -> Result<(), Fail> {
-    let resp = send(http, Req { cfg, method: "GET", name, query: "", payload_hash: EMPTY_SHA256, body: None }).await?;
+    let resp = send(
+        http,
+        Req {
+            cfg,
+            method: "GET",
+            name,
+            query: "",
+            payload_hash: EMPTY_SHA256,
+            body: None,
+        },
+    )
+    .await?;
     let mut file = tokio::fs::File::create(out).await?;
     let mut stream = resp.bytes_stream();
     while let Some(chunk) = stream.next().await {
@@ -295,7 +334,18 @@ pub async fn get_file(http: &reqwest::Client, cfg: &S3Config, name: &str, out: &
 }
 
 async fn delete_object(http: &reqwest::Client, cfg: &S3Config, name: &str) -> Result<(), Fail> {
-    send(http, Req { cfg, method: "DELETE", name, query: "", payload_hash: EMPTY_SHA256, body: None }).await?;
+    send(
+        http,
+        Req {
+            cfg,
+            method: "DELETE",
+            name,
+            query: "",
+            payload_hash: EMPTY_SHA256,
+            body: None,
+        },
+    )
+    .await?;
     Ok(())
 }
 
@@ -303,7 +353,14 @@ async fn delete_object(http: &reqwest::Client, cfg: &S3Config, name: &str) -> Re
 pub async fn list_objects(http: &reqwest::Client, cfg: &S3Config) -> Result<Vec<(String, DateTime<Utc>)>, Fail> {
     let resp = send(
         http,
-        Req { cfg, method: "GET", name: "", query: "list-type=2&prefix=malkkeum%2F", payload_hash: EMPTY_SHA256, body: None },
+        Req {
+            cfg,
+            method: "GET",
+            name: "",
+            query: "list-type=2&prefix=malkkeum%2F",
+            payload_hash: EMPTY_SHA256,
+            body: None,
+        },
     )
     .await?;
     let xml = resp.text().await.map_err(|_| Fail::Unreachable)?;
@@ -344,7 +401,18 @@ pub async fn check(http: &reqwest::Client, cfg: &S3Config) -> Result<(), Fail> {
     let body = b"malkkeum connection test".to_vec();
     let hash = hex(Sha256::digest(&body));
     let len = body.len() as u64;
-    send(http, Req { cfg, method: "PUT", name: CONNECTION_TEST_OBJECT, query: "", payload_hash: &hash, body: Some((reqwest::Body::from(body), len)) }).await?;
+    send(
+        http,
+        Req {
+            cfg,
+            method: "PUT",
+            name: CONNECTION_TEST_OBJECT,
+            query: "",
+            payload_hash: &hash,
+            body: Some((reqwest::Body::from(body), len)),
+        },
+    )
+    .await?;
     delete_object(http, cfg, CONNECTION_TEST_OBJECT).await
 }
 
@@ -385,7 +453,11 @@ async fn offsite(http: &reqwest::Client, cfg: &S3Config, data_key: &[u8; 32], fi
 }
 
 async fn open(config: &Config) -> Result<(PgPool, Integrations), String> {
-    let db = PgPoolOptions::new().max_connections(2).connect(&config.database_url).await.map_err(|e| e.to_string())?;
+    let db = PgPoolOptions::new()
+        .max_connections(2)
+        .connect(&config.database_url)
+        .await
+        .map_err(|e| e.to_string())?;
     let integ = crate::integrations::load(&db, config).await.map_err(|e| e.to_string())?;
     Ok((db, integ))
 }
@@ -447,7 +519,11 @@ async fn fetch_cmd(config: &Config, name: &str, out: &str) -> i32 {
         eprintln!("offsite backup is not set up");
         return 1;
     };
-    let object = if name.starts_with(PREFIX_OBJECT) { name.to_string() } else { format!("{PREFIX_OBJECT}{name}") };
+    let object = if name.starts_with(PREFIX_OBJECT) {
+        name.to_string()
+    } else {
+        format!("{PREFIX_OBJECT}{name}")
+    };
     let out = PathBuf::from(out);
     let cipher = out.with_extension("enc.part");
     let http = reqwest::Client::new();
@@ -519,7 +595,12 @@ async fn list_cmd(config: &Config) -> i32 {
         Ok(mut objects) => {
             objects.sort_by_key(|(_, at)| *at);
             for (key, at) in objects {
-                println!("{}  {}", key.trim_start_matches(PREFIX_OBJECT), at.with_timezone(&chrono::FixedOffset::east_opt(9 * 3600).expect("KST offset")).format("%Y-%m-%d %H:%M"));
+                println!(
+                    "{}  {}",
+                    key.trim_start_matches(PREFIX_OBJECT),
+                    at.with_timezone(&chrono::FixedOffset::east_opt(9 * 3600).expect("KST offset"))
+                        .format("%Y-%m-%d %H:%M")
+                );
             }
             0
         }
@@ -571,7 +652,12 @@ mod tests {
 
     #[test]
     fn sigv4_matches_aws_get_vanilla_vector() {
-        let c = Sigv4 { access: "AKIDEXAMPLE", secret: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY", region: "us-east-1", service: "service" };
+        let c = Sigv4 {
+            access: "AKIDEXAMPLE",
+            secret: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+            region: "us-east-1",
+            service: "service",
+        };
         let headers = [("host", "example.amazonaws.com"), ("x-amz-date", "20150830T123600Z")];
         let auth = authorization(&c, "GET", "/", "", &headers, EMPTY_SHA256, "20150830T123600Z");
         assert_eq!(
@@ -582,7 +668,12 @@ mod tests {
 
     #[test]
     fn sigv4_matches_aws_s3_get_object_example() {
-        let c = Sigv4 { access: "AKIAIOSFODNN7EXAMPLE", secret: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", region: "us-east-1", service: "s3" };
+        let c = Sigv4 {
+            access: "AKIAIOSFODNN7EXAMPLE",
+            secret: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            region: "us-east-1",
+            service: "s3",
+        };
         let headers = [
             ("host", "examplebucket.s3.amazonaws.com"),
             ("range", "bytes=0-9"),
@@ -590,7 +681,10 @@ mod tests {
             ("x-amz-date", "20130524T000000Z"),
         ];
         let auth = authorization(&c, "GET", "/test.txt", "", &headers, EMPTY_SHA256, "20130524T000000Z");
-        assert!(auth.ends_with("Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41"), "{auth}");
+        assert!(
+            auth.ends_with("Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41"),
+            "{auth}"
+        );
     }
 
     #[test]

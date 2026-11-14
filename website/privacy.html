@@ -34,7 +34,7 @@
   <main id="main" class="wrap doc">
 
     <h1>개인정보처리방침</h1>
-    <p class="note"><span data-fill="company.legal_name">[상호]</span>(이하 "회사")는 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고 고충을 신속히 처리하기 위해 다음과 같이 개인정보처리방침을 둡니다. 시행일: 2026년 11월 17일</p>
+    <p class="note">{{httpInclude "/v1/public/seller-info?field=legal_name"}}(이하 "회사")는 「개인정보 보호법」에 따라 이용자의 개인정보를 보호하고 고충을 신속히 처리하기 위해 다음과 같이 개인정보처리방침을 둡니다. 시행일: 2026년 11월 17일</p>
     <h2>1. 수집하는 개인정보 항목</h2>
     <table>
       <tr><th>구분</th><th>항목</th><th>수집 방법</th></tr>
@@ -89,7 +89,7 @@
     <h2>9. 안전성 확보 조치</h2>
     <ul><li>전 구간 암호화 통신(HTTPS)</li><li>정산 계좌·연동 키 암호화 저장(AES-256-GCM), 자동결제 키와 본인확인 정보(CI) 해시 저장</li><li>관리자 비밀번호 해시 저장, 로그인 실패 잠금, 권한 최소화</li><li>직원의 고객 연락처·정산 계좌 조회 기록 보관, 정기 점검</li><li>개인정보 보관 기간이 지난 정보의 자동 파기</li></ul>
     <h2>10. 개인정보 보호책임자</h2>
-    <p>성명: <span data-fill="company.privacy_officer">[개인정보 보호책임자]</span><br>연락처: <a data-support-email hidden></a> · <a data-support-phone hidden></a></p>
+    <p>성명: {{httpInclude "/v1/public/seller-info?field=privacy_officer"}}<br>연락처: {{httpInclude "/v1/public/seller-info?field=support_email"}} · {{httpInclude "/v1/public/seller-info?field=support_phone"}}</p>
     <p>개인정보침해신고센터(privacy.kisa.or.kr, 118), 개인정보분쟁조정위원회(www.kopico.go.kr, 1833-6972)에 문의할 수도 있습니다.</p>
     <h2>11. 변경 고지</h2>
     <p>이 방침이 바뀌면 시행 7일 전부터 앱과 웹사이트에 공지합니다. 국외 이전 항목이나 필수 동의 내용이 바뀌면 다시 동의를 받습니다.</p>
@@ -97,8 +97,8 @@
     <table><tr><th>시행일</th><th>내용</th><th>이전 버전</th></tr><tr><td>2026년 11월 17일</td><td>제정</td><td>-</td></tr></table>
   </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
-    <div><b data-t="f_support">고객센터</b><br><a data-support-phone hidden></a><br><a data-support-email hidden></a></div>
+    <div><p class="company">{{httpInclude "/v1/public/seller-info"}}</p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
+    <div><b data-t="f_support">고객센터</b><br>{{httpInclude "/v1/public/seller-info?field=support_phone"}}<br>{{httpInclude "/v1/public/seller-info?field=support_email"}}</div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>

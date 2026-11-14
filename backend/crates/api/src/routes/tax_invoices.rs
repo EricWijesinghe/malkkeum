@@ -79,7 +79,8 @@ pub struct InvoiceView {
     created_at: DateTime<Utc>,
 }
 
-const VIEW_COLUMNS: &str = "id, checkout_id, payment_id, business_number, company_name, representative, email, state, approval_number, issued_on, exported_at, created_at";
+const VIEW_COLUMNS: &str =
+    "id, checkout_id, payment_id, business_number, company_name, representative, email, state, approval_number, issued_on, exported_at, created_at";
 
 async fn view(db: &PgPool, id: Uuid) -> ApiResult<InvoiceView> {
     sqlx::query_as(&format!("SELECT {VIEW_COLUMNS} FROM tax_invoice_requests WHERE id = $1"))
@@ -105,7 +106,10 @@ async fn request(State(s): State<AppState>, Customer(a): Customer, Path(checkout
         return Err(ApiError::BadRequest("email"));
     }
     let mut tx = s.db.begin().await?;
-    sqlx::query("DELETE FROM tax_invoice_requests WHERE checkout_id = $1 AND state = 'pending'").bind(checkout).execute(&mut *tx).await?;
+    sqlx::query("DELETE FROM tax_invoice_requests WHERE checkout_id = $1 AND state = 'pending'")
+        .bind(checkout)
+        .execute(&mut *tx)
+        .await?;
     let id: Uuid = sqlx::query_scalar(
         "INSERT INTO tax_invoice_requests (checkout_id, business_number, company_name, representative, business_type, business_item, address, email, state)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending') RETURNING id",
@@ -198,8 +202,19 @@ async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<Peri
         })
         .collect();
     let ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
-    sqlx::query("UPDATE tax_invoice_requests SET exported_at = now(), updated_at = now() WHERE id = ANY($1)").bind(&ids).execute(&s.db).await?;
-    audit(&s.db, "staff", Some(a.id), "finance.export", "tax_invoices", json!({ "from": from, "to": to, "rows": ids.len() })).await?;
+    sqlx::query("UPDATE tax_invoice_requests SET exported_at = now(), updated_at = now() WHERE id = ANY($1)")
+        .bind(&ids)
+        .execute(&s.db)
+        .await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "finance.export",
+        "tax_invoices",
+        json!({ "from": from, "to": to, "rows": ids.len() }),
+    )
+    .await?;
     let name = format!("malkkeum-tax-invoices-{from}_{to}");
     csv_response(&name, finance::csv_document(&tax::tax_invoice_document(&invoice_rows)))
 }
@@ -217,12 +232,14 @@ async fn mark_issued(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<
     if !shape_ok {
         return Err(ApiError::BadRequest("approval_number"));
     }
-    let updated = sqlx::query("UPDATE tax_invoice_requests SET state = 'issued', approval_number = $2, issued_on = $3, updated_at = now() WHERE id = $1 AND state = 'requested'")
-        .bind(id)
-        .bind(approval)
-        .bind(b.issued_on)
-        .execute(&s.db)
-        .await?;
+    let updated = sqlx::query(
+        "UPDATE tax_invoice_requests SET state = 'issued', approval_number = $2, issued_on = $3, updated_at = now() WHERE id = $1 AND state = 'requested'",
+    )
+    .bind(id)
+    .bind(approval)
+    .bind(b.issued_on)
+    .execute(&s.db)
+    .await?;
     if updated.rows_affected() == 0 {
         return Err(ApiError::Conflict("not_requested"));
     }

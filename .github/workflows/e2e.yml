@@ -10,6 +10,8 @@ on:
   pull_request:
     paths:
       - deploy/**
+      - backend/crates/**
+      - backend/migrations/**
       - backend/Dockerfile
       - backend/.dockerignore
       - backend/Cargo.lock

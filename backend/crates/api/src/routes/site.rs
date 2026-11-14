@@ -54,7 +54,14 @@ async fn check_in(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) 
         .await?;
     best_effort(
         "check-in: customer",
-        notify(&s, Recipient::User(b.user_id), "booking.arrival", "청소팀이 도착했어요", &b.number, json!({ "booking_id": id })),
+        notify(
+            &s,
+            Recipient::User(b.user_id),
+            "booking.arrival",
+            "청소팀이 도착했어요",
+            &b.number,
+            json!({ "booking_id": id }),
+        ),
     )
     .await;
     s.hub.send(Recipient::Staff, "booking.updated", json!({ "booking_id": id }));
@@ -75,8 +82,11 @@ async fn check_out(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>)
 }
 
 async fn stored_code(s: &AppState, id: Uuid) -> ApiResult<Option<String>> {
-    let enc: Option<String> = sqlx::query_scalar("SELECT access_code_enc FROM bookings WHERE id = $1").bind(id).fetch_one(&s.db).await?;
-    Ok(enc.and_then(|e| crypto::decrypt(&s.config.data_key, &e)))
+    let enc: Option<String> = sqlx::query_scalar("SELECT access_code_enc FROM bookings WHERE id = $1")
+        .bind(id)
+        .fetch_one(&s.db)
+        .await?;
+    Ok(enc.and_then(|e| crypto::decrypt(&s.config.data_key, crypto::aad::ACCESS_CODE, &e)))
 }
 
 /// Assigned partner only, and only on the visit day (KST) while the job is active.

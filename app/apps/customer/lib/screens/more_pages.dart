@@ -505,7 +505,7 @@ class _FaqScreenState extends State<FaqScreen> {
                 child: ListView(
                   key: ValueKey(_category),
                   padding: const EdgeInsets.only(bottom: Space.gutter),
-                  children: [for (final f in shown) _FaqRow(item: f)],
+                  children: [for (final f in shown) FaqRow(item: f)],
                 ),
               ),
             ),
@@ -557,8 +557,8 @@ class _FaqScreenState extends State<FaqScreen> {
 }
 
 /// One question: teal "Q", the question and a chevron; the answer opens in a grey box.
-class _FaqRow extends StatelessWidget {
-  const _FaqRow({required this.item});
+class FaqRow extends StatelessWidget {
+  const FaqRow({super.key, required this.item});
   final ContentItem item;
 
   @override
