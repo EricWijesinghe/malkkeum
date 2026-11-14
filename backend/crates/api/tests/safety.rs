@@ -271,12 +271,63 @@ async fn completion_needs_a_check_in_or_an_owner_reason_that_is_audited(pool: Pg
     with_reason["check_in_override"] = json!("Arrival not recorded in the app; confirmed by phone");
     let (st, b) = call(&app, "POST", &url, Some(pro.as_str()), Some(with_reason)).await;
     assert_eq!(st, StatusCode::OK, "{b}");
-    let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'check_in.override' AND target = $1")
-        .bind(id.to_string())
-        .fetch_one(&pool)
-        .await
-        .expect("audit");
-    assert_eq!(audited, 1, "the override is recorded once");
+    let (role, actor, reason): (String, Option<Uuid>, Option<String>) =
+        sqlx::query_as("SELECT actor_role, actor_id, data->>'reason' FROM audit_log WHERE action = 'check_in.override' AND target = $1")
+            .bind(id.to_string())
+            .fetch_one(&pool)
+            .await
+            .expect("audit");
+    assert_eq!(role, "pro");
+    assert_eq!(actor, Some(pro_id(&pool, id).await));
+    assert_eq!(reason.as_deref(), Some("Arrival not recorded in the app; confirmed by phone"));
+    assert_eq!(audit_count(&pool, "check_in.override").await, 1, "the override is recorded once");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn member_cannot_override_a_missed_check_in(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0115").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    let team = pro_id(&pool, id).await;
+    register_photo(&pool, team).await;
+    let (member, member_id) = team_member(&app, &pool, team, "010-5400-0116").await;
+    assign_to(&pool, id, member_id).await;
+    let report = json!({
+        "before_photos": [PHOTO],
+        "after_photos": [PHOTO],
+        "checklist": [true, true, true, true],
+        "check_in_override": "Forgot to check in",
+    });
+
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{id}/complete"), Some(member.as_str()), Some(report)).await;
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("not_checked_in")), "{b}");
+    assert_eq!(audit_count(&pool, "check_in.override").await, 0, "a refused override writes nothing");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn override_on_a_checked_in_job_is_not_audited(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0117").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    register_photo(&pool, pro_id(&pool, id).await).await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let report = json!({
+        "before_photos": [PHOTO],
+        "after_photos": [PHOTO],
+        "checklist": [true, true, true, true],
+        "check_in_override": "Not needed, already arrived",
+    });
+
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{id}/complete"), Some(pro.as_str()), Some(report)).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    assert_eq!(
+        audit_count(&pool, "check_in.override").await,
+        0,
+        "no override is needed once the arrival is recorded"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
