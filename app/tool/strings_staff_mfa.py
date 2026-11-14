@@ -26,6 +26,6 @@ S = {
     "cMfaLocked": ["시도가 너무 많아요. 몇 분 뒤에 다시 시도하세요.", "Too many attempts. Wait a few minutes and try again."],
     "cStaffReset": ["비밀번호 재설정", "Reset password"],
     "cStaffResetConfirm": ["이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.", "Reset this staff member's password? They will be signed out everywhere."],
-    "cStaffResetTitle": ["재설정 토큰", "Reset token"],
-    "cStaffResetBody": ["이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.", "Give this token to the staff member. It works once, for 30 minutes. You cannot see it again after closing."],
+    "cStaffResetTitle": ["재설정 인증번호", "Reset code"],
+    "cStaffResetBody": ["이 인증번호는 24시간 동안 한 번만 쓸 수 있어요. 직원이 비밀번호를 정하면 모든 기기에서 로그아웃돼요.", "This code works once, for 24 hours. Once the staff member sets a password, they are signed out everywhere."],
 }

@@ -7,6 +7,7 @@ use crate::{
     ratelimit::within_quota,
     realtime::{Recipient, notify},
     routes::uploads,
+    settings_registry,
     state::AppState,
     util::own_upload,
 };
@@ -202,7 +203,8 @@ async fn open_thread(State(s): State<AppState>, a: Auth, Json(o): Json<OpenThrea
             .bind(a.id)
             .fetch_one(&mut *conn)
             .await?;
-            if !within_quota(opened, s.config.max_threads_per_day) {
+            let limit = settings_registry::get(&s.db, &s.config, "max_threads_per_day").await?;
+            if !within_quota(opened, limit) {
                 return Err(ApiError::Quota("thread_quota"));
             }
         }
@@ -263,7 +265,9 @@ pub fn validate_outgoing(o: &Outgoing, public_base: &str) -> ApiResult<(&'static
     match o {
         Outgoing::Text { text } if !text.trim().is_empty() && text.chars().count() <= MAX_TEXT => Ok(("text", json!({ "text": text.trim() }))),
         // Only our own upload URLs, so chats cannot carry arbitrary links as images.
-        Outgoing::Photo { url } => own_upload(public_base, url).map(|p| ("photo", json!({ "url": p }))).ok_or(ApiError::BadRequest("invalid_message")),
+        Outgoing::Photo { url } => own_upload(public_base, url)
+            .map(|p| ("photo", json!({ "url": p })))
+            .ok_or(ApiError::BadRequest("invalid_message")),
         _ => Err(ApiError::BadRequest("invalid_message")),
     }
 }
@@ -291,9 +295,7 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
 
 /// Staff-only routes, mounted under /admin: per-thread AI pause and the monthly AI usage line.
 pub fn admin_routes() -> Router<AppState> {
-    Router::new()
-        .route("/threads/{id}/ai", put(set_ai_paused))
-        .route("/ai/usage", get(ai_usage))
+    Router::new().route("/threads/{id}/ai", put(set_ai_paused)).route("/ai/usage", get(ai_usage))
 }
 
 #[derive(Deserialize)]

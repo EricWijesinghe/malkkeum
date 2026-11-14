@@ -59,7 +59,10 @@ class _OpsScreenState extends State<OpsScreen> {
               const SizedBox(height: Space.lg),
               SectionTitle(t.oJobs),
               const SizedBox(height: Space.sm),
-              _Jobs(jobs: (status['jobs'] as List? ?? const []).cast<Json>()),
+              _Jobs(
+                jobs: (status['jobs'] as List? ?? const []).cast<Json>(),
+                deadLetters: (status['sms_dead_letters'] as num? ?? 0).toInt(),
+              ),
               const SizedBox(height: Space.lg),
               SectionTitle(t.oIntegrations),
               const SizedBox(height: Space.sm),
@@ -272,8 +275,10 @@ String _jobName(T t, String job) => switch (job) {
 
 /// Each background job's last success in the API process (stalled = no success for several intervals).
 class _Jobs extends StatelessWidget {
-  const _Jobs({required this.jobs});
+  const _Jobs({required this.jobs, this.deadLetters = 0});
   final List<Json> jobs;
+  /// Texts (SMS, AlimTalk) that used up their retries. Shown on the outbox card.
+  final int deadLetters;
 
   @override
   Widget build(BuildContext context) {
@@ -333,6 +338,13 @@ class _Jobs extends StatelessWidget {
         Text(when, style: context.text.bodyMedium),
         if (errors > 0)
           Text(t.oJobErrors('$errors'), style: context.text.bodySmall),
+        if (j['job'] == 'notify_outbox' && deadLetters > 0)
+          Text(
+            t.oJobDeadLetters('$deadLetters'),
+            style: context.text.bodySmall?.copyWith(
+              color: context.colors.danger,
+            ),
+          ),
       ],
     );
   }

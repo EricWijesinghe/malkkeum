@@ -108,7 +108,12 @@ pub(super) struct PeriodQuery {
 }
 
 pub(super) fn resolve(q: &PeriodQuery) -> ApiResult<(NaiveDate, NaiveDate)> {
-    Ok(finance::period(q.period.as_deref().unwrap_or("month"), q.anchor.unwrap_or_else(today_kst), q.from, q.to)?)
+    Ok(finance::period(
+        q.period.as_deref().unwrap_or("month"),
+        q.anchor.unwrap_or_else(today_kst),
+        q.from,
+        q.to,
+    )?)
 }
 
 #[derive(FromRow)]
@@ -222,7 +227,11 @@ impl From<Totals> for Metrics {
             net_revenue: t.gross - t.refunds,
             platform_fee: t.fee,
             vat_estimate: finance::vat_estimate(Won(t.fee)).0,
-            payouts: Payouts { paid: t.paid, pending: t.pending, held: t.held },
+            payouts: Payouts {
+                paid: t.paid,
+                pending: t.pending,
+                held: t.held,
+            },
         }
     }
 }
@@ -337,7 +346,10 @@ async fn partners(State(s): State<AppState>, _st: Staff, Query(q): Query<PeriodQ
     let rows = aggregate(&s.db, from, to, "year").await?;
     let by_pro = fold_by(&rows, |r| r.pro);
     let ids: Vec<Uuid> = by_pro.keys().copied().collect();
-    let names: Vec<ProName> = sqlx::query_as("SELECT id, name, team_name FROM pros WHERE id = ANY($1)").bind(&ids).fetch_all(&s.db).await?;
+    let names: Vec<ProName> = sqlx::query_as("SELECT id, name, team_name FROM pros WHERE id = ANY($1)")
+        .bind(&ids)
+        .fetch_all(&s.db)
+        .await?;
     let mut out: Vec<PartnerRow> = names
         .into_iter()
         .filter_map(|p| {
@@ -433,8 +445,20 @@ async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Quer
     let series = finance::buckets(grain, from, today_kst())
         .into_iter()
         .map(|key| match by_key.get(&key) {
-            Some(r) => EarnRow { key, jobs: r.jobs, gross: r.gross, fee: r.fee, net: r.net },
-            None => EarnRow { key, jobs: 0, gross: 0, fee: 0, net: 0 },
+            Some(r) => EarnRow {
+                key,
+                jobs: r.jobs,
+                gross: r.gross,
+                fee: r.fee,
+                net: r.net,
+            },
+            None => EarnRow {
+                key,
+                jobs: 0,
+                gross: 0,
+                fee: 0,
+                net: 0,
+            },
         })
         .collect();
     let next_payout: Option<NextPayout> = sqlx::query_as(
@@ -446,17 +470,19 @@ async fn partner_earnings(State(s): State<AppState>, Pro(a): Pro, Query(q): Quer
     .bind(a.id)
     .fetch_optional(&s.db)
     .await?;
-    let pending_total: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(net), 0)::bigint FROM settlements WHERE pro_id = $1 AND state IN ('pending','waiting_balance')",
-    )
-    .bind(a.id)
-    .fetch_one(&s.db)
-    .await?;
+    let pending_total: i64 =
+        sqlx::query_scalar("SELECT COALESCE(SUM(net), 0)::bigint FROM settlements WHERE pro_id = $1 AND state IN ('pending','waiting_balance')")
+            .bind(a.id)
+            .fetch_one(&s.db)
+            .await?;
     let paid_total: i64 = sqlx::query_scalar("SELECT COALESCE(SUM(net), 0)::bigint FROM settlements WHERE pro_id = $1 AND state = 'paid'")
         .bind(a.id)
         .fetch_one(&s.db)
         .await?;
-    let tax_type: String = sqlx::query_scalar("SELECT tax_type FROM pros WHERE id = $1").bind(a.id).fetch_one(&s.db).await?;
+    let tax_type: String = sqlx::query_scalar("SELECT tax_type FROM pros WHERE id = $1")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
     let estimate = tax::payout_withholding(&tax_type, Won(pending_total));
     Ok(Json(Earnings {
         next_payout,
@@ -562,6 +588,47 @@ struct SettlementRow {
     created_day: NaiveDate,
 }
 
+fn settlement_header() -> Vec<Cell> {
+    [
+        "정산ID",
+        "정산일",
+        "예약번호",
+        "서비스",
+        "방문일",
+        "파트너",
+        "팀명",
+        "총액",
+        "수수료",
+        "지급액",
+        "지급예정일",
+        "지급일",
+        "상태",
+    ]
+    .into_iter()
+    .map(text)
+    .collect()
+}
+
+fn settlement_cells(r: SettlementRow) -> Vec<Cell> {
+    let opt = |d: Option<NaiveDate>| text(d.map(|d| d.to_string()).unwrap_or_default());
+    vec![
+        text(r.id.to_string()),
+        text(r.created_day.to_string()),
+        text(r.number),
+        text(r.service_code),
+        text(r.visit_date.to_string()),
+        text(r.pro_name),
+        text(r.team_name),
+        Cell::Number(r.gross),
+        Cell::Number(r.fee),
+        Cell::Number(r.net),
+        opt(r.payout_date),
+        opt(r.paid_day),
+        text(r.state),
+    ]
+}
+
+/// Settlements in the KST range, one row each, then a 합계 row summing gross, fee and net of those rows.
 async fn export_settlements(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
     let (from, to) = resolve(&q)?;
     let rows: Vec<SettlementRow> = sqlx::query_as(
@@ -575,39 +642,12 @@ async fn export_settlements(State(s): State<AppState>, Admin(a): Admin, Query(q)
     .bind(to)
     .fetch_all(&s.db)
     .await?;
-    let opt = |d: Option<NaiveDate>| text(d.map(|d| d.to_string()).unwrap_or_default());
-    let mut doc = vec![vec![
-        text("정산ID"),
-        text("정산일"),
-        text("예약번호"),
-        text("서비스"),
-        text("방문일"),
-        text("파트너"),
-        text("팀명"),
-        text("총액"),
-        text("수수료"),
-        text("지급액"),
-        text("지급예정일"),
-        text("지급일"),
-        text("상태"),
-    ]];
-    doc.extend(rows.into_iter().map(|r| {
-        vec![
-            text(r.id.to_string()),
-            text(r.created_day.to_string()),
-            text(r.number),
-            text(r.service_code),
-            text(r.visit_date.to_string()),
-            text(r.pro_name),
-            text(r.team_name),
-            Cell::Number(r.gross),
-            Cell::Number(r.fee),
-            Cell::Number(r.net),
-            opt(r.payout_date),
-            opt(r.paid_day),
-            text(r.state),
-        ]
-    }));
+    let (gross, fee, net) = rows.iter().fold((0i64, 0i64, 0i64), |(g, f, n), r| (g + r.gross, f + r.fee, n + r.net));
+    let mut doc = vec![settlement_header()];
+    doc.extend(rows.into_iter().map(settlement_cells));
+    let mut total = vec![text("합계"), text(""), text(""), text(""), text(""), text(""), text("")];
+    total.extend([Cell::Number(gross), Cell::Number(fee), Cell::Number(net), text(""), text(""), text("")]);
+    doc.push(total);
     audit(&s.db, "staff", Some(a.id), "finance.export", "settlements", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("settlements", from, to), finance::csv_document(&doc))
 }
@@ -674,7 +714,12 @@ async fn export_withholding(State(s): State<AppState>, Admin(a): Admin, Query(q)
     .await?;
     let lines: Vec<tax::WithholdingLine> = rows
         .into_iter()
-        .map(|(day, payee, team, gross, tax_type)| tax::WithholdingLine { day, payee, team, split: tax::payout_withholding(&tax_type, Won(gross)) })
+        .map(|(day, payee, team, gross, tax_type)| tax::WithholdingLine {
+            day,
+            payee,
+            team,
+            split: tax::payout_withholding(&tax_type, Won(gross)),
+        })
         .collect();
     audit(&s.db, "staff", Some(a.id), "finance.export", "withholding", json!({ "from": from, "to": to })).await?;
     csv_response(&export_name("withholding", from, to), finance::csv_document(&tax::withholding_document(&lines)))
@@ -692,13 +737,12 @@ struct VatQuery {
 async fn export_vat(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<VatQuery>) -> ApiResult<Response> {
     let (from, to) = tax::quarter_range(q.year, q.quarter)?;
     let methods = payment_methods(&s.db, from, to).await?;
-    let platform_fee: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(fee), 0)::bigint FROM settlements WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
-    )
-    .bind(from)
-    .bind(to)
-    .fetch_one(&s.db)
-    .await?;
+    let platform_fee: i64 =
+        sqlx::query_scalar("SELECT COALESCE(SUM(fee), 0)::bigint FROM settlements WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2")
+            .bind(from)
+            .bind(to)
+            .fetch_one(&s.db)
+            .await?;
     let refunds: i64 = sqlx::query_scalar(
         "SELECT COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2",
     )
@@ -707,7 +751,14 @@ async fn export_vat(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<
     .fetch_one(&s.db)
     .await?;
     let input = VatInput {
-        methods: methods.into_iter().map(|m| VatMethod { method: m.method, count: m.count, amount: m.amount }).collect(),
+        methods: methods
+            .into_iter()
+            .map(|m| VatMethod {
+                method: m.method,
+                count: m.count,
+                amount: m.amount,
+            })
+            .collect(),
         platform_fee: Won(platform_fee),
         refunds: Won(refunds),
     };
