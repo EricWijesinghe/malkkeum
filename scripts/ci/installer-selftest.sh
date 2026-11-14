@@ -267,7 +267,8 @@ t  "fail url, trailing /"  eq "$(fail_url https://hc-ping.com/abc/)" https://hc-
 t  "fail url keeps query"  eq "$(fail_url 'https://x.io/p?k=1')" 'https://x.io/p/fail?k=1'
 nt "alert takes update|backup only" sub cmd_alert ../../etc
 for job in update backup; do
-  t "cron alerts on a failed $job" grep -qF "dahae $job >> \$DIR/backups/$job.log 2>&1 || \$BIN/dahae alert $job" "$ROOT/deploy/install.sh"
+  cmd=$job; [ "$job" = update ] && cmd=auto-update
+  t "cron alerts on a failed $job" grep -qF "dahae $cmd >> \$DIR/backups/$job.log 2>&1 || \$BIN/dahae alert $job" "$ROOT/deploy/install.sh"
 done
 
 # ---- publish-delivery.sh: channel branches + immutable annotated tag (a local bare repo stands in for DIST_REPO) ----
@@ -358,8 +359,7 @@ load_answers "$SB/answers"
 t  "answers: domain"                     eq "$MALKKEUM_DOMAIN" answers.example.kr
 t  "answers: email"                      eq "$MALKKEUM_EMAIL" owner@example.kr
 t  "answers: other keys ignored"         eq "${MALKKEUM_EVIL:-}" ""
-MALKKEUM_DOMAIN=keep.example.kr load_answers "$SB/answers"
-t  "answers: environment wins"           eq "$MALKKEUM_DOMAIN" keep.example.kr
+t  "answers: environment wins"           eq "$(export MALKKEUM_DOMAIN=keep.example.kr; load_answers "$SB/answers"; printf '%s' "$MALKKEUM_DOMAIN")" keep.example.kr
 printf 'DOMAIN=a b.kr\n' > "$SB/answers-bad"
 nt "answers: space in value refused"     sub load_answers "$SB/answers-bad"
 unset MALKKEUM_DOMAIN MALKKEUM_EMAIL
