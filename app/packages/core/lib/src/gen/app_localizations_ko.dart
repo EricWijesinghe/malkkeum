@@ -71,6 +71,169 @@ class TKo extends T {
   String get aiCapHint => '숫자만 입력해요. 비워두면 기본값을 써요.';
 
   @override
+  String get cAppLinkTitle => '앱 링크';
+
+  @override
+  String get cAppLinkHint =>
+      '네이버 로그인 후 앱으로 돌아오게 하는 연결 정보예요. 저장하면 바로 적용돼요. 잘 모르면 개발자에게 맡기세요.';
+
+  @override
+  String get cAppLinkAndroidLabel => '안드로이드 서명 지문 (SHA-256)';
+
+  @override
+  String get cAppLinkAndroidHint => '한 줄에 하나씩, 콜론(:)으로 나눈 32쌍의 값이에요. 최대 8개.';
+
+  @override
+  String get cAppLinkTeamLabel => '애플 팀 ID (10자리)';
+
+  @override
+  String get cAppLinkSourceDb => '콘솔에서 저장한 값을 쓰고 있어요';
+
+  @override
+  String get cAppLinkSourceEnv => '서버 설정 값을 쓰고 있어요';
+
+  @override
+  String get cAppLinkAndroidOn => '안드로이드 앱 링크: 켜짐';
+
+  @override
+  String get cAppLinkAndroidOff => '안드로이드 앱 링크: 꺼짐';
+
+  @override
+  String get cAppLinkIosOn => '아이폰 앱 링크: 켜짐';
+
+  @override
+  String get cAppLinkIosOff => '아이폰 앱 링크: 꺼짐';
+
+  @override
+  String get cAppLinkNone => '값이 없으면 두 연결이 꺼져요. 네이버 로그인 후 앱으로 돌아오지 않을 수 있어요.';
+
+  @override
+  String get cAppLinkChecked => '확인했어요. 아직 저장하지 않았어요.';
+
+  @override
+  String get cAppLinkCheck => '확인';
+
+  @override
+  String get cAudit => '활동 기록';
+
+  @override
+  String get audIntro => '누가 언제 무엇을 했는지 최신순으로 보여요. 기록은 지울 수 없어요.';
+
+  @override
+  String get audPeriodToday => '오늘';
+
+  @override
+  String get audPeriod7 => '최근 7일';
+
+  @override
+  String get audPeriod30 => '최근 30일';
+
+  @override
+  String get audPeriodAll => '전체 기간';
+
+  @override
+  String get audFilterWho => '누가';
+
+  @override
+  String get audFilterWhat => '무엇을';
+
+  @override
+  String get audWhoAll => '모두';
+
+  @override
+  String get audWhatAll => '모든 작업';
+
+  @override
+  String get audRoleStaff => '직원';
+
+  @override
+  String get audRoleCustomer => '고객';
+
+  @override
+  String get audRolePro => '파트너';
+
+  @override
+  String get audRoleSystem => '자동 처리';
+
+  @override
+  String get audCatCase => '사건·환불';
+
+  @override
+  String get audCatBooking => '예약';
+
+  @override
+  String get audCatCustomer => '고객 정보';
+
+  @override
+  String get audCatStaff => '직원 관리';
+
+  @override
+  String get audCatSettlement => '정산';
+
+  @override
+  String get audCatPoints => '포인트';
+
+  @override
+  String get audCatService => '서비스·가격';
+
+  @override
+  String get audActCaseRefund => '사건 환불';
+
+  @override
+  String get audActCaseUpdate => '사건 처리 변경';
+
+  @override
+  String get audActPointsAdjust => '포인트 조정';
+
+  @override
+  String get audActPiiView => '고객 연락처 조회';
+
+  @override
+  String get audActPiiList => '고객 검색';
+
+  @override
+  String get audActStaffCreate => '직원 추가';
+
+  @override
+  String get audActStaffActive => '직원 사용 여부 변경';
+
+  @override
+  String get audActSettlementHold => '정산 보류 변경';
+
+  @override
+  String get audActServiceUpdate => '서비스 수정';
+
+  @override
+  String get audUnknownActor => '알 수 없음';
+
+  @override
+  String get audOtherAction => '기타 작업';
+
+  @override
+  String get audTarget => '대상';
+
+  @override
+  String get audDetailTitle => '상세 내용';
+
+  @override
+  String get audActionCode => '작업 코드';
+
+  @override
+  String get audNoDetail => '기록된 내용이 없어요';
+
+  @override
+  String get audEmpty => '조건에 맞는 기록이 없어요';
+
+  @override
+  String get audLoadMore => '더 보기';
+
+  @override
+  String get audClose => '닫기';
+
+  @override
+  String get audRange => '기간 선택';
+
+  @override
   String get apSocialOr => '또는';
 
   @override
@@ -264,6 +427,158 @@ class TKo extends T {
 
   @override
   String get cSetupHostingProvider => '호스팅 서비스 제공자';
+
+  @override
+  String get cgTabPeak => '피크 요금';
+
+  @override
+  String get cgTabQuality => '품질 기준';
+
+  @override
+  String get cgTabDemo => '샘플 데이터';
+
+  @override
+  String get cgNewService => '새 상품';
+
+  @override
+  String get cgNewServiceTitle => '새 상품 만들기';
+
+  @override
+  String get cgServiceCode => '상품 코드 (영문 소문자)';
+
+  @override
+  String get cgServiceCodeHint => '영문 소문자, 숫자, _ 만 쓸 수 있어요. 만든 뒤에는 바꿀 수 없어요';
+
+  @override
+  String get cgServiceName => '화면에 보이는 이름';
+
+  @override
+  String get cgPriceFixed => '정해진 가격';
+
+  @override
+  String get cgPriceQuote => '방문 후 견적';
+
+  @override
+  String get cgServiceCreated => '상품을 만들었어요';
+
+  @override
+  String get cgArchiveHint => '끄면 보관돼요. 고객 화면에서 사라져요';
+
+  @override
+  String get cgArchived => '보관됨';
+
+  @override
+  String get cgCodeTaken => '같은 코드의 상품이 이미 있어요';
+
+  @override
+  String get cgServiceInvalid => '상품 코드나 가격을 다시 확인해 주세요';
+
+  @override
+  String get cgCodeInvalid => '숫자를 다시 확인해 주세요';
+
+  @override
+  String get cgPeakWeekend => '주말 할증 (%)';
+
+  @override
+  String get cgPeakHoliday => '공휴일 할증 (%)';
+
+  @override
+  String get cgPeakLunar => '명절 할증 (%)';
+
+  @override
+  String get cgPeakEvening => '저녁 할증 (%)';
+
+  @override
+  String get cgPeakEveningFrom => '저녁 시작 시각 (0~23시)';
+
+  @override
+  String get cgPeakEveningTo => '저녁 끝 시각 (1~24시)';
+
+  @override
+  String get cgPeakMax => '할증 합계 상한 (%)';
+
+  @override
+  String get cgPeakHint => '새 견적과 새 예약부터 적용돼요';
+
+  @override
+  String get cgQualityWarning => '주의 기준 (이 점수보다 낮으면 경고)';
+
+  @override
+  String get cgQualityPause => '자동 중지 기준 (이 점수보다 낮으면 파트너 일시 중지)';
+
+  @override
+  String get cgQualityHint => '바꾸면 다음 점수 계산부터 적용돼요';
+
+  @override
+  String get cgSubEdit => '일정 수정';
+
+  @override
+  String get cgSubCadence => '주기';
+
+  @override
+  String get cgSubWeekday => '요일';
+
+  @override
+  String get cgSubStartHour => '시작 시각';
+
+  @override
+  String get cgSubEditHint => '내일 방문은 그대로 두고, 그 뒤 예정된 방문을 새 일정으로 다시 잡아요';
+
+  @override
+  String get cgWeekdayMon => '월';
+
+  @override
+  String get cgWeekdayTue => '화';
+
+  @override
+  String get cgWeekdayWed => '수';
+
+  @override
+  String get cgWeekdayThu => '목';
+
+  @override
+  String get cgWeekdayFri => '금';
+
+  @override
+  String get cgWeekdaySat => '토';
+
+  @override
+  String get cgWeekdaySun => '일';
+
+  @override
+  String get cgDemoTitle => '데모용 샘플 데이터';
+
+  @override
+  String get cgDemoBody =>
+      '시연이나 교육용으로 가짜 고객, 파트너, 예약을 넣어요. 실제 예약이 있으면 넣을 수 없어요.';
+
+  @override
+  String get cgDemoLoad => '샘플 데이터 넣기';
+
+  @override
+  String get cgDemoClear => '샘플 데이터 지우기';
+
+  @override
+  String get cgDemoClearBody =>
+      '샘플 데이터만 지워요. 실제 기록은 그대로 남아요. 인증 앱에 보이는 6자리 코드를 입력하세요.';
+
+  @override
+  String get cgDemoOwnerCode => '인증 앱 6자리 코드';
+
+  @override
+  String get cgDemoLoaded => '샘플 데이터를 넣었어요';
+
+  @override
+  String get cgDemoCleared => '샘플 데이터를 지웠어요';
+
+  @override
+  String get cgDemoRealData => '실제 예약이 있어서 샘플 데이터를 넣을 수 없어요';
+
+  @override
+  String get cgDemoAlready => '샘플 데이터가 이미 들어 있어요';
+
+  @override
+  String get cgCodeWrong => '코드가 맞지 않아요. 새 코드를 입력하세요';
 
   @override
   String get cTitle => '운영 콘솔';
@@ -685,6 +1000,105 @@ class TKo extends T {
 
   @override
   String get cServerChange => '서버 주소 변경';
+
+  @override
+  String get svc_window => '창문 청소';
+
+  @override
+  String get svc_disinfection => '방역·소독';
+
+  @override
+  String get svcDesc_window => '창문 안팎을 창 크기별 개수대로 청소해요';
+
+  @override
+  String get svcDesc_disinfection => '필요한 방역과 소독을 골라 주세요';
+
+  @override
+  String get unitTitle_window => '창문 크기와 개수를\n골라 주세요.';
+
+  @override
+  String get unitTitle_disinfection => '방역 종류를\n골라 주세요.';
+
+  @override
+  String get unit_window_small => '작은 창 (1m 미만)';
+
+  @override
+  String get unit_window_large => '큰 창 (1m 이상)';
+
+  @override
+  String get unit_pest => '해충 방역';
+
+  @override
+  String get unit_mite_bedbug => '진드기·빈대 퇴치';
+
+  @override
+  String get unit_sanitize => '살균·바이러스 소독';
+
+  @override
+  String get unit_sick_house => '새집증후군 제거';
+
+  @override
+  String get unitShort_wall => '벽걸이';
+
+  @override
+  String get unitShort_stand => '스탠드';
+
+  @override
+  String get unitShort_two_in_one => '2in1';
+
+  @override
+  String get unitShort_ceiling => '천장형';
+
+  @override
+  String get unitShort_seat_1_2 => '1~2인용';
+
+  @override
+  String get unitShort_seat_3 => '3인용';
+
+  @override
+  String get unitShort_seat_4_plus => '4인용 이상';
+
+  @override
+  String get unitShort_l_shape => 'L자';
+
+  @override
+  String get unitShort_small => '작은 창';
+
+  @override
+  String get unitShort_large => '큰 창';
+
+  @override
+  String get unitShort_pest => '해충 방역';
+
+  @override
+  String get unitShort_mite_bedbug => '진드기·빈대';
+
+  @override
+  String get unitShort_sanitize => '살균·소독';
+
+  @override
+  String get unitShort_sick_house => '새집증후군';
+
+  @override
+  String get unitHint => '필요한 만큼 +, −로 골라 주세요';
+
+  @override
+  String countsDiscount(String percent) {
+    return '$percent% 할인 적용 (2개 이상 선택)';
+  }
+
+  @override
+  String get countMinus => '개수 줄이기';
+
+  @override
+  String get countPlus => '개수 늘리기';
+
+  @override
+  String get countSelect => '선택';
+
+  @override
+  String get svcNotes_disinfection =>
+      '가격은 약 30평 기준이에요\n더 넓은 집은 채팅에서 금액을 조정해 드려요';
 
   @override
   String get ok => '확인';
@@ -2672,6 +3086,18 @@ class TKo extends T {
   String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
 
   @override
+  String get err_invite_pending => '아직 비밀번호를 정하지 않은 초대예요. 직원이 인증번호를 입력하면 켜져요.';
+
+  @override
+  String get err_phone_taken => '이 휴대폰 번호는 다른 직원이 쓰고 있어요.';
+
+  @override
+  String get err_code_invalid => '인증번호가 맞지 않거나 시간이 지났어요. 관리자에게 새 번호를 받아 주세요.';
+
+  @override
+  String get err_no_phone => '휴대폰 번호가 없어요. 번호를 입력해 주세요.';
+
+  @override
   String get guestSheetTitle => '계속하려면 전화번호로 로그인하세요';
 
   @override
@@ -3057,6 +3483,81 @@ class TKo extends T {
   }
 
   @override
+  String get guestReasonQuote => '견적을 저장하고 예약하려면 로그인하세요';
+
+  @override
+  String get guestReasonBook => '예약을 확정하려면 로그인하세요';
+
+  @override
+  String get guestReasonChat => '상담원과 대화하려면 로그인하세요';
+
+  @override
+  String get guestReasonAccount => '내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요';
+
+  @override
+  String get guestAccountHint => '로그인하면 확인할 수 있어요';
+
+  @override
+  String guestPriceLine(String amount) {
+    return '예상 금액 $amount · 가입 없이 확인한 견적이에요';
+  }
+
+  @override
+  String get guestPeakNote => '방문 시간대에 따라 피크 요금이 더해질 수 있어요';
+
+  @override
+  String get guestBookWithQuote => '이 견적으로 예약하기';
+
+  @override
+  String get guestSeePrices => '가입 없이 가격 확인';
+
+  @override
+  String get guestFlowTitle => '예약 후 이렇게 진행돼요';
+
+  @override
+  String get guestFlowQuote => '견적';
+
+  @override
+  String get guestFlowQuoteBody => '집 조건을 알려주면 가격을 바로 보여드려요';
+
+  @override
+  String get guestFlowConfirm => '예약 확정';
+
+  @override
+  String get guestFlowConfirmBody => '날짜와 시간을 고르면 예약이 확정돼요';
+
+  @override
+  String get guestFlowVisit => '방문';
+
+  @override
+  String get guestFlowVisitBody => '약속한 시간에 담당 전문가가 방문해요';
+
+  @override
+  String get guestFlowDone => '완료·리뷰';
+
+  @override
+  String get guestFlowDoneBody => '작업 사진을 확인하고 후기를 남길 수 있어요';
+
+  @override
+  String get guestFirstQuoteCta => '첫 청소 견적 보기';
+
+  @override
+  String get guestFaqTitle => '자주 묻는 질문';
+
+  @override
+  String get guestChatCta => '상담원과 대화하기 (로그인 필요)';
+
+  @override
+  String welcomeOfferLine(String value, String days) {
+    return '첫 예약 $value 할인 · 가입 후 첫 예약 1회 · 발급일로부터 $days일';
+  }
+
+  @override
+  String referralOfferLine(String amount) {
+    return '친구 초대 시 둘 다 $amount';
+  }
+
+  @override
   String get locUseCurrent => '현재 위치로 찾기';
 
   @override
@@ -3092,6 +3593,9 @@ class TKo extends T {
 
   @override
   String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
+
+  @override
+  String get uMaintenanceBookingPaused => '점검 중에는 새 예약을 받지 않아요.';
 
   @override
   String get cmTab => '캠페인';
@@ -3213,6 +3717,69 @@ class TKo extends T {
   String anWeekAfter(String n) {
     return '$n주 후 예약';
   }
+
+  @override
+  String get ntNavLabel => '알림 문구';
+
+  @override
+  String get ntIntro =>
+      '고객과 청소팀이 앱 알림과 알림함에서 보는 문구를 바꿀 수 있어요. 비워 두면 기본 문구를 써요.';
+
+  @override
+  String get ntLangKo => '한국어';
+
+  @override
+  String get ntLangEn => '영어';
+
+  @override
+  String get ntBuiltIn => '기본 문구';
+
+  @override
+  String get ntUsingCustom => '직접 고친 문구를 쓰고 있어요';
+
+  @override
+  String get ntUsingBuiltIn => '기본 문구를 쓰고 있어요';
+
+  @override
+  String ntVars(String names) {
+    return '넣을 수 있는 값: $names';
+  }
+
+  @override
+  String get ntTitleField => '제목';
+
+  @override
+  String get ntBodyField => '내용';
+
+  @override
+  String get ntPreview => '미리 보기';
+
+  @override
+  String get ntPreviewResult => '이렇게 보여요';
+
+  @override
+  String get ntSave => '저장';
+
+  @override
+  String get ntRestore => '기본 문구로 되돌리기';
+
+  @override
+  String get ntRestored => '기본 문구로 되돌렸어요';
+
+  @override
+  String get ntErrVar => '허용되지 않은 값이 들어 있어요. 중괄호 안에는 위에 적힌 값만 넣어 주세요.';
+
+  @override
+  String get ntErrBraces => '중괄호가 짝이 맞지 않아요.';
+
+  @override
+  String get ntErrEmpty => '제목과 내용을 모두 입력해 주세요.';
+
+  @override
+  String get ntErrLong => '글자 수가 너무 많아요. 제목은 40자, 내용은 120자까지예요.';
+
+  @override
+  String get ntErrChars => '줄바꿈이나 조절 문자는 넣을 수 없어요.';
 
   @override
   String get cOps => '시스템 상태';
@@ -3447,6 +4014,11 @@ class TKo extends T {
   @override
   String oJobErrors(String count) {
     return '오류 $count회';
+  }
+
+  @override
+  String oJobDeadLetters(String count) {
+    return '발송 실패 $count건 (재시도 끝)';
   }
 
   @override
@@ -4175,6 +4747,178 @@ class TKo extends T {
   String get pvExportFailed => '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
 
   @override
+  String get prqTitle => '탈퇴·개인정보 요청';
+
+  @override
+  String get prqIntro =>
+      '고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.';
+
+  @override
+  String get prqPhone => '고객 전화번호';
+
+  @override
+  String get prqFind => '찾기';
+
+  @override
+  String get prqNotFound => '이 번호로 등록된 고객이 없어요.';
+
+  @override
+  String get prqBookings => '예약 수';
+
+  @override
+  String get prqExport => '자료 사본 받기 (CSV)';
+
+  @override
+  String get prqExported => '자료 사본을 저장했어요.';
+
+  @override
+  String get prqDelete => '탈퇴 처리';
+
+  @override
+  String get prqDeleteAdminOnly => '탈퇴 처리는 관리자만 할 수 있어요.';
+
+  @override
+  String get prqDeleteAsk =>
+      '고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.';
+
+  @override
+  String get prqPhoneAgain => '고객 전화번호 다시 입력';
+
+  @override
+  String get prqPhoneMismatch => '전화번호가 맞지 않아요.';
+
+  @override
+  String get prqDeleteDone => '탈퇴 처리가 끝났어요.';
+
+  @override
+  String get prqFailed => '처리하지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get prqLog => '처리 기록';
+
+  @override
+  String get prqLogEmpty => '아직 처리한 요청이 없어요.';
+
+  @override
+  String get prqKindExport => '자료 사본';
+
+  @override
+  String get prqKindDelete => '탈퇴';
+
+  @override
+  String get prqStatusDone => '완료';
+
+  @override
+  String get prqStatusFailed => '실패';
+
+  @override
+  String get prqBy => '처리한 직원';
+
+  @override
+  String get rnwTitle => '갱신 일정';
+
+  @override
+  String get rnwIntro =>
+      '도메인, 호스팅, 앱 스토어와 문자 계정의 갱신 날짜를 적어 두세요. 기한 30일 전과 7일 전에 휴대폰으로 문자를 보내 드려요.';
+
+  @override
+  String get rnwAdd => '갱신 항목 추가';
+
+  @override
+  String get rnwEmpty => '아직 등록한 갱신 항목이 없어요.';
+
+  @override
+  String get rnwLoadFailed => '목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get rnwName => '이름 (예: malkkeum.kr)';
+
+  @override
+  String get rnwNameError => '이름은 1~80자로 적어 주세요.';
+
+  @override
+  String get rnwKind => '종류';
+
+  @override
+  String get rnwDate => '갱신 기한';
+
+  @override
+  String get rnwPickDate => '날짜 고르기';
+
+  @override
+  String get rnwDateError => '갱신 기한 날짜를 골라 주세요.';
+
+  @override
+  String get rnwKindDomain => '도메인';
+
+  @override
+  String get rnwKindDomainAlias => '예전 도메인 (별칭)';
+
+  @override
+  String get rnwKindHosting => '호스팅 (서버 비용)';
+
+  @override
+  String get rnwKindApple => 'Apple 개발자 계정';
+
+  @override
+  String get rnwKindSolapi => '문자 발송 서비스 (Solapi)';
+
+  @override
+  String get rnwKindStorage => '외부 백업 저장소';
+
+  @override
+  String get rnwKindOther => '기타';
+
+  @override
+  String get rnwKindKeysTest => '비밀 키 사본 확인';
+
+  @override
+  String get rnwKeysNote => '마지막 시험 업로드에 성공한 날부터 1년이 기한이에요. 날짜는 자동으로 정해져요.';
+
+  @override
+  String rnwDaysLeft(String n) {
+    return '$n일 남음';
+  }
+
+  @override
+  String get rnwToday => '오늘이 기한이에요';
+
+  @override
+  String get rnwOverdue => '기한이 지났어요';
+
+  @override
+  String get rnwSmsNote =>
+      '기한 30일 전과 7일 전에 문자가 가요. 날짜를 바꾸면 새 기한 기준으로 다시 알려 드려요.';
+
+  @override
+  String get rnwEdit => '수정';
+
+  @override
+  String get rnwDelete => '삭제';
+
+  @override
+  String get rnwDeleteAsk => '이 항목을 목록에서 지워요. 이 항목의 문자 알림도 더 오지 않아요.';
+
+  @override
+  String get rnwSave => '저장';
+
+  @override
+  String get rnwCancel => '취소';
+
+  @override
+  String get rnwSaved => '저장했어요.';
+
+  @override
+  String get rnwDeleted => '삭제했어요.';
+
+  @override
+  String get rnwFailed => '저장하지 못했어요. 입력을 확인하고 다시 시도해 주세요.';
+
+  @override
+  String get cSetupColorContrast =>
+      '이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.';
+
+  @override
   String get safetyEmergency => '긴급 연락처';
 
   @override
@@ -4288,6 +5032,153 @@ class TKo extends T {
 
   @override
   String get caseSave => '저장';
+
+  @override
+  String get rulesTab => '운영 규칙';
+
+  @override
+  String get rulesIntro =>
+      '여기서 바꾼 값은 바로 적용되거나 서버를 다시 시작할 때 적용돼요. 값을 비워 두면 처음 설정값으로 돌아가요.';
+
+  @override
+  String get rulesGroupBusiness => '사업장 한도';
+
+  @override
+  String get rulesGroupMarketing => '광고 발송';
+
+  @override
+  String get rulesGroupPoints => '포인트';
+
+  @override
+  String get rulesGroupQuality => '파트너 품질';
+
+  @override
+  String get rulesGroupOps => '서버·알림 기준';
+
+  @override
+  String get rulesRange => '입력 가능 범위';
+
+  @override
+  String get rulesSource => '현재 값 출처';
+
+  @override
+  String get rulesSourceDb => '직접 바꾼 값';
+
+  @override
+  String get rulesSourceEnv => '설치 시 설정값';
+
+  @override
+  String get rulesSourceDefault => '기본값';
+
+  @override
+  String get rulesTightenDown => '기본값보다 낮게만 바꿀 수 있어요';
+
+  @override
+  String get rulesTightenUp => '기본값보다 높게만 바꿀 수 있어요';
+
+  @override
+  String get rulesApplyInstant => '바로 적용';
+
+  @override
+  String get rulesApplyRebuild => '서버를 다시 시작해야 적용돼요';
+
+  @override
+  String get rulesReadOnly => '여기서는 바꿀 수 없어요 (개발자에게 문의)';
+
+  @override
+  String get rulesReset => '기본값으로';
+
+  @override
+  String get rulesSave => '저장';
+
+  @override
+  String get rulesSaved => '저장했어요';
+
+  @override
+  String get rulesNoChanges => '바뀐 값이 없어요';
+
+  @override
+  String get rulesInvalid => '입력한 값을 확인해 주세요';
+
+  @override
+  String get rulePointsAdjustMax => '포인트 한 번에 지급·차감할 최대 점수';
+
+  @override
+  String get ruleUploadDailyQuota => '하루 사진 업로드 한도 (장)';
+
+  @override
+  String get ruleMaxOpenQuoteRequests => '동시에 열 수 있는 견적 요청 수';
+
+  @override
+  String get ruleMaxThreadsPerDay => '하루 고객 대화방 개설 한도';
+
+  @override
+  String get ruleReviewReportThreshold => '후기 신고 몇 명이면 숨길지';
+
+  @override
+  String get ruleNoshowGraceMinutes => '노쇼 판정 대기 시간 (분)';
+
+  @override
+  String get ruleAiChatRetentionDays => 'AI 상담 기록 보관 기간 (일)';
+
+  @override
+  String get ruleUploadOrphanDays => '연결 없는 사진 삭제 기간 (일)';
+
+  @override
+  String get ruleReconcileIntervalSecs => '결제 대사 주기 (초)';
+
+  @override
+  String get ruleFreqCapPerWeek => '고객 한 명에게 일주일 최대 광고 수';
+
+  @override
+  String get ruleNudgeRebookDays => '재예약 안내 발송 (방문 후 일수)';
+
+  @override
+  String get ruleQualityWindowDays => '품질 점수 집계 기간 (일)';
+
+  @override
+  String get ruleQualityOnTimeGraceMin => '정시 도착 허용 시간 (분)';
+
+  @override
+  String get ruleBackupStaleHours => '백업이 이 시간 넘게 없으면 빨간불 (시간)';
+
+  @override
+  String get ruleBackupLateHours => '백업이 이 시간 넘게 없으면 노란불 (시간)';
+
+  @override
+  String get ruleDiskLowPct => '디스크 여유가 이 비율 아래면 빨간불 (%)';
+
+  @override
+  String get ruleDiskWarnPct => '디스크 여유가 이 비율 아래면 노란불 (%)';
+
+  @override
+  String get ruleMaintenanceOn => '점검 모드 (새 예약 막기)';
+
+  @override
+  String get ruleMaintenanceMessage => '점검 안내 문구';
+
+  @override
+  String get rulesApplyStoreManual => '앱스토어에서 직접 수정해요';
+
+  @override
+  String get rulesMaxLength => '최대 글자 수';
+
+  @override
+  String get rulesDeleteWarning =>
+      '기간을 줄이면 기준보다 오래된 기록이 다음 정리 때 바로 삭제돼요. 삭제한 기록은 되돌릴 수 없어요.';
+
+  @override
+  String get rulesNoshowWarning => '노쇼 판정 대기 시간을 바꾸면 노쇼로 판정되는 기준이 바뀌어요.';
+
+  @override
+  String get err_tighten_only => '기본값을 넘는 값은 저장할 수 없어요. 기본값 쪽으로만 바꿀 수 있어요.';
+
+  @override
+  String get err_threshold_order =>
+      '노란불 기준과 빨간불 기준의 순서가 맞지 않아요. 두 값을 다시 확인해 주세요.';
+
+  @override
+  String get err_read_only_setting => '이 값은 여기서 바꿀 수 없어요. 개발자에게 문의해 주세요.';
 
   @override
   String get cSetup => '설정';
@@ -4471,6 +5362,24 @@ class TKo extends T {
   String get cSetupOptional => '선택';
 
   @override
+  String get cOwnerCodeTitle => '사장님 인증 코드';
+
+  @override
+  String get cOwnerCodeBody => '토스 지급 설정을 바꾸려면 인증 앱에 나온 6자리 코드를 입력하세요.';
+
+  @override
+  String get cOwnerCodeField => '6자리 인증 코드';
+
+  @override
+  String get cOwnerCodeConfirm => '확인';
+
+  @override
+  String get cOwnerCodeWrong => '인증 코드가 맞지 않아요. 앱에 지금 나온 코드를 입력해 주세요';
+
+  @override
+  String get cOwnerCodeLocked => '잘못된 코드가 여러 번 입력됐어요. 잠시 후 다시 시도해 주세요';
+
+  @override
   String get cIntPortone => '결제 (PortOne)';
 
   @override
@@ -4515,6 +5424,56 @@ class TKo extends T {
 
   @override
   String get cInvalidValue => '입력값을 확인해 주세요';
+
+  @override
+  String get cStaffInvite => '직원 초대';
+
+  @override
+  String get cStaffInviteTitle => '직원 초대하기';
+
+  @override
+  String get cStaffInviteBody =>
+      '직원 휴대폰으로 인증번호를 보내요. 직원은 이 번호로 24시간 안에 비밀번호를 정하면 돼요.';
+
+  @override
+  String get cStaffPhone => '휴대폰 번호';
+
+  @override
+  String get cStaffPhoneNeeded => '이 직원은 휴대폰 번호가 없어요. 번호를 입력하면 저장하고 인증번호를 보내요.';
+
+  @override
+  String get cStaffChannel => '인증번호 전달 방법';
+
+  @override
+  String get cStaffChannelSms => '문자로 보내기';
+
+  @override
+  String get cStaffChannelCopy => '직접 전달 (복사)';
+
+  @override
+  String get cStaffCodeTitle => '인증번호';
+
+  @override
+  String get cStaffCodeBody =>
+      '이 번호를 직원에게 전달하세요. 한 번만 쓸 수 있고 24시간 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+
+  @override
+  String get cStaffSentSms => '문자를 보냈어요. 직원은 24시간 안에 입력해야 해요.';
+
+  @override
+  String get cStaffInvited => '초대했어요';
+
+  @override
+  String get cStaffInvitePending => '초대 대기 중 (비밀번호 미설정)';
+
+  @override
+  String get cStaffAdminOnly => '관리자 권한은 관리자만 줄 수 있어요';
+
+  @override
+  String get cStaffInviteResend => '인증번호 다시 보내기';
+
+  @override
+  String get cStaffSendCode => '보내기';
 
   @override
   String get cMfaTitle => '2단계 인증';
@@ -4590,11 +5549,11 @@ class TKo extends T {
   String get cStaffResetConfirm => '이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.';
 
   @override
-  String get cStaffResetTitle => '재설정 토큰';
+  String get cStaffResetTitle => '재설정 인증번호';
 
   @override
   String get cStaffResetBody =>
-      '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+      '이 인증번호는 24시간 동안 한 번만 쓸 수 있어요. 직원이 비밀번호를 정하면 모든 기기에서 로그아웃돼요.';
 
   @override
   String get subTitle => '정기 청소';

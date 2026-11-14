@@ -26,11 +26,19 @@ class Guide {
     required this.site,
     required this.steps,
     required this.fields,
+    this.devHelp = false,
+    this.screenshots = const [],
   });
   final String Function(T) title;
   final String site;
   final List<Tr> steps;
   final Map<String, FieldGuide> fields;
+
+  /// Needs a developer or the company's account owner the first time (contracts, store or channel approval).
+  final bool devHelp;
+
+  /// Screenshot slots: a caption per picture to add later.
+  final List<Tr> screenshots;
 }
 
 const paymentMethodKeys = [
@@ -81,10 +89,21 @@ final guides = <String, Guide>{
         'Save, then press Test connection. Green means done!',
       ),
     ],
+    devHelp: true,
+    screenshots: const [
+      Tr('[결제 연동 → 식별코드 화면 캡처 자리]', '[Screenshot slot: Integration → IDs page]'),
+    ],
     fields: const {
       'store_id': FieldGuide(
         Tr('상점 아이디 (Store ID)', 'Store ID'),
         hint: Tr('store-로 시작해요', 'Starts with store-'),
+      ),
+      'cash_receipts': FieldGuide(
+        Tr('현금영수증 발급', 'Issue cash receipts'),
+        hint: Tr(
+          '꺼 두면 현금영수증을 발급하지 않아요. 켜기 전에 결제사 테스트 환경에서 먼저 확인하세요.',
+          'Off means no cash receipts are issued. Test in the PortOne sandbox before turning it on.',
+        ),
       ),
       'api_secret': FieldGuide(Tr('V2 API Secret', 'V2 API Secret')),
       'webhook_secret': FieldGuide(
@@ -146,6 +165,8 @@ final guides = <String, Guide>{
   'solapi': Guide(
     title: (t) => t.cIntSolapi,
     site: 'https://console.solapi.com',
+    devHelp: true,
+    screenshots: const [Tr('[화면 캡처 자리]', '[Screenshot slot]')],
     steps: const [
       Tr(
         'solapi.com 에 가입하고, [발신번호 관리] 에서 고객센터 번호를 등록해요. (통신서비스 이용증명원이 필요해요)',
@@ -209,6 +230,8 @@ final guides = <String, Guide>{
   'kakao': Guide(
     title: (t) => t.cIntKakao,
     site: 'https://developers.kakao.com/console/app',
+    devHelp: true,
+    screenshots: const [Tr('[화면 캡처 자리]', '[Screenshot slot]')],
     steps: const [
       Tr(
         'developers.kakao.com 에서 [내 애플리케이션] → [애플리케이션 추가하기] 를 눌러요.',
@@ -278,6 +301,8 @@ final guides = <String, Guide>{
   'apple': Guide(
     title: (t) => t.cIntApple,
     site: 'https://developer.apple.com/account/resources/identifiers/list',
+    devHelp: true,
+    screenshots: const [Tr('[화면 캡처 자리]', '[Screenshot slot]')],
     steps: const [
       Tr(
         'developer.apple.com → [Identifiers] 에서 고객 앱과 파트너 앱의 App ID 에 "Sign in with Apple" 을 켜요.',
@@ -332,6 +357,8 @@ final guides = <String, Guide>{
   'payout': Guide(
     title: (t) => t.cIntPayout,
     site: 'https://www.tosspayments.com',
+    devHelp: true,
+    screenshots: const [Tr('[화면 캡처 자리]', '[Screenshot slot]')],
     steps: const [
       Tr(
         '기본은 [직접 이체] 예요. 정산 화면에 계좌와 금액이 나오면 은행 앱으로 보내고 [이체 완료] 를 눌러요.',

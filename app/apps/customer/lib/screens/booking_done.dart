@@ -116,6 +116,10 @@ class DoneScreen extends StatelessWidget {
     final t = context.t;
     final b = booking;
     final minutes = b.minutes;
+    final service = context.app.service(b.serviceCode);
+    final counts = service != null && service.isCounts
+        ? t.unitCounts(service, b.countsOf(service.units.length))
+        : '';
     final road = b.j['address'] is Json
         ? (b.address['road_address'] as String? ?? '')
         : '';
@@ -176,9 +180,12 @@ class DoneScreen extends StatelessWidget {
                     for (final (i, row) in [
                       InfoRow(
                         t.dfSummaryService,
-                        minutes == null
-                            ? t.service(b.serviceCode)
-                            : '${t.service(b.serviceCode)} (${t.duration(minutes)})',
+                        [
+                          minutes == null
+                              ? t.service(b.serviceCode)
+                              : '${t.service(b.serviceCode)} (${t.duration(minutes)})',
+                          if (counts.isNotEmpty) counts,
+                        ].join('\n'),
                       ),
                       InfoRow(
                         t.dfSummaryWhen,

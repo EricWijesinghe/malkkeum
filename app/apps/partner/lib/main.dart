@@ -31,22 +31,14 @@ Future<void> _start() async {
   _errors.send = (body) async => api.post('/client-errors', body);
   final locale = LocaleController();
   final theme = ThemeController();
-  await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  final brand = BrandController(api: api, fallback: partnerBrand);
+  await Future.wait([session.restore(), locale.restore(), theme.restore(), brand.restore()]);
   // One refresh now instead of a 401 on every first screen call.
   api.warmUp().ignore();
-  final app = PartnerState(
-    api,
-    Realtime(api),
-    outbox: await CompletionOutbox.open(),
-  );
-  runApp(
-    PartnerApp(
-      session: session,
-      app: app,
-      locale: locale,
-      theme: theme,
-    ),
-  );
+  // The business's colours and logo; the saved brand paints until this answers (and stays if offline).
+  brand.refresh().ignore();
+  final app = PartnerState(api, Realtime(api), outbox: await CompletionOutbox.open());
+  runApp(PartnerApp(session: session, app: app, locale: locale, theme: theme, brand: brand));
   // Back from the background: a fresh socket; its resync reloads jobs and drains the outbox.
   Foreground(onResume: app.realtime.reconnect);
   // Push (Firebase, launch tap) after the first frame, as in the customer app: keeps cold start fast.
@@ -61,51 +53,53 @@ class PartnerApp extends StatelessWidget {
     required this.app,
     required this.locale,
     required this.theme,
+    this.brand,
   });
   final Session session;
   final PartnerState app;
   final LocaleController locale;
   final ThemeController theme;
+  final BrandController? brand;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: Listenable.merge([locale, session, theme]),
-    builder: (context, _) => Deps(
-      app: app,
-      session: session,
-      locale: locale,
-      theme: theme,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) => DesktopColumn(
-          child: UpdateGate(
-            api: session.api,
-            app: 'partner',
-            child: RemoteConfigGate(
+    listenable: Listenable.merge([locale, session, theme, brand]),
+    builder: (context, _) => BrandScope(
+      brand: brand?.brand ?? partnerBrand,
+      child: Deps(
+        app: app,
+        session: session,
+        locale: locale,
+        theme: theme,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          builder: (context, child) => DesktopColumn(
+            child: UpdateGate(
               api: session.api,
-              child: child ?? const SizedBox.shrink(),
+              app: 'partner',
+              child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
             ),
           ),
+          onGenerateTitle: (_) => (brand?.brand ?? partnerBrand).name,
+          theme: buildTheme(brand?.brand ?? partnerBrand, Brightness.light),
+          darkTheme: buildTheme(brand?.brand ?? partnerBrand, Brightness.dark),
+          themeMode: theme.mode,
+          themeAnimationDuration: const Duration(milliseconds: 280),
+          themeAnimationCurve: Motion.ease,
+          locale: locale.locale,
+          supportedLocales: LocaleController.supported,
+          localizationsDelegates: const [
+            T.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: !session.signedIn
+              ? const PartnerIntro()
+              : session.role == 'member'
+              ? const MemberShell()
+              : const Gate(),
         ),
-        onGenerateTitle: (_) => partnerBrand.name,
-        theme: buildTheme(partnerBrand, Brightness.light),
-        darkTheme: buildTheme(partnerBrand, Brightness.dark),
-        themeMode: theme.mode,
-        themeAnimationDuration: const Duration(milliseconds: 280),
-        themeAnimationCurve: Motion.ease,
-        locale: locale.locale,
-        supportedLocales: LocaleController.supported,
-        localizationsDelegates: const [
-          T.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: !session.signedIn
-            ? const PartnerIntro()
-            : session.role == 'member'
-            ? const MemberShell()
-            : const Gate(),
       ),
     ),
   );

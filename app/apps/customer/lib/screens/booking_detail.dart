@@ -128,14 +128,21 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     ),
   );
 
+  /// "벽걸이 1 · 스탠드 2" for a counts booking; null when the booking carries no counts.
+  String? _countsLabel(T t, Service service, Booking b) {
+    final line = t.unitCounts(service, b.countsOf(service.units.length));
+    return line.isEmpty ? null : line;
+  }
+
   Widget _body(Booking b) {
     final t = context.t;
     final service = context.app.service(b.serviceCode);
     final hue = ServiceHues.of(b.serviceCode);
-    final unit =
-        b.unitIndex != null &&
-            service != null &&
-            b.unitIndex! < service.units.length
+    final unit = service == null
+        ? null
+        : service.isCounts
+        ? _countsLabel(t, service, b)
+        : b.unitIndex != null && b.unitIndex! < service.units.length
         ? t.unit(service.units[b.unitIndex!].labelKey)
         : null;
     return ListView(
@@ -335,8 +342,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             label: Text(t.bookAgain),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) =>
-                    ServiceScreen(service: service, initialUnit: b.unitIndex),
+                builder: (_) => ServiceScreen(
+                  service: service,
+                  initialUnit: b.unitIndex,
+                  initialCounts: b.countsOf(service.units.length),
+                ),
               ),
             ),
           ),
@@ -496,6 +506,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (service == null) return;
     final draft = BookingDraft(service)
       ..unitIndex = b.unitIndex
+      ..counts = b.countsOf(service.units.length)
       ..date = b.visitDate
       ..hour = b.startHour;
     await Navigator.of(context).push(

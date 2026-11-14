@@ -25,7 +25,6 @@ pub const SUPPORTED_LOCALES: [&str; 2] = ["ko", "en"];
 const MAX_NAME_LEN: usize = 40;
 const MAX_ADDRESS_LEN: usize = 200;
 
-
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/me", get(profile).patch(update_profile).delete(delete_account))
@@ -117,8 +116,16 @@ async fn identity_session(State(s): State<AppState>, Customer(a): Customer) -> A
         return Err(ApiError::Unavailable("provider_not_configured"));
     }
     // Dev ids keep the `dev:` prefix the dev provider accepts; live ids are opaque.
-    let id = if s.config.dev_mode { format!("dev:{}", Uuid::now_v7().simple()) } else { format!("idv-{}", Uuid::now_v7().simple()) };
-    sqlx::query("INSERT INTO identity_sessions (id, user_id) VALUES ($1, $2)").bind(&id).bind(a.id).execute(&s.db).await?;
+    let id = if s.config.dev_mode {
+        format!("dev:{}", Uuid::now_v7().simple())
+    } else {
+        format!("idv-{}", Uuid::now_v7().simple())
+    };
+    sqlx::query("INSERT INTO identity_sessions (id, user_id) VALUES ($1, $2)")
+        .bind(&id)
+        .bind(a.id)
+        .execute(&s.db)
+        .await?;
     Ok(Json(IdentitySession {
         store_id: s.config.portone.store_id.clone().unwrap_or_default(),
         channel_key: s.config.portone.channel_keys.get("identity").cloned().unwrap_or_default(),

@@ -4,11 +4,18 @@ import 'package:core/auth_pay.dart' show PendingPayment;
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
+import 'guest_draft.dart';
+
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
-  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics, this.startPush = PushService.start})
-    : cache = cache ?? JsonCache(),
-      analytics = analytics ?? Analytics.off() {
+  AppState(
+    this.api,
+    this.realtime, {
+    JsonCache? cache,
+    Analytics? analytics,
+    this.startPush = PushService.start,
+  }) : cache = cache ?? JsonCache(),
+       analytics = analytics ?? Analytics.off() {
     realtime.events.listen(_onEvent);
   }
 
@@ -27,7 +34,9 @@ class AppState extends ChangeNotifier {
       final s = await api.get('/me/consents') as Json;
       if (epoch != _epoch) return;
       final items = (s['items'] as List).cast<Json>();
-      analytics.setConsent(items.any((i) => i['kind'] == 'marketing' && i['granted'] == true));
+      analytics.setConsent(
+        items.any((i) => i['kind'] == 'marketing' && i['granted'] == true),
+      );
     } on Object {
       analytics.setConsent(false);
     }
@@ -54,6 +63,7 @@ class AppState extends ChangeNotifier {
     analytics.setConsent(false);
     // A payment still waiting for its confirm belongs to the account that paid (the server settles it).
     PendingPayment().clear().ignore();
+    GuestDraft(cache).clear().ignore();
     notifyListeners();
   }
 
@@ -126,7 +136,8 @@ class AppState extends ChangeNotifier {
   Future<void> restoreServices() async {
     if (services.isNotEmpty) return;
     final cached = await cache.read('services');
-    if (cached is! List || services.isNotEmpty) return; // the network won the race
+    if (cached is! List || services.isNotEmpty)
+      return; // the network won the race
     try {
       services = cached.map((e) => Service.fromJson(e as Json)).toList();
     } on Object {
@@ -190,7 +201,11 @@ class AppState extends ChangeNotifier {
   }
 
   /// [billingKey] comes from PortOne's card registration page; the server verifies it before saving.
-  Future<PaymentMethod> addMethod(String provider, String displayName, String billingKey) async {
+  Future<PaymentMethod> addMethod(
+    String provider,
+    String displayName,
+    String billingKey,
+  ) async {
     final r = await api.post('/me/payment-methods', {
       'provider': provider,
       'auth_key': billingKey,
@@ -256,6 +271,9 @@ class BookingDraft {
   BookingDraft(this.service);
   final Service service;
   int? unitIndex;
+
+  /// Counts service: how many of each option, in catalogue order (empty otherwise).
+  List<int> counts = const [];
   Address? address;
   DateTime? date;
   int? hour;
@@ -266,16 +284,25 @@ class BookingDraft {
   /// Steps in this booking's flow (3 when the address step was skipped).
   int totalSteps = 4;
 
-  int get listPrice => service.type == PricingType.fixed
-      ? service.price!
-      : (unitIndex == null ? 0 : service.units[unitIndex!].price);
-  int get minutes => service.type == PricingType.fixed
-      ? service.minutes!
-      : (unitIndex == null ? 0 : service.units[unitIndex!].minutes);
+  /// Total picked so far (counts services mirror the server's rounding; see Service.countsPrice).
+  int get listPrice => switch (service.type) {
+    PricingType.fixed => service.price!,
+    PricingType.counts => service.countsPrice(counts),
+    _ => unitIndex == null ? 0 : service.units[unitIndex!].price,
+  };
+  int get minutes => switch (service.type) {
+    PricingType.fixed => service.minutes!,
+    PricingType.counts => service.countsMinutes(counts),
+    _ => unitIndex == null ? 0 : service.units[unitIndex!].minutes,
+  };
+
+  /// A counts service needs at least one item before continuing.
+  bool get hasCounts => counts.any((n) => n > 0);
 
   Json toJson() => {
     'service_code': service.code,
-    'unit_index': unitIndex,
+    'unit_index': service.isCounts ? null : unitIndex,
+    if (service.isCounts) 'counts': counts,
     'address_id': address!.id,
     'visit_date':
         '${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}',

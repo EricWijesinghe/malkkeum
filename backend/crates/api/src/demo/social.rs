@@ -96,15 +96,33 @@ fn card(b: &BookingRec, at: DateTime<Utc>) -> Msg {
         "booking_id": b.id, "service_code": b.service, "visit_date": b.visit, "start_hour": b.start_hour,
         "answers": b.answers, "estimate": b.estimate,
     });
-    Msg { sender: "system", sender_id: None, kind: "card", body, at }
+    Msg {
+        sender: "system",
+        sender_id: None,
+        kind: "card",
+        body,
+        at,
+    }
 }
 
 fn text(sender: &'static str, sender_id: Option<Uuid>, line: &str, at: DateTime<Utc>) -> Msg {
-    Msg { sender, sender_id, kind: "text", body: json!({ "text": line }), at }
+    Msg {
+        sender,
+        sender_id,
+        kind: "text",
+        body: json!({ "text": line }),
+        at,
+    }
 }
 
 fn system(code: &str, params: Value, at: DateTime<Utc>) -> Msg {
-    Msg { sender: "system", sender_id: None, kind: "system", body: json!({ "code": code, "params": params }), at }
+    Msg {
+        sender: "system",
+        sender_id: None,
+        kind: "system",
+        body: json!({ "code": code, "params": params }),
+        at,
+    }
 }
 
 /// Customer-side thread of a booking: the card, quote and deposit steps, questions and the close-out.
@@ -119,7 +137,13 @@ async fn customer_thread(c: &mut Ctx<'_>, world: &World, b: &BookingRec, closed:
             "booking_id": b.id, "final_price": final_price, "deposit": deposit, "balance": final_price - deposit, "note": note,
             "service_code": b.service, "visit_date": b.visit, "start_hour": b.start_hour, "estimate": b.estimate, "answers": b.answers,
         });
-        msgs.push(Msg { sender: "staff", sender_id: Some(world.consultant), kind: "quote", body, at });
+        msgs.push(Msg {
+            sender: "staff",
+            sender_id: Some(world.consultant),
+            kind: "quote",
+            body,
+            at,
+        });
         at += Duration::minutes(30);
         msgs.push(text("customer", Some(user), "견적 확인했어요. 예약금 결제할게요.", at));
         // Same params as the live deposit message (booking_core.rs), so the app shows the amount.
@@ -133,10 +157,21 @@ async fn customer_thread(c: &mut Ctx<'_>, world: &World, b: &BookingRec, closed:
     }
     match b.status {
         3 => msgs.push(system("job_completed", json!({}), b.completed.unwrap_or(at) + Duration::minutes(5))),
-        -1 => msgs.push(system("booking_cancelled", json!({ "by": "customer", "refunded": b.refunded }), b.cancelled.unwrap_or(at))),
+        -1 => msgs.push(system(
+            "booking_cancelled",
+            json!({ "by": "customer", "refunded": b.refunded }),
+            b.cancelled.unwrap_or(at),
+        )),
         _ => {}
     }
-    let thread = Thread { audience: "customer", user: Some(user), pro: None, booking: Some(b.id), topic: b.service.to_string(), closed };
+    let thread = Thread {
+        audience: "customer",
+        user: Some(user),
+        pro: None,
+        booking: Some(b.id),
+        topic: b.service.to_string(),
+        closed,
+    };
     save_thread(c, thread, msgs).await
 }
 
@@ -158,7 +193,14 @@ async fn partner_thread(c: &mut Ctx<'_>, world: &World, b: &BookingRec, pi: usiz
         msgs.push(text("partner", Some(pro.id), PARTNER_LINES[2], at + Duration::hours(1)));
         msgs.push(text("staff", Some(world.admin), DESK_LINES[1], at + Duration::hours(2)));
     }
-    let thread = Thread { audience: "partner", user: None, pro: Some(pro.id), booking: Some(b.id), topic: b.service.to_string(), closed };
+    let thread = Thread {
+        audience: "partner",
+        user: None,
+        pro: Some(pro.id),
+        booking: Some(b.id),
+        topic: b.service.to_string(),
+        closed,
+    };
     save_thread(c, thread, msgs).await
 }
 
@@ -172,9 +214,21 @@ async fn support_threads(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError
             text("staff", Some(world.consultant), STAFF_LINES[i % STAFF_LINES.len()], start + Duration::hours(2)),
         ];
         if i % 2 == 0 {
-            msgs.push(text("customer", Some(cust.id), "그럼 그렇게 진행해 주세요. 감사합니다!", start + Duration::hours(5)));
+            msgs.push(text(
+                "customer",
+                Some(cust.id),
+                "그럼 그렇게 진행해 주세요. 감사합니다!",
+                start + Duration::hours(5),
+            ));
         }
-        let thread = Thread { audience: "customer", user: Some(cust.id), pro: None, booking: None, topic: SUPPORT_TOPICS[i % SUPPORT_TOPICS.len()].to_string(), closed: i > 5 };
+        let thread = Thread {
+            audience: "customer",
+            user: Some(cust.id),
+            pro: None,
+            booking: None,
+            topic: SUPPORT_TOPICS[i % SUPPORT_TOPICS.len()].to_string(),
+            closed: i > 5,
+        };
         save_thread(c, thread, msgs).await?;
     }
     Ok(())
@@ -190,7 +244,14 @@ async fn ops_threads(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError> {
             text("staff", Some(world.consultant), OPS_LINES[1], start + Duration::hours(3)),
             text("partner", Some(pro.id), OPS_LINES[2], start + Duration::hours(6)),
         ];
-        let thread = Thread { audience: "partner", user: None, pro: Some(pro.id), booking: None, topic: OPS_TOPICS[i].to_string(), closed: false };
+        let thread = Thread {
+            audience: "partner",
+            user: None,
+            pro: Some(pro.id),
+            booking: None,
+            topic: OPS_TOPICS[i].to_string(),
+            closed: false,
+        };
         save_thread(c, thread, msgs).await?;
     }
     Ok(())
@@ -198,7 +259,9 @@ async fn ops_threads(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError> {
 
 /// Writes one thread and its messages. Unread counters follow the last sender, like the live API.
 async fn save_thread(c: &mut Ctx<'_>, th: Thread, msgs: Vec<Msg>) -> Result<(), DemoError> {
-    let (Some(first), Some(last)) = (msgs.first().map(|m| m.at), msgs.last()) else { return Ok(()) };
+    let (Some(first), Some(last)) = (msgs.first().map(|m| m.at), msgs.last()) else {
+        return Ok(());
+    };
     let last_at = last.at;
     let unread_staff = i32::from(matches!(last.sender, "customer" | "partner"));
     let unread_member = i32::from(last.sender == "staff");
@@ -276,7 +339,12 @@ async fn notify(c: &mut Ctx<'_>, role: &str, owner: Uuid, kind: &str, data: Valu
 
 /// Fake device tokens for some customers and every verified pro. They never receive a push.
 async fn push_tokens(c: &mut Ctx<'_>, world: &World) -> Result<(), DemoError> {
-    let customers = world.customers.iter().enumerate().filter(|(i, _)| i % 5 != 0).map(|(i, cu)| ("customer", cu.id, i));
+    let customers = world
+        .customers
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % 5 != 0)
+        .map(|(i, cu)| ("customer", cu.id, i));
     let pros = world.pros.iter().filter(|p| p.verified && !p.deleted).map(|p| ("pro", p.id, 0));
     for (role, owner, i) in customers.chain(pros).collect::<Vec<_>>() {
         let token = format!("demo_fcm_{}", c.hex(16));
@@ -340,7 +408,11 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
             json!({"text": {"ko": "나가는 집과 들어가는 집을 함께 맡기면 일정을 한 번에 맞춰 드려요.", "en": "Book both homes together and we line up the two visits for you."}}),
             Some("service/move_in"),
         ),
-        (json!({"ko": "파트너 모집 중", "en": "Partners wanted"}), json!({"theme": "sun"}), Some("partner")),
+        (
+            json!({"ko": "파트너 모집 중", "en": "Partners wanted"}),
+            json!({"theme": "sun"}),
+            Some("partner"),
+        ),
     ];
     for (i, (title, body, link)) in banners.into_iter().enumerate() {
         insert_content(c, "banner", None, title, body, link, i as i32).await?;
@@ -355,25 +427,52 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
     .execute(&mut *c.tx)
     .await?;
     let news = [
-        (json!({"ko": "원룸 청소 서비스 지역 확대", "en": "Studio cleaning now covers more areas"}), "이번 달부터 성남시 분당구와 하남시에서도 원룸 청소를 예약할 수 있어요. 주소를 등록하면 예약 가능 여부를 바로 알려 드려요."),
-        (json!({"ko": "2in1 에어컨 청소 예약 오픈", "en": "2-in-1 aircon cleaning is open for booking"}), "스탠드와 벽걸이를 한 번에 청소하는 2in1 상품을 예약할 수 있어요. 분해 세척과 살균까지 포함돼요."),
-        (json!({"ko": "상담 운영 시간 안내", "en": "Consultation hours"}), "상담은 평일 09:00~18:00에 운영해요. 보통 10분 안에 답변드려요."),
+        (
+            json!({"ko": "원룸 청소 서비스 지역 확대", "en": "Studio cleaning now covers more areas"}),
+            "이번 달부터 성남시 분당구와 하남시에서도 원룸 청소를 예약할 수 있어요. 주소를 등록하면 예약 가능 여부를 바로 알려 드려요.",
+        ),
+        (
+            json!({"ko": "2in1 에어컨 청소 예약 오픈", "en": "2-in-1 aircon cleaning is open for booking"}),
+            "스탠드와 벽걸이를 한 번에 청소하는 2in1 상품을 예약할 수 있어요. 분해 세척과 살균까지 포함돼요.",
+        ),
+        (
+            json!({"ko": "상담 운영 시간 안내", "en": "Consultation hours"}),
+            "상담은 평일 09:00~18:00에 운영해요. 보통 10분 안에 답변드려요.",
+        ),
     ];
     for (i, (title, text)) in news.into_iter().enumerate() {
         insert_content(c, "news", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
     }
     let notices = [
-        (json!({"ko": "(샘플) 11월 정기 점검 안내", "en": "(sample) November maintenance"}), "11월 15일 새벽 2시부터 30분간 예약 시스템을 점검해요."),
-        (json!({"ko": "(샘플) 연말 운영 시간 안내", "en": "(sample) Year-end opening hours"}), "12월 31일은 오후 4시까지 상담을 받아요."),
+        (
+            json!({"ko": "(샘플) 11월 정기 점검 안내", "en": "(sample) November maintenance"}),
+            "11월 15일 새벽 2시부터 30분간 예약 시스템을 점검해요.",
+        ),
+        (
+            json!({"ko": "(샘플) 연말 운영 시간 안내", "en": "(sample) Year-end opening hours"}),
+            "12월 31일은 오후 4시까지 상담을 받아요.",
+        ),
     ];
     for (i, (title, text)) in notices.into_iter().enumerate() {
         insert_content(c, "notice", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
     }
     let tips = [
-        (json!({"ko": "에어컨 냄새의 원인은?", "en": "What causes aircon odours?"}), "냉각핀에 남은 물기에 곰팡이가 자라면 쉰 냄새가 나요. 끄기 전 10분간 송풍으로 말리고, 필터는 2주에 한 번 씻어 주세요."),
-        (json!({"ko": "에어컨 필터 청소 주기", "en": "How often to clean the aircon filter"}), "두세 달에 한 번 물로 헹구면 냄새와 전기료를 함께 줄일 수 있어요."),
-        (json!({"ko": "욕실 물때 없애는 법", "en": "Removing bathroom limescale"}), "식초 물을 뿌리고 10분 뒤 헹구면 대부분 지워져요."),
-        (json!({"ko": "이사 전 체크리스트", "en": "Move-out checklist"}), "보관 상자, 가전 분리, 가스·전기 정산일을 미리 적어 두세요."),
+        (
+            json!({"ko": "에어컨 냄새의 원인은?", "en": "What causes aircon odours?"}),
+            "냉각핀에 남은 물기에 곰팡이가 자라면 쉰 냄새가 나요. 끄기 전 10분간 송풍으로 말리고, 필터는 2주에 한 번 씻어 주세요.",
+        ),
+        (
+            json!({"ko": "에어컨 필터 청소 주기", "en": "How often to clean the aircon filter"}),
+            "두세 달에 한 번 물로 헹구면 냄새와 전기료를 함께 줄일 수 있어요.",
+        ),
+        (
+            json!({"ko": "욕실 물때 없애는 법", "en": "Removing bathroom limescale"}),
+            "식초 물을 뿌리고 10분 뒤 헹구면 대부분 지워져요.",
+        ),
+        (
+            json!({"ko": "이사 전 체크리스트", "en": "Move-out checklist"}),
+            "보관 상자, 가전 분리, 가스·전기 정산일을 미리 적어 두세요.",
+        ),
     ];
     let after_tips = tips.len() as i32;
     for (i, (title, text)) in tips.into_iter().enumerate() {
@@ -387,9 +486,18 @@ async fn content(c: &mut Ctx<'_>) -> Result<(), DemoError> {
     let title = json!({"ko": "(샘플) 매니저님은 어떤 교육을 받나요?", "en": "(sample) How are managers trained?"});
     insert_content(c, "tip", Some("manager-training"), title, training, None, after_tips).await?;
     let faqs = [
-        (json!({"ko": "(샘플) 취소는 언제까지 무료인가요?", "en": "(sample) Until when can I cancel for free?"}), "방문 2일 전까지 무료로 취소할 수 있어요."),
-        (json!({"ko": "(샘플) 견적은 어떻게 정해지나요?", "en": "(sample) How is a quote decided?"}), "평수와 짐 상태를 반영해 먼저 예상 금액을 드리고, 방문 전 파트너가 최종 견적을 보내요."),
-        (json!({"ko": "(샘플) 정산은 언제 받나요?", "en": "(sample) When are payouts made?"}), "작업이 끝나면 다음 주 정기 지급일에 입금돼요."),
+        (
+            json!({"ko": "(샘플) 취소는 언제까지 무료인가요?", "en": "(sample) Until when can I cancel for free?"}),
+            "방문 2일 전까지 무료로 취소할 수 있어요.",
+        ),
+        (
+            json!({"ko": "(샘플) 견적은 어떻게 정해지나요?", "en": "(sample) How is a quote decided?"}),
+            "평수와 짐 상태를 반영해 먼저 예상 금액을 드리고, 방문 전 파트너가 최종 견적을 보내요.",
+        ),
+        (
+            json!({"ko": "(샘플) 정산은 언제 받나요?", "en": "(sample) When are payouts made?"}),
+            "작업이 끝나면 다음 주 정기 지급일에 입금돼요.",
+        ),
     ];
     for (i, (title, text)) in faqs.into_iter().enumerate() {
         insert_content(c, "faq", None, title, json!({ "text": { "ko": text } }), None, i as i32).await?;
