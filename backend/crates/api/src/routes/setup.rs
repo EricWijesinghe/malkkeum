@@ -581,8 +581,18 @@ async fn put_section(
     Ok(Json(card(&s, sec, None).await?))
 }
 
-async fn clear_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>) -> ApiResult<Json<Value>> {
+async fn clear_section(
+    State(s): State<AppState>,
+    Admin(a): Admin,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Path(code): Path<String>,
+) -> ApiResult<Json<Value>> {
     let sec = section(&code)?;
+    // Disconnecting a saved Toss payout changes where money goes: same owner code as editing it.
+    if sec == Section::Payout && is_toss(&integrations::load_section(&s.db, &s.config.data_key, sec).await?) {
+        super::keys::owner_gate(&s, peer, &headers, a.id).await?;
+    }
     integrations::delete_section(&s.db, sec).await?;
     reload(&s).await?;
     audit(&s.db, a.role.as_str(), Some(a.id), "setup.integration_cleared", sec.code(), json!({})).await?;
