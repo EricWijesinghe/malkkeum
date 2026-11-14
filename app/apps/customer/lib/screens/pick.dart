@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
-import '../state.dart';
 import 'service.dart';
 
 const _popularCount = 4;
