@@ -3585,6 +3585,10 @@ class TEn extends T {
       'We are improving the service. Please come back shortly.';
 
   @override
+  String get uMaintenanceBookingPaused =>
+      'New bookings are paused during maintenance.';
+
+  @override
   String get cmTab => 'Campaigns';
 
   @override

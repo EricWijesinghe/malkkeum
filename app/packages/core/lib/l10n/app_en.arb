@@ -1099,6 +1099,7 @@
  "locNoAddress": "We could not find an address for your location. Please enter your address yourself.",
  "uMaintenanceTitle": "We are under maintenance",
  "uMaintenanceBody": "We are improving the service. Please come back shortly.",
+ "uMaintenanceBookingPaused": "New bookings are paused during maintenance.",
  "cmTab": "Campaigns",
  "cmNew": "New campaign",
  "cmAudience": "Audience",
