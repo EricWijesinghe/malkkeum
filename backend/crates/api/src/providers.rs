@@ -17,10 +17,10 @@ use crate::{
     ops,
 };
 use payout::{Transfer, TransferStatus};
-use reqwest::{Request, StatusCode};
 use rand::{RngCore, rngs::OsRng};
-use sqlx::PgPool;
+use reqwest::{Request, StatusCode};
 use serde_json::{Value, json};
+use sqlx::PgPool;
 use std::{
     sync::{Arc, RwLock},
     time::Duration,
@@ -119,7 +119,13 @@ impl Providers {
     pub fn new(cfg: Config, db: PgPool) -> Result<Self, reqwest::Error> {
         let http = reqwest::Client::builder().timeout(HTTP_TIMEOUT).build()?;
         let live = Arc::new(RwLock::new(Live::new(Integrations::from_config(&cfg))));
-        Ok(Self { cfg, http, live, db, portone_api: portone::API.into() })
+        Ok(Self {
+            cfg,
+            http,
+            live,
+            db,
+            portone_api: portone::API.into(),
+        })
     }
 
     /// Points the PortOne adapter at another base URL. Integration tests use it for a mock gateway.
@@ -360,7 +366,11 @@ impl Providers {
         let status = resp.status();
         let text = resp.text().await.map_err(|e| ProviderError::Upstream(e.to_string()))?;
         let body = payout::read_body(&text, key)?;
-        if status.is_success() { Ok(body) } else { Err(payout::classify(status, &body)) }
+        if status.is_success() {
+            Ok(body)
+        } else {
+            Err(payout::classify(status, &body))
+        }
     }
 
     pub async fn push(&self, tokens: &[String], title: &str, body: &str, data: &Value) -> Result<(), ProviderError> {

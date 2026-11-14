@@ -1,0 +1,26 @@
+# Console: customer rights requests screen (열람 사본, 탈퇴 처리, 처리 기록). Owner-facing, plain Korean first.
+# Columns: ko (source), en.
+S = {
+    "prqTitle": ["탈퇴·개인정보 요청", "Account deletion and data requests"],
+    "prqIntro": ["고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.", "When a customer asks for a copy of their data or to delete their account, find them by phone number and handle it here. Every step is logged. Deletion cannot be undone."],
+    "prqPhone": ["고객 전화번호", "Customer phone number"],
+    "prqFind": ["찾기", "Find"],
+    "prqNotFound": ["이 번호로 등록된 고객이 없어요.", "No customer is registered with this number."],
+    "prqBookings": ["예약 수", "Bookings"],
+    "prqExport": ["자료 사본 받기 (CSV)", "Download a copy of the data (CSV)"],
+    "prqExported": ["자료 사본을 저장했어요.", "The copy of the data was saved."],
+    "prqDelete": ["탈퇴 처리", "Delete account"],
+    "prqDeleteAdminOnly": ["탈퇴 처리는 관리자만 할 수 있어요.", "Only an admin can delete an account."],
+    "prqDeleteAsk": ["고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.", "Type the customer's phone number again to confirm. Their name and contact details are erased and this cannot be undone. Bookings and payment records stay, as the law requires."],
+    "prqPhoneAgain": ["고객 전화번호 다시 입력", "Type the phone number again"],
+    "prqPhoneMismatch": ["전화번호가 맞지 않아요.", "The phone number does not match."],
+    "prqDeleteDone": ["탈퇴 처리가 끝났어요.", "The account was deleted."],
+    "prqFailed": ["처리하지 못했어요. 잠시 후 다시 시도해 주세요.", "This could not be completed. Please try again shortly."],
+    "prqLog": ["처리 기록", "Request log"],
+    "prqLogEmpty": ["아직 처리한 요청이 없어요.", "No requests have been handled yet."],
+    "prqKindExport": ["자료 사본", "Data copy"],
+    "prqKindDelete": ["탈퇴", "Deletion"],
+    "prqStatusDone": ["완료", "Done"],
+    "prqStatusFailed": ["실패", "Failed"],
+    "prqBy": ["처리한 직원", "Handled by"],
+}

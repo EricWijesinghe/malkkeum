@@ -4,11 +4,18 @@ import 'package:core/auth_pay.dart' show PendingPayment;
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
+import 'guest_draft.dart';
+
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
-  AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics, this.startPush = PushService.start})
-    : cache = cache ?? JsonCache(),
-      analytics = analytics ?? Analytics.off() {
+  AppState(
+    this.api,
+    this.realtime, {
+    JsonCache? cache,
+    Analytics? analytics,
+    this.startPush = PushService.start,
+  }) : cache = cache ?? JsonCache(),
+       analytics = analytics ?? Analytics.off() {
     realtime.events.listen(_onEvent);
   }
 
@@ -27,7 +34,9 @@ class AppState extends ChangeNotifier {
       final s = await api.get('/me/consents') as Json;
       if (epoch != _epoch) return;
       final items = (s['items'] as List).cast<Json>();
-      analytics.setConsent(items.any((i) => i['kind'] == 'marketing' && i['granted'] == true));
+      analytics.setConsent(
+        items.any((i) => i['kind'] == 'marketing' && i['granted'] == true),
+      );
     } on Object {
       analytics.setConsent(false);
     }
@@ -54,6 +63,7 @@ class AppState extends ChangeNotifier {
     analytics.setConsent(false);
     // A payment still waiting for its confirm belongs to the account that paid (the server settles it).
     PendingPayment().clear().ignore();
+    GuestDraft(cache).clear().ignore();
     notifyListeners();
   }
 
@@ -70,6 +80,7 @@ class AppState extends ChangeNotifier {
   /// Points balance for the More counter. Null until it loads, or when the wallet is unreachable.
   int? points;
   List<Service> services = const [];
+  List<ServiceGroup> groups = const [];
   List<Address> addresses = const [];
   List<Coupon> coupons = const [];
   List<PaymentMethod> methods = const [];
@@ -84,6 +95,7 @@ class AppState extends ChangeNotifier {
   Future<void> loadAll() async {
     // Disk restore never gates the network: a slow or stuck keystore must not hold up sign-in data.
     unawaited(restoreServices());
+    unawaited(loadServiceGroups());
     await Future.wait([
       loadProfile(),
       loadServices(),
@@ -126,12 +138,24 @@ class AppState extends ChangeNotifier {
   Future<void> restoreServices() async {
     if (services.isNotEmpty) return;
     final cached = await cache.read('services');
-    if (cached is! List || services.isNotEmpty) return; // the network won the race
+    if (cached is! List || services.isNotEmpty)
+      return; // the network won the race
     try {
       services = cached.map((e) => Service.fromJson(e as Json)).toList();
     } on Object {
       // Stale snapshot from an older schema: ignore it and wait for the network.
       return;
+    }
+    notifyListeners();
+  }
+
+  /// Home tiles from the server. Empty when the server is old or offline: the home keeps the service list.
+  Future<void> loadServiceGroups() async {
+    try {
+      final raw = await api.get('/service-groups') as Json;
+      groups = serviceGroupsFrom(raw);
+    } on ApiException {
+      groups = const [];
     }
     notifyListeners();
   }
@@ -190,7 +214,11 @@ class AppState extends ChangeNotifier {
   }
 
   /// [billingKey] comes from PortOne's card registration page; the server verifies it before saving.
-  Future<PaymentMethod> addMethod(String provider, String displayName, String billingKey) async {
+  Future<PaymentMethod> addMethod(
+    String provider,
+    String displayName,
+    String billingKey,
+  ) async {
     final r = await api.post('/me/payment-methods', {
       'provider': provider,
       'auth_key': billingKey,

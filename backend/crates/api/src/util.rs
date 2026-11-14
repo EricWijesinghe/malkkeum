@@ -94,7 +94,14 @@ pub async fn refund_durably(s: &AppState, provider: &str, tx_id: &str, amount: i
         Err(e) => {
             // No retry record possible: refund now, and a failure must reach a human.
             tracing::error!(error = %e, provider, tx_id, amount, "refund queue unavailable");
-            let row = QueuedRefund { id: Uuid::nil(), provider: provider.into(), tx_id: tx_id.into(), amount, attempts: 0, checkout_id: checkout };
+            let row = QueuedRefund {
+                id: Uuid::nil(),
+                provider: provider.into(),
+                tx_id: tx_id.into(),
+                amount,
+                attempts: 0,
+                checkout_id: checkout,
+            };
             match attempt_refund(s, &row).await {
                 Ok(()) => Refund::Done,
                 Err(e) => {
@@ -130,7 +137,14 @@ pub async fn retry_refund(s: &AppState, r: &QueuedRefund) -> Refund {
     if let Some(error) = error {
         let (provider, tx_id, amount) = (r.provider.as_str(), r.tx_id.as_str(), r.amount);
         if attempts >= REFUND_ALERT_AFTER {
-            tracing::error!(error, provider, tx_id, amount, attempts, "COMPENSATING REFUND STILL FAILING - check the PG console");
+            tracing::error!(
+                error,
+                provider,
+                tx_id,
+                amount,
+                attempts,
+                "COMPENSATING REFUND STILL FAILING - check the PG console"
+            );
             crate::ops::record(&s.db, "payment_stuck", Err("refund_failed")).await;
         } else {
             tracing::warn!(error, provider, tx_id, amount, attempts, "compensating refund failed; queued for retry");
@@ -274,8 +288,14 @@ mod tests {
     fn upload_urls() {
         let b = "https://api.x";
         let stem = "0123456789abcdef0123456789abcdef";
-        assert_eq!(own_upload(b, &format!("https://api.x/files/{stem}.jpg")).as_deref(), Some(&*format!("/files/{stem}.jpg")));
-        assert_eq!(own_upload(b, &format!("https://api.x/v1/files/{stem}.png?exp=5&sig=ab")).as_deref(), Some(&*format!("/files/{stem}.png")));
+        assert_eq!(
+            own_upload(b, &format!("https://api.x/files/{stem}.jpg")).as_deref(),
+            Some(&*format!("/files/{stem}.jpg"))
+        );
+        assert_eq!(
+            own_upload(b, &format!("https://api.x/v1/files/{stem}.png?exp=5&sig=ab")).as_deref(),
+            Some(&*format!("/files/{stem}.png"))
+        );
         assert_eq!(own_upload(b, &format!("/files/{stem}.webp")).as_deref(), Some(&*format!("/files/{stem}.webp")));
         assert!(own_upload(b, "https://api.x/files/../etc/passwd").is_none());
         assert!(own_upload(b, &format!("https://evil.x/files/{stem}.jpg")).is_none());

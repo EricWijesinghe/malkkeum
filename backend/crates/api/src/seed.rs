@@ -31,17 +31,26 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
     for s in default_catalog() {
         // Unlisted codes go after the brief's eight, in catalogue order.
         let order = SEED_ORDER.iter().position(|c| *c == s.code).unwrap_or(SEED_ORDER.len());
-        let content = SEED_BADGES.iter().find(|(code, _)| *code == s.code).map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
-        sqlx::query("INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING")
-            .bind(&s.code)
-            .bind(sqlx::types::Json(&s.pricing))
-            .bind(s.needs_preparation)
-            .bind(s.max_pyeong.map(|p| p as i16))
-            .bind(order as i32)
-            .bind(content)
-            .execute(db)
-            .await?;
+        let content = SEED_BADGES
+            .iter()
+            .find(|(code, _)| *code == s.code)
+            .map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
+        sqlx::query(
+            "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING",
+        )
+        .bind(&s.code)
+        .bind(sqlx::types::Json(&s.pricing))
+        .bind(s.needs_preparation)
+        .bind(s.max_pyeong.map(|p| p as i16))
+        .bind(order as i32)
+        .bind(content)
+        .execute(db)
+        .await?;
     }
+    // Services seeded after the migrations take their home tile from the group list (NULL only: owner choices stay).
+    sqlx::query("UPDATE services s SET group_code = g.code FROM service_groups g WHERE s.code = ANY(g.services) AND s.group_code IS NULL")
+        .execute(db)
+        .await?;
     sqlx::query("INSERT INTO settings (key, value) VALUES ('quote_formula', $1) ON CONFLICT DO NOTHING")
         .bind(sqlx::types::Json(QuoteFormula::default()))
         .execute(db)
