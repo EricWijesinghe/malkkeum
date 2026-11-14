@@ -111,7 +111,7 @@ void main() {
 
     // Tapping a picked card clears it.
     await _tap(tester, find.text(koT.unit('pest')));
-    expect(_barAmount(90000), findsOneWidget);
+    expect(_barAmount(100000), findsOneWidget);
     expect(find.text(koT.countsDiscount('10')), findsNothing);
     await unmount(tester);
   });
