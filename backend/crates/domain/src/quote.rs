@@ -1,10 +1,7 @@
 //! Move-in / move-out estimate. The formula's numbers are configuration
 //! (editable in admin); the shape of the calculation is fixed here.
 
-use crate::{
-    DomainError, Won,
-    catalog::{Pricing, Service},
-};
+use crate::{DomainError, Won, catalog::Service};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -178,10 +175,20 @@ pub fn addon_total(lines: &[(Won, u8)], discount_bps: i64) -> Result<Won, Domain
     Ok(list.times_bps(FULL_BPS - discount_bps).round100())
 }
 
+/// Whole-home cleaning always prices as a lived-in deep clean with fully lived-in luggage,
+/// whatever the app sent. Other services keep the answers as given.
+pub fn fixed_answers_for(service_code: &str, mut a: QuoteAnswers) -> QuoteAnswers {
+    if service_code == "whole_home" {
+        a.cleaning_type = CleaningType::LivedInDeepClean;
+        a.luggage = LuggageState::FullyLivedIn;
+    }
+    a
+}
+
 /// Prices each add-on from the aircon service's unit options. Unknown, repeated or
 /// out-of-range units are rejected so the client cannot pick its own price.
 pub fn resolve_ac_addons(aircon: &Service, addons: &[AcAddon]) -> Result<Vec<(Won, u8)>, DomainError> {
-    let Pricing::Unit { units } = &aircon.pricing else {
+    let Some(units) = aircon.pricing.options() else {
         return Err(DomainError::InvalidUnit);
     };
     let mut seen: Vec<&str> = Vec::with_capacity(addons.len());
@@ -426,6 +433,44 @@ mod tests {
         assert_eq!(resolve_ac_addons(&s, &[addon("wall", 6)]), Err(DomainError::OutOfRange("ac_addons")));
         let studio = crate::catalog::default_catalog().into_iter().find(|s| s.code == "studio").unwrap();
         assert_eq!(resolve_ac_addons(&studio, &[addon("wall", 1)]), Err(DomainError::InvalidUnit));
+    }
+
+    #[test]
+    fn counts_services_resolve_as_addons_too() {
+        // The catalogue's aircon service is counts pricing; its add-ons still resolve to the unit price.
+        assert_eq!(resolve_ac_addons(&aircon(), &[addon("stand", 2)]), Ok(vec![(Won(119_000), 2)]));
+    }
+
+    #[test]
+    fn whole_home_always_prices_as_lived_in_deep_clean() {
+        let sent = QuoteAnswers {
+            cleaning_type: CleaningType::Standard,
+            luggage: LuggageState::Empty,
+            ..answers()
+        };
+        let fixed = fixed_answers_for("whole_home", sent.clone());
+        assert_eq!(
+            (fixed.cleaning_type, fixed.luggage),
+            (CleaningType::LivedInDeepClean, LuggageState::FullyLivedIn)
+        );
+        assert_eq!(fixed_answers_for("move_in", sent.clone()), sent);
+    }
+
+    #[test]
+    fn whole_home_two_room_apartment_estimate_is_445500() {
+        // 300,000 base x (1 + 10% deep clean + 15% lived-in luggage + 10% weekend peak) = 405,000; +10% VAT.
+        let a = fixed_answers_for(
+            "whole_home",
+            QuoteAnswers {
+                building: BuildingType::Apartment,
+                layout: Layout::TwoRooms,
+                bathrooms: 1,
+                balconies: 0,
+                ..answers()
+            },
+        );
+        let e = QuoteFormula::default().estimate_with_peak(&a, 1_000).unwrap();
+        assert_eq!(e.total, Won(445_500));
     }
 
     #[test]
