@@ -86,14 +86,14 @@ String newCountKey() => 'opt_${DateTime.now().microsecondsSinceEpoch}';
 /// Editable draft of a counts pricing. Controllers are owned here and disposed by the caller.
 class CountsDraft {
   CountsDraft(Json pricing)
-    : rows = [for (final o in countOptionsOf(pricing)) _Row.of(o)],
+    : rows = [for (final o in countOptionsOf(pricing)) CountRow.of(o)],
       maxEach = TextEditingController(text: '${pricing['max_each'] ?? ''}'),
       discountPct = TextEditingController(
         text:
             '${((pricing['multi_discount_bps'] as num?)?.toInt() ?? 0) ~/ 100}',
       );
 
-  final List<_Row> rows;
+  final List<CountRow> rows;
   final TextEditingController maxEach;
   final TextEditingController discountPct;
 
@@ -141,10 +141,10 @@ class CountsDraft {
   };
 }
 
-class _Row {
-  _Row(this.key, this.label, this.price, this.minutes);
+class CountRow {
+  CountRow(this.key, this.label, this.price, this.minutes);
 
-  factory _Row.of(CountOption o) => _Row(
+  factory CountRow.of(CountOption o) => CountRow(
     o.key,
     TextEditingController(text: o.label),
     TextEditingController(text: '${o.price}'),
@@ -239,7 +239,7 @@ class _CountsDialogState extends State<_CountsDialog> {
                 child: TextButton.icon(
                   onPressed: () => _refresh(
                     () => _d.rows.add(
-                      _Row(
+                      CountRow(
                         newCountKey(),
                         TextEditingController(),
                         TextEditingController(),
