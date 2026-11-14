@@ -552,7 +552,7 @@ async fn fetch_cmd(config: &Config, name: &str, out: &str) -> i32 {
 
 /// `api backup-seal <in> <out>` / `api backup-open <in> <out>`: the offsite encryption without the upload.
 /// The restore drill (scripts/ci/backup-drill.sh) runs a real dump through these to prove it survives
-/// the same code path the offsite copy uses. Half-written output is removed on failure.
+/// the same code path the offsite copy uses. Output appears only once it is complete.
 fn convert_cmd(config: &Config, input: &str, output: &str, seal: bool) -> i32 {
     let key = file_key(&config.data_key);
     let result = convert(&key, Path::new(input), Path::new(output), seal);
@@ -562,14 +562,24 @@ fn convert_cmd(config: &Config, input: &str, output: &str, seal: bool) -> i32 {
             0
         }
         Err(e) => {
-            let _ = std::fs::remove_file(output);
             eprintln!("{} failed: {e}", if seal { "seal" } else { "open" });
             1
         }
     }
 }
 
+/// Writes to `<output>.part` and renames it into place, so a failure never leaves a partial file
+/// under the final name and an existing output is untouched until the new one is complete.
 fn convert(key: &[u8; 32], input: &Path, output: &Path, seal: bool) -> Result<(), Fail> {
+    let part = PathBuf::from(format!("{}.part", output.display()));
+    let result = convert_to(key, input, &part, seal).and_then(|()| std::fs::rename(&part, output).map_err(Fail::from));
+    if result.is_err() {
+        let _ = std::fs::remove_file(&part);
+    }
+    result
+}
+
+fn convert_to(key: &[u8; 32], input: &Path, output: &Path, seal: bool) -> Result<(), Fail> {
     let src = io::BufReader::new(std::fs::File::open(input)?);
     let mut dst = io::BufWriter::new(std::fs::File::create(output)?);
     if seal {
@@ -746,6 +756,30 @@ mod tests {
         let parsed = parse_listing(xml).expect("listing");
         assert_eq!(parsed[0].0, "malkkeum/a.enc");
         assert_eq!(parse_listing("<ListBucketResult></ListBucketResult>"), Some(Vec::new()));
+    }
+
+    #[test]
+    fn convert_round_trips_a_file_and_leaves_no_partial_output() {
+        let dir = std::env::temp_dir().join(format!("malkkeum-convert-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("test dir");
+        let key = file_key(&[4u8; 32]);
+        let data: Vec<u8> = (0..CHUNK * 3 + 5).map(|i| (i % 253) as u8).collect();
+        let (plain, sealed, opened, bad) = (
+            dir.join("plain.sql.gz"),
+            dir.join("plain.sql.gz.enc"),
+            dir.join("opened.sql.gz"),
+            dir.join("bad.enc"),
+        );
+        std::fs::write(&plain, &data).expect("write plain");
+        convert(&key, &plain, &sealed, true).expect("seal");
+        assert!(std::fs::read(&sealed).expect("sealed").starts_with(MAGIC));
+        convert(&key, &sealed, &opened, false).expect("open");
+        assert_eq!(std::fs::read(&opened).expect("opened"), data);
+        std::fs::write(&bad, b"not a backup at all").expect("write bad");
+        let failed = dir.join("failed.sql.gz");
+        assert!(convert(&key, &bad, &failed, false).is_err(), "damaged input is refused");
+        assert!(!failed.exists() && !dir.join("failed.sql.gz.part").exists(), "no partial output left behind");
+        std::fs::remove_dir_all(&dir).expect("cleanup");
     }
 
     #[test]
