@@ -1,37 +1,46 @@
 pub(crate) mod address;
 mod admin;
 mod admin_content;
+mod audit;
 mod auth;
 mod booking_core;
 pub(crate) mod bookings;
 pub mod cases;
-pub(crate) mod catalog;
-mod feed;
-pub(crate) mod chat;
 mod cash_receipts;
+pub(crate) mod catalog;
+pub(crate) mod chat;
 mod checkout_policy;
-mod tax_invoices;
-pub(crate) mod config;
 pub mod checkout_recon;
 pub mod checkouts;
+pub(crate) mod config;
+mod demo_admin;
+mod feed;
 mod finance;
 pub(crate) mod growth;
+mod host_jobs;
+mod keys;
 pub(crate) mod me;
 mod member;
+mod notify_templates;
 mod ops;
 pub(crate) mod partner;
 pub(crate) mod partner_jobs;
-pub(crate) mod tips;
-pub(crate) mod waitlist;
-pub mod subscription_engine;
-pub(crate) mod subscriptions;
-pub mod site;
 pub(crate) mod payments;
 pub(crate) mod payouts;
+mod privacy_requests;
+mod renewals;
+pub(crate) mod seller;
+mod settings;
 pub mod setup;
-pub mod uploads;
+pub mod site;
 mod staff_mfa;
-mod staff_password;
+mod staff_sms;
+pub mod subscription_engine;
+pub(crate) mod subscriptions;
+mod tax_invoices;
+pub(crate) mod tips;
+pub mod uploads;
+pub(crate) mod waitlist;
 mod webhooks;
 
 use crate::{contract, lifecycle, metrics, realtime, state::AppState, telemetry};
@@ -39,7 +48,7 @@ use axum::{
     Router,
     extract::DefaultBodyLimit,
     http::{HeaderName, HeaderValue, Method, header},
-    routing::get,
+    routing::{get, post},
 };
 use std::time::Duration;
 
@@ -70,7 +79,7 @@ pub fn router(state: AppState) -> Router {
     let api = Router::new()
         .merge(auth::routes().layer(DefaultBodyLimit::max(contract::AUTH_BODY_LIMIT)))
         .merge(staff_mfa::routes())
-        .merge(staff_password::public_routes())
+        .merge(staff_sms::public_routes())
         .merge(me::routes())
         .merge(catalog::routes())
         .merge(feed::routes())
@@ -85,6 +94,7 @@ pub fn router(state: AppState) -> Router {
         .merge(cash_receipts::routes())
         .merge(tax_invoices::routes())
         .merge(growth::public_routes())
+        .merge(seller::public_routes())
         .merge(growth::customer_routes())
         .merge(crate::points::customer_routes())
         .merge(payments::routes())
@@ -99,15 +109,20 @@ pub fn router(state: AppState) -> Router {
         .nest(
             "/admin",
             admin::routes()
-                .merge(staff_password::admin_routes())
+                .merge(staff_sms::admin_routes())
                 .merge(admin_content::routes())
+                .merge(notify_templates::routes())
                 .merge(growth::admin_routes())
                 .merge(crate::points::admin_routes())
                 .merge(crate::acquisition::admin_routes())
                 .merge(payments::admin_routes())
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
+                .merge(keys::admin_routes())
+                .merge(host_jobs::admin_routes())
+                .merge(demo_admin::admin_routes())
                 .merge(config::admin_routes())
+                .merge(settings::admin_routes())
                 .merge(crate::client_errors::admin_routes())
                 .merge(chat::admin_routes())
                 .merge(finance::routes())
@@ -117,8 +132,12 @@ pub fn router(state: AppState) -> Router {
                 .merge(cases::admin_routes())
                 .merge(site::admin_routes())
                 .merge(crate::marketing::admin_routes())
+                .merge(crate::app_links::admin_routes())
                 .merge(crate::analytics::admin_routes())
-                .merge(subscriptions::admin_routes()),
+                .merge(subscriptions::admin_routes())
+                .merge(audit::admin_routes())
+                .merge(privacy_requests::admin_routes())
+                .merge(renewals::admin_routes()),
         )
         .nest(
             "/partner",
@@ -131,6 +150,7 @@ pub fn router(state: AppState) -> Router {
         )
         .nest("/member", member::routes())
         .route("/ws", get(realtime::ws_handler))
+        .route("/realtime/ticket", post(crate::realtime_ticket::issue_ticket))
         .route("/openapi.json", get(crate::openapi::spec))
         .layer(DefaultBodyLimit::max(contract::JSON_BODY_LIMIT));
 
@@ -148,7 +168,7 @@ pub fn router(state: AppState) -> Router {
         .layer(cors)
         .layer(axum::middleware::from_fn_with_state(state.clone(), uploads::sign_json))
         .layer(axum::middleware::from_fn_with_state(gate, crate::ratelimit::limit))
-        // Span records the path only: query strings can carry tokens (/v1/ws?token=...).
+        // Span records the path only: query strings can carry tokens (/v1/ws?ticket=... or the old ?token=...).
         .layer(TraceLayer::new_for_http().make_span_with(|req: &axum::http::Request<_>| {
             let request_id = req.extensions().get::<telemetry::RequestId>().map_or("", |r| r.0.as_str());
             tracing::info_span!("http", method = %req.method(), path = %req.uri().path(), request_id)
@@ -166,7 +186,7 @@ pub fn router(state: AppState) -> Router {
 
 /// Writes an audit record for any staff or money-moving action.
 pub(crate) async fn audit(
-    db: &sqlx::PgPool,
+    db: impl sqlx::PgExecutor<'_>,
     actor_role: &str,
     actor_id: Option<uuid::Uuid>,
     action: &str,

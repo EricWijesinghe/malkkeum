@@ -114,12 +114,15 @@ class _FinanceScreenState extends State<FinanceScreen> {
   Future<void> _exportAt(
     String path,
     Map<String, String?> query,
-    String fileName,
-  ) async {
+    String fileName, {
+    bool post = false,
+  }) async {
     final messenger = ScaffoldMessenger.of(context);
     final t = context.t;
     try {
-      final bytes = await context.api.getBytes(path, query: query);
+      final bytes = post
+          ? await context.api.postBytes(path, query: query)
+          : await context.api.getBytes(path, query: query);
       final saved = await saveCsv(bytes, fileName);
       messenger.showSnackBar(
         SnackBar(content: Text(saved ? t.fDownload : t.fDownloadWebOnly)),
@@ -172,7 +175,16 @@ class _FinanceScreenState extends State<FinanceScreen> {
             const SizedBox(height: Space.xl),
             _ExportCard(onExport: _export),
             const SizedBox(height: Space.xl),
-            TaxSection(periodQuery: _periodQuery, onExport: _exportAt),
+            TaxSection(
+              periodQuery: _periodQuery,
+              onExport: _exportAt,
+              onReExport: () => _exportAt(
+                '/admin/finance/export/tax-invoices/re-export',
+                {..._periodQuery, 'confirm': 'true'},
+                'malkkeum-tax-invoices-again.csv',
+                post: true,
+              ),
+            ),
           ],
         ],
       ),

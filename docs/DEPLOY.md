@@ -40,6 +40,14 @@ requests that touch the installer or the server build; `ci.yml` runs on every pu
    Images contain compiled binaries and minified web assets only.
 6. Check from a logged-out machine (`docker logout ghcr.io` first):
    `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
+7. **Release environments (private repo, before the first tag; GitHub makes a missing environment with no
+   rules, so a release would run unprotected).** Settings → Environments, create each one with
+   *Required reviewers* (the owner) and *Deployment branches and tags* → *Selected* → tag `v*`:
+   - `release-cosign`: the image push and signing job. No secrets.
+   - `release-delivery`: the publish job. Move `DIST_DEPLOY_KEY` and `DAHAE_MANIFEST_KEY` here (remove the
+     repo-level copies). Keep `DIST_REPO` as a repository variable.
+   Check: a `v*` tag run waits at both jobs for approval. The Android store build has no such environment yet
+   (`scripts/release/build-all.ps1`, deferred).
 
 Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
 (`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`, the stable channel's
@@ -182,6 +190,9 @@ against `/.well-known/apple-app-site-association` (both sections are served). iO
    The fingerprint list is Play Console → Release → App integrity → *App signing key certificate* SHA-256,
    plus the upload key if you sideload. The command validates both values, stores them and restarts
    the API; either flag can be given alone. Send the owner this exact line; no file is edited.
+   The owner can also save these values in the console under 설정 > 앱 링크 (check, then save). Saved values
+   win over the server settings as a set, so after a console save a later `dahae applinks` changes nothing
+   until the console values are cleared. The card says which source is in use.
 2. Naver Developers app: add the callback URL `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
 3. Apple Developer portal: enable **Associated Domains** on both bundle ids (`com.malkkeum.customer`,
    `com.malkkeum.partner`) so the entitlement can be signed. Codemagic signing fails without it.
@@ -305,7 +316,7 @@ The server cannot report its own outage, so watch it from outside.
   - `malkkeum_realtime_listening`: 0 means this replica is not receiving events from the others.
   - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
 - **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).
-- **Several API replicas.** Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
+- **Several API replicas.** The general rate-limit bucket is per process, so run one API replica unless you accept that its limit multiplies by the replica count (auth and upload limits are shared through Postgres). Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
 
 ## 10. Uninstall
 
