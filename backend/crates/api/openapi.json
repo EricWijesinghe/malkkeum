@@ -2459,6 +2459,24 @@
             "description": "OK"
           }
         }
+      },
+      "post": {
+        "operationId": "adminCreateService",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Add a service (code, name, fixed price or quote)",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
       }
     },
     "/v1/admin/services/{code}": {
@@ -4354,23 +4372,6 @@
         }
       }
     },
-    "/v1/auth/staff/password/reset": {
-      "post": {
-        "operationId": "staffPasswordReset",
-        "tags": [
-          "auth"
-        ],
-        "summary": "Redeem a staff password-reset token",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "default": {
-            "$ref": "#/components/responses/Error"
-          }
-        }
-      }
-    },
     "/v1/admin/staff/{id}/password-reset": {
       "post": {
         "operationId": "adminIssueStaffPasswordReset",
@@ -5547,6 +5548,170 @@
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/demo/load": {
+      "post": {
+        "operationId": "adminDemoLoad",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Load sample data into the business",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/demo/clear": {
+      "post": {
+        "operationId": "adminDemoClear",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Remove sample data (owner authenticator code needed)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/settings/{group}": {
+      "get": {
+        "operationId": "adminGetSettings",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Read one settings group",
+        "parameters": [
+          {
+            "name": "group",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminPutSettings",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Save one settings group",
+        "parameters": [
+          {
+            "name": "group",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/keys/status": {
+      "get": {
+        "operationId": "adminKeysStatus",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Status of the keys bundle backup",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/staff/invite": {
+      "post": {
+        "operationId": "adminInviteStaff",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Invite a staff member by one-time SMS code",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/auth/staff/code/redeem": {
+      "post": {
+        "operationId": "staffRedeemCode",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Redeem a staff one-time SMS code",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/public/offers": {
+      "get": {
+        "operationId": "publicOffers",
+        "tags": [
+          "public"
+        ],
+        "summary": "Welcome offer, sign-up coupons and referral amount for guests",
+        "security": [],
         "responses": {
           "200": {
             "description": "OK"
