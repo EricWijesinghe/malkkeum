@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4934,6 +4935,24 @@ class TKo extends T {
 
   @override
   String get cSetupOptional => '선택';
+
+  @override
+  String get cOwnerCodeTitle => '사장님 인증 코드';
+
+  @override
+  String get cOwnerCodeBody => '토스 지급 설정을 바꾸려면 인증 앱에 나온 6자리 코드를 입력하세요.';
+
+  @override
+  String get cOwnerCodeField => '6자리 인증 코드';
+
+  @override
+  String get cOwnerCodeConfirm => '확인';
+
+  @override
+  String get cOwnerCodeWrong => '인증 코드가 맞지 않아요. 앱에 지금 나온 코드를 입력해 주세요';
+
+  @override
+  String get cOwnerCodeLocked => '잘못된 코드가 여러 번 입력됐어요. 잠시 후 다시 시도해 주세요';
 
   @override
   String get cIntPortone => '결제 (PortOne)';
