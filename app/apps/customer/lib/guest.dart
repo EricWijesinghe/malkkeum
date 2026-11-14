@@ -5,9 +5,29 @@ import 'package:ui/ui.dart';
 import 'screens/auth.dart';
 import 'state.dart';
 
+/// Why a guest is asked to sign in. The sheet title says what the sign-in unlocks.
+enum SignInReason {
+  generic,
+  quote,
+  book,
+  chat,
+  account;
+
+  String title(T t) => switch (this) {
+    SignInReason.generic => t.guestSheetTitle,
+    SignInReason.quote => t.guestReasonQuote,
+    SignInReason.book => t.guestReasonBook,
+    SignInReason.chat => t.guestReasonChat,
+    SignInReason.account => t.guestReasonAccount,
+  };
+}
+
 /// Sign-in only when a protected action needs it. Resolves true once signed in; the caller then
 /// carries on with its own state (the booking draft), so nothing the guest entered is lost.
-Future<bool> requireSignIn(BuildContext context) async {
+Future<bool> requireSignIn(
+  BuildContext context, {
+  SignInReason reason = SignInReason.generic,
+}) async {
   final session = Deps.read(context).session;
   if (session.signedIn) return true;
   final ok = await showModalBottomSheet<bool>(
@@ -15,15 +35,24 @@ Future<bool> requireSignIn(BuildContext context) async {
     isScrollControlled: true,
     useRootNavigator: true,
     showDragHandle: true,
-    builder: (_) => _SignInSheet(session: session),
+    builder: (_) => _SignInSheet(session: session, reason: reason),
   );
-  return ok ?? false;
+  if (ok != true) return false;
+  // The sheet closed before the account finished loading, so the caller's own state
+  // (and the name step for a nameless account) is handled here, after the sheet.
+  if (context.mounted && await completeSignIn(context)) {
+    if (!context.mounted) return true;
+    await Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
+  }
+  return true;
 }
 
 /// Hosts the normal phone and code screens in a nested navigator and closes itself on success.
 class _SignInSheet extends StatefulWidget {
-  const _SignInSheet({required this.session});
+  const _SignInSheet({required this.session, required this.reason});
   final Session session;
+  final SignInReason reason;
 
   @override
   State<_SignInSheet> createState() => _SignInSheetState();
@@ -43,7 +72,9 @@ class _SignInSheetState extends State<_SignInSheet> {
   }
 
   void _onSession() {
-    if (widget.session.signedIn && mounted) Navigator.of(context, rootNavigator: true).pop(true);
+    if (widget.session.signedIn && mounted) {
+      Navigator.of(context, rootNavigator: true).pop(true);
+    }
   }
 
   @override
@@ -55,44 +86,35 @@ class _SignInSheetState extends State<_SignInSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.sm),
-            child: Text(t.guestSheetTitle, style: context.text.titleLarge),
+            padding: const EdgeInsets.fromLTRB(
+              Space.gutter,
+              0,
+              Space.gutter,
+              Space.sm,
+            ),
+            child: Text(widget.reason.title(t), style: context.text.titleLarge),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.md),
-            child: Text(t.guestSheetBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft)),
+            padding: const EdgeInsets.fromLTRB(
+              Space.gutter,
+              0,
+              Space.gutter,
+              Space.md,
+            ),
+            child: Text(
+              t.guestSheetBody,
+              style: context.text.bodyMedium?.copyWith(
+                color: context.colors.inkSoft,
+              ),
+            ),
           ),
           Expanded(
             child: Navigator(
-              onGenerateRoute: (_) => MaterialPageRoute<void>(builder: (_) => const PhoneScreen()),
+              onGenerateRoute: (_) =>
+                  MaterialPageRoute<void>(builder: (_) => const PhoneScreen()),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Placeholder for a tab that needs an account. Tapping opens the sheet; success rebuilds the tab.
-class GuestGate extends StatelessWidget {
-  const GuestGate({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Space.gutter),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(t.guestSheetTitle, style: context.text.titleMedium, textAlign: TextAlign.center),
-            const SizedBox(height: Space.sm),
-            Text(t.guestSheetBody, style: context.text.bodyMedium?.copyWith(color: context.colors.inkSoft), textAlign: TextAlign.center),
-            const SizedBox(height: Space.lg),
-            PrimaryButton(label: t.introStart, onPressed: () => requireSignIn(context)),
-          ],
-        ),
       ),
     );
   }

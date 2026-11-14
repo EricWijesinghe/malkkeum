@@ -175,6 +175,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
+    final paused = RemoteConfigScope.of(context).maintenance;
     final usable =
         app.coupons.where((c) => c.appliesTo(d.service.code)).toList()
           ..sort((a, b) => b.amount.compareTo(a.amount));
@@ -263,9 +264,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           FlowSection(
             children: [
               Theme(
-                data: Theme.of(
-                  context,
-                ).copyWith(dividerColor: Colors.transparent),
+                data: Theme.of(context)
+                    .copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
                   initiallyExpanded: true,
                   tilePadding: EdgeInsets.zero,
@@ -346,7 +346,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: PrimaryButton(
           label: _choice == null ? t.needMethod : t.payAmount(context.won(due)),
           busy: _busy,
-          onPressed: _choice == null ? _pickMethod : () => _pay(due, points),
+          // Maintenance pauses new bookings: the pay button stays off until the owner switches it off.
+          onPressed: _choice == null
+              ? _pickMethod
+              : (paused ? null : () => _pay(due, points)),
         ),
       ),
     );

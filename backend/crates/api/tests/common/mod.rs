@@ -37,7 +37,9 @@ pub fn test_config() -> Config {
         bind: "127.0.0.1:0".parse().expect("bind addr"),
         jwt_secret: SECRET.to_vec(),
         jwt_previous_secret: None,
+        otp_pepper: None,
         data_key: [7u8; 32],
+        host_jobs_dir: std::path::PathBuf::from("/nonexistent-host-jobs"),
         upload_dir: std::env::temp_dir().join("api-flow-tests"),
         public_base_url: BASE_URL.into(),
         dev_mode: true,
@@ -45,6 +47,7 @@ pub fn test_config() -> Config {
         allowed_origins: Vec::new(),
         seed_admin: None,
         setup_code: None,
+        setup_code_at: None,
         kakao_app_id: None,
         kakao_admin_key: None,
         google_client_ids: Vec::new(),
@@ -100,7 +103,8 @@ pub const PORTONE_SECRET: &str = "test-portone-secret";
 pub async fn staff_token(db: &PgPool, role: Role) -> (String, Uuid) {
     let id = Uuid::now_v7();
     let db_role = if role == Role::StaffAdmin { "admin" } else { "consultant" };
-    sqlx::query("INSERT INTO staff (id, email, name, password_hash, role) VALUES ($1, $2, 'tester', 'x', $3)")
+    // Stepped up, so sensitive actions (export, deletion, payouts) are open to the test token.
+    sqlx::query("INSERT INTO staff (id, email, name, password_hash, role, stepup_at) VALUES ($1, $2, 'tester', 'x', $3, now())")
         .bind(id)
         .bind(format!("{id}@test.local"))
         .bind(db_role)
@@ -223,12 +227,13 @@ pub async fn customer(app: &Router, db: &PgPool, phone: &str) -> Customer {
     )
     .await;
     assert_eq!(st, StatusCode::OK, "address: {addr}");
-    let card: Uuid =
-        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id")
-            .bind(user)
-            .fetch_one(db)
-            .await
-            .expect("payment method");
+    let card: Uuid = sqlx::query_scalar(
+        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', 'bk_test_' || $1::text, 'test card') RETURNING id",
+    )
+    .bind(user)
+    .fetch_one(db)
+    .await
+    .expect("payment method");
     Customer {
         token,
         user,

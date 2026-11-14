@@ -2,7 +2,7 @@
 //! [`crate::payout`]; every change runs in one transaction on a locked row, so a payout can be paid
 //! at most once and a settlement is marked paid only together with its payout.
 
-use super::audit;
+use super::{audit, staff_mfa::require_recent_stepup};
 use crate::{
     auth::{Admin, Role, live_staff_role},
     contract::{json_row_cursor, page_limit, paged, ts_id_cursor},
@@ -120,7 +120,14 @@ fn mode_str(m: PayoutMode) -> &'static str {
 }
 
 async fn rows(db: &PgPool, state: Option<&str>, ids: Option<&[Uuid]>, after: (Option<DateTime<Utc>>, Option<Uuid>), limit: i64) -> ApiResult<Value> {
-    Ok(sqlx::query_scalar(LIST_SQL).bind(state).bind(ids).bind(after.0).bind(after.1).bind(limit).fetch_one(db).await?)
+    Ok(sqlx::query_scalar(LIST_SQL)
+        .bind(state)
+        .bind(ids)
+        .bind(after.0)
+        .bind(after.1)
+        .bind(limit)
+        .fetch_one(db)
+        .await?)
 }
 
 /// Newest first; keyset cursor over (created_at, id).
@@ -154,7 +161,11 @@ pub async fn set_tax_type(AxState(s): AxState<AppState>, Admin(a): Admin, Path(p
     if !matches!(b.tax_type.as_str(), "freelancer" | "business") {
         return Err(ApiError::BadRequest("tax_type"));
     }
-    let n = sqlx::query("UPDATE pros SET tax_type = $2 WHERE id = $1").bind(pro).bind(&b.tax_type).execute(&s.db).await?;
+    let n = sqlx::query("UPDATE pros SET tax_type = $2 WHERE id = $1")
+        .bind(pro)
+        .bind(&b.tax_type)
+        .execute(&s.db)
+        .await?;
     if n.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
@@ -165,6 +176,7 @@ pub async fn set_tax_type(AxState(s): AxState<AppState>, Admin(a): Admin, Path(p
 /// Creates one requested payout per pro for everything due by the date. Future dates are refused.
 pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r): Json<RunPayouts>) -> ApiResult<Json<Value>> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     if r.date > today_kst() {
         return Err(ApiError::BadRequest("future_date"));
     }
@@ -176,21 +188,37 @@ pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r)
         .fetch_all(&mut *tx)
         .await?;
     tx.commit().await?;
-    audit(&s.db, "staff", Some(a.id), "payout.request", &r.date.to_string(), json!({ "payouts": ids.len() })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "payout.request",
+        &r.date.to_string(),
+        json!({ "payouts": ids.len() }),
+    )
+    .await?;
     Ok(Json(rows(&s.db, None, Some(&ids), (None, None), BY_IDS_LIMIT).await?))
 }
 
 /// Money actions check the role stored now: a demoted or deactivated owner's token lives on for its TTL.
 async fn live_admin(s: &AppState, id: Uuid) -> ApiResult<()> {
-    if live_staff_role(&s.db, id).await? == Role::StaffAdmin { Ok(()) } else { Err(ApiError::Forbidden) }
+    if live_staff_role(&s.db, id).await? == Role::StaffAdmin {
+        Ok(())
+    } else {
+        Err(ApiError::Forbidden)
+    }
 }
 
 /// Bank details for a manual transfer. Owner only; every reveal is audit-logged and never cached.
 pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path(id): Path<Uuid>) -> ApiResult<Response> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     let (bank, holder, enc, gross, tax_type): (String, String, String, i64, String) =
-        sqlx::query_as("SELECT bank, holder, account_enc, amount, tax_type FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await?;
-    let account = crypto::decrypt(&s.config.data_key, &enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
+        sqlx::query_as("SELECT bank, holder, account_enc, amount, tax_type FROM payouts WHERE id = $1")
+            .bind(id)
+            .fetch_one(&s.db)
+            .await?;
+    let account = crypto::decrypt(&s.config.data_key, crypto::aad::PAYOUT_ACCOUNT, &enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     audit(&s.db, "staff", Some(a.id), "payout.reveal", &id.to_string(), json!({})).await?;
     // `amount` is what to transfer (net of withholding); `gross` and the taxes are shown for the record.
     let split = domain::tax::payout_withholding(&tax_type, domain::Won(gross));
@@ -207,8 +235,14 @@ pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path
 }
 
 /// POST /settlements/payouts/{id}/{action}: send | confirm | fail | retry | sync.
-pub async fn act(AxState(s): AxState<AppState>, Admin(a): Admin, Path((id, action)): Path<(Uuid, String)>, Json(b): Json<ActionBody>) -> ApiResult<Json<Value>> {
+pub async fn act(
+    AxState(s): AxState<AppState>,
+    Admin(a): Admin,
+    Path((id, action)): Path<(Uuid, String)>,
+    Json(b): Json<ActionBody>,
+) -> ApiResult<Json<Value>> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     let outcome = match action.as_str() {
         "send" => send(&s, id).await?,
         "confirm" => step(&s, id, Owner::Confirm).await?,
@@ -220,7 +254,15 @@ pub async fn act(AxState(s): AxState<AppState>, Admin(a): Admin, Path((id, actio
         "sync" => sync(&s, id).await?,
         _ => return Err(ApiError::NotFound),
     };
-    audit(&s.db, "staff", Some(a.id), &format!("payout.{action}"), &id.to_string(), json!({ "state": outcome.as_str() })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        &format!("payout.{action}"),
+        &id.to_string(),
+        json!({ "state": outcome.as_str() }),
+    )
+    .await?;
     if outcome == State::Paid {
         notify_paid(&s, id).await;
     }
@@ -275,12 +317,24 @@ fn seller_draft(pro: Uuid, rev: i32, b: &SellerInput, bank_code: &'static str, a
         }
         "company" => {
             let representative = text(b.representative.as_deref().unwrap_or_default());
-            let registration_no: String = b.registration_no.as_deref().unwrap_or_default().chars().filter(|c| c.is_ascii_digit()).collect();
+            let registration_no: String = b
+                .registration_no
+                .as_deref()
+                .unwrap_or_default()
+                .chars()
+                .filter(|c| c.is_ascii_digit())
+                .collect();
             if representative.is_empty() || registration_no.len() != 10 {
                 return Err(ApiError::BadRequest("invalid_business"));
             }
             let name = b.name.as_deref().map(text).filter(|n| !n.is_empty());
-            adapter::Business::Company { name, representative, registration_no, email, phone }
+            adapter::Business::Company {
+                name,
+                representative,
+                registration_no,
+                email,
+                phone,
+            }
         }
         _ => return Err(ApiError::BadRequest("invalid_business_type")),
     };
@@ -288,7 +342,13 @@ fn seller_draft(pro: Uuid, rev: i32, b: &SellerInput, bank_code: &'static str, a
     if !adapter::REF_SELLER_ID_RANGE.contains(&ref_id.len()) || account.len() > 14 || holder.chars().count() > 50 {
         return Err(ApiError::BadRequest("invalid_account"));
     }
-    Ok(adapter::SellerDraft { ref_id, business, bank_code, account: account.to_string(), holder: holder.to_string() })
+    Ok(adapter::SellerDraft {
+        ref_id,
+        business,
+        bank_code,
+        account: account.to_string(),
+        holder: holder.to_string(),
+    })
 }
 
 /// Registers a pro as a Toss seller, or re-registers after the payout account changed. Stores the seller id,
@@ -297,14 +357,14 @@ pub async fn register_seller(AxState(s): AxState<AppState>, Admin(a): Admin, Pat
     if s.providers.payout_mode() != PayoutMode::Toss {
         return Err(ApiError::Conflict("payout_provider"));
     }
-    let (bank, account_enc, holder): (String, String, String) = sqlx::query_as(
-        "SELECT bank, account_enc, holder FROM payout_accounts WHERE pro_id = $1 AND verified_at IS NOT NULL",
-    )
-    .bind(pro)
-    .fetch_optional(&s.db)
-    .await?
-    .ok_or(ApiError::Conflict("payout_account_unverified"))?;
-    let account = crypto::decrypt(&s.config.data_key, &account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
+    let (bank, account_enc, holder): (String, String, String) =
+        sqlx::query_as("SELECT bank, account_enc, holder FROM payout_accounts WHERE pro_id = $1 AND verified_at IS NOT NULL")
+            .bind(pro)
+            .fetch_optional(&s.db)
+            .await?
+            .ok_or(ApiError::Conflict("payout_account_unverified"))?;
+    let account =
+        crypto::decrypt(&s.config.data_key, crypto::aad::PAYOUT_ACCOUNT, &account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     let bank_code = adapter::bank_code(&bank).ok_or(ApiError::Conflict("unsupported_bank"))?;
     let rev: i32 = sqlx::query_scalar("UPDATE pros SET toss_seller_rev = toss_seller_rev + 1 WHERE id = $1 RETURNING toss_seller_rev")
         .bind(pro)
@@ -324,7 +384,15 @@ pub async fn register_seller(AxState(s): AxState<AppState>, Admin(a): Admin, Pat
         .bind(&fp)
         .execute(&s.db)
         .await?;
-    audit(&s.db, a.role.as_str(), Some(a.id), "payout.seller", &pro.to_string(), json!({ "status": status, "rev": rev })).await?;
+    audit(
+        &s.db,
+        a.role.as_str(),
+        Some(a.id),
+        "payout.seller",
+        &pro.to_string(),
+        json!({ "status": status, "rev": rev }),
+    )
+    .await?;
     Ok(Json(json!({ "seller_status": status, "rev": rev })))
 }
 
@@ -369,15 +437,19 @@ async fn write(tx: &mut Transaction<'_, Postgres>, id: Uuid, to: State, failure:
                 .execute(&mut **tx)
                 .await?
         }
-        State::Failed => sqlx::query("UPDATE payouts SET state = 'failed', failure_reason = $2, updated_at = now() WHERE id = $1 AND state IN ('requested', 'sent')")
-            .bind(id)
-            .bind(failure)
-            .execute(&mut **tx)
-            .await?,
-        State::Requested => sqlx::query("UPDATE payouts SET state = 'requested', failure_reason = NULL, updated_at = now() WHERE id = $1 AND state = 'failed'")
-            .bind(id)
-            .execute(&mut **tx)
-            .await?,
+        State::Failed => {
+            sqlx::query("UPDATE payouts SET state = 'failed', failure_reason = $2, updated_at = now() WHERE id = $1 AND state IN ('requested', 'sent')")
+                .bind(id)
+                .bind(failure)
+                .execute(&mut **tx)
+                .await?
+        }
+        State::Requested => {
+            sqlx::query("UPDATE payouts SET state = 'requested', failure_reason = NULL, updated_at = now() WHERE id = $1 AND state = 'failed'")
+                .bind(id)
+                .execute(&mut **tx)
+                .await?
+        }
         State::Sent => return Err(ApiError::Internal("sent is written by send()".into())),
     };
     if r.rows_affected() != 1 {
@@ -424,7 +496,8 @@ async fn send(s: &AppState, id: Uuid) -> ApiResult<State> {
     crate::payout::next(row.state(), Action::Accept).ok_or(ApiError::Conflict("payout_state"))?;
     check_amount(&mut tx, id, row.amount).await?;
     let bank_code = adapter::bank_code(&row.bank).ok_or(ApiError::Conflict("unsupported_bank"))?;
-    let account = crypto::decrypt(&s.config.data_key, &row.account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
+    let account =
+        crypto::decrypt(&s.config.data_key, crypto::aad::PAYOUT_ACCOUNT, &row.account_enc).ok_or(ApiError::Internal("cannot decrypt payout account".into()))?;
     // Toss pays the seller's registered account. Refuse when that is not the account this payout was approved for.
     let (seller_id, seller_fp): (Option<String>, Option<String>) = sqlx::query_as("SELECT toss_seller_id, toss_seller_fp FROM pros WHERE id = $1")
         .bind(row.pro_id)
@@ -550,7 +623,10 @@ pub(crate) async fn detach_booking(tx: &mut Transaction<'_, Postgres>, booking: 
     .bind(booking)
     .fetch_all(&mut **tx)
     .await?;
-    if batches.iter().any(|(_, state, attempts, failure)| state != "requested" || *attempts > 0 || failure.is_some()) {
+    if batches
+        .iter()
+        .any(|(_, state, attempts, failure)| state != "requested" || *attempts > 0 || failure.is_some())
+    {
         return Err(ApiError::Conflict("settlement_in_transfer"));
     }
     sqlx::query("UPDATE settlements SET payout_id = NULL WHERE booking_id = $1 AND state = 'pending' AND payout_id IS NOT NULL")
@@ -579,12 +655,23 @@ fn truncate(s: &str) -> String {
 }
 
 pub(crate) async fn notify_paid(s: &AppState, id: Uuid) {
-    let Ok((pro_id, amount)) = sqlx::query_as::<_, (Uuid, i64)>("SELECT pro_id, amount FROM payouts WHERE id = $1").bind(id).fetch_one(&s.db).await else {
+    let Ok((pro_id, amount)) = sqlx::query_as::<_, (Uuid, i64)>("SELECT pro_id, amount FROM payouts WHERE id = $1")
+        .bind(id)
+        .fetch_one(&s.db)
+        .await
+    else {
         return;
     };
     crate::util::best_effort(
         "notify",
-        notify(s, Recipient::Pro(pro_id), "settlement.paid", "정산 완료", &format!("{amount}원"), json!({ "total": amount })),
+        notify(
+            s,
+            Recipient::Pro(pro_id),
+            "settlement.paid",
+            "정산 완료",
+            &format!("{amount}원"),
+            json!({ "total": amount }),
+        ),
     )
     .await;
 }

@@ -12,9 +12,13 @@ pub struct Config {
     pub jwt_secret: Vec<u8>,
     /// Retired signing key still accepted during rotation (`JWT_PREVIOUS_SECRET`). Unset outside a rotation.
     pub jwt_previous_secret: Option<Vec<u8>>,
+    /// Pepper for login-code hashes (`OTP_PEPPER`). Unset keeps hashing with `jwt_secret` (older deployments).
+    pub otp_pepper: Option<Vec<u8>>,
     /// Key for encrypting payout account numbers at rest (32 bytes, hex).
     pub data_key: [u8; 32],
     pub upload_dir: PathBuf,
+    /// Folder shared with the server agent: `inbox/` (API writes jobs) and `status/` (agent writes state).
+    pub host_jobs_dir: PathBuf,
     pub public_base_url: String,
     /// Dev mode: fake SMS/payment/push/social/identity providers, OTP code echoed in logs.
     pub dev_mode: bool,
@@ -24,6 +28,8 @@ pub struct Config {
     pub seed_admin: Option<(String, String)>,
     /// One-time code for creating the owner account in the console (installer sets it; random otherwise).
     pub setup_code: Option<String>,
+    /// Unix seconds when the installer issued `setup_code`; the code expires two hours later.
+    pub setup_code_at: Option<i64>,
     /// Kakao REST app id: a Kakao token is only accepted if it was issued to this app.
     pub kakao_app_id: Option<String>,
     /// Kakao Admin key (`KAKAO_ADMIN_KEY`): unlinks the Kakao account when the user deletes theirs. None: no unlink.
@@ -106,7 +112,10 @@ pub struct AppleSignInKey {
 impl std::fmt::Debug for AppleSignInKey {
     // The private key never reaches logs or panics.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("AppleSignInKey").field("team_id", &self.team_id).field("key_id", &self.key_id).finish_non_exhaustive()
+        f.debug_struct("AppleSignInKey")
+            .field("team_id", &self.team_id)
+            .field("key_id", &self.key_id)
+            .finish_non_exhaustive()
     }
 }
 
@@ -123,7 +132,11 @@ impl AppleSignInKey {
         // Env values often carry the PEM on one line with literal `\n`.
         let pem = private_key.trim().replace("\\n", "\n");
         jsonwebtoken::EncodingKey::from_ec_pem(pem.as_bytes()).map_err(|_| "invalid_private_key")?;
-        Ok(Self { team_id: team_id.into(), key_id: key_id.into(), private_key: pem })
+        Ok(Self {
+            team_id: team_id.into(),
+            key_id: key_id.into(),
+            private_key: pem,
+        })
     }
 }
 
@@ -161,6 +174,12 @@ where
         return Err(ConfigError::Invalid(key, format!("must be at least {min}")));
     }
     Ok(value)
+}
+
+fn setup_code_at() -> Result<Option<i64>, ConfigError> {
+    opt("SETUP_CODE_AT")
+        .map(|v| v.parse().map_err(|_| ConfigError::Invalid("SETUP_CODE_AT", format!("not a number: {v}"))))
+        .transpose()
 }
 
 /// Scrape token for `/metrics`. Short tokens are refused so a typo cannot open the endpoint to guessing.
@@ -230,7 +249,9 @@ fn apple_signin(team_id: Option<&str>) -> Result<Option<AppleSignInKey>, ConfigE
         (None, None) => Ok(None),
         (Some(key_id), Some(pem)) => {
             let team = team_id.ok_or(ConfigError::Missing("APPLE_TEAM_ID"))?;
-            AppleSignInKey::new(team, &key_id, &pem).map(Some).map_err(|e| ConfigError::Invalid("APPLE_PRIVATE_KEY", e.into()))
+            AppleSignInKey::new(team, &key_id, &pem)
+                .map(Some)
+                .map_err(|e| ConfigError::Invalid("APPLE_PRIVATE_KEY", e.into()))
         }
         _ => Err(ConfigError::Invalid("APPLE_KEY_ID", "set APPLE_KEY_ID and APPLE_PRIVATE_KEY together".into())),
     }
@@ -257,12 +278,39 @@ impl Config {
         std::iter::once(self.jwt_secret.as_slice()).chain(self.jwt_previous_secret.as_deref()).collect()
     }
 
+    /// Keys that may hash a login code: the pepper first, then `jwt_secret` so codes issued before
+    /// `OTP_PEPPER` was set still verify (codes expire in minutes, so this fallback can be dropped later).
+    pub fn otp_key(&self) -> &[u8] {
+        self.otp_pepper.as_deref().unwrap_or(&self.jwt_secret)
+    }
+
+    pub fn otp_keys(&self) -> Vec<&[u8]> {
+        self.otp_pepper
+            .as_deref()
+            .into_iter()
+            .chain(std::iter::once(self.jwt_secret.as_slice()))
+            .collect()
+    }
+
+    /// Staff second factors are on unless `STAFF_MFA_REQUIRED=0`, which only the local demo kits set, with `DEV_MODE`.
+    fn staff_mfa_required_from(raw: Option<&str>, dev_mode: bool) -> Result<bool, ConfigError> {
+        let required = raw.is_none_or(|v| v != "0" && v != "false");
+        if !required && !dev_mode {
+            return Err(ConfigError::Invalid("STAFF_MFA_REQUIRED", "0 is only allowed with DEV_MODE=1".into()));
+        }
+        Ok(required)
+    }
+
     pub fn from_env() -> Result<Self, ConfigError> {
         let jwt_secret = req("JWT_SECRET")?.into_bytes();
         if jwt_secret.len() < MIN_SECRET_BYTES {
             return Err(ConfigError::Invalid("JWT_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
         }
         let jwt_previous_secret = env::var("JWT_PREVIOUS_SECRET").ok().filter(|s| !s.is_empty()).map(String::into_bytes);
+        let otp_pepper = env::var("OTP_PEPPER").ok().filter(|s| !s.is_empty()).map(String::into_bytes);
+        if otp_pepper.as_ref().is_some_and(|k| k.len() < MIN_SECRET_BYTES) {
+            return Err(ConfigError::Invalid("OTP_PEPPER", format!("needs at least {MIN_SECRET_BYTES} bytes")));
+        }
         if jwt_previous_secret.as_ref().is_some_and(|k| k.len() < MIN_SECRET_BYTES) {
             return Err(ConfigError::Invalid("JWT_PREVIOUS_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
         }
@@ -293,16 +341,19 @@ impl Config {
             bind: bind.parse().map_err(|_| ConfigError::Invalid("BIND_ADDR", bind.clone()))?,
             jwt_secret,
             jwt_previous_secret,
+            otp_pepper,
             data_key,
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "./data/uploads".into()).into(),
+            host_jobs_dir: env::var("HOST_JOBS_DIR").unwrap_or_else(|_| "/jobs".into()).into(),
             public_base_url,
             dev_mode,
-            staff_mfa_required: env::var("STAFF_MFA_REQUIRED").map(|v| v != "0" && v != "false").unwrap_or(true),
+            staff_mfa_required: Self::staff_mfa_required_from(env::var("STAFF_MFA_REQUIRED").ok().as_deref(), dev_mode)?,
             allowed_origins: env::var("ALLOWED_ORIGINS")
                 .map(|v| v.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect())
                 .unwrap_or_default(),
             seed_admin,
             setup_code: opt("SETUP_CODE").map(|c| c.to_uppercase().replace(['-', ' '], "")),
+            setup_code_at: setup_code_at()?,
             kakao_app_id: opt("KAKAO_APP_ID"),
             kakao_admin_key: opt("KAKAO_ADMIN_KEY"),
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
@@ -352,10 +403,22 @@ mod private_url_tests {
 
     #[test]
     fn only_loopback_and_private_networks_count_as_local() {
-        for ok in ["http://127.0.0.1:8080", "http://localhost:8080", "http://10.0.2.2:8080", "http://192.168.0.5:8080", "http://172.25.243.168:8080"] {
+        for ok in [
+            "http://127.0.0.1:8080",
+            "http://localhost:8080",
+            "http://10.0.2.2:8080",
+            "http://192.168.0.5:8080",
+            "http://172.25.243.168:8080",
+        ] {
             assert!(is_private_url(ok), "{ok}");
         }
-        for bad in ["https://malkkeum.kr", "http://172.32.0.1", "http://8.8.8.8", "https://192.168.evil.com", "http://localhost.evil.com"] {
+        for bad in [
+            "https://malkkeum.kr",
+            "http://172.32.0.1",
+            "http://8.8.8.8",
+            "https://192.168.evil.com",
+            "http://localhost.evil.com",
+        ] {
             assert!(!is_private_url(bad), "{bad}");
         }
     }
@@ -365,19 +428,23 @@ const SHA256_BYTES: usize = 32;
 const TEAM_ID_LEN: usize = 10;
 
 /// Upper-cased `AA:BB:..` form, 32 hex pairs, as Android's assetlinks.json expects.
-fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
+pub(crate) fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
     values
         .into_iter()
         .map(|v| {
             let v = v.to_ascii_uppercase();
             let parts: Vec<&str> = v.split(':').collect();
             let ok = parts.len() == SHA256_BYTES && parts.iter().all(|p| p.len() == 2 && p.bytes().all(|b| b.is_ascii_hexdigit()));
-            if ok { Ok(v) } else { Err(ConfigError::Invalid(key, format!("not a SHA-256 fingerprint: {v}"))) }
+            if ok {
+                Ok(v)
+            } else {
+                Err(ConfigError::Invalid(key, format!("not a SHA-256 fingerprint: {v}")))
+            }
         })
         .collect()
 }
 
-fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
+pub(crate) fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
     match raw {
         Some(t) if t.len() == TEAM_ID_LEN && t.bytes().all(|b| b.is_ascii_alphanumeric()) => Ok(Some(t)),
         Some(t) => Err(ConfigError::Invalid("APPLE_TEAM_ID", format!("not a 10-character Team ID: {t}"))),
@@ -396,6 +463,15 @@ mod tests {
         assert!(cert_fingerprints("K", vec!["AB:CD".into()]).is_err(), "too short");
         assert!(cert_fingerprints("K", vec![good.replacen("ab", "zz", 1)]).is_err(), "not hex");
         assert!(cert_fingerprints("K", Vec::new()).expect("empty ok").is_empty());
+    }
+
+    #[test]
+    fn staff_second_factor_cannot_be_switched_off_outside_dev_mode() {
+        assert!(Config::staff_mfa_required_from(None, false).expect("default on"));
+        assert!(Config::staff_mfa_required_from(Some("1"), false).expect("on"));
+        assert!(Config::staff_mfa_required_from(Some("0"), true).is_ok_and(|v| !v), "dev kit");
+        assert!(Config::staff_mfa_required_from(Some("0"), false).is_err(), "production refuses");
+        assert!(Config::staff_mfa_required_from(Some("false"), false).is_err(), "production refuses");
     }
 
     #[test]
