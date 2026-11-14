@@ -166,7 +166,15 @@ async fn update_group(State(s): State<AppState>, Admin(a): Admin, Path(code): Pa
         .execute(&mut *tx)
         .await?;
     tx.commit().await?;
-    audit(&s.db, "staff", Some(a.id), "service_group.update", &code, json!({ "services": u.services, "active": u.active, "chooser": u.chooser })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "service_group.update",
+        &code,
+        json!({ "services": u.services, "active": u.active, "chooser": u.chooser }),
+    )
+    .await?;
     Ok(Json(json!({ "ok": true })))
 }
 
@@ -306,6 +314,9 @@ mod tests {
     #[test]
     fn members_are_listed_once() {
         let services = vec![svc("aircon", None, None)];
-        assert_eq!(check_members("appliance", &["aircon".into(), "aircon".into()], &services), Err("invalid_group_services"));
+        assert_eq!(
+            check_members("appliance", &["aircon".into(), "aircon".into()], &services),
+            Err("invalid_group_services")
+        );
     }
 }
