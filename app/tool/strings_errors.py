@@ -60,4 +60,8 @@ S = {
   "err_invalid_capacity": ["정원은 숫자로 입력해 주세요.", "Enter a valid capacity."],
   "err_seller_declined": ["토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.", "Toss did not approve the seller registration. Check the business details."],
   "err_payout_account_unverified": ["확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.", "This partner has no verified payout account yet. Verify the account first."],
+  "err_invite_pending": ["아직 비밀번호를 정하지 않은 초대예요. 직원이 인증번호를 입력하면 켜져요.", "This invitation has no password yet. It turns on when the staff member enters the code."],
+  "err_phone_taken": ["이 휴대폰 번호는 다른 직원이 쓰고 있어요.", "Another staff member already uses this phone number."],
+  "err_code_invalid": ["인증번호가 맞지 않거나 시간이 지났어요. 관리자에게 새 번호를 받아 주세요.", "The code is wrong or has expired. Ask the admin for a new one."],
+  "err_no_phone": ["휴대폰 번호가 없어요. 번호를 입력해 주세요.", "There is no phone number on file. Enter one."],
 }

@@ -24,6 +24,26 @@
 	import tls-{$TLS_MODE}
 	encode zstd gzip
 
+	# JSON access log in the caddylogs volume: 10 MB per file, 14 files kept. Query strings carry secrets (websocket
+	# ticket, signed upload links, OAuth code and state) and the ops-progress path carries its token, so those values
+	# are replaced before anything is written. One regexp covers both: a field takes one filter only.
+	# shortcut: no edge rate limit on /v1/auth/*, the stock caddy image has no rate_limit module; add one (custom
+	#   image via xcaddy with mholt/caddy-ratelimit) or keep the app-level buckets (ratelimit.rs), when the edge needs it.
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 14
+		}
+		format filter {
+			wrap json
+			fields {
+				request>headers>Authorization delete
+				request>headers>Cookie delete
+				request>uri regexp "(ops-progress/|[?&](ticket|token|sig|code|state)=)[^?&#]*" "${1}REDACTED"
+			}
+		}
+	}
+
 	# Deferred (it deletes a field), so these are set when the response is written, over anything upstream sent.
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -79,6 +99,16 @@
 		reverse_proxy api:8080
 	}
 
+	# Live progress of a server job: the root agent writes /srv/ops-progress/<token>.json (state only) and removes it
+	# 10 minutes after the job ends. The 128-bit token is the only key; no listing, never cached.
+	@ops_progress path_regexp ops_progress ^/ops-progress/([0-9a-f]{32})$
+	handle @ops_progress {
+		rewrite * /{re.ops_progress.1}.json
+		root * /srv/ops-progress
+		header Cache-Control "no-store"
+		file_server
+	}
+
 	# Fallback fonts for both Flutter apps (Roboto + Noto, mirrored at image build; deploy/flutter_bootstrap.js
 	# points the engine here). Paths carry Google's version and hash, so they never change: cache forever.
 	# No try_files: a missing font must be a 404, not index.html.
@@ -115,8 +145,26 @@
 		@site_pages not path /assets/* /vendor/*
 		header @site_assets Cache-Control "public, max-age=3600"
 		header @site_pages Cache-Control "no-cache"
+		# Seller details (전자상거래법 제10조) are written into the HTML here, on the server: {{httpInclude}}
+		# fetches the API fragment /v1/public/seller-info (backend routes/seller.rs). Only text/html is templated,
+		# and pay/ and auth/ stay as they are. A failing fragment fails the page, so keep the API up.
+		@site_templated not path /assets/* /vendor/* /pay/* /auth/*
+		templates @site_templated
 		try_files {path} {path}.html {path}/index.html /index.html
 		file_server
+	}
+
+	# API down or restarting (502/503 from the proxy): pages get a static maintenance page instead of a bare
+	# error. API paths keep their own status, so the apps still get a JSON error they can read. /health stays a
+	# plain error so health probes see the API as down, not a 200 page.
+	handle_errors {
+		@page_down expression {http.error.status} in [502, 503] && !{http.request.uri.path}.startsWith("/v1/") && !{http.request.uri.path}.startsWith("/health")
+		handle @page_down {
+			root * /srv/website
+			rewrite * /maintenance.html
+			header Cache-Control "no-store"
+			file_server
+		}
 	}
 }
 

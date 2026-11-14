@@ -3,7 +3,8 @@
 # Images are prebuilt by .github/workflows/release.yml; `dahae update` pulls new ones.
 # install.sh writes the same file to /opt/malkkeum (write_compose; only the api/web image lines and the
 # build lines differ). scripts/ci/installer-selftest.sh fails when the two drift apart.
-x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+# Container logs: 10 MB per file, 14 files kept per container (about 140 MB each at most; days kept depend on traffic).
+x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "14" } }
 # Every container: no privilege gain through setuid binaries or file capabilities, no Linux capability
 # unless listed under cap_add, a read-only root filesystem (writes go to volumes and tmpfs only), and
 # memory and process caps sized for a 2 GB VPS. No CPU caps: `cpus` above the host's core count stops
@@ -55,6 +56,7 @@ services:
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
       HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
+      SETUP_CODE_AT: ${SETUP_CODE_AT:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}
       TRUSTED_PROXY: "1"
@@ -64,7 +66,8 @@ services:
       ANDROID_CERT_SHA256: "${ANDROID_CERT_SHA256:-}"
       APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
       LOG_FORMAT: json
-    volumes: [uploads:/data/uploads]
+    # Job spool for the root agent (install.sh install_agent): the API writes jobs to inbox, reads status and out.
+    volumes: [uploads:/data/uploads, /opt/malkkeum/jobs/inbox:/jobs/inbox, /opt/malkkeum/jobs/status:/jobs/status:ro, /opt/malkkeum/jobs/out:/jobs/out:ro]
     healthcheck: { test: ["CMD", "api", "--ready"], interval: 15s, retries: 10, start_period: 20s }
 
   web:
@@ -85,7 +88,19 @@ services:
       DOMAIN: ${DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:-}
       TLS_MODE: ${TLS_MODE:-}
-    volumes: [caddydata:/data, caddyconfig:/config]
+    volumes: [caddydata:/data, caddyconfig:/config, caddylogs:/var/log/caddy, /opt/malkkeum/jobs/public:/srv/ops-progress:ro]
     healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
 
-volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
+  # Optional uptime monitor (Uptime Kuma). Not started by default: enable with COMPOSE_PROFILES=monitoring in the
+  # install folder's .env, then `docker compose up -d`. Bound to loopback only; never routed by Caddy.
+  uptime-kuma:
+    <<: *hardened
+    profiles: [monitoring]
+    image: louislam/uptime-kuma:2.1.1
+    tmpfs: [/tmp]
+    mem_limit: 320m
+    pids_limit: 128
+    ports: ["127.0.0.1:3001:3001"]
+    volumes: [kumadata:/app/data]
+
+volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {}, caddylogs: {}, kumadata: {} }

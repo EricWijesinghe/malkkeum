@@ -12,6 +12,8 @@ use crate::{
     providers::sms::TPL_REMINDER,
     realtime::{Recipient, notify},
     routes::audit,
+    settings_registry,
+    sms_outbox::Message,
     state::AppState,
 };
 use axum::{
@@ -30,11 +32,7 @@ use uuid::Uuid;
 /// 정보통신망법 제50조: advertising is blocked 21:00-08:00 KST.
 pub const QUIET_START_HOUR: u32 = 21;
 pub const QUIET_END_HOUR: u32 = 8;
-/// Advertising messages per customer per rolling 7 days, across campaigns and nudges.
-pub const FREQ_CAP_PER_WEEK: i64 = 2;
 pub const CHANNELS: [&str; 2] = ["push", "sms"];
-/// Days after a completed visit before the re-booking nudge.
-pub const NUDGE_REBOOK_DAYS: i32 = 30;
 const PASS_EVERY: StdDuration = StdDuration::from_secs(300);
 const KST_OFFSET_HOURS: i64 = 9;
 const NUDGE_BATCH: i64 = 500;
@@ -58,7 +56,11 @@ pub fn next_send_time(t: DateTime<Utc>) -> DateTime<Utc> {
         return t;
     }
     let local = kst(t);
-    let day = if local.hour() >= QUIET_START_HOUR { local.date().succ_opt().expect("date in range") } else { local.date() };
+    let day = if local.hour() >= QUIET_START_HOUR {
+        local.date().succ_opt().expect("date in range")
+    } else {
+        local.date()
+    };
     let morning = day.and_time(NaiveTime::from_hms_opt(QUIET_END_HOUR, 0, 0).expect("valid time"));
     morning.and_utc() - Duration::hours(KST_OFFSET_HOURS)
 }
@@ -72,12 +74,12 @@ pub enum Gate {
 }
 
 /// Whether one advertising message may go to one customer now. Order: consent, quiet hours, cap.
-pub fn gate(consent: bool, sent_last_week: i64, now: DateTime<Utc>) -> Gate {
+pub fn gate(consent: bool, sent_last_week: i64, now: DateTime<Utc>, weekly_cap: i64) -> Gate {
     if !consent {
         Gate::NoConsent
     } else if quiet_hours(now) {
         Gate::Defer(next_send_time(now))
-    } else if sent_last_week >= FREQ_CAP_PER_WEEK {
+    } else if sent_last_week >= weekly_cap {
         Gate::Capped
     } else {
         Gate::Send
@@ -99,20 +101,26 @@ pub fn valid_optout(num: &str) -> bool {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Segment {
     /// Has booked before, and the last visit was at least N days ago.
-    LastBookingOlderThan { days: i64 },
+    LastBookingOlderThan {
+        days: i64,
+    },
     NeverBooked,
-    District { code: String },
-    Service { code: String },
-    Language { locale: String },
+    District {
+        code: String,
+    },
+    Service {
+        code: String,
+    },
+    Language {
+        locale: String,
+    },
 }
 
 fn segment_ok(s: &Segment) -> bool {
     match s {
         Segment::LastBookingOlderThan { days } => (1..=3650).contains(days),
         Segment::NeverBooked => true,
-        Segment::District { code } | Segment::Service { code } => {
-            (1..=20).contains(&code.len()) && code.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
-        }
+        Segment::District { code } | Segment::Service { code } => (1..=20).contains(&code.len()) && code.chars().all(|c| c.is_ascii_alphanumeric() || c == '_'),
         Segment::Language { locale } => crate::routes::me::SUPPORTED_LOCALES.contains(&locale.as_str()),
     }
 }
@@ -193,17 +201,29 @@ enum Step {
 
 /// Runs the gate for one customer and one channel. Idempotent: a recorded dedupe key is never sent again.
 /// Capped customers are not recorded, so a later pass can still reach them.
-async fn advertise(s: &AppState, t: &Target, channel: &str, scope: &str, campaign: Option<Uuid>, copy: &Copy<'_>, seam: Option<DateTime<Utc>>) -> ApiResult<Step> {
+async fn advertise(
+    s: &AppState,
+    t: &Target,
+    channel: &str,
+    scope: &str,
+    campaign: Option<Uuid>,
+    copy: &Copy<'_>,
+    seam: Option<DateTime<Utc>>,
+) -> ApiResult<Step> {
     let key = format!("{scope}:{}:{channel}", t.id);
-    let seen: Option<i64> = sqlx::query_scalar("SELECT 1::bigint FROM marketing_sends WHERE dedupe_key = $1").bind(&key).fetch_optional(&s.db).await?;
+    let seen: Option<i64> = sqlx::query_scalar("SELECT 1::bigint FROM marketing_sends WHERE dedupe_key = $1")
+        .bind(&key)
+        .fetch_optional(&s.db)
+        .await?;
     if seen.is_some() {
         return Ok(Step::Done);
     }
     let consent = privacy::marketing_allowed(&s.db, t.id).await?;
     let weekly = sent_last_week(&s.db, t.id).await?;
+    let cap = settings_registry::get(&s.db, &s.config, "freq_cap_per_week").await?;
     // Read the clock per customer: a long pass must not send at a time that was quiet when it started.
     let now = seam.unwrap_or_else(Utc::now);
-    let (status, send) = match gate(consent, weekly, now) {
+    let (status, send) = match gate(consent, weekly, now, cap) {
         Gate::Defer(at) => return Ok(Step::Deferred(at)),
         Gate::Capped => return Ok(Step::Done),
         Gate::NoConsent => ("skipped_consent", false),
@@ -242,9 +262,15 @@ async fn deliver(s: &AppState, t: &Target, channel: &str, copy: &Copy<'_>) -> Re
             // Advertising push carries the (광고) marker and how to opt out (정보통신망법 제50조).
             let title = format!("(광고) {}", copy.title);
             let body = format!("{}\n광고 수신은 설정 > 알림에서 끌 수 있어요", copy.body);
-            notify(s, Recipient::User(t.id), copy.kind, &title, &body, json!({ "marketing": true })).await.map_err(|_| "push_failed")
+            notify(s, Recipient::User(t.id), copy.kind, &title, &body, json!({ "marketing": true }))
+                .await
+                .map_err(|_| "push_failed")
         }
-        "sms" => s.providers.send_sms(&t.phone, &sms_ad_text(copy.body, copy.optout)).await.map_err(|_| "sms_failed"),
+        "sms" => s
+            .providers
+            .send_sms(&t.phone, &sms_ad_text(copy.body, copy.optout))
+            .await
+            .map_err(|_| "sms_failed"),
         _ => Err("unknown_channel"),
     }
 }
@@ -271,7 +297,12 @@ enum Run {
 
 async fn run_campaign(s: &AppState, c: &CampaignRow, seam: Option<DateTime<Utc>>) -> ApiResult<Run> {
     let segments: Vec<Segment> = serde_json::from_value(c.audience.clone()).map_err(|_| ApiError::Internal("campaign audience".into()))?;
-    let copy = Copy { kind: "marketing.campaign", title: &c.title, body: &c.body, optout: c.optout_number.as_deref().unwrap_or("") };
+    let copy = Copy {
+        kind: "marketing.campaign",
+        title: &c.title,
+        body: &c.body,
+        optout: c.optout_number.as_deref().unwrap_or(""),
+    };
     let scope = format!("campaign:{}", c.id);
     for t in audience(&s.db, &segments).await? {
         if let Step::Deferred(at) = advertise(s, &t, &c.channel, &scope, Some(c.id), &copy, seam).await? {
@@ -282,7 +313,12 @@ async fn run_campaign(s: &AppState, c: &CampaignRow, seam: Option<DateTime<Utc>>
 }
 
 async fn reopen(db: &PgPool, id: Uuid, at: DateTime<Utc>) -> sqlx::Result<u64> {
-    Ok(sqlx::query("UPDATE campaigns SET status = 'scheduled', scheduled_at = $2 WHERE id = $1").bind(id).bind(at).execute(db).await?.rows_affected())
+    Ok(sqlx::query("UPDATE campaigns SET status = 'scheduled', scheduled_at = $2 WHERE id = $1")
+        .bind(id)
+        .bind(at)
+        .execute(db)
+        .await?
+        .rows_affected())
 }
 
 /// Picks up due campaigns. A campaign that hits quiet hours goes back to `scheduled` for 08:00 KST and resumes
@@ -313,16 +349,23 @@ async fn dispatch_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult<u
         .await?;
     let mut ran = 0;
     for id in due {
-        let claimed: Option<CampaignRow> = sqlx::query_as(&format!("UPDATE campaigns SET status = 'sending' WHERE id = $1 AND status = 'scheduled' RETURNING {CAMPAIGN_COLS}"))
-            .bind(id)
-            .fetch_optional(&s.db)
-            .await?;
+        let claimed: Option<CampaignRow> = sqlx::query_as(&format!(
+            "UPDATE campaigns SET status = 'sending' WHERE id = $1 AND status = 'scheduled' RETURNING {CAMPAIGN_COLS}"
+        ))
+        .bind(id)
+        .fetch_optional(&s.db)
+        .await?;
         let Some(c) = claimed else {
             continue;
         };
         ran += 1;
         let outcome = match run_campaign(s, &c, seam).await {
-            Ok(Run::Done) => sqlx::query("UPDATE campaigns SET status = 'sent', sent_at = now() WHERE id = $1").bind(id).execute(&s.db).await.map(|_| ()).map_err(ApiError::from),
+            Ok(Run::Done) => sqlx::query("UPDATE campaigns SET status = 'sent', sent_at = now() WHERE id = $1")
+                .bind(id)
+                .execute(&s.db)
+                .await
+                .map(|_| ())
+                .map_err(ApiError::from),
             Ok(Run::Deferred(at)) => reopen(&s.db, id, at).await.map(|_| ()).map_err(ApiError::from),
             Err(e) => {
                 tracing::warn!(error = %e, campaign = %id, "campaign run failed; retry in 10 minutes");
@@ -351,6 +394,7 @@ async fn run_nudges_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult
     if quiet_hours(seam.unwrap_or_else(Utc::now)) {
         return Ok(0);
     }
+    let rebook_days = settings_registry::get(&s.db, &s.config, "nudge_rebook_days").await?;
     let rebook: Vec<(Uuid, Uuid, String, String)> = sqlx::query_as(
         "SELECT b.id, u.id, u.phone, u.locale FROM bookings b JOIN users u ON u.id = b.user_id
          WHERE b.status = 3 AND b.visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date - $1::int
@@ -358,7 +402,7 @@ async fn run_nudges_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult
            AND NOT EXISTS (SELECT 1 FROM bookings n WHERE n.user_id = b.user_id AND n.status BETWEEN 0 AND 3 AND n.created_at > b.created_at)
          LIMIT $2",
     )
-    .bind(NUDGE_REBOOK_DAYS)
+    .bind(rebook_days as i32)
     .bind(NUDGE_BATCH)
     .fetch_all(&s.db)
     .await?;
@@ -374,8 +418,18 @@ async fn run_nudges_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult
     .await?;
     let mut sent = 0;
     // Korean source text: notify() translates push and inbox copy into the recipient's language.
-    let rebook_copy = Copy { kind: "marketing.rebook", title: "다음 청소를 예약해 보세요", body: "지난번과 같은 조건으로 빠르게 예약할 수 있어요", optout: "" };
-    let quote_copy = Copy { kind: "marketing.quote", title: "견적 요청이 아직 남아 있어요", body: "원하는 시간에 청소팀을 바로 받아 보세요", optout: "" };
+    let rebook_copy = Copy {
+        kind: "marketing.rebook",
+        title: "다음 청소를 예약해 보세요",
+        body: "지난번과 같은 조건으로 빠르게 예약할 수 있어요",
+        optout: "",
+    };
+    let quote_copy = Copy {
+        kind: "marketing.quote",
+        title: "견적 요청이 아직 남아 있어요",
+        body: "원하는 시간에 청소팀을 바로 받아 보세요",
+        optout: "",
+    };
     for (booking, user, phone, _locale) in rebook {
         let t = Target { id: user, phone };
         if let Step::Done = advertise(s, &t, "push", &format!("nudge:rebook:{booking}"), None, &rebook_copy, seam).await? {
@@ -394,8 +448,8 @@ async fn run_nudges_seam(s: &AppState, seam: Option<DateTime<Utc>>) -> ApiResult
 /// Day-before reminder for confirmed or assigned bookings. Transactional, so no marketing gate.
 /// Claimed once per booking through alert_sends. Korean customers get AlimTalk (SMS fallback); others get SMS.
 pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
-    let rows: Vec<(Uuid, String, String, String)> = sqlx::query_as(
-        "SELECT b.id, b.number, u.phone, u.locale FROM bookings b JOIN users u ON u.id = b.user_id
+    let rows: Vec<(Uuid, String, String, String, Uuid)> = sqlx::query_as(
+        "SELECT b.id, b.number, u.phone, u.locale, b.user_id FROM bookings b JOIN users u ON u.id = b.user_id
          WHERE b.status IN (1, 2) AND b.visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date + 1
            AND u.deleted_at IS NULL AND u.phone NOT LIKE 'deleted:%'
          LIMIT $1",
@@ -404,7 +458,7 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
     .fetch_all(&s.db)
     .await?;
     let mut sent = 0;
-    for (id, number, phone, locale) in rows {
+    for (id, number, phone, locale, user) in rows {
         let claimed = sqlx::query("INSERT INTO alert_sends (dedupe_key) VALUES ($1) ON CONFLICT DO NOTHING")
             .bind(format!("reminder:{id}"))
             .execute(&s.db)
@@ -414,15 +468,22 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
             continue;
         }
         let title = crate::i18n::tr(&locale, "내일 청소 예정이에요");
-        let sent_result = if locale == "ko" {
+        let queued = if locale == "ko" {
             let brand = crate::routes::setup::brand_name(&s.db).await;
-            s.providers.send_customer_message(&phone, TPL_REMINDER, &brand, "내일 청소 예정이에요", &number).await
+            let msg = Message::Alimtalk {
+                template: TPL_REMINDER,
+                brand: &brand,
+                title: "내일 청소 예정이에요",
+                body: &number,
+            };
+            crate::sms_outbox::send(s, Some(user), &phone, "booking.reminder", msg).await
         } else {
-            s.providers.send_sms(&phone, &format!("{title}\n{number}")).await
+            let text = format!("{title}\n{number}");
+            crate::sms_outbox::send(s, Some(user), &phone, "booking.reminder", Message::Sms(&text)).await
         };
-        match sent_result {
+        match queued {
             Ok(()) => sent += 1,
-            Err(e) => tracing::warn!(error = %e, "reminder failed"),
+            Err(e) => tracing::warn!(error = %e, "reminder not queued"),
         }
     }
     Ok(sent)
@@ -497,7 +558,9 @@ pub fn admin_routes() -> Router<AppState> {
 }
 
 async fn list(State(s): State<AppState>, _st: Admin) -> ApiResult<Json<Vec<CampaignRow>>> {
-    let rows = sqlx::query_as(&format!("SELECT {CAMPAIGN_COLS} FROM campaigns ORDER BY created_at DESC LIMIT 100")).fetch_all(&s.db).await?;
+    let rows = sqlx::query_as(&format!("SELECT {CAMPAIGN_COLS} FROM campaigns ORDER BY created_at DESC LIMIT 100"))
+        .fetch_all(&s.db)
+        .await?;
     Ok(Json(rows))
 }
 
@@ -516,13 +579,28 @@ async fn create(State(s): State<AppState>, Admin(st): Admin, Json(c): Json<NewCa
     .bind(st.id)
     .fetch_one(&s.db)
     .await?;
-    audit(&s.db, "staff", Some(st.id), "campaign.create", &row.id.to_string(), json!({ "channel": row.channel })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "campaign.create",
+        &row.id.to_string(),
+        json!({ "channel": row.channel }),
+    )
+    .await?;
     Ok(Json(row))
 }
 
 async fn detail(State(s): State<AppState>, _st: Admin, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    let row: CampaignRow = sqlx::query_as(&format!("SELECT {CAMPAIGN_COLS} FROM campaigns WHERE id = $1")).bind(id).fetch_optional(&s.db).await?.ok_or(ApiError::NotFound)?;
-    let stats: Vec<(String, i64)> = sqlx::query_as("SELECT status, count(*) FROM marketing_sends WHERE campaign_id = $1 GROUP BY status").bind(id).fetch_all(&s.db).await?;
+    let row: CampaignRow = sqlx::query_as(&format!("SELECT {CAMPAIGN_COLS} FROM campaigns WHERE id = $1"))
+        .bind(id)
+        .fetch_optional(&s.db)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+    let stats: Vec<(String, i64)> = sqlx::query_as("SELECT status, count(*) FROM marketing_sends WHERE campaign_id = $1 GROUP BY status")
+        .bind(id)
+        .fetch_all(&s.db)
+        .await?;
     let stats: serde_json::Map<String, Value> = stats.into_iter().map(|(k, v)| (k, json!(v))).collect();
     Ok(Json(json!({ "campaign": row, "stats": stats })))
 }
@@ -548,7 +626,11 @@ async fn schedule(State(s): State<AppState>, Admin(st): Admin, Path(id): Path<Uu
 }
 
 async fn cancel(State(s): State<AppState>, Admin(st): Admin, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
-    let done = sqlx::query("UPDATE campaigns SET status = 'cancelled' WHERE id = $1 AND status IN ('draft', 'scheduled')").bind(id).execute(&s.db).await?.rows_affected();
+    let done = sqlx::query("UPDATE campaigns SET status = 'cancelled' WHERE id = $1 AND status IN ('draft', 'scheduled')")
+        .bind(id)
+        .execute(&s.db)
+        .await?
+        .rows_affected();
     if done == 0 {
         return Err(ApiError::Conflict("campaign_closed"));
     }
@@ -598,14 +680,18 @@ async fn test_send(State(s): State<AppState>, Admin(st): Admin, Json(b): Json<Te
     if own.is_empty() || own != phone {
         return Err(ApiError::BadRequest("phone_not_own"));
     }
-    let recent: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE actor_id = $1 AND action = 'campaign.test_send' AND created_at > now() - interval '1 hour'")
-        .bind(st.id)
-        .fetch_one(&s.db)
-        .await?;
+    let recent: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE actor_id = $1 AND action = 'campaign.test_send' AND created_at > now() - interval '1 hour'")
+            .bind(st.id)
+            .fetch_one(&s.db)
+            .await?;
     if recent >= TEST_SEND_PER_HOUR {
         return Err(ApiError::RateLimited);
     }
-    s.providers.send_sms(&phone, &sms_ad_text(&b.body, &b.optout_number)).await.map_err(|_| ApiError::Unavailable("sms"))?;
+    s.providers
+        .send_sms(&phone, &sms_ad_text(&b.body, &b.optout_number))
+        .await
+        .map_err(|_| ApiError::Unavailable("sms"))?;
     audit(&s.db, "staff", Some(st.id), "campaign.test_send", "self", json!({ "channel": "sms" })).await?;
     Ok(Json(json!({ "ok": true })))
 }
@@ -634,18 +720,22 @@ mod tests {
     #[test]
     fn deferred_sends_wait_for_0800_kst_the_same_or_next_morning() {
         assert_eq!(next_send_time(kst_at(12, 0)), kst_at(12, 0));
-        assert_eq!(next_send_time(kst_at(23, 0)), Utc.with_ymd_and_hms(2026, 11, 12, 8, 0, 0).single().expect("v") - Duration::hours(9));
+        assert_eq!(
+            next_send_time(kst_at(23, 0)),
+            Utc.with_ymd_and_hms(2026, 11, 12, 8, 0, 0).single().expect("v") - Duration::hours(9)
+        );
         assert_eq!(next_send_time(kst_at(3, 0)), kst_at(8, 0));
     }
 
     #[test]
     fn gate_checks_consent_then_quiet_hours_then_frequency_cap() {
         let day = kst_at(12, 0);
-        assert_eq!(gate(false, 0, day), Gate::NoConsent);
-        assert_eq!(gate(false, 99, kst_at(23, 0)), Gate::NoConsent, "consent is checked before quiet hours");
-        assert_eq!(gate(true, 0, kst_at(23, 0)), Gate::Defer(next_send_time(kst_at(23, 0))));
-        assert_eq!(gate(true, FREQ_CAP_PER_WEEK - 1, day), Gate::Send);
-        assert_eq!(gate(true, FREQ_CAP_PER_WEEK, day), Gate::Capped);
+        assert_eq!(gate(false, 0, day, 2), Gate::NoConsent);
+        assert_eq!(gate(false, 99, kst_at(23, 0), 2), Gate::NoConsent, "consent is checked before quiet hours");
+        assert_eq!(gate(true, 0, kst_at(23, 0), 2), Gate::Defer(next_send_time(kst_at(23, 0))));
+        assert_eq!(gate(true, 1, day, 2), Gate::Send);
+        assert_eq!(gate(true, 2, day, 2), Gate::Capped);
+        assert_eq!(gate(true, 2, day, 3), Gate::Send, "the cap is a parameter from the registry");
     }
 
     #[test]

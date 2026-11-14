@@ -17,7 +17,7 @@ mod social;
 
 use crate::config::Config;
 use chrono::{DateTime, Duration, FixedOffset, Utc};
-use rand::{RngCore, SeedableRng, rngs::StdRng, seq::SliceRandom, Rng};
+use rand::{Rng, RngCore, SeedableRng, rngs::StdRng, seq::SliceRandom};
 use sqlx::{PgPool, Postgres, Transaction};
 use std::{collections::BTreeMap, fmt, path::PathBuf};
 use uuid::Uuid;
@@ -206,7 +206,9 @@ pub async fn clear(db: &PgPool, config: &Config) -> Result<Report, DemoError> {
     lock(&mut tx).await?;
     let known: Vec<String> = sqlx::query_scalar("SELECT DISTINCT tbl FROM demo_rows").fetch_all(&mut *tx).await?;
     if let Some(unknown) = known.iter().find(|t| !CLEAR_ORDER.iter().any(|(name, _)| name == t)) {
-        return Err(DemoError::Data(format!("demo_rows lists table `{unknown}` that clear does not know; add it to CLEAR_ORDER")));
+        return Err(DemoError::Data(format!(
+            "demo_rows lists table `{unknown}` that clear does not know; add it to CLEAR_ORDER"
+        )));
     }
     let mut report = Vec::new();
     for (tbl, pk) in CLEAR_ORDER {
@@ -222,7 +224,9 @@ pub async fn clear(db: &PgPool, config: &Config) -> Result<Report, DemoError> {
         .execute(&mut *tx)
         .await?;
     // Saving the profile in the console drops the `demo` flag (unknown keys are stripped), so an edited profile stays.
-    sqlx::query("DELETE FROM settings WHERE key = 'business' AND value->>'demo' = 'true'").execute(&mut *tx).await?;
+    sqlx::query("DELETE FROM settings WHERE key = 'business' AND value->>'demo' = 'true'")
+        .execute(&mut *tx)
+        .await?;
     tx.commit().await?;
     match tokio::fs::remove_file(placeholder_path(config)).await {
         Ok(()) => {}
@@ -261,7 +265,9 @@ fn placeholder_path(config: &Config) -> PathBuf {
 
 fn placeholder_bytes() -> Vec<u8> {
     use base64::Engine;
-    base64::engine::general_purpose::STANDARD.decode(PLACEHOLDER_PNG).expect("placeholder png is valid base64")
+    base64::engine::general_purpose::STANDARD
+        .decode(PLACEHOLDER_PNG)
+        .expect("placeholder png is valid base64")
 }
 
 /// Shared by people, bookings and social: the demo placeholder photo URL.

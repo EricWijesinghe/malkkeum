@@ -36,6 +36,14 @@ Apple `account-delete` notifications (`POST /v1/auth/apple/notifications`) run t
 
 JSON: profile, consent history, addresses, payment method labels (no keys), coupons, bookings, last 500 notifications. Gateway keys and tokens are never included.
 
+## Staff-handled requests (console)
+
+`backend/crates/api/src/routes/privacy_requests.rs`, admin routes under `/v1/admin/privacy/`:
+- `GET customers?phone=`: live customers with that phone (Staff). Audit `privacy.lookup`.
+- `GET customers/{id}/export?format=json|csv`: the same export document as `/v1/me/export`, for one customer (Staff). CSV flattens it to `section,detail` rows. Audit `customer.export`.
+- `POST customers/{id}/delete` with `{"phone": ...}`: the phone must match the stored one; runs `delete_account` (Admin only). Audit `customer.delete`.
+- `GET requests`: the request log (Staff). Each export and deletion writes a `privacy_requests` row (kind, customer id, staff id, `done` or `failed`). It holds no personal details.
+
 ## Retention purge (`retention::spawn`, hourly)
 
 | Target | Rule | Setting |
