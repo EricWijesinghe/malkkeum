@@ -919,6 +919,306 @@ abstract class T {
   /// **'호스팅 서비스 제공자'**
   String get cSetupHostingProvider;
 
+  /// No description provided for @cgTabPeak.
+  ///
+  /// In ko, this message translates to:
+  /// **'피크 요금'**
+  String get cgTabPeak;
+
+  /// No description provided for @cgTabQuality.
+  ///
+  /// In ko, this message translates to:
+  /// **'품질 기준'**
+  String get cgTabQuality;
+
+  /// No description provided for @cgTabDemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터'**
+  String get cgTabDemo;
+
+  /// No description provided for @cgNewService.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 상품'**
+  String get cgNewService;
+
+  /// No description provided for @cgNewServiceTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 상품 만들기'**
+  String get cgNewServiceTitle;
+
+  /// No description provided for @cgServiceCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 코드 (영문 소문자)'**
+  String get cgServiceCode;
+
+  /// No description provided for @cgServiceCodeHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'영문 소문자, 숫자, _ 만 쓸 수 있어요. 만든 뒤에는 바꿀 수 없어요'**
+  String get cgServiceCodeHint;
+
+  /// No description provided for @cgServiceName.
+  ///
+  /// In ko, this message translates to:
+  /// **'화면에 보이는 이름'**
+  String get cgServiceName;
+
+  /// No description provided for @cgPriceFixed.
+  ///
+  /// In ko, this message translates to:
+  /// **'정해진 가격'**
+  String get cgPriceFixed;
+
+  /// No description provided for @cgPriceQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 후 견적'**
+  String get cgPriceQuote;
+
+  /// No description provided for @cgServiceCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품을 만들었어요'**
+  String get cgServiceCreated;
+
+  /// No description provided for @cgArchiveHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'끄면 보관돼요. 고객 화면에서 사라져요'**
+  String get cgArchiveHint;
+
+  /// No description provided for @cgArchived.
+  ///
+  /// In ko, this message translates to:
+  /// **'보관됨'**
+  String get cgArchived;
+
+  /// No description provided for @cgCodeTaken.
+  ///
+  /// In ko, this message translates to:
+  /// **'같은 코드의 상품이 이미 있어요'**
+  String get cgCodeTaken;
+
+  /// No description provided for @cgServiceInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 코드나 가격을 다시 확인해 주세요'**
+  String get cgServiceInvalid;
+
+  /// No description provided for @cgCodeInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'숫자를 다시 확인해 주세요'**
+  String get cgCodeInvalid;
+
+  /// No description provided for @cgPeakWeekend.
+  ///
+  /// In ko, this message translates to:
+  /// **'주말 할증 (%)'**
+  String get cgPeakWeekend;
+
+  /// No description provided for @cgPeakHoliday.
+  ///
+  /// In ko, this message translates to:
+  /// **'공휴일 할증 (%)'**
+  String get cgPeakHoliday;
+
+  /// No description provided for @cgPeakLunar.
+  ///
+  /// In ko, this message translates to:
+  /// **'명절 할증 (%)'**
+  String get cgPeakLunar;
+
+  /// No description provided for @cgPeakEvening.
+  ///
+  /// In ko, this message translates to:
+  /// **'저녁 할증 (%)'**
+  String get cgPeakEvening;
+
+  /// No description provided for @cgPeakEveningFrom.
+  ///
+  /// In ko, this message translates to:
+  /// **'저녁 시작 시각 (0~23시)'**
+  String get cgPeakEveningFrom;
+
+  /// No description provided for @cgPeakEveningTo.
+  ///
+  /// In ko, this message translates to:
+  /// **'저녁 끝 시각 (1~24시)'**
+  String get cgPeakEveningTo;
+
+  /// No description provided for @cgPeakMax.
+  ///
+  /// In ko, this message translates to:
+  /// **'할증 합계 상한 (%)'**
+  String get cgPeakMax;
+
+  /// No description provided for @cgPeakHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 견적과 새 예약부터 적용돼요'**
+  String get cgPeakHint;
+
+  /// No description provided for @cgQualityWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'주의 기준 (이 점수보다 낮으면 경고)'**
+  String get cgQualityWarning;
+
+  /// No description provided for @cgQualityPause.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 중지 기준 (이 점수보다 낮으면 파트너 일시 중지)'**
+  String get cgQualityPause;
+
+  /// No description provided for @cgQualityHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'바꾸면 다음 점수 계산부터 적용돼요'**
+  String get cgQualityHint;
+
+  /// No description provided for @cgSubEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'일정 수정'**
+  String get cgSubEdit;
+
+  /// No description provided for @cgSubCadence.
+  ///
+  /// In ko, this message translates to:
+  /// **'주기'**
+  String get cgSubCadence;
+
+  /// No description provided for @cgSubWeekday.
+  ///
+  /// In ko, this message translates to:
+  /// **'요일'**
+  String get cgSubWeekday;
+
+  /// No description provided for @cgSubStartHour.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 시각'**
+  String get cgSubStartHour;
+
+  /// No description provided for @cgSubEditHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'내일 방문은 그대로 두고, 그 뒤 예정된 방문을 새 일정으로 다시 잡아요'**
+  String get cgSubEditHint;
+
+  /// No description provided for @cgWeekdayMon.
+  ///
+  /// In ko, this message translates to:
+  /// **'월'**
+  String get cgWeekdayMon;
+
+  /// No description provided for @cgWeekdayTue.
+  ///
+  /// In ko, this message translates to:
+  /// **'화'**
+  String get cgWeekdayTue;
+
+  /// No description provided for @cgWeekdayWed.
+  ///
+  /// In ko, this message translates to:
+  /// **'수'**
+  String get cgWeekdayWed;
+
+  /// No description provided for @cgWeekdayThu.
+  ///
+  /// In ko, this message translates to:
+  /// **'목'**
+  String get cgWeekdayThu;
+
+  /// No description provided for @cgWeekdayFri.
+  ///
+  /// In ko, this message translates to:
+  /// **'금'**
+  String get cgWeekdayFri;
+
+  /// No description provided for @cgWeekdaySat.
+  ///
+  /// In ko, this message translates to:
+  /// **'토'**
+  String get cgWeekdaySat;
+
+  /// No description provided for @cgWeekdaySun.
+  ///
+  /// In ko, this message translates to:
+  /// **'일'**
+  String get cgWeekdaySun;
+
+  /// No description provided for @cgDemoTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'데모용 샘플 데이터'**
+  String get cgDemoTitle;
+
+  /// No description provided for @cgDemoBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'시연이나 교육용으로 가짜 고객, 파트너, 예약을 넣어요. 실제 예약이 있으면 넣을 수 없어요.'**
+  String get cgDemoBody;
+
+  /// No description provided for @cgDemoLoad.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터 넣기'**
+  String get cgDemoLoad;
+
+  /// No description provided for @cgDemoClear.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터 지우기'**
+  String get cgDemoClear;
+
+  /// No description provided for @cgDemoClearBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터만 지워요. 실제 기록은 그대로 남아요. 인증 앱에 보이는 6자리 코드를 입력하세요.'**
+  String get cgDemoClearBody;
+
+  /// No description provided for @cgDemoOwnerCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 앱 6자리 코드'**
+  String get cgDemoOwnerCode;
+
+  /// No description provided for @cgDemoLoaded.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터를 넣었어요'**
+  String get cgDemoLoaded;
+
+  /// No description provided for @cgDemoCleared.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터를 지웠어요'**
+  String get cgDemoCleared;
+
+  /// No description provided for @cgDemoRealData.
+  ///
+  /// In ko, this message translates to:
+  /// **'실제 예약이 있어서 샘플 데이터를 넣을 수 없어요'**
+  String get cgDemoRealData;
+
+  /// No description provided for @cgDemoAlready.
+  ///
+  /// In ko, this message translates to:
+  /// **'샘플 데이터가 이미 들어 있어요'**
+  String get cgDemoAlready;
+
+  /// No description provided for @cgCodeWrong.
+  ///
+  /// In ko, this message translates to:
+  /// **'코드가 맞지 않아요. 새 코드를 입력하세요'**
+  String get cgCodeWrong;
+
   /// No description provided for @cTitle.
   ///
   /// In ko, this message translates to:

@@ -13,6 +13,7 @@ mod checkout_policy;
 pub mod checkout_recon;
 pub mod checkouts;
 pub(crate) mod config;
+mod demo_admin;
 mod feed;
 mod finance;
 pub(crate) mod growth;
@@ -116,6 +117,7 @@ pub fn router(state: AppState) -> Router {
                 .merge(checkouts::admin_routes())
                 .merge(setup::admin_routes())
                 .merge(keys::admin_routes())
+                .merge(demo_admin::admin_routes())
                 .merge(config::admin_routes())
                 .merge(settings::admin_routes())
                 .merge(crate::client_errors::admin_routes())

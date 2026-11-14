@@ -444,6 +444,162 @@ class TEn extends T {
   String get cSetupHostingProvider => 'Hosting provider';
 
   @override
+  String get cgTabPeak => 'Peak surcharges';
+
+  @override
+  String get cgTabQuality => 'Quality';
+
+  @override
+  String get cgTabDemo => 'Sample data';
+
+  @override
+  String get cgNewService => 'New service';
+
+  @override
+  String get cgNewServiceTitle => 'New service';
+
+  @override
+  String get cgServiceCode => 'Service code (lowercase letters)';
+
+  @override
+  String get cgServiceCodeHint =>
+      'Lowercase letters, digits and _ only. It cannot be changed later';
+
+  @override
+  String get cgServiceName => 'Name shown to customers';
+
+  @override
+  String get cgPriceFixed => 'Fixed price';
+
+  @override
+  String get cgPriceQuote => 'Quoted per visit';
+
+  @override
+  String get cgServiceCreated => 'Service created';
+
+  @override
+  String get cgArchiveHint => 'Off archives it. Customers stop seeing it';
+
+  @override
+  String get cgArchived => 'Archived';
+
+  @override
+  String get cgCodeTaken => 'A service with this code already exists';
+
+  @override
+  String get cgServiceInvalid => 'Check the service code and price';
+
+  @override
+  String get cgCodeInvalid => 'Check the numbers';
+
+  @override
+  String get cgPeakWeekend => 'Weekend surcharge (%)';
+
+  @override
+  String get cgPeakHoliday => 'Public holiday surcharge (%)';
+
+  @override
+  String get cgPeakLunar => 'Lunar holiday surcharge (%)';
+
+  @override
+  String get cgPeakEvening => 'Evening surcharge (%)';
+
+  @override
+  String get cgPeakEveningFrom => 'Evening starts at (hour 0-23)';
+
+  @override
+  String get cgPeakEveningTo => 'Evening ends at (hour 1-24)';
+
+  @override
+  String get cgPeakMax => 'Maximum total surcharge (%)';
+
+  @override
+  String get cgPeakHint => 'Applies to new quotes and new bookings';
+
+  @override
+  String get cgQualityWarning => 'Warning below this score';
+
+  @override
+  String get cgQualityPause => 'Auto-pause below this score';
+
+  @override
+  String get cgQualityHint => 'Applies from the next score calculation';
+
+  @override
+  String get cgSubEdit => 'Edit schedule';
+
+  @override
+  String get cgSubCadence => 'How often';
+
+  @override
+  String get cgSubWeekday => 'Day';
+
+  @override
+  String get cgSubStartHour => 'Start time';
+
+  @override
+  String get cgSubEditHint =>
+      'Tomorrow\'s visit stays as booked. Later planned visits are rebooked on the new schedule';
+
+  @override
+  String get cgWeekdayMon => 'Mon';
+
+  @override
+  String get cgWeekdayTue => 'Tue';
+
+  @override
+  String get cgWeekdayWed => 'Wed';
+
+  @override
+  String get cgWeekdayThu => 'Thu';
+
+  @override
+  String get cgWeekdayFri => 'Fri';
+
+  @override
+  String get cgWeekdaySat => 'Sat';
+
+  @override
+  String get cgWeekdaySun => 'Sun';
+
+  @override
+  String get cgDemoTitle => 'Demo sample data';
+
+  @override
+  String get cgDemoBody =>
+      'Adds fake customers, partners and bookings for demos or training. Not possible when real bookings exist.';
+
+  @override
+  String get cgDemoLoad => 'Add sample data';
+
+  @override
+  String get cgDemoClear => 'Remove sample data';
+
+  @override
+  String get cgDemoClearBody =>
+      'Removes only the sample data; real records stay. Enter the 6-digit code from your authenticator app.';
+
+  @override
+  String get cgDemoOwnerCode => '6-digit authenticator code';
+
+  @override
+  String get cgDemoLoaded => 'Sample data added';
+
+  @override
+  String get cgDemoCleared => 'Sample data removed';
+
+  @override
+  String get cgDemoRealData =>
+      'Real bookings exist, so sample data cannot be added';
+
+  @override
+  String get cgDemoAlready => 'Sample data is already in place';
+
+  @override
+  String get cgCodeWrong =>
+      'The code is wrong or already used. Enter the current code';
+
+  @override
   String get cTitle => 'Operations console';
 
   @override

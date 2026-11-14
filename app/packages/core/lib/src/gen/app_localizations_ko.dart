@@ -430,6 +430,158 @@ class TKo extends T {
   String get cSetupHostingProvider => '호스팅 서비스 제공자';
 
   @override
+  String get cgTabPeak => '피크 요금';
+
+  @override
+  String get cgTabQuality => '품질 기준';
+
+  @override
+  String get cgTabDemo => '샘플 데이터';
+
+  @override
+  String get cgNewService => '새 상품';
+
+  @override
+  String get cgNewServiceTitle => '새 상품 만들기';
+
+  @override
+  String get cgServiceCode => '상품 코드 (영문 소문자)';
+
+  @override
+  String get cgServiceCodeHint => '영문 소문자, 숫자, _ 만 쓸 수 있어요. 만든 뒤에는 바꿀 수 없어요';
+
+  @override
+  String get cgServiceName => '화면에 보이는 이름';
+
+  @override
+  String get cgPriceFixed => '정해진 가격';
+
+  @override
+  String get cgPriceQuote => '방문 후 견적';
+
+  @override
+  String get cgServiceCreated => '상품을 만들었어요';
+
+  @override
+  String get cgArchiveHint => '끄면 보관돼요. 고객 화면에서 사라져요';
+
+  @override
+  String get cgArchived => '보관됨';
+
+  @override
+  String get cgCodeTaken => '같은 코드의 상품이 이미 있어요';
+
+  @override
+  String get cgServiceInvalid => '상품 코드나 가격을 다시 확인해 주세요';
+
+  @override
+  String get cgCodeInvalid => '숫자를 다시 확인해 주세요';
+
+  @override
+  String get cgPeakWeekend => '주말 할증 (%)';
+
+  @override
+  String get cgPeakHoliday => '공휴일 할증 (%)';
+
+  @override
+  String get cgPeakLunar => '명절 할증 (%)';
+
+  @override
+  String get cgPeakEvening => '저녁 할증 (%)';
+
+  @override
+  String get cgPeakEveningFrom => '저녁 시작 시각 (0~23시)';
+
+  @override
+  String get cgPeakEveningTo => '저녁 끝 시각 (1~24시)';
+
+  @override
+  String get cgPeakMax => '할증 합계 상한 (%)';
+
+  @override
+  String get cgPeakHint => '새 견적과 새 예약부터 적용돼요';
+
+  @override
+  String get cgQualityWarning => '주의 기준 (이 점수보다 낮으면 경고)';
+
+  @override
+  String get cgQualityPause => '자동 중지 기준 (이 점수보다 낮으면 파트너 일시 중지)';
+
+  @override
+  String get cgQualityHint => '바꾸면 다음 점수 계산부터 적용돼요';
+
+  @override
+  String get cgSubEdit => '일정 수정';
+
+  @override
+  String get cgSubCadence => '주기';
+
+  @override
+  String get cgSubWeekday => '요일';
+
+  @override
+  String get cgSubStartHour => '시작 시각';
+
+  @override
+  String get cgSubEditHint => '내일 방문은 그대로 두고, 그 뒤 예정된 방문을 새 일정으로 다시 잡아요';
+
+  @override
+  String get cgWeekdayMon => '월';
+
+  @override
+  String get cgWeekdayTue => '화';
+
+  @override
+  String get cgWeekdayWed => '수';
+
+  @override
+  String get cgWeekdayThu => '목';
+
+  @override
+  String get cgWeekdayFri => '금';
+
+  @override
+  String get cgWeekdaySat => '토';
+
+  @override
+  String get cgWeekdaySun => '일';
+
+  @override
+  String get cgDemoTitle => '데모용 샘플 데이터';
+
+  @override
+  String get cgDemoBody =>
+      '시연이나 교육용으로 가짜 고객, 파트너, 예약을 넣어요. 실제 예약이 있으면 넣을 수 없어요.';
+
+  @override
+  String get cgDemoLoad => '샘플 데이터 넣기';
+
+  @override
+  String get cgDemoClear => '샘플 데이터 지우기';
+
+  @override
+  String get cgDemoClearBody =>
+      '샘플 데이터만 지워요. 실제 기록은 그대로 남아요. 인증 앱에 보이는 6자리 코드를 입력하세요.';
+
+  @override
+  String get cgDemoOwnerCode => '인증 앱 6자리 코드';
+
+  @override
+  String get cgDemoLoaded => '샘플 데이터를 넣었어요';
+
+  @override
+  String get cgDemoCleared => '샘플 데이터를 지웠어요';
+
+  @override
+  String get cgDemoRealData => '실제 예약이 있어서 샘플 데이터를 넣을 수 없어요';
+
+  @override
+  String get cgDemoAlready => '샘플 데이터가 이미 들어 있어요';
+
+  @override
+  String get cgCodeWrong => '코드가 맞지 않아요. 새 코드를 입력하세요';
+
+  @override
   String get cTitle => '운영 콘솔';
 
   @override

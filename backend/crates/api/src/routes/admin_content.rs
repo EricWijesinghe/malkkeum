@@ -24,7 +24,7 @@ const MIN_STAFF_PASSWORD: usize = 12;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/services", get(list_services))
+        .route("/services", get(list_services).post(create_service))
         .route("/services/{code}", put(update_service))
         .route("/slot-capacity", get(get_capacity).put(put_capacity))
         .route("/quote-formula", get(get_formula).put(put_formula))
@@ -57,6 +57,13 @@ async fn list_services(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<
 }
 
 #[derive(Deserialize)]
+struct NewService {
+    code: String,
+    #[serde(flatten)]
+    body: ServiceUpdate,
+}
+
+#[derive(Deserialize)]
 struct ServiceUpdate {
     pricing: Pricing,
     needs_preparation: bool,
@@ -66,13 +73,51 @@ struct ServiceUpdate {
     sort_order: i32,
 }
 
-async fn update_service(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>, Json(u): Json<ServiceUpdate>) -> ApiResult<Json<Value>> {
-    let valid_prices = match &u.pricing {
+/// Prices must be positive and every unit complete; content must be a JSON object.
+fn valid_service(pricing: &Pricing, content: &Value) -> bool {
+    let valid_prices = match pricing {
         Pricing::Fixed { price, minutes } => price.0 > 0 && *minutes > 0,
         Pricing::Unit { units } => !units.is_empty() && units.iter().all(|x| x.price.0 > 0 && x.minutes > 0),
         Pricing::Quote => true,
     };
-    if !valid_prices || !u.content.is_object() {
+    valid_prices && content.is_object()
+}
+
+/// Lowercase ASCII, starts with a letter, 2 to 40 characters: the code is the key bookings and prices refer to.
+fn valid_service_code(code: &str) -> bool {
+    (2..=40).contains(&code.len())
+        && code.starts_with(|c: char| c.is_ascii_lowercase())
+        && code.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+}
+
+/// A new service row. An existing code is refused, never overwritten; archiving is a PUT with `active: false`.
+async fn create_service(State(s): State<AppState>, Admin(a): Admin, Json(n): Json<NewService>) -> ApiResult<Json<Value>> {
+    if !valid_service_code(&n.code) || !valid_service(&n.body.pricing, &n.body.content) {
+        return Err(ApiError::BadRequest("invalid_service"));
+    }
+    let (code, u) = (n.code, n.body);
+    let r = sqlx::query(
+        "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, content, active, sort_order)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (code) DO NOTHING",
+    )
+    .bind(&code)
+    .bind(sqlx::types::Json(&u.pricing))
+    .bind(u.needs_preparation)
+    .bind(u.max_pyeong)
+    .bind(&u.content)
+    .bind(u.active)
+    .bind(u.sort_order)
+    .execute(&s.db)
+    .await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::Conflict("service_exists"));
+    }
+    audit(&s.db, "staff", Some(a.id), "service.create", &code, json!({ "pricing": u.pricing })).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+async fn update_service(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>, Json(u): Json<ServiceUpdate>) -> ApiResult<Json<Value>> {
+    if !valid_service(&u.pricing, &u.content) {
         return Err(ApiError::BadRequest("invalid_service"));
     }
     let r = sqlx::query(
@@ -163,7 +208,10 @@ async fn get_quality_thresholds(State(s): State<AppState>, _st: Staff) -> ApiRes
     let (warning_below, pause_below): (i16, i16) = sqlx::query_as("SELECT warning_below, pause_below FROM quality_settings WHERE id = 1")
         .fetch_one(&s.db)
         .await?;
-    Ok(Json(domain::quality::QualityThresholds { warning_below: warning_below as u8, pause_below: pause_below as u8 }))
+    Ok(Json(domain::quality::QualityThresholds {
+        warning_below: warning_below as u8,
+        pause_below: pause_below as u8,
+    }))
 }
 
 /// Owner-only. Changing thresholds re-evaluates auto-pause on the next quality recompute.
@@ -445,10 +493,14 @@ struct NewStaff {
 }
 
 async fn create_staff(State(s): State<AppState>, Admin(a): Admin, Json(n): Json<NewStaff>) -> ApiResult<Json<Value>> {
-    let too_long = n.email.len() > contract::MAX_EMAIL_BYTES
-        || n.name.chars().count() > contract::MAX_TEXT_CHARS
-        || n.password.len() > contract::MAX_PASSWORD_BYTES;
-    if too_long || !n.email.contains('@') || n.name.trim().is_empty() || !matches!(n.role.as_str(), "admin" | "consultant") || n.password.len() < MIN_STAFF_PASSWORD {
+    let too_long =
+        n.email.len() > contract::MAX_EMAIL_BYTES || n.name.chars().count() > contract::MAX_TEXT_CHARS || n.password.len() > contract::MAX_PASSWORD_BYTES;
+    if too_long
+        || !n.email.contains('@')
+        || n.name.trim().is_empty()
+        || !matches!(n.role.as_str(), "admin" | "consultant")
+        || n.password.len() < MIN_STAFF_PASSWORD
+    {
         return Err(ApiError::BadRequest("invalid_staff"));
     }
     let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, role, password_hash) VALUES ($1,$2,$3,$4) RETURNING id")
