@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -36,9 +37,12 @@ void main() {
     stockPartnerApi(fake);
     final env = await TestEnv.create(fake: fake, role: 'pro');
     await pumpPartnerScreen(tester, env, const MoreTab());
-    await pumpUntilFound(tester, find.text(koT.logout));
-
-    await tester.ensureVisible(find.text(koT.logout));
+    await pumpUntilFound(tester, find.text(koT.moreVersion('9.8.7')));
+    await tester.dragUntilVisible(
+      find.text(koT.logout),
+      find.byType(Scrollable).first,
+      const Offset(0, -200),
+    );
     await tester.tap(find.text(koT.logout));
     await settle(tester);
     expect(find.text(koT.pLogoutConfirm), findsOneWidget);
