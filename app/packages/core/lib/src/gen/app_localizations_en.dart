@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4664,6 +4665,21 @@ class TEn extends T {
   String poSellerDone(String status) {
     return 'Seller status: $status';
   }
+
+  @override
+  String get popularServices => 'Popular services';
+
+  @override
+  String get reviewsSeeAll => 'See all reviews';
+
+  @override
+  String get reviewsAllTitle => 'Reviews';
+
+  @override
+  String get reviewsEmpty => 'No reviews yet';
+
+  @override
+  String get reviewMenu => 'Review options';
 
   @override
   String get oFlags => 'Feature switches';

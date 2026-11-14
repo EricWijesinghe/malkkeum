@@ -2354,6 +2354,11 @@
    }
   }
  },
+ "popularServices": "인기 서비스",
+ "reviewsSeeAll": "후기 전체 보기",
+ "reviewsAllTitle": "후기",
+ "reviewsEmpty": "아직 후기가 없어요",
+ "reviewMenu": "후기 메뉴",
  "oFlags": "기능 스위치",
  "oFlagBooking": "예약",
  "oFlagChat": "채팅",

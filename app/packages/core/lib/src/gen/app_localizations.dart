@@ -8670,6 +8670,36 @@ abstract class T {
   /// **'판매자 상태: {status}'**
   String poSellerDone(String status);
 
+  /// No description provided for @popularServices.
+  ///
+  /// In ko, this message translates to:
+  /// **'인기 서비스'**
+  String get popularServices;
+
+  /// No description provided for @reviewsSeeAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 전체 보기'**
+  String get reviewsSeeAll;
+
+  /// No description provided for @reviewsAllTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기'**
+  String get reviewsAllTitle;
+
+  /// No description provided for @reviewsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 후기가 없어요'**
+  String get reviewsEmpty;
+
+  /// No description provided for @reviewMenu.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 메뉴'**
+  String get reviewMenu;
+
   /// No description provided for @oFlags.
   ///
   /// In ko, this message translates to:
