@@ -13,6 +13,7 @@ nt() { if "${@:2}"; then FAIL=$((FAIL + 1)); echo "FAIL (should fail): $1"; else
 eq() { [ "$1" = "$2" ] || { echo "   got [$1] want [$2]"; return 1; }; }
 
 bash -n "$ROOT/deploy/install.sh"
+bash -n "$ROOT/deploy/agent.sh"
 # shellcheck source=deploy/install.sh
 DAHAE_SELFTEST=1 . "$ROOT/deploy/install.sh"
 set +e # the sourced installer turned on -e; failures are counted below, not fatal
@@ -24,6 +25,12 @@ t  "norm_domain"           eq "$(norm_domain 'https://MyShop.co.kr/x')" myshop.c
 nt "domain empty"          valid_domain ""
 nt "domain no dot"         valid_domain localhost
 nt "domain shell chars"    valid_domain 'a.com;rm -rf /'
+nt "domain IP literal"     valid_domain 1.2.3.4
+nt "domain double dot"     valid_domain a..b
+nt "domain .local"         valid_domain x.local
+nt "domain too long label" valid_domain "$(printf 'a%.0s' $(seq 64)).co.kr"
+t  "domain punycode tld"   valid_domain shop.xn--3e0b707e
+nt "email percent local"   valid_email 'a%b@shop.co.kr'
 t  "email empty ok"        valid_email ""
 t  "email ok"              valid_email owner@myshop.co.kr
 nt "email bad"             valid_email 'owner@shop'
@@ -100,6 +107,11 @@ t  "env_set add"           eq "$(env_get NEWKEY)" v=1
 export YES=1 # read by confirm() in the sourced CLI
 t  "confirm --yes"         confirm "q" yes
 sub() { ( "$@" ) >/dev/null 2>&1; } # die exits: run it in a subshell
+env_set ESC 'a\nB=c'                  # a literal backslash-n stays two characters on one line
+t  "env_set keeps backslash-n"     eq "$(env_get ESC)" 'a\nB=c'
+t  "env_set writes one line"       eq "$(grep -c '^B=' .env || true)" 0
+nt "env_set refuses a newline"     sub env_set BAD "$(printf 'a\nB=c')"
+nt "env_set refuses a CR"          sub env_set BAD "$(printf 'a\rB=c')"
 
 # ---- restore-offsite only takes real backup names (no ../ paths) ----
 t  "backup name"           valid_backup_name db-20261110-033000.sql.gz
@@ -267,7 +279,7 @@ pub() { # pub 태그 : the release job's delivery step, pushing to $SB/dist.git 
 }
 g() { git -C "$SB/dist.git" "$@"; }
 has() { grep -qF -- "$2" <<< "$(g show "$1")"; } # has 태그:파일 문자열 (no pipe: grep -q + pipefail = SIGPIPE)
-sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | cut -d' ' -f1)" ]; }
+sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | awk '{ sub(/^\*/, "", $2) } $2 == "install.sh" { print $1 }')" ]; }
 t  "publish stable"        pub v1.0.0
 t  "tag is annotated"      eq "$(g cat-file -t v1.0.0)" tag
 t  "tag = main commit"     eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
@@ -289,6 +301,8 @@ t  "beta tag SHA256SUMS matches" sums_ok v1.1.0-beta.1
 t  "stable tag unchanged by beta" eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
 g -c user.name=t -c user.email=t@t tag -f -a v1.0.0 -m moved beta >/dev/null
 nt "moved tag is refused"  pub v1.0.0
+
+bash "$ROOT/scripts/ci/agent-selftest.sh" >/dev/null || { FAIL=$((FAIL + 1)); echo "FAIL: agent self-test (run scripts/ci/agent-selftest.sh)"; }
 
 echo "installer self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

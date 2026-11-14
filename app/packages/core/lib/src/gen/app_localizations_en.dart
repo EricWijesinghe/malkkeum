@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -70,6 +71,172 @@ class TEn extends T {
 
   @override
   String get aiCapHint => 'Numbers only. Leave empty for the default.';
+
+  @override
+  String get cAppLinkTitle => 'App links';
+
+  @override
+  String get cAppLinkHint =>
+      'These links let Naver sign-in return to the app. Saving applies them right away. If unsure, ask your developer.';
+
+  @override
+  String get cAppLinkAndroidLabel => 'Android signing fingerprint (SHA-256)';
+
+  @override
+  String get cAppLinkAndroidHint =>
+      'One per line: 32 hex pairs separated by colons. Up to 8.';
+
+  @override
+  String get cAppLinkTeamLabel => 'Apple Team ID (10 characters)';
+
+  @override
+  String get cAppLinkSourceDb => 'Using the values saved in the console';
+
+  @override
+  String get cAppLinkSourceEnv => 'Using the server configuration values';
+
+  @override
+  String get cAppLinkAndroidOn => 'Android app links: on';
+
+  @override
+  String get cAppLinkAndroidOff => 'Android app links: off';
+
+  @override
+  String get cAppLinkIosOn => 'iPhone app links: on';
+
+  @override
+  String get cAppLinkIosOff => 'iPhone app links: off';
+
+  @override
+  String get cAppLinkNone =>
+      'With no values both links are off, and Naver sign-in may not return to the app.';
+
+  @override
+  String get cAppLinkChecked => 'Checked. Not saved yet.';
+
+  @override
+  String get cAppLinkCheck => 'Check';
+
+  @override
+  String get cAudit => 'Activity log';
+
+  @override
+  String get audIntro =>
+      'Who did what and when, newest first. Records cannot be deleted.';
+
+  @override
+  String get audPeriodToday => 'Today';
+
+  @override
+  String get audPeriod7 => 'Last 7 days';
+
+  @override
+  String get audPeriod30 => 'Last 30 days';
+
+  @override
+  String get audPeriodAll => 'All time';
+
+  @override
+  String get audFilterWho => 'Who';
+
+  @override
+  String get audFilterWhat => 'What';
+
+  @override
+  String get audWhoAll => 'Everyone';
+
+  @override
+  String get audWhatAll => 'All actions';
+
+  @override
+  String get audRoleStaff => 'Staff';
+
+  @override
+  String get audRoleCustomer => 'Customer';
+
+  @override
+  String get audRolePro => 'Partner';
+
+  @override
+  String get audRoleSystem => 'Automatic';
+
+  @override
+  String get audCatCase => 'Cases and refunds';
+
+  @override
+  String get audCatBooking => 'Bookings';
+
+  @override
+  String get audCatCustomer => 'Customer data';
+
+  @override
+  String get audCatStaff => 'Staff';
+
+  @override
+  String get audCatSettlement => 'Settlements';
+
+  @override
+  String get audCatPoints => 'Points';
+
+  @override
+  String get audCatService => 'Services and prices';
+
+  @override
+  String get audActCaseRefund => 'Case refund';
+
+  @override
+  String get audActCaseUpdate => 'Case updated';
+
+  @override
+  String get audActPointsAdjust => 'Points adjusted';
+
+  @override
+  String get audActPiiView => 'Customer contact viewed';
+
+  @override
+  String get audActPiiList => 'Customer search';
+
+  @override
+  String get audActStaffCreate => 'Staff added';
+
+  @override
+  String get audActStaffActive => 'Staff access changed';
+
+  @override
+  String get audActSettlementHold => 'Settlement hold changed';
+
+  @override
+  String get audActServiceUpdate => 'Service updated';
+
+  @override
+  String get audUnknownActor => 'Unknown';
+
+  @override
+  String get audOtherAction => 'Other action';
+
+  @override
+  String get audTarget => 'Target';
+
+  @override
+  String get audDetailTitle => 'Details';
+
+  @override
+  String get audActionCode => 'Action code';
+
+  @override
+  String get audNoDetail => 'No details recorded';
+
+  @override
+  String get audEmpty => 'No records match these filters';
+
+  @override
+  String get audLoadMore => 'Load more';
+
+  @override
+  String get audClose => 'Close';
+
+  @override
+  String get audRange => 'Period';
 
   @override
   String get apSocialOr => 'or';
@@ -3128,6 +3295,22 @@ class TEn extends T {
   }
 
   @override
+  String get guestReasonQuote => 'Sign in to save this quote and book';
+
+  @override
+  String get guestReasonBook => 'Sign in to confirm your booking';
+
+  @override
+  String get guestReasonChat => 'Sign in to chat with our team';
+
+  @override
+  String get guestReasonAccount =>
+      'Sign in to see your coupons, points and bookings';
+
+  @override
+  String get guestAccountHint => 'Sign in to view';
+
+  @override
   String get locUseCurrent => 'Use my current location';
 
   @override
@@ -3289,6 +3472,72 @@ class TEn extends T {
   String anWeekAfter(String n) {
     return 'Booked in week $n';
   }
+
+  @override
+  String get ntNavLabel => 'Notification text';
+
+  @override
+  String get ntIntro =>
+      'Change the text customers and cleaning teams see in app alerts and the inbox. Without a change, the built-in text is used.';
+
+  @override
+  String get ntLangKo => 'Korean';
+
+  @override
+  String get ntLangEn => 'English';
+
+  @override
+  String get ntBuiltIn => 'Built-in text';
+
+  @override
+  String get ntUsingCustom => 'Using your text';
+
+  @override
+  String get ntUsingBuiltIn => 'Using the built-in text';
+
+  @override
+  String ntVars(String names) {
+    return 'Values you can use: $names';
+  }
+
+  @override
+  String get ntTitleField => 'Title';
+
+  @override
+  String get ntBodyField => 'Message';
+
+  @override
+  String get ntPreview => 'Preview';
+
+  @override
+  String get ntPreviewResult => 'This is how it looks';
+
+  @override
+  String get ntSave => 'Save';
+
+  @override
+  String get ntRestore => 'Restore built-in text';
+
+  @override
+  String get ntRestored => 'Restored to the built-in text';
+
+  @override
+  String get ntErrVar =>
+      'A value that is not allowed is in the text. Only use the values listed above inside braces.';
+
+  @override
+  String get ntErrBraces => 'The curly brackets do not match.';
+
+  @override
+  String get ntErrEmpty => 'Enter both a title and a message.';
+
+  @override
+  String get ntErrLong =>
+      'Too long. Titles allow 40 characters and messages 120.';
+
+  @override
+  String get ntErrChars =>
+      'Line breaks and control characters are not allowed.';
 
   @override
   String get cOps => 'System status';
@@ -3527,6 +3776,11 @@ class TEn extends T {
   @override
   String oJobErrors(String count) {
     return '$count errors';
+  }
+
+  @override
+  String oJobDeadLetters(String count) {
+    return '$count texts dead-lettered';
   }
 
   @override
@@ -4269,6 +4523,79 @@ class TEn extends T {
       'Could not load your data. Please try again later.';
 
   @override
+  String get prqTitle => 'Account deletion and data requests';
+
+  @override
+  String get prqIntro =>
+      'When a customer asks for a copy of their data or to delete their account, find them by phone number and handle it here. Every step is logged. Deletion cannot be undone.';
+
+  @override
+  String get prqPhone => 'Customer phone number';
+
+  @override
+  String get prqFind => 'Find';
+
+  @override
+  String get prqNotFound => 'No customer is registered with this number.';
+
+  @override
+  String get prqBookings => 'Bookings';
+
+  @override
+  String get prqExport => 'Download a copy of the data (CSV)';
+
+  @override
+  String get prqExported => 'The copy of the data was saved.';
+
+  @override
+  String get prqDelete => 'Delete account';
+
+  @override
+  String get prqDeleteAdminOnly => 'Only an admin can delete an account.';
+
+  @override
+  String get prqDeleteAsk =>
+      'Type the customer\'s phone number again to confirm. Their name and contact details are erased and this cannot be undone. Bookings and payment records stay, as the law requires.';
+
+  @override
+  String get prqPhoneAgain => 'Type the phone number again';
+
+  @override
+  String get prqPhoneMismatch => 'The phone number does not match.';
+
+  @override
+  String get prqDeleteDone => 'The account was deleted.';
+
+  @override
+  String get prqFailed =>
+      'This could not be completed. Please try again shortly.';
+
+  @override
+  String get prqLog => 'Request log';
+
+  @override
+  String get prqLogEmpty => 'No requests have been handled yet.';
+
+  @override
+  String get prqKindExport => 'Data copy';
+
+  @override
+  String get prqKindDelete => 'Deletion';
+
+  @override
+  String get prqStatusDone => 'Done';
+
+  @override
+  String get prqStatusFailed => 'Failed';
+
+  @override
+  String get prqBy => 'Handled by';
+
+  @override
+  String get cSetupColorContrast =>
+      'White text on this colour is hard to read, so the apps will not use it. Choose a darker colour.';
+
+  @override
   String get safetyEmergency => 'Emergency contacts';
 
   @override
@@ -4382,6 +4709,157 @@ class TEn extends T {
 
   @override
   String get caseSave => 'Save';
+
+  @override
+  String get rulesTab => 'Operating rules';
+
+  @override
+  String get rulesIntro =>
+      'Changes apply right away or after a server restart. Reset a value to go back to its original setting.';
+
+  @override
+  String get rulesGroupBusiness => 'Business limits';
+
+  @override
+  String get rulesGroupMarketing => 'Advertising';
+
+  @override
+  String get rulesGroupPoints => 'Points';
+
+  @override
+  String get rulesGroupQuality => 'Partner quality';
+
+  @override
+  String get rulesGroupOps => 'Server and alert limits';
+
+  @override
+  String get rulesRange => 'Allowed range';
+
+  @override
+  String get rulesSource => 'Value source';
+
+  @override
+  String get rulesSourceDb => 'Changed here';
+
+  @override
+  String get rulesSourceEnv => 'Installation setting';
+
+  @override
+  String get rulesSourceDefault => 'Default';
+
+  @override
+  String get rulesTightenDown => 'Can only be lowered from the default';
+
+  @override
+  String get rulesTightenUp => 'Can only be raised from the default';
+
+  @override
+  String get rulesApplyInstant => 'Applies now';
+
+  @override
+  String get rulesApplyRebuild => 'Applies after a server restart';
+
+  @override
+  String get rulesReadOnly => 'Cannot be changed here (ask the developer)';
+
+  @override
+  String get rulesReset => 'Reset';
+
+  @override
+  String get rulesSave => 'Save';
+
+  @override
+  String get rulesSaved => 'Saved';
+
+  @override
+  String get rulesNoChanges => 'Nothing changed';
+
+  @override
+  String get rulesInvalid => 'Check the values you entered';
+
+  @override
+  String get rulePointsAdjustMax => 'Most points per manual adjustment';
+
+  @override
+  String get ruleUploadDailyQuota => 'Daily photo upload limit (count)';
+
+  @override
+  String get ruleMaxOpenQuoteRequests => 'Open quote requests per customer';
+
+  @override
+  String get ruleMaxThreadsPerDay => 'Daily chat threads per customer';
+
+  @override
+  String get ruleReviewReportThreshold => 'Review reports before hiding';
+
+  @override
+  String get ruleNoshowGraceMinutes => 'No-show grace period (minutes)';
+
+  @override
+  String get ruleAiChatRetentionDays => 'AI chat retention (days)';
+
+  @override
+  String get ruleUploadOrphanDays => 'Delete unlinked photos after (days)';
+
+  @override
+  String get ruleReconcileIntervalSecs =>
+      'Payment reconciliation interval (seconds)';
+
+  @override
+  String get ruleFreqCapPerWeek => 'Ads per customer per week';
+
+  @override
+  String get ruleNudgeRebookDays => 'Rebooking reminder (days after visit)';
+
+  @override
+  String get ruleQualityWindowDays => 'Quality score window (days)';
+
+  @override
+  String get ruleQualityOnTimeGraceMin => 'On-time grace period (minutes)';
+
+  @override
+  String get ruleBackupStaleHours => 'Backup overdue after (hours)';
+
+  @override
+  String get ruleBackupLateHours => 'Backup late after (hours)';
+
+  @override
+  String get ruleDiskLowPct => 'Disk free space red below (%)';
+
+  @override
+  String get ruleDiskWarnPct => 'Disk free space yellow below (%)';
+
+  @override
+  String get ruleMaintenanceOn => 'Maintenance mode (blocks new bookings)';
+
+  @override
+  String get ruleMaintenanceMessage => 'Maintenance message';
+
+  @override
+  String get rulesApplyStoreManual => 'Edited in the app store';
+
+  @override
+  String get rulesMaxLength => 'Maximum characters';
+
+  @override
+  String get rulesDeleteWarning =>
+      'A shorter period deletes older records at the next cleanup. Deleted records cannot be restored.';
+
+  @override
+  String get rulesNoshowWarning =>
+      'Changing the no-show grace period changes when a partner is marked as a no-show.';
+
+  @override
+  String get err_tighten_only =>
+      'This value is past the default limit. It can only be changed toward the default.';
+
+  @override
+  String get err_threshold_order =>
+      'The yellow and red limits are in the wrong order. Check both values.';
+
+  @override
+  String get err_read_only_setting =>
+      'This value cannot be changed here. Ask the developer.';
 
   @override
   String get cSetup => 'Setup';
@@ -4573,6 +5051,27 @@ class TEn extends T {
 
   @override
   String get cSetupOptional => 'Optional';
+
+  @override
+  String get cOwnerCodeTitle => 'Owner authenticator code';
+
+  @override
+  String get cOwnerCodeBody =>
+      'To change Toss payouts, enter the 6-digit code from your authenticator app.';
+
+  @override
+  String get cOwnerCodeField => '6-digit code';
+
+  @override
+  String get cOwnerCodeConfirm => 'Confirm';
+
+  @override
+  String get cOwnerCodeWrong =>
+      'That code is not right. Enter the code your app shows now';
+
+  @override
+  String get cOwnerCodeLocked =>
+      'Too many wrong codes. Try again in a few minutes';
 
   @override
   String get cIntPortone => 'Payments (PortOne)';

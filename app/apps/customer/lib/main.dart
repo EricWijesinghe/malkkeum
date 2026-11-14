@@ -22,9 +22,12 @@ Future<void> _start() async {
   _errors.send = (body) async => api.post('/client-errors', body);
   final locale = LocaleController();
   final theme = ThemeController(initial: ThemeMode.system);
-  await Future.wait([session.restore(), locale.restore(), theme.restore()]);
+  final brand = BrandController(api: api, fallback: BrandConfig.placeholder);
+  await Future.wait([session.restore(), locale.restore(), theme.restore(), brand.restore()]);
   // One refresh now instead of a 401 on every first screen call.
   api.warmUp().ignore();
+  // The business's colours and logo; the saved brand paints until this answers (and stays if offline).
+  brand.refresh().ignore();
   final restored = boot.elapsedMilliseconds;
   final analytics = Analytics(
     send: (body) async => api.post('/events', body),
@@ -32,14 +35,7 @@ Future<void> _start() async {
     anonId: await Analytics.loadOrCreateAnonId(),
   );
   final app = AppState(api, Realtime(api), analytics: analytics);
-  runApp(
-    CustomerApp(
-      session: session,
-      app: app,
-      locale: locale,
-      theme: theme,
-    ),
-  );
+  runApp(CustomerApp(session: session, app: app, locale: locale, theme: theme, brand: brand));
   analytics.start();
   // Back from the background: a fresh socket (its resync makes screens refetch). Leaving: send queued events.
   Foreground(onResume: app.realtime.reconnect, onHide: () => analytics.flush().ignore());
@@ -48,7 +44,10 @@ Future<void> _start() async {
   // Push (Firebase, local notifications) after the first frame: keeps cold start fast.
   // A launch tap that arrives before Shell listens is kept by PushService until taken.
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    developer.log('restore ${restored}ms, first frame ${boot.elapsedMilliseconds}ms', name: 'startup');
+    developer.log(
+      'restore ${restored}ms, first frame ${boot.elapsedMilliseconds}ms',
+      name: 'startup',
+    );
     PushService.init().ignore();
   });
 }
@@ -63,48 +62,53 @@ class CustomerApp extends StatelessWidget {
     required this.app,
     required this.locale,
     required this.theme,
+    this.brand,
   });
   final Session session;
   final AppState app;
   final LocaleController locale;
   final ThemeController theme;
+  final BrandController? brand;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: Listenable.merge([locale, session, theme]),
-    builder: (context, _) => Deps(
-      app: app,
-      session: session,
-      locale: locale,
-      theme: theme,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) => MediaQuery.withClampedTextScaling(
-          maxScaleFactor: maxTextScale,
-          child: DesktopColumn(
-            child: UpdateGate(
-              api: session.api,
-              app: 'customer',
-              child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
+    listenable: Listenable.merge([locale, session, theme, brand]),
+    builder: (context, _) => BrandScope(
+      brand: brand?.brand ?? BrandConfig.placeholder,
+      child: Deps(
+        app: app,
+        session: session,
+        locale: locale,
+        theme: theme,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          builder: (context, child) => MediaQuery.withClampedTextScaling(
+            maxScaleFactor: maxTextScale,
+            child: DesktopColumn(
+              child: UpdateGate(
+                api: session.api,
+                app: 'customer',
+                child: RemoteConfigGate(api: session.api, child: child ?? const SizedBox.shrink()),
+              ),
             ),
           ),
+          onGenerateTitle: (c) => (brand?.brand ?? BrandConfig.placeholder).name,
+          theme: buildTheme(brand?.brand ?? BrandConfig.placeholder, Brightness.light),
+          darkTheme: buildTheme(brand?.brand ?? BrandConfig.placeholder, Brightness.dark),
+          themeMode: theme.mode,
+          themeAnimationDuration: const Duration(milliseconds: 280),
+          themeAnimationCurve: Motion.ease,
+          locale: locale.locale,
+          supportedLocales: LocaleController.supported,
+          localizationsDelegates: const [
+            T.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          // Guests land straight in the app; sign-in is asked only when a protected action needs it.
+          home: const Shell(),
         ),
-        onGenerateTitle: (c) => BrandConfig.placeholder.name,
-        theme: buildTheme(BrandConfig.placeholder, Brightness.light),
-        darkTheme: buildTheme(BrandConfig.placeholder, Brightness.dark),
-        themeMode: theme.mode,
-        themeAnimationDuration: const Duration(milliseconds: 280),
-        themeAnimationCurve: Motion.ease,
-        locale: locale.locale,
-        supportedLocales: LocaleController.supported,
-        localizationsDelegates: const [
-          T.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        // Guests land straight in the app; sign-in is asked only when a protected action needs it.
-        home: const Shell(),
       ),
     ),
   );

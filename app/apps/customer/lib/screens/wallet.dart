@@ -38,9 +38,15 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
+  late final _history = Pager<Json>(context.api, '/me/points/ledger', (r) => r);
   late Future<Json> _points = _load();
 
-  Future<Json> _load() async => (await context.api.get('/me/points')) as Json;
+  /// The balance header and the first page of history; the history pages on scroll.
+  Future<Json> _load() async {
+    final points = (await context.api.get('/me/points')) as Json;
+    await _history.first();
+    return points;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +76,9 @@ class _WalletScreenState extends State<WalletScreen> {
     final balance = (p['balance'] as num? ?? 0).toInt();
     final expiring = (p['expiring_soon'] as num? ?? 0).toInt();
     final days = (p['notify_days'] as num? ?? 30).toInt();
-    final entries = ((p['entries'] as List?) ?? const []).cast<Json>();
-    return ListView(
+    return LoadMore<Json>(
+      pager: _history,
+      builder: (context, entries) => ListView(
       padding: const EdgeInsets.all(Space.gutter),
       children: [
         AppCard(
@@ -99,6 +106,7 @@ class _WalletScreenState extends State<WalletScreen> {
         else
           for (final e in entries) _entryRow(context, e),
       ],
+      ),
     );
   }
 
@@ -136,7 +144,9 @@ class PaymentHistoryScreen extends StatefulWidget {
 class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   late Future<List<Json>> _rows = _load();
 
-  Future<List<Json>> _load() async => ((await context.api.get('/checkouts')) as List).cast<Json>();
+  late final _pager = Pager<Json>(context.api, '/checkouts', (r) => r);
+
+  Future<List<Json>> _load() => _pager.first();
 
   String _status(BuildContext context, String s) {
     final t = context.t;
@@ -165,13 +175,12 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           builder: (context, snap) {
             if (snap.hasError) return ListView(children: [Text(t.error(snap.error!))]);
             if (!snap.hasData) return const Center(child: CircularProgressIndicator());
-            final rows = snap.data!;
-            if (rows.isEmpty) {
-              return ListView(children: [EmptyState(icon: Icons.receipt_long_rounded, title: t.payHistoryEmpty)]);
-            }
-            return ListView(
+            return LoadMore<Json>(
+              pager: _pager,
+              builder: (context, rows) => ListView(
               padding: const EdgeInsets.all(Space.gutter),
               children: [
+                if (rows.isEmpty) EmptyState(icon: Icons.receipt_long_rounded, title: t.payHistoryEmpty),
                 for (final r in rows)
                   ListTile(
                     key: ValueKey('pay-row-${r['id']}'),
@@ -186,6 +195,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                     ),
                   ),
               ],
+              ),
             );
           },
         ),
