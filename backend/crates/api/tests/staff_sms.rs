@@ -19,7 +19,7 @@ async fn insert(db: &PgPool, email: &str, role: &str, phone: Option<&str>) -> Uu
         .bind(email)
         .bind(auth::hash_password(OLD).expect("hash"))
         .bind(role)
-        .bind(phone)
+        .bind(phone.map(|p| auth::normalize_phone(p).expect("test phone is valid")))
         .fetch_one(db)
         .await
         .expect("insert")
