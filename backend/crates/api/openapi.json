@@ -5721,6 +5721,76 @@
           }
         }
       }
+    },
+    "/v1/admin/keys/bundle": {
+      "post": {
+        "operationId": "adminKeysBundle",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create the sealed keys bundle (owner authenticator code needed)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/keys/verify": {
+      "post": {
+        "operationId": "adminKeysVerify",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Check that a keys bundle opens with its passphrase",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/me/points/ledger": {
+      "get": {
+        "operationId": "myPointsLedger",
+        "tags": [
+          "customer"
+        ],
+        "summary": "Points ledger, newest first, one page at a time",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "description": "Pass back as cursor to get the next page",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
     }
   },
   "components": {
