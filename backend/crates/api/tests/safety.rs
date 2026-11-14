@@ -522,6 +522,39 @@ async fn missed_check_in_opens_one_no_show_case_and_reassigns_to_a_matching_part
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn manual_no_show_after_an_auto_case_is_a_conflict(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5400-0010").await;
+    let (late, _) = verified_pro(&app, &pool, "010-5400-0110").await;
+    let (id, _) = book(&app, &c, 10, None).await;
+    accept_today(&app, &pool, id, late.as_str()).await;
+    sqlx::query("UPDATE bookings SET start_hour = 0 WHERE id = $1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .expect("window");
+    let s = api::build_state(pool.clone(), common::test_config()).expect("state");
+    assert_eq!(api::noshow::scan(&s).await.expect("scan"), 1);
+
+    let (st, b) = call(
+        &app,
+        "POST",
+        &format!("/v1/bookings/{id}/cases"),
+        Some(c.token.as_str()),
+        Some(json!({ "kind": "no_show", "summary": "late again" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::CONFLICT, "a second no-show is a conflict, not a 500: {b}");
+    let n: i64 = sqlx::query_scalar("SELECT count(*) FROM cases WHERE booking_id = $1 AND kind = 'no_show'")
+        .bind(id)
+        .fetch_one(&pool)
+        .await
+        .expect("count");
+    assert_eq!(n, 1);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn ai_handoff_on_a_job_opens_one_complaint_case(pool: PgPool) {
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());

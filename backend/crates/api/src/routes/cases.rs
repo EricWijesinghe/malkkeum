@@ -64,6 +64,10 @@ const INSERT_CASE_SQL: &str = "INSERT INTO cases (booking_id, kind, source, repo
      VALUES ($1, $2, $3, $4, $5, $6, $7, now() + make_interval(hours => $8))";
 
 pub async fn insert(db: impl sqlx::PgExecutor<'_>, c: NewCase<'_>) -> ApiResult<Uuid> {
+    // A second no-show on a booking is a clean conflict, not a unique violation (500).
+    if c.kind == "no_show" {
+        return insert_no_show(db, c).await?.ok_or(ApiError::Conflict("case_exists"));
+    }
     Ok(sqlx::query_scalar(&format!("{INSERT_CASE_SQL} RETURNING id"))
         .bind(c.booking)
         .bind(c.kind)
