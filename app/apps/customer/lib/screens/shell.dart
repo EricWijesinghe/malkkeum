@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
-import '../guest.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'bookings.dart';

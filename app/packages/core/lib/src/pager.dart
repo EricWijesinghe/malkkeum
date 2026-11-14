@@ -120,8 +120,8 @@ class _LoadMoreState<T> extends State<LoadMore<T>> {
   Widget _footer(BuildContext context) {
     final p = widget.pager;
     if (p.busy) {
-      return Padding(
-        padding: const EdgeInsets.all(Space.md),
+      return const Padding(
+        padding: EdgeInsets.all(Space.md),
         child: Center(
           child: SizedBox.square(
             dimension: 24,

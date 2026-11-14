@@ -38,10 +38,10 @@ void _applyAnswers(QuoteAnswers a, Json j) {
   a.elevator = _as<bool>(j['elevator']);
   a.floor3OrHigher = _as<bool>(j['floor_3_or_higher']) ?? false;
   a.acAddons = {
-    for (final e in _as<List>(j['ac_addons']) ?? const [])
+    for (final e in _as<List<dynamic>>(j['ac_addons']) ?? const [])
       if (e is Json && _as<String>(e['unit']) != null && _as<int>(e['count']) != null)
         e['unit'] as String: e['count'] as int,
   };
 }
 
-T? _as<T>(Object? v) => v is T ? v : null;
+V? _as<V>(Object? v) => v is V ? v : null;

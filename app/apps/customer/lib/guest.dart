@@ -72,8 +72,9 @@ class _SignInSheetState extends State<_SignInSheet> {
   }
 
   void _onSession() {
-    if (widget.session.signedIn && mounted)
+    if (widget.session.signedIn && mounted) {
       Navigator.of(context, rootNavigator: true).pop(true);
+    }
   }
 
   @override

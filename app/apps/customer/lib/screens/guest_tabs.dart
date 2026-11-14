@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../state.dart';
 import 'more.dart';
 
 /// Bookings tab for a guest: a static sample of how a booking goes, and one way to start a quote.

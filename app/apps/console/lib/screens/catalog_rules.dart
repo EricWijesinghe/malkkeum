@@ -25,7 +25,7 @@ TextField _field(
   bool percent = false,
 }) => TextField(
   controller: c,
-  keyboardType: const TextInputType.numberWithOptions(decimal: percent),
+  keyboardType: TextInputType.numberWithOptions(decimal: percent),
   inputFormatters: [
     FilteringTextInputFormatter.allow(
       percent ? RegExp(r'[0-9.]') : RegExp(r'[0-9]'),

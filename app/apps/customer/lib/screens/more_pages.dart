@@ -558,7 +558,7 @@ class _FaqScreenState extends State<FaqScreen> {
 
 /// One question: teal "Q", the question and a chevron; the answer opens in a grey box.
 class FaqRow extends StatelessWidget {
-  const FaqRow({required this.item});
+  const FaqRow({super.key, required this.item});
   final ContentItem item;
 
   @override

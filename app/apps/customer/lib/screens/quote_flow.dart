@@ -102,7 +102,7 @@ class QuoteFlowScreen extends StatefulWidget {
 
 class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   late final BookingDraft d = BookingDraft(widget.service);
-  late final GuestDraft _guest = GuestDraft(context.appRead.cache);
+  late final GuestDraft _draft = GuestDraft(context.appRead.cache);
   final _pages = PageController();
   int _step = 0;
   bool _busy = false;
@@ -135,7 +135,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   /// Answers saved on this device (a restart mid-flow) come back; the steps then carry on as before.
   Future<void> _restoreAnswers() async {
-    await _guest.restore(d);
+    await _draft.restore(d);
     if (mounted) setState(() {});
   }
 
@@ -180,7 +180,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     if (step < _stepAddress) _preview = null;
     if (step >= _stepAddress) _preview ??= _fetchEstimate(withSlot: false);
     if (step >= _stepMethod) _estimate ??= _fetchEstimate();
-    unawaited(_guest.save(d));
+    unawaited(_draft.save(d));
     setState(() {
       _step = step;
       _asked = false;
@@ -248,7 +248,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();
       app.loadUnread().ignore();
-      unawaited(_guest.clear());
+      unawaited(_draft.clear());
       final estimate = await _estimate;
       if (!mounted) return;
       await Navigator.of(context).pushAndRemoveUntil(
