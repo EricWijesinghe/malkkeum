@@ -21,7 +21,7 @@
 #   MALKKEUM_SIGNER=<owner/repo>      이미지 서명자 GitHub 저장소 (기본: 릴리스 저장소)
 #   MALKKEUM_SKIP_SIGNATURE=1         이미지 서명 확인 끄기 (서명 없는 테스트 저장소 전용. 다시 실행하면 다시 켜져요)
 #   MALKKEUM_ANSWERS=<파일>           질문 없이 설치: DOMAIN=도메인, EMAIL=이메일 줄이 든 파일
-#   MALKKEUM_AGENT_FILE=<agent.sh>    작업 실행기를 이 로컬 파일로 설치 (개발·테스트용. 배포본은 같은 릴리스에서 받아 SHA256SUMS 로 확인해요)
+#   MALKKEUM_AGENT_FILE=<agent.sh>    작업 실행기를 이 로컬 파일로 설치 (개발·테스트용. 배포본은 이 install.sh 에 적힌 지문으로 확인해요)
 set -euo pipefail
 
 IMAGE_REPO_DEFAULT=ghcr.io/ericwijesinghe
@@ -39,8 +39,10 @@ DNS_MAX_TRIES=30
 HB_URL_RE='^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~%/:@+=?-]*)?$'
 # 서버 이미지는 이 저장소의 .github/workflows/release.yml 이 v 태그에서 cosign(키 없는 서명)으로 서명해요.
 SIGNER_REPO_DEFAULT=EricWijesinghe/malkkeum
-# 이 버전의 배포 주소(agent.sh·SHA256SUMS 가 있는 곳). publish-delivery.sh 가 채워 넣어요. 비어 있으면 MALKKEUM_AGENT_FILE 이 필요해요.
+# 이 버전의 배포 주소(agent.sh 가 있는 곳). publish-delivery.sh 가 채워 넣어요. 비어 있으면 MALKKEUM_AGENT_FILE 이 필요해요.
 RELEASE_RAW=
+# 작업 실행기(agent.sh)의 SHA-256. publish-delivery.sh 가 이 배포본에 맞춰 채워 넣어요. 받은 agent.sh 가 이 지문과 다르면 설치를 멈춰요.
+AGENT_SHA256=
 # 서명 확인 도구. 버전을 고정하고, 받은 파일의 SHA-256 이 아래와 같을 때만 써요 (cosign_checksums.txt 기준).
 COSIGN_VERSION=v3.1.4
 COSIGN_SHA256_AMD64=424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa
@@ -291,6 +293,7 @@ services:
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
       HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
+      SETUP_CODE_AT: ${SETUP_CODE_AT:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}
       TRUSTED_PROXY: "1"
@@ -863,29 +866,45 @@ cmd_update_schedule() { # dahae update-schedule mon@04:00 | off : 자동 업데�
   ok "자동 업데이트 예약: $spec"
 }
 
-stable_seasoned() { # 안정 채널의 새 버전은 처음 본 뒤 24시간이 지나야 자동으로 받아요 (처음 본 시각과 지문은 host/first-seen)
-  local m key now seen_key="" seen_at=0 f="$DIR/host/first-seen"
-  # shortcut: 이미지 지문을 docker manifest 로 읽어요. 못 읽으면 이번 자동 업데이트를 건너뛰어요 (다음 예약 때 다시 봐요)
-  m=$(DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect "$(env_get IMAGE_REPO)/malkkeum-api:stable" 2>/dev/null) || return 1
-  key=$(printf '%s' "$m" | sha256sum | cut -c1-64)
+stable_manifest_key() { # API·웹 이미지 목록(stable 태그)의 지문. 둘 중 하나라도 못 읽으면 실패해요
+  local repo m_api m_web
+  repo=$(env_get IMAGE_REPO)
+  m_api=$(DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect "$repo/malkkeum-api:stable" 2>/dev/null) || return 1
+  m_web=$(DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect "$repo/malkkeum-web:stable" 2>/dev/null) || return 1
+  printf '%s\n%s\n' "$m_api" "$m_web" | sha256sum | cut -c1-64
+}
+
+stable_seasoned() { # 0: 받아도 돼요. 1: 새 버전을 막 봤어요(24시간 기다려요). 2: 새 버전 정보를 못 읽었어요. 지문은 STABLE_KEY 에 둬요
+  local key now seen_key="" seen_at=0 applied f="$DIR/host/first-seen"
+  key=$(stable_manifest_key) || return 2
+  STABLE_KEY=$key
+  applied=$(cat "$DIR/host/applied-key" 2>/dev/null || true)
+  # shortcut: 지금 쓰는 버전(applied-key)과 같으면 기다릴 것이 없어요. applied-key 는 자동 업데이트가 끝날 때만 써요, 설치 직후에는 없어서 첫 주기에 24시간을 기다려요
+  [ "$key" = "$applied" ] && return 0
   now=$(date +%s)
   if [ -f "$f" ]; then read -r seen_key seen_at < "$f" || true; fi
   case "$seen_at" in ''|*[!0-9]*) seen_at=0 ;; esac
   if [ "$seen_key" != "$key" ]; then printf '%s %s\n' "$key" "$now" > "$f"; seen_at=$now; fi
-  [ $((now - seen_at)) -ge 86400 ]
+  [ $((now - seen_at)) -ge 86400 ] && return 0
+  return 1
 }
 
 cmd_auto_update() { # dahae auto-update : 예약 업데이트. 건너뛰기 표시, 기다리는 작업, 안정 채널 24시간 대기를 먼저 확인해요
-  local queued
+  local queued rc=0
   if [ -e "$DIR/host/skip-next-update" ]; then
     rm -f "$DIR/host/skip-next-update"; echo "건너뛰기 표시가 있어 이번 자동 업데이트를 건너뛰었어요"; return 0
   fi
   queued=$(find "$DIR/jobs/inbox" -maxdepth 1 -name '*.job' 2>/dev/null | head -n1 || true)
   if [ -n "$queued" ]; then echo "기다리는 작업이 있어 자동 업데이트를 미뤘어요"; return 0; fi
-  if [ "$(env_get CHANNEL)" = stable ] && ! stable_seasoned; then
-    echo "새 안정 버전을 막 확인했어요. 24시간 뒤에 받을게요"; return 0
+  STABLE_KEY=""
+  if [ "$(env_get CHANNEL)" = stable ]; then
+    stable_seasoned || rc=$?
+    if [ "$rc" = 1 ]; then echo "새 안정 버전을 막 확인했어요. 24시간 뒤에 받을게요"; return 0; fi
+    # 실패로 돌려보내면 예약표가 'dahae alert update' 를 불러 사장님께 알려요. 다음 예약 때 다시 봐요.
+    if [ "$rc" != 0 ]; then echo "새 버전 정보를 읽지 못했어요. 인터넷 연결과 이미지 저장소를 확인하세요" >&2; return 1; fi
   fi
   cmd_update
+  if [ -n "$STABLE_KEY" ]; then printf '%s\n' "$STABLE_KEY" > "$DIR/host/applied-key"; fi
 }
 
 cmd_setup_code() { # dahae setup-code [--renew] : 사장님 계정 설치 코드. 처음 보인 뒤 2시간 동안만 쓸 수 있어요
@@ -997,25 +1016,22 @@ load_answers() { # load_answers 파일 : MALKKEUM_ANSWERS 파일의 DOMAIN=·EMA
   done < "$f"
 }
 
-agent_sum_ok() { # agent_sum_ok 파일 SHA256SUMS : 파일의 지문이 SHA256SUMS 의 agent.sh 줄과 같아야 해요
-  local want sum
-  want=$(awk '$2 == "agent.sh" { print $1 }' "$2" 2>/dev/null)
+agent_sha_ok() { # agent_sha_ok 파일 지문 : 파일의 SHA-256 이 install.sh 에 적힌 지문과 같아야 해요
+  local sum
   sum=$(sha256sum "$1" 2>/dev/null | cut -d' ' -f1)
-  [ -n "$want" ] && [ "$want" = "$sum" ]
+  [ -n "$2" ] && [ "$2" = "$sum" ]
 }
 
-fetch_agent() { # 같은 릴리스의 agent.sh 를 받아 SHA256SUMS 와 맞을 때만 $DIR/agent.sh 로 둬요 (MALKKEUM_AGENT_FILE 은 개발·테스트용 로컬 파일)
+fetch_agent() { # 같은 릴리스의 agent.sh 를 받아 install.sh 의 지문과 맞을 때만 $DIR/agent.sh 로 둬요 (MALKKEUM_AGENT_FILE 은 개발·테스트용 로컬 파일)
   local tmp
   tmp=$(mktemp "$DIR/.agent.XXXXXX") || die "작업 실행기 파일을 만들지 못했어요."
   if [ -n "${MALKKEUM_AGENT_FILE:-}" ]; then
     cp -- "$MALKKEUM_AGENT_FILE" "$tmp" || { rm -f "$tmp"; die "작업 실행기 파일을 읽지 못했어요: $MALKKEUM_AGENT_FILE"; }
   else
-    [ -n "$RELEASE_RAW" ] || { rm -f "$tmp"; die "이 설치 프로그램에는 작업 실행기 주소가 없어요. 배포본의 install.sh 를 쓰세요."; }
+    { [ -n "$RELEASE_RAW" ] && [ -n "$AGENT_SHA256" ]; } || { rm -f "$tmp"; die "이 설치 프로그램에는 작업 실행기 주소나 지문이 없어요. 배포본의 install.sh 를 쓰세요."; }
     curl -fsSL --max-time 60 "$RELEASE_RAW/agent.sh" -o "$tmp" \
-      && curl -fsSL --max-time 60 "$RELEASE_RAW/SHA256SUMS" -o "$tmp.sums" \
-      || { rm -f "$tmp" "$tmp.sums"; die "작업 실행기를 내려받지 못했어요. 인터넷 연결을 확인하고 다시 실행하세요."; }
-    agent_sum_ok "$tmp" "$tmp.sums" || { rm -f "$tmp" "$tmp.sums"; die "작업 실행기의 지문이 SHA256SUMS 와 달라요. 설치를 멈췄어요."; }
-    rm -f "$tmp.sums"
+      || { rm -f "$tmp"; die "작업 실행기를 내려받지 못했어요. 인터넷 연결을 확인하고 다시 실행하세요."; }
+    agent_sha_ok "$tmp" "$AGENT_SHA256" || { rm -f "$tmp"; die "작업 실행기의 지문이 설치 프로그램에 적힌 값과 달라요. 설치를 멈췄어요."; }
   fi
   bash -n "$tmp" || { rm -f "$tmp"; die "작업 실행기 파일이 손상됐어요."; }
   chmod 0755 "$tmp"; mv -f "$tmp" "$DIR/agent.sh"
@@ -1194,6 +1210,7 @@ DB_PASSWORD=$(rand_hex 24)
 JWT_SECRET=$(rand_hex 32)
 DATA_KEY=$(rand_hex 32)
 SETUP_CODE=$(setup_code)
+SETUP_CODE_AT=$(date +%s)
 EOF
     umask 022
     ok "보안 키를 새로 만들었어요"

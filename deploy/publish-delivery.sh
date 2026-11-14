@@ -62,19 +62,22 @@ publish() { # publish 브랜치 채널
   fi
   find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 
+  [ -f "$src/deploy/agent.sh" ] || { echo "::error::deploy/agent.sh is missing" >&2; exit 1; }
+  cp "$src/deploy/agent.sh" agent.sh
+  agent_sha=$(sha256sum agent.sh | cut -d' ' -f1) # install.sh pins this hash, so the agent is checked without trusting the download
   cp "$src/deploy/install.sh" install.sh
   sed -i -e "s|^IMAGE_REPO_DEFAULT=.*|IMAGE_REPO_DEFAULT=$IMAGE_REPO|" \
          -e "s|^SIGNER_REPO_DEFAULT=.*|SIGNER_REPO_DEFAULT=$SIGNER_REPO|" \
          -e "s|^DEFAULT_CHANNEL=stable\$|DEFAULT_CHANNEL=$channel|" \
-         -e "s|^RELEASE_RAW=\$|RELEASE_RAW=$RAW/$ref|" install.sh
-  grep -qF "RELEASE_RAW=$RAW/$ref" install.sh   # agent.sh and SHA256SUMS of this same ref
+         -e "s|^RELEASE_RAW=\$|RELEASE_RAW=$RAW/$ref|" \
+         -e "s|^AGENT_SHA256=\$|AGENT_SHA256=$agent_sha|" install.sh
+  grep -qF "RELEASE_RAW=$RAW/$ref" install.sh   # agent.sh of this same ref
+  grep -q "^AGENT_SHA256=$agent_sha\$" install.sh
   grep -q "^IMAGE_REPO_DEFAULT=$IMAGE_REPO\$" install.sh
   grep -q "^SIGNER_REPO_DEFAULT=$SIGNER_REPO\$" install.sh
   grep -q "^DEFAULT_CHANNEL=$channel\$" install.sh
   bash -n install.sh
-  files=(install.sh)
-  if [ -f "$src/deploy/agent.sh" ]; then cp "$src/deploy/agent.sh" agent.sh; files+=(agent.sh); fi
-  sha256sum "${files[@]}" > SHA256SUMS
+  sha256sum install.sh agent.sh > SHA256SUMS
   if [ "${SIGN_RELEASE:-0}" = 1 ]; then sign_release "$branch"; fi
 
   cp -r "$src/docs/guide" "$src/docs/store" .

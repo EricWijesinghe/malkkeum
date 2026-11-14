@@ -55,6 +55,7 @@ services:
       DATA_KEY: ${DATA_KEY:?set DATA_KEY}
       HEARTBEAT_URL: ${HEARTBEAT_URL:-}
       SETUP_CODE: ${SETUP_CODE:-}
+      SETUP_CODE_AT: ${SETUP_CODE_AT:-}
       PUBLIC_BASE_URL: https://${DOMAIN:?set DOMAIN}
       ALLOWED_ORIGINS: https://${DOMAIN}
       TRUSTED_PROXY: "1"

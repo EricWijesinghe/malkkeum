@@ -308,7 +308,7 @@ cd "$SB"
 sed "s|/etc/cron.d/malkkeum|$SB/cron-out|" "$SB/dahae" > "$SB/dahae-cron"
 cron_cli() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; "$@" ) >/dev/null 2>&1; }
 has_updated() { case "$1" in *UPDATED*) return 0 ;; *) return 1 ;; esac; }
-auto_run() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; cmd_update() { echo UPDATED; }; docker() { printf '%s' "$FAKE_MANIFEST"; }; cmd_auto_update ) 2>&1; }
+auto_run() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; cmd_update() { echo UPDATED; }; docker() { case "$*" in *malkkeum-web*) [ -z "${WEB_FAIL:-}" ] || return 1 ;; esac; printf '%s' "$FAKE_MANIFEST"; }; cmd_auto_update ) 2>&1; }
 setup_out() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; dc() { return 0; }; cmd_setup_code "$@" ) 2>/dev/null; }
 rm -f "$SB/update-schedule"
 cron_cli cmd_write_cron
@@ -334,9 +334,15 @@ touch "$SB/jobs/inbox/waiting.job"
 nt "a waiting job defers the update"     has_updated "$(auto_run)"
 rm -f "$SB/jobs/inbox/waiting.job"
 nt "a new stable digest waits 24 hours"  has_updated "$(auto_run)"
-key=$(printf '%s' "$FAKE_MANIFEST" | sha256sum | cut -c1-64)
+key=$(printf '%s\n%s\n' "$FAKE_MANIFEST" "$FAKE_MANIFEST" | sha256sum | cut -c1-64)
 printf '%s %s\n' "$key" "$(( $(date +%s) - 90000 ))" > "$SB/host/first-seen"
 t  "seen 25 hours ago: the update runs"  has_updated "$(auto_run)"
+t  "update records the running digest"   eq "$(cat "$SB/host/applied-key")" "$key"
+rm -f "$SB/host/first-seen"
+t  "running digest: no 24-hour wait"     has_updated "$(auto_run)"
+rm -f "$SB/host/applied-key" "$SB/host/first-seen"
+nt "unreadable web manifest: no update"  has_updated "$(WEB_FAIL=1 auto_run)"
+t  "unreadable web manifest: exit 1 so the alert runs" eq "$(WEB_FAIL=1 auto_run >/dev/null; echo $?)" 1
 
 # setup code: shown in groups of four for 2 hours, then only --renew gives a new one
 printf 'SETUP_CODE=ABCDEFGHJKMN\nSETUP_CODE_AT=%s\n' "$(date +%s)" > "$SB/.env"
@@ -358,12 +364,13 @@ printf 'DOMAIN=a b.kr\n' > "$SB/answers-bad"
 nt "answers: space in value refused"     sub load_answers "$SB/answers-bad"
 unset MALKKEUM_DOMAIN MALKKEUM_EMAIL
 
-# the agent is checked against SHA256SUMS of its release
+# the agent is checked against the fingerprint pinned in install.sh
 printf 'echo agent\n' > "$SB/agent.sh"
-sha256sum "$SB/agent.sh" | sed 's|  .*|  agent.sh|' > "$SB/SHA256SUMS"
-t  "agent matches its SHA256SUMS line"   agent_sum_ok "$SB/agent.sh" "$SB/SHA256SUMS"
+pin=$(sha256sum "$SB/agent.sh" | cut -d' ' -f1)
+t  "agent matches its pinned sha256"     agent_sha_ok "$SB/agent.sh" "$pin"
+nt "agent without a pin refused"         agent_sha_ok "$SB/agent.sh" ""
 printf 'echo changed\n' > "$SB/agent.sh"
-nt "changed agent refused"               agent_sum_ok "$SB/agent.sh" "$SB/SHA256SUMS"
+nt "changed agent refused"               agent_sha_ok "$SB/agent.sh" "$pin"
 
 # systemd units: path (inbox), service (root, sandboxed, 3 h limit), timer (every minute)
 mkdir -p "$SB/units"; write_units "$SB/units"
