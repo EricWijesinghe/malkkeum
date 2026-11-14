@@ -5833,6 +5833,36 @@ abstract class T {
   /// **'{rewarded}/{invited}명'**
   String growthReferralValue(String rewarded, String invited);
 
+  /// No description provided for @guestReasonQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적을 저장하고 예약하려면 로그인하세요'**
+  String get guestReasonQuote;
+
+  /// No description provided for @guestReasonBook.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약을 확정하려면 로그인하세요'**
+  String get guestReasonBook;
+
+  /// No description provided for @guestReasonChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담원과 대화하려면 로그인하세요'**
+  String get guestReasonChat;
+
+  /// No description provided for @guestReasonAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요'**
+  String get guestReasonAccount;
+
+  /// No description provided for @guestAccountHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인하면 확인할 수 있어요'**
+  String get guestAccountHint;
+
   /// No description provided for @locUseCurrent.
   ///
   /// In ko, this message translates to:

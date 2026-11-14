@@ -31,6 +31,13 @@ Future<String?> _buildVersion() async {
 void _push(BuildContext context, Widget screen) =>
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
 
+/// Account-only screens: a guest gets the sign-in sheet, a member goes straight through.
+Future<void> _pushMember(BuildContext context, Widget screen) async {
+  final nav = Navigator.of(context);
+  if (!await requireSignIn(context, reason: SignInReason.account)) return;
+  await nav.push(MaterialPageRoute<void>(builder: (_) => screen));
+}
+
 class MoreTab extends StatelessWidget {
   const MoreTab({super.key});
 
@@ -41,6 +48,8 @@ class MoreTab extends StatelessWidget {
     final deps = Deps.of(context);
     final brand = BrandConfig.placeholder.name;
     final coupons = app.coupons.where((c) => c.usable).length;
+    // A member-only row shows a hint instead of its value while the guest is signed out.
+    final guest = !deps.session.signedIn;
     _MoreRow row(
       String icon,
       String label,
@@ -48,14 +57,20 @@ class MoreTab extends StatelessWidget {
       String? trailing,
       bool accent = false,
       int attention = 0,
-    }) => _MoreRow(
-      icon: icon,
-      label: label,
-      onTap: onTap,
-      trailing: trailing,
-      accent: accent,
-      attention: attention,
-    );
+      bool member = false,
+    }) {
+      final hidden = member && guest;
+      return _MoreRow(
+        icon: icon,
+        label: label,
+        onTap: onTap,
+        trailing: hidden ? null : trailing,
+        subtitle: hidden ? t.guestAccountHint : null,
+        accent: accent,
+        attention: hidden ? 0 : attention,
+      );
+    }
+
     // The design's groups, in its order (p05); rows the design leaves out follow below the version.
     final groups = <Widget>[
       _ProfileCard(coupons: coupons, points: app.points, name: app.name),
@@ -68,32 +83,37 @@ class MoreTab extends StatelessWidget {
         row(
           'menu_payments',
           t.morePayments,
-          () => _push(context, const PaymentMethodsScreen()),
+          () => _pushMember(context, const PaymentMethodsScreen()),
+          member: true,
         ),
         row(
           'ui_coupon',
           t.moreCoupons,
-          () => _push(context, const CouponsScreen()),
+          () => _pushMember(context, const CouponsScreen()),
           trailing: '$coupons',
           accent: true,
           attention: coupons,
+          member: true,
         ),
         row(
           'ui_points',
           t.morePoints,
-          () => _push(context, const WalletScreen()),
+          () => _pushMember(context, const WalletScreen()),
+          member: true,
         ),
       ]),
       _Group([
         row(
           'menu_account',
           t.moreAccount,
-          () => _push(context, const AccountScreen()),
+          () => _pushMember(context, const AccountScreen()),
+          member: true,
         ),
         row(
           'menu_addresses',
           t.moreAddresses,
-          () => _push(context, const AddressesScreen()),
+          () => _pushMember(context, const AddressesScreen()),
+          member: true,
         ),
       ]),
       _Group([
@@ -138,12 +158,14 @@ class MoreTab extends StatelessWidget {
         row(
           'pay_virtual',
           t.payHistoryTitle,
-          () => _push(context, const PaymentHistoryScreen()),
+          () => _pushMember(context, const PaymentHistoryScreen()),
+          member: true,
         ),
         row(
           'menu_subscriptions',
           t.subTitle,
-          () => _push(context, const SubscriptionsScreen()),
+          () => _pushMember(context, const SubscriptionsScreen()),
+          member: true,
         ),
         row(
           'menu_language',
@@ -284,12 +306,14 @@ class _ProfileCard extends StatelessWidget {
                   Expanded(
                     child: _Counter(
                       label: t.moreCoupons,
-                      value: CountUp(
-                        value: coupons,
-                        format: (v) => t.moreCouponCount('$v'),
-                        style: _counterStyle(context),
-                      ),
-                      onTap: () => _push(context, const CouponsScreen()),
+                      value: guest
+                          ? _guestHint(context)
+                          : CountUp(
+                              value: coupons,
+                              format: (v) => t.moreCouponCount('$v'),
+                              style: _counterStyle(context),
+                            ),
+                      onTap: () => _pushMember(context, const CouponsScreen()),
                     ),
                   ),
                   VerticalDivider(
@@ -301,14 +325,16 @@ class _ProfileCard extends StatelessWidget {
                   Expanded(
                     child: _Counter(
                       label: t.morePoints,
-                      value: points == null
+                      value: guest
+                          ? _guestHint(context)
+                          : points == null
                           ? Text('-', style: _counterStyle(context))
                           : CountUp(
                               value: points!,
                               format: (v) => t.walletPoints('$v'),
                               style: _counterStyle(context),
                             ),
-                      onTap: () => _push(context, const WalletScreen()),
+                      onTap: () => _pushMember(context, const WalletScreen()),
                     ),
                   ),
                 ],
@@ -324,6 +350,12 @@ class _ProfileCard extends StatelessWidget {
       .text
       .labelLarge
       ?.copyWith(fontWeight: FontWeight.w800, color: context.colors.accent);
+
+  /// A guest's counter shows what sign-in unlocks, not a dash or a zero.
+  static Widget _guestHint(BuildContext context) => Text(
+    context.t.guestAccountHint,
+    style: context.text.labelSmall?.copyWith(color: context.colors.inkSoft),
+  );
 }
 
 /// One strip cell: label left, value right; the whole cell is the tap target.
@@ -397,6 +429,7 @@ class _MoreRow extends StatefulWidget {
     required this.label,
     required this.onTap,
     this.trailing,
+    this.subtitle,
     this.accent = false,
     this.attention = 0,
   });
@@ -404,6 +437,9 @@ class _MoreRow extends StatefulWidget {
   final String label;
   final VoidCallback? onTap;
   final String? trailing;
+
+  /// Second line under the label (a guest's "sign in to view" hint).
+  final String? subtitle;
 
   /// Trailing value in the accent colour (coupon count).
   final bool accent;
@@ -441,7 +477,20 @@ class _MoreRowState extends State<_MoreRow> {
               ),
               const SizedBox(width: Space.md),
               Expanded(
-                child: Text(widget.label, style: context.text.bodyLarge),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(widget.label, style: context.text.bodyLarge),
+                    if (widget.subtitle case final s?)
+                      Text(
+                        s,
+                        style: context.text.bodySmall?.copyWith(
+                          color: c.inkSoft,
+                        ),
+                      ),
+                  ],
+                ),
               ),
               if (widget.trailing case final v?) ...[
                 const SizedBox(width: Space.xs),

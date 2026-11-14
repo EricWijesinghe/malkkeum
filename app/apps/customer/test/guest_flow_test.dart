@@ -1,4 +1,6 @@
 import 'package:core/core.dart';
+import 'package:customer/screens/booking_flow.dart';
+import 'package:customer/screens/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:test_support/test_support.dart';
@@ -19,6 +21,27 @@ void _stockVerify(FakeApi fake) {
       'subject': 'user-guest',
       'is_new': false,
     });
+}
+
+Future<void> _newAccountVerify(FakeApi fake) async {
+  fake.reply('POST', '/auth/verify', {
+    'access_token': 'access-new',
+    'refresh_token': 'refresh-new',
+    'role': 'customer',
+    'subject': 'user-new',
+    'is_new': true,
+  });
+}
+
+Future<void> _signInInSheet(WidgetTester tester) async {
+  await tester.enterText(find.byType(TextField).last, '01012345678');
+  await settle(tester, duration: const Duration(milliseconds: 300));
+  await tester.tap(find.text(koT.loginSendCode));
+  await settle(tester);
+  await tester.enterText(find.byType(TextField).last, '123456');
+  await settle(tester, duration: const Duration(milliseconds: 300));
+  await tester.tap(find.text(koT.loginVerify));
+  await settle(tester);
 }
 
 void main() {
@@ -77,6 +100,39 @@ void main() {
       await unmount(tester);
     });
 
+    testWidgets('a new account that signs in from the sheet lands on the name step', (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake, name: '');
+      _stockVerify(fake);
+      fake.reply('POST', '/auth/verify', {
+        'access_token': 'access-new',
+        'refresh_token': 'refresh-new',
+        'role': 'customer',
+        'subject': 'user-new',
+        'is_new': true,
+      });
+      final env = await TestEnv.create(fake: fake, signedIn: false);
+      await pumpCustomerApp(tester, env);
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      await tester.tap(find.text(koT.service('studio')).first);
+      await settle(tester);
+      await tester.tap(find.text(koT.dfBookNow));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '01012345678');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginSendCode));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '123456');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginVerify));
+      await settle(tester);
+
+      expect(fake.callsTo('PATCH', '/me'), isNotEmpty, reason: 'the chosen language is saved to the account');
+      expect(find.text(koT.profileTitle), findsOneWidget, reason: 'a nameless account is asked for its name');
+      await unmount(tester);
+    });
+
     testWidgets('a network failure on send code shows a localized message with retry', (tester) async {
       setViewport(tester, phoneSize);
       final fake = FakeApi()..on('POST', '/auth/otp', (_) => throw Exception('offline'));
@@ -123,6 +179,54 @@ void main() {
       final visibleBottom = phoneSize.height - keyboard;
       final cta = tester.getRect(find.byType(PrimaryButton).last);
       expect(cta.bottom, lessThanOrEqualTo(visibleBottom), reason: 'CTA hidden behind the keyboard');
+      await unmount(tester);
+    });
+
+    testWidgets('naming a new account from a booking keeps the booking screen under the flow', (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake, name: '');
+      _stockVerify(fake);
+      await _newAccountVerify(fake);
+      final env = await TestEnv.create(fake: fake, signedIn: false);
+      await pumpCustomerApp(tester, env);
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      await tester.tap(find.text(koT.service('studio')).first);
+      await settle(tester);
+      await tester.tap(find.text(koT.dfBookNow));
+      await settle(tester);
+      await _signInInSheet(tester);
+
+      expect(find.text(koT.profileTitle), findsOneWidget);
+      await tester.enterText(find.byType(TextField).last, '지민');
+      await settle(tester);
+      await tester.tap(find.text(koT.profileDone));
+      await settle(tester);
+
+      expect(find.text(koT.profileTitle), findsNothing, reason: 'saving the name closes only the name step');
+      // Booking carries on to the next step on top of the service screen the guest started from.
+      expect(find.byType(ServiceScreen, skipOffstage: false), findsOneWidget, reason: 'the booking the guest started is still open');
+      expect(find.byWidgetPredicate((w) => w is AddressPickScreen || w is ScheduleScreen), findsOneWidget, reason: 'booking continues after the name step');
+      expect(fake.callsTo('PATCH', '/me'), isNotEmpty);
+      await unmount(tester);
+    });
+
+    testWidgets('a nameless account that signs in from a More row gets the name step', (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake, name: '');
+      _stockVerify(fake);
+      await _newAccountVerify(fake);
+      final env = await TestEnv.create(fake: fake, signedIn: false);
+      await pumpCustomerApp(tester, env);
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      await tester.tap(find.text(koT.tabMore));
+      await settle(tester);
+      await tester.tap(find.text(koT.moreAccount));
+      await settle(tester);
+      await _signInInSheet(tester);
+
+      expect(find.text(koT.profileTitle), findsOneWidget, reason: 'the name step opens after a sign-in from More');
       await unmount(tester);
     });
   });
