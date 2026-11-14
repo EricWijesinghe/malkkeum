@@ -50,6 +50,19 @@ impl Kind {
         }
     }
 
+    /// Plain Korean name for owner texts.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::StatusRefresh => "상태 새로고침",
+            Self::BackupNow => "지금 백업",
+            Self::Update => "업데이트",
+            Self::UpdateSkip => "업데이트 건너뛰기",
+            Self::Channel => "업데이트 채널 변경",
+            Self::Restart => "서버 재시작",
+            Self::Schedule => "자동 작업 일정 변경",
+        }
+    }
+
     /// Owner kinds need the owner's TOTP on the request. The read-only status refresh needs only an admin session.
     pub fn needs_owner(self) -> bool {
         self != Self::StatusRefresh

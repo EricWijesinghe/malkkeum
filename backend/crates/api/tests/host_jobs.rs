@@ -41,7 +41,7 @@ fn host(db: PgPool) -> Host {
     }
 }
 
-fn job_files(dir: &PathBuf) -> Vec<PathBuf> {
+fn job_files(dir: &std::path::Path) -> Vec<PathBuf> {
     std::fs::read_dir(dir.join("inbox"))
         .expect("inbox listing")
         .map(|e| e.expect("entry").path())
@@ -140,10 +140,101 @@ async fn refused_arguments_write_nothing(db: PgPool) {
         json!({ "kind": "schedule", "arg": "mon@25:00" }),
         json!({ "kind": "update-skip", "arg": "now" }),
     ] {
-        let (st, _) = send(&h.app, "POST", "/v1/admin/host/jobs", &admin, Some(&code_now()), None, Some(bad.clone())).await;
+        // A fresh key per refusal: a refused answer is stored under its key, so a shared key would replay it.
+        let key = Uuid::now_v7().to_string();
+        let (st, _) = send(&h.app, "POST", "/v1/admin/host/jobs", &admin, Some(&code_now()), Some(&key), Some(bad.clone())).await;
         assert_eq!(st, StatusCode::BAD_REQUEST, "{bad}");
     }
     assert!(job_files(&h.dir).is_empty());
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn request_without_idempotency_key_is_refused(db: PgPool) {
+    let h = host(db.clone());
+    let admin = enrolled_admin(&db).await;
+    let (st, body) = send(
+        &h.app,
+        "POST",
+        "/v1/admin/host/jobs",
+        &admin,
+        Some(&code_now()),
+        None,
+        Some(json!({ "kind": "backup-now" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "{body}");
+    assert!(job_files(&h.dir).is_empty(), "a keyless request writes nothing");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn missing_inbox_refuses_before_the_totp_is_spent(db: PgPool) {
+    let h = host(db.clone());
+    let admin = enrolled_admin(&db).await;
+    let code = code_now();
+    let body = Some(json!({ "kind": "channel", "arg": "beta" }));
+    std::fs::remove_dir_all(h.dir.join("inbox")).expect("remove inbox");
+
+    let (st, _) = send(&h.app, "POST", "/v1/admin/host/jobs", &admin, Some(&code), Some(KEY), body.clone()).await;
+    assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE, "no inbox");
+
+    std::fs::create_dir_all(h.dir.join("inbox")).expect("restore inbox");
+    let (st, _) = send(&h.app, "POST", "/v1/admin/host/jobs", &admin, Some(&code), Some(KEY), body).await;
+    assert_eq!(st, StatusCode::ACCEPTED, "the same code still works once the inbox is back");
+    assert_eq!(job_files(&h.dir).len(), 1);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn owner_job_texts_the_owner_with_the_job_name(db: PgPool) {
+    let h = host(db.clone());
+    let admin = enrolled_admin(&db).await;
+    sqlx::query("UPDATE staff SET phone = '01012345678' WHERE totp_enabled_at IS NOT NULL")
+        .execute(&db)
+        .await
+        .expect("owner phone");
+
+    let (st, _) = send(
+        &h.app,
+        "POST",
+        "/v1/admin/host/jobs",
+        &admin,
+        Some(&code_now()),
+        Some(KEY),
+        Some(json!({ "kind": "restart", "arg": "all" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::ACCEPTED);
+    let texts: Vec<String> = sqlx::query_scalar("SELECT body FROM notification_outbox WHERE kind = 'host_job.enqueue' AND phone = '01012345678'")
+        .fetch_all(&db)
+        .await
+        .expect("owner text");
+    assert_eq!(texts.len(), 1, "one text to the owner");
+    assert!(texts[0].contains("서버 재시작"), "{}", texts[0]);
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn job_with_no_status_past_the_window_reads_unknown(db: PgPool) {
+    let h = host(db.clone());
+    let admin = enrolled_admin(&db).await;
+    let (st, created) = send(
+        &h.app,
+        "POST",
+        "/v1/admin/host/jobs",
+        &admin,
+        Some(&code_now()),
+        Some(KEY),
+        Some(json!({ "kind": "backup-now" })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::ACCEPTED);
+    let id = created["id"].as_str().expect("id").to_string();
+    sqlx::query("UPDATE host_jobs SET created_at = now() - interval '1 hour' WHERE id = $1::uuid")
+        .bind(&id)
+        .execute(&db)
+        .await
+        .expect("age the job");
+
+    let (_, detail) = send(&h.app, "GET", &format!("/v1/admin/host/jobs/{id}"), &admin, None, None, None).await;
+    assert_eq!(detail["state"], "unknown");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -156,7 +247,7 @@ async fn status_is_read_back_capped_and_known_only(db: PgPool) {
         "/v1/admin/host/jobs",
         &admin,
         Some(&code_now()),
-        None,
+        Some(KEY),
         Some(json!({ "kind": "backup-now" })),
     )
     .await;
