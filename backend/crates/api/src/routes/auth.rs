@@ -422,8 +422,8 @@ struct StaffLogin {
     password: String,
 }
 
-/// Password step. Consultants get tokens; a second factor is required before tokens for enrolled staff and
-/// for admins, who must enrol first. Those steps run on a short-lived challenge token (routes/staff_mfa).
+/// Password step. Every staff role must hold an enrolled TOTP factor before any token is issued; a password
+/// alone only reaches enrolment. Those steps run on a short-lived challenge token (routes/staff_mfa).
 async fn staff_login(
     State(s): State<AppState>,
     ConnectInfo(peer): ConnectInfo<SocketAddr>,
@@ -473,7 +473,7 @@ async fn staff_login(
     if enrolled {
         return Ok(Json(json!({ "mfa_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
-    if role == "admin" && s.config.staff_mfa_required {
+    if s.config.staff_mfa_required {
         return Ok(Json(
             json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? }),
         ));

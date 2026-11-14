@@ -103,7 +103,8 @@ pub const PORTONE_SECRET: &str = "test-portone-secret";
 pub async fn staff_token(db: &PgPool, role: Role) -> (String, Uuid) {
     let id = Uuid::now_v7();
     let db_role = if role == Role::StaffAdmin { "admin" } else { "consultant" };
-    sqlx::query("INSERT INTO staff (id, email, name, password_hash, role) VALUES ($1, $2, 'tester', 'x', $3)")
+    // Stepped up, so sensitive actions (export, deletion, payouts) are open to the test token.
+    sqlx::query("INSERT INTO staff (id, email, name, password_hash, role, stepup_at) VALUES ($1, $2, 'tester', 'x', $3, now())")
         .bind(id)
         .bind(format!("{id}@test.local"))
         .bind(db_role)

@@ -2,7 +2,7 @@
 //! [`crate::payout`]; every change runs in one transaction on a locked row, so a payout can be paid
 //! at most once and a settlement is marked paid only together with its payout.
 
-use super::audit;
+use super::{audit, staff_mfa::require_recent_stepup};
 use crate::{
     auth::{Admin, Role, live_staff_role},
     contract::{json_row_cursor, page_limit, paged, ts_id_cursor},
@@ -176,6 +176,7 @@ pub async fn set_tax_type(AxState(s): AxState<AppState>, Admin(a): Admin, Path(p
 /// Creates one requested payout per pro for everything due by the date. Future dates are refused.
 pub async fn run_payouts(AxState(s): AxState<AppState>, Admin(a): Admin, Json(r): Json<RunPayouts>) -> ApiResult<Json<Value>> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     if r.date > today_kst() {
         return Err(ApiError::BadRequest("future_date"));
     }
@@ -211,6 +212,7 @@ async fn live_admin(s: &AppState, id: Uuid) -> ApiResult<()> {
 /// Bank details for a manual transfer. Owner only; every reveal is audit-logged and never cached.
 pub async fn reveal_account(AxState(s): AxState<AppState>, Admin(a): Admin, Path(id): Path<Uuid>) -> ApiResult<Response> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     let (bank, holder, enc, gross, tax_type): (String, String, String, i64, String) =
         sqlx::query_as("SELECT bank, holder, account_enc, amount, tax_type FROM payouts WHERE id = $1")
             .bind(id)
@@ -240,6 +242,7 @@ pub async fn act(
     Json(b): Json<ActionBody>,
 ) -> ApiResult<Json<Value>> {
     live_admin(&s, a.id).await?;
+    require_recent_stepup(&s, a.id).await?;
     let outcome = match action.as_str() {
         "send" => send(&s, id).await?,
         "confirm" => step(&s, id, Owner::Confirm).await?,

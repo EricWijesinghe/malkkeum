@@ -26,6 +26,9 @@ pub enum ApiError {
     BadRequest(&'static str),
     #[error("too many requests")]
     RateLimited,
+    /// 403 `stepup_required`: a sensitive staff action needs a TOTP code proved within the last five minutes.
+    #[error("step-up required")]
+    StepUpRequired,
     #[error("quota exceeded: {0}")]
     Quota(&'static str),
     #[error("payment failed: {0}")]
@@ -52,6 +55,7 @@ impl ApiError {
             Self::PriceChanged(_) => (StatusCode::CONFLICT, "price_changed"),
             Self::BadRequest(c) => (StatusCode::BAD_REQUEST, c),
             Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, "rate_limited"),
+            Self::StepUpRequired => (StatusCode::FORBIDDEN, "stepup_required"),
             Self::Quota(c) => (StatusCode::TOO_MANY_REQUESTS, c),
             Self::PaymentFailed(_) => (StatusCode::PAYMENT_REQUIRED, "payment_failed"),
             Self::Unavailable(c) => (StatusCode::SERVICE_UNAVAILABLE, c),

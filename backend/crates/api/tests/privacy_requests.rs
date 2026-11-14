@@ -1,6 +1,6 @@
-//! Staff handling of customer rights requests over the real router and a migrated database: lookup by
-//! phone, the per-customer export (JSON and CSV), deletion limited to admins with the phone typed back,
-//! and the request log. Consultants may look up and export, never delete.
+//! Admin handling of customer rights requests over the real router and a migrated database: lookup by
+//! phone, the per-customer export (JSON and CSV), deletion with the phone typed back, and the request log.
+//! Consultants get none of it. Test staff are stepped up, so the step-up window is open for them.
 
 mod common;
 
@@ -23,7 +23,7 @@ use uuid::Uuid;
 /// Staff member of the given console role ("admin" or "consultant") and a token for it.
 async fn staff_token(pool: &PgPool, email: &str, role: &str) -> String {
     let hash = auth::hash_password("staff-pass-123").expect("hash");
-    let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role) VALUES ($1, '처리 직원', $2, $3) RETURNING id")
+    let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role, stepup_at) VALUES ($1, '처리 직원', $2, $3, now()) RETURNING id")
         .bind(email)
         .bind(hash)
         .bind(role)
@@ -59,13 +59,13 @@ async fn raw_get(app: &axum::Router, uri: &str, token: &str) -> (StatusCode, Str
 async fn lookup_finds_the_live_customer_by_phone_and_rejects_a_bad_number(pool: PgPool) {
     let app = app(pool.clone());
     let c = customer(&app, &pool, "010-8200-0001").await;
-    let consultant = staff_token(&pool, "lookup@test.local", "consultant").await;
+    let admin = staff_token(&pool, "lookup@test.local", "admin").await;
 
-    let (st, found) = call(&app, "GET", "/v1/admin/privacy/customers?phone=010-8200-0001", Some(consultant.as_str()), None).await;
+    let (st, found) = call(&app, "GET", "/v1/admin/privacy/customers?phone=010-8200-0001", Some(admin.as_str()), None).await;
     assert_eq!(st, StatusCode::OK, "{found}");
     assert_eq!(found[0]["id"], c.user.to_string());
 
-    let (st, body) = call(&app, "GET", "/v1/admin/privacy/customers?phone=12", Some(consultant.as_str()), None).await;
+    let (st, body) = call(&app, "GET", "/v1/admin/privacy/customers?phone=12", Some(admin.as_str()), None).await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "{body}");
     let (st, _) = call(&app, "GET", "/v1/admin/privacy/customers?phone=010-8200-0001", Some(c.token.as_str()), None).await;
     assert_eq!(st, StatusCode::FORBIDDEN, "customers cannot use staff lookup");
@@ -76,13 +76,13 @@ async fn export_holds_only_the_requested_customers_rows_in_json_and_csv(pool: Pg
     let app = app(pool.clone());
     let first = customer(&app, &pool, "010-8200-0002").await;
     let second = customer(&app, &pool, "010-8200-0003").await;
-    let consultant = staff_token(&pool, "export@test.local", "consultant").await;
+    let admin = staff_token(&pool, "export@test.local", "admin").await;
 
     let (st, doc) = call(
         &app,
         "GET",
         &format!("/v1/admin/privacy/customers/{}/export", first.user),
-        Some(consultant.as_str()),
+        Some(admin.as_str()),
         None,
     )
     .await;
@@ -92,7 +92,7 @@ async fn export_holds_only_the_requested_customers_rows_in_json_and_csv(pool: Pg
     assert!(!doc.to_string().contains(&second.user.to_string()), "other customers never appear");
     assert!(!doc.to_string().contains("bk_test_"), "billing keys never leave the server");
 
-    let (st, kind, csv) = raw_get(&app, &format!("/v1/admin/privacy/customers/{}/export?format=csv", first.user), &consultant).await;
+    let (st, kind, csv) = raw_get(&app, &format!("/v1/admin/privacy/customers/{}/export?format=csv", first.user), &admin).await;
     assert_eq!(st, StatusCode::OK, "{csv}");
     assert!(kind.starts_with("text/csv"), "content type {kind}");
     assert!(csv.starts_with('\u{feff}') && csv.contains("section,detail"), "BOM and header row");
@@ -103,7 +103,7 @@ async fn export_holds_only_the_requested_customers_rows_in_json_and_csv(pool: Pg
         &app,
         "GET",
         &format!("/v1/admin/privacy/customers/{}/export?format=xml", first.user),
-        Some(consultant.as_str()),
+        Some(admin.as_str()),
         None,
     )
     .await;

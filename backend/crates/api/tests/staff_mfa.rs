@@ -1,4 +1,4 @@
-//! Staff second factor over the real router and a migrated database: admin enrolment, TOTP and recovery-code
+//! Staff second factor over the real router and a migrated database: enrolment, TOTP and recovery-code
 //! sign-in, replay refusal, and that a password alone cannot replace an active second factor.
 //! Needs DATABASE_URL (sqlx::test).
 
@@ -44,13 +44,6 @@ async fn enrol(app: &axum::Router, mfa: &str) -> (Vec<u8>, Vec<String>) {
     assert!(c["access_token"].is_string());
     let codes = c["recovery_codes"].as_array().unwrap().iter().map(|v| v.as_str().unwrap().to_string()).collect();
     (secret, codes)
-}
-
-#[sqlx::test(migrations = "../../migrations")]
-async fn consultant_signs_in_with_password_only(db: PgPool) {
-    insert_staff(&db, "consultant@test.local", "consultant").await;
-    let b = password_step(&common::app(db), "consultant@test.local").await;
-    assert!(b["access_token"].is_string(), "{b}");
 }
 
 #[sqlx::test(migrations = "../../migrations")]

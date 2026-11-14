@@ -25,6 +25,9 @@ from the release branches; no tags existed for them.
 - Customer app: guests see how a booking works on the Bookings tab and the FAQ and terms on the Chat tab (chat still asks for sign-in). The welcome offer and the referral amount show before sign-in, and a quote in progress is kept on the device across restarts.
 - Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
 
+### Security
+- Every staff role must enrol TOTP before sign-in; customer phone lookup and export are admin-only; customer export, deletion and payouts need a TOTP step-up within five minutes (`POST /v1/auth/staff/mfa/step-up`, answers `403 stepup_required` until the console prompt ships). `STAFF_MFA_REQUIRED=0` is refused outside `DEV_MODE`.
+
 ### Changed
 - Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
 - Customer app: guests see the quote price before the address step without signing up; sign-in is asked only when they book, and the service detail shows the price-first line.
