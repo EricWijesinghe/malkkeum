@@ -26,7 +26,7 @@ use domain::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use sqlx::{FromRow, PgPool};
+use sqlx::{FromRow, PgExecutor, PgPool};
 use uuid::Uuid;
 
 /// Line item name on the invoice. ACCOUNTANT: confirm the 품목 wording for cleaning services.
@@ -172,20 +172,32 @@ struct ExportRow {
     amount: i64,
 }
 
-/// CSV for the 홈택스 upload: queued requests (state 'requested') in the range. Marks them exported.
-async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
-    let (from, to) = resolve(&q)?;
-    let rows: Vec<ExportRow> = sqlx::query_as(
+/// Which queued rows a read returns: only those not exported yet (export), or all of them (re-export).
+#[derive(Clone, Copy)]
+enum Queue {
+    Unexported,
+    All,
+}
+
+/// Queued requests (state 'requested') in the range. An export locks the rows it reads (SKIP LOCKED), so two
+/// concurrent exports cannot both take the same request.
+async fn queued_rows(db: impl PgExecutor<'_>, from: NaiveDate, to: NaiveDate, queue: Queue) -> ApiResult<Vec<ExportRow>> {
+    let (fresh, lock) = match queue {
+        Queue::Unexported => ("AND t.exported_at IS NULL", "FOR UPDATE OF t SKIP LOCKED"),
+        Queue::All => ("", ""),
+    };
+    let sql = format!(
         "SELECT t.id, (t.created_at AT TIME ZONE 'Asia/Seoul')::date AS day, t.business_number, t.company_name, t.representative,
            t.business_type, t.business_item, t.address, t.email, p.amount
          FROM tax_invoice_requests t JOIN payments p ON p.id = t.payment_id
-         WHERE t.state = 'requested' AND (t.created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
-         ORDER BY t.created_at, t.id",
-    )
-    .bind(from)
-    .bind(to)
-    .fetch_all(&s.db)
-    .await?;
+         WHERE t.state = 'requested' {fresh} AND (t.created_at AT TIME ZONE 'Asia/Seoul')::date BETWEEN $1 AND $2
+         ORDER BY t.created_at, t.id {lock}"
+    );
+    Ok(sqlx::query_as(&sql).bind(from).bind(to).fetch_all(db).await?)
+}
+
+/// The 홈택스 CSV response for these rows.
+fn invoice_csv(rows: &[ExportRow], from: NaiveDate, to: NaiveDate) -> ApiResult<Response> {
     let invoice_rows: Vec<InvoiceRow> = rows
         .iter()
         .map(|r| InvoiceRow {
@@ -201,13 +213,23 @@ async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<Peri
             total: r.amount,
         })
         .collect();
+    let name = format!("malkkeum-tax-invoices-{from}_{to}");
+    csv_response(&name, finance::csv_document(&tax::tax_invoice_document(&invoice_rows)))
+}
+
+/// CSV for the 홈택스 upload: queued requests not exported yet, in the range. Marks them exported and writes the
+/// audit row in the same transaction, so a failed write hands out no file and marks nothing.
+async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<PeriodQuery>) -> ApiResult<Response> {
+    let (from, to) = resolve(&q)?;
+    let mut tx = s.db.begin().await?;
+    let rows = queued_rows(&mut *tx, from, to, Queue::Unexported).await?;
     let ids: Vec<Uuid> = rows.iter().map(|r| r.id).collect();
     sqlx::query("UPDATE tax_invoice_requests SET exported_at = now(), updated_at = now() WHERE id = ANY($1)")
         .bind(&ids)
-        .execute(&s.db)
+        .execute(&mut *tx)
         .await?;
     audit(
-        &s.db,
+        &mut *tx,
         "staff",
         Some(a.id),
         "finance.export",
@@ -215,8 +237,44 @@ async fn export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<Peri
         json!({ "from": from, "to": to, "rows": ids.len() }),
     )
     .await?;
-    let name = format!("malkkeum-tax-invoices-{from}_{to}");
-    csv_response(&name, finance::csv_document(&tax::tax_invoice_document(&invoice_rows)))
+    tx.commit().await?;
+    invoice_csv(&rows, from, to)
+}
+
+#[derive(Deserialize)]
+struct ReExportQuery {
+    period: Option<String>,
+    anchor: Option<NaiveDate>,
+    from: Option<NaiveDate>,
+    to: Option<NaiveDate>,
+    #[serde(default)]
+    confirm: bool,
+}
+
+/// `POST /finance/export/tax-invoices/re-export?confirm=true`: sends the same queued rows again, for a lost or
+/// damaged file. Leaves exported_at as it is. Needs the explicit confirm flag and writes an audit row.
+async fn re_export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<ReExportQuery>) -> ApiResult<Response> {
+    if !q.confirm {
+        return Err(ApiError::BadRequest("confirm_required"));
+    }
+    let period = PeriodQuery {
+        period: q.period,
+        anchor: q.anchor,
+        from: q.from,
+        to: q.to,
+    };
+    let (from, to) = resolve(&period)?;
+    let rows = queued_rows(&s.db, from, to, Queue::All).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "tax_invoice.re_export",
+        "tax_invoices",
+        json!({ "from": from, "to": to, "rows": rows.len() }),
+    )
+    .await?;
+    invoice_csv(&rows, from, to)
 }
 
 #[derive(Deserialize)]
@@ -257,5 +315,6 @@ pub fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/finance/tax-invoices", get(list))
         .route("/finance/export/tax-invoices", get(export))
+        .route("/finance/export/tax-invoices/re-export", post(re_export))
         .route("/finance/tax-invoices/{id}/issued", post(mark_issued))
 }

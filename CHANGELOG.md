@@ -46,6 +46,9 @@ from the release branches; no tags existed for them.
 - 정산 내역 CSV (`/admin/finance/export/settlements`) ends with a 합계 row; KST month edges and totals covered by tests.
 - Hardening: new encrypted values carry a version prefix and are bound to their column (old values still read); login codes use `OTP_PEPPER` when set; no-show cases are unique per booking; reviews reaching the report threshold are queued for staff, not hidden; reading partner quotes no longer changes them (a timer closes stale ones); setup code kept out of the structured log.
 
+### Fixed
+- Tax-invoice CSV export (`/admin/finance/export/tax-invoices`) marks each request exported in the same transaction and skips requests already exported, so a second export is empty. A new owner-only `POST /admin/finance/export/tax-invoices/re-export?confirm=true` sends the same rows again without changing exported_at and writes an audit row.
+
 ### Security
 - Live-event sockets open with a 30-second, single-use ticket from `POST /v1/realtime/ticket` instead of the access token in the URL, so the long-lived token no longer reaches proxy and access logs. The old `?token=` form still works for one release. Silent sockets are pinged every 25 s and closed after 60 s without an answer.
 
