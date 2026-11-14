@@ -33,8 +33,9 @@ void _push(BuildContext context, Widget screen) =>
 
 /// Account-only screens: a guest gets the sign-in sheet, a member goes straight through.
 Future<void> _pushMember(BuildContext context, Widget screen) async {
+  final nav = Navigator.of(context);
   if (!await requireSignIn(context, reason: SignInReason.account)) return;
-  if (context.mounted) _push(context, screen);
+  await nav.push(MaterialPageRoute<void>(builder: (_) => screen));
 }
 
 class MoreTab extends StatelessWidget {

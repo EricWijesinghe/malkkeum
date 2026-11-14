@@ -201,8 +201,7 @@ String _pretty(String digits) {
 
 /// After a session exists: save the chosen language to the account and load the profile.
 /// Resolves true when the account still has no name, so the caller can open the name step.
-Future<bool> completeSignIn(BuildContext context) async {
-  final deps = Deps.read(context);
+Future<bool> completeSignIn(Deps deps) async {
   // The language picked before sign-in (or the device one) becomes the account language.
   deps.app.api.patch('/me', {'locale': deps.locale.effectiveCode}).ignore();
   await deps.app.loadProfile();
@@ -248,7 +247,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
         );
         if (!mounted) return;
       }
-      final nameless = await completeSignIn(context);
+      final nameless = await completeSignIn(deps);
       if (!mounted) return;
       if (result.isNew || nameless) {
         await nav.pushReplacement(
@@ -380,7 +379,7 @@ class _CodeScreenState extends State<CodeScreen> {
         audience: 'customer',
       );
       if (!mounted) return;
-      final nameless = await completeSignIn(context);
+      final nameless = await completeSignIn(deps);
       if (!mounted) return;
       final nav = Navigator.of(context);
       if (isNew || nameless) {
@@ -460,7 +459,9 @@ class _CodeScreenState extends State<CodeScreen> {
 }
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  /// Opened on top of a flow (sign-in from a booking): saving pops only this screen, so the flow stays.
+  const ProfileScreen({super.key, this.popOne = false});
+  final bool popOne;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -484,7 +485,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await Future.wait([app.loadProfile(), app.loadCoupons()]);
       if (!mounted) return;
       showToast(context, context.t.welcomeToast);
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      final nav = Navigator.of(context);
+      if (widget.popOne) {
+        nav.pop();
+      } else {
+        nav.popUntil((r) => r.isFirst);
+      }
     } catch (e) {
       if (mounted) setState(() => _error = context.t.error(e));
     } finally {

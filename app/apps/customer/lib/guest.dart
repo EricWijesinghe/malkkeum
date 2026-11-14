@@ -28,8 +28,11 @@ Future<bool> requireSignIn(
   BuildContext context, {
   SignInReason reason = SignInReason.generic,
 }) async {
-  final session = Deps.read(context).session;
+  final deps = Deps.read(context);
+  final session = deps.session;
   if (session.signedIn) return true;
+  // Captured before the await: the caller's tab can be rebuilt by the sign-in, but its navigator stays.
+  final nav = Navigator.of(context);
   final ok = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
@@ -38,12 +41,14 @@ Future<bool> requireSignIn(
     builder: (_) => _SignInSheet(session: session, reason: reason),
   );
   if (ok != true) return false;
-  // The sheet closed before the account finished loading, so the caller's own state
-  // (and the name step for a nameless account) is handled here, after the sheet.
-  if (context.mounted && await completeSignIn(context)) {
-    if (!context.mounted) return true;
-    await Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (_) => const ProfileScreen()));
+  // The sheet closed before the account finished loading, so the name step for a nameless
+  // account is handled here, after the sheet, on the navigator the guest started from.
+  if (await completeSignIn(deps)) {
+    await nav.push(
+      MaterialPageRoute<void>(
+        builder: (_) => const ProfileScreen(popOne: true),
+      ),
+    );
   }
   return true;
 }
@@ -72,8 +77,9 @@ class _SignInSheetState extends State<_SignInSheet> {
   }
 
   void _onSession() {
-    if (widget.session.signedIn && mounted)
+    if (widget.session.signedIn && mounted) {
       Navigator.of(context, rootNavigator: true).pop(true);
+    }
   }
 
   @override
