@@ -379,6 +379,18 @@ t  "unit: service runs the agent"        grep -qF "ExecStart=/bin/bash $SB/agent
 t  "unit: service sandboxed"             grep -qF "ProtectSystem=full" "$SB/units/dahae-agent.service"
 t  "unit: service may run 3 hours"       grep -qF "TimeoutStartSec=3h" "$SB/units/dahae-agent.service"
 t  "unit: timer every minute"            grep -qF "OnCalendar=*-*-* *:*:00" "$SB/units/dahae-agent.timer"
+t  "unit: path also watches approvals"   grep -qF "PathExistsGlob=$SB/jobs/inbox/*.approve" "$SB/units/dahae-agent.path"
+
+# server approval key: made once, private, and owner-reset removes it (the CLI runs in the sandbox)
+mkdir -p "$SB/host"
+enroll() { ( DAHAE_SELFTEST=1 . "$SB/dahae"; cd "$SB"; cmd_host_approval enroll ) >/dev/null 2>&1; }
+enroll
+t  "approval enroll writes a 32-character key" eq "$(wc -c < "$SB/host/approval.key" | tr -d ' ')" 33
+t  "approval key is private"             eq "$(stat -c %a "$SB/host/approval.key")" 600
+nt "approval enroll twice refused"       enroll
+reset_owner() { ( DAHAE_SELFTEST=1 . "$SB/dahae"; cd "$SB"; YES=1 cmd_owner_reset ) >/dev/null 2>&1; }
+reset_owner
+t  "owner-reset removes the approval key" test ! -e "$SB/host/approval.key"
 
 # compose mounts the job spool into the API and the progress folder into the web container
 t  "api mounts inbox read-write"         grep -qF "/opt/malkkeum/jobs/inbox:/jobs/inbox," "$ROOT/deploy/docker-compose.yml"

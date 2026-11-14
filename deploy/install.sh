@@ -356,6 +356,8 @@ USAGE='사용법: dahae <명령>
   restore-offsite [이름] [--yes]  외부 백업 목록 / 내려받아 되돌리기
   load 파일.tar               미리 받아 둔 이미지 불러오기 (인터넷 없이 업데이트)
   heartbeat <https 주소>|off  외부 가동 확인 핑 주소 설정
+  host-approval enroll|status  서버 승인 코드 만들기 / 상태 (버전 올리기·되돌리기 승인에 써요)
+  owner-reset                 서버 승인 코드 지우기 (확인 글자 입력 필요)
   applinks --android-sha256 지문[,지문] --apple-team-id 팀ID   앱 링크 설정
   demo load [--force] | demo clear   체험용 데이터
   logs [api|web|db]           로그 보기
@@ -814,6 +816,28 @@ cmd_applinks() { # dahae applinks --android-sha256 지문[,지문] --apple-team-
   ok "앱 링크를 설정했어요: https://$(env_get DOMAIN)/.well-known/assetlinks.json"
 }
 
+cmd_host_approval() { # dahae host-approval enroll|status : 서버 승인 코드를 처음 만들어요 (버전 올리기·되돌리기를 승인할 때 인증 앱 코드를 써요)
+  local secret
+  case "${1:-status}" in
+    enroll)
+      [ ! -e host/approval.key ] || die "이미 서버 승인 코드가 있어요. 다시 만들려면: dahae owner-reset"
+      secret=$(head -c 20 /dev/urandom | base32 | tr -d '=\n')
+      (umask 077; printf '%s\n' "$secret" > host/approval.key) || die "서버 승인 코드를 저장하지 못했어요"
+      ok "서버 승인 코드를 만들었어요. 인증 앱에 아래 주소나 키를 넣어 주세요 (6자리, 30초)."
+      printf '  키: %s\n  주소: otpauth://totp/Dahae:server?secret=%s&issuer=Dahae&digits=6&period=30\n' "$secret" "$secret" ;;
+    status)
+      if [ -f host/approval.key ]; then ok "서버 승인 코드가 있어요"; else warn "서버 승인 코드가 없어요 (dahae host-approval enroll)"; fi
+      [ ! -e host/awaiting.job ] || warn "서버 승인을 기다리는 작업이 있어요" ;;
+    *) die "사용법: dahae host-approval enroll | status" ;;
+  esac
+}
+
+cmd_owner_reset() { # dahae owner-reset : 서버 승인 코드를 지워요. 기다리는 승인 작업도 취소돼요
+  confirm "서버 승인 코드를 지울까요? 지운 뒤에는 새로 만들어 인증 앱에 다시 넣어야 해요. 기다리는 작업은 취소돼요." 초기화
+  rm -f -- host/approval.key host/approval.last-step host/awaiting.job host/awaiting.meta
+  ok "서버 승인 코드를 지웠어요. 새로 만들려면: dahae host-approval enroll"
+}
+
 cmd_uninstall() { # dahae uninstall [--yes] | dahae uninstall --purge [--confirm 도메인]
   local purge=0 given=""
   while [ $# -gt 0 ]; do
@@ -940,6 +964,8 @@ main() {
     restore) shift; cmd_restore "$@" ;;
     restore-offsite) shift; cmd_restore_offsite "$@" ;;
     heartbeat) shift; cmd_heartbeat "$@" ;;
+    host-approval) shift; cmd_host_approval "$@" ;;
+    owner-reset) shift; cmd_owner_reset "$@" ;;
     keys-backup) cmd_keys_backup ;;
     keys-restore) shift; cmd_keys_restore "$@" ;;
     alert) shift; cmd_alert "$@" ;;
@@ -1045,6 +1071,7 @@ Description=다해 서버 작업 대기 (작업 파일 도착)
 
 [Path]
 PathExistsGlob=$DIR/jobs/inbox/*.job
+PathExistsGlob=$DIR/jobs/inbox/*.approve
 Unit=dahae-agent.service
 
 [Install]
