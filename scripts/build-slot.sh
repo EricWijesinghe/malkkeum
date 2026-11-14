@@ -14,7 +14,9 @@ case "$top" in
   # New targets go to D: (F: filled up 2026-11-12); a worktree that already has a warm cache on F: keeps it.
   *) w=$(basename "$top")
      if [ -d "/f/EC/targets/$w" ]; then export CARGO_TARGET_DIR="F:/EC/targets/$w"
-     else export CARGO_TARGET_DIR="D:/malkkeum-targets/$w"; fi ;;
+     # New targets go to the external G: drive when it is plugged in (D: is shared and near full); warm D: caches stay.
+     elif [ -d "/d/malkkeum-targets/$w" ] || [ ! -d /g/malkkeum-targets ]; then export CARGO_TARGET_DIR="D:/malkkeum-targets/$w"
+     else export CARGO_TARGET_DIR="G:/malkkeum-targets/$w"; fi ;;
 esac
 mkdir -p "$LOCKS"
 
