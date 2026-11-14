@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../state.dart';
+
 /// One public review: stars as icons, the masked name and the text. Reporting lives in the overflow
 /// menu, so the card carries no loud link (store rule: every review stays reportable).
 class ReviewTile extends StatelessWidget {
@@ -139,10 +141,10 @@ class _RecentReviewsState extends State<RecentReviews> {
 
   Future<void> _load() async {
     try {
-      final rows = (await context.api.get(
-        '/public/reviews',
-        query: {'limit': '$_shown'},
-      ) as List).cast<Json>();
+      final rows =
+          (await context.api.get('/public/reviews', query: {'limit': '$_shown'})
+                  as List)
+              .cast<Json>();
       if (mounted) setState(() => _rows = rows);
     } on Object {
       // Decoration only: without reviews the section simply stays out of PICK.
