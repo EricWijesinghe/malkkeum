@@ -81,7 +81,8 @@ bool _roomy(BuildContext context) =>
         MediaQuery.textScalerOf(context).scale(1) >=
     _pillMinWidth;
 
-String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
+String _teamName(BuildContext context, T t) =>
+    '${BrandScope.of(context).name} ${t.chatTeam}';
 
 String _buildingLabel(T t, String code) => switch (code) {
   'apartment' => t.building_apartment,

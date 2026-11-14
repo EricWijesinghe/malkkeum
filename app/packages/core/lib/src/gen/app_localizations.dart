@@ -217,6 +217,330 @@ abstract class T {
   /// **'숫자만 입력해요. 비워두면 기본값을 써요.'**
   String get aiCapHint;
 
+  /// No description provided for @cAppLinkTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 링크'**
+  String get cAppLinkTitle;
+
+  /// No description provided for @cAppLinkHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이버 로그인 후 앱으로 돌아오게 하는 연결 정보예요. 저장하면 바로 적용돼요. 잘 모르면 개발자에게 맡기세요.'**
+  String get cAppLinkHint;
+
+  /// No description provided for @cAppLinkAndroidLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 서명 지문 (SHA-256)'**
+  String get cAppLinkAndroidLabel;
+
+  /// No description provided for @cAppLinkAndroidHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 줄에 하나씩, 콜론(:)으로 나눈 32쌍의 값이에요. 최대 8개.'**
+  String get cAppLinkAndroidHint;
+
+  /// No description provided for @cAppLinkTeamLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'애플 팀 ID (10자리)'**
+  String get cAppLinkTeamLabel;
+
+  /// No description provided for @cAppLinkSourceDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'콘솔에서 저장한 값을 쓰고 있어요'**
+  String get cAppLinkSourceDb;
+
+  /// No description provided for @cAppLinkSourceEnv.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 설정 값을 쓰고 있어요'**
+  String get cAppLinkSourceEnv;
+
+  /// No description provided for @cAppLinkAndroidOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 앱 링크: 켜짐'**
+  String get cAppLinkAndroidOn;
+
+  /// No description provided for @cAppLinkAndroidOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'안드로이드 앱 링크: 꺼짐'**
+  String get cAppLinkAndroidOff;
+
+  /// No description provided for @cAppLinkIosOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'아이폰 앱 링크: 켜짐'**
+  String get cAppLinkIosOn;
+
+  /// No description provided for @cAppLinkIosOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'아이폰 앱 링크: 꺼짐'**
+  String get cAppLinkIosOff;
+
+  /// No description provided for @cAppLinkNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'값이 없으면 두 연결이 꺼져요. 네이버 로그인 후 앱으로 돌아오지 않을 수 있어요.'**
+  String get cAppLinkNone;
+
+  /// No description provided for @cAppLinkChecked.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인했어요. 아직 저장하지 않았어요.'**
+  String get cAppLinkChecked;
+
+  /// No description provided for @cAppLinkCheck.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get cAppLinkCheck;
+
+  /// No description provided for @cAudit.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 기록'**
+  String get cAudit;
+
+  /// No description provided for @audIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'누가 언제 무엇을 했는지 최신순으로 보여요. 기록은 지울 수 없어요.'**
+  String get audIntro;
+
+  /// No description provided for @audPeriodToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘'**
+  String get audPeriodToday;
+
+  /// No description provided for @audPeriod7.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 7일'**
+  String get audPeriod7;
+
+  /// No description provided for @audPeriod30.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 30일'**
+  String get audPeriod30;
+
+  /// No description provided for @audPeriodAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 기간'**
+  String get audPeriodAll;
+
+  /// No description provided for @audFilterWho.
+  ///
+  /// In ko, this message translates to:
+  /// **'누가'**
+  String get audFilterWho;
+
+  /// No description provided for @audFilterWhat.
+  ///
+  /// In ko, this message translates to:
+  /// **'무엇을'**
+  String get audFilterWhat;
+
+  /// No description provided for @audWhoAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모두'**
+  String get audWhoAll;
+
+  /// No description provided for @audWhatAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 작업'**
+  String get audWhatAll;
+
+  /// No description provided for @audRoleStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원'**
+  String get audRoleStaff;
+
+  /// No description provided for @audRoleCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객'**
+  String get audRoleCustomer;
+
+  /// No description provided for @audRolePro.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너'**
+  String get audRolePro;
+
+  /// No description provided for @audRoleSystem.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 처리'**
+  String get audRoleSystem;
+
+  /// No description provided for @audCatCase.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건·환불'**
+  String get audCatCase;
+
+  /// No description provided for @audCatBooking.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약'**
+  String get audCatBooking;
+
+  /// No description provided for @audCatCustomer.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 정보'**
+  String get audCatCustomer;
+
+  /// No description provided for @audCatStaff.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 관리'**
+  String get audCatStaff;
+
+  /// No description provided for @audCatSettlement.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산'**
+  String get audCatSettlement;
+
+  /// No description provided for @audCatPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트'**
+  String get audCatPoints;
+
+  /// No description provided for @audCatService.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스·가격'**
+  String get audCatService;
+
+  /// No description provided for @audActCaseRefund.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 환불'**
+  String get audActCaseRefund;
+
+  /// No description provided for @audActCaseUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'사건 처리 변경'**
+  String get audActCaseUpdate;
+
+  /// No description provided for @audActPointsAdjust.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 조정'**
+  String get audActPointsAdjust;
+
+  /// No description provided for @audActPiiView.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 연락처 조회'**
+  String get audActPiiView;
+
+  /// No description provided for @audActPiiList.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 검색'**
+  String get audActPiiList;
+
+  /// No description provided for @audActStaffCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 추가'**
+  String get audActStaffCreate;
+
+  /// No description provided for @audActStaffActive.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 사용 여부 변경'**
+  String get audActStaffActive;
+
+  /// No description provided for @audActSettlementHold.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 보류 변경'**
+  String get audActSettlementHold;
+
+  /// No description provided for @audActServiceUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'서비스 수정'**
+  String get audActServiceUpdate;
+
+  /// No description provided for @audUnknownActor.
+  ///
+  /// In ko, this message translates to:
+  /// **'알 수 없음'**
+  String get audUnknownActor;
+
+  /// No description provided for @audOtherAction.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타 작업'**
+  String get audOtherAction;
+
+  /// No description provided for @audTarget.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상'**
+  String get audTarget;
+
+  /// No description provided for @audDetailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'상세 내용'**
+  String get audDetailTitle;
+
+  /// No description provided for @audActionCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 코드'**
+  String get audActionCode;
+
+  /// No description provided for @audNoDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록된 내용이 없어요'**
+  String get audNoDetail;
+
+  /// No description provided for @audEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'조건에 맞는 기록이 없어요'**
+  String get audEmpty;
+
+  /// No description provided for @audLoadMore.
+  ///
+  /// In ko, this message translates to:
+  /// **'더 보기'**
+  String get audLoadMore;
+
+  /// No description provided for @audClose.
+  ///
+  /// In ko, this message translates to:
+  /// **'닫기'**
+  String get audClose;
+
+  /// No description provided for @audRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간 선택'**
+  String get audRange;
+
   /// No description provided for @apSocialOr.
   ///
   /// In ko, this message translates to:
@@ -5833,6 +6157,60 @@ abstract class T {
   /// **'{rewarded}/{invited}명'**
   String growthReferralValue(String rewarded, String invited);
 
+  /// No description provided for @guestReasonQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적을 저장하고 예약하려면 로그인하세요'**
+  String get guestReasonQuote;
+
+  /// No description provided for @guestReasonBook.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약을 확정하려면 로그인하세요'**
+  String get guestReasonBook;
+
+  /// No description provided for @guestReasonChat.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담원과 대화하려면 로그인하세요'**
+  String get guestReasonChat;
+
+  /// No description provided for @guestReasonAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요'**
+  String get guestReasonAccount;
+
+  /// No description provided for @guestAccountHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인하면 확인할 수 있어요'**
+  String get guestAccountHint;
+
+  /// No description provided for @guestPriceLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 금액 {amount} · 가입 없이 확인한 견적이에요'**
+  String guestPriceLine(String amount);
+
+  /// No description provided for @guestPeakNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문 시간대에 따라 피크 요금이 더해질 수 있어요'**
+  String get guestPeakNote;
+
+  /// No description provided for @guestBookWithQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 견적으로 예약하기'**
+  String get guestBookWithQuote;
+
+  /// No description provided for @guestSeePrices.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 없이 가격 확인'**
+  String get guestSeePrices;
+
   /// No description provided for @locUseCurrent.
   ///
   /// In ko, this message translates to:
@@ -6114,6 +6492,126 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'{n}주 후 예약'**
   String anWeekAfter(String n);
+
+  /// No description provided for @ntNavLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 문구'**
+  String get ntNavLabel;
+
+  /// No description provided for @ntIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객과 청소팀이 앱 알림과 알림함에서 보는 문구를 바꿀 수 있어요. 비워 두면 기본 문구를 써요.'**
+  String get ntIntro;
+
+  /// No description provided for @ntLangKo.
+  ///
+  /// In ko, this message translates to:
+  /// **'한국어'**
+  String get ntLangKo;
+
+  /// No description provided for @ntLangEn.
+  ///
+  /// In ko, this message translates to:
+  /// **'영어'**
+  String get ntLangEn;
+
+  /// No description provided for @ntBuiltIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구'**
+  String get ntBuiltIn;
+
+  /// No description provided for @ntUsingCustom.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 고친 문구를 쓰고 있어요'**
+  String get ntUsingCustom;
+
+  /// No description provided for @ntUsingBuiltIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구를 쓰고 있어요'**
+  String get ntUsingBuiltIn;
+
+  /// No description provided for @ntVars.
+  ///
+  /// In ko, this message translates to:
+  /// **'넣을 수 있는 값: {names}'**
+  String ntVars(String names);
+
+  /// No description provided for @ntTitleField.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get ntTitleField;
+
+  /// No description provided for @ntBodyField.
+  ///
+  /// In ko, this message translates to:
+  /// **'내용'**
+  String get ntBodyField;
+
+  /// No description provided for @ntPreview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리 보기'**
+  String get ntPreview;
+
+  /// No description provided for @ntPreviewResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'이렇게 보여요'**
+  String get ntPreviewResult;
+
+  /// No description provided for @ntSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get ntSave;
+
+  /// No description provided for @ntRestore.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구로 되돌리기'**
+  String get ntRestore;
+
+  /// No description provided for @ntRestored.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 문구로 되돌렸어요'**
+  String get ntRestored;
+
+  /// No description provided for @ntErrVar.
+  ///
+  /// In ko, this message translates to:
+  /// **'허용되지 않은 값이 들어 있어요. 중괄호 안에는 위에 적힌 값만 넣어 주세요.'**
+  String get ntErrVar;
+
+  /// No description provided for @ntErrBraces.
+  ///
+  /// In ko, this message translates to:
+  /// **'중괄호가 짝이 맞지 않아요.'**
+  String get ntErrBraces;
+
+  /// No description provided for @ntErrEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목과 내용을 모두 입력해 주세요.'**
+  String get ntErrEmpty;
+
+  /// No description provided for @ntErrLong.
+  ///
+  /// In ko, this message translates to:
+  /// **'글자 수가 너무 많아요. 제목은 40자, 내용은 120자까지예요.'**
+  String get ntErrLong;
+
+  /// No description provided for @ntErrChars.
+  ///
+  /// In ko, this message translates to:
+  /// **'줄바꿈이나 조절 문자는 넣을 수 없어요.'**
+  String get ntErrChars;
 
   /// No description provided for @cOps.
   ///
@@ -6522,6 +7020,12 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'오류 {count}회'**
   String oJobErrors(String count);
+
+  /// No description provided for @oJobDeadLetters.
+  ///
+  /// In ko, this message translates to:
+  /// **'발송 실패 {count}건 (재시도 끝)'**
+  String oJobDeadLetters(String count);
 
   /// No description provided for @oJob_settings_refresh.
   ///
@@ -7920,6 +8424,144 @@ abstract class T {
   /// **'데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
   String get pvExportFailed;
 
+  /// No description provided for @prqTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴·개인정보 요청'**
+  String get prqTitle;
+
+  /// No description provided for @prqIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객이 자료 사본을 받고 싶다거나 탈퇴를 원하면 전화번호로 찾아 처리하세요. 모든 처리는 기록에 남아요. 탈퇴는 되돌릴 수 없어요.'**
+  String get prqIntro;
+
+  /// No description provided for @prqPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호'**
+  String get prqPhone;
+
+  /// No description provided for @prqFind.
+  ///
+  /// In ko, this message translates to:
+  /// **'찾기'**
+  String get prqFind;
+
+  /// No description provided for @prqNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 번호로 등록된 고객이 없어요.'**
+  String get prqNotFound;
+
+  /// No description provided for @prqBookings.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 수'**
+  String get prqBookings;
+
+  /// No description provided for @prqExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본 받기 (CSV)'**
+  String get prqExport;
+
+  /// No description provided for @prqExported.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본을 저장했어요.'**
+  String get prqExported;
+
+  /// No description provided for @prqDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리'**
+  String get prqDelete;
+
+  /// No description provided for @prqDeleteAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리는 관리자만 할 수 있어요.'**
+  String get prqDeleteAdminOnly;
+
+  /// No description provided for @prqDeleteAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호를 다시 입력하면 탈퇴가 처리돼요. 이름과 연락처 등 개인 정보는 지워지고, 되돌릴 수 없어요. 예약·결제 기록은 법에 따라 남아요.'**
+  String get prqDeleteAsk;
+
+  /// No description provided for @prqPhoneAgain.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 전화번호 다시 입력'**
+  String get prqPhoneAgain;
+
+  /// No description provided for @prqPhoneMismatch.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호가 맞지 않아요.'**
+  String get prqPhoneMismatch;
+
+  /// No description provided for @prqDeleteDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴 처리가 끝났어요.'**
+  String get prqDeleteDone;
+
+  /// No description provided for @prqFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리하지 못했어요. 잠시 후 다시 시도해 주세요.'**
+  String get prqFailed;
+
+  /// No description provided for @prqLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 기록'**
+  String get prqLog;
+
+  /// No description provided for @prqLogEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 처리한 요청이 없어요.'**
+  String get prqLogEmpty;
+
+  /// No description provided for @prqKindExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'자료 사본'**
+  String get prqKindExport;
+
+  /// No description provided for @prqKindDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'탈퇴'**
+  String get prqKindDelete;
+
+  /// No description provided for @prqStatusDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get prqStatusDone;
+
+  /// No description provided for @prqStatusFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'실패'**
+  String get prqStatusFailed;
+
+  /// No description provided for @prqBy.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리한 직원'**
+  String get prqBy;
+
+  /// No description provided for @cSetupColorContrast.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.'**
+  String get cSetupColorContrast;
+
   /// No description provided for @safetyEmergency.
   ///
   /// In ko, this message translates to:
@@ -8141,6 +8783,294 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'저장'**
   String get caseSave;
+
+  /// No description provided for @rulesTab.
+  ///
+  /// In ko, this message translates to:
+  /// **'운영 규칙'**
+  String get rulesTab;
+
+  /// No description provided for @rulesIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'여기서 바꾼 값은 바로 적용되거나 서버를 다시 시작할 때 적용돼요. 값을 비워 두면 처음 설정값으로 돌아가요.'**
+  String get rulesIntro;
+
+  /// No description provided for @rulesGroupBusiness.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업장 한도'**
+  String get rulesGroupBusiness;
+
+  /// No description provided for @rulesGroupMarketing.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 발송'**
+  String get rulesGroupMarketing;
+
+  /// No description provided for @rulesGroupPoints.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트'**
+  String get rulesGroupPoints;
+
+  /// No description provided for @rulesGroupQuality.
+  ///
+  /// In ko, this message translates to:
+  /// **'파트너 품질'**
+  String get rulesGroupQuality;
+
+  /// No description provided for @rulesGroupOps.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버·알림 기준'**
+  String get rulesGroupOps;
+
+  /// No description provided for @rulesRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력 가능 범위'**
+  String get rulesRange;
+
+  /// No description provided for @rulesSource.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 값 출처'**
+  String get rulesSource;
+
+  /// No description provided for @rulesSourceDb.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 바꾼 값'**
+  String get rulesSourceDb;
+
+  /// No description provided for @rulesSourceEnv.
+  ///
+  /// In ko, this message translates to:
+  /// **'설치 시 설정값'**
+  String get rulesSourceEnv;
+
+  /// No description provided for @rulesSourceDefault.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값'**
+  String get rulesSourceDefault;
+
+  /// No description provided for @rulesTightenDown.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값보다 낮게만 바꿀 수 있어요'**
+  String get rulesTightenDown;
+
+  /// No description provided for @rulesTightenUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값보다 높게만 바꿀 수 있어요'**
+  String get rulesTightenUp;
+
+  /// No description provided for @rulesApplyInstant.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 적용'**
+  String get rulesApplyInstant;
+
+  /// No description provided for @rulesApplyRebuild.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버를 다시 시작해야 적용돼요'**
+  String get rulesApplyRebuild;
+
+  /// No description provided for @rulesReadOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'여기서는 바꿀 수 없어요 (개발자에게 문의)'**
+  String get rulesReadOnly;
+
+  /// No description provided for @rulesReset.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값으로'**
+  String get rulesReset;
+
+  /// No description provided for @rulesSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get rulesSave;
+
+  /// No description provided for @rulesSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get rulesSaved;
+
+  /// No description provided for @rulesNoChanges.
+  ///
+  /// In ko, this message translates to:
+  /// **'바뀐 값이 없어요'**
+  String get rulesNoChanges;
+
+  /// No description provided for @rulesInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'입력한 값을 확인해 주세요'**
+  String get rulesInvalid;
+
+  /// No description provided for @rulePointsAdjustMax.
+  ///
+  /// In ko, this message translates to:
+  /// **'포인트 한 번에 지급·차감할 최대 점수'**
+  String get rulePointsAdjustMax;
+
+  /// No description provided for @ruleUploadDailyQuota.
+  ///
+  /// In ko, this message translates to:
+  /// **'하루 사진 업로드 한도 (장)'**
+  String get ruleUploadDailyQuota;
+
+  /// No description provided for @ruleMaxOpenQuoteRequests.
+  ///
+  /// In ko, this message translates to:
+  /// **'동시에 열 수 있는 견적 요청 수'**
+  String get ruleMaxOpenQuoteRequests;
+
+  /// No description provided for @ruleMaxThreadsPerDay.
+  ///
+  /// In ko, this message translates to:
+  /// **'하루 고객 대화방 개설 한도'**
+  String get ruleMaxThreadsPerDay;
+
+  /// No description provided for @ruleReviewReportThreshold.
+  ///
+  /// In ko, this message translates to:
+  /// **'후기 신고 몇 명이면 숨길지'**
+  String get ruleReviewReportThreshold;
+
+  /// No description provided for @ruleNoshowGraceMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'노쇼 판정 대기 시간 (분)'**
+  String get ruleNoshowGraceMinutes;
+
+  /// No description provided for @ruleAiChatRetentionDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'AI 상담 기록 보관 기간 (일)'**
+  String get ruleAiChatRetentionDays;
+
+  /// No description provided for @ruleUploadOrphanDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 없는 사진 삭제 기간 (일)'**
+  String get ruleUploadOrphanDays;
+
+  /// No description provided for @ruleReconcileIntervalSecs.
+  ///
+  /// In ko, this message translates to:
+  /// **'결제 대사 주기 (초)'**
+  String get ruleReconcileIntervalSecs;
+
+  /// No description provided for @ruleFreqCapPerWeek.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객 한 명에게 일주일 최대 광고 수'**
+  String get ruleFreqCapPerWeek;
+
+  /// No description provided for @ruleNudgeRebookDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'재예약 안내 발송 (방문 후 일수)'**
+  String get ruleNudgeRebookDays;
+
+  /// No description provided for @ruleQualityWindowDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'품질 점수 집계 기간 (일)'**
+  String get ruleQualityWindowDays;
+
+  /// No description provided for @ruleQualityOnTimeGraceMin.
+  ///
+  /// In ko, this message translates to:
+  /// **'정시 도착 허용 시간 (분)'**
+  String get ruleQualityOnTimeGraceMin;
+
+  /// No description provided for @ruleBackupStaleHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'백업이 이 시간 넘게 없으면 빨간불 (시간)'**
+  String get ruleBackupStaleHours;
+
+  /// No description provided for @ruleBackupLateHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'백업이 이 시간 넘게 없으면 노란불 (시간)'**
+  String get ruleBackupLateHours;
+
+  /// No description provided for @ruleDiskLowPct.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 여유가 이 비율 아래면 빨간불 (%)'**
+  String get ruleDiskLowPct;
+
+  /// No description provided for @ruleDiskWarnPct.
+  ///
+  /// In ko, this message translates to:
+  /// **'디스크 여유가 이 비율 아래면 노란불 (%)'**
+  String get ruleDiskWarnPct;
+
+  /// No description provided for @ruleMaintenanceOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 모드 (새 예약 막기)'**
+  String get ruleMaintenanceOn;
+
+  /// No description provided for @ruleMaintenanceMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검 안내 문구'**
+  String get ruleMaintenanceMessage;
+
+  /// No description provided for @rulesApplyStoreManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱스토어에서 직접 수정해요'**
+  String get rulesApplyStoreManual;
+
+  /// No description provided for @rulesMaxLength.
+  ///
+  /// In ko, this message translates to:
+  /// **'최대 글자 수'**
+  String get rulesMaxLength;
+
+  /// No description provided for @rulesDeleteWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간을 줄이면 기준보다 오래된 기록이 다음 정리 때 바로 삭제돼요. 삭제한 기록은 되돌릴 수 없어요.'**
+  String get rulesDeleteWarning;
+
+  /// No description provided for @rulesNoshowWarning.
+  ///
+  /// In ko, this message translates to:
+  /// **'노쇼 판정 대기 시간을 바꾸면 노쇼로 판정되는 기준이 바뀌어요.'**
+  String get rulesNoshowWarning;
+
+  /// No description provided for @err_tighten_only.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본값을 넘는 값은 저장할 수 없어요. 기본값 쪽으로만 바꿀 수 있어요.'**
+  String get err_tighten_only;
+
+  /// No description provided for @err_threshold_order.
+  ///
+  /// In ko, this message translates to:
+  /// **'노란불 기준과 빨간불 기준의 순서가 맞지 않아요. 두 값을 다시 확인해 주세요.'**
+  String get err_threshold_order;
+
+  /// No description provided for @err_read_only_setting.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 값은 여기서 바꿀 수 없어요. 개발자에게 문의해 주세요.'**
+  String get err_read_only_setting;
 
   /// No description provided for @cSetup.
   ///
