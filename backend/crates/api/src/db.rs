@@ -24,14 +24,23 @@ pub struct DbSettings {
 
 impl Default for DbSettings {
     fn default() -> Self {
-        Self { max_connections: 20, statement_timeout_ms: 30_000, idle_tx_timeout_ms: 60_000, slow_query_ms: 500 }
+        Self {
+            max_connections: 20,
+            statement_timeout_ms: 30_000,
+            idle_tx_timeout_ms: 60_000,
+            slow_query_ms: 500,
+        }
     }
 }
 
 impl DbSettings {
     /// Same connection, no statement timeout, one connection: for running migrations.
     pub fn for_migrations(&self) -> Self {
-        Self { max_connections: 1, statement_timeout_ms: 0, ..self.clone() }
+        Self {
+            max_connections: 1,
+            statement_timeout_ms: 0,
+            ..self.clone()
+        }
     }
 }
 
@@ -64,14 +73,18 @@ mod tests {
     #[tokio::test]
     async fn pool_connections_carry_the_configured_timeouts() {
         let Ok(url) = std::env::var("DATABASE_URL") else { return };
-        let settings = DbSettings { max_connections: 2, statement_timeout_ms: 1234, idle_tx_timeout_ms: 5678, slow_query_ms: 1 };
+        let settings = DbSettings {
+            max_connections: 2,
+            statement_timeout_ms: 1234,
+            idle_tx_timeout_ms: 5678,
+            slow_query_ms: 1,
+        };
         let pool = connect(&url, &settings).await.expect("connect");
-        let (stmt, idle): (String, String) = sqlx::query_as(
-            "SELECT current_setting('statement_timeout'), current_setting('idle_in_transaction_session_timeout')",
-        )
-        .fetch_one(&pool)
-        .await
-        .expect("settings readable");
+        let (stmt, idle): (String, String) =
+            sqlx::query_as("SELECT current_setting('statement_timeout'), current_setting('idle_in_transaction_session_timeout')")
+                .fetch_one(&pool)
+                .await
+                .expect("settings readable");
         assert_eq!((stmt.as_str(), idle.as_str()), ("1234ms", "5678ms"));
     }
 }

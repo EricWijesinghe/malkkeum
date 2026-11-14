@@ -80,7 +80,13 @@ pub async fn search_at(http: &reqwest::Client, base: &str, key: &str, keyword: &
     let count = PAGE_SIZE.to_string();
     let resp = http
         .get(base)
-        .query(&[("confmKey", key), ("currentPage", page.as_str()), ("countPerPage", count.as_str()), ("keyword", keyword), ("resultType", "json")])
+        .query(&[
+            ("confmKey", key),
+            ("currentPage", page.as_str()),
+            ("countPerPage", count.as_str()),
+            ("keyword", keyword),
+            ("resultType", "json"),
+        ])
         .send()
         .await
         .map_err(|e| ProviderError::Upstream(e.to_string()))?;
@@ -126,7 +132,15 @@ mod tests {
             {"roadAddr": " 서울 강남구 테헤란로 1 ", "jibunAddr": "서울 강남구 역삼동 1", "zipNo": "06234", "bdNm": "빌딩"}
         ]}});
         let hits = parse(&ok).expect("hits");
-        assert_eq!(hits, vec![Hit { road_address: "서울 강남구 테헤란로 1".into(), jibun_address: "서울 강남구 역삼동 1".into(), zip_code: "06234".into(), building_name: "빌딩".into() }]);
+        assert_eq!(
+            hits,
+            vec![Hit {
+                road_address: "서울 강남구 테헤란로 1".into(),
+                jibun_address: "서울 강남구 역삼동 1".into(),
+                zip_code: "06234".into(),
+                building_name: "빌딩".into()
+            }]
+        );
         let none = json!({"results": {"common": {"errorCode": "0"}}});
         assert!(parse(&none).expect("empty").is_empty());
         let flat = json!({"common": {"errorCode": "0"}, "juso": [{"roadAddr": " flat ", "jibunAddr": "", "zipNo": "", "bdNm": ""}]});

@@ -1,10 +1,11 @@
 //! Console: bookings, status changes, quote desk, inboxes, dashboard.
 
 use super::{
-    audit, growth,
+    audit,
     bookings::{BOOKING_COLS, BookingRow, MAX_NOTE, apply_cancel, load_booking},
     catalog::load_formula,
     chat::{self, MessageRow, THREAD_COLS, ThreadRow},
+    growth,
 };
 use crate::{
     auth::{Role, Staff, live_staff_role},
@@ -103,7 +104,11 @@ struct BookingFilter {
 async fn list_bookings(State(s): State<AppState>, _st: Staff, Query(f): Query<BookingFilter>) -> ApiResult<Response> {
     let limit = page_limit(f.limit)?;
     let (date, hour, id) = match decode_cursor(f.cursor.as_deref(), 3)? {
-        Some(p) => (Some(cursor_part::<NaiveDate>(&p[0])?), Some(cursor_part::<i16>(&p[1])?), Some(cursor_part::<Uuid>(&p[2])?)),
+        Some(p) => (
+            Some(cursor_part::<NaiveDate>(&p[0])?),
+            Some(cursor_part::<i16>(&p[1])?),
+            Some(cursor_part::<Uuid>(&p[2])?),
+        ),
         None => (None, None, None),
     };
     let q = f.q.map(|q| format!("%{}%", q.replace(['%', '_'], "")));
@@ -126,7 +131,9 @@ async fn list_bookings(State(s): State<AppState>, _st: Staff, Query(f): Query<Bo
     .bind(id)
     .fetch_all(&s.db)
     .await?;
-    Ok(paged(rows, limit, |r| encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])))
+    Ok(paged(rows, limit, |r| {
+        encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])
+    }))
 }
 
 #[derive(Serialize)]
@@ -139,7 +146,15 @@ struct BookingDetail {
 
 async fn booking_detail(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid>) -> ApiResult<Json<BookingDetail>> {
     // PIPA 제29조 안전조치: every staff read of a customer's contact details leaves a record.
-    audit(&s.db, "staff", Some(st.id), "customer.pii_view", &id.to_string(), json!({ "fields": ["phone", "email"] })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "customer.pii_view",
+        &id.to_string(),
+        json!({ "fields": ["phone", "email"] }),
+    )
+    .await?;
     let booking = load_booking(&s.db, id).await?;
     let customer: Value = sqlx::query_scalar("SELECT jsonb_build_object('id', id, 'name', name, 'phone', phone, 'email', email) FROM users WHERE id = $1")
         .bind(booking.user_id)
