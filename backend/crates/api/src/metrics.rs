@@ -4,6 +4,7 @@
 //! bearer token, or a loopback peer when no token is set.
 
 use crate::{error::ApiError, state::AppState};
+use axum::extract::MatchedPath;
 use axum::{
     extract::{ConnectInfo, Request, State},
     http::{HeaderMap, Method, header},
@@ -17,7 +18,6 @@ use std::{
     sync::Mutex,
     time::{Instant, SystemTime, UNIX_EPOCH},
 };
-use axum::extract::MatchedPath;
 use subtle::ConstantTimeEq;
 
 /// Request latency buckets in seconds.
@@ -71,7 +71,10 @@ fn method_label(m: &Method) -> &'static str {
 /// Records every request by route template and status. Sits outside routing, so `MatchedPath` is read per route.
 pub async fn track(req: Request, next: Next) -> Response {
     let method = method_label(req.method());
-    let route = req.extensions().get::<MatchedPath>().map_or_else(|| UNMATCHED.to_string(), |m| m.as_str().to_string());
+    let route = req
+        .extensions()
+        .get::<MatchedPath>()
+        .map_or_else(|| UNMATCHED.to_string(), |m| m.as_str().to_string());
     let started = Instant::now();
     let resp = next.run(req).await;
     let elapsed = started.elapsed().as_secs_f64();
@@ -141,7 +144,10 @@ pub fn render(snap: &Snapshot) -> String {
         let _ = writeln!(out, "malkkeum_http_requests_total{{{labels}}} {}", s.count);
     }
 
-    let _ = writeln!(out, "# HELP malkkeum_http_request_duration_seconds Request latency by method, route template and status.");
+    let _ = writeln!(
+        out,
+        "# HELP malkkeum_http_request_duration_seconds Request latency by method, route template and status."
+    );
     let _ = writeln!(out, "# TYPE malkkeum_http_request_duration_seconds histogram");
     for ((method, route, status), s) in &http {
         let labels = format!("method=\"{method}\",route=\"{}\",status=\"{status}\"", escape(route));
@@ -170,7 +176,10 @@ pub fn render(snap: &Snapshot) -> String {
     let _ = writeln!(out, "# TYPE malkkeum_realtime_listening gauge");
     let _ = writeln!(out, "malkkeum_realtime_listening {}", u8::from(snap.realtime_listening));
 
-    let _ = writeln!(out, "# HELP malkkeum_job_last_run_timestamp_seconds Unix time of the last pass of a background job (0 = never).");
+    let _ = writeln!(
+        out,
+        "# HELP malkkeum_job_last_run_timestamp_seconds Unix time of the last pass of a background job (0 = never)."
+    );
     let _ = writeln!(out, "# TYPE malkkeum_job_last_run_timestamp_seconds gauge");
     for (job, j) in &jobs {
         let _ = writeln!(out, "malkkeum_job_last_run_timestamp_seconds{{job=\"{job}\"}} {}", j.last_run_unix);
@@ -233,7 +242,10 @@ mod tests {
         let local: IpAddr = "127.0.0.1".parse().expect("ip");
         assert!(allowed(None, Some(local), &h));
         assert!(!allowed(None, Some(lan), &h), "no token: remote peers refused");
-        assert!(!allowed(Some("s3cret-token-0123456789-0123456789"), Some(local), &h), "token wins over loopback");
+        assert!(
+            !allowed(Some("s3cret-token-0123456789-0123456789"), Some(local), &h),
+            "token wins over loopback"
+        );
         h.insert(header::AUTHORIZATION, "Bearer s3cret-token-0123456789-0123456789".parse().expect("hv"));
         assert!(allowed(Some("s3cret-token-0123456789-0123456789"), Some(lan), &h));
         h.insert(header::AUTHORIZATION, "Bearer wrong".parse().expect("hv"));
@@ -243,7 +255,14 @@ mod tests {
     #[test]
     fn histogram_is_cumulative_and_labels_are_escaped() {
         job_pass("unit_test_job", false);
-        let snap = Snapshot { pool_open: 2, pool_idle: 1, payouts_pending: Some(3), realtime_listening: true, version: "t", uptime_secs: 9 };
+        let snap = Snapshot {
+            pool_open: 2,
+            pool_idle: 1,
+            payouts_pending: Some(3),
+            realtime_listening: true,
+            version: "t",
+            uptime_secs: 9,
+        };
         let text = render(&snap);
         assert!(text.contains("malkkeum_payouts_pending 3"));
         assert!(text.contains("malkkeum_job_errors_total{job=\"unit_test_job\"} 1"));

@@ -1,10 +1,10 @@
-//! Maintenance mode: the owner can still sign in and switch it off; the public API is refused meanwhile.
+//! Maintenance mode: the owner can still sign in and switch it off; new bookings are refused meanwhile.
 
 mod common;
 
 use api::routes::setup::ensure_setup_code;
 use axum::http::StatusCode;
-use common::call;
+use common::{call, customer, seed_catalog};
 use serde_json::{Value, json};
 use sqlx::PgPool;
 
@@ -36,7 +36,14 @@ async fn owner_enrol(app: &axum::Router) -> (String, String) {
     let (st, e) = call(app, "POST", "/v1/auth/staff/mfa/enrol", None, Some(json!({ "mfa_token": mfa }))).await;
     assert_eq!(st, StatusCode::OK, "{e}");
     let secret = api::totp::decode_secret(e["secret"].as_str().expect("secret")).expect("base32 secret");
-    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/enrol/confirm", None, Some(json!({ "mfa_token": mfa, "code": code_now(&secret) }))).await;
+    let (st, c) = call(
+        app,
+        "POST",
+        "/v1/auth/staff/mfa/enrol/confirm",
+        None,
+        Some(json!({ "mfa_token": mfa, "code": code_now(&secret) })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{c}");
     let recovery = c["recovery_codes"][0].as_str().expect("recovery code").to_string();
     (c["access_token"].as_str().expect("token").to_string(), recovery)
@@ -47,14 +54,21 @@ async fn owner_verify(app: &axum::Router, recovery: &str) -> String {
     let (st, b) = owner_login(app).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let mfa = b["mfa_token"].as_str().expect("mfa_token");
-    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/verify", None, Some(json!({ "mfa_token": mfa, "recovery_code": recovery }))).await;
+    let (st, c) = call(
+        app,
+        "POST",
+        "/v1/auth/staff/mfa/verify",
+        None,
+        Some(json!({ "mfa_token": mfa, "recovery_code": recovery })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{c}");
     c["access_token"].as_str().expect("token").to_string()
 }
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
-    ensure_setup_code(&pool, Some(CODE)).await.expect("code");
+    ensure_setup_code(&pool, Some(CODE), None).await.expect("code");
     let app = common::app(pool.clone());
     let (st, b) = call(
         &app,
@@ -78,10 +92,17 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     .await;
     assert_eq!(st, StatusCode::OK);
 
-    // Public booking traffic is refused with the stable code, before any auth check.
-    let (st, b) = call(&app, "GET", "/v1/bookings", None, None).await;
+    // The switch lives in the settings registry, so the public document reports it at once.
+    let (st, b) = call(&app, "GET", "/v1/config", None, None).await;
+    assert_eq!(st, StatusCode::OK);
+    assert_eq!(b["maintenance"], json!({"on": true, "message": "점검"}));
+
+    // New bookings are refused with the stable code, before any auth check; reads stay open.
+    let (st, b) = call(&app, "POST", "/v1/bookings", None, None).await;
     assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE);
     assert_eq!(b["error"]["code"], "maintenance");
+    let (st, _) = call(&app, "GET", "/v1/bookings", None, None).await;
+    assert_ne!(st, StatusCode::SERVICE_UNAVAILABLE);
 
     // The owner can still sign in, refresh and reach the admin config during maintenance.
     let token = owner_verify(&app, &recovery).await;
@@ -92,8 +113,8 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     assert_eq!(st, StatusCode::OK, "{b}");
     assert_eq!(b["maintenance"]["on"], json!(false));
 
-    // Switched off: the public API answers again (here 401, since no token is sent).
-    let (st, _) = call(&app, "GET", "/v1/bookings", None, None).await;
+    // Switched off: new bookings pass the gate again (here 401, since no token is sent).
+    let (st, _) = call(&app, "POST", "/v1/bookings", None, None).await;
     assert_ne!(st, StatusCode::SERVICE_UNAVAILABLE);
 }
 
@@ -105,4 +126,60 @@ async fn config_endpoint_is_public_and_hides_business_fields(pool: PgPool) {
     assert_eq!(b["maintenance"]["on"], json!(false));
     assert_eq!(b["flags"]["booking"], json!(true));
     assert!(b.get("name").is_none());
+}
+
+/// Owner set up and signed in with a recovery-code login, for switching maintenance in a test.
+async fn owner_token(app: &axum::Router, pool: &PgPool) -> String {
+    ensure_setup_code(pool, Some(CODE), None).await.expect("code");
+    let (st, b) = call(
+        app,
+        "POST",
+        "/v1/setup/admin",
+        None,
+        Some(json!({"code": CODE, "email": "owner@test.local", "name": "사장님", "password": PASSWORD})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    owner_enrol(app).await.0
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn maintenance_refuses_booking_checkouts_confirmations_and_subscriptions(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-7300-0001").await;
+    let visit = api::util::today_kst() + chrono::Duration::days(12);
+    let checkout = json!({
+        "kind": "booking", "method": "card",
+        "booking": { "service_code": "studio", "address_id": c.address, "visit_date": visit, "start_hour": 9, "visit_notes": {} }
+    });
+    // A checkout made before maintenance: confirming it would still create the booking, so it is refused too.
+    let (st, intent) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(checkout.clone())).await;
+    assert_eq!(st, StatusCode::OK, "{intent}");
+    let ck = intent["id"].as_str().expect("checkout id");
+
+    let token = owner_token(&app, &pool).await;
+    let (st, b) = call(&app, "PUT", "/v1/admin/config", Some(&token), Some(json!({"maintenance": {"on": true}}))).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+
+    let (st, b) = call(&app, "POST", "/v1/checkouts", Some(c.token.as_str()), Some(checkout)).await;
+    assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE, "{b}");
+    assert_eq!(b["error"]["code"], "maintenance");
+    let (st, b) = call(
+        &app,
+        "POST",
+        &format!("/v1/checkouts/{ck}/confirm"),
+        Some(c.token.as_str()),
+        Some(json!({"payment_id": "p-1"})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE, "{b}");
+    assert_eq!(b["error"]["code"], "maintenance");
+    let subscription = json!({
+        "service_code": "studio", "address_id": c.address, "payment_method_id": c.card,
+        "cadence_weeks": 1, "weekday": 1, "start_hour": 9
+    });
+    let (st, b) = call(&app, "POST", "/v1/subscriptions", Some(c.token.as_str()), Some(subscription)).await;
+    assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE, "{b}");
+    assert_eq!(b["error"]["code"], "maintenance");
 }

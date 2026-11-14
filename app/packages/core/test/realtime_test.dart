@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -66,7 +67,8 @@ class _FakeChannel implements WebSocketChannel {
   Stream<dynamic> get stream => _in.stream;
 
   @override
-  Future<void> get ready => offline ? Future.error(const SocketExceptionStub()) : Future.value();
+  Future<void> get ready =>
+      offline ? Future.error(const SocketExceptionStub()) : Future.value();
 
   @override
   WebSocketSink get sink => _FakeSink(this);
@@ -93,22 +95,70 @@ class _FakeSink implements WebSocketSink {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Fake API: issues numbered tickets to a valid access token, refuses a stale one with 401,
+/// and rotates the session on /auth/refresh. Everything else answers an empty list.
+class _FakeApi {
+  int issued = 0;
+  int refreshes = 0;
+
+  /// Access tokens the server refuses on the ticket call.
+  Set<String> rejected = {};
+
+  Future<http.Response> handle(http.Request req) async {
+    if (req.url.path == '/v1/realtime/ticket') {
+      if (rejected.contains(
+        req.headers['Authorization']?.substring('Bearer '.length),
+      )) {
+        return http.Response('{"error":{"code":"unauthorized"}}', 401);
+      }
+      return http.Response(
+        jsonEncode({'ticket': 'tk-${++issued}', 'expires_in': 30}),
+        200,
+      );
+    }
+    if (req.url.path == '/v1/auth/refresh') {
+      refreshes++;
+      return http.Response(
+        jsonEncode({
+          'access_token': 'fresh',
+          'refresh_token': 'r2',
+          'role': 'customer',
+          'subject': 'u1',
+        }),
+        200,
+      );
+    }
+    return http.Response('[]', 200);
+  }
+}
+
+ApiClient _apiFor(Session session, _FakeApi fake) => ApiClient(
+  baseUrl: 'http://api.test',
+  session: session,
+  client: MockClient(fake.handle),
+);
+
 void main() {
   late Session session;
+  late _FakeApi fake;
   late List<_FakeChannel> opened;
   late Realtime rt;
   late List<String> events;
 
   setUp(() async {
     session = Session(namespace: 't', storage: _MemStorage());
-    final api = ApiClient(
-      baseUrl: 'http://api.test',
-      session: session,
-      client: MockClient((_) async => http.Response('[]', 200)),
-    );
-    await session.save({'access_token': 'a1', 'refresh_token': 'r1', 'role': 'customer', 'subject': 'u1'});
+    fake = _FakeApi();
+    await session.save({
+      'access_token': 'a1',
+      'refresh_token': 'r1',
+      'role': 'customer',
+      'subject': 'u1',
+    });
     opened = [];
-    rt = Realtime(api, connector: (uri) => (opened..add(_FakeChannel(uri))).last);
+    rt = Realtime(
+      _apiFor(session, fake),
+      connector: (uri) => (opened..add(_FakeChannel(uri))).last,
+    );
     events = [];
     rt.events.listen((e) => events.add(e['type'] as String));
   });
@@ -117,6 +167,7 @@ void main() {
 
   test('reconnect replaces the socket and asks screens to refetch', () async {
     rt.connect();
+    await pumpEventQueue();
     expect(opened, hasLength(1));
     rt.reconnect();
     await pumpEventQueue();
@@ -128,8 +179,10 @@ void main() {
 
   test('reconnect does nothing while signed out or never connected', () async {
     rt.reconnect();
+    await pumpEventQueue();
     expect(opened, isEmpty);
     rt.connect();
+    await pumpEventQueue();
     await session.clear();
     rt.reconnect();
     await pumpEventQueue();
@@ -140,37 +193,108 @@ void main() {
 
   test('a new sign-in after sign-out opens a socket for the new account when connected again', () async {
     rt.connect();
+    await pumpEventQueue();
     await session.clear();
-    await session.save({'access_token': 'b1', 'refresh_token': 'r2', 'role': 'customer', 'subject': 'u2'});
-    expect(opened, hasLength(1), reason: 'the app decides when the next account goes live');
-    rt.connect();
-    expect(opened, hasLength(2));
-    expect(opened.last.uri.queryParameters['token'], 'b1');
-  });
-
-  test('a socket that comes back after failed tries asks screens to refetch again', () async {
-    var offline = true;
-    final sockets = <_FakeChannel>[];
-    final types = <String>[];
-    final live = Realtime(
-      ApiClient(baseUrl: 'http://api.test', session: session, client: MockClient((_) async => http.Response('[]', 200))),
-      connector: (uri) => (sockets..add(_FakeChannel(uri, offline: offline))).last,
+    await session.save({
+      'access_token': 'b1',
+      'refresh_token': 'r2',
+      'role': 'customer',
+      'subject': 'u2',
+    });
+    expect(
+      opened,
+      hasLength(1),
+      reason: 'the app decides when the next account goes live',
     );
-    final sub = live.events.listen((e) => types.add(e['type'] as String));
-    live.connect();
+    rt.connect();
     await pumpEventQueue();
-    expect(types, ['resync'], reason: 'the drop asks for a refetch (it fails while offline)');
-
-    offline = false;
-    await Future<void>.delayed(const Duration(milliseconds: 2200)); // first backoff is 1-2 s
-    await pumpEventQueue();
-    expect(sockets, hasLength(2));
-    expect(types, ['resync', 'resync'], reason: 'connected again: refetch now that it can work');
-
-    live.reconnect();
-    await pumpEventQueue();
-    expect(types, ['resync', 'resync', 'resync'], reason: 'a resume asks once, not twice');
-    await sub.cancel();
-    live.dispose();
+    expect(opened, hasLength(2));
+    expect(
+      opened.last.uri.queryParameters['ticket'],
+      'tk-2',
+      reason: 'a fresh ticket for the new session',
+    );
   });
+
+  test('each connect spends a new ticket and the access token never reaches the URL', () async {
+    rt.connect();
+    await pumpEventQueue();
+    rt.reconnect();
+    await pumpEventQueue();
+    expect(opened.map((c) => c.uri.queryParameters['ticket']), [
+      'tk-1',
+      'tk-2',
+    ]);
+    for (final c in opened) {
+      expect(c.uri.queryParameters.containsKey('token'), isFalse);
+      expect(c.uri.path, '/v1/ws');
+      expect(c.uri.scheme, 'ws');
+    }
+  });
+
+  test('a 401 on the ticket refreshes the session once and then connects with the new session', () async {
+    fake.rejected = {'a1'};
+    rt.connect();
+    await pumpEventQueue();
+    expect(fake.refreshes, 1);
+    expect(session.accessToken, 'fresh');
+    expect(opened, hasLength(1));
+    expect(opened.single.uri.queryParameters['ticket'], 'tk-1');
+  });
+
+  test('a ticket that is still refused after the refresh leaves the socket closed and retries later', () async {
+    fake.rejected = {'a1', 'fresh'};
+    rt.connect();
+    await pumpEventQueue();
+    expect(
+      fake.refreshes,
+      1,
+      reason: 'one refresh, then the retry is refused as well',
+    );
+    expect(opened, isEmpty);
+    expect(events, [
+      'resync',
+    ], reason: 'the failed attempt asks screens to refetch');
+  });
+
+  test(
+    'a socket that comes back after failed tries asks screens to refetch again',
+    () async {
+      var offline = true;
+      final sockets = <_FakeChannel>[];
+      final types = <String>[];
+      final live = Realtime(
+        _apiFor(session, fake),
+        connector: (uri) =>
+            (sockets..add(_FakeChannel(uri, offline: offline))).last,
+      );
+      final sub = live.events.listen((e) => types.add(e['type'] as String));
+      live.connect();
+      await pumpEventQueue();
+      expect(types, [
+        'resync',
+      ], reason: 'the drop asks for a refetch (it fails while offline)');
+
+      offline = false;
+      await Future<void>.delayed(
+        const Duration(milliseconds: 2200),
+      ); // first backoff is 1-2 s
+      await pumpEventQueue();
+      expect(sockets, hasLength(2));
+      expect(types, [
+        'resync',
+        'resync',
+      ], reason: 'connected again: refetch now that it can work');
+
+      live.reconnect();
+      await pumpEventQueue();
+      expect(types, [
+        'resync',
+        'resync',
+        'resync',
+      ], reason: 'a resume asks once, not twice');
+      await sub.cancel();
+      live.dispose();
+    },
+  );
 }

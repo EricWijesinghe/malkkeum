@@ -56,7 +56,17 @@ pub fn decode_secret(encoded: &str) -> Option<Vec<u8>> {
 
 /// `otpauth://` URI for authenticator apps. Labels are percent-encoded by the caller.
 pub fn otpauth_uri(issuer: &str, account: &str, secret: &[u8]) -> String {
-    let enc = |s: &str| s.bytes().map(|b| if b.is_ascii_alphanumeric() || b"-._~".contains(&b) { (b as char).to_string() } else { format!("%{b:02X}") }).collect::<String>();
+    let enc = |s: &str| {
+        s.bytes()
+            .map(|b| {
+                if b.is_ascii_alphanumeric() || b"-._~".contains(&b) {
+                    (b as char).to_string()
+                } else {
+                    format!("%{b:02X}")
+                }
+            })
+            .collect::<String>()
+    };
     format!(
         "otpauth://totp/{}:{}?secret={}&issuer={}&algorithm=SHA1&digits={DIGITS}&period={STEP_SECS}",
         enc(issuer),

@@ -247,7 +247,7 @@ async fn two_no_show_scans_in_parallel_open_one_case_per_booking(pool: PgPool) {
     let s = state(&pool);
     let (a, b) = tokio::join!(noshow::scan(&s), noshow::scan(&s));
     assert_eq!(a.expect("scan") + b.expect("scan"), 2, "each case is opened by exactly one scan");
-    for id in late {
+    for id in &late {
         let cases: i64 = sqlx::query_scalar("SELECT count(*) FROM cases WHERE booking_id = $1 AND kind = 'no_show'")
             .bind(id)
             .fetch_one(&pool)
@@ -256,6 +256,16 @@ async fn two_no_show_scans_in_parallel_open_one_case_per_booking(pool: PgPool) {
         assert_eq!(cases, 1, "one case per booking");
     }
     assert_eq!(noshow::scan(&s).await.expect("scan"), 0, "nothing left to open");
+    let dup = sqlx::query(
+        "INSERT INTO cases (booking_id, kind, source, reporter_role, summary, sla_due_at) VALUES ($1, 'no_show', 'no_show', 'system', 'again', now())",
+    )
+    .bind(late[0])
+    .execute(&pool)
+    .await;
+    assert!(
+        dup.is_err_and(|e| e.as_database_error().and_then(|d| d.constraint().map(str::to_owned)).as_deref() == Some("cases_one_no_show_idx")),
+        "the database refuses a second no-show case"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]

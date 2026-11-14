@@ -5,6 +5,7 @@ export 'src/action_keys.dart';
 export 'src/address_search.dart';
 export 'src/analytics.dart';
 export 'src/api.dart';
+export 'src/brand.dart';
 export 'src/json_cache.dart';
 export 'src/billing.dart';
 export 'src/app_update.dart';
