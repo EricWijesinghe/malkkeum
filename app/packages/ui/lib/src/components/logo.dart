@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../brand_scope.dart';
 import '../theme.dart';
 import '../tokens.dart';
 import 'icon3d_registry.dart';
@@ -31,7 +32,7 @@ class DahaeLogo extends StatefulWidget {
     this.size = 48,
     this.color,
     this.wordmark = false,
-    this.brand = BrandConfig.placeholder,
+    this.brand,
     this.semanticLabel,
     this.onDark,
     this.tagline,
@@ -44,7 +45,9 @@ class DahaeLogo extends StatefulWidget {
   /// Mono colour (defaults to the theme ink). Ignored by flat and 3D.
   final Color? color;
   final bool wordmark;
-  final BrandConfig brand;
+
+  /// Null follows the [BrandScope] above (the built-in brand outside one).
+  final BrandConfig? brand;
 
   /// Defaults to the brand name; the mark is one image to screen readers.
   final String? semanticLabel;
@@ -106,6 +109,7 @@ class _DahaeLogoState extends State<DahaeLogo>
   @override
   Widget build(BuildContext context) {
     final w = widget;
+    final brand = w.brand ?? BrandScope.of(context);
     final size = w.size;
     final play = _play;
     final mark = SizedBox.square(
@@ -122,7 +126,7 @@ class _DahaeLogoState extends State<DahaeLogo>
     final onDark = w.onDark ?? context.colors.isDark;
     final tagline = w.tagline;
     final words = Text(
-      w.brand.name,
+      brand.name,
       style: TextStyle(
         fontFamily: 'Dahae Sans',
         package: 'ui',
@@ -134,7 +138,7 @@ class _DahaeLogoState extends State<DahaeLogo>
             ? (w.color ?? context.colors.ink)
             : onDark
             ? Colors.white
-            : w.brand.primary,
+            : brand.primary,
       ),
     );
     final body = w.wordmark
@@ -169,27 +173,41 @@ class _DahaeLogoState extends State<DahaeLogo>
           )
         : mark;
     return Semantics(
-      label: w.semanticLabel ?? w.brand.name,
+      label: w.semanticLabel ?? brand.name,
       image: true,
       excludeSemantics: true,
       child: body,
     );
   }
 
+  /// The business's uploaded logo when it loads; the built-in mark while missing or on any load error.
+  Widget _uploadedOr(BrandConfig brand, Widget mark) {
+    final url = brand.logoUrl;
+    if (url == null) return mark;
+    return Image.network(
+      url,
+      width: widget.size,
+      height: widget.size,
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      excludeFromSemantics: true,
+      errorBuilder: (_, _, _) => mark,
+    );
+  }
+
   /// The mark at play position [t] (1 = at rest).
   Widget _mark(BuildContext context, double t) {
     final w = widget;
+    final brand = w.brand ?? BrandScope.of(context);
     final checkT = Curves.easeOutCubic.transform(
       const Interval(0.35, 1).transform(t),
     );
-    final flat = CustomPaint(
-      painter: DahaeMarkPainter(w.brand, checkT: checkT),
-    );
+    final flat = CustomPaint(painter: DahaeMarkPainter(brand, checkT: checkT));
     return switch (w.variant) {
-      DahaeLogoVariant.flat => flat,
+      DahaeLogoVariant.flat => _uploadedOr(brand, flat),
       DahaeLogoVariant.mono => CustomPaint(
         painter: DahaeMarkPainter(
-          w.brand,
+          brand,
           mono: w.color ?? context.colors.ink,
           checkT: checkT,
         ),
