@@ -24,6 +24,7 @@ export 'src/realtime.dart';
 export 'src/case_report.dart';
 export 'src/receipt_options.dart';
 export 'src/review_report.dart';
+export 'src/service_groups.dart';
 export 'src/session.dart';
 export 'src/remote_config.dart';
 export 'src/store_review.dart';
