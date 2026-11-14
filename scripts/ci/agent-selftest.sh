@@ -14,7 +14,7 @@ eq() { [ "$1" = "$2" ] || { echo "   got [$1] want [$2]"; return 1; }; }
 # sandbox layout and a fake CLI that only records its arguments and DAHAE_YES
 export DAHAE_JOBS="$SB/jobs" DAHAE_HOST_DIR="$SB/host" DAHAE_LOCK="$SB/lock" DAHAE_DIR="$SB"
 export DAHAE_CLI="$SB/dahae"
-mkdir -p "$DAHAE_JOBS/inbox" "$DAHAE_JOBS/work/done" "$DAHAE_JOBS/status" "$DAHAE_JOBS/public" "$DAHAE_HOST_DIR"
+mkdir -p "$DAHAE_JOBS/inbox" "$DAHAE_JOBS/work/done" "$DAHAE_JOBS/status" "$DAHAE_JOBS/public" "$DAHAE_JOBS/out" "$DAHAE_HOST_DIR"
 # fake dahae: `update` exits 3 (rolled back) once after `touch $SB/rollback-next`, or 1 after `touch $SB/fail-next`
 cat > "$DAHAE_CLI" <<EOF
 #!/usr/bin/env bash
@@ -26,13 +26,27 @@ EOF
 printf 'DOMAIN=myshop.co.kr\nCHANNEL=stable\nVERSION=stable\n' > "$DAHAE_DIR/.env"
 chmod +x "$DAHAE_CLI"
 export DAHAE_JOB_UID="$(id -u)" DAHAE_OWNER_UID="$(id -u)"
-# fake docker: records the working folder and argv of every compose call
+# fake docker: records the working folder and argv of every compose call; `logs` prints the file $SB/logs.txt
 mkdir -p "$SB/bin"
 cat > "$SB/bin/docker" <<EOF
 #!/usr/bin/env bash
 printf '%s %s\n' "\$PWD" "\$*" >> "$SB/docker.log"
+case "\$*" in *" logs "*) cat "$SB/logs.txt" 2>/dev/null || true ;; esac
 EOF
 chmod +x "$SB/bin/docker"
+# fake public-IP lookup and DNS lookups: the server is 203.0.113.7, the domain has one A and one AAAA record
+cat > "$SB/bin/curl" <<'EOF'
+#!/usr/bin/env bash
+echo 203.0.113.7
+EOF
+cat > "$SB/bin/getent" <<'EOF'
+#!/usr/bin/env bash
+case "$1" in
+  ahostsv4) echo "203.0.113.7  STREAM myshop.co.kr" ;;
+  ahostsv6) echo "2001:db8::1  STREAM myshop.co.kr" ;;
+esac
+EOF
+chmod +x "$SB/bin/curl" "$SB/bin/getent"
 export PATH="$SB/bin:$PATH"
 
 # shellcheck source=deploy/agent.sh
@@ -217,6 +231,124 @@ t  "host.json next update set"    grep -q '"next_update":"20' "$DAHAE_HOST_DIR/h
 echo off > "$DAHAE_DIR/update-schedule"; host_refresh
 t  "host.json next update null when off" grep -q '"next_update":null' "$DAHAE_HOST_DIR/host.json"
 rm -f "$DAHAE_DIR/update-schedule"
+
+# ---- server approval (TOTP): update-tag and rollback wait in one slot; a code for that job runs it once ----
+SECRET=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ # the RFC 6238 test key ("12345678901234567890")
+TOK1=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa TOK2=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+TOK3=cccccccccccccccccccccccccccccccc TOK4=dddddddddddddddddddddddddddddddd
+TOK5=eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ap() { printf 'code=%s\n' "$2" > "$DAHAE_JOBS/inbox/$1.approve"; intake_all; } # ap 번호 코드 : 승인 파일을 넣고 실행기를 한 번 돌려요
+t  "totp RFC 6238 at T=59"          eq "$(totp_at "$SECRET" 59)" 287082
+t  "totp RFC 6238 at T=1111111109"  eq "$(totp_at "$SECRET" 1111111109)" 081804
+t  "totp RFC 6238 at T=1234567890"  eq "$(totp_at "$SECRET" 1234567890)" 005924
+printf 'DOMAIN=myshop.co.kr\nCHANNEL=stable\nVERSION=stable\n' > "$DAHAE_DIR/.env"
+id=$(uuid7); id=$(uuid7); t  "no approval key: update-tag refused" refuse "$id" "id=$id\nkind=update-tag\narg=v2.1.0\ntoken=$TOK1\n"
+printf '%s\n' "$SECRET" > "$DAHAE_HOST_DIR/approval.key"; chmod 600 "$DAHAE_HOST_DIR/approval.key"
+printf 'v2.0.0\n' > "$DAHAE_HOST_DIR/version-history"
+id=$(uuid7); t  "older version refused"                refuse "$id" "id=$id\nkind=update-tag\narg=v1.9.0\ntoken=$TOK1\n"
+id=$(uuid7); t  "same version refused"                 refuse "$id" "id=$id\nkind=update-tag\narg=v2.0.0\ntoken=$TOK1\n"
+id=$(uuid7); t  "beta suffix refused on stable"        refuse "$id" "id=$id\nkind=update-tag\narg=v2.1.0-beta.1\ntoken=$TOK1\n"
+id=$(uuid7); t  "update-tag without token refused"     refuse "$id" "id=$id\nkind=update-tag\narg=v2.1.0\n"
+id=$(uuid7); t  "rollback without token refused"       refuse "$id" "id=$id\nkind=rollback\n"
+printf 'DOMAIN=myshop.co.kr\nCHANNEL=beta\nVERSION=stable\n' > "$DAHAE_DIR/.env"
+t  "beta suffix accepted on beta"  tag_ok v2.1.0-beta.1
+printf 'DOMAIN=myshop.co.kr\nCHANNEL=stable\nVERSION=stable\n' > "$DAHAE_DIR/.env"
+
+# A: the job waits, a wrong code keeps it waiting, the right code runs it once
+id=$(uuid7); before=$(argv_lines)
+submit "$id" "id=$id\nkind=update-tag\narg=v2.1.0\ntoken=$TOK1\n"
+t  "update-tag waits for approval"        eq "$(state "$id")" awaiting_approval
+t  "approval slot holds the job"          grep -qxF "id=$id" "$HOST_DIR/awaiting.job"
+t  "summary is written for the console"   grep -q '"summary":"업데이트: v2.1.0' "$DAHAE_JOBS/public/$TOK1.json"
+t  "nothing ran while waiting"            eq "$(argv_lines)" "$before"
+id2=$(uuid7); submit "$id2" "id=$id2\nkind=rollback\ntoken=$TOK2\n"
+t  "second high-impact job refused while one waits" eq "$(state "$id2")" rejected
+ap "$id" 000000
+t  "wrong code keeps the slot"            test -e "$HOST_DIR/awaiting.job"
+t  "wrong code runs nothing"              eq "$(argv_lines)" "$before"
+good=$(totp_at "$SECRET" "$(date +%s)")
+ap "$(uuid7)" "$good"
+t  "code for a job not in the slot ignored" test -e "$HOST_DIR/awaiting.job"
+ap "$id" "$good"
+t  "right code runs update v2.1.0"        argv_has "update v2.1.0 YES=1"
+t  "approved job ends ok"                 eq "$(state "$id")" ok
+t  "slot is empty after approval"         test ! -e "$HOST_DIR/awaiting.job"
+t  "version history records v2.1.0"       grep -qx v2.1.0 "$HOST_DIR/version-history"
+nt "downgrade after approval refused"     tag_newer v2.0.0
+
+# B: the same code is never accepted twice; five wrong codes cancel the job
+id2=$(uuid7); submit "$id2" "id=$id2\nkind=rollback\ntoken=$TOK2\n"
+t  "rollback waits for approval"          eq "$(state "$id2")" awaiting_approval
+before=$(argv_lines)
+ap "$id2" "$good"
+t  "reused code refused"                  eq "$(argv_lines)" "$before"
+t  "reused code keeps the slot"           test -e "$HOST_DIR/awaiting.job"
+for w in 000001 000002 000003 000004; do ap "$id2" "$w"; done
+t  "five wrong codes cancel the job"      eq "$(state "$id2")" cancelled
+t  "cancel empties the slot"              test ! -e "$HOST_DIR/awaiting.job"
+
+# C: an unanswered job expires after its time is up
+id3=$(uuid7); submit "$id3" "id=$id3\nkind=rollback\ntoken=$TOK3\n"
+printf 'expires=1\ntries=0\n' > "$HOST_DIR/awaiting.meta"
+expire_slot
+t  "expired job is cancelled"             eq "$(state "$id3")" cancelled
+t  "expiry empties the slot"              test ! -e "$HOST_DIR/awaiting.job"
+
+# D: a fresh code runs rollback; the fixed argv is the only thing that runs
+printf '0\n' > "$HOST_DIR/approval.last-step"
+id4=$(uuid7); submit "$id4" "id=$id4\nkind=rollback\ntoken=$TOK4\n"
+good=$(totp_at "$SECRET" "$(date +%s)")
+ap "$id4" "$good"
+t  "approved rollback runs rollback"      argv_has "rollback YES=1"
+t  "approved rollback ends ok"            eq "$(state "$id4")" ok
+t  "rollback result shown publicly"      grep -q '"state":"ok"' "$DAHAE_JOBS/public/$TOK4.json"
+
+# ---- results written to out/<token>: logs are masked, read-only folders, 10 minutes ----
+cat > "$SB/logs.txt" <<'LOG'
+GET /admin Authorization: Bearer abc.def-ghi
+session eyJhbGciOi.eyJzdWIiOiIxIn0.sig1234
+DATA_KEY=supersecretvalue
+db postgres://app:hunter2@db:5432/cleaning
+{"token":"tokenvalue123","name":"kim"}
+setup code ABCD-EFGH-JKMN
+GET /health 200
+LOG
+id=$(uuid7); submit "$id" "id=$id\nkind=logs\narg=api:200\ntoken=$TOK5\n"
+t  "logs result written to out/"          test -f "$DAHAE_JOBS/out/$TOK5"
+t  "logs keep ordinary lines"             grep -q 'GET /health 200' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the bearer token"           grep -q 'abc.def-ghi' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the session token"          grep -q 'sig1234' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the key value"              grep -q 'supersecretvalue' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the database password"      grep -q 'hunter2' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the json token"             grep -q 'tokenvalue123' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the setup code"             grep -q 'ABCD-EFGH-JKMN' "$DAHAE_JOBS/out/$TOK5"
+t  "logs run compose logs for api"        grep -q ' compose --env-file .env logs --no-color --tail 200 api$' "$SB/docker.log"
+id=$(uuid7); submit "$id" "id=$id\nkind=logs\narg=api:10\ntoken=$TOK5\n"
+t  "logs line count under 50 refused"     eq "$(state "$id")" rejected
+touch -d '20 minutes ago' "$DAHAE_JOBS/out/$TOK5"; prune_old
+t  "result file gone after 10 minutes"    test ! -e "$DAHAE_JOBS/out/$TOK5"
+
+# domain-check: the server asks for its own IP; the answer is the A and AAAA records
+id=$(uuid7); submit "$id" "id=$id\nkind=domain-check\narg=myshop.co.kr\ntoken=$TOK5\n"
+t  "domain-check reports a match"         grep -q '"match":true' "$DAHAE_JOBS/out/$TOK5"
+t  "domain-check reports the server IP"   grep -q '"server_ip":"203.0.113.7"' "$DAHAE_JOBS/out/$TOK5"
+t  "domain-check lists the AAAA record"   grep -q '"aaaa":\["2001:db8::1"\]' "$DAHAE_JOBS/out/$TOK5"
+id=$(uuid7); t  "domain-check takes a domain only" refuse "$id" "id=$id\nkind=domain-check\narg=localhost\ntoken=$TOK5\n"
+
+# offsite-list, heartbeat
+id=$(uuid7); submit "$id" "id=$id\nkind=offsite-list\ntoken=$TOK5\n"
+t  "offsite-list runs restore-offsite"    argv_has "restore-offsite YES=1"
+id=$(uuid7); submit "$id" "id=$id\nkind=heartbeat\narg=https://hc-ping.com/abc-123\n"
+t  "heartbeat sets the ping address"      argv_has "heartbeat https://hc-ping.com/abc-123 YES=1"
+id=$(uuid7); submit "$id" "id=$id\nkind=heartbeat\narg=off\n"
+t  "heartbeat off"                        argv_has "heartbeat off YES=1"
+id=$(uuid7); t  "heartbeat http refused"  refuse "$id" "id=$id\nkind=heartbeat\narg=http://hc-ping.com/x\n"
+
+# out/ is a root folder: a group-writable one is refused
+chmod 777 "$DAHAE_JOBS/out"
+if [ "$(stat -c %a "$DAHAE_JOBS/out")" = 777 ]; then nt "writable out/ refused" dirs_ok; else echo "skip: mode bits cannot be set here"; fi
+chmod 755 "$DAHAE_JOBS/out"
+expire_slot; clear_slot
 
 # ---- shared fixtures (deploy/testdata/jobs/cases.txt): the same files the installer and the Rust tests read ----
 FIX="$ROOT/deploy/testdata/jobs"
