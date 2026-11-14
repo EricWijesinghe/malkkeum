@@ -12,6 +12,10 @@ class _MemStorage extends FlutterSecureStorage {
       data[key];
 
   @override
+  Future<void> delete({required String key, AppleOptions? iOptions, AndroidOptions? aOptions, LinuxOptions? lOptions, WebOptions? webOptions, AppleOptions? mOptions, WindowsOptions? wOptions}) async =>
+      data.remove(key);
+
+  @override
   Future<void> write({required String key, required String? value, AppleOptions? iOptions, AndroidOptions? aOptions, LinuxOptions? lOptions, WebOptions? webOptions, AppleOptions? mOptions, WindowsOptions? wOptions}) async {
     if (value == null) {
       data.remove(key);
@@ -44,5 +48,13 @@ void main() {
 
   test('a missing key reads as null', () async {
     expect(await JsonCache(storage: _MemStorage()).read('feed.me'), isNull);
+  });
+
+  test('clear removes only the named snapshot', () async {
+    final storage = _MemStorage({'cache.feed.me': '[]', 'cache.services': '[]'});
+
+    await JsonCache(storage: storage).clear('feed.me');
+
+    expect(storage.data.keys, ['cache.services']);
   });
 }

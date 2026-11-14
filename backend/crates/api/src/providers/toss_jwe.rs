@@ -30,10 +30,21 @@ pub fn seal_with(key: &[u8; 32], plaintext: &[u8], iat: &str, nonce: &str) -> St
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
     // aes-gcm appends the 16-byte tag to the ciphertext; the protected header is the AAD.
     let sealed = cipher
-        .encrypt(Nonce::from_slice(&iv), Payload { msg: plaintext, aad: protected.as_bytes() })
+        .encrypt(
+            Nonce::from_slice(&iv),
+            Payload {
+                msg: plaintext,
+                aad: protected.as_bytes(),
+            },
+        )
         .expect("AES-GCM encryption cannot fail for a 32-byte key");
     let (ct, tag) = sealed.split_at(sealed.len() - TAG_LEN);
-    format!("{protected}..{}.{}.{}", URL_SAFE_NO_PAD.encode(iv), URL_SAFE_NO_PAD.encode(ct), URL_SAFE_NO_PAD.encode(tag))
+    format!(
+        "{protected}..{}.{}.{}",
+        URL_SAFE_NO_PAD.encode(iv),
+        URL_SAFE_NO_PAD.encode(ct),
+        URL_SAFE_NO_PAD.encode(tag)
+    )
 }
 
 /// Encrypts a JSON body with the current time and a random nonce.
@@ -48,7 +59,9 @@ pub fn seal(key: &[u8; 32], body: &Value) -> String {
 /// Decrypts a compact JWE from Toss. Rejects any header that is not `dir` + `A256GCM`, and any tampering.
 pub fn open(key: &[u8; 32], compact: &str) -> Result<Value, &'static str> {
     let parts: Vec<&str> = compact.trim().split('.').collect();
-    let &[protected, cek, iv, ct, tag] = parts.as_slice() else { return Err("jwe_format") };
+    let &[protected, cek, iv, ct, tag] = parts.as_slice() else {
+        return Err("jwe_format");
+    };
     if !cek.is_empty() {
         return Err("jwe_format");
     }
@@ -65,7 +78,13 @@ pub fn open(key: &[u8; 32], compact: &str) -> Result<Value, &'static str> {
     sealed.extend_from_slice(&tag);
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
     let plain = cipher
-        .decrypt(Nonce::from_slice(&iv), Payload { msg: &sealed, aad: protected.as_bytes() })
+        .decrypt(
+            Nonce::from_slice(&iv),
+            Payload {
+                msg: &sealed,
+                aad: protected.as_bytes(),
+            },
+        )
         .map_err(|_| "jwe_auth")?;
     serde_json::from_slice(&plain).map_err(|_| "jwe_payload")
 }
@@ -94,7 +113,10 @@ mod tests {
         assert_eq!(parts.len(), 5);
         assert_eq!(parts[1], "", "dir mode carries no encrypted key");
         let header: Value = serde_json::from_slice(&URL_SAFE_NO_PAD.decode(parts[0]).unwrap()).unwrap();
-        assert_eq!(header, json!({"alg": "dir", "enc": "A256GCM", "iat": "2026-11-11T10:00:00+09:00", "nonce": "n-1"}));
+        assert_eq!(
+            header,
+            json!({"alg": "dir", "enc": "A256GCM", "iat": "2026-11-11T10:00:00+09:00", "nonce": "n-1"})
+        );
         assert_eq!(URL_SAFE_NO_PAD.decode(parts[2]).unwrap().len(), IV_LEN);
         assert_eq!(URL_SAFE_NO_PAD.decode(parts[4]).unwrap().len(), TAG_LEN);
     }

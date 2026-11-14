@@ -40,6 +40,14 @@ requests that touch the installer or the server build; `ci.yml` runs on every pu
    Images contain compiled binaries and minified web assets only.
 6. Check from a logged-out machine (`docker logout ghcr.io` first):
    `docker pull ghcr.io/<owner>/malkkeum-api:stable` and `…/malkkeum-web:stable`.
+7. **Release environments (private repo, before the first tag; GitHub makes a missing environment with no
+   rules, so a release would run unprotected).** Settings → Environments, create each one with
+   *Required reviewers* (the owner) and *Deployment branches and tags* → *Selected* → tag `v*`:
+   - `release-cosign`: the image push and signing job. No secrets.
+   - `release-delivery`: the publish job. Move `DIST_DEPLOY_KEY` and `DAHAE_MANIFEST_KEY` here (remove the
+     repo-level copies). Keep `DIST_REPO` as a repository variable.
+   Check: a `v*` tag run waits at both jobs for approval. The Android store build has no such environment yet
+   (`scripts/release/build-all.ps1`, deferred).
 
 Send the client the delivery repo link. Guides 00 (one page) and 01 contain the exact install line
 (`https://raw.githubusercontent.com/<owner>/malkkeum-install/main/install.sh`, the stable channel's
@@ -119,8 +127,11 @@ process holds port 80 or 443.
   must not drop, rename or tighten anything the previous release still reads or writes. Remove the
   old shape one release later, once no rollback target uses it.
 - **Backups, RPO and RTO.** Every server takes a `pg_dump` daily at 03:30 KST and before every
-  update, kept 14 days on the server's own disk; the optional offsite copy (setup wizard, S3-compatible)
-  is AES-256-GCM encrypted. There is no WAL archiving, so the recovery point objective is **24 hours**
+  update, kept 14 days on the server's own disk. The disk copy is sealed in the same AES-256-GCM format
+  as the offsite copy (`*.sql.gz.enc`, opened again by `dahae restore`), so no plaintext dump stays on
+  the server. Plaintext dumps left by older installs are sealed on the next backup. The one exception:
+  if sealing fails, the plaintext copy is kept (never deleted before its `.enc` exists), `dahae backup`
+  exits with an error, and update, rollback and restore refuse to run until a backup completes. The optional offsite copy (setup wizard, S3-compatible) is sealed the same way. There is no WAL archiving, so the recovery point objective is **24 hours**
   (up to one day of bookings can be lost). Recovery time on a fresh VPS is about **1 hour**: run the
   installer, put the old `.env` back, `sudo dahae restore-offsite <name>`. Without offsite backups a
   lost disk is a total loss: configure them before launch.
@@ -128,7 +139,8 @@ process holds port 80 or 443.
   integration keys, payout accounts and the offsite backups), `JWT_SECRET` and the database passwords.
   Offsite backups cannot be decrypted without the same `DATA_KEY`. Right after install, copy `.env` to
   a password manager or an encrypted USB stick kept away from the server, and copy it again after any
-  key rotation. Rotating `DATA_KEY` makes older offsite backups unreadable with the new key, so keep the
+  key rotation. `sudo dahae keys-backup` makes a passphrase-locked copy and asks the owner to confirm it
+  is stored off the server; `dahae status` warns until that confirmation is recorded. Rotating `DATA_KEY` makes older offsite backups unreadable with the new key, so keep the
   old value until those backups expire.
 - Re-running the installer on an installed server is the same safe update (backup → new images →
   health check → rollback on failure); settings and data are kept.
@@ -182,6 +194,9 @@ against `/.well-known/apple-app-site-association` (both sections are served). iO
    The fingerprint list is Play Console → Release → App integrity → *App signing key certificate* SHA-256,
    plus the upload key if you sideload. The command validates both values, stores them and restarts
    the API; either flag can be given alone. Send the owner this exact line; no file is edited.
+   The owner can also save these values in the console under 설정 > 앱 링크 (check, then save). Saved values
+   win over the server settings as a set, so after a console save a later `dahae applinks` changes nothing
+   until the console values are cleared. The card says which source is in use.
 2. Naver Developers app: add the callback URL `https://<APP_LINK_DOMAIN>/auth/naver/callback`.
 3. Apple Developer portal: enable **Associated Domains** on both bundle ids (`com.malkkeum.customer`,
    `com.malkkeum.partner`) so the entitlement can be signed. Codemagic signing fails without it.
@@ -305,7 +320,7 @@ The server cannot report its own outage, so watch it from outside.
   - `malkkeum_realtime_listening`: 0 means this replica is not receiving events from the others.
   - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
 - **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).
-- **Several API replicas.** Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
+- **Several API replicas.** The general rate-limit bucket is per process, so run one API replica unless you accept that its limit multiplies by the replica count (auth and upload limits are shared through Postgres). Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
 
 ## 10. Uninstall
 

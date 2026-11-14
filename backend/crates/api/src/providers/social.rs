@@ -126,7 +126,13 @@ async fn naver(p: &Providers, token: &str) -> ApiResult<SocialUser> {
     };
     // Form POST keeps client_secret out of the URL (proxy and access logs). Naver's guide lists GET and POST;
     // POST is the form used by working examples. Residual: confirm in a real login (see DEPLOY.md).
-    let form = form_body(&[("grant_type", "authorization_code"), ("client_id", client_id), ("client_secret", secret), ("code", code), ("state", state)]);
+    let form = form_body(&[
+        ("grant_type", "authorization_code"),
+        ("client_id", client_id),
+        ("client_secret", secret),
+        ("code", code),
+        ("state", state),
+    ]);
     let resp = p
         .http()
         .post(NAVER_TOKEN_URL)
@@ -240,7 +246,12 @@ pub fn may_refetch(last_attempt_age: Option<Duration>) -> bool {
 
 impl KeyCache {
     const fn new(url: &'static str) -> Self {
-        Self { url, slot: Mutex::new(None), attempt: Mutex::new(None), fetching: tokio::sync::Mutex::const_new(()) }
+        Self {
+            url,
+            slot: Mutex::new(None),
+            attempt: Mutex::new(None),
+            fetching: tokio::sync::Mutex::const_new(()),
+        }
     }
 
     fn stored(&self) -> Option<(Instant, Vec<Jwk>)> {
@@ -258,7 +269,15 @@ impl KeyCache {
         if let Ok(mut a) = self.attempt.lock() {
             *a = Some(Instant::now());
         }
-        let jwks: Jwks = p.http().get(self.url).send().await.map_err(unreachable_provider)?.json().await.map_err(unreachable_provider)?;
+        let jwks: Jwks = p
+            .http()
+            .get(self.url)
+            .send()
+            .await
+            .map_err(unreachable_provider)?
+            .json()
+            .await
+            .map_err(unreachable_provider)?;
         if let Ok(mut guard) = self.slot.lock() {
             *guard = Some((Instant::now(), jwks.keys.clone()));
         }
@@ -332,7 +351,11 @@ pub type UnlinkResult = Result<(), &'static str>;
 
 /// Form POST to a provider; the JSON reply on 2xx (Null when the body is not JSON).
 async fn post_form(p: &Providers, url: &str, auth: Option<String>, form: String) -> Result<Value, &'static str> {
-    let mut req = p.http().post(url).header(reqwest::header::CONTENT_TYPE, "application/x-www-form-urlencoded").body(form);
+    let mut req = p
+        .http()
+        .post(url)
+        .header(reqwest::header::CONTENT_TYPE, "application/x-www-form-urlencoded")
+        .body(form);
     if let Some(a) = auth {
         req = req.header(reqwest::header::AUTHORIZATION, a);
     }
@@ -357,9 +380,20 @@ async fn naver_delete(p: &Providers, refresh: Option<&str>) -> UnlinkResult {
     let (Some(id), Some(secret)) = (integ.naver_client_id.as_deref(), integ.naver_client_secret.as_deref()) else {
         return Err("not_configured");
     };
-    let form = form_body(&[("grant_type", "refresh_token"), ("client_id", id), ("client_secret", secret), ("refresh_token", refresh)]);
+    let form = form_body(&[
+        ("grant_type", "refresh_token"),
+        ("client_id", id),
+        ("client_secret", secret),
+        ("refresh_token", refresh),
+    ]);
     let access = naver_access_token(&post_form(p, NAVER_TOKEN_URL, None, form).await?).map_err(|_| "token_expired")?;
-    let form = form_body(&[("grant_type", "delete"), ("client_id", id), ("client_secret", secret), ("access_token", &access), ("service_provider", "NAVER")]);
+    let form = form_body(&[
+        ("grant_type", "delete"),
+        ("client_id", id),
+        ("client_secret", secret),
+        ("access_token", &access),
+        ("service_provider", "NAVER"),
+    ]);
     let reply = post_form(p, NAVER_TOKEN_URL, None, form).await?;
     if reply["result"] == "success" { Ok(()) } else { Err("provider_error") }
 }
@@ -385,7 +419,12 @@ pub async fn links(conn: &mut sqlx::PgConnection, data_key: &[u8; 32], role: &st
     .await?;
     Ok(rows
         .into_iter()
-        .map(|(provider, user_id, client_id, enc)| Link { provider, user_id, client_id, token: enc.and_then(|e| crypto::decrypt(data_key, &e)) })
+        .map(|(provider, user_id, client_id, enc)| Link {
+            provider,
+            user_id,
+            client_id,
+            token: enc.and_then(|e| crypto::decrypt(data_key, crypto::aad::SOCIAL_TOKEN, &e)),
+        })
         .collect())
 }
 
