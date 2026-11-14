@@ -29,6 +29,7 @@ pub(crate) mod payments;
 pub(crate) mod payouts;
 mod privacy_requests;
 mod renewals;
+mod service_groups;
 pub(crate) mod seller;
 mod settings;
 pub mod setup;
@@ -82,6 +83,7 @@ pub fn router(state: AppState) -> Router {
         .merge(staff_sms::public_routes())
         .merge(me::routes())
         .merge(catalog::routes())
+        .merge(service_groups::public_routes())
         .merge(feed::routes())
         .merge(bookings::routes())
         .merge(cases::customer_routes())
@@ -111,6 +113,7 @@ pub fn router(state: AppState) -> Router {
             admin::routes()
                 .merge(staff_sms::admin_routes())
                 .merge(admin_content::routes())
+                .merge(service_groups::admin_routes())
                 .merge(notify_templates::routes())
                 .merge(growth::admin_routes())
                 .merge(crate::points::admin_routes())

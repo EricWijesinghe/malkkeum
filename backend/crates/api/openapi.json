@@ -175,6 +175,18 @@
         }
       }
     },
+    "/v1/service-groups": {
+      "get": {
+        "operationId": "listServiceGroups",
+        "tags": ["public"],
+        "summary": "Home service groups (tiles) with live member services",
+        "security": [],
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/slots": {
       "get": {
         "operationId": "listSlots",
@@ -2501,6 +2513,30 @@
           "default": {
             "$ref": "#/components/responses/Error"
           }
+        }
+      }
+    },
+    "/v1/admin/service-groups": {
+      "get": {
+        "operationId": "adminListServiceGroups",
+        "tags": ["admin"],
+        "summary": "All service groups with every configured member",
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/admin/service-groups/{code}": {
+      "put": {
+        "operationId": "adminUpdateServiceGroup",
+        "tags": ["admin"],
+        "summary": "Update a group's titles, order, icon, members and chooser config",
+        "parameters": [{ "$ref": "#/components/parameters/Code" }],
+        "requestBody": { "$ref": "#/components/requestBodies/Object" },
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
         }
       }
     },
