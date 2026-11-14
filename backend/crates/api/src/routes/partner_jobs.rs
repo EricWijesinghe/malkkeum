@@ -394,7 +394,10 @@ async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Js
     )
     .await;
     let locale = crate::i18n::locale_of(&s.db, Recipient::Member(x.member_id)).await;
-    let _ = s.providers.send_sms(&phone, &crate::i18n::tr(&locale, "새 작업이 배정됐어요")).await;
+    let text = crate::i18n::tr(&locale, "새 작업이 배정됐어요");
+    if let Err(e) = crate::sms_outbox::send(&s, None, &phone, "job.assigned", crate::sms_outbox::Message::Sms(&text)).await {
+        tracing::warn!(error = %e, "assignment text not queued");
+    }
     Ok(Json(json!({ "ok": true })))
 }
 
