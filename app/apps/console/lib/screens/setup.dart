@@ -8,6 +8,7 @@ import '../state.dart';
 import 'setup_app_links.dart';
 import 'setup_business.dart';
 import 'setup_guides.dart';
+import 'setup_owner_code.dart';
 import 'setup_pay_methods.dart';
 import 'setup_review.dart';
 
@@ -177,6 +178,8 @@ class IntegrationCard extends StatefulWidget {
 class _IntegrationCardState extends State<IntegrationCard> {
   final _text = <String, TextEditingController>{};
   final _map = <String, Map<String, TextEditingController>>{};
+  // Null until the owner touches a switch or it is saved; an untouched switch is not sent (env default stays).
+  final _toggles = <String, bool?>{};
   bool _busy = false;
   Json? _result;
 
@@ -204,6 +207,8 @@ class _IntegrationCardState extends State<IntegrationCard> {
           for (final k in keys)
             k: TextEditingController(text: saved[k] as String? ?? ''),
         };
+      } else if (kind == 'toggle') {
+        _toggles[name] = f['set'] == true ? preview == true : null;
       } else {
         final show = kind == 'text' || kind == 'list';
         final text = preview is List
@@ -230,6 +235,8 @@ class _IntegrationCardState extends State<IntegrationCard> {
   Json _body() => {
     for (final e in _text.entries)
       if (e.value.text.trim().isNotEmpty) e.key: e.value.text.trim(),
+    for (final e in _toggles.entries)
+      if (e.value != null) e.key: e.value,
     for (final e in _map.entries)
       e.key: {
         for (final m in e.value.entries)
@@ -242,17 +249,41 @@ class _IntegrationCardState extends State<IntegrationCard> {
     try {
       await action();
     } catch (e) {
-      if (mounted) {
-        showToast(
-          context,
-          e is ApiException && e.status == 400
-              ? setupMessage(context.t, e.code)
-              : context.t.error(e),
-        );
-      }
+      if (mounted) showToast(context, _errorText(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// 400 is a bad value; 401 and 429 on the payout card are owner-code problems.
+  String _errorText(Object e) {
+    final t = context.t;
+    if (e is! ApiException) return t.error(e);
+    return switch (e.status) {
+      400 => setupMessage(t, e.code),
+      401 when _code == 'payout' => t.cOwnerCodeWrong,
+      429 when _code == 'payout' => t.cOwnerCodeLocked,
+      _ => t.error(e),
+    };
+  }
+
+  String? get _savedMode {
+    if (widget.card['source'] != 'console') return null;
+    for (final f in _fields) {
+      if (f['name'] == 'mode') return f['preview'] as String?;
+    }
+    return null;
+  }
+
+  /// Toss payouts move money: the server refuses a change without the owner's code. Saving also counts a
+  /// typed-in toss mode; clearing counts only the saved one. Null means the owner cancelled the prompt.
+  Future<Map<String, String>?> _ownerHeaders({required bool clearing}) async {
+    final typedToss = !clearing && _text['mode']?.text.trim() == 'toss';
+    if (_code != 'payout' || !(typedToss || _savedMode == 'toss')) {
+      return const {};
+    }
+    final code = await askOwnerCode(context);
+    return code == null ? null : {ownerTotpHeader: code};
   }
 
   Future<void> _test() async {
@@ -261,7 +292,9 @@ class _IntegrationCardState extends State<IntegrationCard> {
   }
 
   Future<void> _save() => _run(() async {
-    await context.api.put('/admin/setup/$_code', _body());
+    final headers = await _ownerHeaders(clearing: false);
+    if (headers == null || !mounted) return;
+    await context.api.put('/admin/setup/$_code', _body(), headers);
     if (!mounted) return;
     showToast(context, context.t.cSetupSaved);
     await _test();
@@ -269,7 +302,9 @@ class _IntegrationCardState extends State<IntegrationCard> {
   });
 
   Future<void> _clear() => _run(() async {
-    await context.api.delete('/admin/setup/$_code');
+    final headers = await _ownerHeaders(clearing: true);
+    if (headers == null || !mounted) return;
+    await context.api.delete('/admin/setup/$_code', null, headers);
     widget.onChanged();
   });
 
@@ -387,8 +422,16 @@ class _IntegrationCardState extends State<IntegrationCard> {
         ),
       );
     }
-    final hidden = kind == 'secret' || kind == 'file';
     final preview = f['preview'];
+    if (kind == 'toggle') {
+      return SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label),
+        value: _toggles[name] ?? preview == true,
+        onChanged: (on) => setState(() => _toggles[name] = on),
+      );
+    }
+    final hidden = kind == 'secret' || kind == 'file';
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.sm),
       child: TextField(
@@ -435,6 +478,16 @@ class _Steps extends StatelessWidget {
             ),
           ],
         ),
+        if (guide.devHelp)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Space.xs),
+            child: Chip(
+              avatar: const Icon(Icons.engineering_rounded, size: 18),
+              label: Text(
+                const Tr('개발자 첫 도움 필요', 'Needs a developer the first time').of(context.lang),
+              ),
+            ),
+          ),
         for (final (i, step) in guide.steps.indexed)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.xs),
@@ -454,6 +507,17 @@ class _Steps extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        for (final shot in guide.screenshots)
+          Container(
+            height: 120,
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(bottom: Space.sm),
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).dividerColor),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(shot.of(context.lang), style: context.text.bodySmall),
           ),
       ],
     );

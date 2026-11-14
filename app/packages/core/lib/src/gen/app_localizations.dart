@@ -9390,6 +9390,42 @@ abstract class T {
   /// **'선택'**
   String get cSetupOptional;
 
+  /// No description provided for @cOwnerCodeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사장님 인증 코드'**
+  String get cOwnerCodeTitle;
+
+  /// No description provided for @cOwnerCodeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'토스 지급 설정을 바꾸려면 인증 앱에 나온 6자리 코드를 입력하세요.'**
+  String get cOwnerCodeBody;
+
+  /// No description provided for @cOwnerCodeField.
+  ///
+  /// In ko, this message translates to:
+  /// **'6자리 인증 코드'**
+  String get cOwnerCodeField;
+
+  /// No description provided for @cOwnerCodeConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get cOwnerCodeConfirm;
+
+  /// No description provided for @cOwnerCodeWrong.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증 코드가 맞지 않아요. 앱에 지금 나온 코드를 입력해 주세요'**
+  String get cOwnerCodeWrong;
+
+  /// No description provided for @cOwnerCodeLocked.
+  ///
+  /// In ko, this message translates to:
+  /// **'잘못된 코드가 여러 번 입력됐어요. 잠시 후 다시 시도해 주세요'**
+  String get cOwnerCodeLocked;
+
   /// No description provided for @cIntPortone.
   ///
   /// In ko, this message translates to:

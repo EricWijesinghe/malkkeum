@@ -102,12 +102,19 @@ class ApiClient {
     ).join();
   }
 
-  Future<dynamic> put(String path, [Object? body]) =>
-      _send('PUT', path, body: body);
+  /// [headers]: extra request headers, e.g. the owner's authenticator code on a guarded change.
+  Future<dynamic> put(
+    String path, [
+    Object? body,
+    Map<String, String>? headers,
+  ]) => _send('PUT', path, body: body, headers: headers);
   Future<dynamic> patch(String path, [Object? body]) =>
       _send('PATCH', path, body: body);
-  Future<dynamic> delete(String path, [Object? body]) =>
-      _send('DELETE', path, body: body);
+  Future<dynamic> delete(
+    String path, [
+    Object? body,
+    Map<String, String>? headers,
+  ]) => _send('DELETE', path, body: body, headers: headers);
 
   /// Raw response bytes (CSV exports). The bearer token stays in the header, never in the URL.
   Future<List<int>> getBytes(String path, {Map<String, String?>? query}) async {
@@ -125,9 +132,11 @@ class ApiClient {
     Object? body,
     Map<String, String?>? query,
     String? idempotencyKey,
+    Map<String, String>? headers,
   }) => _exec(path, () {
     final req = http.Request(method, _uri(path, query))
       ..headers['Content-Type'] = 'application/json';
+    if (headers != null) req.headers.addAll(headers);
     if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
     if (body != null) req.body = jsonEncode(body);
     return req;

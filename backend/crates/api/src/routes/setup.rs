@@ -14,7 +14,8 @@ use crate::{
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{ConnectInfo, Path, State},
+    http::HeaderMap,
     routing::{get, post, put},
 };
 use chrono::Utc;
@@ -23,6 +24,7 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::{Map, Value, json};
 use sqlx::PgPool;
+use std::net::SocketAddr;
 use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
@@ -484,26 +486,34 @@ fn kind_name(k: Kind) -> &'static str {
         Kind::List => "list",
         Kind::Map => "map",
         Kind::File => "file",
+        Kind::Toggle => "toggle",
     }
 }
 
 async fn card(s: &AppState, sec: Section, last_test: Option<Value>) -> ApiResult<Value> {
     let saved = integrations::load_section(&s.db, &s.config.data_key, sec).await?;
+    let base = integrations::Integrations::from_config(&s.config);
     let fields: Vec<Value> = sec
         .fields()
         .iter()
         .map(|f| {
             let v = saved.get(f.name);
+            let preview = match (f.kind, v) {
+                // An unsaved switch shows what it does today (the env default), not "off".
+                (Kind::Toggle, _) => json!(v.and_then(Value::as_bool).unwrap_or_else(|| integrations::toggle_default(&base, sec, f.name))),
+                (kind, Some(v)) => integrations::preview(kind, v),
+                (_, None) => Value::Null,
+            };
             json!({
                 "name": f.name,
                 "kind": kind_name(f.kind),
                 "required": f.required,
                 "set": v.is_some(),
-                "preview": v.map(|v| integrations::preview(f.kind, v)),
+                "preview": preview,
             })
         })
         .collect();
-    let env = integrations::Integrations::from_config(&s.config).has(sec);
+    let env = base.has(sec);
     let source = if !saved.is_empty() {
         "console"
     } else if env {
@@ -555,11 +565,26 @@ pub async fn reload(s: &AppState) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-async fn put_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>, Json(input): Json<Value>) -> ApiResult<Json<Value>> {
+fn is_toss(values: &Map<String, Value>) -> bool {
+    values.get("mode").and_then(Value::as_str) == Some("toss")
+}
+
+async fn put_section(
+    State(s): State<AppState>,
+    Admin(a): Admin,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Path(code): Path<String>,
+    Json(input): Json<Value>,
+) -> ApiResult<Json<Value>> {
     let sec = section(&code)?;
     let incoming = input.as_object().ok_or(ApiError::BadRequest("invalid_input"))?;
     let current = integrations::load_section(&s.db, &s.config.data_key, sec).await?;
     let merged = integrations::merge(sec, &current, incoming);
+    // Turning Toss payouts on, off or editing a live Toss setup moves real money: the owner's code is needed.
+    if sec == Section::Payout && (is_toss(&current) || is_toss(&merged)) {
+        super::keys::owner_gate(&s, peer, &headers, a.id).await?;
+    }
     // Validate against env-only keys so this section stands on its own.
     let mut base = integrations::Integrations::from_config(&s.config);
     if sec == Section::Payout {
@@ -580,8 +605,18 @@ async fn put_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Pat
     Ok(Json(card(&s, sec, None).await?))
 }
 
-async fn clear_section(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>) -> ApiResult<Json<Value>> {
+async fn clear_section(
+    State(s): State<AppState>,
+    Admin(a): Admin,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Path(code): Path<String>,
+) -> ApiResult<Json<Value>> {
     let sec = section(&code)?;
+    // Disconnecting a saved Toss payout changes where money goes: same owner code as editing it.
+    if sec == Section::Payout && is_toss(&integrations::load_section(&s.db, &s.config.data_key, sec).await?) {
+        super::keys::owner_gate(&s, peer, &headers, a.id).await?;
+    }
     integrations::delete_section(&s.db, sec).await?;
     reload(&s).await?;
     audit(&s.db, a.role.as_str(), Some(a.id), "setup.integration_cleared", sec.code(), json!({})).await?;

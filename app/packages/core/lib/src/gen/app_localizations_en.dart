@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -5050,6 +5051,27 @@ class TEn extends T {
 
   @override
   String get cSetupOptional => 'Optional';
+
+  @override
+  String get cOwnerCodeTitle => 'Owner authenticator code';
+
+  @override
+  String get cOwnerCodeBody =>
+      'To change Toss payouts, enter the 6-digit code from your authenticator app.';
+
+  @override
+  String get cOwnerCodeField => '6-digit code';
+
+  @override
+  String get cOwnerCodeConfirm => 'Confirm';
+
+  @override
+  String get cOwnerCodeWrong =>
+      'That code is not right. Enter the code your app shows now';
+
+  @override
+  String get cOwnerCodeLocked =>
+      'Too many wrong codes. Try again in a few minutes';
 
   @override
   String get cIntPortone => 'Payments (PortOne)';
