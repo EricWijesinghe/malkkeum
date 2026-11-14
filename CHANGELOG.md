@@ -25,6 +25,9 @@ from the release branches; no tags existed for them.
 - Customer app: guests see how a booking works on the Bookings tab and the FAQ and terms on the Chat tab (chat still asks for sign-in). The welcome offer and the referral amount show before sign-in, and a quote in progress is kept on the device across restarts.
 - Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
 
+### Fixed
+- Subscription visits: a visit moved to another arrival window tells the customer (`subscription.visit_moved`); a day with no free window tells the customer and staff (`subscription.visit_unplaced`, `subscription.capacity_full`). Notices are sent once, when the visit is planned.
+
 ### Changed
 - Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
 - Customer app: guests see the quote price before the address step without signing up; sign-in is asked only when they book, and the service detail shows the price-first line.
