@@ -135,9 +135,10 @@
 	}
 
 	# API down or restarting (502/503 from the proxy): pages get a static maintenance page instead of a bare
-	# error. API paths keep their own status, so the apps still get a JSON error they can read.
+	# error. API paths keep their own status, so the apps still get a JSON error they can read. /health stays a
+	# plain error so health probes see the API as down, not a 200 page.
 	handle_errors {
-		@page_down expression {http.error.status} in [502, 503] && !{http.request.uri.path}.startsWith("/v1/")
+		@page_down expression {http.error.status} in [502, 503] && !{http.request.uri.path}.startsWith("/v1/") && !{http.request.uri.path}.startsWith("/health")
 		handle @page_down {
 			root * /srv/website
 			rewrite * /maintenance.html

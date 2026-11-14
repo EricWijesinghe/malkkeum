@@ -82,7 +82,8 @@ website_served() { [ "$(code /)" = 200 ] && get / | grep -qi '<html'; }
 maintenance_page_when_api_down() {
   dc stop api >/dev/null 2>&1 || return 1
   local shown=1
-  get /health | grep -q '점검 중이에요' && shown=0
+  case "$(code /)" in 502|503) get / | grep -q '점검 중이에요' && shown=0 ;; esac
+  [ "$(code /health)" = 200 ] && shown=1 # a dead API must not look healthy to probes
   dc up -d api >/dev/null 2>&1
   wait_until 180 api_healthy || return 1
   return $shown
