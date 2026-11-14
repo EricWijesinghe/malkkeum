@@ -52,20 +52,24 @@ void main() {
     expect(c.maintenanceMessage, '곧 돌아와요');
   });
 
-  testWidgets('shows the maintenance page while switched on', (tester) async {
+  testWidgets('shows a banner over the app while switched on', (tester) async {
     await tester.pumpWidget(
       _host(
         _api({
-          'maintenance': {'on': true, 'message': ''},
+          'maintenance': {'on': true, 'message': '  곧 돌아와요  '},
         }),
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('홈 화면'), findsNothing);
+    expect(find.text('홈 화면'), findsOneWidget, reason: 'the app stays usable');
     expect(find.text('점검 중이에요'), findsOneWidget);
+    expect(find.text('곧 돌아와요'), findsOneWidget);
+    expect(find.text('점검 중에는 새 예약을 받지 않아요.'), findsOneWidget);
   });
 
-  testWidgets('shows the app when maintenance is off', (tester) async {
+  testWidgets('shows the app without a banner when maintenance is off', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         _api({
@@ -75,6 +79,36 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('홈 화면'), findsOneWidget);
+    expect(find.text('점검 중이에요'), findsNothing);
+  });
+
+  testWidgets('children see maintenance so booking screens can hold submit', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ko'),
+        supportedLocales: const [Locale('ko'), Locale('en')],
+        localizationsDelegates: const [
+          T.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: RemoteConfigGate(
+          api: _api({
+            'maintenance': {'on': true},
+          }),
+          child: Builder(
+            builder: (context) => Text(
+              RemoteConfigScope.of(context).maintenance ? 'paused' : 'open',
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('paused'), findsOneWidget);
   });
 
   testWidgets('offline keeps the app usable', (tester) async {

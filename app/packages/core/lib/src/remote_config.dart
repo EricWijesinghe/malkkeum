@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ui/ui.dart';
 
 import 'api.dart';
 import 'foreground.dart';
@@ -59,8 +60,9 @@ class RemoteConfigScope extends InheritedWidget {
       !mapEquals(old.config.flags, config.flags);
 }
 
-/// Loads `/config` and shows a maintenance screen while the owner has it switched on. Offline or on
-/// error the app keeps working with everything on; the server still refuses switched-off features.
+/// Loads `/config` and shows a banner above the app while the owner has maintenance switched on. The app
+/// stays usable; screens that create bookings check [RemoteConfigScope] and hold their submit button.
+/// Offline or on error the app keeps working with everything on; the server still refuses new bookings.
 class RemoteConfigGate extends StatefulWidget {
   const RemoteConfigGate({super.key, required this.api, required this.child});
 
@@ -103,53 +105,71 @@ class _RemoteConfigGateState extends State<RemoteConfigGate> {
   @override
   Widget build(BuildContext context) {
     final c = _config;
+    // The banner slot is always in the tree, so the app below keeps its state when maintenance toggles.
     return RemoteConfigScope(
       config: c,
-      child: c.maintenance
-          ? _MaintenancePage(message: c.maintenanceMessage, onRetry: _load)
-          : widget.child,
+      child: Column(
+        children: [
+          _MaintenanceBanner(
+            message: c.maintenance ? c.maintenanceMessage : null,
+          ),
+          Expanded(child: widget.child),
+        ],
+      ),
     );
   }
 }
 
-class _MaintenancePage extends StatelessWidget {
-  const _MaintenancePage({required this.message, required this.onRetry});
+/// Above the app while maintenance is on: says new bookings are paused. Empty when it is off.
+class _MaintenanceBanner extends StatelessWidget {
+  const _MaintenanceBanner({required this.message});
 
-  final String message;
-  final Future<void> Function() onRetry;
+  /// The owner's message while maintenance is on; null when it is off.
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
+    final msg = message;
+    if (msg == null) return const SizedBox.shrink();
     final t = context.t;
-    final theme = Theme.of(context);
-    return Scaffold(
-      body: SafeArea(
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.primaryContainer,
+      child: SafeArea(
+        bottom: false,
         child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.gutter,
+            vertical: Space.md,
+          ),
+          child: Row(
             children: [
               Icon(
                 Icons.build_circle_outlined,
-                size: 72,
-                color: theme.colorScheme.primary,
+                color: scheme.onPrimaryContainer,
               ),
-              const SizedBox(height: 24),
-              Text(
-                t.uMaintenanceTitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message.isEmpty ? t.uMaintenanceBody : message,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              FilledButton(
-                onPressed: onRetry,
-                child: const Icon(Icons.refresh_rounded),
+              const SizedBox(width: Space.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t.uMaintenanceTitle,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
+                    Text(
+                      msg.isEmpty ? t.uMaintenanceBody : msg,
+                      style: TextStyle(color: scheme.onPrimaryContainer),
+                    ),
+                    Text(
+                      t.uMaintenanceBookingPaused,
+                      style: TextStyle(color: scheme.onPrimaryContainer),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
