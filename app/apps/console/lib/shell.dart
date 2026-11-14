@@ -15,6 +15,7 @@ import 'screens/ops.dart';
 import 'screens/rules.dart';
 import 'screens/people.dart';
 import 'screens/privacy_requests.dart';
+import 'screens/renewals.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
 import 'state.dart';
@@ -150,6 +151,13 @@ final _sections = <_Section>[
     Icons.privacy_tip_rounded,
     (t) => t.prqTitle,
     () => const PrivacyRequestsScreen(),
+  ),
+  _Section(
+    'c_renewals',
+    Icons.event_repeat_rounded,
+    (t) => t.rnwTitle,
+    () => const RenewalsScreen(),
+    adminOnly: true,
   ),
 ];
 
