@@ -2672,6 +2672,18 @@ class TKo extends T {
   String get err_payout_account_unverified => '확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.';
 
   @override
+  String get err_invite_pending => '아직 비밀번호를 정하지 않은 초대예요. 직원이 인증번호를 입력하면 켜져요.';
+
+  @override
+  String get err_phone_taken => '이 휴대폰 번호는 다른 직원이 쓰고 있어요.';
+
+  @override
+  String get err_code_invalid => '인증번호가 맞지 않거나 시간이 지났어요. 관리자에게 새 번호를 받아 주세요.';
+
+  @override
+  String get err_no_phone => '휴대폰 번호가 없어요. 번호를 입력해 주세요.';
+
+  @override
   String get guestSheetTitle => '계속하려면 전화번호로 로그인하세요';
 
   @override
@@ -4517,6 +4529,56 @@ class TKo extends T {
   String get cInvalidValue => '입력값을 확인해 주세요';
 
   @override
+  String get cStaffInvite => '직원 초대';
+
+  @override
+  String get cStaffInviteTitle => '직원 초대하기';
+
+  @override
+  String get cStaffInviteBody =>
+      '직원 휴대폰으로 인증번호를 보내요. 직원은 이 번호로 24시간 안에 비밀번호를 정하면 돼요.';
+
+  @override
+  String get cStaffPhone => '휴대폰 번호';
+
+  @override
+  String get cStaffPhoneNeeded => '이 직원은 휴대폰 번호가 없어요. 번호를 입력하면 저장하고 인증번호를 보내요.';
+
+  @override
+  String get cStaffChannel => '인증번호 전달 방법';
+
+  @override
+  String get cStaffChannelSms => '문자로 보내기';
+
+  @override
+  String get cStaffChannelCopy => '직접 전달 (복사)';
+
+  @override
+  String get cStaffCodeTitle => '인증번호';
+
+  @override
+  String get cStaffCodeBody =>
+      '이 번호를 직원에게 전달하세요. 한 번만 쓸 수 있고 24시간 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+
+  @override
+  String get cStaffSentSms => '문자를 보냈어요. 직원은 24시간 안에 입력해야 해요.';
+
+  @override
+  String get cStaffInvited => '초대했어요';
+
+  @override
+  String get cStaffInvitePending => '초대 대기 중 (비밀번호 미설정)';
+
+  @override
+  String get cStaffAdminOnly => '관리자 권한은 관리자만 줄 수 있어요';
+
+  @override
+  String get cStaffInviteResend => '인증번호 다시 보내기';
+
+  @override
+  String get cStaffSendCode => '보내기';
+
+  @override
   String get cMfaTitle => '2단계 인증';
 
   @override
@@ -4590,11 +4652,11 @@ class TKo extends T {
   String get cStaffResetConfirm => '이 직원의 비밀번호를 재설정할까요? 모든 기기에서 로그아웃돼요.';
 
   @override
-  String get cStaffResetTitle => '재설정 토큰';
+  String get cStaffResetTitle => '재설정 인증번호';
 
   @override
   String get cStaffResetBody =>
-      '이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.';
+      '이 인증번호는 24시간 동안 한 번만 쓸 수 있어요. 직원이 비밀번호를 정하면 모든 기기에서 로그아웃돼요.';
 
   @override
   String get subTitle => '정기 청소';
