@@ -80,6 +80,14 @@ Future<FakeApi> _pumpGuestMoveOut(WidgetTester tester) async {
   setViewport(tester, phoneSize);
   final fake = FakeApi()
     ..reply('POST', '/quote/estimate', _estimate)
+    ..reply('POST', '/auth/otp', {'dev_code': '123456'})
+    ..reply('POST', '/auth/verify', {
+      'access_token': 'access-guest',
+      'refresh_token': 'refresh-guest',
+      'role': 'customer',
+      'subject': 'user-guest',
+      'is_new': false,
+    })
     ..reply('GET', '/slots', [slotJson(8), slotJson(13)]);
   stockCustomerApi(fake);
   final env = await TestEnv.create(fake: fake, signedIn: false);
@@ -97,6 +105,19 @@ Future<FakeApi> _pumpGuestMoveOut(WidgetTester tester) async {
 }
 
 String _chip(int n) => '${koT.service('move_out')} · $n/7';
+
+/// A guest answers steps 1-3 and lands on the address step (4/7).
+Future<void> _guestToAddress(WidgetTester tester) async {
+  await _tap(tester, find.text(koT.type_standard));
+  await _tap(tester, _next());
+  await _tap(tester, find.text(koT.building_commercial));
+  await _tap(tester, find.text(koT.dfLayoutTwo));
+  await _tap(tester, find.text(koT.dfHas).last);
+  await _tap(tester, _next());
+  await _tap(tester, find.text(koT.dfNone).last);
+  await _tap(tester, _next());
+  expect(find.text(_chip(4)), findsOneWidget);
+}
 
 void main() {
   testWidgets(
@@ -131,6 +152,57 @@ void main() {
       await _tap(tester, find.text(koT.guestBookWithQuote));
       expect(find.text(koT.guestReasonQuote), findsOneWidget);
       expect(fake.callsTo('POST', '/bookings'), isEmpty);
+    },
+  );
+
+  testWidgets(
+    'a guest who changes an answer after the price shows gets a fresh estimate',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _guestToAddress(tester);
+      expect(fake.callsTo('POST', '/quote/estimate'), hasLength(1));
+
+      await tester.tap(find.byType(BackButton).first);
+      await settle(tester);
+      expect(find.text(_chip(3)), findsOneWidget);
+      await _tap(tester, find.text(koT.dfFloor3));
+      await _tap(tester, _next());
+
+      expect(find.text(_chip(4)), findsOneWidget);
+      expect(
+        fake.callsTo('POST', '/quote/estimate'),
+        hasLength(2),
+        reason:
+            'the price was stale: the answer changed before the address step',
+      );
+      await unmount(tester);
+    },
+  );
+
+  testWidgets(
+    'a guest who signs in from the address step keeps the answers and books nothing yet',
+    (tester) async {
+      final fake = await _pumpGuestMoveOut(tester);
+      await _guestToAddress(tester);
+      await _tap(tester, find.text(koT.guestBookWithQuote));
+      await tester.enterText(find.byType(TextField).last, '01012345678');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginSendCode));
+      await settle(tester);
+      await tester.enterText(find.byType(TextField).last, '123456');
+      await settle(tester, duration: const Duration(milliseconds: 300));
+      await tester.tap(find.text(koT.loginVerify));
+      await settle(tester);
+
+      expect(find.byType(AddressRadioList), findsOneWidget);
+      expect(find.text(koT.guestBookWithQuote), findsNothing);
+      expect(
+        fake.callsTo('POST', '/quote/estimate'),
+        hasLength(1),
+        reason: 'answers kept, so the estimate is not asked again',
+      );
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+      await unmount(tester);
     },
   );
 
