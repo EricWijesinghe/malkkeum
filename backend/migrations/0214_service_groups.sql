@@ -31,4 +31,7 @@ FROM (VALUES
 ) AS v (code, grp)
 WHERE services.code = v.code;
 
+-- Studio stays in its group and in admin, but the public home list leaves it out (content.hidden_from_home).
+UPDATE services SET content = content || '{"hidden_from_home": true}'::jsonb WHERE code = 'studio';
+
 CREATE INDEX services_group_code_idx ON services (group_code);

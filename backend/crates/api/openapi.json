@@ -179,7 +179,7 @@
       "get": {
         "operationId": "listServiceGroups",
         "tags": ["public"],
-        "summary": "Home categories in order, with member services, chooser and derived badge (HOT over N)",
+        "summary": "Home categories in order, with member services, chooser and derived badge (HOT over N). Inactive groups and members, and members hidden from home (studio), are left out",
         "security": [],
         "responses": {
           "200": {

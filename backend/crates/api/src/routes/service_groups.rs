@@ -61,11 +61,11 @@ struct GroupDto {
     config: Value,
 }
 
-/// Groups in home order. `public` hides inactive groups and inactive member services.
+/// Groups in home order. `public` hides inactive groups, inactive members and members hidden from home.
 async fn load_groups(db: &sqlx::PgPool, public: bool) -> ApiResult<Vec<GroupDto>> {
     let rows: Vec<GroupRow> = sqlx::query_as(
         "SELECT g.code, g.title, g.sort_order, g.active, g.chooser, g.icon, g.config,
-                COALESCE(array_agg(s.code ORDER BY s.sort_order, s.code) FILTER (WHERE s.code IS NOT NULL AND (NOT $1 OR s.active)), '{}') AS services,
+                COALESCE(array_agg(s.code ORDER BY s.sort_order, s.code) FILTER (WHERE s.code IS NOT NULL AND (NOT $1 OR (s.active AND s.content->>'hidden_from_home' IS DISTINCT FROM 'true'))), '{}') AS services,
                 COALESCE(array_agg(s.content->>'badge') FILTER (WHERE s.active AND s.content->>'badge' IS NOT NULL), '{}') AS badges
          FROM service_groups g LEFT JOIN services s ON s.group_code = g.code
          WHERE NOT $1 OR g.active

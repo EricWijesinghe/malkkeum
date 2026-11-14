@@ -20,6 +20,11 @@ pub fn default_group_of(service_code: &str) -> Option<&'static str> {
     }
 }
 
+/// Services kept for quotes and admin but not listed on the home (CR-2). Studio is the one-room tile the chooser replaces.
+pub fn hidden_from_home(service_code: &str) -> bool {
+    service_code == "studio"
+}
+
 /// Tile badge from the members' `content.badge` values ("hot", "new"). HOT wins over N.
 pub fn derive_badge<'a>(badges: impl IntoIterator<Item = &'a str>) -> Option<&'static str> {
     let mut out = None;
