@@ -53,6 +53,15 @@ pub enum BuildingType {
     Other,
 }
 
+/// Home type the customer chose on the chooser (CR-8.2). Shown as 원룸·투룸 / 아파트 / 빌라·주택.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HomeType {
+    OneTwoRoom,
+    Apartment,
+    VillaHouse,
+}
+
 /// One aircon unit type added to a move-in / move-out booking. `unit` is the aircon
 /// service's `label_key` (wall, stand, two_in_one, ceiling); its price comes from the catalog.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -76,6 +85,9 @@ pub struct QuoteAnswers {
     /// Older bookings have no add-ons; absent and empty are the same.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ac_addons: Vec<AcAddon>,
+    /// Set by the home chooser (CR-8.2). Absent on older quotes and on the full question path.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub home_type: Option<HomeType>,
 }
 
 /// All amounts and rates (basis points, 10_000 = 100%) used by the estimate.
@@ -335,6 +347,7 @@ mod tests {
             elevator: true,
             floor_3_or_higher: true,
             ac_addons: vec![],
+            home_type: None,
         }
     }
 

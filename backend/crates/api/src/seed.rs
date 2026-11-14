@@ -1,7 +1,7 @@
 //! Idempotent first-run data: catalogue, quote formula, slot capacity, first admin, starter content.
 
 use crate::{auth::hash_password, config::Config};
-use domain::{catalog::default_catalog, quote::QuoteFormula};
+use domain::{catalog::default_catalog, quote::QuoteFormula, service_group::default_group_of};
 use serde_json::json;
 use sqlx::PgPool;
 
@@ -36,7 +36,7 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
             .find(|(code, _)| *code == s.code)
             .map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
         sqlx::query(
-            "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING",
+            "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content, group_code) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (code) DO NOTHING",
         )
         .bind(&s.code)
         .bind(sqlx::types::Json(&s.pricing))
@@ -44,6 +44,7 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
         .bind(s.max_pyeong.map(|p| p as i16))
         .bind(order as i32)
         .bind(content)
+        .bind(default_group_of(&s.code))
         .execute(db)
         .await?;
     }

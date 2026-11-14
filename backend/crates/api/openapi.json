@@ -175,6 +175,19 @@
         }
       }
     },
+    "/v1/service-groups": {
+      "get": {
+        "operationId": "listServiceGroups",
+        "tags": ["public"],
+        "summary": "Home categories in order, with member services, chooser and derived badge (HOT over N)",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OK. Cache-Control: public, max-age=60"
+          }
+        }
+      }
+    },
     "/v1/slots": {
       "get": {
         "operationId": "listSlots",
@@ -2486,6 +2499,41 @@
           "admin"
         ],
         "summary": "Update a service's pricing and content",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Code"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/service-groups": {
+      "get": {
+        "operationId": "adminListServiceGroups",
+        "tags": ["admin"],
+        "summary": "All home categories including inactive groups and services",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/admin/service-groups/{code}": {
+      "put": {
+        "operationId": "adminUpdateServiceGroup",
+        "tags": ["admin"],
+        "summary": "Update a group's title (ko/en), order, active flag, icon, member services (listed order) and config. Audited.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Code"
