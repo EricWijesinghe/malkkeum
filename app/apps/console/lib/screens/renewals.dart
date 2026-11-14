@@ -93,6 +93,7 @@ class _RenewalsState extends State<RenewalsScreen> {
 
   Future<void> _delete(Json item) async {
     final t = context.t;
+    final api = context.api;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -112,7 +113,7 @@ class _RenewalsState extends State<RenewalsScreen> {
     );
     if (ok != true) return;
     try {
-      await context.api.delete('/admin/renewals/${item['id']}');
+      await api.delete('/admin/renewals/${item['id']}');
       if (mounted) showToast(context, context.t.rnwDeleted);
     } on ApiException {
       if (mounted) showToast(context, context.t.rnwFailed);
@@ -127,20 +128,16 @@ class _RenewalsState extends State<RenewalsScreen> {
     return ListView(
       padding: const EdgeInsets.all(Space.xl),
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(t.rnwTitle, style: context.text.headlineMedium),
-            ),
-            FilledButton.icon(
-              onPressed: () => _edit(),
-              icon: const Icon(Icons.add),
-              label: Text(t.rnwAdd),
-            ),
-          ],
-        ),
+        Text(t.rnwTitle, style: context.text.headlineMedium),
         const SizedBox(height: Space.xs),
         Text(t.rnwIntro, style: context.text.bodySmall),
+        const SizedBox(height: Space.md),
+        // Not inside a Row: the theme's full-width minimum size needs a bounded width.
+        FilledButton.icon(
+          onPressed: () => _edit(),
+          icon: const Icon(Icons.add),
+          label: Text(t.rnwAdd),
+        ),
         const SizedBox(height: Space.md),
         if (items == null)
           const Center(child: CircularProgressIndicator())
