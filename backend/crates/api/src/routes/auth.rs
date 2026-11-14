@@ -91,7 +91,7 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
     // Store-review demo number: the owner's fixed code, no SMS (reviewers are abroad).
     let review = super::setup::review_code_hash(&s.db, &phone).await?;
     let code = auth::otp_code();
-    let code_hash = review.clone().unwrap_or_else(|| auth::otp_hash(&s.config.jwt_secret, &phone, &code));
+    let code_hash = review.clone().unwrap_or_else(|| auth::otp_hash(s.config.otp_key(), &phone, &code));
     sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ($1, $2, $3)")
         .bind(&phone)
         .bind(code_hash)
@@ -274,8 +274,12 @@ pub async fn consume_otp(s: &AppState, phone: &str, code: &str) -> ApiResult<()>
     .fetch_optional(&s.db)
     .await?;
     let stored = row.ok_or(ApiError::BadRequest("otp_expired"))?;
-    let given = auth::otp_hash(&s.config.jwt_secret, phone, code.trim());
-    if !bool::from(given.as_bytes().ct_eq(stored.as_bytes())) {
+    let matches = s
+        .config
+        .otp_keys()
+        .into_iter()
+        .any(|key| bool::from(auth::otp_hash(key, phone, code.trim()).as_bytes().ct_eq(stored.as_bytes())));
+    if !matches {
         return Err(ApiError::BadRequest("otp_invalid"));
     }
     // Single use: only the request that deletes the code proceeds.
@@ -561,7 +565,7 @@ async fn store_social_token(s: &AppState, provider: &str, social: &SocialUser, r
     .bind(&social.provider_user_id)
     .bind(role.as_str())
     .bind(social.audience.as_deref().unwrap_or_default())
-    .bind(crypto::encrypt(&s.config.data_key, token))
+    .bind(crypto::encrypt(&s.config.data_key, crypto::aad::SOCIAL_TOKEN, token))
     .execute(&s.db)
     .await?;
     Ok(())

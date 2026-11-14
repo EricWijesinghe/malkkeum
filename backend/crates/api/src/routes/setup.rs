@@ -116,7 +116,9 @@ pub async fn ensure_setup_code(db: &PgPool, from_env: Option<&str>, issued_at: O
         .bind(json!({ "code": code, "at": at }))
         .execute(db)
         .await?;
-    tracing::warn!("first-run setup: open the console and enter setup code {code}");
+    // Printed to stdout, not the structured log, so the code never lands in log shipping or search.
+    println!("first-run setup: open the console and enter setup code {code}");
+    tracing::warn!("first-run setup code issued; read it from the startup output");
     Ok(())
 }
 
@@ -267,7 +269,7 @@ async fn put_review(State(s): State<AppState>, Admin(a): Admin, Json(r): Json<Re
     let samples = seed_review_samples(&s.db, &phone).await?;
     let value = json!({
         "phone": phone,
-        "code_hash": crate::auth::otp_hash(&s.config.jwt_secret, &phone, code),
+        "code_hash": crate::auth::otp_hash(s.config.otp_key(), &phone, code),
         "expires_at": expires_at.to_rfc3339(),
     });
     sqlx::query("INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")
