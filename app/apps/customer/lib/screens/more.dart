@@ -71,7 +71,7 @@ class MoreTab extends StatelessWidget {
       );
     }
 
-    // The design's groups, in its order (p05); rows the design leaves out follow below the version.
+    // The design's groups (p05): payments and subscriptions at the top, version and legal at the bottom.
     final groups = <Widget>[
       _ProfileCard(coupons: coupons, points: app.points, name: app.name),
       _Group([
@@ -99,6 +99,18 @@ class MoreTab extends StatelessWidget {
           'ui_points',
           t.morePoints,
           () => _pushMember(context, const WalletScreen()),
+          member: true,
+        ),
+        row(
+          'pay_virtual',
+          t.payHistoryTitle,
+          () => _pushMember(context, const PaymentHistoryScreen()),
+          member: true,
+        ),
+        row(
+          'menu_subscriptions',
+          t.subTitle,
+          () => _pushMember(context, const SubscriptionsScreen()),
           member: true,
         ),
       ]),
@@ -146,27 +158,6 @@ class MoreTab extends StatelessWidget {
         ),
       ]),
       _Group([
-        FutureBuilder<String?>(
-          future: _buildVersion(),
-          builder: (context, snap) => _LabelValueRow(
-            label: t.moreVersionInfo,
-            value: snap.data == null ? '' : 'v${snap.data}',
-          ),
-        ),
-      ]),
-      _Group([
-        row(
-          'pay_virtual',
-          t.payHistoryTitle,
-          () => _pushMember(context, const PaymentHistoryScreen()),
-          member: true,
-        ),
-        row(
-          'menu_subscriptions',
-          t.subTitle,
-          () => _pushMember(context, const SubscriptionsScreen()),
-          member: true,
-        ),
         row(
           'menu_language',
           t.moreLanguage,
@@ -201,6 +192,13 @@ class MoreTab extends StatelessWidget {
             applicationVersion: version,
           );
         }),
+        FutureBuilder<String?>(
+          future: _buildVersion(),
+          builder: (context, snap) => _LabelValueRow(
+            label: t.moreVersionInfo,
+            value: snap.data == null ? '' : 'v${snap.data}',
+          ),
+        ),
       ]),
     ];
     return Scaffold(

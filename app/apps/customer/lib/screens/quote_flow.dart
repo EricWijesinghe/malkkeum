@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 import '../guest.dart';
 import '../guest_draft.dart';
 import '../state.dart';
+import 'auth.dart' show ensureCustomerName;
 import 'booking_flow.dart';
 import 'quote_price_hint.dart';
 import 'quote_review.dart';
@@ -219,10 +220,11 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   /// Without it (the early preview) the server adds no peak surcharge.
   Future<Json> _fetchEstimate({bool withSlot = true}) async =>
       await context.api.post('/quote/estimate', {
-        ...a.toJson(),
-        if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
-        if (withSlot) 'start_hour': ?d.hour,
-      }) as Json;
+            ...a.toJson(),
+            if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
+            if (withSlot) 'start_hour': ?d.hour,
+          })
+          as Json;
 
   /// Guests answer the questions first; signing in is asked only when they book.
   Future<void> _bookAsGuest() async {
@@ -238,6 +240,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) {
       return;
     }
+    if (!await ensureCustomerName(context) || !mounted) return;
     setState(() => _busy = true);
     final app = context.appRead;
     app.analytics.track('booking_start', screen: 'quote');

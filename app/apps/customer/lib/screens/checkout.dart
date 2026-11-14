@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_detail.dart';
+import 'auth.dart' show ensureCustomerName;
 import 'booking_flow.dart';
 import 'cancel_policy_card.dart';
 import 'more.dart' show LegalScreen;
@@ -68,6 +69,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Future<void> _pay(int total, int points) async {
     final choice = _choice;
     if (choice == null || _busy) return;
+    if (!await ensureCustomerName(context) || !mounted) return;
     setState(() => _busy = true);
     final app = context.appRead;
     try {
@@ -264,8 +266,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           FlowSection(
             children: [
               Theme(
-                data: Theme.of(context)
-                    .copyWith(dividerColor: Colors.transparent),
+                data: Theme.of(
+                  context,
+                ).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
                   initiallyExpanded: true,
                   tilePadding: EdgeInsets.zero,

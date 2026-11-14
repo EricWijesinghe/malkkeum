@@ -513,8 +513,22 @@ class _CodeScreenState extends State<CodeScreen> {
   );
 }
 
+/// First booking without a name: asks for it on the same name screen, then returns. False if the customer backs out.
+Future<bool> ensureCustomerName(BuildContext context) async {
+  if (context.appRead.name.trim().isNotEmpty) return true;
+  final saved = await Navigator.of(context).push<bool>(
+    MaterialPageRoute<bool>(
+      builder: (_) => const ProfileScreen(returnToCaller: true),
+    ),
+  );
+  return saved == true;
+}
+
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.returnToCaller = false});
+
+  /// Pushed from a booking: pops back with `true` instead of resetting to the root.
+  final bool returnToCaller;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -538,7 +552,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await Future.wait([app.loadProfile(), app.loadCoupons()]);
       if (!mounted) return;
       showToast(context, context.t.welcomeToast);
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      if (widget.returnToCaller) {
+        Navigator.of(context).pop(true);
+      } else {
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      }
     } catch (e) {
       if (mounted) setState(() => _error = context.t.error(e));
     } finally {
@@ -554,7 +572,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(automaticallyImplyLeading: false),
+    appBar: AppBar(automaticallyImplyLeading: !widget.returnToCaller),
     body: SafeArea(
       child: Column(
         children: [
