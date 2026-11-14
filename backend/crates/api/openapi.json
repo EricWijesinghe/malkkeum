@@ -5791,6 +5791,50 @@
           }
         }
       }
+    },
+    "/v1/admin/renewals": {
+      "get": {
+        "operationId": "adminListRenewals",
+        "tags": ["admin"],
+        "summary": "Renewal calendar: items with days left, and the keys check date (admin only)",
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "adminCreateRenewal",
+        "tags": ["admin"],
+        "summary": "Add a renewal item; reminders go out by SMS 30 and 7 days before (admin only, logged)",
+        "requestBody": { "$ref": "#/components/requestBodies/Object" },
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/admin/renewals/{id}": {
+      "put": {
+        "operationId": "adminUpdateRenewal",
+        "tags": ["admin"],
+        "summary": "Change a renewal item; a new due date starts its reminders again (admin only, logged)",
+        "parameters": [{ "$ref": "#/components/parameters/Id" }],
+        "requestBody": { "$ref": "#/components/requestBodies/Object" },
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "operationId": "adminDeleteRenewal",
+        "tags": ["admin"],
+        "summary": "Remove a renewal item (admin only, logged)",
+        "parameters": [{ "$ref": "#/components/parameters/Id" }],
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
     }
   },
   "components": {

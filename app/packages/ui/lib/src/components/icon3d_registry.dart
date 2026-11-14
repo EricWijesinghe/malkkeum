@@ -212,9 +212,10 @@ abstract final class Icon3DRegistry {
     'c_staff': const Icon3DSpec(Icons.badge_rounded),
     'c_settings': const Icon3DSpec(Icons.settings_rounded),
     'c_monitor': const Icon3DSpec(Icons.monitor_heart_rounded),
-    // shortcut: no rendered art yet (Blender render pipeline), reuses the nearest existing art; render c_audit and c_privacy to replace
+    // shortcut: no rendered art yet (Blender render pipeline), reuses the nearest existing art; render c_audit, c_privacy and c_renewals to replace
     'c_audit': const Icon3DSpec(Icons.history_rounded, alias: 'c_monitor'),
     'c_privacy': const Icon3DSpec(Icons.privacy_tip_rounded, alias: 'c_customers'),
+    'c_renewals': const Icon3DSpec(Icons.event_repeat_rounded, alias: 'c_bookings'),
   };
 
   static Icon3DSpec of(String id) => specs[id] ?? unknown;
