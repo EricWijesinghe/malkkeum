@@ -91,28 +91,38 @@ class _AuditScreenState extends State<AuditScreen> {
     final t = context.t;
     _pager ??= Pager<Json>(context.api, '/admin/audit', (row) => row, query: _query);
     final pager = _pager!;
-    return ListView(
-      padding: const EdgeInsets.all(Space.xl),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(t.cAudit, style: context.text.headlineMedium),
-        const SizedBox(height: Space.xs),
-        Text(t.audIntro, style: context.text.bodyMedium),
-        const SizedBox(height: Space.md),
-        _Filters(
-          period: _period,
-          role: _role,
-          prefix: _prefix,
-          onPeriod: (p) => _set(() => _period = p),
-          onRole: (r) => _set(() => _role = r),
-          onPrefix: (p) => _set(() => _prefix = p),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(Space.xl, Space.xl, Space.xl, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.cAudit, style: context.text.headlineMedium),
+              const SizedBox(height: Space.xs),
+              Text(t.audIntro, style: context.text.bodyMedium),
+              const SizedBox(height: Space.md),
+              _Filters(
+                period: _period,
+                role: _role,
+                prefix: _prefix,
+                onPeriod: (p) => _set(() => _period = p),
+                onRole: (r) => _set(() => _role = r),
+                onPrefix: (p) => _set(() => _prefix = p),
+              ),
+              const SizedBox(height: Space.md),
+            ],
+          ),
         ),
-        const SizedBox(height: Space.md),
-        AsyncView<List<Json>>(
-          key: _view,
-          load: pager.first,
-          builder: (context, _, _) => LoadMore<Json>(
-            pager: pager,
-            builder: (context, rows) => _Rows(rows: rows),
+        Expanded(
+          child: AsyncView<List<Json>>(
+            key: _view,
+            load: pager.first,
+            builder: (context, _, _) => LoadMore<Json>(
+              pager: pager,
+              builder: (context, rows) => _Rows(rows: rows),
+            ),
           ),
         ),
       ],
@@ -198,11 +208,13 @@ class _Rows extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    if (rows.isEmpty) return EmptyState(icon: Icons.history_rounded, title: t.audEmpty);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(Space.xl, Space.xs, Space.xl, Space.xl),
       children: [
-        for (final row in rows) _RowTile(row: row),
+        if (rows.isEmpty)
+          EmptyState(icon: Icons.history_rounded, title: t.audEmpty)
+        else
+          for (final row in rows) _RowTile(row: row),
       ],
     );
   }
