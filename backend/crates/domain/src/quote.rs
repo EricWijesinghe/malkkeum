@@ -76,6 +76,17 @@ pub struct QuoteAnswers {
     /// Older bookings have no add-ons; absent and empty are the same.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ac_addons: Vec<AcAddon>,
+    /// The home type picked on the home-type chooser. Absent on bookings made before it existed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub home_type: Option<HomeType>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HomeType {
+    OneTwoRoom,
+    Apartment,
+    VillaHouse,
 }
 
 /// All amounts and rates (basis points, 10_000 = 100%) used by the estimate.
@@ -335,6 +346,7 @@ mod tests {
             elevator: true,
             floor_3_or_higher: true,
             ac_addons: vec![],
+            home_type: None,
         }
     }
 
@@ -392,6 +404,25 @@ mod tests {
     fn no_addons_leaves_total_unchanged() {
         let e = QuoteFormula::default().estimate_with_addons(&answers(), 0, &[]).unwrap();
         assert_eq!((e.addons, e.addon_discount_bps, e.total), (Won(0), 0, Won(580_800)));
+    }
+
+    #[test]
+    fn home_type_round_trips_and_is_optional_for_old_answers() {
+        let a = QuoteAnswers {
+            home_type: Some(HomeType::VillaHouse),
+            ..answers()
+        };
+        let json = serde_json::to_value(&a).unwrap();
+        assert_eq!(json["home_type"], "villa_house");
+        let back: QuoteAnswers = serde_json::from_value(json).unwrap();
+        assert_eq!(back.home_type, Some(HomeType::VillaHouse));
+        let old: QuoteAnswers = serde_json::from_value(serde_json::json!({
+            "cleaning_type": "standard", "luggage": "empty", "building": "apartment",
+            "layout": "three_rooms", "duplex": false, "bathrooms": 1, "balconies": 0,
+            "elevator": true, "floor_3_or_higher": false
+        }))
+        .unwrap();
+        assert_eq!(old.home_type, None);
     }
 
     #[test]
