@@ -482,8 +482,8 @@ async fn list_staff(State(s): State<AppState>, _a: Admin) -> ApiResult<Json<Valu
         "SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'name', name, 'role', role, 'active', active,
                 'has_phone', phone IS NOT NULL, 'invited', password_hash = '') ORDER BY created_at), '[]') FROM staff",
     )
-        .fetch_one(&s.db)
-        .await?;
+    .fetch_one(&s.db)
+    .await?;
     Ok(Json(v))
 }
 

@@ -32,7 +32,6 @@ mod settings;
 pub mod setup;
 pub mod site;
 mod staff_mfa;
-mod staff_password;
 mod staff_sms;
 pub mod subscription_engine;
 pub(crate) mod subscriptions;
