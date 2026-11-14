@@ -1728,6 +1728,37 @@
  "guestPeakNote": "방문 시간대에 따라 피크 요금이 더해질 수 있어요",
  "guestBookWithQuote": "이 견적으로 예약하기",
  "guestSeePrices": "가입 없이 가격 확인",
+ "guestFlowTitle": "예약 후 이렇게 진행돼요",
+ "guestFlowQuote": "견적",
+ "guestFlowQuoteBody": "집 조건을 알려주면 가격을 바로 보여드려요",
+ "guestFlowConfirm": "예약 확정",
+ "guestFlowConfirmBody": "날짜와 시간을 고르면 예약이 확정돼요",
+ "guestFlowVisit": "방문",
+ "guestFlowVisitBody": "약속한 시간에 담당 전문가가 방문해요",
+ "guestFlowDone": "완료·리뷰",
+ "guestFlowDoneBody": "작업 사진을 확인하고 후기를 남길 수 있어요",
+ "guestFirstQuoteCta": "첫 청소 견적 보기",
+ "guestFaqTitle": "자주 묻는 질문",
+ "guestChatCta": "상담원과 대화하기 (로그인 필요)",
+ "welcomeOfferLine": "첫 예약 {value} 할인 · 가입 후 첫 예약 1회 · 발급일로부터 {days}일",
+ "@welcomeOfferLine": {
+  "placeholders": {
+   "value": {
+    "type": "String"
+   },
+   "days": {
+    "type": "String"
+   }
+  }
+ },
+ "referralOfferLine": "친구 초대 시 둘 다 {amount}",
+ "@referralOfferLine": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
  "locUseCurrent": "현재 위치로 찾기",
  "locConsentTitle": "위치기반서비스 이용약관 동의",
  "locConsentBody": "현재 위치로 주소를 찾으려면 위치기반서비스 이용약관에 동의해 주세요. 위치는 '현재 위치로 찾기'를 누를 때 한 번만 확인하고, 주소를 제안하는 데만 써요. 위치 좌표는 서버에 저장하지 않아요. 동의는 동의 관리에서 언제든지 철회할 수 있어요.",

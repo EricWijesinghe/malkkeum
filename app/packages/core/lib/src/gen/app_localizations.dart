@@ -6535,6 +6535,90 @@ abstract class T {
   /// **'가입 없이 가격 확인'**
   String get guestSeePrices;
 
+  /// No description provided for @guestFlowTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 후 이렇게 진행돼요'**
+  String get guestFlowTitle;
+
+  /// No description provided for @guestFlowQuote.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적'**
+  String get guestFlowQuote;
+
+  /// No description provided for @guestFlowQuoteBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 조건을 알려주면 가격을 바로 보여드려요'**
+  String get guestFlowQuoteBody;
+
+  /// No description provided for @guestFlowConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 확정'**
+  String get guestFlowConfirm;
+
+  /// No description provided for @guestFlowConfirmBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜와 시간을 고르면 예약이 확정돼요'**
+  String get guestFlowConfirmBody;
+
+  /// No description provided for @guestFlowVisit.
+  ///
+  /// In ko, this message translates to:
+  /// **'방문'**
+  String get guestFlowVisit;
+
+  /// No description provided for @guestFlowVisitBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속한 시간에 담당 전문가가 방문해요'**
+  String get guestFlowVisitBody;
+
+  /// No description provided for @guestFlowDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료·리뷰'**
+  String get guestFlowDone;
+
+  /// No description provided for @guestFlowDoneBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업 사진을 확인하고 후기를 남길 수 있어요'**
+  String get guestFlowDoneBody;
+
+  /// No description provided for @guestFirstQuoteCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 청소 견적 보기'**
+  String get guestFirstQuoteCta;
+
+  /// No description provided for @guestFaqTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'자주 묻는 질문'**
+  String get guestFaqTitle;
+
+  /// No description provided for @guestChatCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'상담원과 대화하기 (로그인 필요)'**
+  String get guestChatCta;
+
+  /// No description provided for @welcomeOfferLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 예약 {value} 할인 · 가입 후 첫 예약 1회 · 발급일로부터 {days}일'**
+  String welcomeOfferLine(String value, String days);
+
+  /// No description provided for @referralOfferLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 초대 시 둘 다 {amount}'**
+  String referralOfferLine(String amount);
+
   /// No description provided for @locUseCurrent.
   ///
   /// In ko, this message translates to:

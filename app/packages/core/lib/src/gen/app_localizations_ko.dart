@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3412,6 +3411,52 @@ class TKo extends T {
 
   @override
   String get guestSeePrices => '가입 없이 가격 확인';
+
+  @override
+  String get guestFlowTitle => '예약 후 이렇게 진행돼요';
+
+  @override
+  String get guestFlowQuote => '견적';
+
+  @override
+  String get guestFlowQuoteBody => '집 조건을 알려주면 가격을 바로 보여드려요';
+
+  @override
+  String get guestFlowConfirm => '예약 확정';
+
+  @override
+  String get guestFlowConfirmBody => '날짜와 시간을 고르면 예약이 확정돼요';
+
+  @override
+  String get guestFlowVisit => '방문';
+
+  @override
+  String get guestFlowVisitBody => '약속한 시간에 담당 전문가가 방문해요';
+
+  @override
+  String get guestFlowDone => '완료·리뷰';
+
+  @override
+  String get guestFlowDoneBody => '작업 사진을 확인하고 후기를 남길 수 있어요';
+
+  @override
+  String get guestFirstQuoteCta => '첫 청소 견적 보기';
+
+  @override
+  String get guestFaqTitle => '자주 묻는 질문';
+
+  @override
+  String get guestChatCta => '상담원과 대화하기 (로그인 필요)';
+
+  @override
+  String welcomeOfferLine(String value, String days) {
+    return '첫 예약 $value 할인 · 가입 후 첫 예약 1회 · 발급일로부터 $days일';
+  }
+
+  @override
+  String referralOfferLine(String amount) {
+    return '친구 초대 시 둘 다 $amount';
+  }
 
   @override
   String get locUseCurrent => '현재 위치로 찾기';

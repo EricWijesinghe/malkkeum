@@ -105,6 +105,33 @@ async fn public_proof_hides_small_counts_masks_names_and_respects_moderation(poo
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn public_offers_show_owner_terms_to_guests_and_no_user_fields(pool: PgPool) {
+    use axum::{body::Body, http::Request};
+    use tower::ServiceExt;
+    let app = common::app(pool.clone());
+    let (st, off) = call(&app, "GET", "/v1/public/offers", None, None).await;
+    assert_eq!(st, StatusCode::OK, "{off}");
+    assert_eq!(off["welcome"]["enabled"], false, "off by default");
+    assert_eq!(off["referral"]["enabled"], false, "off by default");
+    assert_eq!(off["welcome_pack"], json!([{ "amount": 15000, "service_code": null }]));
+    assert_eq!(off["coupon_days"], 14);
+
+    set_setting(&pool, "welcome_offer", json!({ "enabled": true, "kind": "percent", "value": 10 })).await;
+    set_setting(&pool, "referral_offer", json!({ "enabled": true, "amount": 3000 })).await;
+    let (st, on) = call(&app, "GET", "/v1/public/offers", None, None).await;
+    assert_eq!(st, StatusCode::OK, "{on}");
+    assert_eq!(on["welcome"], json!({ "enabled": true, "kind": "percent", "value": 10 }));
+    assert_eq!(on["referral"], json!({ "enabled": true, "amount": 3000 }));
+    let mut keys: Vec<&str> = on.as_object().expect("object").keys().map(String::as_str).collect();
+    keys.sort_unstable();
+    assert_eq!(keys, ["coupon_days", "referral", "welcome", "welcome_pack"], "no user data in the public answer");
+
+    let req = Request::builder().uri("/v1/public/offers").body(Body::empty()).expect("request");
+    let res = app.clone().oneshot(req).await.expect("response");
+    assert_eq!(res.headers()["cache-control"], "public, max-age=300");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn referral_pays_both_sides_once_after_the_friend_pays_and_completes(pool: PgPool) {
     seed_catalog(&pool).await;
     set_setting(&pool, "referral_offer", json!({ "enabled": true, "amount": 3000 })).await;

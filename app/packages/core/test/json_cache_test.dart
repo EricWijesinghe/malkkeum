@@ -45,4 +45,12 @@ void main() {
   test('a missing key reads as null', () async {
     expect(await JsonCache(storage: _MemStorage()).read('feed.me'), isNull);
   });
+
+  test('clear removes only the named snapshot', () async {
+    final storage = _MemStorage({'cache.feed.me': '[]', 'cache.services': '[]'});
+
+    await JsonCache(storage: storage).clear('feed.me');
+
+    expect(storage.data.keys, ['cache.services']);
+  });
 }

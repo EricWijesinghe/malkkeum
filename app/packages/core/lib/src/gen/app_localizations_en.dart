@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3494,6 +3493,53 @@ class TEn extends T {
 
   @override
   String get guestSeePrices => 'See prices without signing up';
+
+  @override
+  String get guestFlowTitle => 'Here is how a booking works';
+
+  @override
+  String get guestFlowQuote => 'Quote';
+
+  @override
+  String get guestFlowQuoteBody =>
+      'Tell us about your home and see the price right away';
+
+  @override
+  String get guestFlowConfirm => 'Booking confirmed';
+
+  @override
+  String get guestFlowConfirmBody => 'Pick a date and time to confirm';
+
+  @override
+  String get guestFlowVisit => 'Visit';
+
+  @override
+  String get guestFlowVisitBody => 'Your pro arrives at the agreed time';
+
+  @override
+  String get guestFlowDone => 'Done and review';
+
+  @override
+  String get guestFlowDoneBody => 'Check the photos and leave a review';
+
+  @override
+  String get guestFirstQuoteCta => 'Get your first quote';
+
+  @override
+  String get guestFaqTitle => 'Frequently asked questions';
+
+  @override
+  String get guestChatCta => 'Chat with our team (sign-in required)';
+
+  @override
+  String welcomeOfferLine(String value, String days) {
+    return '$value off your first booking · once, after sign-up · valid $days days';
+  }
+
+  @override
+  String referralOfferLine(String amount) {
+    return 'You and a friend each get $amount';
+  }
 
   @override
   String get locUseCurrent => 'Use my current location';
