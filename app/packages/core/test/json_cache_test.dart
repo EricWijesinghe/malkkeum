@@ -12,6 +12,10 @@ class _MemStorage extends FlutterSecureStorage {
       data[key];
 
   @override
+  Future<void> delete({required String key, AppleOptions? iOptions, AndroidOptions? aOptions, LinuxOptions? lOptions, WebOptions? webOptions, AppleOptions? mOptions, WindowsOptions? wOptions}) async =>
+      data.remove(key);
+
+  @override
   Future<void> write({required String key, required String? value, AppleOptions? iOptions, AndroidOptions? aOptions, LinuxOptions? lOptions, WebOptions? webOptions, AppleOptions? mOptions, WindowsOptions? wOptions}) async {
     if (value == null) {
       data.remove(key);
