@@ -3566,6 +3566,193 @@ class TEn extends T {
   String get oJob_notify_outbox => 'Notification outbox';
 
   @override
+  String get err_owner_exists => 'An owner is already set';
+
+  @override
+  String get err_second_factor_required =>
+      'Finish two-step sign-in and saving recovery codes first';
+
+  @override
+  String get err_owner_transfer_self =>
+      'You cannot hand the owner role to yourself';
+
+  @override
+  String get err_owner_target_invalid =>
+      'The new owner must be an active admin';
+
+  @override
+  String get err_wrong_password => 'The current password is wrong';
+
+  @override
+  String get err_mfa_not_enabled => 'Set up two-step sign-in first';
+
+  @override
+  String get err_reset_code_invalid => 'The reset code is wrong or has expired';
+
+  @override
+  String get err_sms_failed =>
+      'The SMS could not be sent, so the number was not changed. Try again shortly';
+
+  @override
+  String get oaTitle => 'My account';
+
+  @override
+  String get oaOwnerBadge => 'Owner';
+
+  @override
+  String get oaNotOwner =>
+      'Only the owner can change account security and server settings.';
+
+  @override
+  String get oaClaimTitle => 'Claim the owner role';
+
+  @override
+  String get oaClaimBody =>
+      'No owner is set. As owner you manage account security and server settings.';
+
+  @override
+  String get oaClaim => 'Make me the owner';
+
+  @override
+  String get oaClaimDone => 'You are now the owner';
+
+  @override
+  String get oaTwoFactorHint =>
+      'Finish two-step sign-in and saving your recovery codes before owner actions open up.';
+
+  @override
+  String get oaConfirmCodes => 'I wrote down my recovery codes';
+
+  @override
+  String get oaCodesConfirmed => 'Recovery codes confirmed';
+
+  @override
+  String get oaAlertPhone => 'Alert phone';
+
+  @override
+  String get oaAlertPhoneNone =>
+      'Not set. Add one to get important alerts by SMS.';
+
+  @override
+  String get oaChangePhone => 'Change number';
+
+  @override
+  String get oaPhoneHint => 'Mobile number starting with 010';
+
+  @override
+  String get oaPhoneNote => 'The current number gets an SMS about the change.';
+
+  @override
+  String get oaPhoneSaved => 'Alert number updated';
+
+  @override
+  String get oaPassword => 'Change password';
+
+  @override
+  String get oaPasswordNote =>
+      'Changing it signs out every device. Sign in again with the new password.';
+
+  @override
+  String get oaCurrentPassword => 'Current password';
+
+  @override
+  String get oaNewPassword => 'New password';
+
+  @override
+  String get oaPasswordChanged => 'Password changed. Please sign in again.';
+
+  @override
+  String get oaSignOutAll => 'Sign out everywhere';
+
+  @override
+  String get oaSignOutAllBody =>
+      'Every device is signed out, this one included. This cannot be undone.';
+
+  @override
+  String get oaSessions => 'Signed-in devices';
+
+  @override
+  String get oaRecoveryCodes => 'Make new recovery codes';
+
+  @override
+  String get oaRecoveryBody =>
+      'All old recovery codes stop working. Write the new ones down and keep them somewhere safe.';
+
+  @override
+  String get oaRecoveryShown => 'New recovery codes';
+
+  @override
+  String get oaTransfer => 'Hand over the owner role';
+
+  @override
+  String get oaTransferBody =>
+      'The new owner must also enter a code from their own app. After the handover this account loses owner powers.';
+
+  @override
+  String get oaTransferTarget => 'New owner';
+
+  @override
+  String get oaTransferCode => 'New owner\'s 6-digit code';
+
+  @override
+  String get oaTransferNone => 'No other active admin to hand over to';
+
+  @override
+  String get oaTransferDone =>
+      'Owner role handed over. This account no longer has owner actions.';
+
+  @override
+  String get oaTotpTitle => 'Enter your code';
+
+  @override
+  String get oaTotpBody =>
+      'Enter the 6-digit code from your authenticator app. Each code works once.';
+
+  @override
+  String get oaTotpLabel => '6-digit code';
+
+  @override
+  String get oaTotpInvalid => 'Enter the 6 digits';
+
+  @override
+  String get oaContinue => 'Continue';
+
+  @override
+  String get oaCancel => 'Cancel';
+
+  @override
+  String get oaSignInAgain => 'Please sign in again';
+
+  @override
+  String get oaRecoveryTypeTitle => 'Confirm you saved the codes';
+
+  @override
+  String get oaRecoveryTypeBody =>
+      'To confirm, type one of the recovery codes you were just shown.';
+
+  @override
+  String get oaRecoveryTypeLabel => 'One recovery code';
+
+  @override
+  String get err_recovery_code_invalid =>
+      'That code does not match the recovery codes you were just shown';
+
+  @override
+  String get err_totp_invalid =>
+      'That code is wrong. Enter the 6-digit code shown in your app';
+
+  @override
+  String get err_totp_required => 'Enter your 6-digit code';
+
+  @override
+  String get err_totp_reused =>
+      'That code was already used. Wait about 30 seconds for the next code';
+
+  @override
+  String get err_owner_cannot_deactivate =>
+      'The owner account cannot be turned off. Hand the owner role to another admin first';
+
+  @override
   String get pTabJobs => 'Jobs';
 
   @override

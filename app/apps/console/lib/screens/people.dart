@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import '../widgets/owner_totp_dialog.dart';
 import 'finance_tax.dart';
 import 'confirm_action.dart';
 import 'payout_seller_dialog.dart';
@@ -671,16 +672,26 @@ class _StaffState extends State<StaffScreen> {
     );
     if (ok == true && mounted) {
       final api = context.api;
-      await _act(
-        context,
-        () => api.post('/admin/staff', {
-          'email': email.text,
-          'name': name.text,
-          'role': role,
-          'password': password.text,
-        }),
-        () async => _view.currentState?.reload(),
-      );
+      final body = {
+        'email': email.text,
+        'name': name.text,
+        'role': role,
+        'password': password.text,
+      };
+      // Making an admin needs the owner's own code; a consultant does not.
+      final code = role == 'admin' ? await askOwnerTotp(context) : '';
+      if (code != null && mounted) {
+        await _act(
+          context,
+          () => api.post(
+            '/admin/staff',
+            body,
+            null,
+            role == 'admin' ? ownerHeaders(code) : null,
+          ),
+          () async => _view.currentState?.reload(),
+        );
+      }
     }
     disposeAfterClose([email, name, password]);
   }
@@ -716,28 +727,30 @@ class _StaffState extends State<StaffScreen> {
                         onPressed: () => issueStaffPasswordReset(context, s),
                         child: Text(t.cStaffReset),
                       ),
-                    TextButton(
-                      onPressed: () async {
-                        // Only deactivation needs a confirm; reactivating is harmless.
-                        final deactivating = s['active'] == true;
-                        if (deactivating &&
-                            !await confirmAction(context, t.cDeactivate)) {
-                          return;
-                        }
-                        if (!context.mounted) return;
-                        await _act(
-                          context,
-                          () => context.api.post(
-                            '/admin/staff/${s['id']}/active',
-                            {'active': !deactivating},
-                          ),
-                          reload,
-                        );
-                      },
-                      child: Text(
-                        s['active'] == true ? t.cDeactivate : t.cActivate,
+                    // The owner leaves only by handing the role over, so the owner row has no switch.
+                    if (s['is_owner'] != true)
+                      TextButton(
+                        onPressed: () async {
+                          // Only deactivation needs a confirm; reactivating is harmless.
+                          final deactivating = s['active'] == true;
+                          if (deactivating &&
+                              !await confirmAction(context, t.cDeactivate)) {
+                            return;
+                          }
+                          if (!context.mounted) return;
+                          await _act(
+                            context,
+                            () => context.api.post(
+                              '/admin/staff/${s['id']}/active',
+                              {'active': !deactivating},
+                            ),
+                            reload,
+                          );
+                        },
+                        child: Text(
+                          s['active'] == true ? t.cDeactivate : t.cActivate,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

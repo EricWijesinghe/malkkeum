@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import '../widgets/owner_totp_dialog.dart';
 import 'confirm_action.dart';
 
 /// Owner-initiated password reset. The server returns a one-time token shown once in a dialog; the
@@ -11,9 +12,18 @@ import 'confirm_action.dart';
 Future<void> issueStaffPasswordReset(BuildContext context, Json staff) async {
   final t = context.t;
   if (!await confirmAction(context, t.cStaffReset) || !context.mounted) return;
+  // Resetting the owner's own password needs the owner's code; any other staff member does not.
+  final isOwner = staff['is_owner'] == true;
+  final code = isOwner ? await askOwnerTotp(context) : '';
+  if (code == null || !context.mounted) return;
   try {
     final r =
-        await context.api.post('/admin/staff/${staff['id']}/password-reset', {})
+        await context.api.post(
+              '/admin/staff/${staff['id']}/password-reset',
+              {},
+              null,
+              isOwner ? ownerHeaders(code) : null,
+            )
             as Json;
     if (!context.mounted) return;
     await showDialog<void>(

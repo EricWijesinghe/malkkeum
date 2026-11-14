@@ -27,6 +27,9 @@ async fn main() {
     if args.get(1).map(String::as_str) == Some("demo") {
         std::process::exit(api::demo::cli(&args[2..]).await);
     }
+    if args.get(1).map(String::as_str) == Some("owner-reset") {
+        std::process::exit(api::owner::reset_cli().await);
+    }
     if let Err(e) = api::serve().await {
         tracing::error!(error = %e, "fatal");
         std::process::exit(1);

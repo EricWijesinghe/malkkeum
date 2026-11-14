@@ -26,6 +26,7 @@ class StaffMfaPanel extends StatefulWidget {
 
 class _StaffMfaPanelState extends State<StaffMfaPanel> {
   final _code = TextEditingController();
+  final _savedCode = TextEditingController();
   bool _recovery = false;
   bool _busy = false;
   String? _error;
@@ -46,6 +47,7 @@ class _StaffMfaPanelState extends State<StaffMfaPanel> {
   @override
   void dispose() {
     _code.dispose();
+    _savedCode.dispose();
     super.dispose();
   }
 
@@ -97,7 +99,15 @@ class _StaffMfaPanelState extends State<StaffMfaPanel> {
     });
   });
 
-  Future<void> _continue() => _run(() => _session.save(_tokens!));
+  /// Saves the session, then records that the owner kept the recovery codes. Owner actions stay locked
+  /// until that record exists (the account screen offers it again if this call fails).
+  Future<void> _continue() => _run(() async {
+    final api = context.api;
+    await _session.save(_tokens!);
+    if (widget.challenge.enrol) {
+      await api.post('/admin/me/recovery-codes/confirm', {'code': _savedCode.text.trim()});
+    }
+  });
 
   void _submit() {
     if (_busy) return;
@@ -237,6 +247,11 @@ class _StaffMfaPanelState extends State<StaffMfaPanel> {
           ),
         ),
       ),
+    ),
+    const SizedBox(height: Space.md),
+    TextField(
+      controller: _savedCode,
+      decoration: InputDecoration(labelText: t.oaRecoveryTypeLabel),
     ),
     const SizedBox(height: Space.sm),
     Wrap(

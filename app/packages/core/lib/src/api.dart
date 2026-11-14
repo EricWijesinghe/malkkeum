@@ -90,8 +90,9 @@ class ApiClient {
   }
 
   /// [idempotencyKey]: send the same key on every retry of one user action (server replays the first answer for 24h).
-  Future<dynamic> post(String path, [Object? body, String? idempotencyKey]) =>
-      _send('POST', path, body: body, idempotencyKey: idempotencyKey);
+  /// [headers]: extra headers for this call only, e.g. `X-Owner-Totp` on owner-only requests.
+  Future<dynamic> post(String path, [Object? body, String? idempotencyKey, Map<String, String>? headers]) =>
+      _send('POST', path, body: body, idempotencyKey: idempotencyKey, headers: headers);
 
   /// A fresh key for one user action: 128 bits from a secure RNG, hex.
   static String newIdempotencyKey() {
@@ -102,8 +103,8 @@ class ApiClient {
     ).join();
   }
 
-  Future<dynamic> put(String path, [Object? body]) =>
-      _send('PUT', path, body: body);
+  Future<dynamic> put(String path, [Object? body, Map<String, String>? headers]) =>
+      _send('PUT', path, body: body, headers: headers);
   Future<dynamic> patch(String path, [Object? body]) =>
       _send('PATCH', path, body: body);
   Future<dynamic> delete(String path, [Object? body]) =>
@@ -125,10 +126,12 @@ class ApiClient {
     Object? body,
     Map<String, String?>? query,
     String? idempotencyKey,
+    Map<String, String>? headers,
   }) => _exec(path, () {
     final req = http.Request(method, _uri(path, query))
       ..headers['Content-Type'] = 'application/json';
     if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
+    if (headers != null) req.headers.addAll(headers);
     if (body != null) req.body = jsonEncode(body);
     return req;
   });

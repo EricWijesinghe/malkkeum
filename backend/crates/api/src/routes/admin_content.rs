@@ -5,18 +5,21 @@ use crate::{
     auth::{Admin, Staff, hash_password, normalize_phone},
     contract,
     error::{ApiError, ApiResult},
+    owner,
     realtime::{Recipient, notify},
     state::AppState,
 };
 use axum::{
     Json, Router,
-    extract::{Path, Query, State},
+    extract::{ConnectInfo, Path, Query, State},
+    http::HeaderMap,
     routing::{get, post, put},
 };
 use chrono::{DateTime, Duration, Utc};
 use domain::{catalog::Pricing, coupon::COUPON_LIFETIME_DAYS, quote::QuoteFormula};
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::net::SocketAddr;
 use uuid::Uuid;
 
 const LIST_LIMIT: i64 = 200;
@@ -163,7 +166,10 @@ async fn get_quality_thresholds(State(s): State<AppState>, _st: Staff) -> ApiRes
     let (warning_below, pause_below): (i16, i16) = sqlx::query_as("SELECT warning_below, pause_below FROM quality_settings WHERE id = 1")
         .fetch_one(&s.db)
         .await?;
-    Ok(Json(domain::quality::QualityThresholds { warning_below: warning_below as u8, pause_below: pause_below as u8 }))
+    Ok(Json(domain::quality::QualityThresholds {
+        warning_below: warning_below as u8,
+        pause_below: pause_below as u8,
+    }))
 }
 
 /// Owner-only. Changing thresholds re-evaluates auto-pause on the next quality recompute.
@@ -429,7 +435,7 @@ async fn hold_settlement(State(s): State<AppState>, Admin(a): Admin, Path(id): P
 }
 
 async fn list_staff(State(s): State<AppState>, _a: Admin) -> ApiResult<Json<Value>> {
-    let v: Value = sqlx::query_scalar("SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'name', name, 'role', role, 'active', active) ORDER BY created_at), '[]') FROM staff")
+    let v: Value = sqlx::query_scalar("SELECT COALESCE(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'name', name, 'role', role, 'active', active, 'is_owner', is_owner) ORDER BY created_at), '[]') FROM staff")
         .fetch_one(&s.db)
         .await?;
     Ok(Json(v))
@@ -444,12 +450,26 @@ struct NewStaff {
     password: String,
 }
 
-async fn create_staff(State(s): State<AppState>, Admin(a): Admin, Json(n): Json<NewStaff>) -> ApiResult<Json<Value>> {
-    let too_long = n.email.len() > contract::MAX_EMAIL_BYTES
-        || n.name.chars().count() > contract::MAX_TEXT_CHARS
-        || n.password.len() > contract::MAX_PASSWORD_BYTES;
-    if too_long || !n.email.contains('@') || n.name.trim().is_empty() || !matches!(n.role.as_str(), "admin" | "consultant") || n.password.len() < MIN_STAFF_PASSWORD {
+async fn create_staff(
+    State(s): State<AppState>,
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Admin(a): Admin,
+    Json(n): Json<NewStaff>,
+) -> ApiResult<Json<Value>> {
+    let too_long =
+        n.email.len() > contract::MAX_EMAIL_BYTES || n.name.chars().count() > contract::MAX_TEXT_CHARS || n.password.len() > contract::MAX_PASSWORD_BYTES;
+    if too_long
+        || !n.email.contains('@')
+        || n.name.trim().is_empty()
+        || !matches!(n.role.as_str(), "admin" | "consultant")
+        || n.password.len() < MIN_STAFF_PASSWORD
+    {
         return Err(ApiError::BadRequest("invalid_staff"));
+    }
+    // An admin account carries the whole console, so only the owner, with a fresh code, can make one.
+    if n.role == "admin" {
+        owner::verify_owner(&s, a, &headers, Some(peer.ip()), true).await?;
     }
     let id: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, role, password_hash) VALUES ($1,$2,$3,$4) RETURNING id")
         .bind(n.email.trim().to_lowercase())
@@ -478,6 +498,14 @@ struct Active {
 async fn set_staff_active(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<Uuid>, Json(x): Json<Active>) -> ApiResult<Json<Value>> {
     if id == a.id && !x.active {
         return Err(ApiError::BadRequest("cannot_deactivate_self"));
+    }
+    // The owner leaves the console only by handing the role over (transfer), never by deactivation.
+    let is_owner: Option<bool> = sqlx::query_scalar("SELECT is_owner FROM staff WHERE id = $1")
+        .bind(id)
+        .fetch_optional(&s.db)
+        .await?;
+    if is_owner == Some(true) && !x.active {
+        return Err(ApiError::BadRequest("owner_cannot_deactivate"));
     }
     sqlx::query("UPDATE staff SET active = $2 WHERE id = $1")
         .bind(id)
