@@ -401,11 +401,13 @@ open_backup() { # open_backup 파일 : .enc 면 ${파일%.enc} 로 풀고, 평�
   esac
 }
 # 평문 덤프를 MKB1 로 봉인하고 평문을 지워요. 외부 백업은 평문으로 올린 뒤에 봉인해요.
-seal_local() { # seal_local 파일 : 봉인에 실패하면 평문도 지우고 경고만 남겨요 (외부 백업은 이미 올라갔어요)
+seal_local() { # seal_local 파일 : 봉인된 .enc 를 확인한 뒤에만 평문을 지워요. 실패하면 평문은 남기고 경고해요 (롤백 사본이 사라지지 않게)
   local f="$1"
-  if api_backup backup-seal "/$f" "/$f.enc" >> backups/backup.log 2>&1; then rm -f -- "$f"
-  else rm -f -- "$f" "$f.enc"; BACKUP_WARN=1; warn "백업 봉인에 실패했어요: $f"; fi
+  if api_backup backup-seal "/$f" "/$f.enc" >> backups/backup.log 2>&1 && [ -s "$f.enc" ]; then rm -f -- "$f"; return 0; fi
+  rm -f -- "$f.enc"; BACKUP_WARN=1; warn "백업 봉인에 실패했어요. 평문 사본은 그대로 남겨 두었어요: $f"; return 1
 }
+# 복원·업데이트·되돌리기 전에 쓰는 백업 파일은 backups/ 안의 상대 경로만 받아요 (컨테이너는 그 폴더만 보여요)
+backup_path_ok() { case "$1" in backups/*) ;; *) return 1 ;; esac; case "$1" in *..*) return 1 ;; esac; }
 # api 이미지의 백업 명령(backup-upload, -fetch, -list). backups/ 는 root 전용(700)이라 컨테이너 안에서도 root 로
 # 실행해요. 권한(capability)은 모두 빠진 채라 이 폴더와 앱 볼륨에만 닿아요. 임시 파일은 메모리(/tmp) 대신 backups/ 에.
 api_backup() { dc run --rm --no-deps -T --user 0 -e TMPDIR=/backups -v "$DIR/backups:/backups" api api "$@"; }
@@ -598,10 +600,21 @@ cmd_backup() { # BACKUP_WARN=1 이면 DB 는 백업됐지만 사진 파일이나
   api_backup backup-upload "/$db" >> backups/backup.log 2>&1 \
     || warn "외부 백업 실패 또는 미설정 — 콘솔 [설정 > 외부 백업]을 확인하세요"
   # 서버 디스크에 남는 로컬 사본은 봉인해요: 평문 덤프(고객 정보)가 그대로 남지 않아요.
-  seal_local "$db"
-  if [ -f "$up" ]; then seal_local "$up"; fi
+  # 예전 설치가 남긴 평문 사본도 이때 함께 봉인해요 (업그레이드 뒤 첫 백업).
+  seal_leftover_plaintext
+  seal_local "$db" || true
+  if [ -f "$up" ]; then seal_local "$up" || true; fi
   [ "$prune" = noprune ] || find backups \( -name 'db-*.sql.gz' -o -name 'db-*.sql.gz.enc' -o -name 'uploads-*.tar.gz' -o -name 'uploads-*.tar.gz.enc' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
-  ok "백업 완료: $DIR/$db.enc"
+  if [ -f "$db.enc" ]; then ok "백업 완료: $DIR/$db.enc"; return 0; fi
+  BACKUP_WARN=1; warn "로컬 백업을 봉인하지 못했어요. 업데이트·복원·되돌리기를 멈춰요. 'dahae logs' 로 확인하세요."
+  return 1
+}
+seal_leftover_plaintext() { # 봉인되지 않은 평문 db-*.sql.gz · uploads-*.tar.gz 를 .enc 로 바꿔요 (예전 설치에서 남은 것)
+  local f
+  for f in backups/db-*.sql.gz backups/uploads-*.tar.gz; do
+    [ -f "$f" ] && [ ! -f "$f.enc" ] || continue
+    seal_local "$f" || true
+  done
 }
 
 cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터넷 없이 업데이트할 때 써요.
@@ -633,7 +646,7 @@ cmd_update() { # dahae update [태그]: 태그를 주면 그 버전으로 바꿔
   local repo ver cur_api cur_web new_api
   printf '\n▶ 업데이트를 시작합니다 (먼저 백업해요)\n'
   db_roles # 백업의 외부 업로드도 앱 계정으로 접속해요: 예전 설치를 처음 올릴 때 계정부터 만들어요
-  cmd_backup
+  cmd_backup || die "백업을 끝내지 못해서 업데이트를 멈췄어요. 지금 버전 그대로예요."
   repo=$(env_get IMAGE_REPO); ver=${1:-$(env_get VERSION)}
   pull_images "$repo" "$ver"
   cur_api=$(digest_ref "$(running_image api "$(env_get API_IMAGE)")" "$repo/malkkeum-api")
@@ -673,7 +686,7 @@ cmd_rollback() {
   if [ -z "$prev_api" ] || [ "$prev_api" = "$(env_get API_IMAGE)" ]; then
     die "되돌릴 이전 버전 기록이 없어요. 업데이트를 한 번 한 뒤에 쓸 수 있어요."
   fi
-  cmd_backup
+  cmd_backup || die "백업을 끝내지 못해서 되돌리기를 멈췄어요. 지금 버전 그대로예요."
   cur_api=$(digest_ref "$(running_image api "$(env_get API_IMAGE)")" "$repo/malkkeum-api")
   cur_web=$(digest_ref "$(running_image web "$(env_get WEB_IMAGE)")" "$repo/malkkeum-web")
   env_set PREV_API_IMAGE "$cur_api"; env_set PREV_WEB_IMAGE "$cur_web"
@@ -737,10 +750,10 @@ cmd_keys_backup() { # dahae keys-backup : 외부 백업은 DATA_KEY 로 잠겨�
 }
 
 # 사본을 서버 밖에 보관했는지 사장님(관리자)이 직접 확인해요. 확인 기록은 .env 의 KEY_ESCROW_AT 에 남아요.
+# --yes 로는 확인하지 않아요: 사람이 터미널에서 직접 입력해야만 기록돼요.
 key_escrow_confirm() {
   local a=""
-  if [ "${YES:-0}" = 1 ]; then a="보관했어요"
-  elif has_tty; then
+  if has_tty; then
     printf '서버 밖에 보관했어요? 보관했다면 "보관했어요" 를 입력하세요 (나중에 하려면 Enter): ' >/dev/tty
     IFS= read -r a </dev/tty || true
   fi
@@ -785,7 +798,10 @@ cmd_restore() { # dahae restore 파일 [--yes]
   local f="" up a
   for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) f="$a" ;; esac; done
   [ -n "$f" ] || die "복원할 백업 파일을 지정하세요. 예: dahae restore backups/db-20261110-033000.sql.gz.enc"
+  backup_path_ok "$f" || die "백업 파일은 backups/ 폴더 안의 파일만 쓸 수 있어요 (예: backups/db-20261110-033000.sql.gz.enc): $f"
   [ -f "$f" ] || die "백업 파일을 찾을 수 없어요: $f"
+  confirm "현재 데이터를 ${f%.enc} 로 되돌릴까요? 지금 데이터는 먼저 따로 백업해 둬요." yes
+  # 확인을 받은 뒤에만 평문을 풀어요
   open_backup "$f" || die "백업을 풀지 못했어요. 봉인 키(DATA_KEY)가 맞는지 확인하세요: $f"
   f="${f%.enc}"
   up=$(uploads_for "$f")
@@ -794,9 +810,8 @@ cmd_restore() { # dahae restore 파일 [--yes]
   if [ -f "$up" ] && ! uploads_tar_ok "$up"; then
     die "사진 파일 백업이 손상됐거나 허용되지 않는 항목(절대 경로, .., 링크)이 있어서 복원을 멈췄어요. 아무것도 바뀌지 않았어요: $up"
   fi
-  confirm "현재 데이터를 $f 로 되돌릴까요? 지금 데이터는 먼저 따로 백업해 둬요." yes
   printf '\n▶ 복원 전에 지금 상태를 백업해요\n'
-  cmd_backup noprune
+  cmd_backup noprune || die "복원 전 백업을 끝내지 못해서 복원을 멈췄어요. 아무것도 바뀌지 않았어요."
   db_roles
   dc stop api >/dev/null
   # 한 트랜잭션으로 적용해요: 오류가 하나라도 나면 아무것도 바뀌지 않아요.
@@ -822,11 +837,12 @@ cmd_restore_offsite() { # dahae restore-offsite [이름] [--yes]
   if [ -z "$name" ]; then api_backup backup-list; return 0; fi
   valid_backup_name "$name" || die "외부 백업 이름이 아니에요 (예: db-20261110-033000.sql.gz.enc): $name"
   db="backups/${name%.enc}"; up=$(uploads_for "$db")
+  confirm "외부 백업 $name 으로 되돌릴까요? 지금 데이터는 먼저 따로 백업해 둬요." yes
   SCRATCH+=("$db" "$up")   # 내려받은 평문은 복원이 끝나면 지워요
   api_backup backup-fetch "$name" "/$db" || die "외부 백업을 내려받지 못했어요"
   api_backup backup-fetch "$(basename "$up").enc" "/$up" >/dev/null 2>&1 \
     || warn "외부 백업에 같은 시각의 사진 파일이 없어요"
-  cmd_restore "$db"
+  YES=1 cmd_restore "$db" # 위에서 이미 확인했어요: 평문은 확인 뒤에만 내려받아요
 }
 
 cmd_heartbeat() { # dahae heartbeat <https 주소>|off

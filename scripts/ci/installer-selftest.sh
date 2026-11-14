@@ -251,6 +251,29 @@ for k in 'no-new-privileges:true' 'cap_drop: \[ALL\]' 'read_only: true'; do
 done
 t  "every service memory-capped" eq "$(grep -c '^    mem_limit:' "$ROOT/deploy/docker-compose.yml")" 3
 
+# ---- local backups: plaintext stays until its sealed copy exists; restore takes only backups/ paths ----
+mkdir -p backups
+api_backup() { return 1; } # the seal step fails
+printf 'dump' > backups/db-t1.sql.gz
+seal_local backups/db-t1.sql.gz >/dev/null 2>&1 || true
+t  "seal failure keeps plaintext"     test -f backups/db-t1.sql.gz
+nt "seal failure leaves no .enc"      test -e backups/db-t1.sql.gz.enc
+api_backup() { printf 'MKB1' > "${3#/}"; } # the container's seal step, on this sandbox
+printf 'dump' > backups/db-t2.sql.gz
+t  "seal success"                     seal_local backups/db-t2.sql.gz
+nt "seal success removes plaintext"   test -e backups/db-t2.sql.gz
+t  "seal success keeps .enc"          test -s backups/db-t2.sql.gz.enc
+printf 'old' > backups/db-t3.sql.gz
+seal_leftover_plaintext >/dev/null 2>&1
+t  "leftover plaintext gets sealed"   test -s backups/db-t3.sql.gz.enc
+t  "backup path in backups/"          backup_path_ok backups/db-t2.sql.gz.enc
+nt "backup path outside backups/"     backup_path_ok /etc/passwd
+nt "backup path bare name"            backup_path_ok db-t2.sql.gz.enc
+nt "backup path traversal"            backup_path_ok backups/../x
+unset -f api_backup
+YES=1 key_escrow_confirm >/dev/null 2>&1
+t  "--yes never attests key copy"     eq "$(env_get KEY_ESCROW_AT)" ""
+
 # ---- secret key copy (dahae keys-backup / keys-restore) ----
 printf 'DB_PASSWORD=%s\nDATA_KEY=%s\nJWT_SECRET=%s\n' "$(printf 'a%.0s' $(seq 48))" "$(printf 'b%.0s' $(seq 64))" "$(printf 'c%.0s' $(seq 64))" > "$SB/keys.env"
 keys_seal 'correct horse battery' < "$SB/keys.env" > "$SB/keys.enc"

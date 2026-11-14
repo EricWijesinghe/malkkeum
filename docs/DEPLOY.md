@@ -129,7 +129,9 @@ process holds port 80 or 443.
 - **Backups, RPO and RTO.** Every server takes a `pg_dump` daily at 03:30 KST and before every
   update, kept 14 days on the server's own disk. The disk copy is sealed in the same AES-256-GCM format
   as the offsite copy (`*.sql.gz.enc`, opened again by `dahae restore`), so no plaintext dump stays on
-  the server. The optional offsite copy (setup wizard, S3-compatible) is sealed the same way. There is no WAL archiving, so the recovery point objective is **24 hours**
+  the server. Plaintext dumps left by older installs are sealed on the next backup. The one exception:
+  if sealing fails, the plaintext copy is kept (never deleted before its `.enc` exists), `dahae backup`
+  exits with an error, and update, rollback and restore refuse to run until a backup completes. The optional offsite copy (setup wizard, S3-compatible) is sealed the same way. There is no WAL archiving, so the recovery point objective is **24 hours**
   (up to one day of bookings can be lost). Recovery time on a fresh VPS is about **1 hour**: run the
   installer, put the old `.env` back, `sudo dahae restore-offsite <name>`. Without offsite backups a
   lost disk is a total loss: configure them before launch.
