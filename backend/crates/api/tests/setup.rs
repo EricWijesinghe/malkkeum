@@ -24,8 +24,18 @@ async fn owner_token(app: &axum::Router) -> String {
     let (st, e) = call(app, "POST", "/v1/auth/staff/mfa/enrol", None, Some(json!({ "mfa_token": mfa }))).await;
     assert_eq!(st, StatusCode::OK, "{e}");
     let secret = api::totp::decode_secret(e["secret"].as_str().expect("secret")).expect("base32");
-    let code = format!("{:06}", api::totp::code_at(&secret, (chrono::Utc::now().timestamp() / api::totp::STEP_SECS) as u64));
-    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/enrol/confirm", None, Some(json!({ "mfa_token": mfa, "code": code }))).await;
+    let code = format!(
+        "{:06}",
+        api::totp::code_at(&secret, (chrono::Utc::now().timestamp() / api::totp::STEP_SECS) as u64)
+    );
+    let (st, c) = call(
+        app,
+        "POST",
+        "/v1/auth/staff/mfa/enrol/confirm",
+        None,
+        Some(json!({ "mfa_token": mfa, "code": code })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{c}");
     c["access_token"].as_str().expect("token").to_string()
 }
@@ -43,7 +53,7 @@ async fn create_owner(app: &axum::Router, code: &str) -> (StatusCode, Value) {
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn first_owner_needs_the_setup_code_and_only_one_can_be_created(pool: PgPool) {
-    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    ensure_setup_code(&pool, Some("ABCD2345EFGH"), None).await.expect("code");
     let app = common::app(pool.clone());
     let (_, s) = call(&app, "GET", "/v1/setup", None, None).await;
     assert_eq!(s["needs_admin"], true);
@@ -61,8 +71,19 @@ async fn first_owner_needs_the_setup_code_and_only_one_can_be_created(pool: PgPo
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn installer_setup_code_expires_after_two_hours(pool: PgPool) {
+    let now = chrono::Utc::now().timestamp();
+    ensure_setup_code(&pool, Some("ABCD2345EFGH"), Some(now - 7201)).await.expect("code");
+    let app = common::app(pool.clone());
+    let (st, b) = create_owner(&app, "ABCD2345EFGH").await;
+    assert_eq!(st, StatusCode::FORBIDDEN, "expired code refused even when correct: {b}");
+    let (_, s) = call(&app, "GET", "/v1/setup", None, None).await;
+    assert_eq!(s["needs_admin"], true, "expired code does not create the owner");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn owner_saves_business_and_keys_secrets_come_back_masked(pool: PgPool) {
-    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    ensure_setup_code(&pool, Some("ABCD2345EFGH"), None).await.expect("code");
     let app = common::app(pool.clone());
     create_owner(&app, "ABCD2345EFGH").await;
     let t = owner_token(&app).await;
@@ -128,14 +149,28 @@ async fn customer_cannot_read_setup(pool: PgPool) {
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn review_samples_seed_two_bookings_once_and_only_while_active(pool: PgPool) {
-    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    ensure_setup_code(&pool, Some("ABCD2345EFGH"), None).await.expect("code");
     common::seed_catalog(&pool).await;
     let app = common::app(pool.clone());
     create_owner(&app, "ABCD2345EFGH").await;
     let t = owner_token(&app).await;
-    let (st, b) = call(&app, "PUT", "/v1/admin/setup/review", Some(t.as_str()), Some(json!({"phone": "010-9999-0001", "code": "123456"}))).await;
+    let (st, b) = call(
+        &app,
+        "PUT",
+        "/v1/admin/setup/review",
+        Some(t.as_str()),
+        Some(json!({"phone": "010-9999-0001", "code": "123456"})),
+    )
+    .await;
     assert_eq!((st, b["samples"].as_i64()), (StatusCode::OK, Some(2)), "{b}");
-    let (_, b) = call(&app, "PUT", "/v1/admin/setup/review", Some(t.as_str()), Some(json!({"phone": "010-9999-0001", "code": "123456"}))).await;
+    let (_, b) = call(
+        &app,
+        "PUT",
+        "/v1/admin/setup/review",
+        Some(t.as_str()),
+        Some(json!({"phone": "010-9999-0001", "code": "123456"})),
+    )
+    .await;
     assert_eq!(b["samples"], 0, "saving again adds no samples");
     let n: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings").fetch_one(&pool).await.expect("count");
     assert_eq!(n, 2);
@@ -143,7 +178,7 @@ async fn review_samples_seed_two_bookings_once_and_only_while_active(pool: PgPoo
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn review_account_signs_in_with_the_owner_code_and_no_sms_code_is_echoed(pool: PgPool) {
-    ensure_setup_code(&pool, Some("ABCD2345EFGH")).await.expect("code");
+    ensure_setup_code(&pool, Some("ABCD2345EFGH"), None).await.expect("code");
     let app = common::app(pool.clone());
     create_owner(&app, "ABCD2345EFGH").await;
     let t = owner_token(&app).await;

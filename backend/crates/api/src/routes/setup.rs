@@ -31,6 +31,8 @@ const SETUP_CODE_LEN: usize = 12;
 /// No 0/O/1/I/L: the code is read off a screen and typed by hand.
 const SETUP_ALPHABET: &[u8] = b"23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 const SETUP_CODE_KEY: &str = "setup_code";
+/// The installer's setup code works for two hours after it is issued.
+const SETUP_CODE_TTL_SECS: i64 = 2 * 60 * 60;
 const BUSINESS_KEY: &str = "business";
 const REVIEW_KEY: &str = "review_account";
 /// App Review needs days, not hours; the account switches itself off after this.
@@ -66,29 +68,50 @@ fn random_code() -> String {
         .collect()
 }
 
+/// Whether a setup code issued at `issued_at` (unix seconds) is past its window. A code with no
+/// issue time counts as expired, so a row written before expiry existed cannot be used.
+fn setup_code_expired(issued_at: Option<i64>, now: i64) -> bool {
+    issued_at.is_none_or(|at| now - at > SETUP_CODE_TTL_SECS)
+}
+
+/// The code and issue time from the stored settings row, if it has a code.
+fn parse_setup_code(saved: Option<Value>) -> Option<(String, Option<i64>)> {
+    saved.and_then(|v| Some((v["code"].as_str()?.to_string(), v["at"].as_i64())))
+}
+
+async fn saved_setup_code(db: &PgPool) -> Result<Option<(String, Option<i64>)>, sqlx::Error> {
+    let saved: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(SETUP_CODE_KEY)
+        .fetch_optional(db)
+        .await?;
+    Ok(parse_setup_code(saved))
+}
+
+/// Picks the code to use and its issue time. The installer's code wins (issued at `issued_at`,
+/// or when it was first stored). Otherwise the stored code is kept until it expires, then a new one is made.
+fn choose_setup_code(from_env: Option<&str>, issued_at: Option<i64>, saved: Option<(String, Option<i64>)>, now: i64) -> (String, i64) {
+    match (from_env, saved) {
+        (Some(env_code), saved) => {
+            let stored_at = saved.filter(|(c, _)| c == env_code).and_then(|(_, at)| at);
+            (env_code.to_string(), issued_at.or(stored_at).unwrap_or(now))
+        }
+        (None, Some((code, Some(at)))) if !setup_code_expired(Some(at), now) => (code, at),
+        (None, _) => (random_code(), now),
+    }
+}
+
 /// On a fresh install (no staff yet) makes sure a setup code exists and prints it, so the person
 /// installing can open the console and create the owner's account. `SETUP_CODE` (set by the
-/// installer) wins; otherwise a random code is kept in the database across restarts.
-pub async fn ensure_setup_code(db: &PgPool, from_env: Option<&str>) -> Result<(), sqlx::Error> {
+/// installer, issued at `issued_at`) wins; otherwise a random code is kept in the database across restarts.
+pub async fn ensure_setup_code(db: &PgPool, from_env: Option<&str>, issued_at: Option<i64>) -> Result<(), sqlx::Error> {
     if has_staff(db).await? {
         return Ok(());
     }
-    let code = match from_env {
-        Some(c) => c.to_string(),
-        None => {
-            let saved: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
-                .bind(SETUP_CODE_KEY)
-                .fetch_optional(db)
-                .await?;
-            match saved.and_then(|v| v["code"].as_str().map(String::from)) {
-                Some(c) => c,
-                None => random_code(),
-            }
-        }
-    };
+    let saved = saved_setup_code(db).await?;
+    let (code, at) = choose_setup_code(from_env, issued_at, saved, Utc::now().timestamp());
     sqlx::query("INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")
         .bind(SETUP_CODE_KEY)
-        .bind(json!({ "code": code }))
+        .bind(json!({ "code": code, "at": at }))
         .execute(db)
         .await?;
     tracing::warn!("first-run setup: open the console and enter setup code {code}");
@@ -127,9 +150,10 @@ async fn create_admin(State(s): State<AppState>, Json(req): Json<NewAdmin>) -> A
         .bind(SETUP_CODE_KEY)
         .fetch_optional(&mut *tx)
         .await?;
-    let expected = saved.and_then(|v| v["code"].as_str().map(String::from)).unwrap_or_default();
+    let (expected, issued_at) = parse_setup_code(saved).unwrap_or_default();
     let given = req.code.trim().to_uppercase().replace(['-', ' '], "");
-    if expected.is_empty() || !bool::from(given.as_bytes().ct_eq(expected.as_bytes())) {
+    let matches = bool::from(given.as_bytes().ct_eq(expected.as_bytes()));
+    if expected.is_empty() || !matches || setup_code_expired(issued_at, Utc::now().timestamp()) {
         return Err(ApiError::Forbidden);
     }
     let id: uuid::Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role) VALUES ($1, $2, $3, 'admin') RETURNING id")
@@ -684,6 +708,31 @@ mod tests {
         assert_eq!(c.len(), SETUP_CODE_LEN);
         assert!(c.bytes().all(|b| SETUP_ALPHABET.contains(&b)));
         assert!(!c.contains(['0', 'O', '1', 'I', 'L']));
+    }
+
+    #[test]
+    fn setup_code_expires_two_hours_after_issue() {
+        let now = 1_000_000;
+        assert!(!setup_code_expired(Some(now), now));
+        assert!(!setup_code_expired(Some(now - SETUP_CODE_TTL_SECS), now));
+        assert!(setup_code_expired(Some(now - SETUP_CODE_TTL_SECS - 1), now));
+        assert!(setup_code_expired(None, now), "a code without an issue time is never valid");
+    }
+
+    #[test]
+    fn installer_code_keeps_its_issue_time_and_expired_stored_code_is_replaced() {
+        let now = 1_000_000;
+        let issued = now - 60;
+        let saved = Some(("OLDCODE23456".to_string(), Some(issued)));
+        assert_eq!(
+            choose_setup_code(Some("NEWCODE23456"), Some(issued), saved.clone(), now),
+            ("NEWCODE23456".to_string(), issued)
+        );
+        assert_eq!(choose_setup_code(None, None, saved, now), ("OLDCODE23456".to_string(), issued));
+        let stale = Some(("OLDCODE23456".to_string(), Some(now - SETUP_CODE_TTL_SECS - 1)));
+        let (code, at) = choose_setup_code(None, None, stale, now);
+        assert_ne!(code, "OLDCODE23456");
+        assert_eq!(at, now);
     }
 
     #[test]

@@ -30,18 +30,13 @@ pub(crate) mod seller;
 mod settings;
 pub mod setup;
 pub mod site;
-pub mod site;
 mod staff_mfa;
 mod staff_password;
 pub mod subscription_engine;
-pub mod subscription_engine;
-pub(crate) mod subscriptions;
 pub(crate) mod subscriptions;
 mod tax_invoices;
 pub(crate) mod tips;
-pub(crate) mod tips;
 pub mod uploads;
-pub(crate) mod waitlist;
 pub(crate) mod waitlist;
 mod webhooks;
 

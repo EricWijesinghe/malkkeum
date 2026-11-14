@@ -36,7 +36,14 @@ async fn owner_enrol(app: &axum::Router) -> (String, String) {
     let (st, e) = call(app, "POST", "/v1/auth/staff/mfa/enrol", None, Some(json!({ "mfa_token": mfa }))).await;
     assert_eq!(st, StatusCode::OK, "{e}");
     let secret = api::totp::decode_secret(e["secret"].as_str().expect("secret")).expect("base32 secret");
-    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/enrol/confirm", None, Some(json!({ "mfa_token": mfa, "code": code_now(&secret) }))).await;
+    let (st, c) = call(
+        app,
+        "POST",
+        "/v1/auth/staff/mfa/enrol/confirm",
+        None,
+        Some(json!({ "mfa_token": mfa, "code": code_now(&secret) })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{c}");
     let recovery = c["recovery_codes"][0].as_str().expect("recovery code").to_string();
     (c["access_token"].as_str().expect("token").to_string(), recovery)
@@ -47,14 +54,21 @@ async fn owner_verify(app: &axum::Router, recovery: &str) -> String {
     let (st, b) = owner_login(app).await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let mfa = b["mfa_token"].as_str().expect("mfa_token");
-    let (st, c) = call(app, "POST", "/v1/auth/staff/mfa/verify", None, Some(json!({ "mfa_token": mfa, "recovery_code": recovery }))).await;
+    let (st, c) = call(
+        app,
+        "POST",
+        "/v1/auth/staff/mfa/verify",
+        None,
+        Some(json!({ "mfa_token": mfa, "recovery_code": recovery })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{c}");
     c["access_token"].as_str().expect("token").to_string()
 }
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
-    ensure_setup_code(&pool, Some(CODE)).await.expect("code");
+    ensure_setup_code(&pool, Some(CODE), None).await.expect("code");
     let app = common::app(pool.clone());
     let (st, b) = call(
         &app,
