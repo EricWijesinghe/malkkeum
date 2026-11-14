@@ -34,6 +34,8 @@ async fn complete_job(app: &axum::Router, pool: &PgPool, id: Uuid, pro: &str) {
         .fetch_one(pool)
         .await
         .expect("pro");
+    let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     common::register_photo(pool, pro_id).await;
     let done = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
     let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/complete"), Some(pro), Some(done)).await;

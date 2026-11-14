@@ -165,6 +165,8 @@ async fn a_failing_notification_insert_never_fails_the_request_and_is_stored_lat
     let (manual, _) = book(&app, &c, 12, None).await;
     accept(&app, done, pro.as_str()).await;
     visit_today(&pool, done).await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{done}/check-in"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     register_photo(&pool, pro_id).await;
 
     let before = inbox_count(&pool, c.user, "booking.status").await;
@@ -451,6 +453,10 @@ async fn completion_by_the_owner_and_by_a_team_member_write_the_same_state(pool:
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (member, _) = login(&app, "010-5600-0106", "partner").await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{by_owner}/check-in"), Some(owner.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{by_member}/check-in"), Some(member.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     register_photo(&pool, owner_id).await;
     register_photo(&pool, member_id).await;
     let owner_url = format!("/v1/partner/jobs/{by_owner}/complete");

@@ -6,6 +6,7 @@ mod common;
 use api::auth::{self, Role};
 use axum::{Router, http::StatusCode};
 use common::{PHOTO, SECRET, book, call, customer, register_photo, seed_catalog, verified_pro};
+use domain::booking::BookingStatus;
 use serde_json::{Value, json};
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -40,6 +41,8 @@ async fn accept_today(app: &Router, pool: &PgPool, id: Uuid, pro: &str) {
 
 async fn complete_today(app: &Router, pool: &PgPool, id: Uuid, pro: &str) {
     accept_today(app, pool, id, pro).await;
+    let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     let pro_id: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1")
         .bind(id)
         .fetch_one(pool)
@@ -214,6 +217,123 @@ async fn check_in_and_out_are_visit_day_only_and_visible_to_staff(pool: PgPool) 
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     assert!(b["booking"]["checked_in_at"].is_string() && b["booking"]["checked_out_at"].is_string(), "{b}");
+}
+
+/// Books a job for today and accepts it as `pro`. Returns the booking id.
+async fn accepted_for_today(app: &Router, pool: &PgPool, pro: &str) -> Uuid {
+    let c = customer(app, pool, "010-5400-0010").await;
+    let (id, _) = book(app, &c, 10, None).await;
+    accept_today(app, pool, id, pro).await;
+    id
+}
+
+/// A team member of `pro` with a partner-app session. Returns (token, member id).
+async fn team_member(app: &Router, pool: &PgPool, pro: Uuid, phone: &str) -> (String, Uuid) {
+    let member: Uuid =
+        sqlx::query_scalar("INSERT INTO team_members (pro_id, name, phone, role, invite_status) VALUES ($1, 'Member', $2, 'member', 'active') RETURNING id")
+            .bind(pro)
+            .bind(phone)
+            .fetch_one(pool)
+            .await
+            .expect("team member");
+    let (token, subject) = common::login(app, phone, "partner").await;
+    assert_eq!(subject, member.to_string());
+    (token, member)
+}
+
+async fn assign_to(pool: &PgPool, booking: Uuid, member: Uuid) {
+    sqlx::query("UPDATE bookings SET assignee_id = $1 WHERE id = $2")
+        .bind(member)
+        .bind(booking)
+        .execute(pool)
+        .await
+        .expect("assign");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn completion_needs_a_check_in_or_an_owner_reason_that_is_audited(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0110").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    register_photo(&pool, pro_id(&pool, id).await).await;
+    let report = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
+    let url = format!("/v1/partner/jobs/{id}/complete");
+
+    let (st, b) = call(&app, "POST", &url, Some(pro.as_str()), Some(report.clone())).await;
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("not_checked_in")), "{b}");
+    let mut blank = report.clone();
+    blank["check_in_override"] = json!("   ");
+    let (st, b) = call(&app, "POST", &url, Some(pro.as_str()), Some(blank)).await;
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("not_checked_in")), "{b}");
+
+    let mut with_reason = report;
+    with_reason["check_in_override"] = json!("Arrival not recorded in the app; confirmed by phone");
+    let (st, b) = call(&app, "POST", &url, Some(pro.as_str()), Some(with_reason)).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'check_in.override' AND target = $1")
+        .bind(id.to_string())
+        .fetch_one(&pool)
+        .await
+        .expect("audit");
+    assert_eq!(audited, 1, "the override is recorded once");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn member_checks_in_and_out_on_an_assigned_job_only(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0120").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    let team = pro_id(&pool, id).await;
+    let (member, member_id) = team_member(&app, &pool, team, "010-5400-0121").await;
+    assign_to(&pool, id, member_id).await;
+    let (stranger, _) = team_member(&app, &pool, team, "010-5400-0122").await;
+
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{id}/check-in"), Some(stranger.as_str()), None).await;
+    assert_eq!(st, StatusCode::NOT_FOUND, "{b}");
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{id}/check-in"), Some(member.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{id}/check-out"), Some(member.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn check_out_on_a_cancelled_booking_is_refused(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0130").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    let (st, _) = call(&app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK);
+    sqlx::query("UPDATE bookings SET status = $1 WHERE id = $2")
+        .bind(BookingStatus::Cancelled.as_i16())
+        .bind(id)
+        .execute(&pool)
+        .await
+        .expect("cancel");
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{id}/check-out"), Some(pro.as_str()), None).await;
+    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("booking_closed")), "{b}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn member_check_in_keeps_the_no_show_scan_off_the_job(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let (pro, _) = verified_pro(&app, &pool, "010-5400-0140").await;
+    let id = accepted_for_today(&app, &pool, pro.as_str()).await;
+    let (member, member_id) = team_member(&app, &pool, pro_id(&pool, id).await, "010-5400-0141").await;
+    assign_to(&pool, id, member_id).await;
+    sqlx::query("UPDATE bookings SET start_hour = 0 WHERE id = $1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .expect("window");
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{id}/check-in"), Some(member.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+
+    let s = api::build_state(pool.clone(), common::test_config()).expect("state");
+    assert_eq!(api::noshow::scan(&s).await.expect("scan"), 0, "a checked-in member is not a no-show");
 }
 
 #[sqlx::test(migrations = "../../migrations")]

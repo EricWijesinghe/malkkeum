@@ -184,9 +184,9 @@ pub fn router(state: AppState) -> Router {
         .with_state(state)
 }
 
-/// Writes an audit record for any staff or money-moving action.
+/// Writes an audit record for any staff or money-moving action. Pass a transaction to commit it with the action.
 pub(crate) async fn audit(
-    db: &sqlx::PgPool,
+    db: impl sqlx::PgExecutor<'_>,
     actor_role: &str,
     actor_id: Option<uuid::Uuid>,
     action: &str,
