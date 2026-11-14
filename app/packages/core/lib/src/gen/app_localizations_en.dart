@@ -3542,6 +3542,52 @@ class TEn extends T {
   }
 
   @override
+  String get hgMoveQuestion => 'Which kind of home are you moving into?';
+
+  @override
+  String get hgNewBuild => 'New build';
+
+  @override
+  String get hgNewBuildBody => 'Newly built home · move-in cleaning';
+
+  @override
+  String get hgOldBuild => 'Existing building';
+
+  @override
+  String get hgOldBuildBody => 'Older home · move-out cleaning';
+
+  @override
+  String get hgSizeQuestion => 'Choose your home size';
+
+  @override
+  String get hgHomeOneTwo => 'Studio · 2-room';
+
+  @override
+  String get hgHomeApartment => 'Apartment';
+
+  @override
+  String get hgHomeVilla => 'Villa · house';
+
+  @override
+  String get hgEstimateOnly => 'Estimate';
+
+  @override
+  String get hgEstimateNote =>
+      'This is an estimate. We confirm the final quote after a consultation.';
+
+  @override
+  String get hgFloorTitle => 'Which floor is it on?';
+
+  @override
+  String get hgFloorLow => 'Floors 1–2';
+
+  @override
+  String get hgFloorHigh => 'Floor 3 or higher';
+
+  @override
+  String get hgAddressAlias => 'Address label';
+
+  @override
   String get locUseCurrent => 'Use my current location';
 
   @override

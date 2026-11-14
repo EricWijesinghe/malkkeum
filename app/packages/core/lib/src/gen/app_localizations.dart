@@ -6619,6 +6619,96 @@ abstract class T {
   /// **'친구 초대 시 둘 다 {amount}'**
   String referralOfferLine(String amount);
 
+  /// No description provided for @hgMoveQuestion.
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 집으로 입주하시나요?'**
+  String get hgMoveQuestion;
+
+  /// No description provided for @hgNewBuild.
+  ///
+  /// In ko, this message translates to:
+  /// **'신축'**
+  String get hgNewBuild;
+
+  /// No description provided for @hgNewBuildBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'새로 지은 집 · 입주 청소'**
+  String get hgNewBuildBody;
+
+  /// No description provided for @hgOldBuild.
+  ///
+  /// In ko, this message translates to:
+  /// **'구축'**
+  String get hgOldBuild;
+
+  /// No description provided for @hgOldBuildBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'오래된 집 · 이사 청소'**
+  String get hgOldBuildBody;
+
+  /// No description provided for @hgSizeQuestion.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 크기를 골라 주세요'**
+  String get hgSizeQuestion;
+
+  /// No description provided for @hgHomeOneTwo.
+  ///
+  /// In ko, this message translates to:
+  /// **'원룸·투룸'**
+  String get hgHomeOneTwo;
+
+  /// No description provided for @hgHomeApartment.
+  ///
+  /// In ko, this message translates to:
+  /// **'아파트'**
+  String get hgHomeApartment;
+
+  /// No description provided for @hgHomeVilla.
+  ///
+  /// In ko, this message translates to:
+  /// **'빌라·주택'**
+  String get hgHomeVilla;
+
+  /// No description provided for @hgEstimateOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상 견적'**
+  String get hgEstimateOnly;
+
+  /// No description provided for @hgEstimateNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'가격은 예상 견적이에요. 상담 후 확정 견적을 드려요.'**
+  String get hgEstimateNote;
+
+  /// No description provided for @hgFloorTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'몇 층인가요?'**
+  String get hgFloorTitle;
+
+  /// No description provided for @hgFloorLow.
+  ///
+  /// In ko, this message translates to:
+  /// **'1~2층'**
+  String get hgFloorLow;
+
+  /// No description provided for @hgFloorHigh.
+  ///
+  /// In ko, this message translates to:
+  /// **'3층 이상'**
+  String get hgFloorHigh;
+
+  /// No description provided for @hgAddressAlias.
+  ///
+  /// In ko, this message translates to:
+  /// **'주소 별칭'**
+  String get hgAddressAlias;
+
   /// No description provided for @locUseCurrent.
   ///
   /// In ko, this message translates to:

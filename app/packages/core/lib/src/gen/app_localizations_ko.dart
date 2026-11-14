@@ -3459,6 +3459,51 @@ class TKo extends T {
   }
 
   @override
+  String get hgMoveQuestion => '어떤 집으로 입주하시나요?';
+
+  @override
+  String get hgNewBuild => '신축';
+
+  @override
+  String get hgNewBuildBody => '새로 지은 집 · 입주 청소';
+
+  @override
+  String get hgOldBuild => '구축';
+
+  @override
+  String get hgOldBuildBody => '오래된 집 · 이사 청소';
+
+  @override
+  String get hgSizeQuestion => '집 크기를 골라 주세요';
+
+  @override
+  String get hgHomeOneTwo => '원룸·투룸';
+
+  @override
+  String get hgHomeApartment => '아파트';
+
+  @override
+  String get hgHomeVilla => '빌라·주택';
+
+  @override
+  String get hgEstimateOnly => '예상 견적';
+
+  @override
+  String get hgEstimateNote => '가격은 예상 견적이에요. 상담 후 확정 견적을 드려요.';
+
+  @override
+  String get hgFloorTitle => '몇 층인가요?';
+
+  @override
+  String get hgFloorLow => '1~2층';
+
+  @override
+  String get hgFloorHigh => '3층 이상';
+
+  @override
+  String get hgAddressAlias => '주소 별칭';
+
+  @override
   String get locUseCurrent => '현재 위치로 찾기';
 
   @override
