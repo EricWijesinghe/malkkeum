@@ -76,10 +76,11 @@ class _BookingsTabState extends State<BookingsTab>
     if (now != _shown) setState(() => _shown = now);
   }
 
-  Future<List<Booking>> _load() async =>
-      (await context.api.get('/bookings') as List)
-          .map((e) => Booking.fromJson(e as Json))
-          .toList();
+  late final _pager = Pager<Booking>(
+    context.api,
+    '/bookings',
+    Booking.fromJson,
+  );
 
   @override
   void didChangeDependencies() {
@@ -156,21 +157,24 @@ class _BookingsTabState extends State<BookingsTab>
             Expanded(
               child: AsyncView<List<Booking>>(
                 key: _view,
-                load: _load,
-                builder: (context, all, reload) {
-                  if (all.isEmpty) {
-                    return EmptyState(
-                      icon: Icons.event_note_rounded,
-                      title: t.bookingsEmpty,
-                      body: t.bookingsEmptyBody,
-                      hue: ServiceHues.studio,
+                load: _pager.first,
+                builder: (context, _, reload) => LoadMore<Booking>(
+                  pager: _pager,
+                  builder: (context, all) {
+                    if (all.isEmpty) {
+                      return EmptyState(
+                        icon: Icons.event_note_rounded,
+                        title: t.bookingsEmpty,
+                        body: t.bookingsEmptyBody,
+                        hue: ServiceHues.studio,
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: reload,
+                      child: _calendarView(all),
                     );
-                  }
-                  return RefreshIndicator(
-                    onRefresh: reload,
-                    child: _calendarView(all),
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ],

@@ -39,9 +39,7 @@ pub fn current_request_id() -> Option<String> {
 pub fn accept_request_id(incoming: Option<&str>) -> String {
     match incoming {
         Some(id)
-            if !id.is_empty()
-                && id.len() <= MAX_INCOMING_ID
-                && id.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b':')) =>
+            if !id.is_empty() && id.len() <= MAX_INCOMING_ID && id.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b':')) =>
         {
             id.to_string()
         }
