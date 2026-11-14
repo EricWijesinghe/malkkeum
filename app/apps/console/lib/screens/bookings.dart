@@ -250,10 +250,10 @@ class BookingDetailPage extends StatelessWidget {
     body: id != null
         ? BookingPanel(id: id!)
         : AsyncView<List<Json>>(
-            load: () async =>
-                (await context.api.get('/admin/bookings', query: {'q': query})
-                        as List)
-                    .cast<Json>(),
+            load: () async => (await context.api.get(
+              '/admin/bookings',
+              query: {'q': query},
+            ) as List).cast<Json>(),
             builder: (context, rows, _) => rows.isEmpty
                 ? EmptyState(
                     icon: Icons.search_off_rounded,
@@ -611,13 +611,15 @@ class _QuoteDeskState extends State<_QuoteDesk> {
   Future<void> _send({bool override = false}) async {
     setState(() => _busy = true);
     try {
-      await context.api
-          .post('/admin/bookings/${widget.booking.id}/send-quote', {
-            'final_price': int.parse(_price.text),
-            'quote_id': _quoteId,
-            'note': _note.text.isEmpty ? null : _note.text,
-            if (override) 'override': true,
-          });
+      await context.api.post(
+        '/admin/bookings/${widget.booking.id}/send-quote',
+        {
+          'final_price': int.parse(_price.text),
+          'quote_id': _quoteId,
+          'note': _note.text.isEmpty ? null : _note.text,
+          if (override) 'override': true,
+        },
+      );
       if (!mounted) return;
       showToast(context, context.t.cQuoteSent);
       widget.onSent();
@@ -685,7 +687,6 @@ class _QuoteDeskState extends State<_QuoteDesk> {
     final t = context.t;
     final a = widget.booking.answers ?? const {};
     final e = widget.estimate;
-    int n(String k) => (e?[k] as num? ?? 0).toInt();
     return AppCard(
       border: context.colors.sun,
       child: Column(
@@ -703,13 +704,9 @@ class _QuoteDeskState extends State<_QuoteDesk> {
             spacing: 6,
             runSpacing: 6,
             children: [
-              for (final entry in a.entries)
+              for (final (label, value) in quoteAnswerRows(t, a))
                 Chip(
-                  label: Text(
-                    entry.key == 'ac_addons'
-                        ? '${t.service('aircon')}: ${(entry.value as List).cast<Json>().map((u) => '${t.unit(u['unit'] as String)} ${t.dfCountUnits('${u['count']}')}').join(', ')}'
-                        : '${entry.key}: ${entry.value}',
-                  ),
+                  label: Text('$label: $value'),
                   visualDensity: VisualDensity.compact,
                 ),
             ],
@@ -717,10 +714,8 @@ class _QuoteDeskState extends State<_QuoteDesk> {
           if (e != null) ...[
             const SizedBox(height: Space.md),
             Text(t.cEstimateCalc, style: context.text.labelSmall),
-            Text(
-              '${t.cBase} ${context.won(n('base'))} + ${t.cExtras} ${context.won(n('extras'))} · ${t.cSurcharge} +${n('surcharge_bps') / 100}% → ${t.cBeforeVat} ${context.won(n('before_vat'))}${n('addons') > 0 ? ' + ${t.dfEstAddons('${n('addon_discount_bps') / 100}')} ${context.won(n('addons'))}' : ''} → ${context.won(n('total'))}',
-              style: context.text.bodyMedium,
-            ),
+            for (final (label, value) in estimateRows(t, e, context.won))
+              Text('$label  $value', style: context.text.bodyMedium),
           ],
           const SizedBox(height: Space.md),
           Text(t.cProQuotes, style: context.text.labelSmall),

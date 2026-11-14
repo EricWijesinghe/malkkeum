@@ -32,12 +32,10 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
 
   Future<void> _load() async {
     try {
-      final r =
-          await context.api.get(
-                '/admin/threads',
-                query: {'audience': _audience},
-              )
-              as List;
+      final r = await context.api.get(
+        '/admin/threads',
+        query: {'audience': _audience},
+      ) as List;
       if (!mounted) return;
       setState(() {
         _threads = r.map((e) => ChatThread.fromJson(e as Json)).toList();
@@ -131,11 +129,11 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
                   itemCount: _threads.length,
                   itemBuilder: (_, i) {
                     final th = _threads[i];
-                    final last = th.lastMessage;
-                    final preview = last == null
-                        ? ''
-                        : ((last['body'] as Json)['text'] as String? ??
-                              last['kind'] as String);
+                    final preview = threadPreview(
+                      t,
+                      th.lastMessage,
+                      context.won,
+                    );
                     return ListTile(
                       selected: th.id == _selected,
                       selectedTileColor: context.colors.primaryTint,
@@ -215,6 +213,19 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
   }
 }
 
+/// One-line preview of a thread's last message. Cards get words, not the raw kind name.
+String threadPreview(T t, Json? last, String Function(int) won) {
+  if (last == null) return '';
+  final body = (last['body'] as Json?) ?? const {};
+  return switch (last['kind']) {
+    'card' => t.previewRequestCard,
+    'quote' => t.previewQuoteCard(
+      won((body['final_price'] as num? ?? 0).toInt()),
+    ),
+    _ => body['text'] as String? ?? last['kind'] as String? ?? '',
+  };
+}
+
 /// Conversation + composer. Marks the thread read for staff on open and on new messages.
 class ThreadView extends StatefulWidget {
   const ThreadView({
@@ -254,9 +265,9 @@ class _ThreadViewState extends State<ThreadView> {
   }
 
   Future<void> _load() async {
-    final r =
-        await context.api.get('/admin/threads/${widget.threadId}/messages')
-            as List;
+    final r = await context.api.get(
+      '/admin/threads/${widget.threadId}/messages',
+    ) as List;
     if (!mounted) return;
     setState(
       () => _msgs = r.map((e) => ChatMessage.fromJson(e as Json)).toList(),
@@ -269,11 +280,9 @@ class _ThreadViewState extends State<ThreadView> {
 
   Future<void> _toggleAi() async {
     try {
-      final r =
-          await context.api.put('/admin/threads/${widget.threadId}/ai', {
-                'paused': !_aiPaused,
-              })
-              as Json;
+      final r = await context.api.put('/admin/threads/${widget.threadId}/ai', {
+        'paused': !_aiPaused,
+      }) as Json;
       if (!mounted) return;
       setState(() => _aiPaused = r['ai_paused'] == true);
       widget.onAiChanged?.call();
@@ -288,10 +297,9 @@ class _ThreadViewState extends State<ThreadView> {
     try {
       final m = ChatMessage.fromJson(
         await context.api.post('/admin/threads/${widget.threadId}/messages', {
-              'kind': 'text',
-              'text': _input.text,
-            })
-            as Json,
+          'kind': 'text',
+          'text': _input.text,
+        }) as Json,
       );
       if (!mounted) return;
       setState(() => _msgs = [..._msgs.where((x) => x.id != m.id), m]);

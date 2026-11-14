@@ -2404,6 +2404,29 @@
  "prqStatusDone": "완료",
  "prqStatusFailed": "실패",
  "prqBy": "처리한 직원",
+ "qaHomeType": "집 유형",
+ "homeType_one_two_room": "원룸·투룸",
+ "homeType_apartment": "아파트",
+ "homeType_villa_house": "빌라·주택",
+ "qaCleaningType": "청소 종류",
+ "qaLuggage": "짐 상태",
+ "qaLayout": "집 구조",
+ "qaFloor": "층수",
+ "qaFloorLow": "1~2층",
+ "qaFloorHigh": "3층 이상",
+ "quoteUnknown": "미입력",
+ "qaPeak": "주말·공휴일·저녁 할증",
+ "previewRequestCard": "예약 요청 카드",
+ "previewQuoteCard": "견적 카드 · {amount}",
+ "@previewQuoteCard": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "qaTotal": "합계",
+ "qaVat": "부가세 10%",
  "rnwTitle": "갱신 일정",
  "rnwIntro": "도메인, 호스팅, 앱 스토어와 문자 계정의 갱신 날짜를 적어 두세요. 기한 30일 전과 7일 전에 휴대폰으로 문자를 보내 드려요.",
  "rnwAdd": "갱신 항목 추가",

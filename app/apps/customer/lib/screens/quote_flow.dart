@@ -46,40 +46,6 @@ const _reviewPhotoHeight = 96.0;
 /// Required questions that "다음" points at while they are unanswered (design p15, p16).
 enum _Ask { building, layout, duplex, elevator }
 
-String buildingLabel(T t, String? c) => switch (c) {
-  'apartment' => t.building_apartment,
-  'officetel' => t.building_officetel,
-  'villa' => t.dfBldVillaHouse,
-  'commercial' => t.building_commercial,
-  'house' => t.building_house,
-  _ => t.building_other,
-};
-
-String layoutLabel(T t, String? c) => switch (c) {
-  'studio' => t.layout_studio,
-  'one_and_half' => t.dfLayoutOneHalf,
-  'two_rooms' => t.dfLayoutTwo,
-  'three_rooms' => t.dfLayoutThree,
-  _ => t.dfLayoutFour,
-};
-
-String luggageLabel(T t, String c) => switch (c) {
-  'empty' => t.luggage_empty,
-  'not_unpacked' => t.luggage_not_unpacked,
-  'partly_unpacked' => t.luggage_partly_unpacked,
-  'fully_lived_in' => t.luggage_fully_lived_in,
-  _ => t.luggage_unknown,
-};
-
-String cleaningTypeLabel(T t, String? c) => switch (c) {
-  'standard' => t.type_standard,
-  'same_day_move' => t.type_same_day_move,
-  'some_luggage_left' => t.type_some_luggage_left,
-  'normal_move_in' => t.type_normal_move_in,
-  'after_interior' => t.type_after_interior,
-  _ => t.type_lived_in_deep_clean,
-};
-
 /// 3D art for a cleaning type: the art set names three of them shorter than the API codes.
 String cleaningTypeIcon(String c) => switch (c) {
   'same_day_move' => 'type_same_day',

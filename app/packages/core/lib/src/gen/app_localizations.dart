@@ -8970,6 +8970,102 @@ abstract class T {
   /// **'처리한 직원'**
   String get prqBy;
 
+  /// No description provided for @qaHomeType.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 유형'**
+  String get qaHomeType;
+
+  /// No description provided for @homeType_one_two_room.
+  ///
+  /// In ko, this message translates to:
+  /// **'원룸·투룸'**
+  String get homeType_one_two_room;
+
+  /// No description provided for @homeType_apartment.
+  ///
+  /// In ko, this message translates to:
+  /// **'아파트'**
+  String get homeType_apartment;
+
+  /// No description provided for @homeType_villa_house.
+  ///
+  /// In ko, this message translates to:
+  /// **'빌라·주택'**
+  String get homeType_villa_house;
+
+  /// No description provided for @qaCleaningType.
+  ///
+  /// In ko, this message translates to:
+  /// **'청소 종류'**
+  String get qaCleaningType;
+
+  /// No description provided for @qaLuggage.
+  ///
+  /// In ko, this message translates to:
+  /// **'짐 상태'**
+  String get qaLuggage;
+
+  /// No description provided for @qaLayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 구조'**
+  String get qaLayout;
+
+  /// No description provided for @qaFloor.
+  ///
+  /// In ko, this message translates to:
+  /// **'층수'**
+  String get qaFloor;
+
+  /// No description provided for @qaFloorLow.
+  ///
+  /// In ko, this message translates to:
+  /// **'1~2층'**
+  String get qaFloorLow;
+
+  /// No description provided for @qaFloorHigh.
+  ///
+  /// In ko, this message translates to:
+  /// **'3층 이상'**
+  String get qaFloorHigh;
+
+  /// No description provided for @quoteUnknown.
+  ///
+  /// In ko, this message translates to:
+  /// **'미입력'**
+  String get quoteUnknown;
+
+  /// No description provided for @qaPeak.
+  ///
+  /// In ko, this message translates to:
+  /// **'주말·공휴일·저녁 할증'**
+  String get qaPeak;
+
+  /// No description provided for @previewRequestCard.
+  ///
+  /// In ko, this message translates to:
+  /// **'예약 요청 카드'**
+  String get previewRequestCard;
+
+  /// No description provided for @previewQuoteCard.
+  ///
+  /// In ko, this message translates to:
+  /// **'견적 카드 · {amount}'**
+  String previewQuoteCard(String amount);
+
+  /// No description provided for @qaTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'합계'**
+  String get qaTotal;
+
+  /// No description provided for @qaVat.
+  ///
+  /// In ko, this message translates to:
+  /// **'부가세 10%'**
+  String get qaVat;
+
   /// No description provided for @rnwTitle.
   ///
   /// In ko, this message translates to:
