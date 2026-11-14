@@ -9,6 +9,7 @@ from the release branches; no tags existed for them.
 ## [Unreleased]
 
 ### Added
+- Customer app: move-in / move-out starts with the new-build or existing-build question and a home-size question (원룸·투룸, 아파트, 빌라·주택, each marked 예상 견적); the chosen home carries into the quote, whole-home asks the home first, the 견적 방식 page is folded into the review (six steps), the floor question appears only without an elevator, and required-question errors show only after "다음".
 - Owner can queue server jobs (backup, update, update-skip, channel, restart, schedule) from the API: each accepted job is one file in the server job inbox with owner TOTP on the request and a double click queues one job; live state (queued, running, ok, failed) is read back from the server's status files as capped text (`/admin/host/jobs`).
 - Renewal calendar (갱신 일정) in the console: domains, old-domain aliases, hosting, store and SMS accounts, storage, and the yearly keys check. The owner gets an SMS 30 and 7 days before each date; the keys check follows the last successful upload test.
 - Server job runner (`deploy/agent.sh`, root) is installed and started by the installer on new installs and updates (systemd path, service and timer units). It runs schedule, update, update-skip, channel, restart and status jobs; a stable update waits 24 hours after a new digest is first seen; live progress is served read-only at `/ops-progress/<token>` for 10 minutes after a job ends; `dahae setup-code` expires after 2 hours (`--renew` gives a new code); `MALKKEUM_ANSWERS` installs without questions.

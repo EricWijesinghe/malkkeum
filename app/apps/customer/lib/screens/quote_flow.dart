@@ -11,18 +11,23 @@ import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_price_hint.dart';
 import 'quote_review.dart';
+import 'review_carousel.dart';
 import 'request_status.dart';
 import 'service.dart' show ScopeLink;
 
 export 'quote_review.dart';
 
-/// Pages of the move-in / move-out flow (owner design p14-p19).
-const quoteSteps = 7;
+/// Pages of the move-in / move-out flow (owner design p14-p19). The 견적 방식 page is gone
+/// while it has one option (C-10): the estimate folds into the review page.
+const quoteSteps = 6;
 const _stepAddress = 3;
 const _stepDate = 4;
-const _stepMethod = 5;
-const _stepReview = 6;
+const _stepReview = 5;
 const _quoteSlots = [8, 13];
+
+/// Layouts offered per home (CR-3): 원룸·투룸 has no 3+ room options; 아파트 has no 원룸.
+const _studioHomeLayouts = ['studio', 'one_and_half', 'two_rooms'];
+const _apartmentLayouts = ['two_rooms', 'three_rooms', 'four_plus'];
 
 const _luggage = [
   'empty',
@@ -31,6 +36,9 @@ const _luggage = [
   'fully_lived_in',
   'unknown',
 ];
+
+/// Move-in offers three luggage states (CR-3); the others stay for old bookings.
+const _moveInLuggage = ['empty', 'not_unpacked', 'partly_unpacked'];
 const _buildings = ['apartment', 'officetel', 'villa', 'commercial'];
 const _layouts = [
   'studio',
@@ -40,8 +48,6 @@ const _layouts = [
   'four_plus',
 ];
 const _maxCount = 5;
-const _reviewCardHeight = 132.0;
-const _reviewPhotoHeight = 96.0;
 
 /// Required questions that "다음" points at while they are unanswered (design p15, p16).
 enum _Ask { building, layout, duplex, elevator }
@@ -94,8 +100,11 @@ String visitHalf(T t, int hour) => hour < 12 ? t.dfAmVisit : t.dfPmVisit;
 /// Move-in / move-out in 7 steps: cleaning, basics, space, address, date (+AC add-on),
 /// Safe booking, review. "변경" on the review jumps back to a step.
 class QuoteFlowScreen extends StatefulWidget {
-  const QuoteFlowScreen({super.key, required this.service});
+  const QuoteFlowScreen({super.key, required this.service, this.home});
   final Service service;
+
+  /// Home type chosen before the flow (CR-3): hides 건물 유형 and filters 구조. Null shows every question.
+  final MoveHome? home;
   @override
   State<QuoteFlowScreen> createState() => _QuoteFlowScreenState();
 }
@@ -103,8 +112,8 @@ class QuoteFlowScreen extends StatefulWidget {
 class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   late final BookingDraft d = BookingDraft(widget.service);
   late final GuestDraft _draft = GuestDraft(context.appRead.cache);
-  final _pages = PageController();
-  int _step = 0;
+  late final _pages = PageController(initialPage: _firstStep);
+  late int _step = _firstStep;
   bool _busy = false;
   Future<Json>? _estimate;
 
@@ -119,10 +128,40 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   QuoteAnswers get a => d.answers;
   bool get _moveIn => widget.service.code == 'move_in';
+  bool get _wholeHome => widget.service.code == 'whole_home';
+
+  /// Whole-home starts at 집 구조 (the cleaning type page is skipped), so its numbers run 1/5.
+  int get _firstStep => _wholeHome ? 1 : 0;
+  bool get _homeFlow => widget.home != null;
+
+  List<String> get _layoutOptions => switch (widget.home) {
+    MoveHome.oneTwoRoom => _studioHomeLayouts,
+    MoveHome.apartment => _apartmentLayouts,
+    _ => _layouts,
+  };
+
+  /// Answers fixed by the chosen home and by the whole-home path. Run again after a restored draft.
+  void _applyHome() {
+    if (_wholeHome) {
+      a.cleaningType = 'lived_in_deep_clean';
+      a.luggage = 'fully_lived_in';
+    }
+    final home = widget.home;
+    if (home == null) return;
+    a.homeType = home.code;
+    // 원룸·투룸 is sent as an officetel-type building (CR-8.2 keeps the exact home on homeType).
+    a.building = switch (home) {
+      MoveHome.apartment => 'apartment',
+      MoveHome.villaHouse => 'villa',
+      MoveHome.oneTwoRoom => 'officetel',
+    };
+    if (a.layout != null && !_layoutOptions.contains(a.layout)) a.layout = null;
+  }
 
   @override
   void initState() {
     super.initState();
+    _applyHome();
     d.date = DateUtils.dateOnly(DateTime.now()).add(const Duration(days: 1));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -136,6 +175,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   /// Answers saved on this device (a restart mid-flow) come back; the steps then carry on as before.
   Future<void> _restoreAnswers() async {
     await _draft.restore(d);
+    _applyHome();
     if (mounted) setState(() {});
   }
 
@@ -179,7 +219,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     if (step <= _stepDate) _estimate = null;
     if (step < _stepAddress) _preview = null;
     if (step >= _stepAddress) _preview ??= _fetchEstimate(withSlot: false);
-    if (step >= _stepMethod) _estimate ??= _fetchEstimate();
+    if (step >= _stepReview) _estimate ??= _fetchEstimate();
     unawaited(_draft.save(d));
     setState(() {
       _step = step;
@@ -219,10 +259,11 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   /// Without it (the early preview) the server adds no peak surcharge.
   Future<Json> _fetchEstimate({bool withSlot = true}) async =>
       await context.api.post('/quote/estimate', {
-        ...a.toJson(),
-        if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
-        if (withSlot) 'start_hour': ?d.hour,
-      }) as Json;
+            ...a.toJson(),
+            if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
+            if (withSlot) 'start_hour': ?d.hour,
+          })
+          as Json;
 
   /// Guests answer the questions first; signing in is asked only when they book.
   Future<void> _bookAsGuest() async {
@@ -268,7 +309,8 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     }
   }
 
-  void _back() => _step == 0 ? Navigator.of(context).pop() : _go(_step - 1);
+  void _back() =>
+      _step == _firstStep ? Navigator.of(context).pop() : _go(_step - 1);
 
   @override
   void dispose() {
@@ -281,18 +323,16 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     final t = context.t;
     final paused = RemoteConfigScope.of(context).maintenance;
     return PopScope(
-      canPop: _step == 0,
+      canPop: _step == _firstStep,
       onPopInvokedWithResult: (didPop, _) => didPop ? null : _back(),
       child: Scaffold(
-        backgroundColor: _step == _stepMethod
-            ? context.colors.surfaceHigh
-            : context.colors.surface,
+        backgroundColor: context.colors.surface,
         appBar: AppBar(
           leading: BackButton(onPressed: _back),
-          backgroundColor: _step == _stepMethod
-              ? context.colors.surfaceHigh
-              : context.colors.surface,
-          actions: [if (_step == 0) ScopeLink(code: widget.service.code)],
+          backgroundColor: context.colors.surface,
+          actions: [
+            if (_step == _firstStep) ScopeLink(code: widget.service.code),
+          ],
         ),
         body: PageView(
           controller: _pages,
@@ -316,9 +356,8 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
                 ),
             ]),
             _dateStep(t),
-            QuoteMethodPage(chip: _chip(t, 5), estimate: _estimate),
             QuoteReviewPage(
-              chip: _chip(t, 6),
+              chip: _chip(t, 5),
               draft: d,
               estimate: _estimate,
               onEdit: _go,
@@ -355,7 +394,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   );
 
   String _chip(T t, int i) =>
-      '${t.service(widget.service.code)} · ${i + 1}/$quoteSteps';
+      '${t.service(widget.service.code)} · ${i - _firstStep + 1}/${quoteSteps - _firstStep}';
 
   Widget _page(
     T t,
@@ -424,8 +463,9 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   Widget _typeStep(T t) {
     final types = _moveIn
-        ? ['normal_move_in', 'after_interior', 'lived_in_deep_clean']
+        ? ['normal_move_in', 'after_interior']
         : ['standard', 'same_day_move', 'some_luggage_left'];
+    final luggage = _moveIn ? _moveInLuggage : _luggage;
     return _page(
       t,
       0,
@@ -454,7 +494,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
         FlowSection(
           title: t.luggageTitle,
           children: [
-            for (final l in _luggage)
+            for (final l in luggage)
               RadioRow(
                 title: luggageLabel(t, l),
                 selected: a.luggage == l,
@@ -469,31 +509,34 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   Widget _basicStep(T t) =>
       _page(t, 1, t.quoteBasicTitle, body: t.dfBasicBody, [
-        _ask(
-          t,
-          _Ask.building,
-          title: t.buildingType,
-          answered: a.building != null,
-          children: [
-            circleRow([
-              for (final b in _buildings)
-                CircleChoice(
-                  icon: 'bld_$b',
-                  label: buildingLabel(t, b),
-                  selected: a.building == b,
-                  onTap: () => setState(() => a.building = b),
-                ),
-            ]),
-          ],
-        ),
-        const FlowBand(),
+        // The home chosen before the flow answers 건물 유형 (CR-3).
+        if (!_homeFlow) ...[
+          _ask(
+            t,
+            _Ask.building,
+            title: t.buildingType,
+            answered: a.building != null,
+            children: [
+              circleRow([
+                for (final b in _buildings)
+                  CircleChoice(
+                    icon: 'bld_$b',
+                    label: buildingLabel(t, b),
+                    selected: a.building == b,
+                    onTap: () => setState(() => a.building = b),
+                  ),
+              ]),
+            ],
+          ),
+          const FlowBand(),
+        ],
         _ask(
           t,
           _Ask.layout,
           title: t.layoutTitle,
           answered: a.layout != null,
           children: [
-            for (final l in _layouts)
+            for (final l in _layoutOptions)
               RadioRow(
                 title: layoutLabel(t, l),
                 selected: a.layout == l,
@@ -507,7 +550,6 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
           _Ask.duplex,
           title: t.dfDuplexTitle,
           answered: a.duplex != null,
-          marked: true,
           children: [
             circleRow([
               CircleChoice(
@@ -554,7 +596,6 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       _Ask.elevator,
       title: t.dfElevatorTitle,
       answered: a.elevator != null,
-      marked: true,
       children: [
         circleRow([
           CircleChoice(
@@ -570,15 +611,25 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             onTap: () => setState(() => a.elevator = false),
           ),
         ]),
-        const Divider(height: Space.xl),
-        // Needed by the formula when there is no elevator.
-        CheckboxListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(t.dfFloor3),
-          value: a.floor3OrHigher,
-          checkboxShape: const CircleBorder(),
-          onChanged: (v) => setState(() => a.floor3OrHigher = v ?? false),
-        ),
+        // Needed by the formula when there is no elevator (CR-3).
+        if (a.elevator == false) ...[
+          const Divider(height: Space.xl),
+          FlowSection(
+            title: t.hgFloorTitle,
+            children: [
+              RadioRow(
+                title: t.hgFloorLow,
+                selected: !a.floor3OrHigher,
+                onTap: () => setState(() => a.floor3OrHigher = false),
+              ),
+              RadioRow(
+                title: t.hgFloorHigh,
+                selected: a.floor3OrHigher,
+                onTap: () => setState(() => a.floor3OrHigher = true),
+              ),
+            ],
+          ),
+        ],
       ],
     ),
   ]);
@@ -639,180 +690,5 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
         ],
       ),
     ]);
-  }
-}
-
-/// "생생한 이용 후기" (design p14): recent public reviews; hidden when there are none.
-class ReviewCarousel extends StatefulWidget {
-  const ReviewCarousel({super.key});
-  @override
-  State<ReviewCarousel> createState() => _ReviewCarouselState();
-}
-
-class _ReviewCarouselState extends State<ReviewCarousel> {
-  // Fetched once; a failure only hides the section (social proof is optional).
-  late final Future<Object?> _proof = context.api
-      .get('/public/proof')
-      .then<Object?>((v) => v, onError: (_) => null);
-
-  /// Both photos, or none: half a comparison says nothing.
-  static (String, String)? _photos(Json r) {
-    final before = r['before_url'];
-    final after = r['after_url'];
-    return before is String &&
-            after is String &&
-            before.startsWith('https://') &&
-            after.startsWith('https://')
-        ? (before, after)
-        : null;
-  }
-
-  @override
-  Widget build(BuildContext context) => FutureBuilder<Object?>(
-    future: _proof,
-    builder: (context, snap) {
-      final reviews = ((snap.data as Json?)?['reviews'] as List? ?? const [])
-          .cast<Json>();
-      if (reviews.isEmpty) return const SizedBox.shrink();
-      final t = context.t;
-      final withPhotos = reviews.any((r) => _photos(r) != null);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const FlowBand(),
-          FlowSection(
-            title: t.dfReviewsTitle,
-            children: [
-              SizedBox(
-                height:
-                    _reviewCardHeight + (withPhotos ? _reviewPhotoHeight : 0),
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: reviews.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: Space.sm),
-                  itemBuilder: (context, i) {
-                    final r = reviews[i];
-                    final photos = _photos(r);
-                    return StaggerIn(
-                      index: i,
-                      child: SizedBox(
-                        width: 240,
-                        child: AppCard(
-                          padding: EdgeInsets.zero,
-                          level: Level.flat,
-                          border: context.colors.line,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (photos != null)
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(Radii.card),
-                                  ),
-                                  child: SizedBox(
-                                    height: _reviewPhotoHeight,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: _Shot(photos.$1, t.dfBefore),
-                                        ),
-                                        Expanded(
-                                          child: _Shot(
-                                            photos.$2,
-                                            t.dfAfter,
-                                            after: true,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(Space.md),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${'★' * ((r['rating'] as num?)?.toInt() ?? 5)} · ${r['name'] ?? ''}',
-                                        style: context.text.labelMedium
-                                            ?.copyWith(
-                                              color: context.colors.inkMuted,
-                                            ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: Space.xs),
-                                      Expanded(
-                                        child: Text(
-                                          r['body'] as String? ?? '',
-                                          style: context.text.bodySmall,
-                                          overflow: TextOverflow.fade,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    },
-  );
-}
-
-/// One half of a review's BEFORE | AFTER split (design p14). A photo that fails to load
-/// leaves the labelled tint, as in the design's placeholder.
-class _Shot extends StatelessWidget {
-  const _Shot(this.url, this.label, {this.after = false});
-  final String url;
-  final String label;
-  final bool after;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        ColoredBox(color: after ? c.primaryTint : c.surfaceHigh),
-        Image.network(
-          url,
-          fit: BoxFit.cover,
-          semanticLabel: label,
-          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-        ),
-        Align(
-          alignment: AlignmentDirectional.bottomStart,
-          child: Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: c.surface.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: ExcludeSemantics(
-              child: Text(
-                label,
-                style: context.text.labelSmall?.copyWith(
-                  color: after ? context.primary : c.inkSoft,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }

@@ -6,6 +6,7 @@ import '../guest.dart';
 import '../public_offers.dart';
 import '../state.dart';
 import 'booking_flow.dart';
+import 'move_chooser.dart';
 import 'quote_flow.dart';
 import 'service_scope.dart';
 
@@ -63,6 +64,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 이사·입주 and whole-home ask the home first (CR-3, CR-4).
+    if (s.code == 'move_in' || s.code == 'move_out') {
+      return const MoveChooserScreen();
+    }
+    if (s.code == 'whole_home') return MoveChooserScreen(service: s);
     if (s.isQuote) return QuoteFlowScreen(service: s);
     final t = context.t;
     final d = _draft.draft;
