@@ -7,17 +7,22 @@ class AddressHit {
     required this.jibun,
     required this.zip,
     required this.building,
+    required this.districtCode,
   });
   final String road;
   final String jibun;
   final String zip;
   final String building;
 
+  /// Five-digit 시군구 code of the road address ('' when the provider sends none).
+  final String districtCode;
+
   factory AddressHit.fromJson(Map<String, dynamic> j) => AddressHit(
     road: j['road_address'] as String? ?? '',
     jibun: j['jibun_address'] as String? ?? '',
     zip: j['zip_code'] as String? ?? '',
     building: j['building_name'] as String? ?? '',
+    districtCode: j['district_code'] as String? ?? '',
   );
 }
 

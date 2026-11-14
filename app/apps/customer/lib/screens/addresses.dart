@@ -184,6 +184,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
   late final _road = TextEditingController(
     text: widget.existing?.roadAddress ?? '',
   );
+  // The search words; the saved road address (_road) only ever comes from a picked result or the location suggestion.
+  final _query = TextEditingController();
   late final _detail = TextEditingController(
     text: widget.existing?.detail ?? '',
   );
@@ -218,7 +220,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   /// Looks up the words typed in the address field; a picked result replaces them.
   Future<void> _search() async {
-    final q = _road.text.trim();
+    final q = _query.text.trim();
     if (q.length < 2) {
       showToast(context, context.t.addressSearchMinChars);
       return;
@@ -247,10 +249,14 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
     }
   }
 
-  /// Fills the road field from a result; the customer then adds the unit (detail) themselves.
+  /// Fills the road address and its district together from a result; the customer adds only the unit (detail).
   void _pick(AddressHit h) {
     setState(() {
       _road.text = h.road;
+      _district = seoulDistricts.any((d) => d.code == h.districtCode)
+          ? h.districtCode
+          : null;
+      _query.clear();
       _hits = const [];
       _searched = false;
     });
@@ -367,7 +373,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
 
   @override
   void dispose() {
-    for (final c in [_label, _road, _detail, _size]) {
+    for (final c in [_label, _road, _query, _detail, _size]) {
       c.dispose();
     }
     super.dispose();
@@ -492,7 +498,7 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
             children: [
               Expanded(
                 child: TextField(
-                  controller: _road,
+                  controller: searchOn ? _query : _road,
                   maxLength: 200,
                   textInputAction: searchOn ? TextInputAction.search : null,
                   onSubmitted: searchOn ? (_) => _search() : null,
@@ -522,6 +528,13 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               ],
             ],
           ),
+          if (searchOn && _road.text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: Space.xs),
+              child: AppCard(
+                child: Text(_road.text, style: context.text.titleSmall),
+              ),
+            ),
           if (searchOn) ...[
             for (final h in _hits)
               Padding(
