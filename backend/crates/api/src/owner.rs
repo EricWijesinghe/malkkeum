@@ -250,10 +250,8 @@ pub async fn reset_cli() -> i32 {
         return fail("no owner is set; the owner claims it from the console while no owner exists");
     };
     // The reset sign-in only accepts an active account. Reactivating here is the server operator's call, not an API route.
-    if !active {
-        if let Err(e) = sqlx::query("UPDATE staff SET active = TRUE WHERE id = $1").bind(id).execute(&db).await {
-            return fail(&format!("database: {e}"));
-        }
+    if !active && let Err(e) = sqlx::query("UPDATE staff SET active = TRUE WHERE id = $1").bind(id).execute(&db).await {
+        return fail(&format!("database: {e}"));
     }
     match issue_reset_code(&db, id).await {
         Ok(code) => {

@@ -5159,6 +5159,240 @@
           }
         }
       }
+    },
+    "/v1/auth/staff/owner-reset": {
+      "post": {
+        "operationId": "ownerResetSecondFactor",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Lost second factor: owner signs in with password plus a server-issued reset code; TOTP and recovery codes are cleared",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/owner/claim": {
+      "post": {
+        "operationId": "claimOwner",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Claim the owner role while no owner exists (claimant's own TOTP)",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/owner/transfer": {
+      "post": {
+        "operationId": "transferOwner",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Hand the owner role to another active admin (both TOTPs, one transaction)",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/account": {
+      "get": {
+        "operationId": "myStaffAccount",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Owner-facing account status (masked phone, factor and recovery-code state)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/recovery-codes": {
+      "post": {
+        "operationId": "reissueRecoveryCodes",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Replace every recovery code; owner gates stay shut until the new codes are confirmed",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/recovery-codes/confirm": {
+      "post": {
+        "operationId": "confirmRecoveryCodes",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Confirm the recovery codes were saved by typing one back",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/alert-phone": {
+      "put": {
+        "operationId": "setOwnerAlertPhone",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Set the SMS number for owner alerts; the replaced number is told when possible",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/password": {
+      "post": {
+        "operationId": "changeOwnerPassword",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Change the owner's password; every session ends",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/me/sign-out-all": {
+      "post": {
+        "operationId": "ownerSignOutAll",
+        "tags": [
+          "admin"
+        ],
+        "summary": "End every session of the owner, this one included",
+        "parameters": [
+          {
+            "name": "X-Owner-Totp",
+            "in": "header",
+            "required": true,
+            "description": "The owner's current authenticator code (one use per request)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
     }
   },
   "components": {
