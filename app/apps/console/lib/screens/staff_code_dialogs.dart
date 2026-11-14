@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
-import '../state.dart';
-
 /// How a one-time staff code leaves the console: a text to the staff member, or shown once to copy by hand.
 class CodeDelivery {
   const CodeDelivery(this.channel, this.phone);
@@ -41,10 +39,7 @@ Future<CodeDelivery?> pickCodeDelivery(
             SegmentedButton<String>(
               segments: [
                 ButtonSegment(value: 'sms', label: Text(t.cStaffChannelSms)),
-                ButtonSegment(
-                  value: 'copy',
-                  label: Text(t.cStaffChannelCopy),
-                ),
+                ButtonSegment(value: 'copy', label: Text(t.cStaffChannelCopy)),
               ],
               selected: {channel},
               onSelectionChanged: (s) => set(() => channel = s.first),
@@ -67,11 +62,18 @@ Future<CodeDelivery?> pickCodeDelivery(
   final entered = phone.text.trim();
   disposeAfterClose([phone]);
   if (send != true) return null;
-  return CodeDelivery(channel, needsPhone && entered.isNotEmpty ? entered : null);
+  return CodeDelivery(
+    channel,
+    needsPhone && entered.isNotEmpty ? entered : null,
+  );
 }
 
 /// After the server issues a code: shows it once when it was handed back (copy channel), else confirms the text.
-Future<void> showSentCode(BuildContext context, Json reply, String title) async {
+Future<void> showSentCode(
+  BuildContext context,
+  Json reply,
+  String title,
+) async {
   final t = context.t;
   final code = reply['code'];
   if (code is! String) {
