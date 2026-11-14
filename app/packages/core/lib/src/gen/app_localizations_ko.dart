@@ -4070,6 +4070,24 @@ class TKo extends T {
   String get pUnitMattress => '매트리스';
 
   @override
+  String get pUnitWindowSmall => '작은 창';
+
+  @override
+  String get pUnitWindowLarge => '큰 창';
+
+  @override
+  String get pUnitPest => '해충 방제';
+
+  @override
+  String get pUnitMiteBedbug => '진드기·베드버그';
+
+  @override
+  String get pUnitSanitize => '살균';
+
+  @override
+  String get pUnitSickHouse => '새집 증후군';
+
+  @override
   String get pLogoutConfirm => '로그아웃할까요?';
 
   @override

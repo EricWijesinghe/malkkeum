@@ -4168,6 +4168,24 @@ class TEn extends T {
   String get pUnitMattress => 'Mattress';
 
   @override
+  String get pUnitWindowSmall => 'Small window';
+
+  @override
+  String get pUnitWindowLarge => 'Large window';
+
+  @override
+  String get pUnitPest => 'Pest control';
+
+  @override
+  String get pUnitMiteBedbug => 'Mites and bed bugs';
+
+  @override
+  String get pUnitSanitize => 'Sanitizing';
+
+  @override
+  String get pUnitSickHouse => 'Sick-house care';
+
+  @override
   String get pLogoutConfirm => 'Sign out?';
 
   @override

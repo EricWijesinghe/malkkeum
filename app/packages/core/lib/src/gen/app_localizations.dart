@@ -7735,6 +7735,42 @@ abstract class T {
   /// **'매트리스'**
   String get pUnitMattress;
 
+  /// No description provided for @pUnitWindowSmall.
+  ///
+  /// In ko, this message translates to:
+  /// **'작은 창'**
+  String get pUnitWindowSmall;
+
+  /// No description provided for @pUnitWindowLarge.
+  ///
+  /// In ko, this message translates to:
+  /// **'큰 창'**
+  String get pUnitWindowLarge;
+
+  /// No description provided for @pUnitPest.
+  ///
+  /// In ko, this message translates to:
+  /// **'해충 방제'**
+  String get pUnitPest;
+
+  /// No description provided for @pUnitMiteBedbug.
+  ///
+  /// In ko, this message translates to:
+  /// **'진드기·베드버그'**
+  String get pUnitMiteBedbug;
+
+  /// No description provided for @pUnitSanitize.
+  ///
+  /// In ko, this message translates to:
+  /// **'살균'**
+  String get pUnitSanitize;
+
+  /// No description provided for @pUnitSickHouse.
+  ///
+  /// In ko, this message translates to:
+  /// **'새집 증후군'**
+  String get pUnitSickHouse;
+
   /// No description provided for @pLogoutConfirm.
   ///
   /// In ko, this message translates to:

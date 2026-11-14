@@ -53,6 +53,25 @@ void main() {
     expect(fake.lastCall('POST', '/auth/logout'), isNull);
   });
 
+  testWidgets('confirming sign-out calls the logout endpoint', (tester) async {
+    setViewport(tester, phoneSize);
+    final fake = FakeApi();
+    stockPartnerApi(fake);
+    final env = await TestEnv.create(fake: fake, role: 'pro');
+    await pumpPartnerScreen(tester, env, const MoreTab());
+    await pumpUntilFound(tester, find.text(koT.moreVersion('9.8.7')));
+    await tester.dragUntilVisible(
+      find.text(koT.logout),
+      find.byType(Scrollable).first,
+      const Offset(0, -200),
+    );
+    await tester.tap(find.text(koT.logout));
+    await settle(tester);
+    await tester.tap(find.widgetWithText(FilledButton, koT.logout));
+    await settle(tester);
+    expect(fake.lastCall('POST', '/auth/logout'), isNotNull);
+  });
+
   testWidgets('review rows have no reply button until replies ship', (
     tester,
   ) async {

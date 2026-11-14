@@ -13,6 +13,44 @@ void main() {
       expect(jobCountsLabel(koT, job), '벽걸이 1 · 2in1 2');
     });
 
+    test('shows the spec example 벽걸이 1 · 스탠드 2', () {
+      final job = {
+        'service_code': 'aircon',
+        'unit_counts': [1, 2, 0, 0],
+      };
+      expect(jobCountsLabel(koT, job), '벽걸이 1 · 스탠드 2');
+    });
+
+    test('reads a legacy aircon job from answers.ac_addons', () {
+      final job = {
+        'service_code': 'aircon',
+        'unit_counts': null,
+        'answers': {
+          'ac_addons': [
+            {'unit': 'two_in_one', 'count': 2},
+          ],
+        },
+      };
+      expect(jobCountsLabel(koT, job), '2in1 2');
+    });
+
+    test('labels window and disinfection options', () {
+      expect(
+        jobCountsLabel(koT, {
+          'service_code': 'window',
+          'unit_counts': [1, 2],
+        }),
+        '작은 창 1 · 큰 창 2',
+      );
+      expect(
+        jobCountsLabel(koT, {
+          'service_code': 'disinfection',
+          'unit_counts': [0, 1, 0, 1],
+        }),
+        '진드기·베드버그 1 · 새집 증후군 1',
+      );
+    });
+
     test('returns null when the job has no counts or the service has none', () {
       expect(
         jobCountsLabel(koT, {'service_code': 'aircon', 'unit_counts': null}),
