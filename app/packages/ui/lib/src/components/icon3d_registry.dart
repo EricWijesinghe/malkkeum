@@ -264,6 +264,15 @@ abstract final class Icon3DRegistry {
     'svc_window': const Icon3DSpec(Icons.window_rounded),
     'svc_whole_home': const Icon3DSpec(Icons.house_rounded),
     'svc_disinfection': const Icon3DSpec(Icons.sanitizer_rounded),
+    // Home group tiles (CR-2): the group art is the member art of its own composite.
+    'svc_living': const Icon3DSpec(
+      Icons.cleaning_services_rounded,
+      alias: 'group_resident_clean',
+    ),
+    'svc_appliance': const Icon3DSpec(
+      Icons.ac_unit_rounded,
+      alias: 'group_appliance_clean',
+    ),
     'group_resident_clean': const Icon3DSpec(Icons.cleaning_services_rounded),
     'group_appliance_clean': const Icon3DSpec(Icons.ac_unit_rounded),
     'group_disinfect_clean': const Icon3DSpec(Icons.sanitizer_rounded),
