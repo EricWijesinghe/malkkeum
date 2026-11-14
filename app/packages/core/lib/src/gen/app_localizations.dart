@@ -2047,6 +2047,192 @@ abstract class T {
   /// **'서버 주소 변경'**
   String get cServerChange;
 
+  /// No description provided for @svc_window.
+  ///
+  /// In ko, this message translates to:
+  /// **'창문 청소'**
+  String get svc_window;
+
+  /// No description provided for @svc_disinfection.
+  ///
+  /// In ko, this message translates to:
+  /// **'방역·소독'**
+  String get svc_disinfection;
+
+  /// No description provided for @svcDesc_window.
+  ///
+  /// In ko, this message translates to:
+  /// **'창문 안팎을 창 크기별 개수대로 청소해요'**
+  String get svcDesc_window;
+
+  /// No description provided for @svcDesc_disinfection.
+  ///
+  /// In ko, this message translates to:
+  /// **'필요한 방역과 소독을 골라 주세요'**
+  String get svcDesc_disinfection;
+
+  /// No description provided for @unitTitle_window.
+  ///
+  /// In ko, this message translates to:
+  /// **'창문 크기와 개수를\n골라 주세요.'**
+  String get unitTitle_window;
+
+  /// No description provided for @unitTitle_disinfection.
+  ///
+  /// In ko, this message translates to:
+  /// **'방역 종류를\n골라 주세요.'**
+  String get unitTitle_disinfection;
+
+  /// No description provided for @unit_window_small.
+  ///
+  /// In ko, this message translates to:
+  /// **'작은 창 (1m 미만)'**
+  String get unit_window_small;
+
+  /// No description provided for @unit_window_large.
+  ///
+  /// In ko, this message translates to:
+  /// **'큰 창 (1m 이상)'**
+  String get unit_window_large;
+
+  /// No description provided for @unit_pest.
+  ///
+  /// In ko, this message translates to:
+  /// **'해충 방역'**
+  String get unit_pest;
+
+  /// No description provided for @unit_mite_bedbug.
+  ///
+  /// In ko, this message translates to:
+  /// **'진드기·빈대 퇴치'**
+  String get unit_mite_bedbug;
+
+  /// No description provided for @unit_sanitize.
+  ///
+  /// In ko, this message translates to:
+  /// **'살균·바이러스 소독'**
+  String get unit_sanitize;
+
+  /// No description provided for @unit_sick_house.
+  ///
+  /// In ko, this message translates to:
+  /// **'새집증후군 제거'**
+  String get unit_sick_house;
+
+  /// No description provided for @unitShort_wall.
+  ///
+  /// In ko, this message translates to:
+  /// **'벽걸이'**
+  String get unitShort_wall;
+
+  /// No description provided for @unitShort_stand.
+  ///
+  /// In ko, this message translates to:
+  /// **'스탠드'**
+  String get unitShort_stand;
+
+  /// No description provided for @unitShort_two_in_one.
+  ///
+  /// In ko, this message translates to:
+  /// **'2in1'**
+  String get unitShort_two_in_one;
+
+  /// No description provided for @unitShort_ceiling.
+  ///
+  /// In ko, this message translates to:
+  /// **'천장형'**
+  String get unitShort_ceiling;
+
+  /// No description provided for @unitShort_seat_1_2.
+  ///
+  /// In ko, this message translates to:
+  /// **'1~2인용'**
+  String get unitShort_seat_1_2;
+
+  /// No description provided for @unitShort_seat_3.
+  ///
+  /// In ko, this message translates to:
+  /// **'3인용'**
+  String get unitShort_seat_3;
+
+  /// No description provided for @unitShort_seat_4_plus.
+  ///
+  /// In ko, this message translates to:
+  /// **'4인용 이상'**
+  String get unitShort_seat_4_plus;
+
+  /// No description provided for @unitShort_l_shape.
+  ///
+  /// In ko, this message translates to:
+  /// **'L자'**
+  String get unitShort_l_shape;
+
+  /// No description provided for @unitShort_small.
+  ///
+  /// In ko, this message translates to:
+  /// **'작은 창'**
+  String get unitShort_small;
+
+  /// No description provided for @unitShort_large.
+  ///
+  /// In ko, this message translates to:
+  /// **'큰 창'**
+  String get unitShort_large;
+
+  /// No description provided for @unitShort_pest.
+  ///
+  /// In ko, this message translates to:
+  /// **'해충 방역'**
+  String get unitShort_pest;
+
+  /// No description provided for @unitShort_mite_bedbug.
+  ///
+  /// In ko, this message translates to:
+  /// **'진드기·빈대'**
+  String get unitShort_mite_bedbug;
+
+  /// No description provided for @unitShort_sanitize.
+  ///
+  /// In ko, this message translates to:
+  /// **'살균·소독'**
+  String get unitShort_sanitize;
+
+  /// No description provided for @unitShort_sick_house.
+  ///
+  /// In ko, this message translates to:
+  /// **'새집증후군'**
+  String get unitShort_sick_house;
+
+  /// No description provided for @unitHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'필요한 만큼 +, −로 골라 주세요'**
+  String get unitHint;
+
+  /// No description provided for @countsDiscount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{percent}% 할인 적용 (2개 이상 선택)'**
+  String countsDiscount(String percent);
+
+  /// No description provided for @countMinus.
+  ///
+  /// In ko, this message translates to:
+  /// **'개수 줄이기'**
+  String get countMinus;
+
+  /// No description provided for @countPlus.
+  ///
+  /// In ko, this message translates to:
+  /// **'개수 늘리기'**
+  String get countPlus;
+
+  /// No description provided for @countSelect.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택'**
+  String get countSelect;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1000,6 +1001,101 @@ class TKo extends T {
 
   @override
   String get cServerChange => '서버 주소 변경';
+
+  @override
+  String get svc_window => '창문 청소';
+
+  @override
+  String get svc_disinfection => '방역·소독';
+
+  @override
+  String get svcDesc_window => '창문 안팎을 창 크기별 개수대로 청소해요';
+
+  @override
+  String get svcDesc_disinfection => '필요한 방역과 소독을 골라 주세요';
+
+  @override
+  String get unitTitle_window => '창문 크기와 개수를\n골라 주세요.';
+
+  @override
+  String get unitTitle_disinfection => '방역 종류를\n골라 주세요.';
+
+  @override
+  String get unit_window_small => '작은 창 (1m 미만)';
+
+  @override
+  String get unit_window_large => '큰 창 (1m 이상)';
+
+  @override
+  String get unit_pest => '해충 방역';
+
+  @override
+  String get unit_mite_bedbug => '진드기·빈대 퇴치';
+
+  @override
+  String get unit_sanitize => '살균·바이러스 소독';
+
+  @override
+  String get unit_sick_house => '새집증후군 제거';
+
+  @override
+  String get unitShort_wall => '벽걸이';
+
+  @override
+  String get unitShort_stand => '스탠드';
+
+  @override
+  String get unitShort_two_in_one => '2in1';
+
+  @override
+  String get unitShort_ceiling => '천장형';
+
+  @override
+  String get unitShort_seat_1_2 => '1~2인용';
+
+  @override
+  String get unitShort_seat_3 => '3인용';
+
+  @override
+  String get unitShort_seat_4_plus => '4인용 이상';
+
+  @override
+  String get unitShort_l_shape => 'L자';
+
+  @override
+  String get unitShort_small => '작은 창';
+
+  @override
+  String get unitShort_large => '큰 창';
+
+  @override
+  String get unitShort_pest => '해충 방역';
+
+  @override
+  String get unitShort_mite_bedbug => '진드기·빈대';
+
+  @override
+  String get unitShort_sanitize => '살균·소독';
+
+  @override
+  String get unitShort_sick_house => '새집증후군';
+
+  @override
+  String get unitHint => '필요한 만큼 +, −로 골라 주세요';
+
+  @override
+  String countsDiscount(String percent) {
+    return '$percent% 할인 적용 (2개 이상 선택)';
+  }
+
+  @override
+  String get countMinus => '개수 줄이기';
+
+  @override
+  String get countPlus => '개수 늘리기';
+
+  @override
+  String get countSelect => '선택';
 
   @override
   String get ok => '확인';

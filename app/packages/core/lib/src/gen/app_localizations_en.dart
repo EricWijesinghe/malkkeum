@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1021,6 +1022,103 @@ class TEn extends T {
 
   @override
   String get cServerChange => 'Change server address';
+
+  @override
+  String get svc_window => 'Window cleaning';
+
+  @override
+  String get svc_disinfection => 'Pest control & disinfection';
+
+  @override
+  String get svcDesc_window =>
+      'Inside and outside of windows, priced per window size';
+
+  @override
+  String get svcDesc_disinfection =>
+      'Choose the pest control and disinfection you need';
+
+  @override
+  String get unitTitle_window => 'Choose window sizes\nand counts.';
+
+  @override
+  String get unitTitle_disinfection => 'Choose the\ntreatments.';
+
+  @override
+  String get unit_window_small => 'Small window (under 1m)';
+
+  @override
+  String get unit_window_large => 'Large window (1m and over)';
+
+  @override
+  String get unit_pest => 'Pest control';
+
+  @override
+  String get unit_mite_bedbug => 'Mite & bed bug treatment';
+
+  @override
+  String get unit_sanitize => 'Sanitising & virus disinfection';
+
+  @override
+  String get unit_sick_house => 'New-home syndrome removal';
+
+  @override
+  String get unitShort_wall => 'Wall';
+
+  @override
+  String get unitShort_stand => 'Stand';
+
+  @override
+  String get unitShort_two_in_one => '2-in-1';
+
+  @override
+  String get unitShort_ceiling => 'Ceiling';
+
+  @override
+  String get unitShort_seat_1_2 => '1–2 seats';
+
+  @override
+  String get unitShort_seat_3 => '3 seats';
+
+  @override
+  String get unitShort_seat_4_plus => '4+ seats';
+
+  @override
+  String get unitShort_l_shape => 'L-shape';
+
+  @override
+  String get unitShort_small => 'Small window';
+
+  @override
+  String get unitShort_large => 'Large window';
+
+  @override
+  String get unitShort_pest => 'Pest control';
+
+  @override
+  String get unitShort_mite_bedbug => 'Mites & bed bugs';
+
+  @override
+  String get unitShort_sanitize => 'Sanitising';
+
+  @override
+  String get unitShort_sick_house => 'New-home syndrome';
+
+  @override
+  String get unitHint => 'Use + and − to choose what you need';
+
+  @override
+  String countsDiscount(String percent) {
+    return '$percent% off for 2 or more';
+  }
+
+  @override
+  String get countMinus => 'Decrease count';
+
+  @override
+  String get countPlus => 'Increase count';
+
+  @override
+  String get countSelect => 'Select';
 
   @override
   String get ok => 'OK';
