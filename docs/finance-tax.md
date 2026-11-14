@@ -30,6 +30,8 @@ Status: **WIP, untested against live services.** Every feature below is off or u
 - 요청: `PUT /v1/checkouts/{id}/tax-invoice` (고객). 사업자등록번호(체크섬 검증), 상호, 대표자, 업태, 종목, 주소, 이메일.
 - 결제 완료 시 사장 큐(`requested`)에 등록된다.
 - 내보내기: `GET /v1/admin/finance/export/tax-invoices?from&to`. 내보낸 건은 `exported_at`이 찍힌다.
+- 두 번째 내보내기는 비어 있다(아직 내보내지 않은 건만 나간다).
+- 재내보내기: `POST /v1/admin/finance/export/tax-invoices/re-export?from&to&confirm=true`. 이미 내보낸 건만 같은 내용으로 다시 준다. `confirm=true`가 없으면 400. `exported_at`은 바뀌지 않고, 감사 기록 `tax_invoice.re_export`가 남는다. 콘솔 재무 > 세무의 [다시 내보내기] 버튼이 이 경로를 쓴다.
 - 발행 기록: `POST /v1/admin/finance/tax-invoices/{id}/issued` (승인번호, 발행일). 홈택스에서 발행한 뒤에만 기록한다.
 - **홈택스 업로드 양식은 확인되지 않았다.** `domain::tax::TAX_INVOICE_HEADERS` 한 곳에 정의된 열 순서를 실제 다운로드한 일괄작성 양식에 맞춰 수정해야 한다.
 
