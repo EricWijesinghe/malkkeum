@@ -27,6 +27,7 @@ ALIASES = {
     "nav_chat": "nav_chat_active", "nav_more": "nav_more_active",
     "svc_studio": "cat_studio", "svc_move_out": "cat_move", "svc_bathroom": "cat_bathroom",
     "svc_kitchen": "cat_kitchen", "svc_mattress": "cat_mattress", "svc_aircon": "cat_ac", "svc_sofa": "cat_sofa",
+    "svc_whole_home": "cat_whole_home", "svc_window": "cat_window", "svc_disinfection": "cat_disinfection",
     "news_megaphone": "announcement", "faq_bubble": "faq",
     "tool_trash": "tool_trash_bags", "tool_gloves": "tool_rubber_gloves", "tool_spray": "tool_detergent",
     "ac_two_in_one": "ac_2in1",

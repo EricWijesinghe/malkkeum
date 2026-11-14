@@ -75,6 +75,9 @@ abstract final class Icon3DRegistry {
     'svc_mattress': _svc('mattress'),
     'svc_aircon': _svc('aircon'),
     'svc_sofa': _svc('sofa'),
+    'svc_whole_home': _svc('whole_home'),
+    'svc_window': _svc('window'),
+    'svc_disinfection': _svc('disinfection'),
     'rec_move_combo': const Icon3DSpec(Icons.compare_arrows_rounded),
     'banner_coupon': const Icon3DSpec(
       Icons.confirmation_number_rounded,
@@ -214,8 +217,14 @@ abstract final class Icon3DRegistry {
     'c_monitor': const Icon3DSpec(Icons.monitor_heart_rounded),
     // shortcut: no rendered art yet (Blender render pipeline), reuses the nearest existing art; render c_audit, c_privacy and c_renewals to replace
     'c_audit': const Icon3DSpec(Icons.history_rounded, alias: 'c_monitor'),
-    'c_privacy': const Icon3DSpec(Icons.privacy_tip_rounded, alias: 'c_customers'),
-    'c_renewals': const Icon3DSpec(Icons.event_repeat_rounded, alias: 'c_bookings'),
+    'c_privacy': const Icon3DSpec(
+      Icons.privacy_tip_rounded,
+      alias: 'c_customers',
+    ),
+    'c_renewals': const Icon3DSpec(
+      Icons.event_repeat_rounded,
+      alias: 'c_bookings',
+    ),
   };
 
   static Icon3DSpec of(String id) => specs[id] ?? unknown;

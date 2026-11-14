@@ -2,7 +2,7 @@
 from lib import ball, box, cyl, group, rrect, slab, sparkle, tube
 from registry import icon
 
-from .parts import ac_unit, ring, truck, wheel
+from .parts import ac_unit, house, ring, truck, wheel
 
 # ---- categories ----------------------------------------------------------------------------
 
@@ -73,6 +73,36 @@ def cat_sofa():
         box("teal", (0.34, 0.95, 0.7), (x, -0.02, 0.55), r=0.15)
         cyl("yellow", 0.06, 0.24, (x * 0.85, -0.3, 0.1))
         cyl("yellow", 0.06, 0.24, (x * 0.85, 0.3, 0.1))
+
+
+@icon("cat_whole_home", "Category: whole-home cleaning (house with sparkles)", "category", tilt=10)
+def cat_whole_home():
+    house(d=0.8)
+    sparkle("yellow", 0.3, (1.0, -0.4, 1.4))
+    sparkle("yellow", 0.18, (-1.0, 0.5, 1.5))
+
+
+@icon("cat_window", "Category: window cleaning (window with frame and sparkle)", "category", tilt=8)
+def cat_window():
+    box("dteal", (1.9, 0.2, 0.2), (0, 0, 1.85), r=0.06)
+    box("dteal", (1.9, 0.2, 0.2), (0, 0, 0.05), r=0.06)
+    box("dteal", (0.2, 0.2, 1.9), (-0.9, 0, 0.95), r=0.06)
+    box("dteal", (0.2, 0.2, 1.9), (0.9, 0, 0.95), r=0.06)
+    box("teal", (0.14, 0.2, 1.7), (0, 0, 0.95), r=0.04)
+    box("teal", (1.7, 0.2, 0.14), (0, 0, 0.95), r=0.04)
+    box("lteal", (1.5, 0.08, 1.5), (0, 0.1, 0.95), r=0.04)
+    sparkle("yellow", 0.35, (1.2, -0.3, 1.9))
+    sparkle("yellow", 0.2, (1.25, -0.3, 1.3))
+
+
+@icon("cat_disinfection", "Category: pest control and disinfection (spray bottle with droplets)", "category", tilt=6)
+def cat_disinfection():
+    cyl("teal", 0.4, 1.5, (0, 0, 0.75))
+    cyl("dteal", 0.18, 0.3, (0, 0, 1.65))
+    box("dteal", (0.5, 0.2, 0.22), (0.2, 0, 1.85), r=0.07)
+    ball("lteal", 0.08, (0.7, 0, 1.95))
+    ball("lteal", 0.06, (0.95, 0, 1.7))
+    ball("yellow", 0.07, (0.8, 0, 2.2))
 
 
 # ---- studio scope ---------------------------------------------------------------------------
