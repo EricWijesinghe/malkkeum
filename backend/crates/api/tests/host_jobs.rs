@@ -78,7 +78,7 @@ async fn send(app: &Router, method: &str, uri: &str, token: &str, totp: Option<&
 /// Admin with an enrolled TOTP secret. Returns the access token.
 async fn enrolled_admin(db: &PgPool) -> String {
     let (token, id) = staff_token(db, api::auth::Role::StaffAdmin).await;
-    let enc = crypto::encrypt(&test_config().data_key, &totp::encode_secret(TOTP_SEED));
+    let enc = crypto::encrypt(&test_config().data_key, crypto::aad::STAFF_TOTP, &totp::encode_secret(TOTP_SEED));
     sqlx::query("UPDATE staff SET totp_secret = $2, totp_enabled_at = now() WHERE id = $1")
         .bind(id)
         .bind(enc)
