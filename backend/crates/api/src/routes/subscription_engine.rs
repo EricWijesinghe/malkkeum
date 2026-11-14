@@ -5,7 +5,7 @@
 //! 4. planned visits whose day has arrived without a charge become `missed`.
 
 use super::{
-    booking_core::{BookingBody, Prepared, after_booking_created, insert_paid, lock_slot, prepare, record_payment},
+    booking_core::{BookingBody, Prepared, after_booking_created, counts_from_row, insert_paid, lock_slot, prepare, record_payment},
     partner_jobs::VISIBLE,
 };
 use crate::{
@@ -18,7 +18,7 @@ use crate::{
 use chrono::{Duration, NaiveDate, Utc};
 use domain::{
     Won,
-    pricing::{PriceBreakdown, price_booking},
+    pricing::{PriceBreakdown, price_booking_with},
     schedule::{STANDARD_SLOTS, check_capacity},
     subscription::{Cadence, HORIZON_DAYS, Retry, after_failure, visit_dates, visit_price},
 };
@@ -53,6 +53,7 @@ struct SubRow {
     user_id: Uuid,
     service_code: String,
     unit_index: Option<i16>,
+    unit_counts: Option<Vec<i16>>,
     address_id: Uuid,
     payment_method_id: Uuid,
     preferred_pro_id: Option<Uuid>,
@@ -91,7 +92,12 @@ pub async fn pass(s: &AppState) -> ApiResult<PassReport> {
     let planned = plan(s).await?;
     let (booked, failed) = charge_due(s).await?;
     let missed = expire(s).await?;
-    Ok(PassReport { planned, booked, failed, missed })
+    Ok(PassReport {
+        planned,
+        booked,
+        failed,
+        missed,
+    })
 }
 
 /// Plans visits for every active subscription inside the horizon. Returns how many were added.
@@ -109,10 +115,11 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
 
 /// Plans one active subscription's visits inside the horizon. Used on create and on every pass.
 pub async fn plan_subscription(db: &PgPool, sub: Uuid) -> ApiResult<usize> {
-    let row: Option<(i16, NaiveDate, i16)> = sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
-        .bind(sub)
-        .fetch_optional(db)
-        .await?;
+    let row: Option<(i16, NaiveDate, i16)> =
+        sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
+            .bind(sub)
+            .fetch_optional(db)
+            .await?;
     let Some((weeks, anchor, hour)) = row else {
         return Ok(0);
     };
@@ -235,7 +242,7 @@ fn settle(r: Result<String, ProviderError>) -> Settled {
 
 async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let sub: SubRow = sqlx::query_as(
-        "SELECT user_id, service_code, unit_index, address_id, payment_method_id, preferred_pro_id, discount_percent FROM subscriptions WHERE id = $1",
+        "SELECT user_id, service_code, unit_index, unit_counts, address_id, payment_method_id, preferred_pro_id, discount_percent FROM subscriptions WHERE id = $1",
     )
     .bind(d.sub_id)
     .fetch_one(&s.db)
@@ -243,6 +250,7 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let body = BookingBody {
         service_code: sub.service_code.clone(),
         unit_index: sub.unit_index.map(|u| u as usize),
+        counts: counts_from_row(sub.unit_counts.clone()),
         address_id: sub.address_id,
         visit_date: d.visit_date,
         start_hour: d.start_hour as u8,
@@ -255,9 +263,14 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
         Ok(p) => p,
         Err(e) => return blocked(e),
     };
-    let list = price_booking(&prep.service, body.unit_index, None, Utc::now())?;
+    let list = price_booking_with(&prep.service, body.unit_index, &body.counts, None, Utc::now())?;
     let vp = visit_price(list.list_price.0, u8::try_from(sub.discount_percent).unwrap_or(0))?;
-    let price = PriceBreakdown { list_price: list.list_price, discount: Won(vp.discount), total: Won(vp.total), minutes: list.minutes };
+    let price = PriceBreakdown {
+        list_price: list.list_price,
+        discount: Won(vp.discount),
+        total: Won(vp.total),
+        minutes: list.minutes,
+    };
     let key: Option<String> = sqlx::query_scalar("SELECT billing_key FROM payment_methods WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL")
         .bind(sub.payment_method_id)
         .bind(sub.user_id)
@@ -266,7 +279,14 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let Some(key) = key else {
         return Ok(Attempt::Failed(Failure::Blocked));
     };
-    let c = Charge { d, sub: &sub, prep: &prep, body: &body, price: &price, key: &key };
+    let c = Charge {
+        d,
+        sub: &sub,
+        prep: &prep,
+        body: &body,
+        price: &price,
+        key: &key,
+    };
     if price.total.0 == 0 {
         return finalize(s, &c, None).await;
     }
@@ -332,7 +352,9 @@ async fn charge_once(s: &AppState, c: &Charge<'_>, pid: &str) -> ApiResult<Attem
 /// Books the visit once the money is settled. The charge already happened, so any outcome other than a booking refunds it.
 async fn finalize(s: &AppState, c: &Charge<'_>, paid: Option<(&str, &str)>) -> ApiResult<Attempt> {
     let outcome = book_visit(s, c, paid).await;
-    if !matches!(outcome, Ok(Attempt::Booked(_))) && let Some((_, tx)) = paid {
+    if !matches!(outcome, Ok(Attempt::Booked(_)))
+        && let Some((_, tx)) = paid
+    {
         refund_or_alert(s, "portone", tx, c.price.total.0).await;
     }
     outcome
@@ -414,10 +436,12 @@ async fn pro_free_for(conn: &mut PgConnection, booking: Uuid, pro: Uuid) -> ApiR
 
 /// Counts a failed attempt, schedules the retry, and pauses after repeated failures. The customer is told each time.
 async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<()> {
-    let failures: i32 = sqlx::query_scalar("UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures")
-        .bind(d.sub_id)
-        .fetch_one(&s.db)
-        .await?;
+    let failures: i32 = sqlx::query_scalar(
+        "UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures",
+    )
+    .bind(d.sub_id)
+    .fetch_one(&s.db)
+    .await?;
     let retry = after_failure(u32::try_from(failures).unwrap_or(u32::MAX));
     let hours = match retry {
         Retry::After { hours } => Some(hours as i32),
@@ -446,7 +470,14 @@ async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<(
         if paused == 1 {
             best_effort(
                 "notify",
-                notify(s, Recipient::User(d.user_id), "subscription.paused", "정기 청소가 일시 정지됐어요", "결제 수단을 확인한 뒤 재개해 주세요", json!({ "subscription_id": d.sub_id })),
+                notify(
+                    s,
+                    Recipient::User(d.user_id),
+                    "subscription.paused",
+                    "정기 청소가 일시 정지됐어요",
+                    "결제 수단을 확인한 뒤 재개해 주세요",
+                    json!({ "subscription_id": d.sub_id }),
+                ),
             )
             .await;
         }
@@ -478,7 +509,14 @@ async fn expire(s: &AppState) -> ApiResult<usize> {
     for (user,) in &missed {
         best_effort(
             "notify",
-            notify(s, Recipient::User(*user), "subscription.visit_missed", "이번 정기 청소를 잡지 못했어요", "고객센터로 문의해 주세요", json!({})),
+            notify(
+                s,
+                Recipient::User(*user),
+                "subscription.visit_missed",
+                "이번 정기 청소를 잡지 못했어요",
+                "고객센터로 문의해 주세요",
+                json!({}),
+            ),
         )
         .await;
     }
@@ -502,7 +540,10 @@ mod tests {
     #[test]
     fn upstream_is_unknown_and_only_a_decline_fails_the_attempt() {
         assert_eq!(settle(Err(ProviderError::Upstream("timeout".into()))), Settled::Unknown);
-        assert_eq!(settle(Err(ProviderError::Declined("card_declined".into()))), Settled::Declined("card_declined".into()));
+        assert_eq!(
+            settle(Err(ProviderError::Declined("card_declined".into()))),
+            Settled::Declined("card_declined".into())
+        );
         assert_eq!(settle(Ok("tx_1".into())), Settled::Paid("tx_1".into()));
     }
 }

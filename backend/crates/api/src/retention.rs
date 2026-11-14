@@ -1,7 +1,7 @@
 //! Retention purge (PIPA 제21조 파기). Runs hourly. What is purged, and why, is documented in
 //! `docs/privacy-retention.md`. Each run is idempotent; a failed step is logged and the next run retries it.
 
-use crate::{config::Config, state::AppState};
+use crate::{config::Config, settings_registry, state::AppState};
 use sqlx::PgPool;
 use std::{path::Path, time::Duration};
 use tokio::task::JoinHandle;
@@ -53,7 +53,12 @@ async fn pass(state: &AppState) -> Result<(), &'static str> {
 
 /// One pass over every purge rule. Stops at the first database error so the run is retried whole.
 pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::error::Error + Send + Sync>> {
-    let otp_codes = sqlx::query("DELETE FROM otp_codes WHERE created_at < now() - interval '1 day'").execute(db).await?.rows_affected();
+    let ai_days = settings_registry::get(db, cfg, "ai_chat_retention_days").await?;
+    let orphan_days = u32::try_from(settings_registry::get(db, cfg, "upload_orphan_days").await?)?;
+    let otp_codes = sqlx::query("DELETE FROM otp_codes WHERE created_at < now() - interval '1 day'")
+        .execute(db)
+        .await?
+        .rows_affected();
     let refresh_tokens = sqlx::query("DELETE FROM refresh_tokens WHERE expires_at < now() OR revoked_at < now() - interval '1 day'")
         .execute(db)
         .await?
@@ -63,12 +68,12 @@ pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::err
     let ai_messages = sqlx::query(
         "DELETE FROM chat_messages WHERE created_at < now() - make_interval(days => $1) AND thread_id IN (SELECT DISTINCT thread_id FROM ai_usage WHERE thread_id IS NOT NULL)",
     )
-    .bind(cfg.ai_chat_retention_days as i32)
+    .bind(ai_days as i32)
     .execute(db)
     .await?
     .rows_affected();
     let entry_codes = crate::safety::purge_codes(db).await?;
-    let uploads = purge_orphan_uploads(db, &cfg.upload_dir, cfg.upload_orphan_days).await?;
+    let uploads = purge_orphan_uploads(db, &cfg.upload_dir, orphan_days).await?;
     let analytics_events = sqlx::query("DELETE FROM analytics_events WHERE created_at < now() - make_interval(days => $1)")
         .bind(crate::analytics::RETENTION_DAYS as i32)
         .execute(db)
@@ -83,7 +88,15 @@ pub async fn purge(db: &PgPool, cfg: &Config) -> Result<Report, Box<dyn std::err
     .execute(db)
     .await?
     .rows_affected();
-    Ok(Report { otp_codes, refresh_tokens, ai_messages, uploads, entry_codes, analytics_events, checkout_snapshots })
+    Ok(Report {
+        otp_codes,
+        refresh_tokens,
+        ai_messages,
+        uploads,
+        entry_codes,
+        analytics_events,
+        checkout_snapshots,
+    })
 }
 
 /// Deletes uploads older than `days` that no record refers to. The file goes first, then its row, so a

@@ -8,9 +8,21 @@ use sqlx::PgPool;
 /// Default capacity per arrival hour until staff change it (decision #6).
 const DEFAULT_SLOT_CAPACITY: i32 = 6;
 
-/// Home tile order for a fresh catalogue (owner brief): 원룸, 이사, 입주, 화장실, 주방, 매트리스, 에어컨, 소파.
+/// Catalogue order for a fresh database, by home group (CR-7.3; migration 0211 applies it to older ones).
 /// Only the first insert uses it, so an order the owner set in the console is never overwritten.
-pub const SEED_ORDER: [&str; 8] = ["studio", "move_out", "move_in", "bathroom", "kitchen", "mattress", "aircon", "sofa"];
+pub const SEED_ORDER: [&str; 11] = [
+    "studio",
+    "move_out",
+    "move_in",
+    "bathroom",
+    "kitchen",
+    "whole_home",
+    "window",
+    "mattress",
+    "aircon",
+    "sofa",
+    "disinfection",
+];
 
 /// Home tile badges of the owner design: N on mattress, HOT on aircon (`content.badge`, read by the app).
 /// Like the order, only the first insert writes them, so a badge the owner removes stays removed.
@@ -31,16 +43,21 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
     for s in default_catalog() {
         // Unlisted codes go after the brief's eight, in catalogue order.
         let order = SEED_ORDER.iter().position(|c| *c == s.code).unwrap_or(SEED_ORDER.len());
-        let content = SEED_BADGES.iter().find(|(code, _)| *code == s.code).map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
-        sqlx::query("INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING")
-            .bind(&s.code)
-            .bind(sqlx::types::Json(&s.pricing))
-            .bind(s.needs_preparation)
-            .bind(s.max_pyeong.map(|p| p as i16))
-            .bind(order as i32)
-            .bind(content)
-            .execute(db)
-            .await?;
+        let content = SEED_BADGES
+            .iter()
+            .find(|(code, _)| *code == s.code)
+            .map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
+        sqlx::query(
+            "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING",
+        )
+        .bind(&s.code)
+        .bind(sqlx::types::Json(&s.pricing))
+        .bind(s.needs_preparation)
+        .bind(s.max_pyeong.map(|p| p as i16))
+        .bind(order as i32)
+        .bind(content)
+        .execute(db)
+        .await?;
     }
     sqlx::query("INSERT INTO settings (key, value) VALUES ('quote_formula', $1) ON CONFLICT DO NOTHING")
         .bind(sqlx::types::Json(QuoteFormula::default()))

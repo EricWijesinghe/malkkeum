@@ -144,18 +144,21 @@ struct EstimateRequest {
     answers: QuoteAnswers,
     visit_date: Option<NaiveDate>,
     start_hour: Option<u8>,
+    /// The service quoted. whole_home fixes its own cleaning type and luggage whatever is sent.
+    service_code: Option<String>,
 }
 
 /// With a slot the preview carries its peak surcharge, so it equals the estimate the booking stores.
 async fn estimate(State(s): State<AppState>, Json(r): Json<EstimateRequest>) -> ApiResult<Json<Estimate>> {
     let formula = load_formula(&s.db).await?;
-    let lines = addon_lines(&s.db, &r.answers).await?;
+    let answers = domain::quote::fixed_answers_for(r.service_code.as_deref().unwrap_or(""), r.answers);
+    let lines = addon_lines(&s.db, &answers).await?;
     let start = r.visit_date.zip(r.start_hour).and_then(|(d, h)| domain::peak::kst_to_utc(d, u32::from(h)));
     let bps = match start {
         Some(start) => domain::peak::peak_surcharge(&load_peak_config(&s.db).await?, start).bps,
         None => 0,
     };
-    Ok(Json(formula.estimate_with_addons(&r.answers, bps, &lines)?))
+    Ok(Json(formula.estimate_with_addons(&answers, bps, &lines)?))
 }
 
 /// Catalog prices for the answers' aircon add-ons (empty without any), so every estimate
