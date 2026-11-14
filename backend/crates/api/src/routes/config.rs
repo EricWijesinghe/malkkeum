@@ -186,9 +186,16 @@ pub fn feature_for(path: &str) -> Option<&'static str> {
     }
 }
 
-/// Creating a booking: a direct booking or accepting a waitlist offer (the only other path that inserts one).
+/// Creating a booking by path: a direct booking, accepting a waitlist offer, or a recurring subscription.
+/// Checkouts that create a booking are refused in their handlers (`maintenance_on`), not here.
 fn is_new_booking(path: &str) -> bool {
-    path == "/v1/bookings" || (path.starts_with("/v1/waitlist/") && path.ends_with("/accept"))
+    path == "/v1/bookings" || path == "/v1/subscriptions" || (path.starts_with("/v1/waitlist/") && path.ends_with("/accept"))
+}
+
+/// Whether maintenance is on right now, for handlers that refuse by what they create.
+pub async fn maintenance_on(db: &PgPool, cfg: &Config) -> ApiResult<bool> {
+    let doc = current_document(db, cfg).await?;
+    Ok(doc["maintenance"]["on"].as_bool() == Some(true))
 }
 
 /// Stable error code for a refused request, or None when it may proceed. Maintenance refuses new bookings
@@ -336,6 +343,9 @@ mod tests {
         let d = doc(json!({}), true);
         assert_eq!(block_code(&d, &Method::POST, "/v1/bookings"), Some("maintenance"));
         assert_eq!(block_code(&d, &Method::POST, "/v1/waitlist/9/accept"), Some("maintenance"));
+        assert_eq!(block_code(&d, &Method::POST, "/v1/subscriptions"), Some("maintenance"));
+        assert_eq!(block_code(&d, &Method::GET, "/v1/subscriptions"), None, "reads stay open");
+        assert_eq!(block_code(&d, &Method::POST, "/v1/subscriptions/abc/pause"), None, "pausing stays open");
         assert_eq!(block_code(&d, &Method::GET, "/v1/bookings"), None, "reads stay open");
         assert_eq!(block_code(&d, &Method::POST, "/v1/bookings/abc/cancel"), None, "cancelling stays open");
         assert_eq!(block_code(&d, &Method::POST, "/v1/bookings/abc/deposit"), None);
