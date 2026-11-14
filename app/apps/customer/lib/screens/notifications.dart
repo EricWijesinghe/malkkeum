@@ -57,10 +57,11 @@ class _AlertsState extends State<_Alerts> {
   late final _pager = Pager<Json>(context.api, '/me/notifications', (r) => r);
 
   Future<List<Json>> _load() async {
+    final api = context.api;
     final rows = await _pager.first();
     // Opening the inbox reads everything; the list still shows which ones were new.
     if (rows.any((r) => r['read_at'] == null)) {
-      context.api.post('/me/notifications/read').ignore();
+      api.post('/me/notifications/read').ignore();
     }
     return rows;
   }

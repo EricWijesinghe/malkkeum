@@ -4247,6 +4247,36 @@
         }
       }
     },
+    "/v1/me/points/ledger": {
+      "get": {
+        "operationId": "myPointsLedger",
+        "tags": [
+          "customer"
+        ],
+        "summary": "Points ledger entries, newest first (cursor-paginated)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/growth/points": {
       "put": {
         "operationId": "putPointsPolicy",
