@@ -206,10 +206,13 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
         .bind(format!("quote-user:{user}"))
         .execute(&mut *tx)
         .await?;
-    let open: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1 AND status = 0 AND answers IS NOT NULL")
-        .bind(user)
-        .fetch_one(&mut *tx)
-        .await?;
+    let open: i64 = sqlx::query_scalar(&format!(
+        "SELECT count(*) FROM bookings WHERE user_id = $1 AND status = {} AND answers IS NOT NULL",
+        BookingStatus::Consultation.as_i16()
+    ))
+    .bind(user)
+    .fetch_one(&mut *tx)
+    .await?;
     let limit = settings_registry::get(&s.db, &s.config, "max_open_quote_requests").await?;
     if !within_quota(open, limit) {
         return Err(ApiError::Conflict("too_many_open_requests"));
@@ -426,10 +429,13 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
     )
     .await?;
     let refunds = refund_locked(s, &mut tx, b.id, refund_cap).await?;
-    sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1")
-        .bind(b.id)
-        .execute(&mut *tx)
-        .await?;
+    sqlx::query(&format!(
+        "UPDATE bookings SET status = {}, cancelled_at = now(), updated_at = now() WHERE id = $1",
+        BookingStatus::Cancelled.as_i16()
+    ))
+    .bind(b.id)
+    .execute(&mut *tx)
+    .await?;
     if b.coupon_id.is_some() && refund_cap.is_none() {
         // Full refund: the coupon goes back to the customer.
         sqlx::query("UPDATE coupons SET used_booking_id = NULL WHERE id = $1")
@@ -669,7 +675,7 @@ async fn update_notes(State(s): State<AppState>, Customer(a): Customer, Path(id)
     }
     // The door code is stored encrypted and never in visit_notes; a blank entry clears it.
     let mut notes = json!({ "entry": n.entry, "parking": n.parking, "other": n.other });
-    let access_code = safety::take_entry(&mut notes).map(|code| crypto::encrypt(&s.config.data_key, &code));
+    let access_code = safety::take_entry(&mut notes).map(|code| crypto::encrypt(&s.config.data_key, crypto::aad::ACCESS_CODE, &code));
     let r = sqlx::query("UPDATE bookings SET visit_notes = $2, access_code_enc = $3, updated_at = now() WHERE id = $1 AND status BETWEEN 0 AND 2")
         .bind(id)
         .bind(notes)

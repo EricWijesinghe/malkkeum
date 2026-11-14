@@ -316,7 +316,7 @@ The server cannot report its own outage, so watch it from outside.
   - `malkkeum_realtime_listening`: 0 means this replica is not receiving events from the others.
   - `malkkeum_build_info{version}`, `malkkeum_uptime_seconds`.
 - **Shutdown.** On SIGTERM (`docker stop`) the API stops accepting connections, closes WebSockets with code 1012 so clients reconnect, lets in-flight requests finish (each is bounded by the 30 s request timeout), then stops the background jobs after their current pass (up to 10 s).
-- **Several API replicas.** Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
+- **Several API replicas.** The general rate-limit bucket is per process, so run one API replica unless you accept that its limit multiplies by the replica count (auth and upload limits are shared through Postgres). Realtime events fan out through Postgres `LISTEN/NOTIFY` (channel `malkkeum_events`). Each replica holds one pooled connection for it. Events larger than about 7 KB are stored in `realtime_events` for a few minutes and fetched by id. After a database failover, sockets receive `{"type":"resync"}` and refetch.
 
 ## 10. Uninstall
 

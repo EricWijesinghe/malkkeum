@@ -37,6 +37,7 @@ pub fn test_config() -> Config {
         bind: "127.0.0.1:0".parse().expect("bind addr"),
         jwt_secret: SECRET.to_vec(),
         jwt_previous_secret: None,
+        otp_pepper: None,
         data_key: [7u8; 32],
         host_jobs_dir: std::path::PathBuf::from("/nonexistent-host-jobs"),
         upload_dir: std::env::temp_dir().join("api-flow-tests"),

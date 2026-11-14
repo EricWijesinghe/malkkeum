@@ -15,6 +15,7 @@ use axum::{
     routing::{delete, get, post},
 };
 use chrono::NaiveDate;
+use domain::booking::BookingStatus;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
@@ -65,10 +66,11 @@ async fn delete_account(State(s): State<AppState>, Pro(a): Pro) -> ApiResult<Jso
 pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
     let mut tx = s.db.begin().await?;
     sqlx::query("SELECT id FROM pros WHERE id = $1 FOR UPDATE").bind(id).execute(&mut *tx).await?;
-    let (jobs, owed): (bool, bool) = sqlx::query_as(
-        "SELECT EXISTS (SELECT 1 FROM bookings WHERE pro_id = $1 AND status = 2),
-                EXISTS (SELECT 1 FROM settlements WHERE pro_id = $1 AND state IN ('waiting_balance','pending','held'))",
-    )
+    let assigned = BookingStatus::TeamAssigned.as_i16();
+    let (jobs, owed): (bool, bool) = sqlx::query_as(&format!(
+        "SELECT EXISTS (SELECT 1 FROM bookings WHERE pro_id = $1 AND status = {assigned}),
+                EXISTS (SELECT 1 FROM settlements WHERE pro_id = $1 AND state IN ('waiting_balance','pending','held'))"
+    ))
     .bind(id)
     .fetch_one(&mut *tx)
     .await?;
@@ -261,11 +263,14 @@ async fn remove_member(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uu
     if r.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
-    sqlx::query("UPDATE bookings SET assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner') WHERE assignee_id = $1 AND status = 2")
-        .bind(id)
-        .bind(a.id)
-        .execute(&s.db)
-        .await?;
+    sqlx::query(&format!(
+        "UPDATE bookings SET assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner') WHERE assignee_id = $1 AND status = {}",
+        BookingStatus::TeamAssigned.as_i16()
+    ))
+    .bind(id)
+    .bind(a.id)
+    .execute(&s.db)
+    .await?;
     Ok(Json(json!({ "ok": true })))
 }
 
@@ -298,7 +303,7 @@ async fn put_account(State(s): State<AppState>, Pro(a): Pro, Json(x): Json<Accou
     )
     .bind(a.id)
     .bind(x.bank.trim())
-    .bind(crypto::encrypt(&s.config.data_key, &digits))
+    .bind(crypto::encrypt(&s.config.data_key, crypto::aad::PAYOUT_ACCOUNT, &digits))
     .bind(last4)
     .bind(x.holder.trim())
     .bind(verified)

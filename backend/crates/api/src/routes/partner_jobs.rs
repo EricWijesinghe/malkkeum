@@ -20,9 +20,13 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::NaiveDate;
+use domain::booking::BookingStatus;
 use domain::{Won, partner::payout};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sqlx::PgPool;
+use std::time::Duration;
+use tokio::task::JoinHandle;
 use uuid::Uuid;
 
 const FEED_LIMIT: i64 = 100;
@@ -78,11 +82,15 @@ struct FeedQuery {
 }
 
 async fn feed(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<FeedQuery>) -> ApiResult<Json<Vec<JobCard>>> {
+    let consultation = BookingStatus::Consultation.as_i16();
+    let confirmed = BookingStatus::Confirmed.as_i16();
     let kind_filter = match q.kind.as_str() {
         "direct" => {
-            format!("b.answers IS NULL AND (b.status = 1 AND b.pro_id IS NULL AND b.team_name IS NULL OR $2 AND b.status >= 1 AND b.visit_date >= {KST_TODAY})")
+            format!(
+                "b.answers IS NULL AND (b.status = {confirmed} AND b.pro_id IS NULL AND b.team_name IS NULL OR $2 AND b.status >= {confirmed} AND b.visit_date >= {KST_TODAY})"
+            )
         }
-        "quote" => format!("b.answers IS NOT NULL AND (b.status = 0 OR $2 AND b.visit_date >= {KST_TODAY})"),
+        "quote" => format!("b.answers IS NOT NULL AND (b.status = {consultation} OR $2 AND b.visit_date >= {KST_TODAY})"),
         _ => return Err(ApiError::BadRequest("invalid_kind")),
     };
     let order = match q.sort.as_deref() {
@@ -95,7 +103,7 @@ async fn feed(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<FeedQuery>
         "SELECT b.id, b.service_code, b.unit_index, b.district_code, split_part(b.address->>'road_address', ' ', 2) AS road_area, b.visit_date, b.start_hour, b.minutes,
            (b.address->>'size_pyeong')::int AS size_pyeong, b.answers->>'building' AS building, b.answers, b.list_price AS customer_price, b.estimate, p.fee_bps,
            (SELECT amount FROM quotes q WHERE q.booking_id = b.id AND q.pro_id = p.id AND q.state <> 'withdrawn') AS my_quote,
-           (b.pro_id IS NULL AND b.status IN (0, 1)) AS is_open, b.created_at
+           (b.pro_id IS NULL AND b.status IN ({consultation}, {confirmed})) AS is_open, b.created_at
          FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
          WHERE p.id = $1 AND b.visit_date > {KST_TODAY} AND {VISIBLE} AND ({kind_filter})
          ORDER BY {order} LIMIT $3"
@@ -208,11 +216,12 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
     }
     // Claim and default assignee in one statement: no half-accepted jobs.
     let mut tx = s.db.begin().await?;
-    let won: Option<(Uuid, String)> = sqlx::query_as(
-        "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
+    let (assigned, confirmed) = (BookingStatus::TeamAssigned.as_i16(), BookingStatus::Confirmed.as_i16());
+    let won: Option<(Uuid, String)> = sqlx::query_as(&format!(
+        "UPDATE bookings SET pro_id = $2, status = {assigned}, accepted_at = now(), updated_at = now(),
            assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
-         WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = 1 AND answers IS NULL RETURNING user_id, number",
-    )
+         WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = {confirmed} AND answers IS NULL RETURNING user_id, number"
+    ))
     .bind(id)
     .bind(a.id)
     .fetch_optional(&mut *tx)
@@ -258,7 +267,8 @@ impl QuoteInput {
 async fn submit_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(q): Json<QuoteInput>) -> ApiResult<Json<Value>> {
     require_phone(&s, a.id).await?;
     let amount = q.validate()?;
-    let open: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id WHERE b.id = $1 AND p.id = $2 AND b.status = 0 AND b.answers IS NOT NULL AND {VISIBLE})"))
+    let consultation = BookingStatus::Consultation.as_i16();
+    let open: bool = sqlx::query_scalar(&format!("SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id WHERE b.id = $1 AND p.id = $2 AND b.status = {consultation} AND b.answers IS NOT NULL AND {VISIBLE})"))
         .bind(id)
         .bind(a.id)
         .fetch_one(&s.db)
@@ -305,17 +315,35 @@ async fn withdraw_quote(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<U
     Ok(Json(json!({ "ok": true })))
 }
 
+/// How often waiting quotes on visits that have passed (or were cancelled) are closed.
+const STALE_QUOTE_PASS_EVERY: Duration = Duration::from_secs(300);
+
+/// Closes waiting quotes whose visit day has passed or whose booking was cancelled. Runs on a timer, never on a read.
+pub async fn close_stale_quotes(db: &PgPool) -> sqlx::Result<u64> {
+    let cancelled = BookingStatus::Cancelled.as_i16();
+    let closed = sqlx::query(&format!(
+        "UPDATE quotes q SET state = 'closed' FROM bookings b WHERE q.booking_id = b.id AND q.state = 'waiting' AND (b.visit_date <= {KST_TODAY} OR b.status = {cancelled})"
+    ))
+    .execute(db)
+    .await?;
+    Ok(closed.rows_affected())
+}
+
+/// Starts the periodic close pass. Errors are logged and the loop goes on.
+pub fn spawn_close_stale_quotes(state: AppState) -> JoinHandle<()> {
+    let mut stop = state.hub.drain_signal();
+    tokio::spawn(async move {
+        let mut tick = tokio::time::interval(STALE_QUOTE_PASS_EVERY);
+        while crate::lifecycle::next_tick(&mut tick, &mut stop).await {
+            crate::jobs::run(&state, "quote_close", close_stale_quotes(&state.db)).await;
+        }
+    })
+}
+
 /// Latest activity first; keyset cursor over (updated_at, id). Only the quotes on the page are marked seen.
 async fn my_quotes(State(s): State<AppState>, Pro(a): Pro, Query(q): Query<PageQuery>) -> ApiResult<Response> {
     let limit = page_limit(q.limit)?;
     let (ts, id) = ts_id_cursor(q.cursor.as_deref())?;
-    // Closing stale requests lazily keeps the state right without a scheduler.
-    sqlx::query(&format!(
-        "UPDATE quotes q SET state = 'closed' FROM bookings b WHERE q.booking_id = b.id AND q.pro_id = $1 AND q.state = 'waiting' AND (b.visit_date <= {KST_TODAY} OR b.status = -1)"
-    ))
-    .bind(a.id)
-    .execute(&s.db)
-    .await?;
     let rows: Vec<Value> = sqlx::query_scalar(
         "SELECT to_jsonb(x) FROM (SELECT q.id, q.booking_id, q.amount, q.note, q.state, q.seen_by_pro, q.created_at, q.updated_at,
            b.service_code, b.visit_date, b.start_hour, b.estimate, b.district_code, b.answers FROM quotes q JOIN bookings b ON b.id = q.booking_id
@@ -364,10 +392,11 @@ struct Assign {
 }
 
 async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Json(x): Json<Assign>) -> ApiResult<Json<Value>> {
-    let r = sqlx::query(
-        "UPDATE bookings SET assignee_id = $3, updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2
-           AND EXISTS (SELECT 1 FROM team_members m WHERE m.id = $3 AND m.pro_id = $2 AND m.invite_status <> 'removed')",
-    )
+    let assigned = BookingStatus::TeamAssigned.as_i16();
+    let r = sqlx::query(&format!(
+        "UPDATE bookings SET assignee_id = $3, updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = {assigned}
+           AND EXISTS (SELECT 1 FROM team_members m WHERE m.id = $3 AND m.pro_id = $2 AND m.invite_status <> 'removed')"
+    ))
     .bind(id)
     .bind(a.id)
     .bind(x.member_id)

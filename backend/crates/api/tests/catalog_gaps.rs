@@ -44,7 +44,7 @@ async fn public_codes(app: &Router) -> Vec<String> {
 /// Admin with an enrolled TOTP secret, so the owner gate accepts codes made from `TOTP_SEED`.
 async fn enrolled_admin(db: &PgPool) -> String {
     let (token, id) = staff_token(db, Role::StaffAdmin).await;
-    let enc = crypto::encrypt(&test_config().data_key, &totp::encode_secret(TOTP_SEED));
+    let enc = crypto::encrypt(&test_config().data_key, crypto::aad::STAFF_TOTP, &totp::encode_secret(TOTP_SEED));
     sqlx::query("UPDATE staff SET totp_secret = $2, totp_enabled_at = now() WHERE id = $1")
         .bind(id)
         .bind(enc)

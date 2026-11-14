@@ -12,6 +12,8 @@ pub struct Config {
     pub jwt_secret: Vec<u8>,
     /// Retired signing key still accepted during rotation (`JWT_PREVIOUS_SECRET`). Unset outside a rotation.
     pub jwt_previous_secret: Option<Vec<u8>>,
+    /// Pepper for login-code hashes (`OTP_PEPPER`). Unset keeps hashing with `jwt_secret` (older deployments).
+    pub otp_pepper: Option<Vec<u8>>,
     /// Key for encrypting payout account numbers at rest (32 bytes, hex).
     pub data_key: [u8; 32],
     pub upload_dir: PathBuf,
@@ -276,12 +278,30 @@ impl Config {
         std::iter::once(self.jwt_secret.as_slice()).chain(self.jwt_previous_secret.as_deref()).collect()
     }
 
+    /// Keys that may hash a login code: the pepper first, then `jwt_secret` so codes issued before
+    /// `OTP_PEPPER` was set still verify (codes expire in minutes, so this fallback can be dropped later).
+    pub fn otp_key(&self) -> &[u8] {
+        self.otp_pepper.as_deref().unwrap_or(&self.jwt_secret)
+    }
+
+    pub fn otp_keys(&self) -> Vec<&[u8]> {
+        self.otp_pepper
+            .as_deref()
+            .into_iter()
+            .chain(std::iter::once(self.jwt_secret.as_slice()))
+            .collect()
+    }
+
     pub fn from_env() -> Result<Self, ConfigError> {
         let jwt_secret = req("JWT_SECRET")?.into_bytes();
         if jwt_secret.len() < MIN_SECRET_BYTES {
             return Err(ConfigError::Invalid("JWT_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
         }
         let jwt_previous_secret = env::var("JWT_PREVIOUS_SECRET").ok().filter(|s| !s.is_empty()).map(String::into_bytes);
+        let otp_pepper = env::var("OTP_PEPPER").ok().filter(|s| !s.is_empty()).map(String::into_bytes);
+        if otp_pepper.as_ref().is_some_and(|k| k.len() < MIN_SECRET_BYTES) {
+            return Err(ConfigError::Invalid("OTP_PEPPER", format!("needs at least {MIN_SECRET_BYTES} bytes")));
+        }
         if jwt_previous_secret.as_ref().is_some_and(|k| k.len() < MIN_SECRET_BYTES) {
             return Err(ConfigError::Invalid("JWT_PREVIOUS_SECRET", format!("needs at least {MIN_SECRET_BYTES} bytes")));
         }
@@ -312,6 +332,7 @@ impl Config {
             bind: bind.parse().map_err(|_| ConfigError::Invalid("BIND_ADDR", bind.clone()))?,
             jwt_secret,
             jwt_previous_secret,
+            otp_pepper,
             data_key,
             upload_dir: env::var("UPLOAD_DIR").unwrap_or_else(|_| "./data/uploads".into()).into(),
             host_jobs_dir: env::var("HOST_JOBS_DIR").unwrap_or_else(|_| "/jobs".into()).into(),

@@ -348,6 +348,34 @@ async fn quotes_page_marks_only_the_rows_it_returned_as_seen(db: PgPool) {
 }
 
 #[sqlx::test(migrations = "../../migrations")]
+async fn reading_quotes_never_closes_them(db: PgPool) {
+    seed_catalog(&db).await;
+    let app = common::app(db.clone());
+    let (pro, pro_id) = verified_pro(&app, &db, "010-5420-0101").await;
+    let c = customer(&app, &db, "010-5420-0001").await;
+    let (booking, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date - 1 WHERE id = $1")
+        .bind(booking)
+        .execute(&db)
+        .await
+        .expect("past visit");
+    sqlx::query("INSERT INTO quotes (booking_id, pro_id, amount, state) VALUES ($1, $2, 90000, 'waiting')")
+        .bind(booking)
+        .bind(pro_id)
+        .execute(&db)
+        .await
+        .expect("quote");
+    let (st, body, _) = get_page(&app, "/v1/partner/quotes", &pro).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let state: String = sqlx::query_scalar("SELECT state FROM quotes WHERE booking_id = $1")
+        .bind(booking)
+        .fetch_one(&db)
+        .await
+        .expect("state");
+    assert_eq!(state, "waiting", "a read changes no quote state; the timer pass closes stale ones");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
 async fn chat_threads_page_by_cursor_for_customers_and_partners(db: PgPool) {
     seed_catalog(&db).await;
     let app = common::app(db.clone());

@@ -2,6 +2,8 @@
 //! Every bucket has an in-memory sliding window (fast path, per process); auth and upload also keep a
 //! fixed-window counter in Postgres so a restart or a second replica cannot reset the budget. Also hosts
 //! the small quota helper used by per-user daily caps.
+//! shortcut: the general bucket is per process, so N API replicas allow N times its limit; keep one replica,
+//! or move the general bucket to the Postgres counter when running more than one.
 
 use crate::{config::Config, error::ApiError};
 use axum::{

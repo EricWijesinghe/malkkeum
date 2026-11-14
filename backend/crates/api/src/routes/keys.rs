@@ -80,7 +80,7 @@ async fn totp_step(s: &AppState, id: Uuid, code: &str) -> ApiResult<Option<i64>>
     let Some((true, last_step, Some(enc))) = row else {
         return Ok(None);
     };
-    let Some(secret) = crypto::decrypt(&s.config.data_key, &enc).and_then(|b32| totp::decode_secret(&b32)) else {
+    let Some(secret) = crypto::decrypt(&s.config.data_key, crypto::aad::STAFF_TOTP, &enc).and_then(|b32| totp::decode_secret(&b32)) else {
         return Ok(None);
     };
     let Some(step) = totp::verify(&secret, code, Utc::now().timestamp(), last_step) else {
