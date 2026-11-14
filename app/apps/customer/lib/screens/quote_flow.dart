@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
+import '../guest_draft.dart';
 import '../state.dart';
 import 'booking_flow.dart';
+import 'quote_price_hint.dart';
 import 'quote_review.dart';
 import 'request_status.dart';
 import 'service.dart' show ScopeLink;
@@ -41,40 +46,6 @@ const _reviewPhotoHeight = 96.0;
 /// Required questions that "다음" points at while they are unanswered (design p15, p16).
 enum _Ask { building, layout, duplex, elevator }
 
-String buildingLabel(T t, String? c) => switch (c) {
-  'apartment' => t.building_apartment,
-  'officetel' => t.building_officetel,
-  'villa' => t.dfBldVillaHouse,
-  'commercial' => t.building_commercial,
-  'house' => t.building_house,
-  _ => t.building_other,
-};
-
-String layoutLabel(T t, String? c) => switch (c) {
-  'studio' => t.layout_studio,
-  'one_and_half' => t.dfLayoutOneHalf,
-  'two_rooms' => t.dfLayoutTwo,
-  'three_rooms' => t.dfLayoutThree,
-  _ => t.dfLayoutFour,
-};
-
-String luggageLabel(T t, String c) => switch (c) {
-  'empty' => t.luggage_empty,
-  'not_unpacked' => t.luggage_not_unpacked,
-  'partly_unpacked' => t.luggage_partly_unpacked,
-  'fully_lived_in' => t.luggage_fully_lived_in,
-  _ => t.luggage_unknown,
-};
-
-String cleaningTypeLabel(T t, String? c) => switch (c) {
-  'standard' => t.type_standard,
-  'same_day_move' => t.type_same_day_move,
-  'some_luggage_left' => t.type_some_luggage_left,
-  'normal_move_in' => t.type_normal_move_in,
-  'after_interior' => t.type_after_interior,
-  _ => t.type_lived_in_deep_clean,
-};
-
 /// 3D art for a cleaning type: the art set names three of them shorter than the API codes.
 String cleaningTypeIcon(String c) => switch (c) {
   'same_day_move' => 'type_same_day',
@@ -97,10 +68,14 @@ class QuoteFlowScreen extends StatefulWidget {
 
 class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   late final BookingDraft d = BookingDraft(widget.service);
+  late final GuestDraft _draft = GuestDraft(context.appRead.cache);
   final _pages = PageController();
   int _step = 0;
   bool _busy = false;
   Future<Json>? _estimate;
+
+  /// Price shown from the address step on, before any visit time is chosen.
+  Future<Json>? _preview;
   Map<int, (bool, int?)> _slots = {};
   final _askKeys = {for (final q in _Ask.values) q: GlobalKey()};
   final _nudges = <_Ask, int>{};
@@ -120,7 +95,14 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       context.appRead.analytics.track('quote_view', screen: 'quote');
       d.address ??= context.appRead.addresses.firstOrNull;
       _loadSlots();
+      _restoreAnswers();
     });
+  }
+
+  /// Answers saved on this device (a restart mid-flow) come back; the steps then carry on as before.
+  Future<void> _restoreAnswers() async {
+    await _draft.restore(d);
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadSlots() async {
@@ -161,7 +143,10 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   void _go(int step) {
     // The estimate depends on every answer before it: ask again after a change.
     if (step <= _stepDate) _estimate = null;
+    if (step < _stepAddress) _preview = null;
+    if (step >= _stepAddress) _preview ??= _fetchEstimate(withSlot: false);
     if (step >= _stepMethod) _estimate ??= _fetchEstimate();
+    unawaited(_draft.save(d));
     setState(() {
       _step = step;
       _asked = false;
@@ -196,17 +181,29 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     );
   }
 
-  /// With the chosen slot, so the preview carries the same peak surcharge the booking stores.
-  Future<Json> _fetchEstimate() async =>
+  /// With the chosen slot, so the estimate carries the same peak surcharge the booking stores.
+  /// Without it (the early preview) the server adds no peak surcharge.
+  Future<Json> _fetchEstimate({bool withSlot = true}) async =>
       await context.api.post('/quote/estimate', {
-            ...a.toJson(),
-            if (d.date case final day?) 'visit_date': isoDate(day),
-            'start_hour': ?d.hour,
-          })
-          as Json;
+        ...a.toJson(),
+        if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
+        if (withSlot) 'start_hour': ?d.hour,
+      }) as Json;
+
+  /// Guests answer the questions first; signing in is asked only when they book.
+  Future<void> _bookAsGuest() async {
+    if (!await requireSignIn(context, reason: SignInReason.quote) || !mounted) {
+      return;
+    }
+    // Signed in: the address list replaces the button.
+    setState(() {});
+  }
 
   Future<void> _submit() async {
     if (_busy) return;
+    if (!await requireSignIn(context, reason: SignInReason.book) || !mounted) {
+      return;
+    }
     setState(() => _busy = true);
     final app = context.appRead;
     app.analytics.track('booking_start', screen: 'quote');
@@ -217,6 +214,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
       app.analytics.track('booking_done', screen: 'quote');
       app.bookingsChanged();
       app.loadUnread().ignore();
+      unawaited(_draft.clear());
       final estimate = await _estimate;
       if (!mounted) return;
       await Navigator.of(context).pushAndRemoveUntil(
@@ -247,6 +245,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final paused = RemoteConfigScope.of(context).maintenance;
     return PopScope(
       canPop: _step == 0,
       onPopInvokedWithResult: (didPop, _) => didPop ? null : _back(),
@@ -269,13 +268,18 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             _basicStep(t),
             _spaceStep(t),
             _page(t, 3, t.dfAddressTitle, [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
-                child: AddressRadioList(
-                  draft: d,
-                  onChanged: () => setState(() {}),
+              QuotePriceHint(estimate: _preview),
+              // A guest never types an address before signing in (PIPA).
+              if (_guest)
+                _guestBookButton(t)
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+                  child: AddressRadioList(
+                    draft: d,
+                    onChanged: () => setState(() {}),
+                  ),
                 ),
-              ),
             ]),
             _dateStep(t),
             QuoteMethodPage(chip: _chip(t, 5), estimate: _estimate),
@@ -287,18 +291,34 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomActionBar(
-          child: PrimaryButton(
-            label: _step == _stepReview ? t.dfSubmitRequest : t.next,
-            busy: _busy,
-            onPressed: !_canNext
-                ? null
-                : (_step == _stepReview ? _submit : _next),
-          ),
-        ),
+        // A guest's address step has its own button in the page, not a disabled "다음".
+        bottomNavigationBar: _guest && _step == _stepAddress
+            ? null
+            : BottomActionBar(
+                child: PrimaryButton(
+                  label: _step == _stepReview ? t.dfSubmitRequest : t.next,
+                  busy: _busy,
+                  // Maintenance pauses new bookings: the request cannot be sent until it is over.
+                  onPressed: !_canNext || (paused && _step == _stepReview)
+                      ? null
+                      : (_step == _stepReview ? _submit : _next),
+                ),
+              ),
       ),
     );
   }
+
+  bool get _guest => !Deps.of(context).session.signedIn;
+
+  Widget _guestBookButton(T t) => Padding(
+    padding: const EdgeInsets.all(Space.gutter),
+    child: PrimaryButton(
+      label: t.guestBookWithQuote,
+      onPressed: RemoteConfigScope.of(context).maintenance
+          ? null
+          : _bookAsGuest,
+    ),
+  );
 
   String _chip(T t, int i) =>
       '${t.service(widget.service.code)} · ${i + 1}/$quoteSteps';
@@ -551,6 +571,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
             ),
           );
     return _page(t, 4, t.dfDateTitle, body: t.dfDateNote, footer: offer, [
+      QuotePriceHint(estimate: _preview),
       FlowSection(
         children: [
           VisitDateRow(

@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'booking_flow.dart';
@@ -18,12 +19,16 @@ Uri? webHashRoute(Uri base) =>
 
 /// Runs the hash route once, then clears the hash so a reload never repeats a payment confirm.
 /// The Shell calls this after sign-in, so a link opened while signed out waits for sign-in.
-Future<void> openWebHashRoute(BuildContext context) async {
-  final route = webHashRoute(Uri.base);
+Future<void> openWebHashRoute(BuildContext context, {Uri? base}) async {
+  final here = base ?? Uri.base;
+  final route = webHashRoute(here);
   if (route == null) return;
-  replaceBrowserUrl(Uri.base.replace(fragment: '').toString());
+  replaceBrowserUrl(here.replace(fragment: '').toString());
   final segments = route.pathSegments;
   if (segments.length == 2 && segments.first == 'booking') {
+    // A guest's booking link waits for sign-in; the booking detail needs the account.
+    if (!await requireSignIn(context, reason: SignInReason.book)) return;
+    if (!context.mounted) return;
     final id = segments[1];
     await Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: id)),

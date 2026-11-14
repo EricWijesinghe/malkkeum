@@ -260,8 +260,8 @@ class _RequestCard extends StatelessWidget {
         ? body['answers'] as Json
         : const <String, dynamic>{};
     final structure = [
-      if (answers['building'] case final String b) _buildingLabel(t, b),
-      if (answers['layout'] case final String l) _layoutLabel(t, l),
+      if (answers['building'] case final String b) buildingLabel(t, b),
+      if (answers['layout'] case final String l) layoutLabel(t, l),
     ].join(' · ');
     final estimate = body['estimate'] as num?;
     final rows = [

@@ -4,11 +4,11 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
-import '../guest.dart';
 import '../state.dart';
 import 'booking_detail.dart';
 import 'bookings.dart';
 import 'chat.dart';
+import 'guest_tabs.dart';
 import 'home.dart';
 import 'more.dart';
 import 'pay_flow.dart' show resumePendingPayment;
@@ -184,8 +184,8 @@ class _ShellState extends State<Shell> with SingleTickerProviderStateMixin {
     final signedIn = _session?.signedIn ?? false;
     final pages = [
       HomeTab(onOpenTab: go),
-      signedIn ? const BookingsTab() : const GuestGate(),
-      signedIn ? const ChatListTab() : const GuestGate(),
+      signedIn ? const BookingsTab() : GuestBookingsTab(onOpenTab: go),
+      signedIn ? const ChatListTab() : const GuestChatTab(),
       const MoreTab(),
     ];
     // Hidden tabs stay alive but their tickers (idle icons, staggers) pause.

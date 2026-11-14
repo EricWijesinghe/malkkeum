@@ -215,6 +215,10 @@ class ChatThread {
   Json? get lastMessage => j['last_message'] as Json?;
   String? get userId => j['user_id'] as String?;
   String? get proId => j['pro_id'] as String?;
+
+  /// Staff inbox only: the customer's name (may be empty) and phone.
+  String? get customerName => j['customer_name'] as String?;
+  String? get customerPhone => j['customer_phone'] as String?;
   bool get aiPaused => j['ai_paused'] == true;
   factory ChatThread.fromJson(Json j) => ChatThread(j);
 }
@@ -260,6 +264,9 @@ class QuoteAnswers {
   bool? elevator;
   bool floor3OrHigher = false;
 
+  /// 'one_two_room' | 'apartment' | 'villa_house' from the home-type chooser; null when not asked.
+  String? homeType;
+
   /// Aircon unit `label_key` -> count added to the move clean; the server prices them from the catalog.
   Map<String, int> acAddons = {};
 
@@ -277,6 +284,7 @@ class QuoteAnswers {
     'balconies': balconies,
     'elevator': elevator,
     'floor_3_or_higher': floor3OrHigher,
+    if (homeType != null) 'home_type': homeType,
     'ac_addons': [
       for (final e in acAddons.entries)
         if (e.value > 0) {'unit': e.key, 'count': e.value},

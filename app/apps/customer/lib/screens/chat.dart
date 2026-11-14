@@ -81,23 +81,8 @@ bool _roomy(BuildContext context) =>
         MediaQuery.textScalerOf(context).scale(1) >=
     _pillMinWidth;
 
-String _teamName(T t) => '${BrandConfig.placeholder.name} ${t.chatTeam}';
-
-String _buildingLabel(T t, String code) => switch (code) {
-  'apartment' => t.building_apartment,
-  'villa' => t.building_villa,
-  'officetel' => t.building_officetel,
-  'house' => t.building_house,
-  _ => t.building_other,
-};
-
-String _layoutLabel(T t, String code) => switch (code) {
-  'studio' => t.layout_studio,
-  'one_and_half' => t.layout_one_and_half,
-  'two_rooms' => t.layout_two_rooms,
-  'three_rooms' => t.layout_three_rooms,
-  _ => t.layout_four_plus,
-};
+String _teamName(BuildContext context, T t) =>
+    '${BrandScope.of(context).name} ${t.chatTeam}';
 
 /// Tab-root title: large, bold and left-aligned (design p03, p05).
 Widget tabRootTitle(BuildContext context, String title) => Text(

@@ -131,11 +131,11 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
                   itemCount: _threads.length,
                   itemBuilder: (_, i) {
                     final th = _threads[i];
-                    final last = th.lastMessage;
-                    final preview = last == null
-                        ? ''
-                        : ((last['body'] as Json)['text'] as String? ??
-                              last['kind'] as String);
+                    final preview = threadPreview(
+                      t,
+                      th.lastMessage,
+                      context.won,
+                    );
                     return ListTile(
                       selected: th.id == _selected,
                       selectedTileColor: context.colors.primaryTint,
@@ -158,10 +158,23 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
                               : FontWeight.w500,
                         ),
                       ),
-                      subtitle: Text(
-                        preview,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (customerLine(t, th) case final String line)
+                            Text(
+                              line,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.text.labelSmall,
+                            ),
+                          Text(
+                            preview,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                       trailing: th.unreadStaff > 0
                           ? Badge(label: Text('${th.unreadStaff}'))
@@ -213,6 +226,32 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
       ),
     );
   }
+}
+
+/// "이름 없음 · 010-1234-5678" for a customer thread; null for partner threads (no user_id).
+/// The phone is optional: a customer with only a name still shows the name.
+String? customerLine(T t, ChatThread th) {
+  if (th.userId == null) return null;
+  final name = (th.customerName ?? '').trim();
+  final phone = (th.customerPhone ?? '').trim();
+  final parts = [
+    name.isEmpty ? t.nameNone : name,
+    if (phone.isNotEmpty) formatPhone(phone),
+  ];
+  return parts.join(' · ');
+}
+
+/// One-line preview of a thread's last message. Cards get words, not the raw kind name.
+String threadPreview(T t, Json? last, String Function(int) won) {
+  if (last == null) return '';
+  final body = (last['body'] as Json?) ?? const {};
+  return switch (last['kind']) {
+    'card' => t.previewRequestCard,
+    'quote' => t.previewQuoteCard(
+      won((body['final_price'] as num? ?? 0).toInt()),
+    ),
+    _ => body['text'] as String? ?? last['kind'] as String? ?? '',
+  };
 }
 
 /// Conversation + composer. Marks the thread read for staff on open and on new messages.

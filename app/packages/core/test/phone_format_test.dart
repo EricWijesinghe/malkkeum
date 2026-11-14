@@ -1,0 +1,29 @@
+import 'package:core/core.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('11-digit mobile numbers are grouped 3-4-4', () {
+    expect(formatPhone('01012345678'), '010-1234-5678');
+    expect(formatPhone('010-1234-5678'), '010-1234-5678');
+  });
+
+  test('Seoul 02 numbers use a 2-digit area code', () {
+    expect(formatPhone('0212345678'), '02-1234-5678');
+    expect(formatPhone('021234567'), '02-123-4567');
+  });
+
+  test('other 10-digit landlines are grouped 3-3-4', () {
+    expect(formatPhone('0311234567'), '031-123-4567');
+  });
+
+  test('+82 numbers are converted to the domestic form', () {
+    expect(formatPhone('+82 10 1234 5678'), '010-1234-5678');
+    expect(formatPhone('+82 2 1234 5678'), '02-1234-5678');
+  });
+
+  test('unrecognised input is returned unchanged', () {
+    expect(formatPhone('1234'), '1234');
+    expect(formatPhone(''), '');
+    expect(formatPhone('+1 555'), '+1 555');
+  });
+}

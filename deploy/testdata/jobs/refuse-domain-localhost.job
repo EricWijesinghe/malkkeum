@@ -1,0 +1,4 @@
+id=@ID@
+kind=domain-check
+arg=localhost
+token=ffffffffffffffffffffffffffffffff

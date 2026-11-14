@@ -289,7 +289,10 @@ role_extractor!(Admin, |r| r == Role::StaffAdmin);
 /// The staff member's role as stored now, not as the token claims (a token outlives a demotion
 /// for up to ACCESS_TTL_MIN). Missing or deactivated is 401. Use it for money decisions.
 pub async fn live_staff_role(db: &sqlx::PgPool, id: Uuid) -> Result<Role, ApiError> {
-    let role: Option<String> = sqlx::query_scalar("SELECT role FROM staff WHERE id = $1 AND active").bind(id).fetch_optional(db).await?;
+    let role: Option<String> = sqlx::query_scalar("SELECT role FROM staff WHERE id = $1 AND active")
+        .bind(id)
+        .fetch_optional(db)
+        .await?;
     match role.as_deref() {
         Some("admin") => Ok(Role::StaffAdmin),
         Some(_) => Ok(Role::StaffConsultant),
@@ -326,7 +329,14 @@ mod tests {
 
     fn claims(exp_offset_secs: i64, iss: &str, aud: &str) -> Claims {
         let now = Utc::now().timestamp();
-        Claims { sub: Uuid::now_v7(), role: Role::Pro, exp: now + exp_offset_secs, iat: now, iss: iss.into(), aud: aud.into() }
+        Claims {
+            sub: Uuid::now_v7(),
+            role: Role::Pro,
+            exp: now + exp_offset_secs,
+            iat: now,
+            iss: iss.into(),
+            aud: aud.into(),
+        }
     }
 
     #[test]
@@ -358,10 +368,22 @@ mod tests {
     fn issuer_audience_and_expiry_are_enforced() {
         let kid = Some(key_id(NEW));
         assert!(verify_access(&[NEW], &sign(&claims(600, JWT_ISS, JWT_AUD), NEW, kid.clone())).is_ok());
-        assert!(verify_access(&[NEW], &sign(&claims(600, "evil", JWT_AUD), NEW, kid.clone())).is_err(), "wrong iss");
-        assert!(verify_access(&[NEW], &sign(&claims(600, JWT_ISS, "other-svc"), NEW, kid.clone())).is_err(), "wrong aud");
-        assert!(verify_access(&[NEW], &sign(&claims(-120, JWT_ISS, JWT_AUD), NEW, kid.clone())).is_err(), "expired beyond skew");
-        assert!(verify_access(&[NEW], &sign(&claims(-10, JWT_ISS, JWT_AUD), NEW, kid)).is_ok(), "expired within clock skew");
+        assert!(
+            verify_access(&[NEW], &sign(&claims(600, "evil", JWT_AUD), NEW, kid.clone())).is_err(),
+            "wrong iss"
+        );
+        assert!(
+            verify_access(&[NEW], &sign(&claims(600, JWT_ISS, "other-svc"), NEW, kid.clone())).is_err(),
+            "wrong aud"
+        );
+        assert!(
+            verify_access(&[NEW], &sign(&claims(-120, JWT_ISS, JWT_AUD), NEW, kid.clone())).is_err(),
+            "expired beyond skew"
+        );
+        assert!(
+            verify_access(&[NEW], &sign(&claims(-10, JWT_ISS, JWT_AUD), NEW, kid)).is_ok(),
+            "expired within clock skew"
+        );
     }
 
     #[test]

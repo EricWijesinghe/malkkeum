@@ -69,7 +69,9 @@ pub fn issue_body(store_id: Option<String>, payment_id: &str, channel_key: &str,
 
 /// Reads `cashReceipt` from an issue response. Anything but `ISSUED` is a decline. Pure.
 pub fn parse_issue(body: &Value) -> Result<Issued, ProviderError> {
-    let receipt = body.get("cashReceipt").ok_or_else(|| ProviderError::Upstream("cash receipt response without cashReceipt".into()))?;
+    let receipt = body
+        .get("cashReceipt")
+        .ok_or_else(|| ProviderError::Upstream("cash receipt response without cashReceipt".into()))?;
     match receipt.get("status").and_then(Value::as_str) {
         Some("ISSUED") => {
             let issue_number = receipt
@@ -155,7 +157,10 @@ mod tests {
     }
 
     async fn serve(reply: Value) -> (String, Arc<Mock>) {
-        let mock = Arc::new(Mock { seen: Mutex::new(Vec::new()), reply });
+        let mock = Arc::new(Mock {
+            seen: Mutex::new(Vec::new()),
+            reply,
+        });
         let app = Router::new().fallback(capture).with_state(mock.clone());
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
@@ -169,7 +174,13 @@ mod tests {
         let (base, mock) = serve(reply).await;
         let body = issue_body(None, "pay_1", "ch-1", false, "01012345678", 110_000);
         let issued = issue(&reqwest::Client::new(), &base, "secret", &body).await.unwrap();
-        assert_eq!(issued, Issued { issue_number: "1234567890".into(), url: Some("https://example.test/r".into()) });
+        assert_eq!(
+            issued,
+            Issued {
+                issue_number: "1234567890".into(),
+                url: Some("https://example.test/r".into())
+            }
+        );
         let seen = mock.seen.lock().unwrap();
         assert_eq!(seen[0].0, "/cash-receipts");
         assert_eq!(seen[0].1["paymentId"], "pay_1");
