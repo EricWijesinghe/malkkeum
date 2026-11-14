@@ -21,6 +21,11 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgPool};
+use std::{
+    collections::HashMap,
+    sync::{LazyLock, Mutex, PoisonError},
+    time::{Duration, Instant},
+};
 use uuid::Uuid;
 
 const MAX_TEXT: usize = 2000;
@@ -123,13 +128,77 @@ pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> 
     let mut live = data.clone();
     uploads::sign_urls(&s.config, &mut live);
     s.hub.send(Recipient::Staff, "chat.message", live.clone());
+    let preview = msg.body.get("text").and_then(Value::as_str).unwrap_or("").chars().take(80).collect::<String>();
     if msg.sender == "staff" || msg.sender == "system" {
-        let preview = msg.body.get("text").and_then(Value::as_str).unwrap_or("").chars().take(80).collect::<String>();
         notify(s, member, "chat.message", "상담팀", &preview, data).await?;
     } else {
         s.hub.send(member, "chat.message", live);
+        push_staff(s, msg.thread_id, &preview).await;
     }
     Ok(())
+}
+
+/// Minimum gap between two pushes to staff for the same thread.
+const STAFF_PUSH_GAP: Duration = Duration::from_secs(60);
+/// shortcut: per-process, so a multi-node deploy may push once per node per minute; upgrade to a shared timestamp when running more than one node.
+static LAST_STAFF_PUSH: LazyLock<Mutex<HashMap<Uuid, Instant>>> = LazyLock::new(|| Mutex::new(HashMap::new()));
+
+/// True when no staff push went out for `thread` within the gap. Records the push when true.
+fn claim_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid, now: Instant) -> bool {
+    map.retain(|_, sent| now.duration_since(*sent) < STAFF_PUSH_GAP);
+    if map.contains_key(&thread) {
+        return false;
+    }
+    map.insert(thread, now);
+    true
+}
+
+/// Pushes a member's message to staff devices. Staff have no inbox, so this is push only; the live event is already sent.
+async fn push_staff(s: &AppState, thread: Uuid, preview: &str) {
+    let claimed = {
+        let mut map = LAST_STAFF_PUSH.lock().unwrap_or_else(PoisonError::into_inner);
+        claim_staff_push(&mut map, thread, Instant::now())
+    };
+    if !claimed {
+        return;
+    }
+    let tokens: Vec<String> = match sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'")
+        .fetch_all(&s.db)
+        .await
+    {
+        Ok(tokens) => tokens,
+        Err(e) => {
+            tracing::warn!(error = %e, "staff chat push: token lookup failed");
+            return;
+        }
+    };
+    if let Err(e) = s
+        .providers
+        .push(&tokens, "상담팀", preview, &json!({ "kind": "chat.message", "thread_id": thread }))
+        .await
+    {
+        tracing::warn!(error = %e, "staff chat push failed");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn burst_to_one_thread_pushes_once_per_gap() {
+        let (mut map, thread, t0) = (HashMap::new(), Uuid::from_u128(1), Instant::now());
+        assert!(claim_staff_push(&mut map, thread, t0));
+        assert!(!claim_staff_push(&mut map, thread, t0 + Duration::from_secs(30)));
+        assert!(claim_staff_push(&mut map, thread, t0 + STAFF_PUSH_GAP));
+    }
+
+    #[test]
+    fn threads_are_throttled_independently() {
+        let (mut map, t0) = (HashMap::new(), Instant::now());
+        assert!(claim_staff_push(&mut map, Uuid::from_u128(1), t0));
+        assert!(claim_staff_push(&mut map, Uuid::from_u128(2), t0));
+    }
 }
 
 /// Convenience used by bookings/admin: post a system line in a transaction-free context.
