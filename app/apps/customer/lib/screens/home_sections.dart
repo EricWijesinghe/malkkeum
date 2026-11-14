@@ -203,8 +203,11 @@ class _RebookCard extends StatelessWidget {
           ? null
           : () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) =>
-                    ServiceScreen(service: s, initialUnit: booking.unitIndex),
+                builder: (_) => ServiceScreen(
+                  service: s,
+                  initialUnit: booking.unitIndex,
+                  initialCounts: booking.unitCounts,
+                ),
               ),
             ),
       child: Row(

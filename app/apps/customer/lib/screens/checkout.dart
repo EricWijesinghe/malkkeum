@@ -273,7 +273,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   title: Text(
                     [
                       t.service(d.service.code),
-                      if (d.unitIndex != null)
+                      if (d.service.isCounts)
+                        t.unitCounts(d.service, d.counts)
+                      else if (d.unitIndex != null)
                         t.unit(d.service.units[d.unitIndex!].labelKey),
                     ].join(' · '),
                     style: context.text.titleMedium?.copyWith(

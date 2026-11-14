@@ -18,7 +18,17 @@ class UnitOption {
   );
 }
 
-enum PricingType { fixed, unit, quote }
+/// fixed: one price. unit: pick one option. counts: an amount per option (steppers or cards).
+enum PricingType { fixed, unit, quote, counts }
+
+/// Mirrors the server's counts rules (domain money.rs, pricing): keep both in step.
+const int kMinCountMinutes = 60;
+const int kMaxCount = 20;
+const int _kBasisPoints = 10000;
+
+int _timesBps(int won, int bps) =>
+    (won * bps + _kBasisPoints ~/ 2) ~/ _kBasisPoints;
+int _round100(int won) => (won + 50) ~/ 100 * 100;
 
 class Service {
   const Service({
@@ -29,6 +39,8 @@ class Service {
     this.units = const [],
     this.needsPreparation = false,
     this.maxPyeong,
+    this.maxEach,
+    this.multiDiscountBps = 0,
     this.content = const {},
   });
   final String code;
@@ -38,17 +50,56 @@ class Service {
   final List<UnitOption> units;
   final bool needsPreparation;
   final int? maxPyeong;
+
+  /// Counts only: the most of one option a customer may pick (null = [kMaxCount]).
+  final int? maxEach;
+
+  /// Counts only: discount in basis points once two or more items are picked (0 = none).
+  final int multiDiscountBps;
   final Json content;
 
   bool get isQuote => type == PricingType.quote;
+  bool get isCounts => type == PricingType.counts;
+
+  /// Counts where each option can be picked once: a tap-to-select card, not a stepper.
+  bool get isMultiSelect => isCounts && maxEach == 1;
+
   int? get fromPrice => switch (type) {
     PricingType.fixed => price,
-    PricingType.unit =>
+    PricingType.unit || PricingType.counts =>
       units.isEmpty
           ? null
           : units.map((u) => u.price).reduce((a, b) => a < b ? a : b),
     PricingType.quote => null,
   };
+
+  /// Largest count one option accepts.
+  int get countCap => maxEach ?? kMaxCount;
+
+  /// Sum of `price × count` with the multi-item discount applied (server: count_price).
+  int countsPrice(List<int> counts) {
+    final gross = _countsSum(counts, (u) => u.price);
+    if (_countsItems(counts) < 2 || multiDiscountBps == 0) return gross;
+    return gross - _round100(_timesBps(gross, multiDiscountBps));
+  }
+
+  /// Sum of `minutes × count`, at least [kMinCountMinutes] whenever anything is picked.
+  int countsMinutes(List<int> counts) {
+    final sum = _countsSum(counts, (u) => u.minutes);
+    if (sum == 0) return 0;
+    return sum < kMinCountMinutes ? kMinCountMinutes : sum;
+  }
+
+  int _countsSum(List<int> counts, int Function(UnitOption) field) {
+    var total = 0;
+    for (final (i, u) in units.indexed) {
+      if (i < counts.length) total += field(u) * counts[i];
+    }
+    return total;
+  }
+
+  static int _countsItems(List<int> counts) =>
+      counts.fold(0, (sum, n) => sum + n);
 
   factory Service.fromJson(Json j) {
     final p = j['pricing'] as Json;
@@ -63,6 +114,8 @@ class Service {
           .toList(),
       needsPreparation: j['needs_preparation'] as bool? ?? false,
       maxPyeong: _int(j['max_pyeong']),
+      maxEach: _int(p['max_each']),
+      multiDiscountBps: _int(p['multi_discount_bps']) ?? 0,
       content: (j['content'] as Json?) ?? const {},
     );
   }
@@ -161,6 +214,11 @@ class Booking {
   String get number => j['number'] as String;
   String get serviceCode => j['service_code'] as String;
   int? get unitIndex => _int(j['unit_index']);
+
+  /// Per-option counts of a counts booking, in catalogue order (empty for other bookings).
+  List<int> get unitCounts => ((j['unit_counts'] as List?) ?? const [])
+      .map((n) => (n as num).toInt())
+      .toList();
   int get status => _int(j['status'])!;
   DateTime get visitDate => DateTime.parse(j['visit_date'] as String);
   int get startHour => _int(j['start_hour'])!;

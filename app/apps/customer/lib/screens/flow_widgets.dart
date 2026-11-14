@@ -693,10 +693,14 @@ class PriceBar extends StatelessWidget {
   }
 }
 
+String? _nonEmpty(String v) => v.isEmpty ? null : v;
+
 /// "자세히" sheet: what the listed price is made of. Every figure is the catalog's.
 Future<void> showPriceBreakdown(BuildContext context, BookingDraft d) {
   final t = context.t;
-  final unit = d.unitIndex == null
+  final unit = d.service.isCounts
+      ? _nonEmpty(t.unitCounts(d.service, d.counts))
+      : d.unitIndex == null
       ? null
       : t.unit(d.service.units[d.unitIndex!].labelKey);
   return showAppSheet<void>(

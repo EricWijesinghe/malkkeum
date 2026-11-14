@@ -7,14 +7,23 @@ import '../public_offers.dart';
 import '../state.dart';
 import 'booking_flow.dart';
 import 'quote_flow.dart';
+import 'service_counts.dart';
 import 'service_scope.dart';
 
-/// Service detail (design p07 fixed price, p08 unit choice). Quote services go straight
+/// Service detail (design p07 fixed price, p08 unit or counts choice). Quote services go straight
 /// into the move-in/out steps (p14). Every number comes from the catalog.
 class ServiceScreen extends StatefulWidget {
-  const ServiceScreen({super.key, required this.service, this.initialUnit});
+  const ServiceScreen({
+    super.key,
+    required this.service,
+    this.initialUnit,
+    this.initialCounts,
+  });
   final Service service;
   final int? initialUnit;
+
+  /// Counts of an earlier counts booking, when booking it again.
+  final List<int>? initialCounts;
   @override
   State<ServiceScreen> createState() => _ServiceScreenState();
 }
@@ -23,7 +32,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
   late final BookingDraftBox _draft = BookingDraftBox(widget.service)
     ..draft.unitIndex =
         widget.initialUnit ??
-        (widget.service.type == PricingType.unit ? 0 : null);
+        (widget.service.type == PricingType.unit ? 0 : null)
+    ..draft.counts = _startCounts();
+
+  /// A counts service starts from the earlier booking's counts when they still fit the catalogue;
+  /// a single-option service (mattress) starts at one, as its unit picker did.
+  List<int> _startCounts() {
+    final n = widget.service.units.length;
+    if (!widget.service.isCounts) return const [];
+    final given = widget.initialCounts;
+    if (given != null && given.length == n) return given;
+    return [for (var i = 0; i < n; i++) n == 1 ? 1 : 0];
+  }
 
   /// Drives the hero art's parallax.
   final _scroll = ScrollController();
@@ -77,9 +97,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
         controller: _scroll,
         children: [
           FlowTitle(
-            s.type == PricingType.unit
-                ? t.unitTitle(s.code)
-                : t.service(s.code),
+            s.type == PricingType.fixed
+                ? t.service(s.code)
+                : t.unitTitle(s.code),
             body: t.serviceDesc(s.code),
           ),
           if (!Deps.of(context).session.signedIn) ...[
@@ -99,6 +119,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
           ],
           if (s.type == PricingType.fixed)
             ..._fixed(context, t)
+          else if (s.isCounts)
+            ..._counts(context, t, d)
           else
             ..._units(context, t, d),
           if (notes.isNotEmpty)
@@ -116,14 +138,17 @@ class _ServiceScreenState extends State<ServiceScreen> {
       bottomNavigationBar: PriceBar(
         amount: d.listPrice,
         // Design p07 captions the fixed price; p08 links to the breakdown instead.
-        caption: s.type == PricingType.fixed
-            ? '${t.duration(d.minutes)} · ${t.vatIncluded}'
-            : null,
+        caption: switch (s.type) {
+          PricingType.fixed => '${t.duration(d.minutes)} · ${t.vatIncluded}',
+          PricingType.counts when d.minutes > 0 => t.duration(d.minutes),
+          _ => null,
+        },
         onDetails: s.type == PricingType.fixed
             ? null
             : () => showPriceBreakdown(context, d),
         label: s.type == PricingType.fixed ? t.dfBookNow : t.next,
-        onPressed: _continue,
+        // A counts service needs at least one item before the next step.
+        onPressed: s.isCounts && !d.hasCounts ? null : _continue,
       ),
     );
   }
@@ -211,6 +236,57 @@ class _ServiceScreenState extends State<ServiceScreen> {
       ]),
     ),
   ];
+
+  /// Counts services: option cards, then the multi-item discount line once two or more are picked.
+  List<Widget> _counts(BuildContext context, T t, BookingDraft d) {
+    final items = d.counts.fold(0, (sum, n) => sum + n);
+    final discounted = s.multiDiscountBps > 0 && items >= 2;
+    return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          0,
+          Space.gutter,
+          Space.xs,
+        ),
+        child: Text(
+          t.unitHint,
+          style: context.text.bodySmall?.copyWith(
+            color: context.colors.inkMuted,
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          0,
+          Space.gutter,
+          Space.md,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CountsGrid(
+              service: s,
+              counts: d.counts,
+              onChanged: (c) => setState(() => d.counts = c),
+            ),
+            if (discounted)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: Text(
+                  t.countsDiscount('${s.multiDiscountBps ~/ 100}'),
+                  style: context.text.bodyMedium?.copyWith(
+                    color: context.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    ];
+  }
 }
 
 class _Fact extends StatelessWidget {
