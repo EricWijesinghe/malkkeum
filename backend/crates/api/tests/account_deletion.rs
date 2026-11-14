@@ -45,7 +45,7 @@ async fn apple_token_is_stored_encrypted_and_deletion_unlinks_so_the_same_apple_
             .await
             .expect("token stored");
     assert!(!enc.contains("dev-refresh"), "refresh token is encrypted at rest");
-    assert!(api::crypto::decrypt(&test_config().data_key, &enc).is_some_and(|t| t.starts_with("dev-refresh-")));
+    assert!(api::crypto::decrypt(&test_config().data_key, api::crypto::aad::SOCIAL_TOKEN, &enc).is_some_and(|t| t.starts_with("dev-refresh-")));
 
     let token = first["access_token"].as_str().expect("access");
     let (st, body) = call(&app, "DELETE", "/v1/me", Some(token), None).await;

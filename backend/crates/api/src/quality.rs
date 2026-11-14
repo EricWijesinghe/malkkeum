@@ -6,6 +6,7 @@ use crate::{
     error::{ApiError, ApiResult},
     lifecycle::next_tick,
     realtime::{Recipient, notify},
+    settings_registry,
     state::AppState,
 };
 use chrono::{DateTime, Duration as ChronoDuration, NaiveDate, Utc};
@@ -17,10 +18,6 @@ use tokio::task::JoinHandle;
 use uuid::Uuid;
 
 pub const RECOMPUTE_EVERY: Duration = Duration::from_secs(3600);
-const WINDOW_DAYS: i64 = 90;
-/// Check-in within this many minutes after the booked start still counts as on time.
-const ON_TIME_GRACE_MIN: i32 = 15;
-
 /// One row per partner. Counts only; the domain turns them into a score.
 const INPUTS_SQL: &str = "
 SELECT p.id,
@@ -58,13 +55,21 @@ fn inputs_of(r: InputsRow) -> ApiResult<QualityInputs> {
 
 /// Owner thresholds from the single `quality_settings` row.
 pub async fn thresholds(db: &PgPool) -> ApiResult<QualityThresholds> {
-    let (warning_below, pause_below): (i16, i16) = sqlx::query_as("SELECT warning_below, pause_below FROM quality_settings WHERE id = 1").fetch_one(db).await?;
-    Ok(QualityThresholds { warning_below: warning_below as u8, pause_below: pause_below as u8 })
+    let (warning_below, pause_below): (i16, i16) = sqlx::query_as("SELECT warning_below, pause_below FROM quality_settings WHERE id = 1")
+        .fetch_one(db)
+        .await?;
+    Ok(QualityThresholds {
+        warning_below: warning_below as u8,
+        pause_below: pause_below as u8,
+    })
 }
 
 /// Job-offer gate for accepting a job: auto-pause first, then every required published training module.
 pub async fn check_offer_gate(db: &PgPool, pro: Uuid) -> ApiResult<()> {
-    let status: Option<String> = sqlx::query_scalar("SELECT status FROM partner_quality WHERE pro_id = $1").bind(pro).fetch_optional(db).await?;
+    let status: Option<String> = sqlx::query_scalar("SELECT status FROM partner_quality WHERE pro_id = $1")
+        .bind(pro)
+        .fetch_optional(db)
+        .await?;
     if status.and_then(|s| parse_status(&s)).is_some_and(|s| !quality::can_receive_offers(s)) {
         return Err(ApiError::Conflict("quality_paused"));
     }
@@ -101,9 +106,16 @@ fn status_str(s: QualityStatus) -> &'static str {
 /// Recomputes every partner. A partner that fails is logged and skipped so one bad row never blocks the rest.
 pub async fn recompute_pass(s: &AppState, now: DateTime<Utc>) -> ApiResult<usize> {
     let t = thresholds(&s.db).await?;
-    let since_ts = now - ChronoDuration::days(WINDOW_DAYS);
+    let window_days = settings_registry::get(&s.db, &s.config, "quality_window_days").await?;
+    let grace_min = settings_registry::get(&s.db, &s.config, "quality_on_time_grace_min").await?;
+    let since_ts = now - ChronoDuration::days(window_days);
     let since_date: NaiveDate = since_ts.date_naive();
-    let rows: Vec<InputsRow> = sqlx::query_as(INPUTS_SQL).bind(since_ts).bind(since_date).bind(ON_TIME_GRACE_MIN).fetch_all(&s.db).await?;
+    let rows: Vec<InputsRow> = sqlx::query_as(INPUTS_SQL)
+        .bind(since_ts)
+        .bind(since_date)
+        .bind(grace_min as i32)
+        .fetch_all(&s.db)
+        .await?;
     let mut done = 0;
     for row in rows {
         let pro = row.0;
@@ -117,7 +129,10 @@ pub async fn recompute_pass(s: &AppState, now: DateTime<Utc>) -> ApiResult<usize
 
 async fn recompute_one(s: &AppState, t: QualityThresholds, pro: Uuid, inputs: ApiResult<QualityInputs>) -> ApiResult<()> {
     let inputs = inputs?;
-    let previous: Option<(String, bool)> = sqlx::query_as("SELECT status, lift_pause FROM partner_quality WHERE pro_id = $1").bind(pro).fetch_optional(&s.db).await?;
+    let previous: Option<(String, bool)> = sqlx::query_as("SELECT status, lift_pause FROM partner_quality WHERE pro_id = $1")
+        .bind(pro)
+        .fetch_optional(&s.db)
+        .await?;
     let lift = previous.as_ref().is_some_and(|p| p.1);
     let prev_status = previous.as_ref().and_then(|p| parse_status(&p.0));
     let score = quality::score(&inputs);
@@ -134,7 +149,15 @@ async fn recompute_one(s: &AppState, t: QualityThresholds, pro: Uuid, inputs: Ap
     .execute(&s.db)
     .await?;
     if quality::should_notify_warning(prev_status, status) {
-        notify(s, Recipient::Pro(pro), "quality.warning", "품질 점수가 낮아졌어요", "품질 점수를 확인하고 개선해 주세요.", json!({ "score": score })).await?;
+        notify(
+            s,
+            Recipient::Pro(pro),
+            "quality.warning",
+            "품질 점수가 낮아졌어요",
+            "품질 점수를 확인하고 개선해 주세요.",
+            json!({ "score": score }),
+        )
+        .await?;
     }
     Ok(())
 }

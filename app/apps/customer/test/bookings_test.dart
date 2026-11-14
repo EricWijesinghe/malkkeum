@@ -67,8 +67,7 @@ final _firstOfMonth = DateTime(_today.year, _today.month);
 final _otherDay = DateTime(_today.year, _today.month, _today.day > 15 ? 3 : 24);
 final _emptyDay = DateTime(_today.year, _today.month, _today.day > 15 ? 5 : 26);
 
-String _monthTitle(DateTime month) =>
-    DateFormat.yMMMM('ko').format(month).replaceFirst('${month.year}', '${month.year % 100}');
+String _monthTitle(DateTime month) => DateFormat.yMMMM('ko').format(month);
 
 /// The calendar cell of [day]: cells carry the full date as their semantics label.
 Finder _cell(DateTime day) => find.byWidgetPredicate(
@@ -215,7 +214,7 @@ void main() {
     await tester.tap(_cell(DateTime(next.year, next.month, 15)));
     await settle(tester, duration: _calendarSettle);
     // An empty day says so and offers what is coming up instead, with the date on each row.
-    expect(find.text(t.bookingsEmpty), findsOneWidget);
+    expect(find.text(t.bookingsEmptyDay), findsOneWidget);
     expect(find.text(t.bookingsUpcoming), findsOneWidget);
     expect(find.textContaining(dateLabel(_today, 'ko')), findsNWidgets(2));
     // Date and hour are separate pieces, so a narrow row never splits "오전 9시~10시" mid-hour.
@@ -241,7 +240,7 @@ void main() {
     await tester.fling(strip, const Offset(-300, 0), 1000);
     await settle(tester);
     expect(find.text(_homeGroup, findRichText: true), findsNothing);
-    expect(find.text(t.bookingsEmpty), findsOneWidget);
+    expect(find.text(t.bookingsEmptyDay), findsOneWidget);
 
     await tester.fling(strip, const Offset(300, 0), 1000);
     await settle(tester);

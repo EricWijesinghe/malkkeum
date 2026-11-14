@@ -100,7 +100,9 @@ pub async fn migrations_applied(db: &PgPool) -> bool {
         return true;
     };
     // A missing bookkeeping table (never migrated) is a failed probe, not a crash.
-    let applied: Result<Option<i64>, sqlx::Error> = sqlx::query_scalar("SELECT MAX(version) FROM _sqlx_migrations WHERE success").fetch_one(db).await;
+    let applied: Result<Option<i64>, sqlx::Error> = sqlx::query_scalar("SELECT MAX(version) FROM _sqlx_migrations WHERE success")
+        .fetch_one(db)
+        .await;
     matches!(applied, Ok(Some(v)) if v >= latest)
 }
 

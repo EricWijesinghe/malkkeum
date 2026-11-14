@@ -3,8 +3,8 @@
 use super::{
     audit,
     booking_core::{
-        BookingBody, Prepared, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot, next_number, prepare,
-        SeenQuote, price_for, record_payment, take_balance, take_deposit,
+        BookingBody, Prepared, SeenQuote, after_booking_created, after_deposit, balance_due, checked_household, deposit_due, insert_paid, lock_slot,
+        next_number, prepare, price_for, record_payment, take_balance, take_deposit,
     },
     catalog::{load_formula, load_peak_config},
     chat, growth, payouts,
@@ -17,7 +17,7 @@ use crate::{
     providers::ProviderError,
     ratelimit::within_quota,
     realtime::{Recipient, notify},
-    safety,
+    safety, settings_registry,
     state::AppState,
     util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -206,11 +206,15 @@ async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared
         .bind(format!("quote-user:{user}"))
         .execute(&mut *tx)
         .await?;
-    let open: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1 AND status = 0 AND answers IS NOT NULL")
-        .bind(user)
-        .fetch_one(&mut *tx)
-        .await?;
-    if !within_quota(open, s.config.max_open_quote_requests) {
+    let open: i64 = sqlx::query_scalar(&format!(
+        "SELECT count(*) FROM bookings WHERE user_id = $1 AND status = {} AND answers IS NOT NULL",
+        BookingStatus::Consultation.as_i16()
+    ))
+    .bind(user)
+    .fetch_one(&mut *tx)
+    .await?;
+    let limit = settings_registry::get(&s.db, &s.config, "max_open_quote_requests").await?;
+    if !within_quota(open, limit) {
         return Err(ApiError::Conflict("too_many_open_requests"));
     }
     // Serialize bookings per slot so capacity can't be oversold.
@@ -299,7 +303,11 @@ async fn create_paid(s: &AppState, user: Uuid, req: &CreateBooking, prep: &Prepa
 async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<PageQuery>) -> ApiResult<Response> {
     let limit = page_limit(q.limit)?;
     let (date, hour, id) = match decode_cursor(q.cursor.as_deref(), 3)? {
-        Some(p) => (Some(cursor_part::<NaiveDate>(&p[0])?), Some(cursor_part::<i16>(&p[1])?), Some(cursor_part::<Uuid>(&p[2])?)),
+        Some(p) => (
+            Some(cursor_part::<NaiveDate>(&p[0])?),
+            Some(cursor_part::<i16>(&p[1])?),
+            Some(cursor_part::<Uuid>(&p[2])?),
+        ),
         None => (None, None, None),
     };
     let rows: Vec<BookingRow> = sqlx::query_as(&format!(
@@ -314,7 +322,9 @@ async fn list(State(s): State<AppState>, Customer(a): Customer, Query(q): Query<
     .bind(limit)
     .fetch_all(&s.db)
     .await?;
-    Ok(paged(rows, limit, |r| encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])))
+    Ok(paged(rows, limit, |r| {
+        encode_cursor(&[&r.visit_date.to_string(), &r.start_hour.to_string(), &r.id.to_string()])
+    }))
 }
 
 async fn detail(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
@@ -409,12 +419,23 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
         return Err(ApiError::Conflict("settlement_in_transfer"));
     }
     // The intent commits on its own before the provider call, so a refund that lands just before a crash leaves a trace.
-    audit(&s.db, actor, None, "booking.cancel_intent", &b.id.to_string(), json!({ "status": b.status, "refund_cap": refund_cap })).await?;
+    audit(
+        &s.db,
+        actor,
+        None,
+        "booking.cancel_intent",
+        &b.id.to_string(),
+        json!({ "status": b.status, "refund_cap": refund_cap }),
+    )
+    .await?;
     let refunds = refund_locked(s, &mut tx, b.id, refund_cap).await?;
-    sqlx::query("UPDATE bookings SET status = -1, cancelled_at = now(), updated_at = now() WHERE id = $1")
-        .bind(b.id)
-        .execute(&mut *tx)
-        .await?;
+    sqlx::query(&format!(
+        "UPDATE bookings SET status = {}, cancelled_at = now(), updated_at = now() WHERE id = $1",
+        BookingStatus::Cancelled.as_i16()
+    ))
+    .bind(b.id)
+    .execute(&mut *tx)
+    .await?;
     if b.coupon_id.is_some() && refund_cap.is_none() {
         // Full refund: the coupon goes back to the customer.
         sqlx::query("UPDATE coupons SET used_booking_id = NULL WHERE id = $1")
@@ -423,10 +444,12 @@ pub async fn apply_cancel(s: &AppState, b: &BookingRow, refund_cap: Option<i64>,
             .await?;
     }
     // Points spent come back in proportion to the cash refunded so far (all of it on a full cancel).
-    let (paid, refunded): (i64, i64) = sqlx::query_as("SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1 AND kind <> 'tip'")
-        .bind(b.id)
-        .fetch_one(&mut *tx)
-        .await?;
+    let (paid, refunded): (i64, i64) = sqlx::query_as(
+        "SELECT COALESCE(SUM(amount), 0)::bigint, COALESCE(SUM(refunded_amount), 0)::bigint FROM payments WHERE booking_id = $1 AND kind <> 'tip'",
+    )
+    .bind(b.id)
+    .fetch_one(&mut *tx)
+    .await?;
     crate::points::reverse_spend(&mut tx, b.id, refunded, paid).await?;
     sqlx::query("UPDATE quotes SET state = 'closed', updated_at = now() WHERE booking_id = $1 AND state = 'waiting'")
         .bind(b.id)
@@ -531,17 +554,27 @@ async fn cancel_preview(State(s): State<AppState>, Customer(a): Customer, Path(i
 struct CancelBody {
     /// The fee the customer saw in the preview. Required whenever the fee is above 0.
     accepted_fee: Option<i64>,
+    /// Optional customer reason, one of `CANCEL_REASONS`. Stored in the audit row only.
+    reason: Option<String>,
 }
 
+/// The reason keys the customer apps send. Anything else is refused rather than stored.
+const CANCEL_REASONS: [&str; 4] = ["schedule", "provider", "price", "other"];
+
 async fn cancel(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>, body: Option<Json<CancelBody>>) -> ApiResult<Json<BookingRow>> {
-    let accepted = body.and_then(|Json(c)| c.accepted_fee);
-    cancel_owned(&s, a.id, id, accepted).await?;
+    let c = body.map(|Json(c)| c).unwrap_or_default();
+    if let Some(r) = c.reason.as_deref() {
+        if !CANCEL_REASONS.contains(&r) {
+            return Err(ApiError::BadRequest("invalid cancel reason"));
+        }
+    }
+    cancel_owned(&s, a.id, id, c.accepted_fee, c.reason.as_deref()).await?;
     Ok(Json(load_booking(&s.db, id).await?))
 }
 
 /// The customer's cancel with the cancel-fee policy. `accepted_fee` must match the fee shown in the preview.
 /// Shared by the booking route and subscription visit skips.
-pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Option<i64>) -> ApiResult<()> {
+pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Option<i64>, reason: Option<&str>) -> ApiResult<()> {
     let b = owned(s, user, id).await?;
     let status = b.status()?;
     let (policy, _) = load_cancel_policy(&s.db).await?;
@@ -562,7 +595,7 @@ pub async fn cancel_owned(s: &AppState, user: Uuid, id: Uuid, accepted_fee: Opti
         Some(user),
         "booking.cancel",
         &id.to_string(),
-        json!({ "fee": quote.fee, "refund": quote.refund }),
+        json!({ "fee": quote.fee, "refund": quote.refund, "reason": reason }),
     )
     .await?;
     crate::util::best_effort("waitlist offer on cancel", super::waitlist::offer_for_slot(s, b.visit_date, b.start_hour as u8)).await;
@@ -652,7 +685,7 @@ async fn update_notes(State(s): State<AppState>, Customer(a): Customer, Path(id)
     }
     // The door code is stored encrypted and never in visit_notes; a blank entry clears it.
     let mut notes = json!({ "entry": n.entry, "parking": n.parking, "other": n.other });
-    let access_code = safety::take_entry(&mut notes).map(|code| crypto::encrypt(&s.config.data_key, &code));
+    let access_code = safety::take_entry(&mut notes).map(|code| crypto::encrypt(&s.config.data_key, crypto::aad::ACCESS_CODE, &code));
     let r = sqlx::query("UPDATE bookings SET visit_notes = $2, access_code_enc = $3, updated_at = now() WHERE id = $1 AND status BETWEEN 0 AND 2")
         .bind(id)
         .bind(notes)

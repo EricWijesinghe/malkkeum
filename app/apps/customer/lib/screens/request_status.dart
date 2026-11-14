@@ -4,10 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'booking_address.dart';
+import 'booking_detail.dart';
 import 'bookings.dart' show bookingStepLabel;
+import 'cancel_booking_sheet.dart';
 import 'chat.dart';
 import 'flow_widgets.dart';
 import 'quote_flow.dart';
+import 'reschedule_gate.dart';
 import 'service.dart';
 
 const _trackerSteps = 4;
@@ -166,30 +170,22 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
     }
   }
 
+  /// Deposit payment and rescheduling run on the booking detail screen, which has the full flow.
+  void _openDetail() => Navigator.of(context).push(
+    MaterialPageRoute<void>(builder: (_) => BookingDetailScreen(id: b.id)),
+  );
+
   Future<void> _cancel() async {
     final t = context.t;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(t.cancelBooking),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(t.no),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(t.cancelBooking),
-          ),
-        ],
-      ),
-    );
-    if (ok != true || !mounted) return;
+    final result = await confirmCancelBooking(context, b.id);
+    if (result == null || !mounted) return;
     setState(() => _busy = true);
     final app = context.appRead;
     try {
-      // A consultation has no payment yet, so no cancellation fee applies.
-      await app.api.postAction('/bookings/${b.id}/cancel', {'accepted_fee': 0});
+      await app.api.postAction('/bookings/${b.id}/cancel', {
+        'accepted_fee': result.fee,
+        'reason': ?result.reason,
+      });
       app.bookingsChanged();
       if (!mounted) return;
       showToast(context, t.cancelled);
@@ -207,9 +203,7 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
     final lang = context.lang;
     final a = b.answers ?? const {};
     final depositBps = (widget.estimate?['deposit_bps'] as num?)?.toInt();
-    final road = b.j['address'] is Json
-        ? (b.address['road_address'] as String? ?? '')
-        : '';
+    final road = b.j['address'] is Json ? fullAddressLine(b.address) : '';
     // The same wording as the bookings list: 상담요청, 예약확정, 매칭 완료, 서비스 완료.
     final steps = [
       for (var i = 0; i < _trackerSteps; i++) bookingStepLabel(t, i),
@@ -296,9 +290,7 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
                 InfoRow(t.dfEstAmount, context.won(b.estimate!)),
               InfoRow(
                 t.dfDeposit,
-                b.deposit != null && b.status >= 1
-                    ? context.won(b.deposit!)
-                    : t.dfAwaitingPay,
+                b.deposit != null ? context.won(b.deposit!) : t.dfAwaitingPay,
                 valueStyle: context.text.bodyMedium?.copyWith(
                   color: context.primary,
                   fontWeight: FontWeight.w700,
@@ -336,6 +328,21 @@ class _RequestStatusScreenState extends State<RequestStatusScreen> {
                     icon: const Icon(Icons.chat_bubble_outline_rounded),
                     label: Text(t.dfChat),
                     onPressed: _openChat,
+                  ),
+                if (b.status == 0 && b.deposit != null) ...[
+                  const SizedBox(height: Space.sm),
+                  PrimaryButton(label: t.payDeposit, onPressed: _openDetail),
+                ],
+                if (b.isActive)
+                  RescheduleGate(
+                    bookingId: b.id,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: Space.xs),
+                      child: OutlinedButton(
+                        onPressed: _openDetail,
+                        child: Text(t.reschedule),
+                      ),
+                    ),
                   ),
                 if (b.status == 0) ...[
                   const SizedBox(height: Space.sm),

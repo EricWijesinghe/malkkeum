@@ -18,6 +18,10 @@ async fn main() {
         _ => {}
     }
     let args: Vec<String> = std::env::args().skip(1).collect();
+    // No logging here: stdout carries the two restored keys.
+    if args.first().is_some_and(|a| a == "keys-open") {
+        std::process::exit(api::keys_bundle::cli(&args));
+    }
     if args.first().is_some_and(|a| a.starts_with("backup-")) {
         api::telemetry::init_logging("warn");
         std::process::exit(api::backup::cli(&args).await);
