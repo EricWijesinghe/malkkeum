@@ -53,6 +53,45 @@ pub enum BuildingType {
     Other,
 }
 
+/// Home type the customer chose on the chooser (CR-8.2). Shown as 원룸·투룸 / 아파트 / 빌라·주택.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HomeType {
+    OneTwoRoom,
+    Apartment,
+    VillaHouse,
+}
+
+impl HomeType {
+    /// Building type a chooser quote is filed under, so it never shows as "other" (기타).
+    pub fn building(self) -> BuildingType {
+        match self {
+            Self::OneTwoRoom => BuildingType::Officetel,
+            Self::Apartment => BuildingType::Apartment,
+            Self::VillaHouse => BuildingType::House,
+        }
+    }
+
+    /// (Korean, English) name shown on the quote summary.
+    pub fn label(self) -> (&'static str, &'static str) {
+        match self {
+            Self::OneTwoRoom => ("원룸·투룸", "Studio / two-room"),
+            Self::Apartment => ("아파트", "Apartment"),
+            Self::VillaHouse => ("빌라·주택", "Villa / house"),
+        }
+    }
+}
+
+impl QuoteAnswers {
+    /// A chooser quote takes its building from its home type; otherwise the answers are unchanged.
+    pub fn with_home_building(mut self) -> Self {
+        if let Some(home) = self.home_type {
+            self.building = home.building();
+        }
+        self
+    }
+}
+
 /// One aircon unit type added to a move-in / move-out booking. `unit` is the aircon
 /// service's `label_key` (wall, stand, two_in_one, ceiling); its price comes from the catalog.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -76,6 +115,9 @@ pub struct QuoteAnswers {
     /// Older bookings have no add-ons; absent and empty are the same.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ac_addons: Vec<AcAddon>,
+    /// Set by the home chooser (CR-8.2). Absent on older quotes and on the full question path.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub home_type: Option<HomeType>,
 }
 
 /// All amounts and rates (basis points, 10_000 = 100%) used by the estimate.
@@ -335,6 +377,7 @@ mod tests {
             elevator: true,
             floor_3_or_higher: true,
             ac_addons: vec![],
+            home_type: None,
         }
     }
 
@@ -511,5 +554,24 @@ mod tests {
     fn deposit_is_ten_percent() {
         assert_eq!(QuoteFormula::default().deposit(Won(560_000)), Won(56_000));
         assert_eq!(QuoteFormula::default().deposit(Won(580_800)), Won(58_100));
+    }
+
+    #[test]
+    fn each_home_type_has_a_building_and_a_label_never_other() {
+        assert_eq!(HomeType::OneTwoRoom.building(), BuildingType::Officetel);
+        assert_eq!(HomeType::Apartment.building(), BuildingType::Apartment);
+        assert_eq!(HomeType::VillaHouse.building(), BuildingType::House);
+        assert_eq!(HomeType::OneTwoRoom.label(), ("원룸·투룸", "Studio / two-room"));
+        assert_eq!(HomeType::Apartment.label(), ("아파트", "Apartment"));
+        assert_eq!(HomeType::VillaHouse.label(), ("빌라·주택", "Villa / house"));
+    }
+
+    #[test]
+    fn home_type_sets_the_building_and_none_keeps_it() {
+        let mut a = answers();
+        a.building = BuildingType::Other;
+        assert_eq!(a.clone().with_home_building().building, BuildingType::Other);
+        a.home_type = Some(HomeType::VillaHouse);
+        assert_eq!(a.with_home_building().building, BuildingType::House);
     }
 }

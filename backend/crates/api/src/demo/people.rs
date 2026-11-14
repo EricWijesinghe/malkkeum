@@ -15,12 +15,25 @@ const OTP_COUNT: usize = 12;
 /// How long the demo sign-in customer's coupon stays valid after a load.
 const DEMO_COUPON_DAYS: i64 = 30;
 
-const SURNAMES: [&str; 20] = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍"];
-const GIVEN: [&str; 24] = [
-    "민준", "서연", "지호", "수빈", "현우", "지민", "예린", "도윤", "하은", "준서", "유진", "승민", "소연", "재원", "채원", "태윤", "다은", "성호",
-    "미래", "우진", "지우", "시우", "가은", "동현",
+const SURNAMES: [&str; 20] = [
+    "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍",
 ];
-const ROADS: [&str; 10] = ["테헤란로", "반포대로", "올림픽로", "마포대로", "양재대로", "강변북로", "언주로", "도산대로", "월드컵북로", "동작대로"];
+const GIVEN: [&str; 24] = [
+    "민준", "서연", "지호", "수빈", "현우", "지민", "예린", "도윤", "하은", "준서", "유진", "승민", "소연", "재원", "채원", "태윤", "다은", "성호", "미래",
+    "우진", "지우", "시우", "가은", "동현",
+];
+const ROADS: [&str; 10] = [
+    "테헤란로",
+    "반포대로",
+    "올림픽로",
+    "마포대로",
+    "양재대로",
+    "강변북로",
+    "언주로",
+    "도산대로",
+    "월드컵북로",
+    "동작대로",
+];
 const DETAILS: [&str; 6] = ["101동 1204호", "102동 805호", "3층 302호", "빌라 2층", "오피스텔 1502호", "가든하우스 1층"];
 /// Service codes from `domain::catalog::default_catalog`.
 pub const SERVICE_CODES: [&str; 8] = ["studio", "kitchen", "bathroom", "mattress", "aircon", "sofa", "move_out", "move_in"];
@@ -99,7 +112,12 @@ pub async fn run(c: &mut Ctx<'_>) -> Result<World, DemoError> {
     let pros = pros(c).await?;
     let (admin, consultant) = staff(c).await?;
     sign_in_records(c, &customers, &pros).await?;
-    Ok(World { customers, pros, admin, consultant })
+    Ok(World {
+        customers,
+        pros,
+        admin,
+        consultant,
+    })
 }
 
 fn district_name(code: &str) -> &'static str {
@@ -143,7 +161,12 @@ async fn customers(c: &mut Ctx<'_>) -> Result<Vec<Customer>, DemoError> {
         let addresses = addresses(c, id, created).await?;
         card(c, id, created).await?;
         let coupons = coupons(c, id, created, i == 0).await?;
-        out.push(Customer { id, created, addresses, coupons });
+        out.push(Customer {
+            id,
+            created,
+            addresses,
+            coupons,
+        });
     }
     identities(c, &out).await?;
     Ok(out)
@@ -175,7 +198,15 @@ async fn addresses(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Resul
         .execute(&mut *c.tx)
         .await?;
         c.reg("addresses", id).await?;
-        out.push(Address { id, kind, label, road, detail, district: code, size });
+        out.push(Address {
+            id,
+            kind,
+            label,
+            road,
+            detail,
+            district: code,
+            size,
+        });
     }
     Ok(out)
 }
@@ -195,13 +226,15 @@ async fn card(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<(),
     if c.chance(0.4) {
         let extra = c.id();
         let key = format!("demo_bk_{}", c.hex(12));
-        sqlx::query("INSERT INTO payment_methods (id, user_id, provider, billing_key, display_name, created_at) VALUES ($1,$2,'kakaopay',$3,'데모 카카오페이',$4)")
-            .bind(extra)
-            .bind(user)
-            .bind(&key)
-            .bind(created)
-            .execute(&mut *c.tx)
-            .await?;
+        sqlx::query(
+            "INSERT INTO payment_methods (id, user_id, provider, billing_key, display_name, created_at) VALUES ($1,$2,'kakaopay',$3,'데모 카카오페이',$4)",
+        )
+        .bind(extra)
+        .bind(user)
+        .bind(&key)
+        .bind(created)
+        .execute(&mut *c.tx)
+        .await?;
         c.reg("payment_methods", extra).await?;
     }
     Ok(())
@@ -211,18 +244,53 @@ async fn card(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>) -> Result<(),
 /// `demo_login` is the customer the demo signs in as (010-0000-0001): they also get a coupon valid for
 /// `DEMO_COUPON_DAYS` from load time, so checkout's coupon step always has one to show.
 async fn coupons(c: &mut Ctx<'_>, user: Uuid, created: DateTime<Utc>, demo_login: bool) -> Result<Vec<Coupon>, DemoError> {
-    let mut out = vec![
-        (Coupon { id: c.id(), amount: 15_000, service: None, issued: created, expires: created + Duration::days(14), used: false }, "첫 청소 15,000원 웰컴쿠폰", "welcome"),
-    ];
+    let mut out = vec![(
+        Coupon {
+            id: c.id(),
+            amount: 15_000,
+            service: None,
+            issued: created,
+            expires: created + Duration::days(14),
+            used: false,
+        },
+        "첫 청소 15,000원 웰컴쿠폰",
+        "welcome",
+    )];
     if c.chance(0.3) {
-        let expires = if c.chance(0.5) { c.now + Duration::days(10) } else { c.now - Duration::days(2) };
+        let expires = if c.chance(0.5) {
+            c.now + Duration::days(10)
+        } else {
+            c.now - Duration::days(2)
+        };
         let issued = expires - Duration::days(30);
-        out.push((Coupon { id: c.id(), amount: 3_000, service: None, issued, expires, used: false }, "가을 감사 쿠폰 3천원", "autumn-2026"));
+        out.push((
+            Coupon {
+                id: c.id(),
+                amount: 3_000,
+                service: None,
+                issued,
+                expires,
+                used: false,
+            },
+            "가을 감사 쿠폰 3천원",
+            "autumn-2026",
+        ));
     }
     if demo_login {
         // `used: true` only stops the booking generator from spending it; the stored coupon is unused.
         let expires = c.now + Duration::days(DEMO_COUPON_DAYS);
-        out.push((Coupon { id: c.id(), amount: 10_000, service: None, issued: c.now, expires, used: true }, "웰컴 쿠폰 · 전 서비스", "welcome"));
+        out.push((
+            Coupon {
+                id: c.id(),
+                amount: 10_000,
+                service: None,
+                issued: c.now,
+                expires,
+                used: true,
+            },
+            "웰컴 쿠폰 · 전 서비스",
+            "welcome",
+        ));
     }
     let mut rows = Vec::with_capacity(out.len());
     for (coupon, name, campaign) in out {
@@ -249,14 +317,16 @@ async fn identities(c: &mut Ctx<'_>, customers: &[Customer]) -> Result<(), DemoE
     for (i, cust) in customers.iter().take(IDENTITY_COUNT).enumerate() {
         let id = c.id();
         let provider = PROVIDERS[i % PROVIDERS.len()];
-        sqlx::query("INSERT INTO user_identities (id, provider, provider_user_id, role, subject_id, email, created_at) VALUES ($1,$2,$3,'customer',$4,NULL,$5)")
-            .bind(id)
-            .bind(provider)
-            .bind(format!("demo_{provider}_{:04}", i + 1))
-            .bind(cust.id)
-            .bind(cust.created)
-            .execute(&mut *c.tx)
-            .await?;
+        sqlx::query(
+            "INSERT INTO user_identities (id, provider, provider_user_id, role, subject_id, email, created_at) VALUES ($1,$2,$3,'customer',$4,NULL,$5)",
+        )
+        .bind(id)
+        .bind(provider)
+        .bind(format!("demo_{provider}_{:04}", i + 1))
+        .bind(cust.id)
+        .bind(cust.created)
+        .execute(&mut *c.tx)
+        .await?;
         c.reg("user_identities", id).await?;
     }
     Ok(())
@@ -304,16 +374,18 @@ async fn pros(c: &mut Ctx<'_>) -> Result<Vec<Pro>, DemoError> {
                 let mphone = format!("0100002{:04}", i * 10 + n + 1);
                 let invite = if n == 0 { "active" } else { "invited" };
                 let last_login = (n == 0).then(|| c.now - Duration::days(3));
-                sqlx::query("INSERT INTO team_members (id, pro_id, name, phone, role, invite_status, created_at, last_login_at) VALUES ($1,$2,$3,$4,'member',$5,$6,$7)")
-                    .bind(mid)
-                    .bind(id)
-                    .bind(member)
-                    .bind(&mphone)
-                    .bind(invite)
-                    .bind(created + Duration::days(2))
-                    .bind(last_login)
-                    .execute(&mut *c.tx)
-                    .await?;
+                sqlx::query(
+                    "INSERT INTO team_members (id, pro_id, name, phone, role, invite_status, created_at, last_login_at) VALUES ($1,$2,$3,$4,'member',$5,$6,$7)",
+                )
+                .bind(mid)
+                .bind(id)
+                .bind(member)
+                .bind(&mphone)
+                .bind(invite)
+                .bind(created + Duration::days(2))
+                .bind(last_login)
+                .execute(&mut *c.tx)
+                .await?;
                 c.reg("team_members", mid).await?;
                 if n == 0 {
                     assignees.push(mid);
@@ -375,7 +447,7 @@ async fn prefs(c: &mut Ctx<'_>, pro: Uuid, services: &[&str], districts: &[&str]
 /// Bank details are encrypted with the real DATA_KEY so a payout run can decrypt them. The number is fake.
 async fn payout(c: &mut Ctx<'_>, pro: Uuid, holder: &str, index: usize, created: DateTime<Utc>) -> Result<(), DemoError> {
     let account = "데모-110-000-1234-5678";
-    let enc = crypto::encrypt(&c.data_key, account);
+    let enc = crypto::encrypt(&c.data_key, crypto::aad::PAYOUT_ACCOUNT, account);
     let verified_at = (index != UNVERIFIED_PAYOUT).then(|| created + Duration::days(3));
     sqlx::query("INSERT INTO payout_accounts (pro_id, bank, account_enc, account_last4, holder, verified_at) VALUES ($1,'데모은행',$2,'5678',$3,$4)")
         .bind(pro)

@@ -93,7 +93,15 @@ pub const TPL_COMPLETED: &str = "booking.completed";
 pub const TPL_RECEIPT: &str = "payment.receipt";
 pub const TPL_CANCELLED: &str = "booking.cancelled";
 /// Every key the setup wizard accepts in the solapi `templates` map.
-pub const TEMPLATE_KEYS: [&str; 7] = [TPL_CONFIRMED, TPL_ASSIGNED, TPL_REMINDER, TPL_ARRIVAL, TPL_COMPLETED, TPL_RECEIPT, TPL_CANCELLED];
+pub const TEMPLATE_KEYS: [&str; 7] = [
+    TPL_CONFIRMED,
+    TPL_ASSIGNED,
+    TPL_REMINDER,
+    TPL_ARRIVAL,
+    TPL_COMPLETED,
+    TPL_RECEIPT,
+    TPL_CANCELLED,
+];
 
 /// Notify kind + data -> transactional alert template key. None means in-app and push only.
 /// Status codes follow `domain::booking::BookingStatus` (1 confirmed, 2 team assigned).
@@ -208,7 +216,11 @@ mod tests {
         }
         let body = String::from_utf8_lossy(&buf[head_end..head_end + len]).to_string();
         let line = head.lines().next().unwrap_or_default().to_string();
-        let auth = head.lines().find(|l| l.to_ascii_lowercase().starts_with("authorization:")).unwrap_or_default().to_string();
+        let auth = head
+            .lines()
+            .find(|l| l.to_ascii_lowercase().starts_with("authorization:"))
+            .unwrap_or_default()
+            .to_string();
         (line, auth, body)
     }
 
@@ -220,7 +232,9 @@ mod tests {
         let server = tokio::spawn(async move {
             let (mut sock, _) = listener.accept().await.expect("accept");
             let req = read_request(&mut sock).await;
-            sock.write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}").await.expect("write");
+            sock.write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}")
+                .await
+                .expect("write");
             req
         });
         let cfg = SolapiConfig {
@@ -231,9 +245,18 @@ mod tests {
             templates: Default::default(),
         };
         let http = reqwest::Client::new();
-        send_alimtalk_at(&http, &url, &cfg, "PF1", "TPL1", "01012345678", "t\nb", json!({ "#{title}": "t", "#{body}": "b" }))
-            .await
-            .expect("send ok");
+        send_alimtalk_at(
+            &http,
+            &url,
+            &cfg,
+            "PF1",
+            "TPL1",
+            "01012345678",
+            "t\nb",
+            json!({ "#{title}": "t", "#{body}": "b" }),
+        )
+        .await
+        .expect("send ok");
         let (line, auth, body) = server.await.expect("server");
         assert_eq!(line, "POST /messages/v4/send HTTP/1.1");
         assert!(auth.to_ascii_lowercase().starts_with("authorization: hmac-sha256 apikey=key, date="), "{auth}");

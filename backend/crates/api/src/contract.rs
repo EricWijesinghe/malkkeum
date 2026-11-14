@@ -125,7 +125,11 @@ pub fn json_row_cursor(row: &serde_json::Value, ts_field: &str, id_field: &str) 
 
 /// JSON array body plus `X-Next-Cursor` when the page came back full.
 pub fn paged<T: Serialize>(rows: Vec<T>, limit: i64, cursor_of: impl FnOnce(&T) -> String) -> Response {
-    let next = if i64::try_from(rows.len()).is_ok_and(|n| n == limit) { rows.last().map(cursor_of) } else { None };
+    let next = if i64::try_from(rows.len()).is_ok_and(|n| n == limit) {
+        rows.last().map(cursor_of)
+    } else {
+        None
+    };
     let mut res = Json(rows).into_response();
     if let Some(value) = next.and_then(|c| HeaderValue::from_str(&c).ok()) {
         res.headers_mut().insert(NEXT_CURSOR, value);
@@ -141,7 +145,10 @@ pub async fn deprecated_route(req: Request, next: Next, sunset: NaiveDate, succe
     if let Ok(v) = HeaderValue::from_str(&sunset.format("%a, %d %b %Y 00:00:00 GMT").to_string()) {
         h.insert(HeaderName::from_static("sunset"), v);
     }
-    h.insert(header::LINK, HeaderValue::from_str(&format!("<{successor}>; rel=\"successor-version\"")).unwrap_or(HeaderValue::from_static("")));
+    h.insert(
+        header::LINK,
+        HeaderValue::from_str(&format!("<{successor}>; rel=\"successor-version\"")).unwrap_or(HeaderValue::from_static("")),
+    );
     res
 }
 
@@ -162,7 +169,10 @@ mod tests {
     #[test]
     fn cursor_round_trips_and_rejects_garbage() {
         let c = encode_cursor(&["2026-01-02", "9", "abc"]);
-        assert_eq!(decode_cursor(Some(&c), 3).ok().flatten(), Some(vec!["2026-01-02".into(), "9".into(), "abc".into()]));
+        assert_eq!(
+            decode_cursor(Some(&c), 3).ok().flatten(),
+            Some(vec!["2026-01-02".into(), "9".into(), "abc".into()])
+        );
         assert!(decode_cursor(Some(&c), 2).is_err());
         assert!(decode_cursor(Some("%%%"), 1).is_err());
         assert_eq!(decode_cursor(None, 2).ok().flatten(), None);
@@ -184,8 +194,14 @@ mod tests {
 
     #[tokio::test]
     async fn framework_errors_use_envelope() {
-        let app = Router::new().route("/a", get(|| async { "ok" })).layer(axum::middleware::from_fn(error_envelope));
-        let res = app.clone().oneshot(Request::builder().uri("/nope").body(Body::empty()).expect("req")).await.expect("svc");
+        let app = Router::new()
+            .route("/a", get(|| async { "ok" }))
+            .layer(axum::middleware::from_fn(error_envelope));
+        let res = app
+            .clone()
+            .oneshot(Request::builder().uri("/nope").body(Body::empty()).expect("req"))
+            .await
+            .expect("svc");
         assert_eq!(res.status(), StatusCode::NOT_FOUND);
         let body = axum::body::to_bytes(res.into_body(), 1024).await.expect("body");
         assert_eq!(&body[..], br#"{"error":{"code":"not_found"}}"#);

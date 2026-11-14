@@ -35,7 +35,7 @@
 
     <h1>서비스 이용약관</h1>
     <p class="note">시행일: 2026년 11월 17일</p>
-    <h2>제1조 (목적)</h2><p>이 약관은 <span data-fill="company.legal_name">[상호]</span>(이하 "회사")가 제공하는 <span data-brand-name>다해</span> 홈클리닝 서비스(이하 "서비스")의 이용 조건, 회사와 이용자의 권리와 의무를 정합니다.</p>
+    <h2>제1조 (목적)</h2><p>이 약관은 {{httpInclude "/v1/public/seller-info?field=legal_name"}}(이하 "회사")가 제공하는 <span data-brand-name>다해</span> 홈클리닝 서비스(이하 "서비스")의 이용 조건, 회사와 이용자의 권리와 의무를 정합니다.</p>
     <h2>제2조 (서비스 내용)</h2><p>회사는 고객과 청소 전문가(이하 "파트너")를 연결하고 예약, 결제, 상담, 정산 기능을 제공합니다. 방문 청소는 회사의 기준으로 심사된 파트너가 수행합니다.</p>
     <h2>제3조 (회원가입)</h2><p>휴대전화 인증 또는 소셜 로그인으로 가입하며 정확한 정보를 제공해야 합니다. 만 14세 미만은 가입할 수 없습니다.</p>
     <h2>제4조 (예약과 결제)</h2><p>예약은 결제가 완료된 때 확정됩니다. 견적형 서비스(이사·입주 청소 등)는 견적 확인 후 예약금 결제로 확정되고, 잔금은 작업 완료 후 결제합니다.</p>
@@ -45,14 +45,14 @@
     <h2>제8조 (서비스 변경·중단)</h2><p>설비 점검 등 부득이한 경우 서비스를 일시 중단할 수 있으며 미리 공지합니다.</p>
     <h2>제9조 (이용자 생성 콘텐츠 · 후기)</h2><p>후기 등 이용자가 올린 콘텐츠는 다른 이용자에게 공개될 수 있습니다. 욕설·차별·혐오 표현, 음란물, 개인정보나 연락처, 허위 내용, 광고나 타인의 권리를 침해하는 내용은 금지하며, 이를 발견하면 회사는 사전 통지 없이 숨김 또는 삭제하고 해당 이용자의 후기 작성을 제한할 수 있습니다. 이용자는 앱에서 후기를 신고할 수 있으며, 회사는 신고된 후기를 검토해 조치 결과를 처리합니다. 무관용 원칙을 적용합니다.</p>
     <h2>제10조 (분쟁 해결)</h2><p>분쟁은 고객센터를 통해 먼저 협의하며, 협의가 안 되면 관할 법원은 민사소송법에 따릅니다.</p>
-    <h2 id="business">사업자 정보</h2><p>상호 <span data-fill="company.legal_name">[상호]</span> · 대표 <span data-fill="company.ceo">[대표자]</span> · 사업자등록번호 <span data-fill="company.registration_no">[번호]</span> · 통신판매업 신고 <span data-fill="company.mail_order_no">[번호]</span> · 주소 <span data-fill="company.address">[주소]</span> · 호스팅 제공자 <span data-fill="company.hosting_provider">[호스팅 제공자]</span></p>
-    <p>고객센터 전화 <a data-support-phone hidden></a> · 이메일 <a data-support-email hidden></a> <a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener">사업자정보확인</a></p>
+    <h2 id="business">사업자 정보</h2><p>상호 {{httpInclude "/v1/public/seller-info?field=legal_name"}} · 대표 {{httpInclude "/v1/public/seller-info?field=ceo"}} · 사업자등록번호 {{httpInclude "/v1/public/seller-info?field=registration_no"}} · 통신판매업 신고 {{httpInclude "/v1/public/seller-info?field=mail_order_no"}} · 주소 {{httpInclude "/v1/public/seller-info?field=address"}} · 호스팅 제공자 {{httpInclude "/v1/public/seller-info?field=hosting_provider"}}</p>
+    <p>고객센터 전화 {{httpInclude "/v1/public/seller-info?field=support_phone"}} · 이메일 {{httpInclude "/v1/public/seller-info?field=support_email"}} {{httpInclude "/v1/public/seller-info?field=bizcheck"}}</p>
     <h2>개정 이력</h2>
     <table><tr><th>시행일</th><th>내용</th><th>이전 버전</th></tr><tr><td>2026년 11월 17일</td><td>제정</td><td>-</td></tr></table>
   </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
-    <div><b data-t="f_support">고객센터</b><br><a data-support-phone hidden></a><br><a data-support-email hidden></a></div>
+    <div><p class="company">{{httpInclude "/v1/public/seller-info"}}</p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
+    <div><b data-t="f_support">고객센터</b><br>{{httpInclude "/v1/public/seller-info?field=support_phone"}}<br>{{httpInclude "/v1/public/seller-info?field=support_email"}}</div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>

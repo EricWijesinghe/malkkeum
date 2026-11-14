@@ -3,8 +3,8 @@
 //! `util::lock_and_count_slot`). Accepting the offer creates the booking through the normal create path.
 
 use super::{
-    bookings::{self, CreateBooking},
     booking_core::{BookingBody, lock_slot, prepare},
+    bookings::{self, CreateBooking},
 };
 use crate::{
     auth::Customer,
@@ -157,7 +157,10 @@ async fn accept(State(s): State<AppState>, Customer(a): Customer, Path(id): Path
                 .await?
                 .rows_affected();
             if reopened == 0 {
-                sqlx::query("UPDATE waitlist_entries SET status = 'cancelled' WHERE id = $1 AND status = 'accepted'").bind(id).execute(&s.db).await?;
+                sqlx::query("UPDATE waitlist_entries SET status = 'cancelled' WHERE id = $1 AND status = 'accepted'")
+                    .bind(id)
+                    .execute(&s.db)
+                    .await?;
                 best_effort("waitlist re-offer", offer_for_slot(&s, date, hour as u8)).await;
             }
             Err(e)
@@ -188,12 +191,20 @@ pub async fn offer_for_slot(s: &AppState, date: NaiveDate, hour: u8) -> ApiResul
         .enumerate()
         .map(|(i, q)| WaitEntry {
             customer_id: i as i64,
-            range: SlotRange { date, start_hour: u32::from(hour), end_hour: u32::from(hour) + 1 },
+            range: SlotRange {
+                date,
+                start_hour: u32::from(hour),
+                end_hour: u32::from(hour) + 1,
+            },
             joined_at: q.2,
             has_live_offer: false,
         })
         .collect();
-    let freed = SlotRange { date, start_hour: u32::from(hour), end_hour: u32::from(hour) + 1 };
+    let freed = SlotRange {
+        date,
+        start_hour: u32::from(hour),
+        end_hour: u32::from(hour) + 1,
+    };
     let Some(idx) = waitlist::pick_next_offer(&entries, &freed) else {
         return Ok(());
     };

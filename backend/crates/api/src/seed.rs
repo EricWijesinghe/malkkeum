@@ -1,7 +1,11 @@
 //! Idempotent first-run data: catalogue, quote formula, slot capacity, first admin, starter content.
 
 use crate::{auth::hash_password, config::Config};
-use domain::{catalog::default_catalog, quote::QuoteFormula};
+use domain::{
+    catalog::default_catalog,
+    quote::QuoteFormula,
+    service_group::{default_group_of, hidden_from_home},
+};
 use serde_json::json;
 use sqlx::PgPool;
 
@@ -31,16 +35,25 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
     for s in default_catalog() {
         // Unlisted codes go after the brief's eight, in catalogue order.
         let order = SEED_ORDER.iter().position(|c| *c == s.code).unwrap_or(SEED_ORDER.len());
-        let content = SEED_BADGES.iter().find(|(code, _)| *code == s.code).map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
-        sqlx::query("INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING")
-            .bind(&s.code)
-            .bind(sqlx::types::Json(&s.pricing))
-            .bind(s.needs_preparation)
-            .bind(s.max_pyeong.map(|p| p as i16))
-            .bind(order as i32)
-            .bind(content)
-            .execute(db)
-            .await?;
+        let mut content = SEED_BADGES
+            .iter()
+            .find(|(code, _)| *code == s.code)
+            .map_or_else(|| json!({}), |(_, badge)| json!({ "badge": badge }));
+        if hidden_from_home(&s.code) {
+            content["hidden_from_home"] = json!(true);
+        }
+        sqlx::query(
+            "INSERT INTO services (code, pricing, needs_preparation, max_pyeong, sort_order, content, group_code) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (code) DO NOTHING",
+        )
+        .bind(&s.code)
+        .bind(sqlx::types::Json(&s.pricing))
+        .bind(s.needs_preparation)
+        .bind(s.max_pyeong.map(|p| p as i16))
+        .bind(order as i32)
+        .bind(content)
+        .bind(default_group_of(&s.code))
+        .execute(db)
+        .await?;
     }
     sqlx::query("INSERT INTO settings (key, value) VALUES ('quote_formula', $1) ON CONFLICT DO NOTHING")
         .bind(sqlx::types::Json(QuoteFormula::default()))

@@ -23,7 +23,10 @@ pub fn reveal_allowed(visit: NaiveDate, today_kst: NaiveDate) -> bool {
 
 /// Legal case moves: open -> investigating -> resolved | rejected; open may also be rejected directly.
 pub fn can_move(from: &str, to: &str) -> bool {
-    matches!((from, to), ("open", "investigating") | ("open", "rejected") | ("investigating", "resolved") | ("investigating", "rejected"))
+    matches!(
+        (from, to),
+        ("open", "investigating") | ("open", "rejected") | ("investigating", "resolved") | ("investigating", "rejected")
+    )
 }
 
 /// Who may file which case kind. No-show is raised by the system or staff, never by a partner.
@@ -38,10 +41,12 @@ pub fn may_file(reporter: &str, kind: &str) -> bool {
 
 /// Moves a legacy plaintext entry code into the encrypted column. Runs at boot; idempotent.
 pub async fn encrypt_legacy_codes(db: &PgPool, key: &[u8; 32]) -> Result<u64, sqlx::Error> {
-    let rows: Vec<(Uuid, Value)> = sqlx::query_as("SELECT id, visit_notes FROM bookings WHERE visit_notes->'entry' IS NOT NULL").fetch_all(db).await?;
+    let rows: Vec<(Uuid, Value)> = sqlx::query_as("SELECT id, visit_notes FROM bookings WHERE visit_notes->'entry' IS NOT NULL")
+        .fetch_all(db)
+        .await?;
     let mut moved = 0;
     for (id, mut notes) in rows {
-        let enc = take_entry(&mut notes).map(|code| crypto::encrypt(key, &code));
+        let enc = take_entry(&mut notes).map(|code| crypto::encrypt(key, crypto::aad::ACCESS_CODE, &code));
         sqlx::query("UPDATE bookings SET visit_notes = $2, access_code_enc = COALESCE($3, access_code_enc) WHERE id = $1")
             .bind(id)
             .bind(&notes)
