@@ -15,6 +15,8 @@ pub mod crypto;
 pub mod db;
 pub mod demo;
 pub mod error;
+pub mod host_jobs;
+pub mod host_status;
 pub mod i18n;
 pub mod idempotency;
 pub mod image_meta;
