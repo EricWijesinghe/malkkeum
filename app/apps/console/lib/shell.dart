@@ -21,144 +21,91 @@ import 'screens/subscriptions.dart';
 import 'state.dart';
 
 class _Section {
-  const _Section(
-    this.id,
-    this.icon,
-    this.label,
-    this.build, {
-    this.adminOnly = false,
-  });
+  const _Section(this.id, this.label, this.build, {this.adminOnly = false});
 
-  /// 3D rail art id (plan §4). [icon] stays for the command palette.
+  /// Rail art id: the 3D icon and the palette glyph both come from [Icon3DRegistry].
   final String id;
-  final IconData icon;
   final String Function(T) label;
   final Widget Function() build;
   final bool adminOnly;
+
+  IconData get icon => Icon3DRegistry.of(id).icon;
 }
 
+/// Every entry's [_Section.id] names its own icon in [Icon3DRegistry]; test/shell_icons_test.dart checks the mapping.
 final _sections = <_Section>[
-  _Section(
-    'c_dashboard',
-    Icons.space_dashboard_rounded,
-    (t) => t.cDashboard,
-    () => const DashboardScreen(),
-  ),
-  _Section(
-    'c_bookings',
-    Icons.event_note_rounded,
-    (t) => t.cBookings,
-    () => const BookingsScreen(),
-  ),
+  _Section('c_dashboard', (t) => t.cDashboard, () => const DashboardScreen()),
+  _Section('c_bookings', (t) => t.cBookings, () => const BookingsScreen()),
   _Section(
     'c_quotes',
-    Icons.request_quote_rounded,
     (t) => t.cQuoteDesk,
     () => const BookingsScreen(quoteDesk: true),
   ),
+  _Section('c_chat', (t) => t.cInbox, () => const InboxScreen()),
+  _Section('c_pricing', (t) => t.cCatalog, () => const CatalogScreen()),
+  _Section('c_marketing', (t) => t.cMarketing, () => const MarketingScreen()),
+  _Section('c_partners', (t) => t.cPartners, () => const PartnersScreen()),
   _Section(
-    'c_settings',
-    Icons.forum_rounded,
-    (t) => t.cInbox,
-    () => const InboxScreen(),
-  ),
-  _Section(
-    'c_monitor',
-    Icons.sell_rounded,
-    (t) => t.cCatalog,
-    () => const CatalogScreen(),
-  ),
-  _Section(
-    'c_chat',
-    Icons.campaign_rounded,
-    (t) => t.cMarketing,
-    () => const MarketingScreen(),
-  ),
-  _Section(
-    'c_pricing',
-    Icons.engineering_rounded,
-    (t) => t.cPartners,
-    () => const PartnersScreen(),
-  ),
-  _Section(
-    'c_marketing',
-    Icons.payments_rounded,
+    'c_payments',
     (t) => t.cSettlements,
     () => const SettlementsScreen(),
   ),
   _Section(
-    'c_partners',
-    Icons.account_balance_wallet_rounded,
+    'c_payouts',
     (t) => t.fFinance,
     () => const FinanceScreen(),
     adminOnly: true,
   ),
   _Section(
-    'c_payments',
-    Icons.event_repeat_rounded,
+    'c_subscriptions',
     (t) => t.cSubsTitle,
     () => const SubscriptionsScreen(),
   ),
+  _Section('c_customers', (t) => t.cCustomers, () => const CustomersScreen()),
   _Section(
-    'c_payouts',
-    Icons.people_alt_rounded,
-    (t) => t.cCustomers,
-    () => const CustomersScreen(),
-  ),
-  _Section(
-    'c_subscriptions',
-    Icons.badge_rounded,
+    'c_staff',
     (t) => t.cStaff,
     () => const StaffScreen(),
     adminOnly: true,
   ),
   _Section(
-    'c_customers',
-    Icons.tune_rounded,
+    'c_settings',
     (t) => t.cSetup,
     () => const SetupScreen(),
     adminOnly: true,
   ),
   _Section(
     'c_rules',
-    Icons.rule_rounded,
     (t) => t.rulesTab,
     () => const RulesScreen(),
     adminOnly: true,
   ),
   _Section(
-    'c_settings',
-    Icons.notifications_active_rounded,
+    'c_notify',
     (t) => t.ntNavLabel,
     () => const NotifyTemplatesScreen(),
     adminOnly: true,
   ),
-  _Section(
-    'c_staff',
-    Icons.monitor_heart_rounded,
-    (t) => t.cOps,
-    () => const OpsScreen(),
-  ),
+  _Section('c_monitor', (t) => t.cOps, () => const OpsScreen()),
   _Section(
     'c_audit',
-    Icons.history_rounded,
     (t) => t.cAudit,
     () => const AuditScreen(),
     adminOnly: true,
   ),
-  _Section(
-    'c_privacy',
-    Icons.privacy_tip_rounded,
-    (t) => t.prqTitle,
-    () => const PrivacyRequestsScreen(),
-  ),
+  _Section('c_privacy', (t) => t.prqTitle, () => const PrivacyRequestsScreen()),
   _Section(
     'c_renewals',
-    Icons.event_repeat_rounded,
     (t) => t.rnwTitle,
     () => const RenewalsScreen(),
     adminOnly: true,
   ),
+];
+
+/// Nav entries as (rail art id, palette icon), for the icon mapping test.
+@visibleForTesting
+List<(String, IconData)> navIconPairs() => [
+  for (final s in _sections) (s.id, s.icon),
 ];
 
 /// Linear-style: side menu on desktop, drawer on phone, Ctrl+K palette, Ctrl+1..9 to jump.
