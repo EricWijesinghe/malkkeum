@@ -6,9 +6,11 @@
 //! After a listener outage the node broadcasts `resync`, because events sent in the gap were missed.
 
 use crate::{
-    auth::{Role, verify_access},
+    auth::Role,
     error::ApiResult,
     lifecycle::drained,
+    realtime_heartbeat::{Beat, Heartbeat, PING_EVERY},
+    realtime_ticket::{WsQuery, authenticate_socket},
     state::AppState,
 };
 use axum::{
@@ -38,22 +40,21 @@ use uuid::Uuid;
 
 const HUB_CAPACITY: usize = 1024;
 const PUBLISH_QUEUE: usize = 1024;
-const PING_EVERY: Duration = Duration::from_secs(25);
 const CHANNEL: &str = "malkkeum_events";
 /// Postgres rejects NOTIFY payloads of 8000 bytes or more; keep a margin.
 const NOTIFY_INLINE_MAX: usize = 7000;
 /// How long the `notify_outbox` job leaves a new row to the attempt its own request makes.
 const OUTBOX_GRACE_SECS: f64 = 60.0;
 /// The job's retries start at this delay and double each time.
-const OUTBOX_BACKOFF_SECS: f64 = 60.0;
+pub(crate) const OUTBOX_BACKOFF_SECS: f64 = 60.0;
 /// Six retries span about an hour. After that a push is no longer worth sending.
 const OUTBOX_MAX_ATTEMPTS: i32 = 6;
 /// Rows retried at once; kept under the pool size, since each retry runs a few queries.
-const OUTBOX_BATCH: usize = 10;
-const OUTBOX_MAX_BATCHES: usize = 100;
+pub(crate) const OUTBOX_BATCH: usize = 10;
+pub(crate) const OUTBOX_MAX_BATCHES: usize = 100;
 const OUTBOX_EVERY: Duration = Duration::from_secs(30);
 /// Pushes started straight from requests. A bulk send past this is drained by the job in batches.
-static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
+pub(crate) static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
 const LISTEN_BACKOFF_MIN: Duration = Duration::from_millis(250);
 const LISTEN_BACKOFF_MAX: Duration = Duration::from_secs(30);
 
@@ -154,7 +155,13 @@ impl Hub {
 
     /// Subscribes this node to the events of every other node. Reconnects with backoff.
     pub fn spawn_listener(&self) -> JoinHandle<()> {
-        tokio::spawn(listen_loop(self.db.clone(), self.node, self.tx.clone(), self.listening.clone(), self.drain_signal()))
+        tokio::spawn(listen_loop(
+            self.db.clone(),
+            self.node,
+            self.tx.clone(),
+            self.listening.clone(),
+            self.drain_signal(),
+        ))
     }
 
     /// True while this node holds its LISTEN connection.
@@ -191,7 +198,12 @@ async fn publish_loop(db: PgPool, node: Uuid, mut queue: mpsc::Receiver<Event>) 
 }
 
 async fn publish(db: &PgPool, node: Uuid, event: &Event) -> Result<(), sqlx::Error> {
-    let wire = Wire::Inline { origin: node, to: event.to, kind: event.kind.to_string(), data: event.data.clone() };
+    let wire = Wire::Inline {
+        origin: node,
+        to: event.to,
+        kind: event.kind.to_string(),
+        data: event.data.clone(),
+    };
     let mut text = serde_json::to_string(&wire).map_err(|e| sqlx::Error::Encode(Box::new(e)))?;
     if text.len() > NOTIFY_INLINE_MAX {
         let stored = Uuid::now_v7();
@@ -291,7 +303,11 @@ async fn relay(db: &PgPool, node: Uuid, tx: &broadcast::Sender<Frame>, payload: 
         inline => inline,
     };
     if let Wire::Inline { to, kind, data, .. } = wire {
-        let _ = tx.send(Frame::Event(Event { to, kind: Cow::Owned(kind), data }));
+        let _ = tx.send(Frame::Event(Event {
+            to,
+            kind: Cow::Owned(kind),
+            data,
+        }));
     }
 }
 
@@ -303,9 +319,15 @@ async fn fetch_stored(db: &PgPool, id: Uuid) -> Result<Option<Wire>, sqlx::Error
     Ok(payload.map(|p| p.0))
 }
 
-/// Deletes stored payloads older than a few minutes; listeners read them within moments.
+/// Deletes stored payloads older than a few minutes (listeners read them within moments) and tickets never spent.
 pub async fn prune_stored(db: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'").execute(db).await.map(|_| ())
+    sqlx::query("DELETE FROM realtime_events WHERE created_at < now() - interval '10 minutes'")
+        .execute(db)
+        .await?;
+    sqlx::query("DELETE FROM realtime_tickets WHERE expires_at < now()")
+        .execute(db)
+        .await
+        .map(|_| ())
 }
 
 fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
@@ -317,17 +339,12 @@ fn matches(to: Recipient, id: Uuid, role: Role) -> bool {
     }
 }
 
-#[derive(Deserialize)]
-pub struct WsQuery {
-    token: String,
-}
-
 /// Sockets close when the access token would expire; clients reconnect with a fresh token,
 /// so a deactivated account stops receiving events within one token lifetime.
 const SOCKET_LIFETIME: Duration = Duration::from_secs(crate::auth::ACCESS_TTL_MIN as u64 * 60);
 
 pub async fn ws_handler(State(state): State<AppState>, Query(q): Query<WsQuery>, ws: WebSocketUpgrade) -> ApiResult<Response> {
-    let auth = verify_access(&state.config.jwt_keys(), &q.token)?;
+    let auth = authenticate_socket(&state, &q).await?;
     let rx = state.hub.subscribe();
     let presence = auth.role.is_staff().then(|| state.hub.staff_join());
     let draining = state.hub.drain_signal();
@@ -344,6 +361,7 @@ async fn pump(
 ) {
     let (mut sink, mut stream) = socket.split();
     let mut ping = tokio::time::interval(PING_EVERY);
+    let mut heartbeat = Heartbeat::new(tokio::time::Instant::now());
     let expiry = tokio::time::sleep(SOCKET_LIFETIME);
     tokio::pin!(expiry);
     loop {
@@ -371,9 +389,13 @@ async fn pump(
             },
             msg = stream.next() => match msg {
                 Some(Ok(Message::Close(_))) | None | Some(Err(_)) => break,
-                _ => {}
+                Some(Ok(_)) => heartbeat.heard(tokio::time::Instant::now()),
             },
             _ = ping.tick() => {
+                if heartbeat.on_tick(tokio::time::Instant::now()) == Beat::Reap {
+                    tracing::info!("realtime socket silent past the pong timeout; closed");
+                    break;
+                }
                 if sink.send(Message::Ping(Vec::new().into())).await.is_err() { break; }
             }
         }
@@ -524,6 +546,7 @@ async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> Api
     // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
     let locale = crate::i18n::locale_of(&state.db, q.to).await;
     let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    let (inbox_title, inbox_body) = crate::i18n::notice(&state.db, &locale, &q.kind, &q.title, &q.body, &q.data).await;
     // One statement: the inbox row and the outbox flag commit together, so a retry never stores twice.
     sqlx::query(
         "WITH flagged AS (UPDATE notification_outbox SET stored = true WHERE id = $5)
@@ -532,7 +555,7 @@ async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> Api
     .bind(role)
     .bind(owner)
     .bind(q.kind.as_ref())
-    .bind(json!({ "title": title, "body": body, "data": q.data }))
+    .bind(json!({ "title": inbox_title, "body": inbox_body, "data": q.data }))
     .bind(q.id)
     .execute(&state.db)
     .await?;
@@ -569,7 +592,7 @@ async fn try_push(state: &AppState, q: &Queued) -> Result<(), &'static str> {
         return Ok(());
     }
     let locale = crate::i18n::locale_of(&state.db, q.to).await;
-    let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));
+    let (title, body) = crate::i18n::notice(&state.db, &locale, &q.kind, &q.title, &q.body, &q.data).await;
     match state.providers.push_collect(&tokens, &title, &body, &q.data).await {
         Ok(dead) => {
             prune_push_tokens(state, role, owner, &dead).await;
@@ -605,15 +628,21 @@ async fn settle(state: &AppState, q: &Queued, outcome: Result<(), &'static str>)
 /// id, owner_role, owner_id, kind, title, body, data, stored, attempts.
 type OutboxRow = (i64, String, Uuid, String, String, String, Value, bool, i32);
 
-/// One pass of the `notify_outbox` job: retries what a request could not deliver. Rows are claimed with
-/// `FOR UPDATE SKIP LOCKED` and the next-attempt stamp is the lease, so the job runs on every replica
-/// and no two work the same row. Returns how many rows were tried.
+/// One pass of the `notify_outbox` job: retries what a request could not deliver, pushes and texts alike.
+/// Rows are claimed with `FOR UPDATE SKIP LOCKED` and the next-attempt stamp is the lease, so the job runs
+/// on every replica and no two work the same row. Returns how many rows were tried.
 pub async fn outbox_pass(state: &AppState) -> ApiResult<usize> {
+    let pushes = push_pass(state).await?;
+    let texts = crate::sms_outbox::pass(state).await?;
+    Ok(pushes + texts)
+}
+
+async fn push_pass(state: &AppState) -> ApiResult<usize> {
     let mut tried = 0;
     for _ in 0..OUTBOX_MAX_BATCHES {
         let rows: Vec<OutboxRow> = sqlx::query_as(
             "UPDATE notification_outbox SET attempts = attempts + 1, next_attempt_at = now() + make_interval(secs => $1 * power(2, attempts))
-             WHERE id IN (SELECT id FROM notification_outbox WHERE next_attempt_at <= now() ORDER BY next_attempt_at LIMIT $2 FOR UPDATE SKIP LOCKED)
+             WHERE id IN (SELECT id FROM notification_outbox WHERE channel = 'push' AND next_attempt_at <= now() ORDER BY next_attempt_at LIMIT $2 FOR UPDATE SKIP LOCKED)
              RETURNING id, owner_role, owner_id, kind, title, body, data, stored, attempts",
         )
         .bind(OUTBOX_BACKOFF_SECS)
@@ -717,12 +746,19 @@ fn kakao_to_customer(state: &AppState, user: Uuid, kind: &str, locale: &str, ko:
         };
         let sent = if korean {
             let brand = crate::routes::setup::brand_name(&state.db).await;
-            state.providers.send_customer_message(&phone, key, &brand, &ko_title, &ko_body).await
+            let msg = crate::sms_outbox::Message::Alimtalk {
+                template: key,
+                brand: &brand,
+                title: &ko_title,
+                body: &ko_body,
+            };
+            crate::sms_outbox::send(&state, Some(user), &phone, &kind, msg).await
         } else {
-            state.providers.send_sms(&phone, &format!("{title}\n{body}")).await
+            let text = format!("{title}\n{body}");
+            crate::sms_outbox::send(&state, Some(user), &phone, &kind, crate::sms_outbox::Message::Sms(&text)).await
         };
         if let Err(e) = sent {
-            tracing::warn!(error = %e, %kind, "customer message failed");
+            tracing::warn!(error = %e, %kind, "customer message not queued");
         }
     });
 }

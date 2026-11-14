@@ -2,6 +2,8 @@
 //! Every bucket has an in-memory sliding window (fast path, per process); auth and upload also keep a
 //! fixed-window counter in Postgres so a restart or a second replica cannot reset the budget. Also hosts
 //! the small quota helper used by per-user daily caps.
+//! shortcut: the general bucket is per process, so N API replicas allow N times its limit; keep one replica,
+//! or move the general bucket to the Postgres counter when running more than one.
 
 use crate::{config::Config, error::ApiError};
 use axum::{
@@ -10,13 +12,13 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use sqlx::PgPool;
-use uuid::Uuid;
 use std::{
     collections::{HashMap, VecDeque},
     net::{IpAddr, Ipv4Addr, SocketAddr},
     sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
+use uuid::Uuid;
 
 const WINDOW: Duration = Duration::from_secs(60);
 const SWEEP_EVERY: Duration = Duration::from_secs(60);
@@ -159,8 +161,8 @@ pub fn client_ip(peer: Option<IpAddr>, forwarded_for: Option<&str>, trusted_prox
 }
 
 /// A quota is spent while `used` is below `limit`.
-pub fn within_quota(used: i64, limit: u32) -> bool {
-    used < i64::from(limit)
+pub fn within_quota(used: i64, limit: i64) -> bool {
+    used < limit
 }
 
 /// Shared middleware state: the in-memory limiter, the proxy setting and the database that holds the

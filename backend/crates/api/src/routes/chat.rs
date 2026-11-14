@@ -5,8 +5,9 @@ use crate::{
     contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
-    realtime::{Recipient, notify},
+    realtime::{PUSH_SLOTS, Recipient, notify},
     routes::uploads,
+    settings_registry,
     state::AppState,
     util::own_upload,
 };
@@ -20,6 +21,11 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgPool};
+use std::{
+    collections::HashMap,
+    sync::{LazyLock, Mutex, PoisonError},
+    time::{Duration, Instant},
+};
 use uuid::Uuid;
 
 const MAX_TEXT: usize = 2000;
@@ -122,13 +128,123 @@ pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> 
     let mut live = data.clone();
     uploads::sign_urls(&s.config, &mut live);
     s.hub.send(Recipient::Staff, "chat.message", live.clone());
+    let preview = msg.body.get("text").and_then(Value::as_str).unwrap_or("").chars().take(80).collect::<String>();
     if msg.sender == "staff" || msg.sender == "system" {
-        let preview = msg.body.get("text").and_then(Value::as_str).unwrap_or("").chars().take(80).collect::<String>();
         notify(s, member, "chat.message", "상담팀", &preview, data).await?;
     } else {
         s.hub.send(member, "chat.message", live);
+        spawn_staff_push(s, msg.thread_id, preview);
     }
     Ok(())
+}
+
+/// Minimum gap between two pushes to staff for the same thread.
+const STAFF_PUSH_GAP: Duration = Duration::from_secs(60);
+/// shortcut: per-process, so a multi-node deploy may push once per node per minute; upgrade to a shared timestamp when running more than one node.
+static LAST_STAFF_PUSH: LazyLock<Mutex<HashMap<Uuid, Instant>>> = LazyLock::new(|| Mutex::new(HashMap::new()));
+
+fn with_staff_window<T>(f: impl FnOnce(&mut HashMap<Uuid, Instant>) -> T) -> T {
+    let mut map = LAST_STAFF_PUSH.lock().unwrap_or_else(PoisonError::into_inner);
+    f(&mut map)
+}
+
+/// True when no staff push went out for `thread` within the gap. Records the push when true.
+fn claim_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid, now: Instant) -> bool {
+    map.retain(|_, sent| now.duration_since(*sent) < STAFF_PUSH_GAP);
+    if map.contains_key(&thread) {
+        return false;
+    }
+    map.insert(thread, now);
+    true
+}
+
+/// Reopens the window for `thread` after a failed push, so the next message in it pushes again.
+fn release_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid) {
+    map.remove(&thread);
+}
+
+/// Pushes a member's message to staff devices on a background task, so the sender's request never waits
+/// on the push service. Staff have no inbox, so this is push only; the live event is already sent.
+fn spawn_staff_push(s: &AppState, thread: Uuid, preview: String) {
+    if !with_staff_window(|map| claim_staff_push(map, thread, Instant::now())) {
+        return;
+    }
+    let state = s.clone();
+    tokio::spawn(async move {
+        if !push_staff(&state, &preview, thread).await {
+            with_staff_window(|map| release_staff_push(map, thread));
+        }
+    });
+}
+
+/// Staff devices only. Waits for a free push slot like the notify path does. False when the push did not go out.
+async fn push_staff(s: &AppState, preview: &str, thread: Uuid) -> bool {
+    let Ok(_slot) = PUSH_SLOTS.acquire().await else {
+        return false;
+    };
+    let tokens: Vec<String> = match sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'")
+        .fetch_all(&s.db)
+        .await
+    {
+        Ok(tokens) => tokens,
+        Err(e) => {
+            tracing::warn!(error = %e, "staff chat push: token lookup failed");
+            return false;
+        }
+    };
+    let data = json!({ "kind": "chat.message", "thread_id": thread });
+    match s.providers.push_collect(&tokens, "상담팀", preview, &data).await {
+        Ok(dead) => {
+            prune_staff_tokens(s, &dead).await;
+            true
+        }
+        Err(e) => {
+            tracing::warn!(error = %e, "staff chat push failed");
+            false
+        }
+    }
+}
+
+/// Drops staff device tokens the push service reports as dead.
+async fn prune_staff_tokens(s: &AppState, dead: &[String]) {
+    if dead.is_empty() {
+        return;
+    }
+    if let Err(e) = sqlx::query("DELETE FROM push_tokens WHERE token = ANY($1) AND owner_role = 'staff'")
+        .bind(dead.to_vec())
+        .execute(&s.db)
+        .await
+    {
+        tracing::warn!(error = %e, "failed to prune dead staff push tokens");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn burst_to_one_thread_pushes_once_per_gap() {
+        let (mut map, thread, t0) = (HashMap::new(), Uuid::from_u128(1), Instant::now());
+        assert!(claim_staff_push(&mut map, thread, t0));
+        assert!(!claim_staff_push(&mut map, thread, t0 + Duration::from_secs(30)));
+        assert!(claim_staff_push(&mut map, thread, t0 + STAFF_PUSH_GAP));
+    }
+
+    #[test]
+    fn a_failed_push_reopens_the_window() {
+        let (mut map, thread, t0) = (HashMap::new(), Uuid::from_u128(1), Instant::now());
+        assert!(claim_staff_push(&mut map, thread, t0));
+        release_staff_push(&mut map, thread);
+        assert!(claim_staff_push(&mut map, thread, t0 + Duration::from_secs(1)));
+    }
+
+    #[test]
+    fn threads_are_throttled_independently() {
+        let (mut map, t0) = (HashMap::new(), Instant::now());
+        assert!(claim_staff_push(&mut map, Uuid::from_u128(1), t0));
+        assert!(claim_staff_push(&mut map, Uuid::from_u128(2), t0));
+    }
 }
 
 /// Convenience used by bookings/admin: post a system line in a transaction-free context.
@@ -202,7 +318,8 @@ async fn open_thread(State(s): State<AppState>, a: Auth, Json(o): Json<OpenThrea
             .bind(a.id)
             .fetch_one(&mut *conn)
             .await?;
-            if !within_quota(opened, s.config.max_threads_per_day) {
+            let limit = settings_registry::get(&s.db, &s.config, "max_threads_per_day").await?;
+            if !within_quota(opened, limit) {
                 return Err(ApiError::Quota("thread_quota"));
             }
         }
@@ -263,7 +380,9 @@ pub fn validate_outgoing(o: &Outgoing, public_base: &str) -> ApiResult<(&'static
     match o {
         Outgoing::Text { text } if !text.trim().is_empty() && text.chars().count() <= MAX_TEXT => Ok(("text", json!({ "text": text.trim() }))),
         // Only our own upload URLs, so chats cannot carry arbitrary links as images.
-        Outgoing::Photo { url } => own_upload(public_base, url).map(|p| ("photo", json!({ "url": p }))).ok_or(ApiError::BadRequest("invalid_message")),
+        Outgoing::Photo { url } => own_upload(public_base, url)
+            .map(|p| ("photo", json!({ "url": p })))
+            .ok_or(ApiError::BadRequest("invalid_message")),
         _ => Err(ApiError::BadRequest("invalid_message")),
     }
 }
@@ -283,7 +402,7 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
     let msg = insert_message(&mut conn, id, sender, Some(a.id), kind, body).await?;
     drop(conn);
     broadcast_message(&s, &msg).await?;
-    if sender != "staff" && super::config::feature_enabled(&s.db, "ai").await? {
+    if sender != "staff" && super::config::feature_enabled(&s.db, &s.config, "ai").await? {
         crate::ai::schedule(&s, id);
     }
     Ok(Json(msg))
@@ -291,9 +410,7 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
 
 /// Staff-only routes, mounted under /admin: per-thread AI pause and the monthly AI usage line.
 pub fn admin_routes() -> Router<AppState> {
-    Router::new()
-        .route("/threads/{id}/ai", put(set_ai_paused))
-        .route("/ai/usage", get(ai_usage))
+    Router::new().route("/threads/{id}/ai", put(set_ai_paused)).route("/ai/usage", get(ai_usage))
 }
 
 #[derive(Deserialize)]

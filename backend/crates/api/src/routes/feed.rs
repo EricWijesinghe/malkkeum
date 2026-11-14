@@ -2,13 +2,13 @@
 //! unfinished draft); `GET /v1/me/feed` adds the customer's own history, saved home and consent.
 //! The ranking lives in `domain::feed`; this file only gathers facts.
 
+use crate::privacy;
 use crate::{auth::Customer, error::ApiResult, state::AppState, util::today_kst};
 use axum::{
     Json, Router,
     extract::{Query, State},
     routing::get,
 };
-use crate::privacy;
 use chrono::{Datelike, Duration, NaiveDate};
 use domain::feed::{self, FeedFacts, LastClean};
 use serde::Deserialize;
@@ -37,7 +37,8 @@ struct FeedQuery {
 
 /// Device-supplied codes are matched only as plain identifiers, never interpolated.
 fn code_or_none(raw: Option<String>) -> Option<String> {
-    raw.map(|s| s.trim().to_owned()).filter(|s| !s.is_empty() && s.len() <= 32 && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_'))
+    raw.map(|s| s.trim().to_owned())
+        .filter(|s| !s.is_empty() && s.len() <= 32 && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_'))
 }
 
 /// The last complete KST week as [from, to) dates.
@@ -79,7 +80,11 @@ async fn district_bookings(db: &PgPool, code: &str) -> ApiResult<i64> {
 
 async fn guest_feed(State(s): State<AppState>, Query(q): Query<FeedQuery>) -> ApiResult<Json<Value>> {
     let district = code_or_none(q.district.clone());
-    let mut facts = FeedFacts { today: Some(today_kst()), draft_service: code_or_none(q.draft), ..Default::default() };
+    let mut facts = FeedFacts {
+        today: Some(today_kst()),
+        draft_service: code_or_none(q.draft),
+        ..Default::default()
+    };
     if let Some(code) = district {
         facts.district = Some((code.clone(), district_bookings(&s.db, &code).await?));
     }
@@ -98,12 +103,11 @@ async fn my_feed(State(s): State<AppState>, Customer(a): Customer, Query(q): Que
     .bind(a.id)
     .fetch_all(db)
     .await?;
-    let recent_bookings: i64 = sqlx::query_scalar(
-        "SELECT count(*) FROM bookings WHERE user_id = $1 AND status >= 0 AND created_at >= now() - interval '90 days'",
-    )
-    .bind(a.id)
-    .fetch_one(db)
-    .await?;
+    let recent_bookings: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM bookings WHERE user_id = $1 AND status >= 0 AND created_at >= now() - interval '90 days'")
+            .bind(a.id)
+            .fetch_one(db)
+            .await?;
     let size_pyeong: Option<i16> = sqlx::query_scalar(
         "SELECT size_pyeong FROM addresses WHERE user_id = $1 AND deleted_at IS NULL ORDER BY (kind = 'home') DESC, created_at DESC LIMIT 1",
     )
