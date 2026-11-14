@@ -28,17 +28,11 @@ const _headerMaxTextScale = 1.3;
 /// Days of the neighbouring months are shown greyed.
 const _outsideAlpha = 0.4;
 
-/// Languages that write the year before the month, where "26년 11월" reads naturally.
-const _shortYearLangs = {'ko', 'ja', 'zh'};
-
 DateTime _monthOf(DateTime d) => DateTime(d.year, d.month);
 
-String _monthTitle(DateTime month, String lang) {
-  final full = DateFormat.yMMMM(lang).format(month);
-  return _shortYearLangs.contains(lang)
-      ? full.replaceFirst('${month.year}', '${month.year % 100}')
-      : full;
-}
+/// The full year always ("2026년 11월"): a two-digit year reads as a page number.
+String _monthTitle(DateTime month, String lang) =>
+    DateFormat.yMMMM(lang).format(month);
 
 /// Month calendar (a drag handle folds it to one week) over the selected day's bookings.
 class BookingsTab extends StatefulWidget {
@@ -58,13 +52,10 @@ class _BookingsTabState extends State<BookingsTab>
   int _seen = -1;
 
   /// 1 = month grid open (the default), 0 = folded to the selected week.
-  late final AnimationController _open = AnimationController(
-    vsync: this,
-    duration: Motion.route,
-    value: 1,
-  )
-    ..addListener(_onFold)
-    ..addStatusListener((_) => _onFold());
+  late final AnimationController _open =
+      AnimationController(vsync: this, duration: Motion.route, value: 1)
+        ..addListener(_onFold)
+        ..addStatusListener((_) => _onFold());
 
   /// What the last build showed: (month grid, week strip, the fold a tap would make).
   (bool, bool, bool) _shown = (true, false, true);
@@ -467,7 +458,9 @@ class _WeekRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var i = 0; i < DateTime.daysPerWeek; i++)
-          Expanded(child: _cell(DateTime(start.year, start.month, start.day + i))),
+          Expanded(
+            child: _cell(DateTime(start.year, start.month, start.day + i)),
+          ),
       ],
     ),
   );
@@ -760,7 +753,7 @@ class _DayList extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: Space.lg),
               child: Center(
-                child: Text(t.bookingsEmpty, style: context.text.bodySmall),
+                child: Text(t.bookingsEmptyDay, style: context.text.bodySmall),
               ),
             ),
           for (final MapEntry(key: label, value: list) in groups.entries) ...[
@@ -781,7 +774,10 @@ class _DayList extends StatelessWidget {
             ),
             const SizedBox(height: Space.xxs),
             for (final b in list)
-              StaggerIn(index: row++, child: BookingCard(booking: b)),
+              StaggerIn(
+                index: row++,
+                child: BookingCard(booking: b),
+              ),
             const SizedBox(height: Space.sm),
           ],
           if (upcoming.isNotEmpty) ...[

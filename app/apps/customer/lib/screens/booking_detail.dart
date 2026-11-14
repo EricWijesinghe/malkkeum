@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'booking_address.dart';
 import 'booking_flow.dart';
 import 'bookings.dart';
+import 'cancel_booking_sheet.dart';
 import 'growth.dart';
 import 'pay_flow.dart';
 import 'service.dart';
@@ -227,7 +229,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 leading: const Icon(Icons.place_outlined),
                 title: Text(t.visitAddress),
                 subtitle: Text(
-                  '${b.address['road_address']} ${b.address['detail']}\n${t.pyeong('${b.address['size_pyeong']}')}',
+                  '${fullAddressLine(b.address)}\n${t.pyeong('${b.address['size_pyeong']}')}',
                 ),
               ),
               if (b.paidAmount > 0)
@@ -518,76 +520,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
   }
 
-  /// Shows the server's fee preview before confirming; the accepted fee is sent back so a changed policy is refused.
+  /// The cancel sheet shows the server's fee and refund; the accepted fee goes back so a changed policy is refused.
   Future<void> _cancel(Booking b) async {
-    final t = context.t;
-    final preview =
-        (await context.api.get('/bookings/${b.id}/cancel-preview'))
-            as Map<String, dynamic>;
-    if (!mounted) return;
-    final canCancel = preview['can_cancel'] == true;
-    final fee = (preview['fee'] as num? ?? 0).toInt();
-    final refund = (preview['refund'] as num? ?? 0).toInt();
-    final ok = await showAppSheet<bool>(
-      context,
-      title: t.cancelTitle,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(
-          Space.gutter,
-          0,
-          Space.gutter,
-          Space.gutter,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              !canCancel
-                  ? t.err_cancellation_window_closed
-                  : (fee > 0
-                        ? t.cancelFeeNow(ctx.won(fee), ctx.won(refund))
-                        : t.cancelFree),
-              style: ctx.text.bodyMedium,
-            ),
-            const SizedBox(height: Space.xl),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.of(ctx).pop(false),
-                    child: Text(t.cancelKeep),
-                  ),
-                ),
-                const SizedBox(width: Space.xs),
-                Expanded(
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: ctx.colors.danger,
-                    ),
-                    onPressed: canCancel
-                        ? () => Navigator.of(ctx).pop(true)
-                        : null,
-                    child: Text(
-                      fee > 0
-                          ? t.cancelFeeAccept(ctx.won(fee))
-                          : t.cancelBooking,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    final result = await confirmCancelBooking(context, b.id);
+    if (result == null || !mounted) return;
+    await _act(
+      () => context.api.postAction('/bookings/${b.id}/cancel', {
+        'accepted_fee': result.fee,
+        'reason': ?result.reason,
+      }),
+      context.t.cancelled,
     );
-    if (ok == true) {
-      await _act(
-        () => context.api.postAction('/bookings/${b.id}/cancel', {
-          'accepted_fee': fee,
-        }),
-        t.cancelled,
-      );
-    }
   }
 }

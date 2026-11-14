@@ -87,7 +87,7 @@ pub async fn prepare(db: &PgPool, user: Uuid, b: &BookingBody) -> ApiResult<Prep
     service.check_address_size(addr.size_pyeong as u16)?;
     check_date(today_kst(), b.visit_date)?;
     check_slot(service.is_quote(), b.start_hour)?;
-    let snapshot = json!({ "kind": addr.kind, "label": addr.label, "road_address": addr.road_address, "detail": addr.detail, "size_pyeong": addr.size_pyeong });
+    let snapshot = json!({ "kind": addr.kind, "label": addr.label, "road_address": addr.road_address, "detail": addr.detail, "district_code": addr.district_code, "size_pyeong": addr.size_pyeong });
     let notes = if b.visit_notes.is_null() {
         json!({})
     } else {

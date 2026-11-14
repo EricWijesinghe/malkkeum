@@ -168,6 +168,51 @@
  "bizInfoTitle": "사업자 정보",
  "bizInfoVerify": "사업자정보확인",
  "cSetupHostingProvider": "호스팅 서비스 제공자",
+ "cancelRefundCta": "취소하고 {amount} 환불받기",
+ "@cancelRefundCta": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "cancelNoRefund": "환불되는 금액이 없어요",
+ "cancelTierLine": "방문 {days}일 전 취소 · 취소 수수료 {percent}%",
+ "@cancelTierLine": {
+  "placeholders": {
+   "days": {
+    "type": "String"
+   },
+   "percent": {
+    "type": "String"
+   }
+  }
+ },
+ "cancelFeeLine": "취소 수수료 {fee}",
+ "@cancelFeeLine": {
+  "placeholders": {
+   "fee": {
+    "type": "String"
+   }
+  }
+ },
+ "cancelRefundLine": "환불 금액 {refund}",
+ "@cancelRefundLine": {
+  "placeholders": {
+   "refund": {
+    "type": "String"
+   }
+  }
+ },
+ "cancelMethodLine": "결제하신 수단으로 돌려드려요",
+ "cancelPolicyLink": "취소·환불 기준 보기",
+ "cancelPolicyTitle": "취소·환불 기준",
+ "cancelReasonTitle": "취소 이유 (선택)",
+ "cancelReasonSchedule": "일정이 맞지 않아요",
+ "cancelReasonProvider": "다른 곳으로 정했어요",
+ "cancelReasonPrice": "가격이 부담돼요",
+ "cancelReasonOther": "기타",
+ "bookingsEmptyDay": "이 날은 예약이 없어요",
  "cgTabPeak": "피크 요금",
  "cgTabQuality": "품질 기준",
  "cgTabDemo": "샘플 데이터",

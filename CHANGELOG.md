@@ -24,6 +24,7 @@ from the release branches; no tags existed for them.
 - Console catalogue: add a new service (code, name, fixed price or quote), archive one by switching it off, edit peak-hour surcharges and quality thresholds, edit a subscription's cadence, day and start time, and load or remove sample data (removal needs the owner's authenticator code).
 - Customer app: guests see how a booking works on the Bookings tab and the FAQ and terms on the Chat tab (chat still asks for sign-in). The welcome offer and the referral amount show before sign-in, and a quote in progress is kept on the device across restarts.
 - Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
+- Customer booking cancel sheet (quote and fixed-price bookings): shows the server's fee tier, fee, refund and payment method, a link to the cancellation and refund policy, an optional reason, and a confirm button that states the refund amount. Booking detail shows the full address with district; the calendar header shows the full year and an empty day says 이 날은 예약이 없어요.
 
 ### Changed
 - Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
