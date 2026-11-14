@@ -5749,6 +5749,30 @@ abstract class T {
   /// **'확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.'**
   String get err_payout_account_unverified;
 
+  /// No description provided for @err_invite_pending.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 비밀번호를 정하지 않은 초대예요. 직원이 인증번호를 입력하면 켜져요.'**
+  String get err_invite_pending;
+
+  /// No description provided for @err_phone_taken.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 휴대폰 번호는 다른 직원이 쓰고 있어요.'**
+  String get err_phone_taken;
+
+  /// No description provided for @err_code_invalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증번호가 맞지 않거나 시간이 지났어요. 관리자에게 새 번호를 받아 주세요.'**
+  String get err_code_invalid;
+
+  /// No description provided for @err_no_phone.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 번호가 없어요. 번호를 입력해 주세요.'**
+  String get err_no_phone;
+
   /// No description provided for @guestSheetTitle.
   ///
   /// In ko, this message translates to:
@@ -9816,6 +9840,102 @@ abstract class T {
   /// **'입력값을 확인해 주세요'**
   String get cInvalidValue;
 
+  /// No description provided for @cStaffInvite.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 초대'**
+  String get cStaffInvite;
+
+  /// No description provided for @cStaffInviteTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 초대하기'**
+  String get cStaffInviteTitle;
+
+  /// No description provided for @cStaffInviteBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'직원 휴대폰으로 인증번호를 보내요. 직원은 이 번호로 24시간 안에 비밀번호를 정하면 돼요.'**
+  String get cStaffInviteBody;
+
+  /// No description provided for @cStaffPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴대폰 번호'**
+  String get cStaffPhone;
+
+  /// No description provided for @cStaffPhoneNeeded.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 직원은 휴대폰 번호가 없어요. 번호를 입력하면 저장하고 인증번호를 보내요.'**
+  String get cStaffPhoneNeeded;
+
+  /// No description provided for @cStaffChannel.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증번호 전달 방법'**
+  String get cStaffChannel;
+
+  /// No description provided for @cStaffChannelSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자로 보내기'**
+  String get cStaffChannelSms;
+
+  /// No description provided for @cStaffChannelCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 전달 (복사)'**
+  String get cStaffChannelCopy;
+
+  /// No description provided for @cStaffCodeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증번호'**
+  String get cStaffCodeTitle;
+
+  /// No description provided for @cStaffCodeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 번호를 직원에게 전달하세요. 한 번만 쓸 수 있고 24시간 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
+  String get cStaffCodeBody;
+
+  /// No description provided for @cStaffSentSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자를 보냈어요. 직원은 24시간 안에 입력해야 해요.'**
+  String get cStaffSentSms;
+
+  /// No description provided for @cStaffInvited.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대했어요'**
+  String get cStaffInvited;
+
+  /// No description provided for @cStaffInvitePending.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 대기 중 (비밀번호 미설정)'**
+  String get cStaffInvitePending;
+
+  /// No description provided for @cStaffAdminOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'관리자 권한은 관리자만 줄 수 있어요'**
+  String get cStaffAdminOnly;
+
+  /// No description provided for @cStaffInviteResend.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증번호 다시 보내기'**
+  String get cStaffInviteResend;
+
+  /// No description provided for @cStaffSendCode.
+  ///
+  /// In ko, this message translates to:
+  /// **'보내기'**
+  String get cStaffSendCode;
+
   /// No description provided for @cMfaTitle.
   ///
   /// In ko, this message translates to:
@@ -9963,13 +10083,13 @@ abstract class T {
   /// No description provided for @cStaffResetTitle.
   ///
   /// In ko, this message translates to:
-  /// **'재설정 토큰'**
+  /// **'재설정 인증번호'**
   String get cStaffResetTitle;
 
   /// No description provided for @cStaffResetBody.
   ///
   /// In ko, this message translates to:
-  /// **'이 토큰을 직원에게 전달하세요. 한 번만 쓸 수 있고 30분 동안 유효해요. 이 화면을 닫으면 다시 볼 수 없어요.'**
+  /// **'이 인증번호는 24시간 동안 한 번만 쓸 수 있어요. 직원이 비밀번호를 정하면 모든 기기에서 로그아웃돼요.'**
   String get cStaffResetBody;
 
   /// No description provided for @subTitle.

@@ -3061,6 +3061,21 @@ class TEn extends T {
       'This partner has no verified payout account yet. Verify the account first.';
 
   @override
+  String get err_invite_pending =>
+      'This invitation has no password yet. It turns on when the staff member enters the code.';
+
+  @override
+  String get err_phone_taken =>
+      'Another staff member already uses this phone number.';
+
+  @override
+  String get err_code_invalid =>
+      'The code is wrong or has expired. Ask the admin for a new one.';
+
+  @override
+  String get err_no_phone => 'There is no phone number on file. Enter one.';
+
+  @override
   String get guestSheetTitle => 'Sign in to continue';
 
   @override
@@ -5276,6 +5291,58 @@ class TEn extends T {
   String get cInvalidValue => 'Please check the highlighted value';
 
   @override
+  String get cStaffInvite => 'Invite staff';
+
+  @override
+  String get cStaffInviteTitle => 'Invite a staff member';
+
+  @override
+  String get cStaffInviteBody =>
+      'We text a sign-in code to the staff member\'s phone. They set a password with it within 24 hours.';
+
+  @override
+  String get cStaffPhone => 'Mobile number';
+
+  @override
+  String get cStaffPhoneNeeded =>
+      'This staff member has no phone number. Enter one to save it and send the code.';
+
+  @override
+  String get cStaffChannel => 'How to send the code';
+
+  @override
+  String get cStaffChannelSms => 'Send by text';
+
+  @override
+  String get cStaffChannelCopy => 'Hand over (copy)';
+
+  @override
+  String get cStaffCodeTitle => 'Sign-in code';
+
+  @override
+  String get cStaffCodeBody =>
+      'Give this code to the staff member. It works once, for 24 hours. You cannot see it again after closing.';
+
+  @override
+  String get cStaffSentSms =>
+      'Text sent. The staff member must enter it within 24 hours.';
+
+  @override
+  String get cStaffInvited => 'Invitation sent';
+
+  @override
+  String get cStaffInvitePending => 'Invitation pending (no password yet)';
+
+  @override
+  String get cStaffAdminOnly => 'Only admins can grant admin access';
+
+  @override
+  String get cStaffInviteResend => 'Resend invite code';
+
+  @override
+  String get cStaffSendCode => 'Send';
+
+  @override
   String get cMfaTitle => 'Two-step sign-in';
 
   @override
@@ -5355,11 +5422,11 @@ class TEn extends T {
       'Reset this staff member\'s password? They will be signed out everywhere.';
 
   @override
-  String get cStaffResetTitle => 'Reset token';
+  String get cStaffResetTitle => 'Reset code';
 
   @override
   String get cStaffResetBody =>
-      'Give this token to the staff member. It works once, for 30 minutes. You cannot see it again after closing.';
+      'This code works once, for 24 hours. Once the staff member sets a password, they are signed out everywhere.';
 
   @override
   String get subTitle => 'Regular cleaning';

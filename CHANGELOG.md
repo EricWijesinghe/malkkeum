@@ -21,6 +21,7 @@ from the release branches; no tags existed for them.
 - Console catalogue: add a new service (code, name, fixed price or quote), archive one by switching it off, edit peak-hour surcharges and quality thresholds, edit a subscription's cadence, day and start time, and load or remove sample data (removal needs the owner's authenticator code).
 
 ### Changed
+- Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
 - Customer app: guests get the sign-in sheet with a reason for each protected action (chat, account, booking), member-only menu rows show a sign-in hint, the notifications screen shows only notices, and a nameless new account opens the name step after signing in from the sheet.
 - Release hardening: release tags must point into master, the image and delivery jobs run in protected
   environments, every action is pinned to a commit, and the installer's SHA256SUMS is cosign-signed. An
