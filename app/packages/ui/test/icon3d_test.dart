@@ -47,6 +47,20 @@ double _scaleOf(WidgetTester tester, String id) {
 }
 
 void main() {
+  test('every CR-2 group tile id resolves to art that ships', () {
+    const groups = [
+      'group_move_clean',
+      'group_resident_clean',
+      'group_appliance_clean',
+      'group_disinfect_clean',
+    ];
+    for (final id in groups) {
+      expect(Icon3DRegistry.has(id), isTrue, reason: id);
+      final file = Icon3DRegistry.assetFor(id);
+      expect(File(file).existsSync(), isTrue, reason: '$id -> $file');
+    }
+  });
+
   test('registry covers every plan §4 id and aliases resolve to real ids', () {
     const required = [
       'nav_home',
