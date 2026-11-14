@@ -301,6 +301,9 @@ The server cannot report its own outage, so watch it from outside.
 - **Missing config:** without a heartbeat URL, `sudo dahae status` prints a warning and the heartbeat log says so. Nothing is alerted until the URL is set.
 - **HTTP checks (optional, free tiers):** UptimeRobot or BetterStack, HTTPS `GET https://DOMAIN/health`, expect keyword `"ok":true`, interval 5 min. Use this to catch a crashed proxy as well.
 - Logs: `/opt/malkkeum/backups/heartbeat.log` (rotated weekly, 8 kept). Server metrics and request ids are covered by the ops screens, not here.
+- **Edge access log:** Caddy writes JSON access logs to the `caddylogs` volume (`/var/log/caddy/access.log`, 10 MB per file, 14 kept). Query strings are redacted for `ticket`, `token`, `sig`, `code` and `state`; Authorization and Cookie headers are dropped. Container logs keep 14 files of 10 MB each per container.
+- **Edge rate limit: not in place.** The stock Caddy image has no `rate_limit` module, so `/v1/auth/*` has only the app-level buckets. Add a custom Caddy build with `mholt/caddy-ratelimit` if abuse shows up in the access log.
+- **Monitoring profile (optional, off by default):** set `COMPOSE_PROFILES=monitoring` in the install folder's `.env`, then `docker compose up -d`. This starts Uptime Kuma on `127.0.0.1:3001` only (reach it through an SSH tunnel); it is not routed by Caddy and does not start unless the profile is set.
 
 ## 9. Operations: probes, logs, metrics, shutdown (operators)
 

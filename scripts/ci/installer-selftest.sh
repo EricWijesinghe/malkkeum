@@ -244,11 +244,11 @@ mkdir -p "$SB/compose" && (cd "$SB/compose" && write_compose)
 t  "embedded compose = deploy/docker-compose.yml" diff <(norm_compose "$ROOT/deploy/docker-compose.yml") <(norm_compose "$SB/compose/docker-compose.yml")
 # shellcheck disable=SC2016 # literal ${...} on purpose
 t  "embedded compose pins images from .env" eq "$(grep -c 'image: ${\(API\|WEB\)_IMAGE:?set by install.sh}' "$SB/compose/docker-compose.yml")" 2
-t  "every service hardened" eq "$(grep -c '<<: \*hardened' "$ROOT/deploy/docker-compose.yml")" 3
+t  "every service hardened" eq "$(grep -c '<<: \*hardened' "$ROOT/deploy/docker-compose.yml")" 4
 for k in 'no-new-privileges:true' 'cap_drop: \[ALL\]' 'read_only: true'; do
   t "hardening has $k" grep -q "^  .*$k" "$ROOT/deploy/docker-compose.yml"
 done
-t  "every service memory-capped" eq "$(grep -c '^    mem_limit:' "$ROOT/deploy/docker-compose.yml")" 3
+t  "every service memory-capped" eq "$(grep -c '^    mem_limit:' "$ROOT/deploy/docker-compose.yml")" 4
 
 # ---- secret key copy (dahae keys-backup / keys-restore) ----
 printf 'DB_PASSWORD=%s\nDATA_KEY=%s\nJWT_SECRET=%s\n' "$(printf 'a%.0s' $(seq 48))" "$(printf 'b%.0s' $(seq 64))" "$(printf 'c%.0s' $(seq 64))" > "$SB/keys.env"
@@ -411,6 +411,13 @@ t  "api mounts inbox read-write"         grep -qF "/opt/malkkeum/jobs/inbox:/job
 t  "api mounts status and out read-only" grep -qF "/opt/malkkeum/jobs/status:/jobs/status:ro, /opt/malkkeum/jobs/out:/jobs/out:ro]" "$ROOT/deploy/docker-compose.yml"
 t  "web mounts progress read-only"       grep -qF ":/srv/ops-progress:ro]" "$ROOT/deploy/docker-compose.yml"
 t  "Caddy progress route is no-store"    grep -qF 'Cache-Control "no-store"' "$ROOT/deploy/Caddyfile"
+# edge logs: rotated JSON access log, secrets in query strings redacted, probes answer 404 publicly
+t  "Caddy access log rotates 14 files"   grep -qF "roll_keep 14" "$ROOT/deploy/Caddyfile"
+t  "Caddy access log redacts the ws ticket and signed links" grep -qF "replace ticket REDACTED" "$ROOT/deploy/Caddyfile"
+t  "Caddy access log redacts signed link sig" grep -qF "replace sig REDACTED" "$ROOT/deploy/Caddyfile"
+t  "Caddy /ready and /metrics answer 404" grep -qF "@internal path /ready /metrics" "$ROOT/deploy/Caddyfile"
+t  "uptime-kuma is opt-in and loopback-only" grep -qF 'profiles: [monitoring]' "$ROOT/deploy/docker-compose.yml"
+t  "embedded compose has the access log volume" grep -qF "caddylogs:/var/log/caddy" "$SB/compose/docker-compose.yml"
 # the agent is installed on a fresh install and on an update: install_agent is called from main, not from a branch
 t  "install_agent runs in main"          grep -qE '^  install_agent( |$)' "$ROOT/deploy/install.sh"
 t  "cron table written by the CLI"       grep -qF '"$BIN/dahae" write-cron' "$ROOT/deploy/install.sh"

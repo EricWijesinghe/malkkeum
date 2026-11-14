@@ -242,7 +242,8 @@ write_compose() {
   cat > docker-compose.yml <<'EOF'
 # Managed by install.sh — re-run the installer or `dahae update` instead of editing.
 # Same as deploy/docker-compose.yml in the source repo except the image lines (installer-selftest checks).
-x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "3" } }
+# Container logs: 10 MB per file, 14 files kept per container (about 140 MB each at most; days kept depend on traffic).
+x-logging: &log { driver: json-file, options: { max-size: 10m, max-file: "14" } }
 # Every container: no privilege gain through setuid binaries or file capabilities, no Linux capability
 # unless listed under cap_add, a read-only root filesystem (writes go to volumes and tmpfs only), and
 # memory and process caps sized for a 2 GB VPS. No CPU caps: `cpus` above the host's core count stops
@@ -324,10 +325,22 @@ services:
       DOMAIN: ${DOMAIN}
       ACME_EMAIL: ${ACME_EMAIL:-}
       TLS_MODE: ${TLS_MODE:-}
-    volumes: [caddydata:/data, caddyconfig:/config, /opt/malkkeum/jobs/public:/srv/ops-progress:ro]
+    volumes: [caddydata:/data, caddyconfig:/config, caddylogs:/var/log/caddy, /opt/malkkeum/jobs/public:/srv/ops-progress:ro]
     healthcheck: { test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"], interval: 30s, retries: 5 }
 
-volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {} }
+  # Optional uptime monitor (Uptime Kuma). Not started by default: enable with COMPOSE_PROFILES=monitoring in the
+  # install folder's .env, then `docker compose up -d`. Bound to loopback only; never routed by Caddy.
+  uptime-kuma:
+    <<: *hardened
+    profiles: [monitoring]
+    image: louislam/uptime-kuma:2.1.1
+    tmpfs: [/tmp]
+    mem_limit: 320m
+    pids_limit: 128
+    ports: ["127.0.0.1:3001:3001"]
+    volumes: [kumadata:/app/data]
+
+volumes: { dbdata: {}, uploads: {}, caddydata: {}, caddyconfig: {}, caddylogs: {}, kumadata: {} }
 EOF
 }
 

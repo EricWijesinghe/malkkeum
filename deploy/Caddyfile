@@ -24,6 +24,31 @@
 	import tls-{$TLS_MODE}
 	encode zstd gzip
 
+	# JSON access log in the caddylogs volume: 10 MB per file, 14 files kept. Query strings carry secrets (websocket
+	# ticket, signed upload links, OAuth code and state), so those values are replaced before anything is written.
+	# shortcut: no edge rate limit on /v1/auth/*, the stock caddy image has no rate_limit module; add one (custom
+	#   image via xcaddy with mholt/caddy-ratelimit) or keep the app-level buckets (ratelimit.rs), when the edge needs it.
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 14
+		}
+		format filter {
+			wrap json
+			fields {
+				request>headers>Authorization delete
+				request>headers>Cookie delete
+				request>uri query {
+					replace ticket REDACTED
+					replace token REDACTED
+					replace sig REDACTED
+					replace code REDACTED
+					replace state REDACTED
+				}
+			}
+		}
+	}
+
 	# Deferred (it deletes a field), so these are set when the response is written, over anything upstream sent.
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
