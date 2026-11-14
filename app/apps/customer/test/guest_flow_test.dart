@@ -58,7 +58,7 @@ void main() {
 
       await tester.tap(find.text(koT.dfBookNow));
       await settle(tester);
-      expect(find.text(koT.guestSheetTitle), findsOneWidget, reason: 'protected action opens the sheet');
+      expect(find.text(koT.guestReasonBook), findsOneWidget, reason: 'protected action opens the sheet');
       expect(fake.callsTo('POST', '/auth/otp'), isEmpty);
 
       await tester.enterText(find.byType(TextField).last, '01012345678');
@@ -71,7 +71,7 @@ void main() {
       await settle(tester);
 
       expect(fake.lastCall('POST', '/auth/verify'), isNotNull);
-      expect(find.text(koT.guestSheetTitle), findsNothing, reason: 'sheet closes on success');
+      expect(find.text(koT.guestReasonBook), findsNothing, reason: 'sheet closes on success');
       expect(fake.callsTo('GET', '/me'), isNotEmpty, reason: 'account data loads after sign-in');
       expect(fake.callsTo('GET', '/bookings'), isNotEmpty, reason: 'the tabs reload with the account bookings');
       await unmount(tester);

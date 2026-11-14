@@ -113,7 +113,7 @@ void main() {
       await _tap(tester, _next());
 
       // 4/7 (address) for a guest: the price, no address list, and the only button is the sign-in one.
-      expect(find.text(_chip(3)), findsOneWidget);
+      expect(find.text(_chip(4)), findsOneWidget);
       expect(
         find.text(koT.guestPriceLine(formatWon(401100, 'ko'))),
         findsOneWidget,
