@@ -279,6 +279,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
+    final paused = RemoteConfigScope.of(context).maintenance;
     return PopScope(
       canPop: _step == 0,
       onPopInvokedWithResult: (didPop, _) => didPop ? null : _back(),
@@ -331,7 +332,8 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
                 child: PrimaryButton(
                   label: _step == _stepReview ? t.dfSubmitRequest : t.next,
                   busy: _busy,
-                  onPressed: !_canNext
+                  // Maintenance pauses new bookings: the request cannot be sent until it is over.
+                  onPressed: !_canNext || (paused && _step == _stepReview)
                       ? null
                       : (_step == _stepReview ? _submit : _next),
                 ),
@@ -344,7 +346,12 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
 
   Widget _guestBookButton(T t) => Padding(
     padding: const EdgeInsets.all(Space.gutter),
-    child: PrimaryButton(label: t.guestBookWithQuote, onPressed: _bookAsGuest),
+    child: PrimaryButton(
+      label: t.guestBookWithQuote,
+      onPressed: RemoteConfigScope.of(context).maintenance
+          ? null
+          : _bookAsGuest,
+    ),
   );
 
   String _chip(T t, int i) =>

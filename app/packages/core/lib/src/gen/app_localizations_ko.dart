@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3494,6 +3495,9 @@ class TKo extends T {
 
   @override
   String get uMaintenanceBody => '더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.';
+
+  @override
+  String get uMaintenanceBookingPaused => '점검 중에는 새 예약을 받지 않아요.';
 
   @override
   String get cmTab => '캠페인';

@@ -1771,6 +1771,7 @@
  "locNoAddress": "현재 위치의 주소를 찾지 못했어요. 주소를 직접 입력해 주세요.",
  "uMaintenanceTitle": "점검 중이에요",
  "uMaintenanceBody": "더 나은 서비스를 위해 점검하고 있어요. 잠시 후 다시 열어 주세요.",
+ "uMaintenanceBookingPaused": "점검 중에는 새 예약을 받지 않아요.",
  "cmTab": "캠페인",
  "cmNew": "새 캠페인",
  "cmAudience": "대상 고객",

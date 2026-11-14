@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3582,6 +3583,10 @@ class TEn extends T {
   @override
   String get uMaintenanceBody =>
       'We are improving the service. Please come back shortly.';
+
+  @override
+  String get uMaintenanceBookingPaused =>
+      'New bookings are paused during maintenance.';
 
   @override
   String get cmTab => 'Campaigns';

@@ -14,6 +14,7 @@ from the release branches; no tags existed for them.
 - Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
 - Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves
   it opens with an upload test (owner TOTP on each request); `api keys-open` prints the two keys for restores.
+- Maintenance mode is set in the owner's rules (점검 모드, message included) and read by the apps from `/config`. While it is on, the apps show a banner, customers cannot submit a new booking, and the API refuses new bookings only: direct and quote bookings, waitlist accepts, subscriptions and new booking checkouts. Cancellations and payments on existing bookings stay open. If the API is down, the website shows a static maintenance page instead of a bare 502.
 - Owner settings registry: business limits, marketing cap, points cap, quality window and ops alert thresholds are read from the database (env is the seed), validated, and audited on every change.
 - Owner console: app link values (Android signing fingerprints, Apple Team ID) can be saved and checked under the setup screen's "앱 링크" card. Saved values override the `ANDROID_CERT_SHA256` and `APPLE_TEAM_ID` server settings, which remain the fallback.
 - Console "알림 문구" screen: edit the push and inbox text of each customer and cleaning-team notification in Korean and English, with a preview and restore to the built-in text. Only the placeholders listed for each notification (booking number, business name) can be used.

@@ -24,5 +24,8 @@ async fn get_group(State(s): State<AppState>, Admin(_): Admin, Path(group): Path
 
 async fn put_group(State(s): State<AppState>, Admin(a): Admin, Path(group): Path<String>, Json(body): Json<SaveBody>) -> ApiResult<Json<Value>> {
     settings_registry::ensure_can_write(&s.db, a.id).await?;
-    Ok(Json(settings_registry::save_group(&s.db, &s.config, &group, a.id, &body.values).await?))
+    let saved = settings_registry::save_group(&s.db, &s.config, &group, a.id, &body.values).await?;
+    // The ops group holds the maintenance switch that the public config document reads.
+    super::config::invalidate();
+    Ok(Json(saved))
 }

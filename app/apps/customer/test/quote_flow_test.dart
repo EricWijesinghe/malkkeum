@@ -38,7 +38,20 @@ const _estimate = {
   'deposit_bps': 1000,
 };
 
-Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
+/// The quote screen, optionally under maintenance (new bookings paused).
+Widget _quoteScreen(AppState app, {bool maintenance = false}) {
+  final screen = QuoteFlowScreen(service: app.service('move_out')!);
+  if (!maintenance) return screen;
+  return RemoteConfigScope(
+    config: const RemoteConfig(maintenance: true),
+    child: screen,
+  );
+}
+
+Future<FakeApi> _pumpMoveOut(
+  WidgetTester tester, {
+  bool maintenance = false,
+}) async {
   setViewport(tester, phoneSize);
   final fake = FakeApi()
     ..reply('POST', '/quote/estimate', _estimate)
@@ -69,14 +82,17 @@ Future<FakeApi> _pumpMoveOut(WidgetTester tester) async {
     CustomerTestHost(
       env: env,
       app: app,
-      home: QuoteFlowScreen(service: app.service('move_out')!),
+      home: _quoteScreen(app, maintenance: maintenance),
     ),
   );
   await settle(tester);
   return fake;
 }
 
-Future<FakeApi> _pumpGuestMoveOut(WidgetTester tester) async {
+Future<FakeApi> _pumpGuestMoveOut(
+  WidgetTester tester, {
+  bool maintenance = false,
+}) async {
   setViewport(tester, phoneSize);
   final fake = FakeApi()
     ..reply('POST', '/quote/estimate', _estimate)
@@ -97,7 +113,7 @@ Future<FakeApi> _pumpGuestMoveOut(WidgetTester tester) async {
     CustomerTestHost(
       env: env,
       app: app,
-      home: QuoteFlowScreen(service: app.service('move_out')!),
+      home: _quoteScreen(app, maintenance: maintenance),
     ),
   );
   await settle(tester);
@@ -220,6 +236,47 @@ void main() {
       for (final c in types) {
         expect(Icon3DRegistry.has(cleaningTypeIcon(c)), isTrue, reason: c);
       }
+    },
+  );
+
+  testWidgets('maintenance holds the guest book-with-quote button', (
+    tester,
+  ) async {
+    final fake = await _pumpGuestMoveOut(tester, maintenance: true);
+    await _guestToAddress(tester);
+    final book = tester.widget<PrimaryButton>(
+      find.widgetWithText(PrimaryButton, koT.guestBookWithQuote),
+    );
+    expect(book.onPressed, isNull);
+    expect(fake.callsTo('POST', '/bookings'), isEmpty);
+  });
+
+  testWidgets(
+    'maintenance holds the review submit at 7/7 and sends no request',
+    (tester) async {
+      final fake = await _pumpMoveOut(tester, maintenance: true);
+      await _tap(tester, find.text(koT.type_standard));
+      await _tap(tester, find.text(koT.luggage_partly_unpacked));
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.building_commercial));
+      await _tap(tester, find.text(koT.dfLayoutTwo));
+      await _tap(tester, find.text(koT.dfHas).last);
+      await _tap(tester, _next());
+      await _tap(tester, find.bySemanticsLabel(koT.dfCountN('2')).first);
+      await _tap(tester, find.text(koT.dfNone).last);
+      await _tap(tester, find.text(koT.dfFloor3));
+      await _tap(tester, _next()); // 3/7 -> 4/7 address
+      await _tap(tester, _next()); // 4/7 -> 5/7 date
+      await _tap(tester, find.text(koT.dfPmVisit));
+      await _tap(tester, _next()); // 5/7 -> 6/7 safe booking
+      await _tap(tester, _next()); // 6/7 -> 7/7 review
+      expect(find.text(_chip(7)), findsOneWidget);
+      final submit = tester.widget<PrimaryButton>(
+        find.widgetWithText(PrimaryButton, koT.dfSubmitRequest),
+      );
+      expect(submit.onPressed, isNull);
+      expect(fake.callsTo('POST', '/bookings'), isEmpty);
+      await unmount(tester);
     },
   );
 
