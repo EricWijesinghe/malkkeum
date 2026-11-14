@@ -49,6 +49,9 @@ from the release branches; no tags existed for them.
 ### Security
 - Live-event sockets open with a 30-second, single-use ticket from `POST /v1/realtime/ticket` instead of the access token in the URL, so the long-lived token no longer reaches proxy and access logs. The old `?token=` form still works for one release. Silent sockets are pinged every 25 s and closed after 60 s without an answer.
 
+### Fixed
+- Day-before visit reminders are claimed in SQL (oldest visit first), so a busy day no longer starves later bookings; marketing notifications are held 21:00-08:00 KST in the notify path too, not only in campaign sends (quiet hours are fixed by 정보통신망법, no owner setting).
+
 ## [1.4.0] - 2026-11-13
 
 ### Added

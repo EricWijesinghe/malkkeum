@@ -543,6 +543,10 @@ async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> Api
         // 정보통신망법: advertising goes out only while the customer's marketing consent stands.
         return Ok(false);
     }
+    if crate::marketing::ad_suppressed(&q.kind, chrono::Utc::now()) {
+        // 정보통신망법 제50조: no advertising 21:00-08:00 KST, whichever path queued it.
+        return Ok(false);
+    }
     // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
     let locale = crate::i18n::locale_of(&state.db, q.to).await;
     let (title, body) = (crate::i18n::tr(&locale, &q.title), crate::i18n::tr(&locale, &q.body));

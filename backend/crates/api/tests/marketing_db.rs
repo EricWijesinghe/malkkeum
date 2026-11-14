@@ -299,3 +299,36 @@ async fn desktop_platforms_are_stored_and_unknown_ones_rejected_by_the_db(pool: 
         .await;
     assert!(bad.is_err(), "the DB must reject a platform outside the allowlist");
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn day_before_reminders_reach_every_due_visit_across_passes(pool: PgPool) {
+    let app = app(pool.clone());
+    let c = customer(&app, &pool, "010-5400-0009").await;
+    let (first, _) = book(&app, &c, 1, None).await;
+    sqlx::query("UPDATE bookings SET status = 1 WHERE id = $1")
+        .bind(first)
+        .execute(&pool)
+        .await
+        .expect("confirm");
+    sqlx::query(
+        "INSERT INTO bookings (number, user_id, service_code, address, district_code, visit_date, start_hour, status)
+         SELECT 'RM' || g, user_id, service_code, address, district_code, visit_date, (g % 20 + 8)::smallint, 1
+         FROM bookings, generate_series(1, 599) AS g WHERE id = $1",
+    )
+    .bind(first)
+    .execute(&pool)
+    .await
+    .expect("600 due visits");
+    let state = state(&pool);
+
+    let one = marketing::send_reminders(&state).await.expect("first pass");
+    let two = marketing::send_reminders(&state).await.expect("second pass");
+
+    assert_eq!(one, 500, "one batch");
+    assert_eq!(two, 100, "claimed visits are skipped in SQL, so the rest are reached");
+    let claims: i64 = sqlx::query_scalar("SELECT count(*) FROM alert_sends WHERE dedupe_key LIKE 'reminder:%'")
+        .fetch_one(&pool)
+        .await
+        .expect("claims");
+    assert_eq!(claims, 600, "every due visit claimed exactly once");
+}

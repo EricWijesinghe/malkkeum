@@ -50,6 +50,11 @@ pub fn quiet_hours(t: DateTime<Utc>) -> bool {
     !(QUIET_END_HOUR..QUIET_START_HOUR).contains(&h)
 }
 
+/// True when a notification of this kind must be held: marketing kinds inside quiet hours.
+pub fn ad_suppressed(kind: &str, now: DateTime<Utc>) -> bool {
+    privacy::is_marketing(kind) && quiet_hours(now)
+}
+
 /// `t` itself outside quiet hours, otherwise the next 08:00 KST.
 pub fn next_send_time(t: DateTime<Utc>) -> DateTime<Utc> {
     if !quiet_hours(t) {
@@ -452,6 +457,8 @@ pub async fn send_reminders(s: &AppState) -> ApiResult<usize> {
         "SELECT b.id, b.number, u.phone, u.locale, b.user_id FROM bookings b JOIN users u ON u.id = b.user_id
          WHERE b.status IN (1, 2) AND b.visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date + 1
            AND u.deleted_at IS NULL AND u.phone NOT LIKE 'deleted:%'
+           AND NOT EXISTS (SELECT 1 FROM alert_sends a WHERE a.dedupe_key = 'reminder:' || b.id::text)
+         ORDER BY b.visit_date, b.start_hour
          LIMIT $1",
     )
     .bind(NUDGE_BATCH)
@@ -715,6 +722,13 @@ mod tests {
         assert!(quiet_hours(kst_at(7, 59)));
         assert!(!quiet_hours(kst_at(8, 0)));
         assert!(!quiet_hours(kst_at(12, 0)));
+    }
+
+    #[test]
+    fn marketing_is_suppressed_in_quiet_hours_and_transactional_is_not() {
+        assert!(ad_suppressed("marketing.campaign", kst_at(22, 0)));
+        assert!(!ad_suppressed("marketing.campaign", kst_at(12, 0)));
+        assert!(!ad_suppressed("booking.confirmed", kst_at(22, 0)));
     }
 
     #[test]
