@@ -4,7 +4,6 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'cancel_policy_card.dart';
-import 'flow_widgets.dart';
 
 /// The server's cancel preview for one booking. The server decides the fee and refund; the app only shows them.
 class CancelPreview {
@@ -109,10 +108,16 @@ class _CancelSheetBodyState extends State<_CancelSheetBody> {
               style: context.text.bodyMedium,
             ),
             const SizedBox(height: Space.sm),
-            if (p.fee > 0) InfoRow(t.cancelFeeLine, context.won(p.fee)),
-            InfoRow(
-              t.cancelRefundLine,
-              p.refund > 0 ? context.won(p.refund) : t.cancelNoRefund,
+            if (p.fee > 0)
+              Text(
+                t.cancelFeeLine(context.won(p.fee)),
+                style: context.text.bodyMedium,
+              ),
+            Text(
+              p.refund > 0
+                  ? t.cancelRefundLine(context.won(p.refund))
+                  : t.cancelNoRefund,
+              style: context.text.titleSmall,
             ),
             if (p.refund > 0)
               Text(t.cancelMethodLine, style: context.text.bodySmall),
