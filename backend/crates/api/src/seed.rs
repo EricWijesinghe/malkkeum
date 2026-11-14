@@ -47,6 +47,10 @@ pub async fn run(db: &PgPool, config: &Config) -> Result<(), Box<dyn std::error:
         .execute(db)
         .await?;
     }
+    // Services seeded after the migrations take their home tile from the group list (NULL only: owner choices stay).
+    sqlx::query("UPDATE services s SET group_code = g.code FROM service_groups g WHERE s.code = ANY(g.services) AND s.group_code IS NULL")
+        .execute(db)
+        .await?;
     sqlx::query("INSERT INTO settings (key, value) VALUES ('quote_formula', $1) ON CONFLICT DO NOTHING")
         .bind(sqlx::types::Json(QuoteFormula::default()))
         .execute(db)

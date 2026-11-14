@@ -134,37 +134,13 @@ fn derive_badge(badges: &[Option<String>]) -> Option<&'static str> {
 }
 
 async fn update_group(State(s): State<AppState>, Admin(a): Admin, Path(code): Path<String>, Json(u): Json<GroupUpdate>) -> ApiResult<Json<Value>> {
-    let (_, services) = load(&s.db).await?;
-    check_update(&code, &u, &services).map_err(ApiError::BadRequest)?;
     let mut tx = s.db.begin().await?;
-    let r = sqlx::query(
-        "UPDATE service_groups SET title_ko=$2, title_en=$3, sort_order=$4, active=$5, icon=$6, chooser=$7,
-            services=$8, config=$9, updated_at=now() WHERE code=$1",
-    )
-    .bind(&code)
-    .bind(u.title_ko.trim())
-    .bind(u.title_en.trim())
-    .bind(u.sort_order)
-    .bind(u.active)
-    .bind(&u.icon)
-    .bind(&u.chooser)
-    .bind(&u.services)
-    .bind(sqlx::types::Json(&u.config))
-    .execute(&mut *tx)
-    .await?;
-    if r.rows_affected() == 0 {
-        return Err(ApiError::NotFound);
-    }
-    sqlx::query("UPDATE services SET group_code = NULL WHERE group_code = $1 AND NOT (code = ANY($2))")
-        .bind(&code)
-        .bind(&u.services)
-        .execute(&mut *tx)
+    // Lock every service row first: two edits racing for one member are serialised, the second sees the first's result.
+    let services: Vec<ServiceRow> = sqlx::query_as("SELECT code, group_code, active, content->>'badge' AS badge FROM services FOR UPDATE")
+        .fetch_all(&mut *tx)
         .await?;
-    sqlx::query("UPDATE services SET group_code = $1 WHERE code = ANY($2)")
-        .bind(&code)
-        .bind(&u.services)
-        .execute(&mut *tx)
-        .await?;
+    check_update(&code, &u, &services).map_err(ApiError::BadRequest)?;
+    write_group(&mut tx, &code, &u).await?;
     tx.commit().await?;
     audit(
         &s.db,
@@ -176,6 +152,39 @@ async fn update_group(State(s): State<AppState>, Admin(a): Admin, Path(code): Pa
     )
     .await?;
     Ok(Json(json!({ "ok": true })))
+}
+
+/// Writes the group row and moves member services in or out of it. Errors when the group does not exist.
+async fn write_group(tx: &mut sqlx::Transaction<'_, sqlx::Postgres>, code: &str, u: &GroupUpdate) -> ApiResult<()> {
+    let r = sqlx::query(
+        "UPDATE service_groups SET title_ko=$2, title_en=$3, sort_order=$4, active=$5, icon=$6, chooser=$7,
+            services=$8, config=$9, updated_at=now() WHERE code=$1",
+    )
+    .bind(code)
+    .bind(u.title_ko.trim())
+    .bind(u.title_en.trim())
+    .bind(u.sort_order)
+    .bind(u.active)
+    .bind(&u.icon)
+    .bind(&u.chooser)
+    .bind(&u.services)
+    .bind(sqlx::types::Json(&u.config))
+    .execute(&mut **tx)
+    .await?;
+    if r.rows_affected() == 0 {
+        return Err(ApiError::NotFound);
+    }
+    sqlx::query("UPDATE services SET group_code = NULL WHERE group_code = $1 AND NOT (code = ANY($2))")
+        .bind(code)
+        .bind(&u.services)
+        .execute(&mut **tx)
+        .await?;
+    sqlx::query("UPDATE services SET group_code = $1 WHERE code = ANY($2)")
+        .bind(code)
+        .bind(&u.services)
+        .execute(&mut **tx)
+        .await?;
+    Ok(())
 }
 
 /// Returns the reason the update is refused, as a short code the console maps to a Korean message.
