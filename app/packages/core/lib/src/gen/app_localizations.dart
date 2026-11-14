@@ -8964,6 +8964,198 @@ abstract class T {
   /// **'처리한 직원'**
   String get prqBy;
 
+  /// No description provided for @rnwTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'갱신 일정'**
+  String get rnwTitle;
+
+  /// No description provided for @rnwIntro.
+  ///
+  /// In ko, this message translates to:
+  /// **'도메인, 호스팅, 앱 스토어와 문자 계정의 갱신 날짜를 적어 두세요. 기한 30일 전과 7일 전에 휴대폰으로 문자를 보내 드려요.'**
+  String get rnwIntro;
+
+  /// No description provided for @rnwAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'갱신 항목 추가'**
+  String get rnwAdd;
+
+  /// No description provided for @rnwEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 등록한 갱신 항목이 없어요.'**
+  String get rnwEmpty;
+
+  /// No description provided for @rnwLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'**
+  String get rnwLoadFailed;
+
+  /// No description provided for @rnwName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 (예: malkkeum.kr)'**
+  String get rnwName;
+
+  /// No description provided for @rnwNameError.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름은 1~80자로 적어 주세요.'**
+  String get rnwNameError;
+
+  /// No description provided for @rnwKind.
+  ///
+  /// In ko, this message translates to:
+  /// **'종류'**
+  String get rnwKind;
+
+  /// No description provided for @rnwDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'갱신 기한'**
+  String get rnwDate;
+
+  /// No description provided for @rnwPickDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜 고르기'**
+  String get rnwPickDate;
+
+  /// No description provided for @rnwDateError.
+  ///
+  /// In ko, this message translates to:
+  /// **'갱신 기한 날짜를 골라 주세요.'**
+  String get rnwDateError;
+
+  /// No description provided for @rnwKindDomain.
+  ///
+  /// In ko, this message translates to:
+  /// **'도메인'**
+  String get rnwKindDomain;
+
+  /// No description provided for @rnwKindDomainAlias.
+  ///
+  /// In ko, this message translates to:
+  /// **'예전 도메인 (별칭)'**
+  String get rnwKindDomainAlias;
+
+  /// No description provided for @rnwKindHosting.
+  ///
+  /// In ko, this message translates to:
+  /// **'호스팅 (서버 비용)'**
+  String get rnwKindHosting;
+
+  /// No description provided for @rnwKindApple.
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple 개발자 계정'**
+  String get rnwKindApple;
+
+  /// No description provided for @rnwKindSolapi.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 발송 서비스 (Solapi)'**
+  String get rnwKindSolapi;
+
+  /// No description provided for @rnwKindStorage.
+  ///
+  /// In ko, this message translates to:
+  /// **'외부 백업 저장소'**
+  String get rnwKindStorage;
+
+  /// No description provided for @rnwKindOther.
+  ///
+  /// In ko, this message translates to:
+  /// **'기타'**
+  String get rnwKindOther;
+
+  /// No description provided for @rnwKindKeysTest.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀 키 사본 확인'**
+  String get rnwKindKeysTest;
+
+  /// No description provided for @rnwKeysNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 시험 업로드에 성공한 날부터 1년이 기한이에요. 날짜는 자동으로 정해져요.'**
+  String get rnwKeysNote;
+
+  /// No description provided for @rnwDaysLeft.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}일 남음'**
+  String rnwDaysLeft(String n);
+
+  /// No description provided for @rnwToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘이 기한이에요'**
+  String get rnwToday;
+
+  /// No description provided for @rnwOverdue.
+  ///
+  /// In ko, this message translates to:
+  /// **'기한이 지났어요'**
+  String get rnwOverdue;
+
+  /// No description provided for @rnwSmsNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'기한 30일 전과 7일 전에 문자가 가요. 날짜를 바꾸면 새 기한 기준으로 다시 알려 드려요.'**
+  String get rnwSmsNote;
+
+  /// No description provided for @rnwEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정'**
+  String get rnwEdit;
+
+  /// No description provided for @rnwDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제'**
+  String get rnwDelete;
+
+  /// No description provided for @rnwDeleteAsk.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 항목을 목록에서 지워요. 이 항목의 문자 알림도 더 오지 않아요.'**
+  String get rnwDeleteAsk;
+
+  /// No description provided for @rnwSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get rnwSave;
+
+  /// No description provided for @rnwCancel.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get rnwCancel;
+
+  /// No description provided for @rnwSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요.'**
+  String get rnwSaved;
+
+  /// No description provided for @rnwDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제했어요.'**
+  String get rnwDeleted;
+
+  /// No description provided for @rnwFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하지 못했어요. 입력을 확인하고 다시 시도해 주세요.'**
+  String get rnwFailed;
+
   /// No description provided for @cSetupColorContrast.
   ///
   /// In ko, this message translates to:

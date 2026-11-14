@@ -9,6 +9,7 @@ from the release branches; no tags existed for them.
 ## [Unreleased]
 
 ### Added
+- Renewal calendar (갱신 일정) in the console: domains, old-domain aliases, hosting, store and SMS accounts, storage, and the yearly keys check. The owner gets an SMS 30 and 7 days before each date; the keys check follows the last successful upload test.
 - Server job runner (`deploy/agent.sh`, root) is installed and started by the installer on new installs and updates (systemd path, service and timer units). It runs schedule, update, update-skip, channel, restart and status jobs; a stable update waits 24 hours after a new digest is first seen; live progress is served read-only at `/ops-progress/<token>` for 10 minutes after a job ends; `dahae setup-code` expires after 2 hours (`--renew` gives a new code); `MALKKEUM_ANSWERS` installs without questions.
 - Owner activity log (활동 기록): newest first, filter by person, kind and day; owner only (`GET /v1/admin/audit`).
 - Keys bundle: the owner downloads DATA_KEY and JWT_SECRET sealed under a server-generated passphrase, and proves

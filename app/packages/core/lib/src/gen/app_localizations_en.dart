@@ -4823,6 +4823,110 @@ class TEn extends T {
   String get prqBy => 'Handled by';
 
   @override
+  String get rnwTitle => 'Renewal calendar';
+
+  @override
+  String get rnwIntro =>
+      'Record renewal dates for domains, hosting, store and SMS accounts. A text goes to your phone 30 and 7 days before each date.';
+
+  @override
+  String get rnwAdd => 'Add a renewal';
+
+  @override
+  String get rnwEmpty => 'No renewal items yet.';
+
+  @override
+  String get rnwLoadFailed =>
+      'The list could not be loaded. Please try again shortly.';
+
+  @override
+  String get rnwName => 'Name (for example malkkeum.kr)';
+
+  @override
+  String get rnwNameError => 'Enter a name of 1 to 80 characters.';
+
+  @override
+  String get rnwKind => 'Type';
+
+  @override
+  String get rnwDate => 'Due date';
+
+  @override
+  String get rnwPickDate => 'Pick a date';
+
+  @override
+  String get rnwDateError => 'Pick a due date.';
+
+  @override
+  String get rnwKindDomain => 'Domain';
+
+  @override
+  String get rnwKindDomainAlias => 'Old domain (alias)';
+
+  @override
+  String get rnwKindHosting => 'Hosting (server cost)';
+
+  @override
+  String get rnwKindApple => 'Apple developer account';
+
+  @override
+  String get rnwKindSolapi => 'SMS service (Solapi)';
+
+  @override
+  String get rnwKindStorage => 'Off-site backup storage';
+
+  @override
+  String get rnwKindOther => 'Other';
+
+  @override
+  String get rnwKindKeysTest => 'Secret key copy check';
+
+  @override
+  String get rnwKeysNote =>
+      'Due one year after the last successful upload test. The date is set automatically.';
+
+  @override
+  String rnwDaysLeft(String n) {
+    return '$n days left';
+  }
+
+  @override
+  String get rnwToday => 'Due today';
+
+  @override
+  String get rnwOverdue => 'Overdue';
+
+  @override
+  String get rnwSmsNote =>
+      'A text goes out 30 and 7 days before the date. Changing the date starts the reminders again for the new date.';
+
+  @override
+  String get rnwEdit => 'Edit';
+
+  @override
+  String get rnwDelete => 'Delete';
+
+  @override
+  String get rnwDeleteAsk =>
+      'This removes the item from the list. Its texts stop too.';
+
+  @override
+  String get rnwSave => 'Save';
+
+  @override
+  String get rnwCancel => 'Cancel';
+
+  @override
+  String get rnwSaved => 'Saved.';
+
+  @override
+  String get rnwDeleted => 'Deleted.';
+
+  @override
+  String get rnwFailed =>
+      'This could not be saved. Check the entries and try again.';
+
+  @override
   String get cSetupColorContrast =>
       'White text on this colour is hard to read, so the apps will not use it. Choose a darker colour.';
 

@@ -4713,6 +4713,106 @@ class TKo extends T {
   String get prqBy => '처리한 직원';
 
   @override
+  String get rnwTitle => '갱신 일정';
+
+  @override
+  String get rnwIntro =>
+      '도메인, 호스팅, 앱 스토어와 문자 계정의 갱신 날짜를 적어 두세요. 기한 30일 전과 7일 전에 휴대폰으로 문자를 보내 드려요.';
+
+  @override
+  String get rnwAdd => '갱신 항목 추가';
+
+  @override
+  String get rnwEmpty => '아직 등록한 갱신 항목이 없어요.';
+
+  @override
+  String get rnwLoadFailed => '목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get rnwName => '이름 (예: malkkeum.kr)';
+
+  @override
+  String get rnwNameError => '이름은 1~80자로 적어 주세요.';
+
+  @override
+  String get rnwKind => '종류';
+
+  @override
+  String get rnwDate => '갱신 기한';
+
+  @override
+  String get rnwPickDate => '날짜 고르기';
+
+  @override
+  String get rnwDateError => '갱신 기한 날짜를 골라 주세요.';
+
+  @override
+  String get rnwKindDomain => '도메인';
+
+  @override
+  String get rnwKindDomainAlias => '예전 도메인 (별칭)';
+
+  @override
+  String get rnwKindHosting => '호스팅 (서버 비용)';
+
+  @override
+  String get rnwKindApple => 'Apple 개발자 계정';
+
+  @override
+  String get rnwKindSolapi => '문자 발송 서비스 (Solapi)';
+
+  @override
+  String get rnwKindStorage => '외부 백업 저장소';
+
+  @override
+  String get rnwKindOther => '기타';
+
+  @override
+  String get rnwKindKeysTest => '비밀 키 사본 확인';
+
+  @override
+  String get rnwKeysNote => '마지막 시험 업로드에 성공한 날부터 1년이 기한이에요. 날짜는 자동으로 정해져요.';
+
+  @override
+  String rnwDaysLeft(String n) {
+    return '$n일 남음';
+  }
+
+  @override
+  String get rnwToday => '오늘이 기한이에요';
+
+  @override
+  String get rnwOverdue => '기한이 지났어요';
+
+  @override
+  String get rnwSmsNote =>
+      '기한 30일 전과 7일 전에 문자가 가요. 날짜를 바꾸면 새 기한 기준으로 다시 알려 드려요.';
+
+  @override
+  String get rnwEdit => '수정';
+
+  @override
+  String get rnwDelete => '삭제';
+
+  @override
+  String get rnwDeleteAsk => '이 항목을 목록에서 지워요. 이 항목의 문자 알림도 더 오지 않아요.';
+
+  @override
+  String get rnwSave => '저장';
+
+  @override
+  String get rnwCancel => '취소';
+
+  @override
+  String get rnwSaved => '저장했어요.';
+
+  @override
+  String get rnwDeleted => '삭제했어요.';
+
+  @override
+  String get rnwFailed => '저장하지 못했어요. 입력을 확인하고 다시 시도해 주세요.';
+
+  @override
   String get cSetupColorContrast =>
       '이 색 위의 흰 글자가 잘 안 보여요. 저장해도 앱에는 적용되지 않아요. 조금 더 진한 색을 고르세요.';
 
