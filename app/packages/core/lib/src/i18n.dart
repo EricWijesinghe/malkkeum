@@ -78,6 +78,8 @@ extension Labels on T {
     'invalid_transition' => err_invalid_transition,
     'job_not_started' => err_job_not_started,
     'job_not_active' => err_job_not_active,
+    'not_checked_in' => err_not_checked_in,
+    'override_reason_too_long' => err_override_reason_too_long,
     'quote_locked' => err_quote_locked,
     'request_closed' => err_request_closed,
     'team_full' => err_team_full,

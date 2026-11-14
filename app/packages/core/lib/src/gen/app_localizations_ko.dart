@@ -2909,6 +2909,12 @@ class TKo extends T {
   String get err_job_not_started => '먼저 작업을 시작해 주세요.';
 
   @override
+  String get err_not_checked_in => '도착 기록이 없어요. 먼저 도착을 기록하거나 사유를 적어 주세요.';
+
+  @override
+  String get err_override_reason_too_long => '사유는 200자 이하로 적어 주세요.';
+
+  @override
   String get err_job_not_active => '지금은 진행할 수 없는 작업이에요.';
 
   @override
@@ -4218,6 +4224,12 @@ class TKo extends T {
 
   @override
   String get pChecklist => '확인 항목';
+
+  @override
+  String get pCheckInReasonTitle => '도착 기록 없이 완료하는 이유';
+
+  @override
+  String get pCheckInReasonHint => '예: 앱에서 도착을 누르지 못했어요 (전화로 확인)';
 
   @override
   String get pCheck1 => '요청한 모든 공간을 청소했어요';

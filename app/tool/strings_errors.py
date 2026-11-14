@@ -33,6 +33,8 @@ S = {
   "err_invalid_transition": ["지금은 이 상태로 바꿀 수 없어요.", "The status can't be changed that way right now."],
   # partner
   "err_job_not_started": ["먼저 작업을 시작해 주세요.", "Start the job first."],
+  "err_not_checked_in": ["도착 기록이 없어요. 먼저 도착을 기록하거나 사유를 적어 주세요.", "The arrival isn't recorded. Check in first, or give a reason."],
+  "err_override_reason_too_long": ["사유는 200자 이하로 적어 주세요.", "Keep the reason to 200 characters or fewer."],
   "err_job_not_active": ["지금은 진행할 수 없는 작업이에요.", "This job isn't active."],
   "err_quote_locked": ["확정된 견적이라 수정할 수 없어요.", "This quote is locked and can't be edited."],
   "err_request_closed": ["이미 마감된 요청이에요.", "This request is closed."],

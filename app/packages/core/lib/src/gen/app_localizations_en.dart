@@ -2973,6 +2973,14 @@ class TEn extends T {
   String get err_job_not_started => 'Start the job first.';
 
   @override
+  String get err_not_checked_in =>
+      'The arrival isn\'t recorded. Check in first, or give a reason.';
+
+  @override
+  String get err_override_reason_too_long =>
+      'Keep the reason to 200 characters or fewer.';
+
+  @override
   String get err_job_not_active => 'This job isn\'t active.';
 
   @override
@@ -4318,6 +4326,13 @@ class TEn extends T {
 
   @override
   String get pChecklist => 'Checklist';
+
+  @override
+  String get pCheckInReasonTitle => 'Why there is no arrival record';
+
+  @override
+  String get pCheckInReasonHint =>
+      'e.g. Could not tap arrival in the app (confirmed by phone)';
 
   @override
   String get pCheck1 => 'All requested areas cleaned';

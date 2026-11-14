@@ -5,10 +5,18 @@ import 'package:ui/ui.dart';
 import '../state.dart';
 
 /// On-site steps for the assigned partner: check-in and check-out, the door code (visit day only),
-/// an incident report, and emergency numbers. The server enforces the same rules; the UI hides
-/// what cannot work today.
+/// an incident report, and emergency numbers. A team member gets check-in and check-out only.
+/// The server enforces the same rules; the UI hides what cannot work today.
 class SiteActionsCard extends StatelessWidget {
-  const SiteActionsCard({super.key, required this.raw, required this.act});
+  const SiteActionsCard({
+    super.key,
+    required this.raw,
+    required this.act,
+    this.member = false,
+  });
+
+  /// True on the team member's job screen, which uses the member routes.
+  final bool member;
 
   /// The job's booking JSON from `GET /partner/jobs/{id}`.
   final Json raw;
@@ -29,39 +37,64 @@ class SiteActionsCard extends StatelessWidget {
     final id = b.id;
     final active = b.status == 2 && _isToday;
     final checkedIn = b.checkedInAt != null;
+    final base = member ? '/member/jobs' : '/partner/jobs';
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (checkedIn) Text(t.checkedInAt(TimeOfDay.fromDateTime(b.checkedInAt!.toLocal()).format(context)), style: context.text.bodySmall),
-          if (b.checkedOutAt != null) Text(t.checkedOutAt(TimeOfDay.fromDateTime(b.checkedOutAt!.toLocal()).format(context)), style: context.text.bodySmall),
+          if (checkedIn)
+            Text(
+              t.checkedInAt(
+                TimeOfDay.fromDateTime(b.checkedInAt!.toLocal())
+                    .format(context),
+              ),
+              style: context.text.bodySmall,
+            ),
+          if (b.checkedOutAt != null)
+            Text(
+              t.checkedOutAt(
+                TimeOfDay.fromDateTime(b.checkedOutAt!.toLocal())
+                    .format(context),
+              ),
+              style: context.text.bodySmall,
+            ),
           if (active && !checkedIn)
             FilledButton.icon(
               icon: const Icon(Icons.login_rounded),
               label: Text(t.checkInAction),
-              onPressed: () => act(() => context.api.post('/partner/jobs/$id/check-in'), t.checkInAction),
+              onPressed: () => act(
+                () => context.api.post('$base/$id/check-in'),
+                t.checkInAction,
+              ),
             ),
           if (active && checkedIn && b.checkedOutAt == null)
             FilledButton.tonalIcon(
               icon: const Icon(Icons.logout_rounded),
               label: Text(t.checkOutAction),
-              onPressed: () => act(() => context.api.post('/partner/jobs/$id/check-out'), t.checkOutAction),
+              onPressed: () => act(
+                () => context.api.post('$base/$id/check-out'),
+                t.checkOutAction,
+              ),
             ),
-          if (b.entryCodeSet)
+          if (!member && b.entryCodeSet)
             OutlinedButton.icon(
               icon: const Icon(Icons.dialpad_rounded),
               label: Text(_isToday ? t.entryCodeAction : t.entryCodeNotToday),
               onPressed: _isToday ? () => _showEntryCode(context, id) : null,
             ),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.report_problem_outlined),
-            label: Text(t.caseReportAction),
-            onPressed: () => showCaseReport(
-              context,
-              kinds: const ['damage', 'loss', 'complaint', 'safety'],
-              submit: (kind, summary) => context.api.post('/partner/jobs/$id/cases', {'kind': kind, 'summary': summary}),
+          if (!member)
+            OutlinedButton.icon(
+              icon: const Icon(Icons.report_problem_outlined),
+              label: Text(t.caseReportAction),
+              onPressed: () => showCaseReport(
+                context,
+                kinds: const ['damage', 'loss', 'complaint', 'safety'],
+                submit: (kind, summary) => context.api.post(
+                  '/partner/jobs/$id/cases',
+                  {'kind': kind, 'summary': summary},
+                ),
+              ),
             ),
-          ),
           const SizedBox(height: Space.sm),
           EmergencyContactsCard(contacts: b.emergency),
         ],
@@ -84,8 +117,16 @@ class SiteActionsCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(t.entryCodeTitle),
-        content: SelectableText(code ?? t.entryCodeEmpty, style: ctx.text.headlineSmall),
-        actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(MaterialLocalizations.of(ctx).okButtonLabel))],
+        content: SelectableText(
+          code ?? t.entryCodeEmpty,
+          style: ctx.text.headlineSmall,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(MaterialLocalizations.of(ctx).okButtonLabel),
+          ),
+        ],
       ),
     );
   }

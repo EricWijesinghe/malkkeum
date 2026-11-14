@@ -5593,6 +5593,18 @@ abstract class T {
   /// **'먼저 작업을 시작해 주세요.'**
   String get err_job_not_started;
 
+  /// No description provided for @err_not_checked_in.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 기록이 없어요. 먼저 도착을 기록하거나 사유를 적어 주세요.'**
+  String get err_not_checked_in;
+
+  /// No description provided for @err_override_reason_too_long.
+  ///
+  /// In ko, this message translates to:
+  /// **'사유는 200자 이하로 적어 주세요.'**
+  String get err_override_reason_too_long;
+
   /// No description provided for @err_job_not_active.
   ///
   /// In ko, this message translates to:
@@ -8016,6 +8028,18 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'확인 항목'**
   String get pChecklist;
+
+  /// No description provided for @pCheckInReasonTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 기록 없이 완료하는 이유'**
+  String get pCheckInReasonTitle;
+
+  /// No description provided for @pCheckInReasonHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 앱에서 도착을 누르지 못했어요 (전화로 확인)'**
+  String get pCheckInReasonHint;
 
   /// No description provided for @pCheck1.
   ///

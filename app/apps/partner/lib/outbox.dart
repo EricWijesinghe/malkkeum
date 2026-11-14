@@ -9,7 +9,8 @@ import 'package:path_provider/path_provider.dart';
 class QueuedPhoto {
   QueuedPhoto(this.file, {this.url});
 
-  factory QueuedPhoto.fromJson(Json j) => QueuedPhoto(j['file'] as String, url: j['url'] as String?);
+  factory QueuedPhoto.fromJson(Json j) =>
+      QueuedPhoto(j['file'] as String, url: j['url'] as String?);
 
   final String file;
   String? url;
@@ -27,16 +28,22 @@ class QueuedCompletion {
     required this.checklist,
     this.ready = false,
     this.error,
+    this.checkInOverride,
   });
 
   factory QueuedCompletion.fromJson(Json j) => QueuedCompletion(
     basePath: j['basePath'] as String,
     bookingId: j['bookingId'] as String,
-    before: [for (final p in j['before'] as List) QueuedPhoto.fromJson(p as Json)],
-    after: [for (final p in j['after'] as List) QueuedPhoto.fromJson(p as Json)],
+    before: [
+      for (final p in j['before'] as List) QueuedPhoto.fromJson(p as Json),
+    ],
+    after: [
+      for (final p in j['after'] as List) QueuedPhoto.fromJson(p as Json),
+    ],
     checklist: [for (final c in j['checklist'] as List) c as bool],
     ready: j['ready'] as bool? ?? false,
     error: j['error'] as String?,
+    checkInOverride: j['checkInOverride'] as String?,
   );
 
   /// `/partner` for the owner, `/member` for a team member.
@@ -50,6 +57,9 @@ class QueuedCompletion {
   /// Last non-network failure from the server, kept so the entry is never dropped silently.
   String? error;
 
+  /// Owner only: the reason the job is completed without a recorded arrival (sent as check_in_override).
+  final String? checkInOverride;
+
   Iterable<QueuedPhoto> get photos => [...before, ...after];
   bool get isEmpty => photos.isEmpty && !checklist.contains(true);
 
@@ -57,6 +67,7 @@ class QueuedCompletion {
     'before_photos': [for (final p in before) p.url],
     'after_photos': [for (final p in after) p.url],
     'checklist': checklist,
+    if (checkInOverride != null) 'check_in_override': checkInOverride,
   };
 
   Json toJson() => {
@@ -67,6 +78,7 @@ class QueuedCompletion {
     'checklist': checklist,
     'ready': ready,
     'error': error,
+    'checkInOverride': checkInOverride,
   };
 }
 
@@ -87,7 +99,9 @@ class CompletionOutbox {
 
   Directory get dir {
     final who = account();
-    return who == null ? root : Directory('${root.path}/${who.replaceAll(RegExp(r'[^\w-]'), '_')}');
+    return who == null
+        ? root
+        : Directory('${root.path}/${who.replaceAll(RegExp(r'[^\w-]'), '_')}');
   }
 
   File _entryFile(String bookingId) => File('${dir.path}/$bookingId.json');
@@ -114,8 +128,7 @@ class CompletionOutbox {
     if (!await dir.exists()) return const [];
     return [
       for (final e in await dir.list().toList())
-        if (e is File && e.path.endsWith('.json'))
-          ?await _read(e),
+        if (e is File && e.path.endsWith('.json')) ?await _read(e),
     ];
   }
 
@@ -140,7 +153,9 @@ class CompletionOutbox {
 
   /// Keeps the picked photo on disk before any upload attempt.
   Future<QueuedPhoto> stash(Uint8List bytes, String bookingId) async {
-    final f = File('${dir.path}/photos/$bookingId-${DateTime.now().microsecondsSinceEpoch}.jpg');
+    final f = File(
+      '${dir.path}/photos/$bookingId-${DateTime.now().microsecondsSinceEpoch}.jpg',
+    );
     await f.parent.create(recursive: true);
     await f.writeAsBytes(bytes, flush: true);
     return QueuedPhoto(f.path);
@@ -177,7 +192,10 @@ class CompletionOutbox {
   /// Uploads what is missing, completes the job, then removes the entry. Throws on failure; progress is kept.
   Future<Json> send(ApiClient api, QueuedCompletion c) async {
     await _uploadMissing(api, c);
-    final r = await api.post('${c.basePath}/jobs/${c.bookingId}/complete', c.payload) as Json;
+    final r = await api.post(
+      '${c.basePath}/jobs/${c.bookingId}/complete',
+      c.payload,
+    ) as Json;
     await remove(c);
     return r;
   }
