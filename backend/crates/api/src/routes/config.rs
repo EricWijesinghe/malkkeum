@@ -32,7 +32,8 @@ const MAX_MESSAGE_CHARS: usize = 200;
 const CACHE_TTL: Duration = Duration::from_secs(30);
 const CACHE_CONTROL: &str = "public, max-age=30";
 
-static CACHE: Mutex<Option<(Instant, Value)>> = Mutex::new(None);
+/// One entry, tagged with the database it was read from (one per process in production; tests share a process).
+static CACHE: Mutex<Option<(String, Instant, Value)>> = Mutex::new(None);
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/config", get(public_config))
@@ -107,14 +108,18 @@ pub fn invalidate() {
     }
 }
 
-fn cached() -> Option<Value> {
-    let c = CACHE.lock().ok()?;
-    c.as_ref().filter(|(t, _)| t.elapsed() < CACHE_TTL).map(|(_, v)| v.clone())
+fn cache_key(db: &PgPool) -> String {
+    db.connect_options().get_database().unwrap_or_default().to_string()
 }
 
-fn remember(v: &Value) {
+fn cached(key: &str) -> Option<Value> {
+    let c = CACHE.lock().ok()?;
+    c.as_ref().filter(|(k, t, _)| k == key && t.elapsed() < CACHE_TTL).map(|(_, _, v)| v.clone())
+}
+
+fn remember(key: String, v: &Value) {
     if let Ok(mut c) = CACHE.lock() {
-        *c = Some((Instant::now(), v.clone()));
+        *c = Some((key, Instant::now(), v.clone()));
     }
 }
 
@@ -136,11 +141,12 @@ async fn maintenance_state(db: &PgPool, cfg: &Config) -> ApiResult<Value> {
 
 /// The public document, from the 30 s cache when fresh.
 async fn current_document(db: &PgPool, cfg: &Config) -> ApiResult<Value> {
-    if let Some(d) = cached() {
+    let key = cache_key(db);
+    if let Some(d) = cached(&key) {
         return Ok(d);
     }
     let d = public_document(&load(db, CONFIG_KEY).await?, &load(db, BUSINESS_KEY).await?, &maintenance_state(db, cfg).await?);
-    remember(&d);
+    remember(key, &d);
     Ok(d)
 }
 
