@@ -172,11 +172,11 @@ struct ExportRow {
     amount: i64,
 }
 
-/// Which queued rows a read returns: only those not exported yet (export), or all of them (re-export).
+/// Which queued rows a read returns: only those not exported yet (export), or only those already handed out (re-export).
 #[derive(Clone, Copy)]
 enum Queue {
     Unexported,
-    All,
+    Exported,
 }
 
 /// Queued requests (state 'requested') in the range. An export locks the rows it reads (SKIP LOCKED), so two
@@ -184,7 +184,7 @@ enum Queue {
 async fn queued_rows(db: impl PgExecutor<'_>, from: NaiveDate, to: NaiveDate, queue: Queue) -> ApiResult<Vec<ExportRow>> {
     let (fresh, lock) = match queue {
         Queue::Unexported => ("AND t.exported_at IS NULL", "FOR UPDATE OF t SKIP LOCKED"),
-        Queue::All => ("", ""),
+        Queue::Exported => ("AND t.exported_at IS NOT NULL", ""),
     };
     let sql = format!(
         "SELECT t.id, (t.created_at AT TIME ZONE 'Asia/Seoul')::date AS day, t.business_number, t.company_name, t.representative,
@@ -252,7 +252,8 @@ struct ReExportQuery {
 }
 
 /// `POST /finance/export/tax-invoices/re-export?confirm=true`: sends the same queued rows again, for a lost or
-/// damaged file. Leaves exported_at as it is. Needs the explicit confirm flag and writes an audit row.
+/// damaged file. Only repeats rows already exported (a never-exported row is not handed out here). Leaves
+/// exported_at as it is. Needs the explicit confirm flag and writes an audit row.
 async fn re_export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<ReExportQuery>) -> ApiResult<Response> {
     if !q.confirm {
         return Err(ApiError::BadRequest("confirm_required"));
@@ -264,7 +265,7 @@ async fn re_export(State(s): State<AppState>, Admin(a): Admin, Query(q): Query<R
         to: q.to,
     };
     let (from, to) = resolve(&period)?;
-    let rows = queued_rows(&s.db, from, to, Queue::All).await?;
+    let rows = queued_rows(&s.db, from, to, Queue::Exported).await?;
     audit(
         &s.db,
         "staff",

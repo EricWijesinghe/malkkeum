@@ -10662,6 +10662,24 @@ abstract class T {
   /// **'세금계산서 업로드 CSV'**
   String get tExportTaxInvoices;
 
+  /// No description provided for @tReExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 내보내기'**
+  String get tReExport;
+
+  /// No description provided for @tReExportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 내보내기'**
+  String get tReExportTitle;
+
+  /// No description provided for @tReExportConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 내보낸 세금계산서 요청을 같은 파일로 다시 받아요. 파일을 잃어버렸거나 손상됐을 때만 사용하세요.'**
+  String get tReExportConfirm;
+
   /// No description provided for @tTaxLayoutNote.
   ///
   /// In ko, this message translates to:

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -5736,6 +5737,16 @@ class TEn extends T {
 
   @override
   String get tExportTaxInvoices => 'Tax invoice upload CSV';
+
+  @override
+  String get tReExport => 'Export again';
+
+  @override
+  String get tReExportTitle => 'Export again';
+
+  @override
+  String get tReExportConfirm =>
+      'Downloads the already exported tax invoice requests again. Use only if the file was lost or damaged.';
 
   @override
   String get tTaxLayoutNote =>

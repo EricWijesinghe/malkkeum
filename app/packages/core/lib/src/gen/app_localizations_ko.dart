@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -5593,6 +5594,16 @@ class TKo extends T {
 
   @override
   String get tExportTaxInvoices => '세금계산서 업로드 CSV';
+
+  @override
+  String get tReExport => '다시 내보내기';
+
+  @override
+  String get tReExportTitle => '다시 내보내기';
+
+  @override
+  String get tReExportConfirm =>
+      '이미 내보낸 세금계산서 요청을 같은 파일로 다시 받아요. 파일을 잃어버렸거나 손상됐을 때만 사용하세요.';
 
   @override
   String get tTaxLayoutNote => '홈택스 실제 양식과 대조한 뒤 올려주세요. 열 구성은 아직 확인되지 않았어요.';

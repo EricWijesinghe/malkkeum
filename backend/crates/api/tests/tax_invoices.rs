@@ -124,3 +124,19 @@ async fn re_export_requires_confirm_and_returns_the_same_rows(pool: PgPool) {
         .expect("audit count");
     assert_eq!(audited, 1);
 }
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn re_export_skips_rows_never_exported(pool: PgPool) {
+    seed_requests(&pool).await;
+    let app = common::app(pool.clone());
+
+    let (status, body) = send(&app, "POST", &format!("{RE_EXPORT}&confirm=true")).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    assert!(!body.contains("ACME-"), "re-export before any export must hand out nothing: {body}");
+
+    let exported: i64 = sqlx::query_scalar("SELECT count(*) FROM tax_invoice_requests WHERE exported_at IS NOT NULL")
+        .fetch_one(&pool)
+        .await
+        .expect("count");
+    assert_eq!(exported, 0, "re-export must not mark rows exported");
+}

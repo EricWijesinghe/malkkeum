@@ -137,6 +137,19 @@ class ApiClient {
     return bytes as List<int>;
   }
 
+  /// Raw response bytes from a POST that returns a CSV (owner re-export). Same token rules as [getBytes].
+  Future<List<int>> postBytes(
+    String path, {
+    Map<String, String?>? query,
+  }) async {
+    final bytes = await _exec(
+      path,
+      () => http.Request('POST', _uri(path, query)),
+      raw: true,
+    );
+    return bytes as List<int>;
+  }
+
   Future<dynamic> _send(
     String method,
     String path, {

@@ -18,9 +18,13 @@ class TaxSection extends StatelessWidget {
     super.key,
     required this.periodQuery,
     required this.onExport,
+    required this.onReExport,
   });
   final Map<String, String?> periodQuery;
   final ExportAt onExport;
+
+  /// Sends the already-exported tax-invoice rows again (the owner confirmed in the dialog).
+  final Future<void> Function() onReExport;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +59,11 @@ class TaxSection extends StatelessWidget {
                 icon: const Icon(Icons.download_rounded),
                 label: Text(t.tExportTaxInvoices),
               ),
+              OutlinedButton.icon(
+                onPressed: () => _confirmReExport(context),
+                icon: const Icon(Icons.replay_rounded),
+                label: Text(t.tReExport),
+              ),
             ],
           ),
         ),
@@ -66,6 +75,28 @@ class TaxSection extends StatelessWidget {
         _CashReceiptList(periodQuery: periodQuery),
       ],
     );
+  }
+
+  Future<void> _confirmReExport(BuildContext context) async {
+    final t = context.t;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.tReExportTitle),
+        content: Text(t.tReExportConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.tReExport),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await onReExport();
   }
 }
 
