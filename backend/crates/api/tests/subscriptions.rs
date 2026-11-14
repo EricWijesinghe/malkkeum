@@ -160,32 +160,50 @@ async fn declined_card_retries_then_pauses_until_a_new_card(pool: PgPool) {
 
     let first = subscription_engine::pass(&state).await.expect("pass");
     assert_eq!((first.booked, first.failed), (0, 1), "{first:?}");
-    let booked: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE subscription_id = $1").bind(id).fetch_one(&pool).await.unwrap();
+    let booked: i64 = sqlx::query_scalar("SELECT count(*) FROM bookings WHERE subscription_id = $1")
+        .bind(id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
     assert_eq!(booked, 0, "a declined charge leaves no booking");
     assert_eq!(sub_status(&pool, id).await.2, 1);
 
     // Open the retry window twice more: the third consecutive decline pauses for payment.
     for _ in 0..2 {
-        sqlx::query("UPDATE subscription_visits SET retry_at = NULL WHERE subscription_id = $1").bind(id).execute(&pool).await.unwrap();
+        sqlx::query("UPDATE subscription_visits SET retry_at = NULL WHERE subscription_id = $1")
+            .bind(id)
+            .execute(&pool)
+            .await
+            .unwrap();
         subscription_engine::pass(&state).await.expect("pass");
     }
     let (status, reason, failures) = sub_status(&pool, id).await;
     assert_eq!((status.as_str(), reason.as_deref(), failures), ("paused", Some("payment"), 3));
 
     // Paused: no charge, even with the window open.
-    sqlx::query("UPDATE subscription_visits SET retry_at = NULL WHERE subscription_id = $1").bind(id).execute(&pool).await.unwrap();
+    sqlx::query("UPDATE subscription_visits SET retry_at = NULL WHERE subscription_id = $1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .unwrap();
     assert_eq!(subscription_engine::pass(&state).await.expect("pass").booked, 0);
 
     // A new card and a resume: the visit is charged on the next pass.
-    let second: Uuid = sqlx::query_scalar(
-        "INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', $2, 'card 2') RETURNING id",
+    let second: Uuid =
+        sqlx::query_scalar("INSERT INTO payment_methods (user_id, provider, billing_key, display_name) VALUES ($1, 'pg', $2, 'card 2') RETURNING id")
+            .bind(c.user)
+            .bind(format!("bk_test_second_{}", c.user))
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+    let (st, resumed) = call(
+        &app,
+        "POST",
+        &format!("/v1/subscriptions/{id}/resume"),
+        Some(c.token.as_str()),
+        Some(json!({ "payment_method_id": second })),
     )
-    .bind(c.user)
-    .bind(format!("bk_test_second_{}", c.user))
-    .fetch_one(&pool)
-    .await
-    .unwrap();
-    let (st, resumed) = call(&app, "POST", &format!("/v1/subscriptions/{id}/resume"), Some(c.token.as_str()), Some(json!({ "payment_method_id": second }))).await;
+    .await;
     assert_eq!(st, StatusCode::OK, "{resumed}");
     assert_eq!(sub_status(&pool, id).await.0, "active");
     assert_eq!(subscription_engine::pass(&state).await.expect("pass").booked, 1);
@@ -212,7 +230,10 @@ async fn preferred_partner_gets_the_visit_and_is_the_only_one_who_sees_it(pool: 
     assert_eq!(st, StatusCode::OK, "{mine}");
     assert_eq!(mine.as_array().map(Vec::len), Some(1), "{mine}");
     assert_eq!(mine[0]["district_code"], common::DISTRICT);
-    assert!(mine[0].get("user_id").is_none() && mine[0].get("address").is_none(), "partner sees contact-free rows only");
+    assert!(
+        mine[0].get("user_id").is_none() && mine[0].get("address").is_none(),
+        "partner sees contact-free rows only"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -231,6 +252,75 @@ async fn planning_falls_back_when_the_customers_window_is_full(pool: PgPool) {
     assert!(planned.iter().all(|v| v["start_hour"] == 8), "{body}");
 }
 
+async fn close_slot(db: &PgPool, hour: i16) {
+    sqlx::query("INSERT INTO slot_capacity (start_hour, capacity) VALUES ($1, 0) ON CONFLICT (start_hour) DO UPDATE SET capacity = 0")
+        .bind(hour)
+        .execute(db)
+        .await
+        .expect("close slot");
+}
+
+async fn count_notices(db: &PgPool, kind: &str, owner: Option<Uuid>) -> i64 {
+    sqlx::query_scalar("SELECT count(*) FROM notifications WHERE kind = $1 AND ($2::uuid IS NULL OR owner_id = $2)")
+        .bind(kind)
+        .bind(owner)
+        .fetch_one(db)
+        .await
+        .expect("notice count")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn visit_moved_to_another_window_tells_the_customer(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let (app, _) = app_and_state(pool.clone());
+    let c = customer(&app, &pool, "010-7000-0010").await;
+    close_slot(&pool, 9).await;
+    let (st, body) = subscribe(&app, &c, 2, 1, 9, None).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let planned = visits(&body).iter().filter(|v| v["state"] == "planned").count() as i64;
+    assert!(planned >= 3, "{body}");
+    assert_eq!(
+        count_notices(&pool, "subscription.visit_moved", Some(c.user)).await,
+        planned,
+        "one notice per moved visit"
+    );
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn visit_with_no_free_window_tells_the_customer_and_staff(pool: PgPool) {
+    seed_catalog(&pool).await;
+    for hour in [8, 9, 13, 14] {
+        close_slot(&pool, hour).await;
+    }
+    let (app, _) = app_and_state(pool.clone());
+    let c = customer(&app, &pool, "010-7000-0011").await;
+    let (st, body) = subscribe(&app, &c, 2, 1, 9, None).await;
+    assert_eq!(st, StatusCode::OK, "{body}");
+    let planned = visits(&body).iter().filter(|v| v["state"] == "planned").count() as i64;
+    assert!(planned >= 3, "{body}");
+    assert_eq!(count_notices(&pool, "subscription.visit_unplaced", Some(c.user)).await, planned);
+    assert_eq!(count_notices(&pool, "subscription.capacity_full", None).await, planned, "staff alert per visit");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn booking_that_fails_after_the_charge_is_refunded(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let (app, state) = app_and_state(pool.clone());
+    let c = customer(&app, &pool, "010-7000-0012").await;
+    let (_, body) = subscribe(&app, &c, weekday_index(kst_today() + Duration::days(1)), 1, 9, None).await;
+    assert!(!visits(&body).is_empty(), "{body}");
+    // The window fills after planning: the charge goes through, then the booking is refused.
+    close_slot(&pool, 9).await;
+
+    let report = subscription_engine::pass(&state).await.expect("pass");
+    assert_eq!((report.booked, report.failed), (0, 1), "{report:?}");
+    let (queued, done): (i64, bool) = sqlx::query_as("SELECT count(*), coalesce(bool_and(done_at IS NOT NULL), false) FROM refund_queue")
+        .fetch_one(&pool)
+        .await
+        .expect("refund queue");
+    assert_eq!((queued, done), (1, true), "the charge is refunded and the refund is recorded");
+}
+
 #[sqlx::test(migrations = "../../migrations")]
 async fn customer_skips_moves_pauses_and_cancels(pool: PgPool) {
     seed_catalog(&pool).await;
@@ -242,7 +332,14 @@ async fn customer_skips_moves_pauses_and_cancels(pool: PgPool) {
     assert!(planned.len() >= 2, "{body}");
     let (first, second) = (planned[0]["id"].as_str().unwrap().to_string(), planned[1]["id"].as_str().unwrap().to_string());
 
-    let (st, v) = call(&app, "POST", &format!("/v1/subscriptions/{id}/visits/{first}/skip"), Some(c.token.as_str()), None).await;
+    let (st, v) = call(
+        &app,
+        "POST",
+        &format!("/v1/subscriptions/{id}/visits/{first}/skip"),
+        Some(c.token.as_str()),
+        None,
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{v}");
     assert!(visits(&v).iter().any(|x| x["id"] == first.as_str() && x["state"] == "skipped"));
 
@@ -309,7 +406,11 @@ async fn visit_that_passed_unpaid_becomes_missed(pool: PgPool) {
         .unwrap();
     let report = subscription_engine::pass(&state).await.expect("pass");
     assert!(report.missed >= 1, "{report:?}");
-    let missed: i64 = sqlx::query_scalar("SELECT count(*) FROM subscription_visits WHERE subscription_id = $1 AND state = 'missed'").bind(id).fetch_one(&pool).await.unwrap();
+    let missed: i64 = sqlx::query_scalar("SELECT count(*) FROM subscription_visits WHERE subscription_id = $1 AND state = 'missed'")
+        .bind(id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
     assert_eq!(missed, 1);
 }
 
@@ -323,13 +424,23 @@ async fn owner_edits_pauses_and_reads_metrics(pool: PgPool) {
     let id = sub_id(&body);
     let token = admin();
 
-    let (st, edited) = call(&app, "PUT", &format!("/v1/admin/subscriptions/{id}"), Some(token.as_str()), Some(json!({ "weekday": 4, "cadence_weeks": 2 }))).await;
+    let (st, edited) = call(
+        &app,
+        "PUT",
+        &format!("/v1/admin/subscriptions/{id}"),
+        Some(token.as_str()),
+        Some(json!({ "weekday": 4, "cadence_weeks": 2 })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{edited}");
     assert_eq!(edited["subscription"]["cadence_weeks"], 2);
-    assert!(visits(&edited).iter().filter(|v| v["state"] == "planned").all(|v| {
-        let d: NaiveDate = v["visit_date"].as_str().unwrap().parse().unwrap();
-        weekday_index(d) == 4
-    }), "{edited}");
+    assert!(
+        visits(&edited).iter().filter(|v| v["state"] == "planned").all(|v| {
+            let d: NaiveDate = v["visit_date"].as_str().unwrap().parse().unwrap();
+            weekday_index(d) == 4
+        }),
+        "{edited}"
+    );
     let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'subscription.edit' AND target = $1")
         .bind(id.to_string())
         .fetch_one(&pool)
@@ -353,7 +464,14 @@ async fn owner_edits_pauses_and_reads_metrics(pool: PgPool) {
     assert_eq!(metrics["cancelled"], 1, "{metrics}");
 
     // The owner's finance summary carries the same recurring block.
-    let (st, fin) = call(&app, "GET", "/v1/admin/finance/summary?period=custom&from=2026-03-01&to=2026-03-31", Some(token.as_str()), None).await;
+    let (st, fin) = call(
+        &app,
+        "GET",
+        "/v1/admin/finance/summary?period=custom&from=2026-03-01&to=2026-03-31",
+        Some(token.as_str()),
+        None,
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{fin}");
     assert!(fin.get("recurring").is_some(), "{fin}");
 }
@@ -363,9 +481,23 @@ async fn discount_policy_is_bounded_and_public(pool: PgPool) {
     seed_catalog(&pool).await;
     let (app, _) = app_and_state(pool.clone());
     let token = admin();
-    let (st, _) = call(&app, "PUT", "/v1/admin/subscriptions/policy", Some(token.as_str()), Some(json!({ "discount_percent": 31 }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/subscriptions/policy",
+        Some(token.as_str()),
+        Some(json!({ "discount_percent": 31 })),
+    )
+    .await;
     assert!(st.is_client_error(), "31% accepted: {st}");
-    let (st, _) = call(&app, "PUT", "/v1/admin/subscriptions/policy", Some(token.as_str()), Some(json!({ "discount_percent": 15 }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/subscriptions/policy",
+        Some(token.as_str()),
+        Some(json!({ "discount_percent": 15 })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK);
     let (st, public) = call(&app, "GET", "/v1/policy/subscription", None, None).await;
     assert_eq!(st, StatusCode::OK);

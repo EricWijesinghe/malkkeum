@@ -23,7 +23,7 @@ use domain::{
     subscription::{Cadence, HORIZON_DAYS, Retry, after_failure, visit_dates, visit_price},
 };
 use serde_json::{Value, json};
-use sqlx::{PgConnection, PgPool};
+use sqlx::PgConnection;
 use std::time::Duration as StdDuration;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -91,7 +91,12 @@ pub async fn pass(s: &AppState) -> ApiResult<PassReport> {
     let planned = plan(s).await?;
     let (booked, failed) = charge_due(s).await?;
     let missed = expire(s).await?;
-    Ok(PassReport { planned, booked, failed, missed })
+    Ok(PassReport {
+        planned,
+        booked,
+        failed,
+        missed,
+    })
 }
 
 /// Plans visits for every active subscription inside the horizon. Returns how many were added.
@@ -99,7 +104,7 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
     let subs: Vec<(Uuid,)> = sqlx::query_as("SELECT id FROM subscriptions WHERE status = 'active'").fetch_all(&s.db).await?;
     let mut added = 0;
     for (sub,) in subs {
-        match plan_subscription(&s.db, sub).await {
+        match plan_subscription(s, sub).await {
             Ok(n) => added += n,
             Err(e) => tracing::warn!(error = %e, subscription = %sub, "planning a subscription failed"),
         }
@@ -108,52 +113,93 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
 }
 
 /// Plans one active subscription's visits inside the horizon. Used on create and on every pass.
-pub async fn plan_subscription(db: &PgPool, sub: Uuid) -> ApiResult<usize> {
-    let row: Option<(i16, NaiveDate, i16)> = sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
-        .bind(sub)
-        .fetch_optional(db)
-        .await?;
-    let Some((weeks, anchor, hour)) = row else {
+pub async fn plan_subscription(s: &AppState, sub: Uuid) -> ApiResult<usize> {
+    let row: Option<(i16, NaiveDate, i16, Uuid)> =
+        sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour, user_id FROM subscriptions WHERE id = $1 AND status = 'active'")
+            .bind(sub)
+            .fetch_optional(&s.db)
+            .await?;
+    let Some((weeks, anchor, hour, user)) = row else {
         return Ok(0);
     };
     let cadence = Cadence::from_weeks(i64::from(weeks))?;
     let (from, until) = (today_kst() + Duration::days(1), today_kst() + Duration::days(HORIZON_DAYS));
     let mut added = 0;
     for date in visit_dates(anchor, cadence, from, until) {
-        if plan_visit(db, sub, date, hour as u8).await? {
+        if plan_visit(s, sub, user, date, hour as u8).await? {
             added += 1;
         }
     }
     Ok(added)
 }
 
-async fn plan_visit(db: &PgPool, sub: Uuid, date: NaiveDate, preferred: u8) -> ApiResult<bool> {
-    let mut tx = db.begin().await?;
-    let hour = free_hour(&mut tx, date, preferred).await?;
+/// Adds one planned visit. Only a newly added visit is announced, so later passes never repeat the notice.
+async fn plan_visit(s: &AppState, sub: Uuid, user: Uuid, date: NaiveDate, preferred: u8) -> ApiResult<bool> {
+    let mut tx = s.db.begin().await?;
+    let placed = free_hour(&mut tx, date, preferred).await?;
     let inserted = sqlx::query(
         "INSERT INTO subscription_visits (subscription_id, visit_date, start_hour) VALUES ($1, $2, $3) ON CONFLICT (subscription_id, visit_date) DO NOTHING",
     )
     .bind(sub)
     .bind(date)
-    .bind(i16::from(hour))
+    .bind(i16::from(placed.unwrap_or(preferred)))
     .execute(&mut *tx)
     .await?
     .rows_affected();
     tx.commit().await?;
-    Ok(inserted == 1)
+    let added = inserted == 1;
+    if added {
+        announce_placement(s, user, sub, date, preferred, placed).await;
+    }
+    Ok(added)
+}
+
+/// A visit moved to another window tells the customer. A day with no free window tells the customer and staff.
+async fn announce_placement(s: &AppState, user: Uuid, sub: Uuid, date: NaiveDate, preferred: u8, placed: Option<u8>) {
+    let data = json!({ "subscription_id": sub, "visit_date": date });
+    match placed {
+        Some(hour) if hour != preferred => {
+            let moved = json!({ "subscription_id": sub, "visit_date": date, "start_hour": hour });
+            let title = "정기 청소 시간이 바뀌었어요";
+            let body = "요청하신 시간이 가득 차 가까운 시간으로 옮겼어요";
+            best_effort("notify", notify(s, Recipient::User(user), "subscription.visit_moved", title, body, moved)).await;
+        }
+        Some(_) => {}
+        None => {
+            let title = "정기 청소 시간을 잡지 못했어요";
+            best_effort(
+                "notify",
+                notify(
+                    s,
+                    Recipient::User(user),
+                    "subscription.visit_unplaced",
+                    title,
+                    "고객센터로 문의해 주세요",
+                    data.clone(),
+                ),
+            )
+            .await;
+            let title = "정기 청소 정원이 가득 찼어요";
+            best_effort(
+                "notify",
+                notify(s, Recipient::Staff, "subscription.capacity_full", title, "배정 시간을 확인해 주세요", data),
+            )
+            .await;
+        }
+    }
 }
 
 /// The customer's arrival window when it has room, else the first standard window that does.
-/// When every window is full the preferred one is kept, and the charge step reports the shortage.
-async fn free_hour(conn: &mut PgConnection, date: NaiveDate, preferred: u8) -> ApiResult<u8> {
+/// `None` when every window is full: the visit keeps the preferred window and the charge step reports the shortage.
+async fn free_hour(conn: &mut PgConnection, date: NaiveDate, preferred: u8) -> ApiResult<Option<u8>> {
     let order = std::iter::once(preferred).chain(STANDARD_SLOTS.iter().copied().filter(|h| *h != preferred));
     for hour in order {
         let (used, cap) = lock_and_count_slot(conn, date, hour, None).await?;
         if check_capacity(used, cap).is_ok() {
-            return Ok(hour);
+            return Ok(Some(hour));
         }
     }
-    Ok(preferred)
+    Ok(None)
 }
 
 /// Charges every planned visit due tomorrow (KST) whose retry time has come. Returns (booked, failed).
@@ -257,7 +303,12 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     };
     let list = price_booking(&prep.service, body.unit_index, None, Utc::now())?;
     let vp = visit_price(list.list_price.0, u8::try_from(sub.discount_percent).unwrap_or(0))?;
-    let price = PriceBreakdown { list_price: list.list_price, discount: Won(vp.discount), total: Won(vp.total), minutes: list.minutes };
+    let price = PriceBreakdown {
+        list_price: list.list_price,
+        discount: Won(vp.discount),
+        total: Won(vp.total),
+        minutes: list.minutes,
+    };
     let key: Option<String> = sqlx::query_scalar("SELECT billing_key FROM payment_methods WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL")
         .bind(sub.payment_method_id)
         .bind(sub.user_id)
@@ -266,7 +317,14 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let Some(key) = key else {
         return Ok(Attempt::Failed(Failure::Blocked));
     };
-    let c = Charge { d, sub: &sub, prep: &prep, body: &body, price: &price, key: &key };
+    let c = Charge {
+        d,
+        sub: &sub,
+        prep: &prep,
+        body: &body,
+        price: &price,
+        key: &key,
+    };
     if price.total.0 == 0 {
         return finalize(s, &c, None).await;
     }
@@ -332,7 +390,9 @@ async fn charge_once(s: &AppState, c: &Charge<'_>, pid: &str) -> ApiResult<Attem
 /// Books the visit once the money is settled. The charge already happened, so any outcome other than a booking refunds it.
 async fn finalize(s: &AppState, c: &Charge<'_>, paid: Option<(&str, &str)>) -> ApiResult<Attempt> {
     let outcome = book_visit(s, c, paid).await;
-    if !matches!(outcome, Ok(Attempt::Booked(_))) && let Some((_, tx)) = paid {
+    if !matches!(outcome, Ok(Attempt::Booked(_)))
+        && let Some((_, tx)) = paid
+    {
         refund_or_alert(s, "portone", tx, c.price.total.0).await;
     }
     outcome
@@ -414,10 +474,12 @@ async fn pro_free_for(conn: &mut PgConnection, booking: Uuid, pro: Uuid) -> ApiR
 
 /// Counts a failed attempt, schedules the retry, and pauses after repeated failures. The customer is told each time.
 async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<()> {
-    let failures: i32 = sqlx::query_scalar("UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures")
-        .bind(d.sub_id)
-        .fetch_one(&s.db)
-        .await?;
+    let failures: i32 = sqlx::query_scalar(
+        "UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures",
+    )
+    .bind(d.sub_id)
+    .fetch_one(&s.db)
+    .await?;
     let retry = after_failure(u32::try_from(failures).unwrap_or(u32::MAX));
     let hours = match retry {
         Retry::After { hours } => Some(hours as i32),
@@ -446,7 +508,14 @@ async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<(
         if paused == 1 {
             best_effort(
                 "notify",
-                notify(s, Recipient::User(d.user_id), "subscription.paused", "정기 청소가 일시 정지됐어요", "결제 수단을 확인한 뒤 재개해 주세요", json!({ "subscription_id": d.sub_id })),
+                notify(
+                    s,
+                    Recipient::User(d.user_id),
+                    "subscription.paused",
+                    "정기 청소가 일시 정지됐어요",
+                    "결제 수단을 확인한 뒤 재개해 주세요",
+                    json!({ "subscription_id": d.sub_id }),
+                ),
             )
             .await;
         }
@@ -478,7 +547,14 @@ async fn expire(s: &AppState) -> ApiResult<usize> {
     for (user,) in &missed {
         best_effort(
             "notify",
-            notify(s, Recipient::User(*user), "subscription.visit_missed", "이번 정기 청소를 잡지 못했어요", "고객센터로 문의해 주세요", json!({})),
+            notify(
+                s,
+                Recipient::User(*user),
+                "subscription.visit_missed",
+                "이번 정기 청소를 잡지 못했어요",
+                "고객센터로 문의해 주세요",
+                json!({}),
+            ),
         )
         .await;
     }
@@ -502,7 +578,10 @@ mod tests {
     #[test]
     fn upstream_is_unknown_and_only_a_decline_fails_the_attempt() {
         assert_eq!(settle(Err(ProviderError::Upstream("timeout".into()))), Settled::Unknown);
-        assert_eq!(settle(Err(ProviderError::Declined("card_declined".into()))), Settled::Declined("card_declined".into()));
+        assert_eq!(
+            settle(Err(ProviderError::Declined("card_declined".into()))),
+            Settled::Declined("card_declined".into())
+        );
         assert_eq!(settle(Ok("tx_1".into())), Settled::Paid("tx_1".into()));
     }
 }

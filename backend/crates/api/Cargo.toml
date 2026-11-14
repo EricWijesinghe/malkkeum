@@ -18,7 +18,7 @@ hmac = "0.12"
 sha1 = "0.10"
 data-encoding = "2"
 hex = "0.4"
-jsonwebtoken = { version = "10.3", default-features = false, features = ["rust_crypto", "use_pem"] }
+jsonwebtoken = { version = "11.1", default-features = false, features = ["rust_crypto", "use_pem"] }
 rand = "0.8"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
 serde.workspace = true
@@ -38,3 +38,4 @@ uuid.workspace = true
 [dev-dependencies]
 
 http-body-util = "0.1"
+tokio = { version = "1", features = ["test-util"] }

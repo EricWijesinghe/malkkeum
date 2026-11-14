@@ -106,7 +106,10 @@ pub async fn load_policy(db: &PgPool) -> ApiResult<(Policy, bool)> {
         .await?;
     match v {
         None => Ok((Policy::default(), true)),
-        Some(v) => Ok((serde_json::from_value(v).map_err(|_| ApiError::Internal("bad setting subscription_policy".into()))?, false)),
+        Some(v) => Ok((
+            serde_json::from_value(v).map_err(|_| ApiError::Internal("bad setting subscription_policy".into()))?,
+            false,
+        )),
     }
 }
 
@@ -148,14 +151,20 @@ async fn check_card(db: &PgPool, user: Uuid, method: Uuid) -> ApiResult<()> {
         .bind(user)
         .fetch_one(db)
         .await?;
-    if owned { Ok(()) } else { Err(ApiError::BadRequest("payment_method_required")) }
+    if owned {
+        Ok(())
+    } else {
+        Err(ApiError::BadRequest("payment_method_required"))
+    }
 }
 
 async fn list(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Vec<SubView>>> {
-    let rows: Vec<SubView> = sqlx::query_as(&format!("SELECT {SUB_COLS} FROM subscriptions s WHERE s.user_id = $1 ORDER BY s.created_at DESC LIMIT 50"))
-        .bind(a.id)
-        .fetch_all(&s.db)
-        .await?;
+    let rows: Vec<SubView> = sqlx::query_as(&format!(
+        "SELECT {SUB_COLS} FROM subscriptions s WHERE s.user_id = $1 ORDER BY s.created_at DESC LIMIT 50"
+    ))
+    .bind(a.id)
+    .fetch_all(&s.db)
+    .await?;
     Ok(Json(rows))
 }
 
@@ -200,7 +209,10 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
     price_booking(&prep.service, req.unit_index, None, Utc::now())?;
     check_card(&s.db, a.id, req.payment_method_id).await?;
     if let Some(pro) = req.preferred_pro_id {
-        let exists: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1)").bind(pro).fetch_one(&s.db).await?;
+        let exists: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM pros WHERE id = $1)")
+            .bind(pro)
+            .fetch_one(&s.db)
+            .await?;
         if !exists {
             return Err(ApiError::BadRequest("pro_not_found"));
         }
@@ -226,8 +238,16 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
     .bind(i16::from(policy.discount_percent))
     .execute(&s.db)
     .await?;
-    plan_subscription(&s.db, id).await?;
-    audit(&s.db, "customer", Some(a.id), "subscription.create", &id.to_string(), json!({ "cadence_weeks": cadence.weeks() })).await?;
+    plan_subscription(&s, id).await?;
+    audit(
+        &s.db,
+        "customer",
+        Some(a.id),
+        "subscription.create",
+        &id.to_string(),
+        json!({ "cadence_weeks": cadence.weeks() }),
+    )
+    .await?;
     Ok(Json(view(&s.db, id).await?))
 }
 
@@ -245,7 +265,11 @@ async fn transition(db: &PgPool, id: Uuid, from: &str, to: &str, reason: Option<
     .execute(db)
     .await?
     .rows_affected();
-    if n == 0 { Err(ApiError::Conflict("invalid_subscription_state")) } else { Ok(()) }
+    if n == 0 {
+        Err(ApiError::Conflict("invalid_subscription_state"))
+    } else {
+        Ok(())
+    }
 }
 
 async fn pause(State(s): State<AppState>, Customer(a): Customer, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
@@ -377,7 +401,12 @@ struct VisitMove {
 }
 
 /// Moves one planned visit. A booked visit moves through the booking reschedule route instead.
-async fn reschedule_visit(State(s): State<AppState>, Customer(a): Customer, Path((id, visit)): Path<(Uuid, Uuid)>, Json(m): Json<VisitMove>) -> ApiResult<Json<Value>> {
+async fn reschedule_visit(
+    State(s): State<AppState>,
+    Customer(a): Customer,
+    Path((id, visit)): Path<(Uuid, Uuid)>,
+    Json(m): Json<VisitMove>,
+) -> ApiResult<Json<Value>> {
     owned_sub(&s.db, a.id, id).await?;
     let v = visit_of(&s.db, id, visit).await?;
     match v.state.as_str() {
@@ -492,7 +521,11 @@ async fn admin_edit(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<U
     let weekday = weekday_from_index(weekday_index)?;
     let hour = e.start_hour.unwrap_or(before.start_hour as u8);
     check_slot(false, hour)?;
-    let anchor = if i16::from(weekday_index) == before.weekday { before.anchor_date } else { first_visit(today_kst() + Duration::days(1), weekday) };
+    let anchor = if i16::from(weekday_index) == before.weekday {
+        before.anchor_date
+    } else {
+        first_visit(today_kst() + Duration::days(1), weekday)
+    };
     let mut tx = s.db.begin().await?;
     sqlx::query(
         "UPDATE subscriptions SET cadence_weeks = $2, weekday = $3, start_hour = $4, anchor_date = $5,
@@ -514,7 +547,7 @@ async fn admin_edit(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<U
     .execute(&mut *tx)
     .await?;
     tx.commit().await?;
-    plan_subscription(&s.db, id).await?;
+    plan_subscription(&s, id).await?;
     let after = fetch(&s.db, id).await?;
     audit(
         &s.db,

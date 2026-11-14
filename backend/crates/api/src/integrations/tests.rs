@@ -71,10 +71,16 @@ fn apple_key_fields_go_together_and_must_parse() {
     assert_eq!(out.apple_signin.as_ref().map(|k| k.key_id.as_str()), Some("KEY1234567"));
     let mut partial = full.clone();
     partial["private_key"] = json!("");
-    assert_eq!(apply(&Integrations::default(), Section::Apple, &obj(partial)).unwrap_err(), Invalid("missing_field"));
+    assert_eq!(
+        apply(&Integrations::default(), Section::Apple, &obj(partial)).unwrap_err(),
+        Invalid("missing_field")
+    );
     let mut bad = full;
     bad["private_key"] = json!("-----BEGIN PRIVATE KEY-----\nnot a key\n-----END PRIVATE KEY-----");
-    assert_eq!(apply(&Integrations::default(), Section::Apple, &obj(bad)).unwrap_err(), Invalid("invalid_private_key"));
+    assert_eq!(
+        apply(&Integrations::default(), Section::Apple, &obj(bad)).unwrap_err(),
+        Invalid("invalid_private_key")
+    );
     let kakao = apply(&Integrations::default(), Section::Kakao, &obj(json!({"app_id": "1", "admin_key": "adm"}))).unwrap();
     assert_eq!(kakao.kakao_admin_key.as_deref(), Some("adm"));
 }
@@ -107,9 +113,18 @@ fn ai_defaults_to_offline_and_validates_mode_and_model() {
     assert!(out.has(Section::Ai));
     let always = json!({"api_key": "k", "mode": "always_first", "model": "claude-opus-5-5"});
     assert_eq!(apply(&base, Section::Ai, &obj(always)).unwrap().ai.unwrap().mode, Mode::AlwaysFirst);
-    assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "mode": "daytime"}))).unwrap_err(), Invalid("invalid_mode"));
-    assert_eq!(apply(&base, Section::Ai, &obj(json!({"api_key": "k", "model": "x y"}))).unwrap_err(), Invalid("invalid_model"));
-    assert_eq!(apply(&base, Section::Ai, &obj(json!({"model": "claude-opus-5-5"}))).unwrap_err(), Invalid("missing_field"));
+    assert_eq!(
+        apply(&base, Section::Ai, &obj(json!({"api_key": "k", "mode": "daytime"}))).unwrap_err(),
+        Invalid("invalid_mode")
+    );
+    assert_eq!(
+        apply(&base, Section::Ai, &obj(json!({"api_key": "k", "model": "x y"}))).unwrap_err(),
+        Invalid("invalid_model")
+    );
+    assert_eq!(
+        apply(&base, Section::Ai, &obj(json!({"model": "claude-opus-5-5"}))).unwrap_err(),
+        Invalid("missing_field")
+    );
 }
 
 #[test]
@@ -119,7 +134,14 @@ fn ai_caps_default_when_unset_and_read_when_saved() {
     assert_eq!(plain.caps, Caps::default());
     let saved = json!({"api_key": "k", "thread_hourly_cap": "5", "member_daily_cap": 20, "daily_cap": " 300 "});
     let caps = apply(&base, Section::Ai, &obj(saved)).unwrap().ai.unwrap().caps;
-    assert_eq!(caps, Caps { thread_hourly: 5, member_daily: 20, daily: 300 });
+    assert_eq!(
+        caps,
+        Caps {
+            thread_hourly: 5,
+            member_daily: 20,
+            daily: 300
+        }
+    );
 }
 
 #[test]
@@ -147,17 +169,29 @@ fn ai_caps_accept_only_whole_numbers_inside_their_bounds() {
 
 #[test]
 fn backup_endpoint_must_be_a_public_host() {
-    for bad in ["https://127.0.0.1", "https://10.0.0.5:9000", "https://169.254.169.254/latest", "https://[::1]", "https://localhost", "https://minio.internal"] {
+    for bad in [
+        "https://127.0.0.1",
+        "https://10.0.0.5:9000",
+        "https://169.254.169.254/latest",
+        "https://[::1]",
+        "https://localhost",
+        "https://minio.internal",
+    ] {
         assert!(!public_host(bad), "{bad}");
     }
-    for good in ["https://acc.r2.cloudflarestorage.com", "https://kr.object.ncloudstorage.com", "https://s3.ap-northeast-2.amazonaws.com:443"] {
+    for good in [
+        "https://acc.r2.cloudflarestorage.com",
+        "https://kr.object.ncloudstorage.com",
+        "https://s3.ap-northeast-2.amazonaws.com:443",
+    ] {
         assert!(public_host(good), "{good}");
     }
 }
 
 #[test]
 fn backup_section_validates_endpoint_bucket_and_retention() {
-    let good = json!({"endpoint": "https://acc.r2.cloudflarestorage.com/", "region": "auto", "bucket": "malkkeum-backup", "access_key": "AK", "secret_key": "SK"});
+    let good =
+        json!({"endpoint": "https://acc.r2.cloudflarestorage.com/", "region": "auto", "bucket": "malkkeum-backup", "access_key": "AK", "secret_key": "SK"});
     let out = apply(&Integrations::default(), Section::Backup, &obj(good.clone())).unwrap();
     let cfg = out.backup.clone().expect("backup configured");
     assert_eq!(cfg.endpoint, "https://acc.r2.cloudflarestorage.com");
@@ -165,13 +199,22 @@ fn backup_section_validates_endpoint_bucket_and_retention() {
     assert!(out.has(Section::Backup));
     let mut insecure = good.clone();
     insecure["endpoint"] = json!("http://plain.example");
-    assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(insecure)).unwrap_err(), Invalid("invalid_endpoint"));
+    assert_eq!(
+        apply(&Integrations::default(), Section::Backup, &obj(insecure)).unwrap_err(),
+        Invalid("invalid_endpoint")
+    );
     let mut bucket = good.clone();
     bucket["bucket"] = json!("Bad_Bucket");
-    assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(bucket)).unwrap_err(), Invalid("invalid_bucket"));
+    assert_eq!(
+        apply(&Integrations::default(), Section::Backup, &obj(bucket)).unwrap_err(),
+        Invalid("invalid_bucket")
+    );
     let mut keep = good;
     keep["retention_days"] = json!("0");
-    assert_eq!(apply(&Integrations::default(), Section::Backup, &obj(keep)).unwrap_err(), Invalid("invalid_retention"));
+    assert_eq!(
+        apply(&Integrations::default(), Section::Backup, &obj(keep)).unwrap_err(),
+        Invalid("invalid_retention")
+    );
 }
 
 #[test]
@@ -180,14 +223,30 @@ fn payout_defaults_to_manual_and_toss_is_refused() {
     assert!(base.payout.is_none(), "no section means manual");
     let manual = apply(&base, Section::Payout, &obj(json!({"mode": "manual"}))).unwrap();
     assert_eq!(manual.payout.map(|p| p.mode), Some(PayoutMode::Manual));
-    assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "toss"}))).unwrap_err(), Invalid("missing_field"));
+    assert_eq!(
+        apply(&base, Section::Payout, &obj(json!({"mode": "toss"}))).unwrap_err(),
+        Invalid("missing_field")
+    );
     let keys = json!({"mode": "toss", "secret_key": "test_sk_x", "security_key": "0123456789abcdef".repeat(4)});
-    assert_eq!(apply(&base, Section::Payout, &obj(keys.clone())).unwrap_err(), Invalid("toss_unverified"), "gate closed without env and test");
-    let ready = Integrations { payout_toss_ready: true, ..Integrations::default() };
-    assert_eq!(apply(&ready, Section::Payout, &obj(keys)).unwrap().payout.map(|p| p.mode), Some(PayoutMode::Toss));
+    assert_eq!(
+        apply(&base, Section::Payout, &obj(keys.clone())).unwrap_err(),
+        Invalid("toss_unverified"),
+        "gate closed without env and test"
+    );
+    let ready = Integrations {
+        payout_toss_ready: true,
+        ..Integrations::default()
+    };
+    assert_eq!(
+        apply(&ready, Section::Payout, &obj(keys)).unwrap().payout.map(|p| p.mode),
+        Some(PayoutMode::Toss)
+    );
     let bad_key = json!({"mode": "toss", "secret_key": "test_sk_x", "security_key": "xyz"});
     assert_eq!(apply(&ready, Section::Payout, &obj(bad_key)).unwrap_err(), Invalid("invalid_security_key"));
-    assert_eq!(apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(), Invalid("invalid_mode"));
+    assert_eq!(
+        apply(&base, Section::Payout, &obj(json!({"mode": "bank"}))).unwrap_err(),
+        Invalid("invalid_mode")
+    );
 }
 
 #[test]
@@ -217,4 +276,28 @@ fn every_section_code_round_trips() {
         assert!(s.fields().iter().any(|f| f.required));
     }
     assert_eq!(Section::parse("nope"), None);
+}
+
+#[test]
+fn cash_receipt_switch_takes_a_bool_and_defaults_to_env() {
+    let base = Integrations::default();
+    let on = json!({"store_id": "s", "api_secret": "k", "cash_receipts": true});
+    assert!(apply(&base, Section::Portone, &obj(on)).unwrap().portone.cash_receipts);
+    let text = json!({"store_id": "s", "api_secret": "k", "cash_receipts": "on"});
+    assert_eq!(apply(&base, Section::Portone, &obj(text)).unwrap_err(), Invalid("invalid_toggle"));
+    let mut env = Integrations::default();
+    env.portone.cash_receipts = true;
+    let unset = json!({"store_id": "s", "api_secret": "k"});
+    assert!(apply(&env, Section::Portone, &obj(unset)).unwrap().portone.cash_receipts);
+    assert!(toggle_default(&env, Section::Portone, "cash_receipts"));
+    assert!(!toggle_default(&base, Section::Portone, "cash_receipts"));
+}
+
+#[test]
+fn saved_console_value_beats_env_value() {
+    let mut env = Integrations::default();
+    env.portone.store_id = Some("env-store".into());
+    let saved = json!({"store_id": "db-store", "api_secret": "k"});
+    let out = apply(&env, Section::Portone, &obj(saved)).unwrap();
+    assert_eq!(out.portone.store_id.as_deref(), Some("db-store"));
 }
