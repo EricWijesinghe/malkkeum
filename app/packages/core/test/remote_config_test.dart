@@ -111,6 +111,68 @@ void main() {
     expect(find.text('paused'), findsOneWidget);
   });
 
+  testWidgets('the status bar inset is not added twice under the banner', (
+    tester,
+  ) async {
+    tester.view.padding = const FakeViewPadding(top: 40);
+    addTearDown(tester.view.resetPadding);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ko'),
+        supportedLocales: const [Locale('ko'), Locale('en')],
+        localizationsDelegates: const [
+          T.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: RemoteConfigGate(
+          api: _api({
+            'maintenance': {'on': true},
+          }),
+          child: Builder(
+            builder: (context) =>
+                Text('top ${MediaQuery.paddingOf(context).top}'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('top 0.0'), findsOneWidget);
+  });
+
+  testWidgets('the status bar inset reaches the app when maintenance is off', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.view.padding = const FakeViewPadding(top: 40);
+    addTearDown(tester.view.resetPadding);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ko'),
+        supportedLocales: const [Locale('ko'), Locale('en')],
+        localizationsDelegates: const [
+          T.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: RemoteConfigGate(
+          api: _api({
+            'maintenance': {'on': false},
+          }),
+          child: Builder(
+            builder: (context) =>
+                Text('top ${MediaQuery.paddingOf(context).top}'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('top 40.0'), findsOneWidget);
+  });
+
   testWidgets('offline keeps the app usable', (tester) async {
     await tester.pumpWidget(_host(_api(null, offline: true)));
     await tester.pumpAndSettle();

@@ -105,7 +105,8 @@ class _RemoteConfigGateState extends State<RemoteConfigGate> {
   @override
   Widget build(BuildContext context) {
     final c = _config;
-    // The banner slot is always in the tree, so the app below keeps its state when maintenance toggles.
+    // The banner slot and the padding wrapper are always in the tree, so the app below keeps its state when
+    // maintenance toggles. The banner's SafeArea already clears the status bar, so the app drops that inset.
     return RemoteConfigScope(
       config: c,
       child: Column(
@@ -113,7 +114,13 @@ class _RemoteConfigGateState extends State<RemoteConfigGate> {
           _MaintenanceBanner(
             message: c.maintenance ? c.maintenanceMessage : null,
           ),
-          Expanded(child: widget.child),
+          Expanded(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: c.maintenance,
+              child: widget.child,
+            ),
+          ),
         ],
       ),
     );
