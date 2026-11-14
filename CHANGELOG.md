@@ -26,6 +26,7 @@ from the release branches; no tags existed for them.
 - Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
 
 ### Changed
+- CI: PortOne webhook tests (valid, forged, tampered, stale, replayed) and Toss webhook test added; Dart files a pull request changes must pass `dart format`; install e2e also runs on backend changes.
 - Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.
 - Customer app: guests see the quote price before the address step without signing up; sign-in is asked only when they book, and the service detail shows the price-first line.
 - Customer app: guests get the sign-in sheet with a reason for each protected action (chat, account, booking), member-only menu rows show a sign-in hint, the notifications screen shows only notices, and a nameless new account opens the name step after signing in from the sheet.
