@@ -15,6 +15,7 @@ S = {
   "qaPeak": ["주말·공휴일·저녁 할증", "Weekend / holiday / evening surcharge"],
   "previewRequestCard": ["예약 요청 카드", "Booking request card"],
   "previewQuoteCard": ["견적 카드 · {amount}", "Quote card · {amount}"],
+  "nameNone": ["이름 없음", "No name"],
   "qaTotal": ["합계", "Total"],
   "qaVat": ["부가세 10%", "VAT 10%"],
 }

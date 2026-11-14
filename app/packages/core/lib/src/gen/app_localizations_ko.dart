@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4759,6 +4758,9 @@ class TKo extends T {
   String previewQuoteCard(String amount) {
     return '견적 카드 · $amount';
   }
+
+  @override
+  String get nameNone => '이름 없음';
 
   @override
   String get qaTotal => '합계';

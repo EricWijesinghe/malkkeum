@@ -9054,6 +9054,12 @@ abstract class T {
   /// **'견적 카드 · {amount}'**
   String previewQuoteCard(String amount);
 
+  /// No description provided for @nameNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 없음'**
+  String get nameNone;
+
   /// No description provided for @qaTotal.
   ///
   /// In ko, this message translates to:

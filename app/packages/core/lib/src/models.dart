@@ -215,6 +215,10 @@ class ChatThread {
   Json? get lastMessage => j['last_message'] as Json?;
   String? get userId => j['user_id'] as String?;
   String? get proId => j['pro_id'] as String?;
+
+  /// Staff inbox only: the customer's name (may be empty) and phone.
+  String? get customerName => j['customer_name'] as String?;
+  String? get customerPhone => j['customer_phone'] as String?;
   bool get aiPaused => j['ai_paused'] == true;
   factory ChatThread.fromJson(Json j) => ChatThread(j);
 }

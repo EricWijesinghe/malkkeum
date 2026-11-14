@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4870,6 +4869,9 @@ class TEn extends T {
   String previewQuoteCard(String amount) {
     return 'Quote card · $amount';
   }
+
+  @override
+  String get nameNone => 'No name';
 
   @override
   String get qaTotal => 'Total';

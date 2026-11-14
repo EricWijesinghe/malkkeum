@@ -32,10 +32,12 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
 
   Future<void> _load() async {
     try {
-      final r = await context.api.get(
-        '/admin/threads',
-        query: {'audience': _audience},
-      ) as List;
+      final r =
+          await context.api.get(
+                '/admin/threads',
+                query: {'audience': _audience},
+              )
+              as List;
       if (!mounted) return;
       setState(() {
         _threads = r.map((e) => ChatThread.fromJson(e as Json)).toList();
@@ -156,10 +158,23 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
                               : FontWeight.w500,
                         ),
                       ),
-                      subtitle: Text(
-                        preview,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (customerLine(t, th) case final String line)
+                            Text(
+                              line,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.text.labelSmall,
+                            ),
+                          Text(
+                            preview,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                       trailing: th.unreadStaff > 0
                           ? Badge(label: Text('${th.unreadStaff}'))
@@ -211,6 +226,14 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
       ),
     );
   }
+}
+
+/// "이름 없음 · 010-1234-5678" for a customer thread; null for partner threads.
+String? customerLine(T t, ChatThread th) {
+  final phone = th.customerPhone;
+  if (phone == null) return null;
+  final name = th.customerName ?? '';
+  return '${name.isEmpty ? t.nameNone : name} · ${formatPhone(phone)}';
 }
 
 /// One-line preview of a thread's last message. Cards get words, not the raw kind name.
@@ -265,9 +288,9 @@ class _ThreadViewState extends State<ThreadView> {
   }
 
   Future<void> _load() async {
-    final r = await context.api.get(
-      '/admin/threads/${widget.threadId}/messages',
-    ) as List;
+    final r =
+        await context.api.get('/admin/threads/${widget.threadId}/messages')
+            as List;
     if (!mounted) return;
     setState(
       () => _msgs = r.map((e) => ChatMessage.fromJson(e as Json)).toList(),
@@ -280,9 +303,11 @@ class _ThreadViewState extends State<ThreadView> {
 
   Future<void> _toggleAi() async {
     try {
-      final r = await context.api.put('/admin/threads/${widget.threadId}/ai', {
-        'paused': !_aiPaused,
-      }) as Json;
+      final r =
+          await context.api.put('/admin/threads/${widget.threadId}/ai', {
+                'paused': !_aiPaused,
+              })
+              as Json;
       if (!mounted) return;
       setState(() => _aiPaused = r['ai_paused'] == true);
       widget.onAiChanged?.call();
@@ -297,9 +322,10 @@ class _ThreadViewState extends State<ThreadView> {
     try {
       final m = ChatMessage.fromJson(
         await context.api.post('/admin/threads/${widget.threadId}/messages', {
-          'kind': 'text',
-          'text': _input.text,
-        }) as Json,
+              'kind': 'text',
+              'text': _input.text,
+            })
+            as Json,
       );
       if (!mounted) return;
       setState(() => _msgs = [..._msgs.where((x) => x.id != m.id), m]);

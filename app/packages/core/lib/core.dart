@@ -20,6 +20,7 @@ export 'src/identity.dart';
 export 'src/models.dart';
 export 'src/pager.dart';
 export 'src/push.dart';
+export 'src/phone_format.dart';
 export 'src/quote_labels.dart';
 export 'src/realtime.dart';
 export 'src/case_report.dart';

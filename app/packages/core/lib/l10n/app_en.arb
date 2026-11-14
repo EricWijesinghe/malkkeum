@@ -1492,6 +1492,7 @@
  "qaPeak": "Weekend / holiday / evening surcharge",
  "previewRequestCard": "Booking request card",
  "previewQuoteCard": "Quote card · {amount}",
+ "nameNone": "No name",
  "qaTotal": "Total",
  "qaVat": "VAT 10%",
  "rnwTitle": "Renewal calendar",

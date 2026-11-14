@@ -23,6 +23,21 @@ void main() {
     expect(threadPreview(ko, last, won), '예약 요청 카드');
   });
 
+  test('customer line shows 이름 없음 for a blank name and a formatted phone', () {
+    final th = ChatThread.fromJson({
+      'id': 't1',
+      'topic': 'move_in',
+      'customer_name': '',
+      'customer_phone': '01012345678',
+    });
+    expect(customerLine(ko, th), '이름 없음 · 010-1234-5678');
+  });
+
+  test('partner threads have no customer line', () {
+    final th = ChatThread.fromJson({'id': 't2', 'topic': 'move_in'});
+    expect(customerLine(ko, th), isNull);
+  });
+
   test(
     'text messages keep their text and an empty thread previews nothing',
     () {

@@ -416,13 +416,25 @@ struct InboxQuery {
     audience: Option<String>,
 }
 
-async fn inbox(State(s): State<AppState>, _st: Staff, Query(q): Query<InboxQuery>) -> ApiResult<Json<Vec<ThreadRow>>> {
+/// Staff inbox row: the thread plus the customer's name and phone (empty for partner threads).
+#[derive(Serialize, sqlx::FromRow)]
+struct InboxRow {
+    #[serde(flatten)]
+    #[sqlx(flatten)]
+    thread: ThreadRow,
+    customer_name: Option<String>,
+    customer_phone: Option<String>,
+}
+
+async fn inbox(State(s): State<AppState>, _st: Staff, Query(q): Query<InboxQuery>) -> ApiResult<Json<Vec<InboxRow>>> {
     let aud = q.audience.unwrap_or_else(|| "customer".into());
     if aud != "customer" && aud != "partner" {
         return Err(ApiError::BadRequest("invalid_audience"));
     }
     let rows = sqlx::query_as(&format!(
-        "SELECT {THREAD_COLS} FROM chat_threads t WHERE t.audience = $1 ORDER BY (t.unread_staff > 0) DESC, t.last_message_at DESC LIMIT $2"
+        "SELECT {THREAD_COLS}, u.name AS customer_name, u.phone AS customer_phone FROM chat_threads t
+           LEFT JOIN users u ON u.id = t.user_id
+          WHERE t.audience = $1 ORDER BY (t.unread_staff > 0) DESC, t.last_message_at DESC LIMIT $2"
     ))
     .bind(aud)
     .bind(LIST_LIMIT)
