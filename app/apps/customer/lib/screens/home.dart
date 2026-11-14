@@ -14,6 +14,7 @@ import 'feed.dart';
 import 'growth.dart';
 import 'notifications.dart';
 import 'service.dart';
+import 'service_groups.dart';
 
 part 'home_sections.dart';
 
@@ -71,6 +72,7 @@ class _HomeTabState extends State<HomeTab> {
   List<ContentItem> _banners = const [];
   ContentItem? _notice;
   List<ContentItem> _articles = const [];
+  List<ServiceGroup> _groups = defaultServiceGroups;
   List<Json> _feed = const [];
   bool _loaded = false;
 
@@ -113,7 +115,7 @@ class _HomeTabState extends State<HomeTab> {
         (rows as List).map((e) => ContentItem(e as Json)).toList();
     Future<List<ContentItem>?> content(String kind) =>
         _section(api.get('/content', query: {'kind': kind}), items);
-    final (bookings, feed, banners, notice, news, tips) = await (
+    final (bookings, feed, banners, notice, news, tips, groups) = await (
       _section(
         signedIn ? api.get('/bookings') : Future.value(const <Json>[]),
         (r) => (r as List).map((e) => Booking.fromJson(e as Json)).toList(),
@@ -128,6 +130,7 @@ class _HomeTabState extends State<HomeTab> {
       content('notice'),
       content('news'),
       content('tip'),
+      fetchServiceGroups(api),
     ).wait;
     if (!mounted) return;
     if (feed != null) unawaited(context.appRead.cache.write(_feedKey, feed));
@@ -142,6 +145,7 @@ class _HomeTabState extends State<HomeTab> {
         _articles = _alternate(news ?? const [], tips ?? const []);
       }
       _feed = feed ?? _feed;
+      _groups = groups;
     });
   }
 
@@ -266,7 +270,7 @@ class _HomeTabState extends State<HomeTab> {
                   addresses: app.addresses,
                 ),
                 const SizedBox(height: Space.xs),
-                _ServiceGrid(services: app.services),
+                _GroupGrid(groups: _groups, services: app.services),
                 if (!signedIn) const WelcomeOfferLine(),
                 const SizedBox(height: Space.md),
                 Divider(height: 1, thickness: 1, color: c.line),
