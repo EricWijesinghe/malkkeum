@@ -31,8 +31,10 @@ class _QuotesTabState extends State<QuotesTab> {
   bool _unseen = false;
   int _seen = -1;
 
+  late final _pager = Pager<Json>(context.api, '/partner/quotes', (r) => r);
+
   Future<List<Json>> _load() async {
-    final r = (await context.api.get('/partner/quotes') as List).cast<Json>();
+    final r = await _pager.first();
     // Opening the tab marks results as seen on the server; refresh the badge.
     if (mounted) context.proRead.loadBadges().ignore();
     return r;
@@ -92,7 +94,9 @@ class _QuotesTabState extends State<QuotesTab> {
             child: AsyncView<List<Json>>(
               key: _view,
               load: _load,
-              builder: (context, all, reload) {
+              builder: (context, _, reload) => LoadMore<Json>(
+                pager: _pager,
+                builder: (context, all) {
                 final items = all
                     .where(
                       (q) =>
@@ -100,7 +104,8 @@ class _QuotesTabState extends State<QuotesTab> {
                           (!_unseen || q['seen_by_pro'] == false),
                     )
                     .toList();
-                if (items.isEmpty) {
+                // A filter can empty a loaded page; the list stays so the next page still loads on scroll.
+                if (items.isEmpty && !_pager.hasMore) {
                   return EmptyState(
                     icon: Icons.request_quote_rounded,
                     title: t.pNoQuotes,
@@ -174,7 +179,8 @@ class _QuotesTabState extends State<QuotesTab> {
                     ],
                   ),
                 );
-              },
+                },
+              ),
             ),
           ),
         ],

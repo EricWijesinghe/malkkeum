@@ -1,11 +1,7 @@
 //! First-touch acquisition: UTM and referral params the site and customer app captured. Stored once on customer
 //! signup (`users.acquisition`, never overwritten) and summarised for the console by source, medium and campaign.
 
-use crate::{
-    auth::Admin,
-    error::ApiResult,
-    state::AppState,
-};
+use crate::{auth::Admin, error::ApiResult, state::AppState};
 use axum::{
     Json, Router,
     extract::{Query, State},

@@ -5,6 +5,8 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'cancel_policy.dart';
+import 'catalog_demo.dart';
+import 'catalog_rules.dart';
 
 /// Prices, durations, availability, slot capacity and the quote formula — no code change needed.
 class CatalogScreen extends StatelessWidget {
@@ -14,7 +16,7 @@ class CatalogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return DefaultTabController(
-      length: 4,
+      length: 7,
       child: Column(
         children: [
           TabBar(
@@ -24,7 +26,10 @@ class CatalogScreen extends StatelessWidget {
               Tab(text: t.cPricing),
               Tab(text: t.cSlotCapacity),
               Tab(text: t.cFormula),
+              Tab(text: t.cgTabPeak),
+              Tab(text: t.cgTabQuality),
               Tab(text: t.cTabCancelPolicy),
+              Tab(text: t.cgTabDemo),
             ],
           ),
           const Expanded(
@@ -33,7 +38,10 @@ class CatalogScreen extends StatelessWidget {
                 _Services(),
                 _Capacity(),
                 _Formula(),
+                PeakTab(),
+                QualityTab(),
                 CancelPolicyTab(),
+                DemoTab(),
               ],
             ),
           ),
@@ -82,6 +90,7 @@ class _ServicesState extends State<_Services> {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(t.cActive),
+                    subtitle: Text(t.cgArchiveHint),
                     value: active,
                     onChanged: (v) => set(() => active = v),
                   ),
@@ -184,18 +193,27 @@ class _ServicesState extends State<_Services> {
       builder: (context, rows, _) => ListView(
         padding: const EdgeInsets.all(Space.lg),
         children: [
+          if (context.console.isAdmin)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: () => _create(),
+                icon: const Icon(Icons.add),
+                label: Text(t.cgNewService),
+              ),
+            ),
           for (final s in rows)
             Card(
               elevation: 0,
               child: ListTile(
                 leading: ServiceGlyph(s['code'] as String, size: 40),
-                title: Text(t.service(s['code'] as String)),
+                title: Text(_name(context, s)),
                 subtitle: Text(_priceSummary(context, s['pricing'] as Json)),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (s['active'] != true)
-                      Tag(label: t.statusCancelled, hue: StatusHues.cancelled),
+                      Tag(label: t.cgArchived, hue: StatusHues.cancelled),
                     const Icon(Icons.edit_outlined),
                   ],
                 ),
@@ -209,6 +227,26 @@ class _ServicesState extends State<_Services> {
     );
   }
 
+  String _name(BuildContext context, Json s) {
+    final name = (s['content'] as Json?)?['name'];
+    return name is String && name.isNotEmpty
+        ? name
+        : context.t.service(s['code'] as String);
+  }
+
+  Future<void> _create() async {
+    final draft = await _askNewService(context);
+    if (draft == null || !mounted) return;
+    final t = context.t;
+    try {
+      await context.api.post('/admin/services', draft);
+      if (mounted) showToast(context, t.cgServiceCreated);
+      await _view.currentState?.reload();
+    } on ApiException catch (e) {
+      if (mounted) showToast(context, _createError(t, e));
+    }
+  }
+
   String _priceSummary(BuildContext context, Json p) => switch (p['type']) {
     'fixed' =>
       '${context.won((p['price'] as num).toInt())} · ${context.t.duration((p['minutes'] as num).toInt())}',
@@ -219,6 +257,124 @@ class _ServicesState extends State<_Services> {
           .join(' / '),
     _ => context.t.quoteBadge,
   };
+}
+
+String _createError(T t, ApiException e) => switch (e.code) {
+  'service_exists' => t.cgCodeTaken,
+  'invalid_service' => t.cgServiceInvalid,
+  _ => t.error(e),
+};
+
+/// The POST body from the dialog fields. Bad numbers go to the server as 0, which it refuses with a message.
+Json _newServiceBody({
+  required String code,
+  required String name,
+  required bool quote,
+  required String price,
+  required String minutes,
+}) {
+  final pricing = quote
+      ? <String, Object?>{'type': 'quote'}
+      : <String, Object?>{
+          'type': 'fixed',
+          'price': int.tryParse(price) ?? 0,
+          'minutes': int.tryParse(minutes) ?? 0,
+        };
+  return {
+    'code': code,
+    'pricing': pricing,
+    'needs_preparation': false,
+    'max_pyeong': null,
+    'content': {'name': name},
+    'active': true,
+    'sort_order': 100,
+  };
+}
+
+/// New-service dialog. Returns the POST body, or null when cancelled.
+Future<Json?> _askNewService(BuildContext context) async {
+  final t = context.t;
+  final code = TextEditingController();
+  final name = TextEditingController();
+  final price = TextEditingController();
+  final minutes = TextEditingController();
+  var quote = false;
+  final body = await showDialog<Json>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, set) => AlertDialog(
+        title: Text(t.cgNewServiceTitle),
+        content: SizedBox(
+          width: 420,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: code,
+                  decoration: InputDecoration(
+                    labelText: t.cgServiceCode,
+                    helperText: t.cgServiceCodeHint,
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: name,
+                  decoration: InputDecoration(
+                    labelText: t.cgServiceName,
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: Text(t.cgPriceFixed),
+                      selected: !quote,
+                      onSelected: (_) => set(() => quote = false),
+                    ),
+                    ChoiceChip(
+                      label: Text(t.cgPriceQuote),
+                      selected: quote,
+                      onSelected: (_) => set(() => quote = true),
+                    ),
+                  ],
+                ),
+                if (!quote) ...[
+                  const SizedBox(height: 8),
+                  _num(price, t.listPrice),
+                  const SizedBox(height: 8),
+                  _num(minutes, t.cMinutes),
+                ],
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(
+              _newServiceBody(
+                code: code.text.trim(),
+                name: name.text.trim(),
+                quote: quote,
+                price: price.text,
+                minutes: minutes.text,
+              ),
+            ),
+            child: Text(t.save),
+          ),
+        ],
+      ),
+    ),
+  );
+  disposeAfterClose([code, name, price, minutes]);
+  return body;
 }
 
 class _Capacity extends StatefulWidget {
