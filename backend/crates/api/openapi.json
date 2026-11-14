@@ -5792,6 +5792,38 @@
         }
       }
     },
+    "/v1/admin/host/jobs": {
+      "get": {
+        "operationId": "adminListHostJobs",
+        "tags": ["admin"],
+        "summary": "Server jobs the owner queued, with live state read from the server status files (admin only)",
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "adminEnqueueHostJob",
+        "tags": ["admin"],
+        "summary": "Queue one server job (backup, update, update-skip, channel, restart, schedule); needs owner TOTP and an Idempotency-Key header (admin only, logged)",
+        "requestBody": { "$ref": "#/components/requestBodies/Object" },
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/admin/host/jobs/{id}": {
+      "get": {
+        "operationId": "adminHostJobDetail",
+        "tags": ["admin"],
+        "summary": "One queued server job and its live state (admin only)",
+        "responses": {
+          "200": { "description": "OK" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/admin/renewals": {
       "get": {
         "operationId": "adminListRenewals",
