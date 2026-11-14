@@ -145,7 +145,14 @@ async fn member_sees_only_the_assigned_job_and_can_complete_it(pool: PgPool) {
         .expect("visit today");
     common::register_photo(&pool, member_id.parse().expect("member uuid")).await;
     let done_body = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
-    let (st, done) = call(&app, "POST", &format!("/v1/member/jobs/{job_a}/complete"), Some(m.as_str()), Some(done_body.clone())).await;
+    let (st, done) = call(
+        &app,
+        "POST",
+        &format!("/v1/member/jobs/{job_a}/complete"),
+        Some(m.as_str()),
+        Some(done_body.clone()),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{done}");
     assert!(done.get("net").is_none(), "no payout in the member response");
     let (status,): (i16,) = sqlx::query_as("SELECT status FROM bookings WHERE id = $1")
@@ -332,4 +339,24 @@ async fn studio_at_eleven_pyeong_is_refused_by_the_server(pool: PgPool) {
     .await;
     assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{b}");
     assert_eq!(b["error"]["code"], "studio_too_large");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn address_road_must_match_its_district(pool: PgPool) {
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0403").await;
+    let road = "서울특별시 송파구 올림픽로 300";
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/addresses",
+        Some(c.token.as_str()),
+        Some(json!({
+            "kind": "home", "label": "집", "road_address": road, "detail": "",
+            "district_code": common::DISTRICT, "size_pyeong": 11
+        })),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "{b}");
+    assert_eq!(b["error"]["code"], "invalid_address");
 }

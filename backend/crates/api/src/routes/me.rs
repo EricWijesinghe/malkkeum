@@ -270,6 +270,7 @@ impl AddressInput {
             && self.detail.len() <= MAX_ADDRESS_LEN
             && self.district_code.len() == 5
             && self.district_code.chars().all(|c| c.is_ascii_digit())
+            && crate::address::road_in_district(&self.road_address, &self.district_code)
             && (1..=500).contains(&self.size_pyeong);
         if ok { Ok(()) } else { Err(ApiError::BadRequest("invalid_address")) }
     }
