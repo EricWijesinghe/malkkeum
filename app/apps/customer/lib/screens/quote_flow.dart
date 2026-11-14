@@ -130,7 +130,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   bool get _moveIn => widget.service.code == 'move_in';
   bool get _wholeHome => widget.service.code == 'whole_home';
 
-  /// Whole-home starts at 집 구조 (the cleaning type page is skipped), so its numbers run 1/5.
+  /// Whole-home starts at 집 구조 (the cleaning type page is skipped) and is numbered out of 6 (CR-4).
   int get _firstStep => _wholeHome ? 1 : 0;
   bool get _homeFlow => widget.home != null;
 
@@ -214,7 +214,9 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
     _ => null,
   };
 
-  void _go(int step) {
+  void _go(int requested) {
+    // Whole-home has no cleaning type page: any edit to it lands on 집 구조 instead.
+    final step = _wholeHome && requested < _firstStep ? _firstStep : requested;
     // The estimate depends on every answer before it: ask again after a change.
     if (step <= _stepDate) _estimate = null;
     if (step < _stepAddress) _preview = null;
@@ -394,7 +396,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   );
 
   String _chip(T t, int i) =>
-      '${t.service(widget.service.code)} · ${i - _firstStep + 1}/${quoteSteps - _firstStep}';
+      '${t.service(widget.service.code)} · ${i - _firstStep + 1}/${_wholeHome ? quoteSteps : quoteSteps - _firstStep}';
 
   Widget _page(
     T t,

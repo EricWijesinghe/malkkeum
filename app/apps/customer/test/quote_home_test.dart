@@ -135,7 +135,7 @@ void main() {
   );
 
   testWidgets(
-    'whole-home asks 원룸·투룸 then starts the quote at 집 구조 with 1/5 and no type page',
+    'whole-home asks 원룸·투룸 then starts the quote at 집 구조 with 1/6 and no type page',
     (tester) async {
       await _pump(tester, (_) => MoveChooserScreen(service: _wholeHome));
 
@@ -146,7 +146,7 @@ void main() {
       );
       await _tap(tester, find.text(koT.hgHomeOneTwo));
 
-      expect(find.text(_chip('whole_home', 1, 5)), findsOneWidget);
+      expect(find.text(_chip('whole_home', 1, 6)), findsOneWidget);
       expect(
         find.byType(CircleChoice),
         findsNothing,
@@ -196,4 +196,40 @@ void main() {
     expect(find.text(koT.dfPleaseSelect), findsNWidgets(3));
     await unmount(tester);
   });
+
+  testWidgets(
+    'whole-home review: 변경 on 기본 정보 keeps the fixed cleaning type and luggage in the booking',
+    (tester) async {
+      final fake = await _pump(
+        tester,
+        (app) => QuoteFlowScreen(
+          service: _wholeHome,
+          home: MoveHome.oneTwoRoom,
+        ),
+      );
+      await _tap(tester, find.text(koT.dfLayoutOneHalf));
+      await _tap(tester, find.text(koT.dfNone).first); // duplex: no
+      await _tap(tester, _next());
+      await _tap(tester, find.text(koT.dfHas).last);
+      await _tap(tester, _next());
+      await _tap(tester, _next()); // address, preselected
+      await _tap(tester, _next()); // date and hour, preselected
+      expect(find.text(_chip('whole_home', 5, 6)), findsOneWidget);
+
+      await _tap(tester, find.text(koT.dfChange).at(1));
+      expect(find.text(_chip('whole_home', 1, 6)), findsOneWidget);
+      expect(find.byType(CircleChoice), findsNothing);
+      for (var i = 0; i < 4; i++) {
+        await _tap(tester, _next());
+      }
+      await _tap(tester, find.widgetWithText(PrimaryButton, koT.dfSubmitRequest));
+
+      final body = fake.lastCall('POST', '/bookings')!.json;
+      final answers = body['answers'] as Map<String, dynamic>;
+      expect(answers['cleaning_type'], 'lived_in_deep_clean');
+      expect(answers['luggage'], 'fully_lived_in');
+      expect(answers['home_type'], 'one_two_room');
+      await unmount(tester);
+    },
+  );
 }
