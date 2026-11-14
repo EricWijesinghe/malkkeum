@@ -111,21 +111,48 @@
         "tags": [
           "realtime"
         ],
-        "summary": "WebSocket: booking, chat and notification events. Browsers pass the token as ?token=",
+        "summary": "WebSocket: booking, chat and notification events. Authenticate with a ticket from POST /v1/realtime/ticket",
         "parameters": [
           {
-            "name": "token",
+            "name": "ticket",
             "in": "query",
             "required": false,
             "schema": {
               "type": "string"
             },
-            "description": "Access token for clients that cannot set headers"
+            "description": "Single-use ticket from POST /v1/realtime/ticket, valid 30 seconds"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "deprecated": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Deprecated: access token in the URL. Accepted for apps installed before tickets; use ticket"
           }
         ],
         "responses": {
           "101": {
             "description": "Switching protocols"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/realtime/ticket": {
+      "post": {
+        "operationId": "realtimeTicket",
+        "tags": [
+          "realtime"
+        ],
+        "summary": "Single-use WebSocket ticket, valid 30 seconds, bound to the caller",
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -213,6 +240,35 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/public/seller-info": {
+      "get": {
+        "operationId": "publicSellerInfo",
+        "tags": [
+          "public"
+        ],
+        "summary": "Seller details as an HTML fragment for the website (?field= for one value)",
+        "security": [],
+        "parameters": [
+          {
+            "name": "field",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["legal_name", "ceo", "registration_no", "mail_order_no", "address", "privacy_officer", "hosting_provider", "support_phone", "support_email"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK, text/html fragment"
+          },
+          "404": {
+            "description": "Unknown field"
           }
         }
       }
@@ -2586,6 +2642,101 @@
         }
       }
     },
+    "/v1/admin/notify-templates": {
+      "get": {
+        "operationId": "adminNotifyTemplates",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Notification text per event: built-in text and the owner's override, per language",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/notify-templates/preview": {
+      "post": {
+        "operationId": "adminPreviewNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fill a notification text with sample values; nothing is saved",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/notify-templates/{kind}/{locale}": {
+      "parameters": [
+        {
+          "name": "kind",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        {
+          "name": "locale",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ko",
+              "en"
+            ]
+          }
+        }
+      ],
+      "put": {
+        "operationId": "adminSaveNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Save the owner's title and message for one event and language",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "adminResetNotifyTemplate",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Restore the built-in text for one event and language",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/customers": {
       "get": {
         "operationId": "adminCustomers",
@@ -3398,6 +3549,100 @@
         }
       }
     },
+    "/v1/admin/audit": {
+      "get": {
+        "operationId": "adminListAudit",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Staff activity log, newest first (owner only, cursor-paginated; filters are exact unless noted)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "actor_role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "staff",
+                "customer",
+                "pro",
+                "member",
+                "system"
+              ]
+            }
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[a-z_.]+$"
+            },
+            "description": "Exact action code, or a prefix such as case. Anything else is 400 invalid_action."
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "First Seoul day included (YYYY-MM-DD)."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Last Seoul day included (YYYY-MM-DD). Earlier than from is 400 invalid_range."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Each row's data_text is the recorded JSON as plain text, cut at 4000 characters.",
+            "headers": {
+              "X-Next-Cursor": {
+                "$ref": "#/components/headers/NextCursor"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
     "/v1/admin/ops/status": {
       "get": {
         "operationId": "adminOpsStatus",
@@ -3451,6 +3696,55 @@
           "admin"
         ],
         "summary": "Owner sets the cancellation fee tiers",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/app-links": {
+      "get": {
+        "operationId": "adminGetAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Android and iOS app link values, with the files they produce",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      },
+      "put": {
+        "operationId": "adminPutAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Owner saves the app link values (overrides the env values)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/app-links/verify": {
+      "post": {
+        "operationId": "adminVerifyAppLinks",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Checks app link values and shows the files without saving",
         "responses": {
           "200": {
             "description": "OK"
@@ -4524,6 +4818,109 @@
           "admin"
         ],
         "summary": "Errors reported by the apps",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/customers": {
+      "get": {
+        "operationId": "adminPrivacyLookup",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Live customers with a phone number (customer rights request lookup)",
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/customers/{id}/export": {
+      "get": {
+        "operationId": "adminPrivacyExport",
+        "tags": [
+          "admin"
+        ],
+        "summary": "One customer's data as JSON, or as CSV with format=csv (logged as a privacy request)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/customers/{id}/delete": {
+      "post": {
+        "operationId": "adminPrivacyDelete",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete a customer's account; admin only, the phone must be typed back (logged as a privacy request)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Object"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        }
+      }
+    },
+    "/v1/admin/privacy/requests": {
+      "get": {
+        "operationId": "adminPrivacyRequests",
+        "tags": [
+          "admin"
+        ],
+        "summary": "Log of customer rights requests, newest first (the last 200)",
         "responses": {
           "200": {
             "description": "OK"

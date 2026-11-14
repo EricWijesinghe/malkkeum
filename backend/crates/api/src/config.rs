@@ -24,6 +24,8 @@ pub struct Config {
     pub seed_admin: Option<(String, String)>,
     /// One-time code for creating the owner account in the console (installer sets it; random otherwise).
     pub setup_code: Option<String>,
+    /// Unix seconds when the installer issued `setup_code`; the code expires two hours later.
+    pub setup_code_at: Option<i64>,
     /// Kakao REST app id: a Kakao token is only accepted if it was issued to this app.
     pub kakao_app_id: Option<String>,
     /// Kakao Admin key (`KAKAO_ADMIN_KEY`): unlinks the Kakao account when the user deletes theirs. None: no unlink.
@@ -106,7 +108,10 @@ pub struct AppleSignInKey {
 impl std::fmt::Debug for AppleSignInKey {
     // The private key never reaches logs or panics.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("AppleSignInKey").field("team_id", &self.team_id).field("key_id", &self.key_id).finish_non_exhaustive()
+        f.debug_struct("AppleSignInKey")
+            .field("team_id", &self.team_id)
+            .field("key_id", &self.key_id)
+            .finish_non_exhaustive()
     }
 }
 
@@ -123,7 +128,11 @@ impl AppleSignInKey {
         // Env values often carry the PEM on one line with literal `\n`.
         let pem = private_key.trim().replace("\\n", "\n");
         jsonwebtoken::EncodingKey::from_ec_pem(pem.as_bytes()).map_err(|_| "invalid_private_key")?;
-        Ok(Self { team_id: team_id.into(), key_id: key_id.into(), private_key: pem })
+        Ok(Self {
+            team_id: team_id.into(),
+            key_id: key_id.into(),
+            private_key: pem,
+        })
     }
 }
 
@@ -161,6 +170,12 @@ where
         return Err(ConfigError::Invalid(key, format!("must be at least {min}")));
     }
     Ok(value)
+}
+
+fn setup_code_at() -> Result<Option<i64>, ConfigError> {
+    opt("SETUP_CODE_AT")
+        .map(|v| v.parse().map_err(|_| ConfigError::Invalid("SETUP_CODE_AT", format!("not a number: {v}"))))
+        .transpose()
 }
 
 /// Scrape token for `/metrics`. Short tokens are refused so a typo cannot open the endpoint to guessing.
@@ -230,7 +245,9 @@ fn apple_signin(team_id: Option<&str>) -> Result<Option<AppleSignInKey>, ConfigE
         (None, None) => Ok(None),
         (Some(key_id), Some(pem)) => {
             let team = team_id.ok_or(ConfigError::Missing("APPLE_TEAM_ID"))?;
-            AppleSignInKey::new(team, &key_id, &pem).map(Some).map_err(|e| ConfigError::Invalid("APPLE_PRIVATE_KEY", e.into()))
+            AppleSignInKey::new(team, &key_id, &pem)
+                .map(Some)
+                .map_err(|e| ConfigError::Invalid("APPLE_PRIVATE_KEY", e.into()))
         }
         _ => Err(ConfigError::Invalid("APPLE_KEY_ID", "set APPLE_KEY_ID and APPLE_PRIVATE_KEY together".into())),
     }
@@ -303,6 +320,7 @@ impl Config {
                 .unwrap_or_default(),
             seed_admin,
             setup_code: opt("SETUP_CODE").map(|c| c.to_uppercase().replace(['-', ' '], "")),
+            setup_code_at: setup_code_at()?,
             kakao_app_id: opt("KAKAO_APP_ID"),
             kakao_admin_key: opt("KAKAO_ADMIN_KEY"),
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
@@ -352,10 +370,22 @@ mod private_url_tests {
 
     #[test]
     fn only_loopback_and_private_networks_count_as_local() {
-        for ok in ["http://127.0.0.1:8080", "http://localhost:8080", "http://10.0.2.2:8080", "http://192.168.0.5:8080", "http://172.25.243.168:8080"] {
+        for ok in [
+            "http://127.0.0.1:8080",
+            "http://localhost:8080",
+            "http://10.0.2.2:8080",
+            "http://192.168.0.5:8080",
+            "http://172.25.243.168:8080",
+        ] {
             assert!(is_private_url(ok), "{ok}");
         }
-        for bad in ["https://malkkeum.kr", "http://172.32.0.1", "http://8.8.8.8", "https://192.168.evil.com", "http://localhost.evil.com"] {
+        for bad in [
+            "https://malkkeum.kr",
+            "http://172.32.0.1",
+            "http://8.8.8.8",
+            "https://192.168.evil.com",
+            "http://localhost.evil.com",
+        ] {
             assert!(!is_private_url(bad), "{bad}");
         }
     }
@@ -365,19 +395,23 @@ const SHA256_BYTES: usize = 32;
 const TEAM_ID_LEN: usize = 10;
 
 /// Upper-cased `AA:BB:..` form, 32 hex pairs, as Android's assetlinks.json expects.
-fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
+pub(crate) fn cert_fingerprints(key: &'static str, values: Vec<String>) -> Result<Vec<String>, ConfigError> {
     values
         .into_iter()
         .map(|v| {
             let v = v.to_ascii_uppercase();
             let parts: Vec<&str> = v.split(':').collect();
             let ok = parts.len() == SHA256_BYTES && parts.iter().all(|p| p.len() == 2 && p.bytes().all(|b| b.is_ascii_hexdigit()));
-            if ok { Ok(v) } else { Err(ConfigError::Invalid(key, format!("not a SHA-256 fingerprint: {v}"))) }
+            if ok {
+                Ok(v)
+            } else {
+                Err(ConfigError::Invalid(key, format!("not a SHA-256 fingerprint: {v}")))
+            }
         })
         .collect()
 }
 
-fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
+pub(crate) fn team_id(raw: Option<String>) -> Result<Option<String>, ConfigError> {
     match raw {
         Some(t) if t.len() == TEAM_ID_LEN && t.bytes().all(|b| b.is_ascii_alphanumeric()) => Ok(Some(t)),
         Some(t) => Err(ConfigError::Invalid("APPLE_TEAM_ID", format!("not a 10-character Team ID: {t}"))),

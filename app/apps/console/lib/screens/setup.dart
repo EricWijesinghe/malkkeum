@@ -5,6 +5,7 @@ import 'package:ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../state.dart';
+import 'setup_app_links.dart';
 import 'setup_business.dart';
 import 'setup_guides.dart';
 import 'setup_pay_methods.dart';
@@ -59,6 +60,8 @@ class _SetupScreenState extends State<SetupScreen> {
                 ),
                 const SizedBox(height: Space.md),
                 HeartbeatCard(configured: data['heartbeat_configured'] == true),
+                const SizedBox(height: Space.md),
+                const AppLinksCard(),
                 for (final c in cards) ...[
                   const SizedBox(height: Space.md),
                   IntegrationCard(

@@ -3,8 +3,8 @@
 use super::auth::{PhoneBind, conflict_on_unique, consume_otp};
 use crate::{
     auth::{Pro, normalize_phone},
-    crypto,
     contract::{PageQuery, json_row_cursor, page_limit, paged, ts_id_cursor},
+    crypto,
     error::{ApiError, ApiResult},
     state::AppState,
 };
@@ -84,10 +84,7 @@ pub(crate) async fn delete_pro(s: &AppState, id: Uuid) -> ApiResult<()> {
         .bind(id)
         .execute(&mut *tx)
         .await?;
-    sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1")
-        .bind(id)
-        .execute(&mut *tx)
-        .await?;
+    sqlx::query("DELETE FROM payout_accounts WHERE pro_id = $1").bind(id).execute(&mut *tx).await?;
     sqlx::query("DELETE FROM user_identities WHERE role = 'pro' AND subject_id = $1")
         .bind(id)
         .execute(&mut *tx)
@@ -248,7 +245,10 @@ async fn invite(State(s): State<AppState>, Pro(a): Pro, Json(i): Json<Invite>) -
     let id: Uuid = sqlx::query_scalar("INSERT INTO team_members (pro_id, name, phone, role) VALUES ($1,$2,$3,'member') ON CONFLICT (pro_id, phone) DO UPDATE SET name = $2, invite_status = 'invited' RETURNING id")
         .bind(a.id).bind(i.name.trim()).bind(&phone).fetch_one(&s.db).await?;
     let locale = crate::i18n::locale_of(&s.db, crate::realtime::Recipient::Pro(a.id)).await;
-    let _ = s.providers.send_sms(&phone, &crate::i18n::tr(&locale, "팀원으로 초대됐어요. 파트너 앱을 설치해 주세요.")).await;
+    let text = crate::i18n::tr(&locale, "팀원으로 초대됐어요. 파트너 앱을 설치해 주세요.");
+    if let Err(e) = crate::sms_outbox::send(&s, None, &phone, "team.invite", crate::sms_outbox::Message::Sms(&text)).await {
+        tracing::warn!(error = %e, "team invite text not queued");
+    }
     Ok(Json(json!({ "id": id })))
 }
 

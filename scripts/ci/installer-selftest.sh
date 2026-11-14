@@ -13,6 +13,7 @@ nt() { if "${@:2}"; then FAIL=$((FAIL + 1)); echo "FAIL (should fail): $1"; else
 eq() { [ "$1" = "$2" ] || { echo "   got [$1] want [$2]"; return 1; }; }
 
 bash -n "$ROOT/deploy/install.sh"
+bash -n "$ROOT/deploy/agent.sh"
 # shellcheck source=deploy/install.sh
 DAHAE_SELFTEST=1 . "$ROOT/deploy/install.sh"
 set +e # the sourced installer turned on -e; failures are counted below, not fatal
@@ -24,6 +25,12 @@ t  "norm_domain"           eq "$(norm_domain 'https://MyShop.co.kr/x')" myshop.c
 nt "domain empty"          valid_domain ""
 nt "domain no dot"         valid_domain localhost
 nt "domain shell chars"    valid_domain 'a.com;rm -rf /'
+nt "domain IP literal"     valid_domain 1.2.3.4
+nt "domain double dot"     valid_domain a..b
+nt "domain .local"         valid_domain x.local
+nt "domain too long label" valid_domain "$(printf 'a%.0s' $(seq 64)).co.kr"
+t  "domain punycode tld"   valid_domain shop.xn--3e0b707e
+nt "email percent local"   valid_email 'a%b@shop.co.kr'
 t  "email empty ok"        valid_email ""
 t  "email ok"              valid_email owner@myshop.co.kr
 nt "email bad"             valid_email 'owner@shop'
@@ -100,6 +107,11 @@ t  "env_set add"           eq "$(env_get NEWKEY)" v=1
 export YES=1 # read by confirm() in the sourced CLI
 t  "confirm --yes"         confirm "q" yes
 sub() { ( "$@" ) >/dev/null 2>&1; } # die exits: run it in a subshell
+env_set ESC 'a\nB=c'                  # a literal backslash-n stays two characters on one line
+t  "env_set keeps backslash-n"     eq "$(env_get ESC)" 'a\nB=c'
+t  "env_set writes one line"       eq "$(grep -c '^B=' .env || true)" 0
+nt "env_set refuses a newline"     sub env_set BAD "$(printf 'a\nB=c')"
+nt "env_set refuses a CR"          sub env_set BAD "$(printf 'a\rB=c')"
 
 # ---- restore-offsite only takes real backup names (no ../ paths) ----
 t  "backup name"           valid_backup_name db-20261110-033000.sql.gz
@@ -267,7 +279,7 @@ pub() { # pub 태그 : the release job's delivery step, pushing to $SB/dist.git 
 }
 g() { git -C "$SB/dist.git" "$@"; }
 has() { grep -qF -- "$2" <<< "$(g show "$1")"; } # has 태그:파일 문자열 (no pipe: grep -q + pipefail = SIGPIPE)
-sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | cut -d' ' -f1)" ]; }
+sums_ok() { [ "$(g show "$1:install.sh" | sha256sum | cut -d' ' -f1)" = "$(g show "$1:SHA256SUMS" | awk '{ sub(/^\*/, "", $2) } $2 == "install.sh" { print $1 }')" ]; }
 t  "publish stable"        pub v1.0.0
 t  "tag is annotated"      eq "$(g cat-file -t v1.0.0)" tag
 t  "tag = main commit"     eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
@@ -289,6 +301,96 @@ t  "beta tag SHA256SUMS matches" sums_ok v1.1.0-beta.1
 t  "stable tag unchanged by beta" eq "$(g rev-parse 'v1.0.0^{commit}')" "$(g rev-parse main)"
 g -c user.name=t -c user.email=t@t tag -f -a v1.0.0 -m moved beta >/dev/null
 nt "moved tag is refused"  pub v1.0.0
+
+# ---- scheduled jobs: cron table, update gates, setup code expiry (a copy of the CLI writes into the sandbox, never /etc) ----
+set +e
+cd "$SB"
+sed "s|/etc/cron.d/malkkeum|$SB/cron-out|" "$SB/dahae" > "$SB/dahae-cron"
+cron_cli() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; "$@" ) >/dev/null 2>&1; }
+has_updated() { case "$1" in *UPDATED*) return 0 ;; *) return 1 ;; esac; }
+auto_run() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; cmd_update() { echo UPDATED; }; docker() { case "$*" in *malkkeum-web*) [ -z "${WEB_FAIL:-}" ] || return 1 ;; esac; printf '%s' "$FAKE_MANIFEST"; }; cmd_auto_update ) 2>&1; }
+setup_out() { ( DAHAE_SELFTEST=1 . "$SB/dahae-cron"; cd "$SB"; dc() { return 0; }; cmd_setup_code "$@" ) 2>/dev/null; }
+rm -f "$SB/update-schedule"
+cron_cli cmd_write_cron
+t  "default cron: backup under the lock"  grep -qF "30 3 * * * root flock -w 3600 /run/dahae.lock /usr/local/bin/dahae backup" "$SB/cron-out"
+t  "default cron: weekly update Monday"   grep -qF "0 4 * * 1 root flock -n -E 0 /run/dahae.lock /usr/local/bin/dahae auto-update" "$SB/cron-out"
+t  "default cron: heartbeat kept"         grep -qF "*/5 * * * * root /usr/local/bin/malkkeum-heartbeat" "$SB/cron-out"
+cron_cli cmd_update_schedule tue@06:30
+t  "schedule tue 06:30 in the cron table" grep -qF "30 6 * * 2 root flock -n -E 0" "$SB/cron-out"
+t  "schedule kept in its file"           eq "$(cat "$SB/update-schedule")" tue@06:30
+nt "bad schedule refused"                cron_cli cmd_update_schedule mon@4:00
+cron_cli cmd_update_schedule off
+nt "off removes the update line"         grep -qF "auto-update" "$SB/cron-out"
+t  "off keeps the backup line"           grep -qF "dahae backup" "$SB/cron-out"
+
+# auto-update: a skip mark, a waiting job, and the 24-hour wait for a new stable digest each skip the update
+mkdir -p "$SB/host" "$SB/jobs/inbox"
+printf 'CHANNEL=stable\nIMAGE_REPO=ghcr.io/owner\n' > "$SB/.env"
+FAKE_MANIFEST='{"v":1}'
+touch "$SB/host/skip-next-update"
+nt "skip mark skips the update"          has_updated "$(auto_run)"
+t  "skip mark is used up"                test ! -e "$SB/host/skip-next-update"
+touch "$SB/jobs/inbox/waiting.job"
+nt "a waiting job defers the update"     has_updated "$(auto_run)"
+rm -f "$SB/jobs/inbox/waiting.job"
+nt "a new stable digest waits 24 hours"  has_updated "$(auto_run)"
+key=$(printf '%s\n%s\n' "$FAKE_MANIFEST" "$FAKE_MANIFEST" | sha256sum | cut -c1-64)
+printf '%s %s\n' "$key" "$(( $(date +%s) - 90000 ))" > "$SB/host/first-seen"
+t  "seen 25 hours ago: the update runs"  has_updated "$(auto_run)"
+t  "update records the running digest"   eq "$(cat "$SB/host/applied-key")" "$key"
+rm -f "$SB/host/first-seen"
+t  "running digest: no 24-hour wait"     has_updated "$(auto_run)"
+rm -f "$SB/host/applied-key" "$SB/host/first-seen"
+nt "unreadable web manifest: no update"  has_updated "$(WEB_FAIL=1 auto_run)"
+t  "unreadable web manifest: exit 1 so the alert runs" eq "$(WEB_FAIL=1 auto_run >/dev/null; echo $?)" 1
+
+# setup code: shown in groups of four for 2 hours, then only --renew gives a new one
+printf 'SETUP_CODE=ABCDEFGHJKMN\nSETUP_CODE_AT=%s\n' "$(date +%s)" > "$SB/.env"
+t  "setup code shown in groups"          eq "$(setup_out)" ABCD-EFGH-JKMN
+printf 'SETUP_CODE=ABCDEFGHJKMN\nSETUP_CODE_AT=%s\n' "$(( $(date +%s) - 8000 ))" > "$SB/.env"
+nt "setup code expires after 2 hours"    setup_out
+t  "renew gives a 12-character code"     eq "$(setup_out --renew | tail -n1 | tr -d '\n-' | wc -c | tr -d ' ')" 12
+
+# MALKKEUM_ANSWERS: only DOMAIN and EMAIL are read, values hold no spaces, environment values win
+printf 'DOMAIN=answers.example.kr\nEMAIL=owner@example.kr\nEVIL=1\n' > "$SB/answers"
+unset MALKKEUM_DOMAIN MALKKEUM_EMAIL MALKKEUM_EVIL
+load_answers "$SB/answers"
+t  "answers: domain"                     eq "$MALKKEUM_DOMAIN" answers.example.kr
+t  "answers: email"                      eq "$MALKKEUM_EMAIL" owner@example.kr
+t  "answers: other keys ignored"         eq "${MALKKEUM_EVIL:-}" ""
+MALKKEUM_DOMAIN=keep.example.kr load_answers "$SB/answers"
+t  "answers: environment wins"           eq "$MALKKEUM_DOMAIN" keep.example.kr
+printf 'DOMAIN=a b.kr\n' > "$SB/answers-bad"
+nt "answers: space in value refused"     sub load_answers "$SB/answers-bad"
+unset MALKKEUM_DOMAIN MALKKEUM_EMAIL
+
+# the agent is checked against the fingerprint pinned in install.sh
+printf 'echo agent\n' > "$SB/agent.sh"
+pin=$(sha256sum "$SB/agent.sh" | cut -d' ' -f1)
+t  "agent matches its pinned sha256"     agent_sha_ok "$SB/agent.sh" "$pin"
+nt "agent without a pin refused"         agent_sha_ok "$SB/agent.sh" ""
+printf 'echo changed\n' > "$SB/agent.sh"
+nt "changed agent refused"               agent_sha_ok "$SB/agent.sh" "$pin"
+
+# systemd units: path (inbox), service (root, sandboxed, 3 h limit), timer (every minute)
+mkdir -p "$SB/units"; write_units "$SB/units"
+t  "unit: path watches the inbox"        grep -qF "PathExistsGlob=$SB/jobs/inbox/*.job" "$SB/units/dahae-agent.path"
+t  "unit: service runs the agent"        grep -qF "ExecStart=/bin/bash $SB/agent.sh run" "$SB/units/dahae-agent.service"
+t  "unit: service sandboxed"             grep -qF "ProtectSystem=full" "$SB/units/dahae-agent.service"
+t  "unit: service may run 3 hours"       grep -qF "TimeoutStartSec=3h" "$SB/units/dahae-agent.service"
+t  "unit: timer every minute"            grep -qF "OnCalendar=*-*-* *:*:00" "$SB/units/dahae-agent.timer"
+
+# compose mounts the job spool into the API and the progress folder into the web container
+t  "api mounts inbox read-write"         grep -qF "/opt/malkkeum/jobs/inbox:/jobs/inbox," "$ROOT/deploy/docker-compose.yml"
+t  "api mounts status and out read-only" grep -qF "/opt/malkkeum/jobs/status:/jobs/status:ro, /opt/malkkeum/jobs/out:/jobs/out:ro]" "$ROOT/deploy/docker-compose.yml"
+t  "web mounts progress read-only"       grep -qF ":/srv/ops-progress:ro]" "$ROOT/deploy/docker-compose.yml"
+t  "Caddy progress route is no-store"    grep -qF 'Cache-Control "no-store"' "$ROOT/deploy/Caddyfile"
+# the agent is installed on a fresh install and on an update: install_agent is called from main, not from a branch
+t  "install_agent runs in main"          grep -qE '^  install_agent( |$)' "$ROOT/deploy/install.sh"
+t  "cron table written by the CLI"       grep -qF '"$BIN/dahae" write-cron' "$ROOT/deploy/install.sh"
+t  "publish fills RELEASE_RAW"           grep -qF 'RELEASE_RAW=$RAW/$ref' "$ROOT/deploy/publish-delivery.sh"
+
+bash "$ROOT/scripts/ci/agent-selftest.sh" >/dev/null || { FAIL=$((FAIL + 1)); echo "FAIL: agent self-test (run scripts/ci/agent-selftest.sh)"; }
 
 echo "installer self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

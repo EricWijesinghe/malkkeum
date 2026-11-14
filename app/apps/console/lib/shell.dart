@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ui/ui.dart';
 
+import 'screens/audit.dart';
 import 'screens/bookings.dart';
 import 'screens/catalog.dart';
 import 'screens/dashboard.dart';
 import 'screens/finance.dart';
 import 'screens/inbox.dart';
 import 'screens/marketing.dart';
+import 'screens/notify_templates.dart';
 import 'screens/ops.dart';
+import 'screens/rules.dart';
 import 'screens/people.dart';
+import 'screens/privacy_requests.dart';
 import 'screens/setup.dart';
 import 'screens/subscriptions.dart';
 import 'state.dart';
@@ -115,10 +119,37 @@ final _sections = <_Section>[
     adminOnly: true,
   ),
   _Section(
+    'c_rules',
+    Icons.rule_rounded,
+    (t) => t.rulesTab,
+    () => const RulesScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    'c_settings',
+    Icons.notifications_active_rounded,
+    (t) => t.ntNavLabel,
+    () => const NotifyTemplatesScreen(),
+    adminOnly: true,
+  ),
+  _Section(
     'c_staff',
     Icons.monitor_heart_rounded,
     (t) => t.cOps,
     () => const OpsScreen(),
+  ),
+  _Section(
+    'c_audit',
+    Icons.history_rounded,
+    (t) => t.cAudit,
+    () => const AuditScreen(),
+    adminOnly: true,
+  ),
+  _Section(
+    'c_privacy',
+    Icons.privacy_tip_rounded,
+    (t) => t.prqTitle,
+    () => const PrivacyRequestsScreen(),
   ),
 ];
 
