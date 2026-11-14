@@ -20,6 +20,7 @@
   <!-- The bundled Korean face the app paints with: fetched early so date pickers and headers never show
        boxes while it loads. Same files as the ui package's Dahae Sans family (pubspec.yaml). -->
   <link rel="preload" href="assets/packages/ui/assets/fonts/DahaeSans-Regular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="assets/packages/ui/assets/fonts/DahaeSans-Medium.otf" as="font" type="font/otf" crossorigin>
   <link rel="preload" href="assets/packages/ui/assets/fonts/DahaeSans-SemiBold.otf" as="font" type="font/otf" crossorigin>
   <link rel="preload" href="assets/packages/ui/assets/fonts/DahaeSans-Bold.otf" as="font" type="font/otf" crossorigin>
 
@@ -44,7 +45,7 @@
   <div id="splash" aria-hidden="true"><div class="wrap"><svg class="mark" viewBox="0 0 1024 1024" width="72" height="72" aria-hidden="true"><path d="M150 470 512 175 874 470V890a40 40 0 0 1-40 40H190a40 40 0 0 1-40-40Z" fill="#1E9EBA"/><path d="M110 440 512 110 914 440" fill="none" stroke="#187A8F" stroke-width="110" stroke-linecap="round" stroke-linejoin="round"/><path d="M345 650 455 760 690 520" fill="none" stroke="#FFD95A" stroke-width="105" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="word">다해</div><div class="dot"></div></div></div>
   <script>
     // Hide the splash once the home has its first data (the app's dahae-ready event). A safety timeout
-    // covers a stalled load; the first Flutter frame also hides it so a slow data call never holds it.
+    // covers a stalled load so a dead network never holds the splash forever.
     (function () {
       var splash = document.getElementById('splash');
       var hide = function () {
@@ -52,7 +53,6 @@
         setTimeout(function () { splash.remove(); }, 400);
       };
       window.addEventListener('dahae-ready', hide, { once: true });
-      window.addEventListener('flutter-first-frame', hide, { once: true });
       setTimeout(hide, 12000);
     })();
   </script>

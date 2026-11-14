@@ -214,10 +214,12 @@ Future<void> openTopicChat(
   if (!await requireSignIn(context, reason: SignInReason.chat)) return;
   if (!context.mounted) return;
   try {
-    final r = await context.api.post('/chat/threads', {
-      'topic': topic,
-      'booking_id': bookingId,
-    }) as Json;
+    final r =
+        await context.api.post('/chat/threads', {
+              'topic': topic,
+              'booking_id': bookingId,
+            })
+            as Json;
     if (!context.mounted) return;
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -268,20 +270,7 @@ class VisitDateRow extends StatelessWidget {
               initialDate: date,
               firstDate: _firstDay,
               lastDate: _firstDay.add(const Duration(days: _maxDaysAhead - 1)),
-              // Hangul falls back to system faces while the bundled one is still loading (no boxes).
-              builder: (ctx, child) => Theme(
-                data: Theme.of(ctx).copyWith(
-                  textTheme: Theme.of(ctx).textTheme.apply(
-                    fontFamilyFallback: const [
-                      'Apple SD Gothic Neo',
-                      'Noto Sans KR',
-                      'Malgun Gothic',
-                      'sans-serif',
-                    ],
-                  ),
-                ),
-                child: child!,
-              ),
+              builder: koreanPickerBuilder,
             );
             if (picked != null) onChanged(picked);
           },
@@ -319,10 +308,9 @@ Future<Map<int, (bool, int?)>> loadSlots(
   DateTime date, {
   required bool quote,
 }) async {
-  final r = await api.get(
-    '/slots',
-    query: {'date': isoDate(date), 'quote': '$quote'},
-  ) as List;
+  final r =
+      await api.get('/slots', query: {'date': isoDate(date), 'quote': '$quote'})
+          as List;
   return {
     for (final s in r.cast<Json>())
       (s['start_hour'] as num).toInt(): (
@@ -443,8 +431,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final page = tip != null
         ? ContentDetailScreen(item: tip)
         : ServiceScopeScreen(initialGroup: scopeGroupFor(d.service.code));
-    await Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (_) => page));
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => page));
   }
 
   void _next() {
@@ -667,4 +656,22 @@ class _SlotTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Date picker builder: Hangul falls back to system faces while the bundled Dahae Sans is still loading (no boxes).
+Widget koreanPickerBuilder(BuildContext ctx, Widget? child) {
+  final base = Theme.of(ctx);
+  return Theme(
+    data: base.copyWith(
+      textTheme: base.textTheme.apply(
+        fontFamilyFallback: const [
+          'Apple SD Gothic Neo',
+          'Noto Sans KR',
+          'Malgun Gothic',
+          'sans-serif',
+        ],
+      ),
+    ),
+    child: child!,
+  );
 }
