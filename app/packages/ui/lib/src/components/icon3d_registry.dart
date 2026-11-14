@@ -258,7 +258,7 @@ abstract final class Icon3DRegistry {
     'ui_note': const Icon3DSpec(Icons.edit_note_rounded),
     'ui_chevron_down': const Icon3DSpec(Icons.expand_more_rounded),
     'brand_wordmark': const Icon3DSpec(Icons.home_rounded, hue: _deep),
-    'brand_confirm_check': const Icon3DSpec(Icons.check_rounded, large: true),
+    'brand_confirm_check': const Icon3DSpec(Icons.check_rounded),
     // Derived (not in the design PDF): drawn in the same colour language as the
     // design art; the group tiles are composites of member art.
     'svc_window': const Icon3DSpec(Icons.window_rounded),
