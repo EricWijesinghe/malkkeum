@@ -22,6 +22,15 @@ class JsonCache {
     }
   }
 
+  /// Forgets one snapshot (sign-out, a finished booking).
+  Future<void> clear(String key) async {
+    try {
+      await _storage.delete(key: _k(key));
+    } on Object {
+      // A snapshot that survives only costs a cold start on the next launch.
+    }
+  }
+
   Future<void> write(String key, Object value) async {
     try {
       await _storage.write(key: _k(key), value: jsonEncode(value));

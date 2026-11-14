@@ -71,6 +71,7 @@ S = {
   "oJobNever": ["아직 성공한 적 없음", "No successful run yet"],
   "oJobStalled": ["멈춤", "Stalled"],
   "oJobErrors": ["오류 {count}회", "{count} errors"],
+  "oJobDeadLetters": ["발송 실패 {count}건 (재시도 끝)", "{count} texts dead-lettered"],
   "oJob_settings_refresh": ["설정 새로고침", "Settings refresh"],
   "oJob_reconciler": ["결제 대사", "Payment reconciliation"],
   "oJob_ops_alerts": ["운영 알림", "Owner alerts"],
