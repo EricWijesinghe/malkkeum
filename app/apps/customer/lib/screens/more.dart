@@ -86,7 +86,7 @@ class MoreTab extends StatelessWidget {
           member: true,
         ),
         row(
-          'ui_coupon',
+          'menu_coupons',
           t.moreCoupons,
           () => _pushMember(context, const CouponsScreen()),
           trailing: '$coupons',
@@ -95,7 +95,7 @@ class MoreTab extends StatelessWidget {
           member: true,
         ),
         row(
-          'ui_points',
+          'menu_points',
           t.morePoints,
           () => _pushMember(context, const WalletScreen()),
           member: true,

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#EFF9FB</color>
+    <color name="ic_launcher_background">#1E9EBA</color>
     <!-- Launch screen = the app canvas (light #F7FAFB / dark #0B1217): no flash into Flutter. -->
     <color name="splash_background">#F7FAFB</color>
 </resources>
