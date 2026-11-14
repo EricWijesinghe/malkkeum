@@ -12,7 +12,7 @@ use api::{
     retention,
 };
 use axum::http::StatusCode;
-use chrono::{Duration, Utc};
+use chrono::{Duration, TimeZone, Utc};
 use common::{SECRET, app, book, call, customer, seed_catalog, test_config};
 use serde_json::json;
 use sqlx::PgPool;
@@ -113,7 +113,9 @@ async fn marketing_message_is_dropped_without_consent_and_transactional_still_se
     privacy::update_consents(&pool, c.user, serde_json::from_value(json!({ "consents": [{ "kind": "marketing", "granted": true, "version": CONSENT_VERSION }] })).expect("body"))
         .await
         .expect("grant");
-    api::realtime::notify(&state, Recipient::User(c.user), "marketing.autumn", "t", "b", json!({})).await.expect("notify");
+    // 2026-11-11 12:00 KST: outside quiet hours, so the advertising notice is stored at a fixed instant.
+    let noon = Utc.with_ymd_and_hms(2026, 11, 11, 3, 0, 0).single().expect("valid instant");
+    api::realtime::notify_at(&state, Recipient::User(c.user), "marketing.autumn", "t", "b", json!({}), noon).await.expect("notify");
     api::realtime::notify(&state, Recipient::User(c.user), "booking.status", "t", "b", json!({})).await.expect("notify");
     let n: i64 = sqlx::query_scalar("SELECT count(*) FROM notifications WHERE owner_id = $1").bind(c.user).fetch_one(&pool).await.expect("count");
     assert_eq!(n, 2, "consented marketing and a transactional message are both stored");

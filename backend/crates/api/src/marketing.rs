@@ -10,7 +10,7 @@ use crate::{
     lifecycle,
     privacy::{self, CONSENT_VERSION},
     providers::sms::TPL_REMINDER,
-    realtime::{Recipient, notify},
+    realtime::{Recipient, notify_at},
     routes::audit,
     settings_registry,
     sms_outbox::Message,
@@ -249,7 +249,7 @@ async fn advertise(
     .rows_affected();
     if claimed == 1
         && send
-        && let Err(code) = deliver(s, t, channel, copy).await
+        && let Err(code) = deliver(s, t, channel, copy, now).await
     {
         sqlx::query("UPDATE marketing_sends SET status = 'failed', error = $2 WHERE dedupe_key = $1")
             .bind(&key)
@@ -261,13 +261,13 @@ async fn advertise(
 }
 
 /// Sends through the channel's provider. Errors are fixed codes, so no provider detail reaches the log table.
-async fn deliver(s: &AppState, t: &Target, channel: &str, copy: &Copy<'_>) -> Result<(), &'static str> {
+async fn deliver(s: &AppState, t: &Target, channel: &str, copy: &Copy<'_>, now: DateTime<Utc>) -> Result<(), &'static str> {
     match channel {
         "push" => {
             // Advertising push carries the (광고) marker and how to opt out (정보통신망법 제50조).
             let title = format!("(광고) {}", copy.title);
             let body = format!("{}\n광고 수신은 설정 > 알림에서 끌 수 있어요", copy.body);
-            notify(s, Recipient::User(t.id), copy.kind, &title, &body, json!({ "marketing": true }))
+            notify_at(s, Recipient::User(t.id), copy.kind, &title, &body, json!({ "marketing": true }), now)
                 .await
                 .map_err(|_| "push_failed")
         }

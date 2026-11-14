@@ -20,6 +20,7 @@ use axum::{
     },
     response::Response,
 };
+use chrono::{DateTime, Utc};
 use futures_util::{SinkExt, StreamExt, future::join_all};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -469,6 +470,11 @@ pub async fn enqueue<'e>(db: impl PgExecutor<'e>, to: Recipient, kind: &'static 
 /// change is committed, so it never fails the caller: a step that fails stays in the outbox and the
 /// `notify_outbox` job retries it. Always `Ok`; the `ApiResult` is kept for the call sites.
 pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: &str, body: &str, data: Value) -> ApiResult<()> {
+    notify_at(state, to, kind, title, body, data, Utc::now()).await
+}
+
+/// [`notify`] with the clock passed in, so quiet hours can be tested at a fixed instant.
+pub async fn notify_at(state: &AppState, to: Recipient, kind: &'static str, title: &str, body: &str, data: Value, now: DateTime<Utc>) -> ApiResult<()> {
     let mut q = Queued {
         id: None,
         to,
@@ -482,15 +488,15 @@ pub async fn notify(state: &AppState, to: Recipient, kind: &'static str, title: 
         Ok(id) => q.id = id,
         Err(e) => tracing::warn!(error = %e, kind, "notification not queued: one delivery attempt, no retry"),
     }
-    deliver(state, q).await;
+    deliver(state, q, now).await;
     Ok(())
 }
 
 /// Delivers a queued notification: inbox row and live event now, the push on a background task, so a
 /// slow push service never holds the request. Never fails the caller. What could not be done stays in
 /// the outbox for the `notify_outbox` job.
-pub async fn deliver(state: &AppState, mut q: Queued) {
-    if !store(state, &mut q).await {
+pub async fn deliver(state: &AppState, mut q: Queued, now: DateTime<Utc>) {
+    if !store(state, &mut q, now).await {
         return;
     }
     // No free slot (bulk send): the row waits for the job, which pushes in bounded batches.
@@ -508,13 +514,17 @@ pub async fn deliver(state: &AppState, mut q: Queued) {
 }
 
 /// Stage one: inbox row, live event and the customer's AlimTalk or SMS. True when the push may follow.
-async fn store(state: &AppState, q: &mut Queued) -> bool {
+async fn store(state: &AppState, q: &mut Queued, now: DateTime<Utc>) -> bool {
     let Some((role, owner)) = q.to.owner() else {
         state.hub.send(q.to, q.kind.clone(), q.data.clone());
         return false;
     };
     if q.stored {
         return true;
+    }
+    if crate::marketing::ad_suppressed(&q.kind, now) {
+        // 정보통신망법 제50조: advertising waits in the outbox until 08:00 KST.
+        return hold(state, q, crate::marketing::next_send_time(now)).await;
     }
     match try_store(state, q, role, owner).await {
         Ok(true) => {
@@ -534,17 +544,31 @@ async fn store(state: &AppState, q: &mut Queued) -> bool {
     }
 }
 
-/// False when the notification must not go out at all.
+/// Parks an advertising notice in the outbox until `until`; the outbox job stores and pushes it then.
+/// Returns false: nothing goes out now. Without an outbox row there is nothing to park, so it is dropped.
+async fn hold(state: &AppState, q: &Queued, until: DateTime<Utc>) -> bool {
+    let Some(id) = q.id else {
+        tracing::warn!(kind = %q.kind, "advertising notice dropped in quiet hours: not queued");
+        return false;
+    };
+    if let Err(e) = sqlx::query("UPDATE notification_outbox SET next_attempt_at = $2, last_error = 'quiet_hours' WHERE id = $1")
+        .bind(id)
+        .bind(until)
+        .execute(&state.db)
+        .await
+    {
+        tracing::warn!(error = %e, outbox = id, "quiet-hours hold not recorded; it will be tried again");
+    }
+    false
+}
+
+/// False when the notification must not go out at all (marketing consent withdrawn).
 async fn try_store(state: &AppState, q: &Queued, role: &str, owner: Uuid) -> ApiResult<bool> {
     if let Recipient::User(user) = q.to
         && crate::privacy::is_marketing(&q.kind)
         && !crate::privacy::marketing_allowed(&state.db, user).await?
     {
         // 정보통신망법: advertising goes out only while the customer's marketing consent stands.
-        return Ok(false);
-    }
-    if crate::marketing::ad_suppressed(&q.kind, chrono::Utc::now()) {
-        // 정보통신망법 제50조: no advertising 21:00-08:00 KST, whichever path queued it.
         return Ok(false);
     }
     // Inbox and push in the recipient's language; AlimTalk below keeps the approved Korean text.
@@ -682,7 +706,7 @@ async fn retry(state: &AppState, (id, role, owner, kind, title, body, data, stor
         tracing::error!(kind = %q.kind, stored, retries = OUTBOX_MAX_ATTEMPTS, "notification dropped: retries used up");
         return settle(state, &q, Ok(())).await;
     }
-    if store(state, &mut q).await {
+    if store(state, &mut q, Utc::now()).await {
         push(state, &q).await;
     }
 }

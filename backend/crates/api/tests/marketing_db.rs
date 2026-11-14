@@ -4,7 +4,7 @@
 
 mod common;
 
-use api::{auth, marketing, privacy::CONSENT_VERSION, settings_registry, state::AppState};
+use api::{auth, marketing, privacy::CONSENT_VERSION, realtime::Recipient, settings_registry, state::AppState};
 use axum::http::StatusCode;
 use chrono::{DateTime, Duration, TimeZone, Utc};
 use common::{SECRET, app, book, call, customer, login, seed_catalog};
@@ -331,4 +331,50 @@ async fn day_before_reminders_reach_every_due_visit_across_passes(pool: PgPool) 
         .await
         .expect("claims");
     assert_eq!(claims, 600, "every due visit claimed exactly once");
+}
+
+/// 2026-11-11 22:00 KST: inside quiet hours, the notice waits for 08:00 KST on 2026-11-12.
+fn ten_pm() -> DateTime<Utc> {
+    Utc.with_ymd_and_hms(2026, 11, 11, 13, 0, 0).single().expect("valid instant")
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn advertising_notice_is_held_in_quiet_hours_and_stored_at_noon(pool: PgPool) {
+    let app = app(pool.clone());
+    let c = customer(&app, &pool, "010-5400-0021").await;
+    grant_marketing(&pool, c.user, true).await;
+    let state = state(&pool);
+
+    api::realtime::notify_at(&state, Recipient::User(c.user), "marketing.campaign", "t", "b", json!({}), ten_pm())
+        .await
+        .expect("notify at 22:00");
+    let inbox: i64 = sqlx::query_scalar("SELECT count(*) FROM notifications WHERE owner_id = $1")
+        .bind(c.user)
+        .fetch_one(&pool)
+        .await
+        .expect("count");
+    assert_eq!(inbox, 0, "no inbox row at 22:00 KST");
+    let (stored, last_error, until): (bool, Option<String>, DateTime<Utc>) =
+        sqlx::query_as("SELECT stored, last_error, next_attempt_at FROM notification_outbox WHERE owner_id = $1 AND kind = 'marketing.campaign'")
+            .bind(c.user)
+            .fetch_one(&pool)
+            .await
+            .expect("held outbox row");
+    assert!(!stored, "not stored yet");
+    assert_eq!(last_error.as_deref(), Some("quiet_hours"));
+    assert_eq!(
+        until,
+        Utc.with_ymd_and_hms(2026, 11, 11, 23, 0, 0).single().expect("08:00 KST"),
+        "held until 08:00 KST"
+    );
+
+    api::realtime::notify_at(&state, Recipient::User(c.user), "marketing.campaign", "t", "b", json!({}), daytime())
+        .await
+        .expect("notify at noon");
+    let inbox: i64 = sqlx::query_scalar("SELECT count(*) FROM notifications WHERE owner_id = $1")
+        .bind(c.user)
+        .fetch_one(&pool)
+        .await
+        .expect("count");
+    assert_eq!(inbox, 1, "stored at 12:00 KST");
 }
