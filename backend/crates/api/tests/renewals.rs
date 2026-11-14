@@ -30,11 +30,15 @@ async fn set_owner_phone(db: &PgPool) {
     ops_alerts::save_prefs(db, &prefs).await.expect("save alert phone");
 }
 
-async fn renewal_sms_count(db: &PgPool) -> i64 {
-    sqlx::query_scalar("SELECT count(*) FROM notification_outbox WHERE kind = 'renewal.due'")
-        .fetch_one(db)
+/// Thresholds recorded as sent for one item and due date. The outbox row is deleted once delivered, so the
+/// record is what proves a text was queued.
+async fn sent_days(db: &PgPool, item: &str, due: &str) -> Vec<i64> {
+    sqlx::query_scalar("SELECT days::BIGINT FROM renewal_reminders WHERE item = $1 AND due_on = $2::DATE ORDER BY days")
+        .bind(item)
+        .bind(due)
+        .fetch_all(db)
         .await
-        .expect("count sms")
+        .expect("read reminders")
 }
 
 async fn audit_count(db: &PgPool, action: &str) -> i64 {
@@ -52,25 +56,25 @@ async fn admin_manages_items_and_consultant_is_refused(db: PgPool) {
     let (consultant, _) = staff_token(&db, Role::StaffConsultant).await;
     let body = json!({ "kind": "domain", "name": "malkkeum.kr", "due_on": in_days(90) });
 
-    let (status, _) = call(&app, "POST", "/admin/renewals", Some(&consultant), Some(body.clone())).await;
+    let (status, _) = call(&app, "POST", "/v1/admin/renewals", Some(&consultant), Some(body.clone())).await;
     assert_eq!(status, StatusCode::FORBIDDEN);
 
-    let (status, created) = call(&app, "POST", "/admin/renewals", Some(&admin), Some(body)).await;
+    let (status, created) = call(&app, "POST", "/v1/admin/renewals", Some(&admin), Some(body)).await;
     assert_eq!(status, StatusCode::OK);
     let id = created["id"].as_str().expect("id").to_owned();
 
-    let (status, listed) = call(&app, "GET", "/admin/renewals", Some(&admin), None).await;
+    let (status, listed) = call(&app, "GET", "/v1/admin/renewals", Some(&admin), None).await;
     assert_eq!(status, StatusCode::OK);
     assert_eq!(listed["items"][0]["name"], "malkkeum.kr");
     assert_eq!(listed["items"][0]["days_left"], 90);
 
     let moved = json!({ "kind": "domain_alias", "name": "old.kr", "due_on": in_days(10) });
-    let (status, _) = call(&app, "PUT", &format!("/admin/renewals/{id}"), Some(&admin), Some(moved)).await;
+    let (status, _) = call(&app, "PUT", &format!("/v1/admin/renewals/{id}"), Some(&admin), Some(moved)).await;
     assert_eq!(status, StatusCode::OK);
 
-    let (status, _) = call(&app, "DELETE", &format!("/admin/renewals/{id}"), Some(&admin), None).await;
+    let (status, _) = call(&app, "DELETE", &format!("/v1/admin/renewals/{id}"), Some(&admin), None).await;
     assert_eq!(status, StatusCode::OK);
-    let (status, _) = call(&app, "DELETE", &format!("/admin/renewals/{id}"), Some(&admin), None).await;
+    let (status, _) = call(&app, "DELETE", &format!("/v1/admin/renewals/{id}"), Some(&admin), None).await;
     assert_eq!(status, StatusCode::NOT_FOUND);
 
     assert_eq!(audit_count(&db, "renewal.create").await, 1);
@@ -83,10 +87,17 @@ async fn bad_input_is_refused_before_writing(db: PgPool) {
     let app = app(db.clone());
     let (admin, _) = staff_token(&db, Role::StaffAdmin).await;
     let bad = json!({ "kind": "hosting", "name": "", "due_on": in_days(5) });
-    let (status, _) = call(&app, "POST", "/admin/renewals", Some(&admin), Some(bad)).await;
+    let (status, _) = call(&app, "POST", "/v1/admin/renewals", Some(&admin), Some(bad)).await;
     assert_eq!(status, StatusCode::BAD_REQUEST);
     let missing = json!({ "kind": "hosting", "name": "x", "due_on": in_days(5) });
-    let (status, _) = call(&app, "PUT", "/admin/renewals/00000000-0000-0000-0000-000000000000", Some(&admin), Some(missing)).await;
+    let (status, _) = call(
+        &app,
+        "PUT",
+        "/v1/admin/renewals/00000000-0000-0000-0000-000000000000",
+        Some(&admin),
+        Some(missing),
+    )
+    .await;
     assert_eq!(status, StatusCode::NOT_FOUND);
     assert_eq!(audit_count(&db, "renewal.create").await, 0);
 }
@@ -95,7 +106,7 @@ async fn bad_input_is_refused_before_writing(db: PgPool) {
 async fn keys_test_is_listed_only_after_a_passing_upload(db: PgPool) {
     let app = app(db.clone());
     let (admin, _) = staff_token(&db, Role::StaffAdmin).await;
-    let (_, before) = call(&app, "GET", "/admin/renewals", Some(&admin), None).await;
+    let (_, before) = call(&app, "GET", "/v1/admin/renewals", Some(&admin), None).await;
     assert_eq!(before["items"].as_array().map(Vec::len), Some(0));
 
     let verified = Utc::now() - Duration::days(335);
@@ -104,7 +115,7 @@ async fn keys_test_is_listed_only_after_a_passing_upload(db: PgPool) {
         .execute(&db)
         .await
         .expect("record upload test");
-    let (_, after) = call(&app, "GET", "/admin/renewals", Some(&admin), None).await;
+    let (_, after) = call(&app, "GET", "/v1/admin/renewals", Some(&admin), None).await;
     assert_eq!(after["items"][0]["id"], renewals::KEYS_TEST_ID);
     assert_eq!(after["items"][0]["days_left"], 30);
 }
@@ -116,18 +127,18 @@ async fn reminders_fire_once_per_threshold_and_rearm_on_a_new_date(db: PgPool) {
     let app = app(db.clone());
     let (admin, _) = staff_token(&db, Role::StaffAdmin).await;
     let body = json!({ "kind": "domain", "name": "malkkeum.kr", "due_on": in_days(30) });
-    let (_, created) = call(&app, "POST", "/admin/renewals", Some(&admin), Some(body)).await;
+    let (_, created) = call(&app, "POST", "/v1/admin/renewals", Some(&admin), Some(body)).await;
     let id = created["id"].as_str().expect("id").to_owned();
 
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 1, "30-day text");
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 0, "not twice");
-    assert_eq!(renewal_sms_count(&db).await, 1);
+    assert_eq!(sent_days(&db, &id, &in_days(30)).await, vec![30]);
 
     let near = json!({ "kind": "domain", "name": "malkkeum.kr", "due_on": in_days(7) });
-    call(&app, "PUT", &format!("/admin/renewals/{id}"), Some(&admin), Some(near)).await;
+    call(&app, "PUT", &format!("/v1/admin/renewals/{id}"), Some(&admin), Some(near)).await;
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 1, "7-day text on the moved date");
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 0);
-    assert_eq!(renewal_sms_count(&db).await, 2);
+    assert_eq!(sent_days(&db, &id, &in_days(7)).await, vec![7, 30], "a 7-day text also covers 30");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -142,7 +153,7 @@ async fn keys_test_reminds_thirty_days_before_its_year_is_up(db: PgPool) {
 
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 1);
     assert_eq!(renewals::run_once(&state).await.expect("pass"), 0);
-    assert_eq!(renewal_sms_count(&db).await, 1);
+    assert_eq!(sent_days(&db, renewals::KEYS_TEST_ID, &in_days(30)).await, vec![30]);
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -151,7 +162,7 @@ async fn no_owner_phone_means_no_text_and_no_record(db: PgPool) {
     let app = app(db.clone());
     let (admin, _) = staff_token(&db, Role::StaffAdmin).await;
     let body = json!({ "kind": "apple", "name": "Apple 개발자", "due_on": in_days(3) });
-    call(&app, "POST", "/admin/renewals", Some(&admin), Some(body)).await;
+    call(&app, "POST", "/v1/admin/renewals", Some(&admin), Some(body)).await;
 
     let queued = renewals::run_once(&state).await.expect("pass");
     assert_eq!(queued, 0);
