@@ -72,8 +72,7 @@ pub fn key_fingerprint(secret: &str) -> String {
 
 /// Toss payouts open only when the env switch is on AND the last sandbox test recorded success for this key.
 pub fn toss_ready(env_enabled: bool, last_test: Option<&Value>, secret: &str) -> bool {
-    env_enabled
-        && last_test.is_some_and(|t| t["ok"] == json!(true) && t["code"] == json!("sandbox_connected") && t["key_fp"] == json!(key_fingerprint(secret)))
+    env_enabled && last_test.is_some_and(|t| t["ok"] == json!(true) && t["code"] == json!("sandbox_connected") && t["key_fp"] == json!(key_fingerprint(secret)))
 }
 
 pub fn toss_env_enabled() -> bool {
@@ -148,6 +147,8 @@ pub enum Kind {
     Map,
     /// Pasted file contents (Firebase key JSON). Secret.
     File,
+    /// On or off (JSON boolean). Unsaved, it shows the env default.
+    Toggle,
 }
 
 pub struct Field {
@@ -177,7 +178,19 @@ pub enum Section {
 }
 
 impl Section {
-    pub const ALL: [Section; 11] = [Self::Portone, Self::Solapi, Self::Push, Self::Kakao, Self::Naver, Self::Google, Self::Apple, Self::Ai, Self::Backup, Self::Payout, Self::Juso];
+    pub const ALL: [Section; 11] = [
+        Self::Portone,
+        Self::Solapi,
+        Self::Push,
+        Self::Kakao,
+        Self::Naver,
+        Self::Google,
+        Self::Apple,
+        Self::Ai,
+        Self::Backup,
+        Self::Payout,
+        Self::Juso,
+    ];
 
     pub fn code(self) -> &'static str {
         match self {
@@ -216,11 +229,12 @@ impl Section {
     }
 }
 
-const PORTONE_FIELDS: [Field; 4] = [
+const PORTONE_FIELDS: [Field; 5] = [
     f("store_id", Kind::Text, true),
     f("api_secret", Kind::Secret, true),
     f("webhook_secret", Kind::Secret, false),
     f("channel_keys", Kind::Map, false),
+    f("cash_receipts", Kind::Toggle, false),
 ];
 const SOLAPI_FIELDS: [Field; 5] = [
     f("api_key", Kind::Secret, true),
@@ -256,7 +270,11 @@ const BACKUP_FIELDS: [Field; 6] = [
     f("secret_key", Kind::Secret, true),
     f("retention_days", Kind::Text, false),
 ];
-const PAYOUT_FIELDS: [Field; 3] = [f("mode", Kind::Text, true), f("secret_key", Kind::Secret, false), f("security_key", Kind::Secret, false)];
+const PAYOUT_FIELDS: [Field; 3] = [
+    f("mode", Kind::Text, true),
+    f("secret_key", Kind::Secret, false),
+    f("security_key", Kind::Secret, false),
+];
 const JUSO_FIELDS: [Field; 1] = [f("confm_key", Kind::Secret, true)];
 const BACKUP_RETENTION_DEFAULT: u32 = 30;
 const BACKUP_RETENTION_MAX: u32 = 3650;
@@ -267,6 +285,15 @@ pub struct Invalid(pub &'static str);
 
 fn text(v: &Map<String, Value>, k: &str) -> Option<String> {
     v.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty()).map(String::from)
+}
+
+/// A JSON boolean switch. Absent or null means "use the default"; any other type is refused.
+fn toggle(v: &Map<String, Value>, k: &str) -> Result<Option<bool>, Invalid> {
+    match v.get(k) {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::Bool(b)) => Ok(Some(*b)),
+        Some(_) => Err(Invalid("invalid_toggle")),
+    }
 }
 
 fn required(v: &Map<String, Value>, k: &str) -> Result<String, Invalid> {
@@ -326,14 +353,19 @@ fn public_host(endpoint: &str) -> bool {
     let rest = endpoint.trim_start_matches("https://");
     let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
     let host = authority.rsplit_once('@').map_or(authority, |(_, h)| h);
-    let host = host.strip_prefix('[').and_then(|h| h.split_once(']')).map_or_else(|| host.rsplit_once(':').map_or(host, |(h, _)| h), |(h, _)| h);
+    let host = host
+        .strip_prefix('[')
+        .and_then(|h| h.split_once(']'))
+        .map_or_else(|| host.rsplit_once(':').map_or(host, |(h, _)| h), |(h, _)| h);
     let lower = host.to_ascii_lowercase();
     if lower.is_empty() || lower == "localhost" || lower.ends_with(".localhost") || lower.ends_with(".internal") || lower.ends_with(".local") {
         return false;
     }
     match lower.parse::<std::net::IpAddr>() {
         Ok(std::net::IpAddr::V4(ip)) => !(ip.is_loopback() || ip.is_private() || ip.is_link_local() || ip.is_unspecified() || ip.is_broadcast()),
-        Ok(std::net::IpAddr::V6(ip)) => !(ip.is_loopback() || ip.is_unspecified() || (ip.segments()[0] & 0xfe00) == 0xfc00 || (ip.segments()[0] & 0xffc0) == 0xfe80),
+        Ok(std::net::IpAddr::V6(ip)) => {
+            !(ip.is_loopback() || ip.is_unspecified() || (ip.segments()[0] & 0xfe00) == 0xfc00 || (ip.segments()[0] & 0xffc0) == 0xfe80)
+        }
         Err(_) => true,
     }
 }
@@ -348,14 +380,17 @@ fn s3_config(v: &Map<String, Value>) -> Result<S3Config, Invalid> {
         return Err(Invalid("invalid_region"));
     }
     let bucket = required(v, "bucket")?;
-    let bucket_ok = (3..=63).contains(&bucket.len())
-        && bucket.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '.');
+    let bucket_ok = (3..=63).contains(&bucket.len()) && bucket.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '.');
     if !bucket_ok {
         return Err(Invalid("invalid_bucket"));
     }
     let retention_days = match text(v, "retention_days") {
         None => BACKUP_RETENTION_DEFAULT,
-        Some(d) => d.parse::<u32>().ok().filter(|d| (1..=BACKUP_RETENTION_MAX).contains(d)).ok_or(Invalid("invalid_retention"))?,
+        Some(d) => d
+            .parse::<u32>()
+            .ok()
+            .filter(|d| (1..=BACKUP_RETENTION_MAX).contains(d))
+            .ok_or(Invalid("invalid_retention"))?,
     };
     Ok(S3Config {
         endpoint,
@@ -384,7 +419,11 @@ fn payout_settings(v: &Map<String, Value>, toss_ready: bool) -> Result<PayoutSet
             return Err(Invalid("toss_unverified"));
         }
     }
-    Ok(PayoutSettings { mode, secret_key, security_key })
+    Ok(PayoutSettings {
+        mode,
+        secret_key,
+        security_key,
+    })
 }
 
 /// Team id, key id and .p8 key go together: all three or none.
@@ -423,7 +462,7 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
                 webhook_secret,
                 store_id: Some(required(v, "store_id")?),
                 channel_keys: string_map(v, "channel_keys")?,
-                cash_receipts: base.portone.cash_receipts,
+                cash_receipts: toggle(v, "cash_receipts")?.unwrap_or(base.portone.cash_receipts),
             };
         }
         Section::Solapi => {
@@ -467,7 +506,12 @@ pub fn apply(base: &Integrations, section: Section, v: &Map<String, Value>) -> R
                 member_daily: cap(v, "member_daily_cap", ai::DEFAULT_MEMBER_DAILY_CAP, ai::MEMBER_DAILY_RANGE)?,
                 daily: cap(v, "daily_cap", ai::DEFAULT_DAILY_CAP, ai::DAILY_RANGE)?,
             };
-            out.ai = Some(AiConfig { api_key: required(v, "api_key")?, model, mode, caps });
+            out.ai = Some(AiConfig {
+                api_key: required(v, "api_key")?,
+                model,
+                mode,
+                caps,
+            });
         }
         Section::Google | Section::Apple => {
             let ids = list(v, "client_ids");
@@ -525,6 +569,14 @@ pub fn preview(kind: Kind, v: &Value) -> Value {
     }
 }
 
+/// The value a toggle shows when nothing is saved: the env default for that switch.
+pub fn toggle_default(base: &Integrations, section: Section, name: &str) -> bool {
+    match (section, name) {
+        (Section::Portone, "cash_receipts") => base.portone.cash_receipts,
+        _ => false,
+    }
+}
+
 /// Saved console values for one section, decrypted. Empty when nothing was saved.
 pub async fn load_section(db: &PgPool, key: &[u8; 32], section: Section) -> Result<Map<String, Value>, sqlx::Error> {
     let row: Option<String> = sqlx::query_scalar("SELECT secret FROM integration_settings WHERE section = $1")
@@ -535,12 +587,12 @@ pub async fn load_section(db: &PgPool, key: &[u8; 32], section: Section) -> Resu
 }
 
 fn decode(key: &[u8; 32], enc: &str) -> Option<Map<String, Value>> {
-    let plain = crypto::decrypt(key, enc)?;
+    let plain = crypto::decrypt(key, crypto::aad::INTEGRATION, enc)?;
     serde_json::from_str::<Value>(&plain).ok()?.as_object().cloned()
 }
 
 pub async fn save_section(db: &PgPool, key: &[u8; 32], section: Section, values: &Map<String, Value>, by: uuid::Uuid) -> Result<(), sqlx::Error> {
-    let enc = crypto::encrypt(key, &Value::Object(values.clone()).to_string());
+    let enc = crypto::encrypt(key, crypto::aad::INTEGRATION, &Value::Object(values.clone()).to_string());
     sqlx::query(
         "INSERT INTO integration_settings (section, secret, updated_by) VALUES ($1, $2, $3)
          ON CONFLICT (section) DO UPDATE SET secret = EXCLUDED.secret, updated_by = EXCLUDED.updated_by, updated_at = now(), last_test = NULL",
@@ -564,7 +616,9 @@ pub async fn delete_section(db: &PgPool, section: Section) -> Result<(), sqlx::E
 /// Env keys overlaid with every saved console section. A section that no longer validates
 /// (e.g. after DATA_KEY rotation) is skipped with a warning so the server still starts.
 pub async fn load(db: &PgPool, config: &Config) -> Result<Integrations, sqlx::Error> {
-    let rows: Vec<(String, String, Option<Value>)> = sqlx::query_as("SELECT section, secret, last_test FROM integration_settings").fetch_all(db).await?;
+    let rows: Vec<(String, String, Option<Value>)> = sqlx::query_as("SELECT section, secret, last_test FROM integration_settings")
+        .fetch_all(db)
+        .await?;
     let mut out = Integrations::from_config(config);
     for (code, enc, last_test) in rows {
         let Some(section) = Section::parse(&code) else { continue };

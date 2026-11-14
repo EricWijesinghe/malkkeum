@@ -24,7 +24,7 @@ const IDEMPOTENT_OPS: [&str; 9] = [
     "adminPayoutAction",
 ];
 /// Operations that page with `limit`/`cursor` and advertise `X-Next-Cursor`.
-const PAGED_OPS: [&str; 11] = [
+const PAGED_OPS: [&str; 12] = [
     "listBookings",
     "listNotifications",
     "listCheckouts",
@@ -36,6 +36,7 @@ const PAGED_OPS: [&str; 11] = [
     "listMyThreads",
     "partnerThreads",
     "adminPayouts",
+    "adminListAudit",
 ];
 
 fn manifest() -> &'static Path {
@@ -74,7 +75,11 @@ fn route_literals(src: &str) -> Vec<(String, BTreeSet<String>)> {
         let Some(rest) = after.strip_prefix('"') else { continue };
         let Some(end) = rest.find('"') else { continue };
         let expr_start = &rest[end..];
-        let stop = [".route(", ".nest(", ".merge(", ";"].iter().filter_map(|t| expr_start.find(t)).min().unwrap_or(expr_start.len());
+        let stop = [".route(", ".nest(", ".merge(", ";"]
+            .iter()
+            .filter_map(|t| expr_start.find(t))
+            .min()
+            .unwrap_or(expr_start.len());
         let expr = &expr_start[..stop];
         let methods = METHODS.iter().filter(|m| contains_call(expr, m)).map(|m| (*m).to_owned()).collect();
         out.push((rest[..end].to_owned(), methods));
@@ -85,7 +90,8 @@ fn route_literals(src: &str) -> Vec<(String, BTreeSet<String>)> {
 /// `get(` as a call, not as part of a longer identifier. A chained `get(a).post(b)` counts both methods.
 fn contains_call(expr: &str, method: &str) -> bool {
     let pat = format!("{method}(");
-    expr.match_indices(&pat).any(|(i, _)| expr[..i].chars().last().is_none_or(|c| !(c.is_alphanumeric() || c == '_')))
+    expr.match_indices(&pat)
+        .any(|(i, _)| expr[..i].chars().last().is_none_or(|c| !(c.is_alphanumeric() || c == '_')))
 }
 
 fn route_sources() -> Vec<(String, String)> {
@@ -98,7 +104,12 @@ fn route_sources() -> Vec<(String, String)> {
     files
         .into_iter()
         .filter(|p| p.extension().is_some_and(|x| x == "rs"))
-        .map(|p| (p.file_name().unwrap_or_default().to_string_lossy().into_owned(), fs::read_to_string(&p).expect("read route file")))
+        .map(|p| {
+            (
+                p.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                fs::read_to_string(&p).expect("read route file"),
+            )
+        })
         .collect()
 }
 
@@ -127,9 +138,9 @@ fn every_mounted_route_is_documented() {
     let mut missing = Vec::new();
     for (file, src) in route_sources() {
         for (path, methods) in route_literals(&src) {
-            let documented = PREFIXES.iter().any(|pre| {
-                spec_methods(&spec, &format!("{pre}{path}")).is_some_and(|have| !methods.is_empty() && methods.iter().all(|m| have.contains(m)))
-            });
+            let documented = PREFIXES
+                .iter()
+                .any(|pre| spec_methods(&spec, &format!("{pre}{path}")).is_some_and(|have| !methods.is_empty() && methods.iter().all(|m| have.contains(m))));
             if !documented {
                 missing.push(format!("{file}: {path} {methods:?}"));
             }
@@ -168,7 +179,10 @@ fn idempotent_and_paged_operations_say_so() {
         }
         if PAGED_OPS.contains(&id) {
             assert!(params.contains("#/components/parameters/Limit"), "{id} must document limit");
-            assert!(op["responses"]["200"]["headers"]["X-Next-Cursor"].is_object(), "{id} must document X-Next-Cursor");
+            assert!(
+                op["responses"]["200"]["headers"]["X-Next-Cursor"].is_object(),
+                "{id} must document X-Next-Cursor"
+            );
         }
     }
     assert_eq!(IDEMPOTENT_OPS.len(), 9);
@@ -179,7 +193,14 @@ fn dart_call_sites(text: &str) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for (i, _) in text.match_indices("'/") {
         let Some(before) = text[..i].trim_end().strip_suffix('(') else { continue };
-        let ident: String = before.chars().rev().take_while(|c| c.is_alphanumeric() || *c == '_').collect::<Vec<_>>().into_iter().rev().collect();
+        let ident: String = before
+            .chars()
+            .rev()
+            .take_while(|c| c.is_alphanumeric() || *c == '_')
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect();
         let method = match ident.as_str() {
             "get" | "getBytes" => "get",
             "post" => "post",
@@ -218,7 +239,10 @@ fn dart_literal(s: &str) -> Option<String> {
 /// Spec-shaped segments: any `$` interpolation becomes `{}`, which matches any `{param}`.
 fn normalize_dart(path: &str) -> Vec<String> {
     let path = path.split('?').next().unwrap_or(path);
-    path.split('/').skip(1).map(|s| if s.contains('$') { "{}".to_owned() } else { s.to_owned() }).collect()
+    path.split('/')
+        .skip(1)
+        .map(|s| if s.contains('$') { "{}".to_owned() } else { s.to_owned() })
+        .collect()
 }
 
 fn segments_match(spec_path: &str, dart: &[String]) -> bool {
@@ -231,7 +255,10 @@ fn dart_files(dir: &Path, out: &mut Vec<PathBuf>) {
     for e in entries.flatten() {
         let p = e.path();
         if p.is_dir() {
-            if !matches!(p.file_name().and_then(|n| n.to_str()), Some("build" | ".dart_tool" | "test" | "integration_test")) {
+            if !matches!(
+                p.file_name().and_then(|n| n.to_str()),
+                Some("build" | ".dart_tool" | "test" | "integration_test")
+            ) {
                 dart_files(&p, out);
             }
         } else if p.extension().is_some_and(|x| x == "dart") {
@@ -246,7 +273,9 @@ fn flutter_clients_call_only_documented_routes() {
     let root = manifest().join("../../../app");
     let mut files = Vec::new();
     for group in ["apps", "packages"] {
-        let Ok(entries) = fs::read_dir(root.join(group)) else { panic!("app/{group} missing") };
+        let Ok(entries) = fs::read_dir(root.join(group)) else {
+            panic!("app/{group} missing")
+        };
         for e in entries.flatten() {
             dart_files(&e.path().join("lib"), &mut files);
         }
@@ -261,7 +290,9 @@ fn flutter_clients_call_only_documented_routes() {
         for (method, path) in dart_call_sites(&text) {
             seen += 1;
             let segs = normalize_dart(&path);
-            let ok = ops.iter().any(|(m, sp)| (method == "*" || *m == method) && sp.starts_with("/v1/") && segments_match(sp, &segs_v1(&segs)));
+            let ok = ops
+                .iter()
+                .any(|(m, sp)| (method == "*" || *m == method) && sp.starts_with("/v1/") && segments_match(sp, &segs_v1(&segs)));
             if !ok {
                 drift.push(format!("{}: {method} {path}", f.strip_prefix(&root).unwrap_or(f).display()));
             }
@@ -286,5 +317,8 @@ fn dart_literal_handles_interpolation_with_quotes() {
 #[test]
 fn dart_call_sites_find_method_and_path() {
     let sites = dart_call_sites("final r = await api.get('/services');\n  await api.post(\n    '/checkouts/$id/confirm',\n    body);");
-    assert_eq!(sites, vec![("get".into(), "/services".into()), ("post".into(), "/checkouts/$id/confirm".into())]);
+    assert_eq!(
+        sites,
+        vec![("get".into(), "/services".into()), ("post".into(), "/checkouts/$id/confirm".into())]
+    );
 }

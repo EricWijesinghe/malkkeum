@@ -323,18 +323,42 @@ class AccountScreen extends StatelessWidget {
             ),
           ),
           const FlowBand(),
-          _LabelValueRow(label: t.accountName, value: app.name),
+          _LabelValueRow(
+            label: t.accountName,
+            value: app.name,
+            extra: TextButton(
+              onPressed: () => _editAccountField(
+                context,
+                label: t.accountName,
+                initial: app.name,
+                isEmail: false,
+              ),
+              child: Text(t.edit),
+            ),
+          ),
           divider(),
           _LabelValueRow(
             label: t.accountPhone,
-            value: app.phone,
+            value: formatKoreanPhone(app.phone),
             extra: TextButton(
               onPressed: () => _push(context, const AccountIdentityScreen()),
               child: Text(t.change),
             ),
           ),
           divider(),
-          _LabelValueRow(label: t.accountEmail, value: app.email ?? '-'),
+          _LabelValueRow(
+            label: t.accountEmail,
+            value: app.email ?? '-',
+            extra: TextButton(
+              onPressed: () => _editAccountField(
+                context,
+                label: t.accountEmail,
+                initial: app.email ?? '',
+                isEmail: true,
+              ),
+              child: Text(t.edit),
+            ),
+          ),
           divider(),
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 52),
@@ -505,7 +529,7 @@ class _FaqScreenState extends State<FaqScreen> {
                 child: ListView(
                   key: ValueKey(_category),
                   padding: const EdgeInsets.only(bottom: Space.gutter),
-                  children: [for (final f in shown) _FaqRow(item: f)],
+                  children: [for (final f in shown) FaqRow(item: f)],
                 ),
               ),
             ),
@@ -557,8 +581,8 @@ class _FaqScreenState extends State<FaqScreen> {
 }
 
 /// One question: teal "Q", the question and a chevron; the answer opens in a grey box.
-class _FaqRow extends StatelessWidget {
-  const _FaqRow({required this.item});
+class FaqRow extends StatelessWidget {
+  const FaqRow({super.key, required this.item});
   final ContentItem item;
 
   @override
@@ -605,6 +629,79 @@ class _FaqRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Name or email: one field in a dialog, saved with PATCH /me, then the profile reloads.
+Future<void> _editAccountField(
+  BuildContext context, {
+  required String label,
+  required String initial,
+  required bool isEmail,
+}) async {
+  final value = await showDialog<String>(
+    context: context,
+    builder: (_) =>
+        _AccountFieldDialog(label: label, initial: initial, isEmail: isEmail),
+  );
+  if (value == null || !context.mounted) return;
+  final app = context.appRead;
+  try {
+    await app.api.patch('/me', {isEmail ? 'email' : 'name': value});
+    await app.loadProfile();
+  } catch (e) {
+    if (context.mounted) showToast(context, context.t.error(e));
+  }
+}
+
+class _AccountFieldDialog extends StatefulWidget {
+  const _AccountFieldDialog({
+    required this.label,
+    required this.initial,
+    required this.isEmail,
+  });
+  final String label;
+  final String initial;
+  final bool isEmail;
+
+  @override
+  State<_AccountFieldDialog> createState() => _AccountFieldDialogState();
+}
+
+class _AccountFieldDialogState extends State<_AccountFieldDialog> {
+  late final _ctrl = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return AlertDialog(
+      title: Text(widget.label),
+      content: TextField(
+        controller: _ctrl,
+        autofocus: true,
+        keyboardType: widget.isEmail
+            ? TextInputType.emailAddress
+            : TextInputType.name,
+        maxLength: widget.isEmail ? 254 : 40,
+        decoration: const InputDecoration(counterText: ''),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(t.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(_ctrl.text.trim()),
+          child: Text(t.save),
+        ),
+      ],
     );
   }
 }

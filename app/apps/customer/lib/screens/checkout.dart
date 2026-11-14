@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'booking_detail.dart';
+import 'auth.dart' show ensureCustomerName;
 import 'booking_flow.dart';
 import 'cancel_policy_card.dart';
 import 'more.dart' show LegalScreen;
@@ -68,6 +69,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Future<void> _pay(int total, int points) async {
     final choice = _choice;
     if (choice == null || _busy) return;
+    if (!await ensureCustomerName(context) || !mounted) return;
     setState(() => _busy = true);
     final app = context.appRead;
     try {
@@ -175,6 +177,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     final app = context.app;
     final t = context.t;
+    final paused = RemoteConfigScope.of(context).maintenance;
     final usable =
         app.coupons.where((c) => c.appliesTo(d.service.code)).toList()
           ..sort((a, b) => b.amount.compareTo(a.amount));
@@ -346,7 +349,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: PrimaryButton(
           label: _choice == null ? t.needMethod : t.payAmount(context.won(due)),
           busy: _busy,
-          onPressed: _choice == null ? _pickMethod : () => _pay(due, points),
+          // Maintenance pauses new bookings: the pay button stays off until the owner switches it off.
+          onPressed: _choice == null
+              ? _pickMethod
+              : (paused ? null : () => _pay(due, points)),
         ),
       ),
     );

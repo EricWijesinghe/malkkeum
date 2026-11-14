@@ -104,9 +104,10 @@ class NewsList extends StatelessWidget {
   }
 }
 
-void _open(BuildContext context, ContentItem item) => Navigator.of(context).push(
-  MaterialPageRoute<void>(builder: (_) => ContentDetailScreen(item: item)),
-);
+void _open(BuildContext context, ContentItem item) => Navigator.of(context)
+    .push(
+      MaterialPageRoute<void>(builder: (_) => ContentDetailScreen(item: item)),
+    );
 
 class _NoticeRow extends StatelessWidget {
   const _NoticeRow({required this.item});
@@ -155,6 +156,13 @@ class _NoticeRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (noticeDateLabel(item).isNotEmpty) ...[
+                const SizedBox(width: Space.sm),
+                Text(
+                  noticeDateLabel(item),
+                  style: context.text.labelSmall?.copyWith(color: c.inkMuted),
+                ),
+              ],
             ],
           ),
         ),
@@ -307,7 +315,8 @@ class BannerCarouselState extends State<BannerCarousel> {
 
   void _openBanner(ContentItem? item) => Navigator.of(context).push(
     MaterialPageRoute<void>(
-      builder: (_) => item == null || (item.link ?? item.body['link']) == 'coupons'
+      builder: (_) =>
+          item == null || (item.link ?? item.body['link']) == 'coupons'
           ? const CouponsScreen()
           : ContentDetailScreen(item: item),
     ),
@@ -445,10 +454,7 @@ class _BannerCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (label.isNotEmpty)
-              Text(
-                label,
-                style: context.text.labelSmall?.copyWith(color: on),
-              ),
+              Text(label, style: context.text.labelSmall?.copyWith(color: on)),
             Text(
               value,
               style: context.text.titleLarge?.copyWith(

@@ -7,16 +7,8 @@ import 'package:ui/ui.dart';
 import 'api.dart';
 import 'i18n.dart';
 import 'pay_i18n.dart';
+import 'phone_format.dart';
 import 'social_auth.dart';
-
-String _pretty(String digits) {
-  if (digits.length < 4) return digits;
-  if (digits.length < 8) {
-    return '${digits.substring(0, 3)}-${digits.substring(3)}';
-  }
-  final mid = digits.length == 11 ? 7 : 6;
-  return '${digits.substring(0, 3)}-${digits.substring(3, mid)}-${digits.substring(mid)}';
-}
 
 /// Verifies a phone for a social account that has none yet. Two steps on one screen:
 /// number, then the 6-digit code. Pops `true` once attached.
@@ -110,7 +102,9 @@ class _PhoneAttachScreenState extends State<PhoneAttachScreen> {
           ),
           const SizedBox(height: Space.xs),
           Text(
-            _sent ? t.loginCodeSentTo(_pretty(_digits)) : t.apPhoneAttachBody,
+            _sent
+                ? t.loginCodeSentTo(formatKoreanPhone(_digits))
+                : t.apPhoneAttachBody,
             style: context.text.bodyMedium?.copyWith(
               color: context.colors.inkMuted,
             ),
@@ -128,9 +122,9 @@ class _PhoneAttachScreenState extends State<PhoneAttachScreen> {
                 LengthLimitingTextInputFormatter(11),
                 TextInputFormatter.withFunction(
                   (_, v) => TextEditingValue(
-                    text: _pretty(v.text),
+                    text: formatKoreanPhone(v.text),
                     selection: TextSelection.collapsed(
-                      offset: _pretty(v.text).length,
+                      offset: formatKoreanPhone(v.text).length,
                     ),
                   ),
                 ),

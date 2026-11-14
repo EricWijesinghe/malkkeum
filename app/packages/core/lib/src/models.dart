@@ -293,6 +293,9 @@ class ContentItem {
   String? get imageUrl => j['image_url'] as String?;
   Json get body => (j['body'] as Json?) ?? const {};
 
+  /// Posting date; null only for rows from an older server that does not send it.
+  DateTime? get createdAt => _date(j['created_at']);
+
   /// Content is stored per language; fall back to Korean.
   String title(String lang) => _pick(j['title'], lang);
   String text(String lang) => _pick(body['text'], lang);

@@ -20,10 +20,11 @@ fn item(kind: &str, title: &str, active: bool) -> Value {
 #[sqlx::test(migrations = "../../migrations")]
 async fn news_is_created_edited_and_listed_publicly_by_kind(pool: PgPool) {
     let app = common::app(pool.clone());
-    let staff: Uuid = sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role) VALUES ('owner@test.local', 'Owner', 'unused', 'admin') RETURNING id")
-        .fetch_one(&pool)
-        .await
-        .expect("staff row");
+    let staff: Uuid =
+        sqlx::query_scalar("INSERT INTO staff (email, name, password_hash, role) VALUES ('owner@test.local', 'Owner', 'unused', 'admin') RETURNING id")
+            .fetch_one(&pool)
+            .await
+            .expect("staff row");
     let admin = auth::issue_access(SECRET, staff, Role::StaffAdmin).expect("token");
     let admin = Some(admin.as_str());
 
@@ -35,10 +36,17 @@ async fn news_is_created_edited_and_listed_publicly_by_kind(pool: PgPool) {
     let (st, b) = call(&app, "POST", "/v1/admin/content", admin, Some(item("blog", "없는 종류", true))).await;
     assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("invalid_content")), "{b}");
 
-    let titles = |v: &Value| -> Vec<String> { v.as_array().expect("list").iter().map(|c| c["title"]["ko"].as_str().expect("title").to_string()).collect() };
+    let titles = |v: &Value| -> Vec<String> {
+        v.as_array()
+            .expect("list")
+            .iter()
+            .map(|c| c["title"]["ko"].as_str().expect("title").to_string())
+            .collect()
+    };
     let (st, news) = call(&app, "GET", "/v1/content?kind=news", None, None).await;
     assert_eq!(st, StatusCode::OK, "{news}");
     assert_eq!(titles(&news), ["원룸 청소 서비스 지역 확대"], "public, no token, news only");
+    assert!(news[0]["created_at"].is_string(), "the posting date rides along: {news}");
     let (_, tips) = call(&app, "GET", "/v1/content?kind=tip", None, None).await;
     assert_eq!(titles(&tips), ["에어컨 냄새의 원인은?"]);
     let (_, listed) = call(&app, "GET", "/v1/admin/content?kind=news", admin, None).await;
@@ -60,7 +68,10 @@ async fn news_is_created_edited_and_listed_publicly_by_kind(pool: PgPool) {
 }
 
 async fn service_order(pool: &PgPool) -> Vec<String> {
-    sqlx::query_scalar("SELECT code FROM services ORDER BY sort_order, code").fetch_all(pool).await.expect("services")
+    sqlx::query_scalar("SELECT code FROM services ORDER BY sort_order, code")
+        .fetch_all(pool)
+        .await
+        .expect("services")
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -68,9 +79,16 @@ async fn seed_orders_tiles_per_the_brief_and_keeps_an_owner_order(pool: PgPool) 
     common::seed_catalog(&pool).await;
     assert_eq!(service_order(&pool).await, api::seed::SEED_ORDER);
 
-    sqlx::query("UPDATE services SET sort_order = 99 WHERE code = 'studio'").execute(&pool).await.expect("owner order");
+    sqlx::query("UPDATE services SET sort_order = 99 WHERE code = 'studio'")
+        .execute(&pool)
+        .await
+        .expect("owner order");
     common::seed_catalog(&pool).await;
-    assert_eq!(service_order(&pool).await.last().map(String::as_str), Some("studio"), "a re-seed never resets the owner's order");
+    assert_eq!(
+        service_order(&pool).await.last().map(String::as_str),
+        Some("studio"),
+        "a re-seed never resets the owner's order"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -86,20 +104,31 @@ async fn seed_fixes_only_the_untouched_old_two_coupon_banner(pool: PgPool) {
             .expect("banner");
     }
     common::seed_catalog(&pool).await;
-    let titles: Vec<Value> = sqlx::query_scalar("SELECT title FROM content_items WHERE kind = 'banner' ORDER BY sort_order").fetch_all(&pool).await.expect("titles");
+    let titles: Vec<Value> = sqlx::query_scalar("SELECT title FROM content_items WHERE kind = 'banner' ORDER BY sort_order")
+        .fetch_all(&pool)
+        .await
+        .expect("titles");
     assert_eq!(titles[0]["ko"], "첫 청소 15,000원 웰컴쿠폰");
     assert_eq!(titles[1], edited, "an owner-edited banner is left alone");
 }
 #[sqlx::test(migrations = "../../migrations")]
 async fn seed_badges_mattress_new_and_aircon_hot_once(pool: PgPool) {
     common::seed_catalog(&pool).await;
-    let badges: Vec<(String, String)> =
-        sqlx::query_as("SELECT code, content->>'badge' FROM services WHERE content ? 'badge' ORDER BY code").fetch_all(&pool).await.expect("badges");
+    let badges: Vec<(String, String)> = sqlx::query_as("SELECT code, content->>'badge' FROM services WHERE content ? 'badge' ORDER BY code")
+        .fetch_all(&pool)
+        .await
+        .expect("badges");
     let expected: Vec<(String, String)> = vec![("aircon".into(), "hot".into()), ("mattress".into(), "new".into())];
     assert_eq!(badges, expected);
 
-    sqlx::query("UPDATE services SET content = '{}'::jsonb WHERE code = 'aircon'").execute(&pool).await.expect("owner removes the badge");
+    sqlx::query("UPDATE services SET content = '{}'::jsonb WHERE code = 'aircon'")
+        .execute(&pool)
+        .await
+        .expect("owner removes the badge");
     common::seed_catalog(&pool).await;
-    let left: Vec<String> = sqlx::query_scalar("SELECT code FROM services WHERE content ? 'badge'").fetch_all(&pool).await.expect("badges");
+    let left: Vec<String> = sqlx::query_scalar("SELECT code FROM services WHERE content ? 'badge'")
+        .fetch_all(&pool)
+        .await
+        .expect("badges");
     assert_eq!(left, ["mattress"], "a re-seed never brings back a removed badge");
 }

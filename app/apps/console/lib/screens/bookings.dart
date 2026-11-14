@@ -348,7 +348,7 @@ class _BookingPanelState extends State<BookingPanel> with LiveReload {
               title: t.cCustomer,
               lines: [
                 '${customer['name']}',
-                '${customer['phone']}',
+                formatKoreanPhone('${customer['phone']}'),
                 if (customer['email'] != null) '${customer['email']}',
               ],
             ),

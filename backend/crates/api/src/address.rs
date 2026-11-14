@@ -29,6 +29,16 @@ pub struct Hit {
     pub jibun_address: String,
     pub zip_code: String,
     pub building_name: String,
+    /// Five-digit 시군구 code: the first five digits of the provider's 10-digit `admCd`.
+    pub district_code: String,
+}
+
+/// Whether `road` names the Seoul district `code`: the district's Korean name must be a whole word of the address.
+pub fn road_in_district(road: &str, code: &str) -> bool {
+    crate::seo::SEOUL_DISTRICTS
+        .iter()
+        .find(|d| d.0 == code)
+        .is_some_and(|d| road.split_whitespace().any(|word| word == d.1))
 }
 
 /// Collapses whitespace, then rejects keywords the provider refuses (length, symbols, SQL words).
@@ -70,6 +80,7 @@ pub fn parse(v: &Value) -> Result<Vec<Hit>, ProviderError> {
             jibun_address: text(&j["jibunAddr"]),
             zip_code: text(&j["zipNo"]),
             building_name: text(&j["bdNm"]),
+            district_code: text(&j["admCd"]).chars().take(5).collect(),
         })
         .collect())
 }
@@ -80,7 +91,13 @@ pub async fn search_at(http: &reqwest::Client, base: &str, key: &str, keyword: &
     let count = PAGE_SIZE.to_string();
     let resp = http
         .get(base)
-        .query(&[("confmKey", key), ("currentPage", page.as_str()), ("countPerPage", count.as_str()), ("keyword", keyword), ("resultType", "json")])
+        .query(&[
+            ("confmKey", key),
+            ("currentPage", page.as_str()),
+            ("countPerPage", count.as_str()),
+            ("keyword", keyword),
+            ("resultType", "json"),
+        ])
         .send()
         .await
         .map_err(|e| ProviderError::Upstream(e.to_string()))?;
@@ -123,10 +140,19 @@ mod tests {
     #[test]
     fn parse_maps_hits_and_provider_errors() {
         let ok = json!({"results": {"common": {"errorCode": "0", "totalCount": "1"}, "juso": [
-            {"roadAddr": " 서울 강남구 테헤란로 1 ", "jibunAddr": "서울 강남구 역삼동 1", "zipNo": "06234", "bdNm": "빌딩"}
+            {"roadAddr": " 서울 강남구 테헤란로 1 ", "jibunAddr": "서울 강남구 역삼동 1", "zipNo": "06234", "bdNm": "빌딩", "admCd": "1168010100"}
         ]}});
         let hits = parse(&ok).expect("hits");
-        assert_eq!(hits, vec![Hit { road_address: "서울 강남구 테헤란로 1".into(), jibun_address: "서울 강남구 역삼동 1".into(), zip_code: "06234".into(), building_name: "빌딩".into() }]);
+        assert_eq!(
+            hits,
+            vec![Hit {
+                road_address: "서울 강남구 테헤란로 1".into(),
+                jibun_address: "서울 강남구 역삼동 1".into(),
+                zip_code: "06234".into(),
+                building_name: "빌딩".into(),
+                district_code: "11680".into(),
+            }]
+        );
         let none = json!({"results": {"common": {"errorCode": "0"}}});
         assert!(parse(&none).expect("empty").is_empty());
         let flat = json!({"common": {"errorCode": "0"}, "juso": [{"roadAddr": " flat ", "jibunAddr": "", "zipNo": "", "bdNm": ""}]});
@@ -153,6 +179,15 @@ mod tests {
         let addr = listener.local_addr().expect("fake addr");
         tokio::spawn(async move { axum::serve(listener, app).await.expect("fake serves") });
         format!("http://{addr}/addr")
+    }
+
+    #[test]
+    fn road_must_name_the_chosen_district() {
+        assert!(road_in_district("서울특별시 강남구 테헤란로 1", "11680"));
+        assert!(!road_in_district("서울특별시 송파구 올림픽로 1", "11680"));
+        // A substring is not a district: 강남구 must match as a whole word.
+        assert!(!road_in_district("서울특별시 강남구청길 1", "11680"));
+        assert!(!road_in_district("서울특별시 강남구 테헤란로 1", "99999"));
     }
 
     #[tokio::test]
