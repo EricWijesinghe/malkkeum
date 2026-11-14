@@ -9390,6 +9390,12 @@ abstract class T {
   /// **'저장'**
   String get caseSave;
 
+  /// No description provided for @err_schedule_overlap.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 시간에 이미 다른 일정이 있어요'**
+  String get err_schedule_overlap;
+
   /// No description provided for @rulesTab.
   ///
   /// In ko, this message translates to:

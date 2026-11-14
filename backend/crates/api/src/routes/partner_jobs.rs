@@ -10,6 +10,7 @@ use crate::{
     contract::{PageQuery, json_row_cursor, page_limit, paged, ts_id_cursor},
     error::{ApiError, ApiResult},
     realtime::{Recipient, deliver, enqueue, notify},
+    schedule::{clash, lock_schedule, schedule_clash},
     state::AppState,
     util::{KST_TODAY, best_effort, today_kst},
 };
@@ -24,7 +25,7 @@ use domain::booking::BookingStatus;
 use domain::{Won, partner::payout};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::{PgConnection, PgPool, Postgres, Transaction};
+use sqlx::{PgConnection, PgPool};
 use std::time::Duration;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -208,35 +209,29 @@ pub(crate) async fn require_phone(s: &AppState, pro: Uuid) -> ApiResult<()> {
     if has_phone { Ok(()) } else { Err(ApiError::Conflict("phone_required")) }
 }
 
-/// Minutes a booking holds its hour when no estimate is stored.
-const SLOT_MINUTES: u32 = 60;
-
-/// SQL: booking `o` clashes with the booking aliased `cand` (same visit date, live, windows overlap).
-/// A window runs from its start hour for its estimated minutes, one slot when there is no estimate.
-fn clash(cand: &str) -> String {
-    format!(
-        "o.id <> {cand}.id AND o.visit_date = {cand}.visit_date AND o.status >= 0
-           AND o.start_hour * 60 < {cand}.start_hour * 60 + COALESCE({cand}.minutes, {SLOT_MINUTES})
-           AND {cand}.start_hour * 60 < o.start_hour * 60 + COALESCE(o.minutes, {SLOT_MINUTES})"
-    )
+/// Whether the job can still be claimed: confirmed, unassigned, and not waiting for a quote.
+async fn claimable(conn: &mut PgConnection, job: Uuid) -> ApiResult<bool> {
+    let confirmed = BookingStatus::Confirmed.as_i16();
+    Ok(sqlx::query_scalar(&format!(
+        "SELECT EXISTS (SELECT 1 FROM bookings WHERE id = $1 AND pro_id IS NULL AND team_name IS NULL AND status = {confirmed} AND answers IS NULL)"
+    ))
+    .bind(job)
+    .fetch_one(conn)
+    .await?)
 }
 
-/// Serializes schedule writes per pro, so two overlap checks cannot both pass before either commits.
-async fn lock_schedule(tx: &mut Transaction<'_, Postgres>, pro: Uuid) -> ApiResult<()> {
-    sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))")
-        .bind(pro.to_string())
-        .execute(&mut **tx)
-        .await?;
-    Ok(())
-}
-
-/// Whether booking `job` clashes with a live booking whose `owner_col` (pro or assignee) is `owner`.
-async fn schedule_clash(conn: &mut PgConnection, job: Uuid, owner_col: &str, owner: Uuid) -> ApiResult<bool> {
-    let sql = format!(
-        "SELECT EXISTS (SELECT 1 FROM bookings c, bookings o WHERE c.id = $1 AND o.{owner_col} = $2 AND {})",
-        clash("c")
-    );
-    Ok(sqlx::query_scalar(&sql).bind(job).bind(owner).fetch_one(conn).await?)
+/// Whether the job is held by this pro in the team-assigned state and the member is on the pro's team.
+async fn assignable(conn: &mut PgConnection, job: Uuid, pro: Uuid, member: Uuid) -> ApiResult<bool> {
+    let assigned = BookingStatus::TeamAssigned.as_i16();
+    Ok(sqlx::query_scalar(&format!(
+        "SELECT EXISTS (SELECT 1 FROM bookings b JOIN team_members m ON m.pro_id = b.pro_id
+           WHERE b.id = $1 AND b.pro_id = $2 AND b.status = {assigned} AND m.id = $3 AND m.invite_status <> 'removed')"
+    ))
+    .bind(job)
+    .bind(pro)
+    .bind(member)
+    .fetch_one(conn)
+    .await?)
 }
 
 async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
@@ -262,7 +257,7 @@ async fn accept(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>) ->
     .fetch_optional(&mut *tx)
     .await?;
     let Some((user, number)) = won else {
-        let overlaps = schedule_clash(&mut *tx, id, "pro_id", a.id).await?;
+        let overlaps = claimable(&mut *tx, id).await? && schedule_clash(&mut *tx, id, "pro_id", a.id).await?;
         return Err(ApiError::Conflict(if overlaps { "schedule_overlap" } else { "already_taken" }));
     };
     // Queued with the claim. After the commit nothing can fail the request: a 5xx here would make the
@@ -445,7 +440,8 @@ async fn assign(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uuid>, Js
     .execute(&mut *tx)
     .await?;
     if r.rows_affected() == 0 {
-        if schedule_clash(&mut *tx, id, "assignee_id", x.member_id).await? {
+        let overlaps = assignable(&mut *tx, id, a.id, x.member_id).await? && schedule_clash(&mut *tx, id, "assignee_id", x.member_id).await?;
+        if overlaps {
             return Err(ApiError::Conflict("schedule_overlap"));
         }
         return Err(ApiError::NotFound);

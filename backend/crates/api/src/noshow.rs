@@ -10,6 +10,7 @@ use crate::{
         cases::{self, NewCase},
         partner_jobs::VISIBLE,
     },
+    schedule::{clash, lock_schedule},
     settings_registry,
     state::AppState,
     util::{KST_TODAY, best_effort, today_kst},
@@ -121,27 +122,33 @@ pub async fn reassign(s: &AppState, booking: Uuid, coupon: i64) -> ApiResult<Uui
     let next: Option<Uuid> = sqlx::query_scalar(&format!(
         "SELECT p.id FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
          WHERE b.id = $1 AND p.id IS DISTINCT FROM b.pro_id AND {VISIBLE}
-           AND NOT EXISTS (SELECT 1 FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date AND x.start_hour = b.start_hour AND x.status = {assigned})
+           AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.pro_id = p.id AND {})
          ORDER BY (SELECT count(*) FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date), p.id
-         LIMIT 1"
+         LIMIT 1",
+        clash("b")
     ))
     .bind(booking)
     .fetch_optional(&s.db)
     .await?;
     let next = next.ok_or(ApiError::Conflict("no_partner_available"))?;
+    let mut tx = s.db.begin().await?;
+    lock_schedule(&mut tx, next).await?;
     let moved = sqlx::query(&format!(
         "UPDATE bookings SET pro_id = $2, assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner'), accepted_at = now(), updated_at = now()
-         WHERE id = $1 AND status = {assigned} AND checked_in_at IS NULL AND pro_id IS NOT DISTINCT FROM $3"
+         WHERE id = $1 AND status = {assigned} AND checked_in_at IS NULL AND pro_id IS NOT DISTINCT FROM $3
+           AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.pro_id = $2 AND {})",
+        clash("bookings")
     ))
     .bind(booking)
     .bind(next)
     .bind(b.pro_id)
-    .execute(&s.db)
+    .execute(&mut *tx)
     .await?
     .rows_affected();
     if moved == 0 {
         return Err(ApiError::Conflict("reassign_closed"));
     }
+    tx.commit().await?;
     if coupon > 0 {
         sqlx::query(
             "INSERT INTO coupons (user_id, name, amount, campaign, issued_at, expires_at)

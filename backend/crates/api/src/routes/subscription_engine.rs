@@ -12,6 +12,7 @@ use crate::{
     error::{ApiError, ApiResult},
     providers::ProviderError,
     realtime::{Recipient, notify},
+    schedule::{clash, lock_schedule},
     state::AppState,
     util::{KST_TODAY, best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -392,18 +393,19 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
         .bind(d.sub_id)
         .execute(&mut *tx)
         .await?;
-    if let Some(pro) = sub.preferred_pro_id
-        && pro_free_for(&mut tx, id, pro).await?
-    {
-        sqlx::query(
-            "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
-               assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
-             WHERE id = $1",
-        )
-        .bind(id)
-        .bind(pro)
-        .execute(&mut *tx)
-        .await?;
+    if let Some(pro) = sub.preferred_pro_id {
+        lock_schedule(&mut tx, pro).await?;
+        if pro_free_for(&mut tx, id, pro).await? {
+            sqlx::query(
+                "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
+                   assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
+                 WHERE id = $1",
+            )
+            .bind(id)
+            .bind(pro)
+            .execute(&mut *tx)
+            .await?;
+        }
     }
     sqlx::query("UPDATE subscription_visits SET state = 'booked', booking_id = $2, charge_attempts = charge_attempts + 1, retry_at = NULL, payment_ref = NULL, updated_at = now() WHERE id = $1")
         .bind(d.visit_id)
@@ -418,12 +420,14 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
     Ok(())
 }
 
-/// Whether the preferred partner may take this booking: verified, prefs match, and no job already at that slot.
+/// Whether the preferred partner may take this booking: verified, prefs match, and no live job overlapping its window.
+/// The caller holds `lock_schedule` for the partner.
 async fn pro_free_for(conn: &mut PgConnection, booking: Uuid, pro: Uuid) -> ApiResult<bool> {
     let ok: bool = sqlx::query_scalar(&format!(
         "SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
            WHERE b.id = $1 AND p.id = $2 AND {VISIBLE}
-             AND NOT EXISTS (SELECT 1 FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date AND x.start_hour = b.start_hour AND x.status = 2))"
+             AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.pro_id = p.id AND {}))",
+        clash("b")
     ))
     .bind(booking)
     .bind(pro)

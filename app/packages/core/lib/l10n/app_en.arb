@@ -1548,6 +1548,7 @@
  "caseHold": "Hold settlement",
  "caseNoteHint": "Internal note",
  "caseSave": "Save",
+ "err_schedule_overlap": "You already have a job at this time",
  "rulesTab": "Operating rules",
  "rulesIntro": "Changes apply right away or after a server restart. Reset a value to go back to its original setting.",
  "rulesGroupBusiness": "Business limits",

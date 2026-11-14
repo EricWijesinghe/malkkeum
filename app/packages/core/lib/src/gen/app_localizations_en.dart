@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -5048,6 +5049,9 @@ class TEn extends T {
 
   @override
   String get caseSave => 'Save';
+
+  @override
+  String get err_schedule_overlap => 'You already have a job at this time';
 
   @override
   String get rulesTab => 'Operating rules';

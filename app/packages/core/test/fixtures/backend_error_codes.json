@@ -82,6 +82,7 @@
     "checkout_refund_pending",
     "payment_not_for_checkout",
     "read_only_setting",
+    "schedule_overlap",
     "tighten_only",
     "threshold_order"
   ],

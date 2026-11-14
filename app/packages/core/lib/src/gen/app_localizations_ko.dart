@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -4933,6 +4934,9 @@ class TKo extends T {
 
   @override
   String get caseSave => '저장';
+
+  @override
+  String get err_schedule_overlap => '이 시간에 이미 다른 일정이 있어요';
 
   @override
   String get rulesTab => '운영 규칙';

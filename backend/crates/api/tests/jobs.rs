@@ -595,7 +595,14 @@ async fn team_assign_refuses_a_member_whose_job_overlaps(pool: PgPool) {
     .await
     .expect("team member");
     let body = json!({ "member_id": member });
-    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{first}/assign"), Some(pro.as_str()), Some(body.clone())).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        &format!("/v1/partner/jobs/{first}/assign"),
+        Some(pro.as_str()),
+        Some(body.clone()),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     sqlx::query("UPDATE bookings SET start_hour = 10 WHERE id = $1")
         .bind(second)
@@ -605,4 +612,80 @@ async fn team_assign_refuses_a_member_whose_job_overlaps(pool: PgPool) {
     let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{second}/assign"), Some(pro.as_str()), Some(body)).await;
     assert_eq!(st, StatusCode::CONFLICT, "{b}");
     assert_eq!(b["error"]["code"], "schedule_overlap");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_job_another_pro_already_took_reports_already_taken(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0408").await;
+    let (first, _) = book(&app, &c, 10, None).await;
+    let (second, _) = book(&app, &c, 10, None).await;
+    let (pro_a, _) = verified_pro(&app, &pool, "010-5000-0409").await;
+    let (pro_b, _) = verified_pro(&app, &pool, "010-5000-0410").await;
+    accept(&app, first, &pro_a).await;
+    accept(&app, second, &pro_b).await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{first}/accept"), Some(pro_b.as_str()), None).await;
+    assert_eq!(st, StatusCode::CONFLICT, "{b}");
+    assert_eq!(b["error"]["code"], "already_taken", "a taken job is not a schedule clash: {b}");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn a_customer_cannot_move_an_accepted_job_onto_another_accepted_jobs_window(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0414").await;
+    let (first, _) = book(&app, &c, 10, None).await;
+    let (second, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET start_hour = 13 WHERE id = $1")
+        .bind(second)
+        .execute(&pool)
+        .await
+        .expect("afternoon");
+    let (pro, _) = verified_pro(&app, &pool, "010-5000-0415").await;
+    accept(&app, first, &pro).await;
+    accept(&app, second, &pro).await;
+    let visit: String = sqlx::query_scalar("SELECT visit_date::text FROM bookings WHERE id = $1")
+        .bind(second)
+        .fetch_one(&pool)
+        .await
+        .expect("visit date");
+    let body = json!({ "visit_date": visit, "start_hour": 9 });
+    let (st, b) = call(&app, "POST", &format!("/v1/bookings/{second}/reschedule"), Some(c.token.as_str()), Some(body)).await;
+    assert_eq!(st, StatusCode::CONFLICT, "{b}");
+    assert_eq!(b["error"]["code"], "schedule_overlap");
+    let hour: i16 = sqlx::query_scalar("SELECT start_hour FROM bookings WHERE id = $1")
+        .bind(second)
+        .fetch_one(&pool)
+        .await
+        .expect("hour");
+    assert_eq!(hour, 13, "the refused move is rolled back");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn no_show_reassign_skips_a_partner_with_a_longer_overlapping_job(pool: PgPool) {
+    seed_catalog(&pool).await;
+    let app = common::app(pool.clone());
+    let c = customer(&app, &pool, "010-5000-0416").await;
+    let (job, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET start_hour = 13 WHERE id = $1")
+        .bind(job)
+        .execute(&pool)
+        .await
+        .expect("afternoon");
+    let (busy, _) = book(&app, &c, 10, None).await;
+    sqlx::query("UPDATE bookings SET minutes = 300 WHERE id = $1")
+        .bind(busy)
+        .execute(&pool)
+        .await
+        .expect("five hour job from nine");
+    let (pro_a, _) = verified_pro(&app, &pool, "010-5000-0417").await;
+    let (pro_b, _) = verified_pro(&app, &pool, "010-5000-0418").await;
+    accept(&app, job, &pro_a).await;
+    accept(&app, busy, &pro_b).await;
+    let err = api::noshow::reassign(&state(&pool), job, 0).await.expect_err("pro b is busy until 14:00");
+    assert!(
+        matches!(err, api::error::ApiError::Conflict("no_partner_available")),
+        "reassign must refuse an overlapping partner"
+    );
 }

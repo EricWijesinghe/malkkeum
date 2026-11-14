@@ -17,7 +17,9 @@ use crate::{
     providers::ProviderError,
     ratelimit::within_quota,
     realtime::{Recipient, notify},
-    safety, settings_registry,
+    safety,
+    schedule::{lock_schedule, schedule_clash},
+    settings_registry,
     state::AppState,
     util::{best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -718,6 +720,9 @@ async fn reschedule(State(s): State<AppState>, Customer(a): Customer, Path(id): 
     // The booking's own current slot does not count against the new one.
     let (used, cap) = lock_and_count_slot(&mut tx, r.visit_date, r.start_hour, Some(id)).await?;
     check_capacity(used, cap)?;
+    if let Some(pro) = b.pro_id {
+        lock_schedule(&mut tx, pro).await?;
+    }
     let moved = sqlx::query("UPDATE bookings SET visit_date = $2, start_hour = $3, reschedule = $4, updated_at = now() WHERE id = $1 AND status = $5")
         .bind(id)
         .bind(r.visit_date)
@@ -728,6 +733,12 @@ async fn reschedule(State(s): State<AppState>, Customer(a): Customer, Path(id): 
         .await?;
     if moved.rows_affected() == 0 {
         return Err(ApiError::Conflict("booking_changed"));
+    }
+    // Checked after the write: a clash rolls the move back when the transaction drops.
+    if let Some(pro) = b.pro_id
+        && schedule_clash(&mut *tx, id, "pro_id", pro).await?
+    {
+        return Err(ApiError::Conflict("schedule_overlap"));
     }
     tx.commit().await?;
     if let Some(pro) = b.pro_id {

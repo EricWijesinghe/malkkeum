@@ -46,6 +46,7 @@ pub mod renewals;
 pub mod retention;
 pub mod routes;
 pub mod safety;
+pub mod schedule;
 pub mod seed;
 pub mod seo;
 pub mod settings_registry;
