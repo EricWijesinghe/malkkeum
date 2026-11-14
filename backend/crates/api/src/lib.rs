@@ -37,6 +37,7 @@ pub mod providers;
 pub mod quality;
 pub mod ratelimit;
 pub mod realtime;
+pub mod renewals;
 mod realtime_heartbeat;
 pub mod realtime_ticket;
 pub mod reconciler;
@@ -103,6 +104,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         spawn_settings_refresh(state.clone()),
         reconciler::spawn(state.clone()),
         ops_alerts::spawn(state.clone()),
+        renewals::spawn(state.clone()),
         payout_sync::spawn(state.clone()),
         retention::spawn(state.clone()),
         noshow::spawn(state.clone()),

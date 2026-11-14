@@ -27,6 +27,7 @@ pub(crate) mod partner_jobs;
 pub(crate) mod payments;
 pub(crate) mod payouts;
 mod privacy_requests;
+mod renewals;
 pub(crate) mod seller;
 mod settings;
 pub mod setup;
@@ -133,7 +134,8 @@ pub fn router(state: AppState) -> Router {
                 .merge(crate::analytics::admin_routes())
                 .merge(subscriptions::admin_routes())
                 .merge(audit::admin_routes())
-                .merge(privacy_requests::admin_routes()),
+                .merge(privacy_requests::admin_routes())
+                .merge(renewals::admin_routes()),
         )
         .nest(
             "/partner",
