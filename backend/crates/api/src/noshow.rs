@@ -27,9 +27,10 @@ const PASS_EVERY: Duration = Duration::from_secs(5 * 60);
 /// Returns how many cases were opened.
 pub async fn scan(s: &AppState) -> ApiResult<usize> {
     let grace = settings_registry::get(&s.db, &s.config, "noshow_grace_minutes").await?;
+    let assigned = BookingStatus::TeamAssigned.as_i16();
     let due: Vec<(Uuid, String)> = sqlx::query_as(&format!(
         "SELECT b.id, b.number FROM bookings b
-         WHERE b.status = 2 AND b.pro_id IS NOT NULL AND b.checked_in_at IS NULL AND b.visit_date <= {KST_TODAY}
+         WHERE b.status = {assigned} AND b.pro_id IS NOT NULL AND b.checked_in_at IS NULL AND b.visit_date <= {KST_TODAY}
            AND ((b.visit_date + make_interval(hours => b.start_hour::int)) AT TIME ZONE 'Asia/Seoul')
                + make_interval(mins => $1) <= now()
            AND NOT EXISTS (SELECT 1 FROM cases c WHERE c.booking_id = b.id AND c.kind = 'no_show')"
@@ -79,7 +80,8 @@ async fn open_case(db: &PgPool, booking: Uuid) -> ApiResult<Option<Uuid>> {
     if exists {
         return Ok(None);
     }
-    let case = cases::insert(
+    // The unique index is the last guard; a scan that loses the race gets None from ON CONFLICT.
+    let case = cases::insert_no_show(
         &mut *tx,
         NewCase {
             booking: Some(booking),
@@ -93,7 +95,7 @@ async fn open_case(db: &PgPool, booking: Uuid) -> ApiResult<Option<Uuid>> {
     )
     .await?;
     tx.commit().await?;
-    Ok(Some(case))
+    Ok(case)
 }
 
 /// Starts the periodic scan. Errors are logged and the loop goes on.
@@ -115,10 +117,11 @@ pub async fn reassign(s: &AppState, booking: Uuid, coupon: i64) -> ApiResult<Uui
     if b.status()? != BookingStatus::TeamAssigned || b.checked_in_at.is_some() || b.visit_date < today_kst() {
         return Err(ApiError::Conflict("reassign_closed"));
     }
+    let assigned = BookingStatus::TeamAssigned.as_i16();
     let next: Option<Uuid> = sqlx::query_scalar(&format!(
         "SELECT p.id FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
          WHERE b.id = $1 AND p.id IS DISTINCT FROM b.pro_id AND {VISIBLE}
-           AND NOT EXISTS (SELECT 1 FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date AND x.start_hour = b.start_hour AND x.status = 2)
+           AND NOT EXISTS (SELECT 1 FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date AND x.start_hour = b.start_hour AND x.status = {assigned})
          ORDER BY (SELECT count(*) FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date), p.id
          LIMIT 1"
     ))
@@ -126,10 +129,10 @@ pub async fn reassign(s: &AppState, booking: Uuid, coupon: i64) -> ApiResult<Uui
     .fetch_optional(&s.db)
     .await?;
     let next = next.ok_or(ApiError::Conflict("no_partner_available"))?;
-    let moved = sqlx::query(
+    let moved = sqlx::query(&format!(
         "UPDATE bookings SET pro_id = $2, assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner'), accepted_at = now(), updated_at = now()
-         WHERE id = $1 AND status = 2 AND checked_in_at IS NULL AND pro_id IS NOT DISTINCT FROM $3",
-    )
+         WHERE id = $1 AND status = {assigned} AND checked_in_at IS NULL AND pro_id IS NOT DISTINCT FROM $3"
+    ))
     .bind(booking)
     .bind(next)
     .bind(b.pro_id)

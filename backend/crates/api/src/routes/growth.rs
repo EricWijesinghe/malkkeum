@@ -18,6 +18,7 @@ use axum::{
 };
 use chrono::{DateTime, Duration, Utc};
 use domain::{
+    booking::BookingStatus,
     coupon::{COUPON_LIFETIME_DAYS, WelcomePack},
     growth::{ReferralOffer, WelcomeOffer, check_claim, check_reward, mask_name, paid_in_full, proof_count},
 };
@@ -239,12 +240,13 @@ struct PublicReview {
 
 /// Public, real numbers only. Counts under MIN_PROOF_COUNT come back null so the apps hide them.
 async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
-    let (homes, rated, avg): (i64, i64, Option<f64>) = sqlx::query_as(
+    let completed = BookingStatus::Completed.as_i16();
+    let (homes, rated, avg): (i64, i64, Option<f64>) = sqlx::query_as(&format!(
         "SELECT
-           (SELECT count(*) FROM bookings WHERE status = 3 AND completed_at >= date_trunc('month', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'),
+           (SELECT count(*) FROM bookings WHERE status = {completed} AND completed_at >= date_trunc('month', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'),
            (SELECT count(*) FROM reviews WHERE NOT hidden),
-           (SELECT avg(rating)::float8 FROM reviews WHERE NOT hidden)",
-    )
+           (SELECT avg(rating)::float8 FROM reviews WHERE NOT hidden)"
+    ))
     .fetch_one(&s.db)
     .await?;
     let recent: Vec<(Uuid, i16, String, String)> = sqlx::query_as(
@@ -428,17 +430,8 @@ struct ReportInput {
     note: String,
 }
 
-/// A reporter counts toward the auto-hide only if they completed a booking with the reviewed pro and are not
-/// that pro or one of its team members (matched by phone). Other reports still queue the review for staff.
-const QUALIFIED_REPORTS_SQL: &str = "SELECT count(*) FROM review_reports rr JOIN users u ON u.id = rr.reporter_id
-  WHERE rr.booking_id = $1 AND $2::uuid IS NOT NULL
-    AND EXISTS (SELECT 1 FROM bookings b WHERE b.user_id = u.id AND b.pro_id = $2 AND b.status = 3)
-    AND NOT EXISTS (SELECT 1 FROM pros p WHERE p.id = $2 AND p.phone = u.phone)
-    AND NOT EXISTS (SELECT 1 FROM team_members t WHERE t.pro_id = $2 AND t.phone = u.phone)";
-
-/// A customer reports a review once. Reports from the threshold of distinct customers who booked that pro
-/// hide the review at once; any threshold-many reports queue it for a staff decision (`report_pending`).
-/// The reviewed pro and its team can never hide a review this way.
+/// A customer reports a review once. Reaching the threshold queues the review for a staff decision
+/// (`report_pending`); the review stays visible until staff act.
 async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(booking): Path<Uuid>, Json(r): Json<ReportInput>) -> ApiResult<Json<Value>> {
     let reason = REPORT_REASONS.iter().find(|x| **x == r.reason).ok_or(ApiError::BadRequest("invalid_report"))?;
     let note = r.note.trim();
@@ -448,7 +441,7 @@ async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(bo
     if !s.review_reports.admit(a.id, REPORTS_PER_WINDOW, Instant::now()) {
         return Err(ApiError::RateLimited);
     }
-    let (author, pro): (Uuid, Option<Uuid>) = sqlx::query_as("SELECT user_id, pro_id FROM reviews WHERE booking_id = $1")
+    let author: Uuid = sqlx::query_scalar("SELECT user_id FROM reviews WHERE booking_id = $1")
         .bind(booking)
         .fetch_optional(&s.db)
         .await?
@@ -471,13 +464,7 @@ async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(bo
         .bind(booking)
         .fetch_one(&s.db)
         .await?;
-    let qualified: i64 = sqlx::query_scalar(QUALIFIED_REPORTS_SQL).bind(booking).bind(pro).fetch_one(&s.db).await?;
-    if qualified >= threshold {
-        sqlx::query("UPDATE reviews SET hidden = TRUE, report_pending = TRUE WHERE booking_id = $1")
-            .bind(booking)
-            .execute(&s.db)
-            .await?;
-    } else if reports >= threshold {
+    if reports >= threshold {
         sqlx::query("UPDATE reviews SET report_pending = TRUE WHERE booking_id = $1")
             .bind(booking)
             .execute(&s.db)

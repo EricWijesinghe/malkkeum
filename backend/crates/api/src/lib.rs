@@ -110,6 +110,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
         marketing::spawn(state.clone()),
         quality::spawn(state.clone()),
         routes::waitlist::spawn(state.clone()),
+        routes::partner_jobs::spawn_close_stale_quotes(state.clone()),
         routes::subscription_engine::spawn(state.clone()),
         realtime::spawn_outbox(state.clone()),
         state.hub.spawn_listener(),

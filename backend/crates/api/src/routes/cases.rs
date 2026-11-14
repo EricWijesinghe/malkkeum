@@ -60,11 +60,28 @@ pub struct NewCase<'a> {
     pub photos: Value,
 }
 
+const INSERT_CASE_SQL: &str = "INSERT INTO cases (booking_id, kind, source, reporter_role, reporter_id, summary, photos, sla_due_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, now() + make_interval(hours => $8))";
+
 pub async fn insert(db: impl sqlx::PgExecutor<'_>, c: NewCase<'_>) -> ApiResult<Uuid> {
-    Ok(sqlx::query_scalar(
-        "INSERT INTO cases (booking_id, kind, source, reporter_role, reporter_id, summary, photos, sla_due_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, now() + make_interval(hours => $8)) RETURNING id",
-    )
+    Ok(sqlx::query_scalar(&format!("{INSERT_CASE_SQL} RETURNING id"))
+        .bind(c.booking)
+        .bind(c.kind)
+        .bind(c.source)
+        .bind(c.reporter)
+        .bind(c.reporter_id)
+        .bind(c.summary)
+        .bind(c.photos)
+        .bind(SLA_HOURS)
+        .fetch_one(db)
+        .await?)
+}
+
+/// Like `insert`, but None when the booking already has a no-show case (`cases_one_no_show_idx`).
+pub async fn insert_no_show(db: impl sqlx::PgExecutor<'_>, c: NewCase<'_>) -> ApiResult<Option<Uuid>> {
+    Ok(sqlx::query_scalar(&format!(
+        "{INSERT_CASE_SQL} ON CONFLICT (booking_id) WHERE kind = 'no_show' DO NOTHING RETURNING id"
+    ))
     .bind(c.booking)
     .bind(c.kind)
     .bind(c.source)
@@ -73,7 +90,7 @@ pub async fn insert(db: impl sqlx::PgExecutor<'_>, c: NewCase<'_>) -> ApiResult<
     .bind(c.summary)
     .bind(c.photos)
     .bind(SLA_HOURS)
-    .fetch_one(db)
+    .fetch_optional(db)
     .await?)
 }
 
@@ -126,10 +143,26 @@ async fn customer_open(State(s): State<AppState>, Customer(a): Customer, Path(id
     let photos = own_upload_list(&s, Some(a.id), &b.photos, false).await?;
     let case = insert(
         &s.db,
-        NewCase { booking: Some(id), kind: &b.kind, source: "manual", reporter: "customer", reporter_id: Some(a.id), summary: b.summary.trim(), photos },
+        NewCase {
+            booking: Some(id),
+            kind: &b.kind,
+            source: "manual",
+            reporter: "customer",
+            reporter_id: Some(a.id),
+            summary: b.summary.trim(),
+            photos,
+        },
     )
     .await?;
-    audit(&s.db, "customer", Some(a.id), "case.open", &case.to_string(), json!({ "booking_id": id, "kind": b.kind })).await?;
+    audit(
+        &s.db,
+        "customer",
+        Some(a.id),
+        "case.open",
+        &case.to_string(),
+        json!({ "booking_id": id, "kind": b.kind }),
+    )
+    .await?;
     s.hub.send(Recipient::Staff, "case.opened", json!({ "case_id": case }));
     Ok(Json(json!({ "id": case })))
 }
@@ -146,10 +179,26 @@ async fn partner_open(State(s): State<AppState>, Pro(a): Pro, Path(id): Path<Uui
     let photos = own_upload_list(&s, Some(a.id), &b.photos, true).await?;
     let case = insert(
         &s.db,
-        NewCase { booking: Some(id), kind: &b.kind, source: "manual", reporter: "partner", reporter_id: Some(a.id), summary: b.summary.trim(), photos },
+        NewCase {
+            booking: Some(id),
+            kind: &b.kind,
+            source: "manual",
+            reporter: "partner",
+            reporter_id: Some(a.id),
+            summary: b.summary.trim(),
+            photos,
+        },
     )
     .await?;
-    audit(&s.db, "pro", Some(a.id), "case.open", &case.to_string(), json!({ "booking_id": id, "kind": b.kind })).await?;
+    audit(
+        &s.db,
+        "pro",
+        Some(a.id),
+        "case.open",
+        &case.to_string(),
+        json!({ "booking_id": id, "kind": b.kind }),
+    )
+    .await?;
     s.hub.send(Recipient::Staff, "case.opened", json!({ "case_id": case }));
     Ok(Json(json!({ "id": case })))
 }
@@ -213,11 +262,13 @@ async fn list(State(s): State<AppState>, _st: Staff, Query(q): Query<ListQuery>)
 }
 
 async fn load_case(db: &PgPool, id: Uuid) -> ApiResult<CaseRow> {
-    sqlx::query_as(&format!("SELECT {CASE_COLS} FROM cases c LEFT JOIN bookings b ON b.id = c.booking_id WHERE c.id = $1"))
-        .bind(id)
-        .fetch_optional(db)
-        .await?
-        .ok_or(ApiError::NotFound)
+    sqlx::query_as(&format!(
+        "SELECT {CASE_COLS} FROM cases c LEFT JOIN bookings b ON b.id = c.booking_id WHERE c.id = $1"
+    ))
+    .bind(id)
+    .fetch_optional(db)
+    .await?
+    .ok_or(ApiError::NotFound)
 }
 
 /// Case, internal notes and the job (with check-in/out times, which only staff see).
@@ -276,12 +327,14 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
         // Claim first: the row is written as pending before any money moves, and only a case with no
         // refund field can be claimed. A retry or a second click sees pending/done and stops here.
         let key = Uuid::now_v7();
-        let claimed = sqlx::query("UPDATE cases SET outcome = jsonb_set(COALESCE(outcome, '{}'), '{refund}', $2), updated_at = now() WHERE id = $1 AND outcome->'refund' IS NULL")
-            .bind(id)
-            .bind(json!({ "status": "pending", "key": key, "requested": amount }))
-            .execute(&s.db)
-            .await?
-            .rows_affected();
+        let claimed = sqlx::query(
+            "UPDATE cases SET outcome = jsonb_set(COALESCE(outcome, '{}'), '{refund}', $2), updated_at = now() WHERE id = $1 AND outcome->'refund' IS NULL",
+        )
+        .bind(id)
+        .bind(json!({ "status": "pending", "key": key, "requested": amount }))
+        .execute(&s.db)
+        .await?
+        .rows_affected();
         if claimed == 0 {
             return Err(ApiError::Conflict("refund_already_claimed"));
         }
@@ -290,12 +343,28 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
         let refunded = match refund_all(&s, booking, Some(amount)).await {
             Ok(total) => total,
             Err(e) => {
-                audit(&s.db, "staff", Some(st.id), "case.refund_failed", &id.to_string(), json!({ "key": key, "requested": amount })).await?;
+                audit(
+                    &s.db,
+                    "staff",
+                    Some(st.id),
+                    "case.refund_failed",
+                    &id.to_string(),
+                    json!({ "key": key, "requested": amount }),
+                )
+                .await?;
                 return Err(e);
             }
         };
         outcome["refund"] = json!({ "status": "done", "key": key, "requested": amount, "refunded": refunded });
-        audit(&s.db, "staff", Some(st.id), "case.refund", &id.to_string(), json!({ "requested": amount, "refunded": refunded })).await?;
+        audit(
+            &s.db,
+            "staff",
+            Some(st.id),
+            "case.refund",
+            &id.to_string(),
+            json!({ "requested": amount, "refunded": refunded }),
+        )
+        .await?;
     }
     if let Some(hold) = u.hold_settlement {
         let booking = case.booking_id.ok_or(ApiError::BadRequest("case_has_no_booking"))?;
@@ -311,7 +380,15 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
             return Err(ApiError::Conflict("settlement_state"));
         }
         outcome["hold"] = json!(hold);
-        audit(&s.db, "staff", Some(st.id), "settlement.hold", &booking.to_string(), json!({ "hold": hold, "case_id": id })).await?;
+        audit(
+            &s.db,
+            "staff",
+            Some(st.id),
+            "settlement.hold",
+            &booking.to_string(),
+            json!({ "hold": hold, "case_id": id }),
+        )
+        .await?;
     }
     let moved = sqlx::query(
         "UPDATE cases SET status = COALESCE($3, status), assignee_id = COALESCE($4, assignee_id), outcome = $5, updated_at = now(),
@@ -330,9 +407,22 @@ async fn update(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uuid
         return Err(ApiError::Conflict("case_changed"));
     }
     if let Some(note) = u.note.as_deref().map(str::trim).filter(|n| !n.is_empty()) {
-        sqlx::query("INSERT INTO case_notes (case_id, author_id, body) VALUES ($1, $2, $3)").bind(id).bind(st.id).bind(note).execute(&s.db).await?;
+        sqlx::query("INSERT INTO case_notes (case_id, author_id, body) VALUES ($1, $2, $3)")
+            .bind(id)
+            .bind(st.id)
+            .bind(note)
+            .execute(&s.db)
+            .await?;
     }
-    audit(&s.db, "staff", Some(st.id), "case.update", &id.to_string(), json!({ "status": u.status, "assignee_id": u.assignee_id })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "case.update",
+        &id.to_string(),
+        json!({ "status": u.status, "assignee_id": u.assignee_id }),
+    )
+    .await?;
     Ok(Json(case_view(&s, id).await?))
 }
 
@@ -365,6 +455,14 @@ async fn reassign(State(s): State<AppState>, Staff(st): Staff, Path(id): Path<Uu
     .bind(coupon)
     .execute(&s.db)
     .await?;
-    audit(&s.db, "staff", Some(st.id), "booking.reassign", &booking.to_string(), json!({ "case_id": id, "to_pro": next, "coupon": coupon })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(st.id),
+        "booking.reassign",
+        &booking.to_string(),
+        json!({ "case_id": id, "to_pro": next, "coupon": coupon }),
+    )
+    .await?;
     Ok(Json(case_view(&s, id).await?))
 }
