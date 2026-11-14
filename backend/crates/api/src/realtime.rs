@@ -54,7 +54,7 @@ pub(crate) const OUTBOX_BATCH: usize = 10;
 pub(crate) const OUTBOX_MAX_BATCHES: usize = 100;
 const OUTBOX_EVERY: Duration = Duration::from_secs(30);
 /// Pushes started straight from requests. A bulk send past this is drained by the job in batches.
-static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
+pub(crate) static PUSH_SLOTS: Semaphore = Semaphore::const_new(32);
 const LISTEN_BACKOFF_MIN: Duration = Duration::from_millis(250);
 const LISTEN_BACKOFF_MAX: Duration = Duration::from_secs(30);
 

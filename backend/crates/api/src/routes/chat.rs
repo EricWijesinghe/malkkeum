@@ -5,7 +5,7 @@ use crate::{
     contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
     ratelimit::within_quota,
-    realtime::{Recipient, notify},
+    realtime::{PUSH_SLOTS, Recipient, notify},
     routes::uploads,
     settings_registry,
     state::AppState,
@@ -133,7 +133,7 @@ pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> 
         notify(s, member, "chat.message", "상담팀", &preview, data).await?;
     } else {
         s.hub.send(member, "chat.message", live);
-        push_staff(s, msg.thread_id, &preview).await;
+        spawn_staff_push(s, msg.thread_id, preview);
     }
     Ok(())
 }
@@ -142,6 +142,11 @@ pub async fn broadcast_message(s: &AppState, msg: &MessageRow) -> ApiResult<()> 
 const STAFF_PUSH_GAP: Duration = Duration::from_secs(60);
 /// shortcut: per-process, so a multi-node deploy may push once per node per minute; upgrade to a shared timestamp when running more than one node.
 static LAST_STAFF_PUSH: LazyLock<Mutex<HashMap<Uuid, Instant>>> = LazyLock::new(|| Mutex::new(HashMap::new()));
+
+fn with_staff_window<T>(f: impl FnOnce(&mut HashMap<Uuid, Instant>) -> T) -> T {
+    let mut map = LAST_STAFF_PUSH.lock().unwrap_or_else(PoisonError::into_inner);
+    f(&mut map)
+}
 
 /// True when no staff push went out for `thread` within the gap. Records the push when true.
 fn claim_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid, now: Instant) -> bool {
@@ -153,15 +158,30 @@ fn claim_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid, now: Instant
     true
 }
 
-/// Pushes a member's message to staff devices. Staff have no inbox, so this is push only; the live event is already sent.
-async fn push_staff(s: &AppState, thread: Uuid, preview: &str) {
-    let claimed = {
-        let mut map = LAST_STAFF_PUSH.lock().unwrap_or_else(PoisonError::into_inner);
-        claim_staff_push(&mut map, thread, Instant::now())
-    };
-    if !claimed {
+/// Reopens the window for `thread` after a failed push, so the next message in it pushes again.
+fn release_staff_push(map: &mut HashMap<Uuid, Instant>, thread: Uuid) {
+    map.remove(&thread);
+}
+
+/// Pushes a member's message to staff devices on a background task, so the sender's request never waits
+/// on the push service. Staff have no inbox, so this is push only; the live event is already sent.
+fn spawn_staff_push(s: &AppState, thread: Uuid, preview: String) {
+    if !with_staff_window(|map| claim_staff_push(map, thread, Instant::now())) {
         return;
     }
+    let state = s.clone();
+    tokio::spawn(async move {
+        if !push_staff(&state, &preview, thread).await {
+            with_staff_window(|map| release_staff_push(map, thread));
+        }
+    });
+}
+
+/// Staff devices only. Waits for a free push slot like the notify path does. False when the push did not go out.
+async fn push_staff(s: &AppState, preview: &str, thread: Uuid) -> bool {
+    let Ok(_slot) = PUSH_SLOTS.acquire().await else {
+        return false;
+    };
     let tokens: Vec<String> = match sqlx::query_scalar("SELECT token FROM push_tokens WHERE owner_role = 'staff'")
         .fetch_all(&s.db)
         .await
@@ -169,15 +189,33 @@ async fn push_staff(s: &AppState, thread: Uuid, preview: &str) {
         Ok(tokens) => tokens,
         Err(e) => {
             tracing::warn!(error = %e, "staff chat push: token lookup failed");
-            return;
+            return false;
         }
     };
-    if let Err(e) = s
-        .providers
-        .push(&tokens, "상담팀", preview, &json!({ "kind": "chat.message", "thread_id": thread }))
+    let data = json!({ "kind": "chat.message", "thread_id": thread });
+    match s.providers.push_collect(&tokens, "상담팀", preview, &data).await {
+        Ok(dead) => {
+            prune_staff_tokens(s, &dead).await;
+            true
+        }
+        Err(e) => {
+            tracing::warn!(error = %e, "staff chat push failed");
+            false
+        }
+    }
+}
+
+/// Drops staff device tokens the push service reports as dead.
+async fn prune_staff_tokens(s: &AppState, dead: &[String]) {
+    if dead.is_empty() {
+        return;
+    }
+    if let Err(e) = sqlx::query("DELETE FROM push_tokens WHERE token = ANY($1) AND owner_role = 'staff'")
+        .bind(dead.to_vec())
+        .execute(&s.db)
         .await
     {
-        tracing::warn!(error = %e, "staff chat push failed");
+        tracing::warn!(error = %e, "failed to prune dead staff push tokens");
     }
 }
 
@@ -191,6 +229,14 @@ mod tests {
         assert!(claim_staff_push(&mut map, thread, t0));
         assert!(!claim_staff_push(&mut map, thread, t0 + Duration::from_secs(30)));
         assert!(claim_staff_push(&mut map, thread, t0 + STAFF_PUSH_GAP));
+    }
+
+    #[test]
+    fn a_failed_push_reopens_the_window() {
+        let (mut map, thread, t0) = (HashMap::new(), Uuid::from_u128(1), Instant::now());
+        assert!(claim_staff_push(&mut map, thread, t0));
+        release_staff_push(&mut map, thread);
+        assert!(claim_staff_push(&mut map, thread, t0 + Duration::from_secs(1)));
     }
 
     #[test]
