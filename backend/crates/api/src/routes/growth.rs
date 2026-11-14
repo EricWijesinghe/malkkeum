@@ -4,6 +4,7 @@
 use super::{audit, uploads};
 use crate::{
     auth::{Admin, Customer, Staff},
+    contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
     settings_registry,
     state::AppState,
@@ -11,7 +12,7 @@ use crate::{
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::header,
     response::{IntoResponse, Response},
     routing::{get, post, put},
@@ -39,9 +40,14 @@ const MAX_PHOTOS: usize = 5;
 const RECENT_REVIEWS: i64 = 3;
 const REVIEW_LIST_LIMIT: i64 = 200;
 const PROOF_BODY_CHARS: i32 = 120;
+/// Full review list: the whole text, capped so one page stays small.
+const REVIEW_BODY_CHARS: i32 = 1000;
 
 pub fn public_routes() -> Router<AppState> {
-    Router::new().route("/public/proof", get(proof)).route("/public/offers", get(offers))
+    Router::new()
+        .route("/public/proof", get(proof))
+        .route("/public/offers", get(offers))
+        .route("/public/reviews", get(public_reviews))
 }
 
 pub fn customer_routes() -> Router<AppState> {
@@ -236,6 +242,44 @@ struct PublicReview {
     rating: i16,
     body: String,
     name: String,
+}
+
+/// One visible review for the full list: newest first, keyset-paged, same redaction as the proof card.
+#[derive(Serialize)]
+struct PublicReviewRow {
+    booking_id: Uuid,
+    created_at: DateTime<Utc>,
+    rating: i16,
+    body: String,
+    name: String,
+}
+
+/// Every visible review (any rating), newest first. `limit` 1..=100, `cursor` from `X-Next-Cursor`.
+async fn public_reviews(State(s): State<AppState>, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (before_ts, before_id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<(Uuid, DateTime<Utc>, i16, String, String)> = sqlx::query_as(
+        "SELECT r.booking_id, r.created_at, r.rating, left(r.body, $2), u.name FROM reviews r JOIN users u ON u.id = r.user_id
+         WHERE NOT r.hidden AND ($3::timestamptz IS NULL OR (r.created_at, r.booking_id) < ($3, $4))
+         ORDER BY r.created_at DESC, r.booking_id DESC LIMIT $1",
+    )
+    .bind(limit)
+    .bind(REVIEW_BODY_CHARS)
+    .bind(before_ts)
+    .bind(before_id)
+    .fetch_all(&s.db)
+    .await?;
+    let reviews: Vec<PublicReviewRow> = rows
+        .into_iter()
+        .map(|(booking_id, created_at, rating, body, name)| PublicReviewRow {
+            booking_id,
+            created_at,
+            rating,
+            body: domain::growth::redact_contacts(&body),
+            name: mask_name(&name),
+        })
+        .collect();
+    Ok(paged(reviews, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.booking_id.to_string()])))
 }
 
 /// Public, real numbers only. Counts under MIN_PROOF_COUNT come back null so the apps hide them.

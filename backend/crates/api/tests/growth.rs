@@ -115,6 +115,13 @@ async fn public_proof_hides_small_counts_masks_names_and_respects_moderation(poo
     assert!(proof["rating"].is_null());
     assert_eq!(proof["reviews"][0]["name"], "김*수", "masked name");
 
+    let (st, all) = call(&app, "GET", "/v1/public/reviews?limit=1", None, None).await;
+    assert_eq!(st, StatusCode::OK, "{all}");
+    assert_eq!(all[0]["name"], "김*수", "full list masks names too");
+    assert_eq!(all[0]["rating"], 5);
+    let (st, bad) = call(&app, "GET", "/v1/public/reviews?limit=0", None, None).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST, "{bad}");
+
     let admin = auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffAdmin).expect("token");
     let (st, b) = call(
         &app,
@@ -127,6 +134,8 @@ async fn public_proof_hides_small_counts_masks_names_and_respects_moderation(poo
     assert_eq!(st, StatusCode::OK, "{b}");
     let (_, proof) = call(&app, "GET", "/v1/public/proof", None, None).await;
     assert_eq!(proof["reviews"].as_array().map(Vec::len), Some(0), "hidden reviews leave the public page");
+    let (_, all) = call(&app, "GET", "/v1/public/reviews", None, None).await;
+    assert_eq!(all.as_array().map(Vec::len), Some(0), "hidden reviews leave the full list too");
 
     let consultant = auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffConsultant).expect("token");
     let (st, _) = call(
