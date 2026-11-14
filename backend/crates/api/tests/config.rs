@@ -1,4 +1,4 @@
-//! Maintenance mode: the owner can still sign in and switch it off; the public API is refused meanwhile.
+//! Maintenance mode: the owner can still sign in and switch it off; new bookings are refused meanwhile.
 
 mod common;
 
@@ -92,10 +92,17 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     .await;
     assert_eq!(st, StatusCode::OK);
 
-    // Public booking traffic is refused with the stable code, before any auth check.
-    let (st, b) = call(&app, "GET", "/v1/bookings", None, None).await;
+    // The switch lives in the settings registry, so the public document reports it at once.
+    let (st, b) = call(&app, "GET", "/v1/config", None, None).await;
+    assert_eq!(st, StatusCode::OK);
+    assert_eq!(b["maintenance"], json!({"on": true, "message": "점검"}));
+
+    // New bookings are refused with the stable code, before any auth check; reads stay open.
+    let (st, b) = call(&app, "POST", "/v1/bookings", None, None).await;
     assert_eq!(st, StatusCode::SERVICE_UNAVAILABLE);
     assert_eq!(b["error"]["code"], "maintenance");
+    let (st, _) = call(&app, "GET", "/v1/bookings", None, None).await;
+    assert_ne!(st, StatusCode::SERVICE_UNAVAILABLE);
 
     // The owner can still sign in, refresh and reach the admin config during maintenance.
     let token = owner_verify(&app, &recovery).await;
@@ -106,8 +113,8 @@ async fn owner_signs_in_during_maintenance_and_switches_it_off(pool: PgPool) {
     assert_eq!(st, StatusCode::OK, "{b}");
     assert_eq!(b["maintenance"]["on"], json!(false));
 
-    // Switched off: the public API answers again (here 401, since no token is sent).
-    let (st, _) = call(&app, "GET", "/v1/bookings", None, None).await;
+    // Switched off: new bookings pass the gate again (here 401, since no token is sent).
+    let (st, _) = call(&app, "POST", "/v1/bookings", None, None).await;
     assert_ne!(st, StatusCode::SERVICE_UNAVAILABLE);
 }
 

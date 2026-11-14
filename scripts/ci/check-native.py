@@ -561,9 +561,12 @@ def check_seller_include(caddy):
     cover the website (not pay/, auth/ or assets), and each page must carry the seller-info include."""
     check('@site_templated not path /assets/* /vendor/* /pay/* /auth/*' in caddy and 'templates @site_templated' in caddy,
           "deploy/Caddyfile: templates must cover the website pages only (not assets, pay or auth)")
+    check('rewrite * /maintenance.html' in caddy and (REPO / "website" / "maintenance.html").is_file(),
+          "deploy/Caddyfile: the 502/503 handler must serve website/maintenance.html")
     for page in sorted((REPO / "website").rglob("*.html")):
         rel = page.relative_to(REPO).as_posix()
-        if rel.startswith(("website/pay/", "website/auth/")):
+        # maintenance.html is served by Caddy's error handler without templating; it is not a sales page.
+        if rel.startswith(("website/pay/", "website/auth/")) or rel == "website/maintenance.html":
             continue
         check('httpInclude "/v1/public/seller-info' in page.read_text(encoding="utf-8"),
               f"{rel}: seller details must be included server-side ({{{{httpInclude \"/v1/public/seller-info\"}}}})")

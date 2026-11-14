@@ -372,6 +372,15 @@ pub async fn save_group(db: &PgPool, cfg: &Config, group: &str, actor: Uuid, val
     group_view(db, cfg, group).await
 }
 
+/// The effective text value of one text key, for handlers and jobs.
+pub async fn get_text(db: &PgPool, cfg: &Config, key: &str) -> ApiResult<String> {
+    load(db, cfg, key)
+        .await?
+        .as_str()
+        .map(str::to_string)
+        .ok_or_else(|| ApiError::Internal(format!("setting {key} is not text")))
+}
+
 /// Only staff admins may change limits; consultants may read them.
 pub async fn ensure_can_write(db: &PgPool, actor: Uuid) -> ApiResult<()> {
     if live_staff_role(db, actor).await? != Role::StaffAdmin {

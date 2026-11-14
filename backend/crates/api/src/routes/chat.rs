@@ -287,7 +287,7 @@ pub async fn send(State(s): State<AppState>, a: Auth, Path(id): Path<Uuid>, Json
     let msg = insert_message(&mut conn, id, sender, Some(a.id), kind, body).await?;
     drop(conn);
     broadcast_message(&s, &msg).await?;
-    if sender != "staff" && super::config::feature_enabled(&s.db, "ai").await? {
+    if sender != "staff" && super::config::feature_enabled(&s.db, &s.config, "ai").await? {
         crate::ai::schedule(&s, id);
     }
     Ok(Json(msg))

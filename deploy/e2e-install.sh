@@ -78,6 +78,15 @@ wait_until() { # wait_until 초 명령... : 명령이 성공할 때까지 기다
 api_healthy() { get /health | grep -q '"ok":true'; }
 api_version_is_test() { get /health | grep -q "\"version\":\"$TAG\""; }
 website_served() { [ "$(code /)" = 200 ] && get / | grep -qi '<html'; }
+# API down: a proxied non-API path gets the static maintenance page (Caddy's 502 handler), then the API comes back.
+maintenance_page_when_api_down() {
+  dc stop api >/dev/null 2>&1 || return 1
+  local shown=1
+  get /health | grep -q '점검 중이에요' && shown=0
+  dc up -d api >/dev/null 2>&1
+  wait_until 180 api_healthy || return 1
+  return $shown
+}
 console_served() { [ "$(code /admin/)" = 200 ] && get /admin/ | grep -q 'base href="/admin/"'; }
 csp_of() { curl_d -D - -o /dev/null "https://$DOMAIN$1" | grep -i '^content-security-policy:'; }
 csp_tight() { # apps: PortOne-only connect-src, no unsafe-eval, nothing may frame us
@@ -168,6 +177,7 @@ expect "website CSP allows inline scripts by hash only" site_csp_strict
 expect "setup wizard waits for the owner" needs_owner
 expect "dahae status" dahae status
 expect "dahae version shows the image version" version_shown
+expect "API down: a page path shows the maintenance page" maintenance_page_when_api_down
 
 step "3. owner account, console sign-in, setup wizard"
 expect "owner created with the setup code" create_owner

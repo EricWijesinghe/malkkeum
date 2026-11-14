@@ -133,6 +133,18 @@
 		try_files {path} {path}.html {path}/index.html /index.html
 		file_server
 	}
+
+	# API down or restarting (502/503 from the proxy): pages get a static maintenance page instead of a bare
+	# error. API paths keep their own status, so the apps still get a JSON error they can read.
+	handle_errors {
+		@page_down expression {http.error.status} in [502, 503] && !{http.request.uri.path}.startsWith("/v1/")
+		handle @page_down {
+			root * /srv/website
+			rewrite * /maintenance.html
+			header Cache-Control "no-store"
+			file_server
+		}
+	}
 }
 
 # www -> apex. HSTS above covers subdomains, so without this site a visitor typing www gets a TLS error.
