@@ -69,7 +69,7 @@ class PartnersScreen extends StatelessWidget {
                         ],
                       ),
                       subtitle: Text(
-                        '${p['phone']} · ${t.cCompleted} ${p['completed']} · ${t.cCancelledN} ${p['cancelled']} · ${t.cRating} ${p['rating'] ?? '-'} · ${t.cFeeRate} ${(p['fee_bps'] as num) / 100}',
+                        '${formatKoreanPhone('${p['phone']}')} · ${t.cCompleted} ${p['completed']} · ${t.cCancelledN} ${p['cancelled']} · ${t.cRating} ${p['rating'] ?? '-'} · ${t.cFeeRate} ${(p['fee_bps'] as num) / 100}',
                       ),
                       trailing: !admin
                           ? null
@@ -580,7 +580,7 @@ class _CustomersState extends State<CustomersScreen> {
                       (c['name'] as String).isEmpty ? '-' : c['name'] as String,
                     ),
                     subtitle: Text(
-                      '${c['phone']} · ${t.cJoined} ${dateLabel(DateTime.parse(c['created_at'] as String), context.lang)}',
+                      '${formatKoreanPhone('${c['phone']}')} · ${t.cJoined} ${dateLabel(DateTime.parse(c['created_at'] as String), context.lang)}',
                     ),
                     trailing: Text(t.cBookingsCount('${c['bookings']}')),
                     // The points ledger is admin-only on the server too.

@@ -68,12 +68,16 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     final notes = (b['visit_notes'] as Json?) ?? const {};
     final reschedule = b['reschedule'] as Json?;
     final addr = committed
-        ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'.trim()
+        ? '${(b['address'] as Json)['road_address']} ${(b['address'] as Json)['detail']}'
+              .trim()
         : null;
     return ListView(
       padding: const EdgeInsets.all(Space.gutter),
       children: [
-        if (committed) ...[SiteActionsCard(raw: b, act: _act), const SizedBox(height: Space.sm)],
+        if (committed) ...[
+          SiteActionsCard(raw: b, act: _act),
+          const SizedBox(height: Space.sm),
+        ],
         Tilt3D(
           child: AppCard(
             glow: hue.tone,
@@ -229,7 +233,9 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       notes['parking'],
       notes['other'],
     ].whereType<String>().where((s) => s.isNotEmpty).toList();
-    final householdLines = _householdLines((b['household'] as Json?) ?? const {});
+    final householdLines = _householdLines(
+      (b['household'] as Json?) ?? const {},
+    );
     return [
       const SizedBox(height: Space.sm),
       AppCard(
@@ -356,7 +362,8 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
       if (pets.isNotEmpty)
         '${t.pPets}: ${pets.map((p) => '${petLabel(p['kind'] as String)} ${p['count']}').join(', ')}',
       if (text('allergies').isNotEmpty) '${t.pAllergies}: ${text('allergies')}',
-      if (text('preferred_products').isNotEmpty) '${t.pPreferredProducts}: ${text('preferred_products')}',
+      if (text('preferred_products').isNotEmpty)
+        '${t.pPreferredProducts}: ${text('preferred_products')}',
       if (text('parking').isNotEmpty) '${t.pParking}: ${text('parking')}',
       if (floor != null)
         [
@@ -512,7 +519,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
             ListTile(
               title: Text(
                 (m['name'] as String).isEmpty
-                    ? m['phone'] as String
+                    ? formatKoreanPhone(m['phone'] as String)
                     : m['name'] as String,
               ),
               subtitle: Text(m['role'] == 'owner' ? ctx.t.pOwner : ''),

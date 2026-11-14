@@ -193,7 +193,10 @@ class _PrivacyRequestsState extends State<PrivacyRequestsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('$name · ${c['phone']}', style: context.text.labelLarge),
+            Text(
+              '$name · ${formatKoreanPhone('${c['phone']}')}',
+              style: context.text.labelLarge,
+            ),
             Text(
               '${t.prqBookings} ${c['bookings']}',
               style: context.text.bodySmall,

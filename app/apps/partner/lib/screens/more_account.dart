@@ -227,10 +227,10 @@ class _TeamState extends State<TeamScreen> {
                 ),
                 title: Text(
                   (m['name'] as String).isEmpty
-                      ? m['phone'] as String
+                      ? formatKoreanPhone(m['phone'] as String)
                       : m['name'] as String,
                 ),
-                subtitle: Text(m['phone'] as String),
+                subtitle: Text(formatKoreanPhone(m['phone'] as String)),
                 trailing: m['role'] == 'owner'
                     ? Tag(label: t.pOwner, hue: StatusHues.confirmed)
                     : Row(
