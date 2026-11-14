@@ -4417,6 +4417,48 @@ abstract class T {
   /// **'현관 바닥 청소'**
   String get dfScopeEntrance;
 
+  /// No description provided for @dfScopePest.
+  ///
+  /// In ko, this message translates to:
+  /// **'해충 방역 약제 살포'**
+  String get dfScopePest;
+
+  /// No description provided for @dfScopeMite.
+  ///
+  /// In ko, this message translates to:
+  /// **'진드기·빈대 퇴치'**
+  String get dfScopeMite;
+
+  /// No description provided for @dfScopeSanitize.
+  ///
+  /// In ko, this message translates to:
+  /// **'살균·바이러스 소독'**
+  String get dfScopeSanitize;
+
+  /// No description provided for @dfScopeSickHouse.
+  ///
+  /// In ko, this message translates to:
+  /// **'새집증후군 제거 작업'**
+  String get dfScopeSickHouse;
+
+  /// No description provided for @dfScopeWholeHomeGroup.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 전체 청소'**
+  String get dfScopeWholeHomeGroup;
+
+  /// No description provided for @dfScopeWindowGroup.
+  ///
+  /// In ko, this message translates to:
+  /// **'창문 청소'**
+  String get dfScopeWindowGroup;
+
+  /// No description provided for @dfScopeDisinfGroup.
+  ///
+  /// In ko, this message translates to:
+  /// **'방역·소독'**
+  String get dfScopeDisinfGroup;
+
   /// No description provided for @dfBasicService.
   ///
   /// In ko, this message translates to:

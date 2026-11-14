@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2266,6 +2267,27 @@ class TKo extends T {
 
   @override
   String get dfScopeEntrance => '현관 바닥 청소';
+
+  @override
+  String get dfScopePest => '해충 방역 약제 살포';
+
+  @override
+  String get dfScopeMite => '진드기·빈대 퇴치';
+
+  @override
+  String get dfScopeSanitize => '살균·바이러스 소독';
+
+  @override
+  String get dfScopeSickHouse => '새집증후군 제거 작업';
+
+  @override
+  String get dfScopeWholeHomeGroup => '집 전체 청소';
+
+  @override
+  String get dfScopeWindowGroup => '창문 청소';
+
+  @override
+  String get dfScopeDisinfGroup => '방역·소독';
 
   @override
   String get dfBasicService => '기본 서비스';
