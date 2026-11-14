@@ -171,7 +171,7 @@ async fn issue_and_deliver(
     purpose: &str,
     channel: Channel,
 ) -> ApiResult<Option<String>> {
-    check_cooldown(&mut **tx, staff).await?;
+    check_cooldown(tx, staff).await?;
     let code = auth::otp_code();
     sqlx::query("DELETE FROM staff_sms_codes WHERE staff_id = $1 AND purpose = $2")
         .bind(staff)

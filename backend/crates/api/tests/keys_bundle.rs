@@ -23,7 +23,6 @@ use serde_json::{Value, json};
 use sqlx::PgPool;
 use std::net::SocketAddr;
 use tower::ServiceExt;
-use uuid::Uuid;
 
 const TOTP_SEED: &[u8] = b"12345678901234567890";
 /// The JWT secret of `test_config()`, so the live keys are the ones the bundle must hold.

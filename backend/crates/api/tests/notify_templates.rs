@@ -5,7 +5,7 @@ mod common;
 use api::auth::Role;
 use axum::http::StatusCode;
 use common::{call, customer, seed_catalog};
-use serde_json::{Value, json};
+use serde_json::json;
 use sqlx::PgPool;
 use uuid::Uuid;
 
