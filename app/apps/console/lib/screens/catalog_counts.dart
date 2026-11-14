@@ -10,14 +10,16 @@ const countsMinMinutes = 60;
 const countsMaxEachCap = 20;
 const countsMaxDiscountPct = 50;
 
-/// One option row as the owner sees it: label, price in won, minutes.
+/// One option row as the owner sees it: stable [key] (never edited), display [label], price in won, minutes.
 class CountOption {
   const CountOption({
+    required this.key,
     required this.label,
     required this.minutes,
     required this.price,
   });
 
+  final String key;
   final String label;
   final int minutes;
   final int price;
@@ -67,19 +69,23 @@ void swapAt<E>(List<E> xs, int i, int j) {
   xs[j] = first;
 }
 
-/// Options as stored in a `counts` pricing JSON.
+/// Options as stored in a `counts` pricing JSON. The display label falls back to the key for old rows.
 List<CountOption> countOptionsOf(Json pricing) => [
   for (final u in ((pricing['units'] as List?) ?? const []).cast<Json>())
     CountOption(
-      label: '${u['label_key'] ?? ''}',
+      key: '${u['label_key'] ?? ''}',
+      label: '${u['label'] ?? u['label_key'] ?? ''}',
       minutes: (u['minutes'] as num?)?.toInt() ?? 0,
       price: (u['price'] as num?)?.toInt() ?? 0,
     ),
 ];
 
+/// Stable id for a new option. The apps match add-on art on it, so it is assigned once and never edited.
+String newCountKey() => 'opt_${DateTime.now().microsecondsSinceEpoch}';
+
 /// Editable draft of a counts pricing. Controllers are owned here and disposed by the caller.
-class _CountsDraft {
-  _CountsDraft(Json pricing)
+class CountsDraft {
+  CountsDraft(Json pricing)
     : rows = [for (final o in countOptionsOf(pricing)) _Row.of(o)],
       maxEach = TextEditingController(text: '${pricing['max_each'] ?? ''}'),
       discountPct = TextEditingController(
@@ -124,7 +130,8 @@ class _CountsDraft {
     'units': [
       for (final r in rows)
         {
-          'label_key': r.label.text.trim(),
+          'label_key': r.key,
+          'label': r.label.text.trim(),
           'minutes': _int(r.minutes),
           'price': _int(r.price),
         },
@@ -135,14 +142,16 @@ class _CountsDraft {
 }
 
 class _Row {
-  _Row(this.label, this.price, this.minutes);
+  _Row(this.key, this.label, this.price, this.minutes);
 
   factory _Row.of(CountOption o) => _Row(
+    o.key,
     TextEditingController(text: o.label),
     TextEditingController(text: '${o.price}'),
     TextEditingController(text: '${o.minutes}'),
   );
 
+  final String key;
   final TextEditingController label;
   final TextEditingController price;
   final TextEditingController minutes;
@@ -152,7 +161,7 @@ int _int(TextEditingController c) => int.tryParse(c.text.trim()) ?? 0;
 
 /// Owner dialog for a counts service. Returns the new pricing JSON, or null when cancelled.
 Future<Json?> askCountsPricing(BuildContext context, Json pricing) async {
-  final draft = _CountsDraft(pricing);
+  final draft = CountsDraft(pricing);
   final result = await showDialog<Json>(
     context: context,
     builder: (_) => _CountsDialog(draft: draft),
@@ -164,7 +173,7 @@ Future<Json?> askCountsPricing(BuildContext context, Json pricing) async {
 class _CountsDialog extends StatefulWidget {
   const _CountsDialog({required this.draft});
 
-  final _CountsDraft draft;
+  final CountsDraft draft;
 
   @override
   State<_CountsDialog> createState() => _CountsDialogState();
@@ -175,7 +184,7 @@ class _CountsDialogState extends State<_CountsDialog> {
   late List<int> _basket = List.generate(widget.draft.rows.length, (_) => 0);
   String? _error;
 
-  _CountsDraft get _d => widget.draft;
+  CountsDraft get _d => widget.draft;
 
   void _refresh([VoidCallback? change]) => setState(() {
     change?.call();
@@ -205,6 +214,7 @@ class _CountsDialogState extends State<_CountsDialog> {
     final options = [
       for (final r in _d.rows)
         CountOption(
+          key: r.key,
           label: r.label.text.trim(),
           minutes: _int(r.minutes),
           price: _int(r.price),
@@ -230,6 +240,7 @@ class _CountsDialogState extends State<_CountsDialog> {
                   onPressed: () => _refresh(
                     () => _d.rows.add(
                       _Row(
+                        newCountKey(),
                         TextEditingController(),
                         TextEditingController(),
                         TextEditingController(),
