@@ -43,7 +43,12 @@ void main() {
   });
 
   testWidgets('outside a scope the built-in brand is used', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: DahaeLogo(wordmark: true)));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildTheme(BrandConfig.placeholder, Brightness.light),
+        home: const DahaeLogo(wordmark: true),
+      ),
+    );
 
     expect(find.text(BrandConfig.placeholder.name), findsOneWidget);
   });
