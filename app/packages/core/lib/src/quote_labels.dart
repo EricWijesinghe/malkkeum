@@ -89,21 +89,28 @@ List<(String, String)> quoteAnswerRows(T t, Json a) {
   return rows;
 }
 
+/// Basis points as a percent number without a trailing ".0": 1000 -> "10", 550 -> "5.5".
+String pctNumber(int bps) {
+  final v = bps / 100;
+  return v == v.truncateToDouble() ? '${v.toInt()}' : v.toStringAsFixed(1);
+}
+
 /// Itemised estimate as (label, amount) rows, in the order the customer pays them. The VAT row
-/// is derived (total minus add-ons minus pre-VAT) so the rows add up to the total shown.
+/// is derived as total minus add-ons minus pre-VAT, so it is a check on the server total: a
+/// mismatch shows as a wrong VAT figure rather than being hidden.
 List<(String, String)> estimateRows(T t, Json e, String Function(int) won) {
   int n(String k) => (e[k] as num? ?? 0).toInt();
   final vat = n('total') - n('addons') - n('before_vat');
   return [
     (t.cBase, won(n('base'))),
     (t.cExtras, won(n('extras'))),
-    (t.cSurcharge, '+${n('surcharge_bps') / 100}%'),
+    (t.cSurcharge, '+${pctNumber(n('surcharge_bps'))}%'),
     if (n('peak') > 0)
-      (t.qaPeak, '+${n('peak_bps') / 100}% · ${won(n('peak'))}'),
+      (t.qaPeak, '+${pctNumber(n('peak_bps'))}% · ${won(n('peak'))}'),
     (t.cBeforeVat, won(n('before_vat'))),
     if (vat != 0) (t.qaVat, won(vat)),
     if (n('addons') > 0)
-      (t.dfEstAddons('${n('addon_discount_bps') / 100}'), won(n('addons'))),
+      (t.dfEstAddons(pctNumber(n('addon_discount_bps'))), won(n('addons'))),
     (t.qaTotal, won(n('total'))),
   ];
 }

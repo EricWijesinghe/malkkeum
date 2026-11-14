@@ -5,14 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final ko = lookupT(const Locale('ko'));
-  String won(int n) => '$n원';
+  String won(int n) => formatWon(n, 'ko');
 
   test('quote card preview shows the final price', () {
     final last = {
       'kind': 'quote',
       'body': {'final_price': 363000, 'deposit': 36300},
     };
-    expect(threadPreview(ko, last, won), '견적 카드 · 363000원');
+    expect(threadPreview(ko, last, won), '견적 카드 · 363,000원');
   });
 
   test('request card preview says it is a booking request card', () {
@@ -33,8 +33,24 @@ void main() {
     expect(customerLine(ko, th), '이름 없음 · 010-1234-5678');
   });
 
+  test('a customer with a name but no phone keeps the name', () {
+    final th = ChatThread.fromJson({
+      'id': 't3',
+      'topic': 'move_in',
+      'user_id': 'u1',
+      'customer_name': '김다해',
+      'customer_phone': null,
+    });
+    expect(customerLine(ko, th), '김다해');
+  });
+
   test('partner threads have no customer line', () {
-    final th = ChatThread.fromJson({'id': 't2', 'topic': 'move_in'});
+    final th = ChatThread.fromJson({
+      'id': 't2',
+      'topic': 'move_in',
+      'customer_name': '김다해',
+      'customer_phone': '01012345678',
+    });
     expect(customerLine(ko, th), isNull);
   });
 

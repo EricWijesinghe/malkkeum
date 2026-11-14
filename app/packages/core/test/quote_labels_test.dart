@@ -39,6 +39,12 @@ void main() {
     expect(rows.any((r) => r.$2.contains('_')), isFalse);
   });
 
+  test('percent labels drop a trailing .0 and keep real decimals', () {
+    expect(pctNumber(1000), '10');
+    expect(pctNumber(0), '0');
+    expect(pctNumber(550), '5.5');
+  });
+
   test('floor row appears only without an elevator', () {
     final rows = quoteAnswerRows(ko, {
       'elevator': true,
@@ -62,8 +68,9 @@ void main() {
         'total': 363000,
       }, (n) => '$n원');
       final map = {for (final (k, v) in rows) k: v};
-      expect(map[ko.qaPeak], '+10.0% · 30000원');
+      expect(map[ko.qaPeak], '+10% · 30000원');
       expect(map[ko.qaVat], '33000원');
+      expect(map[ko.cSurcharge], '+0%');
       expect(map[ko.qaTotal], '363000원');
     },
   );

@@ -228,12 +228,17 @@ class _InboxScreenState extends State<InboxScreen> with LiveReload {
   }
 }
 
-/// "이름 없음 · 010-1234-5678" for a customer thread; null for partner threads.
+/// "이름 없음 · 010-1234-5678" for a customer thread; null for partner threads (no user_id).
+/// The phone is optional: a customer with only a name still shows the name.
 String? customerLine(T t, ChatThread th) {
-  final phone = th.customerPhone;
-  if (phone == null) return null;
-  final name = th.customerName ?? '';
-  return '${name.isEmpty ? t.nameNone : name} · ${formatPhone(phone)}';
+  if (th.userId == null) return null;
+  final name = (th.customerName ?? '').trim();
+  final phone = (th.customerPhone ?? '').trim();
+  final parts = [
+    name.isEmpty ? t.nameNone : name,
+    if (phone.isNotEmpty) formatPhone(phone),
+  ];
+  return parts.join(' · ');
 }
 
 /// One-line preview of a thread's last message. Cards get words, not the raw kind name.
