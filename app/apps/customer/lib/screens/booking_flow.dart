@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
+import '../guest.dart';
 import '../state.dart';
 import 'addresses.dart';
 import 'booking_detail.dart';
@@ -210,6 +211,8 @@ Future<void> openTopicChat(
   String topic, {
   String? bookingId,
 }) async {
+  if (!await requireSignIn(context, reason: SignInReason.chat)) return;
+  if (!context.mounted) return;
   try {
     final r =
         await context.api.post('/chat/threads', {
@@ -267,6 +270,7 @@ class VisitDateRow extends StatelessWidget {
               initialDate: date,
               firstDate: _firstDay,
               lastDate: _firstDay.add(const Duration(days: _maxDaysAhead - 1)),
+              builder: koreanPickerBuilder,
             );
             if (picked != null) onChanged(picked);
           },
@@ -652,4 +656,22 @@ class _SlotTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Date picker builder: Hangul falls back to system faces while the bundled Dahae Sans is still loading (no boxes).
+Widget koreanPickerBuilder(BuildContext ctx, Widget? child) {
+  final base = Theme.of(ctx);
+  return Theme(
+    data: base.copyWith(
+      textTheme: base.textTheme.apply(
+        fontFamilyFallback: const [
+          'Apple SD Gothic Neo',
+          'Noto Sans KR',
+          'Malgun Gothic',
+          'sans-serif',
+        ],
+      ),
+    ),
+    child: child!,
+  );
 }

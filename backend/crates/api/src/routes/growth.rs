@@ -4,25 +4,30 @@
 use super::{audit, uploads};
 use crate::{
     auth::{Admin, Customer, Staff},
+    contract::{PageQuery, encode_cursor, page_limit, paged, ts_id_cursor, ts_key},
     error::{ApiError, ApiResult},
+    settings_registry,
     state::AppState,
     util::own_uploads,
 };
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
+    http::header,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
 };
 use chrono::{DateTime, Duration, Utc};
 use domain::{
+    booking::BookingStatus,
     coupon::{COUPON_LIFETIME_DAYS, WelcomePack},
     growth::{ReferralOffer, WelcomeOffer, check_claim, check_reward, mask_name, paid_in_full, proof_count},
 };
 use rand::{RngCore, rngs::OsRng};
-use std::time::Instant;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgExecutor, PgPool};
+use std::time::Instant;
 use uuid::Uuid;
 
 const WELCOME_KEY: &str = "welcome_offer";
@@ -35,9 +40,14 @@ const MAX_PHOTOS: usize = 5;
 const RECENT_REVIEWS: i64 = 3;
 const REVIEW_LIST_LIMIT: i64 = 200;
 const PROOF_BODY_CHARS: i32 = 120;
+/// Full review list: the whole text, capped so one page stays small.
+const REVIEW_BODY_CHARS: i32 = 1000;
 
 pub fn public_routes() -> Router<AppState> {
-    Router::new().route("/public/proof", get(proof))
+    Router::new()
+        .route("/public/proof", get(proof))
+        .route("/public/offers", get(offers))
+        .route("/public/reviews", get(public_reviews))
 }
 
 pub fn customer_routes() -> Router<AppState> {
@@ -61,7 +71,10 @@ pub fn admin_routes() -> Router<AppState> {
 }
 
 pub(crate) async fn load_setting<'e, T: DeserializeOwned + Default>(ex: impl PgExecutor<'e>, key: &str) -> ApiResult<T> {
-    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1").bind(key).fetch_optional(ex).await?;
+    let v: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key = $1")
+        .bind(key)
+        .fetch_optional(ex)
+        .await?;
     match v {
         None => Ok(T::default()),
         Some(v) => serde_json::from_value(v).map_err(|_| ApiError::Internal(format!("bad setting {key}"))),
@@ -111,12 +124,13 @@ async fn ensure_code(db: &PgPool, user: Uuid) -> ApiResult<String> {
 async fn my_referral(State(s): State<AppState>, Customer(a): Customer) -> ApiResult<Json<Value>> {
     let code = ensure_code(&s.db, a.id).await?;
     let offer = load_referral(&s.db).await?;
-    let (invited, rewarded): (i64, i64) =
-        sqlx::query_as("SELECT count(*), count(*) FILTER (WHERE state = 'rewarded') FROM referrals WHERE referrer_id = $1")
-            .bind(a.id)
-            .fetch_one(&s.db)
-            .await?;
-    Ok(Json(json!({ "code": code, "enabled": offer.enabled, "amount": offer.amount, "invited": invited, "rewarded": rewarded })))
+    let (invited, rewarded): (i64, i64) = sqlx::query_as("SELECT count(*), count(*) FILTER (WHERE state = 'rewarded') FROM referrals WHERE referrer_id = $1")
+        .bind(a.id)
+        .fetch_one(&s.db)
+        .await?;
+    Ok(Json(
+        json!({ "code": code, "enabled": offer.enabled, "amount": offer.amount, "invited": invited, "rewarded": rewarded }),
+    ))
 }
 
 #[derive(Deserialize)]
@@ -135,13 +149,12 @@ async fn claim_referral(State(s): State<AppState>, Customer(a): Customer, Json(c
         .fetch_optional(&s.db)
         .await?
         .ok_or(ApiError::BadRequest("invalid_referral_code"))?;
-    let (friend_phone, friend_bookings): (String, i64) = sqlx::query_as(
-        "SELECT u.phone, (SELECT count(*) FROM bookings b WHERE b.user_id = u.id) FROM users u WHERE u.id = $1",
-    )
-    .bind(a.id)
-    .fetch_optional(&s.db)
-    .await?
-    .ok_or(ApiError::NotFound)?;
+    let (friend_phone, friend_bookings): (String, i64) =
+        sqlx::query_as("SELECT u.phone, (SELECT count(*) FROM bookings b WHERE b.user_id = u.id) FROM users u WHERE u.id = $1")
+            .bind(a.id)
+            .fetch_optional(&s.db)
+            .await?
+            .ok_or(ApiError::NotFound)?;
     if referrer == a.id {
         return Err(ApiError::BadRequest("self_referral"));
     }
@@ -179,10 +192,11 @@ pub(crate) async fn reward_in_own_tx(db: &PgPool, booking: Uuid) -> ApiResult<()
 /// Pays both sides once a referred friend's booking is paid in full. Call inside the completion
 /// transaction; a no-op until the friend's booking is paid, and never twice (row lock + state).
 pub(crate) async fn reward_on_paid_completion(conn: &mut PgConnection, booking: Uuid) -> ApiResult<()> {
-    let (friend, paid, final_price): (Uuid, i64, Option<i64>) = sqlx::query_as("SELECT user_id, paid_amount, COALESCE(final_price, list_price) FROM bookings WHERE id = $1")
-        .bind(booking)
-        .fetch_one(&mut *conn)
-        .await?;
+    let (friend, paid, final_price): (Uuid, i64, Option<i64>) =
+        sqlx::query_as("SELECT user_id, paid_amount, COALESCE(final_price, list_price) FROM bookings WHERE id = $1")
+            .bind(booking)
+            .fetch_one(&mut *conn)
+            .await?;
     let Some((referrer, state)) = sqlx::query_as::<_, (Uuid, String)>("SELECT referrer_id, state FROM referrals WHERE referred_user_id = $1 FOR UPDATE")
         .bind(friend)
         .fetch_optional(&mut *conn)
@@ -230,14 +244,53 @@ struct PublicReview {
     name: String,
 }
 
+/// One visible review for the full list: newest first, keyset-paged, same redaction as the proof card.
+#[derive(Serialize)]
+struct PublicReviewRow {
+    booking_id: Uuid,
+    created_at: DateTime<Utc>,
+    rating: i16,
+    body: String,
+    name: String,
+}
+
+/// Every visible review (any rating), newest first. `limit` 1..=100, `cursor` from `X-Next-Cursor`.
+async fn public_reviews(State(s): State<AppState>, Query(q): Query<PageQuery>) -> ApiResult<Response> {
+    let limit = page_limit(q.limit)?;
+    let (before_ts, before_id) = ts_id_cursor(q.cursor.as_deref())?;
+    let rows: Vec<(Uuid, DateTime<Utc>, i16, String, String)> = sqlx::query_as(
+        "SELECT r.booking_id, r.created_at, r.rating, left(r.body, $2), u.name FROM reviews r JOIN users u ON u.id = r.user_id
+         WHERE NOT r.hidden AND ($3::timestamptz IS NULL OR (r.created_at, r.booking_id) < ($3, $4))
+         ORDER BY r.created_at DESC, r.booking_id DESC LIMIT $1",
+    )
+    .bind(limit)
+    .bind(REVIEW_BODY_CHARS)
+    .bind(before_ts)
+    .bind(before_id)
+    .fetch_all(&s.db)
+    .await?;
+    let reviews: Vec<PublicReviewRow> = rows
+        .into_iter()
+        .map(|(booking_id, created_at, rating, body, name)| PublicReviewRow {
+            booking_id,
+            created_at,
+            rating,
+            body: domain::growth::redact_contacts(&body),
+            name: mask_name(&name),
+        })
+        .collect();
+    Ok(paged(reviews, limit, |r| encode_cursor(&[&ts_key(r.created_at), &r.booking_id.to_string()])))
+}
+
 /// Public, real numbers only. Counts under MIN_PROOF_COUNT come back null so the apps hide them.
 async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
-    let (homes, rated, avg): (i64, i64, Option<f64>) = sqlx::query_as(
+    let completed = BookingStatus::Completed.as_i16();
+    let (homes, rated, avg): (i64, i64, Option<f64>) = sqlx::query_as(&format!(
         "SELECT
-           (SELECT count(*) FROM bookings WHERE status = 3 AND completed_at >= date_trunc('month', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'),
+           (SELECT count(*) FROM bookings WHERE status = {completed} AND completed_at >= date_trunc('month', now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'),
            (SELECT count(*) FROM reviews WHERE NOT hidden),
-           (SELECT avg(rating)::float8 FROM reviews WHERE NOT hidden)",
-    )
+           (SELECT avg(rating)::float8 FROM reviews WHERE NOT hidden)"
+    ))
     .fetch_one(&s.db)
     .await?;
     let recent: Vec<(Uuid, i16, String, String)> = sqlx::query_as(
@@ -250,7 +303,12 @@ async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
     .await?;
     let reviews: Vec<PublicReview> = recent
         .into_iter()
-        .map(|(booking_id, rating, body, name)| PublicReview { booking_id, rating, body: domain::growth::redact_contacts(&body), name: mask_name(&name) })
+        .map(|(booking_id, rating, body, name)| PublicReview {
+            booking_id,
+            rating,
+            body: domain::growth::redact_contacts(&body),
+            name: mask_name(&name),
+        })
         .collect();
     let rating = proof_count(rated).and(avg).map(round_rating);
     Ok(Json(json!({
@@ -259,6 +317,21 @@ async fn proof(State(s): State<AppState>) -> ApiResult<Json<Value>> {
         "review_count": proof_count(rated),
         "reviews": reviews,
     })))
+}
+
+/// Public offer terms for guests: welcome offer, sign-up coupons and the referral amount. Reads
+/// owner settings only, never a user, so the answer is the same for everyone and cacheable.
+async fn offers(State(s): State<AppState>) -> ApiResult<Response> {
+    let welcome: WelcomeOffer = load_setting(&s.db, WELCOME_KEY).await?;
+    let pack: WelcomePack = load_setting(&s.db, WELCOME_PACK_KEY).await?;
+    let referral = load_referral(&s.db).await?;
+    let body = json!({
+        "welcome": { "enabled": welcome.enabled, "kind": welcome.kind, "value": welcome.value },
+        "welcome_pack": pack.0.iter().map(|c| json!({ "amount": c.amount, "service_code": c.service_code })).collect::<Vec<_>>(),
+        "referral": { "enabled": referral.enabled, "amount": referral.amount },
+        "coupon_days": COUPON_LIFETIME_DAYS,
+    });
+    Ok(([(header::CACHE_CONTROL, "public, max-age=300")], Json(body)).into_response())
 }
 
 pub(crate) struct DashboardFigures {
@@ -275,14 +348,20 @@ pub(crate) async fn dashboard_figures(db: &PgPool) -> ApiResult<DashboardFigures
     )
     .fetch_one(db)
     .await?;
-    Ok(DashboardFigures { average_rating: avg, invited, rewarded })
+    Ok(DashboardFigures {
+        average_rating: avg,
+        invited,
+        rewarded,
+    })
 }
 
 async fn overview(State(s): State<AppState>, _st: Staff) -> ApiResult<Json<Value>> {
     let welcome: WelcomeOffer = load_setting(&s.db, WELCOME_KEY).await?;
     let pack: WelcomePack = load_setting(&s.db, WELCOME_PACK_KEY).await?;
     let referral = load_referral(&s.db).await?;
-    let (rated, avg): (i64, Option<f64>) = sqlx::query_as("SELECT count(*), avg(rating)::float8 FROM reviews WHERE NOT hidden").fetch_one(&s.db).await?;
+    let (rated, avg): (i64, Option<f64>) = sqlx::query_as("SELECT count(*), avg(rating)::float8 FROM reviews WHERE NOT hidden")
+        .fetch_one(&s.db)
+        .await?;
     let (invited, rewarded): (i64, i64) = sqlx::query_as("SELECT count(*), count(*) FILTER (WHERE state = 'rewarded') FROM referrals")
         .fetch_one(&s.db)
         .await?;
@@ -306,7 +385,10 @@ async fn put_welcome(State(s): State<AppState>, Admin(a): Admin, Json(o): Json<W
 async fn put_welcome_pack(State(s): State<AppState>, Admin(a): Admin, Json(pack): Json<WelcomePack>) -> ApiResult<Json<Value>> {
     pack.validate()?;
     let codes: Vec<&str> = pack.0.iter().filter_map(|c| c.service_code.as_deref()).collect();
-    let known: i64 = sqlx::query_scalar("SELECT count(*) FROM services WHERE code = ANY($1)").bind(&codes).fetch_one(&s.db).await?;
+    let known: i64 = sqlx::query_scalar("SELECT count(*) FROM services WHERE code = ANY($1)")
+        .bind(&codes)
+        .fetch_one(&s.db)
+        .await?;
     let mut distinct = codes.clone();
     distinct.sort_unstable();
     distinct.dedup();
@@ -361,11 +443,23 @@ struct Moderation {
 }
 
 async fn moderate_review(State(s): State<AppState>, Admin(a): Admin, Path(booking): Path<Uuid>, Json(m): Json<Moderation>) -> ApiResult<Json<Value>> {
-    let changed = sqlx::query("UPDATE reviews SET hidden = $2 WHERE booking_id = $1").bind(booking).bind(m.hidden).execute(&s.db).await?;
+    let changed = sqlx::query("UPDATE reviews SET hidden = $2 WHERE booking_id = $1")
+        .bind(booking)
+        .bind(m.hidden)
+        .execute(&s.db)
+        .await?;
     if changed.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
-    audit(&s.db, "staff", Some(a.id), "review.moderate", &booking.to_string(), json!({ "hidden": m.hidden })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "review.moderate",
+        &booking.to_string(),
+        json!({ "hidden": m.hidden }),
+    )
+    .await?;
     Ok(Json(json!({ "ok": true, "hidden": m.hidden })))
 }
 
@@ -380,17 +474,8 @@ struct ReportInput {
     note: String,
 }
 
-/// A reporter counts toward the auto-hide only if they completed a booking with the reviewed pro and are not
-/// that pro or one of its team members (matched by phone). Other reports still queue the review for staff.
-const QUALIFIED_REPORTS_SQL: &str = "SELECT count(*) FROM review_reports rr JOIN users u ON u.id = rr.reporter_id
-  WHERE rr.booking_id = $1 AND $2::uuid IS NOT NULL
-    AND EXISTS (SELECT 1 FROM bookings b WHERE b.user_id = u.id AND b.pro_id = $2 AND b.status = 3)
-    AND NOT EXISTS (SELECT 1 FROM pros p WHERE p.id = $2 AND p.phone = u.phone)
-    AND NOT EXISTS (SELECT 1 FROM team_members t WHERE t.pro_id = $2 AND t.phone = u.phone)";
-
-/// A customer reports a review once. Reports from the threshold of distinct customers who booked that pro
-/// hide the review at once; any threshold-many reports queue it for a staff decision (`report_pending`).
-/// The reviewed pro and its team can never hide a review this way.
+/// A customer reports a review once. Reaching the threshold queues the review for a staff decision
+/// (`report_pending`); the review stays visible until staff act.
 async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(booking): Path<Uuid>, Json(r): Json<ReportInput>) -> ApiResult<Json<Value>> {
     let reason = REPORT_REASONS.iter().find(|x| **x == r.reason).ok_or(ApiError::BadRequest("invalid_report"))?;
     let note = r.note.trim();
@@ -400,7 +485,7 @@ async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(bo
     if !s.review_reports.admit(a.id, REPORTS_PER_WINDOW, Instant::now()) {
         return Err(ApiError::RateLimited);
     }
-    let (author, pro): (Uuid, Option<Uuid>) = sqlx::query_as("SELECT user_id, pro_id FROM reviews WHERE booking_id = $1")
+    let author: Uuid = sqlx::query_scalar("SELECT user_id FROM reviews WHERE booking_id = $1")
         .bind(booking)
         .fetch_optional(&s.db)
         .await?
@@ -418,13 +503,16 @@ async fn report_review(State(s): State<AppState>, Customer(a): Customer, Path(bo
     if inserted.rows_affected() == 0 {
         return Err(ApiError::Conflict("already_reported"));
     }
-    let threshold = i64::from(s.config.review_report_threshold);
-    let reports: i64 = sqlx::query_scalar("SELECT count(*) FROM review_reports WHERE booking_id = $1").bind(booking).fetch_one(&s.db).await?;
-    let qualified: i64 = sqlx::query_scalar(QUALIFIED_REPORTS_SQL).bind(booking).bind(pro).fetch_one(&s.db).await?;
-    if qualified >= threshold {
-        sqlx::query("UPDATE reviews SET hidden = TRUE, report_pending = TRUE WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
-    } else if reports >= threshold {
-        sqlx::query("UPDATE reviews SET report_pending = TRUE WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
+    let threshold = settings_registry::get(&s.db, &s.config, "review_report_threshold").await?;
+    let reports: i64 = sqlx::query_scalar("SELECT count(*) FROM review_reports WHERE booking_id = $1")
+        .bind(booking)
+        .fetch_one(&s.db)
+        .await?;
+    if reports >= threshold {
+        sqlx::query("UPDATE reviews SET report_pending = TRUE WHERE booking_id = $1")
+            .bind(booking)
+            .execute(&s.db)
+            .await?;
     }
     Ok(Json(json!({ "ok": true })))
 }
@@ -479,9 +567,20 @@ async fn decide_review(State(s): State<AppState>, Admin(a): Admin, Path(booking)
     }
     if d.action == "keep" {
         // Cleared reports let a new wave of reports count from zero again.
-        sqlx::query("DELETE FROM review_reports WHERE booking_id = $1").bind(booking).execute(&s.db).await?;
+        sqlx::query("DELETE FROM review_reports WHERE booking_id = $1")
+            .bind(booking)
+            .execute(&s.db)
+            .await?;
     }
-    audit(&s.db, "staff", Some(a.id), "review.decision", &booking.to_string(), json!({ "action": d.action })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "review.decision",
+        &booking.to_string(),
+        json!({ "action": d.action }),
+    )
+    .await?;
     Ok(Json(json!({ "ok": true })))
 }
 
@@ -501,7 +600,15 @@ async fn set_author_block(State(s): State<AppState>, Admin(a): Admin, Path(booki
     if changed.rows_affected() == 0 {
         return Err(ApiError::NotFound);
     }
-    audit(&s.db, "staff", Some(a.id), "review.author_block", &booking.to_string(), json!({ "blocked": b.blocked })).await?;
+    audit(
+        &s.db,
+        "staff",
+        Some(a.id),
+        "review.author_block",
+        &booking.to_string(),
+        json!({ "blocked": b.blocked }),
+    )
+    .await?;
     Ok(Json(json!({ "ok": true, "blocked": b.blocked })))
 }
 

@@ -4,6 +4,8 @@ import 'package:core/auth_pay.dart' show PendingPayment;
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 
+import 'guest_draft.dart';
+
 /// Customer data the whole app reads: profile, catalogue, addresses, coupons, methods, unread.
 class AppState extends ChangeNotifier {
   AppState(this.api, this.realtime, {JsonCache? cache, Analytics? analytics, this.startPush = PushService.start})
@@ -54,6 +56,7 @@ class AppState extends ChangeNotifier {
     analytics.setConsent(false);
     // A payment still waiting for its confirm belongs to the account that paid (the server settles it).
     PendingPayment().clear().ignore();
+    GuestDraft(cache).clear().ignore();
     notifyListeners();
   }
 

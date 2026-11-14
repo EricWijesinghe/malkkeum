@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 import '../guest.dart';
+import '../public_offers.dart';
 import '../state.dart';
+import '../web_ready.dart';
 import 'addresses.dart';
 import 'bookings.dart' show BookingCard;
 import 'content_rail.dart';
 import 'feed.dart';
 import 'growth.dart';
 import 'notifications.dart';
+import 'pick.dart';
+import 'reviews.dart';
 import 'service.dart';
 
 part 'home_sections.dart';
@@ -142,6 +146,8 @@ class _HomeTabState extends State<HomeTab> {
       }
       _feed = feed ?? _feed;
     });
+    // The page shell's splash goes once the home has its first answers (web only; no-op elsewhere).
+    markAppReady();
   }
 
   /// Inline, so the rest of home stays usable; retry runs the whole load again.
@@ -266,6 +272,7 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 const SizedBox(height: Space.xs),
                 _ServiceGrid(services: app.services),
+                if (!signedIn) const WelcomeOfferLine(),
                 const SizedBox(height: Space.md),
                 Divider(height: 1, thickness: 1, color: c.line),
                 if (_error case final e?) ...[
@@ -318,7 +325,7 @@ class _HomeTabState extends State<HomeTab> {
               if (signedIn)
                 const ReferralCard()
               else
-                _GuestReferralGate(onSignedIn: _load),
+                const _GuestReferralGate(),
               const SizedBox(height: Space.lg),
               const _TrustRow(),
             ],
@@ -328,38 +335,57 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  /// PICK: every console recommendation and personal card, nothing else.
-  Widget _pickView(List<ContentItem> picks) => ColoredBox(
-    key: const ValueKey(_HomeView.pick),
-    color: context.colors.surface,
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(
-        Space.gutter,
-        Space.md,
-        Space.gutter,
-        Space.xxxl,
-      ),
-      child: FeedSection(
-        cards: _feed,
-        picks: picks,
-        loading: !_loaded,
-        empty: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Space.xxxl),
-          // "Nothing here yet" would be a lie when the feed simply did not load.
-          child: _error != null
-              ? _errorCard(_error!)
-              : Center(
+  /// PICK: the recommendations and feed, then popular services and the newest reviews, so the tab
+  /// is not blank while the feed is thin.
+  Widget _pickView(List<ContentItem> picks) {
+    final app = context.app;
+    final t = context.t;
+    final nothing =
+        _loaded && _feed.isEmpty && picks.isEmpty && app.services.isEmpty;
+    return ColoredBox(
+      key: const ValueKey(_HomeView.pick),
+      color: context.colors.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Space.gutter,
+          Space.md,
+          Space.gutter,
+          Space.xxxl,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FeedSection(
+              cards: _feed,
+              picks: picks,
+              loading: !_loaded,
+              empty: const SizedBox.shrink(),
+            ),
+            // "Nothing here yet" would be a lie when the feed simply did not load.
+            if (_error case final e?)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.xxxl),
+                child: _errorCard(e),
+              )
+            else if (nothing)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.xxxl),
+                child: Center(
                   child: Text(
-                    context.t.noContent,
+                    t.noContent,
                     style: context.text.bodyMedium?.copyWith(
                       color: context.colors.inkMuted,
                     ),
                   ),
                 ),
+              ),
+            PopularServices(services: app.services),
+            const RecentReviews(),
+          ],
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// Greeting by local time of day; the name replaces it once the account has one.
@@ -440,29 +466,44 @@ class _Intro extends StatelessWidget {
   );
 }
 
-/// Referral needs an account. Tapping asks for sign-in, then shows the real card in place.
+/// Referral needs an account. The amount shows before the tap; hidden while referrals are off.
+/// Signing in rebuilds the home tab (the shell keys its tabs by account), so the real card appears on its own.
 class _GuestReferralGate extends StatelessWidget {
-  const _GuestReferralGate({required this.onSignedIn});
-  final Future<void> Function() onSignedIn;
+  const _GuestReferralGate();
 
   @override
-  Widget build(BuildContext context) => AppCard(
-    color: context.colors.primaryTint,
-    level: Level.flat,
-    onTap: () async {
-      if (!await requireSignIn(context) || !context.mounted) return;
-      await onSignedIn();
-    },
-    child: Row(
-      children: [
-        Icon(Icons.card_giftcard_rounded, color: context.primary, size: 28),
-        const SizedBox(width: Space.md),
-        Expanded(
-          child: Text(context.t.referralTitle, style: context.text.bodyMedium),
+  Widget build(BuildContext context) => PublicOffersBuilder(
+    builder: (context, offers) {
+      if (offers != null && !offers.referralOn) return const SizedBox.shrink();
+      final t = context.t;
+      return AppCard(
+        color: context.colors.primaryTint,
+        level: Level.flat,
+        onTap: () => requireSignIn(context),
+        child: Row(
+          children: [
+            Icon(Icons.card_giftcard_rounded, color: context.primary, size: 28),
+            const SizedBox(width: Space.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(t.referralTitle, style: context.text.bodyMedium),
+                  if (offers != null)
+                    Text(
+                      t.referralOfferLine(context.won(offers.referralAmount)),
+                      style: context.text.bodySmall?.copyWith(
+                        color: context.colors.inkSoft,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded),
+          ],
         ),
-        const Icon(Icons.chevron_right_rounded),
-      ],
-    ),
+      );
+    },
   );
 }
 
@@ -513,9 +554,9 @@ class _UpcomingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final days = DateUtils.dateOnly(
-      booking.visitDate,
-    ).difference(DateUtils.dateOnly(DateTime.now())).inDays;
+    final days = DateUtils.dateOnly(booking.visitDate)
+        .difference(DateUtils.dateOnly(DateTime.now()))
+        .inDays;
     return AppCard(
       level: Level.flat,
       border: context.colors.line,

@@ -312,7 +312,9 @@ void main() {
 
     await tester.tap(find.text(koT.dhHomePick(_brand)));
     await settle(tester);
-    expect(find.text(koT.noContent), findsOneWidget);
+    // The catalogue still fills PICK, so the empty state stays home-only and PICK leaves no gap.
+    expect(find.text(koT.popularServices), findsOneWidget);
+    expect(find.text(koT.noContent), findsNothing);
     expect(tester.takeException(), isNull);
     await unmount(tester);
   });

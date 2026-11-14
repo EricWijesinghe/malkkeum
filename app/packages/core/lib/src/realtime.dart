@@ -26,6 +26,9 @@ class Realtime {
   bool _wanted = false;
   String? _subject;
 
+  /// Bumped on every close: a ticket that comes back for an older generation is dropped unused.
+  int _generation = 0;
+
   static const _maxBackoffSeconds = 30;
 
   Stream<Map<String, dynamic>> get events => _events.stream;
@@ -64,8 +67,27 @@ class Realtime {
   void _open() {
     if (!_wanted || _ch != null) return;
     if (api.session.accessToken == null) return _schedule();
+    unawaited(_openWithTicket(_generation));
+  }
+
+  /// Each connect spends a fresh single-use ticket, so the access token never reaches a URL. A 401 on
+  /// the ticket call refreshes the session inside [ApiClient] (one retry); if that still fails, back off.
+  Future<void> _openWithTicket(int generation) async {
+    final Uri uri;
     try {
-      final ch = _connect(api.wsUri());
+      uri = await api.wsUri();
+    } catch (_) {
+      if (generation == _generation) _dropped();
+      return;
+    }
+    // Closed or re-opened while the ticket was in flight: this ticket is for a socket nobody wants.
+    if (generation != _generation || !_wanted || _ch != null) return;
+    _dial(uri);
+  }
+
+  void _dial(Uri uri) {
+    try {
+      final ch = _connect(uri);
       _ch = ch;
       ch.ready.then((_) {
         // Back after failed tries (no signal, server restart): the refetch sent when the socket
@@ -120,6 +142,7 @@ class Realtime {
   }
 
   void _close() {
+    _generation++;
     _retry?.cancel();
     _sub?.cancel();
     _ch?.sink.close();

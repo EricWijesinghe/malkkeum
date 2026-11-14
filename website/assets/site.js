@@ -2,10 +2,6 @@
 // before/after slider, scroll reveal. No framework, no build step.
 const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'http://127.0.0.1:8080' : '';
 
-// Fair Trade Commission seller lookup; takes the 10-digit 사업자등록번호 without dashes.
-const FTC_LOOKUP = 'https://www.ftc.go.kr/bizCommPop.do?wrkr_no=';
-const BIZ_NO_DIGITS = 10;
-
 // i18n-archive: extra languages archived in archive/i18n-extra-languages (see README to restore)
 const LANGS = { ko: '한국어', en: 'English' };
 
@@ -30,8 +26,7 @@ const COPY = {
     q4: '청소 도구는 따로 준비해야 하나요?', a4: '전문가가 전용 장비와 세제를 가져와요.',
     band_title: '지금 앱을 내려받고 첫 예약 쿠폰을 받으세요', band_sub: '가입하면 바로 쓸 수 있는 쿠폰을 드려요.',
     partner_title: '청소 전문가로 함께해요', partner_sub: '원하는 지역과 시간에 일하고, 매주 수요일 정산받으세요.', partner_cta: '파트너 앱 받기',
-    f_privacy: '개인정보처리방침', f_terms: '이용약관', f_delete: '계정 삭제 안내', f_support: '고객센터',
-    c_ceo: '대표', c_reg: '사업자등록번호', c_mail: '통신판매업 신고', c_addr: '주소', c_privacy: '개인정보 보호책임자', c_host: '호스팅 제공자', c_bizcheck: '사업자정보확인',
+    f_privacy: '개인정보처리방침', f_terms: '이용약관', f_delete: '계정 삭제 안내', f_support: '고객센터', c_bizcheck: '사업자정보확인',
     store_soon: '곧 출시',
   },
   en: {
@@ -54,8 +49,7 @@ const COPY = {
     q4: 'Do I need to prepare supplies?', a4: 'No. Pros bring their own equipment and detergents.',
     band_title: 'Get the app and your first-booking coupons', band_sub: 'Coupons are ready the moment you sign up.',
     partner_title: 'Work with us as a cleaning pro', partner_sub: 'Choose your areas and hours; get paid every Wednesday.', partner_cta: 'Get the partner app',
-    f_privacy: 'Privacy policy', f_terms: 'Terms of service', f_delete: 'Delete your account', f_support: 'Support',
-    c_ceo: 'CEO', c_reg: 'Business reg. no.', c_mail: 'Mail-order reg.', c_addr: 'Address', c_privacy: 'Privacy officer', c_host: 'Hosting provider', c_bizcheck: 'Verify business registration',
+    f_privacy: 'Privacy policy', f_terms: 'Terms of service', f_delete: 'Delete your account', f_support: 'Support', c_bizcheck: 'Verify business registration',
     store_soon: 'Coming soon',
   },
 };
@@ -187,8 +181,6 @@ function applyBrand(b) {
     document.title = document.title.replace(/^[^·|]+/, `${b.name} `);
   }
   if (b.logo_url) document.querySelectorAll('.logo-mark').forEach((el) => { el.innerHTML = ''; el.style.background = 'none'; const img = new Image(); img.alt = ''; img.src = b.logo_url; el.append(img); });
-  if (b.support_phone) document.querySelectorAll('[data-support-phone]').forEach((el) => { el.hidden = false; el.textContent = b.support_phone; el.href = `tel:${b.support_phone.replace(/[^0-9+]/g, '')}`; });
-  if (b.support_email) document.querySelectorAll('[data-support-email]').forEach((el) => { el.hidden = false; el.textContent = b.support_email; el.href = `mailto:${b.support_email}`; });
   for (const key of ['app_store_url', 'play_store_url', 'partner_play_store_url', 'partner_app_store_url']) {
     if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.removeAttribute('aria-disabled'); a.removeAttribute('role'); a.querySelector('[data-t="store_soon"]')?.remove(); });
   }
@@ -196,29 +188,6 @@ function applyBrand(b) {
   for (const key of ['kakao_channel_url', 'naver_talk_url']) {
     if (b[key]) document.querySelectorAll(`[data-link="${key}"]`).forEach((a) => { a.href = b[key]; a.hidden = false; });
   }
-  const c = b.company || {};
-  const box = document.getElementById('company');
-  if (box) {
-    box.innerHTML = '';
-    const rows = [[b.name || c.legal_name, ''], [c.legal_name, ''], [c.ceo, 'c_ceo'], [c.registration_no, 'c_reg'], [c.mail_order_no, 'c_mail'], [c.address, 'c_addr'], [c.privacy_officer, 'c_privacy'], [c.hosting_provider, 'c_host']];
-    const seen = new Set();
-    for (const [v, k] of rows) {
-      if (!v || seen.has(v)) continue;
-      seen.add(v);
-      const span = document.createElement('span');
-      span.textContent = k ? `${text(k)} ${v}` : v;
-      box.append(span);
-    }
-  }
-  // 전자상거래법 제10조: link to the FTC lookup so a buyer can verify the seller's registration.
-  const regNo = String(c.registration_no || '').replace(/\D/g, '');
-  if (regNo.length === BIZ_NO_DIGITS) {
-    document.querySelectorAll('[data-bizcheck]').forEach((a) => { a.href = FTC_LOOKUP + regNo; a.hidden = false; });
-  }
-  document.querySelectorAll('[data-fill]').forEach((el) => {
-    const v = el.dataset.fill.split('.').reduce((o, k) => (o ? o[k] : undefined), b);
-    if (v) el.textContent = v;
-  });
 }
 
 function beforeAfter() {

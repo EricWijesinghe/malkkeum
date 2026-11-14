@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ui/ui.dart';
 
 import '../state.dart';
+import 'reviews.dart';
 
 const _maxReviewPhotos = 5;
 
@@ -81,27 +82,25 @@ class _SocialProofCardState extends State<SocialProofCard> {
           ],
           if (reviews.isNotEmpty) ...[
             const SizedBox(height: Space.sm),
-            Text(t.proofReviewsTitle, style: context.text.labelLarge),
-            for (final r in reviews)
-              Padding(
-                padding: const EdgeInsets.only(top: Space.xs),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '★${r['rating']}  ${r['body']}  — ${r['name']}',
-                        style: context.text.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    ReviewReportButton(
-                      api: context.api,
-                      bookingId: r['booking_id'] as String,
-                    ),
-                  ],
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    t.proofReviewsTitle,
+                    style: context.text.labelLarge,
+                  ),
                 ),
-              ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const ReviewsAllScreen(),
+                    ),
+                  ),
+                  child: Text(t.reviewsSeeAll),
+                ),
+              ],
+            ),
+            for (final r in reviews) ReviewTile(api: context.api, row: r),
           ],
         ],
       ),
