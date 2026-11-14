@@ -3482,6 +3482,20 @@ class TEn extends T {
   String get guestAccountHint => 'Sign in to view';
 
   @override
+  String guestPriceLine(String amount) {
+    return 'Estimated $amount · no sign-up needed';
+  }
+
+  @override
+  String get guestPeakNote => 'Peak-hour visits may add a surcharge';
+
+  @override
+  String get guestBookWithQuote => 'Book with this quote';
+
+  @override
+  String get guestSeePrices => 'See prices without signing up';
+
+  @override
   String get locUseCurrent => 'Use my current location';
 
   @override

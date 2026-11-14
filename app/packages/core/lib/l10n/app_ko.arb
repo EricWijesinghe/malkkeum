@@ -1717,6 +1717,17 @@
  "guestReasonChat": "상담원과 대화하려면 로그인하세요",
  "guestReasonAccount": "내 쿠폰·포인트·예약은 로그인 후 볼 수 있어요",
  "guestAccountHint": "로그인하면 확인할 수 있어요",
+ "guestPriceLine": "예상 금액 {amount} · 가입 없이 확인한 견적이에요",
+ "@guestPriceLine": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "guestPeakNote": "방문 시간대에 따라 피크 요금이 더해질 수 있어요",
+ "guestBookWithQuote": "이 견적으로 예약하기",
+ "guestSeePrices": "가입 없이 가격 확인",
  "locUseCurrent": "현재 위치로 찾기",
  "locConsentTitle": "위치기반서비스 이용약관 동의",
  "locConsentBody": "현재 위치로 주소를 찾으려면 위치기반서비스 이용약관에 동의해 주세요. 위치는 '현재 위치로 찾기'를 누를 때 한 번만 확인하고, 주소를 제안하는 데만 써요. 위치 좌표는 서버에 저장하지 않아요. 동의는 동의 관리에서 언제든지 철회할 수 있어요.",
