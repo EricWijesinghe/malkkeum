@@ -379,6 +379,32 @@ t  "unit: service runs the agent"        grep -qF "ExecStart=/bin/bash $SB/agent
 t  "unit: service sandboxed"             grep -qF "ProtectSystem=full" "$SB/units/dahae-agent.service"
 t  "unit: service may run 3 hours"       grep -qF "TimeoutStartSec=3h" "$SB/units/dahae-agent.service"
 t  "unit: timer every minute"            grep -qF "OnCalendar=*-*-* *:*:00" "$SB/units/dahae-agent.timer"
+t  "unit: path also watches approvals"   grep -qF "PathExistsGlob=$SB/jobs/inbox/*.approve" "$SB/units/dahae-agent.path"
+
+# server approval key: made once, private, and owner-reset removes it (the CLI runs in the sandbox)
+mkdir -p "$SB/host"
+STAFF=0190a6f2-1111-7000-8000-000000000001
+enroll() { ( DAHAE_SELFTEST=1 . "$SB/dahae"; cd "$SB"; cmd_host_approval enroll "$1" ) >/dev/null 2>&1; }
+nt "approval enroll without an owner refused" enroll ""
+enroll "$STAFF"
+t  "approval enroll writes a 32-character key" eq "$(wc -c < "$SB/host/approval.key" | tr -d ' ')" 33
+t  "approval key is private"             eq "$(stat -c %a "$SB/host/approval.key")" 600
+t  "approval enroll records the owner"   grep -qF "\"staff_id\":\"$STAFF\"" "$SB/host/owner.json"
+nt "approval enroll twice refused"       enroll "$STAFF"
+reset_owner() { ( DAHAE_SELFTEST=1 . "$SB/dahae"; cd "$SB"; YES=1 cmd_owner_reset ) >/dev/null 2>&1; }
+printf '%s\n' "$(date +%s)" > "$SB/host/approval.fails"
+reset_owner
+t  "owner-reset removes the approval key" test ! -e "$SB/host/approval.key"
+t  "owner-reset removes the owner record" test ! -e "$SB/host/owner.json"
+t  "owner-reset clears the failure log"   test ! -e "$SB/host/approval.fails"
+
+# version history: a version label is recorded once; a label that is not a version is skipped
+record_label() { ( DAHAE_SELFTEST=1 . "$SB/dahae"; cd "$SB"; docker() { echo "$LABEL"; }; NEW_API=img; LABEL="$1"; record_version ) >/dev/null 2>&1; }
+rm -f "$SB/host/version-history"
+record_label 2.1.0; record_label 2.1.0; record_label 2.1.0-beta.1; record_label dev
+t  "record_version writes v2.1.0 once"        eq "$(grep -c '^v2\.1\.0$' "$SB/host/version-history")" 1
+t  "record_version writes the beta tag"       grep -qxF v2.1.0-beta.1 "$SB/host/version-history"
+t  "record_version skips a non-version label"  eq "$(grep -c -v '^v[0-9]' "$SB/host/version-history")" 0
 
 # compose mounts the job spool into the API and the progress folder into the web container
 t  "api mounts inbox read-write"         grep -qF "/opt/malkkeum/jobs/inbox:/jobs/inbox," "$ROOT/deploy/docker-compose.yml"

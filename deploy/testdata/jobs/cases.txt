@@ -16,3 +16,9 @@ refuse-equals-in-value.job refuse
 refuse-backslash.job refuse
 refuse-restart-service.job refuse
 refuse-skip-with-arg.job refuse
+ok-heartbeat-off.job run heartbeat off YES=1
+ok-offsite-list.job run restore-offsite YES=1
+refuse-logs-small.job refuse
+refuse-logs-no-token.job refuse
+refuse-update-tag-no-token.job refuse
+refuse-domain-localhost.job refuse
