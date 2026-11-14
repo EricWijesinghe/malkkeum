@@ -39,6 +39,8 @@ IconData serviceIcon(String code) => switch (code) {
   'sofa' => Icons.weekend_rounded,
   'move_out' => Icons.local_shipping_rounded,
   'move_in' => Icons.vpn_key_rounded,
+  'window' => Icons.window_rounded,
+  'disinfection' => Icons.sanitizer_rounded,
   _ => Icons.cleaning_services_rounded,
 };
 

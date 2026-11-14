@@ -36,6 +36,28 @@ FakeApi _subscribeApi() {
   return fake;
 }
 
+/// Picks studio, the address and the card, then a biweekly Monday at 13:00.
+Future<void> _chooseSubscription(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('sub-service')));
+  await settle(tester);
+  await tester.tap(find.text(koT.service('studio')).last);
+  await settle(tester);
+
+  await tester.tap(find.byKey(const Key('sub-address')));
+  await settle(tester);
+  await tester.tap(find.text(addressJson()['label'] as String).last);
+  await settle(tester);
+
+  await tester.tap(find.byKey(const Key('sub-method')));
+  await settle(tester);
+  await tester.tap(find.text(paymentMethodJson()['display_name'] as String).last);
+  await settle(tester);
+
+  await tester.tap(find.text(koT.subBiweekly));
+  await tester.tap(find.text('13:00'));
+  await settle(tester);
+}
+
 void main() {
   testWidgets('subscribe sends the chosen service, address, card, cadence, weekday and hour', (tester) async {
     setViewport(tester, phoneSize);
@@ -47,25 +69,7 @@ void main() {
     await settle(tester);
 
     expect(find.text(koT.subDiscountNote('10')), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('sub-service')));
-    await settle(tester);
-    await tester.tap(find.text(koT.service('studio')).last);
-    await settle(tester);
-
-    await tester.tap(find.byKey(const Key('sub-address')));
-    await settle(tester);
-    await tester.tap(find.text(addressJson()['label'] as String).last);
-    await settle(tester);
-
-    await tester.tap(find.byKey(const Key('sub-method')));
-    await settle(tester);
-    await tester.tap(find.text(paymentMethodJson()['display_name'] as String).last);
-    await settle(tester);
-
-    await tester.tap(find.text(koT.subBiweekly));
-    await tester.tap(find.text('13:00'));
-    await settle(tester);
+    await _chooseSubscription(tester);
 
     await tester.tap(find.byKey(const Key('sub-submit')));
     await settle(tester);
@@ -86,6 +90,23 @@ void main() {
     final env = await TestEnv.create(fake: _subscribeApi());
     await pumpCustomerScreen(tester, env, const SubscribeScreen());
     await settle(tester);
+
+    final button = tester.widget<FilledButton>(find.byKey(const Key('sub-submit')));
+    expect(button.onPressed, isNull);
+    await unmount(tester);
+  });
+
+  testWidgets('maintenance holds the subscribe submit even when everything is chosen', (tester) async {
+    setViewport(tester, phoneSize);
+    final env = await TestEnv.create(fake: _subscribeApi());
+    final app = await pumpCustomerScreen(
+      tester,
+      env,
+      const RemoteConfigScope(config: RemoteConfig(maintenance: true), child: SubscribeScreen()),
+    );
+    await app.loadAll();
+    await settle(tester);
+    await _chooseSubscription(tester);
 
     final button = tester.widget<FilledButton>(find.byKey(const Key('sub-submit')));
     expect(button.onPressed, isNull);

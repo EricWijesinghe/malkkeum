@@ -18,7 +18,7 @@
   ],
   "note": "@1x/@2x/@3x have no ground shadow; 512/1024 hero renders include a soft contact shadow"
  },
- "icon_count": 121,
+ "icon_count": 124,
  "icons": [
   {
    "id": "svc_move",
@@ -2353,6 +2353,69 @@
    ]
   },
   {
+   "id": "cat_whole_home",
+   "group": "category",
+   "description": "Category: whole-home cleaning (house with sparkles)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_whole_home",
+     "files": {
+      "1x": "out/icons/cat_whole_home/cat_whole_home@1x.png",
+      "2x": "out/icons/cat_whole_home/cat_whole_home@2x.png",
+      "3x": "out/icons/cat_whole_home/cat_whole_home@3x.png",
+      "512": "out/icons/cat_whole_home/cat_whole_home_512.png",
+      "1024": "out/icons/cat_whole_home/cat_whole_home_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_whole_home"
+   ]
+  },
+  {
+   "id": "cat_window",
+   "group": "category",
+   "description": "Category: window cleaning (window with frame and sparkle)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_window",
+     "files": {
+      "1x": "out/icons/cat_window/cat_window@1x.png",
+      "2x": "out/icons/cat_window/cat_window@2x.png",
+      "3x": "out/icons/cat_window/cat_window@3x.png",
+      "512": "out/icons/cat_window/cat_window_512.png",
+      "1024": "out/icons/cat_window/cat_window_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_window"
+   ]
+  },
+  {
+   "id": "cat_disinfection",
+   "group": "category",
+   "description": "Category: pest control and disinfection (spray bottle with droplets)",
+   "variants": [
+    {
+     "variant": "default",
+     "name": "cat_disinfection",
+     "files": {
+      "1x": "out/icons/cat_disinfection/cat_disinfection@1x.png",
+      "2x": "out/icons/cat_disinfection/cat_disinfection@2x.png",
+      "3x": "out/icons/cat_disinfection/cat_disinfection@3x.png",
+      "512": "out/icons/cat_disinfection/cat_disinfection_512.png",
+      "1024": "out/icons/cat_disinfection/cat_disinfection_1024.png"
+     }
+    }
+   ],
+   "app_ids": [
+    "svc_disinfection"
+   ]
+  },
+  {
    "id": "scope_dusting",
    "group": "scope",
    "description": "Studio scope: dusting (feather duster)",
@@ -2687,8 +2750,8 @@
  ],
  "app_export": {
   "dir": "export/icons3d",
-  "ids": 124,
-  "bytes": 1722458,
+  "ids": 127,
+  "bytes": 1758282,
   "missing": [],
   "base_dp": 64,
   "px": {

@@ -1,8 +1,8 @@
 use crate::{
     auth::{self, Auth, Role},
+    crypto,
     error::{ApiError, ApiResult},
     lockout,
-    crypto,
     providers::{
         apple,
         social::{self, SocialUser},
@@ -15,10 +15,10 @@ use axum::{
     http::HeaderMap,
     routing::{delete, get, post},
 };
-use std::net::SocketAddr;
-use serde_json::{Value, json};
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
+use std::net::SocketAddr;
 use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
@@ -79,18 +79,19 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
     let global: i64 = sqlx::query_scalar("SELECT count(*) FROM otp_codes WHERE created_at > now() - interval '1 hour'")
         .fetch_one(&s.db)
         .await?;
-    let cooling: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM otp_codes WHERE phone = $1 AND created_at > now() - ($2::float8 * interval '1 second'))")
-        .bind(&phone)
-        .bind(OTP_RESEND_COOLDOWN_SECS)
-        .fetch_one(&s.db)
-        .await?;
+    let cooling: bool =
+        sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM otp_codes WHERE phone = $1 AND created_at > now() - ($2::float8 * interval '1 second'))")
+            .bind(&phone)
+            .bind(OTP_RESEND_COOLDOWN_SECS)
+            .fetch_one(&s.db)
+            .await?;
     if recent >= OTP_MAX_PER_HOUR || global >= OTP_GLOBAL_PER_HOUR || cooling {
         return Err(ApiError::RateLimited);
     }
     // Store-review demo number: the owner's fixed code, no SMS (reviewers are abroad).
     let review = super::setup::review_code_hash(&s.db, &phone).await?;
     let code = auth::otp_code();
-    let code_hash = review.clone().unwrap_or_else(|| auth::otp_hash(&s.config.jwt_secret, &phone, &code));
+    let code_hash = review.clone().unwrap_or_else(|| auth::otp_hash(s.config.otp_key(), &phone, &code));
     sqlx::query("INSERT INTO otp_codes (phone, code_hash, expires_at) VALUES ($1, $2, $3)")
         .bind(&phone)
         .bind(code_hash)
@@ -98,8 +99,9 @@ async fn request_otp(State(s): State<AppState>, Json(req): Json<OtpRequest>) -> 
         .execute(&s.db)
         .await?;
     if review.is_none() {
-        s.providers
-            .send_sms(&phone, &format!("[{}] {code}", crate::i18n::tr(req.locale.as_deref().unwrap_or("ko"), "인증번호")))
+        // Inline, not queued: the user is waiting on this code. One quick retry covers a blip (see sms_outbox).
+        let text = format!("[{}] {code}", crate::i18n::tr(req.locale.as_deref().unwrap_or("ko"), "인증번호"));
+        crate::sms_outbox::retry_once(|| s.providers.send_sms(&phone, &text))
             .await
             .map_err(|e| ApiError::Internal(e.to_string()))?;
     }
@@ -186,19 +188,23 @@ async fn verify_otp(
     };
     // Upsert keeps sign-up and login a single step; xmax = 0 means the row was inserted.
     let (id, is_new): (Uuid, bool) = match role {
-        Role::Customer => sqlx::query_as(
-            "INSERT INTO users (phone, acquisition) VALUES ($1, $2) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)",
-        )
-        .bind(&phone)
-        .bind(crate::acquisition::clean(req.attribution.as_ref()).map(sqlx::types::Json))
-        .fetch_one(&s.db)
-        .await?,
-        _ => sqlx::query_as(&format!(
-            "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
-        ))
-        .bind(&phone)
-        .fetch_one(&s.db)
-        .await?,
+        Role::Customer => {
+            sqlx::query_as(
+                "INSERT INTO users (phone, acquisition) VALUES ($1, $2) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)",
+            )
+            .bind(&phone)
+            .bind(crate::acquisition::clean(req.attribution.as_ref()).map(sqlx::types::Json))
+            .fetch_one(&s.db)
+            .await?
+        }
+        _ => {
+            sqlx::query_as(&format!(
+                "INSERT INTO {table} (phone) VALUES ($1) ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone RETURNING id, (xmax = 0)"
+            ))
+            .bind(&phone)
+            .fetch_one(&s.db)
+            .await?
+        }
     };
     if role == Role::Pro && is_new {
         sqlx::query("INSERT INTO partner_prefs (pro_id) VALUES ($1) ON CONFLICT DO NOTHING")
@@ -268,8 +274,12 @@ pub async fn consume_otp(s: &AppState, phone: &str, code: &str) -> ApiResult<()>
     .fetch_optional(&s.db)
     .await?;
     let stored = row.ok_or(ApiError::BadRequest("otp_expired"))?;
-    let given = auth::otp_hash(&s.config.jwt_secret, phone, code.trim());
-    if !bool::from(given.as_bytes().ct_eq(stored.as_bytes())) {
+    let matches = s
+        .config
+        .otp_keys()
+        .into_iter()
+        .any(|key| bool::from(auth::otp_hash(key, phone, code.trim()).as_bytes().ct_eq(stored.as_bytes())));
+    if !matches {
         return Err(ApiError::BadRequest("otp_invalid"));
     }
     // Single use: only the request that deletes the code proceeds.
@@ -345,10 +355,12 @@ async fn ensure_active(s: &AppState, id: Uuid, role: Role) -> ApiResult<()> {
 
 /// Signs out this device: its whole rotation family is revoked.
 async fn logout(State(s): State<AppState>, Json(req): Json<RefreshRequest>) -> ApiResult<Json<serde_json::Value>> {
-    sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE family_id = (SELECT family_id FROM refresh_tokens WHERE token_hash = $1) AND revoked_at IS NULL")
-        .bind(auth::sha256_hex(req.refresh_token.as_bytes()))
-        .execute(&s.db)
-        .await?;
+    sqlx::query(
+        "UPDATE refresh_tokens SET revoked_at = now() WHERE family_id = (SELECT family_id FROM refresh_tokens WHERE token_hash = $1) AND revoked_at IS NULL",
+    )
+    .bind(auth::sha256_hex(req.refresh_token.as_bytes()))
+    .execute(&s.db)
+    .await?;
     Ok(Json(serde_json::json!({ "ok": true })))
 }
 
@@ -381,7 +393,11 @@ async fn sessions(State(s): State<AppState>, a: Auth) -> ApiResult<Json<Value>> 
     .await?;
     let items: Vec<SessionView> = rows
         .into_iter()
-        .map(|(session_id, signed_in_at, last_refreshed_at)| SessionView { session_id, signed_in_at, last_refreshed_at })
+        .map(|(session_id, signed_in_at, last_refreshed_at)| SessionView {
+            session_id,
+            signed_in_at,
+            last_refreshed_at,
+        })
         .collect();
     Ok(Json(json!({ "sessions": items })))
 }
@@ -450,14 +466,22 @@ async fn staff_login(
     let (id, _, role, _) = row.filter(|_| ok).ok_or(ApiError::Unauthorized)?;
     // Reset the lockout only when tokens are issued here. A password step that leads to a second
     // factor must not reset it, or a password holder could retry codes forever (see staff_mfa).
-    let enrolled: bool = sqlx::query_scalar("SELECT totp_enabled_at IS NOT NULL FROM staff WHERE id = $1").bind(id).fetch_one(&s.db).await?;
+    let enrolled: bool = sqlx::query_scalar("SELECT totp_enabled_at IS NOT NULL FROM staff WHERE id = $1")
+        .bind(id)
+        .fetch_one(&s.db)
+        .await?;
     if enrolled {
         return Ok(Json(json!({ "mfa_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
     }
     if role == "admin" && s.config.staff_mfa_required {
-        return Ok(Json(json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? })));
+        return Ok(Json(
+            json!({ "mfa_enrol_required": true, "mfa_token": auth::issue_mfa(&s.config.jwt_secret, id)? }),
+        ));
     }
-    sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1").bind(id).execute(&s.db).await?;
+    sqlx::query("UPDATE staff SET failed_logins = 0, locked_until = NULL WHERE id = $1")
+        .bind(id)
+        .execute(&s.db)
+        .await?;
     s.lockout.success(&keys).await?;
     let staff_role = if role == "admin" { Role::StaffAdmin } else { Role::StaffConsultant };
     let tokens = issue_tokens(&s, id, staff_role, false, None).await?;
@@ -541,7 +565,7 @@ async fn store_social_token(s: &AppState, provider: &str, social: &SocialUser, r
     .bind(&social.provider_user_id)
     .bind(role.as_str())
     .bind(social.audience.as_deref().unwrap_or_default())
-    .bind(crypto::encrypt(&s.config.data_key, token))
+    .bind(crypto::encrypt(&s.config.data_key, crypto::aad::SOCIAL_TOKEN, token))
     .execute(&s.db)
     .await?;
     Ok(())

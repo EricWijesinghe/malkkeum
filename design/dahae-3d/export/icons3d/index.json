@@ -484,6 +484,11 @@
   "alias": true,
   "large": false
  },
+ "svc_disinfection": {
+  "source": "cat_disinfection",
+  "alias": true,
+  "large": false
+ },
  "svc_kitchen": {
   "source": "cat_kitchen",
   "alias": true,
@@ -516,6 +521,16 @@
  },
  "svc_studio": {
   "source": "cat_studio",
+  "alias": true,
+  "large": false
+ },
+ "svc_whole_home": {
+  "source": "cat_whole_home",
+  "alias": true,
+  "large": false
+ },
+ "svc_window": {
+  "source": "cat_window",
   "alias": true,
   "large": false
  },

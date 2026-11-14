@@ -4,6 +4,7 @@
 //! numbers, amounts, chat previews) passes through unchanged. AlimTalk keeps Korean: its templates
 //! are pre-approved word for word.
 
+use serde_json::Value;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -127,9 +128,318 @@ pub async fn locale_of(db: &PgPool, to: Recipient) -> String {
     }
 }
 
+/// A notification whose text the owner may replace. Only kinds with one call site and one text are
+/// listed, so an override never changes another message that shares the kind.
+pub struct Event {
+    pub kind: &'static str,
+    pub label: &'static str,
+    /// Built-in Korean text, also the editor's starting point.
+    pub title: &'static str,
+    pub body: &'static str,
+    /// Placeholders the text may use. Each resolves from the event's own data.
+    pub vars: &'static [&'static str],
+}
+
+pub const BOOKING_NO: &str = "예약번호";
+pub const BRAND: &str = "업체명";
+/// Stands in for a real booking number in previews and checks.
+pub const SAMPLE_BOOKING_NO: &str = "B-20261111-0042";
+const BOOKING_BODY: &str = "{예약번호}";
+const BOOKING_VARS: &[&str] = &[BOOKING_NO];
+
+pub const EVENTS: &[Event] = &[
+    Event {
+        kind: "booking.created",
+        label: "새 예약 (직원)",
+        title: "새 예약",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "booking.quote_requested",
+        label: "견적 요청 (직원)",
+        title: "견적 요청",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "booking.deposit_paid",
+        label: "예약금 결제 (직원)",
+        title: "예약금 결제",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "booking.cancelled",
+        label: "예약 취소 (고객)",
+        title: "예약이 취소됐어요",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "booking.arrival",
+        label: "청소팀 도착 (고객)",
+        title: "청소팀이 도착했어요",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "booking.completed",
+        label: "청소 완료 (고객)",
+        title: "청소가 끝났어요",
+        body: "전후 사진을 확인하고 후기를 남겨 주세요",
+        vars: &[BOOKING_NO, BRAND],
+    },
+    Event {
+        kind: "booking.reschedule_confirmed",
+        label: "일정 변경 확정 (고객)",
+        title: "변경된 일정이 확정됐어요",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "payment.receipt",
+        label: "결제 완료 (고객)",
+        title: "결제가 완료됐어요",
+        body: "결제 내역은 예약 상세에서 확인할 수 있어요",
+        vars: &[],
+    },
+    Event {
+        kind: "job.cancelled",
+        label: "예약 취소 (청소팀)",
+        title: "예약 취소",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "job.reschedule_requested",
+        label: "일정 변경 요청 (청소팀)",
+        title: "일정 변경 요청",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "quote.selected",
+        label: "견적 선택 (청소팀)",
+        title: "견적이 선택됐어요",
+        body: BOOKING_BODY,
+        vars: BOOKING_VARS,
+    },
+    Event {
+        kind: "quality.warning",
+        label: "품질 점수 경고 (청소팀)",
+        title: "품질 점수가 낮아졌어요",
+        body: "품질 점수를 확인하고 개선해 주세요.",
+        vars: &[],
+    },
+    Event {
+        kind: "subscription.paused",
+        label: "정기 청소 일시 정지 (고객)",
+        title: "정기 청소가 일시 정지됐어요",
+        body: "결제 수단을 확인한 뒤 재개해 주세요",
+        vars: &[],
+    },
+    Event {
+        kind: "subscription.payment_failed",
+        label: "정기 청소 결제 실패 (고객)",
+        title: "정기 청소 결제가 실패했어요",
+        body: "카드 정보를 확인해 주세요",
+        vars: &[],
+    },
+    Event {
+        kind: "subscription.visit_missed",
+        label: "정기 청소 미배정 (고객)",
+        title: "이번 정기 청소를 잡지 못했어요",
+        body: "고객센터로 문의해 주세요",
+        vars: &[],
+    },
+    Event {
+        kind: "waitlist.offer",
+        label: "빈 자리 안내 (고객)",
+        title: "빈 자리가 생겼어요",
+        body: "15분 안에 예약을 확정해 주세요.",
+        vars: &[BRAND],
+    },
+];
+
+pub fn event(kind: &str) -> Option<&'static Event> {
+    EVENTS.iter().find(|e| e.kind == kind)
+}
+
+/// The built-in text in `locale`: what the editor starts from and what reset returns to.
+pub fn default_text(ev: &Event, locale: &str) -> (String, String) {
+    (tr(locale, ev.title), tr(locale, ev.body))
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum TemplateError {
+    /// A brace is unclosed, stray or nested.
+    Unbalanced,
+    /// A `{name}` the event does not allow.
+    UnknownVariable(String),
+}
+
+impl TemplateError {
+    /// Stable code for API error responses.
+    pub fn code(&self) -> &'static str {
+        match self {
+            Self::Unbalanced => "unbalanced_braces",
+            Self::UnknownVariable(_) => "unknown_variable",
+        }
+    }
+}
+
+/// `template` with each `{name}` replaced by its value. A name without a value is an error.
+pub fn fill(template: &str, values: &[(&str, String)]) -> Result<String, TemplateError> {
+    let mut out = String::with_capacity(template.len());
+    let mut rest = template;
+    while let Some(open) = rest.find(['{', '}']) {
+        if rest.as_bytes()[open] == b'}' {
+            return Err(TemplateError::Unbalanced);
+        }
+        let close = rest[open..].find('}').ok_or(TemplateError::Unbalanced)? + open;
+        let name = &rest[open + 1..close];
+        if name.contains('{') {
+            return Err(TemplateError::Unbalanced);
+        }
+        let (_, value) = values
+            .iter()
+            .find(|(key, _)| *key == name)
+            .ok_or_else(|| TemplateError::UnknownVariable(name.to_string()))?;
+        out.push_str(&rest[..open]);
+        out.push_str(value);
+        rest = &rest[close + 1..];
+    }
+    out.push_str(rest);
+    Ok(out)
+}
+
+/// Stand-in values for an event's placeholders: a sample booking number and the business name.
+pub fn sample_values(vars: &[&'static str], brand: &str) -> Vec<(&'static str, String)> {
+    vars.iter()
+        .map(|&name| match name {
+            BRAND => (name, brand.to_string()),
+            _ => (name, SAMPLE_BOOKING_NO.to_string()),
+        })
+        .collect()
+}
+
+/// Real values for an event's placeholders. `None` when the booking they need cannot be found.
+async fn live_values(db: &PgPool, vars: &[&'static str], booking: Option<Uuid>) -> sqlx::Result<Option<Vec<(&'static str, String)>>> {
+    let mut out = Vec::with_capacity(vars.len());
+    for &name in vars {
+        if name == BRAND {
+            out.push((name, crate::routes::setup::brand_name(db).await));
+            continue;
+        }
+        let Some(id) = booking else {
+            return Ok(None);
+        };
+        let number: Option<String> = sqlx::query_scalar("SELECT number FROM bookings WHERE id = $1")
+            .bind(id)
+            .fetch_optional(db)
+            .await?;
+        let Some(number) = number else {
+            return Ok(None);
+        };
+        out.push((name, number));
+    }
+    Ok(Some(out))
+}
+
+/// The owner's text filled with `values`, or the built-in text when there is none or it does not fill.
+pub fn pick(custom: Option<(&str, &str)>, values: &[(&str, String)], built_in: (String, String)) -> (String, String) {
+    let Some((title, body)) = custom else {
+        return built_in;
+    };
+    match (fill(title, values), fill(body, values)) {
+        (Ok(title), Ok(body)) => (title, body),
+        (Err(e), _) | (_, Err(e)) => {
+            tracing::warn!(error = ?e, "notification text override does not fill; using built-in text");
+            built_in
+        }
+    }
+}
+
+/// Inbox and push text for a notification of `kind`: the owner's text in the recipient's language when set,
+/// else the built-in text. AlimTalk does not use this; its templates are approved word for word.
+pub async fn notice(db: &PgPool, locale: &str, kind: &str, title: &str, body: &str, data: &Value) -> (String, String) {
+    let built_in = (tr(locale, title), tr(locale, body));
+    let Some(ev) = event(kind) else {
+        return built_in;
+    };
+    let saved = sqlx::query_as::<_, (String, String)>("SELECT title, body FROM notify_templates WHERE kind = $1 AND locale = $2")
+        .bind(ev.kind)
+        .bind(shipped(locale))
+        .fetch_optional(db)
+        .await;
+    let custom = match saved {
+        Ok(row) => row,
+        Err(e) => {
+            tracing::warn!(error = %e, kind, "notification text lookup failed; using built-in text");
+            return built_in;
+        }
+    };
+    let Some((title, body)) = custom else {
+        return built_in;
+    };
+    let booking = data.get("booking_id").and_then(Value::as_str).and_then(|s| Uuid::parse_str(s).ok());
+    match live_values(db, ev.vars, booking).await {
+        Ok(Some(values)) => pick(Some((&title, &body)), &values, built_in),
+        Ok(None) => {
+            tracing::warn!(kind, "notification placeholder has no value; using built-in text");
+            built_in
+        }
+        Err(e) => {
+            tracing::warn!(error = %e, kind, "notification placeholder lookup failed; using built-in text");
+            built_in
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fill_replaces_allowed_placeholders() {
+        let values = [(BOOKING_NO, "B-1".to_string())];
+        assert_eq!(fill("예약 {예약번호} 확인", &values).unwrap(), "예약 B-1 확인");
+        assert_eq!(fill("placeholder-free", &values).unwrap(), "placeholder-free");
+    }
+
+    #[test]
+    fn fill_rejects_unknown_variable_and_broken_braces() {
+        let values = [(BOOKING_NO, "B-1".to_string())];
+        assert_eq!(fill("{이름}님", &values), Err(TemplateError::UnknownVariable("이름".into())));
+        assert_eq!(fill("{예약번호", &values), Err(TemplateError::Unbalanced));
+        assert_eq!(fill("예약번호}", &values), Err(TemplateError::Unbalanced));
+        assert_eq!(fill("{{예약번호}}", &values), Err(TemplateError::Unbalanced));
+    }
+
+    #[test]
+    fn unusable_override_falls_back_to_built_in_text() {
+        let built_in = ("새 예약".to_string(), "B-2".to_string());
+        let values = [(BOOKING_NO, "B-2".to_string())];
+        assert_eq!(pick(Some(("{이름}", "ok")), &values, built_in.clone()), built_in);
+        assert_eq!(pick(None, &values, built_in.clone()), built_in);
+        assert_eq!(
+            pick(Some(("안내", "{예약번호} 확인")), &values, built_in.clone()),
+            ("안내".into(), "B-2 확인".into())
+        );
+    }
+
+    #[test]
+    fn every_event_default_fills_with_its_own_placeholders() {
+        let mut kinds = std::collections::HashSet::new();
+        for ev in EVENTS {
+            assert!(kinds.insert(ev.kind), "duplicate kind {}", ev.kind);
+            let samples = sample_values(ev.vars, "다해");
+            let (title, body) = default_text(ev, "ko");
+            assert!(fill(&title, &samples).is_ok() && fill(&body, &samples).is_ok(), "{}", ev.kind);
+            assert!(!default_text(ev, "en").0.trim().is_empty(), "{}", ev.kind);
+        }
+    }
 
     #[test]
     fn translates_known_text_and_passes_through_the_rest() {

@@ -7,7 +7,7 @@ import 'flow_widgets.dart';
 /// What a studio clean covers (design p07 기본 서비스).
 const studioScope = ['dusting', 'vacuum', 'dishes', 'bathroom', 'trash'];
 
-enum ScopeGroup { studio, move, bathKitchen }
+enum ScopeGroup { studio, move, bathKitchen, wholeHome, window, disinfection }
 
 enum ScopeArea { room, kitchen, bath, entrance }
 
@@ -30,11 +30,29 @@ const _scope = <ScopeGroup, Map<ScopeArea, List<String>>>{
     ScopeArea.kitchen: ['dishes', 'stove', 'hood'],
     ScopeArea.bath: ['bathroom', 'tiles', 'mold'],
   },
+  ScopeGroup.wholeHome: {
+    ScopeArea.room: ['dusting', 'vacuum', 'windows', 'cabinets'],
+    ScopeArea.kitchen: ['dishes', 'stove', 'hood', 'fridge'],
+    ScopeArea.bath: ['bathroom', 'tiles', 'mold'],
+    ScopeArea.entrance: ['entrance', 'shoes', 'trash'],
+  },
+  ScopeGroup.window: {
+    ScopeArea.room: ['windows', 'dusting'],
+  },
+  ScopeGroup.disinfection: {
+    ScopeArea.room: ['pest', 'mite'],
+    ScopeArea.kitchen: ['sanitize'],
+    ScopeArea.bath: ['sanitize'],
+    ScopeArea.entrance: ['pest', 'sick_house'],
+  },
 };
 
 ScopeGroup scopeGroupFor(String code) => switch (code) {
   'move_in' || 'move_out' => ScopeGroup.move,
   'bathroom' || 'kitchen' => ScopeGroup.bathKitchen,
+  'whole_home' => ScopeGroup.wholeHome,
+  'window' => ScopeGroup.window,
+  'disinfection' => ScopeGroup.disinfection,
   _ => ScopeGroup.studio,
 };
 
@@ -54,6 +72,10 @@ String scopeLabel(T t, String k) => switch (k) {
   'cabinets' => t.dfScopeCabinets,
   'windows' => t.dfScopeWindows,
   'shoes' => t.dfScopeShoes,
+  'pest' => t.dfScopePest,
+  'mite' => t.dfScopeMite,
+  'sanitize' => t.dfScopeSanitize,
+  'sick_house' => t.dfScopeSickHouse,
   _ => t.dfScopeEntrance,
 };
 
@@ -61,6 +83,9 @@ String _groupLabel(T t, ScopeGroup g) => switch (g) {
   ScopeGroup.studio => t.service('studio'),
   ScopeGroup.move => t.dfScopeMove,
   ScopeGroup.bathKitchen => t.dfScopeBathKitchen,
+  ScopeGroup.wholeHome => t.dfScopeWholeHomeGroup,
+  ScopeGroup.window => t.dfScopeWindowGroup,
+  ScopeGroup.disinfection => t.dfScopeDisinfGroup,
 };
 
 String _areaLabel(T t, ScopeArea a) => switch (a) {
@@ -163,9 +188,8 @@ class _ServiceScopeScreenState extends State<ServiceScopeScreen> {
                 borderRadius: BorderRadius.circular(Radii.tile),
                 clipBehavior: Clip.antiAlias,
                 child: Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
                     initiallyExpanded: true,
                     title: Text(
