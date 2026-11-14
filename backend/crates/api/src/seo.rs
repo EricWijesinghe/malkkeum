@@ -29,15 +29,18 @@ const REVIEW_SNIPPETS: i64 = 3;
 const SNIPPET_CHARS: i32 = 200;
 const NOTICE_ITEMS: i64 = 50;
 /// Keyword pages: service code, Korean search term, English name.
-pub const KEYWORDS: [(&str, &str, &str); 8] = [
+pub const KEYWORDS: [(&str, &str, &str); 11] = [
     ("move_in", "입주청소", "Move-in cleaning"),
     ("move_out", "이사청소", "Move-out cleaning"),
     ("studio", "원룸청소", "Studio cleaning"),
     ("kitchen", "주방청소", "Kitchen cleaning"),
     ("bathroom", "욕실청소", "Bathroom cleaning"),
+    ("whole_home", "집전체청소", "Whole-home cleaning"),
+    ("window", "창문청소", "Window cleaning"),
     ("mattress", "매트리스청소", "Mattress cleaning"),
     ("aircon", "에어컨청소", "Air conditioner cleaning"),
     ("sofa", "소파청소", "Sofa cleaning"),
+    ("disinfection", "방역소독", "Pest control and disinfection"),
 ];
 /// Seoul districts: legal-dong code (what partners and bookings store), Korean and English names.
 pub const SEOUL_DISTRICTS: [(&str, &str, &str); 25] = [
@@ -833,6 +836,15 @@ mod tests {
         assert!(svg.contains("fill=\"#187A8F\""));
         assert!(svg.contains("다해 &lt;b&gt;"));
         assert!(!svg.contains("<b>"));
+    }
+
+    #[test]
+    fn keyword_pages_cover_the_new_services() {
+        for code in ["whole_home", "window", "disinfection", "aircon", "sofa", "mattress"] {
+            assert!(keyword(code).is_some(), "no keyword page for {code}");
+        }
+        assert_eq!(keyword("window"), Some(("창문청소", "Window cleaning")));
+        assert_eq!(keyword("unknown_code"), None);
     }
 
     #[test]
