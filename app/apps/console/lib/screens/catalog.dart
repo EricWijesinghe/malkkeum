@@ -5,7 +5,9 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'cancel_policy.dart';
+import 'catalog_counts.dart';
 import 'catalog_demo.dart';
+import 'catalog_groups.dart';
 import 'catalog_rules.dart';
 
 /// Prices, durations, availability, slot capacity and the quote formula — no code change needed.
@@ -16,7 +18,7 @@ class CatalogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     return DefaultTabController(
-      length: 7,
+      length: 8,
       child: Column(
         children: [
           TabBar(
@@ -24,6 +26,7 @@ class CatalogScreen extends StatelessWidget {
             tabAlignment: TabAlignment.start,
             tabs: [
               Tab(text: t.cPricing),
+              Tab(text: t.cgTabGroups),
               Tab(text: t.cSlotCapacity),
               Tab(text: t.cFormula),
               Tab(text: t.cgTabPeak),
@@ -36,6 +39,7 @@ class CatalogScreen extends StatelessWidget {
             child: TabBarView(
               children: [
                 _Services(),
+                GroupsTab(),
                 _Capacity(),
                 _Formula(),
                 PeakTab(),
@@ -71,6 +75,11 @@ class _ServicesState extends State<_Services> {
     final t = context.t;
     final pricing = Map<String, dynamic>.from(s['pricing'] as Json);
     final type = pricing['type'] as String;
+    if (type == 'counts') {
+      final next = await askCountsPricing(context, pricing);
+      if (next != null && mounted) await _save(s, next, s['active'] as bool);
+      return;
+    }
     final ctrls = <String, TextEditingController>{};
     TextEditingController c(String k, Object? v) =>
         ctrls.putIfAbsent(k, () => TextEditingController(text: '${v ?? ''}'));
@@ -165,22 +174,28 @@ class _ServicesState extends State<_Services> {
         },
         _ => {'type': 'quote'},
       };
-      try {
-        await context.api.put('/admin/services/${s['code']}', {
-          'pricing': next,
-          'needs_preparation': s['needs_preparation'],
-          'max_pyeong': s['max_pyeong'],
-          'content': s['content'],
-          'active': active,
-          'sort_order': s['sort_order'],
-        });
-        if (mounted) showToast(context, t.cSaved);
-        await _view.currentState?.reload();
-      } catch (e) {
-        if (mounted) showToast(context, t.error(e));
-      }
+      if (mounted) await _save(s, next, active);
     }
     disposeAfterClose(ctrls.values.toList());
+  }
+
+  /// Saves one service's pricing and active flag, then reloads the list.
+  Future<void> _save(Json s, Json pricing, bool active) async {
+    final t = context.t;
+    try {
+      await context.api.put('/admin/services/${s['code']}', {
+        'pricing': pricing,
+        'needs_preparation': s['needs_preparation'],
+        'max_pyeong': s['max_pyeong'],
+        'content': s['content'],
+        'active': active,
+        'sort_order': s['sort_order'],
+      });
+      if (mounted) showToast(context, t.cSaved);
+      await _view.currentState?.reload();
+    } catch (e) {
+      if (mounted) showToast(context, t.error(e));
+    }
   }
 
   @override
@@ -250,7 +265,7 @@ class _ServicesState extends State<_Services> {
   String _priceSummary(BuildContext context, Json p) => switch (p['type']) {
     'fixed' =>
       '${context.won((p['price'] as num).toInt())} · ${context.t.duration((p['minutes'] as num).toInt())}',
-    'unit' =>
+    'unit' || 'counts' =>
       (p['units'] as List)
           .cast<Json>()
           .map((u) => context.won((u['price'] as num).toInt()))

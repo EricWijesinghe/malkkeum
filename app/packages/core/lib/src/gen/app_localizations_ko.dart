@@ -429,6 +429,68 @@ class TKo extends T {
   String get cSetupHostingProvider => '호스팅 서비스 제공자';
 
   @override
+  String get cntTitle => '수량 선택 가격';
+
+  @override
+  String get cntHelp =>
+      '고객이 항목마다 수량을 골라요. 두 개 이상 고르면 할인이 적용돼요. 가격은 예시이니 자유롭게 바꿀 수 있어요';
+
+  @override
+  String get cntAddOption => '항목 추가';
+
+  @override
+  String get cntOptionName => '항목 이름';
+
+  @override
+  String get cntMaxEach => '항목당 최대 수량 (비우면 제한 없음)';
+
+  @override
+  String get cntDiscount => '두 개 이상 할인 (%)';
+
+  @override
+  String get cntPreview => '미리보기 (수량을 골라 보세요)';
+
+  @override
+  String cntPreviewTotal(String price, String time) {
+    return '합계 $price · 약 $time';
+  }
+
+  @override
+  String cntPreviewDiscount(String amount) {
+    return '할인 −$amount';
+  }
+
+  @override
+  String get cntMoveUp => '위로 옮기기';
+
+  @override
+  String get cntMoveDown => '아래로 옮기기';
+
+  @override
+  String get cntRemove => '항목 삭제';
+
+  @override
+  String get cntLess => '하나 줄이기';
+
+  @override
+  String get cntMore => '하나 더하기';
+
+  @override
+  String get cntNeedOption => '항목을 하나 이상 넣어 주세요';
+
+  @override
+  String get cntNeedName => '모든 항목에 이름을 적어 주세요';
+
+  @override
+  String get cntNeedPrice => '모든 항목의 가격과 시간을 0보다 크게 적어 주세요';
+
+  @override
+  String get cntMaxEachInvalid => '최대 수량은 1~20 사이로 적어 주세요';
+
+  @override
+  String get cntDiscountInvalid => '할인은 0~50% 사이로 적어 주세요';
+
+  @override
   String get cgTabPeak => '피크 요금';
 
   @override
@@ -579,6 +641,112 @@ class TKo extends T {
 
   @override
   String get cgCodeWrong => '코드가 맞지 않아요. 새 코드를 입력하세요';
+
+  @override
+  String get cgTabGroups => '상품 묶음';
+
+  @override
+  String get cgGroupsHelp => '앱 첫 화면의 큰 메뉴 4개예요. 제목, 순서, 들어가는 상품을 여기서 바꿀 수 있어요';
+
+  @override
+  String get cgGroupTitleKo => '제목 (한국어)';
+
+  @override
+  String get cgGroupTitleEn => '제목 (영어)';
+
+  @override
+  String get cgGroupOrder => '순서 (작은 숫자가 먼저)';
+
+  @override
+  String get cgGroupIcon => '그림';
+
+  @override
+  String get cgGroupChooser => '눌렀을 때';
+
+  @override
+  String get cgChooserMove => '이사 질문 먼저';
+
+  @override
+  String get cgChooserList => '상품 고르기';
+
+  @override
+  String get cgChooserDirect => '상품 바로 열기';
+
+  @override
+  String get cgChooserMoveHelp => '새 집인지 오래된 집인지 묻고, 집 크기를 물어요';
+
+  @override
+  String get cgChooserListHelp => '들어가 있는 상품 목록을 보여줘요';
+
+  @override
+  String get cgChooserDirectHelp => '상품이 하나뿐일 때 바로 그 상품 화면으로 가요';
+
+  @override
+  String get cgGroupMembers => '들어가는 상품 (누른 순서대로 보여요)';
+
+  @override
+  String get cgGroupMembersHelp => '다른 묶음에 있는 상품은 먼저 그 묶음에서 빼야 해요';
+
+  @override
+  String cgMemberOtherGroup(String group) {
+    return '다른 묶음: $group';
+  }
+
+  @override
+  String get cgMoveNewService => '새 집(신축)일 때 상품';
+
+  @override
+  String get cgMoveOldService => '오래된 집(구축)일 때 상품';
+
+  @override
+  String get cgMoveHomeTypes => '집 크기 선택지';
+
+  @override
+  String get cgHomeOneTwo => '원룸·투룸';
+
+  @override
+  String get cgHomeApartment => '아파트';
+
+  @override
+  String get cgHomeVilla => '빌라·주택';
+
+  @override
+  String cgGroupRowInfo(String chooser, String count) {
+    return '$chooser · 상품 $count개';
+  }
+
+  @override
+  String get cgGroupHidden => '숨김';
+
+  @override
+  String get cgGroupShown => '앱에 보임';
+
+  @override
+  String get cgGroupSaved => '묶음을 저장했어요';
+
+  @override
+  String get cgGroupErrTitle => '제목은 1~40자로 적어 주세요';
+
+  @override
+  String get cgGroupErrOrder => '순서는 0~99 사이로 적어 주세요';
+
+  @override
+  String get cgGroupErrMembers => '상품을 하나 이상 골라 주세요';
+
+  @override
+  String get cgGroupErrDirect => '바로 열기는 상품을 하나만 골라 주세요';
+
+  @override
+  String get cgGroupErrMove => '새 집과 오래된 집 상품, 집 크기 선택지를 골라 주세요';
+
+  @override
+  String get cgGroupErrOtherGroup => '상품이 다른 묶음에 들어 있어요. 그 묶음에서 먼저 빼 주세요';
+
+  @override
+  String get cgGroupErrIcon => '그림을 다시 골라 주세요';
+
+  @override
+  String get cgGroupErrUnknown => '저장하지 못했어요. 다시 확인해 주세요';
 
   @override
   String get cTitle => '운영 콘솔';

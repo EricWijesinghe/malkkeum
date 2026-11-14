@@ -919,6 +919,120 @@ abstract class T {
   /// **'호스팅 서비스 제공자'**
   String get cSetupHostingProvider;
 
+  /// No description provided for @cntTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수량 선택 가격'**
+  String get cntTitle;
+
+  /// No description provided for @cntHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'고객이 항목마다 수량을 골라요. 두 개 이상 고르면 할인이 적용돼요. 가격은 예시이니 자유롭게 바꿀 수 있어요'**
+  String get cntHelp;
+
+  /// No description provided for @cntAddOption.
+  ///
+  /// In ko, this message translates to:
+  /// **'항목 추가'**
+  String get cntAddOption;
+
+  /// No description provided for @cntOptionName.
+  ///
+  /// In ko, this message translates to:
+  /// **'항목 이름'**
+  String get cntOptionName;
+
+  /// No description provided for @cntMaxEach.
+  ///
+  /// In ko, this message translates to:
+  /// **'항목당 최대 수량 (비우면 제한 없음)'**
+  String get cntMaxEach;
+
+  /// No description provided for @cntDiscount.
+  ///
+  /// In ko, this message translates to:
+  /// **'두 개 이상 할인 (%)'**
+  String get cntDiscount;
+
+  /// No description provided for @cntPreview.
+  ///
+  /// In ko, this message translates to:
+  /// **'미리보기 (수량을 골라 보세요)'**
+  String get cntPreview;
+
+  /// No description provided for @cntPreviewTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'합계 {price} · 약 {time}'**
+  String cntPreviewTotal(String price, String time);
+
+  /// No description provided for @cntPreviewDiscount.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인 −{amount}'**
+  String cntPreviewDiscount(String amount);
+
+  /// No description provided for @cntMoveUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'위로 옮기기'**
+  String get cntMoveUp;
+
+  /// No description provided for @cntMoveDown.
+  ///
+  /// In ko, this message translates to:
+  /// **'아래로 옮기기'**
+  String get cntMoveDown;
+
+  /// No description provided for @cntRemove.
+  ///
+  /// In ko, this message translates to:
+  /// **'항목 삭제'**
+  String get cntRemove;
+
+  /// No description provided for @cntLess.
+  ///
+  /// In ko, this message translates to:
+  /// **'하나 줄이기'**
+  String get cntLess;
+
+  /// No description provided for @cntMore.
+  ///
+  /// In ko, this message translates to:
+  /// **'하나 더하기'**
+  String get cntMore;
+
+  /// No description provided for @cntNeedOption.
+  ///
+  /// In ko, this message translates to:
+  /// **'항목을 하나 이상 넣어 주세요'**
+  String get cntNeedOption;
+
+  /// No description provided for @cntNeedName.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 항목에 이름을 적어 주세요'**
+  String get cntNeedName;
+
+  /// No description provided for @cntNeedPrice.
+  ///
+  /// In ko, this message translates to:
+  /// **'모든 항목의 가격과 시간을 0보다 크게 적어 주세요'**
+  String get cntNeedPrice;
+
+  /// No description provided for @cntMaxEachInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'최대 수량은 1~20 사이로 적어 주세요'**
+  String get cntMaxEachInvalid;
+
+  /// No description provided for @cntDiscountInvalid.
+  ///
+  /// In ko, this message translates to:
+  /// **'할인은 0~50% 사이로 적어 주세요'**
+  String get cntDiscountInvalid;
+
   /// No description provided for @cgTabPeak.
   ///
   /// In ko, this message translates to:
@@ -1218,6 +1332,210 @@ abstract class T {
   /// In ko, this message translates to:
   /// **'코드가 맞지 않아요. 새 코드를 입력하세요'**
   String get cgCodeWrong;
+
+  /// No description provided for @cgTabGroups.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 묶음'**
+  String get cgTabGroups;
+
+  /// No description provided for @cgGroupsHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 첫 화면의 큰 메뉴 4개예요. 제목, 순서, 들어가는 상품을 여기서 바꿀 수 있어요'**
+  String get cgGroupsHelp;
+
+  /// No description provided for @cgGroupTitleKo.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목 (한국어)'**
+  String get cgGroupTitleKo;
+
+  /// No description provided for @cgGroupTitleEn.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목 (영어)'**
+  String get cgGroupTitleEn;
+
+  /// No description provided for @cgGroupOrder.
+  ///
+  /// In ko, this message translates to:
+  /// **'순서 (작은 숫자가 먼저)'**
+  String get cgGroupOrder;
+
+  /// No description provided for @cgGroupIcon.
+  ///
+  /// In ko, this message translates to:
+  /// **'그림'**
+  String get cgGroupIcon;
+
+  /// No description provided for @cgGroupChooser.
+  ///
+  /// In ko, this message translates to:
+  /// **'눌렀을 때'**
+  String get cgGroupChooser;
+
+  /// No description provided for @cgChooserMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'이사 질문 먼저'**
+  String get cgChooserMove;
+
+  /// No description provided for @cgChooserList.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 고르기'**
+  String get cgChooserList;
+
+  /// No description provided for @cgChooserDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품 바로 열기'**
+  String get cgChooserDirect;
+
+  /// No description provided for @cgChooserMoveHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 집인지 오래된 집인지 묻고, 집 크기를 물어요'**
+  String get cgChooserMoveHelp;
+
+  /// No description provided for @cgChooserListHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'들어가 있는 상품 목록을 보여줘요'**
+  String get cgChooserListHelp;
+
+  /// No description provided for @cgChooserDirectHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품이 하나뿐일 때 바로 그 상품 화면으로 가요'**
+  String get cgChooserDirectHelp;
+
+  /// No description provided for @cgGroupMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'들어가는 상품 (누른 순서대로 보여요)'**
+  String get cgGroupMembers;
+
+  /// No description provided for @cgGroupMembersHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'다른 묶음에 있는 상품은 먼저 그 묶음에서 빼야 해요'**
+  String get cgGroupMembersHelp;
+
+  /// No description provided for @cgMemberOtherGroup.
+  ///
+  /// In ko, this message translates to:
+  /// **'다른 묶음: {group}'**
+  String cgMemberOtherGroup(String group);
+
+  /// No description provided for @cgMoveNewService.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 집(신축)일 때 상품'**
+  String get cgMoveNewService;
+
+  /// No description provided for @cgMoveOldService.
+  ///
+  /// In ko, this message translates to:
+  /// **'오래된 집(구축)일 때 상품'**
+  String get cgMoveOldService;
+
+  /// No description provided for @cgMoveHomeTypes.
+  ///
+  /// In ko, this message translates to:
+  /// **'집 크기 선택지'**
+  String get cgMoveHomeTypes;
+
+  /// No description provided for @cgHomeOneTwo.
+  ///
+  /// In ko, this message translates to:
+  /// **'원룸·투룸'**
+  String get cgHomeOneTwo;
+
+  /// No description provided for @cgHomeApartment.
+  ///
+  /// In ko, this message translates to:
+  /// **'아파트'**
+  String get cgHomeApartment;
+
+  /// No description provided for @cgHomeVilla.
+  ///
+  /// In ko, this message translates to:
+  /// **'빌라·주택'**
+  String get cgHomeVilla;
+
+  /// No description provided for @cgGroupRowInfo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{chooser} · 상품 {count}개'**
+  String cgGroupRowInfo(String chooser, String count);
+
+  /// No description provided for @cgGroupHidden.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨김'**
+  String get cgGroupHidden;
+
+  /// No description provided for @cgGroupShown.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱에 보임'**
+  String get cgGroupShown;
+
+  /// No description provided for @cgGroupSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'묶음을 저장했어요'**
+  String get cgGroupSaved;
+
+  /// No description provided for @cgGroupErrTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목은 1~40자로 적어 주세요'**
+  String get cgGroupErrTitle;
+
+  /// No description provided for @cgGroupErrOrder.
+  ///
+  /// In ko, this message translates to:
+  /// **'순서는 0~99 사이로 적어 주세요'**
+  String get cgGroupErrOrder;
+
+  /// No description provided for @cgGroupErrMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품을 하나 이상 골라 주세요'**
+  String get cgGroupErrMembers;
+
+  /// No description provided for @cgGroupErrDirect.
+  ///
+  /// In ko, this message translates to:
+  /// **'바로 열기는 상품을 하나만 골라 주세요'**
+  String get cgGroupErrDirect;
+
+  /// No description provided for @cgGroupErrMove.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 집과 오래된 집 상품, 집 크기 선택지를 골라 주세요'**
+  String get cgGroupErrMove;
+
+  /// No description provided for @cgGroupErrOtherGroup.
+  ///
+  /// In ko, this message translates to:
+  /// **'상품이 다른 묶음에 들어 있어요. 그 묶음에서 먼저 빼 주세요'**
+  String get cgGroupErrOtherGroup;
+
+  /// No description provided for @cgGroupErrIcon.
+  ///
+  /// In ko, this message translates to:
+  /// **'그림을 다시 골라 주세요'**
+  String get cgGroupErrIcon;
+
+  /// No description provided for @cgGroupErrUnknown.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하지 못했어요. 다시 확인해 주세요'**
+  String get cgGroupErrUnknown;
 
   /// No description provided for @cTitle.
   ///

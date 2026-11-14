@@ -443,6 +443,69 @@ class TEn extends T {
   String get cSetupHostingProvider => 'Hosting provider';
 
   @override
+  String get cntTitle => 'Counted pricing';
+
+  @override
+  String get cntHelp =>
+      'Customers pick a count for each option. Two or more items get the discount. Prices are examples you can change';
+
+  @override
+  String get cntAddOption => 'Add option';
+
+  @override
+  String get cntOptionName => 'Option name';
+
+  @override
+  String get cntMaxEach => 'Max per option (empty = no limit)';
+
+  @override
+  String get cntDiscount => 'Discount for two or more (%)';
+
+  @override
+  String get cntPreview => 'Preview (pick counts)';
+
+  @override
+  String cntPreviewTotal(String price, String time) {
+    return 'Total $price · about $time';
+  }
+
+  @override
+  String cntPreviewDiscount(String amount) {
+    return 'Discount −$amount';
+  }
+
+  @override
+  String get cntMoveUp => 'Move up';
+
+  @override
+  String get cntMoveDown => 'Move down';
+
+  @override
+  String get cntRemove => 'Remove option';
+
+  @override
+  String get cntLess => 'One less';
+
+  @override
+  String get cntMore => 'One more';
+
+  @override
+  String get cntNeedOption => 'Add at least one option';
+
+  @override
+  String get cntNeedName => 'Enter a name for every option';
+
+  @override
+  String get cntNeedPrice =>
+      'Enter a price and time above zero for every option';
+
+  @override
+  String get cntMaxEachInvalid => 'Max per option must be 1 to 20';
+
+  @override
+  String get cntDiscountInvalid => 'Discount must be 0 to 50%';
+
+  @override
   String get cgTabPeak => 'Peak surcharges';
 
   @override
@@ -597,6 +660,119 @@ class TEn extends T {
   @override
   String get cgCodeWrong =>
       'The code is wrong or already used. Enter the current code';
+
+  @override
+  String get cgTabGroups => 'Service groups';
+
+  @override
+  String get cgGroupsHelp =>
+      'The four big tiles on the app\'s home screen. Change titles, order and member services here';
+
+  @override
+  String get cgGroupTitleKo => 'Title (Korean)';
+
+  @override
+  String get cgGroupTitleEn => 'Title (English)';
+
+  @override
+  String get cgGroupOrder => 'Order (smaller comes first)';
+
+  @override
+  String get cgGroupIcon => 'Picture';
+
+  @override
+  String get cgGroupChooser => 'When tapped';
+
+  @override
+  String get cgChooserMove => 'Move questions first';
+
+  @override
+  String get cgChooserList => 'Pick a service';
+
+  @override
+  String get cgChooserDirect => 'Open the service directly';
+
+  @override
+  String get cgChooserMoveHelp =>
+      'Asks whether the home is new or old, then the home size';
+
+  @override
+  String get cgChooserListHelp => 'Shows the member services as a list';
+
+  @override
+  String get cgChooserDirectHelp =>
+      'With one service, goes straight to its screen';
+
+  @override
+  String get cgGroupMembers => 'Member services (shown in this order)';
+
+  @override
+  String get cgGroupMembersHelp =>
+      'A service in another group must be removed from that group first';
+
+  @override
+  String cgMemberOtherGroup(String group) {
+    return 'In another group: $group';
+  }
+
+  @override
+  String get cgMoveNewService => 'Service for a new home';
+
+  @override
+  String get cgMoveOldService => 'Service for an older home';
+
+  @override
+  String get cgMoveHomeTypes => 'Home size choices';
+
+  @override
+  String get cgHomeOneTwo => 'Studio or two-room';
+
+  @override
+  String get cgHomeApartment => 'Apartment';
+
+  @override
+  String get cgHomeVilla => 'Villa or house';
+
+  @override
+  String cgGroupRowInfo(String chooser, String count) {
+    return '$chooser · $count services';
+  }
+
+  @override
+  String get cgGroupHidden => 'Hidden';
+
+  @override
+  String get cgGroupShown => 'Shown in app';
+
+  @override
+  String get cgGroupSaved => 'Group saved';
+
+  @override
+  String get cgGroupErrTitle => 'Titles must be 1 to 40 characters';
+
+  @override
+  String get cgGroupErrOrder => 'Order must be 0 to 99';
+
+  @override
+  String get cgGroupErrMembers => 'Pick at least one service';
+
+  @override
+  String get cgGroupErrDirect => 'Open directly needs exactly one service';
+
+  @override
+  String get cgGroupErrMove =>
+      'Pick the new-home and older-home services and at least one home size';
+
+  @override
+  String get cgGroupErrOtherGroup =>
+      'A service is already in another group. Remove it there first';
+
+  @override
+  String get cgGroupErrIcon => 'Pick the picture again';
+
+  @override
+  String get cgGroupErrUnknown =>
+      'Could not save. Check the details and try again';
 
   @override
   String get cTitle => 'Operations console';

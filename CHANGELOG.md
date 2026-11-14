@@ -24,6 +24,9 @@ from the release branches; no tags existed for them.
 - Console catalogue: add a new service (code, name, fixed price or quote), archive one by switching it off, edit peak-hour surcharges and quality thresholds, edit a subscription's cadence, day and start time, and load or remove sample data (removal needs the owner's authenticator code).
 - Customer app: guests see how a booking works on the Bookings tab and the FAQ and terms on the Chat tab (chat still asks for sign-in). The welcome offer and the referral amount show before sign-in, and a quote in progress is kept on the device across restarts.
 - Public `GET /v1/public/offers`: welcome offer, sign-up coupons and referral amount for guests, cacheable for 5 minutes, no user data.
+- Console home tiles (상품 묶음): the four home groups (titles in Korean and English, order, picture, shown or hidden, member services, and the move-chooser questions) are edited in the catalogue under a new tab, stored in `service_groups` (migrations 0224 and 0225) and served at `GET /v1/service-groups`.
+- Console catalogue: counted-pricing services (수량 선택) are edited as options with name, minutes and price, add, remove and reorder, a per-option maximum, a two-or-more discount, and a live price preview.
+- Console sidebar: each entry shows its own icon (the icons had shifted by one row).
 
 ### Changed
 - Staff invites and password resets now use a one-time 6-digit code sent by SMS (or copied by the admin), valid 24 hours, single use, locked after five wrong tries; consultants can invite consultants only.

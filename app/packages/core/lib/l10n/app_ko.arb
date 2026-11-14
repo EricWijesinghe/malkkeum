@@ -168,6 +168,42 @@
  "bizInfoTitle": "사업자 정보",
  "bizInfoVerify": "사업자정보확인",
  "cSetupHostingProvider": "호스팅 서비스 제공자",
+ "cntTitle": "수량 선택 가격",
+ "cntHelp": "고객이 항목마다 수량을 골라요. 두 개 이상 고르면 할인이 적용돼요. 가격은 예시이니 자유롭게 바꿀 수 있어요",
+ "cntAddOption": "항목 추가",
+ "cntOptionName": "항목 이름",
+ "cntMaxEach": "항목당 최대 수량 (비우면 제한 없음)",
+ "cntDiscount": "두 개 이상 할인 (%)",
+ "cntPreview": "미리보기 (수량을 골라 보세요)",
+ "cntPreviewTotal": "합계 {price} · 약 {time}",
+ "@cntPreviewTotal": {
+  "placeholders": {
+   "price": {
+    "type": "String"
+   },
+   "time": {
+    "type": "String"
+   }
+  }
+ },
+ "cntPreviewDiscount": "할인 −{amount}",
+ "@cntPreviewDiscount": {
+  "placeholders": {
+   "amount": {
+    "type": "String"
+   }
+  }
+ },
+ "cntMoveUp": "위로 옮기기",
+ "cntMoveDown": "아래로 옮기기",
+ "cntRemove": "항목 삭제",
+ "cntLess": "하나 줄이기",
+ "cntMore": "하나 더하기",
+ "cntNeedOption": "항목을 하나 이상 넣어 주세요",
+ "cntNeedName": "모든 항목에 이름을 적어 주세요",
+ "cntNeedPrice": "모든 항목의 가격과 시간을 0보다 크게 적어 주세요",
+ "cntMaxEachInvalid": "최대 수량은 1~20 사이로 적어 주세요",
+ "cntDiscountInvalid": "할인은 0~50% 사이로 적어 주세요",
  "cgTabPeak": "피크 요금",
  "cgTabQuality": "품질 기준",
  "cgTabDemo": "샘플 데이터",
@@ -218,6 +254,57 @@
  "cgDemoRealData": "실제 예약이 있어서 샘플 데이터를 넣을 수 없어요",
  "cgDemoAlready": "샘플 데이터가 이미 들어 있어요",
  "cgCodeWrong": "코드가 맞지 않아요. 새 코드를 입력하세요",
+ "cgTabGroups": "상품 묶음",
+ "cgGroupsHelp": "앱 첫 화면의 큰 메뉴 4개예요. 제목, 순서, 들어가는 상품을 여기서 바꿀 수 있어요",
+ "cgGroupTitleKo": "제목 (한국어)",
+ "cgGroupTitleEn": "제목 (영어)",
+ "cgGroupOrder": "순서 (작은 숫자가 먼저)",
+ "cgGroupIcon": "그림",
+ "cgGroupChooser": "눌렀을 때",
+ "cgChooserMove": "이사 질문 먼저",
+ "cgChooserList": "상품 고르기",
+ "cgChooserDirect": "상품 바로 열기",
+ "cgChooserMoveHelp": "새 집인지 오래된 집인지 묻고, 집 크기를 물어요",
+ "cgChooserListHelp": "들어가 있는 상품 목록을 보여줘요",
+ "cgChooserDirectHelp": "상품이 하나뿐일 때 바로 그 상품 화면으로 가요",
+ "cgGroupMembers": "들어가는 상품 (누른 순서대로 보여요)",
+ "cgGroupMembersHelp": "다른 묶음에 있는 상품은 먼저 그 묶음에서 빼야 해요",
+ "cgMemberOtherGroup": "다른 묶음: {group}",
+ "@cgMemberOtherGroup": {
+  "placeholders": {
+   "group": {
+    "type": "String"
+   }
+  }
+ },
+ "cgMoveNewService": "새 집(신축)일 때 상품",
+ "cgMoveOldService": "오래된 집(구축)일 때 상품",
+ "cgMoveHomeTypes": "집 크기 선택지",
+ "cgHomeOneTwo": "원룸·투룸",
+ "cgHomeApartment": "아파트",
+ "cgHomeVilla": "빌라·주택",
+ "cgGroupRowInfo": "{chooser} · 상품 {count}개",
+ "@cgGroupRowInfo": {
+  "placeholders": {
+   "chooser": {
+    "type": "String"
+   },
+   "count": {
+    "type": "String"
+   }
+  }
+ },
+ "cgGroupHidden": "숨김",
+ "cgGroupShown": "앱에 보임",
+ "cgGroupSaved": "묶음을 저장했어요",
+ "cgGroupErrTitle": "제목은 1~40자로 적어 주세요",
+ "cgGroupErrOrder": "순서는 0~99 사이로 적어 주세요",
+ "cgGroupErrMembers": "상품을 하나 이상 골라 주세요",
+ "cgGroupErrDirect": "바로 열기는 상품을 하나만 골라 주세요",
+ "cgGroupErrMove": "새 집과 오래된 집 상품, 집 크기 선택지를 골라 주세요",
+ "cgGroupErrOtherGroup": "상품이 다른 묶음에 들어 있어요. 그 묶음에서 먼저 빼 주세요",
+ "cgGroupErrIcon": "그림을 다시 골라 주세요",
+ "cgGroupErrUnknown": "저장하지 못했어요. 다시 확인해 주세요",
  "cTitle": "운영 콘솔",
  "cEmail": "이메일",
  "cPassword": "비밀번호",
