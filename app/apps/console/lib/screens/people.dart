@@ -619,10 +619,8 @@ class _StaffState extends State<StaffScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => inviteStaff(
-          context,
-          () async => _view.currentState?.reload(),
-        ),
+        onPressed: () =>
+            inviteStaff(context, () async => _view.currentState?.reload()),
         icon: const Icon(Icons.person_add_rounded),
         label: Text(t.cStaffInvite),
       ),
@@ -653,11 +651,8 @@ class _StaffState extends State<StaffScreen> {
                     // A pending invite cannot be switched on by hand; a fresh invite code is the way in.
                     if (s['invited'] == true)
                       TextButton(
-                        onPressed: () => issueStaffPasswordReset(
-                          context,
-                          s,
-                          invite: true,
-                        ),
+                        onPressed: () =>
+                            issueStaffPasswordReset(context, s, invite: true),
                         child: Text(t.cStaffInviteResend),
                       )
                     else
