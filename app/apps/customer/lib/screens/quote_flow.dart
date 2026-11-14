@@ -208,7 +208,7 @@ class _QuoteFlowScreenState extends State<QuoteFlowScreen> {
   Future<Json> _fetchEstimate({bool withSlot = true}) async =>
       await context.api.post('/quote/estimate', {
         ...a.toJson(),
-        if (withSlot && d.date case final day?) 'visit_date': isoDate(day),
+        if (withSlot && d.date != null) 'visit_date': isoDate(d.date!),
         if (withSlot) 'start_hour': ?d.hour,
       }) as Json;
 
