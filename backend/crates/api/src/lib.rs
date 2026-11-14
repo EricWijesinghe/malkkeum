@@ -41,9 +41,7 @@ mod realtime_heartbeat;
 pub mod realtime_ticket;
 pub mod reconciler;
 pub mod retention;
-pub mod retention;
 pub mod routes;
-pub mod safety;
 pub mod safety;
 pub mod seed;
 pub mod seo;
@@ -93,7 +91,7 @@ pub async fn serve() -> Result<(), Box<dyn std::error::Error>> {
     if moved > 0 {
         tracing::warn!(moved, "entry codes moved into encrypted storage");
     }
-    routes::setup::ensure_setup_code(&db, config.setup_code.as_deref()).await?;
+    routes::setup::ensure_setup_code(&db, config.setup_code.as_deref(), config.setup_code_at).await?;
     tokio::fs::create_dir_all(&config.upload_dir).await?;
     if config.dev_mode {
         tracing::warn!("DEV_MODE on: fake SMS, payments and push");

@@ -14,11 +14,16 @@ eq() { [ "$1" = "$2" ] || { echo "   got [$1] want [$2]"; return 1; }; }
 # sandbox layout and a fake CLI that only records its arguments and DAHAE_YES
 export DAHAE_JOBS="$SB/jobs" DAHAE_HOST_DIR="$SB/host" DAHAE_LOCK="$SB/lock" DAHAE_DIR="$SB"
 export DAHAE_CLI="$SB/dahae"
-mkdir -p "$DAHAE_JOBS/inbox" "$DAHAE_JOBS/work/done" "$DAHAE_JOBS/status" "$DAHAE_HOST_DIR"
+mkdir -p "$DAHAE_JOBS/inbox" "$DAHAE_JOBS/work/done" "$DAHAE_JOBS/status" "$DAHAE_JOBS/public" "$DAHAE_HOST_DIR"
+# fake dahae: `update` exits 3 (rolled back) once after `touch $SB/rollback-next`, or 1 after `touch $SB/fail-next`
 cat > "$DAHAE_CLI" <<EOF
 #!/usr/bin/env bash
 printf '%s YES=%s\n' "\$*" "\${DAHAE_YES:-}" >> "$SB/argv.log"
+if [ "\$1" = update ] && [ -e "$SB/rollback-next" ]; then rm -f "$SB/rollback-next"; exit 3; fi
+if [ "\$1" = update ] && [ -e "$SB/fail-next" ]; then rm -f "$SB/fail-next"; exit 1; fi
+exit 0
 EOF
+printf 'DOMAIN=myshop.co.kr\nCHANNEL=stable\nVERSION=stable\n' > "$DAHAE_DIR/.env"
 chmod +x "$DAHAE_CLI"
 export DAHAE_JOB_UID="$(id -u)" DAHAE_OWNER_UID="$(id -u)"
 # fake docker: records the working folder and argv of every compose call
@@ -167,6 +172,67 @@ id=$(uuid7); printf 'id=%s\nkind=backup-now\n' "$id" > "$DAHAE_JOBS/work/$id.job
 before=$(argv_lines); sweep_work
 t  "stale work job swept"        test ! -e "$DAHAE_JOBS/work/$id.job"
 t  "stale work job not run"      eq "$(argv_lines)" "$before"
+
+# ---- schedule kind: only HH:MM on a weekday, or off ----
+id=$(uuid7); submit "$id" "id=$id\nkind=schedule\narg=mon@04:00\n"
+t  "schedule runs update-schedule" argv_has "update-schedule mon@04:00 YES=1"
+id=$(uuid7); submit "$id" "id=$id\nkind=schedule\narg=off\n"
+t  "schedule off accepted"         argv_has "update-schedule off YES=1"
+
+# ---- outcomes of update: a reverted update is rolled_back, a failed one is failed ----
+touch "$SB/rollback-next"
+id=$(uuid7); submit "$id" "id=$id\nkind=update\n"
+t  "reverted update ends rolled_back" eq "$(state "$id")" rolled_back
+touch "$SB/fail-next"
+id=$(uuid7); submit "$id" "id=$id\nkind=update\n"
+t  "failed update ends failed"        eq "$(state "$id")" failed
+
+# ---- public progress: the token names the file, it holds the state only, and it goes 10 minutes after the end ----
+tok=0123456789abcdef0123456789abcdef
+id=$(uuid7); submit "$id" "id=$id\nkind=backup-now\ntoken=$tok\n"
+t  "progress file holds the state" grep -qx '{"state":"ok"}' "$DAHAE_JOBS/public/$tok.json"
+old=ffffffffffffffffffffffffffffffff
+printf '{"state":"ok"}\n' > "$DAHAE_JOBS/public/$old.json"; touch -d '20 minutes ago' "$DAHAE_JOBS/public/$old.json"
+printf '{"state":"ok"}\n' > "$DAHAE_JOBS/public/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json"
+prune_old
+t  "old progress file removed"  test ! -e "$DAHAE_JOBS/public/$old.json"
+t  "fresh progress file kept"   test -e "$DAHAE_JOBS/public/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json"
+
+# ---- a job that was running when the server stopped is failed on the next start ----
+id=$(uuid7); printf '{"id":"%s","kind":"backup-now","state":"running"}\n' "$id" > "$DAHAE_JOBS/status/$id.json"
+recover_interrupted
+t  "interrupted job marked failed" eq "$(state "$id")" failed
+t  "interrupted job logged"        grep -q '중단됨' "$DAHAE_JOBS/status/$id.log"
+
+# ---- old step logs are pruned after 30 days ----
+id=$(uuid7); printf '▶ old\n' > "$DAHAE_JOBS/status/$id.log"; touch -d '40 days ago' "$DAHAE_JOBS/status/$id.log"
+prune_old
+t  "40-day-old step log removed" test ! -e "$DAHAE_JOBS/status/$id.log"
+
+# ---- host.json: channel, version, required CLI revision, next automatic update ----
+host_refresh
+t  "host.json has channel"        grep -q '"channel":"stable"' "$DAHAE_HOST_DIR/host.json"
+t  "host.json has min_cli"        grep -q '"min_cli":2' "$DAHAE_HOST_DIR/host.json"
+t  "host.json next update set"    grep -q '"next_update":"20' "$DAHAE_HOST_DIR/host.json"
+echo off > "$DAHAE_DIR/update-schedule"; host_refresh
+t  "host.json next update null when off" grep -q '"next_update":null' "$DAHAE_HOST_DIR/host.json"
+rm -f "$DAHAE_DIR/update-schedule"
+
+# ---- shared fixtures (deploy/testdata/jobs/cases.txt): the same files the installer and the Rust tests read ----
+FIX="$ROOT/deploy/testdata/jobs"
+while read -r file want rest <&3; do
+  case "$file" in ''|\#*) continue ;; esac
+  id=$(uuid7); old=$(uuid7 $(( $(now_ms) - 960000 ))); fut=$(uuid7 $(( $(now_ms) + 60000 )))
+  case "$(cat "$FIX/$file")" in *@OLD@*) name=$old ;; *@FUTURE@*) name=$fut ;; *) name=$id ;; esac
+  sed -e "s/@ID@/$id/g" -e "s/@OLD@/$old/g" -e "s/@FUTURE@/$fut/g" "$FIX/$file" > "$DAHAE_JOBS/inbox/$name.job"
+  before=$(argv_lines); intake_all
+  if [ "$want" = refuse ]; then
+    t  "fixture $file refused"  eq "$(argv_lines)" "$before"
+    t  "fixture $file rejected" eq "$(state "$name")" rejected
+  else
+    t  "fixture $file runs: $rest" eq "$(tail -n1 "$SB/argv.log")" "$rest"
+  fi
+done 3< "$FIX/cases.txt"
 
 echo "agent self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

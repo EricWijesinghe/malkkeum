@@ -24,6 +24,8 @@ pub struct Config {
     pub seed_admin: Option<(String, String)>,
     /// One-time code for creating the owner account in the console (installer sets it; random otherwise).
     pub setup_code: Option<String>,
+    /// Unix seconds when the installer issued `setup_code`; the code expires two hours later.
+    pub setup_code_at: Option<i64>,
     /// Kakao REST app id: a Kakao token is only accepted if it was issued to this app.
     pub kakao_app_id: Option<String>,
     /// Kakao Admin key (`KAKAO_ADMIN_KEY`): unlinks the Kakao account when the user deletes theirs. None: no unlink.
@@ -170,6 +172,12 @@ where
     Ok(value)
 }
 
+fn setup_code_at() -> Result<Option<i64>, ConfigError> {
+    opt("SETUP_CODE_AT")
+        .map(|v| v.parse().map_err(|_| ConfigError::Invalid("SETUP_CODE_AT", format!("not a number: {v}"))))
+        .transpose()
+}
+
 /// Scrape token for `/metrics`. Short tokens are refused so a typo cannot open the endpoint to guessing.
 fn metrics_token() -> Result<Option<String>, ConfigError> {
     match opt("METRICS_TOKEN") {
@@ -312,6 +320,7 @@ impl Config {
                 .unwrap_or_default(),
             seed_admin,
             setup_code: opt("SETUP_CODE").map(|c| c.to_uppercase().replace(['-', ' '], "")),
+            setup_code_at: setup_code_at()?,
             kakao_app_id: opt("KAKAO_APP_ID"),
             kakao_admin_key: opt("KAKAO_ADMIN_KEY"),
             google_client_ids: list("GOOGLE_CLIENT_IDS"),
