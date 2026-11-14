@@ -35,7 +35,7 @@ void _cursorList(FakeApi fake, String path, Json Function(String id) row, {requi
 FakeApi _walletApi({bool hasNext = true}) {
   final fake = FakeApi();
   // First match wins: the paged routes go before the stock ones.
-  _cursorList(fake, '/me/points/ledger', (id) => _entry(id), firstId: 'e1', secondId: 'e2', hasNext: hasNext);
+  _cursorList(fake, '/me/points/ledger', (id) => _entry(id, amount: id == 'e2' ? 50 : 100), firstId: 'e1', secondId: 'e2', hasNext: hasNext);
   fake.reply('GET', '/me/points', {'balance': 1200, 'enabled': true, 'expiring_soon': 0, 'notify_days': 30});
   stockCustomerApi(fake);
   return fake;
@@ -49,6 +49,7 @@ void main() {
     await settle(tester);
 
     expect(find.text('+100 P'), findsOneWidget, reason: 'page 1');
+    expect(find.text('+50 P'), findsOneWidget, reason: 'page 2 loaded');
     expect(find.text('-100 P'), findsNothing);
     expect(fake.callsTo('GET', '/me/points/ledger'), hasLength(2));
     expect(fake.lastCall('GET', '/me/points/ledger')!.query['cursor'], '2');

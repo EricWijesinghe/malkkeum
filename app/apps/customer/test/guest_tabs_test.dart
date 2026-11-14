@@ -32,7 +32,7 @@ void main() {
       await tester.tap(find.text(koT.guestFirstQuoteCta));
       await settle(tester);
       expect(find.text(koT.guestSheetTitle), findsNothing);
-      expect(find.text(koT.dhHomeRecommended), findsOneWidget);
+      expect(find.text(koT.dhHomeAll), findsOneWidget, reason: 'home opened');
       await unmount(tester);
     });
 

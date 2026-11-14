@@ -147,7 +147,6 @@ class ApiClient {
   }) => _exec(path, () {
     final req = http.Request(method, _uri(path, query))
       ..headers['Content-Type'] = 'application/json';
-    if (headers != null) req.headers.addAll(headers);
     if (idempotencyKey != null) req.headers['Idempotency-Key'] = idempotencyKey;
     if (headers != null) req.headers.addAll(headers);
     if (body != null) req.body = jsonEncode(body);
