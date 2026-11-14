@@ -14,7 +14,11 @@ use axum::{
     routing::{get, post, put},
 };
 use chrono::{DateTime, Duration, Utc};
-use domain::{catalog::Pricing, coupon::COUPON_LIFETIME_DAYS, quote::QuoteFormula};
+use domain::{
+    catalog::{MAX_COUNT, Pricing, UnitOption},
+    coupon::COUPON_LIFETIME_DAYS,
+    quote::QuoteFormula,
+};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
@@ -77,10 +81,19 @@ struct ServiceUpdate {
 fn valid_service(pricing: &Pricing, content: &Value) -> bool {
     let valid_prices = match pricing {
         Pricing::Fixed { price, minutes } => price.0 > 0 && *minutes > 0,
-        Pricing::Unit { units } => !units.is_empty() && units.iter().all(|x| x.price.0 > 0 && x.minutes > 0),
+        Pricing::Unit { units } => valid_units(units),
+        Pricing::Counts {
+            units,
+            max_each,
+            multi_discount_bps,
+        } => valid_units(units) && max_each.is_none_or(|m| (1..=MAX_COUNT).contains(&m)) && (0..=10_000).contains(multi_discount_bps),
         Pricing::Quote => true,
     };
     valid_prices && content.is_object()
+}
+
+fn valid_units(units: &[UnitOption]) -> bool {
+    !units.is_empty() && units.iter().all(|x| x.price.0 > 0 && x.minutes > 0)
 }
 
 /// Lowercase ASCII, starts with a letter, 2 to 40 characters: the code is the key bookings and prices refer to.

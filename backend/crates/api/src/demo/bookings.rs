@@ -119,7 +119,7 @@ async fn one(
     let created = created_at(c, visit, past, world.customers[ci].created);
     let start_hour = *c.pick(&START_HOURS);
     let unit = match &svc.pricing {
-        Pricing::Unit { units } => Some(c.range(0, units.len() as i64 - 1) as usize),
+        Pricing::Unit { units } | Pricing::Counts { units, .. } => Some(c.range(0, units.len() as i64 - 1) as usize),
         _ => None,
     };
     let answers = is_quote.then(|| quote_answers(c, svc.code.as_str(), addr.size));

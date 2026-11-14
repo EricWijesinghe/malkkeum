@@ -199,7 +199,7 @@
         "tags": [
           "public"
         ],
-        "summary": "Price estimate for a service and size",
+        "summary": "Price estimate for a service and size. Optional `service_code`: whole_home always prices as a lived-in deep clean with fully lived-in luggage.",
         "security": [],
         "requestBody": {
           "$ref": "#/components/requestBodies/Object"
@@ -1102,7 +1102,7 @@
         "tags": [
           "customer"
         ],
-        "summary": "Create a booking (idempotent)",
+        "summary": "Create a booking (idempotent). Counts services take `counts`: one integer per option in catalogue order (see CountsPricing); the booking returns `unit_counts`. Older clients may send `unit_index` instead.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -5901,6 +5901,60 @@
               }
             }
           }
+        }
+      }
+    },
+    "CountsPricing": {
+      "description": "Counts pricing (catalogue type \"counts\"). A booking sends `counts`: one integer per option, in catalogue order, each at most `max_each` (default 20). Two or more items take `multi_discount_bps` off, rounded to 100 won. Minutes total at least 60. Prices are placeholders until the owner sets them in the console.",
+      "type": "object",
+      "required": [
+        "type",
+        "units"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "counts"
+          ]
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "label_key",
+              "minutes",
+              "price"
+            ],
+            "properties": {
+              "label_key": {
+                "type": "string"
+              },
+              "minutes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "price": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "max_each": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 20
+        },
+        "multi_discount_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
         }
       }
     },

@@ -125,7 +125,7 @@ pub fn krw(n: i64) -> String {
 pub fn price_range(p: &Pricing) -> Option<(i64, i64)> {
     match p {
         Pricing::Fixed { price, .. } => Some((price.0, price.0)),
-        Pricing::Unit { units } => {
+        Pricing::Unit { units } | Pricing::Counts { units, .. } => {
             let lo = units.iter().map(|u| u.price.0).min()?;
             let hi = units.iter().map(|u| u.price.0).max()?;
             Some((lo, hi))
@@ -739,6 +739,16 @@ mod tests {
         assert_eq!(price_range(&unit), Some((59_000, 99_000)));
         assert_eq!(price_range(&Pricing::Quote), None);
         assert_eq!(price_range(&Pricing::Unit { units: vec![] }), None);
+        let counts = Pricing::Counts {
+            units: vec![UnitOption {
+                label_key: "window_small".into(),
+                minutes: 15,
+                price: Won(9_000),
+            }],
+            max_each: None,
+            multi_discount_bps: 0,
+        };
+        assert_eq!(price_range(&counts), Some((9_000, 9_000)));
     }
 
     #[test]

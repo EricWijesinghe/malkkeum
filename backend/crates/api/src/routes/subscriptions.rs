@@ -23,7 +23,7 @@ use axum::{
 };
 use chrono::{DateTime, Duration, NaiveDate, Utc};
 use domain::{
-    pricing::price_booking,
+    pricing::{price_booking, price_booking_with},
     schedule::{check_capacity, check_date, check_slot},
     subscription::{Cadence, Policy, active_days, churn_bps, first_visit, monthly_equivalent, prorate, visit_price, weekday_from_index},
 };
@@ -194,6 +194,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
     let body = BookingBody {
         service_code: req.service_code.clone(),
         unit_index: req.unit_index,
+        counts: Vec::new(),
         address_id: req.address_id,
         visit_date: first,
         start_hour: req.start_hour,
@@ -610,13 +611,14 @@ pub async fn recurring_metrics(db: &PgPool, from: NaiveDate, to: NaiveDate) -> A
         status: String,
         service_code: String,
         unit_index: Option<i16>,
+        unit_counts: Option<Vec<i16>>,
         cadence_weeks: i16,
         discount_percent: i16,
         started: NaiveDate,
         ended: Option<NaiveDate>,
     }
     let rows: Vec<Row> = sqlx::query_as(
-        "SELECT s.status, s.service_code, s.unit_index, s.cadence_weeks, s.discount_percent,
+        "SELECT s.status, s.service_code, s.unit_index, s.unit_counts, s.cadence_weeks, s.discount_percent,
            (s.created_at AT TIME ZONE 'Asia/Seoul')::date AS started,
            (s.cancelled_at AT TIME ZONE 'Asia/Seoul')::date AS ended
          FROM subscriptions s
@@ -630,7 +632,8 @@ pub async fn recurring_metrics(db: &PgPool, from: NaiveDate, to: NaiveDate) -> A
     let (mut active, mut at_start, mut started_in, mut cancelled_in) = (0u32, 0u32, 0u32, 0u32);
     for r in &rows {
         let service = load_service(db, &r.service_code).await?;
-        let (list, _) = service.list_price(r.unit_index.map(|u| u as usize))?;
+        let counts = super::booking_core::counts_from_row(r.unit_counts.clone());
+        let list = price_booking_with(&service, r.unit_index.map(|u| u as usize), &counts, None, Utc::now())?.list_price;
         let total = visit_price(list.0, u8::try_from(r.discount_percent).unwrap_or(0))?.total;
         let monthly = monthly_equivalent(total, Cadence::from_weeks(i64::from(r.cadence_weeks))?);
         recognized += prorate(monthly, active_days(r.started, r.ended, from, to), period_days);

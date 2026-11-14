@@ -5,7 +5,7 @@
 //! 4. planned visits whose day has arrived without a charge become `missed`.
 
 use super::{
-    booking_core::{BookingBody, Prepared, after_booking_created, insert_paid, lock_slot, prepare, record_payment},
+    booking_core::{BookingBody, Prepared, after_booking_created, counts_from_row, insert_paid, lock_slot, prepare, record_payment},
     partner_jobs::VISIBLE,
 };
 use crate::{
@@ -18,7 +18,7 @@ use crate::{
 use chrono::{Duration, NaiveDate, Utc};
 use domain::{
     Won,
-    pricing::{PriceBreakdown, price_booking},
+    pricing::{PriceBreakdown, price_booking_with},
     schedule::{STANDARD_SLOTS, check_capacity},
     subscription::{Cadence, HORIZON_DAYS, Retry, after_failure, visit_dates, visit_price},
 };
@@ -53,6 +53,7 @@ struct SubRow {
     user_id: Uuid,
     service_code: String,
     unit_index: Option<i16>,
+    unit_counts: Option<Vec<i16>>,
     address_id: Uuid,
     payment_method_id: Uuid,
     preferred_pro_id: Option<Uuid>,
@@ -241,7 +242,7 @@ fn settle(r: Result<String, ProviderError>) -> Settled {
 
 async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let sub: SubRow = sqlx::query_as(
-        "SELECT user_id, service_code, unit_index, address_id, payment_method_id, preferred_pro_id, discount_percent FROM subscriptions WHERE id = $1",
+        "SELECT user_id, service_code, unit_index, unit_counts, address_id, payment_method_id, preferred_pro_id, discount_percent FROM subscriptions WHERE id = $1",
     )
     .bind(d.sub_id)
     .fetch_one(&s.db)
@@ -249,6 +250,7 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let body = BookingBody {
         service_code: sub.service_code.clone(),
         unit_index: sub.unit_index.map(|u| u as usize),
+        counts: counts_from_row(sub.unit_counts.clone()),
         address_id: sub.address_id,
         visit_date: d.visit_date,
         start_hour: d.start_hour as u8,
@@ -261,7 +263,7 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
         Ok(p) => p,
         Err(e) => return blocked(e),
     };
-    let list = price_booking(&prep.service, body.unit_index, None, Utc::now())?;
+    let list = price_booking_with(&prep.service, body.unit_index, &body.counts, None, Utc::now())?;
     let vp = visit_price(list.list_price.0, u8::try_from(sub.discount_percent).unwrap_or(0))?;
     let price = PriceBreakdown {
         list_price: list.list_price,

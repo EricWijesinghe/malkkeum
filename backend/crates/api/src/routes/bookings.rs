@@ -56,7 +56,7 @@ pub fn routes() -> Router<AppState> {
 }
 
 pub const BOOKING_COLS: &str =
-    "b.id, b.number, b.user_id, b.service_code, b.unit_index, b.address, b.district_code, b.visit_date, b.start_hour, b.minutes, b.status,
+    "b.id, b.number, b.user_id, b.service_code, b.unit_index, b.unit_counts, b.address, b.district_code, b.visit_date, b.start_hour, b.minutes, b.status,
     b.answers, b.estimate, b.final_price, b.deposit, b.list_price, b.discount, b.paid_amount, b.balance_paid, b.coupon_id, b.team_name, b.pro_id,
     b.visit_notes, b.household, b.reschedule, b.cancelled_at, b.completed_at, b.created_at, b.checked_in_at, b.checked_out_at,
     (b.access_code_enc IS NOT NULL) AS entry_code_set,
@@ -71,6 +71,8 @@ pub struct BookingRow {
     pub user_id: Uuid,
     pub service_code: String,
     pub unit_index: Option<i16>,
+    /// Counts services: one count per option (catalogue order). Null for other services.
+    pub unit_counts: Option<Vec<i16>>,
     pub address: Value,
     pub district_code: String,
     pub visit_date: NaiveDate,
@@ -198,7 +200,8 @@ pub(crate) async fn create_core(s: &AppState, user: Uuid, req: &CreateBooking) -
 async fn create_quote(s: &AppState, user: Uuid, b: &BookingBody, prep: &Prepared) -> ApiResult<Uuid> {
     // Anything needing its own pool connection is read before the slot lock is taken.
     let formula = load_formula(&s.db).await?;
-    let answers = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
+    let sent = b.answers.clone().ok_or(ApiError::BadRequest("answers_required"))?;
+    let answers = domain::quote::fixed_answers_for(&prep.service.code, sent);
     let addons = super::catalog::addon_lines(&s.db, &answers).await?;
     let mut tx = s.db.begin().await?;
     // Per-customer lock first: two concurrent requests cannot both pass the open-request count.
