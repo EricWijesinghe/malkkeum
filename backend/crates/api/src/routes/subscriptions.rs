@@ -238,7 +238,7 @@ async fn create(State(s): State<AppState>, Customer(a): Customer, Json(req): Jso
     .bind(i16::from(policy.discount_percent))
     .execute(&s.db)
     .await?;
-    plan_subscription(&s.db, id).await?;
+    plan_subscription(&s, id).await?;
     audit(
         &s.db,
         "customer",
@@ -547,7 +547,7 @@ async fn admin_edit(State(s): State<AppState>, Admin(a): Admin, Path(id): Path<U
     .execute(&mut *tx)
     .await?;
     tx.commit().await?;
-    plan_subscription(&s.db, id).await?;
+    plan_subscription(&s, id).await?;
     let after = fetch(&s.db, id).await?;
     audit(
         &s.db,

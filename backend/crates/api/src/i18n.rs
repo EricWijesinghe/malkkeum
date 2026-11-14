@@ -254,6 +254,27 @@ pub const EVENTS: &[Event] = &[
         vars: &[],
     },
     Event {
+        kind: "subscription.visit_moved",
+        label: "정기 청소 시간 변경 (고객)",
+        title: "정기 청소 시간이 바뀌었어요",
+        body: "요청하신 시간이 가득 차 가까운 시간으로 옮겼어요",
+        vars: &[],
+    },
+    Event {
+        kind: "subscription.visit_unplaced",
+        label: "정기 청소 시간 미배정 (고객)",
+        title: "정기 청소 시간을 잡지 못했어요",
+        body: "고객센터로 문의해 주세요",
+        vars: &[],
+    },
+    Event {
+        kind: "subscription.capacity_full",
+        label: "정기 청소 정원 초과 (직원)",
+        title: "정기 청소 정원이 가득 찼어요",
+        body: "배정 시간을 확인해 주세요",
+        vars: &[],
+    },
+    Event {
         kind: "waitlist.offer",
         label: "빈 자리 안내 (고객)",
         title: "빈 자리가 생겼어요",

@@ -23,7 +23,7 @@ use domain::{
     subscription::{Cadence, HORIZON_DAYS, Retry, after_failure, visit_dates, visit_price},
 };
 use serde_json::{Value, json};
-use sqlx::{PgConnection, PgPool};
+use sqlx::PgConnection;
 use std::time::Duration as StdDuration;
 use tokio::task::JoinHandle;
 use uuid::Uuid;
@@ -104,7 +104,7 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
     let subs: Vec<(Uuid,)> = sqlx::query_as("SELECT id FROM subscriptions WHERE status = 'active'").fetch_all(&s.db).await?;
     let mut added = 0;
     for (sub,) in subs {
-        match plan_subscription(&s.db, sub).await {
+        match plan_subscription(s, sub).await {
             Ok(n) => added += n,
             Err(e) => tracing::warn!(error = %e, subscription = %sub, "planning a subscription failed"),
         }
@@ -113,53 +113,93 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
 }
 
 /// Plans one active subscription's visits inside the horizon. Used on create and on every pass.
-pub async fn plan_subscription(db: &PgPool, sub: Uuid) -> ApiResult<usize> {
-    let row: Option<(i16, NaiveDate, i16)> =
-        sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
+pub async fn plan_subscription(s: &AppState, sub: Uuid) -> ApiResult<usize> {
+    let row: Option<(i16, NaiveDate, i16, Uuid)> =
+        sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour, user_id FROM subscriptions WHERE id = $1 AND status = 'active'")
             .bind(sub)
-            .fetch_optional(db)
+            .fetch_optional(&s.db)
             .await?;
-    let Some((weeks, anchor, hour)) = row else {
+    let Some((weeks, anchor, hour, user)) = row else {
         return Ok(0);
     };
     let cadence = Cadence::from_weeks(i64::from(weeks))?;
     let (from, until) = (today_kst() + Duration::days(1), today_kst() + Duration::days(HORIZON_DAYS));
     let mut added = 0;
     for date in visit_dates(anchor, cadence, from, until) {
-        if plan_visit(db, sub, date, hour as u8).await? {
+        if plan_visit(s, sub, user, date, hour as u8).await? {
             added += 1;
         }
     }
     Ok(added)
 }
 
-async fn plan_visit(db: &PgPool, sub: Uuid, date: NaiveDate, preferred: u8) -> ApiResult<bool> {
-    let mut tx = db.begin().await?;
-    let hour = free_hour(&mut tx, date, preferred).await?;
+/// Adds one planned visit. Only a newly added visit is announced, so later passes never repeat the notice.
+async fn plan_visit(s: &AppState, sub: Uuid, user: Uuid, date: NaiveDate, preferred: u8) -> ApiResult<bool> {
+    let mut tx = s.db.begin().await?;
+    let placed = free_hour(&mut tx, date, preferred).await?;
     let inserted = sqlx::query(
         "INSERT INTO subscription_visits (subscription_id, visit_date, start_hour) VALUES ($1, $2, $3) ON CONFLICT (subscription_id, visit_date) DO NOTHING",
     )
     .bind(sub)
     .bind(date)
-    .bind(i16::from(hour))
+    .bind(i16::from(placed.unwrap_or(preferred)))
     .execute(&mut *tx)
     .await?
     .rows_affected();
     tx.commit().await?;
-    Ok(inserted == 1)
+    let added = inserted == 1;
+    if added {
+        announce_placement(s, user, sub, date, preferred, placed).await;
+    }
+    Ok(added)
+}
+
+/// A visit moved to another window tells the customer. A day with no free window tells the customer and staff.
+async fn announce_placement(s: &AppState, user: Uuid, sub: Uuid, date: NaiveDate, preferred: u8, placed: Option<u8>) {
+    let data = json!({ "subscription_id": sub, "visit_date": date });
+    match placed {
+        Some(hour) if hour != preferred => {
+            let moved = json!({ "subscription_id": sub, "visit_date": date, "start_hour": hour });
+            let title = "정기 청소 시간이 바뀌었어요";
+            let body = "요청하신 시간이 가득 차 가까운 시간으로 옮겼어요";
+            best_effort("notify", notify(s, Recipient::User(user), "subscription.visit_moved", title, body, moved)).await;
+        }
+        Some(_) => {}
+        None => {
+            let title = "정기 청소 시간을 잡지 못했어요";
+            best_effort(
+                "notify",
+                notify(
+                    s,
+                    Recipient::User(user),
+                    "subscription.visit_unplaced",
+                    title,
+                    "고객센터로 문의해 주세요",
+                    data.clone(),
+                ),
+            )
+            .await;
+            let title = "정기 청소 정원이 가득 찼어요";
+            best_effort(
+                "notify",
+                notify(s, Recipient::Staff, "subscription.capacity_full", title, "배정 시간을 확인해 주세요", data),
+            )
+            .await;
+        }
+    }
 }
 
 /// The customer's arrival window when it has room, else the first standard window that does.
-/// When every window is full the preferred one is kept, and the charge step reports the shortage.
-async fn free_hour(conn: &mut PgConnection, date: NaiveDate, preferred: u8) -> ApiResult<u8> {
+/// `None` when every window is full: the visit keeps the preferred window and the charge step reports the shortage.
+async fn free_hour(conn: &mut PgConnection, date: NaiveDate, preferred: u8) -> ApiResult<Option<u8>> {
     let order = std::iter::once(preferred).chain(STANDARD_SLOTS.iter().copied().filter(|h| *h != preferred));
     for hour in order {
         let (used, cap) = lock_and_count_slot(conn, date, hour, None).await?;
         if check_capacity(used, cap).is_ok() {
-            return Ok(hour);
+            return Ok(Some(hour));
         }
     }
-    Ok(preferred)
+    Ok(None)
 }
 
 /// Charges every planned visit due tomorrow (KST) whose retry time has come. Returns (booked, failed).
