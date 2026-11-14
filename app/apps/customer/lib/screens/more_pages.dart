@@ -327,7 +327,7 @@ class AccountScreen extends StatelessWidget {
           divider(),
           _LabelValueRow(
             label: t.accountPhone,
-            value: app.phone,
+            value: formatKoreanPhone(app.phone),
             extra: TextButton(
               onPressed: () => _push(context, const AccountIdentityScreen()),
               child: Text(t.change),

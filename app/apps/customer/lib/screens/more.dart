@@ -14,6 +14,7 @@ import 'chat.dart' show tabRootTitle;
 import 'payments.dart';
 import 'privacy.dart';
 import 'service_scope.dart';
+import 'theme_sheet.dart';
 import 'wallet.dart';
 import 'subscriptions.dart';
 
@@ -175,7 +176,7 @@ class MoreTab extends StatelessWidget {
         row(
           'menu_theme',
           t.themeTitle,
-          () => deps.theme.cycle(),
+          () => showThemeSheet(context, deps.theme),
           trailing: t.themeLabel(deps.theme.mode),
         ),
         row(
@@ -670,6 +671,12 @@ class ContentListBody extends StatelessWidget {
   );
 }
 
+/// Posting date as 2026.11.14 on notice rows and detail headers; empty when the server sent none.
+String noticeDateLabel(ContentItem item) {
+  final d = item.createdAt;
+  return d == null ? '' : DateFormat('yyyy.MM.dd').format(d);
+}
+
 class ContentDetailScreen extends StatelessWidget {
   const ContentDetailScreen({super.key, required this.item});
   final ContentItem item;
@@ -680,6 +687,16 @@ class ContentDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.all(Space.gutter),
       children: [
         Text(item.title(context.lang), style: context.text.headlineSmall),
+        if (noticeDateLabel(item).isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: Space.xs),
+            child: Text(
+              noticeDateLabel(item),
+              style: context.text.bodySmall?.copyWith(
+                color: context.colors.inkMuted,
+              ),
+            ),
+          ),
         const SizedBox(height: Space.lg),
         if (item.imageUrl != null) ...[
           ClipRRect(

@@ -190,15 +190,6 @@ class _Sun extends StatelessWidget {
   }
 }
 
-String _pretty(String digits) {
-  if (digits.length < 4) return digits;
-  if (digits.length < 8) {
-    return '${digits.substring(0, 3)}-${digits.substring(3)}';
-  }
-  final mid = digits.length == 11 ? 7 : 6;
-  return '${digits.substring(0, 3)}-${digits.substring(3, mid)}-${digits.substring(mid)}';
-}
-
 /// After a session exists: save the chosen language to the account and load the profile.
 /// Resolves true when the account still has no name, so the caller can open the name step.
 Future<bool> completeSignIn(BuildContext context) async {
@@ -323,9 +314,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
                     LengthLimitingTextInputFormatter(11),
                     TextInputFormatter.withFunction(
                       (_, v) => TextEditingValue(
-                        text: _pretty(v.text),
+                        text: formatKoreanPhone(v.text),
                         selection: TextSelection.collapsed(
-                          offset: _pretty(v.text).length,
+                          offset: formatKoreanPhone(v.text).length,
                         ),
                       ),
                     ),
@@ -466,7 +457,7 @@ class _CodeScreenState extends State<CodeScreen> {
                 ),
                 const SizedBox(height: Space.xs),
                 Text(
-                  context.t.loginCodeSentTo(_pretty(widget.phone)),
+                  context.t.loginCodeSentTo(formatKoreanPhone(widget.phone)),
                   style: context.text.bodyMedium?.copyWith(
                     color: context.colors.inkMuted,
                   ),

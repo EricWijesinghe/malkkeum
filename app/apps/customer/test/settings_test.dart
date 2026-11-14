@@ -19,10 +19,16 @@ Future<void> _scrollMoreTo(WidgetTester tester, String label) async {
   await tester.scrollUntilVisible(
     find.text(label),
     200,
-    scrollable: find.descendant(of: find.byType(MoreTab), matching: find.byType(Scrollable)),
+    scrollable: find.descendant(
+      of: find.byType(MoreTab),
+      matching: find.byType(Scrollable),
+    ),
   );
   // Centre the row and lay it out: the lowest rows sit under the frosted bottom bar, where a tap would miss.
-  await Scrollable.ensureVisible(tester.element(find.text(label)), alignment: 0.5);
+  await Scrollable.ensureVisible(
+    tester.element(find.text(label)),
+    alignment: 0.5,
+  );
   await tester.pump();
 }
 
@@ -42,14 +48,23 @@ const Json _brand = {
   },
 };
 
-Future<List<Uri>> _pumpBusinessInfo(WidgetTester tester, Json brand, {String localeCode = 'ko'}) async {
+Future<List<Uri>> _pumpBusinessInfo(
+  WidgetTester tester,
+  Json brand, {
+  String localeCode = 'ko',
+}) async {
   final opened = <Uri>[];
-  final env = await TestEnv.create(fake: FakeApi()..reply('GET', '/brand', brand), localeCode: localeCode);
+  final env = await TestEnv.create(
+    fake: FakeApi()..reply('GET', '/brand', brand),
+    localeCode: localeCode,
+  );
   await pumpCustomerScreen(
     tester,
     env,
     Scaffold(
-      body: SingleChildScrollView(child: BusinessInfo(api: env.api, open: (uri) async => opened.add(uri))),
+      body: SingleChildScrollView(
+        child: BusinessInfo(api: env.api, open: (uri) async => opened.add(uri)),
+      ),
     ),
   );
   await settle(tester);
@@ -57,7 +72,9 @@ Future<List<Uri>> _pumpBusinessInfo(WidgetTester tester, Json brand, {String loc
 }
 
 void main() {
-  testWidgets('More tab ends with the seller details from /brand', (tester) async {
+  testWidgets('More tab ends with the seller details from /brand', (
+    tester,
+  ) async {
     setViewport(tester, phoneSize);
     final fake = FakeApi()..reply('GET', '/brand', _brand);
     stockCustomerApi(fake);
@@ -69,14 +86,20 @@ void main() {
     expect(find.text(koT.bizInfoTitle), findsOneWidget);
     final company = _brand['company'] as Json;
     for (final value in company.values) {
-      expect(find.textContaining(value as String), findsOneWidget, reason: '$value is shown');
+      expect(
+        find.textContaining(value as String),
+        findsOneWidget,
+        reason: '$value is shown',
+      );
     }
     expect(find.text('02-0000-0000'), findsOneWidget);
     expect(find.text('help@example.com'), findsOneWidget);
     await unmount(tester);
   });
 
-  testWidgets('seller details open the FTC lookup, the dialer and mail', (tester) async {
+  testWidgets('seller details open the FTC lookup, the dialer and mail', (
+    tester,
+  ) async {
     setViewport(tester, phoneSize);
     final opened = await _pumpBusinessInfo(tester, _brand);
 
@@ -91,93 +114,147 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('seller details hide empty fields, and the whole section when nothing is set', (tester) async {
-    setViewport(tester, phoneSize);
-    await _pumpBusinessInfo(tester, {
-      'name': '말끔',
-      'support_phone': ' ',
-      'company': {'ceo': '홍길동(예시)', 'registration_no': '000-00', 'address': ''},
-    });
-    expect(find.textContaining('홍길동(예시)'), findsOneWidget);
-    expect(find.textContaining(koT.cSetupAddress), findsNothing);
-    expect(find.textContaining(koT.cSetupMailOrderNo), findsNothing);
-    expect(find.text(koT.bizInfoVerify), findsNothing, reason: 'no lookup link for an incomplete number');
-    expect(find.byType(TextButton), findsNothing);
-    await unmount(tester);
+  testWidgets(
+    'seller details hide empty fields, and the whole section when nothing is set',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      await _pumpBusinessInfo(tester, {
+        'name': '말끔',
+        'support_phone': ' ',
+        'company': {
+          'ceo': '홍길동(예시)',
+          'registration_no': '000-00',
+          'address': '',
+        },
+      });
+      expect(find.textContaining('홍길동(예시)'), findsOneWidget);
+      expect(find.textContaining(koT.cSetupAddress), findsNothing);
+      expect(find.textContaining(koT.cSetupMailOrderNo), findsNothing);
+      expect(
+        find.text(koT.bizInfoVerify),
+        findsNothing,
+        reason: 'no lookup link for an incomplete number',
+      );
+      expect(find.byType(TextButton), findsNothing);
+      await unmount(tester);
 
-    await _pumpBusinessInfo(tester, {'name': '말끔', 'company': <String, dynamic>{}});
-    expect(find.text(koT.bizInfoTitle), findsNothing);
-    expect(find.byType(Text), findsNothing);
-    await unmount(tester);
-  });
+      await _pumpBusinessInfo(tester, {
+        'name': '말끔',
+        'company': <String, dynamic>{},
+      });
+      expect(find.text(koT.bizInfoTitle), findsNothing);
+      expect(find.byType(Text), findsNothing);
+      await unmount(tester);
+    },
+  );
 
   for (final locale in LocaleController.supported) {
-    testWidgets('seller details fit a phone at large font (${locale.languageCode})', (tester) async {
-      setViewport(tester, phoneSize);
-      tester.platformDispatcher.textScaleFactorTestValue = 1.3;
-      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-      await _pumpBusinessInfo(tester, _brand, localeCode: locale.languageCode);
-      expect(find.text(lookupT(locale).bizInfoTitle), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await unmount(tester);
-    });
+    testWidgets(
+      'seller details fit a phone at large font (${locale.languageCode})',
+      (tester) async {
+        setViewport(tester, phoneSize);
+        tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        await _pumpBusinessInfo(
+          tester,
+          _brand,
+          localeCode: locale.languageCode,
+        );
+        expect(find.text(lookupT(locale).bizInfoTitle), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await unmount(tester);
+      },
+    );
   }
-  testWidgets('theme defaults to dark and the tile cycles dark -> light -> system -> dark', (tester) async {
-    setViewport(tester, phoneSize);
-    final fake = FakeApi();
-    stockCustomerApi(fake);
-    final env = await TestEnv.create(fake: fake);
-    expect(env.theme.mode, ThemeMode.dark, reason: 'dark is the product default');
+  testWidgets(
+    'theme defaults to dark and the sheet lists three choices with a check on the current one',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi();
+      stockCustomerApi(fake);
+      final env = await TestEnv.create(fake: fake);
+      expect(
+        env.theme.mode,
+        ThemeMode.dark,
+        reason: 'dark is the product default',
+      );
 
-    await pumpCustomerApp(tester, env);
-    await _openMoreTab(tester);
-    await _scrollMoreTo(tester, koT.themeTitle);
-    expect(find.text(koT.themeLabel(ThemeMode.dark)), findsOneWidget);
+      await pumpCustomerApp(tester, env);
+      await _openMoreTab(tester);
+      await _scrollMoreTo(tester, koT.themeTitle);
+      expect(find.text(koT.themeLabel(ThemeMode.dark)), findsOneWidget);
 
-    Future<void> tapTheme() async {
-      await tester.tap(find.text(koT.themeTitle));
+      Future<void> openSheet() async {
+        await tester.tap(find.text(koT.themeTitle));
+        await settle(tester, duration: const Duration(milliseconds: 500));
+      }
+
+      await openSheet();
+      expect(find.byKey(const ValueKey('theme_light')), findsOneWidget);
+      expect(find.byKey(const ValueKey('theme_dark')), findsOneWidget);
+      expect(find.byKey(const ValueKey('theme_system')), findsOneWidget);
+      expect(
+        find.byIcon(Icons.check),
+        findsOneWidget,
+        reason: 'only the current choice is checked',
+      );
+
+      await tester.tap(find.byKey(const ValueKey('theme_light')));
       await settle(tester, duration: const Duration(milliseconds: 500));
-    }
+      expect(env.theme.mode, ThemeMode.light);
+      expect(
+        env.storage.data['app.theme'],
+        'light',
+        reason: 'choice is persisted',
+      );
+      expect(find.text(koT.themeLabel(ThemeMode.light)), findsOneWidget);
 
-    await tapTheme();
-    expect(env.theme.mode, ThemeMode.light);
-    expect(env.storage.data['app.theme'], 'light', reason: 'choice is persisted');
-    expect(find.text(koT.themeLabel(ThemeMode.light)), findsOneWidget);
+      await openSheet();
+      await tester.tap(find.byKey(const ValueKey('theme_system')));
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      expect(env.theme.mode, ThemeMode.system);
+      expect(find.text(koT.themeLabel(ThemeMode.system)), findsOneWidget);
+      await unmount(tester);
+    },
+  );
 
-    await tapTheme();
-    expect(env.theme.mode, ThemeMode.system);
-    expect(find.text(koT.themeLabel(ThemeMode.system)), findsOneWidget);
+  testWidgets(
+    'choosing English then Korean re-renders the chrome and saves the account language',
+    (tester) async {
+      setViewport(tester, phoneSize);
+      final fake = FakeApi()
+        ..reply('PATCH', '/me', {'name': '지민', 'phone': '01012345678'});
+      stockCustomerApi(fake);
+      final env = await TestEnv.create(fake: fake);
 
-    await tapTheme();
-    expect(env.theme.mode, ThemeMode.dark);
-    await unmount(tester);
-  });
+      await pumpCustomerApp(tester, env);
+      await _openMoreTab(tester);
+      await _scrollMoreTo(tester, koT.moreLanguage);
+      await tester.tap(find.text(koT.moreLanguage));
+      await settle(tester);
 
-  testWidgets('choosing English then Korean re-renders the chrome and saves the account language', (tester) async {
-    setViewport(tester, phoneSize);
-    final fake = FakeApi()..reply('PATCH', '/me', {'name': '지민', 'phone': '01012345678'});
-    stockCustomerApi(fake);
-    final env = await TestEnv.create(fake: fake);
+      await tester.tap(find.text(LocaleController.names['en']!));
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      final en = lookupT(const Locale('en'));
+      expect(env.locale.locale?.languageCode, 'en');
+      expect(env.storage.data['app.locale'], 'en');
+      expect(
+        find.text(en.moreLanguage),
+        findsWidgets,
+        reason: 'language screen re-renders in English',
+      );
+      expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'en');
 
-    await pumpCustomerApp(tester, env);
-    await _openMoreTab(tester);
-    await _scrollMoreTo(tester, koT.moreLanguage);
-    await tester.tap(find.text(koT.moreLanguage));
-    await settle(tester);
-
-    await tester.tap(find.text(LocaleController.names['en']!));
-    await settle(tester, duration: const Duration(milliseconds: 500));
-    final en = lookupT(const Locale('en'));
-    expect(env.locale.locale?.languageCode, 'en');
-    expect(env.storage.data['app.locale'], 'en');
-    expect(find.text(en.moreLanguage), findsWidgets, reason: 'language screen re-renders in English');
-    expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'en');
-
-    await tester.tap(find.text(LocaleController.names['ko']!));
-    await settle(tester, duration: const Duration(milliseconds: 500));
-    expect(env.locale.locale?.languageCode, 'ko');
-    expect(find.text(koT.moreLanguage), findsWidgets, reason: 'language screen re-renders in Korean');
-    expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'ko');
-    await unmount(tester);
-  });
+      await tester.tap(find.text(LocaleController.names['ko']!));
+      await settle(tester, duration: const Duration(milliseconds: 500));
+      expect(env.locale.locale?.languageCode, 'ko');
+      expect(
+        find.text(koT.moreLanguage),
+        findsWidgets,
+        reason: 'language screen re-renders in Korean',
+      );
+      expect(fake.lastCall('PATCH', '/me')!.json['locale'], 'ko');
+      await unmount(tester);
+    },
+  );
 }
