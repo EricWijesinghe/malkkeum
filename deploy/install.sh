@@ -393,7 +393,19 @@ confirm() { # confirm "질문" 기대값 : 터미널에서 기대값을 입력�
   IFS= read -r a </dev/tty || true
   [ "$a" = "$2" ] || die "취소했어요."
 }
-uploads_for() { local b; b=$(basename "$1"); b=${b#db-}; printf '%s/uploads-%s.tar.gz' "$(dirname "$1")" "${b%.sql.gz}"; }
+uploads_for() { local b; b=$(basename "$1"); b=${b#db-}; b=${b%.enc}; printf '%s/uploads-%s.tar.gz' "$(dirname "$1")" "${b%.sql.gz}"; }
+# 봉인된 백업(.enc)은 같은 폴더에 풀어요. 풀린 평문은 SCRATCH 에 넣어 두었다가 명령이 끝나면 지워요.
+open_backup() { # open_backup 파일 : .enc 면 ${파일%.enc} 로 풀고, 평문 파일이면 아무 일도 안 해요
+  case "$1" in
+    *.enc) api_backup backup-open "/$1" "/${1%.enc}" >/dev/null || return 1; SCRATCH+=("${1%.enc}") ;;
+  esac
+}
+# 평문 덤프를 MKB1 로 봉인하고 평문을 지워요. 외부 백업은 평문으로 올린 뒤에 봉인해요.
+seal_local() { # seal_local 파일 : 봉인에 실패하면 평문도 지우고 경고만 남겨요 (외부 백업은 이미 올라갔어요)
+  local f="$1"
+  if api_backup backup-seal "/$f" "/$f.enc" >> backups/backup.log 2>&1; then rm -f -- "$f"
+  else rm -f -- "$f" "$f.enc"; BACKUP_WARN=1; warn "백업 봉인에 실패했어요: $f"; fi
+}
 # api 이미지의 백업 명령(backup-upload, -fetch, -list). backups/ 는 root 전용(700)이라 컨테이너 안에서도 root 로
 # 실행해요. 권한(capability)은 모두 빠진 채라 이 폴더와 앱 볼륨에만 닿아요. 임시 파일은 메모리(/tmp) 대신 backups/ 에.
 api_backup() { dc run --rm --no-deps -T --user 0 -e TMPDIR=/backups -v "$DIR/backups:/backups" api api "$@"; }
@@ -581,12 +593,15 @@ cmd_backup() { # BACKUP_WARN=1 이면 DB 는 백업됐지만 사진 파일이나
   if ! dc run --rm --no-deps -T --entrypoint tar api czf - -C /data uploads > "$up"; then
     rm -f "$up"; BACKUP_WARN=1; warn "사진 파일 백업에 실패했어요 (DB 백업은 됐어요). 'dahae logs api' 로 확인하세요."
   fi
-  [ "$prune" = noprune ] || find backups \( -name 'db-*.sql.gz' -o -name 'uploads-*.tar.gz' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
   # Offsite copy (콘솔: 설정 > 외부 백업). The local backup stays good if this fails or isn't set up.
   if [ -f "$up" ]; then api_backup backup-upload "/$up" >> backups/backup.log 2>&1 || true; fi
   api_backup backup-upload "/$db" >> backups/backup.log 2>&1 \
     || warn "외부 백업 실패 또는 미설정 — 콘솔 [설정 > 외부 백업]을 확인하세요"
-  ok "백업 완료: $DIR/$db"
+  # 서버 디스크에 남는 로컬 사본은 봉인해요: 평문 덤프(고객 정보)가 그대로 남지 않아요.
+  seal_local "$db"
+  if [ -f "$up" ]; then seal_local "$up"; fi
+  [ "$prune" = noprune ] || find backups \( -name 'db-*.sql.gz' -o -name 'db-*.sql.gz.enc' -o -name 'uploads-*.tar.gz' -o -name 'uploads-*.tar.gz.enc' \) -mtime +"$BACKUP_KEEP_DAYS" -delete
+  ok "백업 완료: $DIR/$db.enc"
 }
 
 cmd_load() { # 미리 받아 둔 이미지 묶음(.tar)을 불러와요. 인터넷 없이 업데이트할 때 써요.
@@ -698,8 +713,10 @@ cmd_status() {
   # 로컬 백업은 DB 와 같은 디스크에 있어요: 외부 백업이 없으면 디스크 하나를 잃을 때 전부 잃어요.
   if tail -n 40 backups/backup.log 2>/dev/null | grep -q 'offsite backup uploaded'; then ok "외부 백업 정상"
   else warn "최근 외부 백업이 없어요 — 서버 디스크를 잃으면 데이터도 모두 잃어요. 콘솔 [설정 > 외부 백업]에서 켜세요"; fi
-  if compgen -G 'backups/keys-*.env.enc' >/dev/null; then ok "비밀 키 사본 있음 (서버 밖에도 보관했는지 확인하세요)"
+  if compgen -G 'backups/keys-*.env.enc' >/dev/null; then ok "비밀 키 사본 있음"
   else warn "비밀 키 사본이 없어요 — 'dahae keys-backup' 으로 만들어 서버 밖에 보관하세요. 없으면 외부 백업을 풀 수 없어요"; fi
+  if [ -n "$(env_get KEY_ESCROW_AT)" ]; then ok "비밀 키 사본을 서버 밖에 보관했다고 확인했어요"
+  else warn "비밀 키 사본을 서버 밖에 보관했다는 확인이 없어요 — 'dahae keys-backup' 을 다시 실행해 확인하세요"; fi
 }
 
 cmd_keys_backup() { # dahae keys-backup : 외부 백업은 DATA_KEY 로 잠겨요. 서버를 잃어도 풀 수 있게 .env 를 비밀번호로 잠근 사본을 만들어요
@@ -716,6 +733,19 @@ cmd_keys_backup() { # dahae keys-backup : 외부 백업은 DATA_KEY 로 잠겨�
   ok "비밀 키 사본: $DIR/$out"
   echo "  이 파일과 비밀번호를 서버 밖(USB, 비밀번호 관리자 등)에 따로 보관하세요. 서버를 잃으면:"
   echo "  새 서버에 설치 → dahae keys-restore <이 파일> → 콘솔에서 외부 백업 연결 → dahae restore-offsite"
+  key_escrow_confirm
+}
+
+# 사본을 서버 밖에 보관했는지 사장님(관리자)이 직접 확인해요. 확인 기록은 .env 의 KEY_ESCROW_AT 에 남아요.
+key_escrow_confirm() {
+  local a=""
+  if [ "${YES:-0}" = 1 ]; then a="보관했어요"
+  elif has_tty; then
+    printf '서버 밖에 보관했어요? 보관했다면 "보관했어요" 를 입력하세요 (나중에 하려면 Enter): ' >/dev/tty
+    IFS= read -r a </dev/tty || true
+  fi
+  if [ "$a" = "보관했어요" ]; then env_set KEY_ESCROW_AT "$(date +%s)"; ok "비밀 키 사본 보관을 확인했어요"
+  else warn "비밀 키 사본 보관은 아직 확인되지 않았어요 (dahae status 에서 다시 확인해요)"; fi
 }
 
 keys_field() { sed -n "s/^$1=\([0-9a-f]\{32,\}\)\$/\1/p" | tail -n1; } # keys_field 이름 < 내용 : 16진수 값만
@@ -754,10 +784,13 @@ cmd_alert() { # dahae alert update|backup : 예약 작업(cron)이 실패하면 
 cmd_restore() { # dahae restore 파일 [--yes]
   local f="" up a
   for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) f="$a" ;; esac; done
-  [ -n "$f" ] || die "복원할 백업 파일을 지정하세요. 예: dahae restore backups/db-20261110-033000.sql.gz"
+  [ -n "$f" ] || die "복원할 백업 파일을 지정하세요. 예: dahae restore backups/db-20261110-033000.sql.gz.enc"
   [ -f "$f" ] || die "백업 파일을 찾을 수 없어요: $f"
-  gzip -t "$f" 2>/dev/null || die "백업 파일이 손상됐어요: $f"
+  open_backup "$f" || die "백업을 풀지 못했어요. 봉인 키(DATA_KEY)가 맞는지 확인하세요: $f"
+  f="${f%.enc}"
   up=$(uploads_for "$f")
+  if [ -f "$up.enc" ]; then open_backup "$up.enc" || die "사진 파일 백업을 풀지 못했어요: $up.enc"; fi
+  gzip -t "$f" 2>/dev/null || die "백업 파일이 손상됐어요: $f"
   if [ -f "$up" ] && ! uploads_tar_ok "$up"; then
     die "사진 파일 백업이 손상됐거나 허용되지 않는 항목(절대 경로, .., 링크)이 있어서 복원을 멈췄어요. 아무것도 바뀌지 않았어요: $up"
   fi
@@ -784,15 +817,16 @@ cmd_restore() { # dahae restore 파일 [--yes]
 }
 
 cmd_restore_offsite() { # dahae restore-offsite [이름] [--yes]
-  local name="" a up_name
+  local name="" a db up
   for a in "$@"; do case "$a" in --yes|-y) YES=1 ;; *) name="$a" ;; esac; done
   if [ -z "$name" ]; then api_backup backup-list; return 0; fi
   valid_backup_name "$name" || die "외부 백업 이름이 아니에요 (예: db-20261110-033000.sql.gz.enc): $name"
-  api_backup backup-fetch "$name" "/backups/${name%.enc}" || die "외부 백업을 내려받지 못했어요"
-  up_name=$(basename "$(uploads_for "${name%.enc}")")
-  api_backup backup-fetch "$up_name.enc" "/backups/$up_name" >/dev/null 2>&1 \
+  db="backups/${name%.enc}"; up=$(uploads_for "$db")
+  SCRATCH+=("$db" "$up")   # 내려받은 평문은 복원이 끝나면 지워요
+  api_backup backup-fetch "$name" "/$db" || die "외부 백업을 내려받지 못했어요"
+  api_backup backup-fetch "$(basename "$up").enc" "/$up" >/dev/null 2>&1 \
     || warn "외부 백업에 같은 시각의 사진 파일이 없어요"
-  cmd_restore "backups/${name%.enc}"
+  cmd_restore "$db"
 }
 
 cmd_heartbeat() { # dahae heartbeat <https 주소>|off
@@ -973,6 +1007,8 @@ main() {
   chmod 700 backups 2>/dev/null || true
   chmod 600 .env 2>/dev/null || true
   YES=${DAHAE_YES:-0}
+  # 복원 중 풀린 평문 백업은 명령이 어떻게 끝나든 지워요 (실패하거나 취소해도 디스크에 남지 않아요).
+  SCRATCH=(); trap 'rm -f -- ${SCRATCH[@]+"${SCRATCH[@]}"}' EXIT
   case "${1:-status}" in
     status) cmd_status ;;
     update) shift; cmd_update "$@" ;;

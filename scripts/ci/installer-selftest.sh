@@ -94,6 +94,7 @@ printf 'DOMAIN=myshop.co.kr\nIMAGE_SOURCE=local\n' > .env
 DAHAE_SELFTEST=1 . "$SB/dahae"
 set +e
 t  "uploads_for"           eq "$(uploads_for backups/db-20261110-033000.sql.gz)" backups/uploads-20261110-033000.tar.gz
+t  "uploads_for sealed"    eq "$(uploads_for backups/db-20261110-033000.sql.gz.enc)" backups/uploads-20261110-033000.tar.gz
 t  "fingerprint ok"        valid_fingerprints "$(printf 'AB:%.0s' $(seq 31))CD"
 t  "two fingerprints"      valid_fingerprints "$(printf 'ab:%.0s' $(seq 31))cd,$(printf 'AB:%.0s' $(seq 31))EF"
 nt "fingerprint short"     valid_fingerprints AB:CD
