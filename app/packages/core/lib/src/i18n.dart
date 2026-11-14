@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import 'api.dart';
 import 'gen/app_localizations.dart';
+import 'models.dart';
 
 extension L10nX on BuildContext {
   T get t => T.of(this);
