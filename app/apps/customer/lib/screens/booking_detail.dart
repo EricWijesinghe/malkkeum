@@ -130,7 +130,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
   /// "벽걸이 1 · 스탠드 2" for a counts booking; null when the booking carries no counts.
   String? _countsLabel(T t, Service service, Booking b) {
-    final line = t.unitCounts(service, b.unitCounts);
+    final line = t.unitCounts(service, b.countsOf(service.units.length));
     return line.isEmpty ? null : line;
   }
 
@@ -345,7 +345,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 builder: (_) => ServiceScreen(
                   service: service,
                   initialUnit: b.unitIndex,
-                  initialCounts: b.unitCounts,
+                  initialCounts: b.countsOf(service.units.length),
                 ),
               ),
             ),
@@ -506,7 +506,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     if (service == null) return;
     final draft = BookingDraft(service)
       ..unitIndex = b.unitIndex
-      ..counts = b.unitCounts
+      ..counts = b.countsOf(service.units.length)
       ..date = b.visitDate
       ..hour = b.startHour;
     await Navigator.of(context).push(
@@ -532,9 +532,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   /// Shows the server's fee preview before confirming; the accepted fee is sent back so a changed policy is refused.
   Future<void> _cancel(Booking b) async {
     final t = context.t;
-    final preview = (await context.api.get(
-      '/bookings/${b.id}/cancel-preview',
-    )) as Map<String, dynamic>;
+    final preview =
+        (await context.api.get('/bookings/${b.id}/cancel-preview'))
+            as Map<String, dynamic>;
     if (!mounted) return;
     final canCancel = preview['can_cancel'] == true;
     final fee = (preview['fee'] as num? ?? 0).toInt();

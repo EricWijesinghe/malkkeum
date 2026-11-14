@@ -118,7 +118,7 @@ class DoneScreen extends StatelessWidget {
     final minutes = b.minutes;
     final service = context.app.service(b.serviceCode);
     final counts = service != null && service.isCounts
-        ? t.unitCounts(service, b.unitCounts)
+        ? t.unitCounts(service, b.countsOf(service.units.length))
         : '';
     final road = b.j['address'] is Json
         ? (b.address['road_address'] as String? ?? '')

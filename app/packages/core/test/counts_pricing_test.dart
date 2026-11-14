@@ -126,5 +126,32 @@ void main() {
       expect(counted.unitCounts, [1, 2]);
       expect(plain.unitCounts, isEmpty);
     });
+
+    test('legacy unit_index reads as one item of that option', () {
+      final legacy = Booking.fromJson({'id': 'b3', 'unit_index': 1});
+      expect(legacy.countsOf(3), [0, 1, 0]);
+      expect(legacy.countsOf(2), [0, 1]);
+    });
+
+    test('sofa: 1~2인용 + 3인용 is 124,200원 with 10% off, 150 min', () {
+      final s = _counts(
+        units: const [
+          UnitOption('seat_1_2', 60, 59000),
+          UnitOption('seat_3', 90, 79000),
+          UnitOption('seat_4_plus', 120, 99000),
+          UnitOption('l_shape', 150, 119000),
+        ],
+        bps: 1000,
+      );
+      expect(s.countsPrice([1, 1, 0, 0]), 124200);
+      expect(s.countsMinutes([1, 1, 0, 0]), 150);
+    });
+
+    test('mattress single option is 59,000원 for 60 min and one item', () {
+      final s = _counts(units: const [UnitOption('mattress', 60, 59000)]);
+      expect(s.countsPrice([1]), 59000);
+      expect(s.countsMinutes([1]), 60);
+      expect(s.countsPrice([0]), 0);
+    });
   });
 }

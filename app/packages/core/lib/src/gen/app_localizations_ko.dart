@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1096,6 +1095,10 @@ class TKo extends T {
 
   @override
   String get countSelect => '선택';
+
+  @override
+  String get svcNotes_disinfection =>
+      '가격은 약 30평 기준이에요\n더 넓은 집은 채팅에서 금액을 조정해 드려요';
 
   @override
   String get ok => '확인';

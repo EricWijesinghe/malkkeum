@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1119,6 +1118,10 @@ class TEn extends T {
 
   @override
   String get countSelect => 'Select';
+
+  @override
+  String get svcNotes_disinfection =>
+      'Prices assume about 30 pyeong\nLarger homes are adjusted in chat';
 
   @override
   String get ok => 'OK';

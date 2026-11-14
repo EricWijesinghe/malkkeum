@@ -116,6 +116,43 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('next stays disabled until one item is picked', (tester) async {
+    await _pumpService(tester, _aircon());
+    final next = find.widgetWithText(PrimaryButton, koT.next);
+    expect(tester.widget<PrimaryButton>(next).onPressed, isNull);
+
+    await _tap(tester, find.byTooltip(koT.countPlus).at(0));
+    expect(tester.widget<PrimaryButton>(next).onPressed, isNotNull);
+    await unmount(tester);
+  });
+
+  testWidgets('legacy aircon booking starts with its single unit counted', (
+    tester,
+  ) async {
+    final ac = _aircon();
+    setViewport(tester, phoneSize);
+    final fake = FakeApi();
+    stockCustomerApi(fake);
+    final env = await TestEnv.create(fake: fake);
+    // unit_index 1 (스탠드) with no unit_counts: one stand, 119,000원.
+    await pumpCustomerScreen(
+      tester,
+      env,
+      ServiceScreen(
+        service: ac,
+        initialUnit: 1,
+        initialCounts: Booking.fromJson({
+          'id': 'b',
+          'unit_index': 1,
+        }).countsOf(4),
+      ),
+    );
+    await settle(tester);
+    expect(_barAmount(119000), findsOneWidget);
+    expect(find.text(koT.duration(120)), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('counts labels read in Korean for summaries', (tester) async {
     final ac = _aircon();
     expect(koT.unitCounts(ac, [0, 2, 1, 0]), '스탠드 2 · 2in1 1');

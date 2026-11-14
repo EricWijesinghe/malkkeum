@@ -155,6 +155,7 @@ extension Labels on T {
     'mattress' => svcNotes_mattress,
     'aircon' => svcNotes_aircon,
     'sofa' => svcNotes_sofa,
+    'disinfection' => svcNotes_disinfection,
     _ => '',
   }.split('\n').where((l) => l.isNotEmpty).toList();
 

@@ -2233,6 +2233,12 @@ abstract class T {
   /// **'선택'**
   String get countSelect;
 
+  /// No description provided for @svcNotes_disinfection.
+  ///
+  /// In ko, this message translates to:
+  /// **'가격은 약 30평 기준이에요\n더 넓은 집은 채팅에서 금액을 조정해 드려요'**
+  String get svcNotes_disinfection;
+
   /// No description provided for @ok.
   ///
   /// In ko, this message translates to:

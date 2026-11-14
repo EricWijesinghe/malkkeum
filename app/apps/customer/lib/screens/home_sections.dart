@@ -206,7 +206,7 @@ class _RebookCard extends StatelessWidget {
                 builder: (_) => ServiceScreen(
                   service: s,
                   initialUnit: booking.unitIndex,
-                  initialCounts: booking.unitCounts,
+                  initialCounts: booking.countsOf(s.units.length),
                 ),
               ),
             ),

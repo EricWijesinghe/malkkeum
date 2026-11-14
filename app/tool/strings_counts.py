@@ -35,6 +35,7 @@ ROWS = {
   "countMinus": ["개수 줄이기", "Decrease count"],
   "countPlus": ["개수 늘리기", "Increase count"],
   "countSelect": ["선택", "Select"],
+  "svcNotes_disinfection": ["가격은 약 30평 기준이에요\n더 넓은 집은 채팅에서 금액을 조정해 드려요", "Prices assume about 30 pyeong\nLarger homes are adjusted in chat"],
 }
 
 for _k, _row in ROWS.items():

@@ -219,6 +219,14 @@ class Booking {
   List<int> get unitCounts => ((j['unit_counts'] as List?) ?? const [])
       .map((n) => (n as num).toInt())
       .toList();
+
+  /// Counts in catalogue order, [optionCount] long. A legacy single-unit booking (unit_index only)
+  /// counts as one item of that option, the way the server reads it.
+  List<int> countsOf(int optionCount) {
+    if (unitCounts.isNotEmpty || unitIndex == null) return unitCounts;
+    return [for (var i = 0; i < optionCount; i++) i == unitIndex ? 1 : 0];
+  }
+
   int get status => _int(j['status'])!;
   DateTime get visitDate => DateTime.parse(j['visit_date'] as String);
   int get startHour => _int(j['start_hour'])!;
