@@ -165,6 +165,8 @@ async fn a_failing_notification_insert_never_fails_the_request_and_is_stored_lat
     let (manual, _) = book(&app, &c, 12, None).await;
     accept(&app, done, pro.as_str()).await;
     visit_today(&pool, done).await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{done}/check-in"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     register_photo(&pool, pro_id).await;
 
     let before = inbox_count(&pool, c.user, "booking.status").await;
@@ -247,7 +249,7 @@ async fn two_no_show_scans_in_parallel_open_one_case_per_booking(pool: PgPool) {
     let s = state(&pool);
     let (a, b) = tokio::join!(noshow::scan(&s), noshow::scan(&s));
     assert_eq!(a.expect("scan") + b.expect("scan"), 2, "each case is opened by exactly one scan");
-    for id in late {
+    for id in &late {
         let cases: i64 = sqlx::query_scalar("SELECT count(*) FROM cases WHERE booking_id = $1 AND kind = 'no_show'")
             .bind(id)
             .fetch_one(&pool)
@@ -256,6 +258,16 @@ async fn two_no_show_scans_in_parallel_open_one_case_per_booking(pool: PgPool) {
         assert_eq!(cases, 1, "one case per booking");
     }
     assert_eq!(noshow::scan(&s).await.expect("scan"), 0, "nothing left to open");
+    let dup = sqlx::query(
+        "INSERT INTO cases (booking_id, kind, source, reporter_role, summary, sla_due_at) VALUES ($1, 'no_show', 'no_show', 'system', 'again', now())",
+    )
+    .bind(late[0])
+    .execute(&pool)
+    .await;
+    assert!(
+        dup.is_err_and(|e| e.as_database_error().and_then(|d| d.constraint().map(str::to_owned)).as_deref() == Some("cases_one_no_show_idx")),
+        "the database refuses a second no-show case"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -441,6 +453,10 @@ async fn completion_by_the_owner_and_by_a_team_member_write_the_same_state(pool:
     .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (member, _) = login(&app, "010-5600-0106", "partner").await;
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{by_owner}/check-in"), Some(owner.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
+    let (st, b) = call(&app, "POST", &format!("/v1/member/jobs/{by_member}/check-in"), Some(member.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     register_photo(&pool, owner_id).await;
     register_photo(&pool, member_id).await;
     let owner_url = format!("/v1/partner/jobs/{by_owner}/complete");

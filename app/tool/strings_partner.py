@@ -86,6 +86,8 @@ S = {
   "pAfterPhotos": ["청소 후 사진", "After photos"],
   "pAddPhoto": ["사진 추가", "Add photo"],
   "pChecklist": ["확인 항목", "Checklist"],
+  "pCheckInReasonTitle": ["도착 기록 없이 완료하는 이유", "Why there is no arrival record"],
+  "pCheckInReasonHint": ["예: 앱에서 도착을 누르지 못했어요 (전화로 확인)", "e.g. Could not tap arrival in the app (confirmed by phone)"],
   "pCheck1": ["요청한 모든 공간을 청소했어요", "All requested areas cleaned"],
   "pCheck2": ["쓰레기를 정리하고 도구를 회수했어요", "Trash handled, tools collected"],
   "pCheck3": ["창문·전기·수도를 확인했어요", "Windows, power and water checked"],

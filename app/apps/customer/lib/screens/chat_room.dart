@@ -64,9 +64,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Future<void> _load() async {
     final seq = ++_loadSeq;
     try {
-      final r =
-          await context.api.get('/chat/threads/${widget.threadId}/messages')
-              as List;
+      final r = await context.api.get(
+        '/chat/threads/${widget.threadId}/messages',
+      ) as List;
       // A newer load (e.g. after resync) supersedes this one.
       if (!mounted || seq != _loadSeq) return;
       setState(() {
@@ -99,10 +99,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     try {
       final m = ChatMessage.fromJson(
         await context.api.post(
-              '/chat/threads/${widget.threadId}/messages',
-              body,
-            )
-            as Json,
+          '/chat/threads/${widget.threadId}/messages',
+          body,
+        ) as Json,
       );
       if (!mounted) return;
       if (!_messages.any((x) => x.id == m.id)) _arrived(m.id);
@@ -245,7 +244,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _teamName(t),
+            _teamName(context, t),
             style: context.text.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),

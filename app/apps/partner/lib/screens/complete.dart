@@ -33,8 +33,12 @@ class _CompleteScreenState extends State<CompleteScreen> {
   final _checks = List<bool>.filled(4, false);
   final _sending = <QueuedPhoto>{};
   final _failed = <QueuedPhoto>{};
+  final _reason = TextEditingController();
   late final CompletionOutbox _box;
   bool _busy = false;
+
+  /// Owner only: set after the server says the arrival is missing, which shows the reason field.
+  bool _needsReason = false;
 
   /// Set once the job is completed or queued, so leaving the screen does not keep a draft.
   bool _finished = false;
@@ -52,6 +56,7 @@ class _CompleteScreenState extends State<CompleteScreen> {
   @override
   void dispose() {
     if (!_finished) _saveDraft().ignore();
+    _reason.dispose();
     super.dispose();
   }
 
@@ -62,6 +67,8 @@ class _CompleteScreenState extends State<CompleteScreen> {
     setState(() {
       _before.addAll(draft.before);
       _after.addAll(draft.after);
+      _reason.text = draft.checkInOverride ?? '';
+      _needsReason = _reason.text.isNotEmpty;
       for (var i = 0; i < _checks.length; i++) {
         _checks[i] = draft.checklist[i];
       }
@@ -78,6 +85,9 @@ class _CompleteScreenState extends State<CompleteScreen> {
     after: _after,
     checklist: _checks,
     ready: ready,
+    checkInOverride: widget.isMember || _reason.text.trim().isEmpty
+        ? null
+        : _reason.text.trim(),
   );
 
   Future<void> _saveDraft() async {
@@ -153,6 +163,9 @@ class _CompleteScreenState extends State<CompleteScreen> {
         showToast(context, context.t.pOfflineSaved);
         Navigator.of(context).pop();
       } else {
+        if (e.code == 'not_checked_in' && !widget.isMember) {
+          setState(() => _needsReason = true);
+        }
         showToast(context, context.t.error(e));
       }
     } finally {
@@ -243,6 +256,16 @@ class _CompleteScreenState extends State<CompleteScreen> {
               padding: const EdgeInsets.only(top: Space.sm),
               child: Text(t.pCompleteNeed, style: context.text.labelSmall),
             ),
+          if (_needsReason) ...[
+            const SizedBox(height: Space.lg),
+            SectionTitle(t.pCheckInReasonTitle),
+            TextField(
+              controller: _reason,
+              maxLength: 200,
+              decoration: InputDecoration(hintText: t.pCheckInReasonHint),
+              onChanged: (_) => _saveDraft().ignore(),
+            ),
+          ],
         ],
       ),
       bottomNavigationBar: BottomActionBar(

@@ -33,6 +33,8 @@ S = {
   "err_invalid_transition": ["지금은 이 상태로 바꿀 수 없어요.", "The status can't be changed that way right now."],
   # partner
   "err_job_not_started": ["먼저 작업을 시작해 주세요.", "Start the job first."],
+  "err_not_checked_in": ["도착 기록이 없어요. 먼저 도착을 기록하거나 사유를 적어 주세요.", "The arrival isn't recorded. Check in first, or give a reason."],
+  "err_override_reason_too_long": ["사유는 200자 이하로 적어 주세요.", "Keep the reason to 200 characters or fewer."],
   "err_job_not_active": ["지금은 진행할 수 없는 작업이에요.", "This job isn't active."],
   "err_quote_locked": ["확정된 견적이라 수정할 수 없어요.", "This quote is locked and can't be edited."],
   "err_request_closed": ["이미 마감된 요청이에요.", "This request is closed."],
@@ -60,4 +62,8 @@ S = {
   "err_invalid_capacity": ["정원은 숫자로 입력해 주세요.", "Enter a valid capacity."],
   "err_seller_declined": ["토스가 판매자 등록을 승인하지 않았어요. 사업자 정보를 확인해 주세요.", "Toss did not approve the seller registration. Check the business details."],
   "err_payout_account_unverified": ["확인된 정산 계좌가 없어요. 먼저 계좌를 확인해 주세요.", "This partner has no verified payout account yet. Verify the account first."],
+  "err_invite_pending": ["아직 비밀번호를 정하지 않은 초대예요. 직원이 인증번호를 입력하면 켜져요.", "This invitation has no password yet. It turns on when the staff member enters the code."],
+  "err_phone_taken": ["이 휴대폰 번호는 다른 직원이 쓰고 있어요.", "Another staff member already uses this phone number."],
+  "err_code_invalid": ["인증번호가 맞지 않거나 시간이 지났어요. 관리자에게 새 번호를 받아 주세요.", "The code is wrong or has expired. Ask the admin for a new one."],
+  "err_no_phone": ["휴대폰 번호가 없어요. 번호를 입력해 주세요.", "There is no phone number on file. Enter one."],
 }

@@ -4,6 +4,7 @@ import 'package:ui/ui.dart';
 
 import '../state.dart';
 import 'complete.dart';
+import 'site_actions.dart';
 
 /// How far back and ahead a team member sees their jobs (server allows up to 62 days).
 const _pastDays = 7;
@@ -178,6 +179,17 @@ class MemberJobScreen extends StatelessWidget {
               .cast<String>()
               .toList();
           final memo = data['team_memo'] as String?;
+
+          Future<void> act(Future<void> Function() fn, String done) async {
+            try {
+              await fn();
+              if (context.mounted) showToast(context, done);
+            } catch (e) {
+              if (context.mounted) showToast(context, context.t.error(e));
+            }
+            await reload();
+          }
+
           return ListView(
             padding: const EdgeInsets.all(Space.gutter),
             children: [
@@ -230,6 +242,12 @@ class MemberJobScreen extends StatelessWidget {
                 SectionTitle(t.pTeamMemo),
                 Text(memo),
               ],
+              const SizedBox(height: Space.md),
+              SiteActionsCard(
+                raw: data['booking'] as Json,
+                member: true,
+                act: act,
+              ),
               const SizedBox(height: Space.xl),
               if (b.status == 2)
                 PrimaryButton(

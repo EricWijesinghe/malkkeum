@@ -3,7 +3,7 @@
 //! and balance steps. Nothing there decides money; callers own the transaction.
 //! Also the one job completion (`complete_job`) behind the owner's and the team member's handler.
 
-use super::{bookings::BookingRow, catalog::load_service, chat, growth, partner_jobs, uploads};
+use super::{audit, bookings::BookingRow, catalog::load_service, chat, growth, partner_jobs, uploads};
 use crate::{
     crypto,
     error::{ApiError, ApiResult},
@@ -171,10 +171,18 @@ pub async fn next_number(conn: &mut PgConnection) -> ApiResult<String> {
 /// Inserts a confirmed booking whose full price is paid, and marks its coupon used.
 /// Returns the booking number.
 /// The entry code is encrypted with `key` and never stored in `visit_notes`.
-pub async fn insert_paid(conn: &mut PgConnection, key: &[u8; 32], id: Uuid, user: Uuid, prep: &Prepared, b: &BookingBody, price: &PriceBreakdown) -> ApiResult<String> {
+pub async fn insert_paid(
+    conn: &mut PgConnection,
+    key: &[u8; 32],
+    id: Uuid,
+    user: Uuid,
+    prep: &Prepared,
+    b: &BookingBody,
+    price: &PriceBreakdown,
+) -> ApiResult<String> {
     let number = next_number(&mut *conn).await?;
     let mut notes = prep.notes.clone();
-    let access_code = take_entry(&mut notes).map(|code| crypto::encrypt(key, &code));
+    let access_code = take_entry(&mut notes).map(|code| crypto::encrypt(key, crypto::aad::ACCESS_CODE, &code));
     sqlx::query(
         "INSERT INTO bookings (id, number, user_id, service_code, unit_index, address, district_code, visit_date, start_hour, minutes, status, list_price, discount, paid_amount, coupon_id, visit_notes, access_code_enc, household)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,1,$11,$12,$13,$14,$15,$16,$17)",
@@ -233,8 +241,16 @@ pub struct SeenQuote {
 impl SeenQuote {
     /// All or nothing: a partial card binding is a client bug, not an old client.
     pub fn validate(&self) -> ApiResult<()> {
-        let given = [self.expected_deposit.is_some(), self.expected_final_price.is_some(), self.expected_quote_message_id.is_some()];
-        if given.iter().all(|g| *g) || given.iter().all(|g| !*g) { Ok(()) } else { Err(ApiError::BadRequest("invalid_request")) }
+        let given = [
+            self.expected_deposit.is_some(),
+            self.expected_final_price.is_some(),
+            self.expected_quote_message_id.is_some(),
+        ];
+        if given.iter().all(|g| *g) || given.iter().all(|g| !*g) {
+            Ok(())
+        } else {
+            Err(ApiError::BadRequest("invalid_request"))
+        }
     }
 }
 
@@ -292,9 +308,14 @@ pub async fn take_deposit(conn: &mut PgConnection, id: Uuid, deposit: i64, seen:
         .bind(id)
         .fetch_optional(&mut *conn)
         .await?;
-    let new_status = if selected.is_some() { 2 } else { 1 };
+    let new_status = if selected.is_some() {
+        BookingStatus::TeamAssigned
+    } else {
+        BookingStatus::Confirmed
+    };
+    let new_status = new_status.as_i16();
     // `deposit = $3` and the locked price: a re-quote since the amount was read is booking_changed, never the old price.
-    let moved = sqlx::query("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = 0 AND deposit = $3 AND final_price IS NOT DISTINCT FROM $5")
+    let moved = sqlx::query(&format!("UPDATE bookings SET status = $2, paid_amount = paid_amount + $3, pro_id = $4, accepted_at = CASE WHEN $4 IS NULL THEN NULL ELSE now() END, updated_at = now() WHERE id = $1 AND status = {} AND deposit = $3 AND final_price IS NOT DISTINCT FROM $5", BookingStatus::Consultation.as_i16()))
         .bind(id)
         .bind(new_status)
         .bind(deposit)
@@ -391,6 +412,7 @@ pub async fn after_booking_created(s: &AppState, id: Uuid, number: &str) {
 
 const CHECKLIST_ITEMS: usize = 4;
 const MAX_REPORT_PHOTOS: usize = 20;
+const MAX_OVERRIDE_REASON_CHARS: usize = 200;
 
 /// Completion report as both partner apps send it.
 #[derive(Deserialize)]
@@ -398,6 +420,25 @@ pub struct CompletionBody {
     before_photos: Vec<String>,
     after_photos: Vec<String>,
     checklist: Vec<bool>,
+    /// Owner only: why the job is completed without a recorded arrival. Audited. Ignored for team members.
+    #[serde(default)]
+    check_in_override: Option<String>,
+}
+
+/// A job completes only after its arrival is recorded. The owner may override with a reason, which is
+/// returned for the audit row; a team member has no override.
+fn check_in_gate(b: &BookingRow, member: Option<Uuid>, c: &CompletionBody) -> ApiResult<Option<String>> {
+    if b.checked_in_at.is_some() {
+        return Ok(None);
+    }
+    let reason = match (member, c.check_in_override.as_deref().map(str::trim)) {
+        (None, Some(r)) if !r.is_empty() => r,
+        _ => return Err(ApiError::Conflict("not_checked_in")),
+    };
+    if reason.chars().count() > MAX_OVERRIDE_REASON_CHARS {
+        return Err(ApiError::BadRequest("override_reason_too_long"));
+    }
+    Ok(Some(reason.to_owned()))
 }
 
 /// What a completion settled: the team's net, and when it is paid out (None while a quote's balance is open).
@@ -445,6 +486,7 @@ pub async fn complete_job(s: &AppState, b: &BookingRow, pro: Uuid, member: Optio
     if b.visit_date > today {
         return Err(ApiError::Conflict("job_not_started"));
     }
+    let override_reason = check_in_gate(b, member, c)?;
     let gross = b.final_price.or(b.list_price).ok_or(ApiError::Conflict("job_unpriced"))?;
     let fee_bps: i32 = sqlx::query_scalar("SELECT fee_bps FROM pros WHERE id = $1").bind(pro).fetch_one(&s.db).await?;
     let p = payout(Won(gross), i64::from(fee_bps));
@@ -455,13 +497,20 @@ pub async fn complete_job(s: &AppState, b: &BookingRow, pro: Uuid, member: Optio
         (Some(payout_date(today)), "pending")
     };
     let mut tx = s.db.begin().await?;
-    let moved = sqlx::query("UPDATE bookings SET status = 3, completed_at = now(), updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = 2")
-        .bind(b.id)
-        .bind(pro)
-        .execute(&mut *tx)
-        .await?;
+    let moved = sqlx::query(&format!(
+        "UPDATE bookings SET status = {}, completed_at = now(), updated_at = now() WHERE id = $1 AND pro_id = $2 AND status = {}",
+        BookingStatus::Completed.as_i16(),
+        BookingStatus::TeamAssigned.as_i16()
+    ))
+    .bind(b.id)
+    .bind(pro)
+    .execute(&mut *tx)
+    .await?;
     if moved.rows_affected() == 0 {
         return Err(ApiError::Conflict("job_not_active"));
+    }
+    if let Some(reason) = &override_reason {
+        audit(&mut *tx, "pro", Some(pro), "check_in.override", &b.id.to_string(), json!({ "reason": reason })).await?;
     }
     sqlx::query("INSERT INTO completion_reports (booking_id, before_photos, after_photos, checklist, submitted_by) VALUES ($1,$2,$3,$4,$5)")
         .bind(b.id)

@@ -21,6 +21,8 @@ async fn retried_completion_returns_the_first_result_without_a_second_settlement
         .execute(&pool)
         .await
         .expect("visit today");
+    let (st, b) = call(&app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro.as_str()), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     common::register_photo(&pool, pro_id).await;
     let done = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
     let url = format!("/v1/partner/jobs/{id}/complete");

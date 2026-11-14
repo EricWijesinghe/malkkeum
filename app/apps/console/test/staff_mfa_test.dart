@@ -159,7 +159,7 @@ void main() {
   );
 
   testWidgets(
-    'an owner issues a one-time reset token for an active staff member',
+    'an owner issues a one-time reset code for an active staff member',
     (tester) async {
       setViewport(tester, wideSize);
       final fake = FakeApi()
@@ -170,11 +170,13 @@ void main() {
             'email': 'min@example.test',
             'role': 'consultant',
             'active': true,
+            'has_phone': true,
+            'invited': false,
           },
         ])
         ..onPost(
           '/admin/staff/st-1/password-reset',
-          (_) => {'token': 'reset-abc-123', 'expires_in': 1800},
+          (_) => {'code': '482910', 'expires_in': 86400},
         );
       final env = await TestEnv.create(fake: fake, role: 'staff_admin');
       await pumpConsoleScreen(tester, env, const StaffScreen());
@@ -184,10 +186,14 @@ void main() {
       await settle(tester);
       await tester.tap(find.widgetWithText(FilledButton, koT.cStaffReset));
       await settle(tester);
+      await tester.tap(find.text(koT.cStaffChannelCopy));
+      await tester.tap(find.widgetWithText(FilledButton, koT.cStaffSendCode));
+      await settle(tester);
 
-      expect(fake.lastCall('POST', '/admin/staff/st-1/password-reset'), isNotNull);
+      final sent = fake.lastCall('POST', '/admin/staff/st-1/password-reset')!;
+      expect(sent.json['channel'], 'copy');
       expect(find.text(koT.cStaffResetTitle), findsOneWidget);
-      expect(_selectable('reset-abc-123'), findsOneWidget);
+      expect(_selectable('482910'), findsOneWidget);
       await unmount(tester);
     },
   );

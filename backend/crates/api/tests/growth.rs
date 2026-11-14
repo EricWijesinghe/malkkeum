@@ -29,7 +29,13 @@ async fn complete_job(app: &axum::Router, pool: &PgPool, id: Uuid, pro: &str) {
         .execute(pool)
         .await
         .expect("visit today");
-    let pro_id: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1").bind(id).fetch_one(pool).await.expect("pro");
+    let pro_id: Uuid = sqlx::query_scalar("SELECT pro_id FROM bookings WHERE id = $1")
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .expect("pro");
+    let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/check-in"), Some(pro), None).await;
+    assert_eq!(st, StatusCode::OK, "{b}");
     common::register_photo(pool, pro_id).await;
     let done = json!({ "before_photos": [PHOTO], "after_photos": [PHOTO], "checklist": [true, true, true, true] });
     let (st, b) = call(app, "POST", &format!("/v1/partner/jobs/{id}/complete"), Some(pro), Some(done)).await;
@@ -63,7 +69,14 @@ async fn only_the_customer_reviews_a_completed_booking_once_with_own_photos(pool
 
     let (st, _) = call(&app, "POST", &uri, Some(stranger.token.as_str()), Some(ok.clone())).await;
     assert_eq!(st, StatusCode::NOT_FOUND, "only the booking's customer may review");
-    let (st, _) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(json!({ "rating": 6, "body": "", "photos": [] }))).await;
+    let (st, _) = call(
+        &app,
+        "POST",
+        &uri,
+        Some(c.token.as_str()),
+        Some(json!({ "rating": 6, "body": "", "photos": [] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "rating is 1..=5");
     let foreign = json!({ "rating": 5, "body": "", "photos": ["https://evil.example/files/0123456789abcdef0123456789abcdef.jpg"] });
     let (st, _) = call(&app, "POST", &uri, Some(c.token.as_str()), Some(foreign)).await;
@@ -80,11 +93,22 @@ async fn public_proof_hides_small_counts_masks_names_and_respects_moderation(poo
     seed_catalog(&pool).await;
     let app = common::app(pool.clone());
     let c = customer(&app, &pool, "010-5100-0003").await;
-    sqlx::query("UPDATE users SET name = '김민수' WHERE id = $1").bind(c.user).execute(&pool).await.expect("name");
+    sqlx::query("UPDATE users SET name = '김민수' WHERE id = $1")
+        .bind(c.user)
+        .execute(&pool)
+        .await
+        .expect("name");
     let (pro, _) = verified_pro(&app, &pool, "010-5100-0102").await;
     let (id, _) = book(&app, &c, 10, None).await;
     complete_job(&app, &pool, id, pro.as_str()).await;
-    let (st, b) = call(&app, "POST", &format!("/v1/bookings/{id}/review"), Some(c.token.as_str()), Some(json!({ "rating": 5, "body": "다음에도 부를게요", "photos": [] }))).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        &format!("/v1/bookings/{id}/review"),
+        Some(c.token.as_str()),
+        Some(json!({ "rating": 5, "body": "다음에도 부를게요", "photos": [] })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{b}");
 
     let (st, proof) = call(&app, "GET", "/v1/public/proof", None, None).await;
@@ -94,14 +118,59 @@ async fn public_proof_hides_small_counts_masks_names_and_respects_moderation(poo
     assert_eq!(proof["reviews"][0]["name"], "김*수", "masked name");
 
     let admin = auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffAdmin).expect("token");
-    let (st, b) = call(&app, "PUT", &format!("/v1/admin/reviews/{id}"), Some(admin.as_str()), Some(json!({ "hidden": true }))).await;
+    let (st, b) = call(
+        &app,
+        "PUT",
+        &format!("/v1/admin/reviews/{id}"),
+        Some(admin.as_str()),
+        Some(json!({ "hidden": true })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{b}");
     let (_, proof) = call(&app, "GET", "/v1/public/proof", None, None).await;
     assert_eq!(proof["reviews"].as_array().map(Vec::len), Some(0), "hidden reviews leave the public page");
 
     let consultant = auth::issue_access(SECRET, Uuid::now_v7(), Role::StaffConsultant).expect("token");
-    let (st, _) = call(&app, "PUT", &format!("/v1/admin/reviews/{id}"), Some(consultant.as_str()), Some(json!({ "hidden": false }))).await;
+    let (st, _) = call(
+        &app,
+        "PUT",
+        &format!("/v1/admin/reviews/{id}"),
+        Some(consultant.as_str()),
+        Some(json!({ "hidden": false })),
+    )
+    .await;
     assert_eq!(st, StatusCode::FORBIDDEN, "moderation is owner-only");
+}
+
+#[sqlx::test(migrations = "../../migrations")]
+async fn public_offers_show_owner_terms_to_guests_and_no_user_fields(pool: PgPool) {
+    use axum::{body::Body, http::Request};
+    use tower::ServiceExt;
+    let app = common::app(pool.clone());
+    let (st, off) = call(&app, "GET", "/v1/public/offers", None, None).await;
+    assert_eq!(st, StatusCode::OK, "{off}");
+    assert_eq!(off["welcome"]["enabled"], false, "off by default");
+    assert_eq!(off["referral"]["enabled"], false, "off by default");
+    assert_eq!(off["welcome_pack"], json!([{ "amount": 15000, "service_code": null }]));
+    assert_eq!(off["coupon_days"], 14);
+
+    set_setting(&pool, "welcome_offer", json!({ "enabled": true, "kind": "percent", "value": 10 })).await;
+    set_setting(&pool, "referral_offer", json!({ "enabled": true, "amount": 3000 })).await;
+    let (st, on) = call(&app, "GET", "/v1/public/offers", None, None).await;
+    assert_eq!(st, StatusCode::OK, "{on}");
+    assert_eq!(on["welcome"], json!({ "enabled": true, "kind": "percent", "value": 10 }));
+    assert_eq!(on["referral"], json!({ "enabled": true, "amount": 3000 }));
+    let mut keys: Vec<&str> = on.as_object().expect("object").keys().map(String::as_str).collect();
+    keys.sort_unstable();
+    assert_eq!(
+        keys,
+        ["coupon_days", "referral", "welcome", "welcome_pack"],
+        "no user data in the public answer"
+    );
+
+    let req = Request::builder().uri("/v1/public/offers").body(Body::empty()).expect("request");
+    let res = app.clone().oneshot(req).await.expect("response");
+    assert_eq!(res.headers()["cache-control"], "public, max-age=300");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -116,15 +185,43 @@ async fn referral_pays_both_sides_once_after_the_friend_pays_and_completes(pool:
     let (_, again) = call(&app, "GET", "/v1/me/referral", Some(referrer.token.as_str()), None).await;
     assert_eq!(again["code"], code, "the code is stable");
 
-    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(referrer.token.as_str()), Some(json!({ "code": code }))).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/referral/claim",
+        Some(referrer.token.as_str()),
+        Some(json!({ "code": code })),
+    )
+    .await;
     assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("self_referral")), "{b}");
 
     let friend = customer(&app, &pool, "010-5200-0002").await;
-    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": "NOSUCH12" }))).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/referral/claim",
+        Some(friend.token.as_str()),
+        Some(json!({ "code": "NOSUCH12" })),
+    )
+    .await;
     assert_eq!(st, StatusCode::BAD_REQUEST, "{b}");
-    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": code }))).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/referral/claim",
+        Some(friend.token.as_str()),
+        Some(json!({ "code": code })),
+    )
+    .await;
     assert_eq!(st, StatusCode::OK, "{b}");
-    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": code }))).await;
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/referral/claim",
+        Some(friend.token.as_str()),
+        Some(json!({ "code": code })),
+    )
+    .await;
     assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::CONFLICT, Some("already_referred")), "{b}");
 
     let (pro, _) = verified_pro(&app, &pool, "010-5200-0101").await;
@@ -152,8 +249,19 @@ async fn referral_is_refused_after_the_friend_has_booked(pool: PgPool) {
     let (_, mine) = call(&app, "GET", "/v1/me/referral", Some(referrer.token.as_str()), None).await;
     let friend = customer(&app, &pool, "010-5300-0002").await;
     book(&app, &friend, 10, None).await;
-    let (st, b) = call(&app, "POST", "/v1/me/referral/claim", Some(friend.token.as_str()), Some(json!({ "code": mine["code"] }))).await;
-    assert_eq!((st, b["error"]["code"].as_str()), (StatusCode::BAD_REQUEST, Some("referee_already_booked")), "{b}");
+    let (st, b) = call(
+        &app,
+        "POST",
+        "/v1/me/referral/claim",
+        Some(friend.token.as_str()),
+        Some(json!({ "code": mine["code"] })),
+    )
+    .await;
+    assert_eq!(
+        (st, b["error"]["code"].as_str()),
+        (StatusCode::BAD_REQUEST, Some("referee_already_booked")),
+        "{b}"
+    );
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -174,20 +282,28 @@ async fn welcome_offer_applies_once_to_the_first_booking_and_not_on_top_of_a_cou
     assert_eq!(of(second), Some(0), "only the first booking");
 
     let fresh = customer(&app, &pool, "010-5400-0002").await;
-    let coupon: Uuid = sqlx::query_scalar("INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'manual', 2000, now() + interval '30 days') RETURNING id")
-        .bind(fresh.user)
+    let coupon: Uuid =
+        sqlx::query_scalar("INSERT INTO coupons (user_id, name, amount, expires_at) VALUES ($1, 'manual', 2000, now() + interval '30 days') RETURNING id")
+            .bind(fresh.user)
+            .fetch_one(&pool)
+            .await
+            .expect("coupon");
+    let (with_coupon, _) = book(&app, &fresh, 12, Some(coupon)).await;
+    let (d,): (i64,) = sqlx::query_as("SELECT discount FROM bookings WHERE id = $1")
+        .bind(with_coupon)
         .fetch_one(&pool)
         .await
-        .expect("coupon");
-    let (with_coupon, _) = book(&app, &fresh, 12, Some(coupon)).await;
-    let (d,): (i64,) = sqlx::query_as("SELECT discount FROM bookings WHERE id = $1").bind(with_coupon).fetch_one(&pool).await.expect("discount");
+        .expect("discount");
     assert_eq!(d, 2_000, "a coupon is never stacked with the welcome offer");
 }
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn slot_shows_seats_left_only_when_two_or_fewer_remain(pool: PgPool) {
     seed_catalog(&pool).await;
-    sqlx::query("UPDATE slot_capacity SET capacity = 3 WHERE start_hour = 9").execute(&pool).await.expect("capacity");
+    sqlx::query("UPDATE slot_capacity SET capacity = 3 WHERE start_hour = 9")
+        .execute(&pool)
+        .await
+        .expect("capacity");
     let app = common::app(pool.clone());
     let date = api::util::today_kst() + Duration::days(10);
     let uri = format!("/v1/slots?date={date}");
@@ -278,7 +394,10 @@ async fn admin_edits_the_welcome_pack_and_new_sign_ups_get_it(pool: PgPool) {
         (json!([{ "amount": 15050 }]), "out_of_range"),
         (json!([{ "amount": 0 }]), "out_of_range"),
         (json!([{ "amount": 200000 }]), "out_of_range"),
-        (json!([{ "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }]), "out_of_range"),
+        (
+            json!([{ "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }, { "amount": 1000 }]),
+            "out_of_range",
+        ),
         (json!([{ "amount": 30000 }, { "amount": 25000 }]), "out_of_range"),
         (json!([{ "amount": 5000, "service_code": "no_such_service" }]), "invalid_service"),
     ] {
@@ -288,11 +407,20 @@ async fn admin_edits_the_welcome_pack_and_new_sign_ups_get_it(pool: PgPool) {
     }
     let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(pack)).await;
     assert_eq!(st, StatusCode::OK, "{b}");
-    let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'growth.welcome_pack'").fetch_one(&pool).await.expect("audit");
+    let audited: i64 = sqlx::query_scalar("SELECT count(*) FROM audit_log WHERE action = 'growth.welcome_pack'")
+        .fetch_one(&pool)
+        .await
+        .expect("audit");
     assert_eq!(audited, 1);
 
     let coupons = sign_up(&app, &pool, "010-5600-0002").await;
-    assert_eq!(coupons, vec![("welcome_studio".to_string(), 7_000, Some("studio".to_string())), ("welcome_any".to_string(), 3_000, None)]);
+    assert_eq!(
+        coupons,
+        vec![
+            ("welcome_studio".to_string(), 7_000, Some("studio".to_string())),
+            ("welcome_any".to_string(), 3_000, None)
+        ]
+    );
 
     // An empty pack switches the coupons off.
     let (st, b) = call(&app, "PUT", uri, Some(admin.as_str()), Some(json!([]))).await;

@@ -4,6 +4,7 @@
 use super::{
     booking_core::{CompletionBody, complete_job},
     bookings::{BOOKING_COLS, BookingRow, load_booking},
+    site,
 };
 use crate::{
     auth::{Member, mask_name},
@@ -28,6 +29,20 @@ pub fn routes() -> Router<AppState> {
         .route("/jobs", get(jobs))
         .route("/jobs/{id}", get(job))
         .route("/jobs/{id}/complete", post(complete))
+        .route("/jobs/{id}/check-in", post(check_in))
+        .route("/jobs/{id}/check-out", post(check_out))
+}
+
+/// The member's arrival on their own assigned job; the rules are `site::check_in_job`, shared with the owner's.
+async fn check_in(State(s): State<AppState>, Member(a): Member, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let (b, _) = assigned(&s, a.id, id).await?;
+    site::check_in_job(&s, &b).await
+}
+
+/// The member's departure from their own assigned job; the rules are `site::check_out_job`.
+async fn check_out(State(s): State<AppState>, Member(a): Member, Path(id): Path<Uuid>) -> ApiResult<Json<Value>> {
+    let (b, _) = assigned(&s, a.id, id).await?;
+    site::check_out_job(&s, &b).await
 }
 
 async fn me(State(s): State<AppState>, Member(a): Member) -> ApiResult<Json<Value>> {

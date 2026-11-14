@@ -149,7 +149,8 @@ def main():
     early = call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0], expect=409)
     assert early["error"]["code"] == "job_not_started"
     sql(f"UPDATE bookings SET visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date WHERE id = '{b['id']}'")  # time travel to visit day
-    done = call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0])
+    call("POST", f"/v1/partner/jobs/{b['id']}/check-in", token=pros[0])
+    done =call("POST", f"/v1/partner/jobs/{b['id']}/complete", {"before_photos": [photo], "after_photos": [photo], "checklist": [True] * 4}, pros[0])
     assert done["net"] == 41600, done
     assert call("GET", f"/v1/bookings/{b['id']}", token=cust)["status"] == 3
     step("completion needs photos; payout 41,600 (52,000 - 20%) scheduled")

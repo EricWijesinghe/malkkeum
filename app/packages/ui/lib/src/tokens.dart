@@ -20,6 +20,7 @@ class BrandConfig {
     required this.fresh,
     required this.sun,
     this.ink = const Color(0xFF17232C),
+    this.logoUrl,
   });
 
   final String name;
@@ -38,6 +39,9 @@ class BrandConfig {
 
   /// Ink: body text and dark surfaces.
   final Color ink;
+
+  /// Uploaded logo image (absolute URL) from the business profile; null shows the built-in mark.
+  final String? logoUrl;
 
   static const placeholder = BrandConfig(
     name: '다해',

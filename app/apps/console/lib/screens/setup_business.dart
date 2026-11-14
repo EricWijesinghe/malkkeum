@@ -273,6 +273,17 @@ class _BusinessCardState extends State<BusinessCard> {
                 ),
               ],
             ),
+            // Customers and partners see white text on this colour (buttons): flag a colour they cannot read.
+            if (parseHex(_color.text) case final c? when !whiteTextReadsOn(c))
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: Text(
+                  t.cSetupColorContrast,
+                  style: context.text.bodySmall?.copyWith(
+                    color: context.colors.danger,
+                  ),
+                ),
+              ),
             const SizedBox(height: Space.lg),
             Text(t.cSetupCompany, style: context.text.labelLarge),
             const SizedBox(height: Space.xs),
@@ -368,10 +379,8 @@ class _Preview extends StatelessWidget {
                         // 64dp box, 3x screens.
                         cacheWidth: 192,
                         cacheHeight: 192,
-                        errorBuilder: (_, _, _) => Icon(
-                          Icons.broken_image_outlined,
-                          color: onColor,
-                        ),
+                        errorBuilder: (_, _, _) =>
+                            Icon(Icons.broken_image_outlined, color: onColor),
                       ),
               ),
             ),
