@@ -214,8 +214,14 @@ abstract final class Icon3DRegistry {
     'c_monitor': const Icon3DSpec(Icons.monitor_heart_rounded),
     // shortcut: no rendered art yet (Blender render pipeline), reuses the nearest existing art; render c_audit, c_privacy and c_renewals to replace
     'c_audit': const Icon3DSpec(Icons.history_rounded, alias: 'c_monitor'),
-    'c_privacy': const Icon3DSpec(Icons.privacy_tip_rounded, alias: 'c_customers'),
-    'c_renewals': const Icon3DSpec(Icons.event_repeat_rounded, alias: 'c_bookings'),
+    'c_privacy': const Icon3DSpec(
+      Icons.privacy_tip_rounded,
+      alias: 'c_customers',
+    ),
+    'c_renewals': const Icon3DSpec(
+      Icons.event_repeat_rounded,
+      alias: 'c_bookings',
+    ),
     // Icons cut from the client's design PDF (screenshots). Line icons are
     // tintable white masks; colour art is full colour.
     'circle_box': const Icon3DSpec(Icons.inventory_2_outlined),
@@ -253,6 +259,14 @@ abstract final class Icon3DRegistry {
     'ui_chevron_down': const Icon3DSpec(Icons.expand_more_rounded),
     'brand_wordmark': const Icon3DSpec(Icons.home_rounded, hue: _deep),
     'brand_confirm_check': const Icon3DSpec(Icons.check_rounded, large: true),
+    // Derived (not in the design PDF): drawn in the same colour language as the
+    // design art; the group tiles are composites of member art.
+    'svc_window': const Icon3DSpec(Icons.window_rounded),
+    'svc_whole_home': const Icon3DSpec(Icons.house_rounded),
+    'svc_disinfection': const Icon3DSpec(Icons.sanitizer_rounded),
+    'group_resident_clean': const Icon3DSpec(Icons.cleaning_services_rounded),
+    'group_appliance_clean': const Icon3DSpec(Icons.ac_unit_rounded),
+    'group_disinfect_clean': const Icon3DSpec(Icons.sanitizer_rounded),
   };
 
   static Icon3DSpec of(String id) => specs[id] ?? unknown;
