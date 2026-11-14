@@ -28,6 +28,7 @@ void main() {
     final th = ChatThread.fromJson({
       'id': 't1',
       'topic': 'move_in',
+      'user_id': 'u1',
       'customer_name': '',
       'customer_phone': '01012345678',
     });
