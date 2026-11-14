@@ -41,6 +41,7 @@ extension Labels on T {
     'cancellation_window_closed' => err_cancellation_window_closed,
     'address_required' => err_address_required,
     'already_taken' => err_already_taken,
+    'schedule_overlap' => err_schedule_overlap,
     'invalid_address' => err_invalid_address,
     'has_active_jobs' => err_has_active_jobs,
     'pending_payouts' => err_pending_payouts,
@@ -103,6 +104,9 @@ extension Labels on T {
     'toss_unverified' => err_toss_unverified,
     'invalid_cap' => err_invalid_cap,
     'invalid_capacity' => err_invalid_capacity,
+    'tighten_only' => err_tighten_only,
+    'threshold_order' => err_threshold_order,
+    'read_only_setting' => err_read_only_setting,
     _ => null,
   };
 

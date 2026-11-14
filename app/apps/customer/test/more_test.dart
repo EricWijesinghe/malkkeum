@@ -202,4 +202,33 @@ void main() {
     expect(find.text(koT.guestSheetTitle), findsOneWidget, reason: 'the card opens sign-in');
     await unmount(tester);
   });
+
+  testWidgets('a guest sees sign-in hints on member rows and the account row opens the sheet, not the account', (tester) async {
+    setViewport(tester, _tall);
+    final fake = _api();
+    final env = await TestEnv.create(fake: fake, signedIn: false);
+    await pumpCustomerScreen(tester, env, const MoreTab());
+    await settle(tester);
+
+    expect(find.text(koT.guestAccountHint), findsWidgets, reason: 'member rows and counters show the hint');
+    await tester.tap(find.text(koT.moreAccount));
+    await settle(tester);
+    expect(find.text(koT.guestReasonAccount), findsOneWidget, reason: 'the account copy names the reason');
+    expect(fake.callsTo('GET', '/me'), isEmpty, reason: 'no account request while signed out');
+    await unmount(tester);
+  });
+
+  testWidgets('a guest tapping contact is asked to sign in before any chat thread is created', (tester) async {
+    setViewport(tester, _tall);
+    final fake = _api();
+    final env = await TestEnv.create(fake: fake, signedIn: false);
+    await pumpCustomerScreen(tester, env, const MoreTab());
+    await settle(tester);
+
+    await tester.tap(find.text(koT.moreContact));
+    await settle(tester);
+    expect(find.text(koT.guestReasonChat), findsOneWidget);
+    expect(fake.callsTo('POST', '/chat/threads'), isEmpty);
+    await unmount(tester);
+  });
 }

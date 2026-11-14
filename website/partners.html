@@ -48,8 +48,8 @@
     </div>
   </main>
   <footer><div class="wrap cols">
-    <div><p class="company" id="company"></p><noscript data-unbaked><p class="company">사업자 정보(상호, 대표자, 사업자등록번호, 통신판매업 신고번호, 주소, 호스팅 제공자)는 <a href="terms.html#business">이용약관</a>에 있어요.</p></noscript><p class="company"><a data-bizcheck hidden href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener" data-t="c_bizcheck">사업자정보확인</a></p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
-    <div><b data-t="f_support">고객센터</b><br><a data-support-phone hidden></a><br><a data-support-email hidden></a></div>
+    <div><p class="company">{{httpInclude "/v1/public/seller-info"}}</p><p>© <span id="year"></span> <span data-brand-name>다해</span></p></div>
+    <div><b data-t="f_support">고객센터</b><br>{{httpInclude "/v1/public/seller-info?field=support_phone"}}<br>{{httpInclude "/v1/public/seller-info?field=support_email"}}</div>
     <div><a href="privacy.html" data-t="f_privacy">개인정보처리방침</a><br><a href="terms.html" data-t="f_terms">이용약관</a><br><a href="location-terms.html">위치기반서비스 이용약관</a><br>
       <a href="delete-account.html" data-t="f_delete">계정 삭제 안내</a></div>
   </div></footer>

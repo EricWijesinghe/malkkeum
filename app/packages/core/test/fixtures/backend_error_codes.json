@@ -80,7 +80,11 @@
     "unsupported_image",
     "upload_quota",
     "checkout_refund_pending",
-    "payment_not_for_checkout"
+    "payment_not_for_checkout",
+    "read_only_setting",
+    "schedule_overlap",
+    "tighten_only",
+    "threshold_order"
   ],
   "fallback": [
     "already_confirmed",
@@ -149,6 +153,7 @@
     "thread_quota",
     "unauthorized",
     "use_cancel",
-    "weak_password"
+    "weak_password",
+    "unknown_setting"
   ]
 }

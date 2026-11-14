@@ -12,6 +12,7 @@ use crate::{
     error::{ApiError, ApiResult},
     providers::ProviderError,
     realtime::{Recipient, notify},
+    schedule::{clash, lock_schedule},
     state::AppState,
     util::{KST_TODAY, best_effort, lock_and_count_slot, refund_or_alert, today_kst},
 };
@@ -91,7 +92,12 @@ pub async fn pass(s: &AppState) -> ApiResult<PassReport> {
     let planned = plan(s).await?;
     let (booked, failed) = charge_due(s).await?;
     let missed = expire(s).await?;
-    Ok(PassReport { planned, booked, failed, missed })
+    Ok(PassReport {
+        planned,
+        booked,
+        failed,
+        missed,
+    })
 }
 
 /// Plans visits for every active subscription inside the horizon. Returns how many were added.
@@ -109,10 +115,11 @@ async fn plan(s: &AppState) -> ApiResult<usize> {
 
 /// Plans one active subscription's visits inside the horizon. Used on create and on every pass.
 pub async fn plan_subscription(db: &PgPool, sub: Uuid) -> ApiResult<usize> {
-    let row: Option<(i16, NaiveDate, i16)> = sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
-        .bind(sub)
-        .fetch_optional(db)
-        .await?;
+    let row: Option<(i16, NaiveDate, i16)> =
+        sqlx::query_as("SELECT cadence_weeks, anchor_date, start_hour FROM subscriptions WHERE id = $1 AND status = 'active'")
+            .bind(sub)
+            .fetch_optional(db)
+            .await?;
     let Some((weeks, anchor, hour)) = row else {
         return Ok(0);
     };
@@ -257,7 +264,12 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     };
     let list = price_booking(&prep.service, body.unit_index, None, Utc::now())?;
     let vp = visit_price(list.list_price.0, u8::try_from(sub.discount_percent).unwrap_or(0))?;
-    let price = PriceBreakdown { list_price: list.list_price, discount: Won(vp.discount), total: Won(vp.total), minutes: list.minutes };
+    let price = PriceBreakdown {
+        list_price: list.list_price,
+        discount: Won(vp.discount),
+        total: Won(vp.total),
+        minutes: list.minutes,
+    };
     let key: Option<String> = sqlx::query_scalar("SELECT billing_key FROM payment_methods WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL")
         .bind(sub.payment_method_id)
         .bind(sub.user_id)
@@ -266,7 +278,14 @@ async fn charge_visit(s: &AppState, d: &Due) -> ApiResult<Attempt> {
     let Some(key) = key else {
         return Ok(Attempt::Failed(Failure::Blocked));
     };
-    let c = Charge { d, sub: &sub, prep: &prep, body: &body, price: &price, key: &key };
+    let c = Charge {
+        d,
+        sub: &sub,
+        prep: &prep,
+        body: &body,
+        price: &price,
+        key: &key,
+    };
     if price.total.0 == 0 {
         return finalize(s, &c, None).await;
     }
@@ -332,7 +351,9 @@ async fn charge_once(s: &AppState, c: &Charge<'_>, pid: &str) -> ApiResult<Attem
 /// Books the visit once the money is settled. The charge already happened, so any outcome other than a booking refunds it.
 async fn finalize(s: &AppState, c: &Charge<'_>, paid: Option<(&str, &str)>) -> ApiResult<Attempt> {
     let outcome = book_visit(s, c, paid).await;
-    if !matches!(outcome, Ok(Attempt::Booked(_))) && let Some((_, tx)) = paid {
+    if !matches!(outcome, Ok(Attempt::Booked(_)))
+        && let Some((_, tx)) = paid
+    {
         refund_or_alert(s, "portone", tx, c.price.total.0).await;
     }
     outcome
@@ -372,18 +393,19 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
         .bind(d.sub_id)
         .execute(&mut *tx)
         .await?;
-    if let Some(pro) = sub.preferred_pro_id
-        && pro_free_for(&mut tx, id, pro).await?
-    {
-        sqlx::query(
-            "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
-               assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
-             WHERE id = $1",
-        )
-        .bind(id)
-        .bind(pro)
-        .execute(&mut *tx)
-        .await?;
+    if let Some(pro) = sub.preferred_pro_id {
+        lock_schedule(&mut tx, pro).await?;
+        if pro_free_for(&mut tx, id, pro).await? {
+            sqlx::query(
+                "UPDATE bookings SET pro_id = $2, status = 2, accepted_at = now(), updated_at = now(),
+                   assignee_id = (SELECT id FROM team_members WHERE pro_id = $2 AND role = 'owner')
+                 WHERE id = $1",
+            )
+            .bind(id)
+            .bind(pro)
+            .execute(&mut *tx)
+            .await?;
+        }
     }
     sqlx::query("UPDATE subscription_visits SET state = 'booked', booking_id = $2, charge_attempts = charge_attempts + 1, retry_at = NULL, payment_ref = NULL, updated_at = now() WHERE id = $1")
         .bind(d.visit_id)
@@ -398,12 +420,14 @@ async fn commit_booking(mut tx: sqlx::Transaction<'_, sqlx::Postgres>, id: Uuid,
     Ok(())
 }
 
-/// Whether the preferred partner may take this booking: verified, prefs match, and no job already at that slot.
+/// Whether the preferred partner may take this booking: verified, prefs match, and no live job overlapping its window.
+/// The caller holds `lock_schedule` for the partner.
 async fn pro_free_for(conn: &mut PgConnection, booking: Uuid, pro: Uuid) -> ApiResult<bool> {
     let ok: bool = sqlx::query_scalar(&format!(
         "SELECT EXISTS (SELECT 1 FROM bookings b, pros p JOIN partner_prefs pp ON pp.pro_id = p.id
            WHERE b.id = $1 AND p.id = $2 AND {VISIBLE}
-             AND NOT EXISTS (SELECT 1 FROM bookings x WHERE x.pro_id = p.id AND x.visit_date = b.visit_date AND x.start_hour = b.start_hour AND x.status = 2))"
+             AND NOT EXISTS (SELECT 1 FROM bookings o WHERE o.pro_id = p.id AND {}))",
+        clash("b")
     ))
     .bind(booking)
     .bind(pro)
@@ -414,10 +438,12 @@ async fn pro_free_for(conn: &mut PgConnection, booking: Uuid, pro: Uuid) -> ApiR
 
 /// Counts a failed attempt, schedules the retry, and pauses after repeated failures. The customer is told each time.
 async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<()> {
-    let failures: i32 = sqlx::query_scalar("UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures")
-        .bind(d.sub_id)
-        .fetch_one(&s.db)
-        .await?;
+    let failures: i32 = sqlx::query_scalar(
+        "UPDATE subscriptions SET consecutive_failures = consecutive_failures + 1, updated_at = now() WHERE id = $1 RETURNING consecutive_failures",
+    )
+    .bind(d.sub_id)
+    .fetch_one(&s.db)
+    .await?;
     let retry = after_failure(u32::try_from(failures).unwrap_or(u32::MAX));
     let hours = match retry {
         Retry::After { hours } => Some(hours as i32),
@@ -446,7 +472,14 @@ async fn record_failure(s: &AppState, d: &Due, failure: &Failure) -> ApiResult<(
         if paused == 1 {
             best_effort(
                 "notify",
-                notify(s, Recipient::User(d.user_id), "subscription.paused", "정기 청소가 일시 정지됐어요", "결제 수단을 확인한 뒤 재개해 주세요", json!({ "subscription_id": d.sub_id })),
+                notify(
+                    s,
+                    Recipient::User(d.user_id),
+                    "subscription.paused",
+                    "정기 청소가 일시 정지됐어요",
+                    "결제 수단을 확인한 뒤 재개해 주세요",
+                    json!({ "subscription_id": d.sub_id }),
+                ),
             )
             .await;
         }
@@ -478,7 +511,14 @@ async fn expire(s: &AppState) -> ApiResult<usize> {
     for (user,) in &missed {
         best_effort(
             "notify",
-            notify(s, Recipient::User(*user), "subscription.visit_missed", "이번 정기 청소를 잡지 못했어요", "고객센터로 문의해 주세요", json!({})),
+            notify(
+                s,
+                Recipient::User(*user),
+                "subscription.visit_missed",
+                "이번 정기 청소를 잡지 못했어요",
+                "고객센터로 문의해 주세요",
+                json!({}),
+            ),
         )
         .await;
     }
@@ -502,7 +542,10 @@ mod tests {
     #[test]
     fn upstream_is_unknown_and_only_a_decline_fails_the_attempt() {
         assert_eq!(settle(Err(ProviderError::Upstream("timeout".into()))), Settled::Unknown);
-        assert_eq!(settle(Err(ProviderError::Declined("card_declined".into()))), Settled::Declined("card_declined".into()));
+        assert_eq!(
+            settle(Err(ProviderError::Declined("card_declined".into()))),
+            Settled::Declined("card_declined".into())
+        );
         assert_eq!(settle(Ok("tx_1".into())), Settled::Paid("tx_1".into()));
     }
 }
