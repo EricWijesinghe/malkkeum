@@ -37,13 +37,14 @@ chmod +x "$SB/bin/docker"
 # fake public-IP lookup and DNS lookups: the server is 203.0.113.7, the domain has one A and one AAAA record
 cat > "$SB/bin/curl" <<'EOF'
 #!/usr/bin/env bash
-echo 203.0.113.7
+case "$*" in *" -6 "*) echo 2001:db8::1 ;; *) echo 203.0.113.7 ;; esac
 EOF
+# a file named stray-aaaa next to this script adds an AAAA record that points elsewhere
 cat > "$SB/bin/getent" <<'EOF'
 #!/usr/bin/env bash
 case "$1" in
   ahostsv4) echo "203.0.113.7  STREAM myshop.co.kr" ;;
-  ahostsv6) echo "2001:db8::1  STREAM myshop.co.kr" ;;
+  ahostsv6) if [ -e "$(dirname "$0")/stray-aaaa" ]; then echo "2001:db8::99  STREAM myshop.co.kr"; else echo "2001:db8::1  STREAM myshop.co.kr"; fi ;;
 esac
 EOF
 chmod +x "$SB/bin/curl" "$SB/bin/getent"
@@ -232,6 +233,23 @@ echo off > "$DAHAE_DIR/update-schedule"; host_refresh
 t  "host.json next update null when off" grep -q '"next_update":null' "$DAHAE_HOST_DIR/host.json"
 rm -f "$DAHAE_DIR/update-schedule"
 
+# ---- version floor: the highest recorded version; no record means update-tag is refused; a stable release beats its own beta ----
+VH="$HOST_DIR/version-history"
+rm -f "$VH"
+nt "no history: update-tag refused"         tag_newer v2.1.0
+printf 'v2.1.0\n' > "$VH"
+nt "beta of the installed version refused"  tag_newer v2.1.0-beta.1
+printf 'v2.1.0-beta.1\n' > "$VH"
+t  "stable after its own beta allowed"      tag_newer v2.1.0
+t  "next beta after a beta allowed"         tag_newer v2.1.0-beta.2
+printf 'v2.1.0-beta.2\n' > "$VH"
+nt "older beta refused"                     tag_newer v2.1.0-beta.1
+printf 'v2.9.0\n' > "$VH"
+t  "v2.10.0 is newer than v2.9.0"           tag_newer v2.10.0
+printf 'v2.2.0\n' > "$VH"                   # recorded by a manual update, not by update-tag
+nt "tag installed outside update-tag holds" tag_newer v2.1.5
+rm -f "$VH"
+
 # ---- server approval (TOTP): update-tag and rollback wait in one slot; a code for that job runs it once ----
 SECRET=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ # the RFC 6238 test key ("12345678901234567890")
 TOK1=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa TOK2=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -241,6 +259,7 @@ ap() { printf 'code=%s\n' "$2" > "$DAHAE_JOBS/inbox/$1.approve"; intake_all; } #
 t  "totp RFC 6238 at T=59"          eq "$(totp_at "$SECRET" 59)" 287082
 t  "totp RFC 6238 at T=1111111109"  eq "$(totp_at "$SECRET" 1111111109)" 081804
 t  "totp RFC 6238 at T=1234567890"  eq "$(totp_at "$SECRET" 1234567890)" 005924
+nt "totp key never given as an argument" grep -q 'hexkey' "$ROOT/deploy/agent.sh"
 printf 'DOMAIN=myshop.co.kr\nCHANNEL=stable\nVERSION=stable\n' > "$DAHAE_DIR/.env"
 id=$(uuid7); id=$(uuid7); t  "no approval key: update-tag refused" refuse "$id" "id=$id\nkind=update-tag\narg=v2.1.0\ntoken=$TOK1\n"
 printf '%s\n' "$SECRET" > "$DAHAE_HOST_DIR/approval.key"; chmod 600 "$DAHAE_HOST_DIR/approval.key"
@@ -303,6 +322,45 @@ t  "approved rollback runs rollback"      argv_has "rollback YES=1"
 t  "approved rollback ends ok"            eq "$(state "$id4")" ok
 t  "rollback result shown publicly"      grep -q '"state":"ok"' "$DAHAE_JOBS/public/$TOK4.json"
 
+# E: ten wrong codes within an hour lock approval: the right code is refused, a new high-impact job is refused
+rm -f "$HOST_DIR/approval.fails"
+idE=$(uuid7); submit "$idE" "id=$idE\nkind=rollback\ntoken=$TOK1\n"
+for w in 000011 000012 000013 000014 000015; do ap "$idE" "$w"; done
+idF=$(uuid7); submit "$idF" "id=$idF\nkind=rollback\ntoken=$TOK2\n"
+for w in 000021 000022 000023 000024 000025; do ap "$idF" "$w"; done
+t  "ten wrong codes are recorded"          eq "$(wc -l < "$HOST_DIR/approval.fails" | tr -d ' ')" 10
+t  "ten wrong codes lock approval"         approval_locked
+idG=$(uuid7); t  "new high-impact job refused while locked" refuse "$idG" "id=$idG\nkind=rollback\ntoken=$TOK3\n"
+idH=$(uuid7); printf 'id=%s\nkind=rollback\ntoken=%s\n' "$idH" "$TOK4" > "$DAHAE_JOBS/inbox/$idH.job"
+rm -f "$HOST_DIR/approval.fails"; intake_all
+t  "waiting job held before the lock"      eq "$(state "$idH")" awaiting_approval
+: > "$HOST_DIR/approval.fails"
+for i in 1 2 3 4 5 6 7 8 9 10; do date +%s >> "$HOST_DIR/approval.fails"; done
+good=$(totp_at "$SECRET" $(( $(date +%s) + 30 )))   # the next 30-second step: not used yet
+before=$(argv_lines)
+ap "$idH" "$good"
+t  "right code refused while locked"       eq "$(argv_lines)" "$before"
+t  "waiting job stays while locked"        test -e "$HOST_DIR/awaiting.job"
+: > "$HOST_DIR/approval.fails"
+for i in 1 2 3 4 5 6 7 8 9 10; do echo $(( $(date +%s) - 7200 )) >> "$HOST_DIR/approval.fails"; done
+nt "old failures do not lock"              approval_locked
+ap "$idH" "$good"
+t  "right code runs once the lock lifts"   eq "$(state "$idH")" ok
+
+# F: the enrolment job makes the key once, records the owner, and publishes the address to out/<token>
+rm -f "$HOST_DIR/approval.key" "$HOST_DIR/owner.json"
+STAFF=0190a6f2-1111-7000-8000-000000000001
+idI=$(uuid7); submit "$idI" "id=$idI\nkind=host-approval-enroll\narg=$STAFF\ntoken=$TOK5\n"
+t  "enroll job ends ok"                    eq "$(state "$idI")" ok
+t  "enroll writes a 32-character key"      eq "$(wc -c < "$HOST_DIR/approval.key" | tr -d ' ')" 33
+t  "enroll records the owner"              grep -qF "\"staff_id\":\"$STAFF\"" "$HOST_DIR/owner.json"
+t  "enroll publishes the address"          grep -q 'otpauth://totp/Dahae:server?secret=' "$DAHAE_JOBS/out/$TOK5"
+idJ=$(uuid7); submit "$idJ" "id=$idJ\nkind=host-approval-enroll\narg=$STAFF\ntoken=$TOK5\n"
+t  "second enroll fails"                   eq "$(state "$idJ")" failed
+id=$(uuid7); t  "enroll without a token refused" refuse "$id" "id=$id\nkind=host-approval-enroll\narg=$STAFF\n"
+id=$(uuid7); t  "enroll with a bad owner id refused" refuse "$id" "id=$id\nkind=host-approval-enroll\narg=not-a-uuid\ntoken=$TOK5\n"
+printf '%s\n' "$SECRET" > "$HOST_DIR/approval.key"
+
 # ---- results written to out/<token>: logs are masked, read-only folders, 10 minutes ----
 cat > "$SB/logs.txt" <<'LOG'
 GET /admin Authorization: Bearer abc.def-ghi
@@ -311,6 +369,12 @@ DATA_KEY=supersecretvalue
 db postgres://app:hunter2@db:5432/cleaning
 {"token":"tokenvalue123","name":"kim"}
 setup code ABCD-EFGH-JKMN
+Authorization: Basic dXNlcjpwYXNzd29yZA==
+Set-Cookie: sid=cookiesecret99; Path=/
+toss test_sk_livesecret123 used
+setup code ABCDEFGHJKMN
+phone 010-1234-5678 and 01098765432
+secret=alpha,beta
 GET /health 200
 LOG
 id=$(uuid7); submit "$id" "id=$id\nkind=logs\narg=api:200\ntoken=$TOK5\n"
@@ -322,6 +386,13 @@ nt "logs hide the key value"              grep -q 'supersecretvalue' "$DAHAE_JOB
 nt "logs hide the database password"      grep -q 'hunter2' "$DAHAE_JOBS/out/$TOK5"
 nt "logs hide the json token"             grep -q 'tokenvalue123' "$DAHAE_JOBS/out/$TOK5"
 nt "logs hide the setup code"             grep -q 'ABCD-EFGH-JKMN' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the basic credential"       grep -q 'dXNlcjpwYXNz' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the cookie value"           grep -q 'cookiesecret99' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the toss secret key"        grep -q 'livesecret123' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide a bare setup code"          grep -q 'ABCDEFGHJKMN' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide a hyphenated phone number"  grep -q '1234-5678' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide an unhyphenated phone"      grep -q '98765432' "$DAHAE_JOBS/out/$TOK5"
+nt "logs hide the value after a comma"    grep -q 'beta' "$DAHAE_JOBS/out/$TOK5"
 t  "logs run compose logs for api"        grep -q ' compose --env-file .env logs --no-color --tail 200 api$' "$SB/docker.log"
 id=$(uuid7); submit "$id" "id=$id\nkind=logs\narg=api:10\ntoken=$TOK5\n"
 t  "logs line count under 50 refused"     eq "$(state "$id")" rejected
@@ -333,6 +404,12 @@ id=$(uuid7); submit "$id" "id=$id\nkind=domain-check\narg=myshop.co.kr\ntoken=$T
 t  "domain-check reports a match"         grep -q '"match":true' "$DAHAE_JOBS/out/$TOK5"
 t  "domain-check reports the server IP"   grep -q '"server_ip":"203.0.113.7"' "$DAHAE_JOBS/out/$TOK5"
 t  "domain-check lists the AAAA record"   grep -q '"aaaa":\["2001:db8::1"\]' "$DAHAE_JOBS/out/$TOK5"
+t  "domain-check: AAAA is this server's"  grep -q '"aaaa_ok":true' "$DAHAE_JOBS/out/$TOK5"
+touch "$SB/bin/stray-aaaa"
+id=$(uuid7); submit "$id" "id=$id\nkind=domain-check\narg=myshop.co.kr\ntoken=$TOK5\n"
+t  "stray AAAA elsewhere: aaaa_ok false"  grep -q '"aaaa_ok":false' "$DAHAE_JOBS/out/$TOK5"
+t  "stray AAAA elsewhere: match false"    grep -q '"match":false' "$DAHAE_JOBS/out/$TOK5"
+rm -f "$SB/bin/stray-aaaa"
 id=$(uuid7); t  "domain-check takes a domain only" refuse "$id" "id=$id\nkind=domain-check\narg=localhost\ntoken=$TOK5\n"
 
 # offsite-list, heartbeat
@@ -343,6 +420,13 @@ t  "heartbeat sets the ping address"      argv_has "heartbeat https://hc-ping.co
 id=$(uuid7); submit "$id" "id=$id\nkind=heartbeat\narg=off\n"
 t  "heartbeat off"                        argv_has "heartbeat off YES=1"
 id=$(uuid7); t  "heartbeat http refused"  refuse "$id" "id=$id\nkind=heartbeat\narg=http://hc-ping.com/x\n"
+nt "heartbeat to loopback refused"        heartbeat_url_ok https://127.0.0.1:5432/
+nt "heartbeat to metadata address refused" heartbeat_url_ok https://169.254.169.254/latest
+nt "heartbeat to a private range refused" heartbeat_url_ok https://10.0.0.5/
+nt "heartbeat to localhost refused"       heartbeat_url_ok https://localhost/
+nt "heartbeat to an internal name refused" heartbeat_url_ok https://db/ping
+t  "heartbeat to a public name accepted"  heartbeat_url_ok https://hc-ping.com/abc-123
+id=$(uuid7); t  "heartbeat job to loopback refused" refuse "$id" "id=$id\nkind=heartbeat\narg=https://127.0.0.1:5432/\n"
 
 # out/ is a root folder: a group-writable one is refused
 chmod 777 "$DAHAE_JOBS/out"

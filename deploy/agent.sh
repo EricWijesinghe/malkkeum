@@ -37,6 +37,10 @@ SLOT_META="$HOST_DIR/awaiting.meta"
 APPROVAL_TTL_SEC=600                # 승인 칸의 작업은 10분 안에 승인해야 해요
 APPROVAL_MAX_TRIES=5                # 승인 코드를 이만큼 틀리면 그 작업을 취소해요
 APPROVE_MAX_BYTES=64
+APPROVAL_FAILS="$HOST_DIR/approval.fails"   # 틀린 승인 코드의 시각 기록 (한 줄에 한 번)
+APPROVAL_FAIL_MAX=10                # 한 시간 안에 이만큼 틀리면 승인을 잠가요 (owner-reset 이나 1시간 뒤에 풀려요)
+APPROVAL_FAIL_WINDOW_SEC=3600
+OWNER_FILE="$HOST_DIR/owner.json"   # 승인 코드를 만든 사장님 계정 번호
 LOG_MIN_LINES=50
 LOG_MAX_LINES=2000
 
@@ -114,12 +118,44 @@ tag_ok() { # 정식 채널은 vX.Y.Z 만 받아요. 베타 채널만 -접미사�
   [ "$(env_val CHANNEL)" = beta ] && printf '%s' "$1" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-[0-9A-Za-z.]{1,40}$'
 }
 
-tag_newer() { # 기록된 버전(설치된 버전 포함)보다 높아야 해요. 같거나 낮으면 거부해요 (낮추기 금지)
-  local top
-  # shortcut: 베타(-접미사)와 정식판의 순서는 sort -V 에 맡겨요. 베타 채널을 쓰기 전에 확인해요
-  top=$({ cat -- "$HOST_DIR/version-history" 2>/dev/null || true; env_val VERSION; } | grep -E '^v[0-9]' | sort -V | tail -n1)
-  [ -z "$top" ] && return 0
-  [ "$1" != "$top" ] && [ "$(printf '%s\n%s\n' "$top" "$1" | sort -V | tail -n1)" = "$1" ]
+ver_key() { # ver_key 태그 : 정렬 키 (같은 번호에서는 정식판이 베타보다 높아요: v2.1.0 > v2.1.0-beta.1)
+  case "$1" in *-*) printf '%s\t0%s\n' "${1%%-*}" "${1#*-}" ;; *) printf '%s\t1\n' "$1" ;; esac
+}
+
+tag_newer() { # 설치 기록의 가장 높은 버전보다 높아야 해요. 기록이 없으면 현재 버전을 몰라서 거부해요 (낮추기 금지)
+  local hist top new
+  hist=$(grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]{1,40})?$' -- "$HOST_DIR/version-history" 2>/dev/null) || return 1
+  top=$(while IFS= read -r v; do ver_key "$v"; done <<< "$hist" | sort -V | tail -n1)
+  new=$(ver_key "$1")
+  [ "$new" != "$top" ] && [ "$(printf '%s\n%s\n' "$top" "$new" | sort -V | tail -n1)" = "$new" ]
+}
+
+private_ipv4() { # 사설·루프백·링크 로컬·예약 주소이면 성공해요
+  case "$1" in
+    0.*|10.*|127.*|169.254.*|192.168.*|172.1[6-9].*|172.2[0-9].*|172.3[01].*) return 0 ;;
+    100.6[4-9].*|100.[7-9][0-9].*|100.1[01][0-9].*|100.12[0-7].*) return 0 ;; # 100.64.0.0/10 (공유 주소)
+    22[4-9].*|23[0-9].*|24[0-9].*|25[0-5].*) return 0 ;;                       # 멀티캐스트·예약
+  esac
+  return 1
+}
+
+public_host_ok() { # public_host_ok 호스트 : 점이 있는 공개 이름이고, 풀린 모든 주소가 공개 주소여야 해요
+  local h="$1" ips ip
+  printf '%s' "$h" | grep -Eq '^([A-Za-z0-9-]+\.)+[A-Za-z]{2,63}$' || return 1
+  ips=$(getent ahostsv4 "$h" 2>/dev/null | awk '{ print $1 }' | sort -u) || return 1
+  [ -n "$ips" ] || return 1
+  while IFS= read -r ip; do
+    printf '%s' "$ip" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$' || return 1
+    private_ipv4 "$ip" && return 1
+  done <<< "$ips"
+  return 0
+}
+
+heartbeat_url_ok() { # heartbeat_url_ok 주소 : https 이고 공개 이름이어야 해요 (이 서버의 내부 주소·IP 는 안 돼요)
+  local host
+  printf '%s' "$1" | grep -Eq "$HB_URL_RE" || return 1
+  host=${1#https://}; host=${host%%[:/]*}
+  public_host_ok "$host"
 }
 
 log_arg_ok() { # 로그 값은 서비스:줄 수 (api|web|db, 50~2000 줄)
@@ -131,14 +167,15 @@ log_arg_ok() { # 로그 값은 서비스:줄 수 (api|web|db, 50~2000 줄)
 
 job_args_ok() { # 종류와 값의 짝이 맞아야 해요. 목록에 없는 종류는 이 실행기에서 돌리지 않아요
   case "$JOB_KIND" in
-    logs|offsite-list|domain-check|update-tag|rollback) [ -n "$JOB_TOKEN" ] || return 1 ;; # 결과·요약을 공개 파일로 남기려면 토큰이 있어야 해요
+    logs|offsite-list|domain-check|update-tag|rollback|host-approval-enroll) [ -n "$JOB_TOKEN" ] || return 1 ;; # 결과·요약을 공개 파일로 남기려면 토큰이 있어야 해요
   esac
   case "$JOB_KIND" in
     status-refresh|backup-now|update|update-skip|offsite-list|rollback) [ -z "$JOB_ARG" ] ;;
     update-tag) tag_ok "$JOB_ARG" && tag_newer "$JOB_ARG" ;;
     logs) log_arg_ok ;;
     domain-check) printf '%s' "$JOB_ARG" | grep -Eq "$DOMAIN_RE" ;;
-    heartbeat) [ "$JOB_ARG" = off ] || printf '%s' "$JOB_ARG" | grep -Eq "$HB_URL_RE" ;;
+    heartbeat) [ "$JOB_ARG" = off ] || heartbeat_url_ok "$JOB_ARG" ;;
+    host-approval-enroll) printf '%s' "$JOB_ARG" | grep -Eq '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' ;;
     channel) case "$JOB_ARG" in stable|beta) ;; *) return 1 ;; esac ;;
     restart) case "$JOB_ARG" in api|web|db|all) ;; *) return 1 ;; esac ;;
     schedule) printf '%s' "$JOB_ARG" | grep -Eq "$SCHEDULE_RE" ;;
@@ -155,15 +192,14 @@ ledger_take() { # ledger_take 번호 : 처음 보는 번호면 기록하고 성�
 }
 
 # ---- 서버 승인 (TOTP, RFC 6238: HMAC-SHA1, 30초, 6자리) ----
-totp_at() { # totp_at 비밀(base32) 시각(초) : 그 시각의 6자리 코드
-  local key hex esc="" i mac off word
-  key=$(printf '%s' "$1" | base32 -d | od -An -tx1 | tr -d ' \n')
-  hex=$(printf '%016x' $(( $2 / 30 )))
-  for ((i = 0; i < 16; i += 2)); do esc+="\\x${hex:i:2}"; done
-  mac=$(printf '%b' "$esc" | openssl mac -digest SHA1 -macopt hexkey:"$key" HMAC | sed 's/.*= *//' | tr -d ' \n' | tr 'A-F' 'a-f')
-  off=$(( 16#${mac: -2} & 15 ))
-  word=$(( 16#${mac:off*2:8} & 0x7fffffff ))
-  printf '%06d\n' $(( word % 1000000 ))
+totp_at() { # totp_at 비밀(base32) 시각(초) : 그 시각의 6자리 코드. 비밀은 표준 입력으로만 받아요 (명령 줄 인자에 두지 않아요)
+  printf '%s' "$1" | python3 -c '
+import base64, hashlib, hmac, struct, sys
+key = base64.b32decode(sys.stdin.read().strip())
+mac = hmac.new(key, struct.pack(">Q", int(sys.argv[1]) // 30), hashlib.sha1).digest()
+off = mac[-1] & 15
+print("%06d" % ((struct.unpack(">I", mac[off:off + 4])[0] & 0x7fffffff) % 1000000))
+' "$2" 2>/dev/null
 }
 
 approval_secret() { # 서버 승인 비밀(base32 32자리). 없거나 모양이 다르면 빈 값
@@ -227,6 +263,7 @@ summary_for() { # 서버가 직접 쓰는 요약 (값은 이미 검사를 통과
 hold_for_approval() { # hold_for_approval 사본 : 승인 칸에 하나만 두고, 서버가 쓴 요약을 공개 파일에 남겨요
   local copy="$1"
   [ -n "$(approval_secret)" ] || { rm -f -- "$copy"; warn "서버 승인 코드가 없어요"; reject_job "$JOB_ID"; return 1; }
+  approval_locked && { rm -f -- "$copy"; warn "틀린 승인 코드가 많아서 승인이 잠겨 있어요"; reject_job "$JOB_ID"; return 1; }
   [ ! -e "$SLOT_JOB" ] || { rm -f -- "$copy"; reject_job "$JOB_ID"; return 1; } # 승인 칸이 차 있으면 두 번째 작업은 거부해요
   mv -f -- "$copy" "$SLOT_JOB" || { rm -f -- "$copy"; return 1; }
   write_file "$SLOT_META" "$(printf 'expires=%s\ntries=0' $(( $(date +%s) + APPROVAL_TTL_SEC )))" || return 1
@@ -236,8 +273,23 @@ hold_for_approval() { # hold_for_approval 사본 : 승인 칸에 하나만 두�
     "$(printf '{"state":"awaiting_approval","summary":"%s"}' "$(summary_for "$JOB_KIND" "$JOB_ARG")")" || warn "서버 요약을 못 남겼어요"
 }
 
+approval_locked() { # 한 시간 안에 틀린 코드가 많으면 잠가요 (승인도, 새 승인 작업도 받지 않아요). owner-reset 이 기록을 지워요
+  local since n
+  since=$(( $(date +%s) - APPROVAL_FAIL_WINDOW_SEC ))
+  n=$(awk -v s="$since" '$1 + 0 >= s + 0 { n++ } END { print n + 0 }' "$APPROVAL_FAILS" 2>/dev/null || true)
+  [ "${n:-0}" -ge "$APPROVAL_FAIL_MAX" ]
+}
+
+record_approval_fail() { # 틀린 승인 코드를 기록해요 (지난 한 시간 것만 남겨요). 기록이 안 되면 그 작업을 취소하고 실패해요
+  local since
+  since=$(( $(date +%s) - APPROVAL_FAIL_WINDOW_SEC ))
+  write_file "$APPROVAL_FAILS" "$({ cat -- "$APPROVAL_FAILS" 2>/dev/null || true; date +%s; } | awk -v s="$since" '$1 + 0 >= s + 0')" && return 0
+  cancel_slot "승인 실패 기록을 못 남겨서 취소했어요"; return 1
+}
+
 slot_try_fail() { # 틀린 승인 코드: 여러 번 틀리면 그 작업을 취소해요
   local tries
+  record_approval_fail || return 0
   tries=$(( $(slot_field tries) + 1 ))
   if [ "$tries" -ge "$APPROVAL_MAX_TRIES" ]; then
     cancel_slot "승인 코드를 여러 번 틀려서 취소했어요"
@@ -263,6 +315,7 @@ approve_one() { # approve_one 경로 : 승인 코드 파일 하나를 받아요.
   copy=$(mktemp "$JOBS/work/copy.XXXXXX") || return 1
   if ! copy_small "$src" "$copy" "$APPROVE_MAX_BYTES"; then rm -f -- "$src" "$copy"; return 1; fi
   rm -f -- "$src"
+  if approval_locked; then rm -f -- "$copy"; warn "틀린 승인 코드가 많아서 승인이 잠겨 있어요 (1시간 뒤에 풀려요)"; return 1; fi
   if ! slot_is "$id"; then rm -f -- "$copy"; warn "승인 칸에 없는 작업이에요: $id"; return 1; fi
   code=$(sed -n 's/^code=\([0-9]\{6\}\)$/\1/p' "$copy" | head -n1)
   lines=$(grep -c '' "$copy" || true)
@@ -272,6 +325,16 @@ approve_one() { # approve_one 경로 : 승인 코드 파일 하나를 받아요.
   else
     slot_try_fail
   fi
+}
+
+approval_enroll() { # 승인 코드를 처음 한 번만 만들어요 (이미 있으면 실패). 사장님 계정 번호와 인증 앱 주소를 남겨요
+  local secret
+  [ ! -e "$APPROVAL_KEY" ] && [ ! -L "$APPROVAL_KEY" ] || { warn "이미 서버 승인 코드가 있어요"; return 1; }
+  secret=$(head -c 20 /dev/urandom | base32 | tr -d '=\n')
+  [ "${#secret}" = 32 ] || return 1
+  write_file "$OWNER_FILE" "$(printf '{"staff_id":"%s"}' "$JOB_ARG")" || return 1
+  (umask 077; printf '%s\n' "$secret" > "$APPROVAL_KEY") || return 1
+  printf 'otpauth://totp/Dahae:server?secret=%s&issuer=Dahae&digits=6&period=30\n' "$secret" | out_publish "$JOB_TOKEN"
 }
 
 # ---- 실행 (고정 명령만) ----
@@ -304,11 +367,17 @@ out_publish() { # out_publish 토큰 : 표준 입력을 out/<토큰> 으로 남�
 mask_log() { # 로그에서 토큰·비밀번호·접속 주소의 암호·설정 값·설정 코드를 가려요
   sed -E \
     -e 's#(Bearer[[:space:]]+)[A-Za-z0-9._~+=/-]+#\1[가려짐]#g' \
+    -e 's#((Basic|Token)[[:space:]]+)[A-Za-z0-9._~+=/-]+#\1[가려짐]#gI' \
+    -e 's/((Set-)?Cookie:[[:space:]]*).*/\1[가려짐]/gI' \
     -e 's/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/[가려짐]/g' \
+    -e 's/[a-z]+_(sk|ck)_[A-Za-z0-9]+/[가려짐]/g' \
     -e 's#(://[^:/[:space:]]+:)[^@/[:space:]]+@#\1[가려짐]@#g' \
-    -e 's/("?(token|secret|password|key)"?[[:space:]]*[:=][[:space:]]*"?)[^"[:space:],}]+/\1[가려짐]/gI' \
+    -e 's/("?(token|secret|password|key)"?[[:space:]]*[:=][[:space:]]*"?)[^"[:space:]}]+/\1[가려짐]/gI' \
     -e 's/([A-Za-z0-9_]*_KEY:)[[:space:]]*.*/\1 [가려짐]/g' \
-    -e 's/\b[A-HJ-KM-NP-Z2-9]{4}-[A-HJ-KM-NP-Z2-9]{4}-[A-HJ-KM-NP-Z2-9]{4}\b/[가려짐]/g'
+    -e 's/\b[A-HJ-KM-NP-Z2-9]{4}-[A-HJ-KM-NP-Z2-9]{4}-[A-HJ-KM-NP-Z2-9]{4}\b/[가려짐]/g' \
+    -e 's/((setup|code)[^[:space:]]*[[:space:]:=]+)[2-9A-HJ-KM-NP-Z]{12}\b/\1[가려짐]/gI' \
+    -e 's/\b01[016-9][0-9]{7,8}\b/[가려짐]/g' \
+    -e 's/\b0[0-9]{1,2}[-. ][0-9]{3,4}[-. ][0-9]{4}\b/[가려짐]/g'
 }
 
 logs_job() { # 서비스 로그의 끝부분을 가려서 out/<토큰> 에 남겨요
@@ -322,23 +391,30 @@ update_tag() { # 승인 받은 버전 올리기: 성공하면 설치 기록에 �
   return "$rc"
 }
 
-server_ipv4() { # 이 서버의 공개 IPv4 를 직접 물어봐요
-  local ip
-  ip=$(curl -fsS4 --max-time 5 https://api.ipify.org 2>/dev/null) || return 1
-  printf '%s' "$ip" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$' || return 1
-  printf '%s' "$ip"
+server_ip() { # server_ip 4|6 : 이 서버의 공개 IPv4·IPv6 를 두 곳에 물어봐요 (답이 다르면 실패해요)
+  local fam="$1" a b
+  a=$(curl -fsS -"$fam" --max-time 5 https://api.ipify.org 2>/dev/null) || return 1
+  b=$(curl -fsS -"$fam" --max-time 5 https://icanhazip.com 2>/dev/null) || return 1
+  [ "$a" = "$b" ] || return 1
+  if [ "$fam" = 4 ]; then printf '%s' "$a" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$' || return 1
+  else printf '%s' "$a" | grep -Eq '^[0-9A-Fa-f:]{3,45}$' && printf '%s' "$a" | grep -q ':' || return 1; fi
+  printf '%s' "$a"
 }
 
 json_list() { awk 'NF { printf "%s\"%s\"", (n++ ? "," : ""), $1 }'; } # 줄마다 값 하나를 JSON 배열 안에 넣어요
 
-domain_check() { # 도메인이 이 서버를 가리키는지 봐요 (서버 IP 는 이 서버가 직접 물어봐요)
-  local ip a aaaa match=false
-  ip=$(server_ipv4) || { warn "서버 IP 를 확인하지 못했어요"; return 1; }
+domain_check() { # 도메인이 이 서버를 가리키는지 봐요 (서버 IP 는 이 서버가 직접 물어봐요). A 는 이 서버의 IPv4, AAAA 는 없거나 이 서버의 IPv6 이어야 해요
+  local ip ip6 a aaaa a_ok=false aaaa_ok=false
+  ip=$(server_ip 4) || { warn "서버 IP 를 확인하지 못했어요"; return 1; }
+  ip6=$(server_ip 6) || ip6=""   # IPv6 가 없는 서버는 빈 값이에요
   a=$(getent ahostsv4 "$JOB_ARG" 2>/dev/null | awk '{ print $1 }' | grep -E "$IP_CHARS_RE" | sort -u || true)
   aaaa=$(getent ahostsv6 "$JOB_ARG" 2>/dev/null | awk '{ print $1 }' | grep -E "$IP_CHARS_RE" | sort -u || true)
-  grep -qxF "$ip" <<< "$a" && match=true
-  printf '{"domain":"%s","server_ip":"%s","a":[%s],"aaaa":[%s],"match":%s}\n' \
-    "$JOB_ARG" "$ip" "$(json_list <<< "$a")" "$(json_list <<< "$aaaa")" "$match" | out_publish "$JOB_TOKEN"
+  grep -qxF "$ip" <<< "$a" && a_ok=true
+  if [ -z "$aaaa" ]; then aaaa_ok=true
+  elif [ -n "$ip6" ] && [ -z "$(grep -vxF "$ip6" <<< "$aaaa" || true)" ]; then aaaa_ok=true; fi
+  printf '{"domain":"%s","server_ip":"%s","a":[%s],"aaaa":[%s],"match":%s,"aaaa_ok":%s}\n' \
+    "$JOB_ARG" "$ip" "$(json_list <<< "$a")" "$(json_list <<< "$aaaa")" \
+    "$([ "$a_ok" = true ] && [ "$aaaa_ok" = true ] && echo true || echo false)" "$aaaa_ok" | out_publish "$JOB_TOKEN"
 }
 
 offsite_list() { cli_out restore-offsite | mask_log | out_publish "$JOB_TOKEN"; } # 외부 백업 목록을 out/<토큰> 에 남겨요
@@ -380,6 +456,7 @@ dispatch() { # 종류에 맞는 명령 하나만 실행해요. 종료 코드를 
     logs) logs_job ;;
     offsite-list) offsite_list ;;
     domain-check) domain_check ;;
+    host-approval-enroll) approval_enroll ;;
   esac
 }
 
